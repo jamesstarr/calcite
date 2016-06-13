@@ -108,8 +108,11 @@ public class BasicSqlType extends AbstractSqlType {
     this.typeSystem = Objects.requireNonNull(typeSystem);
     this.precision = precision;
     this.scale = scale;
+<<<<<<< HEAD
     this.collation = collation;
     this.wrappedCharset = wrappedCharset;
+=======
+>>>>>>> f4a00349b ([] DX-3819, DX-3861, DX-4190:  Minor fixes)
     computeDigest();
   }
 

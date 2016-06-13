@@ -154,11 +154,21 @@ public class RelBuilder {
 
   protected final RelOptCluster cluster;
   protected final RelOptSchema relOptSchema;
-  private final Deque<Frame> stack = new ArrayDeque<>();
-  private final RexSimplify simplifier;
-  private final Config config;
-  private final RelOptTable.ViewExpander viewExpander;
-  private final RelFactories.Struct struct;
+  protected final RelFactories.FilterFactory filterFactory;
+  protected final RelFactories.ProjectFactory projectFactory;
+  protected final RelFactories.AggregateFactory aggregateFactory;
+  protected final RelFactories.SortFactory sortFactory;
+  protected final RelFactories.SetOpFactory setOpFactory;
+  protected final RelFactories.JoinFactory joinFactory;
+  protected final RelFactories.SemiJoinFactory semiJoinFactory;
+  protected final RelFactories.CorrelateFactory correlateFactory;
+  protected final RelFactories.ValuesFactory valuesFactory;
+  protected final RelFactories.TableScanFactory scanFactory;
+  protected final RelFactories.MatchFactory matchFactory;
+  protected final Deque<Frame> stack = new ArrayDeque<>();
+  protected final boolean simplify;
+  protected final RexSimplify simplifier;
+  protected final RexSimplify simplifierUnknownAsFalse;
 
   protected RelBuilder(Context context, RelOptCluster cluster,
       RelOptSchema relOptSchema) {
@@ -3516,9 +3526,9 @@ public class RelBuilder {
    *
    * <p>Describes a previously created relational expression and
    * information about how table aliases map into its row type. */
-  private static class Frame {
-    final RelNode rel;
-    final ImmutableList<Field> fields;
+  protected static class Frame {
+    public final RelNode rel;
+    public final ImmutableList<Field> fields;
 
     private Frame(RelNode rel, ImmutableList<Field> fields) {
       this.rel = rel;
