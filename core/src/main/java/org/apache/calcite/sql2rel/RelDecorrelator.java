@@ -2894,12 +2894,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
     @Override public RelNode visit(RelNode other) {
       if (other instanceof Join) {
         Join join = (Join) other;
-        try {
-          stack.push(join);
-          join.getCondition().accept(rexVisitor(join));
-        } finally {
-          stack.pop();
-        }
+        join.getCondition().accept(rexVisitor(join));
         return visitJoin(join);
       } else if (other instanceof Correlate) {
         Correlate correlate = (Correlate) other;
@@ -2907,21 +2902,11 @@ public class RelDecorrelator implements ReflectiveVisitor {
         return visitJoin(correlate);
       } else if (other instanceof Filter) {
         Filter filter = (Filter) other;
-        try {
-          stack.push(filter);
-          filter.getCondition().accept(rexVisitor(filter));
-        } finally {
-          stack.pop();
-        }
+        filter.getCondition().accept(rexVisitor(filter));
       } else if (other instanceof Project) {
         Project project = (Project) other;
-        try {
-          stack.push(project);
-          for (RexNode node : project.getProjects()) {
-            node.accept(rexVisitor(project));
-          }
-        } finally {
-          stack.pop();
+        for (RexNode node : project.getProjects()) {
+          node.accept(rexVisitor(project));
         }
       }
       return super.visit(other);

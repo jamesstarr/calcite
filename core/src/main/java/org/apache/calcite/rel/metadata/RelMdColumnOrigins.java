@@ -57,7 +57,7 @@ public class RelMdColumnOrigins
 
   //~ Constructors -----------------------------------------------------------
 
-  private RelMdColumnOrigins() {}
+  protected RelMdColumnOrigins() {}
 
   //~ Methods ----------------------------------------------------------------
 

@@ -4016,9 +4016,9 @@ public class RelBuilder {
    *
    * <p>Describes a previously created relational expression and
    * information about how table aliases map into its row type. */
-  private static class Frame {
-    final RelNode rel;
-    final ImmutableList<Field> fields;
+  protected static class Frame {
+    public final RelNode rel;
+    public final ImmutableList<Field> fields;
 
     private Frame(RelNode rel, ImmutableList<Field> fields) {
       this.rel = rel;

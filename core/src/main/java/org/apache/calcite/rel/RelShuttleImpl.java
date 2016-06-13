@@ -34,9 +34,7 @@ import org.apache.calcite.rel.logical.LogicalTableModify;
 import org.apache.calcite.rel.logical.LogicalUnion;
 import org.apache.calcite.rel.logical.LogicalValues;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 
 /**
@@ -46,24 +44,18 @@ import java.util.List;
  * any children change.
  */
 public class RelShuttleImpl implements RelShuttle {
-  protected final Deque<RelNode> stack = new ArrayDeque<>();
 
   /**
    * Visits a particular child of a parent.
    */
   protected RelNode visitChild(RelNode parent, int i, RelNode child) {
-    stack.push(parent);
-    try {
-      RelNode child2 = child.accept(this);
-      if (child2 != child) {
-        final List<RelNode> newInputs = new ArrayList<>(parent.getInputs());
-        newInputs.set(i, child2);
-        return parent.copy(parent.getTraitSet(), newInputs);
-      }
-      return parent;
-    } finally {
-      stack.pop();
+    RelNode child2 = child.accept(this);
+    if (child2 != child) {
+      final List<RelNode> newInputs = new ArrayList<>(parent.getInputs());
+      newInputs.set(i, child2);
+      return parent.copy(parent.getTraitSet(), newInputs);
     }
+    return parent;
   }
 
   protected RelNode visitChildren(RelNode rel) {

@@ -410,6 +410,8 @@ public class RelMdUtil {
         sel *= .15;
       } else if (pred.isA(SqlKind.COMPARISON)) {
         sel *= .5;
+      } else if (pred.isA(SqlKind.LIKE)) {
+        sel *= .05;
       } else {
         sel *= .25;
       }
