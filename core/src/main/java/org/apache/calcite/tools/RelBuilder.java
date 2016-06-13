@@ -125,21 +125,21 @@ public class RelBuilder {
 
   protected final RelOptCluster cluster;
   protected final RelOptSchema relOptSchema;
-  private final RelFactories.FilterFactory filterFactory;
-  private final RelFactories.ProjectFactory projectFactory;
-  private final RelFactories.AggregateFactory aggregateFactory;
-  private final RelFactories.SortFactory sortFactory;
-  private final RelFactories.SetOpFactory setOpFactory;
-  private final RelFactories.JoinFactory joinFactory;
-  private final RelFactories.SemiJoinFactory semiJoinFactory;
-  private final RelFactories.CorrelateFactory correlateFactory;
-  private final RelFactories.ValuesFactory valuesFactory;
-  private final RelFactories.TableScanFactory scanFactory;
-  private final RelFactories.MatchFactory matchFactory;
-  private final Deque<Frame> stack = new ArrayDeque<>();
-  private final boolean simplify;
-  private final RexSimplify simplifier;
-  private final RexSimplify simplifierUnknownAsFalse;
+  protected final RelFactories.FilterFactory filterFactory;
+  protected final RelFactories.ProjectFactory projectFactory;
+  protected final RelFactories.AggregateFactory aggregateFactory;
+  protected final RelFactories.SortFactory sortFactory;
+  protected final RelFactories.SetOpFactory setOpFactory;
+  protected final RelFactories.JoinFactory joinFactory;
+  protected final RelFactories.SemiJoinFactory semiJoinFactory;
+  protected final RelFactories.CorrelateFactory correlateFactory;
+  protected final RelFactories.ValuesFactory valuesFactory;
+  protected final RelFactories.TableScanFactory scanFactory;
+  protected final RelFactories.MatchFactory matchFactory;
+  protected final Deque<Frame> stack = new ArrayDeque<>();
+  protected final boolean simplify;
+  protected final RexSimplify simplifier;
+  protected final RexSimplify simplifierUnknownAsFalse;
 
   protected RelBuilder(Context context, RelOptCluster cluster,
       RelOptSchema relOptSchema) {
@@ -2020,9 +2020,9 @@ public class RelBuilder {
    *
    * <p>Describes a previously created relational expression and
    * information about how table aliases map into its row type. */
-  private static class Frame {
-    final RelNode rel;
-    final ImmutableList<Field> fields;
+  protected static class Frame {
+    public final RelNode rel;
+    public final ImmutableList<Field> fields;
 
     private Frame(RelNode rel, ImmutableList<Field> fields) {
       this.rel = rel;

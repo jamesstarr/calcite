@@ -180,6 +180,9 @@ public abstract class RelDataTypeImpl
   }
 
   @Override public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
     if (obj instanceof RelDataTypeImpl) {
       final RelDataTypeImpl that = (RelDataTypeImpl) obj;
       return this.digest.equals(that.digest);

@@ -2499,7 +2499,7 @@ public class RexUtil {
       final RelDataType refType2 =
           rexBuilder.getTypeFactory().createTypeWithNullability(refType,
               rightType.isNullable());
-      if (refType2 == rightType) {
+      if (Objects.equals(refType2, rightType)) {
         return new RexInputRef(ref.getIndex(), refType2);
       }
       throw new AssertionError("mismatched type " + ref + " " + rightType);

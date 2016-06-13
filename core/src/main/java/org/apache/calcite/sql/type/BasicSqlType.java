@@ -91,6 +91,7 @@ public class BasicSqlType extends AbstractSqlType {
     this.typeSystem = typeSystem;
     this.precision = precision;
     this.scale = scale;
+    computeDigest();
   }
 
   //~ Methods ----------------------------------------------------------------
