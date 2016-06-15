@@ -166,6 +166,10 @@ public class RelMetadataQuery {
     return new RelMetadataQuery(THREAD_PROVIDERS.get(), EMPTY);
   }
 
+  public static RelMetadataQuery instance(RelMetadataProvider provider) {
+    return new RelMetadataQuery(JaninoRelMetadataProvider.of(provider), EMPTY);
+  }
+
   /** Creates and initializes the instance that will serve as a prototype for
    * all other instances. */
   private RelMetadataQuery(boolean dummy) {

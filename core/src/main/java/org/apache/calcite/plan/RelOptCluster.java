@@ -49,7 +49,6 @@ public class RelOptCluster {
   private RelMetadataProvider metadataProvider;
   private MetadataFactory metadataFactory;
   private final RelTraitSet emptyTraitSet;
-  private RelMetadataQuery mq;
 
   //~ Constructors -----------------------------------------------------------
 
@@ -149,10 +148,11 @@ public class RelOptCluster {
    * for example if you are in a {@link RelOptRule#onMatch(RelOptRuleCall)}
    * method, then use {@link RelOptRuleCall#getMetadataQuery()} instead. */
   public RelMetadataQuery getMetadataQuery() {
-    if (mq == null) {
-      mq = RelMetadataQuery.instance();
+    if (metadataProvider == null) {
+      return RelMetadataQuery.instance();
+    } else {
+      return RelMetadataQuery.instance(this.metadataProvider);
     }
-    return mq;
   }
 
   /**
@@ -160,7 +160,6 @@ public class RelOptCluster {
    * invalid. Typically invoked from {@link RelOptRuleCall#transformTo}.
    */
   public void invalidateMetadataQuery() {
-    mq = null;
   }
 
   /**
