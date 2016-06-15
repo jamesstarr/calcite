@@ -146,54 +146,9 @@ public abstract class AbstractRelNode implements RelNode {
     return null;
   }
 
-  public int getId() {
-    return id;
-  }
-
-  public RelNode getInput(int i) {
-    List<RelNode> inputs = getInputs();
-    return inputs.get(i);
-  }
-
-  public void register(RelOptPlanner planner) {
-    Util.discard(planner);
-  }
-
-  public final String getRelTypeName() {
-    String cn = getClass().getName();
-    int i = cn.length();
-    while (--i >= 0) {
-      if (cn.charAt(i) == '$' || cn.charAt(i) == '.') {
-        return cn.substring(i + 1);
-      }
-    }
-    return cn;
-  }
-
-  public boolean isValid(Litmus litmus, Context context) {
-    return litmus.succeed();
-  }
-
-  public final RelDataType getRowType() {
-    if (rowType == null) {
-      rowType = deriveRowType();
-      assert rowType != null : this;
-    }
-    return rowType;
-  }
-
-  protected RelDataType deriveRowType() {
-    // This method is only called if rowType is null, so you don't NEED to
-    // implement it if rowType is always set.
-    throw new UnsupportedOperationException();
-  }
-
-  public RelDataType getExpectedInputRowType(int ordinalInParent) {
-    return getRowType();
-  }
-
-  public List<RelNode> getInputs() {
-    return Collections.emptyList();
+  @SuppressWarnings("deprecation")
+  public final double getRows() {
+    return estimateRowCount(getCluster().getMetadataQuery());
   }
 
   public double estimateRowCount(RelMetadataQuery mq) {
@@ -228,6 +183,14 @@ public abstract class AbstractRelNode implements RelNode {
     return this;
   }
 
+<<<<<<< HEAD
+=======
+  @SuppressWarnings("deprecation")
+  public final RelOptCost computeSelfCost(RelOptPlanner planner) {
+    return computeSelfCost(planner, getCluster().getMetadataQuery());
+  }
+
+>>>>>>> 3d7bdad35 ([] use RelMetadataProvider/RelMetadataQuery set in cluster instead of the default/empty ones)
   public RelOptCost computeSelfCost(RelOptPlanner planner,
       RelMetadataQuery mq) {
     // by default, assume cost is proportional to number of rows

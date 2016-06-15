@@ -53,8 +53,7 @@ public class RelOptCluster {
   private MetadataFactory metadataFactory;
   private HintStrategyTable hintStrategies;
   private final RelTraitSet emptyTraitSet;
-  private RelMetadataQuery mq;
-  private Supplier<RelMetadataQuery> mqSupplier;
+>>>>>>> 3d7bdad35 ([] use RelMetadataProvider/RelMetadataQuery set in cluster instead of the default/empty ones)
 
   //~ Constructors -----------------------------------------------------------
 
@@ -182,10 +181,15 @@ public class RelOptCluster {
    * for example if you are in a {@link RelOptRule#onMatch(RelOptRuleCall)}
    * method, then use {@link RelOptRuleCall#getMetadataQuery()} instead. */
   public RelMetadataQuery getMetadataQuery() {
+<<<<<<< HEAD
     if (mq == null) {
       mq = mqSupplier.get();
+=======
+    if (metadataProvider == null) {
+      return RelMetadataQuery.instance();
+    } else {
+      return RelMetadataQuery.instance(this.metadataProvider);
     }
-    return mq;
   }
 
   /**
@@ -200,7 +204,6 @@ public class RelOptCluster {
    * invalid. Typically invoked from {@link RelOptRuleCall#transformTo}.
    */
   public void invalidateMetadataQuery() {
-    mq = null;
   }
 
   /**

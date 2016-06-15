@@ -248,8 +248,8 @@ public abstract class AbstractRelOptPlanner implements RelOptPlanner {
     return mq.getCumulativeCost(rel);
   }
 
-  @Deprecated
-  @Override public @Nullable RelOptCost getCost(RelNode rel) {
+  @SuppressWarnings("deprecation")
+  public RelOptCost getCost(RelNode rel) {
     final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
     return getCost(rel, mq);
   }
