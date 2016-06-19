@@ -60,6 +60,7 @@ import org.apache.calcite.rel.metadata.CachingRelMetadataProvider;
 import org.apache.calcite.rel.metadata.ChainedRelMetadataProvider;
 import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
 import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
+import org.apache.calcite.rel.metadata.JaninoRelMetadataQuery;
 import org.apache.calcite.rel.metadata.Metadata;
 import org.apache.calcite.rel.metadata.MetadataDef;
 import org.apache.calcite.rel.metadata.MetadataHandler;
@@ -805,7 +806,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
         rel.getCluster().getMetadataProvider();
     final RelOptPlanner planner = rel.getCluster().getPlanner();
     for (int i = 0; i < iterationCount; i++) {
-      RelMetadataQuery.THREAD_PROVIDERS.set(
+      JaninoRelMetadataQuery.THREAD_PROVIDERS.set(
           JaninoRelMetadataProvider.of(
               new CachingRelMetadataProvider(metadataProvider, planner)));
       final RelMetadataQuery mq = RelMetadataQuery.instance();
@@ -2492,11 +2493,11 @@ public class RelMetadataTest extends SqlToRelTestBase {
   /** Extension to {@link RelMetadataQuery} to support {@link ColType}.
    *
    * <p>Illustrates how you would package up a user-defined metadata type. */
-  private static class MyRelMetadataQuery extends RelMetadataQuery {
+  private static class MyRelMetadataQuery extends JaninoRelMetadataQuery {
     private ColType.Handler colTypeHandler;
 
     MyRelMetadataQuery() {
-      super(THREAD_PROVIDERS.get(), EMPTY);
+      super(JaninoRelMetadataProvider.DEFAULT);
       colTypeHandler = initialHandler(ColType.Handler.class);
     }
 

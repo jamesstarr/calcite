@@ -17,6 +17,8 @@
 package org.apache.calcite.plan.volcano;
 
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
+import org.apache.calcite.rel.metadata.JaninoRelMetadataQuery;
 import org.apache.calcite.rel.metadata.Metadata;
 import org.apache.calcite.rel.metadata.MetadataDef;
 import org.apache.calcite.rel.metadata.MetadataHandler;
@@ -118,6 +120,10 @@ public class VolcanoRelMetadataProvider implements RelMetadataProvider {
   public <M extends Metadata> Multimap<Method, MetadataHandler<M>> handlers(
       MetadataDef<M> def) {
     return ImmutableMultimap.of();
+  }
+
+  @Override public RelMetadataQuery getRelMetadataQuery() {
+    return new JaninoRelMetadataQuery(JaninoRelMetadataProvider.of(this));
   }
 }
 

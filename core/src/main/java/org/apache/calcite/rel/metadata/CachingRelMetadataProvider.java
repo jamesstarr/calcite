@@ -82,6 +82,10 @@ public class CachingRelMetadataProvider implements RelMetadataProvider {
     return underlyingProvider.handlers(def);
   }
 
+  @Override public RelMetadataQuery getRelMetadataQuery() {
+    return underlyingProvider.getRelMetadataQuery();
+  }
+
   //~ Inner Classes ----------------------------------------------------------
 
   /** An entry in the cache. Consists of the cached object and the timestamp
