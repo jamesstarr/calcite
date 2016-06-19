@@ -66,6 +66,7 @@ import org.apache.calcite.rel.metadata.ChainedRelMetadataProvider;
 import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
 import org.apache.calcite.rel.metadata.JaninoRelMetadataHandlerProvider;
 import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
+import org.apache.calcite.rel.metadata.JaninoRelMetadataQuery;
 import org.apache.calcite.rel.metadata.Metadata;
 import org.apache.calcite.rel.metadata.MetadataDef;
 import org.apache.calcite.rel.metadata.MetadataHandler;
@@ -889,20 +890,10 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final RelMetadataProvider metadataProvider =
         rel.getCluster().getMetadataProvider();
     for (int i = 0; i < iterationCount; i++) {
-      RelMetadataProvider wrappedProvider = new RelMetadataProvider() {
-        @Deprecated
-        @Override public <M extends Metadata> UnboundMetadata<M> apply(
-            Class<? extends RelNode> relClass, Class<? extends M> metadataClass) {
-          return metadataProvider.apply(relClass, metadataClass);
-        }
-
-        @Override public <M extends Metadata> Multimap<Method, MetadataHandler<M>> handlers(
-            MetadataDef<M> def) {
-          return metadataProvider.handlers(def);
-        }
-      };
-      RelMetadataQuery.THREAD_PROVIDERS.set(JaninoRelMetadataProvider.of(wrappedProvider));
-      final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
+      JaninoRelMetadataQuery.THREAD_PROVIDERS.set(
+          JaninoRelMetadataProvider.of(
+              new CachingRelMetadataProvider(metadataProvider, planner)));
+      final RelMetadataQuery mq = RelMetadataQuery.instance();
       final Double result = mq.getRowCount(rel);
       assertThat(result, within(14d, 0.1d));
     }
@@ -3167,11 +3158,12 @@ public class RelMetadataTest extends SqlToRelTestBase {
   /** Extension to {@link RelMetadataQuery} to support {@link ColType}.
    *
    * <p>Illustrates how you would package up a user-defined metadata type. */
-  private static class MyRelMetadataQuery extends RelMetadataQuery {
+  private static class MyRelMetadataQuery extends JaninoRelMetadataQuery {
     private ColType.Handler colTypeHandler;
 
     MyRelMetadataQuery() {
-      colTypeHandler = JaninoRelMetadataHandlerProvider.INSTANCE.initialHandler(ColType.DEF);
+      super(JaninoRelMetadataProvider.DEFAULT);
+      colTypeHandler = initialHandler(ColType.Handler.class);
     }
 
     public String colType(RelNode rel, int column) {
