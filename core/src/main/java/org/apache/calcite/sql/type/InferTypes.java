@@ -23,6 +23,7 @@ import org.apache.calcite.sql.SqlNode;
 
 import com.google.common.collect.ImmutableList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -121,6 +122,34 @@ public abstract class InferTypes {
           for (int i = 0; i < operandTypes.length; ++i) {
             operandTypes[i] =
                 typeFactory.createSqlType(SqlTypeName.VARCHAR, 1024);
+          }
+        }
+      };
+
+  public static final SqlOperandTypeInference LEAST_RESTRICTIVE =
+      new SqlOperandTypeInference() {
+        public void inferOperandTypes(
+            SqlCallBinding callBinding,
+            RelDataType returnType,
+            RelDataType[] operandTypes) {
+          RelDataTypeFactory typeFactory = callBinding.getTypeFactory();
+          final RelDataType unknownType = callBinding.getValidator().getUnknownType();
+          RelDataType knownType = unknownType;
+          List<RelDataType> knownTypes = new ArrayList<>();
+          for (SqlNode operand : callBinding.operands()) {
+            knownType = callBinding.getValidator().deriveType(callBinding.getScope(), operand);
+            if (!knownType.equals(unknownType)) {
+              knownTypes.add(knownType);
+            }
+          }
+          final RelDataType inferType;
+          if (!knownTypes.isEmpty()) {
+            inferType = typeFactory.leastRestrictive(knownTypes);
+          } else {
+            inferType = unknownType;
+          }
+          for (int i = 0; i < operandTypes.length; ++i) {
+            operandTypes[i] = inferType;
           }
         }
       };
