@@ -97,6 +97,7 @@ public abstract class RelDataTypeSystemImpl implements RelDataTypeSystem {
     case REAL:
       return 7;
     case FLOAT:
+      return 6;
     case DOUBLE:
       return 15;
     case TIME:

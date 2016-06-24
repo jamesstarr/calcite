@@ -19,11 +19,14 @@ package org.apache.calcite.sql.type;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Strategies for inferring operand types.
@@ -114,6 +117,32 @@ public abstract class InferTypes {
               typeFactory.createTypeWithNullability(
                   typeFactory.createSqlType(SqlTypeName.ANY), true);
         }
+      };
+
+  public static final SqlOperandTypeInference LEAST_RESTRICTIVE =
+      (callBinding, returnType, operandTypes) -> {
+        final SqlValidator sqlValidator = callBinding.getValidator();
+        final RelDataTypeFactory typeFactory = callBinding.getTypeFactory();
+        final RelDataType unknownType = sqlValidator.getUnknownType();
+        final List<RelDataType> knownTypes =
+            callBinding.operands().stream()
+                .map(operand ->
+                    sqlValidator.deriveType(callBinding.getScope(), operand))
+                .filter(knownType -> !knownType.equals(unknownType))
+                .collect(Collectors.toList());
+        final RelDataType inferType;
+        if (!knownTypes.isEmpty()) {
+          final RelDataType leastRestrictive = typeFactory.leastRestrictive(knownTypes);
+          //Default to the first found if leastRestrictive does not work out
+          if (null == leastRestrictive) {
+            inferType = Util.first(knownTypes);
+          } else {
+            inferType = leastRestrictive;
+          }
+        } else {
+          inferType = unknownType;
+        }
+        Arrays.fill(operandTypes, inferType);
       };
 
   /** Returns an {@link SqlOperandTypeInference} that returns a given list of

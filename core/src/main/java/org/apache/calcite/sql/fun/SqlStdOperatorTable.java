@@ -272,7 +272,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           60,
           true,
           ReturnTypes.QUOTIENT_NULLABLE,
-          InferTypes.FIRST_KNOWN,
+          InferTypes.LEAST_RESTRICTIVE,
           OperandTypes.DIVISION_OPERATOR);
 
   /**
@@ -332,7 +332,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           30,
           true,
           ReturnTypes.BOOLEAN_NULLABLE,
-          InferTypes.FIRST_KNOWN,
+          InferTypes.LEAST_RESTRICTIVE,
           OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED);
 
   /**
@@ -345,7 +345,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           30,
           true,
           ReturnTypes.BOOLEAN_NULLABLE,
-          InferTypes.FIRST_KNOWN,
+          InferTypes.LEAST_RESTRICTIVE,
           OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED);
 
   /**
@@ -401,7 +401,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           30,
           true,
           ReturnTypes.BOOLEAN_NULLABLE,
-          InferTypes.FIRST_KNOWN,
+          InferTypes.LEAST_RESTRICTIVE,
           OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED);
 
   /**
@@ -475,7 +475,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           30,
           true,
           ReturnTypes.BOOLEAN_NULLABLE,
-          InferTypes.FIRST_KNOWN,
+          InferTypes.LEAST_RESTRICTIVE,
           OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED);
 
   /**
@@ -488,7 +488,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           30,
           true,
           ReturnTypes.BOOLEAN_NULLABLE,
-          InferTypes.FIRST_KNOWN,
+          InferTypes.LEAST_RESTRICTIVE,
           OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED);
 
   /**
@@ -506,7 +506,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
 
           // Same type inference strategy as sum
           ReturnTypes.NULLABLE_SUM,
-          InferTypes.FIRST_KNOWN,
+          InferTypes.LEAST_RESTRICTIVE,
           OperandTypes.MINUS_OPERATOR);
 
   /**
@@ -519,7 +519,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           60,
           true,
           ReturnTypes.PRODUCT_NULLABLE,
-          InferTypes.FIRST_KNOWN,
+          InferTypes.LEAST_RESTRICTIVE,
           OperandTypes.MULTIPLY_OPERATOR);
 
   /**
@@ -532,7 +532,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           30,
           true,
           ReturnTypes.BOOLEAN_NULLABLE,
-          InferTypes.FIRST_KNOWN,
+          InferTypes.LEAST_RESTRICTIVE,
           OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED);
 
   /**
@@ -558,7 +558,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           40,
           true,
           ReturnTypes.NULLABLE_SUM,
-          InferTypes.FIRST_KNOWN,
+          InferTypes.LEAST_RESTRICTIVE,
           OperandTypes.PLUS_OPERATOR);
 
   /**

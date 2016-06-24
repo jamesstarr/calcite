@@ -373,7 +373,7 @@ class TypeCoercionTest extends SqlValidatorTestCase {
     checkCommonType(nullType, doubleType, doubleType, true);
     // Use RelDataTypeFactory#leastRestrictive to find the common type, it's not symmetric but
     // it's ok because precision does not become lower.
-    checkCommonType(floatType, doubleType, floatType, false);
+    checkCommonType(floatType, doubleType, doubleType, false);
     checkCommonType(floatType, floatType, floatType, true);
     checkCommonType(doubleType, doubleType, doubleType, true);
     // EXACT + FRACTIONAL
