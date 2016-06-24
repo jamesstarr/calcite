@@ -503,9 +503,8 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           SqlKind.MINUS,
           40,
           true,
-
-          // Same type inference strategy as sum
-          ReturnTypes.NULLABLE_SUM,
+          // Return type is similar to SUMS, but allows for timestamp - timestamp/date - date
+          ReturnTypes.NULLABLE_MINUS,
           InferTypes.LEAST_RESTRICTIVE,
           OperandTypes.MINUS_OPERATOR);
 

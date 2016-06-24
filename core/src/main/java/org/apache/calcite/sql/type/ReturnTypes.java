@@ -16,6 +16,7 @@
  */
 package org.apache.calcite.sql.type;
 
+import org.apache.calcite.avatica.util.TimeUnit;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeField;
@@ -26,10 +27,12 @@ import org.apache.calcite.sql.ExplicitOperatorBinding;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlCallBinding;
 import org.apache.calcite.sql.SqlCollation;
+import org.apache.calcite.sql.SqlIntervalQualifier;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperatorBinding;
 import org.apache.calcite.sql.SqlUtil;
+import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.validate.SqlValidatorNamespace;
 import org.apache.calcite.util.Glossary;
 import org.apache.calcite.util.Util;
@@ -654,6 +657,51 @@ public abstract class ReturnTypes {
    */
   public static final SqlReturnTypeInference DECIMAL_MOD_NULLABLE =
       DECIMAL_MOD.andThen(SqlTypeTransforms.TO_NULLABLE);
+
+  /**
+   * Type-inference strategy for DATE - DATE.
+   */
+  public static final SqlReturnTypeInference DATE_MINUS = opBinding -> {
+    RelDataType type1 = opBinding.getOperandType(0);
+    RelDataType type2 = opBinding.getOperandType(1);
+    if (type1.getSqlTypeName() == SqlTypeName.DATE
+        && type2.getSqlTypeName() == SqlTypeName.DATE) {
+      return opBinding.getTypeFactory().createTypeWithNullability(
+          opBinding.getTypeFactory().createSqlIntervalType(
+              new SqlIntervalQualifier(
+                  TimeUnit.DAY, TimeUnit.DAY, SqlParserPos.ZERO)),
+          type1.isNullable() || type2.isNullable());
+    }
+    return null;
+  };
+
+  /**
+   * Type-inference strategy for TIMESTAMP - TIMESTAMP.
+   */
+  public static final SqlReturnTypeInference TIMESTAMP_MINUS = opBinding -> {
+    RelDataType type1 = opBinding.getOperandType(0);
+    RelDataType type2 = opBinding.getOperandType(1);
+    if (type1.getSqlTypeName() == SqlTypeName.TIMESTAMP
+        && type2.getSqlTypeName() == SqlTypeName.TIMESTAMP) {
+      return opBinding.getTypeFactory().createTypeWithNullability(
+          opBinding.getTypeFactory().createSqlIntervalType(
+              new SqlIntervalQualifier(
+                  TimeUnit.DAY, TimeUnit.SECOND, SqlParserPos.ZERO)),
+          type1.isNullable() || type2.isNullable());
+    }
+    return null;
+  };
+
+  /**
+   * Type-inference strategy whereby the result type of a call is
+   * {@link #DECIMAL_SUM_NULLABLE}, {@link #TIMESTAMP_MINUS}, {@link #DATE_MINUS} with
+   * a fallback to {@link #LEAST_RESTRICTIVE}
+   * These rules are used for addition and subtraction.
+   */
+  public static final SqlReturnTypeInference NULLABLE_MINUS =
+      new SqlReturnTypeInferenceChain(
+          DECIMAL_SUM_NULLABLE, TIMESTAMP_MINUS, DATE_MINUS, LEAST_RESTRICTIVE);
+
 
   /**
    * Type-inference strategy whereby the result type of a call is
