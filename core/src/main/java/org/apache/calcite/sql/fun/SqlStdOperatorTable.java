@@ -59,6 +59,7 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.util.ReflectiveSqlOperatorTable;
 import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlModality;
+import org.apache.calcite.sql.validate.SqlMonotonicity;
 import org.apache.calcite.sql2rel.AuxiliaryConverter;
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.Pair;
@@ -473,9 +474,8 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           SqlKind.MINUS,
           40,
           true,
-
-          // Same type inference strategy as sum
-          ReturnTypes.NULLABLE_SUM,
+          // Return type is similar to SUMS, but allows for timestamp - timestamp/date - date
+          ReturnTypes.NULLABLE_MINUS,
           InferTypes.LEAST_RESTRICTIVE,
           OperandTypes.MINUS_OPERATOR);
 
@@ -555,6 +555,19 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           default:
             return leftType;
           }
+        }
+
+        @Override public void unparse(
+            SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
+          final SqlWriter.Frame frame = writer.startList("(", ")");
+          call.operand(0).unparse(writer, leftPrec, rightPrec);
+          writer.sep("+");
+          call.operand(1).unparse(writer, leftPrec, rightPrec);
+          writer.endList(frame);
+        }
+
+        @Override public SqlMonotonicity getMonotonicity(SqlOperatorBinding call) {
+          return SqlStdOperatorTable.PLUS.getMonotonicity(call);
         }
       };
 
