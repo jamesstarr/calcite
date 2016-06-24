@@ -254,7 +254,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           60,
           true,
           ReturnTypes.QUOTIENT_NULLABLE,
-          InferTypes.FIRST_KNOWN,
+          InferTypes.LEAST_RESTRICTIVE,
           OperandTypes.DIVISION_OPERATOR);
 
   /**
@@ -314,7 +314,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           30,
           true,
           ReturnTypes.BOOLEAN_NULLABLE,
-          InferTypes.FIRST_KNOWN,
+          InferTypes.LEAST_RESTRICTIVE,
           OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED);
 
   /**
@@ -480,8 +480,9 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           SqlKind.MINUS,
           40,
           true,
-          // Return type is similar to SUMS, but allows for timestamp - timestamp/date - date
-          ReturnTypes.NULLABLE_MINUS,
+
+          // Same type inference strategy as sum
+          ReturnTypes.NULLABLE_SUM,
           InferTypes.LEAST_RESTRICTIVE,
           OperandTypes.MINUS_OPERATOR);
 
@@ -509,7 +510,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           true,
           ReturnTypes.BOOLEAN_NULLABLE,
           InferTypes.LEAST_RESTRICTIVE,
-          OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED_FOR_EQUALITY);
+          OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED);
 
   /**
    * Logical <code>OR</code> operator.
