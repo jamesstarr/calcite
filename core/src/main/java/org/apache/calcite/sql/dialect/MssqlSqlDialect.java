@@ -139,6 +139,10 @@ public class MssqlSqlDialect extends SqlDialect {
     }
   }
 
+  @Override public boolean supportsOrderByNullOrdering() {
+    return false;
+  }
+
   @Override public void unparseDateTimeLiteral(SqlWriter writer,
       SqlAbstractDateTimeLiteral literal, int leftPrec, int rightPrec) {
     writer.literal("'" + literal.toFormattedString() + "'");

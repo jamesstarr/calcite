@@ -22,5 +22,6 @@ package org.apache.calcite.sql;
 public enum SqlSelectKeyword implements Symbolizable {
   DISTINCT,
   ALL,
-  STREAM
+  STREAM,
+  TOP;
 }

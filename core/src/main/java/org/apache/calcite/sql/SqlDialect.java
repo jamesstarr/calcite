@@ -843,6 +843,10 @@ public class SqlDialect {
     return node;
   }
 
+  public boolean supportsOrderByNullOrdering() {
+    return true;
+  }
+
   /**
    * Returns whether the dialect supports OFFSET/FETCH clauses
    * introduced by SQL:2008, for instance
