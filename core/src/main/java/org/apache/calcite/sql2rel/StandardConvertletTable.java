@@ -149,6 +149,12 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
             case DATE:
             case TIME:
             case TIMESTAMP:
+              // if DATETIME - INTERVAL, then use special logic
+              if (e.getOperands().size() == 2) {
+                final RexBuilder rexBuilder = cx.getRexBuilder();
+                return rexBuilder.makeCall(
+                    e.getType(), SqlStdOperatorTable.DATETIME_MINUS, e.getOperands());
+              }
               return convertDatetimeMinus(cx, SqlStdOperatorTable.MINUS_DATE,
                   call);
             default:
