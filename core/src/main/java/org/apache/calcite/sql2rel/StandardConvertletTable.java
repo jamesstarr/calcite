@@ -131,18 +131,26 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
         });
 
     registerOp(SqlStdOperatorTable.MINUS,
-        (cx, call) -> {
-          final RexCall e =
-              (RexCall) StandardConvertletTable.this.convertCall(cx, call.getOperator(),
-                  call.getOperandList());
-          switch (e.getOperands().get(0).getType().getSqlTypeName()) {
-          case DATE:
-          case TIME:
-          case TIMESTAMP:
-            return convertDatetimeMinus(cx, SqlStdOperatorTable.MINUS_DATE,
-                call);
-          default:
-            return e;
+        new SqlRexConvertlet() {
+          public RexNode convertCall(SqlRexContext cx, SqlCall call) {
+            final RexCall e =
+                (RexCall) StandardConvertletTable.this.convertCall(cx, call,
+                    call.getOperator());
+            switch (e.getOperands().get(0).getType().getSqlTypeName()) {
+            case DATE:
+            case TIME:
+            case TIMESTAMP:
+              // if DATETIME - INTERVAL, then use special logic
+              if (e.getOperands().size() == 2) {
+                final RexBuilder rexBuilder = cx.getRexBuilder();
+                return rexBuilder.makeCall(
+                    e.getType(), SqlStdOperatorTable.DATETIME_MINUS, e.getOperands());
+              }
+              return convertDatetimeMinus(cx, SqlStdOperatorTable.MINUS_DATE,
+                  call);
+            default:
+              return e;
+            }
           }
         });
 

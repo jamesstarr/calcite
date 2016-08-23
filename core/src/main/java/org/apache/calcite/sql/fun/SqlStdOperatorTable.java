@@ -64,7 +64,6 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.util.ReflectiveSqlOperatorTable;
 import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlModality;
-import org.apache.calcite.sql.validate.SqlMonotonicity;
 import org.apache.calcite.sql2rel.AuxiliaryConverter;
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.Optionality;
@@ -542,41 +541,21 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
    * Infix datetime plus operator, '<code>DATETIME + INTERVAL</code>'.
    */
   public static final SqlSpecialOperator DATETIME_PLUS =
-      new SqlSpecialOperator("DATETIME_PLUS", SqlKind.PLUS, 40, true, null,
-          InferTypes.FIRST_KNOWN, OperandTypes.PLUS_OPERATOR) {
-        @Override public RelDataType
-        inferReturnType(SqlOperatorBinding opBinding) {
-          final RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-          final RelDataType leftType = opBinding.getOperandType(0);
-          final IntervalSqlType unitType =
-              (IntervalSqlType) opBinding.getOperandType(1);
-          switch (unitType.getIntervalQualifier().getStartUnit()) {
-          case HOUR:
-          case MINUTE:
-          case SECOND:
-          case MILLISECOND:
-          case MICROSECOND:
-            return typeFactory.createTypeWithNullability(
-                typeFactory.createSqlType(SqlTypeName.TIMESTAMP),
-                leftType.isNullable() || unitType.isNullable());
-          default:
-            return leftType;
-          }
-        }
+      new SqlDatetimeAddMinusOperator(
+          "DATETIME_PLUS",
+          "+",
+          SqlKind.PLUS,
+          OperandTypes.PLUS_OPERATOR);
 
-        @Override public void unparse(
-            SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
-          final SqlWriter.Frame frame = writer.startList("(", ")");
-          call.operand(0).unparse(writer, leftPrec, rightPrec);
-          writer.sep("+");
-          call.operand(1).unparse(writer, leftPrec, rightPrec);
-          writer.endList(frame);
-        }
-
-        @Override public SqlMonotonicity getMonotonicity(SqlOperatorBinding call) {
-          return SqlStdOperatorTable.PLUS.getMonotonicity(call);
-        }
-      };
+  /**
+   * Infix datetime minus operator, '<code>DATETIME - INTERVAL</code>'.
+   */
+  public static final SqlSpecialOperator DATETIME_MINUS =
+      new SqlDatetimeAddMinusOperator(
+          "DATETIME_MINUS",
+          "-",
+          SqlKind.MINUS,
+          OperandTypes.MINUS_OPERATOR);
 
   /**
    * Multiset {@code MEMBER OF}, which returns whether a element belongs to a

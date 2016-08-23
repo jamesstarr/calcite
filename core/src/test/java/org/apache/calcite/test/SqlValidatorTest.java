@@ -9372,6 +9372,11 @@ class SqlValidatorTest extends SqlValidatorTestCase {
         + "+ -\n"
         + "- left\n"
         + "- -\n"
+<<<<<<< HEAD
+=======
+        + "DATETIME_MINUS -\n"
+        + "DATETIME_PLUS -\n"
+>>>>>>> 345f3262d ([] DX-3111, DX-3584, DX-3569:  New operator <DateTime> - <Interval>, and support INTERVAL in RelToSqlConverter/SqlImplementor)
         + "EXISTS pre\n"
         + "\n"
         + "< ALL left\n"
