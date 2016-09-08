@@ -7187,7 +7187,11 @@ LogicalProject(DEPTNO=[$0], NAME=[$1])
   LogicalJoin(condition=[=($0, $2)], joinType=[inner])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
     LogicalAggregate(group=[{0}])
+<<<<<<< HEAD
       LogicalProject(DEPTNO=[$7])
+=======
+      LogicalProject(DEPTNO9=[$7], $f0=[1])
+>>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
         LogicalFilter(condition=[>($5, 100)])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
@@ -7196,7 +7200,11 @@ LogicalProject(DEPTNO=[$0], NAME=[$1])
             <![CDATA[
 LogicalJoin(condition=[=($0, $2)], joinType=[semi])
   LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+<<<<<<< HEAD
   LogicalProject(DEPTNO=[$7])
+=======
+  LogicalProject(DEPTNO9=[$7], $f0=[1])
+>>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
     LogicalFilter(condition=[>($5, 100)])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
@@ -7215,7 +7223,11 @@ LogicalProject(DEPTNO=[$0])
   LogicalJoin(condition=[=($0, $2)], joinType=[inner])
     LogicalJoin(condition=[=($0, $2)], joinType=[semi])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+<<<<<<< HEAD
       LogicalProject(DEPTNO=[$7], $f0=[1:BIGINT])
+=======
+      LogicalProject(DEPTNO9=[$7], $f0=[1])
+>>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
         LogicalFilter(condition=[>($5, 100)])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalTableScan(table=[[CATALOG, CUSTOMER, ACCOUNT]])
