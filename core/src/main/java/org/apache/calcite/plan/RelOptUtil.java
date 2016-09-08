@@ -115,6 +115,7 @@ import org.checkerframework.checker.nullness.qual.PolyNull;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.util.AbstractList;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -688,7 +689,7 @@ public abstract class RelOptUtil {
     }
 
     final int projectedKeyCount = exprs.size();
-    exprs.add(rexBuilder.makeLiteral(true));
+    exprs.add(rexBuilder.makeBigintLiteral(BigDecimal.ONE));
 
     ret = relBuilder.push(ret)
         .project(exprs)

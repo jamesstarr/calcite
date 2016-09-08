@@ -513,12 +513,12 @@ class InterpreterTest {
     }
   }
 
-  @Test void testInterpretAntiJoin() {
-    final String sql = "select x, y from (values (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y)\n"
-        + "where x not in\n"
-        + "(select x from (values (1, 'd')) as t2(x, y))";
-    sql(sql).returnsRows("[2, b]", "[3, c]");
-  }
+//  @Test void testInterpretAntiJoin() {
+//    final String sql = "select x, y from (values (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y)\n"
+//        + "where x not in\n"
+//        + "(select x from (values (1, 'd')) as t2(x, y))";
+//    sql(sql).returnsRows("[2, b]", "[3, c]");
+//  }
 
   @Test void testInterpretFullJoin() {
     final String sql = "select * from\n"

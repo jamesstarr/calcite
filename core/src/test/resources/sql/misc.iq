@@ -367,7 +367,7 @@ EnumerableCalc(expr#0..1=[{inputs}], deptno=[$t0])
       EnumerableTableScan(table=[[hr, depts]])
     EnumerableCalc(expr#0=[{inputs}], expr#1=[IS NOT NULL($t0)], $f0=[$t0], $condition=[$t1])
       EnumerableAggregate(group=[{}], agg#0=[MIN($0)])
-        EnumerableCalc(expr#0..4=[{inputs}], expr#5=[true], $f0=[$t5])
+        EnumerableCalc(expr#0..4=[{inputs}], expr#5=[1:BIGINT], $f0=[$t5])
           EnumerableTableScan(table=[[hr, emps]])
 !plan
 
@@ -386,7 +386,7 @@ EnumerableCalc(expr#0..1=[{inputs}], expr#2=[IS NULL($t1)], deptno=[$t0], $condi
     EnumerableCalc(expr#0..3=[{inputs}], deptno=[$t0])
       EnumerableTableScan(table=[[hr, depts]])
     EnumerableAggregate(group=[{}], agg#0=[MIN($0)])
-      EnumerableCalc(expr#0..4=[{inputs}], expr#5=[true], $f0=[$t5])
+      EnumerableCalc(expr#0..4=[{inputs}], expr#5=[1:BIGINT], $f0=[$t5])
         EnumerableTableScan(table=[[hr, emps]])
 !plan
 
@@ -406,7 +406,7 @@ EnumerableCalc(expr#0..1=[{inputs}], deptno=[$t0])
       EnumerableTableScan(table=[[hr, depts]])
     EnumerableCalc(expr#0=[{inputs}], expr#1=[IS NOT NULL($t0)], $f0=[$t0], $condition=[$t1])
       EnumerableAggregate(group=[{}], agg#0=[MIN($0)])
-        EnumerableCalc(expr#0..4=[{inputs}], expr#5=[true], expr#6=[0], expr#7=[<($t0, $t6)], $f0=[$t5], $condition=[$t7])
+        EnumerableCalc(expr#0..4=[{inputs}], expr#5=[1:BIGINT], expr#6=[0], expr#7=[<($t0, $t6)], $f0=[$t5], $condition=[$t7])
           EnumerableTableScan(table=[[hr, emps]])
 !plan
 
@@ -428,7 +428,7 @@ EnumerableCalc(expr#0..1=[{inputs}], expr#2=[IS NULL($t1)], deptno=[$t0], $condi
     EnumerableCalc(expr#0..3=[{inputs}], deptno=[$t0])
       EnumerableTableScan(table=[[hr, depts]])
     EnumerableAggregate(group=[{}], agg#0=[MIN($0)])
-      EnumerableCalc(expr#0..4=[{inputs}], expr#5=[true], expr#6=[0], expr#7=[<($t0, $t6)], $f0=[$t5], $condition=[$t7])
+      EnumerableCalc(expr#0..4=[{inputs}], expr#5=[1:BIGINT], expr#6=[0], expr#7=[<($t0, $t6)], $f0=[$t5], $condition=[$t7])
         EnumerableTableScan(table=[[hr, emps]])
 !plan
 
@@ -470,7 +470,7 @@ EnumerableCalc(expr#0..6=[{inputs}], expr#7=[IS NULL($t6)], proj#0..4=[{exprs}],
       EnumerableTableScan(table=[[hr, emps]])
     EnumerableSort(sort0=[$0], dir0=[ASC])
       EnumerableAggregate(group=[{0}], agg#0=[MIN($1)])
-        EnumerableCalc(expr#0..3=[{inputs}], expr#4=[true], deptno=[$t0], $f0=[$t4])
+        EnumerableCalc(expr#0..3=[{inputs}], expr#4=[1:BIGINT], deptno=[$t0], $f0=[$t4])
           EnumerableTableScan(table=[[hr, depts]])
 !plan
 
@@ -501,11 +501,11 @@ EnumerableCalc(expr#0..8=[{inputs}], expr#9=[IS NULL($t5)], expr#10=[IS NULL($t8
             EnumerableTableScan(table=[[hr, emps]])
           EnumerableSort(sort0=[$0], dir0=[ASC])
             EnumerableAggregate(group=[{0}], agg#0=[MIN($1)])
-              EnumerableCalc(expr#0..3=[{inputs}], expr#4=[true], deptno=[$t0], $f0=[$t4])
+              EnumerableCalc(expr#0..3=[{inputs}], expr#4=[1:BIGINT], deptno=[$t0], $f0=[$t4])
                 EnumerableTableScan(table=[[hr, depts]])
     EnumerableSort(sort0=[$0], dir0=[ASC])
       EnumerableAggregate(group=[{0}], agg#0=[MIN($1)])
-        EnumerableCalc(expr#0..3=[{inputs}], expr#4=[90], expr#5=[+($t0, $t4)], expr#6=[true], $f4=[$t5], $f0=[$t6])
+        EnumerableCalc(expr#0..3=[{inputs}], expr#4=[90], expr#5=[+($t0, $t4)], expr#6=[1:BIGINT], $f4=[$t5], $f0=[$t6])
           EnumerableTableScan(table=[[hr, depts]])
 !plan
 
