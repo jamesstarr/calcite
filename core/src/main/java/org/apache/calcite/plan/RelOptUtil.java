@@ -115,6 +115,7 @@ import com.google.common.collect.Multimap;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -573,7 +574,7 @@ public abstract class RelOptUtil {
     }
 
     final int projectedKeyCount = exprs.size();
-    exprs.add(rexBuilder.makeLiteral(true));
+    exprs.add(rexBuilder.makeBigintLiteral(BigDecimal.ONE));
 
     ret = createProject(ret, exprs, null);
 

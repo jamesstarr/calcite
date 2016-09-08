@@ -2034,6 +2034,10 @@ public class SqlFunctions {
     return b != null && b;
   }
 
+  public static boolean isTrue(Long l) {
+    return l != null && l != 0;
+  }
+
   /** NULL &rarr; FALSE, FALSE &rarr; TRUE, TRUE &rarr; FALSE. */
   public static boolean isFalse(Boolean b) {
     return b != null && !b;
