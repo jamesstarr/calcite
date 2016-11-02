@@ -337,14 +337,32 @@ public class RelSubset extends AbstractRelNode {
       }
     }
 
-    while (!q.isEmpty()) {
-      RelSubset currentSubset = q.poll();
-      for (RelNode parent : currentSubset.getParents()) {
-        final RelSubset parentSubset = planner.getSubset(parent);
-        for (RelSubset s : parentSubset.set.subsets) {
-          if (parent.getTraitSet().satisfies(s.traitSet)) {
-            checkAndEnqueue(planner, mq, parent, s, q);
-          }
+  void propagateCostImprovements0(VolcanoPlanner planner, RelMetadataQuery mq,
+      RelNode rel, Set<RelSubset> activeSet) {
+
+    if (!activeSet.add(this)) {
+      // This subset is already in the chain being propagated to. This
+      // means that the graph is cyclic, and therefore the cost of this
+      // relational expression - not this subset - must be infinite.
+      LOGGER.trace("cyclic: {}", this);
+      return;
+    }
+    try {
+      ++timestamp;
+      final RelOptCost cost = planner.getCost(rel, mq);
+      if (cost.isLt(bestCost)) {
+        LOGGER.trace("Subset cost improved: subset [{}] cost was {} now {}", this, bestCost, cost);
+
+        bestCost = cost;
+        best = rel;
+
+        // Lower cost means lower importance. Other nodes will change
+        // too, but we'll get to them later.
+        planner.ruleQueue.recompute(this);
+        for (RelNode parent : getParents()) {
+          final RelSubset parentSubset = planner.getSubset(parent);
+          parentSubset.propagateCostImprovements(planner, mq, parent,
+              activeSet);
         }
       }
     }

@@ -1587,8 +1587,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
   }
 
   // implement RelOptPlanner
-  @Deprecated
-  @Override public long getRelMetadataTimestamp(RelNode rel) {
+  public long getRelMetadataTimestamp(RelNode rel) {
     List<Long> inputSubsets = new ArrayList<>();
     for (RelNode input : rel.getInputs()) {
       RelSubset inputSubset = getSubset(input);
