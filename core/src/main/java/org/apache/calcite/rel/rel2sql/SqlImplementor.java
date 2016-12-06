@@ -577,7 +577,10 @@ public abstract class SqlImplementor {
           sqlIdentifier = (SqlIdentifier) correlAliasContext
               .field(lastAccess.getField().getIndex());
           break;
->>>>>>> ca3727fe0 ([CALCITE-2417] Fix ClassCastException in RelToSqlConverter with structs (Benoit Hanotte))
+        case ROW:
+          final SqlNode expr = toSql(program, referencedExpr);
+          sqlIdentifier = new SqlIdentifier(expr.toString(), POS);
+          break;
         default:
           sqlIdentifier = (SqlIdentifier) toSql(program, referencedExpr);
         }
@@ -817,6 +820,31 @@ public abstract class SqlImplementor {
         rexOvers.add(createOverCall(aggFunction, operands, sqlWindow));
       }
       return rexOvers;
+    }
+
+    /** Converts an expression from {@link RexWindowBound} to {@link SqlNode}
+     * format.
+     *
+     * @param rexWindowBound Expression to convert
+     */
+    public SqlNode toSql(RexWindowBound rexWindowBound) {
+      final SqlNode offsetLiteral =
+          rexWindowBound.getOffset() == null
+              ? null
+              : SqlLiteral.createCharString(rexWindowBound.getOffset().toString(),
+                  SqlParserPos.ZERO);
+      if (rexWindowBound.isPreceding()) {
+        return offsetLiteral == null
+            ? SqlWindow.createUnboundedPreceding(POS)
+            : SqlWindow.createPreceding(offsetLiteral, POS);
+      } else if (rexWindowBound.isFollowing()) {
+        return offsetLiteral == null
+            ? SqlWindow.createUnboundedFollowing(POS)
+            : SqlWindow.createFollowing(offsetLiteral, POS);
+      } else {
+        assert rexWindowBound.isCurrentRow();
+        return SqlWindow.createCurrentRow(POS);
+      }
     }
 
     protected Context getAliasContext(RexCorrelVariable variable) {
@@ -1178,12 +1206,13 @@ public abstract class SqlImplementor {
 
   /** Result of implementing a node. */
   public class Result {
-<<<<<<< HEAD
+>>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)
     final SqlNode node;
     final String neededAlias;
     private final RelDataType neededType;
     private final Map<String, RelDataType> aliases;
     final Expressions.FluentList<Clause> clauses;
+<<<<<<< HEAD
     private final boolean anon;
 =======
     protected final SqlNode node;
@@ -1191,6 +1220,7 @@ public abstract class SqlImplementor {
     protected final RelDataType neededType;
     protected final Map<String, RelDataType> aliases;
     protected final Expressions.FluentList<Clause> clauses;
+=======
 
     public Result(SqlNode node, Collection<Clause> clauses, String neededAlias,
         RelDataType neededType, Map<String, RelDataType> aliases) {
@@ -1229,9 +1259,6 @@ public abstract class SqlImplementor {
      * @return A builder
      */
     public Builder builder(RelNode rel, Clause... clauses) {
-<<<<<<< HEAD
-      final boolean needNew = needNewSubQuery(rel, clauses);
-=======
       final Clause maxClause = maxClause();
       boolean needNew = false;
       // If old and new clause are equal and belong to below set,
@@ -1501,12 +1528,14 @@ public abstract class SqlImplementor {
       return new Result(node, clauses, alias, neededType,
           ImmutableMap.of(alias, type));
     }
+<<<<<<< HEAD
 
     /** Returns a copy of this Result, overriding the value of {@code anon}. */
     Result withAnon(boolean anon) {
       return anon == this.anon ? this
           : new Result(node, clauses, neededAlias, neededType, aliases, anon);
     }
+=======
   }
 
   /** Builder. */

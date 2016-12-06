@@ -19,11 +19,7 @@ package org.apache.calcite.test;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.sql.SqlDialect;
 import org.apache.calcite.sql.dialect.CalciteSqlDialect;
-import org.apache.calcite.util.TestUtil;
-import org.apache.calcite.util.Util;
-
-import org.hamcrest.Matcher;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,18 +34,18 @@ import java.util.List;
 import static org.apache.calcite.test.Matchers.hasTree;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@code PigRelOpVisitor}.
  */
-class PigRelOpTest extends PigRelTestBase {
+public class PigRelOpTest extends PigRelTestBase {
   /**
    * SQL dialect for the tests.
    */
   private static class PigRelSqlDialect extends SqlDialect {
     static final SqlDialect DEFAULT =
-        new CalciteSqlDialect(SqlDialect.EMPTY_CONTEXT
+        new CalciteSqlDialect(emptyContext()
             .withDatabaseProduct(DatabaseProduct.CALCITE));
 
     private PigRelSqlDialect(Context context) {
@@ -139,7 +135,7 @@ class PigRelOpTest extends PigRelTestBase {
     return new Fluent(script);
   }
 
-  @Test void testLoadFromFile() {
+  @Test public void testLoadFromFile() {
     final String datadir = "/tmp/pigdata";
     final String schema = "{\"fields\":["
         + "{\"name\":\"x\",\"type\":55,\"schema\":null},"
@@ -164,7 +160,7 @@ class PigRelOpTest extends PigRelTestBase {
     pig(script).assertRel(hasTree(plan));
   }
 
-  @Test void testLoadWithoutSchema() {
+  @Test public void testLoadWithoutSchema() {
     final String script = "A = LOAD 'scott.DEPT';";
     final String plan = "LogicalTableScan(table=[[scott, DEPT]])\n";
     final String result = ""
@@ -176,7 +172,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertResult(is(result));
   }
 
-  @Test void testLoadWithSchema() {
+  @Test public void testLoadWithSchema() {
     final String script = ""
         + "A = LOAD 'testSchema.testTable' as (a:int, b:long, c:float, "
         + "d:double, e:chararray, "
@@ -195,7 +191,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertRel(hasTree("LogicalTableScan(table=[[scott, DEPT]])\n"));
   }
 
-  @Test void testFilter() {
+  @Test public void testFilter() {
     final String script = ""
         + "A = LOAD 'scott.DEPT' as (DEPTNO:int, DNAME:chararray, LOC:CHARARRAY);\n"
         + "B = FILTER A BY DEPTNO == 10;\n";
@@ -211,7 +207,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 
-  @Test void testSample() {
+  @Test public void testSample() {
     final String script = ""
         + "A = LOAD 'scott.DEPT' as (DEPTNO:int, DNAME:chararray, LOC:CHARARRAY);\n"
         + "B = SAMPLE A 0.5;\n";
@@ -226,7 +222,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 
-  @Test void testSplit() {
+  @Test public void testSplit() {
     String script = ""
         + "A = LOAD 'scott.EMP'as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -271,7 +267,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 
-  @Test void testUdf() {
+  @Test public void testUdf() {
     final String script = ""
         + "A = LOAD 'scott.DEPT' as (DEPTNO:int, DNAME:chararray, LOC:CHARARRAY);\n"
         + "B = FILTER A BY ENDSWITH(DNAME, 'LES');\n";
@@ -288,7 +284,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 
-  @Test void testSimpleForEach1() {
+  @Test public void testSimpleForEach1() {
     String script = ""
         + "A = LOAD 'testSchema.testTable' as (a:int, b:long, c:float, "
         + "d:double, e:chararray, f:bytearray, g:boolean, "
@@ -297,7 +293,7 @@ class PigRelOpTest extends PigRelTestBase {
         + "l2:bag{l21:(l22:int, l23:float)}, "
         + "m1:map[], m2:map[int], m3:map[(m3:float)]);\n"
         + "B = FOREACH A GENERATE a, a as a2, b, c, d, e, f, g, h, i, j, k2, "
-        + "l2, m2, null as n:chararray;\n";
+        + "l2, m2, null as n:chararray; \n";
     final String plan = ""
         + "LogicalProject(a=[$0], a2=[$0], b=[$1], c=[$2], d=[$3], e=[$4], "
         + "f=[$5], g=[$6], h=[$7], i=[$8], j=[$9], k2=[$11], l2=[$13], "
@@ -311,7 +307,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 
-  @Test void testSimpleForEach2() {
+  @Test public void testSimpleForEach2() {
     final String script = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -344,7 +340,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 
-  @Test void testSimpleForEach3() {
+  @Test public void testSimpleForEach3() {
     String script = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -404,7 +400,7 @@ class PigRelOpTest extends PigRelTestBase {
     }
   }
 
-  @Test void testForEachNested() {
+  @Test public void testForEachNested() {
     final String script = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -485,7 +481,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 
-  @Test void testUnionSameSchema() {
+  @Test public void testUnionSameSchema() {
     final String script = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -521,7 +517,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 
-  @Test void testUnionDifferentSchemas1() {
+  @Test public void testUnionDifferentSchemas1() {
     final String script = ""
         + "A = LOAD 'scott.DEPT' as (DEPTNO:int, DNAME:chararray, LOC:CHARARRAY);\n"
         + "B = FOREACH A GENERATE DEPTNO, DNAME;\n"
@@ -559,7 +555,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 
-  @Test void testUnionDifferentSchemas2() {
+  @Test public void testUnionDifferentSchemas2() {
     final String script = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -607,7 +603,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 
-  @Test void testJoin2Rels() {
+  @Test public void testJoin2Rels() {
     final String scanScript = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -700,7 +696,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertResult(is(fullResult));
   }
 
-  @Test void testJoin3Rels() {
+  @Test public void testJoin3Rels() {
     final String script = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -776,11 +772,11 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql2));
   }
 
-  @Test void testCross() {
+  @Test public void testCross() {
     final String script = ""
         + "A = LOAD 'scott.DEPT' as (DEPTNO:int, DNAME:chararray,\n"
         + "    LOC:CHARARRAY);\n"
-        + "B = FOREACH A GENERATE DEPTNO;\n"
+        + "B = FOREACH A GENERATE DEPTNO; \n"
         + "C = FILTER B BY DEPTNO <= 20;\n"
         + "D = CROSS B, C;\n";
     final String plan = ""
@@ -813,7 +809,7 @@ class PigRelOpTest extends PigRelTestBase {
     final String script2 = ""
         + "A = LOAD 'scott.DEPT' as (DEPTNO:int, DNAME:chararray,"
         + "    LOC:CHARARRAY);\n"
-        + "B = FOREACH A GENERATE DEPTNO;\n"
+        + "B = FOREACH A GENERATE DEPTNO; \n"
         + "C = FILTER B BY DEPTNO <= 20;\n"
         + "D = FILTER B BY DEPTNO > 20;\n"
         + "E = CROSS B, C, D;\n";
@@ -862,7 +858,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql2));
   }
 
-  @Test void testGroupby() {
+  @Test public void testGroupby() {
     final String baseScript =
         "A = LOAD 'scott.DEPT' as (DEPTNO:int, DNAME:chararray, LOC:CHARARRAY);\n";
     final String basePlan = "      LogicalTableScan(table=[[scott, DEPT]])\n";
@@ -899,7 +895,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertRel(hasTree(plan1));
   }
 
-  @Test void testGroupby2() {
+  @Test public void testGroupby2() {
     final String script = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -934,7 +930,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertResult(is(result));
   }
 
-  @Test void testCubeCube() {
+  @Test public void testCubeCube() {
     final String script = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -987,7 +983,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 
-  @Test void testCubeRollup() {
+  @Test public void testCubeRollup() {
     final String script = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -1036,7 +1032,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 
-  @Test void testMultisetProjection() {
+  @Test public void testMultisetProjection() {
     final String script = ""
         + "A = LOAD 'scott.DEPT' as (DEPTNO:int, DNAME:chararray,\n"
         + "    LOC:CHARARRAY);\n"
@@ -1048,27 +1044,43 @@ class PigRelOpTest extends PigRelTestBase {
         + "    LogicalAggregate(group=[{0}], A=[COLLECT($1)])\n"
         + "      LogicalProject(DEPTNO=[$0], $f1=[ROW($0, $1, $2)])\n"
         + "        LogicalTableScan(table=[[scott, DEPT]])\n";
-    final String optimizedPlan = ""
+    String optimizedPlan = ""
         + "LogicalProject($f0=[$1])\n"
-        + "  LogicalAggregate(group=[{0}], agg#0=[COLLECT($1)])\n"
-        + "    LogicalProject(DEPTNO=[$0], $f2=[ROW($0, $1)])\n"
+        + "  LogicalAggregate(group=[{0}], agg#0=[COLLECT($2)])\n"
+        + "    LogicalProject(DEPTNO=[$0], DNAME=[$1], $f2=[ROW"
+        + "($0, $1)])\n"
         + "      LogicalTableScan(table=[[scott, DEPT]])\n";
     final String result = ""
         + "({(20,RESEARCH)})\n"
         + "({(40,OPERATIONS)})\n"
         + "({(10,ACCOUNTING)})\n"
         + "({(30,SALES)})\n";
-    final String sql = ""
+    String sql = ""
         + "SELECT COLLECT(ROW(DEPTNO, DNAME)) AS $f0\n"
         + "FROM scott.DEPT\n"
         + "GROUP BY DEPTNO";
+    // When
+    //   [CALCITE-3297] PigToSqlAggregateRule should be applied on multi-set
+    //   projection to produce an optimal plan
+    // is fixed we can remove the following block.
+    if (Bug.remark("[CALCITE-3297]") != null) {
+      optimizedPlan = ""
+          + "LogicalProject($f0=[MULTISET_PROJECTION($1, 0, 1)])\n"
+          + "  LogicalAggregate(group=[{0}], A=[COLLECT($1)])\n"
+          + "    LogicalProject(DEPTNO=[$0], $f1=[ROW($0, $1, $2)])\n"
+          + "      LogicalTableScan(table=[[scott, DEPT]])\n";
+      sql = "SELECT MULTISET_PROJECTION(COLLECT(ROW(DEPTNO, DNAME, LOC)), "
+          + "0, 1) AS $f0\n"
+          + "FROM scott.DEPT\n"
+          + "GROUP BY DEPTNO";
+    }
     pig(script).assertRel(hasTree(plan))
         .assertOptimizedRel(hasTree(optimizedPlan))
         .assertResult(is(result))
         .assertSql(is(sql));
   }
 
-  @Test void testOrderBy() {
+  @Test public void testOrderBy() {
     final String scan = ""
         + "A = LOAD 'scott.DEPT' as (DEPTNO:int, DNAME:chararray,\n"
         + "    LOC:CHARARRAY);\n";
@@ -1132,7 +1144,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertResult(is(result4));
   }
 
-  @Test void testRank() {
+  @Test public void testRank() {
     final String base = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -1218,7 +1230,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql2));
   }
 
-  @Test void testLimit() {
+  @Test public void testLimit() {
     final String scan = ""
         + "A = LOAD 'scott.DEPT' as (DEPTNO:int, DNAME:chararray,\n"
         + "    LOC:CHARARRAY);\n";
@@ -1250,7 +1262,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql2));
   }
 
-  @Test void testDistinct() {
+  @Test public void testDistinct() {
     final String script = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -1274,7 +1286,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 
-  @Test void testAggregate() {
+  @Test public void testAggregate() {
     final String script = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -1308,7 +1320,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 
-  @Test void testAggregate2() {
+  @Test public void testAggregate2() {
     final String script = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -1360,7 +1372,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 
-  @Test void testAggregate2half() {
+  @Test public void testAggregate2half() {
     final String script = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -1425,7 +1437,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertOptimizedRel(hasTree(optimizedPlan2));
   }
 
-  @Test void testAggregate3() {
+  @Test public void testAggregate3() {
     final String script = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -1515,7 +1527,7 @@ class PigRelOpTest extends PigRelTestBase {
     pig(script3).assertSql(is(sql3));
   }
 
-  @Test void testAggregate4() {
+  @Test public void testAggregate4() {
     final String script = ""
         + "A = LOAD 'scott.EMP' as (EMPNO:int, ENAME:chararray,\n"
         + "    JOB:chararray, MGR:int, HIREDATE:datetime, SAL:bigdecimal,\n"
@@ -1553,7 +1565,7 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 
-  @Test void testCoGroup() {
+  @Test public void testCoGroup() {
     final String script = ""
         + "A = LOAD 'scott.DEPT' as (DEPTNO:int, DNAME:chararray, LOC:CHARARRAY);\n"
         + "B = FILTER A BY DEPTNO <= 30;\n"
@@ -1610,3 +1622,8 @@ class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 }
+<<<<<<< HEAD
+=======
+
+// End PigRelOpTest.java
+>>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)

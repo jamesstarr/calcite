@@ -3713,8 +3713,7 @@ public class SqlParserTest {
     final String expected2 = "SELECT *\n"
         + "FROM LATERAL (SELECT *\n"
         + "FROM `EMP`)";
-    sql("select * from lateral (select * from emp)")
-        .ok(expected2);
+    sql("select * from lateral (select * from emp)").ok(expected2);
     sql("select * from lateral (select * from emp) as t")
         .ok(expected2 + " AS `T`");
     sql("select * from lateral (select * from emp) as t(x)")

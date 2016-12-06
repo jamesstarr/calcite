@@ -4441,25 +4441,41 @@ class RelToSqlConverterTest {
         callsUnparseCallOnSqlSelect[0], is(true));
   }
 
-  @Test public void testSqlSelectUnparseCall() {
-    final String query = "select * from \"product\"";
-    final String expected = "SELECT *\n"
-            + "FROM foodmart.product";
+  @Test public void testCorrelate() {
+    final String sql = "select d.\"department_id\", d_plusOne "
+        + "from \"department\" as d, "
+        + "       lateral (select d.\"department_id\" + 1 as d_plusOne"
+        + "                from (values(true)))";
 
-    final boolean[] callsUnparseCallOnSqlSelect = new boolean[] {false};
-    sql(query).dialect(new SqlDialect(SqlDialect.EMPTY_CONTEXT) {
-      @Override public void unparseCall(SqlWriter writer, SqlCall call,
-                                        int leftPrec, int rightPrec) {
-        if (call instanceof SqlSelect) {
-          callsUnparseCallOnSqlSelect[0] = true;
-        }
-        super.unparseCall(writer, call, leftPrec, rightPrec);
-      }
-    }).ok(expected);
-
-    assertTrue("Dialect must be able to customize unparseCall() for SqlSelect nodes.",
-        callsUnparseCallOnSqlSelect[0]);
+    final String expected = "SELECT \"$cor0\".\"department_id\", \"$cor0\".\"D_PLUSONE\"\n"
+        + "FROM \"foodmart\".\"department\" AS \"$cor0\",\n"
+        + "LATERAL (SELECT \"$cor0\".\"department_id\" + 1 AS \"D_PLUSONE\"\n"
+        + "FROM (VALUES  (TRUE)) AS \"t\" (\"EXPR$0\")) AS \"t0\"";
+    sql(sql).ok(expected);
   }
+
+  @Test public void testUncollectExplicitAlias() {
+    final String sql = "select did + 1 \n"
+        + "from unnest(select collect(\"department_id\") as deptid"
+        + "            from \"department\") as t(did)";
+
+    final String expected = "SELECT \"col_0\" + 1\n"
+        + "FROM UNNEST (SELECT COLLECT(\"department_id\") AS \"DEPTID\"\n"
+        + "FROM \"foodmart\".\"department\") AS \"t0\" (\"col_0\")";
+    sql(sql).ok(expected);
+  }
+
+  @Test public void testUncollectImplicitAlias() {
+    final String sql = "select did + 1 \n"
+        + "from unnest(select collect(\"department_id\") "
+        + "            from \"department\") as t(did)";
+
+    final String expected = "SELECT \"col_0\" + 1\n"
+        + "FROM UNNEST (SELECT COLLECT(\"department_id\")\n"
+        + "FROM \"foodmart\".\"department\") AS \"t0\" (\"col_0\")";
+    sql(sql).ok(expected);
+  }
+
 
   @Test public void testWithinGroup1() {
     final String query = "select \"product_class_id\", collect(\"net_weight\") "

@@ -21,7 +21,7 @@ import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptSchema;
 import org.apache.calcite.plan.RelOptTable;
-import org.apache.calcite.plan.ViewExpanders;
+>>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.SingleRel;
 import org.apache.calcite.rel.core.CorrelationId;
@@ -263,8 +263,11 @@ public class PigRelBuilder extends RelBuilder {
    * @return This builder
    */
   private RelBuilder scan(RelOptTable tableSchema) {
+<<<<<<< HEAD
     final RelNode scan = getScanFactory().createScan(
         ViewExpanders.simpleContext(cluster), tableSchema);
+=======
+    final RelNode scan = getScanFactory().createScan(cluster, tableSchema, ImmutableList.of());
     push(scan);
     return this;
   }
@@ -512,11 +515,8 @@ public class PigRelBuilder extends RelBuilder {
   public RelBuilder multiSetFlatten() {
     // [CALCITE-3193] Add RelBuilder.uncollect method, and interface
     // UncollectFactory, to instantiate Uncollect
-    Uncollect uncollect = Uncollect.create(
-        cluster.traitSetOf(Convention.NONE),
-        build(),
-        false,
-        Collections.emptyList());
+    Uncollect uncollect = new Uncollect(cluster,
+        cluster.traitSetOf(Convention.NONE), build(), false, Collections.emptyList());
     push(uncollect);
     return this;
   }
@@ -668,3 +668,8 @@ public class PigRelBuilder extends RelBuilder {
     final Map<String, FuncSpec> pigUdfs = new HashMap<>();
   }
 }
+<<<<<<< HEAD
+=======
+
+// End PigRelBuilder.java
+>>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)

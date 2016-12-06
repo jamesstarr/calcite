@@ -195,6 +195,20 @@ public class Matchers {
   }
 
   /**
+   * Creates a Matcher that matches a {@link RelNode} if its string
+   * representation, after converting Windows-style line endings ("\r\n")
+   * to Unix-style line endings ("\n"), contains the given {@code value}
+   * as a substring.
+   */
+  @Factory
+  public static Matcher<RelNode> inTree(final String value) {
+    return compose(StringContains.containsString(value), input -> {
+      // Convert RelNode to a string with Linux line-endings
+      return Util.toLinux(RelOptUtil.toString(input));
+    });
+  }
+
+  /**
    * Creates a matcher that matches when the examined string is equal to the
    * specified <code>operand</code> when all Windows-style line endings ("\r\n")
    * have been converted to Unix-style line endings ("\n").

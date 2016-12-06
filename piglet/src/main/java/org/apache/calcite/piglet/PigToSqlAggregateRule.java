@@ -36,7 +36,7 @@ import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
-import org.apache.calcite.util.ImmutableBitSet;
+>>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -255,9 +255,13 @@ public class PigToSqlAggregateRule extends RelOptRule {
 
     // Step 2 build new Aggregate
     // Copy the group key
+<<<<<<< HEAD
     final RelBuilder.GroupKey groupKey =
         relBuilder.groupKey(oldAgg.getGroupSet(),
             (Iterable<ImmutableBitSet>) oldAgg.groupSets);
+=======
+    final RelBuilder.GroupKey groupKey = relBuilder.groupKey(oldAgg.getGroupSet(),
+        oldAgg.groupSets);
     // The construct the agg call list
     final List<RelBuilder.AggCall> aggCalls = new ArrayList<>();
     if (needGoupingCol) {
@@ -406,3 +410,8 @@ public class PigToSqlAggregateRule extends RelOptRule {
     return rexCall.getOperator().getName().equals(MULTISET_PROJECTION);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End PigToSqlAggregateRule.java
+>>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)

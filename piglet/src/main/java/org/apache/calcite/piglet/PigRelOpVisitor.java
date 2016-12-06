@@ -318,8 +318,7 @@ class PigRelOpVisitor extends PigRelOpWalker.PlanPreVisitor {
     final ImmutableList<ImmutableBitSet> groupSets =
         (groupType == GroupType.CUBE)
             ? ImmutableList.copyOf(groupSet.powerSet()) : groupsetBuilder.build();
-    RelBuilder.GroupKey groupKey = builder.groupKey(groupSet,
-        (Iterable<ImmutableBitSet>) groupSets);
+    RelBuilder.GroupKey groupKey = builder.groupKey(groupSet, groupSets);
 
     // Finally, do COLLECT aggregate.
     builder.cogroup(ImmutableList.of(groupKey));
@@ -719,3 +718,8 @@ class PigRelOpVisitor extends PigRelOpWalker.PlanPreVisitor {
     return builder.checkMap(root);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End PigRelOpVisitor.java
+>>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)

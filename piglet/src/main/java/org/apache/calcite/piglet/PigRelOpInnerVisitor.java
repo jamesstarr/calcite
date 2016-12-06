@@ -247,3 +247,8 @@ class PigRelOpInnerVisitor extends PigRelOpVisitor {
     return false;
   }
 }
+<<<<<<< HEAD
+=======
+
+// End PigRelOpInnerVisitor.java
+>>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)

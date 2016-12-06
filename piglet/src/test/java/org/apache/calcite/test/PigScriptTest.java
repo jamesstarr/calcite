@@ -18,9 +18,9 @@ package org.apache.calcite.test;
 
 import org.apache.calcite.rel.RelNode;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -38,11 +38,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Test for converting a Pig script file.
  */
-class PigScriptTest extends PigRelTestBase {
+public class PigScriptTest extends PigRelTestBase {
   private static String projectRootDir;
   private static String dataFile;
 
-  @BeforeAll
+  @BeforeClass
   public static void setUpOnce() throws IOException {
     projectRootDir = System.getProperty("user.dir");
     dataFile = projectRootDir + "/src/test/resources/input.data";
@@ -51,12 +51,13 @@ class PigScriptTest extends PigRelTestBase {
     Files.write(Paths.get(dataFile), lines, StandardCharsets.UTF_8);
   }
 
-  @AfterAll
+  @AfterClass
   public static void testClean() throws IOException {
     Files.delete(Paths.get(dataFile));
   }
 
-  @Test void testReadScript() throws IOException {
+  @Test
+  public void testReadScript() throws IOException {
     Map<String, String> params = new HashMap<>();
     params.put("input", dataFile);
     params.put("output", "outputFile");
@@ -74,3 +75,8 @@ class PigScriptTest extends PigRelTestBase {
     assertThat(rel, hasTree(expectedPlan));
   }
 }
+<<<<<<< HEAD
+=======
+
+// End PigScriptTest.java
+>>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)
