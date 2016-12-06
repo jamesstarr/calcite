@@ -509,6 +509,10 @@ public abstract class SqlImplementor {
           sqlIdentifier = (SqlIdentifier) correlAliasContext
               .field(lastAccess.getField().getIndex());
           break;
+        case ROW:
+          final SqlNode expr = toSql(program, referencedExpr);
+          sqlIdentifier = new SqlIdentifier(expr.toString(), POS);
+          break;
         default:
           sqlIdentifier = (SqlIdentifier) toSql(program, referencedExpr);
         }
@@ -731,6 +735,31 @@ public abstract class SqlImplementor {
         rexOvers.add(createOverCall(aggFunction, operands, sqlWindow));
       }
       return rexOvers;
+    }
+
+    /** Converts an expression from {@link RexWindowBound} to {@link SqlNode}
+     * format.
+     *
+     * @param rexWindowBound Expression to convert
+     */
+    public SqlNode toSql(RexWindowBound rexWindowBound) {
+      final SqlNode offsetLiteral =
+          rexWindowBound.getOffset() == null
+              ? null
+              : SqlLiteral.createCharString(rexWindowBound.getOffset().toString(),
+                  SqlParserPos.ZERO);
+      if (rexWindowBound.isPreceding()) {
+        return offsetLiteral == null
+            ? SqlWindow.createUnboundedPreceding(POS)
+            : SqlWindow.createPreceding(offsetLiteral, POS);
+      } else if (rexWindowBound.isFollowing()) {
+        return offsetLiteral == null
+            ? SqlWindow.createUnboundedFollowing(POS)
+            : SqlWindow.createFollowing(offsetLiteral, POS);
+      } else {
+        assert rexWindowBound.isCurrentRow();
+        return SqlWindow.createCurrentRow(POS);
+      }
     }
 
     protected Context getAliasContext(RexCorrelVariable variable) {
@@ -1081,11 +1110,11 @@ public abstract class SqlImplementor {
 
   /** Result of implementing a node. */
   public class Result {
-    protected final SqlNode node;
-    protected final String neededAlias;
-    protected final RelDataType neededType;
-    protected final Map<String, RelDataType> aliases;
-    protected final Expressions.FluentList<Clause> clauses;
+    final SqlNode node;
+    final String neededAlias;
+    private final RelDataType neededType;
+    private final Map<String, RelDataType> aliases;
+    final Expressions.FluentList<Clause> clauses;
 
     public Result(SqlNode node, Collection<Clause> clauses, String neededAlias,
         RelDataType neededType, Map<String, RelDataType> aliases) {
@@ -1292,6 +1321,17 @@ public abstract class SqlImplementor {
         return makeNewResult(node, clauses, neededAlias, neededType,
             ImmutableMap.of(neededAlias, neededType));
       }
+    }
+
+    /**
+     * Sets the alias of the join or correlate just created.
+     *
+     * @param alias New alias
+     * @param type type of the node associated with the alias
+     */
+    public Result resetAlias(String alias, RelDataType type) {
+      return new Result(node, clauses, alias, neededType,
+          ImmutableMap.of(alias, type));
     }
   }
 

@@ -48,7 +48,7 @@ import org.junit.Test;
 
 import static org.apache.calcite.test.Matchers.hasTree;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ToLogicalConverter}.
