@@ -18,6 +18,7 @@ package org.apache.calcite.sql.fun;
 
 import org.apache.calcite.avatica.util.TimeUnitRange;
 import org.apache.calcite.sql.SqlCall;
+import org.apache.calcite.sql.SqlDialect;
 import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlKind;
@@ -54,11 +55,21 @@ public class SqlExtractFunction extends SqlFunction {
     return "{0}({1} FROM {2})";
   }
 
+  @SuppressWarnings("deprecation")
   @Override public void unparse(
       SqlWriter writer,
       SqlCall call,
       int leftPrec,
       int rightPrec) {
+    SqlDialect dialect = writer.getDialect();
+    switch (dialect.getDatabaseProduct()) {
+    case MSSQL:
+      final SqlWriter.Frame frame =
+          writer.startFunCall(call.operand(0).toSqlString(dialect).toString());
+      call.operand(1).unparse(writer, 0, 0);
+      writer.endFunCall(frame);
+      return;
+    }
     final SqlWriter.Frame frame = writer.startFunCall(getName());
     call.operand(0).unparse(writer, 0, 0);
     writer.sep("FROM");
