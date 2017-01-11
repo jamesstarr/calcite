@@ -27,6 +27,7 @@ import org.apache.calcite.rel.RelWriter;
 import org.apache.calcite.rel.SingleRel;
 import org.apache.calcite.rel.metadata.RelMdUtil;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
+import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexChecker;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexProgram;
@@ -72,7 +73,9 @@ public abstract class Filter extends SingleRel {
     super(cluster, traits, child);
     assert condition != null;
     assert RexUtil.isFlat(condition) : condition;
-    this.condition = condition;
+    this.condition = (RexUtil.isNullabilityCast(getCluster().getTypeFactory(), condition))
+        ? ((RexCall) condition).getOperands().get(0)
+        : condition;
     // Too expensive for everyday use:
     assert !CalcitePrepareImpl.DEBUG || isValid(Litmus.THROW, null);
   }
@@ -112,9 +115,6 @@ public abstract class Filter extends SingleRel {
   }
 
   @Override public boolean isValid(Litmus litmus, Context context) {
-    if (RexUtil.isNullabilityCast(getCluster().getTypeFactory(), condition)) {
-      return litmus.fail("Cast for just nullability not allowed");
-    }
     final RexChecker checker =
         new RexChecker(getInput().getRowType(), context, litmus);
     condition.accept(checker);
