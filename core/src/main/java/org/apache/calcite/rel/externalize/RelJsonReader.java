@@ -16,6 +16,8 @@
  */
 package org.apache.calcite.rel.externalize;
 
+import org.apache.calcite.avatica.com.fasterxml.jackson.core.type.TypeReference;
+import org.apache.calcite.avatica.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptSchema;
@@ -36,9 +38,12 @@ import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
+<<<<<<< HEAD
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+=======
+>>>>>>> 1750bd07a ([] Use shaded avatica)
 import com.google.common.collect.ImmutableList;
 
 import java.io.IOException;
