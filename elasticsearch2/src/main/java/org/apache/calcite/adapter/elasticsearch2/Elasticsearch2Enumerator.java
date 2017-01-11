@@ -117,6 +117,7 @@ public class Elasticsearch2Enumerator implements Enumerator<Object> {
     };
   }
 
+  @SuppressWarnings("unchecked")
   static Function1<SearchHit, Object> getter(List<Map.Entry<String, Class>> fields) {
     //noinspection unchecked
     return fields == null

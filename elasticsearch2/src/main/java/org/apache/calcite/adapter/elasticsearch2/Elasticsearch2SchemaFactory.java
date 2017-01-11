@@ -16,13 +16,12 @@
  */
 package org.apache.calcite.adapter.elasticsearch2;
 
+import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonParser;
+import org.apache.calcite.avatica.com.fasterxml.jackson.core.type.TypeReference;
+import org.apache.calcite.avatica.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.SchemaFactory;
 import org.apache.calcite.schema.SchemaPlus;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.Map;

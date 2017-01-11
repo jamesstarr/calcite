@@ -18,6 +18,12 @@ package org.apache.calcite.adapter.druid;
 
 import org.apache.calcite.avatica.AvaticaUtils;
 import org.apache.calcite.avatica.ColumnMetaData;
+import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonFactory;
+import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonParser;
+import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonToken;
+import org.apache.calcite.avatica.com.fasterxml.jackson.databind.DeserializationFeature;
+import org.apache.calcite.avatica.com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.calcite.avatica.com.fasterxml.jackson.databind.type.CollectionType;
 import org.apache.calcite.avatica.util.DateTimeUtils;
 import org.apache.calcite.interpreter.Row;
 import org.apache.calcite.interpreter.Sink;
@@ -31,12 +37,6 @@ import org.apache.calcite.util.Util;
 
 import static org.apache.calcite.runtime.HttpUtils.post;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;

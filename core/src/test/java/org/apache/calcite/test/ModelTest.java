@@ -16,6 +16,8 @@
  */
 package org.apache.calcite.test;
 
+import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonParser;
+import org.apache.calcite.avatica.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.calcite.model.JsonColumn;
 import org.apache.calcite.model.JsonCustomSchema;
 import org.apache.calcite.model.JsonCustomTable;
@@ -25,9 +27,6 @@ import org.apache.calcite.model.JsonMapSchema;
 import org.apache.calcite.model.JsonRoot;
 import org.apache.calcite.model.JsonTable;
 import org.apache.calcite.model.JsonView;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.Test;
 
