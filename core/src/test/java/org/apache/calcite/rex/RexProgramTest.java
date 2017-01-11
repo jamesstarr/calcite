@@ -2885,4 +2885,15 @@ class RexProgramTest extends RexProgramTestBase {
     final RexNode expr = eq(call1, call2);
     checkSimplifyUnchanged(expr);
   }
+
+  // Empty string "" cannot be simplified to a number/bigint.  Instead of
+  // throwing an exception, just return the original expression.
+  @Test public void testSimplifyEmptyStringCast() {
+    RexNode emptyString = rexBuilder.makeLiteral("");
+    RexNode emptyStringCast = rexBuilder.makeCast(
+        typeFactory.createTypeWithNullability(
+            typeFactory.createSqlType(SqlTypeName.BIGINT), true), emptyString);
+    RexNode result = RexUtil.simplify(rexBuilder, emptyStringCast);
+    assertThat(result, equalTo(emptyStringCast));
+  }
 }
