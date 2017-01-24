@@ -850,15 +850,7 @@ public class LoptOptimizeJoinRule
    * original MultiJoin input factors.
    */
   private static boolean isJoinTree(RelNode rel) {
-    // full outer joins were already optimized in a prior instantiation
-    // of this rule; therefore we should never see a join input that's
-    // a full outer join
-    if (rel instanceof Join) {
-      assert ((Join) rel).getJoinType() != JoinRelType.FULL;
-      return true;
-    } else {
-      return false;
-    }
+    return rel instanceof Join;
   }
 
   /**
@@ -1214,7 +1206,6 @@ public class LoptOptimizeJoinRule
     // factors in the join, so create the join as a full outer join
     JoinRelType joinType;
     if (multiJoin.getMultiJoinRel().isFullOuterJoin()) {
-      assert multiJoin.getNumJoinFactors() == 2;
       joinType = JoinRelType.FULL;
     } else if (multiJoin.isNullGenerating(factorToAdd)) {
       joinType = JoinRelType.LEFT;

@@ -218,7 +218,7 @@ public class JoinToMultiJoinRule
 
     // leave the null generating sides of an outer join intact; don't
     // pull up those children inputs into the array we're constructing
-    if (canCombine(left, join.getJoinType().generatesNullsOnLeft())) {
+    if (canCombine(left, join.getJoinType(), join.getJoinType().generatesNullsOnLeft())) {
       final MultiJoin leftMultiJoin = (MultiJoin) left;
       for (int i = 0; i < left.getInputs().size(); i++) {
         newInputs.add(leftMultiJoin.getInput(i));
@@ -233,7 +233,7 @@ public class JoinToMultiJoinRule
           new int[left.getRowType().getFieldCount()]);
     }
 
-    if (canCombine(right, join.getJoinType().generatesNullsOnRight())) {
+    if (canCombine(right, join.getJoinType(), join.getJoinType().generatesNullsOnRight())) {
       final MultiJoin rightMultiJoin = (MultiJoin) right;
       for (int i = 0; i < right.getInputs().size(); i++) {
         newInputs.add(rightMultiJoin.getInput(i));
@@ -274,9 +274,9 @@ public class JoinToMultiJoinRule
       List<Pair<JoinRelType, @Nullable RexNode>> joinSpecs) {
     JoinRelType joinType = joinRel.getJoinType();
     boolean leftCombined =
-        canCombine(left, joinType.generatesNullsOnLeft());
+        canCombine(left, joinType, joinType.generatesNullsOnLeft());
     boolean rightCombined =
-        canCombine(right, joinType.generatesNullsOnRight());
+        canCombine(right, joinType, joinType.generatesNullsOnRight());
     switch (joinType) {
     case LEFT:
       if (leftCombined) {
@@ -402,12 +402,12 @@ public class JoinToMultiJoinRule
     if ((joinType != JoinRelType.LEFT) && (joinType != JoinRelType.RIGHT)) {
       filters.add(join.getCondition());
     }
-    if (canCombine(left, joinType.generatesNullsOnLeft())) {
+    if (canCombine(left, joinType, joinType.generatesNullsOnLeft())) {
       filters.add(((MultiJoin) left).getJoinFilter());
     }
     // Need to adjust the RexInputs of the right child, since
     // those need to shift over to the right
-    if (canCombine(right, joinType.generatesNullsOnRight())) {
+    if (canCombine(right, joinType, joinType.generatesNullsOnRight())) {
       MultiJoin multiJoin = (MultiJoin) right;
       filters.add(
           shiftRightFilter(join, left, multiJoin,
@@ -425,7 +425,15 @@ public class JoinToMultiJoinRule
    * @param nullGenerating true if the input is null generating
    * @return true if the input can be combined into a parent MultiJoin
    */
-  private static boolean canCombine(RelNode input, boolean nullGenerating) {
+
+  private static boolean canCombine(RelNode input, JoinRelType type, boolean nullGenerating) {
+    // If the current join is full outer join, and the multi-join only contains full outer joins
+    if (type == JoinRelType.FULL
+        && input instanceof MultiJoin
+        && ((MultiJoin) input).isFullOuterJoin()
+        && !((MultiJoin) input).containsOuter()) {
+      return true;
+    }
     return input instanceof MultiJoin
         && !((MultiJoin) input).isFullOuterJoin()
         && !((MultiJoin) input).containsOuter()

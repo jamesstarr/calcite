@@ -2372,6 +2372,53 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).with(program).check();
   }
 
+  @Test void testConvertMultiJoinRuleFullOuterJoins() throws Exception {
+    final String sql = ""
+        + "select e1.ename from emp e1\n"
+        + "  full outer join dept d on e1.deptno = d.deptno\n"
+        + "  full outer join emp e2 on d.deptno = e2.deptno";
+    sql(sql).withRule(CoreRules.JOIN_TO_MULTI_JOIN).check();
+  }
+
+  @Test void testConvertMultiJoinRuleFullOuterJoinsLoptOptimizeJoinRule() throws Exception {
+    final String sql = ""
+        + "select e1.ename from emp e1\n"
+        + "  full outer join dept d on e1.deptno = d.deptno\n"
+        + "  full outer join emp e2 on d.deptno = e2.deptno";
+    sql(sql)
+        .withRule(CoreRules.JOIN_TO_MULTI_JOIN, CoreRules.MULTI_JOIN_OPTIMIZE)
+        .check();
+  }
+
+
+  @Test void testConvertMultiJoinRuleFullOuterJoinAndInnerJoin() throws Exception {
+    final String sql = ""
+        + "select e1.ename from emp e1\n"
+        + "  full outer join dept d on e1.deptno = d.deptno\n"
+        + "  inner join emp e2 on d.deptno = e2.deptno";
+    sql(sql).withRule(CoreRules.JOIN_TO_MULTI_JOIN).check();
+  }
+
+  @Test void testConvertMultiJoinRuleFullOuterJoinAndLeftJoin() throws Exception {
+    final String sql = ""
+        + "select e1.ename from emp e1\n"
+        + "  left outer join dept d on e1.deptno = d.deptno "
+        + "  full outer join emp e2 on d.deptno = e2.deptno";
+    sql(sql).withRule(CoreRules.JOIN_TO_MULTI_JOIN).check();
+  }
+
+  @Test void testConvertMultiJoinRuleFullOuterJoinAndInnerJoinLoptOptimizeJoinRule()
+      throws Exception {
+    final String sql = ""
+        + "select e1.ename from emp e1\n"
+        + "  full outer join dept d on e1.deptno = d.deptno\n"
+        + "  inner join emp e2 on d.deptno = e2.deptno";
+    sql(sql)
+        .withPreRule(CoreRules.JOIN_TO_MULTI_JOIN)
+        .withRule(CoreRules.MULTI_JOIN_OPTIMIZE)
+        .check();
+  }
+
   @Test void testManyFiltersOnTopOfMultiJoinShouldCollapse() {
     HepProgram program = new HepProgramBuilder()
         .addMatchOrder(HepMatchOrder.BOTTOM_UP)
