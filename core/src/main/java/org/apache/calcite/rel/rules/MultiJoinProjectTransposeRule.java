@@ -62,10 +62,35 @@ import org.apache.calcite.tools.RelBuilderFactory;
  */
 public class MultiJoinProjectTransposeRule extends JoinProjectTransposeRule {
 
-  /** Creates a MultiJoinProjectTransposeRule. */
-  protected MultiJoinProjectTransposeRule(Config config) {
-    super(config);
-  }
+  public static final MultiJoinProjectTransposeRule MULTI_BOTH_PROJECT =
+      new MultiJoinProjectTransposeRule(
+          operand(LogicalJoin.class,
+              operand(LogicalProject.class,
+                  operand(MultiJoin.class, any())),
+              operand(LogicalProject.class,
+                  operand(MultiJoin.class, any()))),
+          RelFactories.LOGICAL_BUILDER,
+          "MultiJoinProjectTransposeRule:TwoLogicalProjects");
+
+  public static final MultiJoinProjectTransposeRule MULTI_LEFT_PROJECT =
+      new MultiJoinProjectTransposeRule(
+          operand(LogicalJoin.class,
+              some(
+                  operand(LogicalProject.class,
+                      operand(MultiJoin.class, any())))),
+          RelFactories.LOGICAL_BUILDER,
+          "MultiJoinProjectTransposeRule:LeftLogicalProject");
+
+  public static final MultiJoinProjectTransposeRule MULTI_RIGHT_PROJECT =
+      new MultiJoinProjectTransposeRule(
+          operand(LogicalJoin.class,
+              operand(RelNode.class, any()),
+              operand(LogicalProject.class,
+                  operand(MultiJoin.class, any()))),
+          RelFactories.LOGICAL_BUILDER,
+          "MultiJoinProjectTransposeRule:RightLogicalProject");
+
+  //~ Constructors -----------------------------------------------------------
 
   @Deprecated // to be removed before 2.0
   public MultiJoinProjectTransposeRule(
