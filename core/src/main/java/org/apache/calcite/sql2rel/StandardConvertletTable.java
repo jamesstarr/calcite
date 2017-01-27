@@ -132,6 +132,21 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
         });
 
     registerOp(
+        SqlStdOperatorTable.EQUALS,
+        new SqlRexConvertlet() {
+          public RexNode convertCall(SqlRexContext cx, SqlCall call) {
+            return convertEqualsOrNotEquals(cx, call);
+          }
+        });
+    registerOp(
+        SqlStdOperatorTable.NOT_EQUALS,
+        new SqlRexConvertlet() {
+          public RexNode convertCall(SqlRexContext cx, SqlCall call) {
+            return convertEqualsOrNotEquals(cx, call);
+          }
+        });
+
+    registerOp(
         SqlStdOperatorTable.PLUS,
         new SqlRexConvertlet() {
           public RexNode convertCall(SqlRexContext cx, SqlCall call) {
@@ -916,6 +931,40 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
     default:
       return null;
     }
+  }
+
+  private RexNode convertEqualsOrNotEquals(SqlRexContext cx, SqlCall call) {
+
+    final RexCall convertedCall = (RexCall) convertCall(cx, call);
+
+    final RexNode op0 = convertedCall.getOperands().get(0);
+    final RexNode op1 = convertedCall.getOperands().get(1);
+    final RexNode booleanOp;
+    final RexNode integerOp;
+
+    if (op0.getType().getSqlTypeName() == SqlTypeName.BOOLEAN
+        && SqlTypeName.INT_TYPES.contains(op1.getType().getSqlTypeName())) {
+      booleanOp = op0;
+      integerOp = op1;
+    } else if (SqlTypeName.INT_TYPES.contains(op0.getType().getSqlTypeName())
+        && op1.getType().getSqlTypeName() == SqlTypeName.BOOLEAN) {
+      booleanOp = op1;
+      integerOp = op0;
+    } else {
+      return convertedCall;
+    }
+
+    final RexBuilder rexBuilder = cx.getRexBuilder();
+    return rexBuilder.makeCall(call.getOperator(),
+        booleanOp,
+        rexBuilder.makeCall(
+            SqlStdOperatorTable.CASE,
+            rexBuilder.makeCall(
+                SqlStdOperatorTable.EQUALS,
+                integerOp,
+                rexBuilder.makeZeroLiteral(integerOp.getType())),
+            rexBuilder.makeLiteral(false),
+            rexBuilder.makeLiteral(true)));
   }
 
   private RexNode convertPlus(SqlRexContext cx, SqlCall call) {

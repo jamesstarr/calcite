@@ -201,6 +201,11 @@ public abstract class OperandTypes {
   public static final SqlSingleOperandTypeChecker NUMERIC =
       family(SqlTypeFamily.NUMERIC);
 
+  public static final SqlOperandTypeChecker BOOLEAN_INTEGER =
+      family(SqlTypeFamily.BOOLEAN, SqlTypeFamily.INTEGER);
+
+  public static final SqlOperandTypeChecker INTEGER_BOOLEAN =
+      family(SqlTypeFamily.INTEGER, SqlTypeFamily.BOOLEAN);
 
   public static final SqlSingleOperandTypeChecker NUMERIC_OPTIONAL_INTEGER =
       family(ImmutableList.of(SqlTypeFamily.NUMERIC, SqlTypeFamily.INTEGER),
@@ -388,6 +393,20 @@ public abstract class OperandTypes {
       new ComparableOperandTypeChecker(2, RelDataTypeComparability.UNORDERED,
           SqlOperandTypeChecker.Consistency.LEAST_RESTRICTIVE);
 
+  public static final SqlOperandTypeChecker
+      COMPARABLE_UNORDERED_COMPARABLE_UNORDERED_FOR_EQUALITY =
+      new CompositeOperandTypeChecker(
+          CompositeOperandTypeChecker.Composition.OR,
+          ImmutableList.of(
+              COMPARABLE_UNORDERED_COMPARABLE_UNORDERED,
+              BOOLEAN_INTEGER,
+              INTEGER_BOOLEAN),
+          null, null) {
+        @Override public Consistency getConsistency() {
+          // This is to be used for equals/not-equals, so we want least restrictive consistency
+          return Consistency.LEAST_RESTRICTIVE;
+        }
+      };
   /**
    * Operand type-checking strategy where two operands must both be in the
    * same string type family.

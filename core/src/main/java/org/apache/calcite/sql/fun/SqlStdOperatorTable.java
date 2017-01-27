@@ -304,7 +304,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           true,
           ReturnTypes.BOOLEAN_NULLABLE,
           InferTypes.LEAST_RESTRICTIVE,
-          OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED);
+          OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED_FOR_EQUALITY);
 
   /**
    * Logical greater-than operator, '<code>&gt;</code>'.
@@ -498,7 +498,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           true,
           ReturnTypes.BOOLEAN_NULLABLE,
           InferTypes.LEAST_RESTRICTIVE,
-          OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED);
+          OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED_FOR_EQUALITY);
 
   /**
    * Logical <code>OR</code> operator.
