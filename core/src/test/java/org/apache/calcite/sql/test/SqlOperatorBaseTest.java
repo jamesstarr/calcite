@@ -2403,7 +2403,7 @@ public abstract class SqlOperatorBaseTest {
         "INTERVAL YEAR TO MONTH NOT NULL");
   }
 
-  @Test void testCompareBooleanAndInteger() {
+  @Test public void testCompareBooleanAndInteger() {
     tester.setFor(SqlStdOperatorTable.EQUALS);
 
     tester.checkBoolean("true = 1", Boolean.TRUE);
@@ -2411,14 +2411,22 @@ public abstract class SqlOperatorBaseTest {
     tester.checkBoolean("1 = true", Boolean.TRUE);
     tester.checkBoolean("false = 0", Boolean.TRUE);
     tester.checkBoolean("false <> 1", Boolean.TRUE);
-    tester.checkBoolean("true = 3", Boolean.FALSE);
+    tester.checkBoolean("true = 3", Boolean.TRUE);
+    tester.checkBoolean("false <> 2", Boolean.TRUE);
 
-    strictTester.checkFails("^true = cast(1 as double)^",
+    tester.checkBoolean("true = cast(1 as tinyint)", Boolean.TRUE);
+    tester.checkBoolean("true <> cast(1 as bigint)", Boolean.FALSE);
+    tester.checkBoolean("false = cast(0 as smallint)", Boolean.TRUE);
+    tester.checkBoolean("false <> cast(1 as int)", Boolean.TRUE);
+
+    tester.checkFails("^true = cast(1 as double)^",
         "Cannot apply '=' to arguments of type '<BOOLEAN> = <DOUBLE>'\\. "
-            + "Supported form\\(s\\): '<COMPARABLE_TYPE> = <COMPARABLE_TYPE>'", false);
+            + "Supported form\\(s\\): '<COMPARABLE_TYPE> = <COMPARABLE_TYPE>'\n"
+            + "'<BOOLEAN> = <INTEGER>'\n"
+            + "'<INTEGER> = <BOOLEAN>'", false);
   }
 
-  @Test void testEqualsOperator() {
+  @Test public void testEqualsOperator() {
     tester.setFor(SqlStdOperatorTable.EQUALS);
     tester.checkBoolean("1=1", Boolean.TRUE);
     tester.checkBoolean("1=1.0", Boolean.TRUE);
