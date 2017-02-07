@@ -1134,6 +1134,17 @@ public class SqlFunctions {
     return Math.pow(b0.doubleValue(), b1.doubleValue());
   }
 
+<<<<<<< HEAD
+=======
+  public static double power(BigDecimal b0, long b1) {
+    return Math.pow(b0.doubleValue(), b1);
+  }
+
+  public static double power(long b0, BigDecimal b1) {
+    return Math.pow(b0, b1.doubleValue());
+  }
+
+>>>>>>> d0362c878 (Fix missing power function)
   // LN
 
   /** SQL {@code LN(number)} function applied to double values. */
