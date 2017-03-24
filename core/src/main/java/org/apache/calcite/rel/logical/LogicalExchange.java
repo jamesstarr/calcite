@@ -31,7 +31,7 @@ import org.apache.calcite.rel.core.Exchange;
  * targeted at any particular engine or calling convention.
  */
 public final class LogicalExchange extends Exchange {
-  private LogicalExchange(RelOptCluster cluster, RelTraitSet traitSet,
+  public LogicalExchange(RelOptCluster cluster, RelTraitSet traitSet,
       RelNode input, RelDistribution distribution) {
     super(cluster, traitSet, input, distribution);
     assert traitSet.containsIfApplicable(Convention.NONE);
