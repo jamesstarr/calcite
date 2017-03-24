@@ -32,7 +32,7 @@ import org.apache.calcite.rex.RexNode;
  * targeted at any particular engine or calling convention.
  */
 public final class LogicalSort extends Sort {
-  private LogicalSort(RelOptCluster cluster, RelTraitSet traitSet,
+  public LogicalSort(RelOptCluster cluster, RelTraitSet traitSet,
       RelNode input, RelCollation collation, RexNode offset, RexNode fetch) {
     super(cluster, traitSet, input, collation, offset, fetch);
     assert traitSet.containsIfApplicable(Convention.NONE);
