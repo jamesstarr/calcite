@@ -71,6 +71,7 @@ import org.apache.calcite.rel.rules.ProjectToWindowRule;
 import org.apache.calcite.rel.rules.PruneEmptyRules;
 import org.apache.calcite.rel.rules.PushProjector;
 import org.apache.calcite.rel.rules.ReduceExpressionsRule;
+import org.apache.calcite.rel.rules.SortRemoveConstantKeysRule;
 import org.apache.calcite.rel.rules.TableScanRule;
 import org.apache.calcite.rel.rules.UnionMergeRule;
 import org.apache.calcite.rel.rules.ValuesReduceRule;
@@ -530,6 +531,30 @@ public class RelOptRulesTest extends RelOptTestBase {
         + "select b.name from dept b\n"
         + "order by name limit 0";
     checkPlanning(program, sql);
+  }
+
+  @Test public void testSortRemovalAllKeysConstant() {
+    final HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(SortRemoveConstantKeysRule.INSTANCE)
+        .build();
+    final String sql = "select count(*) as c\n"
+        + "from sales.emp\n"
+        + "where deptno = 10\n"
+        + "group by deptno, sal\n"
+        + "order by deptno desc nulls last";
+    sql(sql).with(program).check();
+  }
+
+  @Test public void testSortRemovalOneKeyConstant() {
+    final HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(SortRemoveConstantKeysRule.INSTANCE)
+        .build();
+    final String sql = "select count(*) as c\n"
+        + "from sales.emp\n"
+        + "where deptno = 10\n"
+        + "group by deptno, sal\n"
+        + "order by deptno, sal desc nulls first";
+    sql(sql).with(program).check();
   }
 
   @Test public void testSemiJoinRuleExists() {

@@ -75,6 +75,7 @@ import org.apache.calcite.rel.rules.AbstractMaterializedViewRule;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.JoinPushThroughJoinRule;
 import org.apache.calcite.rel.rules.MaterializedViewFilterScanRule;
+import org.apache.calcite.rel.rules.SortRemoveConstantKeysRule;
 import org.apache.calcite.rel.rules.TableScanRule;
 import org.apache.calcite.rel.stream.StreamRules;
 import org.apache.calcite.rel.type.RelDataType;
@@ -216,6 +217,7 @@ public class CalcitePrepareImpl implements CalcitePrepare {
           JoinPushThroughJoinRule.LEFT,
           CoreRules.SORT_PROJECT_TRANSPOSE,
           CoreRules.SORT_JOIN_TRANSPOSE,
+          SortRemoveConstantKeysRule.INSTANCE,
           CoreRules.SORT_UNION_TRANSPOSE);
 
   private static final List<RelOptRule> CONSTANT_REDUCTION_RULES =
