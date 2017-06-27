@@ -19,7 +19,7 @@ package org.apache.calcite.rel.rules;
 import org.apache.calcite.plan.RelOptPredicateList;
 import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
-import org.apache.calcite.plan.SubstitutionRule;
+>>>>>>> d0e86c5a6 ([CALCITE-873] Add a planner rule, SortRemoveConstantKeysRule, that removes constant keys from Sort (Atri Sharma))
 import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelFieldCollation;
@@ -39,8 +39,11 @@ import java.util.stream.Collectors;
  *
  * <p>Requires {@link RelCollationTraitDef}.
  */
+<<<<<<< HEAD
 public class SortRemoveConstantKeysRule extends RelOptRule
     implements SubstitutionRule {
+=======
+public class SortRemoveConstantKeysRule extends RelOptRule {
   public static final SortRemoveConstantKeysRule INSTANCE =
       new SortRemoveConstantKeysRule();
 
@@ -84,3 +87,8 @@ public class SortRemoveConstantKeysRule extends RelOptRule
     call.getPlanner().setImportance(sort, 0.0);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SortRemoveConstantKeysRule.java
+>>>>>>> d0e86c5a6 ([CALCITE-873] Add a planner rule, SortRemoveConstantKeysRule, that removes constant keys from Sort (Atri Sharma))

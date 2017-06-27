@@ -8970,11 +8970,15 @@ join (select mgr, sal, max(hiredate) as hiredate1,
     sum(comm) as comm1 from sales.emp group by mgr, sal) as B
 on A.sal=B.sal
 <<<<<<< HEAD
+<<<<<<< HEAD
 group by A.job, B.mgr, A.deptno]]>
 =======
 group by A.job, B.mgr, A.deptno
 ]]>
 >>>>>>> fdda73d23 ([CALCITE-2278] AggregateJoinTransposeRule fails to split aggregate call if input contains an aggregate call and has distinct rows (Haisheng Yuan))
+=======
+group by A.job, B.mgr, A.deptno]]>
+>>>>>>> d0e86c5a6 ([CALCITE-873] Add a planner rule, SortRemoveConstantKeysRule, that removes constant keys from Sort (Atri Sharma))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -12148,6 +12152,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testSortJoinCopyInnerJoinOrderBy">
         <Resource name="sql">
             <![CDATA[select * from sales.emp join sales.dept on
@@ -12301,6 +12306,8 @@ LogicalSort(sort0=[$0], dir0=[ASC], offset=[2])
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> d0e86c5a6 ([CALCITE-873] Add a planner rule, SortRemoveConstantKeysRule, that removes constant keys from Sort (Atri Sharma))
     <TestCase name="testSortRemovalAllKeysConstant">
         <Resource name="sql">
             <![CDATA[select count(*) as c
@@ -12358,8 +12365,11 @@ LogicalSort(sort0=[$2], dir0=[DESC])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 >>>>>>> df6d25e82 ([CALCITE-2986] Wrong results with =ANY subquery (Vineet Garg))
+=======
+>>>>>>> d0e86c5a6 ([CALCITE-873] Add a planner rule, SortRemoveConstantKeysRule, that removes constant keys from Sort (Atri Sharma))
     <TestCase name="testSomeWithEquality2">
         <Resource name="sql">
             <![CDATA[select * from emp e1

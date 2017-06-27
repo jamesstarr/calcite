@@ -72,6 +72,7 @@ import org.apache.calcite.rel.rules.ProjectToWindowRule;
 import org.apache.calcite.rel.rules.PruneEmptyRules;
 import org.apache.calcite.rel.rules.PushProjector;
 import org.apache.calcite.rel.rules.ReduceExpressionsRule;
+import org.apache.calcite.rel.rules.SortRemoveConstantKeysRule;
 import org.apache.calcite.rel.rules.TableScanRule;
 import org.apache.calcite.rel.rules.UnionMergeRule;
 import org.apache.calcite.rel.rules.ValuesReduceRule;
@@ -799,7 +800,7 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).with(program).check();
   }
 
-  @Test void testSortRemovalAllKeysConstant() {
+  @Test public void testSortRemovalAllKeysConstant() {
     final HepProgram program = new HepProgramBuilder()
         .addRuleInstance(SortRemoveConstantKeysRule.INSTANCE)
         .build();
@@ -811,7 +812,7 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).with(program).check();
   }
 
-  @Test void testSortRemovalOneKeyConstant() {
+  @Test public void testSortRemovalOneKeyConstant() {
     final HepProgram program = new HepProgramBuilder()
         .addRuleInstance(SortRemoveConstantKeysRule.INSTANCE)
         .build();
@@ -823,7 +824,7 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).with(program).check();
   }
 
-  @Test void testSemiJoinRuleExists() {
+  @Test public void testSemiJoinRuleExists() {
     final HepProgram preProgram =
         HepProgram.builder()
             .addRuleInstance(CoreRules.FILTER_PROJECT_TRANSPOSE)
