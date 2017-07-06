@@ -93,6 +93,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.IntFunction;
+import javax.annotation.Nonnull;
 
 /**
  * State for generating a SQL statement.
@@ -420,15 +422,17 @@ public abstract class SqlImplementor {
   /** Context for translating a {@link RexNode} expression (within a
    * {@link RelNode}) into a {@link SqlNode} expression (within a SQL parse
    * tree). */
-  public abstract class Context {
-    protected final int fieldCount;
-    protected final boolean ignoreCast;
+  public abstract static class Context {
+    final SqlDialect dialect;
+    final int fieldCount;
+    private final boolean ignoreCast;
 
-    protected Context(int fieldCount) {
-      this(fieldCount, false);
+    protected Context(SqlDialect dialect, int fieldCount) {
+      this(dialect, fieldCount, false);
     }
 
-    protected Context(int fieldCount, boolean ignoreCast) {
+    protected Context(SqlDialect dialect, int fieldCount, boolean ignoreCast) {
+      this.dialect = dialect;
       this.fieldCount = fieldCount;
       this.ignoreCast = ignoreCast;
     }
@@ -463,7 +467,7 @@ public abstract class SqlImplementor {
         switch (referencedExpr.getKind()) {
         case CORREL_VARIABLE:
           final RexCorrelVariable variable = (RexCorrelVariable) referencedExpr;
-          final Context correlAliasContext = correlTableMap.get(variable.id);
+          final Context correlAliasContext = getAliasContext(variable);
           final RexFieldAccess lastAccess = accesses.pollLast();
           assert lastAccess != null;
           sqlIdentifier = (SqlIdentifier) correlAliasContext
@@ -573,7 +577,7 @@ public abstract class SqlImplementor {
         if (rex instanceof RexSubQuery) {
           subQuery = (RexSubQuery) rex;
           sqlSubQuery =
-              visitChild(0, subQuery.rel).asQueryOrValues();
+              implementor().visitChild(0, subQuery.rel).asQueryOrValues();
           final List<RexNode> operands = subQuery.operands;
           SqlNode op0;
           if (operands.size() == 1) {
@@ -593,7 +597,8 @@ public abstract class SqlImplementor {
       case EXISTS:
       case SCALAR_QUERY:
         subQuery = (RexSubQuery) rex;
-        sqlSubQuery = visitChild(0, subQuery.rel).asQueryOrValues();
+        sqlSubQuery =
+            implementor().visitChild(0, subQuery.rel).asQueryOrValues();
         return subQuery.getOperator().createCall(POS, sqlSubQuery);
 
       case NOT:
@@ -644,7 +649,11 @@ public abstract class SqlImplementor {
       }
     }
 
-    protected SqlCall toSql(RexProgram program, RexOver rexOver) {
+    protected Context getAliasContext(RexCorrelVariable variable) {
+      throw new UnsupportedOperationException();
+    }
+
+    private SqlCall toSql(RexProgram program, RexOver rexOver) {
       final RexWindow rexWindow = rexOver.getWindow();
       final SqlNodeList partitionList = new SqlNodeList(
           toSql(program, rexWindow.partitionKeys), POS);
@@ -845,6 +854,39 @@ public abstract class SqlImplementor {
     }
 
     public SqlImplementor implementor() {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  /** Simple implementation of {@link Context} that cannot handle sub-queries
+   * or correlations. Because it is so simple, you do not need to create a
+   * {@link SqlImplementor} or {@link org.apache.calcite.tools.RelBuilder}
+   * to use it. It is a good way to convert a {@link RexNode} to SQL text. */
+  public static class SimpleContext extends Context {
+    @Nonnull private final IntFunction<SqlNode> field;
+
+    public SimpleContext(SqlDialect dialect, IntFunction<SqlNode> field) {
+      super(dialect, 0, false);
+      this.field = field;
+    }
+
+    public SqlNode field(int ordinal) {
+      return field.apply(ordinal);
+    }
+  }
+
+  /** Implementation of {@link Context} that has an enclosing
+   * {@link SqlImplementor} and can therefore do non-trivial expressions. */
+  protected abstract class BaseContext extends Context {
+    BaseContext(SqlDialect dialect, int fieldCount) {
+      super(dialect, fieldCount);
+    }
+
+    @Override protected Context getAliasContext(RexCorrelVariable variable) {
+      return correlTableMap.get(variable.id);
+    }
+
+    @Override public SqlImplementor implementor() {
       return SqlImplementor.this;
     }
   }
@@ -860,23 +902,24 @@ public abstract class SqlImplementor {
 
   public Context aliasContext(Map<String, RelDataType> aliases,
       boolean qualified) {
-    return new AliasContext(aliases, qualified);
+    return new AliasContext(dialect, aliases, qualified);
   }
 
   public Context joinContext(Context leftContext, Context rightContext) {
-    return new JoinContext(leftContext, rightContext);
+    return new JoinContext(dialect, leftContext, rightContext);
   }
 
   public Context matchRecognizeContext(Context context) {
-    return new MatchRecognizeContext(((AliasContext) context).aliases);
+    return new MatchRecognizeContext(dialect, ((AliasContext) context).aliases);
   }
 
   /**
    * Context for translating MATCH_RECOGNIZE clause
    */
   public class MatchRecognizeContext extends AliasContext {
-    protected MatchRecognizeContext(Map<String, RelDataType> aliases) {
-      super(aliases, false);
+    protected MatchRecognizeContext(SqlDialect dialect,
+        Map<String, RelDataType> aliases) {
+      super(dialect, aliases, false);
     }
 
     @Override public SqlNode toSql(RexProgram program, RexNode rex) {
@@ -892,14 +935,14 @@ public abstract class SqlImplementor {
 
   /** Implementation of Context that precedes field references with their
    * "table alias" based on the current sub-query's FROM clause. */
-  public class AliasContext extends Context {
+  public class AliasContext extends BaseContext {
     private final boolean qualified;
     private final Map<String, RelDataType> aliases;
 
     /** Creates an AliasContext; use {@link #aliasContext(Map, boolean)}. */
-    protected AliasContext(Map<String, RelDataType> aliases,
-        boolean qualified) {
-      super(computeFieldCount(aliases));
+    protected AliasContext(SqlDialect dialect,
+        Map<String, RelDataType> aliases, boolean qualified) {
+      super(dialect, computeFieldCount(aliases));
       this.aliases = aliases;
       this.qualified = qualified;
     }
@@ -928,13 +971,14 @@ public abstract class SqlImplementor {
 
   /** Context for translating ON clause of a JOIN from {@link RexNode} to
    * {@link SqlNode}. */
-  class JoinContext extends Context {
+  class JoinContext extends BaseContext {
     private final SqlImplementor.Context leftContext;
     private final SqlImplementor.Context rightContext;
 
     /** Creates a JoinContext; use {@link #joinContext(Context, Context)}. */
-    private JoinContext(Context leftContext, Context rightContext) {
-      super(leftContext.fieldCount + rightContext.fieldCount);
+    private JoinContext(SqlDialect dialect, Context leftContext,
+        Context rightContext) {
+      super(dialect, leftContext.fieldCount + rightContext.fieldCount);
       this.leftContext = leftContext;
       this.rightContext = rightContext;
     }
@@ -1015,7 +1059,7 @@ public abstract class SqlImplementor {
       Context newContext;
       final SqlNodeList selectList = select.getSelectList();
       if (selectList != null) {
-        newContext = new Context(selectList.size()) {
+        newContext = new Context(dialect, selectList.size()) {
           public SqlNode field(int ordinal) {
             final SqlNode selectItem = selectList.get(ordinal);
             switch (selectItem.getKind()) {

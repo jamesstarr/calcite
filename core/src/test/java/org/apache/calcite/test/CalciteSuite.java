@@ -19,6 +19,7 @@ package org.apache.calcite.test;
 import org.apache.calcite.TestKtTest;
 import org.apache.calcite.adapter.clone.ArrayTableTest;
 import org.apache.calcite.jdbc.CalciteRemoteDriverTest;
+import org.apache.calcite.materialize.LatticeSuggesterTest;
 import org.apache.calcite.plan.RelOptPlanReaderTest;
 import org.apache.calcite.plan.RelOptUtilTest;
 import org.apache.calcite.plan.RelTraitTest;
@@ -171,6 +172,7 @@ import org.junit.runners.Suite;
     SqlToRelConverterTest.class,
     RexProgramFuzzyTest.class,
     ProfilerTest.class,
+    LatticeSuggesterTest.class,
     SqlAdvisorJdbcTest.class,
     CoreQuidemTest.class,
     CalciteRemoteDriverTest.class,
