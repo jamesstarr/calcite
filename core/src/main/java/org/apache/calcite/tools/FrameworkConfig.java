@@ -126,6 +126,24 @@ public interface FrameworkConfig {
    * Returns the type system.
    */
   RelDataTypeSystem getTypeSystem();
+<<<<<<< HEAD
+=======
+
+  /**
+   * Returns whether the lattice suggester should try to widen a lattice when a
+   * new query arrives that doesn't quite fit, as opposed to creating a new
+   * lattice.
+   */
+  boolean isEvolveLattice();
+
+  /**
+   * Returns the source of statistics about tables and columns to be used
+   * by the lattice suggester to deduce primary keys, foreign keys, and the
+   * direction of relationships.
+   */
+  SqlStatisticProvider getStatisticProvider();
+}
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
 
   /**
    * Returns whether the lattice suggester should try to widen a lattice when a

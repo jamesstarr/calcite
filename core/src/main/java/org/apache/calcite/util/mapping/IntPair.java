@@ -153,6 +153,20 @@ public class IntPair {
       }
     };
   }
+<<<<<<< HEAD
+=======
+
+  /** Returns the left side of a list of pairs. */
+  public static List<Integer> left(final List<IntPair> pairs) {
+    return Lists.transform(pairs, LEFT);
+  }
+
+  /** Returns the right side of a list of pairs. */
+  public static List<Integer> right(final List<IntPair> pairs) {
+    return Lists.transform(pairs, RIGHT);
+  }
+}
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
 
   /** Returns the left side of a list of pairs. */
   public static List<Integer> left(final List<IntPair> pairs) {

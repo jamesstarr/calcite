@@ -19,8 +19,6 @@ package org.apache.calcite.test;
 import org.apache.calcite.linq4j.tree.Primitive;
 import org.apache.calcite.util.IntegerIntervalSet;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 
 import org.junit.Ignore;
@@ -29,10 +27,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Test case that runs the FoodMart reference queries.
@@ -117,8 +113,17 @@ class FoodmartTest {
   }
 
   // 202 and others: strip away "CAST(the_year AS UNSIGNED) = 1997"
-  public static Stream<FoodMartQuerySet.FoodmartQuery> queries() throws IOException {
-    String idList = CalciteSystemProperty.TEST_FOODMART_QUERY_IDS.value();
+
+  private final FoodMartQuerySet.FoodmartQuery query;
+
+  @Parameterized.Parameters(name = "{index}: foodmart({0})={1}")
+  public static List<Object[]> getSqls() throws IOException {
+    String idList = System.getProperty("calcite.ids");
+    if (!CalciteAssert.ENABLE_SLOW && idList == null) {
+      // Avoid loading the query set in a regular test suite run. It burns too
+      // much memory.
+      return ImmutableList.of();
+    }
     final FoodMartQuerySet set = FoodMartQuerySet.instance();
     final List<FoodMartQuerySet.FoodmartQuery> list = new ArrayList<>();
     if (idList != null) {
@@ -137,41 +142,60 @@ class FoodmartTest {
         }
       }
     } else {
-      int idLimit = 200; // Limit the number of tests to avoid timeout
-      if (CalciteSystemProperty.TEST_SLOW.value()) {
-        idLimit = -1; // no limit
-      }
       for (FoodMartQuerySet.FoodmartQuery query1 : set.queries.values()) {
+        if (!CalciteAssert.ENABLE_SLOW && query1.id != 2) {
+          // If slow queries are not enabled, only run query #2.
+          continue;
+        }
         if (Primitive.asList(DISABLED_IDS).contains(query1.id)) {
           continue;
         }
-        list.add(query1);
-        if (idLimit != -1 && list.size() >= idLimit) {
-          break;
-        }
+        list.add(new Object[]{query1.id /*, query1.sql */});
       }
     }
-    return list.stream();
+    return list;
   }
 
-  @ParameterizedTest(name = "{0}")
-  @MethodSource("queries")
-  public void test(FoodMartQuerySet.FoodmartQuery query) {
-    Assertions.assertTimeoutPreemptively(Duration.ofMinutes(2), () -> {
-      assertFoodmart.query(query.sql).runs();
-    });
+  public FoodmartTest(int id) throws IOException {
+    if (id < 0) {
+      this.query = new FoodMartQuerySet.FoodmartQuery();
+      query.id = id;
+      query.sql = "select * from (values 1) as t(c)";
+    } else {
+      this.query = FoodMartQuerySet.instance().queries.get(id);
+    }
+    assert query.id == id : id + ":" + query.id;
   }
 
-  @ParameterizedTest(name = "{0}")
-  @Disabled
-  @MethodSource("queries")
-  public void testWithLattice(FoodMartQuerySet.FoodmartQuery query) {
-    Assertions.assertTimeoutPreemptively(Duration.ofMinutes(2), () -> {
-      assertFoodmartLattice
-              .withDefaultSchema("foodmart")
-              .query(query.sql)
-              .enableMaterializations(true)
-              .runs();
-    });
+  @Test(timeout = 60000)
+  public void test() {
+    try {
+      CalciteAssert.that()
+          .with(CalciteAssert.Config.FOODMART_CLONE)
+          .pooled()
+          .query(query.sql)
+          .runs();
+    } catch (Throwable e) {
+      throw new RuntimeException("Test failed, id=" + query.id + ", sql="
+          + query.sql, e);
+    }
   }
+
+  @Test(timeout = 60000)
+  @Ignore
+  public void testWithLattice() {
+    try {
+      CalciteAssert.that()
+          .with(CalciteAssert.Config.JDBC_FOODMART_WITH_LATTICE)
+          .pooled()
+          .withDefaultSchema("foodmart")
+          .query(query.sql)
+          .enableMaterializations(true)
+          .runs();
+    } catch (Throwable e) {
+      throw new RuntimeException("Test failed, id=" + query.id + ", sql="
+          + query.sql, e);
+    }
+  }
+
 }

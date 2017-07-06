@@ -52,3 +52,8 @@ public class LatticeTable {
     return t.getRowType().getFieldList().get(i);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End LatticeTable.java
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)

@@ -41,3 +41,8 @@ class Path {
         && id == ((Path) obj).id;
   }
 }
+<<<<<<< HEAD
+=======
+
+// End Path.java
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)

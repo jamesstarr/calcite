@@ -59,7 +59,7 @@ public abstract class LatticeNode {
         if (i++ > 0) {
           sb.append(",");
         }
-        sb.append(space.fieldName(parent.table, p.source));
+        sb.append(parent.table.field(p.source).getName());
       }
     }
     if (mutableNode.children.isEmpty()) {
@@ -112,3 +112,8 @@ public abstract class LatticeNode {
   }
 
 }
+<<<<<<< HEAD
+=======
+
+// End LatticeNode.java
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)

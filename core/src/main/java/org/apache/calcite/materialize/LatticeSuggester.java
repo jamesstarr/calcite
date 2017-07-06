@@ -28,11 +28,9 @@ import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.Project;
-import org.apache.calcite.rel.core.SetOp;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.rules.CoreRules;
-import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.sql.SqlAggFunction;
@@ -65,7 +63,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -105,6 +103,7 @@ public class LatticeSuggester {
     return ImmutableSet.copyOf(set);
   }
 
+<<<<<<< HEAD
   /** Converts a column reference to an expression. */
   public RexNode toRex(LatticeTable table, int column) {
     final List<RelDataTypeField> fieldList =
@@ -116,6 +115,7 @@ public class LatticeSuggester {
     }
   }
 
+=======
   /** Adds a query.
    *
    * <p>It may fit within an existing lattice (or lattices). Or it may need a
@@ -134,14 +134,10 @@ public class LatticeSuggester {
     final RelNode r2 = planner.findBestExp();
 
     final Query q = new Query(space);
-    final List<Frame> frameList = new ArrayList<>();
-    frames(frameList, q, r2);
-    final List<Lattice> lattices = new ArrayList<>();
-    frameList.forEach(frame -> addFrame(q, frame, lattices));
-    return ImmutableList.copyOf(lattices);
-  }
-
-  private void addFrame(Query q, Frame frame, List<Lattice> lattices) {
+    final Frame frame = frame(q, r2);
+    if (frame == null) {
+      return ImmutableList.of();
+    }
     final AttributedDirectedGraph<TableRef, StepRef> g =
         AttributedDirectedGraph.create(new StepRef.Factory());
     final Multimap<Pair<TableRef, TableRef>, IntPair> map =
@@ -150,8 +146,8 @@ public class LatticeSuggester {
       g.addVertex(tableRef);
     }
     for (Hop hop : frame.hops) {
-      map.put(Pair.of(hop.source.tableRef(), hop.target.tableRef()),
-          IntPair.of(hop.source.col(space), hop.target.col(space)));
+      map.put(Pair.of(hop.source.t, hop.target.t),
+          IntPair.of(hop.source.c, hop.target.c));
     }
     for (Map.Entry<Pair<TableRef, TableRef>, Collection<IntPair>> e
         : map.asMap().entrySet()) {
@@ -168,7 +164,7 @@ public class LatticeSuggester {
     // If the join graph is cyclic, we can't use it.
     final Set<TableRef> cycles = new CycleDetector<>(g).findCycles();
     if (!cycles.isEmpty()) {
-      return;
+      return ImmutableList.of();
     }
 
     // Translate the query graph to mutable nodes
@@ -210,45 +206,32 @@ public class LatticeSuggester {
     }
 
     // Transcribe the hierarchy of mutable nodes to immutable nodes
-    for (MutableNode rootNode : rootNodes) {
-      if (rootNode.isCyclic()) {
-        continue;
-      }
-      final CalciteSchema rootSchema = CalciteSchema.createRootSchema(false);
-      final Lattice.Builder latticeBuilder =
-          new Lattice.Builder(space, rootSchema, rootNode);
-
-      final List<MutableNode> flatNodes = new ArrayList<>();
-      rootNode.flatten(flatNodes);
-
-      for (MutableMeasure measure : frame.measures) {
-        for (ColRef arg : measure.arguments) {
-          if (arg == null) {
-            // Cannot handle expressions, e.g. "sum(x + 1)" yet
-            return;
+            return ImmutableList.of();
           }
         }
         latticeBuilder.addMeasure(
             new Lattice.Measure(measure.aggregate, measure.distinct,
                 measure.name,
                 Lists.transform(measure.arguments, colRef -> {
-                  final Lattice.Column column;
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
                   if (colRef instanceof BaseColRef) {
                     final BaseColRef baseColRef = (BaseColRef) colRef;
                     final MutableNode node = nodes.get(baseColRef.t);
                     final int table = flatNodes.indexOf(node);
+<<<<<<< HEAD
                     column = latticeBuilder.column(table, baseColRef.c);
+=======
+                    return latticeBuilder.column(table, baseColRef.c);
                   } else if (colRef instanceof DerivedColRef) {
                     final DerivedColRef derivedColRef =
                         (DerivedColRef) colRef;
                     final String alias = deriveAlias(measure, derivedColRef);
-                    column = latticeBuilder.expression(derivedColRef.e, alias,
+                    return latticeBuilder.expression(derivedColRef.e, alias,
                         derivedColRef.tableAliases());
                   } else {
                     throw new AssertionError("expression in measure");
                   }
-                  latticeBuilder.use(column, true);
-                  return column;
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
                 })));
       }
 
@@ -259,7 +242,9 @@ public class LatticeSuggester {
           final Lattice.Column expression =
               latticeBuilder.expression(derivedColRef.e,
                   derivedColRef.alias, derivedColRef.tableAliases());
+<<<<<<< HEAD
           latticeBuilder.use(expression, false);
+=======
         }
       }
 
@@ -267,84 +252,12 @@ public class LatticeSuggester {
       final Lattice lattice1 = findMatch(lattice0, rootNode);
       lattices.add(lattice1);
     }
-  }
-
-  /** Derives the alias of an expression that is the argument to a measure.
-   *
-   * <p>For example, if the measure is called "sum_profit" and the aggregate
-   * function is "sum", returns "profit".
-   */
-  private static String deriveAlias(MutableMeasure measure,
-      DerivedColRef derivedColRef) {
-    if (!derivedColRef.alias.contains("$")) {
-      // User specified an alias. Use that.
-      return derivedColRef.alias;
-    }
-    String alias = measure.name;
-    if (alias.contains("$")) {
-      // User did not specify an alias for the aggregate function, and it got a
-      // system-generated name like 'EXPR$2'. Don't try to derive anything from
-      // it.
-      return derivedColRef.alias;
-    }
-    final String aggUpper =
-        measure.aggregate.getName().toUpperCase(Locale.ROOT);
-    final String aliasUpper = alias.toUpperCase(Locale.ROOT);
-    if (aliasUpper.startsWith(aggUpper + "_")) {
-      // Convert "sum_profit" to "profit"
-      return alias.substring((aggUpper + "_").length());
-    } else if (aliasUpper.startsWith(aggUpper)) {
-      // Convert "sumprofit" to "profit"
-      return alias.substring(aggUpper.length());
-    } else if (aliasUpper.endsWith("_" + aggUpper)) {
-      // Convert "profit_sum" to "profit"
-      return alias.substring(0, alias.length() - ("_" + aggUpper).length());
-    } else if (aliasUpper.endsWith(aggUpper)) {
-      // Convert "profitsum" to "profit"
-      return alias.substring(0, alias.length() - aggUpper.length());
-    } else {
-      return alias;
-    }
-  }
-
-  /** Returns the best match for a lattice. If no match, registers the lattice
-   * and returns it. Never returns null. */
-  private Lattice findMatch(final Lattice lattice, MutableNode mutableNode) {
-    final Lattice lattice1 = latticeMap.get(lattice.toString());
-    if (lattice1 != null) {
-      // Exact match for an existing lattice
-      return lattice1;
-    }
-
-    if (evolve) {
-      // No exact match. Scan existing lattices for a sub-set.
-      int bestMatchQuality = 0;
-      Lattice bestMatch = null;
-      for (Lattice lattice2 : latticeMap.values()) {
-        int q = matchQuality(lattice2, lattice);
-        if (q > bestMatchQuality) {
-          bestMatch = lattice2;
-          bestMatchQuality = q;
-        } else if (q == bestMatchQuality
-            && bestMatch != null
-            && !lattice2.rootNode.paths.equals(bestMatch.rootNode.paths)
-            && lattice2.rootNode.paths.containsAll(bestMatch.rootNode.paths)) {
-          bestMatch = lattice2;
+        for (Lattice.Measure measure : bestMatch.defaultMeasures) {
+          builder.addMeasure(measure.copy(mapper(bestMatch, builder)));
         }
-      }
-
-      if (bestMatch != null) {
-        // Fix up the best batch
-        for (Path path
-            : minus(bestMatch.rootNode.paths, lattice.rootNode.paths)) {
-          // TODO: assign alias based on node in bestMatch
-          mutableNode.addPath(path, null);
+        for (Lattice.Measure measure : lattice.defaultMeasures) {
+          builder.addMeasure(measure.copy(mapper(lattice, builder)));
         }
-        final CalciteSchema rootSchema = CalciteSchema.createRootSchema(false);
-        final Lattice.Builder builder =
-            new Lattice.Builder(space, rootSchema, mutableNode);
-        copyMeasures(builder, bestMatch);
-        copyMeasures(builder, lattice);
         final Lattice lattice2 = builder.build();
         latticeMap.remove(bestMatch.toString());
         obsoleteLatticeMap.put(bestMatch, lattice2);
@@ -358,29 +271,19 @@ public class LatticeSuggester {
     return lattice;
   }
 
-  /** Copies measures and column usages from an existing lattice into a builder,
-   * using a mapper to translate old-to-new columns, so that the new lattice can
-   * inherit from the old. */
-  private void copyMeasures(Lattice.Builder builder, Lattice lattice) {
-    final Function<Lattice.Column, Lattice.Column> mapper =
-        (Lattice.Column c) -> {
-          if (c instanceof Lattice.BaseColumn) {
-            Lattice.BaseColumn baseColumn = (Lattice.BaseColumn) c;
-            Pair<Path, Integer> p = lattice.columnToPathOffset(baseColumn);
-            return builder.pathOffsetToColumn(p.left, p.right);
-          } else {
-            final Lattice.DerivedColumn derivedColumn = (Lattice.DerivedColumn) c;
-            return builder.expression(derivedColumn.e, derivedColumn.alias,
-                derivedColumn.tables);
-          }
-        };
-    for (Lattice.Measure measure : lattice.defaultMeasures) {
-      builder.addMeasure(measure.copy(mapper));
-    }
-    for (Map.Entry<Integer, Boolean> entry : lattice.columnUses.entries()) {
-      final Lattice.Column column = lattice.columns.get(entry.getKey());
-      builder.use(mapper.apply(column), entry.getValue());
-    }
+  private java.util.function.Function<Lattice.Column, Lattice.Column> mapper(
+      final Lattice lattice, final Lattice.Builder builder) {
+    return (Lattice.Column c) -> {
+      if (c instanceof Lattice.BaseColumn) {
+        Lattice.BaseColumn baseColumn = (Lattice.BaseColumn) c;
+        Pair<Path, Integer> p = lattice.columnToPathOffset(baseColumn);
+        return builder.pathOffsetToColumn(p.left, p.right);
+      } else {
+        final Lattice.DerivedColumn derivedColumn = (Lattice.DerivedColumn) c;
+        return builder.expression(derivedColumn.e, derivedColumn.alias,
+            derivedColumn.tables);
+      }
+    };
   }
 
   private int matchQuality(Lattice lattice, Lattice target) {
@@ -402,17 +305,7 @@ public class LatticeSuggester {
     return c3;
   }
 
-  private void frames(List<Frame> frames, final Query q, RelNode r) {
-    if (r instanceof SetOp) {
-      r.getInputs().forEach(input -> frames(frames, q, input));
-    } else {
-      final Frame frame = frame(q, r);
-      if (frame != null) {
-        frames.add(frame);
-      }
-    }
-  }
-
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
   private Frame frame(final Query q, RelNode r) {
     if (r instanceof Sort) {
       final Sort sort = (Sort) r;
@@ -483,6 +376,7 @@ public class LatticeSuggester {
               tableRefs.add(tableRef);
             }
           }
+<<<<<<< HEAD
           final List<TableRef> tableRefList = tableRefs.build();
           switch (tableRefList.size()) {
           case 1:
@@ -490,6 +384,8 @@ public class LatticeSuggester {
           default:
             return new DerivedColRef(tableRefList, e, alias);
           }
+=======
+          return new DerivedColRef(tableRefs.build(), e, alias);
         }
       };
     } else if (r instanceof Join) {
@@ -505,11 +401,9 @@ public class LatticeSuggester {
       for (IntPair p : join.analyzeCondition().pairs()) {
         final ColRef source = left.column(p.source);
         final ColRef target = right.column(p.target);
-        assert source instanceof SingleTableColRef;
-        assert target instanceof SingleTableColRef;
-        builder.add(
-            new Hop((SingleTableColRef) source,
-                (SingleTableColRef) target));
+        assert source instanceof BaseColRef;
+        assert target instanceof BaseColRef;
+        builder.add(new Hop((BaseColRef) source, (BaseColRef) target));
       }
       builder.addAll(right.hops);
       final int fieldCount = r.getRowType().getFieldCount();
@@ -567,7 +461,7 @@ public class LatticeSuggester {
 
     StepRef stepRef(TableRef source, TableRef target, List<IntPair> keys) {
       keys = LatticeSpace.sortUnique(keys);
-      final Step h = Step.create(source.table, target.table, keys, space);
+      final Step h = new Step(source.table, target.table, keys);
       if (h.isBackwards(space.statisticProvider)) {
         final List<IntPair> keys1 = LatticeSpace.swap(h.keys);
         final Step h2 = space.addEdge(h.target(), h.source(), keys1);
@@ -608,8 +502,8 @@ public class LatticeSuggester {
     static Set<TableRef> collectTableRefs(List<Frame> inputs, List<Hop> hops) {
       final LinkedHashSet<TableRef> set = new LinkedHashSet<>();
       for (Hop hop : hops) {
-        set.add(hop.source.tableRef());
-        set.add(hop.target.tableRef());
+        set.add(hop.source.t);
+        set.add(hop.target.t);
       }
       for (Frame frame : inputs) {
         set.addAll(frame.tableRefs);
@@ -665,8 +559,21 @@ public class LatticeSuggester {
     }
 
     @Override public String toString() {
-      return "StepRef(" + source + ", " + target + "," + step.keyString + "):"
-          + ordinalInQuery;
+      final StringBuilder b = new StringBuilder()
+          .append("StepRef(")
+          .append(source)
+          .append(", ")
+          .append(target)
+          .append(",");
+      for (IntPair key : step.keys) {
+        b.append(' ')
+            .append(step.source().field(key.source).getName())
+            .append(':')
+            .append(step.target().field(key.target).getName());
+      }
+      return b.append("):")
+          .append(ordinalInQuery)
+          .toString();
     }
 
     TableRef source() {
@@ -724,10 +631,10 @@ public class LatticeSuggester {
    * </ul>
    */
   private static class Hop {
-    final SingleTableColRef source;
-    final SingleTableColRef target;
+    final BaseColRef source;
+    final BaseColRef target;
 
-    private Hop(SingleTableColRef source, SingleTableColRef target) {
+    private Hop(BaseColRef source, BaseColRef target) {
       this.source = source;
       this.target = target;
     }
@@ -737,15 +644,8 @@ public class LatticeSuggester {
   private abstract static class ColRef {
   }
 
-  /** Column reference that is within a single table. */
-  private interface SingleTableColRef {
-    TableRef tableRef();
-
-    int col(LatticeSpace space);
-  }
-
   /** Reference to a base column. */
-  private static class BaseColRef extends ColRef implements SingleTableColRef {
+  private static class BaseColRef extends ColRef {
     final TableRef t;
     final int c;
 
@@ -753,14 +653,7 @@ public class LatticeSuggester {
       this.t = t;
       this.c = c;
     }
-
-    public TableRef tableRef() {
-      return t;
-    }
-
-    public int col(LatticeSpace space) {
-      return c;
-    }
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
   }
 
   /** Reference to a derived column (that is, an expression). */
@@ -769,7 +662,11 @@ public class LatticeSuggester {
     @Nonnull final RexNode e;
     final String alias;
 
+<<<<<<< HEAD
     DerivedColRef(Iterable<TableRef> tableRefs, RexNode e, String alias) {
+=======
+    private DerivedColRef(Iterable<TableRef> tableRefs, RexNode e,
+        String alias) {
       this.tableRefs = ImmutableList.copyOf(tableRefs);
       this.e = e;
       this.alias = alias;
@@ -780,23 +677,7 @@ public class LatticeSuggester {
     }
   }
 
-  /** Variant of {@link DerivedColRef} where all referenced expressions are in
-   * the same table. */
-  private static class SingleTableDerivedColRef extends DerivedColRef
-      implements SingleTableColRef {
-    SingleTableDerivedColRef(TableRef tableRef, RexNode e, String alias) {
-      super(ImmutableList.of(tableRef), e, alias);
-    }
-
-    public TableRef tableRef() {
-      return tableRefs.get(0);
-    }
-
-    public int col(LatticeSpace space) {
-      return space.registerExpression(tableRef().table, e);
-    }
-  }
-
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
   /** An aggregate call. Becomes a measure in the final lattice. */
   private static class MutableMeasure {
     final SqlAggFunction aggregate;
@@ -814,3 +695,7 @@ public class LatticeSuggester {
   }
 
 }
+<<<<<<< HEAD
+=======
+
+// End LatticeSuggester.java

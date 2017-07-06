@@ -99,12 +99,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.IntFunction;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import static org.apache.calcite.linq4j.Nullness.castNonNull;
 
 /**
  * State for generating a SQL statement.
@@ -502,9 +498,10 @@ public abstract class SqlImplementor {
   /** Context for translating a {@link RexNode} expression (within a
    * {@link RelNode}) into a {@link SqlNode} expression (within a SQL parse
    * tree). */
-  public abstract class Context {
-    protected final int fieldCount;
-    protected final boolean ignoreCast;
+  public abstract static class Context {
+    final SqlDialect dialect;
+    final int fieldCount;
+    private final boolean ignoreCast;
 
     protected Context(SqlDialect dialect, int fieldCount) {
       this(dialect, fieldCount, false);
@@ -558,7 +555,7 @@ public abstract class SqlImplementor {
         switch (referencedExpr.getKind()) {
         case CORREL_VARIABLE:
           final RexCorrelVariable variable = (RexCorrelVariable) referencedExpr;
-          final Context correlAliasContext = correlTableMap.get(variable.id);
+          final Context correlAliasContext = getAliasContext(variable);
           final RexFieldAccess lastAccess = accesses.pollLast();
           assert lastAccess != null;
           sqlIdentifier = (SqlIdentifier) correlAliasContext
@@ -671,7 +668,7 @@ public abstract class SqlImplementor {
         if (rex instanceof RexSubQuery) {
           subQuery = (RexSubQuery) rex;
           sqlSubQuery =
-              visitChild(0, subQuery.rel).asQueryOrValues();
+              implementor().visitChild(0, subQuery.rel).asQueryOrValues();
           final List<RexNode> operands = subQuery.operands;
           SqlNode op0;
           if (operands.size() == 1) {
@@ -692,8 +689,7 @@ public abstract class SqlImplementor {
       case SCALAR_QUERY:
         subQuery = (RexSubQuery) rex;
         sqlSubQuery =
-            implementor().visitChild(0, subQuery.rel)
-                .asQueryOrValues();
+            implementor().visitChild(0, subQuery.rel).asQueryOrValues();
         return subQuery.getOperator().createCall(POS, sqlSubQuery);
 
       case NOT:
@@ -759,7 +755,11 @@ public abstract class SqlImplementor {
       }
     }
 
-    protected SqlCall toSql(RexProgram program, RexOver rexOver) {
+    protected Context getAliasContext(RexCorrelVariable variable) {
+      throw new UnsupportedOperationException();
+    }
+
+    private SqlCall toSql(RexProgram program, RexOver rexOver) {
       final RexWindow rexWindow = rexOver.getWindow();
       final SqlNodeList partitionList = new SqlNodeList(
           toSql(program, rexWindow.partitionKeys), POS);
@@ -1020,10 +1020,13 @@ public abstract class SqlImplementor {
 
   public Context matchRecognizeContext(Context context) {
     return new MatchRecognizeContext(dialect, ((AliasContext) context).aliases);
+<<<<<<< HEAD
   }
 
   public Context tableFunctionScanContext(List<SqlNode> inputSqlNodes) {
     return new TableFunctionScanContext(dialect, inputSqlNodes);
+=======
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
   }
 
   /**

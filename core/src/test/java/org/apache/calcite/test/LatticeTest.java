@@ -221,6 +221,28 @@ class LatticeTest {
         });
   }
 
+  /** Tests some of the properties of the {@link Lattice} data structure. */
+  @Test public void testLattice() throws Exception {
+    modelWithLattice("star",
+        "select 1 from \"foodmart\".\"sales_fact_1997\" as s\n"
+            + "join \"foodmart\".\"product\" as p using (\"product_id\")\n"
+            + "join \"foodmart\".\"time_by_day\" as t on t.\"time_id\" = s.\"time_id\"")
+        .doWithConnection(c -> {
+          final SchemaPlus schema = c.getRootSchema();
+          final SchemaPlus adhoc = schema.getSubSchema("adhoc");
+          assertThat(adhoc.getTableNames().contains("EMPLOYEES"), is(true));
+          final Map.Entry<String, CalciteSchema.LatticeEntry> entry =
+              adhoc.unwrap(CalciteSchema.class).getLatticeMap().firstEntry();
+          final Lattice lattice = entry.getValue().getLattice();
+          assertThat(lattice.firstColumn("S"), is(10));
+          assertThat(lattice.firstColumn("P"), is(18));
+          assertThat(lattice.firstColumn("T"), is(0));
+          assertThat(lattice.firstColumn("PC"), is(-1));
+          assertThat(lattice.defaultMeasures.size(), is(1));
+          assertThat(lattice.rootNode.descendants.size(), is(3));
+        });
+  }
+
   /** Tests that it's OK for a lattice to have the same name as a table in the
    * schema. */
   @Test void testLatticeWithSameNameAsTable() {
@@ -293,6 +315,15 @@ class LatticeTest {
         .connectThrows("only non nulls-generating join allowed, but got LEFT");
   }
 
+  /** Each lattice table must have a parent. */
+  @Test public void testLatticeInvalidSql3() {
+    modelWithLattice("star",
+        "select 1 from \"foodmart\".\"sales_fact_1997\" as s\n"
+        + "join \"foodmart\".\"product\" as p using (\"product_id\")\n"
+        + "join \"foodmart\".\"time_by_day\" as t on s.\"product_id\" = p.\"product_id\"")
+        .connectThrows("child node must have precisely one parent");
+  }
+
   /** When a lattice is registered, there is a table with the same name.
    * It can be used for explain, but not for queries. */
   @Test void testLatticeStarTable() {
@@ -345,12 +376,6 @@ class LatticeTest {
                   containsStringLinux(
                       "LogicalProject(brand_name=[$1], customer_id=[$0])\n"
                       + "  LogicalAggregate(group=[{2, 10}])\n"
-<<<<<<< HEAD
-                      + "    StarTableScan(table=[[adhoc, star]])\n"),
-                  containsStringLinux(
-                      "LogicalAggregate(group=[{2, 10}])\n"
-                      + "  StarTableScan(table=[[adhoc, star]])\n")));
-=======
                       + "    LogicalTableScan(table=[[adhoc, star]])\n"),
                   containsStringLinux(
                       "LogicalAggregate(group=[{2, 10}])\n"
@@ -465,9 +490,14 @@ class LatticeTest {
 
   /** As {@link #testTileAlgorithm()}, but uses the
    * {@link Lattices#PROFILER} statistics provider. */
+<<<<<<< HEAD
   @Test void testTileAlgorithm3() {
     assumeTrue(TestUtil.getJavaMajorVersion() >= 8,
         "Yahoo sketches requires JDK 8 or higher");
+=======
+  @Test public void testTileAlgorithm3() {
+    Assume.assumeTrue("Yahoo sketches requires JDK 8 or higher",
+        TestUtil.getJavaMajorVersion() >= 8);
     final String explain = "EnumerableAggregate(group=[{4, 5}])\n"
         + "  EnumerableTableScan(table=[[adhoc, m{16, 17, 27, 31, 32, 36, 37}]";
     checkTileAlgorithm(Lattices.class.getCanonicalName() + "#PROFILER",
@@ -647,10 +677,10 @@ class LatticeTest {
             + "join \"foodmart\".\"time_by_day\" using (\"time_id\")\n"
             + "group by \"the_year\"")
         .enableMaterializations(true)
-        .explainContains("EnumerableCalc(expr#0=[{inputs}], expr#1=[IS NOT NULL($t0)], "
-            + "expr#2=[1:BIGINT], expr#3=[0:BIGINT], expr#4=[CASE($t1, $t2, $t3)], C=[$t4])\n"
-            + "  EnumerableAggregate(group=[{0}])\n"
-            + "    EnumerableTableScan(table=[[adhoc, m{32, 36}]])")
+        .explainContains("EnumerableCalc(expr#0..1=[{inputs}], C=[$t1])\n"
+            + "  EnumerableAggregate(group=[{0}], C=[COUNT($0)])\n"
+            + "    EnumerableAggregate(group=[{0}])\n"
+            + "      EnumerableTableScan(table=[[adhoc, m{32, 36}]])")
         .returnsUnordered("C=1");
   }
 
@@ -870,7 +900,7 @@ class LatticeTest {
         .returns("EXPR$0=1\n");
   }
 
-  @Test void testSuggester() {
+  @Test public void testSuggester() {
     final Class<JdbcTest.EmpDeptTableFactory> clazz =
         JdbcTest.EmpDeptTableFactory.class;
     final String model = ""
@@ -898,11 +928,11 @@ class LatticeTest {
         + "join \"time_by_day\" using (\"time_id\")\n";
     final String explain = "PLAN=JdbcToEnumerableConverter\n"
         + "  JdbcAggregate(group=[{}], EXPR$0=[COUNT()])\n"
-        + "    JdbcJoin(condition=[=($0, $1)], joinType=[inner])\n"
-        + "      JdbcProject(time_id=[$1])\n"
-        + "        JdbcTableScan(table=[[foodmart, sales_fact_1997]])\n"
+        + "    JdbcJoin(condition=[=($1, $0)], joinType=[inner])\n"
         + "      JdbcProject(time_id=[$0])\n"
-        + "        JdbcTableScan(table=[[foodmart, time_by_day]])\n";
+        + "        JdbcTableScan(table=[[foodmart, time_by_day]])\n"
+        + "      JdbcProject(time_id=[$1])\n"
+        + "        JdbcTableScan(table=[[foodmart, sales_fact_1997]])\n";
     CalciteAssert.model(model)
         .withDefaultSchema("foodmart")
         .query(sql)

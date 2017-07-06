@@ -61,13 +61,16 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.LinkedHashMultimap;
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -96,30 +99,27 @@ public class Lattice {
   public final double rowCountEstimate;
   public final ImmutableList<Measure> defaultMeasures;
   public final ImmutableList<Tile> tiles;
+<<<<<<< HEAD
   public final ImmutableListMultimap<Integer, Boolean> columnUses;
+=======
   public final LatticeStatisticProvider statisticProvider;
 
-  private Lattice(CalciteSchema rootSchema, ImmutableList<Node> nodes,
+  private Lattice(CalciteSchema rootSchema, LatticeRootNode rootNode,
       boolean auto, boolean algorithm, long algorithmMaxMillis,
       LatticeStatisticProvider.Factory statisticProviderFactory,
       @Nullable Double rowCountEstimate, ImmutableList<Column> columns,
-      ImmutableSortedSet<Measure> defaultMeasures, ImmutableList<Tile> tiles,
-      ImmutableListMultimap<Integer, Boolean> columnUses) {
+      ImmutableSortedSet<Measure> defaultMeasures, ImmutableList<Tile> tiles) {
     this.rootSchema = rootSchema;
-    this.nodes = Objects.requireNonNull(nodes);
+    this.rootNode = Objects.requireNonNull(rootNode);
     this.columns = Objects.requireNonNull(columns);
     this.auto = auto;
     this.algorithm = algorithm;
     this.algorithmMaxMillis = algorithmMaxMillis;
-    this.defaultMeasures = Objects.requireNonNull(defaultMeasures);
+    this.defaultMeasures = defaultMeasures.asList(); // unique and sorted
     this.tiles = Objects.requireNonNull(tiles);
 
     assert isValid(Litmus.THROW);
 
-    uniqueColumnNames =
-        ImmutableList.copyOf(
-            SqlValidatorUtil.uniquify(
-                Lists.transform(columns, input -> input.alias), true));
     if (rowCountEstimate == null) {
       // We could improve this when we fix
       // [CALCITE-429] Add statistics SPI for lattice optimization algorithm
@@ -136,8 +136,23 @@ public class Lattice {
     return builder(schema, sql).auto(auto).build();
   }
 
+  private boolean isValid(Litmus litmus) {
+    if (!rootNode.isValid(litmus)) {
+      return false;
+    }
+    for (Measure measure : defaultMeasures) {
+      for (Column arg : measure.args) {
+        if (columns.get(arg.ordinal) != arg) {
+          return litmus.fail("measure argument must be a column registered in"
+              + " this lattice: {}", measure);
+        }
+      }
+    }
+    return litmus.succeed();
+  }
+
   private static void populateAliases(SqlNode from, List<String> aliases,
-      String current) {
+      @Nullable String current) {
     if (from instanceof SqlJoin) {
       SqlJoin join = (SqlJoin) from;
       populateAliases(join.getLeft(), aliases, null);
@@ -211,6 +226,10 @@ public class Lattice {
     throw new AssertionError("input not found");
   }
 
+  @Override public String toString() {
+    return rootNode + ":" + defaultMeasures;
+  }
+
   /** Generates a SQL query to populate a tile of the lattice specified by a
    * given set of columns and measures. */
   public String sql(ImmutableBitSet groupSet, List<Measure> aggCallList) {
@@ -221,7 +240,7 @@ public class Lattice {
    * given set of columns and measures, optionally grouping. */
   public String sql(ImmutableBitSet groupSet, boolean group,
       List<Measure> aggCallList) {
-    final List<Node> usedNodes = new ArrayList<>();
+    final List<LatticeNode> usedNodes = new ArrayList<>();
     if (group) {
       final ImmutableBitSet.Builder columnSetBuilder = groupSet.rebuild();
       for (Measure call : aggCallList) {
@@ -233,17 +252,18 @@ public class Lattice {
 
       // Figure out which nodes are needed. Use a node if its columns are used
       // or if has a child whose columns are used.
-      for (Node node : nodes) {
+      for (LatticeNode node : rootNode.descendants) {
         if (ImmutableBitSet.range(node.startCol, node.endCol)
             .intersects(columnSet)) {
-          use(usedNodes, node);
+          node.use(usedNodes);
+        }
+
+        if (usedNodes.isEmpty()) {
+          usedNodes.add(rootNode);
         }
       }
-      if (usedNodes.isEmpty()) {
-        usedNodes.add(nodes.get(0));
-      }
     } else {
-      usedNodes.addAll(nodes);
+      usedNodes.addAll(rootNode.descendants);
     }
 
     final SqlDialect dialect = SqlDialect.DatabaseProduct.CALCITE.getDialect();
@@ -251,6 +271,9 @@ public class Lattice {
     final StringBuilder groupBuf = new StringBuilder("\nGROUP BY ");
     int k = 0;
     final Set<String> columnNames = new HashSet<>();
+    final SqlWriter w = createSqlWriter(dialect, buf, f -> {
+      throw new UnsupportedOperationException();
+    });
     if (groupSet != null) {
       for (int i : groupSet) {
         if (k++ > 0) {
@@ -350,12 +373,11 @@ public class Lattice {
 
   public StarTable createStarTable() {
     final List<Table> tables = new ArrayList<>();
-<<<<<<< HEAD
-    for (LatticeNode node : rootNode.descendants) {
-      tables.add(node.table.t.unwrap(Table.class));
-=======
     for (Node node : nodes) {
       tables.add(node.scan.getTable().unwrap(Table.class));
+=======
+    for (LatticeNode node : rootNode.descendants) {
+      tables.add(node.table.t.unwrap(Table.class));
     }
     return StarTable.of(this, tables);
   }
@@ -371,9 +393,12 @@ public class Lattice {
   }
 
   public List<Measure> toMeasures(List<AggregateCall> aggCallList) {
-    return Lists.transform(aggCallList,
-        call -> new Measure(call.getAggregation(),
-        Lists.transform(call.getArgList(), columns::get)));
+    return Lists.transform(aggCallList, this::toMeasure);
+  }
+
+  private Measure toMeasure(AggregateCall aggCall) {
+    return new Measure(aggCall.getAggregation(), aggCall.isDistinct(),
+        aggCall.name, Lists.transform(aggCall.getArgList(), columns::get));
   }
 
   public Iterable<? extends Tile> computeTiles() {
@@ -431,17 +456,12 @@ public class Lattice {
     return Lists.transform(columns, column -> column.alias);
   }
 
-    public Node(TableScan scan, Node parent, List<IntPair> link,
-        int startCol, int endCol, String alias) {
-      this.scan = Objects.requireNonNull(scan);
-      this.parent = parent;
-      this.link = link == null ? null : ImmutableList.copyOf(link);
-      assert (parent == null) == (link == null);
-      assert startCol >= 0;
-      assert endCol > startCol;
-      this.startCol = startCol;
-      this.endCol = endCol;
-      this.alias = alias;
+  Pair<Path, Integer> columnToPathOffset(BaseColumn c) {
+    for (Pair<LatticeNode, Path> p
+        : Pair.zip(rootNode.descendants, rootNode.paths)) {
+      if (p.left.alias.equals(c.table)) {
+        return Pair.of(p.right, c.ordinal - p.left.startCol);
+      }
     }
     throw new AssertionError("lattice column not found: " + c);
   }
@@ -463,29 +483,12 @@ public class Lattice {
       }
     }
     return -1;
-  }
-
-  /** Returns whether every use of a column is as an argument to a measure.
-   *
-   * <p>For example, in the query
-   * {@code select sum(x + y), sum(a + b) from t group by x + y}
-   * the expression "x + y" is used once as an argument to a measure,
-   * and once as a dimension.
-   *
-   * <p>Therefore, in a lattice created from that one query,
-   * {@code isAlwaysMeasure} for the derived column corresponding to "x + y"
-   * returns false, and for "a + b" returns true.
-   *
-   * @param column Column or derived column
-   * @return Whether all uses are as arguments to aggregate functions
-   */
-  public boolean isAlwaysMeasure(Column column) {
-    return !columnUses.get(column.ordinal).contains(false);
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
   }
 
   /** Edge in the temporary graph. */
   private static class Edge extends DefaultEdge {
-    public static final DirectedGraph.EdgeFactory<RelNode, Edge> FACTORY =
+    public static final DirectedGraph.EdgeFactory<Vertex, Edge> FACTORY =
         Edge::new;
 
     final List<IntPair> pairs = new ArrayList<>();
@@ -528,8 +531,11 @@ public class Lattice {
     public final ImmutableList<Column> args;
     public final String digest;
 
-    public Measure(SqlAggFunction agg, Iterable<Column> args) {
+    public Measure(SqlAggFunction agg, boolean distinct, @Nullable String name,
+        Iterable<Column> args) {
       this.agg = Objects.requireNonNull(agg);
+      this.distinct = distinct;
+      this.name = name;
       this.args = ImmutableList.copyOf(args);
 
       final StringBuilder b = new StringBuilder()
@@ -589,7 +595,7 @@ public class Lattice {
 
     /** Returns a list of argument ordinals. */
     public List<Integer> argOrdinals() {
-      return Lists.transform(args, input -> input.ordinal);
+      return Lists.transform(args, column -> column.ordinal);
     }
 
     private static int compare(List<Column> list0, List<Column> list1) {
@@ -623,8 +629,134 @@ public class Lattice {
 
     private Column(int ordinal, String alias) {
       this.ordinal = ordinal;
+<<<<<<< HEAD
     private final List<Node> nodes = new ArrayList<>();
     private final ImmutableList<Column> columns;
+=======
+      this.alias = Objects.requireNonNull(alias);
+    }
+
+    /** Converts a list of columns to a bit set of their ordinals. */
+    static ImmutableBitSet toBitSet(List<Column> columns) {
+      final ImmutableBitSet.Builder builder = ImmutableBitSet.builder();
+      for (Column column : columns) {
+        builder.set(column.ordinal);
+      }
+      return builder.build();
+    }
+
+    public int compareTo(Column column) {
+      return Utilities.compare(ordinal, column.ordinal);
+    }
+
+    @Override public int hashCode() {
+      return ordinal;
+    }
+
+    @Override public boolean equals(Object obj) {
+      return obj == this
+          || obj instanceof Column
+          && this.ordinal == ((Column) obj).ordinal;
+    }
+
+    public abstract void toSql(SqlWriter writer);
+
+    /** The alias that SQL would give to this expression. */
+    public abstract String defaultAlias();
+  }
+
+  /** Column in a lattice. Columns are identified by table alias and
+   * column name, and may have an additional alias that is unique
+   * within the entire lattice. */
+  public static class BaseColumn extends Column {
+    /** Alias of the table reference that the column belongs to. */
+    public final String table;
+
+    /** Name of the column. Unique within the table reference, but not
+     * necessarily within the lattice. */
+    @Nonnull public final String column;
+
+    private BaseColumn(int ordinal, String table, String column, String alias) {
+      super(ordinal, alias);
+      this.table = Objects.requireNonNull(table);
+      this.column = Objects.requireNonNull(column);
+    }
+
+    @Override public String toString() {
+      return identifiers().toString();
+    }
+
+    public List<String> identifiers() {
+      return ImmutableList.of(table, column);
+    }
+
+    public void toSql(SqlWriter writer) {
+      writer.dialect.quoteIdentifier(writer.buf, identifiers());
+    }
+
+    public String defaultAlias() {
+      return column;
+    }
+  }
+
+  /** Column in a lattice that is based upon a SQL expression. */
+  public static class DerivedColumn extends Column {
+    @Nonnull public final RexNode e;
+    @Nonnull final List<String> tables;
+
+    private DerivedColumn(int ordinal, String alias, RexNode e,
+        List<String> tables) {
+      super(ordinal, alias);
+      this.e = e;
+      this.tables = ImmutableList.copyOf(tables);
+    }
+
+    @Override public String toString() {
+      return Arrays.toString(new Object[] {e, alias});
+    }
+
+    public void toSql(SqlWriter writer) {
+      writer.write(e);
+    }
+
+    public String defaultAlias() {
+      // there is no default alias for an expression
+      return null;
+    }
+  }
+
+  /** The information necessary to convert a column to SQL. */
+  public static class SqlWriter {
+    public final Lattice lattice;
+    public final StringBuilder buf;
+    public final SqlDialect dialect;
+    private final SqlImplementor.SimpleContext context;
+
+    SqlWriter(Lattice lattice, SqlDialect dialect, StringBuilder buf,
+        SqlImplementor.SimpleContext context) {
+      this.lattice = lattice;
+      this.context = context;
+      this.buf = buf;
+      this.dialect = dialect;
+    }
+
+    /** Re-binds this writer to a different {@link StringBuilder}. */
+    public SqlWriter with(StringBuilder buf) {
+      return new SqlWriter(lattice, dialect, buf, context);
+    }
+
+    /** Writes an expression. */
+    public SqlWriter write(RexNode e) {
+      final SqlNode node = context.toSql(null, e);
+      buf.append(node.toSqlString(dialect));
+      return this;
+    }
+  }
+
+  /** Lattice builder. */
+  public static class Builder {
+    private final LatticeRootNode rootNode;
+    private final ImmutableList<BaseColumn> baseColumns;
     private final ImmutableListMultimap<String, Column> columnsByAlias;
     private final SortedSet<Measure> defaultMeasureSet =
         new TreeSet<>();
@@ -641,7 +773,7 @@ public class Lattice {
     private Map<String, DerivedColumn> derivedColumnsByName =
         new LinkedHashMap<>();
 
-    public Builder(CalciteSchema schema, String sql) {
+    public Builder(LatticeSpace space, CalciteSchema schema, String sql) {
       this.rootSchema = Objects.requireNonNull(schema.root());
       Preconditions.checkArgument(rootSchema.isRoot(), "must be root schema");
       CalcitePrepare.ConvertResult parsed =
@@ -679,15 +811,12 @@ public class Lattice {
 
       // Convert the graph into a tree of nodes, each connected to a parent and
       // with a join condition to that parent.
-      Node previous = null;
-      final Map<RelNode, Node> map = new IdentityHashMap<>();
-      int previousColumn = 0;
-      for (RelNode relNode : TopologicalOrderIterator.of(graph)) {
-        final List<Edge> edges = graph.getInwardEdges(relNode);
-        Node node;
-        final int column = previousColumn
-            + relNode.getRowType().getFieldCount();
-        if (previous == null) {
+      MutableNode root = null;
+      final Map<LatticeTable, MutableNode> map = new IdentityHashMap<>();
+      for (Vertex vertex : TopologicalOrderIterator.of(graph)) {
+        final List<Edge> edges = graph.getInwardEdges(vertex);
+        MutableNode node;
+        if (root == null) {
           if (!edges.isEmpty()) {
             throw new RuntimeException("root node must not have relationships: "
                 + vertex);
@@ -702,8 +831,8 @@ public class Lattice {
           final Edge edge = edges.get(0);
           final MutableNode parent = map.get(edge.getSource().table);
           final Step step =
-              Step.create(edge.getSource().table,
-                  edge.getTarget().table, edge.pairs, space);
+              new Step(edge.getSource().table,
+                  edge.getTarget().table, edge.pairs);
           node = new MutableNode(vertex.table, parent, step);
           node.alias = vertex.alias;
         }
@@ -788,7 +917,7 @@ public class Lattice {
       return new Lattice(rootSchema, rootNode, auto,
           algorithm, algorithmMaxMillis, statisticProvider, rowCountEstimate,
           columnBuilder.build(), ImmutableSortedSet.copyOf(defaultMeasureSet),
-          tileListBuilder.build(), ImmutableListMultimap.copyOf(columnUses));
+          tileListBuilder.build());
     }
 
     /** Resolves the arguments of a
@@ -932,6 +1061,7 @@ public class Lattice {
       });
     }
 
+<<<<<<< HEAD
     /** Records a use of a column.
      *
      * @param column Column
@@ -943,6 +1073,8 @@ public class Lattice {
       columnUses.put(column.ordinal, measure);
     }
 
+=======
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
     /** Work space for fixing up a tree of mutable nodes. */
     private static class Fixer {
       final Set<String> aliases = new HashSet<>();

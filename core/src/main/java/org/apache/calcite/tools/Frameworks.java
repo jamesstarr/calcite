@@ -18,229 +18,7 @@ package org.apache.calcite.tools;
 
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteSchema;
-import org.apache.calcite.materialize.SqlStatisticProvider;
-import org.apache.calcite.plan.Context;
-import org.apache.calcite.plan.Contexts;
-import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptCostFactory;
-import org.apache.calcite.plan.RelOptSchema;
-import org.apache.calcite.plan.RelOptTable;
-import org.apache.calcite.plan.RelTraitDef;
-import org.apache.calcite.prepare.CalcitePrepareImpl;
-import org.apache.calcite.prepare.PlannerImpl;
-import org.apache.calcite.rel.type.RelDataTypeSystem;
-import org.apache.calcite.rex.RexExecutor;
-import org.apache.calcite.schema.SchemaPlus;
-import org.apache.calcite.server.CalciteServerStatement;
-import org.apache.calcite.sql.SqlOperatorTable;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
-import org.apache.calcite.sql.parser.SqlParser;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql2rel.SqlRexConvertletTable;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.calcite.sql2rel.StandardConvertletTable;
-import org.apache.calcite.statistic.QuerySqlStatisticProvider;
-import org.apache.calcite.util.Util;
-
-import com.google.common.collect.ImmutableList;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.List;
-import java.util.Objects;
-import java.util.Properties;
-
-/**
- * Tools for invoking Calcite functionality without initializing a container /
- * server first.
- */
-public class Frameworks {
-  private Frameworks() {
-  }
-
-  /**
-   * Creates a planner.
-   *
-   * @param config Planner configuration
-   * @return Planner
-   */
-  public static Planner getPlanner(FrameworkConfig config) {
-    return new PlannerImpl(config);
-  }
-
-  /** Piece of code to be run in a context where a planner is available. The
-   * planner is accessible from the {@code cluster} parameter, as are several
-   * other useful objects.
-   *
-   * @param <R> result type */
-  @FunctionalInterface
-  public interface PlannerAction<R> {
-    R apply(RelOptCluster cluster, RelOptSchema relOptSchema,
-        SchemaPlus rootSchema);
-  }
-
-  /** Piece of code to be run in a context where a planner and statement are
-   * available. The planner is accessible from the {@code cluster} parameter, as
-   * are several other useful objects. The connection and
-   * {@link org.apache.calcite.DataContext} are accessible from the
-   * statement.
-   *
-   * @param <R> result type */
-  @FunctionalInterface
-  public interface BasePrepareAction<R> {
-    R apply(RelOptCluster cluster, RelOptSchema relOptSchema,
-        SchemaPlus rootSchema, CalciteServerStatement statement);
-  }
-
-  /** As {@link BasePrepareAction} but with a {@link FrameworkConfig} included.
-   * Deprecated because a functional interface is more convenient.
-   *
-   * @param <R> result type */
-  @Deprecated // to be removed before 2.0
-  public abstract static class PrepareAction<R>
-      implements BasePrepareAction<R> {
-    private final FrameworkConfig config;
-    public PrepareAction() {
-      this.config = newConfigBuilder()
-          .defaultSchema(Frameworks.createRootSchema(true)).build();
-    }
-
-    public PrepareAction(FrameworkConfig config) {
-      this.config = config;
-    }
-
-    public FrameworkConfig getConfig() {
-      return config;
-    }
-  }
-
-  /**
-   * Initializes a container then calls user-specified code with a planner.
-   *
-   * @param action Callback containing user-specified code
-   * @param config FrameworkConfig to use for planner action.
-   * @return Return value from action
-   */
-  public static <R> R withPlanner(final PlannerAction<R> action,
-      final FrameworkConfig config) {
-    return withPrepare(config,
-        (cluster, relOptSchema, rootSchema, statement) -> {
-          final CalciteSchema schema =
-              CalciteSchema.from(
-                  Util.first(config.getDefaultSchema(), rootSchema));
-          return action.apply(cluster, relOptSchema, schema.root().plus());
-        });
-  }
-
-  /**
-   * Initializes a container then calls user-specified code with a planner.
-   *
-   * @param action Callback containing user-specified code
-   * @return Return value from action
-   */
-  public static <R> R withPlanner(final PlannerAction<R> action) {
-    FrameworkConfig config = newConfigBuilder() //
-        .defaultSchema(Frameworks.createRootSchema(true)).build();
-    return withPlanner(action, config);
-  }
-
-  @Deprecated // to be removed before 2.0
-  public static <R> R withPrepare(PrepareAction<R> action) {
-    return withPrepare(action.getConfig(), action);
-  }
-
-  /** As {@link #withPrepare(FrameworkConfig, BasePrepareAction)} but using a
-   * default configuration. */
-  public static <R> R withPrepare(BasePrepareAction<R> action) {
-    final FrameworkConfig config = newConfigBuilder()
-        .defaultSchema(Frameworks.createRootSchema(true)).build();
-    return withPrepare(config, action);
-  }
-
-  /**
-   * Initializes a container then calls user-specified code with a planner
-   * and statement.
-   *
-   * @param action Callback containing user-specified code
-   * @return Return value from action
-   */
-  public static <R> R withPrepare(FrameworkConfig config,
-      BasePrepareAction<R> action) {
-    try {
-      final Properties info = new Properties();
-      if (config.getTypeSystem() != RelDataTypeSystem.DEFAULT) {
-        info.setProperty(CalciteConnectionProperty.TYPE_SYSTEM.camelName(),
-            config.getTypeSystem().getClass().getName());
-      }
-      Connection connection =
-          DriverManager.getConnection("jdbc:calcite:", info);
-      final CalciteServerStatement statement =
-          connection.createStatement()
-              .unwrap(CalciteServerStatement.class);
-      return new CalcitePrepareImpl().perform(statement, config, action);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  /**
-   * Creates a root schema.
-   *
-   * @param addMetadataSchema Whether to add "metadata" schema containing
-   *    definitions of tables, columns etc.
-   */
-  public static SchemaPlus createRootSchema(boolean addMetadataSchema) {
-    return CalciteSchema.createRootSchema(addMetadataSchema).plus();
-  }
-
-  /** Creates a config builder with each setting initialized to its default
-   * value. */
-  public static ConfigBuilder newConfigBuilder() {
-    return new ConfigBuilder();
-  }
-
-  /** Creates a config builder initializing each setting from an existing
-   * config.
-   *
-   * <p>So, {@code newConfigBuilder(config).build()} will return a
-   * value equal to {@code config}. */
-  public static ConfigBuilder newConfigBuilder(FrameworkConfig config) {
-    return new ConfigBuilder(config);
-  }
-
-  /**
-   * A builder to help you build a {@link FrameworkConfig} using defaults
-   * where values aren't required.
-   */
-  public static class ConfigBuilder {
-    private SqlRexConvertletTable convertletTable;
-    private SqlOperatorTable operatorTable;
-    private ImmutableList<Program> programs;
-    private Context context;
-    private ImmutableList<RelTraitDef> traitDefs;
-    private SqlParser.Config parserConfig =
-        SqlParser.Config.DEFAULT;
-    private SqlValidator.Config sqlValidatorConfig;
-    private SqlToRelConverter.Config sqlToRelConverterConfig =
-        SqlToRelConverter.Config.DEFAULT;
-    private SchemaPlus defaultSchema;
-    private RexExecutor executor;
-    private RelOptCostFactory costFactory;
-    private RelDataTypeSystem typeSystem = RelDataTypeSystem.DEFAULT;
-    private boolean evolveLattice;
-
-    /** Creates a ConfigBuilder, initializing to defaults. */
-    private ConfigBuilder() {
-      convertletTable = StandardConvertletTable.INSTANCE;
-      operatorTable = SqlStdOperatorTable.instance();
-      programs = ImmutableList.of();
-      context = Contexts.empty();
-      parserConfig = SqlParser.Config.DEFAULT;
-      sqlValidatorConfig = SqlValidator.Config.DEFAULT;
-      sqlToRelConverterConfig = SqlToRelConverter.Config.DEFAULT;
-      typeSystem = RelDataTypeSystem.DEFAULT;
-      evolveLattice = false;
->>>>>>> e62a96083 ([CALCITE-3900] Add Config for SqlValidator)
+      statisticProvider = MapSqlStatisticProvider.INSTANCE;
     }
 
     /** Creates a ConfigBuilder, initializing from an existing config. */
@@ -257,12 +35,15 @@ public class Frameworks {
       executor = config.getExecutor();
       costFactory = config.getCostFactory();
       typeSystem = config.getTypeSystem();
+      evolveLattice = config.isEvolveLattice();
+      statisticProvider = config.getStatisticProvider();
     }
 
     public FrameworkConfig build() {
       return new StdFrameworkConfig(context, convertletTable, operatorTable,
           programs, traitDefs, parserConfig, sqlValidatorConfig, sqlToRelConverterConfig,
-          defaultSchema, costFactory, typeSystem, executor);
+          defaultSchema, costFactory, typeSystem, executor, evolveLattice,
+          statisticProvider);
     }
 
     public ConfigBuilder context(Context c) {
@@ -347,7 +128,6 @@ public class Frameworks {
 
     public ConfigBuilder typeSystem(RelDataTypeSystem typeSystem) {
       this.typeSystem = Objects.requireNonNull(typeSystem);
-<<<<<<< HEAD
       return this;
     }
 
@@ -359,12 +139,6 @@ public class Frameworks {
     public ConfigBuilder statisticProvider(
         SqlStatisticProvider statisticProvider) {
       this.statisticProvider = Objects.requireNonNull(statisticProvider);
-      return this;
-    }
-
-    public ConfigBuilder viewExpander(RelOptTable.ViewExpander viewExpander) {
-      this.viewExpander = viewExpander;
-=======
       return this;
     }
   }
@@ -388,7 +162,9 @@ public class Frameworks {
     private final RexExecutor executor;
     private final boolean evolveLattice;
     private final SqlStatisticProvider statisticProvider;
+<<<<<<< HEAD
     private final RelOptTable.ViewExpander viewExpander;
+=======
 
     StdFrameworkConfig(Context context,
         SqlRexConvertletTable convertletTable,
@@ -403,8 +179,7 @@ public class Frameworks {
         RelDataTypeSystem typeSystem,
         RexExecutor executor,
         boolean evolveLattice,
-        SqlStatisticProvider statisticProvider,
-        RelOptTable.ViewExpander viewExpander) {
+        SqlStatisticProvider statisticProvider) {
       this.context = context;
       this.convertletTable = convertletTable;
       this.operatorTable = operatorTable;
@@ -419,7 +194,7 @@ public class Frameworks {
       this.executor = executor;
       this.evolveLattice = evolveLattice;
       this.statisticProvider = statisticProvider;
-      this.viewExpander = viewExpander;
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
     }
 
     public SqlParser.Config getParserConfig() {
@@ -477,9 +252,11 @@ public class Frameworks {
     public SqlStatisticProvider getStatisticProvider() {
       return statisticProvider;
     }
+<<<<<<< HEAD
 
     public RelOptTable.ViewExpander getViewExpander() {
       return viewExpander;
     }
+=======
   }
 }

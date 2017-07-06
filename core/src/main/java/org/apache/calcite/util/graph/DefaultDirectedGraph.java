@@ -37,8 +37,7 @@ import java.util.Set;
 public class DefaultDirectedGraph<V, E extends DefaultEdge>
     implements DirectedGraph<V, E> {
   final Set<E> edges = new LinkedHashSet<>();
-  final Map<V, VertexInfo<V, E>> vertexMap =
-      new LinkedHashMap<>();
+  final Map<V, VertexInfo<V, E>> vertexMap = new LinkedHashMap<>();
   final EdgeFactory<V, E> edgeFactory;
 
   /** Creates a graph. */
@@ -53,6 +52,12 @@ public class DefaultDirectedGraph<V, E extends DefaultEdge>
   public static <V, E extends DefaultEdge> DefaultDirectedGraph<V, E> create(
       EdgeFactory<V, E> edgeFactory) {
     return new DefaultDirectedGraph<>(edgeFactory);
+  }
+
+  public String toStringUnordered() {
+    return "graph("
+        + "vertices: " + vertexMap.keySet()
+        + ", edges: " + edges + ")";
   }
 
   @Override public String toString() {

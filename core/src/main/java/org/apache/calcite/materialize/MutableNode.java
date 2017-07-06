@@ -123,3 +123,8 @@ class MutableNode {
     return null;
   }
 }
+<<<<<<< HEAD
+=======
+
+// End MutableNode.java
+>>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
