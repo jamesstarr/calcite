@@ -2451,6 +2451,7 @@ where false;
 #!ok
 #
 <<<<<<< HEAD
+<<<<<<< HEAD
 # [CALCITE-2447] POWER, ATAN2 functions fail with NoSuchMethodException
 values power(0.5, 2);
 +--------+
@@ -2473,6 +2474,8 @@ values atan2(0.5, 2);
 
 !ok
 
+=======
+>>>>>>> 8fb9e5d96 ([CALCITE-1167] OVERLAPS should match even if operands are in (high, low) order)
 !set outputformat csv
 
 # [CALCITE-1167] OVERLAPS should match even if operands are in (high, low) order
@@ -2496,6 +2499,7 @@ EXPR$0
 false
 !ok
 
+<<<<<<< HEAD
 # Sub-query returns a MAP, column is renamed, and enclosing query references the map.
 select mycol['b'] as x
 from (select map['a', false, 'b', true] from (values (2))) as t(mycol);
@@ -2532,4 +2536,6 @@ EXPR$0, EXPR$1
 
 =======
 >>>>>>> ffd60db46 (DX-11444: Prevent optimization of non-deterministic functions)
+=======
+>>>>>>> 8fb9e5d96 ([CALCITE-1167] OVERLAPS should match even if operands are in (high, low) order)
 # End misc.iq
