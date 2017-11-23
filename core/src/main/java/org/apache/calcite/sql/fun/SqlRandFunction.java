@@ -54,6 +54,14 @@ public class SqlRandFunction extends SqlFunction {
   public boolean isDynamicFunction() {
     return true;
   }
+<<<<<<< HEAD
+=======
+
+  @Override public boolean isDeterministic() {
+    return false;
+  }
+}
+>>>>>>> 5f686d042 (DX-9204: Set rand() function as non-deterministic.)
 
   @Override public boolean isDeterministic() {
     return false;
