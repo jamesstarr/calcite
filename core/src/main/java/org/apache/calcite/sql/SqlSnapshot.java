@@ -131,3 +131,8 @@ public class SqlSnapshot extends SqlCall {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlSnapshot.java
+>>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))

@@ -43,8 +43,9 @@ public class SqlLateralOperator extends SqlSpecialOperator {
         SqlKind.SELECT,
         SqlKind.AS);
     if (call.operandCount() == 1
-        && specialOperandKinds.contains(call.operand(0).getKind())) {
-      // Do not create ( ) around the following TABLE clause.
+        && (call.getOperandList().get(0).getKind() == SqlKind.COLLECTION_TABLE
+            || call.getOperandList().get(0).getKind() == SqlKind.SNAPSHOT)) {
+      // do not create ( ) around the following TABLE clause
       writer.keyword(getName());
       call.operand(0).unparse(writer, 0, 0);
     } else {

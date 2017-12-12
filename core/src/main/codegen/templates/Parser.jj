@@ -104,9 +104,13 @@ import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.SqlSetOption;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import org.apache.calcite.sql.SqlSnapshot;
 =======
 >>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
+=======
+import org.apache.calcite.sql.SqlSnapshot;
+>>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
 import org.apache.calcite.sql.SqlTableRef;
 import org.apache.calcite.sql.SqlTimeLiteral;
 import org.apache.calcite.sql.SqlTimestampLiteral;
@@ -2322,7 +2326,17 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
             }
         }
         [
+<<<<<<< HEAD
             tableRef = Snapshot(tableRef)
+        ]
+        [
+            tableRef = MatchRecognize(tableRef)
+=======
+            snapshot = Snapshot(tableRef) {
+                tableRef = SqlStdOperatorTable.LATERAL.createCall(
+                    getPos(), snapshot);
+            }
+>>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
         ]
         [
             tableRef = MatchRecognize(tableRef)
@@ -3301,6 +3315,21 @@ SqlSnapshot Snapshot(SqlNode tableRef) :
 >>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 =======
 >>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
+/**
+ * Parses a FOR SYSTEM_TIME clause following a table expression.
+ */
+SqlSnapshot Snapshot(SqlNode tableRef) :
+{
+    final Span s;
+    final SqlNode e;
+}
+{
+    <FOR> { s = span(); } <SYSTEM_TIME> <AS> <OF>
+    e = Expression(ExprContext.ACCEPT_NON_QUERY) {
+        return new SqlSnapshot(s.end(this), tableRef, e);
+    }
+}
+
 /**
  * Parses a MATCH_RECOGNIZE clause following a table expression.
  */

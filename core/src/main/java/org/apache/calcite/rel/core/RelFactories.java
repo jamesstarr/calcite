@@ -35,11 +35,10 @@ import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalMatch;
 import org.apache.calcite.rel.logical.LogicalMinus;
 import org.apache.calcite.rel.logical.LogicalProject;
-import org.apache.calcite.rel.logical.LogicalRepeatUnion;
+>>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
 import org.apache.calcite.rel.logical.LogicalSnapshot;
 import org.apache.calcite.rel.logical.LogicalSort;
 import org.apache.calcite.rel.logical.LogicalSortExchange;
->>>>>>> 349a43772 ([CALCITE-2661] In RelBuilder, add methods for creating Exchange and SortExchange relational expressions (Chunwei Lei))
 import org.apache.calcite.rel.logical.LogicalTableScan;
 import org.apache.calcite.rel.logical.LogicalTableSpool;
 import org.apache.calcite.rel.logical.LogicalUnion;
@@ -106,6 +105,9 @@ public class RelFactories {
   public static final TableScanFactory DEFAULT_TABLE_SCAN_FACTORY =
       new TableScanFactoryImpl();
 
+  public static final SnapshotFactory DEFAULT_SNAPSHOT_FACTORY =
+      new SnapshotFactoryImpl();
+
   public static final Struct DEFAULT_STRUCT =
       new Struct(DEFAULT_FILTER_FACTORY,
           DEFAULT_PROJECT_FACTORY,
@@ -118,6 +120,7 @@ public class RelFactories {
           DEFAULT_CORRELATE_FACTORY,
           DEFAULT_VALUES_FACTORY,
           DEFAULT_TABLE_SCAN_FACTORY,
+          DEFAULT_SNAPSHOT_FACTORY,
           DEFAULT_MATCH_FACTORY);
 
   /** A {@link RelBuilderFactory} that creates a {@link RelBuilder} that will
@@ -493,6 +496,27 @@ public class RelFactories {
   }
 
   /**
+   * Can create a {@link Snapshot} of
+   * the appropriate type for a rule's calling convention.
+   */
+  public interface SnapshotFactory {
+    /**
+     * Creates a {@link Snapshot}.
+     */
+    RelNode createSnapshot(RelNode input, RexNode period);
+  }
+
+  /**
+   * Implementation of {@link RelFactories.SnapshotFactory} that
+   * returns a vanilla {@link LogicalSnapshot}.
+   */
+  public static class SnapshotFactoryImpl implements SnapshotFactory {
+    public RelNode createSnapshot(RelNode input, RexNode period) {
+      return LogicalSnapshot.create(input, period);
+    }
+  }
+
+  /**
    * Can create a {@link Match} of
    * the appropriate type for a rule's calling convention.
    */
@@ -539,6 +563,7 @@ public class RelFactories {
     public final CorrelateFactory correlateFactory;
     public final ValuesFactory valuesFactory;
     public final TableScanFactory scanFactory;
+    public final SnapshotFactory snapshotFactory;
     public final MatchFactory matchFactory;
 
     private Struct(FilterFactory filterFactory,
@@ -552,6 +577,7 @@ public class RelFactories {
         CorrelateFactory correlateFactory,
         ValuesFactory valuesFactory,
         TableScanFactory scanFactory,
+        SnapshotFactory snapshotFactory,
         MatchFactory matchFactory) {
       this.filterFactory = Objects.requireNonNull(filterFactory);
       this.projectFactory = Objects.requireNonNull(projectFactory);
@@ -564,6 +590,7 @@ public class RelFactories {
       this.correlateFactory = Objects.requireNonNull(correlateFactory);
       this.valuesFactory = Objects.requireNonNull(valuesFactory);
       this.scanFactory = Objects.requireNonNull(scanFactory);
+      this.snapshotFactory = Objects.requireNonNull(snapshotFactory);
       this.matchFactory = Objects.requireNonNull(matchFactory);
     }
 
@@ -595,6 +622,8 @@ public class RelFactories {
               DEFAULT_VALUES_FACTORY),
           Util.first(context.unwrap(TableScanFactory.class),
               DEFAULT_TABLE_SCAN_FACTORY),
+          Util.first(context.unwrap(SnapshotFactory.class),
+              DEFAULT_SNAPSHOT_FACTORY),
           Util.first(context.unwrap(MatchFactory.class),
               DEFAULT_MATCH_FACTORY));
     }

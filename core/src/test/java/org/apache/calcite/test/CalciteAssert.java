@@ -87,7 +87,1167 @@ import org.hamcrest.Matcher;
         // It is better to have AssertionError
         // at the very top level of the exception stack.
         throw e;
-=======
+      }
+      if (resultChecker != null) {
+        resultChecker.accept(resultSet);
+      }
+      if (updateChecker != null) {
+        updateChecker.accept(updateCount);
+      }
+      if (resultSet != null) {
+        resultSet.close();
+      }
+      statement.close();
+      connection.close();
+    } catch (Throwable e) {
+      String message = "With materializationsEnabled=" + materializationsEnabled
+          + ", limit=" + limit;
+      if (!TestUtil.hasMessage(e, sql)) {
+        message += ", sql=" + sql;
+      }
+      throw TestUtil.rethrow(e, message);
+    }
+  }
+
+  private static void assertPrepare(
+      Connection connection,
+      String sql,
+      int limit,
+      boolean materializationsEnabled,
+      List<Pair<Hook, Consumer>> hooks,
+      Consumer<ResultSet> resultChecker,
+      Consumer<Integer> updateChecker,
+      Consumer<Throwable> exceptionChecker,
+      PreparedStatementConsumer consumer) {
+    try (Closer closer = new Closer()) {
+      if (connection.isWrapperFor(CalciteConnection.class)) {
+        final CalciteConnection calciteConnection =
+            connection.unwrap(CalciteConnection.class);
+        final Properties properties = calciteConnection.getProperties();
+        properties.setProperty(
+            CalciteConnectionProperty.MATERIALIZATIONS_ENABLED.camelName(),
+            Boolean.toString(materializationsEnabled));
+        properties.setProperty(
+            CalciteConnectionProperty.CREATE_MATERIALIZATIONS.camelName(),
+            Boolean.toString(materializationsEnabled));
+        if (!properties
+            .containsKey(CalciteConnectionProperty.TIME_ZONE.camelName())) {
+          // Do not override id some test has already set this property.
+          properties.setProperty(
+              CalciteConnectionProperty.TIME_ZONE.camelName(),
+              DateTimeUtils.UTC_ZONE.getID());
+        }
+      }
+      for (Pair<Hook, Consumer> hook : hooks) {
+        //noinspection unchecked
+        closer.add(hook.left.addThread(hook.right));
+      }
+      PreparedStatement statement = connection.prepareStatement(sql);
+      statement.setMaxRows(limit <= 0 ? limit : Math.max(limit, 1));
+      ResultSet resultSet = null;
+      Integer updateCount = null;
+      try {
+        consumer.accept(statement);
+        if (updateChecker == null) {
+          resultSet = statement.executeQuery();
+        } else {
+          updateCount = statement.executeUpdate(sql);
+        }
+        if (exceptionChecker != null) {
+          exceptionChecker.accept(null);
+          return;
+        }
+      } catch (Exception | Error e) {
+        if (exceptionChecker != null) {
+          exceptionChecker.accept(e);
+          return;
+        }
+        throw e;
+      }
+      if (resultChecker != null) {
+        resultChecker.accept(resultSet);
+      }
+      if (updateChecker != null) {
+        updateChecker.accept(updateCount);
+      }
+      if (resultSet != null) {
+        resultSet.close();
+      }
+      statement.close();
+      connection.close();
+    } catch (Throwable e) {
+      String message = "With materializationsEnabled=" + materializationsEnabled
+          + ", limit=" + limit;
+      if (!TestUtil.hasMessage(e, sql)) {
+        message += ", sql=" + sql;
+      }
+      throw TestUtil.rethrow(e, message);
+    }
+  }
+
+  static void assertPrepare(
+      Connection connection,
+      String sql,
+      boolean materializationsEnabled,
+      final Function<RelNode, Void> convertChecker,
+      final Function<RelNode, Void> substitutionChecker) {
+    try (Closer closer = new Closer()) {
+      if (convertChecker != null) {
+        closer.add(
+            Hook.TRIMMED.addThread((Consumer<RelNode>) convertChecker::apply));
+
+      }
+      if (substitutionChecker != null) {
+        closer.add(
+            Hook.SUB.addThread(
+                (Consumer<RelNode>) substitutionChecker::apply));
+
+      }
+      ((CalciteConnection) connection).getProperties().setProperty(
+          CalciteConnectionProperty.MATERIALIZATIONS_ENABLED.camelName(),
+          Boolean.toString(materializationsEnabled));
+      ((CalciteConnection) connection).getProperties().setProperty(
+          CalciteConnectionProperty.CREATE_MATERIALIZATIONS.camelName(),
+          Boolean.toString(materializationsEnabled));
+      PreparedStatement statement = connection.prepareStatement(sql);
+      statement.close();
+      connection.close();
+    } catch (Throwable e) {
+      String message = "With materializationsEnabled=" + materializationsEnabled;
+      if (!TestUtil.hasMessage(e, sql)) {
+        message += ", sql=" + sql;
+      }
+      throw TestUtil.rethrow(e, message);
+    }
+  }
+
+  /** Converts a {@link ResultSet} to a string. */
+  static String toString(ResultSet resultSet) throws SQLException {
+    return new ResultSetFormatter().resultSet(resultSet).string();
+  }
+
+  static int countRows(ResultSet resultSet) throws SQLException {
+    int n = 0;
+    while (resultSet.next()) {
+      ++n;
+    }
+    return n;
+  }
+
+  static Collection<String> toStringList(ResultSet resultSet,
+      Collection<String> list) throws SQLException {
+    return new ResultSetFormatter().toStringList(resultSet, list);
+  }
+
+  static List<String> toList(ResultSet resultSet) throws SQLException {
+    return (List<String>) toStringList(resultSet, new ArrayList<String>());
+  }
+
+  static ImmutableMultiset<String> toSet(ResultSet resultSet)
+      throws SQLException {
+    return ImmutableMultiset.copyOf(toList(resultSet));
+  }
+
+  /** Calls a non-static method via reflection. Useful for testing methods that
+   * don't exist in certain versions of the JDK. */
+  static Object call(Object o, String methodName, Object... args)
+      throws NoSuchMethodException, InvocationTargetException,
+      IllegalAccessException {
+    return method(o, methodName, args).invoke(o, args);
+  }
+
+  /** Finds a non-static method based on its target, name and arguments.
+   * Throws if not found. */
+  static Method method(Object o, String methodName, Object[] args) {
+    for (Class<?> aClass = o.getClass();;) {
+    loop:
+      for (Method method1 : aClass.getMethods()) {
+        if (method1.getName().equals(methodName)
+            && method1.getParameterTypes().length == args.length
+            && Modifier.isPublic(method1.getDeclaringClass().getModifiers())) {
+          for (Pair<Object, Class> pair
+              : Pair.zip(args, (Class[]) method1.getParameterTypes())) {
+            if (!pair.right.isInstance(pair.left)) {
+              continue loop;
+            }
+          }
+          return method1;
+        }
+      }
+      if (aClass.getSuperclass() != null
+          && aClass.getSuperclass() != Object.class) {
+        aClass = aClass.getSuperclass();
+      } else {
+        final Class<?>[] interfaces = aClass.getInterfaces();
+        if (interfaces.length > 0) {
+          aClass = interfaces[0];
+        } else {
+          break;
+        }
+      }
+    }
+    throw new AssertionError("method " + methodName + " not found");
+  }
+
+  public static SchemaPlus addSchema(SchemaPlus rootSchema, SchemaSpec schema) {
+    final SchemaPlus foodmart;
+    final SchemaPlus jdbcScott;
+    final SchemaPlus scott;
+    final ConnectionSpec cs;
+    final DataSource dataSource;
+    switch (schema) {
+    case REFLECTIVE_FOODMART:
+      return rootSchema.add(schema.schemaName,
+          new ReflectiveSchema(new JdbcTest.FoodmartSchema()));
+    case JDBC_SCOTT:
+      cs = DatabaseInstance.HSQLDB.scott;
+      dataSource = JdbcSchema.dataSource(cs.url, cs.driver, cs.username,
+          cs.password);
+      return rootSchema.add(schema.schemaName,
+          JdbcSchema.create(rootSchema, schema.schemaName, dataSource,
+              cs.catalog, cs.schema));
+    case JDBC_FOODMART:
+      cs = DB.foodmart;
+      dataSource =
+          JdbcSchema.dataSource(cs.url, cs.driver, cs.username, cs.password);
+      return rootSchema.add(schema.schemaName,
+          JdbcSchema.create(rootSchema, schema.schemaName, dataSource,
+              cs.catalog, cs.schema));
+    case JDBC_FOODMART_WITH_LATTICE:
+      foodmart = addSchemaIfNotExists(rootSchema, SchemaSpec.JDBC_FOODMART);
+      foodmart.add(schema.schemaName,
+
+          Lattice.create(foodmart.unwrap(CalciteSchema.class),
+              "select 1 from \"foodmart\".\"sales_fact_1997\" as s\n"
+                  + "join \"foodmart\".\"time_by_day\" as t using (\"time_id\")\n"
+                  + "join \"foodmart\".\"customer\" as c using (\"customer_id\")\n"
+                  + "join \"foodmart\".\"product\" as p using (\"product_id\")\n"
+                  + "join \"foodmart\".\"product_class\" as pc on p.\"product_class_id\" = pc.\"product_class_id\"",
+              true));
+      return foodmart;
+    case SCOTT:
+      jdbcScott = addSchemaIfNotExists(rootSchema, SchemaSpec.JDBC_SCOTT);
+      return rootSchema.add(schema.schemaName, new CloneSchema(jdbcScott));
+    case SCOTT_WITH_TEMPORAL:
+      scott = addSchemaIfNotExists(rootSchema, SchemaSpec.SCOTT);
+      scott.add("products_temporal", new StreamTest.ProductsTemporalTable());
+      scott.add("orders",
+          new StreamTest.OrdersHistoryTable(
+              StreamTest.OrdersStreamTableFactory.getRowList()));
+      return scott;
+    case CLONE_FOODMART:
+      foodmart = addSchemaIfNotExists(rootSchema, SchemaSpec.JDBC_FOODMART);
+
+      return rootSchema.add("foodmart2", new CloneSchema(foodmart));
+    case GEO:
+      ModelHandler.addFunctions(rootSchema, null, ImmutableList.of(),
+          GeoFunctions.class.getName(), "*", true);
+      final SchemaPlus s =
+          rootSchema.add(schema.schemaName, new AbstractSchema());
+      ModelHandler.addFunctions(s, "countries", ImmutableList.of(),
+          CountriesTableFunction.class.getName(), null, false);
+      final String sql = "select * from table(\"countries\"(true))";
+      final ViewTableMacro viewMacro = ViewTable.viewMacro(rootSchema, sql,
+          ImmutableList.of("GEO"), ImmutableList.of(), false);
+      s.add("countries", viewMacro);
+      return s;
+    case HR:
+      return rootSchema.add(schema.schemaName,
+          new ReflectiveSchema(new JdbcTest.HrSchema()));
+    case LINGUAL:
+      return rootSchema.add(schema.schemaName,
+          new ReflectiveSchema(new JdbcTest.LingualSchema()));
+    case BLANK:
+      return rootSchema.add(schema.schemaName, new AbstractSchema());
+    case ORINOCO:
+      final SchemaPlus orinoco =
+          rootSchema.add(schema.schemaName, new AbstractSchema());
+      orinoco.add("ORDERS",
+          new StreamTest.OrdersHistoryTable(
+              StreamTest.OrdersStreamTableFactory.getRowList()));
+      return orinoco;
+    case POST:
+      final SchemaPlus post =
+          rootSchema.add(schema.schemaName, new AbstractSchema());
+      post.add("EMP",
+          ViewTable.viewMacro(post,
+              "select * from (values\n"
+                  + "    ('Jane', 10, 'F'),\n"
+                  + "    ('Bob', 10, 'M'),\n"
+                  + "    ('Eric', 20, 'M'),\n"
+                  + "    ('Susan', 30, 'F'),\n"
+                  + "    ('Alice', 30, 'F'),\n"
+                  + "    ('Adam', 50, 'M'),\n"
+                  + "    ('Eve', 50, 'F'),\n"
+                  + "    ('Grace', 60, 'F'),\n"
+                  + "    ('Wilma', cast(null as integer), 'F'))\n"
+                  + "  as t(ename, deptno, gender)",
+              ImmutableList.of(), ImmutableList.of("POST", "EMP"),
+              null));
+      post.add("DEPT",
+          ViewTable.viewMacro(post,
+              "select * from (values\n"
+                  + "    (10, 'Sales'),\n"
+                  + "    (20, 'Marketing'),\n"
+                  + "    (30, 'Engineering'),\n"
+                  + "    (40, 'Empty')) as t(deptno, dname)",
+              ImmutableList.of(), ImmutableList.of("POST", "DEPT"),
+              null));
+      post.add("DEPT30",
+          ViewTable.viewMacro(post,
+              "select * from dept where deptno = 30",
+              ImmutableList.of("POST"), ImmutableList.of("POST", "DEPT30"),
+              null));
+      post.add("EMPS",
+          ViewTable.viewMacro(post,
+              "select * from (values\n"
+                  + "    (100, 'Fred',  10, CAST(NULL AS CHAR(1)), CAST(NULL AS VARCHAR(20)), 40,               25, TRUE,    FALSE, DATE '1996-08-03'),\n"
+                  + "    (110, 'Eric',  20, 'M',                   'San Francisco',           3,                80, UNKNOWN, FALSE, DATE '2001-01-01'),\n"
+                  + "    (110, 'John',  40, 'M',                   'Vancouver',               2, CAST(NULL AS INT), FALSE,   TRUE,  DATE '2002-05-03'),\n"
+                  + "    (120, 'Wilma', 20, 'F',                   CAST(NULL AS VARCHAR(20)), 1,                 5, UNKNOWN, TRUE,  DATE '2005-09-07'),\n"
+                  + "    (130, 'Alice', 40, 'F',                   'Vancouver',               2, CAST(NULL AS INT), FALSE,   TRUE,  DATE '2007-01-01'))\n"
+                  + " as t(empno, name, deptno, gender, city, empid, age, slacker, manager, joinedat)",
+              ImmutableList.of(), ImmutableList.of("POST", "EMPS"),
+              null));
+      return post;
+    case AUX:
+      SchemaPlus aux =
+          rootSchema.add(schema.schemaName, new AbstractSchema());
+      TableFunction tableFunction =
+          TableFunctionImpl.create(Smalls.SimpleTableFunction.class, "eval");
+      aux.add("TBLFUN", tableFunction);
+      final String simpleSql = "select *\n"
+          + "from (values\n"
+          + "    ('ABC', 1),\n"
+          + "    ('DEF', 2),\n"
+          + "    ('GHI', 3))\n"
+          + "  as t(strcol, intcol)";
+      aux.add("SIMPLETABLE",
+          ViewTable.viewMacro(aux, simpleSql, ImmutableList.of(),
+              ImmutableList.of("AUX", "SIMPLETABLE"), null));
+      final String lateralSql = "SELECT *\n"
+          + "FROM AUX.SIMPLETABLE ST\n"
+          + "CROSS JOIN LATERAL TABLE(AUX.TBLFUN(ST.INTCOL))";
+      aux.add("VIEWLATERAL",
+          ViewTable.viewMacro(aux, lateralSql, ImmutableList.of(),
+              ImmutableList.of("AUX", "VIEWLATERAL"), null));
+      return aux;
+    case BOOKSTORE:
+      return rootSchema.add(schema.schemaName,
+          new ReflectiveSchema(new BookstoreSchema()));
+    default:
+      throw new AssertionError("unknown schema " + schema);
+    }
+  }
+
+  private static SchemaPlus addSchemaIfNotExists(SchemaPlus rootSchema,
+        SchemaSpec schemaSpec) {
+    final SchemaPlus schema = rootSchema.getSubSchema(schemaSpec.schemaName);
+    if (schema != null) {
+      return schema;
+    }
+    return addSchema(rootSchema, schemaSpec);
+  }
+
+  /**
+   * Asserts that two objects are equal. If they are not, an
+   * {@link AssertionError} is thrown with the given message. If
+   * <code>expected</code> and <code>actual</code> are <code>null</code>,
+   * they are considered equal.
+   *
+   * <p>This method produces more user-friendly error messages than
+   * {@link org.junit.Assert#assertArrayEquals(String, Object[], Object[])}
+   *
+   * @param message the identifying message for the {@link AssertionError} (<code>null</code>
+   * okay)
+   * @param expected expected value
+   * @param actual actual value
+   */
+  public static void assertArrayEqual(
+      String message, Object[] expected, Object[] actual) {
+    assertEquals(message, str(expected), str(actual));
+
+  }
+
+  private static String str(Object[] objects) {
+    return objects == null
+          ? null
+          : Arrays.stream(objects).map(Object::toString)
+              .collect(Collectors.joining("\n"));
+  }
+
+  /** Returns a {@link PropBuilder}. */
+  static PropBuilder propBuilder() {
+    return new PropBuilder();
+  }
+
+  /**
+   * Result of calling {@link CalciteAssert#that}.
+   */
+  public static class AssertThat {
+    private final ConnectionFactory connectionFactory;
+
+    private static final AssertThat EMPTY =
+        new AssertThat(EMPTY_CONNECTION_FACTORY);
+
+    private AssertThat(ConnectionFactory connectionFactory) {
+      this.connectionFactory = Objects.requireNonNull(connectionFactory);
+    }
+
+    public AssertThat with(Config config) {
+      switch (config) {
+      case EMPTY:
+        return EMPTY;
+      case REGULAR:
+        return with(SchemaSpec.HR, SchemaSpec.REFLECTIVE_FOODMART,
+            SchemaSpec.POST);
+      case REGULAR_PLUS_METADATA:
+        return with(SchemaSpec.HR, SchemaSpec.REFLECTIVE_FOODMART);
+      case GEO:
+        return with(SchemaSpec.GEO)
+            .with(CalciteConnectionProperty.CONFORMANCE,
+                SqlConformanceEnum.LENIENT);
+      case LINGUAL:
+        return with(SchemaSpec.LINGUAL);
+      case JDBC_FOODMART:
+        return with(CalciteAssert.SchemaSpec.JDBC_FOODMART);
+      case FOODMART_CLONE:
+        return with(SchemaSpec.CLONE_FOODMART);
+      case JDBC_FOODMART_WITH_LATTICE:
+        return with(SchemaSpec.JDBC_FOODMART_WITH_LATTICE);
+      case JDBC_SCOTT:
+        return with(SchemaSpec.JDBC_SCOTT);
+      case SCOTT:
+        return with(SchemaSpec.SCOTT);
+      case SPARK:
+        return with(CalciteConnectionProperty.SPARK, true);
+      case AUX:
+        return with(SchemaSpec.AUX, SchemaSpec.POST);
+      default:
+        throw Util.unexpected(config);
+      }
+    }
+
+    /** Creates a copy of this AssertThat, adding more schemas */
+    public AssertThat with(SchemaSpec... specs) {
+      AssertThat next = this;
+      for (SchemaSpec spec : specs) {
+        next = next.with(new AddSchemaSpecPostProcessor(spec));
+      }
+      return next;
+    }
+
+    /** Creates a copy of this AssertThat, overriding the connection factory. */
+    public AssertThat with(ConnectionFactory connectionFactory) {
+      return new AssertThat(connectionFactory);
+    }
+
+    public final AssertThat with(final Map<String, String> map) {
+      AssertThat x = this;
+      for (Map.Entry<String, String> entry : map.entrySet()) {
+        x = with(entry.getKey(), entry.getValue());
+      }
+      return x;
+    }
+
+    public AssertThat with(String property, Object value) {
+      return new AssertThat(connectionFactory.with(property, value));
+    }
+
+    public AssertThat with(ConnectionProperty property, Object value) {
+      if (!property.type().valid(value, property.valueClass())) {
+        throw new IllegalArgumentException();
+      }
+      return new AssertThat(connectionFactory.with(property, value));
+    }
+
+    /** Sets Lex property **/
+    public AssertThat with(Lex lex) {
+      return with(CalciteConnectionProperty.LEX, lex);
+    }
+
+    /** Sets the default schema to a given schema. */
+    public AssertThat withSchema(String name, Schema schema) {
+      return new AssertThat(
+          connectionFactory.with(new AddSchemaPostProcessor(name, schema)));
+    }
+
+    /** Sets the default schema of the connection. Schema name may be null. */
+    public AssertThat withDefaultSchema(String schema) {
+      return new AssertThat(
+          connectionFactory.with(new DefaultSchemaPostProcessor(schema)));
+    }
+
+    public AssertThat with(ConnectionPostProcessor postProcessor) {
+      return new AssertThat(connectionFactory.with(postProcessor));
+    }
+
+    public final AssertThat withModel(String model) {
+      return with(CalciteConnectionProperty.MODEL, "inline:" + model);
+    }
+
+    public final AssertThat withModel(URL model) {
+      return with(CalciteConnectionProperty.MODEL,
+          Sources.of(model).file().getAbsolutePath());
+    }
+
+    public final AssertThat withMaterializations(String model,
+         final String... materializations) {
+      return withMaterializations(model, false, materializations);
+    }
+
+    /** Adds materializations to the schema. */
+    public final AssertThat withMaterializations(String model, final boolean existing,
+        final String... materializations) {
+      return withMaterializations(model, builder -> {
+
+        assert materializations.length % 2 == 0;
+        final List<Object> list = builder.list();
+        for (int i = 0; i < materializations.length; i++) {
+          String table = materializations[i++];
+          final Map<String, Object> map = builder.map();
+          map.put("table", table);
+          if (!existing) {
+            map.put("view", table + "v");
+          }
+          String sql = materializations[i];
+          final String sql2 = sql.replaceAll("`", "\"");
+          map.put("sql", sql2);
+          list.add(map);
+        }
+        return list;
+
+      });
+    }
+
+    /** Adds materializations to the schema. */
+    public final AssertThat withMaterializations(String model,
+        Function<JsonBuilder, List<Object>> materializations) {
+      final JsonBuilder builder = new JsonBuilder();
+      final List<Object> list = materializations.apply(builder);
+      final String buf =
+          "materializations: " + builder.toJsonString(list);
+      final String model2;
+      if (model.contains("defaultSchema: 'foodmart'")) {
+        int endIndex = model.lastIndexOf(']');
+        model2 = model.substring(0, endIndex)
+            + ", \n{ name: 'mat', "
+            + buf
+            + "}\n"
+            + "]"
+            + model.substring(endIndex + 1);
+      } else if (model.contains("type: ")) {
+        model2 = model.replaceFirst("type: ",
+            java.util.regex.Matcher.quoteReplacement(buf + ",\n"
+            + "type: "));
+      } else {
+        throw new AssertionError("do not know where to splice");
+      }
+      return withModel(model2);
+    }
+
+    public AssertQuery query(String sql) {
+      return new AssertQuery(connectionFactory, sql);
+    }
+
+    /** Asserts that there is an exception with the given message while
+     * creating a connection. */
+    public AssertThat connectThrows(String message) {
+      return connectThrows(checkException(message));
+    }
+
+    /** Asserts that there is an exception that matches the given predicate
+     * while creating a connection. */
+    public AssertThat connectThrows(Consumer<Throwable> exceptionChecker) {
+
+      Throwable throwable;
+      try (Connection x = connectionFactory.createConnection()) {
+        try {
+          x.close();
+        } catch (SQLException e) {
+          // ignore
+        }
+        throwable = null;
+      } catch (Throwable e) {
+        throwable = e;
+      }
+      exceptionChecker.accept(throwable);
+      return this;
+    }
+
+    /** Creates a {@link org.apache.calcite.jdbc.CalciteConnection}
+     * and executes a callback. */
+    public <T> AssertThat doWithConnection(Function<CalciteConnection, T> fn)
+        throws Exception {
+      try (Connection connection = connectionFactory.createConnection()) {
+        T t = fn.apply((CalciteConnection) connection);
+        Util.discard(t);
+        return AssertThat.this;
+      }
+    }
+
+    /** Creates a {@link org.apache.calcite.jdbc.CalciteConnection}
+     * and executes a callback that returns no result. */
+    public final AssertThat doWithConnection(Consumer<CalciteConnection> fn)
+        throws Exception {
+      return doWithConnection(c -> {
+        fn.accept(c);
+        return null;
+      });
+    }
+
+    /** Creates a {@link DataContext} and executes a callback. */
+    public <T> AssertThat doWithDataContext(Function<DataContext, T> fn)
+        throws Exception {
+      try (CalciteConnection connection =
+               (CalciteConnection) connectionFactory.createConnection()) {
+        final DataContext dataContext =
+            CalciteMetaImpl.createDataContext(connection);
+        T t = fn.apply(dataContext);
+        Util.discard(t);
+        return AssertThat.this;
+      }
+    }
+
+
+    /** Use sparingly. Does not close the connection. */
+    public Connection connect() throws SQLException {
+      return connectionFactory.createConnection();
+    }
+
+    public AssertThat enable(boolean enabled) {
+      return enabled ? this : DISABLED;
+    }
+
+    /** Returns a version that uses a single connection, as opposed to creating
+     * a new one each time a test method is invoked. */
+    public AssertThat pooled() {
+      if (connectionFactory instanceof PoolingConnectionFactory) {
+        return this;
+      } else {
+        return new AssertThat(new PoolingConnectionFactory(connectionFactory));
+      }
+    }
+
+    public AssertMetaData metaData(Function<Connection, ResultSet> function) {
+      return new AssertMetaData(connectionFactory, function);
+    }
+  }
+
+  /**
+   * Abstract implementation of connection factory whose {@code with}
+   * methods throw.
+   *
+   * <p>Avoid creating new sub-classes otherwise it would be hard to support
+   * {@code .with(property, value).with(...)} kind of chains.
+   *
+   * <p>If you want augment the connection, use {@link ConnectionPostProcessor}.
+   **/
+  public abstract static class ConnectionFactory {
+    public abstract Connection createConnection() throws SQLException;
+
+    public ConnectionFactory with(String property, Object value) {
+      throw new UnsupportedOperationException();
+    }
+
+    public ConnectionFactory with(ConnectionProperty property, Object value) {
+      throw new UnsupportedOperationException();
+    }
+
+    public ConnectionFactory with(ConnectionPostProcessor postProcessor) {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  /** Connection post processor */
+  @FunctionalInterface
+  public interface ConnectionPostProcessor {
+    Connection apply(Connection connection) throws SQLException;
+  }
+
+  /** Adds {@link Schema} and sets it as default. */
+  public static class AddSchemaPostProcessor
+      implements ConnectionPostProcessor {
+    private final String name;
+    private final Schema schema;
+
+    public AddSchemaPostProcessor(String name, Schema schema) {
+      this.name = Objects.requireNonNull(name);
+      this.schema = Objects.requireNonNull(schema);
+    }
+
+    public Connection apply(Connection connection) throws SQLException {
+      if (schema != null) {
+        CalciteConnection con = connection.unwrap(CalciteConnection.class);
+        SchemaPlus rootSchema = con.getRootSchema();
+        rootSchema.add(name, schema);
+      }
+      connection.setSchema(name);
+      return connection;
+    }
+  }
+
+  /** Sets a default schema name. */
+  public static class DefaultSchemaPostProcessor
+      implements ConnectionPostProcessor {
+    private final String name;
+
+    public DefaultSchemaPostProcessor(String name) {
+      this.name = name;
+    }
+
+    public Connection apply(Connection connection) throws SQLException {
+      connection.setSchema(name);
+      return connection;
+    }
+  }
+
+  /** Adds {@link SchemaSpec} (set of schemes) to a connection. */
+  public static class AddSchemaSpecPostProcessor
+      implements ConnectionPostProcessor {
+    private final SchemaSpec schemaSpec;
+
+    public AddSchemaSpecPostProcessor(SchemaSpec schemaSpec) {
+      this.schemaSpec = schemaSpec;
+    }
+
+    public Connection apply(Connection connection) throws SQLException {
+      CalciteConnection con = connection.unwrap(CalciteConnection.class);
+      SchemaPlus rootSchema = con.getRootSchema();
+      switch (schemaSpec) {
+      case CLONE_FOODMART:
+      case JDBC_FOODMART_WITH_LATTICE:
+        addSchema(rootSchema, SchemaSpec.JDBC_FOODMART);
+        /* fall through */
+      default:
+        addSchema(rootSchema, schemaSpec);
+      }
+      con.setSchema(schemaSpec.schemaName);
+
+      return connection;
+    }
+  }
+
+  /** Connection factory that uses the same instance of connections. */
+  private static class PoolingConnectionFactory
+      extends ConnectionFactory {
+    private final PoolingDataSource dataSource;
+
+    PoolingConnectionFactory(final ConnectionFactory factory) {
+      final PoolableConnectionFactory connectionFactory =
+          new PoolableConnectionFactory(factory::createConnection, null);
+      connectionFactory.setRollbackOnReturn(false);
+      this.dataSource = new PoolingDataSource<>(
+          new GenericObjectPool<>(connectionFactory));
+    }
+
+    public Connection createConnection() throws SQLException {
+      return dataSource.getConnection();
+    }
+  }
+
+  /** Connection factory that uses a given map of (name, value) pairs and
+   * optionally an initial schema. */
+  private static class MapConnectionFactory extends ConnectionFactory {
+    private final ImmutableMap<String, String> map;
+    private final ImmutableList<ConnectionPostProcessor> postProcessors;
+
+    private MapConnectionFactory(ImmutableMap<String, String> map,
+        ImmutableList<ConnectionPostProcessor> postProcessors) {
+      this.map = Objects.requireNonNull(map);
+      this.postProcessors = Objects.requireNonNull(postProcessors);
+    }
+
+    @Override public boolean equals(Object obj) {
+      return this == obj
+          || obj.getClass() == MapConnectionFactory.class
+          && ((MapConnectionFactory) obj).map.equals(map)
+          && ((MapConnectionFactory) obj).postProcessors.equals(postProcessors);
+    }
+
+    @Override public int hashCode() {
+      return Objects.hash(map, postProcessors);
+    }
+
+    public Connection createConnection() throws SQLException {
+      final Properties info = new Properties();
+      for (Map.Entry<String, String> entry : map.entrySet()) {
+        info.setProperty(entry.getKey(), entry.getValue());
+      }
+      Connection connection =
+          DriverManager.getConnection("jdbc:calcite:", info);
+      for (ConnectionPostProcessor postProcessor : postProcessors) {
+        connection = postProcessor.apply(connection);
+      }
+      return connection;
+    }
+
+    public ConnectionFactory with(String property, Object value) {
+      return new MapConnectionFactory(
+          FlatLists.append(this.map, property, value.toString()),
+          postProcessors);
+    }
+
+    public ConnectionFactory with(ConnectionProperty property, Object value) {
+      if (!property.type().valid(value, property.valueClass())) {
+        throw new IllegalArgumentException();
+      }
+      return with(property.camelName(), value.toString());
+    }
+
+    public ConnectionFactory with(
+        ConnectionPostProcessor postProcessor) {
+      ImmutableList.Builder<ConnectionPostProcessor> builder =
+          ImmutableList.builder();
+      builder.addAll(postProcessors);
+      builder.add(postProcessor);
+      return new MapConnectionFactory(map, builder.build());
+    }
+  }
+
+  /** Fluent interface for building a query to be tested. */
+  public static class AssertQuery {
+    private final String sql;
+    private ConnectionFactory connectionFactory;
+    private String plan;
+    private int limit;
+    private boolean materializationsEnabled = false;
+    private final List<Pair<Hook, Consumer>> hooks = new ArrayList<>();
+    private PreparedStatementConsumer consumer;
+
+    private AssertQuery(ConnectionFactory connectionFactory, String sql) {
+      this.sql = sql;
+      this.connectionFactory = connectionFactory;
+    }
+
+    protected Connection createConnection() {
+      try {
+        return connectionFactory.createConnection();
+      } catch (SQLException e) {
+        throw new IllegalStateException(
+            "Unable to create connection: connectionFactory = " + connectionFactory, e);
+      }
+    }
+
+    /** Performs an action using a connection, and closes the connection
+     * afterwards. */
+    public final AssertQuery withConnection(Consumer<Connection> f) {
+      try (Connection c = createConnection()) {
+        f.accept(c);
+      } catch (SQLException e) {
+        TestUtil.rethrow(e);
+      }
+      return this;
+    }
+
+    public AssertQuery enable(boolean enabled) {
+      return enabled ? this : NopAssertQuery.of(sql);
+    }
+
+    public AssertQuery returns(String expected) {
+      return returns(checkResult(expected));
+    }
+
+    /** Similar to {@link #returns}, but trims a few values before
+     * comparing. */
+    public AssertQuery returns2(final String expected) {
+      return returns(
+          checkResult(expected,
+              new ResultSetFormatter() {
+                @Override protected String adjustValue(String s) {
+                  if (s != null) {
+                    if (s.contains(".")) {
+                      while (s.endsWith("0")) {
+                        s = s.substring(0, s.length() - 1);
+                      }
+                      if (s.endsWith(".")) {
+                        s = s.substring(0, s.length() - 1);
+                      }
+                    }
+                    if (s.endsWith(" 00:00:00")) {
+                      s = s.substring(0, s.length() - " 00:00:00".length());
+                    }
+                  }
+                  return s;
+                }
+              }));
+    }
+
+    public AssertQuery returnsValue(String expected) {
+      return returns(checkResultValue(expected));
+    }
+
+    public AssertQuery returnsCount(int expectedCount) {
+      return returns(checkResultCount(is(expectedCount)));
+    }
+
+    public final AssertQuery returns(Consumer<ResultSet> checker) {
+      return returns(sql, checker);
+    }
+
+    public final AssertQuery updates(int count) {
+      return withConnection(connection ->
+          assertQuery(connection, sql, limit, materializationsEnabled,
+              hooks, null, checkUpdateCount(count), null));
+    }
+
+    @SuppressWarnings("Guava")
+    @Deprecated // to be removed in 2.0
+    public final AssertQuery returns(
+        com.google.common.base.Function<ResultSet, Void> checker) {
+      return returns(sql, checker::apply);
+    }
+
+    protected AssertQuery returns(String sql, Consumer<ResultSet> checker) {
+      return withConnection(connection -> {
+        if (consumer == null) {
+          assertQuery(connection, sql, limit, materializationsEnabled,
+              hooks, checker, null, null);
+        } else {
+          assertPrepare(connection, sql, limit, materializationsEnabled,
+              hooks, checker, null, null, consumer);
+        }
+      });
+    }
+
+    public AssertQuery returnsUnordered(String... lines) {
+      return returns(checkResult(true, false, lines));
+    }
+
+    public AssertQuery returnsOrdered(String... lines) {
+      return returns(checkResult(false, false, lines));
+    }
+
+    public AssertQuery returnsStartingWith(String... lines) {
+      return returns(checkResult(false, true, lines));
+    }
+
+    public AssertQuery throws_(String message) {
+      return withConnection(connection ->
+        assertQuery(connection, sql, limit, materializationsEnabled,
+            hooks, null, null, checkException(message)));
+    }
+
+    /**
+     * Used to check whether a sql statement fails at the SQL Validation phase. More formally,
+     * it checks if a {@link SqlValidatorException} or {@link CalciteException} was thrown.
+     *
+     * @param optionalMessage An optional message to check for in the output stacktrace
+     * */
+    public AssertQuery failsAtValidation(String optionalMessage) {
+      return withConnection(connection ->
+        assertQuery(connection, sql, limit, materializationsEnabled,
+            hooks, null, null, checkValidationException(optionalMessage)));
+    }
+
+    /**
+     * Utility method so that one doesn't have to call
+     * {@link #failsAtValidation} with {@code null}
+     * */
+    public AssertQuery failsAtValidation() {
+      return failsAtValidation(null);
+    }
+
+    public AssertQuery runs() {
+      return withConnection(connection -> {
+        if (consumer == null) {
+          assertQuery(connection, sql, limit, materializationsEnabled,
+              hooks, null, null, null);
+        } else {
+          assertPrepare(connection, sql, limit, materializationsEnabled,
+              hooks, null, null, null, consumer);
+        }
+      });
+    }
+
+    public AssertQuery typeIs(String expected) {
+      return withConnection(connection ->
+        assertQuery(connection, sql, limit, false,
+            hooks, checkResultType(expected), null, null));
+    }
+
+    /** Checks that when the query (which was set using
+     * {@link AssertThat#query(String)}) is converted to a relational algebra
+     * expression matching the given string. */
+    public final AssertQuery convertContains(final String expected) {
+      return convertMatches(checkRel(expected, null));
+    }
+
+    public final AssertQuery consumesPreparedStatement(PreparedStatementConsumer consumer) {
+      this.consumer =  consumer;
+      return this;
+    }
+
+    public AssertQuery convertMatches(final Function<RelNode, Void> checker) {
+      return withConnection(connection ->
+        assertPrepare(connection, sql, this.materializationsEnabled,
+            checker, null));
+    }
+
+    public AssertQuery substitutionMatches(
+        final Function<RelNode, Void> checker) {
+      return withConnection(connection ->
+        assertPrepare(connection, sql, materializationsEnabled, null, checker));
+    }
+
+    public AssertQuery explainContains(String expected) {
+      return explainMatches("", checkResultContains(expected));
+    }
+
+    public final AssertQuery explainMatches(String extra,
+        Consumer<ResultSet> checker) {
+      return returns("explain plan " + extra + "for " + sql, checker);
+    }
+
+    public AssertQuery planContains(String expected) {
+      ensurePlan(null);
+      assertTrue(
+          "Plan [" + plan + "] contains [" + expected + "]",
+          Util.toLinux(plan)
+              .replaceAll("\\\\r\\\\n", "\\\\n")
+              .contains(expected));
+      return this;
+    }
+
+    public AssertQuery planUpdateHasSql(String expected, int count) {
+      ensurePlan(checkUpdateCount(count));
+      expected = "getDataSource(), \""
+          + expected.replace("\\", "\\\\")
+          .replace("\"", "\\\"")
+          .replaceAll("\n", "\\\\n")
+          + "\"";
+      assertTrue(
+          "Plan [" + plan + "] contains [" + expected + "]",
+          Util.toLinux(plan)
+              .replaceAll("\\\\r\\\\n", "\\\\n")
+              .contains(expected));
+      return this;
+    }
+
+    public AssertQuery planHasSql(String expected) {
+      return planContains(
+          "getDataSource(), \""
+              + expected.replace("\\", "\\\\")
+              .replace("\"", "\\\"")
+              .replaceAll("\n", "\\\\n")
+              + "\"");
+    }
+
+    private void ensurePlan(Consumer<Integer> checkUpdate) {
+      if (plan != null) {
+        return;
+      }
+      addHook(Hook.JAVA_PLAN, (Consumer<String>) a0 -> plan = a0);
+      withConnection(connection -> {
+        assertQuery(connection, sql, limit, materializationsEnabled,
+            hooks, null, checkUpdate, null);
+        assertNotNull(plan);
+      });
+    }
+
+    /** Runs the query and applies a checker to the generated third-party
+     * queries. The checker should throw to fail the test if it does not see
+     * what it wants. This method can be used to check whether a particular
+     * MongoDB or SQL query is generated, for instance. */
+    public AssertQuery queryContains(Consumer<List> predicate1) {
+      final List<Object> list = new ArrayList<>();
+      addHook(Hook.QUERY_PLAN, list::add);
+      return withConnection(connection -> {
+        assertQuery(connection, sql, limit, materializationsEnabled,
+            hooks, null, null, null);
+        predicate1.accept(list);
+      });
+    }
+
+    /** @deprecated Use {@link #queryContains(Consumer)}. */
+    @SuppressWarnings("Guava")
+    @Deprecated // to be removed before 2.0
+    public final AssertQuery queryContains(
+        com.google.common.base.Function<List, Void> predicate1) {
+      return queryContains((Consumer<List>) predicate1::apply);
+    }
+
+    /** Sets a limit on the number of rows returned. -1 means no limit. */
+    public AssertQuery limit(int limit) {
+      this.limit = limit;
+      return this;
+    }
+
+    public void sameResultWithMaterializationsDisabled() {
+      boolean save = materializationsEnabled;
+      try {
+        materializationsEnabled = false;
+        final boolean ordered =
+            sql.toUpperCase(Locale.ROOT).contains("ORDER BY");
+        final Consumer<ResultSet> checker = consistentResult(ordered);
+        returns(checker);
+        materializationsEnabled = true;
+        returns(checker);
+      } finally {
+        materializationsEnabled = save;
+      }
+    }
+
+    public AssertQuery enableMaterializations(boolean enable) {
+      this.materializationsEnabled = enable;
+      return this;
+    }
+
+    @SuppressWarnings("Guava")
+    @Deprecated // to be removed in 2.0
+    public <T> AssertQuery withHook(Hook hook, Function<T, Void> handler) {
+      return withHook(hook, (Consumer<T>) handler::apply);
+    }
+
+    /** Adds a hook and a handler for that hook. Calcite will create a thread
+     * hook (by calling {@link Hook#addThread(Consumer)})
+     * just before running the query, and remove the hook afterwards. */
+    public <T> AssertQuery withHook(Hook hook, Consumer<T> handler) {
+      addHook(hook, handler);
+      return this;
+    }
+
+    private <T> void addHook(Hook hook, Consumer<T> handler) {
+      hooks.add(Pair.of(hook, handler));
+    }
+
+    /** Adds a property hook. */
+    public <V> AssertQuery withProperty(Hook hook, V value) {
+      return withHook(hook, Hook.propertyJ(value));
+    }
+
+    /** Adds a factory to create a {@link RelNode} query. This {@code RelNode}
+     * will be used instead of the SQL string. */
+    public AssertQuery withRel(final Function<RelBuilder, RelNode> relFn) {
+      return withHook(Hook.STRING_TO_QUERY,
+          (Consumer<Pair<FrameworkConfig, Holder<CalcitePrepare.Query>>>)
+          pair -> {
+
+            final RelBuilder b = RelBuilder.create(pair.left);
+            pair.right.set(CalcitePrepare.Query.of(relFn.apply(b)));
+
+          });
+    }
+  }
+
+  /** Fluent interface for building a metadata query to be tested. */
+  public static class AssertMetaData {
+    private final ConnectionFactory connectionFactory;
+    private final Function<Connection, ResultSet> function;
+
+    AssertMetaData(ConnectionFactory connectionFactory,
+        Function<Connection, ResultSet> function) {
+      this.connectionFactory = connectionFactory;
+      this.function = function;
+    }
+
+    public final AssertMetaData returns(Consumer<ResultSet> checker) {
+      try (Connection c = connectionFactory.createConnection()) {
+        final ResultSet resultSet = function.apply(c);
+        checker.accept(resultSet);
+        resultSet.close();
+        c.close();
+        return this;
       } catch (Throwable e) {
         throw TestUtil.rethrow(e);
       }
@@ -256,6 +1416,7 @@ import org.hamcrest.Matcher;
     HR("hr"),
     JDBC_SCOTT("JDBC_SCOTT"),
     SCOTT("scott"),
+    SCOTT_WITH_TEMPORAL("scott_temporal"),
     BLANK("BLANK"),
     LINGUAL("SALES"),
     POST("POST"),

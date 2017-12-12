@@ -41,7 +41,7 @@ import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalMatch;
 import org.apache.calcite.rel.logical.LogicalMinus;
 import org.apache.calcite.rel.logical.LogicalProject;
-import org.apache.calcite.rel.logical.LogicalRepeatUnion;
+>>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
 import org.apache.calcite.rel.logical.LogicalSnapshot;
 import org.apache.calcite.rel.logical.LogicalSort;
 import org.apache.calcite.rel.logical.LogicalTableFunctionScan;
@@ -83,7 +83,6 @@ import org.apache.calcite.util.mapping.Mappings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.SortedSetMultimap;
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 =======
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -766,21 +765,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
     setNewForOldRel(rel, newRel);
   }
 
-  private RelNode coverNewRelByFlatteningProjection(RelNode rel, RelNode newRel) {
-    final List<Pair<RexNode, String>> flattenedExpList = new ArrayList<>();
-    RexNode newRowRef = rexBuilder.makeRangeReference(newRel);
-    List<RelDataTypeField> inputRowFields = rel.getRowType().getFieldList();
-    flattenInputs(inputRowFields, newRowRef, flattenedExpList);
-    // cover new scan with flattening projection
-    List<RexNode> projects = Pair.left(flattenedExpList);
-    List<String> fieldNames = Pair.right(flattenedExpList);
-    newRel = relBuilder.push(newRel)
-        .projectNamed(projects, fieldNames, true)
-        .build();
-    newRel = RelOptUtil.copyRelHints(rel, newRel);
-    return newRel;
-  }
-
+>>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
   public void rewriteRel(LogicalSnapshot rel) {
     RelNode newRel =
         rel.copy(rel.getTraitSet(),
@@ -865,7 +850,6 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
     @Override public RexNode visitInputRef(RexInputRef input) {
       final int oldIndex = input.getIndex();
       final Ord<RelDataType> field = getNewFieldForOldInput(oldIndex);
->>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
 
       // Use the actual flattened type, which may be different from the current
       // type.

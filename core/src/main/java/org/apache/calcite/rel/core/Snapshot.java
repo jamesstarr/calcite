@@ -16,7 +16,7 @@
  */
 package org.apache.calcite.rel.core;
 
->>>>>>> d39266f6b (DX-37039: getChildExps has been removed from RelNode)
+import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
@@ -27,6 +27,8 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexShuttle;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.Litmus;
+
+import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 import java.util.Objects;
@@ -63,7 +65,8 @@ public abstract class Snapshot extends SingleRel  {
       RexNode period) {
     super(cluster, traitSet, input);
     this.period = Objects.requireNonNull(period, "period");
-    assert isValid(Litmus.THROW, null);
+    // Too expensive for everyday use:
+    assert !CalciteSystemProperty.DEBUG.value() || isValid(Litmus.THROW, null);
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -73,6 +76,10 @@ public abstract class Snapshot extends SingleRel  {
   }
 
   public abstract Snapshot copy(RelTraitSet traitSet, RelNode input, RexNode period);
+
+  @Override public List<RexNode> getChildExps() {
+    return ImmutableList.of(period);
+  }
 
   @Override public RelNode accept(RexShuttle shuttle) {
     RexNode condition = shuttle.apply(this.period);

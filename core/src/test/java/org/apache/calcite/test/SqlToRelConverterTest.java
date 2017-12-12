@@ -1162,20 +1162,13 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql("select * from dept, lateral table(ramp(deptno))").ok();
   }
 
-  @Test void testSnapshotOnTemporalTable1() {
+  @Test public void testSnapshotOnTemporalTable() {
     final String sql = "select * from products_temporal "
         + "for system_time as of TIMESTAMP '2011-01-02 00:00:00'";
     sql(sql).ok();
   }
 
-  @Test void testSnapshotOnTemporalTable2() {
-    // Test temporal table with virtual columns.
-    final String sql = "select * from VIRTUALCOLUMNS.VC_T1 "
-        + "for system_time as of TIMESTAMP '2011-01-02 00:00:00'";
-    sql(sql).with(getExtendedTester()).ok();
-  }
-
-  @Test void testJoinTemporalTableOnSpecificTime1() {
+  @Test public void testJoinTemporalTableOnSpecificTime() {
     final String sql = "select stream *\n"
         + "from orders,\n"
         + "  products_temporal for system_time as of\n"
@@ -1183,16 +1176,8 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
-  @Test void testJoinTemporalTableOnSpecificTime2() {
-    // Test temporal table with virtual columns.
-    final String sql = "select stream *\n"
-        + "from orders,\n"
-        + "  VIRTUALCOLUMNS.VC_T1 for system_time as of\n"
-        + "    TIMESTAMP '2011-01-02 00:00:00'";
-    sql(sql).with(getExtendedTester()).ok();
-  }
-
-  @Test void testJoinTemporalTableOnColumnReference1() {
+  @Ignore
+  @Test public void testJoinTemporalTableOnColumnReference() {
     final String sql = "select stream *\n"
         + "from orders\n"
         + "join products_temporal for system_time as of orders.rowtime\n"
@@ -1200,59 +1185,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
-  @Test void testJoinTemporalTableOnColumnReference2() {
-    // Test temporal table with virtual columns.
-    final String sql = "select stream *\n"
-        + "from orders\n"
-        + "join VIRTUALCOLUMNS.VC_T1 for system_time as of orders.rowtime\n"
-        + "on orders.productid = VIRTUALCOLUMNS.VC_T1.a";
-    sql(sql).with(getExtendedTester()).ok();
-  }
-
-  /**
-   * Lateral join with temporal table, both snapshot's input scan
-   * and snapshot's period reference outer columns. Should not
-   * decorrelate join.
-   */
-  @Test void testCrossJoinTemporalTable1() {
-    final String sql = "select stream *\n"
-        + "from orders\n"
-        + "cross join lateral (\n"
-        + "  select * from products_temporal for system_time\n"
-        + "  as of orders.rowtime\n"
-        + "  where orders.productid = products_temporal.productid)\n";
-    sql(sql).ok();
-  }
-
-  /**
-   * Lateral join with temporal table, snapshot's input scan
-   * reference outer columns, but snapshot's period is static.
-   * Should be able to decorrelate join.
-   */
-  @Test void testCrossJoinTemporalTable2() {
-    final String sql = "select stream *\n"
-        + "from orders\n"
-        + "cross join lateral (\n"
-        + "  select * from products_temporal for system_time\n"
-        + "  as of TIMESTAMP '2011-01-02 00:00:00'\n"
-        + "  where orders.productid = products_temporal.productid)\n";
-    sql(sql).ok();
-  }
-
-  /**
-   * Lateral join with temporal table, snapshot's period reference
-   * outer columns. Should not decorrelate join.
-   */
-  @Test void testCrossJoinTemporalTable3() {
-    final String sql = "select stream *\n"
-        + "from orders\n"
-        + "cross join lateral (\n"
-        + "  select * from products_temporal for system_time\n"
-        + "  as of orders.rowtime\n"
-        + "  where products_temporal.productid > 1)\n";
-    sql(sql).ok();
-  }
-
+>>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1732">[CALCITE-1732]
    * IndexOutOfBoundsException when using LATERAL TABLE with more than one
@@ -4274,7 +4207,6 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
         .ok();
   }
 }
->>>>>>> 148d638eb ([CALCITE-5045] Alias within GroupingSets throws type mis-match exception [CALCITE-5145] CASE statement within GROUPING SETS throws type mis-match exception)
 
   /**
    * Test case for

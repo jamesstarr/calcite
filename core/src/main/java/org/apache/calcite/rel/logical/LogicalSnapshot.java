@@ -70,3 +70,8 @@ public class LogicalSnapshot extends Snapshot {
     return new LogicalSnapshot(cluster, traitSet, input, period);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End LogicalSnapshot.java
+>>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
