@@ -41,6 +41,7 @@ import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalMatch;
 import org.apache.calcite.rel.logical.LogicalMinus;
 import org.apache.calcite.rel.logical.LogicalProject;
+import org.apache.calcite.rel.logical.LogicalSnapshot;
 import org.apache.calcite.rel.logical.LogicalSort;
 import org.apache.calcite.rel.logical.LogicalTableFunctionScan;
 import org.apache.calcite.rel.logical.LogicalTableModify;
@@ -738,6 +739,14 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
           .build();
     }
     newRel = RelOptUtil.copyRelHints(rel, newRel);
+    setNewForOldRel(rel, newRel);
+  }
+
+  public void rewriteRel(LogicalSnapshot rel) {
+    RelNode newRel =
+        rel.copy(rel.getTraitSet(),
+            getNewForOldRel(rel.getInput()),
+            rel.getPeriod().accept(new RewriteRexShuttle()));
     setNewForOldRel(rel, newRel);
   }
 

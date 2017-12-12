@@ -197,6 +197,7 @@ joinCondition:
 
 tableReference:
       tablePrimary
+      [ FOR SYSTEM_TIME AS OF expression ]
       [ pivot ]
       [ unpivot ]
       [ matchRecognize ]

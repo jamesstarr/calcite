@@ -16,6 +16,8 @@
  */
 package org.apache.calcite.schema;
 
+import javax.annotation.Nonnull;
+
 /**
  * Table that is temporal.
  */
@@ -23,11 +25,11 @@ public interface TemporalTable extends Table {
 
   /** Returns the name of the system column that contains the start effective
    * time of each row. */
-  String getSysStartFieldName();
+  @Nonnull String getSysStartFieldName();
 
   /** Returns the name of the system column that contains the end effective
    * time of each row. */
-  String getSysEndFieldName();
+  @Nonnull String getSysEndFieldName();
 }
 
 // End TemporalTable.java

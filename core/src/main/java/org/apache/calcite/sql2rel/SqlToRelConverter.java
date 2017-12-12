@@ -126,6 +126,7 @@ import org.apache.calcite.sql.SqlSampleSpec;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.SqlSetOperator;
+import org.apache.calcite.sql.SqlSnapshot;
 import org.apache.calcite.sql.SqlUnnestOperator;
 import org.apache.calcite.sql.SqlUnpivot;
 import org.apache.calcite.sql.SqlUpdate;
@@ -2120,6 +2121,10 @@ public class SqlToRelConverter {
       convertIdentifier(bb, id, extendedColumns, null);
       return;
 
+    case SNAPSHOT:
+      snapshotTemporalTable(bb, (SqlCall) from);
+      return;
+
     case JOIN:
       convertJoin(bb, (SqlJoin) from);
 
@@ -2581,6 +2586,20 @@ public class SqlToRelConverter {
       SqlToRelConverter.Blackboard bb,
       SqlCall call,
       LogicalTableFunctionScan callRel) {
+  }
+
+  private void snapshotTemporalTable(Blackboard bb, SqlCall call) {
+    final SqlSnapshot snapshot = (SqlSnapshot) call;
+    final RexNode period = bb.convertExpression(snapshot.getPeriod());
+
+    // convert inner query, could be a table name or a derived table
+    SqlNode expr = snapshot.getTableRef();
+    convertFrom(bb, expr);
+    final TableScan scan = (TableScan) bb.root;
+
+    final RelNode snapshotRel = relBuilder.push(scan).snapshot(period).build();
+
+    bb.setRoot(snapshotRel, false);
   }
 
   private Set<RelColumnMapping> getColumnMappings(SqlOperator op) {

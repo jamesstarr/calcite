@@ -42,6 +42,7 @@ import org.apache.calcite.rel.core.Minus;
 import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.core.SemiJoin;
+import org.apache.calcite.rel.core.Snapshot;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.core.Uncollect;
@@ -145,6 +146,7 @@ public class RelBuilder {
   protected final RelOptSchema relOptSchema;
   private final RelFactories.ExchangeFactory exchangeFactory;
   private final RelFactories.SortExchangeFactory sortExchangeFactory;
+  private final RelFactories.SnapshotFactory snapshotFactory;
   private final Deque<Frame> stack = new ArrayDeque<>();
   private final boolean simplify;
   private final RexSimplify simplifier;
@@ -168,6 +170,9 @@ public class RelBuilder {
     this.sortExchangeFactory =
         Util.first(context.unwrap(RelFactories.SortExchangeFactory.class),
             RelFactories.DEFAULT_SORT_EXCHANGE_FACTORY);
+    this.snapshotFactory =
+        Util.first(context.unwrap(RelFactories.SnapshotFactory.class),
+            RelFactories.DEFAULT_SNAPSHOT_FACTORY);
     final RexExecutor executor =
         Util.first(context.unwrap(RexExecutor.class),
             Util.first(cluster.getPlanner().getExecutor(), RexUtil.EXECUTOR));
@@ -1213,6 +1218,19 @@ public class RelBuilder {
    */
   public RelBuilder scan(String... tableNames) {
     return scan(ImmutableList.copyOf(tableNames));
+  }
+
+  /** Creates a {@link Snapshot} of a given snapshot period.
+   *
+   * <p>Returns this builder.
+   *
+   * @param period Name of table (can optionally be qualified)
+   */
+  public RelBuilder snapshot(RexNode period) {
+    final Frame frame = stack.pop();
+    final RelNode snapshot = snapshotFactory.createSnapshot(frame.rel, period);
+    stack.push(new Frame(snapshot, frame.fields));
+    return this;
   }
 
   /** Creates a {@link Filter} of an array of
