@@ -40,6 +40,7 @@ import org.apache.calcite.rel.metadata.RelMetadataProvider;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.JoinPushThroughJoinRule;
 import org.apache.calcite.rel.rules.LoptOptimizeJoinRule;
+import org.apache.calcite.rel.rules.MatchRule;
 import org.apache.calcite.rel.rules.TableScanRule;
 import org.apache.calcite.sql2rel.RelDecorrelator;
 import org.apache.calcite.sql2rel.RelFieldTrimmer;
@@ -85,9 +86,11 @@ public class Programs {
           EnumerableRules.ENUMERABLE_TABLE_MODIFICATION_RULE,
           EnumerableRules.ENUMERABLE_VALUES_RULE,
           EnumerableRules.ENUMERABLE_WINDOW_RULE,
+          EnumerableRules.ENUMERABLE_MATCH_RULE,
           CoreRules.PROJECT_TO_SEMI_JOIN,
           CoreRules.JOIN_TO_SEMI_JOIN,
           TableScanRule.INSTANCE,
+          MatchRule.INSTANCE,
           CalciteSystemProperty.COMMUTE.value()
               ? CoreRules.JOIN_ASSOCIATE
               : CoreRules.PROJECT_MERGE,

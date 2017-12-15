@@ -154,6 +154,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.ELEMENT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EQUALS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EXP;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EXTRACT;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.FINAL;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.FIRST_VALUE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.FLOOR;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.FUSION;
@@ -233,6 +234,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.PI;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.PLUS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.POSITION;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.POWER;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.PREV;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.RADIANS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.RAND;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.RAND_INTEGER;
@@ -597,6 +599,18 @@ public class RexImpTable {
     winAggMap.put(LAG, constructorSupplier(LagImplementor.class));
     winAggMap.put(NTILE, constructorSupplier(NtileImplementor.class));
     winAggMap.put(COUNT, constructorSupplier(CountWinImplementor.class));
+
+    // Functions for MATCH_RECOGNIZE
+    defineMethod(FINAL, "abs", NullPolicy.ANY);
+
+    map.put(PREV, (translator, call, nullAs) -> {
+      final RexNode node = call.getOperands().get(0);
+      final RexNode offset = call.getOperands().get(1);
+      final Expression offs = Expressions.multiply(translator.translate(offset),
+          Expressions.constant(-1));
+      ((EnumerableMatch.PrevInputGetter) translator.inputGetter).setOffset(offs);
+      return translator.translate(node, nullAs);
+    });
   }
 
   private <T> Supplier<T> constructorSupplier(Class<T> klass) {

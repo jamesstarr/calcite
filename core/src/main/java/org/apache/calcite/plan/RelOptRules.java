@@ -28,6 +28,7 @@ import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.DateRangeRules;
 import org.apache.calcite.rel.rules.ExchangeRemoveConstantKeysRule;
 import org.apache.calcite.rel.rules.JoinPushThroughJoinRule;
+import org.apache.calcite.rel.rules.MatchRule;
 import org.apache.calcite.rel.rules.MaterializedViewFilterScanRule;
 import org.apache.calcite.rel.rules.PruneEmptyRules;
 import org.apache.calcite.rel.rules.SortRemoveConstantKeysRule;
@@ -87,6 +88,7 @@ public class RelOptRules {
       CoreRules.FILTER_AGGREGATE_TRANSPOSE,
       CoreRules.PROJECT_WINDOW_TRANSPOSE,
       CoreRules.JOIN_COMMUTE,
+      MatchRule.INSTANCE,
       JoinPushThroughJoinRule.RIGHT,
       JoinPushThroughJoinRule.LEFT,
       CoreRules.SORT_PROJECT_TRANSPOSE,

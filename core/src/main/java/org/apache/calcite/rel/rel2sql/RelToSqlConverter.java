@@ -45,6 +45,7 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexCall;
+import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexLocalRef;
 import org.apache.calcite.rex.RexNode;
@@ -665,12 +666,12 @@ public class RelToSqlConverter extends SqlImplementor
 
     SqlNode tableRef = x.asQueryOrValues();
 
+    final RexBuilder rexBuilder = input.getCluster().getRexBuilder();
     final List<SqlNode> partitionSqlList = new ArrayList<>();
-    if (e.getPartitionKeys() != null) {
-      for (RexNode rex : e.getPartitionKeys()) {
-        SqlNode sqlNode = context.toSql(null, rex);
-        partitionSqlList.add(sqlNode);
-      }
+    for (int key : e.getPartitionKeys()) {
+      final RexInputRef ref = rexBuilder.makeInputRef(input, key);
+      SqlNode sqlNode = context.toSql(null, ref);
+      partitionSqlList.add(sqlNode);
     }
     final SqlNodeList partitionList = new SqlNodeList(partitionSqlList, POS);
 

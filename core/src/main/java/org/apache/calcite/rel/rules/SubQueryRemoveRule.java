@@ -218,8 +218,8 @@ public class SubQueryRemoveRule
       // cross join (
       //   select max(deptno) as m, count(*) as c, count(deptno) as d
       //   from emp) as q
-      builder.push(e.rel).
-          aggregate(builder.groupKey(),
+      builder.push(e.rel)
+          .aggregate(builder.groupKey(),
               builder.aggregateCall(minMax, builder.field(0)).as("m"),
               builder.count(false, "c"),
               builder.count(false, "d", builder.field(0)))
