@@ -352,7 +352,7 @@ class ImmutableBitSetTest {
   }
 
   /** Tests {@link ImmutableBitSet.Builder#buildAndReset()}. */
-  @Test void testReset() {
+  @Test public void testReset() {
     final ImmutableBitSet.Builder builder = ImmutableBitSet.builder();
     builder.set(2);
     assertThat(builder.build().toString(), is("{2}"));
@@ -384,7 +384,7 @@ class ImmutableBitSetTest {
     assertThat(builder2.buildAndReset().toString(), is("{3, 151}"));
   }
 
-  @Test void testNth() {
+  @Test public void testNth() {
     assertThat(ImmutableBitSet.of(0, 2, 4).nth(0), equalTo(0));
     assertThat(ImmutableBitSet.of(0, 2, 4).nth(1), equalTo(2));
     assertThat(ImmutableBitSet.of(0, 2, 4).nth(2), equalTo(4));

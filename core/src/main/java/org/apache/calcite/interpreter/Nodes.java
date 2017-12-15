@@ -91,6 +91,7 @@ public class Nodes {
     public void visit(Match match) {
       node = new MatchNode(this, match);
     }
+<<<<<<< HEAD
 
     public void visit(Collect collect) {
       node = new CollectNode(this, collect);
@@ -99,5 +100,7 @@ public class Nodes {
     public void visit(Uncollect uncollect) {
       node = new UncollectNode(this, uncollect);
     }
+=======
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
   }
 }

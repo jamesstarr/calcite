@@ -1840,9 +1840,8 @@ public class RelBuilder {
   /** Creates an {@link Aggregate} with a list of
    * calls. */
   public RelBuilder aggregate(GroupKey groupKey, Iterable<AggCall> aggCalls) {
-    final Registrar registrar = new Registrar();
-    registrar.extraNodes.addAll(fields());
-    registrar.names.addAll(peek().getRowType().getFieldNames());
+    final Registrar registrar =
+        new Registrar(fields(), peek().getRowType().getFieldNames());
     final GroupKeyImpl groupKey_ = (GroupKeyImpl) groupKey;
     final ImmutableBitSet groupSet =
         ImmutableBitSet.of(registrar.registerExpressions(groupKey_.nodes));
@@ -2299,9 +2298,8 @@ public class RelBuilder {
   public RelBuilder correlate(JoinRelType joinType,
       CorrelationId correlationId, Iterable<? extends RexNode> requiredFields) {
     Frame right = stack.pop();
-    final Registrar registrar = new Registrar();
-    registrar.extraNodes.addAll(fields());
-    registrar.names.addAll(peek().getRowType().getFieldNames());
+    final Registrar registrar =
+        new Registrar(fields(), peek().getRowType().getFieldNames());
 
     List<Integer> requiredOrdinals =
         registrar.registerExpressions(ImmutableList.copyOf(requiredFields));
@@ -2777,6 +2775,326 @@ public class RelBuilder {
     return project(exprList);
   }
 
+<<<<<<< HEAD
+=======
+  public RelBuilder aggregate(GroupKey groupKey,
+      List<AggregateCall> aggregateCalls) {
+    return aggregate(groupKey,
+        Lists.transform(aggregateCalls, AggCallImpl2::new));
+
+  }
+
+  /** Creates a {@link Match}. */
+  public RelBuilder match(RexNode pattern, boolean strictStart,
+      boolean strictEnd, Map<String, RexNode> patternDefinitions,
+      Iterable<? extends RexNode> measureList, RexNode after,
+      Map<String, ? extends SortedSet<String>> subsets, boolean allRows,
+      Iterable<? extends RexNode> partitionKeys,
+      Iterable<? extends RexNode> orderKeys, RexNode interval) {
+    final Registrar registrar =
+        new Registrar(fields(), peek().getRowType().getFieldNames());
+    final List<RelFieldCollation> fieldCollations =
+        registrar.registerFieldCollations(orderKeys);
+
+    final ImmutableBitSet partitionBitSet =
+        ImmutableBitSet.of(registrar.registerExpressions(partitionKeys));
+
+    final RelDataTypeFactory.Builder typeBuilder = cluster.getTypeFactory().builder();
+    for (RexNode partitionKey : partitionKeys) {
+      typeBuilder.add(partitionKey.toString(), partitionKey.getType());
+    }
+    if (allRows) {
+      for (RexNode orderKey : orderKeys) {
+        if (!typeBuilder.nameExists(orderKey.toString())) {
+          typeBuilder.add(orderKey.toString(), orderKey.getType());
+        }
+      }
+
+      final RelDataType inputRowType = peek().getRowType();
+      for (RelDataTypeField fs : inputRowType.getFieldList()) {
+        if (!typeBuilder.nameExists(fs.getName())) {
+          typeBuilder.add(fs);
+        }
+      }
+    }
+
+    final ImmutableMap.Builder<String, RexNode> measures = ImmutableMap.builder();
+    for (RexNode measure : measureList) {
+      List<RexNode> operands = ((RexCall) measure).getOperands();
+      String alias = operands.get(1).toString();
+      typeBuilder.add(alias, operands.get(0).getType());
+      measures.put(alias, operands.get(0));
+    }
+
+    final RelNode match = struct.matchFactory.createMatch(peek(), pattern,
+        typeBuilder.build(), strictStart, strictEnd, patternDefinitions,
+        measures.build(), after, subsets, allRows,
+        partitionBitSet, RelCollations.of(fieldCollations),
+        interval);
+    stack.push(new Frame(match));
+    return this;
+  }
+
+  /**
+   * Attaches an array of hints to the stack top relational expression.
+   *
+   * <p>The redundant hints would be eliminated.
+   *
+   * @param hints Hints
+   *
+   * @throws AssertionError if the top relational expression does not implement
+   * {@link org.apache.calcite.rel.hint.Hintable}
+   */
+  public RelBuilder hints(RelHint... hints) {
+    return hints(ImmutableList.copyOf(hints));
+  }
+
+  /**
+   * Attaches multiple hints to the stack top relational expression.
+   *
+   * <p>The redundant hints would be eliminated.
+   *
+   * @param hints Hints
+   *
+   * @throws AssertionError if the top relational expression does not implement
+   * {@link org.apache.calcite.rel.hint.Hintable}
+   */
+  public RelBuilder hints(Iterable<RelHint> hints) {
+    Objects.requireNonNull(hints);
+    final Frame frame = peek_();
+    assert frame != null : "There is no relational expression to attach the hints";
+    assert frame.rel instanceof Hintable : "The top relational expression is not a Hintable";
+    Hintable hintable = (Hintable) frame.rel;
+    replaceTop(hintable.attachHints(ImmutableList.copyOf(hints)));
+    return this;
+  }
+
+  /** Creates a Pivot.
+   *
+   * <p>To achieve the same effect as the SQL
+   *
+   * <blockquote><pre>{@code
+   * SELECT *
+   * FROM (SELECT mgr, deptno, job, sal FROM emp)
+   * PIVOT (SUM(sal) AS ss, COUNT(*) AS c
+   *     FOR (job, deptno)
+   *     IN (('CLERK', 10) AS c10, ('MANAGER', 20) AS m20))
+   * }</pre></blockquote>
+   *
+   * <p>use the builder as follows:
+   *
+   * <blockquote><pre>{@code
+   * RelBuilder b;
+   * b.scan("EMP");
+   * final RelBuilder.GroupKey groupKey = b.groupKey("MGR");
+   * final List<RelBuilder.AggCall> aggCalls =
+   *     Arrays.asList(b.sum(b.field("SAL")).as("SS"),
+   *         b.count().as("C"));
+   * final List<RexNode> axes =
+   *     Arrays.asList(b.field("JOB"),
+   *         b.field("DEPTNO"));
+   * final ImmutableMap.Builder<String, List<RexNode>> valueMap =
+   *     ImmutableMap.builder();
+   * valueMap.put("C10",
+   *     Arrays.asList(b.literal("CLERK"), b.literal(10)));
+   * valueMap.put("M20",
+   *     Arrays.asList(b.literal("MANAGER"), b.literal(20)));
+   * b.pivot(groupKey, aggCalls, axes, valueMap.build().entrySet());
+   * }</pre></blockquote>
+   *
+   * <p>Note that the SQL uses a sub-query to project away columns (e.g.
+   * {@code HIREDATE}) that it does not reference, so that they do not appear in
+   * the {@code GROUP BY}. You do not need to do that in this API, because the
+   * {@code groupKey} parameter specifies the keys.
+   *
+   * <p>Pivot is implemented by desugaring. The above example becomes the
+   * following:
+   *
+   * <blockquote><pre>{@code
+   * SELECT mgr,
+   *     SUM(sal) FILTER (WHERE job = 'CLERK' AND deptno = 10) AS c10_ss,
+   *     COUNT(*) FILTER (WHERE job = 'CLERK' AND deptno = 10) AS c10_c,
+   *     SUM(sal) FILTER (WHERE job = 'MANAGER' AND deptno = 20) AS m20_ss,
+   *      COUNT(*) FILTER (WHERE job = 'MANAGER' AND deptno = 20) AS m20_c
+   * FROM emp
+   * GROUP BY mgr
+   * }</pre></blockquote>
+   *
+   * @param groupKey Key columns
+   * @param aggCalls Aggregate expressions to compute for each value
+   * @param axes Columns to pivot
+   * @param values Values to pivot, and the alias for each column group
+   *
+   * @return this RelBuilder
+   */
+  public RelBuilder pivot(GroupKey groupKey,
+      Iterable<? extends AggCall> aggCalls,
+      Iterable<? extends RexNode> axes,
+      Iterable<? extends Map.Entry<String,
+          ? extends Iterable<? extends RexNode>>> values) {
+    final List<RexNode> axisList = ImmutableList.copyOf(axes);
+    final List<AggCall> multipliedAggCalls = new ArrayList<>();
+    Pair.forEach(values, (alias, expressions) -> {
+      final List<RexNode> expressionList = ImmutableList.copyOf(expressions);
+      if (expressionList.size() != axisList.size()) {
+        throw new IllegalArgumentException("value count must match axis count ["
+            + expressionList + "], [" + axisList + "]");
+      }
+      aggCalls.forEach(aggCall -> {
+        final String alias2 = alias + "_" + ((AggCallPlus) aggCall).alias();
+        final List<RexNode> filters = new ArrayList<>();
+        Pair.forEach(axisList, expressionList, (axis, expression) ->
+            filters.add(equals(axis, expression)));
+        multipliedAggCalls.add(aggCall.filter(and(filters)).as(alias2));
+      });
+    });
+    return aggregate(groupKey, multipliedAggCalls);
+  }
+
+  /**
+   * Creates an Unpivot.
+   *
+   * <p>To achieve the same effect as the SQL
+   *
+   * <blockquote><pre>{@code
+   * SELECT *
+   * FROM (SELECT deptno, job, sal, comm FROM emp)
+   *   UNPIVOT INCLUDE NULLS (remuneration
+   *     FOR remuneration_type IN (comm AS 'commission',
+   *                               sal AS 'salary'))
+   * }</pre></blockquote>
+   *
+   * <p>use the builder as follows:
+   *
+   * <blockquote><pre>{@code
+   * RelBuilder b;
+   * b.scan("EMP");
+   * final List<String> measureNames = Arrays.asList("REMUNERATION");
+   * final List<String> axisNames = Arrays.asList("REMUNERATION_TYPE");
+   * final Map<List<RexLiteral>, List<RexNode>> axisMap =
+   *     ImmutableMap.<List<RexLiteral>, List<RexNode>>builder()
+   *         .put(Arrays.asList(b.literal("commission")),
+   *             Arrays.asList(b.field("COMM")))
+   *         .put(Arrays.asList(b.literal("salary")),
+   *             Arrays.asList(b.field("SAL")))
+   *         .build();
+   * b.unpivot(false, measureNames, axisNames, axisMap);
+   * }</pre></blockquote>
+   *
+   * <p>The query generates two columns: {@code remuneration_type} (an axis
+   * column) and {@code remuneration} (a measure column). Axis columns contain
+   * values to indicate the source of the row (in this case, {@code 'salary'}
+   * if the row came from the {@code sal} column, and {@code 'commission'}
+   * if the row came from the {@code comm} column).
+   *
+   * @param includeNulls Whether to include NULL values in the output
+   * @param measureNames Names of columns to be generated to hold pivoted
+   *                    measures
+   * @param axisNames Names of columns to be generated to hold qualifying values
+   * @param axisMap Mapping from the columns that hold measures to the values
+   *           that the axis columns will hold in the generated rows
+   * @return This RelBuilder
+   */
+  public RelBuilder unpivot(boolean includeNulls,
+      Iterable<String> measureNames, Iterable<String> axisNames,
+      Iterable<? extends Map.Entry<? extends List<? extends RexLiteral>,
+              ? extends List<? extends RexNode>>> axisMap) {
+    // Make immutable copies of all arguments.
+    final List<String> measureNameList = ImmutableList.copyOf(measureNames);
+    final List<String> axisNameList = ImmutableList.copyOf(axisNames);
+    final List<Pair<List<RexLiteral>, List<RexNode>>> map =
+        StreamSupport.stream(axisMap.spliterator(), false)
+            .map(pair ->
+                Pair.<List<RexLiteral>, List<RexNode>>of(
+                    ImmutableList.<RexLiteral>copyOf(pair.getKey()),
+                    ImmutableList.<RexNode>copyOf(pair.getValue())))
+            .collect(Util.toImmutableList());
+
+    // Check that counts match.
+    Pair.forEach(map, (valueList, inputMeasureList) -> {
+      if (inputMeasureList.size() != measureNameList.size()) {
+        throw new IllegalArgumentException("Number of measures ("
+            + inputMeasureList.size() + ") must match number of measure names ("
+            + measureNameList.size() + ")");
+      }
+      if (valueList.size() != axisNameList.size()) {
+        throw new IllegalArgumentException("Number of axis values ("
+            + valueList.size() + ") match match number of axis names ("
+            + axisNameList.size() + ")");
+      }
+    });
+
+    final RelDataType leftRowType = peek().getRowType();
+    final BitSet usedFields = new BitSet();
+    Pair.forEach(map, (aliases, nodes) ->
+        nodes.forEach(node -> {
+          if (node instanceof RexInputRef) {
+            usedFields.set(((RexInputRef) node).getIndex());
+          }
+        }));
+
+    // Create "VALUES (('commission'), ('salary')) AS t (remuneration_type)"
+    values(ImmutableList.copyOf(Pair.left(map)), axisNameList);
+
+    join(JoinRelType.INNER);
+
+    final ImmutableBitSet unusedFields =
+        ImmutableBitSet.range(leftRowType.getFieldCount())
+            .except(ImmutableBitSet.fromBitSet(usedFields));
+    final List<RexNode> projects = new ArrayList<RexNode>(fields(unusedFields));
+    Ord.forEach(axisNameList, (dimensionName, d) ->
+        projects.add(
+            alias(field(leftRowType.getFieldCount() + d),
+                dimensionName)));
+
+    final List<RexNode> conditions = new ArrayList<>();
+    Ord.forEach(measureNameList, (measureName, m) -> {
+      final List<RexNode> caseOperands = new ArrayList<>();
+      Pair.forEach(map, (literals, nodes) -> {
+        Ord.forEach(literals, (literal, d) ->
+            conditions.add(
+                call(SqlStdOperatorTable.EQUALS,
+                    field(leftRowType.getFieldCount() + d), literal)));
+        caseOperands.add(and(conditions));
+        conditions.clear();
+        caseOperands.add(nodes.get(m));
+      });
+      caseOperands.add(literal(null));
+      projects.add(
+          alias(call(SqlStdOperatorTable.CASE, caseOperands),
+              measureName));
+    });
+    project(projects);
+
+    if (!includeNulls) {
+      // Add 'WHERE m1 IS NOT NULL OR m2 IS NOT NULL'
+      final BitSet notNullFields = new BitSet();
+      Ord.forEach(measureNameList, (measureName, m) -> {
+        final int f = unusedFields.cardinality() + axisNameList.size() + m;
+        conditions.add(isNotNull(field(f)));
+        notNullFields.set(f);
+      });
+      filter(or(conditions));
+      if (measureNameList.size() == 1) {
+        // If there is one field, EXCLUDE NULLS will have converted it to NOT
+        // NULL.
+        final RelDataTypeFactory.Builder builder = getTypeFactory().builder();
+        peek().getRowType().getFieldList().forEach(field -> {
+          final RelDataType type = field.getType();
+          builder.add(field.getName(),
+              notNullFields.get(field.getIndex())
+                  ? getTypeFactory().createTypeWithNullability(type, false)
+                  : type);
+        });
+        convert(builder.build(), false);
+      }
+      conditions.clear();
+    }
+
+    return this;
+  }
+
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
   /** Clears the stack.
    *
    * <p>The builder's state is now the same as when it was created. */

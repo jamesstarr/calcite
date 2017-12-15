@@ -110,6 +110,7 @@ C    EMPID
 
 !ok
 
+<<<<<<< HEAD
 # Test Classifier
 select *
 from "hr"."emps" match_recognize (
@@ -160,6 +161,8 @@ C    CL EMPID
 
 !ok
 
+=======
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
 !if (false) {
 # Match recognize
 SELECT *

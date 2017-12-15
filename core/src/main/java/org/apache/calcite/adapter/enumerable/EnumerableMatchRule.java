@@ -33,14 +33,15 @@ public class EnumerableMatchRule extends ConverterRule {
 
   @Override public RelNode convert(RelNode rel) {
     final LogicalMatch match = (LogicalMatch) rel;
-    return EnumerableMatch.create(
-        convert(match.getInput(),
-            match.getInput().getTraitSet()
-                .replace(EnumerableConvention.INSTANCE)),
-        match.getRowType(),
+    return EnumerableMatch.create(match.getInput(), match.getRowType(),
         match.getPattern(), match.isStrictStart(), match.isStrictEnd(),
         match.getPatternDefinitions(), match.getMeasures(), match.getAfter(),
         match.getSubsets(), match.isAllRows(), match.getPartitionKeys(),
         match.getOrderKeys(), match.getInterval());
   }
 }
+<<<<<<< HEAD
+=======
+
+// End EnumerableMatchRule.java
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))

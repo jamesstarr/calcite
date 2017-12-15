@@ -83,7 +83,8 @@ import org.apache.calcite.runtime.CompressionFunctions;
 import org.apache.calcite.runtime.Enumerables;
 import org.apache.calcite.runtime.FlatLists;
 import org.apache.calcite.runtime.JsonFunctions;
->>>>>>> 355e516ff ([CALCITE-2975] Implement JSON_REMOVE function (xuqianjin))
+import org.apache.calcite.runtime.Matcher;
+import org.apache.calcite.runtime.Pattern;
 import org.apache.calcite.runtime.RandomFunction;
 import org.apache.calcite.runtime.ResultSetEnumerable;
 import org.apache.calcite.runtime.SortedMultiMap;
@@ -129,6 +130,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.function.BiPredicate;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import javax.sql.DataSource;
 
 /**
@@ -171,6 +175,19 @@ public enum BuiltInMethod {
       DataContext.class),
   HASH_JOIN(ExtendedEnumerable.class, "hashJoin", Enumerable.class, Function1.class,
       Function1.class, Function2.class),
+  MATCH(Enumerables.class, "match", Enumerable.class, Function1.class,
+      Matcher.class, Enumerables.Emitter.class, int.class, int.class),
+  PATTERN_BUILDER(Utilities.class, "patternBuilder"),
+  PATTERN_BUILDER_SYMBOL(Pattern.PatternBuilder.class, "symbol", String.class),
+  PATTERN_BUILDER_SEQ(Pattern.PatternBuilder.class, "seq"),
+  PATTERN_BUILDER_BUILD(Pattern.PatternBuilder.class, "build"),
+  PATTERN_TO_AUTOMATON(Pattern.PatternBuilder.class, "automaton"),
+  MATCHER_BUILDER(Matcher.class, "builder", Automaton.class),
+  MATCHER_BUILDER_ADD(Matcher.Builder.class, "add", String.class,
+      Predicate.class),
+  MATCHER_BUILDER_BUILD(Matcher.Builder.class, "build"),
+  EMITTER_EMIT(Enumerables.Emitter.class, "emit", List.class, List.class,
+      List.class, int.class, Consumer.class),
   MERGE_JOIN(EnumerableDefaults.class, "mergeJoin", Enumerable.class,
       Enumerable.class, Function1.class, Function1.class, Function2.class,
       boolean.class, boolean.class),

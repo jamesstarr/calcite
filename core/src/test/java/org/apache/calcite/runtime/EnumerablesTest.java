@@ -26,15 +26,14 @@ import org.apache.calcite.linq4j.function.Predicate2;
 
 import com.google.common.collect.Lists;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
-import static com.google.common.collect.Lists.newArrayList;
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
 
 import static com.google.common.collect.Lists.newArrayList;
 
@@ -284,6 +283,7 @@ class EnumerablesTest {
         equalTo("[]"));
   }
 
+<<<<<<< HEAD
   @Test void testNestedLoopSemiJoinEmp() {
     assertThat(
         EnumerableDefaults.nestedLoopJoin(EMPS, DEPTS, EMP_DEPT_EQUAL_DEPTNO,
@@ -313,6 +313,9 @@ class EnumerablesTest {
   }
 
   @Test @Disabled // TODO fix this
+=======
+  @Test
+  @Ignore // TODO fix this
   public void testMatch() {
     final Enumerable<Emp> emps = Linq4j.asEnumerable(
         Arrays.asList(
@@ -354,6 +357,7 @@ class EnumerablesTest {
             + "[Emp(20, Sebastian), Emp(30, Joe)] null 2]"));
   }
 
+<<<<<<< HEAD
   @Test void testInnerHashJoin() {
     assertThat(
         EnumerableDefaults.hashJoin(
@@ -469,6 +473,8 @@ class EnumerablesTest {
             + " null, Dept(30, Development)]"));
   }
 
+=======
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
   /** Employee record. */
   private static class Emp {
     final int deptno;

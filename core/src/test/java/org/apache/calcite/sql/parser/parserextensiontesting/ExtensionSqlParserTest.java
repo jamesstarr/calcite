@@ -35,12 +35,12 @@ class ExtensionSqlParserTest extends SqlParserTest {
     return ExtensionSqlParserImpl.FACTORY;
   }
 
-  @Test void testAlterSystemExtension() {
-    sql("alter system upload jar '/path/to/jar'")
-        .ok("ALTER SYSTEM UPLOAD JAR '/path/to/jar'");
+  @Test public void testAlterSystemExtension() {
+    check("alter system upload jar '/path/to/jar'",
+        "ALTER SYSTEM UPLOAD JAR '/path/to/jar'");
   }
 
-  @Test void testAlterSystemExtensionWithoutAlter() {
+  @Test public void testAlterSystemExtensionWithoutAlter() {
     // We need to include the scope for custom alter operations
     sql("^upload^ jar '/path/to/jar'")
         .fails("(?s).*Encountered \"upload\" at .*");

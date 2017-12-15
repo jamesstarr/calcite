@@ -93,3 +93,8 @@ public class MemoryFactory<E> {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End MemoryFactory.java
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))

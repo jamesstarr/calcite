@@ -110,7 +110,7 @@ public abstract class Match extends SingleRel {
     this.after = Objects.requireNonNull(after);
     this.subsets = copyMap(subsets);
     this.allRows = allRows;
-    this.partitionKeys = ImmutableList.copyOf(partitionKeys);
+    this.partitionKeys = Objects.requireNonNull(partitionKeys);
     this.orderKeys = Objects.requireNonNull(orderKeys);
     this.interval = interval;
 

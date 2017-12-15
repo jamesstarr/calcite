@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-<<<<<<<< HEAD:core/src/main/java/org/apache/calcite/interpreter/MatchNode.java
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
 package org.apache.calcite.interpreter;
 
 import org.apache.calcite.rel.core.Match;
@@ -35,6 +35,7 @@ public class MatchNode extends AbstractSingleNode<Match> {
     }
     sink.end();
   }
+<<<<<<< HEAD
 ========
 package org.apache.calcite.adapter.geode.rel;
 
@@ -65,3 +66,7 @@ class GeodeAssertions {
 }
 
 // End GeodeAssertions.java
+=======
+}
+
+// End MatchNode.java

@@ -159,6 +159,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EQUALS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EVERY;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EXP;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EXTRACT;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.FINAL;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.FIRST_VALUE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.FLOOR;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.FUSION;
@@ -465,26 +466,6 @@ public class RexImpTable {
         NotImplementor.of(posixRegexImplementor), false);
     defineImplementor(SqlStdOperatorTable.NEGATED_POSIX_REGEX_CASE_SENSITIVE, NullPolicy.STRICT,
         NotImplementor.of(posixRegexImplementor), false);
-<<<<<<< HEAD
-    defineImplementor(REGEXP_REPLACE, NullPolicy.STRICT,
-        new NotNullImplementor() {
-          final NotNullImplementor[] implementors = {
-              new ReflectiveCallNotNullImplementor(
-                  BuiltInMethod.REGEXP_REPLACE3.method),
-              new ReflectiveCallNotNullImplementor(
-                  BuiltInMethod.REGEXP_REPLACE4.method),
-              new ReflectiveCallNotNullImplementor(
-                  BuiltInMethod.REGEXP_REPLACE5.method),
-              new ReflectiveCallNotNullImplementor(
-                  BuiltInMethod.REGEXP_REPLACE6.method)
-          };
-          public Expression implement(RexToLixTranslator translator, RexCall call,
-              List<Expression> translatedOperands) {
-            return implementors[call.getOperands().size() - 3]
-                .implement(translator, call, translatedOperands);
-          }
-        }, false);
-=======
 
     // Multisets & arrays
     defineMethod(CARDINALITY, BuiltInMethod.COLLECTION_SIZE.method,
@@ -640,12 +621,24 @@ public class RexImpTable {
     winAggMap.put(COUNT, constructorSupplier(CountWinImplementor.class));
 
     // Functions for MATCH_RECOGNIZE
+<<<<<<< HEAD
     matchMap.put(CLASSIFIER, ClassifierImplementor::new);
     matchMap.put(LAST, LastImplementor::new);
     map.put(PREV, new PrevImplementor());
     tvfImplementorMap.put(TUMBLE, TumbleImplementor::new);
     tvfImplementorMap.put(HOP, HopImplementor::new);
     tvfImplementorMap.put(SESSION, SessionImplementor::new);
+=======
+    defineMethod(FINAL, "abs", NullPolicy.ANY);
+
+    map.put(PREV, (translator, call, nullAs) -> {
+      final RexNode node = call.getOperands().get(0);
+      final RexNode offset = call.getOperands().get(1);
+      final Expression offs = Expressions.multiply(translator.translate(offset),
+          Expressions.constant(-1));
+      ((EnumerableMatch.PrevInputGetter) translator.inputGetter).setOffset(offs);
+      return translator.translate(node, nullAs);
+    });
   }
 
   private <T> Supplier<T> constructorSupplier(Class<T> klass) {

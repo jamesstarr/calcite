@@ -72,14 +72,14 @@ public class Matcher<E> {
     return new Builder<>(automaton);
   }
 
-  public List<PartialMatch<E>> match(E... rows) {
+  public List<List<E>> match(E... rows) {
     return match(Arrays.asList(rows));
   }
 
-  public List<PartialMatch<E>> match(Iterable<E> rows) {
-    final ImmutableList.Builder<PartialMatch<E>> resultMatchBuilder =
+  public List<List<E>> match(Iterable<E> rows) {
+    final ImmutableList.Builder<List<E>> resultMatchBuilder =
         ImmutableList.builder();
-    final Consumer<PartialMatch<E>> resultMatchConsumer = resultMatchBuilder::add;
+    final Consumer<List<E>> resultMatchConsumer = resultMatchBuilder::add;
     final PartitionState<E> partitionState = createPartitionState(0, 0);
     for (E row : rows) {
       partitionState.getMemoryFactory().add(row);
@@ -98,10 +98,10 @@ public class Matcher<E> {
    * This method ignores the symbols that caused a transition.
    */
   protected void matchOne(MemoryFactory.Memory<E> rows,
-      PartitionState<E> partitionState, Consumer<PartialMatch<E>> resultMatches) {
+      PartitionState<E> partitionState, Consumer<List<E>> resultMatches) {
     List<PartialMatch<E>> matches = matchOneWithSymbols(rows, partitionState);
     for (PartialMatch<E> pm : matches) {
-      resultMatches.accept(pm);
+      resultMatches.accept(pm.rows);
     }
   }
 
@@ -349,3 +349,8 @@ public class Matcher<E> {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End Matcher.java
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))

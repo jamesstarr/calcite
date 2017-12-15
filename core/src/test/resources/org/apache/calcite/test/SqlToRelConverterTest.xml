@@ -374,9 +374,13 @@ LogicalProject(DEPTNO=[$0], NAME=[$1], I=[$2])
 =======
     <TestCase name="testSnapshotOnTemporalTable">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[select * from products_temporal
 for system_time as of TIMESTAMP '2011-01-02 00:00:00']]>
 >>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
+=======
+            <![CDATA[select * from products_temporal for system_time as of TIMESTAMP '2011-01-02 00:00:00']]>
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -409,9 +413,16 @@ from orders,
 =======
     <TestCase name="testJoinTemporalTableOnSpecificTime">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[select stream * from orders, products_temporal
 for system_time as of TIMESTAMP '2011-01-02 00:00:00']]>
 >>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
+=======
+            <![CDATA[select stream *
+from orders,
+  products_temporal for system_time as of
+    TIMESTAMP '2011-01-02 00:00:00']]>
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -453,9 +464,16 @@ on orders.productid = products_temporal.productid]]>
 =======
     <TestCase name="testJoinTemporalTableOnColumnReference">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[select stream * from orders join products_temporal
 for system_time as of orders.rowtime on orders.productid = products_temporal.productid]]>
 >>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
+=======
+            <![CDATA[select stream *
+from orders
+join products_temporal for system_time as of orders.rowtime
+on orders.productid = products_temporal.productid]]>
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -503,10 +521,19 @@ cross join lateral (
     <TestCase name="testCrossJoinTemporalTable1">
         <Resource name="sql">
             <![CDATA[select stream *
+<<<<<<< HEAD
         from orders
         join products_temporal for system_time as of orders.rowtime
         on orders.productid = products_temporal.productid]]>
 >>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
+=======
+from orders
+cross join lateral (
+  select * from products_temporal for system_time
+  as of orders.rowtime
+  where orders.productid = products_temporal.productid)
+]]>
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -525,12 +552,16 @@ LogicalDelta
         <Resource name="sql">
             <![CDATA[select stream *
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
 from orders
 cross join lateral (
   select * from products_temporal for system_time
   as of TIMESTAMP '2011-01-02 00:00:00'
   where orders.productid = products_temporal.productid)
 ]]>
+<<<<<<< HEAD
 =======
         from orders
         cross join lateral (
@@ -538,6 +569,8 @@ cross join lateral (
           as of TIMESTAMP '2011-01-02 00:00:00'
           where orders.productid = products_temporal.productid)]]>
 >>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
+=======
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -555,17 +588,23 @@ LogicalDelta
         <Resource name="sql">
             <![CDATA[select stream *
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
 from orders
 cross join lateral (
   select * from products_temporal for system_time
   as of orders.rowtime
   where products_temporal.productid > 1)
 ]]>
+<<<<<<< HEAD
 =======
         from orders
         join products_temporal for system_time as of orders.rowtime
         on products_temporal.productid > 1]]>
 >>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
+=======
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -1552,6 +1591,23 @@ LogicalProject(EXPR$0=[ROW($0, $1)])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
 ]]>
         </Resource>
+        <Resource name="sql">
+            <![CDATA[select
+  char_length(coord."unit") as unit_length
+from
+  (
+    select
+      fname,
+      coord
+    from
+      customer.contact_peek
+    where
+      coord.x > 1
+      and coord.y > 1
+  ) as view
+where
+  fname = 'john']]>
+        </Resource>
     </TestCase>
     <TestCase name="testNestedStructPrimitiveFieldAccess">
         <Resource name="plan">
@@ -1560,6 +1616,17 @@ LogicalProject(EXPR$0=[$2.OTHERS.A])
   LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
 ]]>
         </Resource>
+        <Resource name="sql">
+            <![CDATA[select
+  coord.x,
+  coord_ne.sub.a,
+  avg(coord.y)
+from
+  customer.contact_peek
+group by
+  coord_ne.sub.a,
+  coord.x]]>
+        </Resource>
     </TestCase>
     <TestCase name="testNestedPrimitiveFieldAccess">
         <Resource name="plan">
@@ -1567,6 +1634,20 @@ LogicalProject(EXPR$0=[$2.OTHERS.A])
 LogicalProject(EXPR$0=[$2.DESC])
   LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
 ]]>
+        </Resource>
+        <Resource name="sql">
+            <![CDATA[select
+  coord.x,
+  coord."unit",
+  coord_ne.sub.a,
+  avg(coord.y)
+from
+  customer.contact_peek
+group by
+  grouping sets (
+    (coord_ne.sub.a, coord.x, coord."unit"),
+    (coord.x, coord."unit")
+  )]]>
         </Resource>
     </TestCase>
     <TestCase name="testArrayElementNestedPrimitive">
@@ -2268,11 +2349,15 @@ last_value(deptno) ignore nulls over w,
 last_value(deptno) respect nulls over w
  from emp
 <<<<<<< HEAD
+<<<<<<< HEAD
 window w as (order by empno)]]>
 =======
 window w as (order by empno)
 ]]>
 >>>>>>> cf7bf148e ([CALCITE-883] Support RESPECT NULLS, IGNORE NULLS option for LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE functions (Chunwei Lei))
+=======
+window w as (order by empno)]]>
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -4744,10 +4829,14 @@ LogicalAggregate(group=[{0}])
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalMatch(partition=[[2, 5]], order=[[2, 5 DESC, 0]], outputFields=[[EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO, SLACKER]], allRows=[false], after=[FLAG(SKIP TO NEXT ROW)], pattern=[(('STRT', PATTERN_QUANTIFIER('DOWN', 1, -1, false)), PATTERN_QUANTIFIER('UP', 1, -1, false))], isStrictStarts=[false], isStrictEnds=[false], subsets=[[]], patternDefinitions=[[OR(=(PREV(DOWN.$3, 0), 0), =(PREV(DOWN.$3, 0), 1)), >(PREV(UP.$3, 0), PREV(UP.$3, 1))]], inputFields=[[EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO, SLACKER]])
 =======
   LogicalMatch(partition=[[$2, $5]], order=[[2, 5 DESC, 0]], outputFields=[[EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO, SLACKER]], allRows=[false], after=[FLAG(SKIP TO NEXT ROW)], pattern=[(('STRT', PATTERN_QUANTIFIER('DOWN', 1, -1, false)), PATTERN_QUANTIFIER('UP', 1, -1, false))], isStrictStarts=[false], isStrictEnds=[false], subsets=[[]], patternDefinitions=[[OR(=(PREV(DOWN.$3, 0), 0), =(PREV(DOWN.$3, 0), 1)), >(PREV(UP.$3, 0), PREV(UP.$3, 1))]], inputFields=[[EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO, SLACKER]])
 >>>>>>> e6376b26e ([CALCITE-2739] NPE is thrown if the DEFINE statement contains IN in MATCH_RECOGNIZE)
+=======
+  LogicalMatch(partition=[[2, 5]], order=[[2, 5 DESC, 0]], outputFields=[[EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO, SLACKER]], allRows=[false], after=[FLAG(SKIP TO NEXT ROW)], pattern=[(('STRT', PATTERN_QUANTIFIER('DOWN', 1, -1, false)), PATTERN_QUANTIFIER('UP', 1, -1, false))], isStrictStarts=[false], isStrictEnds=[false], subsets=[[]], patternDefinitions=[[OR(=(PREV(DOWN.$3, 0), 0), =(PREV(DOWN.$3, 0), 1)), >(PREV(UP.$3, 0), PREV(UP.$3, 1))]], inputFields=[[EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO, SLACKER]])
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -5052,9 +5141,14 @@ FROM emp e1 where exists
     <TestCase name="testSimplifyExistsAggregateSubQuery">
         <Resource name="sql">
             <![CDATA[SELECT e1.empno
+<<<<<<< HEAD
         FROM emp e1 where exists
         (select avg(sal) from emp e2 where e1.empno = e2.empno)]]>
 >>>>>>> 8df9c9187 ([CALCITE-2936] Simplify EXISTS or NOT EXISTS sub-query that has "GROUP BY ()")
+=======
+FROM emp e1 where exists
+(select avg(sal) from emp e2 where e1.empno = e2.empno)]]>
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -5067,12 +5161,17 @@ LogicalProject(EMPNO=[$0])
         <Resource name="sql">
             <![CDATA[SELECT e1.empno
 <<<<<<< HEAD
+<<<<<<< HEAD
 FROM emp e1 where not exists
 (select avg(sal) from emp e2 where e1.empno = e2.empno)]]>
 =======
         FROM emp e1 where not exists
         (select avg(sal) from emp e2 where e1.empno = e2.empno)]]>
 >>>>>>> 8df9c9187 ([CALCITE-2936] Simplify EXISTS or NOT EXISTS sub-query that has "GROUP BY ()")
+=======
+FROM emp e1 where not exists
+(select avg(sal) from emp e2 where e1.empno = e2.empno)]]>
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -5086,12 +5185,17 @@ LogicalProject(EMPNO=[$0])
         <Resource name="sql">
             <![CDATA[select deptno
 <<<<<<< HEAD
+<<<<<<< HEAD
 from EMP
 where exists (values 10)]]>
 =======
         from EMP
         where exists (values 10)]]>
 >>>>>>> 8df9c9187 ([CALCITE-2936] Simplify EXISTS or NOT EXISTS sub-query that has "GROUP BY ()")
+=======
+from EMP
+where exists (values 10)]]>
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -5104,12 +5208,17 @@ LogicalProject(DEPTNO=[$7])
         <Resource name="sql">
             <![CDATA[select deptno
 <<<<<<< HEAD
+<<<<<<< HEAD
 from EMP
 where not exists (values 10)]]>
 =======
         from EMP
         where not exists (values 10)]]>
 >>>>>>> 8df9c9187 ([CALCITE-2936] Simplify EXISTS or NOT EXISTS sub-query that has "GROUP BY ()")
+=======
+from EMP
+where not exists (values 10)]]>
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -6280,7 +6389,7 @@ LogicalAggregate(group=[{}], EXPR$0=[SUM($0)])
 from emp e1, dept d1
 where e1.deptno = d1.deptno
 and e1.sal > (select avg(e2.sal) from emp e2
-where e2.deptno = d1.deptno group by cube(comm, mgr))]]>
+  where e2.deptno = d1.deptno group by cube(comm, mgr))]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -10304,10 +10413,10 @@ LogicalSort(sort0=[$0], dir0=[ASC])
 =======
     <TestCase name="testLeftJoinLateral1">
         <Resource name="sql">
-            <![CDATA[select * from (values 4) as t (c)
-            left join lateral
-            (select c,a*c from (values 2) as s(a)) as r(d,c)
-            using(c)]]>
+            <![CDATA[select * from (values 4) as t(c)
+ left join lateral
+ (select c,a*c from (values 2) as s(a)) as r(d,c)
+ using(c)]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -10322,9 +10431,9 @@ LogicalProject(C=[$0], D=[$1])
     </TestCase>
     <TestCase name="testLeftJoinLateral2">
         <Resource name="sql">
-            <![CDATA[select * from (values 4) as t (c)
-            natural left join lateral
-            (select c,a*c from (values 2) as s(a)) as r(d,c)]]>
+            <![CDATA[select * from (values 4) as t(c)
+ natural left join lateral
+ (select c,a*c from (values 2) as s(a)) as r(d,c)]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -10339,10 +10448,10 @@ LogicalProject(C=[$0], D=[$1])
     </TestCase>
     <TestCase name="testLeftJoinLateral3">
         <Resource name="sql">
-            <![CDATA[select * from (values 4) as t (c)
-            left join lateral
-            (select c,a*c from (values 2) as s(a)) as r(d,c)
-            on t.c=r.c]]>
+            <![CDATA[select * from (values 4) as t(c)
+ left join lateral
+ (select c,a*c from (values 2) as s(a)) as r(d,c)
+ on t.c=r.c]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -10358,9 +10467,9 @@ LogicalProject(C=[$0], D=[$1], C0=[$2])
     <TestCase name="testLeftJoinLateral4">
         <Resource name="sql">
             <![CDATA[select * from (values (4,5)) as t(c,d)
-            left join lateral
-            (select c,a*c from (values 2) as s(a)) as r(d,c)
-            on t.c+t.d=r.c]]>
+ left join lateral
+ (select c,a*c from (values 2) as s(a)) as r(d,c)
+ on t.c+t.d=r.c]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -10376,12 +10485,12 @@ LogicalProject(C=[$0], D=[$1], D0=[$2], C0=[$3])
     <TestCase name="testLeftJoinLateral5">
         <Resource name="sql">
             <![CDATA[select * from (values 4) as t (c)
-        left join lateral
-          (select f1+b1 from (values 2) as foo(f1)
-            join
-          (select c+1 from (values 3)) as bar(b1)
-          on f1=b1)
-        as r(n) on c=n]]>
+left join lateral
+  (select f1+b1 from (values 2) as foo(f1)
+    join
+  (select c+1 from (values 3)) as bar(b1)
+  on f1=b1)
+as r(n) on c=n]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -10400,9 +10509,9 @@ LogicalProject(C=[$0], N=[$1])
     <TestCase name="testCrossJoinLateral1">
         <Resource name="sql">
             <![CDATA[select * from (values (4,5)) as t(c,d)
-         cross join lateral
-         (select c,a*c as f from (values 2) as s(a)
-         where c+d=a*c)]]>
+ cross join lateral
+ (select c,a*c as f from (values 2) as s(a)
+ where c+d=a*c)]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -10418,13 +10527,13 @@ LogicalProject(C=[$0], D=[$1], C0=[$2], F=[$3])
     <TestCase name="testCrossJoinLateral2">
         <Resource name="sql">
             <![CDATA[select * from (values 4) as t (c)
-        cross join lateral
-        (select * from (
-          select f1+b1 from (values 2) as foo(f1)
-            join
-          (select c+1 from (values 3)) as bar(b1)
-          on f1=b1
-        ) as r(n) where c=n)]]>
+cross join lateral
+(select * from (
+  select f1+b1 from (values 2) as foo(f1)
+    join
+  (select c+1 from (values 3)) as bar(b1)
+  on f1=b1
+) as r(n) where c=n)]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[

@@ -16,14 +16,14 @@
  */
 package org.apache.calcite.runtime;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 /** Tests for the {@link DeterministicAutomaton} */
-class DeterministicAutomatonTest {
-  @Test void convertAutomaton() {
+public class DeterministicAutomatonTest {
+  @Test public void convertAutomaton() {
     final Pattern.PatternBuilder builder = Pattern.builder();
     final Pattern pattern = builder.symbol("A")
         .repeat(1, 2)
@@ -45,7 +45,7 @@ class DeterministicAutomatonTest {
     assertThat(da.getEndStates().size(), is(2));
   }
 
-  @Test void convertAutomaton2() {
+  @Test public void convertAutomaton2() {
     final Pattern.PatternBuilder builder = Pattern.builder();
     final Pattern pattern = builder
         .symbol("A")
@@ -65,7 +65,7 @@ class DeterministicAutomatonTest {
     assertThat(da.getEndStates().size(), is(1));
   }
 
-  @Test void convertAutomaton3() {
+  @Test public void convertAutomaton3() {
     final Pattern.PatternBuilder builder = Pattern.builder();
     final Pattern pattern = builder
         .symbol("A")
@@ -83,7 +83,7 @@ class DeterministicAutomatonTest {
     assertThat(da.getEndStates().size(), is(2));
   }
 
-  @Test void convertAutomaton4() {
+  @Test public void convertAutomaton4() {
     final Pattern.PatternBuilder builder = Pattern.builder();
     final Pattern pattern = builder
         .symbol("A")
@@ -100,3 +100,8 @@ class DeterministicAutomatonTest {
     assertThat(da.getEndStates().size(), is(1));
   }
 }
+<<<<<<< HEAD
+=======
+
+// End DeterministicAutomatonTest.java
+>>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))

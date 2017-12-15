@@ -1530,7 +1530,7 @@ public class ExpressionTest {
         Expressions.toString(builder.toBlock()));
   }
 
-  @Test void testForEach() {
+  @Test public void testForEach() {
     final BlockBuilder builder = new BlockBuilder();
     final ParameterExpression i_ = Expressions.parameter(int.class, "i");
     final ParameterExpression list_ = Expressions.parameter(List.class, "list");
@@ -1551,7 +1551,7 @@ public class ExpressionTest {
             + "}\n"));
   }
 
-  @Test void testEmptyListLiteral() throws Exception {
+  @Test public void testEmptyListLiteral() throws Exception {
     assertEquals("java.util.Collections.EMPTY_LIST",
         Expressions.toString(Expressions.constant(Arrays.asList())));
   }

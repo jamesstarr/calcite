@@ -251,6 +251,11 @@ public class Utilities {
     collator.setStrength(strength);
     return collator;
   }
+
+  /** Creates a pattern builder. */
+  public static Pattern.PatternBuilder patternBuilder() {
+    return Pattern.builder();
+  }
 }
 
   public static Collator generateCollator(Locale locale, int strength) {
