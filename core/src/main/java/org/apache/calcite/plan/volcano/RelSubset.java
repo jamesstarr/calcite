@@ -134,6 +134,8 @@ public class RelSubset extends AbstractRelNode {
       if (cost.isLt(bestCost)) {
         bestCost = cost;
         best = rel;
+        mq.clearCache(this);
+        getParents().forEach(mq::clearCache);
       }
     }
   }
@@ -204,7 +206,8 @@ public class RelSubset extends AbstractRelNode {
     final Set<RelNode> list = new LinkedHashSet<>();
     for (RelNode parent : set.getParentRels()) {
       for (RelSubset rel : inputSubsets(parent)) {
-        if (rel.set == set && traitSet.satisfies(rel.getTraitSet())) {
+        // see usage of this method in propagateCostImprovements0()
+        if (rel == this) {
           list.add(parent);
         }
       }
@@ -369,6 +372,9 @@ public class RelSubset extends AbstractRelNode {
       q.remove(subset);
       subset.bestCost = cost;
       subset.best = rel;
+      // since best was changed, cached metadata for this subset should be removed
+      mq.clearCache(subset);
+      subset.getParents().forEach(mq::clearCache);
       // Lower cost means lower importance. Other nodes will change
       // too, but we'll get to them later.
       planner.ruleQueue.recompute(subset);

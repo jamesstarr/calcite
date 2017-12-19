@@ -310,6 +310,7 @@ class RelSet {
     assert otherSet.equivalentSet == null;
     LOGGER.trace("Merge set#{} into set#{}", otherSet.id, id);
     otherSet.equivalentSet = this;
+    RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
 
     // remove from table
     boolean existed = planner.allSets.remove(otherSet);
@@ -325,6 +326,8 @@ class RelSet {
       if (otherSubset.bestCost.isLt(subset.bestCost)) {
         subset.bestCost = otherSubset.bestCost;
         subset.best = otherSubset.best;
+        mq.clearCache(subset);
+        subset.getParents().forEach(mq::clearCache);
       }
       for (RelNode otherRel : otherSubset.getRels()) {
         planner.reregister(this, otherRel);
@@ -352,7 +355,6 @@ class RelSet {
     }
 
     // Make sure the cost changes as a result of merging are propagated.
-    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
     for (RelNode parentRel : getParentRels()) {
       final RelSubset parentSubset = planner.getSubset(parentRel);
       parentSubset.propagateCostImprovements(
