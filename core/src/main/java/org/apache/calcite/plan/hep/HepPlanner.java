@@ -848,7 +848,7 @@ public class HepPlanner extends AbstractRelOptPlanner {
         }
         parentRel.replaceInput(i, preservedVertex);
       }
-      clearCache(parent);
+      RelMdUtil.clearCache(parentRel);
       graph.removeEdge(parent, discardedVertex);
       graph.addEdge(parent, preservedVertex);
       updateVertex(parent, parentRel);

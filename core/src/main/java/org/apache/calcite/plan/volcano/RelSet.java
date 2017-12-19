@@ -348,10 +348,9 @@ public class RelSet {
     }
 
     // Make sure the cost changes as a result of merging are propagated.
-<<<<<<< HEAD
-=======
     final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
->>>>>>> f11ff4461 (DX-14922: Use a more efficient algorithm for cost propagation in Volcano planner)
+=======
+>>>>>>> 1782bf62d ([CALCITE-2018] Queries failed with AssertionError: rel has lower cost than best cost of subset)
     for (RelNode parentRel : getParentRels()) {
       final RelSubset parentSubset = planner.getSubset(parentRel);
       parentSubset.propagateCostImprovements(

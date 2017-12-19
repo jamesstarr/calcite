@@ -360,9 +360,6 @@ public class RelMetadataTest extends SqlToRelTestBase {
     Set<RelColumnOrigin> result = checkColumnOrigin(sql);
     assertNotNull(result);
     assertThat(result.size(), is(2));
-<<<<<<< HEAD
-
-=======
     for (RelColumnOrigin rco : result) {
       RelOptTable actualTable = rco.getOriginTable();
       List<String> actualTableName = actualTable.getQualifiedName();
@@ -1285,7 +1282,6 @@ public class RelMetadataTest extends SqlToRelTestBase {
     assertThat(buf.size(), equalTo(5));
     assertThat(colType(mq1, input, 0), equalTo("DEPTNO-agg"));
     assertThat(buf.size(), equalTo(5));
->>>>>>> a320d6088 ([CALCITE-3446] Make RelMetadataQuery extensible)
   }
 
   /** Unit test for

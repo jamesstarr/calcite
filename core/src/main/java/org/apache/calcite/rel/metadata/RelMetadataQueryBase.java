@@ -18,10 +18,11 @@ package org.apache.calcite.rel.metadata;
 
 import org.apache.calcite.rel.RelNode;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -60,7 +61,7 @@ public class RelMetadataQueryBase {
   //~ Instance fields --------------------------------------------------------
 
   /** Set of active metadata queries, and cache of previous results. */
-  public final Map<List, Object> map = new HashMap<>();
+  public final Table<RelNode, List, Object> map = HashBasedTable.create();
 
   public final JaninoRelMetadataProvider metadataProvider;
 
@@ -91,6 +92,15 @@ public class RelMetadataQueryBase {
   protected <M extends Metadata, H extends MetadataHandler<M>> H
       revise(Class<? extends RelNode> class_, MetadataDef<M> def) {
     return metadataProvider.revise(class_, def);
+  }
+
+  /**
+   * Removes cached metadata values for specified RelNode.
+   *
+   * @param rel RelNode whose cached metadata should be removed
+   */
+  public void clearCache(RelNode rel) {
+    map.row(rel).clear();
   }
 }
 

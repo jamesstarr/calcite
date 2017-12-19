@@ -359,6 +359,9 @@ public class RelSubset extends AbstractRelNode {
       q.remove(subset);
       subset.bestCost = cost;
       subset.best = rel;
+      // since best was changed, cached metadata for this subset should be removed
+      mq.clearCache(subset);
+      subset.getParents().forEach(mq::clearCache);
       // Lower cost means lower importance. Other nodes will change
       // too, but we'll get to them later.
       planner.ruleQueue.recompute(subset);
