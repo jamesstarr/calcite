@@ -31,6 +31,7 @@ adapters.
 
 ## Building from a source distribution
 
+<<<<<<< HEAD
 Prerequisite is Java (JDK 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 or 18)
 and Gradle (version 7.4.2) on your path.
 
@@ -42,6 +43,18 @@ then build using Gradle:
 $ tar xvfz apache-calcite-1.23.0-src.tar.gz
 $ cd apache-calcite-1.23.0-src
 $ ./gradlew build
+=======
+Prerequisite is Java (JDK 8, 9 or 10) on your path.
+
+Unpack the source distribution `.tar.gz` file,
+`cd` to the root directory of the unpacked source,
+then build using the included maven wrapper:
+
+{% highlight bash %}
+$ tar xvfz calcite-1.16.0-source.tar.gz
+$ cd calcite-1.16.0
+$ ./mvnw install
+>>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
 {% endhighlight %}
 
 [Running tests](#running-tests) describes how to run more or fewer
@@ -51,16 +64,28 @@ tests  (but you should use the `gradle` command rather than
 ## Building from Git
 
 Prerequisites are git
+<<<<<<< HEAD
 and Java (JDK 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 or 18) on your path.
+=======
+and Java (JDK 8, 9 or 10) on your path.
+>>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
 
 Create a local copy of the GitHub repository,
 `cd` to its root directory,
+<<<<<<< HEAD
 then build using the included Gradle wrapper:
+=======
+then build using the included maven wrapper:
+>>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
 
 {% highlight bash %}
 $ git clone git://github.com/apache/calcite.git
 $ cd calcite
+<<<<<<< HEAD
 $ ./gradlew build
+=======
+$ ./mvnw install
+>>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
 {% endhighlight %}
 
 Calcite includes a number of machine-generated codes. By default, these are
@@ -76,6 +101,7 @@ then you can call `./gradlew generateSources` tasks manually.
 [Running tests](#running-tests) describes how to run more or fewer
 tests.
 
+<<<<<<< HEAD
 ## Gradle vs the Gradle Wrapper
 
 Calcite uses the Gradle Wrapper to make a consistent build environment.
@@ -114,6 +140,13 @@ provides detailed information about how to upgrade Gradle. Here is a list of ste
 7. Try to build the project and run tests; debug any errors using the
    [Troubleshooting Guide](https://docs.gradle.org/current/userguide/troubleshooting.html#troubleshooting).
 8. Update the Gradle version in this howto.
+=======
+## If you already have Apache Maven
+
+If you have already installed Maven and it is on your path, then you
+can use `mvn` rather than `./mvnw` in commands. You need Maven version
+3.5.2 or later.
+>>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
 
 ## Running tests
 
@@ -121,6 +154,7 @@ The test suite will run by default when you build, unless you specify
 `-x test`
 
 {% highlight bash %}
+<<<<<<< HEAD
 $ ./gradlew assemble # build the artifacts
 $ ./gradlew build -x test # build the artifacts, verify code style, skip tests
 $ ./gradlew check # verify code style, execute tests
@@ -128,6 +162,10 @@ $ ./gradlew test # execute tests
 $ ./gradlew style # update code formatting (for auto-correctable cases) and verify style
 $ ./gradlew autostyleCheck checkstyleAll # report code style violations
 $ ./gradlew -PenableErrorprone classes # verify Java code with Error Prone compiler, requires Java 11
+=======
+$ ./mvnw -DskipTests clean install
+$ ./mvnw test
+>>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
 {% endhighlight %}
 
 You can use `./gradlew assemble` to build the artifacts and skip all tests and verifications.
@@ -261,6 +299,17 @@ Once the importer is finished, test the project setup.
 For example, navigate to the method `JdbcTest.testWinAgg` with
 *Navigate > Symbol* and enter `testWinAgg`. Run `testWinAgg` by right-clicking and selecting *Run* (or the equivalent keyboard shortcut).
 
+<<<<<<< HEAD
+=======
+If you encounter an error while running the `JdbcTest.testWinAgg` , run the following Maven command from the command line:
+
+`$ ./mvnw -DskipTests clean install`
+
+You should see `"BUILD SUCCESS"`.
+
+Once that is complete, proceed with running `JdbcTest.testWinAgg`.
+
+>>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
 ### Setting up NetBeans
 
 From the main menu, select *File > Open Project* and navigate to a name of the project (Calcite) with a small Gradle icon, and choose to open.
@@ -586,8 +635,14 @@ Before you start:
 {% highlight bash %}
 # Make sure that there are no junk files in the sandbox
 git clean -xn
+<<<<<<< HEAD
 # Publish snapshot artifacts
 ./gradlew clean publish -Pasf
+=======
+./mvnw clean
+
+./mvnw -Papache-release -Dgpg.passphrase=${GPG_PASSPHRASE} install
+>>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
 {% endhighlight %}
 
 ## Making a release candidate (for Calcite committers)
@@ -601,14 +656,25 @@ Before you start:
 * Make sure you are using JDK 8 (not 9 or 10).
 * Check that `README` and `site/_docs/howto.md` have the correct version number.
 * Check that `NOTICE` has the current copyright year.
+<<<<<<< HEAD
 * Check that `calcite.version` has the proper value in `/gradle.properties`.
 * Make sure build and tests succeed
 * Make sure that `./gradlew javadoc` succeeds
+=======
+* Set `version.major` and `version.minor` in `pom.xml`.
+* Make sure build and tests succeed, including with `-P it,it-oracle`.
+* Make sure that `./mvnw javadoc:javadoc javadoc:test-javadoc` succeeds
+>>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
   (i.e. gives no errors; warnings are OK)
 * Generate a report of vulnerabilities that occur among dependencies,
   using `./gradlew dependencyCheckUpdate dependencyCheckAggregate`.
   Report to [private@calcite.apache.org](mailto:private@calcite.apache.org)
   if new critical vulnerabilities are found among dependencies.
+<<<<<<< HEAD
+=======
+* Make sure that `./mvnw apache-rat:check` succeeds. (It will be run as part of
+  the release, but it's better to trouble-shoot early.)
+>>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
 * Decide the supported configurations of JDK, operating system and
   Guava.  These will probably be the same as those described in the
   release notes of the previous release.  Document them in the release
@@ -668,12 +734,25 @@ export GPG_TTY=$(tty)
 
 # Make sure that there are no junk files in the sandbox
 git clean -xn
+<<<<<<< HEAD
 
 # Dry run the release candidate (push to asf-like-environment)
 ./gradlew prepareVote -Prc=1
 
 # Push release candidate to ASF servers
 ./gradlew prepareVote -Prc=1 -Pasf
+=======
+./mvnw clean
+
+# Do a dry run of the release:prepare step, which sets version numbers
+# (accept the default tag name of calcite-X.Y.Z)
+# Note X.Y.Z is the current version we're trying to release, and X.Y+1.Z is the next development version.
+# For example, if I am currently building a release for 1.16.0, X.Y.Z would be 1.16.0 and X.Y+1.Z would be 1.17.0.
+./mvnw -DdryRun=true -DskipTests -DreleaseVersion=X.Y.Z -DdevelopmentVersion=X.Y+1.Z-SNAPSHOT -Papache-release -Darguments="-Dgpg.passphrase=${GPG_PASSPHRASE}" release:prepare 2>&1 | tee /tmp/prepare-dry.log
+
+# If you have multiple GPG keys, you can select the key used to sign the release by adding `-Dgpg.keyname=${GPG_KEY_ID}` to `-Darguments`:
+./mvnw -DdryRun=true -DskipTests -DreleaseVersion=X.Y.Z -DdevelopmentVersion=X.Y+1.Z-SNAPSHOT -Papache-release -Darguments="-Dgpg.passphrase=${GPG_PASSPHRASE} -Dgpg.keyname=${GPG_KEY_ID}" release:prepare 2>&1 | tee /tmp/prepare-dry.log
+>>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
 {% endhighlight %}
 
 #### Checking the artifacts
@@ -710,6 +789,25 @@ git clean -xn
   `NOTICE`
 * Check PGP, per [this](https://httpd.apache.org/dev/verification.html)
 
+<<<<<<< HEAD
+=======
+Now, remove the `-DdryRun` flag and run the release for real.
+For this step you'll have to add the [Apache servers](https://maven.apache.org/developers/committer-settings.html) to `~/.m2/settings.xml`.
+
+{% highlight bash %}
+# Prepare sets the version numbers, creates a tag, and pushes it to git
+# Note X.Y.Z is the current version we're trying to release, and X.Y+1.Z is the next development version.
+# For example, if I am currently building a release for 1.16.0, X.Y.Z would be 1.16.0 and X.Y+1.Z would be 1.17.0.
+./mvnw -DdryRun=false -DskipTests -DreleaseVersion=X.Y.Z -DdevelopmentVersion=X.Y+1.Z-SNAPSHOT -Papache-release -Darguments="-Dgpg.passphrase=${GPG_PASSPHRASE}" release:prepare 2>&1 | tee /tmp/prepare.log
+
+# If you have multiple GPG keys, you can select the key used to sign the release by adding `-Dgpg.keyname=${GPG_KEY_ID}` to `-Darguments`:
+./mvnw -DdryRun=false -DskipTests -DreleaseVersion=X.Y.Z -DdevelopmentVersion=X.Y+1.Z-SNAPSHOT -Papache-release -Darguments="-Dgpg.passphrase=${GPG_PASSPHRASE} -Dgpg.keyname=${GPG_KEY_ID}" release:prepare 2>&1 | tee /tmp/prepare-dry.log
+
+# Perform checks out the tagged version, builds, and deploys to the staging repository
+./mvnw -DskipTests -Papache-release -Darguments="-Dgpg.passphrase=${GPG_PASSPHRASE}" release:perform 2>&1 | tee /tmp/perform.log
+{% endhighlight %}
+
+>>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
 Verify the staged artifacts in the Nexus repository:
 
 * Go to [https://repository.apache.org/](https://repository.apache.org/) and login
@@ -723,8 +821,28 @@ Verify the staged artifacts in the Nexus repository:
 
 ## Cleaning up after a failed release attempt (for Calcite committers)
 
+<<<<<<< HEAD
 If something is not correct, you can fix it, commit it, and prepare the next candidate.
 The release candidate tags might be kept for a while.
+=======
+{% highlight bash %}
+# Make sure that the tag you are about to generate does not already
+# exist (due to a failed release attempt)
+git tag
+
+# If the tag exists, delete it locally and remotely
+git tag -d calcite-X.Y.Z
+git push origin :refs/tags/calcite-X.Y.Z
+
+# Remove modified files
+./mvnw release:clean
+
+# Check whether there are modified files and if so, go back to the
+# original git commit
+git status
+git reset --hard HEAD
+{% endhighlight %}
+>>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
 
 ## Validate a release
 
@@ -898,6 +1016,7 @@ The old releases will remain available in the
 You should receive an email from the [Apache Reporter Service](https://reporter.apache.org/).
 Make sure to add the version number and date of the latest release at the site linked to in the email.
 
+<<<<<<< HEAD
 Update the site with the release note, the release announcement, and the javadoc of the new version.
 The javadoc can be generated only from a final version (not a SNAPSHOT) so checkout the most recent
 tag and start working there (`git checkout calcite-X.Y.Z`). Add a release announcement by copying
@@ -907,6 +1026,12 @@ instructions in [site/README.md]({{ site.sourceRoot }}/site/README.md). Check th
 javadoc, and release note appear correctly and then publish the site following the instructions
 in the same file. Now checkout again the release branch (`git checkout branch-X.Y`) and commit
 the release announcement.
+=======
+Add a release note by copying
+[site/_posts/2016-10-12-release-1.10.0.md]({{ site.sourceRoot }}/site/_posts/2016-10-12-release-1.10.0.md),
+generate the javadoc using `./mvnw site`, [publish the site](#publish-the-web-site),
+and check that it appears in the contents in [news](http://localhost:4000/news/).
+>>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
 
 Merge the release branch back into `master` (e.g., `git merge --ff-only branch-X.Y`) and align
 the `master` with the `site` branch (e.g., `git merge --ff-only site`).
