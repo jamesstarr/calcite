@@ -88,49 +88,25 @@ public class AggregateReduceFunctionsRule
     extends RelRule<AggregateReduceFunctionsRule.Config> {
   //~ Static fields/initializers ---------------------------------------------
 
-  private static void validateFunction(SqlKind function) {
-    if (!isValid(function)) {
-      throw new IllegalArgumentException("AggregateReduceFunctionsRule doesn't "
-          + "support function: " + function.sql);
-    }
-  }
+  /** The singleton. */
+  public static final AggregateReduceFunctionsRule INSTANCE =
+      new AggregateReduceFunctionsRule(operand(LogicalAggregate.class, any()), true,
+          RelFactories.LOGICAL_BUILDER);
 
-  private static boolean isValid(SqlKind function) {
-    return SqlKind.AVG_AGG_FUNCTIONS.contains(function)
-        || function == SqlKind.SUM;
-  }
+  /** The singleton. */
+  public static final AggregateReduceFunctionsRule NO_REDUCE_SUM =
+          new AggregateReduceFunctionsRule(operand(LogicalAggregate.class, any()), false,
+                  RelFactories.LOGICAL_BUILDER);
 
-  private final Set<SqlKind> functionsToReduce;
+  private final boolean reduceSum;
 
   //~ Constructors -----------------------------------------------------------
 
   /** Creates an AggregateReduceFunctionsRule. */
-  protected AggregateReduceFunctionsRule(Config config) {
-    super(config);
-    this.functionsToReduce =
-        ImmutableSet.copyOf(config.actualFunctionsToReduce());
-  }
-
-  @Deprecated // to be removed before 2.0
-  public AggregateReduceFunctionsRule(RelOptRuleOperand operand,
+  public AggregateReduceFunctionsRule(RelOptRuleOperand operand, boolean reduceSum,
       RelBuilderFactory relBuilderFactory) {
-    this(Config.DEFAULT
-        .withRelBuilderFactory(relBuilderFactory)
-        .withOperandSupplier(b -> b.exactly(operand))
-        .as(Config.class)
-        // reduce all functions handled by this rule
-        .withFunctionsToReduce(null));
-  }
-
-  @Deprecated // to be removed before 2.0
-  public AggregateReduceFunctionsRule(Class<? extends Aggregate> aggregateClass,
-      RelBuilderFactory relBuilderFactory, EnumSet<SqlKind> functionsToReduce) {
-    this(Config.DEFAULT
-        .withRelBuilderFactory(relBuilderFactory)
-        .as(Config.class)
-        .withOperandFor(aggregateClass)
-        // reduce specific functions provided by the client
-        .withFunctionsToReduce(Objects.requireNonNull(functionsToReduce, "functionsToReduce")));
+    super(operand, relBuilderFactory, null);
+    this.reduceSum = reduceSum;
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -163,9 +139,22 @@ public class AggregateReduceFunctionsRule
   }
 
   /**
-   * Reduces calls to functions AVG, SUM, STDDEV_POP, STDDEV_SAMP, VAR_POP,
-   * VAR_SAMP, COVAR_POP, COVAR_SAMP, REGR_SXX, REGR_SYY if the function is
-   * present in {@link AggregateReduceFunctionsRule#functionsToReduce}
+   * Returns whether the aggregate call is a reducible function
+   */
+  private boolean isReducible(final SqlKind kind) {
+    if (SqlKind.AVG_AGG_FUNCTIONS.contains(kind)) {
+      return true;
+    }
+    switch (kind) {
+    case SUM:
+      return reduceSum;
+    }
+    return false;
+  }
+
+  /**
+   * Reduces all calls to AVG, STDDEV_POP, STDDEV_SAMP, VAR_POP, VAR_SAMP in
+   * the aggregates list to.
    *
    * <p>It handles newly generated common subexpressions since this was done
    * at the sql2rel stage.

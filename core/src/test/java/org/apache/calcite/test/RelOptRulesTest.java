@@ -1340,16 +1340,22 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).withRule(CoreRules.AGGREGATE_REDUCE_FUNCTIONS).check();
   }
 
+  @Test public void testReduceAverageWithNoReduceSum() {
+    checkPlanning(AggregateReduceFunctionsRule.NO_REDUCE_SUM,
+            "select name, max(name), avg(deptno), min(name)"
+                    + " from sales.dept group by name");
+  }
+
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1621">[CALCITE-1621]
    * Adding a cast around the null literal in aggregate rules</a>. */
   @Test void testCastInAggregateReduceFunctions() {
     final HepProgram program =
         HepProgram.builder()
-            .addRuleInstance(CoreRules.AGGREGATE_REDUCE_FUNCTIONS)
-            .build();
-    final String sql = "select name, stddev_pop(deptno), avg(deptno),\n"
-        + "stddev_samp(deptno),var_pop(deptno), var_samp(deptno)\n"
+        .addRuleInstance(AggregateReduceFunctionsRule.INSTANCE)
+        .build();
+    final String sql = "select name, stddev_pop(deptno), avg(deptno),"
+        + " stddev_samp(deptno),var_pop(deptno), var_samp(deptno)\n"
         + "from sales.dept group by name";
     sql(sql).with(program).check();
   }
@@ -1364,7 +1370,16 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).with(program).check();
   }
 
-  @Test void testDistinctCount1() {
+  @Test public void testNoReduceSum() {
+    HepProgram program = new HepProgramBuilder()
+            .addRuleInstance(AggregateReduceFunctionsRule.NO_REDUCE_SUM)
+            .build();
+    String sql = "select name, sum(deptno)"
+                    + " from sales.dept group by name";
+    sql(sql).with(program).checkUnchanged();
+  }
+
+  @Test public void testDistinctCount1() {
     final HepProgram program = HepProgram.builder()
         .addRuleInstance(CoreRules.AGGREGATE_EXPAND_DISTINCT_AGGREGATES)
         .addRuleInstance(CoreRules.AGGREGATE_PROJECT_MERGE)
