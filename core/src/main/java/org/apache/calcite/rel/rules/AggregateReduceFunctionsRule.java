@@ -84,15 +84,23 @@ public class AggregateReduceFunctionsRule extends RelOptRule {
 
   /** The singleton. */
   public static final AggregateReduceFunctionsRule INSTANCE =
-      new AggregateReduceFunctionsRule(operand(LogicalAggregate.class, any()),
+      new AggregateReduceFunctionsRule(operand(LogicalAggregate.class, any()), true,
           RelFactories.LOGICAL_BUILDER);
+
+  /** The singleton. */
+  public static final AggregateReduceFunctionsRule NO_REDUCE_SUM =
+          new AggregateReduceFunctionsRule(operand(LogicalAggregate.class, any()), false,
+                  RelFactories.LOGICAL_BUILDER);
+
+  private final boolean reduceSum;
 
   //~ Constructors -----------------------------------------------------------
 
   /** Creates an AggregateReduceFunctionsRule. */
-  public AggregateReduceFunctionsRule(RelOptRuleOperand operand,
+  public AggregateReduceFunctionsRule(RelOptRuleOperand operand, boolean reduceSum,
       RelBuilderFactory relBuilderFactory) {
     super(operand, relBuilderFactory, null);
+    this.reduceSum = reduceSum;
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -133,7 +141,7 @@ public class AggregateReduceFunctionsRule extends RelOptRule {
     }
     switch (kind) {
     case SUM:
-      return true;
+      return reduceSum;
     }
     return false;
   }
