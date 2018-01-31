@@ -175,6 +175,65 @@ import org.apache.calcite.sql.parser.SqlParserPos;
     if (!Objects.equals(this.timeZone, that.timeZone)) {
       return litmus.fail("{} != {}", this, node);
     }
+<<<<<<< HEAD
+=======
+    if (!SqlNode.equalDeep(
+        this.collectionsTypeName,
+        that.collectionsTypeName, litmus)) {
+      return litmus.fail(null);
+    }
+    if (!this.typeNameSpec.equalsDeep(that.typeNameSpec, litmus)) {
+      return litmus.fail(null);
+    }
+    return litmus.succeed();
+  }
+
+  /**
+   * Throws an error if the type is not found.
+   */
+  public RelDataType deriveType(SqlValidator validator) {
+    // validate collection type name first.
+    if (null != collectionsTypeName) {
+      final String collectionName = collectionsTypeName.getSimple();
+      if (SqlTypeName.get(collectionName) == null) {
+        throw validator.newValidationError(this,
+            RESOURCE.unknownDatatypeName(collectionName));
+      }
+    }
+    RelDataTypeFactory typeFactory = validator.getTypeFactory();
+    RelDataType type = deriveType(typeFactory);
+    if (type == null) {
+      // the type is a UDT.
+      type = validator.getValidatedNodeType(typeNameSpec.getTypeName());
+      if (null != collectionsTypeName) {
+        type = createCollectionType(type, typeFactory);
+      }
+    }
+    return type;
+  }
+
+  /**
+   * Does not throw an error if the type is not built-in.
+   */
+  public RelDataType deriveType(RelDataTypeFactory typeFactory) {
+    return deriveType(typeFactory, false);
+  }
+
+  /**
+   * Converts this type specification to a {@link RelDataType}.
+   *
+   * <p>Does not throw an error if the type is not built-in.
+   *
+   * @param nullable Whether the type is nullable if the type specification
+   *                 does not explicitly state
+   */
+  public RelDataType deriveType(RelDataTypeFactory typeFactory,
+      boolean nullable) {
+    if (!typeNameSpec.getTypeName().isSimple()) {
+      return null;
+    }
+    RelDataType type;
+>>>>>>> f48aee584 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
     type = createTypeFromTypeNameSpec(typeFactory, typeNameSpec);
     if (type == null) {
       // This is definitely not a builtin data type, returns null.
