@@ -261,6 +261,9 @@ public class SqlDataTypeSpec extends SqlNode {
    */
   public RelDataType deriveType(RelDataTypeFactory typeFactory,
       boolean nullable) {
+    if (!typeNameSpec.getTypeName().isSimple()) {
+      return null;
+    }
     RelDataType type;
     type = createTypeFromTypeNameSpec(typeFactory, typeNameSpec);
     if (type == null) {

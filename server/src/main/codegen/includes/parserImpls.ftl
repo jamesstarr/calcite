@@ -213,7 +213,13 @@ void AttributeDef(List<SqlNode> list) :
     id = SimpleIdentifier()
     (
         type = DataType()
-        nullable = NullableOptDefaultTrue()
+        (
+            <NULL> { nullable = true; }
+        |
+            <NOT> <NULL> { nullable = false; }
+        |
+            { nullable = true; }
+        )
     )
     [ <DEFAULT_> e = Expression(ExprContext.ACCEPT_SUB_QUERY) ]
     {
