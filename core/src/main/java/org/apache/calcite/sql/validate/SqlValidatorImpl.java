@@ -1551,6 +1551,9 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     if (original != null && original != node) {
       return getValidatedNodeType(original);
     }
+    if (node instanceof SqlIdentifier) {
+      return getCatalogReader().getNamedType((SqlIdentifier) node);
+    }
     return null;
   }
 

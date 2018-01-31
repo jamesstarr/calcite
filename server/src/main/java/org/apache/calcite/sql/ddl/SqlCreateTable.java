@@ -167,10 +167,12 @@ public class SqlCreateTable extends SqlCreate
       if (c.e instanceof SqlColumnDeclaration) {
         final SqlColumnDeclaration d = (SqlColumnDeclaration) c.e;
         RelDataType type = d.dataType.deriveType(typeFactory, true);
+        final Pair<CalciteSchema, String> pairForType =
+            SqlDdlNodes.schema(context, true, d.dataType.getTypeName());
         if (type == null) {
-          if (d.dataType.getNullable() != null
-              && d.dataType.getNullable() != type.isNullable()) {
-            type = typeFactory.createTypeWithNullability(type, d.dataType.getNullable());
+          CalciteSchema.TypeEntry typeEntry = pairForType.left.getType(pairForType.right, false);
+          if (typeEntry != null) {
+            type = typeEntry.getType().apply(typeFactory);
           }
         }
         builder.add(d.name.getSimple(), type);
