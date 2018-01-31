@@ -62,7 +62,12 @@ import java.util.TimeZone;
 public class SqlDataTypeSpec extends SqlNode {
   //~ Instance fields --------------------------------------------------------
 
-  private final SqlTypeNameSpec typeNameSpec;
+  private final SqlIdentifier collectionsTypeName;
+  private final SqlIdentifier typeName;
+  private final SqlIdentifier baseTypeName;
+  private final int scale;
+  private final int precision;
+  private final String charSetName;
   private final TimeZone timeZone;
 
   /** Whether data type allows nulls.
@@ -110,12 +115,52 @@ public class SqlDataTypeSpec extends SqlNode {
    * @param nullable     The nullability
    */
   public SqlDataTypeSpec(
-      SqlTypeNameSpec typeNameSpec,
+      SqlIdentifier collectionsTypeName,
+      SqlIdentifier typeName,
+      int precision,
+      int scale,
+      String charSetName,
+      SqlParserPos pos) {
+    this(collectionsTypeName, typeName, precision, scale, charSetName, null,
+        null, pos);
+  }
+
+  /**
+   * Creates a type specification that has no base type.
+   */
+  public SqlDataTypeSpec(
+      SqlIdentifier collectionsTypeName,
+      SqlIdentifier typeName,
+      int precision,
+      int scale,
+      String charSetName,
+      TimeZone timeZone,
+      Boolean nullable,
+      SqlParserPos pos) {
+    this(collectionsTypeName, typeName, typeName, precision, scale, charSetName,
+        timeZone, nullable, pos);
+  }
+
+  /**
+   * Creates a type specification.
+   */
+  public SqlDataTypeSpec(
+      SqlIdentifier collectionsTypeName,
+      SqlIdentifier typeName,
+      SqlIdentifier baseTypeName,
+      int precision,
+      int scale,
+      String charSetName,
       TimeZone timeZone,
       Boolean nullable,
       SqlParserPos pos) {
     super(pos);
-    this.typeNameSpec = typeNameSpec;
+    this.collectionsTypeName = collectionsTypeName;
+    this.typeName = typeName;
+    this.baseTypeName = baseTypeName;
+    this.precision = precision;
+    this.scale = scale;
+    this.charSetName = charSetName;
     this.timeZone = timeZone;
     this.nullable = nullable;
   }
@@ -201,12 +246,33 @@ public class SqlDataTypeSpec extends SqlNode {
   }
 
   /**
-   * Converts this type specification to a {@link RelDataType}.
-   *
-   * <p>Throws an error if the type is not found.
+   * Throws an error if the type is not found.
    */
   public RelDataType deriveType(SqlValidator validator) {
-    return deriveType(validator, false);
+    RelDataType type = null;
+    if (typeName.isSimple()) {
+      if (null != collectionsTypeName) {
+        final String collectionName = collectionsTypeName.getSimple();
+        if (SqlTypeName.get(collectionName) == null) {
+          throw validator.newValidationError(this,
+              RESOURCE.unknownDatatypeName(collectionName));
+        }
+      }
+
+      RelDataTypeFactory typeFactory = validator.getTypeFactory();
+      type = deriveType(typeFactory);
+    }
+    if (type == null) {
+      type = validator.getValidatedNodeType(typeName);
+    }
+    return type;
+  }
+
+  /**
+   * Does not throw an error if the type is not built-in.
+   */
+  public RelDataType deriveType(RelDataTypeFactory typeFactory) {
+    return deriveType(typeFactory, false);
   }
 
   /**
@@ -217,7 +283,20 @@ public class SqlDataTypeSpec extends SqlNode {
    * @param nullable Whether the type is nullable if the type specification
    *                 does not explicitly state
    */
-  public RelDataType deriveType(SqlValidator validator, boolean nullable) {
+  public RelDataType deriveType(RelDataTypeFactory typeFactory,
+      boolean nullable) {
+    if (!typeName.isSimple()) {
+      return null;
+    }
+    final String name = typeName.getSimple();
+    final SqlTypeName sqlTypeName = SqlTypeName.get(name);
+    if (sqlTypeName == null) {
+      return null;
+    }
+
+    // NOTE jvs 15-Jan-2009:  earlier validation is supposed to
+    // have caught these, which is why it's OK for them
+    // to be assertions rather than user-level exceptions.
     RelDataType type;
     type = typeNameSpec.deriveType(validator);
 

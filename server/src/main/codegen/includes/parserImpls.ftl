@@ -188,7 +188,11 @@ void TableElement(List<SqlNode> list) :
 SqlNodeList AttributeDefList() :
 {
     final Span s;
+<<<<<<< HEAD
     final List<SqlNode> list = new ArrayList<SqlNode>();
+=======
+    final List<SqlNode> list = Lists.newArrayList();
+>>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
 }
 {
     <LPAREN> { s = span(); }

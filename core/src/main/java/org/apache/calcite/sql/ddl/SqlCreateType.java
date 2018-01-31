@@ -31,12 +31,21 @@ import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSpecialOperator;
 import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.parser.SqlParserPos;
+<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.util.ImmutableNullableList;
 import org.apache.calcite.util.Pair;
 
 import java.util.List;
 import java.util.Objects;
+=======
+import org.apache.calcite.util.ImmutableNullableList;
+import org.apache.calcite.util.Pair;
+
+import com.google.common.base.Preconditions;
+
+import java.util.List;
+>>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen)):server/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
 
 /**
  * Parse tree for {@code CREATE TYPE} statement.
@@ -54,7 +63,11 @@ public class SqlCreateType extends SqlCreate
   SqlCreateType(SqlParserPos pos, boolean replace, SqlIdentifier name,
       SqlNodeList attributeDefs, SqlDataTypeSpec dataType) {
     super(OPERATOR, pos, replace, false);
+<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
     this.name = Objects.requireNonNull(name);
+=======
+    this.name = Preconditions.checkNotNull(name);
+>>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen)):server/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
     this.attributeDefs = attributeDefs; // may be null
     this.dataType = dataType; // may be null
   }
@@ -62,17 +75,33 @@ public class SqlCreateType extends SqlCreate
   @Override public void execute(CalcitePrepare.Context context) {
     final Pair<CalciteSchema, String> pair =
         SqlDdlNodes.schema(context, true, name);
+<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
     final SqlValidator validator = SqlDdlNodes.validator(context, false);
     pair.left.add(pair.right, typeFactory -> {
       if (dataType != null) {
         return dataType.deriveType(validator);
+=======
+    pair.left.add(pair.right, typeFactory -> {
+      if (dataType != null) {
+        return dataType.deriveType(typeFactory);
+>>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen)):server/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
       } else {
         final RelDataTypeFactory.Builder builder = typeFactory.builder();
         for (SqlNode def : attributeDefs) {
           final SqlAttributeDefinition attributeDef =
               (SqlAttributeDefinition) def;
           final SqlDataTypeSpec typeSpec = attributeDef.dataType;
+<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
           final RelDataType type = typeSpec.deriveType(validator);
+=======
+          RelDataType type = typeSpec.deriveType(typeFactory);
+          if (type == null) {
+            Pair<CalciteSchema, String> pair1 =
+                SqlDdlNodes.schema(context, false, typeSpec.getTypeName());
+            type = pair1.left.getType(pair1.right, false).getType()
+                .apply(typeFactory);
+          }
+>>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen)):server/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
           builder.add(attributeDef.name.getSimple(), type);
         }
         return builder.build();
@@ -105,3 +134,8 @@ public class SqlCreateType extends SqlCreate
     }
   }
 }
+<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
+=======
+
+// End SqlCreateType.java
+>>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen)):server/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java

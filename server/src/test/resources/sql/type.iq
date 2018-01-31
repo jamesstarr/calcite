@@ -49,6 +49,7 @@ select * from t;
 
 !ok
 
+<<<<<<< HEAD
 # Create a table with complex structure type
 # This is to test struct type inference in
 # <a href="https://issues.apache.org/jira/browse/CALCITE-2468">[CALCITE-2468]
@@ -137,6 +138,9 @@ drop table t;
 drop table v;
 drop table w;
 drop table w2;
+=======
+drop table t;
+>>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
 (0 rows modified)
 
 !update

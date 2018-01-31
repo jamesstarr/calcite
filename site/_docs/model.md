@@ -498,7 +498,10 @@ if found, creates an aggregate function.
 
 Occurs within `root.schemas.types`.
 
+<<<<<<< HEAD
 #### JSON
+=======
+>>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
 {% highlight json %}
 {
   name: 'mytype1',
@@ -512,6 +515,7 @@ Occurs within `root.schemas.types`.
 }
 {% endhighlight %}
 
+<<<<<<< HEAD
 #### YAML
 {% highlight yaml %}
 name: mytype1
@@ -521,6 +525,8 @@ attributes:
   type: BIGINT
 {% endhighlight %}
 
+=======
+>>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
 `name` (required string) is the name of this type.
 
 `type` (optional) is the SQL type.

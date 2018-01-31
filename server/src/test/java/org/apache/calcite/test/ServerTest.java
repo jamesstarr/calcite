@@ -22,8 +22,10 @@ import org.apache.calcite.schema.Function;
 import org.apache.calcite.schema.FunctionParameter;
 import org.apache.calcite.sql.parser.ddl.SqlDdlParserImpl;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -52,6 +54,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 class ServerTest {
 
   static final String URL = "jdbc:calcite:";
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
 
   static Connection connect() throws SQLException {
     return DriverManager.getConnection(URL,
@@ -92,7 +97,7 @@ class ServerTest {
     }
   }
 
-  @Test void testCreateType() throws Exception {
+  @Test public void testCreateType() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
       boolean b = s.execute("create type mytype1 as BIGINT");
@@ -121,7 +126,7 @@ class ServerTest {
     }
   }
 
-  @Test void testDropType() throws Exception {
+  @Test public void testDropType() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
       boolean b = s.execute("create type mytype1 as BIGINT");
@@ -131,11 +136,7 @@ class ServerTest {
     }
   }
 
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3046">[CALCITE-3046]
-   * CompileException when inserting casted value of composited user defined type
-   * into table</a>. */
-  @Test void testCreateTable() throws Exception {
+  @Test public void testCreateTable() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
       boolean b = s.execute("create table t (i int not null)");

@@ -67,7 +67,11 @@ public class SqlAttributeDefinition extends SqlCall {
     dataType.unparse(writer, 0, 0);
     if (collation != null) {
       writer.keyword("COLLATE");
+<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlAttributeDefinition.java
       collation.unparse(writer);
+=======
+      collation.unparse(writer, 0, 0);
+>>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen)):server/src/main/java/org/apache/calcite/sql/ddl/SqlAttributeDefinition.java
     }
     if (dataType.getNullable() != null && !dataType.getNullable()) {
       writer.keyword("NOT NULL");
@@ -89,3 +93,8 @@ public class SqlAttributeDefinition extends SqlCall {
     }
   }
 }
+<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlAttributeDefinition.java
+=======
+
+// End SqlAttributeDefinition.java
+>>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen)):server/src/main/java/org/apache/calcite/sql/ddl/SqlAttributeDefinition.java

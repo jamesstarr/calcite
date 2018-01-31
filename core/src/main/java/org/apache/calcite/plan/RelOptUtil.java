@@ -3712,35 +3712,6 @@ public abstract class RelOptUtil {
       List<RexNode> operands = Lists.newArrayList(call.getOperands());
       for (int i = 0; i < operands.size(); i++) {
         RexNode operand = operands.get(i);
-<<<<<<< HEAD
-        if (operand instanceof RexCall) {
-          operand = collapseExpandedIsNotDistinctFromExpr(
-              (RexCall) operand, builder);
-        }
-        if (node.getKind() == SqlKind.AND
-            && operand.getKind() != SqlKind.EQUALS
-            && operand.getKind() != SqlKind.IS_NOT_DISTINCT_FROM) {
-          // one of the join condition is neither EQ nor INDF
-          list.add(operand);
-        } else {
-          final int left2 = leftCount + extraLeftExprs.size();
-          final RexNode e =
-              pushDownEqualJoinConditions(
-                  operand,
-                  leftCount,
-                  rightCount,
-                  extraLeftExprs,
-                  extraRightExprs,
-                  builder);
-          if (!e.equals(operand)) {
-            final List<RexNode> remainingOperands = Util.skip(operands, i + 1);
-            final int left3 = leftCount + extraLeftExprs.size();
-            fix(remainingOperands, left2, left3);
-            fix(list, left2, left3);
-          }
-          list.add(e);
-        }
-=======
         final int left2 = leftCount + extraLeftExprs.size();
         final int right2 = rightCount + extraRightExprs.size();
         final RexNode e =
@@ -4169,7 +4140,6 @@ public abstract class RelOptUtil {
 <<<<<<< HEAD
 =======
       this.inputBitSet = bitBuilder; // deprecated field mirrors private field
->>>>>>> eac65607d (Partially cherry-pick [CALCITE-4038] Refactor RexVisitor)
       this.extraFields = extraFields;
     }
 

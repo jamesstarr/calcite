@@ -1794,6 +1794,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     if (node instanceof SqlIdentifier) {
       return getCatalogReader().getNamedType((SqlIdentifier) node);
     }
+<<<<<<< HEAD
     if (node instanceof SqlCall) {
       SqlCall sqlCall = (SqlCall) node;
       if (sqlCall.getOperator() instanceof SqlAggFunction) {
@@ -1815,6 +1816,8 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
         return null;
       }
     }
+=======
+>>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
     return null;
   }
 

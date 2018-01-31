@@ -470,6 +470,7 @@ data: {
       "SqlCreateMaterializedView"
       "SqlCreateSchema"
       "SqlCreateTable"
+      "SqlCreateType"
       "SqlCreateView"
     ]
 
@@ -480,6 +481,7 @@ data: {
       "SqlDropMaterializedView"
       "SqlDropSchema"
       "SqlDropTable"
+      "SqlDropType"
       "SqlDropView"
     ]
 

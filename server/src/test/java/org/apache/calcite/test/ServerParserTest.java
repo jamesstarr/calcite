@@ -88,22 +88,22 @@ class ServerParserTest extends SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testCreateTypeWithAttributeList() {
+  @Test public void testCreateTypeWithAttributeList() {
     sql("create type x.mytype1 as (i int not null, j varchar(5) null)")
         .ok("CREATE TYPE `X`.`MYTYPE1` AS (`I` INTEGER NOT NULL, `J` VARCHAR(5))");
   }
 
-  @Test void testCreateTypeWithBaseType() {
+  @Test public void testCreateTypeWithBaseType() {
     sql("create type mytype1 as varchar(5)")
         .ok("CREATE TYPE `MYTYPE1` AS VARCHAR(5)");
   }
 
-  @Test void testCreateOrReplaceTypeWith() {
+  @Test public void testCreateOrReplaceTypeWith() {
     sql("create or replace type mytype1 as varchar(5)")
         .ok("CREATE OR REPLACE TYPE `MYTYPE1` AS VARCHAR(5)");
   }
 
-  @Test void testCreateTable() {
+  @Test public void testCreateTable() {
     sql("create table x (i int not null, j varchar(5) null)")
         .ok("CREATE TABLE `X` (`I` INTEGER NOT NULL, `J` VARCHAR(5))");
   }
@@ -256,22 +256,22 @@ class ServerParserTest extends SqlParserTest {
         .ok("DROP FOREIGN SCHEMA `X`");
   }
 
-  @Test void testDropType() {
+  @Test public void testDropType() {
     sql("drop type X")
         .ok("DROP TYPE `X`");
   }
 
-  @Test void testDropTypeIfExists() {
+  @Test public void testDropTypeIfExists() {
     sql("drop type if exists X")
         .ok("DROP TYPE IF EXISTS `X`");
   }
 
-  @Test void testDropTypeTrailingIfExistsFails() {
+  @Test public void testDropTypeTrailingIfExistsFails() {
     sql("drop type X ^if^ exists")
         .fails("(?s)Encountered \"if\" at.*");
   }
 
-  @Test void testDropTable() {
+  @Test public void testDropTable() {
     sql("drop table x")
         .ok("DROP TABLE `X`");
   }

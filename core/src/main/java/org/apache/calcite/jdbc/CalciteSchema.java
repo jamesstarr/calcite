@@ -112,6 +112,11 @@ public abstract class CalciteSchema {
     } else {
       this.typeMap = Objects.requireNonNull(typeMap);
     }
+    if (typeMap == null) {
+      this.typeMap = new NameMap<>();
+    } else {
+      this.typeMap = Preconditions.checkNotNull(typeMap);
+    }
     this.path = path;
   }
 
@@ -175,6 +180,11 @@ public abstract class CalciteSchema {
   /** Creates a TableEntryImpl with no SQLs. */
   protected TableEntryImpl tableEntry(String name, Table table) {
     return new TableEntryImpl(this, name, table, ImmutableList.of());
+  }
+
+  /** Creates a TableEntryImpl with no SQLs. */
+  protected TypeEntryImpl typeEntry(String name, RelProtoDataType relProtoDataType) {
+    return new TypeEntryImpl(this, name, relProtoDataType);
   }
 
   /** Creates a TableEntryImpl with no SQLs. */
@@ -360,6 +370,27 @@ public abstract class CalciteSchema {
     // Add implicit types.
     addImplicitTypeNamesToBuilder(builder);
     return builder.build();
+  }
+
+  /** Returns a type, explicit and implicit, with a given
+   * name. Never null. */
+  public final TypeEntry getType(String name, boolean caseSensitive) {
+    for (Map.Entry<String, TypeEntry> entry
+        : typeMap.range(name, caseSensitive).entrySet()) {
+      return entry.getValue();
+    }
+    return getImplicitType(name, caseSensitive);
+  }
+
+  /** Returns the set of all types names. */
+  public final NavigableSet<String> getTypeNames() {
+    final ImmutableSortedSet.Builder<String> builder =
+        new ImmutableSortedSet.Builder<>(NameSet.COMPARATOR);
+    // Add explicit types.
+    builder.addAll(typeMap.map().keySet());
+    // Add implicit types.
+    addImplicitTypeNamesToBuilder(builder);
+    return Compatible.INSTANCE.navigableSet(builder.build());
   }
 
   /** Returns a type, explicit and implicit, with a given

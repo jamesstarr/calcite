@@ -3048,14 +3048,20 @@ ddlStatement:
   |   createViewStatement
   |   createMaterializedViewStatement
   |   createTypeStatement
+<<<<<<< HEAD
   |   createFunctionStatement
+=======
+>>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
   |   dropSchemaStatement
   |   dropForeignSchemaStatement
   |   dropTableStatement
   |   dropViewStatement
   |   dropMaterializedViewStatement
   |   dropTypeStatement
+<<<<<<< HEAD
   |   dropFunctionStatement
+=======
+>>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
 
 createSchemaStatement:
       CREATE [ OR REPLACE ] SCHEMA [ IF NOT EXISTS ] name
@@ -3146,9 +3152,12 @@ dropMaterializedViewStatement:
 
 dropTypeStatement:
       DROP TYPE [ IF EXISTS ] name
+<<<<<<< HEAD
 
 dropFunctionStatement:
       DROP FUNCTION [ IF EXISTS ] name
+=======
+>>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
 {% endhighlight %}
 
 In *createTableStatement*, if you specify *AS query*, you may omit the list of
