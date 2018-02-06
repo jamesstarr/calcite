@@ -317,7 +317,11 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
     if (conformance == null) {
       conformance = SqlConformanceEnum.DEFAULT;
     }
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/sql/test/AbstractSqlTester.java
     final SqlTester tester = with("conformance", conformance);
+=======
+    final SqlTesterImpl tester = with("conformance", conformance);
+>>>>>>> 0f9894602 (Use real properties, not their names, in tests):core/src/test/java/org/apache/calcite/sql/test/SqlTesterImpl.java
     if (conformance instanceof SqlConformanceEnum) {
       return tester
           .withConnectionFactory(
@@ -326,10 +330,13 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
     } else {
       return tester;
     }
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/sql/test/AbstractSqlTester.java
   }
 
   public SqlTester enableTypeCoercion(boolean enabled) {
     return with("enableTypeCoercion", enabled);
+=======
+>>>>>>> 0f9894602 (Use real properties, not their names, in tests):core/src/test/java/org/apache/calcite/sql/test/SqlTesterImpl.java
   }
 
   public SqlTester withOperatorTable(SqlOperatorTable operatorTable) {

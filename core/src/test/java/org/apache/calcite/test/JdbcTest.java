@@ -32,7 +32,7 @@ import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.avatica.util.Quoting;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionProperty;
-import org.apache.calcite.config.CalciteSystemProperty;
+>>>>>>> 0f9894602 (Use real properties, not their names, in tests)
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.config.NullCollation;
 import org.apache.calcite.jdbc.CalciteConnection;
@@ -5946,7 +5946,16 @@ public class JdbcTest {
   @Test void testCurrentTimestamp() throws Exception {
     CalciteAssert.that()
         .with(CalciteConnectionProperty.TIME_ZONE, "GMT+1:00")
+<<<<<<< HEAD
         .doWithConnection(connection -> {
+=======
+        .doWithConnection(
+            new Function<CalciteConnection, Void>() {
+              public Void apply(CalciteConnection connection) {
+                try {
+                  final PreparedStatement statement =
+                      connection.prepareStatement("VALUES CURRENT_TIMESTAMP");
+                  ResultSet resultSet;
 
           try {
             final PreparedStatement statement =
@@ -5982,16 +5991,17 @@ public class JdbcTest {
   @Test void testGetTimestamp() throws Exception {
     CalciteAssert.that()
         .with(CalciteConnectionProperty.TIME_ZONE, "GMT+1:00")
-        .doWithConnection(connection -> {
-
-          try {
-            checkGetTimestamp(connection);
-
-          } catch (SQLException e) {
-            throw TestUtil.rethrow(e);
-          }
-
-        });
+        .doWithConnection(
+            new Function<CalciteConnection, Void>() {
+              public Void apply(CalciteConnection connection) {
+                try {
+                  checkGetTimestamp(connection);
+                  return null;
+                } catch (SQLException e) {
+                  throw new RuntimeException(e);
+                }
+              }
+            });
   }
 
   private void checkGetTimestamp(Connection con) throws SQLException {
@@ -6282,10 +6292,6 @@ public class JdbcTest {
         "select * from \"employee\" where \"full_name\" = _UTF16'\u82f1\u56fd'")
         .throws_(
             "Cannot apply = to the two different charsets ISO-8859-1 and UTF-16LE");
-<<<<<<< HEAD
-=======
-        .returns("");
-=======
 >>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
 
     // The CONVERT function (what SQL:2011 calls "character transliteration") is
@@ -6474,6 +6480,7 @@ public class JdbcTest {
         .with(CalciteConnectionProperty.UNQUOTED_CASING, Casing.UNCHANGED)
         .with(CalciteConnectionProperty.QUOTED_CASING, Casing.UNCHANGED)
         .with(CalciteConnectionProperty.CASE_SENSITIVE, true)
+<<<<<<< HEAD
         .doWithConnection(connection -> {
 
           try {
@@ -6502,6 +6509,36 @@ public class JdbcTest {
           }
 
         });
+=======
+        .doWithConnection(
+            new Function<CalciteConnection, Void>() {
+              public Void apply(CalciteConnection connection) {
+                try {
+                  DatabaseMetaData metaData = connection.getMetaData();
+                  assertThat(metaData.getIdentifierQuoteString(),
+                      equalTo("`"));
+                  assertThat(metaData.supportsMixedCaseIdentifiers(),
+                      equalTo(true));
+                  assertThat(metaData.storesMixedCaseIdentifiers(),
+                      equalTo(false));
+                  assertThat(metaData.storesUpperCaseIdentifiers(),
+                      equalTo(false));
+                  assertThat(metaData.storesLowerCaseIdentifiers(),
+                      equalTo(false));
+                  assertThat(metaData.supportsMixedCaseQuotedIdentifiers(),
+                      equalTo(true));
+                  assertThat(metaData.storesMixedCaseQuotedIdentifiers(),
+                      equalTo(false));
+                  assertThat(metaData.storesUpperCaseQuotedIdentifiers(),
+                      equalTo(false));
+                  assertThat(metaData.storesLowerCaseQuotedIdentifiers(),
+                      equalTo(false));
+                  return null;
+                } catch (SQLException e) {
+                  throw new RuntimeException(e);
+                }
+              }
+            });
   }
 
   /** Tests case-insensitive resolution of schema and table names. */

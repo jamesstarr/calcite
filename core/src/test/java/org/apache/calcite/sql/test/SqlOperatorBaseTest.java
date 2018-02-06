@@ -18,7 +18,7 @@ package org.apache.calcite.sql.test;
 
 import org.apache.calcite.avatica.util.DateTimeUtils;
 import org.apache.calcite.config.CalciteConnectionProperty;
-import org.apache.calcite.config.Lex;
+>>>>>>> 0f9894602 (Use real properties, not their names, in tests)
 import org.apache.calcite.linq4j.Linq4j;
 import org.apache.calcite.plan.Strong;
 import org.apache.calcite.rel.type.RelDataType;
@@ -341,6 +341,7 @@ public abstract class SqlOperatorBaseTest {
             CalciteAssert.EMPTY_CONNECTION_FACTORY
                 .with(new CalciteAssert
                     .AddSchemaSpecPostProcessor(CalciteAssert.SchemaSpec.HR))
+<<<<<<< HEAD
                 .with(CalciteConnectionProperty.FUN, library.fun));
   }
 
@@ -378,6 +379,8 @@ public abstract class SqlOperatorBaseTest {
     }
 
     return result;
+=======
+                .with(CalciteConnectionProperty.FUN, "oracle"));
   }
 
   //--- Tests -----------------------------------------------------------

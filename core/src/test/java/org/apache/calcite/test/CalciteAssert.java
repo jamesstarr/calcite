@@ -1070,8 +1070,7 @@ public class CalciteAssert {
         return with(SchemaSpec.SCOTT);
       case SPARK:
         return with(CalciteConnectionProperty.SPARK, true);
-      case AUX:
-        return with(SchemaSpec.AUX, SchemaSpec.POST);
+>>>>>>> 0f9894602 (Use real properties, not their names, in tests)
       default:
         throw Util.unexpected(config);
       }
@@ -1133,11 +1132,13 @@ public class CalciteAssert {
 
     public final AssertThat withModel(String model) {
       return with(CalciteConnectionProperty.MODEL, "inline:" + model);
+<<<<<<< HEAD
     }
 
     public final AssertThat withModel(URL model) {
       return with(CalciteConnectionProperty.MODEL,
           Sources.of(model).file().getAbsolutePath());
+=======
     }
 
     public final AssertThat withMaterializations(String model,
