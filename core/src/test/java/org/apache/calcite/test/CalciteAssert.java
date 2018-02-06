@@ -20,6 +20,7 @@ import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.clone.CloneSchema;
 import org.apache.calcite.adapter.java.ReflectiveSchema;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
+import org.apache.calcite.avatica.ConnectionProperty;
 import org.apache.calcite.avatica.util.DateTimeUtils;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
@@ -883,10 +884,6 @@ public class CalciteAssert {
     }
 
     public AssertThat with(Config config) {
-      if (config == Config.SPARK) {
-        return with("spark", "true");
-      }
-
       switch (config) {
       case EMPTY:
         return EMPTY;
@@ -897,7 +894,7 @@ public class CalciteAssert {
         return with(SchemaSpec.HR, SchemaSpec.REFLECTIVE_FOODMART);
       case GEO:
         return with(SchemaSpec.GEO)
-            .with(CalciteConnectionProperty.CONFORMANCE.camelName(),
+            .with(CalciteConnectionProperty.CONFORMANCE,
                 SqlConformanceEnum.LENIENT);
       case LINGUAL:
         return with(SchemaSpec.LINGUAL);
@@ -911,6 +908,8 @@ public class CalciteAssert {
         return with(SchemaSpec.JDBC_SCOTT);
       case SCOTT:
         return with(SchemaSpec.SCOTT);
+      case SPARK:
+        return with(CalciteConnectionProperty.SPARK, true);
       default:
         throw Util.unexpected(config);
       }
@@ -942,9 +941,16 @@ public class CalciteAssert {
       return new AssertThat(connectionFactory.with(property, value));
     }
 
+    public AssertThat with(ConnectionProperty property, Object value) {
+      if (!property.type().valid(value, property.valueClass())) {
+        throw new IllegalArgumentException();
+      }
+      return new AssertThat(connectionFactory.with(property, value));
+    }
+
     /** Sets Lex property **/
     public AssertThat with(Lex lex) {
-      return with(CalciteConnectionProperty.LEX.name(), lex.toString());
+      return with(CalciteConnectionProperty.LEX, lex);
     }
 
     /** Sets the default schema to a given schema. */
@@ -958,7 +964,7 @@ public class CalciteAssert {
     }
 
     public final AssertThat withModel(String model) {
-      return with("model", "inline:" + model);
+      return with(CalciteConnectionProperty.MODEL, "inline:" + model);
     }
 
     public final AssertThat withMaterializations(String model,
@@ -1120,6 +1126,10 @@ public class CalciteAssert {
       throw new UnsupportedOperationException();
     }
 
+    public ConnectionFactory with(ConnectionProperty property, Object value) {
+      throw new UnsupportedOperationException();
+    }
+
     public ConnectionFactory with(ConnectionPostProcessor postProcessor) {
       throw new UnsupportedOperationException();
     }
@@ -1250,6 +1260,13 @@ public class CalciteAssert {
       return new MapConnectionFactory(
           FlatLists.append(this.map, property, value.toString()),
           postProcessors);
+    }
+
+    public ConnectionFactory with(ConnectionProperty property, Object value) {
+      if (!property.type().valid(value, property.valueClass())) {
+        throw new IllegalArgumentException();
+      }
+      return with(property.camelName(), value.toString());
     }
 
     public ConnectionFactory with(

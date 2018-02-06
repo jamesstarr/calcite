@@ -140,10 +140,10 @@ public class DruidAdapterIT {
   private CalciteAssert.AssertQuery approxQuery(URL url, String sql) {
     return CalciteAssert.that()
             .enable(enabled())
-            .with(ImmutableMap.of("model", url.getPath()))
-            .with(CalciteConnectionProperty.APPROXIMATE_DISTINCT_COUNT.camelName(), true)
-            .with(CalciteConnectionProperty.APPROXIMATE_TOP_N.camelName(), true)
-            .with(CalciteConnectionProperty.APPROXIMATE_DECIMAL.camelName(), true)
+            .with(CalciteConnectionProperty.MODEL, url.getPath())
+            .with(CalciteConnectionProperty.APPROXIMATE_DISTINCT_COUNT, true)
+            .with(CalciteConnectionProperty.APPROXIMATE_TOP_N, true)
+            .with(CalciteConnectionProperty.APPROXIMATE_DECIMAL, true)
             .query(sql);
   }
 
@@ -151,7 +151,7 @@ public class DruidAdapterIT {
   private CalciteAssert.AssertQuery sql(String sql, URL url) {
     return CalciteAssert.that()
         .enable(enabled())
-        .with(ImmutableMap.of("model", url.getPath()))
+        .with(CalciteConnectionProperty.MODEL, url.getPath())
         .query(sql);
   }
 
@@ -674,8 +674,8 @@ public class DruidAdapterIT {
         + "aggs=[[SUM($1)]], sort0=[1], dir0=[DESC], fetch=[3])";
     CalciteAssert.that()
         .enable(enabled())
-        .with(ImmutableMap.of("model", FOODMART.getPath()))
-        .with(CalciteConnectionProperty.APPROXIMATE_TOP_N.name(), approx)
+        .with(CalciteConnectionProperty.MODEL, FOODMART.getPath())
+        .with(CalciteConnectionProperty.APPROXIMATE_TOP_N, approx)
         .query(sql)
         .runs()
         .returnsOrdered("brand_name=Hermanos; S=8469",
@@ -2990,8 +2990,8 @@ public class DruidAdapterIT {
       String expectedDruidQuery) {
     CalciteAssert.that()
         .enable(enabled())
-        .with(ImmutableMap.of("model", FOODMART.getPath()))
-        .with(CalciteConnectionProperty.APPROXIMATE_DISTINCT_COUNT.camelName(), approx)
+        .with(CalciteConnectionProperty.MODEL, FOODMART.getPath())
+        .with(CalciteConnectionProperty.APPROXIMATE_DISTINCT_COUNT, approx)
         .query(sql)
         .runs()
         .explainContains(expectedExplain)
@@ -3291,8 +3291,8 @@ public class DruidAdapterIT {
 
     CalciteAssert.that()
         .enable(enabled())
-        .with(ImmutableMap.of("model", WIKI_AUTO2.getPath()))
-        .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "IST")
+        .with(CalciteConnectionProperty.MODEL, WIKI_AUTO2.getPath())
+        .with(CalciteConnectionProperty.TIME_ZONE, "Asia/Kolkata")
         .query(sql)
         .runs()
         .queryContains(druidChecker(druidQueryPart1, druidQueryPart2))
@@ -3314,8 +3314,8 @@ public class DruidAdapterIT {
 
     CalciteAssert.that()
         .enable(enabled())
-        .with(ImmutableMap.of("model", WIKI_AUTO2.getPath()))
-        .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "IST")
+        .with(CalciteConnectionProperty.MODEL, WIKI_AUTO2.getPath())
+        .with(CalciteConnectionProperty.TIME_ZONE, "Asia/Kolkata")
         .query(sql)
         .runs()
         .queryContains(druidChecker(druidQueryPart1, druidQueryPart2))
