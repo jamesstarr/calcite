@@ -565,6 +565,7 @@ public class PushProjector {
     return (Project) relBuilder.push(projChild)
         .projectNamed(Pair.left(newProjects), Pair.right(newProjects), true)
         .build();
+<<<<<<< HEAD
   }
 
   private String findOriginalFieldName(RexNode originRexNode) {
@@ -576,6 +577,8 @@ public class PushProjector {
       return null;
     }
     return origProj.getRowType().getFieldList().get(idx).getName();
+=======
+>>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
   }
 
   /**

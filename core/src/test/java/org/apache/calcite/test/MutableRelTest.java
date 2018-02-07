@@ -29,8 +29,8 @@ import org.apache.calcite.rel.mutable.MutableScan;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql2rel.RelDecorrelator;
-import org.apache.calcite.tools.FrameworkConfig;
 import org.apache.calcite.tools.RelBuilder;
+import org.apache.calcite.util.Litmus;
 
 import com.google.common.collect.ImmutableList;
 
@@ -259,7 +259,9 @@ class MutableRelTest {
     };
     RelNode origRel = test.createTester().convertSqlToRel(sql).rel;
     if (decorrelate) {
-      origRel = RelDecorrelator.decorrelateQuery(origRel, false);
+      final RelBuilder relBuilder =
+          RelFactories.LOGICAL_BUILDER.create(origRel.getCluster(), null);
+      origRel = RelDecorrelator.decorrelateQuery(origRel, relBuilder, false);
     }
     if (rules != null) {
       final HepProgram hepProgram =

@@ -3066,6 +3066,7 @@ LogicalProject(NAME=[$1], EXPR$1=[OR(AND(IS NOT NULL($6), <>($2, 0)), AND(<($3, 
         LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
         LogicalAggregate(group=[{}], agg#0=[COUNT()], agg#1=[COUNT($0)])
 <<<<<<< HEAD
+<<<<<<< HEAD
           LogicalProject(EXPR$0=[$0], $f1=[1:BIGINT])
             LogicalProject(EXPR$0=[CAST($7):INTEGER])
               LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -3078,6 +3079,13 @@ LogicalProject(NAME=[$1], EXPR$1=[OR(AND(IS NOT NULL($6), <>($2, 0)), AND(<($3, 
     LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
       LogicalProject($f0=[$0], $f1=[1])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
+=======
+          LogicalProject(EXPR$0=[$0], $f1=[1])
+            LogicalProject(EXPR$0=[CAST($7):INTEGER])
+              LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
+      LogicalProject(EXPR$0=[$0], $f1=[1])
+>>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
         LogicalProject(EXPR$0=[CAST($7):INTEGER])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
@@ -3098,6 +3106,7 @@ LogicalProject(EMPNO=[$0], EXPR$1=[OR(=($9, 0), AND(<($10, $9), null, <>($9, 0),
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{}], agg#0=[COUNT()], agg#1=[COUNT($0)])
 <<<<<<< HEAD
+<<<<<<< HEAD
           LogicalProject(EXPR$0=[$0], $f1=[1:BIGINT])
             LogicalProject(EXPR$0=[CAST($0):INTEGER])
               LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -3110,6 +3119,13 @@ LogicalProject(EMPNO=[$0], EXPR$1=[OR(=($9, 0), AND(<($10, $9), null, <>($9, 0),
     LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
       LogicalProject($f0=[$0], $f1=[1])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
+=======
+          LogicalProject(EXPR$0=[$0], $f1=[1])
+            LogicalProject(EXPR$0=[CAST($0):INTEGER])
+              LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
+      LogicalProject(EXPR$0=[$0], $f1=[1])
+>>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
         LogicalProject(EXPR$0=[CAST($0):INTEGER])
           LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 ]]>
@@ -3128,10 +3144,14 @@ LogicalProject(EMPNO=[$0])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
 <<<<<<< HEAD
+<<<<<<< HEAD
         LogicalProject(DEPTNO=[$0], $f1=[1:BIGINT])
           LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 =======
         LogicalProject($f0=[$0], $f1=[1])
+=======
+        LogicalProject(DEPTNO=[$0], $f1=[1])
+>>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
           LogicalProject(DEPTNO=[$0])
             LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
@@ -3152,10 +3172,14 @@ LogicalProject(EMPNO=[$0], EXPR$1=[IS NOT TRUE($11)])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject(DEPTNO=[$0], $f1=[1:BIGINT])
         LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 =======
       LogicalProject($f0=[$0], $f1=[1])
+=======
+      LogicalProject(DEPTNO=[$0], $f1=[1])
+>>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
         LogicalProject(DEPTNO=[$0])
           LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
@@ -3201,11 +3225,15 @@ LogicalProject(EMPNO=[$0], EXPR$1=[CAST(IS NOT TRUE($11)):BOOLEAN])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject(MGR=[$3], $f1=[1:BIGINT])
         LogicalFilter(condition=[>($3, 5)])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 =======
       LogicalProject($f0=[$0], $f1=[1])
+=======
+      LogicalProject(MGR=[$0], $f1=[1])
+>>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
         LogicalProject(MGR=[$3])
           LogicalFilter(condition=[>($3, 5)])
             LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -3227,11 +3255,15 @@ LogicalProject(EMPNO=[$0], EXPR$1=[CAST(IS NOT TRUE($11)):BOOLEAN])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject(MGR=[$3], $f1=[1:BIGINT])
         LogicalFilter(condition=[IS NOT NULL($3)])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 =======
       LogicalProject($f0=[$0], $f1=[1])
+=======
+      LogicalProject(MGR=[$0], $f1=[1])
+>>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
         LogicalProject(MGR=[$3])
           LogicalFilter(condition=[IS NOT NULL($3)])
             LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -3254,6 +3286,7 @@ LogicalProject(EMPNO=[$0], EXPR$1=[CAST(IS NOT TRUE($11)):BOOLEAN])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject(MGR=[$3], $f1=[1:BIGINT])
         LogicalJoin(condition=[=($3, $9)], joinType=[inner])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -3263,6 +3296,9 @@ LogicalProject(EMPNO=[$0], EXPR$1=[CAST(IS NOT TRUE($11)):BOOLEAN])
                 LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 =======
       LogicalProject($f0=[$0], $f1=[1])
+=======
+      LogicalProject(MGR=[$0], $f1=[1])
+>>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
         LogicalProject(MGR=[$3])
           LogicalJoin(condition=[=($3, $9)], joinType=[inner])
             LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -3289,6 +3325,7 @@ LogicalProject(EMPNO=[$0], EXPR$1=[OR(=($9, 0), AND(<($10, $9), null, <>($9, 0),
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{}], agg#0=[COUNT()], agg#1=[COUNT($0)])
 <<<<<<< HEAD
+<<<<<<< HEAD
           LogicalProject(MGR=[$3], $f1=[1:BIGINT])
             LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
@@ -3296,10 +3333,13 @@ LogicalProject(EMPNO=[$0], EXPR$1=[OR(=($9, 0), AND(<($10, $9), null, <>($9, 0),
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 =======
           LogicalProject($f0=[$0], $f1=[1])
+=======
+          LogicalProject(MGR=[$0], $f1=[1])
+>>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
             LogicalProject(MGR=[$3])
               LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
-      LogicalProject($f0=[$0], $f1=[1])
+      LogicalProject(MGR=[$0], $f1=[1])
         LogicalProject(MGR=[$3])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
@@ -4298,10 +4338,14 @@ LogicalProject(**=[$1])
         LogicalTableScan(table=[[CATALOG, SALES, NATION]])
       LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
 <<<<<<< HEAD
+<<<<<<< HEAD
         LogicalProject(EXPR$0=[''], $f1=[1:BIGINT])
           LogicalTableScan(table=[[CATALOG, SALES, NATION]])
 =======
         LogicalProject($f0=[$0], $f1=[1])
+=======
+        LogicalProject(EXPR$0=[$0], $f1=[1])
+>>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
           LogicalProject(EXPR$0=[''])
             LogicalTableScan(table=[[CATALOG, SALES, NATION]])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)

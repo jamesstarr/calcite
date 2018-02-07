@@ -461,7 +461,8 @@ public class SqlToRelConverter {
       RelNode rootRel,
       boolean restructure) {
     RelStructuredTypeFlattener typeFlattener =
-        new RelStructuredTypeFlattener(rexBuilder, createToRelContext(), restructure);
+        new RelStructuredTypeFlattener(relBuilder,
+            rexBuilder, createToRelContext(), restructure);
     return typeFlattener.rewrite(rootRel);
   }
 
@@ -2172,7 +2173,26 @@ public class SqlToRelConverter {
       return;
 
     case UNNEST:
-      convertUnnest(bb, (SqlCall) from, fieldNames);
+      call = (SqlCall) from;
+      final List<SqlNode> nodes = call.getOperandList();
+      final SqlUnnestOperator operator = (SqlUnnestOperator) call.getOperator();
+      for (SqlNode node : nodes) {
+        replaceSubQueries(bb, node, RelOptUtil.Logic.TRUE_FALSE_UNKNOWN);
+      }
+      final List<RexNode> exprs = new ArrayList<>();
+      final List<String> fieldNames = new ArrayList<>();
+      for (Ord<SqlNode> node : Ord.zip(nodes)) {
+        exprs.add(bb.convertExpression(node.e));
+        fieldNames.add(validator.deriveAlias(node.e, node.i));
+      }
+      RelNode child =
+          (null != bb.root) ? bb.root : LogicalValues.createOneRow(cluster);
+      relBuilder.push(child).projectNamed(exprs, fieldNames, false);
+
+      Uncollect uncollect =
+          new Uncollect(cluster, cluster.traitSetOf(Convention.NONE),
+              relBuilder.build(), operator.withOrdinality);
+      bb.setRoot(uncollect, true);
       return;
 
     case COLLECTION_TABLE:
@@ -3607,7 +3627,7 @@ public class SqlToRelConverter {
   }
 
   protected RelNode decorrelateQuery(RelNode rootRel) {
-    return RelDecorrelator.decorrelateQuery(rootRel, false);
+    return RelDecorrelator.decorrelateQuery(rootRel, relBuilder, false);
   }
 
   /**
@@ -4561,17 +4581,9 @@ public class SqlToRelConverter {
       fieldNames.add(deriveAlias(expr, aliases, i));
     }
 
-    final List<String> uniqueFieldNames =
-        SqlValidatorUtil.uniquify(fieldNames,
-            catalogReader.nameMatcher().isCaseSensitive());
-
-    RelNode r = relBuilder.push(bb.root())
-        .projectNamed(exprs, uniqueFieldNames, true)
-        .build();
-
-    getCorrelationUse(bb, r);
-
-    bb.setRoot(r, false);
+    relBuilder.push(bb.root)
+        .projectNamed(exprs, fieldNames, true);
+    bb.setRoot(relBuilder.build(), false);
 
     assert bb.columnMonotonicities.isEmpty();
     bb.columnMonotonicities.addAll(columnMonotonicityList);
@@ -4848,7 +4860,7 @@ public class SqlToRelConverter {
       final RexNode joinCond;
       final int origLeftInputCount = root.getRowType().getFieldCount();
       if (leftKeys != null) {
-        List<RexNode> newLeftInputExprs = new ArrayList<>();
+        List<RexNode> newLeftInputExprs = Lists.newArrayList();
         for (int i = 0; i < origLeftInputCount; i++) {
           newLeftInputExprs.add(rexBuilder.makeInputRef(root, i));
         }

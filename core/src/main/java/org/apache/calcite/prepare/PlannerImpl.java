@@ -55,6 +55,10 @@ import org.apache.calcite.tools.FrameworkConfig;
 import org.apache.calcite.tools.Planner;
 import org.apache.calcite.tools.Program;
 import org.apache.calcite.tools.RelBuilder;
+<<<<<<< HEAD
+=======
+import org.apache.calcite.tools.RelConversionException;
+>>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
 import org.apache.calcite.tools.ValidationException;
 import org.apache.calcite.util.Pair;
 
@@ -252,7 +256,10 @@ public class PlannerImpl implements Planner, ViewExpander {
     root =
         sqlToRelConverter.convertQuery(validatedSqlNode, false, true);
     root = root.withRel(sqlToRelConverter.flattenTypes(root.rel, true));
-    root = root.withRel(RelDecorrelator.decorrelateQuery(root.rel, false));
+    final RelBuilder relBuilder =
+        config.getRelBuilderFactory().create(cluster, null);
+    root = root.withRel(
+        RelDecorrelator.decorrelateQuery(root.rel, relBuilder, false));
     state = State.STATE_5_CONVERTED;
     return root;
   }
@@ -294,7 +301,10 @@ public class PlannerImpl implements Planner, ViewExpander {
 
       root = sqlToRelConverter.convertQuery(validatedSqlNode, true, false);
       root = root.withRel(sqlToRelConverter.flattenTypes(root.rel, true));
-      root = root.withRel(RelDecorrelator.decorrelateQuery(root.rel, false));
+      final RelBuilder relBuilder =
+          config.getRelBuilderFactory().create(cluster, null);
+      root = root.withRel(
+          RelDecorrelator.decorrelateQuery(root.rel, relBuilder, false));
 
       return PlannerImpl.this.root;
     }
