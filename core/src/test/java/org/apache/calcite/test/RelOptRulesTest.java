@@ -1514,6 +1514,19 @@ public class RelOptRulesTest extends RelOptTestBase {
             + "full outer join emp e2 on d.deptno = e2.deptno");
   }
 
+  @Test public void testConvertMultiJoinRuleLoptOptimizeJoinRuleNonOptimized() throws Exception {
+    HepProgram preProgram = new HepProgramBuilder()
+            .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+            .addRuleInstance(JoinToMultiJoinRule.INSTANCE)
+            .build();
+    HepProgram program = new HepProgramBuilder()
+            .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+            .addRuleInstance(LoptOptimizeJoinRule.UNOPTIMIZED)
+            .build();
+    checkPlanning(tester, preProgram, new HepPlanner(program),
+            "select e1.ename from emp e1 full outer join dept d on e1.deptno = d.deptno "
+                    + "full outer join emp e2 on d.deptno = e2.deptno");
+  }
 
   @Test public void testConvertMultiFullOuterJoinRuleShouldNotCollapse() throws Exception {
     HepProgram program = new HepProgramBuilder()
