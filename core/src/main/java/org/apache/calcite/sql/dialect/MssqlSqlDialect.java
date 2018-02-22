@@ -49,6 +49,10 @@ public class MssqlSqlDialect extends SqlDialect {
     super(context);
   }
 
+  @Override public boolean supportsCharSet() {
+    return false;
+  }
+
   @Override public void unparseDateTimeLiteral(SqlWriter writer,
       SqlAbstractDateTimeLiteral literal, int leftPrec, int rightPrec) {
     writer.literal("'" + literal.toFormattedString() + "'");

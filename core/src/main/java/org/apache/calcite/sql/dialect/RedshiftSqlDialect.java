@@ -38,6 +38,14 @@ public class RedshiftSqlDialect extends SqlDialect {
       SqlNode fetch) {
     unparseFetchUsingLimit(writer, offset, fetch);
   }
+
+  @Override public boolean supportsCharSet() {
+    return false;
+  }
+
+  @Override public boolean supportsOffsetFetch() {
+    return false;
+  }
 }
 
 // End RedshiftSqlDialect.java
