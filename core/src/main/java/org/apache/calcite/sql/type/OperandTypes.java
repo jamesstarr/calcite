@@ -558,7 +558,7 @@ public abstract class OperandTypes {
       OperandTypes.or(NUMERIC_NUMERIC, INTERVAL_SAME_SAME, DATETIME_INTERVAL,
           TIMESTAMP_TIMESTAMP, DATE_DATE);
 
-  public static final SqlSingleOperandTypeChecker MINUS_DATE_OPERATOR =
+  public static final FamilyOperandTypeChecker MINUS_DATE_OPERATOR =
       new FamilyOperandTypeChecker(
           ImmutableList.of(SqlTypeFamily.DATETIME, SqlTypeFamily.DATETIME,
               SqlTypeFamily.DATETIME_INTERVAL),
