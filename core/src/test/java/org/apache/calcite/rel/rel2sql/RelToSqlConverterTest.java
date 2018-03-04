@@ -2769,26 +2769,7 @@ class RelToSqlConverterTest {
         .ok(expected);
   }
 
-  @Test public void testFloorWeek() {
-    final String query = "SELECT floor(\"hire_date\" TO WEEK) FROM \"employee\"";
-    final String expectedClickHouse = "SELECT toMonday(`hire_date`)\n"
-        + "FROM `foodmart`.`employee`";
-    final String expectedMssql = "SELECT CONVERT(DATETIME, CONVERT(VARCHAR(10), "
-        + "DATEADD(day, - (6 + DATEPART(weekday, [hire_date] )) % 7, [hire_date] ), 126))\n"
-        + "FROM [foodmart].[employee]";
-    final String expectedMysql = "SELECT STR_TO_DATE(DATE_FORMAT(`hire_date` , '%x%v-1'), "
-        + "'%x%v-%w')\n"
-        + "FROM `foodmart`.`employee`";
-    sql(query)
-        .withClickHouse()
-        .ok(expectedClickHouse)
-        .withMssql()
-        .ok(expectedMssql)
-        .withMysql()
-        .ok(expectedMysql);
-  }
-
-  @Test void testUnparseSqlIntervalQualifierDb2() {
+  @Test public void testUnparseSqlIntervalQualifierDb2() {
     String queryDatePlus = "select  * from \"employee\" where  \"hire_date\" + "
         + "INTERVAL '19800' SECOND(5) > TIMESTAMP '2005-10-17 00:00:00' ";
     String expectedDatePlus = "SELECT *\n"
@@ -2812,7 +2793,7 @@ class RelToSqlConverterTest {
         .ok(expectedDateMinus);
   }
 
-  @Test void testUnparseSqlIntervalQualifierMySql() {
+  @Test public void testUnparseSqlIntervalQualifierMySql() {
     final String sql0 = "select  * from \"employee\" where  \"hire_date\" - "
         + "INTERVAL '19800' SECOND(5) > TIMESTAMP '2005-10-17 00:00:00' ";
     final String expect0 = "SELECT *\n"
@@ -2847,7 +2828,7 @@ class RelToSqlConverterTest {
     sql(sql3).withMysql().ok(expect3);
   }
 
-  @Test void testUnparseSqlIntervalQualifierMsSql() {
+  @Test public void testUnparseSqlIntervalQualifierMsSql() {
     String queryDatePlus = "select  * from \"employee\" where  \"hire_date\" +"
         + "INTERVAL '19800' SECOND(5) > TIMESTAMP '2005-10-17 00:00:00' ";
     String expectedDatePlus = "SELECT *\n"
@@ -2880,29 +2861,7 @@ class RelToSqlConverterTest {
         .ok(expectedDateMinusNegate);
   }
 
-  @Test void testUnparseSqlIntervalQualifierBigQuery() {
-    final String sql0 = "select  * from \"employee\" where  \"hire_date\" - "
-            + "INTERVAL '19800' SECOND(5) > TIMESTAMP '2005-10-17 00:00:00' ";
-    final String expect0 = "SELECT *\n"
-            + "FROM foodmart.employee\n"
-            + "WHERE (hire_date - INTERVAL 19800 SECOND)"
-            + " > TIMESTAMP '2005-10-17 00:00:00'";
-    sql(sql0).withBigQuery().ok(expect0);
-
-    final String sql1 = "select  * from \"employee\" where  \"hire_date\" + "
-            + "INTERVAL '10' HOUR > TIMESTAMP '2005-10-17 00:00:00' ";
-    final String expect1 = "SELECT *\n"
-            + "FROM foodmart.employee\n"
-            + "WHERE (hire_date + INTERVAL 10 HOUR)"
-            + " > TIMESTAMP '2005-10-17 00:00:00'";
-    sql(sql1).withBigQuery().ok(expect1);
-
-    final String sql2 = "select  * from \"employee\" where  \"hire_date\" + "
-            + "INTERVAL '1 2:34:56.78' DAY TO SECOND > TIMESTAMP '2005-10-17 00:00:00' ";
-    sql(sql2).withBigQuery().throws_("Only INT64 is supported as the interval value for BigQuery.");
-  }
-
-  @Test void testFloorMysqlWeek() {
+  @Test public void testFloorMysqlWeek() {
     String query = "SELECT floor(\"hire_date\" TO WEEK) FROM \"employee\"";
     String expected = "SELECT STR_TO_DATE(DATE_FORMAT(`hire_date` , '%x%v-1'), '%x%v-%w')\n"
         + "FROM `foodmart`.`employee`";

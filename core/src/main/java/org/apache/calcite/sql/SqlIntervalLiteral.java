@@ -72,42 +72,7 @@ public class SqlIntervalLiteral extends SqlLiteral {
       SqlWriter writer,
       int leftPrec,
       int rightPrec) {
-    final IntervalValue interval = (IntervalValue) value;
-    final SqlDialect dialect = writer.getDialect();
-    final String qualifierString;
-    if (interval.intervalQualifier.isSingleDatetimeField()) {
-      switch (interval.intervalQualifier.getStartUnit()) {
-      case WEEK:
-        qualifierString = "DAY";
-        break;
-      case QUARTER:
-        qualifierString = "MONTH";
-        break;
-      default:
-        qualifierString = interval.intervalQualifier.toString();
-        break;
-      }
-    } else {
-      qualifierString = interval.intervalQualifier.toString();
-    }
-
-    switch (dialect.getDatabaseProduct()) {
-    case DB2:
-      if (interval.getSign() == -1) {
-        writer.print("-");
-      }
-      writer.literal(value.toString());
-      writer.keyword(qualifierString);
-      return;
-    default:
-      writer.keyword("INTERVAL");
-      if (interval.getSign() == -1) {
-        writer.print("-");
-      }
-      writer.literal("'" + value.toString() + "'");
-      writer.keyword(qualifierString);
-      return;
-    }
+    writer.getDialect().unparseSqlIntervalLiteral(writer, this, leftPrec, rightPrec);
   }
 
   @SuppressWarnings("deprecation")

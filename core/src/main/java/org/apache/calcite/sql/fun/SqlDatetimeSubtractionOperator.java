@@ -58,14 +58,8 @@ public class SqlDatetimeSubtractionOperator extends SqlSpecialOperator {
       SqlCall call,
       int leftPrec,
       int rightPrec) {
-    final SqlWriter.Frame frame = writer.startList("(", ")");
-    call.operand(0).unparse(writer, leftPrec, rightPrec);
-    writer.sep("-");
-    call.operand(1).unparse(writer, leftPrec, rightPrec);
-    writer.endList(frame);
-    if (call.operandCount() > 2) {
-      call.operand(2).unparse(writer, leftPrec, rightPrec);
-    }
+    writer.getDialect().unparseSqlDatetimeArithmetic(
+        writer, call, SqlKind.MINUS, leftPrec, rightPrec);
   }
 
   @Override public SqlMonotonicity getMonotonicity(SqlOperatorBinding call) {

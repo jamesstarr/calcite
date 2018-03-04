@@ -541,11 +541,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
    * Infix datetime plus operator, '<code>DATETIME + INTERVAL</code>'.
    */
   public static final SqlSpecialOperator DATETIME_PLUS =
-      new SqlDatetimeAddMinusOperator(
-          "DATETIME_PLUS",
-          "+",
-          SqlKind.PLUS,
-          OperandTypes.PLUS_OPERATOR);
+      new SqlDatetimePlusOperator();
 
   /**
    * Multiset {@code MEMBER OF}, which returns whether a element belongs to a

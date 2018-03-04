@@ -17,7 +17,7 @@
 package org.apache.calcite.sql.dialect;
 
 import org.apache.calcite.avatica.util.TimeUnitRange;
-import org.apache.calcite.config.NullCollation;
+>>>>>>> ef578f572 ([CALCITE-2188] JDBC adapter generates invalid SQL for DATE/INTERVAL arithmetic)
 import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.sql.SqlAbstractDateTimeLiteral;
 import org.apache.calcite.sql.SqlCall;
@@ -29,12 +29,13 @@ import org.apache.calcite.sql.SqlIntervalQualifier;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 import org.apache.calcite.sql.SqlUtil;
 import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.ReturnTypes;
+
+
 
 /**
  * A <code>SqlDialect</code> implementation for the Microsoft SQL Server
@@ -95,16 +96,6 @@ public class MssqlSqlDialect extends SqlDialect {
       fetch.unparse(writer, -1, -1);
       writer.keyword(")");
     }
-<<<<<<< HEAD
-  }
-
-  @Override public boolean useTimestampAddInsteadOfDatetimePlus() {
-    return true;
-  }
-
-  @Override public boolean supportsOrderByNullOrdering() {
-    return false;
-=======
   }
 
   @Override public boolean useTimestampAddInsteadOfDatetimePlus() {
@@ -256,8 +247,12 @@ public class MssqlSqlDialect extends SqlDialect {
 
   private void unparseSqlIntervalLiteralMssql(
       SqlWriter writer, SqlIntervalLiteral literal, int sign) {
+<<<<<<< HEAD
     final SqlIntervalLiteral.IntervalValue interval =
         (SqlIntervalLiteral.IntervalValue) literal.getValue();
+=======
+    SqlIntervalLiteral.IntervalValue interval
+        = (SqlIntervalLiteral.IntervalValue) literal.getValue();
     unparseSqlIntervalQualifier(writer, interval.getIntervalQualifier(),
         RelDataTypeSystem.DEFAULT);
     writer.sep(",", true);

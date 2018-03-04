@@ -1001,7 +1001,6 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
         + "+ -\n"
         + "- left\n"
         + "- -\n"
-        + "DATETIME_PLUS -\n"
         + "EXISTS pre\n"
         + "\n"
         + "< ALL left\n"
