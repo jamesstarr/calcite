@@ -1583,7 +1583,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
 
   /** Unit test for
    * {@link org.apache.calcite.rel.metadata.RelMdPredicates#getPredicates(Join, RelMetadataQuery)}. */
-  @Test void testPredicates() {
+  @Test public void testPredicates() {
     final Project rel = (Project) convertSql("select * from emp, dept");
     final Join join = (Join) rel.getInput();
     final RelOptTable empTable = join.getInput(0).getTable();
@@ -1743,7 +1743,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
       final RelNode rel = convertSql(sql, false);
       final RelMetadataQuery mq = RelMetadataQuery.instance();
       RelOptPredicateList inputSet = mq.getPulledUpPredicates(rel.getInput(0));
-      assertThat(inputSet.pulledUpPredicates.size(), is(131083));
+      assertThat(inputSet.pulledUpPredicates.size(), is(12));
     }
   }
 
