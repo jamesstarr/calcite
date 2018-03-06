@@ -74,6 +74,8 @@ import javax.annotation.Nonnull;
 
 import static org.apache.calcite.sql.type.SqlTypeName.INTERVAL_TYPES;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Utility methods concerning row-expressions.
  */
@@ -1062,6 +1064,14 @@ public class RexUtil {
       RelDataType inputRowType) {
     return inputRowType.getFieldCount() == exps.size()
         && containIdentity(exps, inputRowType, Litmus.IGNORE);
+  }
+
+  /** As {@link #composeConjunction(RexBuilder, Iterable, boolean)} but never
+   * returns null. */
+  public static RexNode composeConjunction(RexBuilder rexBuilder,
+      Iterable<? extends RexNode> nodes) {
+    final RexNode e = composeConjunction(rexBuilder, nodes, false);
+    return requireNonNull(e);
   }
 
   /**

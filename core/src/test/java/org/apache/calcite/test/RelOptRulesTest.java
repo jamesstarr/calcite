@@ -3264,6 +3264,9 @@ public class RelOptRulesTest extends RelOptTestBase {
     sql(sql).withPre(preProgram).with(program).check();
   }
 
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2200">[CALCITE-2200]
+   * Infinite loop for JoinPushTransitivePredicatesRule</a>. */
   @Test public void testJoinPushTransitivePredicatesRule() {
     HepProgram preProgram = new HepProgramBuilder()
         .addRuleInstance(CoreRules.FILTER_INTO_JOIN)
@@ -3278,6 +3281,29 @@ public class RelOptRulesTest extends RelOptTestBase {
         + "IN (select e.deptno from sales.emp e "
         + "where e.deptno = d.deptno or e.deptno = 4)";
     sql(sql).withPre(preProgram).with(hepPlanner).checkUnchanged();
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2205">[CALCITE-2205]
+   * One more infinite loop for JoinPushTransitivePredicatesRule</a>. */
+  @Test public void testJoinPushTransitivePredicatesRule2() {
+    HepProgram hepProgram = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.FILTER_INTO_JOIN)
+        .addRuleInstance(CoreRules.JOIN_CONDITION_PUSH)
+        .addRuleInstance(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES)
+        .build();
+    HepPlanner hepPlanner = new HepPlanner(hepProgram);
+
+    final String sql = "select n1.SAL\n"
+        + "from EMPNULLABLES_20 n1\n"
+        + "where n1.SAL IN (\n"
+        + "  select n2.SAL\n"
+        + "  from EMPNULLABLES_20 n2\n"
+        + "  where n1.SAL = n2.SAL or n1.SAL = 4)";
+    sql(sql)
+        .withDecorrelation(true)
+        .with(hepPlanner)
+        .checkUnchanged();
   }
 
   /** Test case for

@@ -1495,7 +1495,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
   }
 
   /** Unit test for
-   * {@link org.apache.calcite.rel.metadata.RelMdPredicates#getPredicates(SemiJoin, RelMetadataQuery)}. */
+   * {@link org.apache.calcite.rel.metadata.RelMdPredicates#getPredicates(Join, RelMetadataQuery)}. */
   @Test public void testPredicates() {
     final Project rel = (Project) convertSql("select * from emp, dept");
     final Join join = (Join) rel.getInput();
@@ -1634,7 +1634,9 @@ public class RelMetadataTest extends SqlToRelTestBase {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1960">[CALCITE-1960]
    * RelMdPredicates.getPredicates is slow if there are many equivalent
-   * columns</a>. Since this is a performance problem, the test result does not
+   * columns</a>. There are much less duplicates after
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2205">[CALCITE-2205]</a>.
+   * Since this is a performance problem, the test result does not
    * change, but takes over 15 minutes before the fix and 6 seconds after. */
   @Test(timeout = 20_000) public void testPullUpPredicatesForExprsItr() {
     // If we're running Windows, we are probably in a VM and the test may
@@ -1663,7 +1665,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
       final RelNode rel = convertSql(sql, false);
       final RelMetadataQuery mq = RelMetadataQuery.instance();
       RelOptPredicateList inputSet = mq.getPulledUpPredicates(rel.getInput(0));
-      assertThat(inputSet.pulledUpPredicates.size(), is(131083));
+      assertThat(inputSet.pulledUpPredicates.size(), is(12));
     }
   }
 

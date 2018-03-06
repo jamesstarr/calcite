@@ -412,22 +412,31 @@ public class RelMdPredicates
                     RelOptUtil.conjunctions(filter.getCondition()))));
   }
 
-  /** Infers predicates for a {@link org.apache.calcite.rel.core.Join}. */
+  /**
+   * Infers predicates for a {@link org.apache.calcite.rel.core.Join} (including
+   * {@link org.apache.calcite.rel.core.SemiJoin}).
+   */
   public RelOptPredicateList getPredicates(Join join, RelMetadataQuery mq) {
-    RexBuilder rB = join.getCluster().getRexBuilder();
-    RelNode left = join.getInput(0);
-    RelNode right = join.getInput(1);
+    RelOptCluster cluster = join.getCluster();
+    RexBuilder rexBuilder = cluster.getRexBuilder();
+    final RexExecutor executor =
+        Util.first(cluster.getPlanner().getExecutor(), RexUtil.EXECUTOR);
+    final RelNode left = join.getInput(0);
+    final RelNode right = join.getInput(1);
 
     final RelOptPredicateList leftInfo = mq.getPulledUpPredicates(left);
     final RelOptPredicateList rightInfo = mq.getPulledUpPredicates(right);
 
-    JoinConditionBasedPredicateInference jI =
-        new JoinConditionBasedPredicateInference(join,
-            RexUtil.composeConjunction(rB, leftInfo.pulledUpPredicates, false),
-            RexUtil.composeConjunction(rB, rightInfo.pulledUpPredicates,
-                false));
+    final RexSimplify simplifier =
+        new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, true, executor);
 
-    return jI.inferPredicates(false);
+    JoinConditionBasedPredicateInference joinInference =
+        new JoinConditionBasedPredicateInference(join,
+            RexUtil.composeConjunction(rexBuilder, leftInfo.pulledUpPredicates, false),
+            RexUtil.composeConjunction(rexBuilder, rightInfo.pulledUpPredicates, false),
+            simplifier);
+
+    return joinInference.inferPredicates(false);
   }
 
   /**
@@ -602,11 +611,13 @@ public class RelMdPredicates
     final Set<RexNode> equalityPredicates;
     final RexNode leftChildPredicates;
     final RexNode rightChildPredicates;
+    final RexSimplify simplify;
 
     JoinConditionBasedPredicateInference(Join joinRel, RexNode leftPredicates,
-        RexNode rightPredicates) {
+        RexNode rightPredicates, RexSimplify simplify) {
       super();
       this.joinRel = joinRel;
+      this.simplify = simplify;
       nFieldsLeft = joinRel.getLeft().getRowType().getFieldList().size();
       nFieldsRight = joinRel.getRight().getRowType().getFieldList().size();
       nSysFields = joinRel.getSystemFieldList().size();
@@ -782,11 +793,15 @@ public class RelMdPredicates
           RexNode tr = r.accept(
               new RexPermuteInputsShuttle(m, joinRel.getInput(0),
                   joinRel.getInput(1)));
-          if (inferringFields.contains(RelOptUtil.InputFinder.bits(tr))
-              && !allExprs.contains(tr)
-              && !isAlwaysTrue(tr)) {
-            inferredPredicates.add(tr);
-            allExprs.add(tr);
+          // Filter predicates can be already simplified, so we should work with
+          // simplified RexNode versions as well. It also allows prevent of having
+          // some duplicates in in result pulledUpPredicates
+          RexNode simplifiedTarget =
+              simplify.simplifyFilterPredicates(RelOptUtil.conjunctions(tr));
+          if (checkTarget(inferringFields, allExprs, tr)
+              && checkTarget(inferringFields, allExprs, simplifiedTarget)) {
+            inferredPredicates.add(simplifiedTarget);
+            allExprs.add(simplifiedTarget);
           }
         }
       }
