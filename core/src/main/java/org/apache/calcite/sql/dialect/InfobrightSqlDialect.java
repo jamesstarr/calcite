@@ -32,6 +32,15 @@ public class InfobrightSqlDialect extends SqlDialect {
   public InfobrightSqlDialect(Context context) {
     super(context);
   }
+<<<<<<< HEAD
+=======
+
+  @Override public boolean supportsWindowFunctions() {
+    return false;
+  }
+
+}
+>>>>>>> 70f226063 ([CALCITE-2206] JDBC adapter incorrectly pushes windowed aggregates down to HSQLDB (Pavel Gubin))
 
   @Override public boolean supportsWindowFunctions() {
     return false;

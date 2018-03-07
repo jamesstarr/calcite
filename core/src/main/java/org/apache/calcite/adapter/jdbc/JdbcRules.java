@@ -61,20 +61,17 @@ import org.apache.calcite.rex.RexMultisetUtil;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexOver;
 import org.apache.calcite.rex.RexProgram;
-import org.apache.calcite.rex.RexUtil;
-import org.apache.calcite.rex.RexVisitorImpl;
+import org.apache.calcite.runtime.PredicateImpl;
 import org.apache.calcite.schema.ModifiableTable;
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlDialect;
-import org.apache.calcite.sql.SqlFunction;
-import org.apache.calcite.sql.SqlOperator;
-import org.apache.calcite.sql.validate.SqlValidatorUtil;
-import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.Util;
 import org.apache.calcite.util.trace.CalciteTrace;
 
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 
 import org.slf4j.Logger;
@@ -82,7 +79,7 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
+import javax.annotation.Nullable;
 
 /**
  * Rules and relational operators for
@@ -221,7 +218,7 @@ public class JdbcRules {
 
   public static List<RelOptRule> rules(JdbcConvention out,
       RelBuilderFactory relBuilderFactory) {
-    return ImmutableList.of(
+    return ImmutableList.<RelOptRule>of(
         new JdbcToEnumerableConverterRule(out, relBuilderFactory),
         new JdbcJoinRule(out, relBuilderFactory),
         new JdbcCalcRule(out, relBuilderFactory),
@@ -240,11 +237,10 @@ public class JdbcRules {
   abstract static class JdbcConverterRule extends ConverterRule {
     protected final JdbcConvention out;
 
-    @SuppressWarnings("unchecked")
     @Deprecated // to be removed before 2.0
     JdbcConverterRule(Class<? extends RelNode> clazz, RelTrait in,
         JdbcConvention out, String description) {
-      this(clazz, (Predicate<RelNode>) r -> true, in, out,
+      this(clazz, Predicates.<RelNode>alwaysTrue(), in, out,
           RelFactories.LOGICAL_BUILDER, description);
     }
 
@@ -276,7 +272,7 @@ public class JdbcRules {
     /** Creates a JdbcJoinRule. */
     public JdbcJoinRule(JdbcConvention out,
         RelBuilderFactory relBuilderFactory) {
-      super(Join.class, (Predicate<RelNode>) r -> true, Convention.NONE,
+      super(Join.class, Predicates.<RelNode>alwaysTrue(), Convention.NONE,
           out, relBuilderFactory, "JdbcJoinRule");
     }
 
@@ -289,59 +285,7 @@ public class JdbcRules {
       default:
         return convert(join, true);
       }
-      super(cluster, traitSet, ImmutableList.of(), input, groupSet, groupSets, aggCalls);
-      assert getConvention() instanceof JdbcConvention;
-      assert this.groupSets.size() == 1 : "Grouping sets not supported";
-      final SqlDialect dialect = ((JdbcConvention) getConvention()).dialect;
-      for (AggregateCall aggCall : aggCalls) {
-        if (!canImplement(aggCall.getAggregation(), dialect)) {
-          throw new InvalidRelException("cannot implement aggregate function "
-              + aggCall.getAggregation());
-        }
-      }
-    }
-
-    @Deprecated // to be removed before 2.0
-    public JdbcAggregate(RelOptCluster cluster, RelTraitSet traitSet,
-        RelNode input, boolean indicator, ImmutableBitSet groupSet,
-        List<ImmutableBitSet> groupSets, List<AggregateCall> aggCalls)
-        throws InvalidRelException {
-      this(cluster, traitSet, input, groupSet, groupSets, aggCalls);
-      checkIndicator(indicator);
-    }
-
-    @Override public JdbcAggregate copy(RelTraitSet traitSet, RelNode input,
-        ImmutableBitSet groupSet,
-        List<ImmutableBitSet> groupSets, List<AggregateCall> aggCalls) {
-      try {
-        return new JdbcAggregate(getCluster(), traitSet, input,
-            groupSet, groupSets, aggCalls);
-      } catch (InvalidRelException e) {
-        // Semantic error not possible. Must be a bug. Convert to
-        // internal error.
-        throw new AssertionError(e);
-      }
-    }
-
-    public JdbcImplementor.Result implement(JdbcImplementor implementor) {
-      return implementor.implement(this);
-    }
-  }
-
-  /**
-   * Rule to convert a {@link org.apache.calcite.rel.core.Sort} to an
-   * {@link org.apache.calcite.adapter.jdbc.JdbcRules.JdbcSort}.
-   */
-  public static class JdbcSortRule extends JdbcConverterRule {
-    @Deprecated // to be removed before 2.0
-    public JdbcSortRule(JdbcConvention out) {
-      this(out, RelFactories.LOGICAL_BUILDER);
-    }
-
-    /** Creates a JdbcSortRule. */
-    public JdbcSortRule(JdbcConvention out,
-        RelBuilderFactory relBuilderFactory) {
-      super(Sort.class, (Predicate<RelNode>) r -> true, Convention.NONE, out,
+      super(Sort.class, Predicates.<RelNode>alwaysTrue(), Convention.NONE, out,
           relBuilderFactory, "JdbcSortRule");
     }
 
@@ -418,7 +362,7 @@ public class JdbcRules {
     /** Creates a JdbcUnionRule. */
     public JdbcUnionRule(JdbcConvention out,
         RelBuilderFactory relBuilderFactory) {
-      super(Union.class, (Predicate<RelNode>) r -> true, Convention.NONE, out,
+      super(Union.class, Predicates.<RelNode>alwaysTrue(), Convention.NONE, out,
           relBuilderFactory, "JdbcUnionRule");
     }
 
@@ -464,7 +408,7 @@ public class JdbcRules {
     /** Creates a JdbcIntersectRule. */
     private JdbcIntersectRule(JdbcConvention out,
         RelBuilderFactory relBuilderFactory) {
-      super(Intersect.class, (Predicate<RelNode>) r -> true, Convention.NONE,
+      super(Intersect.class, Predicates.<RelNode>alwaysTrue(), Convention.NONE,
           out, relBuilderFactory, "JdbcIntersectRule");
     }
 
@@ -511,7 +455,7 @@ public class JdbcRules {
     /** Creates a JdbcMinusRule. */
     private JdbcMinusRule(JdbcConvention out,
         RelBuilderFactory relBuilderFactory) {
-      super(Minus.class, (Predicate<RelNode>) r -> true, Convention.NONE, out,
+      super(Minus.class, Predicates.<RelNode>alwaysTrue(), Convention.NONE, out,
           relBuilderFactory, "JdbcMinusRule");
     }
 
@@ -550,7 +494,7 @@ public class JdbcRules {
     /** Creates a JdbcTableModificationRule. */
     private JdbcTableModificationRule(JdbcConvention out,
         RelBuilderFactory relBuilderFactory) {
-      super(TableModify.class, (Predicate<RelNode>) r -> true,
+      super(TableModify.class, Predicates.<RelNode>alwaysTrue(),
           Convention.NONE, out, relBuilderFactory, "JdbcTableModificationRule");
     }
 
@@ -626,7 +570,7 @@ public class JdbcRules {
     /** Creates a JdbcValuesRule. */
     private JdbcValuesRule(JdbcConvention out,
         RelBuilderFactory relBuilderFactory) {
-      super(Values.class, (Predicate<RelNode>) r -> true, Convention.NONE,
+      super(Values.class, Predicates.<RelNode>alwaysTrue(), Convention.NONE,
           out, relBuilderFactory, "JdbcValuesRule");
     }
 

@@ -687,6 +687,11 @@ public class SqlDialect {
     return false;
   }
 
+  /** Returns whether this dialect supports window functions (OVER clause). */
+  public boolean supportsWindowFunctions() {
+    return true;
+  }
+
   /**
    * Indicates that datetime_plus operations should be unparsed as timestampadd
    * when possible.
