@@ -282,7 +282,18 @@ public class RexProgramTest {
     return rexBuilder.makeCall(SqlStdOperatorTable.GREATER_THAN, n1, n2);
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  private RexNode plus(RexNode n1, RexNode n2) {
+    return rexBuilder.makeCall(SqlStdOperatorTable.PLUS, n1, n2);
+  }
+
+  private RexNode coalesce(RexNode... nodes) {
+    return rexBuilder.makeCall(SqlStdOperatorTable.COALESCE, nodes);
+  }
+
+>>>>>>> 9a00f8eec ([CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   /**
    * Tests construction of a RexProgram.
    */
@@ -1400,6 +1411,7 @@ public class RexProgramTest {
     checkSimplify(gt(literal1, literal1), "false");
     checkSimplify(gt(hRef, hRef), "false");
     checkSimplify2(gt(iRef, iRef), ">(?0.i, ?0.i)", "false");
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkSimplifyUnchanged(gt(iRef, hRef));
 
     // "(not x) is null" to "x is null"
@@ -1427,6 +1439,18 @@ public class RexProgramTest {
     checkSimplify(isNotNull(plus(vIntNotNull(0), vIntNotNull(1))), "true");
     checkSimplify(isNotNull(plus(vIntNotNull(0), vInt(1))),
         "IS NOT NULL(?0.int1)");
+=======
+    checkSimplify(gt(iRef, hRef), ">(?0.i, ?0.h)");
+
+    checkSimplify(coalesce(hRef, iRef), "?0.h"); // first arg not null
+    checkSimplify(coalesce(iRef, hRef), "COALESCE(?0.i, ?0.h)"); // a0 nullable
+    checkSimplify(coalesce(iRef, iRef), "?0.i"); // repeated arg
+    checkSimplify(coalesce(hRef, hRef), "?0.h"); // repeated arg
+    checkSimplify(coalesce(hRef, literal1), "?0.h");
+    checkSimplify(coalesce(iRef, literal1), "COALESCE(?0.i, 1)");
+    checkSimplify(coalesce(iRef, plus(iRef, hRef), literal1, hRef),
+        "COALESCE(?0.i, +(?0.i, ?0.h), 1)");
+>>>>>>> 9a00f8eec ([CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   @Test void simplifyStrong() {

@@ -120,7 +120,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CBRT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CEIL;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CHARACTER_LENGTH;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CHAR_LENGTH;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CLASSIFIER;
+>>>>>>> 9a00f8eec ([CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING)
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.COALESCE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.COLLECT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CONCAT;
@@ -2719,10 +2719,16 @@ public class RexImpTable {
     private Expression implementRecurse(RexToLixTranslator translator,
         List<RexNode> operands, NullAs nullAs) {
       if (operands.size() == 1) {
+<<<<<<< HEAD
         return translator.translate(operands.get(0), nullAs);
       } else {
         return Expressions.condition(
             translator.translate(operands.get(0), NullAs.IS_NOT_NULL),
+=======
+        return translator.translate(operands.get(0));
+      } else {
+        return Expressions.condition(
+            translator.translate(operands.get(0), NullAs.IS_NULL),
             translator.translate(operands.get(0), nullAs),
             implementRecurse(translator, Util.skip(operands), nullAs));
       }

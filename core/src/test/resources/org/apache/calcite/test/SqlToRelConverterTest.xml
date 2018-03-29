@@ -724,10 +724,14 @@ where d.name = (
         <Resource name="plan">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(DEPTNO=[$7], EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], SLACKER=[$8], NAME=[$10])
 =======
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], DEPTNO0=[$9], NAME=[$10])
 >>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
+=======
+LogicalProject(DEPTNO=[$7], EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], SLACKER=[$8], NAME=[$10])
+>>>>>>> 9a00f8eec ([CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING)
   LogicalFilter(condition=[=($10, $SCALAR_QUERY($cor0, {
 LogicalAggregate(group=[{}], EXPR$0=[MAX($0)])
   LogicalProject(NAME=[$1])

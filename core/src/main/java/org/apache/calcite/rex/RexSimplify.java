@@ -234,6 +234,8 @@ public class RexSimplify {
         return simplifyNot((RexCall) e);
       case CASE:
         return simplifyCase((RexCall) e);
+      case COALESCE:
+        return simplifyCoalesce((RexCall) e);
       case CAST:
         return simplifyCast((RexCall) e);
       case CEIL:
@@ -835,34 +837,55 @@ public class RexSimplify {
     }
   }
 
-  private RexNode simplifyIsNull(RexNode a) {
-    // Simplify the argument first,
-    // call ourselves recursively to see whether we can make more progress.
-    // For example, given
-    // "(CASE WHEN FALSE THEN 1 ELSE 2) IS NULL" we first simplify the
-    // argument to "2", and only then we can simplify "2 IS NULL" to "FALSE".
-    a = simplify(a, UNKNOWN);
-    if (!a.getType().isNullable() && isSafeExpression(a)) {
-      return rexBuilder.makeLiteral(false);
+  private RexNode simplifyCoalesce(RexCall call) {
+    final Set<String> digests = new HashSet<>();
+    final List<RexNode> operands = new ArrayList<>();
+    for (RexNode operand : call.getOperands()) {
+      operand = simplify(operand);
+      if (digests.add(operand.digest)) {
+        operands.add(operand);
+      }
+      if (!operand.getType().isNullable()) {
+        break;
+      }
     }
-    if (RexUtil.isNull(a)) {
-      return rexBuilder.makeLiteral(true);
+    switch (operands.size()) {
+    case 0:
+      return rexBuilder.makeNullLiteral(call.type);
+    case 1:
+      return operands.get(0);
+    default:
+      if (operands.equals(call.operands)) {
+        return call;
+      }
+      return call.clone(call.type, operands);
     }
-    if (hasCustomNullabilityRules(a.getKind())) {
-      return null;
-    }
-    switch (Strong.policy(a.getKind())) {
-    case NOT_NULL:
-      return rexBuilder.makeLiteral(false);
-    case ANY:
-      // "f" is a strong operator, so "f(operand0, operand1) IS NULL" simplifies
-      // to "operand0 IS NULL OR operand1 IS NULL"
-      final List<RexNode> operands = new ArrayList<>();
-      for (RexNode operand : ((RexCall) a).getOperands()) {
-        final RexNode simplified = simplifyIsNull(operand);
-        if (simplified == null) {
-          operands.add(
-              rexBuilder.makeCall(SqlStdOperatorTable.IS_NULL, operand));
+  }
+
+  private RexNode simplifyCase(RexCall call) {
+    final List<RexNode> operands = call.getOperands();
+    final List<RexNode> newOperands = new ArrayList<>();
+    final Set<String> values = new HashSet<>();
+    for (int i = 0; i < operands.size(); i++) {
+      RexNode operand = operands.get(i);
+      if (RexUtil.isCasePredicate(call, i)) {
+        if (operand.isAlwaysTrue()) {
+          // Predicate is always TRUE. Make value the ELSE and quit.
+          newOperands.add(operands.get(++i));
+          if (unknownAsFalse && RexUtil.isNull(operands.get(i))) {
+            values.add(rexBuilder.makeLiteral(false).toString());
+          } else {
+            values.add(operands.get(i).toString());
+          }
+          break;
+        } else if (operand.isAlwaysFalse() || RexUtil.isNull(operand)) {
+          // Predicate is always FALSE or NULL. Skip predicate and value.
+          ++i;
+          continue;
+        }
+      } else {
+        if (unknownAsFalse && RexUtil.isNull(operand)) {
+          values.add(rexBuilder.makeLiteral(false).toString());
         } else {
           operands.add(simplified);
         }

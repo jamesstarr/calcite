@@ -2182,6 +2182,30 @@ class RelToSqlConverterTest {
   @Test void testSimpleJoinUsing() {
     String query = "select *\n"
         + "from \"sales_fact_1997\" as s\n"
+        + "join \"customer\" as c on s.\"customer_id\" = c.\"customer_id\"\n"
+        + "join \"product\" as p on s.\"product_id\" = p.\"product_id\"\n"
+        + "join \"product_class\" as pc\n"
+        + "  on p.\"product_class_id\" = pc.\"product_class_id\"\n"
+        + "where c.\"city\" = 'San Francisco'\n"
+        + "and pc.\"product_department\" = 'Snacks'\n";
+    final String expected = "SELECT *\n"
+        + "FROM \"foodmart\".\"sales_fact_1997\"\n"
+        + "INNER JOIN \"foodmart\".\"customer\" "
+        + "ON \"sales_fact_1997\".\"customer_id\" = \"customer\""
+        + ".\"customer_id\"\n"
+        + "INNER JOIN \"foodmart\".\"product\" "
+        + "ON \"sales_fact_1997\".\"product_id\" = \"product\".\"product_id\"\n"
+        + "INNER JOIN \"foodmart\".\"product_class\" "
+        + "ON \"product\".\"product_class_id\" = \"product_class\""
+        + ".\"product_class_id\"\n"
+        + "WHERE \"customer\".\"city\" = 'San Francisco' AND "
+        + "\"product_class\".\"product_department\" = 'Snacks'";
+    sql(query).ok(expected);
+  }
+
+  @Test public void testSimpleJoinUsing() {
+    String query = "select *\n"
+        + "from \"sales_fact_1997\" as s\n"
         + "  join \"customer\" as c using (\"customer_id\")\n"
         + "  join \"product\" as p using (\"product_id\")\n"
         + "  join \"product_class\" as pc using (\"product_class_id\")\n"

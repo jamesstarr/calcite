@@ -19,6 +19,7 @@ package org.apache.calcite.sql.validate;
 import org.apache.calcite.config.NullCollation;
 import org.apache.calcite.linq4j.Ord;
 import org.apache.calcite.linq4j.function.Function2;
+import org.apache.calcite.linq4j.function.Functions;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.prepare.Prepare;
@@ -100,6 +101,7 @@ import org.apache.calcite.sql2rel.InitializerContext;
 import org.apache.calcite.util.BitString;
 import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.ImmutableBitSet;
+import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.ImmutableNullableList;
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.Pair;
@@ -133,13 +135,11 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
 
@@ -666,7 +666,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
               addOrExpandField(
                       selectItems,
                       aliases,
-                      types,
+                      fields,
                       includeSystemVars,
                       scope,
                       exp,
@@ -689,13 +689,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       // If NATURAL JOIN or USING is present, move key fields to the front of
       // the list, per standard SQL. Disabled if there are dynamic fields.
       if (!hasDynamicStruct || Bug.CALCITE_2400_FIXED) {
-        SqlNode from =
-            requireNonNull(scope.getNode().getFrom(),
-                () -> "getFrom for " + scope.getNode());
-        // If some fields before star identifier,
-        // we should move offset.
-        int offset = calculatePermuteOffset(selectItems);
-        new Permute(from, offset).permute(selectItems, fields);
+        new Permute(scope.getNode().getFrom(), 0).permute(selectItems, fields);
       }
       return true;
 
@@ -743,21 +737,12 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     }
   }
 
-  private int calculatePermuteOffset(List<SqlNode> selectItems) {
-    for (int i = 0; i < selectItems.size(); i++) {
-      SqlNode selectItem = selectItems.get(i);
-      SqlNode col = SqlUtil.stripAs(selectItem);
-      if (col.getKind() == SqlKind.IDENTIFIER
-          && selectItem.getKind() != SqlKind.AS) {
-        return i;
-      }
-    }
-    return 0;
-  }
-
   private SqlNode maybeCast(SqlNode node, RelDataType currentType,
       RelDataType desiredType) {
-    return SqlTypeUtil.equalSansNullability(typeFactory, currentType, desiredType)
+    return currentType.equals(desiredType)
+        || (currentType.isNullable() != desiredType.isNullable()
+            && typeFactory.createTypeWithNullability(currentType,
+                desiredType.isNullable()).equals(desiredType))
         ? node
         : SqlStdOperatorTable.CAST.createCall(SqlParserPos.ZERO,
             node, SqlTypeUtil.convertTypeToSpec(desiredType));
@@ -3449,8 +3434,8 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
 
       // Parser ensures that using clause is not empty.
       Preconditions.checkArgument(list.size() > 0, "Empty USING clause");
-      for (int i = 0; i < list.size(); i++) {
-        SqlIdentifier id = (SqlIdentifier) list.get(i);
+      for (SqlNode node : list) {
+        SqlIdentifier id = (SqlIdentifier) node;
         final RelDataType leftColType = validateUsingCol(id, left);
         final RelDataType rightColType = validateUsingCol(id, right);
         if (!SqlTypeUtil.isComparable(leftColType, rightColType)) {
@@ -3477,13 +3462,14 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       // fields that occur more than once on either side.
       final RelDataType leftRowType = getNamespace(left).getRowType();
       final RelDataType rightRowType = getNamespace(right).getRowType();
+      final SqlNameMatcher nameMatcher = catalogReader.nameMatcher();
       List<String> naturalColumnNames =
-          SqlValidatorUtil.deriveNaturalJoinColumnList(
-              leftRowType,
-              rightRowType);
+          SqlValidatorUtil.deriveNaturalJoinColumnList(nameMatcher,
+              leftRowType, rightRowType);
+
 
       // Check compatibility of the chosen columns.
-      final SqlNameMatcher nameMatcher = catalogReader.nameMatcher();
+
       for (String name : naturalColumnNames) {
         final RelDataType leftColType =
             nameMatcher.field(leftRowType, name).getType();
@@ -3565,7 +3551,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       final SqlNameMatcher nameMatcher = catalogReader.nameMatcher();
       final RelDataTypeField field = nameMatcher.field(rowType, name);
       if (field != null) {
-        if (Collections.frequency(rowType.getFieldNames(), name) > 1) {
+        if (nameMatcher.frequency(rowType.getFieldNames(), name) > 1) {
           throw newValidationError(id,
               RESOURCE.columnInUsingNotUnique(id.toString()));
         }
@@ -4437,7 +4423,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       validateExpr(selectItem, selectScope);
     }
 
-    assert fieldList.size() >= aliases.size();
     return typeFactory.createStructType(fieldList);
   }
 
@@ -4530,11 +4515,11 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       return baseRowType;
     }
     List<RelDataTypeField> targetFields = baseRowType.getFieldList();
-    final List<Map.Entry<String, RelDataType>> types = new ArrayList<>();
+    final List<Map.Entry<String, RelDataType>> fields = new ArrayList<>();
     if (append) {
       for (RelDataTypeField targetField : targetFields) {
-        types.add(
-            Pair.of(SqlUtil.deriveAliasFromOrdinal(types.size()),
+        fields.add(
+            Pair.of(SqlUtil.deriveAliasFromOrdinal(fields.size()),
                 targetField.getType()));
       }
     }
@@ -4554,9 +4539,9 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
         throw newValidationError(id,
             RESOURCE.duplicateTargetColumn(targetField.getName()));
       }
-      types.add(targetField);
+      fields.add(targetField);
     }
-    return typeFactory.createStructType(types);
+    return typeFactory.createStructType(fields);
   }
 
   public void validateInsert(SqlInsert insert) {
@@ -5445,9 +5430,8 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
 
   private void validateDefinitions(SqlMatchRecognize mr,
       MatchRecognizeScope scope) {
-    final Set<String> aliases = catalogReader.nameMatcher().isCaseSensitive()
-        ? new LinkedHashSet<String>()
-        : new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    final Set<String> aliases = catalogReader.nameMatcher().createSet();
+
     for (SqlNode item : mr.getPatternDefList().getList()) {
       final String alias = alias(item);
       if (!aliases.add(alias)) {
@@ -6477,11 +6461,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
         }
         expr = stripAs(expr);
         if (expr instanceof SqlIdentifier) {
-<<<<<<< HEAD
-          SqlIdentifier sid = (SqlIdentifier) expr;
-          final SqlIdentifier fqId = getScope().fullyQualify(sid).identifier;
-          expr = expandDynamicStar(sid, fqId);
-=======
           expr = getScope().fullyQualify((SqlIdentifier) expr).identifier;
         }
         return expr;
@@ -6846,10 +6825,14 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     final List<ImmutableIntList> sources;
     final RelDataType rowType;
     final boolean trivial;
+<<<<<<< HEAD
     final int offset;
 
     Permute(SqlNode from, int offset) {
       this.offset = offset;
+=======
+
+    Permute(SqlNode from, int offset) {
       switch (from.getKind()) {
       case JOIN:
         final SqlJoin join = (SqlJoin) from;
@@ -6912,20 +6895,9 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       return catalogReader.nameMatcher().field(rowType, name);
     }
 
-    /** Moves fields according to the permutation. */
-    public void permute(List<SqlNode> selectItems,
-        List<Map.Entry<String, RelDataType>> fields) {
-      if (trivial) {
-        return;
-      }
-
-      final List<SqlNode> oldSelectItems = ImmutableList.copyOf(selectItems);
-      selectItems.clear();
-      selectItems.addAll(oldSelectItems.subList(0, offset));
       final List<Map.Entry<String, RelDataType>> oldFields =
           ImmutableList.copyOf(fields);
       fields.clear();
-      fields.addAll(oldFields.subList(0, offset));
       for (ImmutableIntList source : sources) {
         final int p0 = source.get(0);
         Map.Entry<String, RelDataType> field = oldFields.get(p0);
