@@ -115,6 +115,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CBRT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CEIL;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CHARACTER_LENGTH;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CHAR_LENGTH;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.COALESCE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.COLLECT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CONCAT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.COS;
@@ -510,7 +511,7 @@ public class RexImpTable {
         NullPolicy.NONE, NotImplementor.of(subMultisetImplementor), false);
 
     map.put(CASE, new CaseImplementor());
-
+    map.put(COALESCE, new CoalesceImplementor());
     map.put(CAST, new CastOptimizedImplementor());
     map.put(DATE, new CastOptimizedImplementor());
 
@@ -2100,44 +2101,6 @@ public class RexImpTable {
           translatedOperands.get(1),
           translatedOperands.get(2),
           Expressions.constant(strict));
-<<<<<<< HEAD
-    }
-  }
-
-  /** Implementor for the {@code MONTHNAME} and {@code DAYNAME} functions.
-   * Each takes a {@link java.util.Locale} argument. */
-  private static class PeriodNameImplementor extends MethodNameImplementor {
-    private final BuiltInMethod timestampMethod;
-    private final BuiltInMethod dateMethod;
-
-    PeriodNameImplementor(String methodName, BuiltInMethod timestampMethod,
-        BuiltInMethod dateMethod) {
-      super(methodName);
-      this.timestampMethod = timestampMethod;
-      this.dateMethod = dateMethod;
-    }
-
-    @Override public Expression implement(RexToLixTranslator translator,
-        RexCall call, List<Expression> translatedOperands) {
-      Expression operand = translatedOperands.get(0);
-      final RelDataType type = call.operands.get(0).getType();
-      switch (type.getSqlTypeName()) {
-      case TIMESTAMP:
-        return getExpression(translator, operand, timestampMethod);
-      case DATE:
-        return getExpression(translator, operand, dateMethod);
-      default:
-        throw new AssertionError("unknown type " + type);
-      }
-    }
-
-    protected Expression getExpression(RexToLixTranslator translator,
-        Expression operand, BuiltInMethod builtInMethod) {
-      final MethodCallExpression locale =
-          Expressions.call(BuiltInMethod.LOCALE.method, translator.getRoot());
-      return Expressions.call(builtInMethod.method.getDeclaringClass(),
-          builtInMethod.method.getName(), operand, locale);
-=======
     }
   }
 
@@ -2724,6 +2687,18 @@ public class RexImpTable {
     }
   }
 
+<<<<<<< HEAD
+=======
+  /** Implementor for the SQL {@code COALESCE} operator. */
+  private static class CoalesceImplementor implements CallImplementor {
+    public Expression implement(RexToLixTranslator translator, RexCall call,
+        NullAs nullAs) {
+      return implementRecurse(translator, call.operands, nullAs);
+    }
+
+    private Expression implementRecurse(RexToLixTranslator translator,
+        List<RexNode> operands, NullAs nullAs) {
+      if (operands.size() == 1) {
         return translator.translate(operands.get(0));
       } else {
         return Expressions.condition(
@@ -2734,7 +2709,6 @@ public class RexImpTable {
     }
   }
 
-<<<<<<< HEAD
 =======
 =======
 =======

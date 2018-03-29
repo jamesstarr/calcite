@@ -82,14 +82,17 @@ public abstract class SqlTypeTransforms {
    * the arguments is NOT NULL; otherwise the type is unchanged.
    */
   public static final SqlTypeTransform LEAST_NULLABLE =
-      (opBinding, typeToTransform) -> {
-        for (RelDataType type : opBinding.collectOperandTypes()) {
-          if (!type.isNullable()) {
-            return opBinding.getTypeFactory()
-                .createTypeWithNullability(typeToTransform, false);
+      new SqlTypeTransform() {
+        public RelDataType transformType(SqlOperatorBinding opBinding,
+            RelDataType typeToTransform) {
+          for (RelDataType type : opBinding.collectOperandTypes()) {
+            if (!type.isNullable()) {
+              return opBinding.getTypeFactory()
+                  .createTypeWithNullability(typeToTransform, false);
+            }
           }
+          return typeToTransform;
         }
-        return typeToTransform;
       };
 
   /**

@@ -122,10 +122,20 @@ public class SqlNameMatchers {
       return rowType.getField(fieldName, caseSensitive, false);
     }
 
-    @Override public Set<String> createSet() {
+    public int frequency(Iterable<String> names, String name) {
+      int n = 0;
+      for (String s : names) {
+        if (matches(s, name)) {
+          ++n;
+        }
+      }
+      return n;
+    }
+
+    public Set<String> createSet() {
       return isCaseSensitive()
-              ? new LinkedHashSet<>()
-              : new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+          ? new LinkedHashSet<String>()
+          : new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     }
   }
 

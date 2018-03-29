@@ -2568,7 +2568,7 @@ public class SqlToRelConverter {
       SqlValidatorNamespace rightNamespace) {
     final List<String> columnList =
         SqlValidatorUtil.deriveNaturalJoinColumnList(
-            //catalogReader.nameMatcher(),
+            catalogReader.nameMatcher(),
             leftNamespace.getRowType(),
             rightNamespace.getRowType());
     return convertUsing(leftNamespace, rightNamespace, columnList);
