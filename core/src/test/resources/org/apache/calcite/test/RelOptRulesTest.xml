@@ -12943,6 +12943,9 @@ LogicalProject(JOB=[$0], EMPNO=[10], SAL=[$1], S=[$2])
     </TestCase>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b0f0cb108 ([CALCITE-2232] Assertion error on AggregatePullUpConstantsRule while adjusting Aggregate indices)
     <TestCase name="testAggregateProjectPullUpConstants2">
         <Resource name="sql">
             <![CDATA[select ename, sal
@@ -12965,11 +12968,14 @@ LogicalProject(ENAME=['John':VARCHAR(20)], SAL=[$0])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 =======
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+>>>>>>> b0f0cb108 ([CALCITE-2232] Assertion error on AggregatePullUpConstantsRule while adjusting Aggregate indices)
     <TestCase name="testWhereExpressionInCorrelated">
         <Resource name="sql">
             <![CDATA[select ename from (
