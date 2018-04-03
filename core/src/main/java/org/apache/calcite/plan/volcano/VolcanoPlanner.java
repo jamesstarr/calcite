@@ -326,6 +326,14 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     return root;
   }
 
+  public RelNode getOriginalRoot() {
+    return originalRoot;
+  }
+
+  public void setOriginalRoot(RelNode originalRoot) {
+    this.originalRoot = originalRoot;
+  }
+
   public ImmutableList<RelOptMaterialization> getMaterializations() {
     return ImmutableList.copyOf(materializations);
   }
@@ -343,7 +351,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     return latticeByName.get(table.getQualifiedName());
   }
 
-  private void registerMaterializations() {
+  protected void registerMaterializations() {
     // Avoid using materializations while populating materializations!
     final CalciteConnectionConfig config =
         context.unwrap(CalciteConnectionConfig.class);
