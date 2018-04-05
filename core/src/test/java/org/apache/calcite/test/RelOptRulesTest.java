@@ -2603,30 +2603,20 @@ class RelOptRulesTest extends RelOptTestBase {
     diffRepos.assertEquals("planAfter", "${planAfter}", planAfter);
   }
 
-  /** Checks that constant reducer duplicates calls to dynamic functions, if
-   * appropriate. CURRENT_TIMESTAMP is a dynamic function. */
-  @Test void testReduceConstantsDynamicFunction() {
+  @Test public void testCasePushIsAlwaysWorking() throws Exception {
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.CALC_REDUCE_EXPRESSIONS)
         .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
         .build();
 
-    final String sql = "select sal, t\n"
-        + "from (select sal, current_timestamp t from emp)\n"
-        + "where t > TIMESTAMP '2018-01-01 00:00:00'";
-    sql(sql).with(program).checkUnchanged();
-  }
-
-  @Test void testCasePushIsAlwaysWorking() throws Exception {
     final String sql = "select empno from emp"
         + " where case when sal > 1000 then empno else sal end = 1";
-    sql(sql).withRule(CoreRules.FILTER_REDUCE_EXPRESSIONS,
-        CoreRules.CALC_REDUCE_EXPRESSIONS,
-        CoreRules.PROJECT_REDUCE_EXPRESSIONS)
-        .check();
+    checkPlanning(program, sql);
   }
 
-  @Test void testReduceValuesNull() throws Exception {
+  @Ignore // Calcite does not support INSERT yet
+  @Test public void testReduceValuesNull() throws Exception {
     // The NULL literal presents pitfalls for value-reduction. Only
     // an INSERT statement contains un-CASTed NULL values.
     HepProgram program = new HepProgramBuilder()

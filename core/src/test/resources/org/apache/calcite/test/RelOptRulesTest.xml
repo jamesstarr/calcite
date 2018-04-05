@@ -713,6 +713,9 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 804308e89 ([CALCITE-2240] Extend rule to push predicates into CASE statement (Zoltan Haindrich))
     <TestCase name="testCasePushIsAlwaysWorking">
         <Resource name="sql">
             <![CDATA[select empno from emp where case when sal > 1000 then empno else sal end = 1]]>
@@ -727,17 +730,24 @@ LogicalProject(EMPNO=[$0])
         <Resource name="planAfter">
             <![CDATA[
 LogicalProject(EMPNO=[$0])
+<<<<<<< HEAD
   LogicalFilter(condition=[OR(AND(>($5, 1000), =($0, 1)), =($5, 1))])
+=======
+  LogicalFilter(condition=[CASE(>($5, 1000), =($0, 1), =($5, 1))])
+>>>>>>> 804308e89 ([CALCITE-2240] Extend rule to push predicates into CASE statement (Zoltan Haindrich))
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
          </Resource>
      </TestCase>
+<<<<<<< HEAD
     <TestCase name="testAnyInProjectNonNullable">
         <Resource name="sql">
             <![CDATA[select name, deptno > ANY (
   select deptno from emp)
 from dept]]>
 =======
+=======
+>>>>>>> 804308e89 ([CALCITE-2240] Extend rule to push predicates into CASE statement (Zoltan Haindrich))
     <TestCase name="testAnyInProjectNonNullable">
         <Resource name="sql">
             <![CDATA[select name, 
