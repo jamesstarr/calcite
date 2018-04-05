@@ -625,8 +625,9 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
   protected static boolean reduceExpressionsInternal(RelNode rel,
       RexSimplify simplify, List<RexNode> expList,
       RelOptPredicateList predicates, boolean treatDynamicCallsAsConstant) {
+    boolean changed = false;
     // Replace predicates on CASE to CASE on predicates.
-    new CaseShuttle().mutate(expList);
+    changed |= new CaseShuttle().mutate(expList);
 
     // Find reducible expressions.
     final List<RexNode> constExps = Lists.newArrayList();
@@ -635,7 +636,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
     findReducibleExps(rel.getCluster().getTypeFactory(), expList,
         predicates.constantMap, constExps, addCasts, removableCasts, treatDynamicCallsAsConstant);
     if (constExps.isEmpty() && removableCasts.isEmpty()) {
-      return false;
+      return changed;
     }
 
     // Remove redundant casts before reducing constant expressions.
@@ -662,8 +663,8 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
     if (!predicates.constantMap.isEmpty()) {
       //noinspection unchecked
       final List<Map.Entry<RexNode, RexNode>> pairs =
-          (List<Map.Entry<RexNode, RexNode>>) (List)
-              Lists.newArrayList(predicates.constantMap.entrySet());
+
+          Lists.newArrayList(predicates.constantMap.entrySet());
       RexReplacer replacer =
           new RexReplacer(simplify, Pair.left(pairs), Pair.right(pairs),
               Collections.nCopies(pairs.size(), false), false);
@@ -680,7 +681,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
       // final RexExecutorImpl executor =
       //   new RexExecutorImpl(Schemas.createDataContext(null));
       // rootRel.getCluster().getPlanner().setExecutor(executor);
-      return false;
+      return changed;
     }
 
     final List<RexNode> reducedValues = Lists.newArrayList();
@@ -689,7 +690,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
     // Use RexNode.digest to judge whether each newly generated RexNode
     // is equivalent to the original one.
     if (RexUtil.strings(constExps).equals(RexUtil.strings(reducedValues))) {
-      return false;
+      return changed;
     }
 
     // For Project, we have to be sure to preserve the result
