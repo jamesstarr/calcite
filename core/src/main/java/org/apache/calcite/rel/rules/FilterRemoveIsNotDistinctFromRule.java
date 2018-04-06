@@ -21,8 +21,6 @@ import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Filter;
-import org.apache.calcite.rel.core.RelFactories;
-import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexNode;
@@ -34,8 +32,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
 
 /**
  * Planner rule that replaces {@code IS NOT DISTINCT FROM}
- * in a {@link org.apache.calcite.rel.logical.LogicalFilter}
- * with logically equivalent operations.
+ * in a {@link Filter} with logically equivalent operations.
  * @see CoreRules#FILTER_EXPAND_IS_NOT_DISTINCT_FROM
  * @see RelBuilder#isDistinctFrom
  * @see RelBuilder#isNotDistinctFrom
@@ -59,7 +56,7 @@ public final class FilterRemoveIsNotDistinctFromRule
   //~ Methods ----------------------------------------------------------------
 
   @Override public void onMatch(RelOptRuleCall call) {
-    LogicalFilter oldFilter = call.rel(0);
+    Filter oldFilter = call.rel(0);
     RexNode oldFilterCond = oldFilter.getCondition();
 
     if (RexUtil.findOperatorCall(
@@ -77,11 +74,11 @@ public final class FilterRemoveIsNotDistinctFromRule
         new RemoveIsNotDistinctFromRexShuttle(
             oldFilter.getCluster().getRexBuilder());
 
-    final RelFactories.FilterFactory factory =
-        RelFactories.DEFAULT_FILTER_FACTORY;
-    RelNode newFilterRel =
-        factory.createFilter(oldFilter.getInput(),
-            oldFilterCond.accept(rewriteShuttle));
+    final RelBuilder relBuilder = call.builder();
+    final RelNode newFilterRel = relBuilder
+        .push(oldFilter.getInput())
+        .filter(oldFilterCond.accept(rewriteShuttle))
+        .build();
 
     call.transformTo(newFilterRel);
   }
