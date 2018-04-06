@@ -15038,4 +15038,18 @@ LogicalProject(DEPTNO=[$0])
 ]]>
         </Resource>
     </TestCase>
+    <TestCase name="testFilterRemoveIsNotDistinctFromRule">
+        <Resource name="planBefore">
+          <![CDATA[
+LogicalFilter(condition=[IS NOT DISTINCT FROM($7, 20)])
+  LogicalTableScan(table=[[scott, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+          <![CDATA[
+LogicalFilter(condition=[IS TRUE(=($7, 20))])
+  LogicalTableScan(table=[[scott, EMP]])
+]]>
+        </Resource>
+    </TestCase>
 </Root>

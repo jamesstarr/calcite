@@ -21,8 +21,18 @@ import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Filter;
- * in a {@link org.apache.calcite.rel.logical.LogicalFilter}
- * with logically equivalent operations.
+import org.apache.calcite.rex.RexBuilder;
+import org.apache.calcite.rex.RexCall;
+import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.rex.RexShuttle;
+import org.apache.calcite.rex.RexUtil;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.tools.RelBuilder;
+import org.apache.calcite.tools.RelBuilderFactory;
+
+/**
+ * Planner rule that replaces {@code IS NOT DISTINCT FROM}
+ * in a {@link Filter} with logically equivalent operations.
  * @see CoreRules#FILTER_EXPAND_IS_NOT_DISTINCT_FROM
  * @see RelBuilder#isDistinctFrom
  * @see RelBuilder#isNotDistinctFrom
@@ -46,7 +56,7 @@ public final class FilterRemoveIsNotDistinctFromRule
   //~ Methods ----------------------------------------------------------------
 
   @Override public void onMatch(RelOptRuleCall call) {
-    LogicalFilter oldFilter = call.rel(0);
+    Filter oldFilter = call.rel(0);
     RexNode oldFilterCond = oldFilter.getCondition();
 
     if (RexUtil.findOperatorCall(

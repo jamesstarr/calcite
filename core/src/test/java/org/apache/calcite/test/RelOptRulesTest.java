@@ -88,13 +88,7 @@ import org.apache.calcite.runtime.PredicateImpl;
 import org.apache.calcite.schema.Schemas;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlOperator;
-import org.apache.calcite.sql.SqlOperatorBinding;
-import org.apache.calcite.sql.SqlSpecialOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
-import org.apache.calcite.sql.parser.SqlParser;
-import org.apache.calcite.sql.type.OperandTypes;
-import org.apache.calcite.sql.type.ReturnTypes;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.validate.SqlMonotonicity;
 import org.apache.calcite.sql.validate.SqlValidator;
@@ -7117,4 +7111,31 @@ class RelOptRulesTest extends RelOptTestBase {
     getDiffRepos().assertEquals("planAfter", "${planAfter}", planAfter);
   }
 
+  @Test public void testFilterRemoveIsNotDistinctFromRule() {
+    final DiffRepository diffRepos = getDiffRepos();
+    final RelBuilder builder = RelBuilder.create(RelBuilderTest.config().build());
+    RelNode root = builder
+        .scan("EMP")
+        .filter(
+            builder.call(SqlStdOperatorTable.IS_NOT_DISTINCT_FROM,
+            builder.field("DEPTNO"), builder.literal(20)))
+        .build();
+
+    HepProgram preProgram = new HepProgramBuilder().build();
+    HepPlanner prePlanner = new HepPlanner(preProgram);
+    prePlanner.setRoot(root);
+    final RelNode relBefore = prePlanner.findBestExp();
+    final String planBefore = NL + RelOptUtil.toString(relBefore);
+    diffRepos.assertEquals("planBefore", "${planBefore}", planBefore);
+
+    HepProgram hepProgram = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.FILTER_EXPAND_IS_NOT_DISTINCT_FROM)
+        .build();
+
+    HepPlanner hepPlanner = new HepPlanner(hepProgram);
+    hepPlanner.setRoot(root);
+    final RelNode relAfter = hepPlanner.findBestExp();
+    final String planAfter = NL + RelOptUtil.toString(relAfter);
+    diffRepos.assertEquals("planAfter", "${planAfter}", planAfter);
+  }
 }
