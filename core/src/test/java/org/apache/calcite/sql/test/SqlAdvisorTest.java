@@ -87,6 +87,17 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
           "TABLE(CATALOG.SALES.EMP_R)",
           "TABLE(CATALOG.SALES.DEPT_R)");
 
+  protected static final List<String> SALES_E_TABLES =
+      Arrays.asList(
+          "TABLE(CATALOG.SALES.EMP)",
+          "TABLE(CATALOG.SALES.EMPDEFAULTS)",
+          "TABLE(CATALOG.SALES.EMPNULLABLES)",
+          "TABLE(CATALOG.SALES.EMPNULLABLES_20)",
+          "TABLE(CATALOG.SALES.EMP_20)",
+          "TABLE(CATALOG.SALES.EMP_ADDRESS)",
+          "TABLE(CATALOG.SALES.EMP_B)",
+          "TABLE(CATALOG.SALES.EMP_R)");
+
   private static final List<String> SCHEMAS =
       Arrays.asList(
           "CATALOG(CATALOG)",
@@ -1189,6 +1200,22 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
     // just before dot
     sql = "select emp.^name from emp";
     assertComplete(sql, EMP_COLUMNS, STAR_KEYWORD);
+
+    // partial table completion - cursor at end of word
+    sql = "select * from sales.e^";
+    assertComplete(sql, SALES_E_TABLES);
+
+    // partial table completion - cursor in middle of word
+    sql = "select * from sales.e^m";
+    assertComplete(sql, SALES_E_TABLES);
+
+    // partial table completion - cursor before middle of word
+    sql = "select * from sales.^em";
+    assertComplete(sql, SALES_TABLES);
+
+    // partial column completion with alias
+    sql = "select t1.j^ from sales.emp t1";
+    assertComplete(sql, Arrays.asList("COLUMN(JOB)"));
   }
 
   @Test public void testInsert() throws Exception {

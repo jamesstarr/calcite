@@ -158,9 +158,11 @@ public class SqlAdvisor {
       } else {
         // Regular identifier. Case-insensitive match.
         for (SqlMoniker hint : completionHints) {
+          List<String> fullyQualifiedNames = hint.getFullyQualifiedNames();
           String cname = hint.toString();
-          if ((cname.length() >= word.length())
-              && cname.substring(0, word.length()).equalsIgnoreCase(word)) {
+          String scopedIdentifier = fullyQualifiedNames.get(fullyQualifiedNames.size() - 1);
+          if (cname.regionMatches(true, 0, word, 0, word.length())
+              || scopedIdentifier.regionMatches(true, 0, word, 0, word.length())) {
             result.add(hint);
           }
         }
