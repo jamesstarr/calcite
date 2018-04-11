@@ -188,17 +188,29 @@ public class SqlAdvisor {
 
     // If cursor was part of the way through a word, only include hints
     // which start with that word in the result.
-    final List<SqlMoniker> result = new ArrayList<>();
-    Casing preferredCasing = getPreferredCasing(word);
-
-    boolean ignoreCase = preferredCasing != Casing.UNCHANGED;
-    for (SqlMoniker hint : completionHints) {
-      List<String> names = hint.getFullyQualifiedNames();
-      // For now we treat only simple cases where the added name is the last
-      // See [CALCITE-2439] Smart complete for SqlAdvisor
-      String cname = Util.last(names);
-      if (cname.regionMatches(ignoreCase, 0, word, 0, word.length())) {
-        result.add(hint);
+    final List<SqlMoniker> result;
+    if (word.length() > 0) {
+      result = new ArrayList<SqlMoniker>();
+      if (quoted) {
+        // Quoted identifier. Case-sensitive match.
+        word = word.substring(1);
+        for (SqlMoniker hint : completionHints) {
+          String cname = hint.toString();
+          if (cname.startsWith(word)) {
+            result.add(hint);
+          }
+        }
+      } else {
+        // Regular identifier. Case-insensitive match.
+        for (SqlMoniker hint : completionHints) {
+          List<String> fullyQualifiedNames = hint.getFullyQualifiedNames();
+          String cname = hint.toString();
+          String scopedIdentifier = fullyQualifiedNames.get(fullyQualifiedNames.size() - 1);
+          if (cname.regionMatches(true, 0, word, 0, word.length())
+              || scopedIdentifier.regionMatches(true, 0, word, 0, word.length())) {
+            result.add(hint);
+          }
+        }
       }
     }
 
