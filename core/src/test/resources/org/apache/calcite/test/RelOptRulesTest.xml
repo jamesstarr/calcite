@@ -10032,6 +10032,7 @@ LogicalAggregate(group=[{}], EXPR$0=[$SUM0($0)])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughJoinOnEmptyLogicalValues">
         <Resource name="sql">
             <![CDATA[select count(*) volume, sum(C1.sal) C1_sum_sal from (select sal, ename from sales.emp where 1=2) C1 inner join (select ename from sales.emp) C2   on C1.ename = C2.ename ]]>
@@ -10060,6 +10061,8 @@ LogicalAggregate(group=[{}], VOLUME=[$SUM0($0)], C1_SUM_SAL=[SUM($1)])
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> e87ead03c ([CALCITE-2249] AggregateJoinTransposeRule generates inequivalent nodes if Aggregate relNode contains distinct aggregate function (jingzhang))
     <TestCase name="testPushDistinctAggregateIntoJoin">
         <Resource name="sql">
             <![CDATA[select count(distinct sal) from sales.emp join sales.dept on job = name]]>
@@ -10082,6 +10085,7 @@ LogicalAggregate(group=[{}], EXPR$0=[COUNT(DISTINCT $5)])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testAggregateJoinRemoveRule1">
         <Resource name="sql">
             <![CDATA[select count(distinct sal) from sales.emp e
@@ -10141,6 +10145,8 @@ LogicalAggregate(group=[{2, 10}])
 =======
 
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+>>>>>>> e87ead03c ([CALCITE-2249] AggregateJoinTransposeRule generates inequivalent nodes if Aggregate relNode contains distinct aggregate function (jingzhang))
     <TestCase name="testPushAggregateThroughJoinDistinct">
         <Resource name="sql">
             <![CDATA[select d.name,
