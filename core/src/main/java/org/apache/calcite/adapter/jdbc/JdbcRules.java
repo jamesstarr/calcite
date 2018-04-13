@@ -61,10 +61,13 @@ import org.apache.calcite.rex.RexMultisetUtil;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexOver;
 import org.apache.calcite.rex.RexProgram;
+import org.apache.calcite.rex.RexVisitorImpl;
 import org.apache.calcite.runtime.PredicateImpl;
 import org.apache.calcite.schema.ModifiableTable;
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlDialect;
+import org.apache.calcite.sql.SqlFunction;
+import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.Util;
@@ -285,6 +288,415 @@ public class JdbcRules {
       default:
         return convert(join, true);
       }
+<<<<<<< HEAD
+=======
+    }
+  }
+
+  /** Join operator implemented in JDBC convention. */
+  public static class JdbcJoin extends Join implements JdbcRel {
+    /** Creates a JdbcJoin. */
+    public JdbcJoin(RelOptCluster cluster, RelTraitSet traitSet,
+        RelNode left, RelNode right, RexNode condition,
+        Set<CorrelationId> variablesSet, JoinRelType joinType)
+        throws InvalidRelException {
+      super(cluster, traitSet, ImmutableList.of(), left, right, condition, variablesSet, joinType);
+    }
+
+    @Deprecated // to be removed before 2.0
+    protected JdbcJoin(
+        RelOptCluster cluster,
+        RelTraitSet traitSet,
+        RelNode left,
+        RelNode right,
+        RexNode condition,
+        JoinRelType joinType,
+        Set<String> variablesStopped)
+        throws InvalidRelException {
+      this(cluster, traitSet, left, right, condition,
+          CorrelationId.setOf(variablesStopped), joinType);
+    }
+
+    @Override public JdbcJoin copy(RelTraitSet traitSet, RexNode condition,
+        RelNode left, RelNode right, JoinRelType joinType,
+        boolean semiJoinDone) {
+      try {
+        return new JdbcJoin(getCluster(), traitSet, left, right,
+            condition, variablesSet, joinType);
+      } catch (InvalidRelException e) {
+        // Semantic error not possible. Must be a bug. Convert to
+        // internal error.
+        throw new AssertionError(e);
+      }
+    }
+
+    @Override public RelOptCost computeSelfCost(RelOptPlanner planner,
+        RelMetadataQuery mq) {
+      // We always "build" the
+      double rowCount = mq.getRowCount(this);
+
+      return planner.getCostFactory().makeCost(rowCount, 0, 0);
+    }
+
+    @Override public double estimateRowCount(RelMetadataQuery mq) {
+      final double leftRowCount = left.estimateRowCount(mq);
+      final double rightRowCount = right.estimateRowCount(mq);
+      return Math.max(leftRowCount, rightRowCount);
+    }
+
+    public JdbcImplementor.Result implement(JdbcImplementor implementor) {
+      return implementor.implement(this);
+    }
+  }
+
+  /**
+   * Rule to convert a {@link org.apache.calcite.rel.core.Calc} to an
+   * {@link org.apache.calcite.adapter.jdbc.JdbcRules.JdbcCalc}.
+   */
+  private static class JdbcCalcRule extends JdbcConverterRule {
+    /** Creates a JdbcCalcRule. */
+    private JdbcCalcRule(JdbcConvention out,
+        RelBuilderFactory relBuilderFactory) {
+      super(Calc.class, Predicates.<RelNode>alwaysTrue(), Convention.NONE,
+          out, relBuilderFactory, "JdbcCalcRule");
+    }
+
+    public RelNode convert(RelNode rel) {
+      final Calc calc = (Calc) rel;
+
+      // If there's a multiset, let FarragoMultisetSplitter work on it
+      // first.
+      if (RexMultisetUtil.containsMultiset(calc.getProgram())) {
+        return null;
+      }
+
+      return new JdbcCalc(rel.getCluster(), rel.getTraitSet().replace(out),
+          convert(calc.getInput(), calc.getTraitSet().replace(out)),
+          calc.getProgram());
+    }
+  }
+
+  /** Calc operator implemented in JDBC convention.
+   *
+   * @see org.apache.calcite.rel.core.Calc */
+  public static class JdbcCalc extends SingleRel implements JdbcRel {
+    private final RexProgram program;
+
+    public JdbcCalc(RelOptCluster cluster,
+        RelTraitSet traitSet,
+        RelNode input,
+        RexProgram program) {
+      super(cluster, traitSet, input);
+      assert getConvention() instanceof JdbcConvention;
+      this.program = program;
+      this.rowType = program.getOutputRowType();
+    }
+
+    @Deprecated // to be removed before 2.0
+    public JdbcCalc(RelOptCluster cluster, RelTraitSet traitSet, RelNode input,
+        RexProgram program, int flags) {
+      this(cluster, traitSet, input, program);
+      Util.discard(flags);
+    }
+
+    public RelWriter explainTerms(RelWriter pw) {
+      return program.explainCalc(super.explainTerms(pw));
+    }
+
+    @Override public double estimateRowCount(RelMetadataQuery mq) {
+      return RelMdUtil.estimateFilteredRows(getInput(), program, mq);
+    }
+
+    public RelOptCost computeSelfCost(RelOptPlanner planner,
+        RelMetadataQuery mq) {
+      double dRows = mq.getRowCount(this);
+      double dCpu = mq.getRowCount(getInput())
+          * program.getExprCount();
+      double dIo = 0;
+      return planner.getCostFactory().makeCost(dRows, dCpu, dIo);
+    }
+
+    public RelNode copy(RelTraitSet traitSet, List<RelNode> inputs) {
+      return new JdbcCalc(getCluster(), traitSet, sole(inputs), program);
+    }
+
+    public JdbcImplementor.Result implement(JdbcImplementor implementor) {
+      return implementor.implement(this);
+    }
+  }
+
+  /**
+   * Rule to convert a {@link org.apache.calcite.rel.core.Project} to
+   * an {@link org.apache.calcite.adapter.jdbc.JdbcRules.JdbcProject}.
+   */
+  public static class JdbcProjectRule extends JdbcConverterRule {
+    @Deprecated // to be removed before 2.0
+    public JdbcProjectRule(final JdbcConvention out) {
+      this(out, RelFactories.LOGICAL_BUILDER);
+    }
+
+    /** Creates a JdbcProjectRule. */
+    public JdbcProjectRule(final JdbcConvention out,
+        RelBuilderFactory relBuilderFactory) {
+      super(Project.class,
+          new PredicateImpl<Project>() {
+            public boolean test(@Nullable Project project) {
+              assert project != null;
+              return (out.dialect.supportsWindowFunctions()
+                  || !RexOver.containsOver(project.getProjects(), null))
+                  && !userDefinedFunctionInProject(project);
+            }
+
+          },
+          Convention.NONE, out, relBuilderFactory, "JdbcProjectRule");
+    }
+
+    private static boolean userDefinedFunctionInProject(Project project) {
+      CheckingUserDefinedFunctionVisitor visitor = new CheckingUserDefinedFunctionVisitor();
+      for (RexNode node : project.getChildExps()) {
+        node.accept(visitor);
+        if (visitor.containsUserDefinedFunction()) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    /**
+     * Visitor for checking whether part of projection is a user defined function or not
+     */
+    private static class CheckingUserDefinedFunctionVisitor extends RexVisitorImpl<Void> {
+
+      private boolean containsUsedDefinedFunction = false;
+
+      CheckingUserDefinedFunctionVisitor() {
+        super(true);
+      }
+
+      public boolean containsUserDefinedFunction() {
+        return containsUsedDefinedFunction;
+      }
+
+      @Override public Void visitCall(RexCall call) {
+        SqlOperator operator = call.getOperator();
+        if (operator instanceof SqlFunction
+            && ((SqlFunction) operator).getFunctionType().isUserDefined()) {
+          containsUsedDefinedFunction |= true;
+        }
+        return super.visitCall(call);
+      }
+
+    }
+
+    public RelNode convert(RelNode rel) {
+      final Project project = (Project) rel;
+
+      return new JdbcProject(
+          rel.getCluster(),
+          rel.getTraitSet().replace(out),
+          convert(
+              project.getInput(),
+              project.getInput().getTraitSet().replace(out)),
+          project.getProjects(),
+          project.getRowType());
+    }
+  }
+
+  /** Implementation of {@link org.apache.calcite.rel.core.Project} in
+   * {@link JdbcConvention jdbc calling convention}. */
+  public static class JdbcProject
+      extends Project
+      implements JdbcRel {
+    public JdbcProject(
+        RelOptCluster cluster,
+        RelTraitSet traitSet,
+        RelNode input,
+        List<? extends RexNode> projects,
+        RelDataType rowType) {
+      super(cluster, traitSet, ImmutableList.of(), input, projects, rowType);
+      assert getConvention() instanceof JdbcConvention;
+    }
+
+    @Deprecated // to be removed before 2.0
+    public JdbcProject(RelOptCluster cluster, RelTraitSet traitSet,
+        RelNode input, List<RexNode> projects, RelDataType rowType, int flags) {
+      this(cluster, traitSet, input, projects, rowType);
+      Util.discard(flags);
+    }
+
+    @Override public JdbcProject copy(RelTraitSet traitSet, RelNode input,
+        List<RexNode> projects, RelDataType rowType) {
+      return new JdbcProject(getCluster(), traitSet, input, projects, rowType);
+    }
+
+    @Override public RelOptCost computeSelfCost(RelOptPlanner planner,
+        RelMetadataQuery mq) {
+      return super.computeSelfCost(planner, mq)
+          .multiplyBy(JdbcConvention.COST_MULTIPLIER);
+    }
+
+    public JdbcImplementor.Result implement(JdbcImplementor implementor) {
+      return implementor.implement(this);
+    }
+  }
+
+  /**
+   * Rule to convert a {@link org.apache.calcite.rel.core.Filter} to
+   * an {@link org.apache.calcite.adapter.jdbc.JdbcRules.JdbcFilter}.
+   */
+  public static class JdbcFilterRule extends JdbcConverterRule {
+    @Deprecated // to be removed before 2.0
+    public JdbcFilterRule(JdbcConvention out) {
+      this(out, RelFactories.LOGICAL_BUILDER);
+    }
+
+    /** Creates a JdbcFilterRule. */
+    public JdbcFilterRule(JdbcConvention out,
+        RelBuilderFactory relBuilderFactory) {
+      super(Filter.class, Predicates.<RelNode>alwaysTrue(), Convention.NONE,
+          out, relBuilderFactory, "JdbcFilterRule");
+    }
+
+    public RelNode convert(RelNode rel) {
+      final Filter filter = (Filter) rel;
+
+      return new JdbcFilter(
+          rel.getCluster(),
+          rel.getTraitSet().replace(out),
+          convert(filter.getInput(),
+              filter.getInput().getTraitSet().replace(out)),
+          filter.getCondition());
+    }
+  }
+
+  /** Implementation of {@link org.apache.calcite.rel.core.Filter} in
+   * {@link JdbcConvention jdbc calling convention}. */
+  public static class JdbcFilter extends Filter implements JdbcRel {
+    public JdbcFilter(
+        RelOptCluster cluster,
+        RelTraitSet traitSet,
+        RelNode input,
+        RexNode condition) {
+      super(cluster, traitSet, input, condition);
+      assert getConvention() instanceof JdbcConvention;
+    }
+
+    public JdbcFilter copy(RelTraitSet traitSet, RelNode input,
+        RexNode condition) {
+      return new JdbcFilter(getCluster(), traitSet, input, condition);
+    }
+
+    public JdbcImplementor.Result implement(JdbcImplementor implementor) {
+      return implementor.implement(this);
+    }
+  }
+
+  /**
+   * Rule to convert a {@link org.apache.calcite.rel.core.Aggregate}
+   * to a {@link org.apache.calcite.adapter.jdbc.JdbcRules.JdbcAggregate}.
+   */
+  public static class JdbcAggregateRule extends JdbcConverterRule {
+    @Deprecated // to be removed before 2.0
+    public JdbcAggregateRule(JdbcConvention out) {
+      this(out, RelFactories.LOGICAL_BUILDER);
+    }
+
+    /** Creates a JdbcAggregateRule. */
+    public JdbcAggregateRule(JdbcConvention out,
+        RelBuilderFactory relBuilderFactory) {
+      super(Aggregate.class, Predicates.<RelNode>alwaysTrue(), Convention.NONE,
+          out, relBuilderFactory, "JdbcAggregateRule");
+    }
+
+    public RelNode convert(RelNode rel) {
+      final Aggregate agg = (Aggregate) rel;
+      if (agg.getGroupSets().size() != 1) {
+        // GROUPING SETS not supported; see
+        // [CALCITE-734] Push GROUPING SETS to underlying SQL via JDBC adapter
+        return null;
+      }
+      final RelTraitSet traitSet =
+          agg.getTraitSet().replace(out);
+      try {
+        return new JdbcAggregate(rel.getCluster(), traitSet,
+            convert(agg.getInput(), out), false, agg.getGroupSet(),
+            agg.getGroupSets(), agg.getAggCallList());
+      } catch (InvalidRelException e) {
+        LOGGER.debug(e.toString());
+        return null;
+      }
+    }
+  }
+
+  /** Returns whether this JDBC data source can implement a given aggregate
+   * function. */
+  private static boolean canImplement(SqlAggFunction aggregation, SqlDialect sqlDialect) {
+    return sqlDialect.supportsAggregateFunction(aggregation.getKind());
+  }
+
+  /** Aggregate operator implemented in JDBC convention. */
+  public static class JdbcAggregate extends Aggregate implements JdbcRel {
+    public JdbcAggregate(
+        RelOptCluster cluster,
+        RelTraitSet traitSet,
+        RelNode input,
+        ImmutableBitSet groupSet,
+        List<ImmutableBitSet> groupSets,
+        List<AggregateCall> aggCalls)
+        throws InvalidRelException {
+      super(cluster, traitSet, ImmutableList.of(), input, groupSet, groupSets, aggCalls);
+      assert getConvention() instanceof JdbcConvention;
+      assert this.groupSets.size() == 1 : "Grouping sets not supported";
+      final SqlDialect dialect = ((JdbcConvention) getConvention()).dialect;
+      for (AggregateCall aggCall : aggCalls) {
+        if (!canImplement(aggCall.getAggregation(), dialect)) {
+          throw new InvalidRelException("cannot implement aggregate function "
+              + aggCall.getAggregation());
+        }
+      }
+    }
+
+    @Deprecated // to be removed before 2.0
+    public JdbcAggregate(RelOptCluster cluster, RelTraitSet traitSet,
+        RelNode input, boolean indicator, ImmutableBitSet groupSet,
+        List<ImmutableBitSet> groupSets, List<AggregateCall> aggCalls)
+        throws InvalidRelException {
+      this(cluster, traitSet, input, groupSet, groupSets, aggCalls);
+      checkIndicator(indicator);
+    }
+
+    @Override public JdbcAggregate copy(RelTraitSet traitSet, RelNode input,
+        ImmutableBitSet groupSet,
+        List<ImmutableBitSet> groupSets, List<AggregateCall> aggCalls) {
+      try {
+        return new JdbcAggregate(getCluster(), traitSet, input,
+            groupSet, groupSets, aggCalls);
+      } catch (InvalidRelException e) {
+        // Semantic error not possible. Must be a bug. Convert to
+        // internal error.
+        throw new AssertionError(e);
+      }
+    }
+
+    public JdbcImplementor.Result implement(JdbcImplementor implementor) {
+      return implementor.implement(this);
+    }
+  }
+
+  /**
+   * Rule to convert a {@link org.apache.calcite.rel.core.Sort} to an
+   * {@link org.apache.calcite.adapter.jdbc.JdbcRules.JdbcSort}.
+   */
+  public static class JdbcSortRule extends JdbcConverterRule {
+    @Deprecated // to be removed before 2.0
+    public JdbcSortRule(JdbcConvention out) {
+      this(out, RelFactories.LOGICAL_BUILDER);
+    }
+
+    /** Creates a JdbcSortRule. */
+    public JdbcSortRule(JdbcConvention out,
+        RelBuilderFactory relBuilderFactory) {
+>>>>>>> afcde0bfa ([CALCITE-2264] In JDBC adapter, do not push down a call to a user-defined function (UDF) (Piotr Bojko))
       super(Sort.class, Predicates.<RelNode>alwaysTrue(), Convention.NONE, out,
           relBuilderFactory, "JdbcSortRule");
     }

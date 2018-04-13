@@ -43,9 +43,15 @@
           ]
         },
         {
+<<<<<<< HEAD
           "name": "SIMPLE_CUSTOMER",
           "type": "view",
           "sql": [
+=======
+          "name" : "SIMPLE_CUSTOMER",
+          "type" : "view",
+          "sql" : [
+>>>>>>> afcde0bfa ([CALCITE-2264] In JDBC adapter, do not push down a call to a user-defined function (UDF) (Piotr Bojko))
             "SELECT c.firstname, c.lastname, c.email ",
             "FROM chinook.customer AS c"
           ]
@@ -65,6 +71,7 @@
         {
           "name": "ASCONCATOFPARAMS",
           "className": "org.apache.calcite.chinook.StringConcatFunction"
+<<<<<<< HEAD
         },
         {
           "name": "CHOSENCUSTOMEREMAIL",
@@ -100,6 +107,8 @@
             "CROSS JOIN LATERAL TABLE(AUX.CODES(SC.email)) TF ",
             "limit 6"
           ]
+=======
+>>>>>>> afcde0bfa ([CALCITE-2264] In JDBC adapter, do not push down a call to a user-defined function (UDF) (Piotr Bojko))
         }
       ]
     }

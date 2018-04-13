@@ -28,6 +28,7 @@ SELECT email, ASCONCATOFPARAMS(firstname, lastname) AS joined FROM SIMPLE_CUSTOM
 (3 rows)
 
 !ok
+<<<<<<< HEAD
 
 # Checks whether CHOOSENCUSTOMFUNCTION function is properly computed and not passed to subschema, like jdbc
 SELECT * FROM SIMPLE_CUSTOMER WHERE email = CHOSENCUSTOMEREMAIL();
@@ -39,3 +40,5 @@ SELECT * FROM SIMPLE_CUSTOMER WHERE email = CHOSENCUSTOMEREMAIL();
 (1 row)
 
 !ok
+=======
+>>>>>>> afcde0bfa ([CALCITE-2264] In JDBC adapter, do not push down a call to a user-defined function (UDF) (Piotr Bojko))

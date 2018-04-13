@@ -72,101 +72,15 @@ public abstract class Project extends SingleRel implements Hintable {
    * @param cluster  Cluster that this relational expression belongs to
    * @param traits   Traits of this relational expression
    * @param hints    Hints of this relation expression
-<<<<<<< HEAD
-=======
-   * @param input    Input relational expression
-   * @param projects List of expressions for the input columns
-   * @param rowType  Output row type
-   */
-  protected Project(
-      RelOptCluster cluster,
-      RelTraitSet traits,
-      List<RelHint> hints,
-      RelNode input,
-      List<? extends RexNode> projects,
-      RelDataType rowType) {
-    super(cluster, traits, input);
-    assert rowType != null;
-    this.exps = ImmutableList.copyOf(projects);
-    this.hints = ImmutableList.copyOf(hints);
-    this.rowType = rowType;
-    assert isValid(Litmus.THROW, null);
-  }
-
-  @Deprecated // to be removed before 2.0
->>>>>>> 6435df1c4 ([CALCITE-3723] Following the change to add hints to RelNode, deprecate the old constructors)
-  protected Project(RelOptCluster cluster, RelTraitSet traits,
-      RelNode input, List<? extends RexNode> projects, RelDataType rowType) {
-    this(cluster, traits, ImmutableList.of(), input, projects, rowType);
-  }
-
-  @Deprecated // to be removed before 2.0
-  protected Project(RelOptCluster cluster, RelTraitSet traits,
-      RelNode input, List<? extends RexNode> projects, RelDataType rowType) {
-    this(cluster, traits, ImmutableList.of(), input, projects, rowType);
-  }
-
-  @Deprecated // to be removed before 2.0
-  protected Project(RelOptCluster cluster, RelTraitSet traitSet, RelNode input,
-      List<? extends RexNode> projects, RelDataType rowType, int flags) {
-    this(cluster, traitSet, ImmutableList.of(), input, projects, rowType);
-    Util.discard(flags);
-  }
-
-  /**
-   * Creates a Project by parsing serialized output.
-   */
-  protected Project(RelInput input) {
-    this(input.getCluster(),
-        input.getTraitSet(),
-        ImmutableList.of(),
-        input.getInput(),
-        input.getExpressionList("exprs"),
-        input.getRowType("exprs", "fields"));
-  }
-
-  //~ Methods ----------------------------------------------------------------
-
-  @Override public final RelNode copy(RelTraitSet traitSet,
-      List<RelNode> inputs) {
-    return copy(traitSet, sole(inputs), exps, rowType);
-  }
-
-  /**
-   * Copies a project.
-   *
-   * @param traitSet Traits
-   * @param input Input
-   * @param projects Project expressions
-   * @param rowType Output row type
-   * @return New {@code Project} if any parameter differs from the value of this
-   *   {@code Project}, or just {@code this} if all the parameters are
-   *   the same
-   *
-   * @see #copy(RelTraitSet, List)
-   */
-  public abstract Project copy(RelTraitSet traitSet, RelNode input,
-      List<RexNode> projects, RelDataType rowType);
-
-  @Deprecated // to be removed before 2.0
-  public Project copy(RelTraitSet traitSet, RelNode input,
-      List<RexNode> projects, RelDataType rowType, int flags) {
-    Util.discard(flags);
-    return copy(traitSet, input, projects, rowType);
-  }
-
-  @Deprecated // to be removed before 2.0
-  public boolean isBoxed() {
-    return true;
-  }
-
-<<<<<<< HEAD
+>>>>>>> afcde0bfa ([CALCITE-2264] In JDBC adapter, do not push down a call to a user-defined function (UDF) (Piotr Bojko))
   public List<RexNode> getChildExps() {
     return exps;
   }
 
+<<<<<<< HEAD
 =======
->>>>>>> fa076d987 ([CALCITE-4079] Dialect constants in SqlDialect can cause class initialization deadlock)
+=======
+>>>>>>> afcde0bfa ([CALCITE-2264] In JDBC adapter, do not push down a call to a user-defined function (UDF) (Piotr Bojko))
   public RelNode accept(RexShuttle shuttle) {
     List<RexNode> exps = shuttle.apply(this.exps);
     if (this.exps == exps) {
