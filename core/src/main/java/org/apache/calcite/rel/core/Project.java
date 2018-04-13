@@ -152,6 +152,10 @@ public abstract class Project extends SingleRel implements Hintable {
     return true;
   }
 
+  public List<RexNode> getChildExps() {
+    return exps;
+  }
+
   public RelNode accept(RexShuttle shuttle) {
     List<RexNode> exps = shuttle.apply(this.exps);
     if (this.exps == exps) {
