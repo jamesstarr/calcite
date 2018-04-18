@@ -242,8 +242,6 @@ public class SqlParser {
     private int identifierMaxLength = DEFAULT_IDENTIFIER_MAX_LENGTH;
     private boolean caseSensitive = Lex.ORACLE.caseSensitive;
     private SqlConformance conformance = SqlConformanceEnum.DEFAULT;
-    private boolean allowBangEqual =
-        SqlConformanceEnum.DEFAULT.isBangEqualAllowed();
     Set<CharLiteralStyle> charLiteralStyles = ImmutableSet.of(CharLiteralStyle.STANDARD);
     private SqlParserImplFactory parserFactory = SqlParserImpl.FACTORY;
 
@@ -256,7 +254,6 @@ public class SqlParser {
       this.quoting = config.quoting();
       this.identifierMaxLength = config.identifierMaxLength();
       this.conformance = config.conformance();
-      this.allowBangEqual = config.allowBangEqual();
       this.charLiteralStyles = config.charLiteralStyles();
       this.parserFactory = config.parserFactory();
       return this;
@@ -303,7 +300,6 @@ public class SqlParser {
 
     public ConfigBuilder setConformance(SqlConformance conformance) {
       this.conformance = conformance;
-      this.allowBangEqual = conformance.isBangEqualAllowed();
       return this;
     }
 

@@ -96,7 +96,7 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
 
   public final Sql sql(Tester tester, String sql) {
     return new Sql(sql, true, true, tester, false,
-        SqlToRelConverter.Config.DEFAULT, SqlConformanceEnum.DEFAULT);
+        SqlToRelConverter.Config.DEFAULT, tester.getConformance());
   }
 
   protected final void check(
@@ -1164,6 +1164,27 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
   @Test public void testUnnestSubQuery() {
     final String sql = "select*from unnest(multiset(select*from dept))";
     sql(sql).ok();
+  }
+
+  @Test public void testUnnestArrayAggPlan() {
+    final String sql = "select d.deptno, e2.empno_avg\n"
+        + "from dept_nested as d outer apply\n"
+        + " (select avg(e.empno) as empno_avg from UNNEST(d.employees) as e) e2";
+    sql(sql).conformance(SqlConformanceEnum.LENIENT).ok();
+  }
+
+  @Test public void testUnnestArrayPlan() {
+    final String sql = "select d.deptno, e2.empno\n"
+        + "from dept_nested as d,\n"
+        + " UNNEST(d.employees) e2";
+    sql(sql).with(getExtendedTester()).ok();
+  }
+
+  @Test public void testUnnestArrayPlanAs() {
+    final String sql = "select d.deptno, e2.empno\n"
+        + "from dept_nested as d,\n"
+        + " UNNEST(d.employees) as e2(empno, y, z)";
+    sql(sql).with(getExtendedTester()).ok();
   }
 
   @Test public void testArrayOfRecord() {
@@ -2654,12 +2675,12 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).with(getTesterWithDynamicTable()).ok();
   }
 
-
-  @Test
-  public void testNestedStructFieldAccess() {
-    final String sql =
-        "select dn.skill['others'] from sales.dept_nested dn";
-    sql(sql).ok();
+  @Test public void testDynamicSchemaUnnest() {
+    final String sql3 = "select t1.c_nationkey, t3.fake_col3\n"
+        + "from SALES.CUSTOMER as t1,\n"
+        + "lateral (select t2.fake_col2 as fake_col3\n"
+        + "         from unnest(t1.fake_col) as t2) as t3";
+    sql(sql3).with(getTesterWithDynamicTable()).ok();
   }
 
   @Test
