@@ -1345,52 +1345,28 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
-  @Test void testUnnestArrayAggPlan() {
+  @Test public void testUnnestArrayAggPlan() {
     final String sql = "select d.deptno, e2.empno_avg\n"
         + "from dept_nested as d outer apply\n"
         + " (select avg(e.empno) as empno_avg from UNNEST(d.employees) as e) e2";
     sql(sql).conformance(SqlConformanceEnum.LENIENT).ok();
   }
 
-  @Test void testUnnestArrayPlan() {
+  @Test public void testUnnestArrayPlan() {
     final String sql = "select d.deptno, e2.empno\n"
         + "from dept_nested as d,\n"
         + " UNNEST(d.employees) e2";
     sql(sql).with(getExtendedTester()).ok();
   }
 
-  @Test void testUnnestArrayPlanAs() {
+  @Test public void testUnnestArrayPlanAs() {
     final String sql = "select d.deptno, e2.empno\n"
         + "from dept_nested as d,\n"
         + " UNNEST(d.employees) as e2(empno, y, z)";
-    sql(sql).ok();
+    sql(sql).with(getExtendedTester()).ok();
   }
 
-  /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3789">[CALCITE-3789]
-   * Support validation of UNNEST multiple array columns like Presto</a>.
-   */
-  @Test public void testAliasUnnestArrayPlanWithSingleColumn() {
-    final String sql = "select d.deptno, employee.empno\n"
-        + "from dept_nested_expanded as d,\n"
-        + " UNNEST(d.employees) as t(employee)";
-    sql(sql).conformance(SqlConformanceEnum.PRESTO).ok();
-  }
-
-  /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3789">[CALCITE-3789]
-   * Support validation of UNNEST multiple array columns like Presto</a>.
-   */
-  @Test public void testAliasUnnestArrayPlanWithDoubleColumn() {
-    final String sql = "select d.deptno, e, k.empno\n"
-        + "from dept_nested_expanded as d CROSS JOIN\n"
-        + " UNNEST(d.admins, d.employees) as t(e, k)";
-    sql(sql).conformance(SqlConformanceEnum.PRESTO).ok();
-  }
-
-  @Test void testArrayOfRecord() {
+  @Test public void testArrayOfRecord() {
     sql("select employees[1].detail.skills[2+3].desc from dept_nested").ok();
   }
 
@@ -3217,12 +3193,12 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).with(getTesterWithDynamicTable()).ok();
   }
 
-
-  @Test
-  public void testNestedStructFieldAccess() {
-    final String sql =
-        "select dn.skill['others'] from sales.dept_nested dn";
-    sql(sql).ok();
+  @Test public void testDynamicSchemaUnnest() {
+    final String sql3 = "select t1.c_nationkey, t3.fake_col3\n"
+        + "from SALES.CUSTOMER as t1,\n"
+        + "lateral (select t2.fake_col2 as fake_col3\n"
+        + "         from unnest(t1.fake_col) as t2) as t3";
+    sql(sql3).with(getTesterWithDynamicTable()).ok();
   }
 
   @Test

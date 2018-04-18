@@ -160,9 +160,6 @@ public class SqlParser {
       return parser.parseSqlStmtEof();
     } catch (Throwable ex) {
       throw handleException(ex);
-<<<<<<< HEAD
-
-=======
     }
   }
 
@@ -267,7 +264,21 @@ public class SqlParser {
     private int identifierMaxLength = DEFAULT_IDENTIFIER_MAX_LENGTH;
     private boolean caseSensitive = Lex.ORACLE.caseSensitive;
     private SqlConformance conformance = SqlConformanceEnum.DEFAULT;
+<<<<<<< HEAD
       this.allowBangEqual = config.allowBangEqual();
+=======
+    Set<CharLiteralStyle> charLiteralStyles = ImmutableSet.of(CharLiteralStyle.STANDARD);
+    private SqlParserImplFactory parserFactory = SqlParserImpl.FACTORY;
+
+    private ConfigBuilder() {}
+
+    /** Sets configuration identical to a given {@link Config}. */
+    public ConfigBuilder setConfig(Config config) {
+      this.quotedCasing = config.quotedCasing();
+      this.unquotedCasing = config.unquotedCasing();
+      this.quoting = config.quoting();
+      this.identifierMaxLength = config.identifierMaxLength();
+      this.conformance = config.conformance();
       this.charLiteralStyles = config.charLiteralStyles();
       this.parserFactory = config.parserFactory();
       return this;
@@ -314,11 +325,14 @@ public class SqlParser {
 
     public ConfigBuilder setConformance(SqlConformance conformance) {
       this.conformance = conformance;
+<<<<<<< HEAD
       return this;
     }
 
     public ConfigBuilder setCharLiteralStyles(Set<CharLiteralStyle> charLiteralStyles) {
       this.charLiteralStyles = charLiteralStyles;
+=======
+>>>>>>> 192f9096c ([CALCITE-2159] Support dynamic row type in UNNEST (Chunhui Shi))
       return this;
     }
 
