@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Base class for every relational expression ({@link RelNode}).
@@ -55,11 +56,8 @@ import java.util.Set;
 public abstract class AbstractRelNode implements RelNode {
   //~ Static fields/initializers ---------------------------------------------
 
-  // TODO jvs 10-Oct-2003:  Make this thread safe.  Either synchronize, or
-  // keep this per-VolcanoPlanner.
-
   /** Generator for {@link #id} values. */
-  static int nextId = 0;
+  private static final AtomicInteger NEXT_ID = new AtomicInteger(0);
 
   private static final Logger LOGGER = CalciteTrace.getPlannerTracer();
 
@@ -91,7 +89,7 @@ public abstract class AbstractRelNode implements RelNode {
   /**
    * unique id of this object -- for debugging
    */
-  protected int id;
+  protected final int id;
 
   /**
    * The RelTraitSet that describes the traits of this RelNode.
@@ -108,7 +106,7 @@ public abstract class AbstractRelNode implements RelNode {
     assert cluster != null;
     this.cluster = cluster;
     this.traitSet = traitSet;
-    this.id = nextId++;
+    this.id = NEXT_ID.getAndIncrement();
     this.digest = getRelTypeName() + "#" + id;
     this.desc = digest;
     LOGGER.trace("new {}", digest);
