@@ -141,7 +141,7 @@ public class ExceptionMessageTest {
       fail("Query should fail");
     } catch (SQLException e) {
       assertThat(e.getMessage(),
-          containsString("Object 'nonexistentTable' not found"));
+          containsString("Table 'nonexistentTable' not found"));
     }
   }
 }

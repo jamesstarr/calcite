@@ -16,7 +16,6 @@
  */
 package org.apache.calcite.sql.validate;
 
-import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.schema.Wrapper;
@@ -105,9 +104,6 @@ public interface SqlValidatorCatalogReader extends Wrapper {
    * {@link #nameMatcher()}.{@link SqlNameMatcher#isCaseSensitive()} */
   @Deprecated // to be removed before 2.0
   boolean isCaseSensitive();
-
-  /** Returns the root namespace for name resolution. */
-  CalciteSchema getRootSchema();
 }
 
 // End SqlValidatorCatalogReader.java

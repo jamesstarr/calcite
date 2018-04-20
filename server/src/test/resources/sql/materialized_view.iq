@@ -82,7 +82,7 @@ drop materialized view if exists v;
 
 # It's gone
 select * from v;
-Object 'V' not found
+Table 'V' not found
 !error
 
 # Drop does nothing because materialized view does not exist
@@ -108,7 +108,7 @@ Encountered "int" at line 1, column 31.
 
 # Create based on itself - fails
 create materialized view d2 as select * from d2;
-Object 'D2' not found
+Table 'D2' not found
 !error
 
 # Create materialized view based on UNION

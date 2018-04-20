@@ -82,7 +82,7 @@ drop table if exists d;
 
 # It's gone
 select * from d;
-Object 'D' not found
+Table 'D' not found
 !error
 
 # Drop does nothing because table does not exist
@@ -108,7 +108,7 @@ At line 1, column 24: Type required for column 'Y' in CREATE TABLE without AS
 
 # Create based on itself - fails
 create table d2 as select * from d2;
-Object 'D2' not found
+Table 'D2' not found
 !error
 
 # Create table based on UNION

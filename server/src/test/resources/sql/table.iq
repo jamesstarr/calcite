@@ -139,7 +139,7 @@ drop table if exists t;
 !update
 
 select * from t;
-Object 'T' not found
+Table 'T' not found
 !error
 
 drop table t;

@@ -31,6 +31,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import javax.annotation.Nullable;
 
 import static org.apache.calcite.util.Static.RESOURCE;
@@ -97,13 +98,13 @@ public class IdentifierNamespace extends AbstractNamespace {
   }
 
   private SqlValidatorNamespace resolveImpl(SqlIdentifier id) {
-    final SqlNameMatcher nameMatcher = validator.catalogReader.nameMatcher();
-    final SqlValidatorScope.ResolvedImpl resolved =
-        new SqlValidatorScope.ResolvedImpl();
-    final List<String> names = SqlIdentifier.toStar(id.names);
     try {
-      parentScope.resolveTable(names, nameMatcher,
-          SqlValidatorScope.Path.EMPTY, resolved);
+      SqlValidatorNamespace ns = parentScope.getTableNamespace(id.names);
+      if (ns == null) {
+        throw validator.newValidationError(id,
+            RESOURCE.tableNameNotFound(id.toString()));
+      }
+      return ns;
     } catch (CyclicDefinitionException e) {
       if (e.depth == 1) {
         throw validator.newValidationError(id,
@@ -113,64 +114,6 @@ public class IdentifierNamespace extends AbstractNamespace {
         throw new CyclicDefinitionException(e.depth - 1, e.path);
       }
     }
-    SqlValidatorScope.Resolve previousResolve = null;
-    if (resolved.count() == 1) {
-      final SqlValidatorScope.Resolve resolve =
-          previousResolve = resolved.only();
-      if (resolve.remainingNames.isEmpty()) {
-        return resolve.namespace;
-      }
-      // If we're not case sensitive, give an error.
-      // If we're case sensitive, we'll shortly try again and give an error
-      // then.
-      if (!nameMatcher.isCaseSensitive()) {
-        throw validator.newValidationError(id,
-            RESOURCE.objectNotFoundWithin(resolve.remainingNames.get(0),
-                SqlIdentifier.getString(resolve.path.stepNames())));
-      }
-    }
-
-    // Failed to match.  If we're matching case-sensitively, try a more
-    // lenient match. If we find something we can offer a helpful hint.
-    if (nameMatcher.isCaseSensitive()) {
-      final SqlNameMatcher liberalMatcher = SqlNameMatchers.liberal();
-      resolved.clear();
-      parentScope.resolveTable(names, liberalMatcher,
-          SqlValidatorScope.Path.EMPTY, resolved);
-      if (resolved.count() == 1) {
-        final SqlValidatorScope.Resolve resolve = resolved.only();
-        if (resolve.remainingNames.isEmpty()
-            || previousResolve == null) {
-          // We didn't match it case-sensitive, so they must have had the
-          // right identifier, wrong case.
-          //
-          // If previousResolve is null, we matched nothing case-sensitive and
-          // everything case-insensitive, so the mismatch must have been at
-          // position 0.
-          final int i = previousResolve == null ? 0
-              : previousResolve.path.stepCount();
-          final int offset = resolve.path.stepCount()
-              + resolve.remainingNames.size() - names.size();
-          final List<String> prefix =
-              resolve.path.stepNames().subList(0, offset + i);
-          final String next = resolve.path.stepNames().get(i + offset);
-          if (prefix.isEmpty()) {
-            throw validator.newValidationError(id,
-                RESOURCE.objectNotFoundDidYouMean(names.get(i), next));
-          } else {
-            throw validator.newValidationError(id,
-                RESOURCE.objectNotFoundWithinDidYouMean(names.get(i),
-                    SqlIdentifier.getString(prefix), next));
-          }
-        } else {
-          throw validator.newValidationError(id,
-              RESOURCE.objectNotFoundWithin(resolve.remainingNames.get(0),
-                  SqlIdentifier.getString(resolve.path.stepNames())));
-        }
-      }
-    }
-    throw validator.newValidationError(id,
-        RESOURCE.objectNotFound(id.getComponent(0).toString()));
   }
 
   public RelDataType validateImpl(RelDataType targetRowType) {

@@ -4772,11 +4772,11 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
    */
   @Test public void testStarInFromFails() {
     sql("select emp.empno AS x from ^sales.*^")
-        .fails("Object '\\*' not found within 'SALES'");
+        .fails("Table 'SALES\\.\\*' not found");
     sql("select * from ^emp.*^")
-        .fails("Object '\\*' not found within 'SALES.EMP'");
+        .fails("Table 'EMP\\.\\*' not found");
     sql("select emp.empno AS x from ^emp.*^")
-        .fails("Object '\\*' not found within 'SALES.EMP'");
+        .fails("Table 'EMP\\.\\*' not found");
     sql("select emp.empno from emp where emp.^*^ is not null")
         .fails("Unknown field '\\*'");
   }
@@ -5776,14 +5776,14 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         "with emp3 as (select * from ^emp2^),\n"
             + " emp2 as (select * from emp)\n"
             + "select * from emp3",
-        "Object 'EMP2' not found");
+        "Table 'EMP2' not found");
 
     // forward reference in with-item not used; should still fail
     checkFails(
         "with emp3 as (select * from ^emp2^),\n"
             + " emp2 as (select * from emp)\n"
             + "select * from emp2",
-        "Object 'EMP2' not found");
+        "Table 'EMP2' not found");
 
     // table not used is ok
     checkResultType(
@@ -5796,11 +5796,11 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkFails("with emp2 as (select * from emp),\n"
             + " emp3 as (select * from ^emp3^)\n"
             + "values (1)",
-        "Object 'EMP3' not found");
+        "Table 'EMP3' not found");
 
     // self-reference not ok
     checkFails("with emp2 as (select * from ^emp2^)\n"
-        + "select * from emp2 where false", "Object 'EMP2' not found");
+        + "select * from emp2 where false", "Table 'EMP2' not found");
 
     // refer to 2 previous tables, not just immediately preceding
     checkResultType("with emp2 as (select * from emp),\n"
@@ -7690,10 +7690,10 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
             + " BOOLEAN NOT NULL SLACKER) NOT NULL";
     checkResultType("select * from (table emp)", empRecordType);
     checkResultType("table emp", empRecordType);
-    checkFails("table ^nonexistent^", "Object 'NONEXISTENT' not found");
+    checkFails("table ^nonexistent^", "Table 'NONEXISTENT' not found");
     checkFails("table ^sales.nonexistent^",
-        "Object 'NONEXISTENT' not found within 'SALES'");
-    checkFails("table ^nonexistent.foo^", "Object 'NONEXISTENT' not found");
+        "Table 'SALES\\.NONEXISTENT' not found");
+    checkFails("table ^nonexistent.foo^", "Table 'NONEXISTENT\\.FOO' not found");
   }
 
   @Test public void testCollectionTable() {
@@ -7758,7 +7758,7 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         "RecordType(VARCHAR(1024) NOT NULL NAME) NOT NULL");
     checkFails(
         "select * from table(dedup(cursor(select * from ^bloop^),'ename'))",
-        "Object 'BLOOP' not found");
+        "Table 'BLOOP' not found");
   }
 
   @Test public void testScalarSubQuery() {
@@ -8295,33 +8295,33 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
   @Test public void testTableNotFoundDidYouMean() {
     // No table in default schema
     tester.checkQueryFails("select * from ^unknownTable^",
-        "Object 'UNKNOWNTABLE' not found");
+        "Table 'UNKNOWNTABLE' not found");
 
     // Similar table exists in default schema
     tester.checkQueryFails("select * from ^\"Emp\"^",
-        "Object 'Emp' not found within 'SALES'; did you mean 'EMP'\\?");
+        "Table 'Emp' not found");
 
     // Schema correct, but no table in specified schema
     tester.checkQueryFails("select * from ^sales.unknownTable^",
-        "Object 'UNKNOWNTABLE' not found within 'SALES'");
+        "Table 'SALES\\.UNKNOWNTABLE' not found");
     // Similar table exists in specified schema
     tester.checkQueryFails("select * from ^sales.\"Emp\"^",
-        "Object 'Emp' not found within 'SALES'; did you mean 'EMP'\\?");
+        "Table 'SALES\\.Emp' not found");
 
     // No schema found
     tester.checkQueryFails("select * from ^unknownSchema.unknownTable^",
-        "Object 'UNKNOWNSCHEMA' not found");
+        "Table 'UNKNOWNSCHEMA\\.UNKNOWNTABLE' not found");
     // Similar schema found
     tester.checkQueryFails("select * from ^\"sales\".emp^",
-        "Object 'sales' not found; did you mean 'SALES'\\?");
+        "Table 'sales\\.EMP' not found");
     tester.checkQueryFails("select * from ^\"saLes\".\"eMp\"^",
-        "Object 'saLes' not found; did you mean 'SALES'\\?");
+        "Table 'saLes\\.eMp' not found");
 
     // Spurious after table
     tester.checkQueryFails("select * from ^emp.foo^",
-        "Object 'FOO' not found within 'SALES\\.EMP'");
+        "Table 'EMP\\.FOO' not found");
     tester.checkQueryFails("select * from ^sales.emp.foo^",
-        "Object 'FOO' not found within 'SALES\\.EMP'");
+        "Table 'SALES\\.EMP\\.FOO' not found");
 
     // Alias not found
     tester.checkQueryFails("select ^aliAs^.\"name\"\n"
@@ -8329,7 +8329,7 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         "Table 'ALIAS' not found; did you mean 'Alias'\\?");
     // Alias not found, fully-qualified
     tester.checkQueryFails("select ^sales.\"emp\"^.\"name\" from sales.emp",
-        "Table 'SALES\\.emp' not found; did you mean 'EMP'\\?");
+        "Table 'SALES\\.emp' not found");
   }
 
   @Test public void testColumnNotFoundDidYouMean() {

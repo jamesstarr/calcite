@@ -167,7 +167,7 @@ drop view if exists v2;
 !update
 
 select * from v2;
-Object 'V2' not found
+Table 'V2' not found
 !error
 
 # Try to drop view that does not exist

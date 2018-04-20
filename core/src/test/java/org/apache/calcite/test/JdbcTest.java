@@ -102,7 +102,6 @@ import com.google.common.collect.Multimap;
 
 import org.hamcrest.Matcher;
 import org.hsqldb.jdbcDriver;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -139,6 +138,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
+
 import javax.sql.DataSource;
 
 import static org.apache.calcite.test.Matchers.isLinux;
@@ -5140,7 +5140,7 @@ public class JdbcTest {
             + "empid=150; deptno=10; name=Sebastian; salary=7000.0; commission=null\n"
             + "empid=110; deptno=10; name=Theodore; salary=11500.0; commission=250\n");
     that.query("select * from \"adhoc\".EMPLOYEES")
-        .throws_("Object 'EMPLOYEES' not found within 'adhoc'");
+        .throws_("Table 'adhoc.EMPLOYEES' not found");
   }
 
   /** Test case for
@@ -6150,15 +6150,15 @@ public class JdbcTest {
     final CalciteAssert.AssertThat with2 =
         CalciteAssert.that().with(Lex.JAVA);
     with2.query("select COUNT(*) as c from `metaData`.`tAbles`")
-        .throws_("Object 'metaData' not found; did you mean 'metadata'?");
+        .throws_("Table 'metaData.tAbles' not found");
     with2.query("select COUNT(*) as c from `metaData`.`TABLES`")
-        .throws_("Object 'metaData' not found; did you mean 'metadata'?");
+        .throws_("Table 'metaData.TABLES' not found");
     with2.query("select COUNT(*) as c from `metaData`.`tables`")
-        .throws_("Object 'metaData' not found; did you mean 'metadata'?");
+        .throws_("Table 'metaData.tables' not found");
     with2.query("select COUNT(*) as c from `metaData`.`nonExistent`")
-        .throws_("Object 'metaData' not found; did you mean 'metadata'?");
+        .throws_("Table 'metaData.nonExistent' not found");
     with2.query("select COUNT(*) as c from `metadata`.`tAbles`")
-        .throws_("Object 'tAbles' not found within 'metadata'; did you mean 'TABLES'?");
+        .throws_("Table 'metadata.tAbles'");
   }
 
   /** Test case for
@@ -6171,7 +6171,7 @@ public class JdbcTest {
     // With [CALCITE-1563], the following query succeeded; it queried
     // metadata.tables.
     with.query("select COUNT(*) as c from `metaData`.`zoo`")
-        .throws_("Object 'zoo' not found within 'metadata'");
+        .throws_("Table 'metaData.zoo' not found");
     with.query("select COUNT(*) as c from `metaData`.`tAbLes`")
         .returns("c=2\n");
   }
