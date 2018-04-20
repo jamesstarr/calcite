@@ -49,7 +49,8 @@
               "namespace",
               "page",
               "regionIsoCode",
-              "regionName"
+              "regionName",
+              "user"
             ],
             "metrics": [
               {
@@ -74,11 +75,8 @@
               {
                 "name" : "user_unique",
                 "type" : "hyperUnique",
-                "fieldName" : "user_id"
+                "fieldName" : "user"
               }
-            ],
-            "complexMetrics" : [
-              "user_id"
             ]
           }
         }

@@ -18,8 +18,6 @@ package org.apache.calcite.prepare;
 
 import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.config.CalciteConnectionConfig;
-import org.apache.calcite.config.CalciteConnectionConfigImpl;
-import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.plan.Context;
 import org.apache.calcite.plan.RelOptCluster;
@@ -59,7 +57,6 @@ import org.apache.calcite.util.Util;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
-import java.util.Properties;
 
 /** Implementation of {@link org.apache.calcite.tools.Planner}. */
 public class PlannerImpl implements Planner {
@@ -289,22 +286,11 @@ public class PlannerImpl implements Planner {
   // CalciteCatalogReader is stateless; no need to store one
   private CalciteCatalogReader createCatalogReader() {
     SchemaPlus rootSchema = rootSchema(defaultSchema);
-    Context context = config.getContext();
-    CalciteConnectionConfig connectionConfig = null;
-
-    if (context != null) {
-      connectionConfig = context.unwrap(CalciteConnectionConfig.class);
-    } else {
-      Properties properties = new Properties();
-      properties.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(),
-              String.valueOf(parserConfig.caseSensitive()));
-      connectionConfig = new CalciteConnectionConfigImpl(properties);
-    }
-
     return new CalciteCatalogReader(
         CalciteSchema.from(rootSchema),
+        parserConfig.caseSensitive(),
         CalciteSchema.from(defaultSchema).path(null),
-        typeFactory, connectionConfig);
+        typeFactory);
   }
 
   private static SchemaPlus rootSchema(SchemaPlus schema) {

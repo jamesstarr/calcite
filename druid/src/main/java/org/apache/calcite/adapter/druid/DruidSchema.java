@@ -27,12 +27,11 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -76,14 +75,12 @@ public class DruidSchema extends AbstractSchema {
                   @Override public Table load(@Nonnull String tableName) throws Exception {
                     final Map<String, SqlTypeName> fieldMap = new LinkedHashMap<>();
                     final Set<String> metricNameSet = new LinkedHashSet<>();
-                    final Map<String, List<ComplexMetric>> complexMetrics = new HashMap<>();
 
                     connection.metadata(tableName, DruidTable.DEFAULT_TIMESTAMP_COLUMN,
-                            null, fieldMap, metricNameSet, complexMetrics);
+                            null, fieldMap, metricNameSet);
 
                     return DruidTable.create(DruidSchema.this, tableName, null,
-                            fieldMap, metricNameSet, DruidTable.DEFAULT_TIMESTAMP_COLUMN,
-                            complexMetrics);
+                            fieldMap, metricNameSet, DruidTable.DEFAULT_TIMESTAMP_COLUMN);
                   }
                 }));
     }

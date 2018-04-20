@@ -111,7 +111,7 @@ public class DruidAdapterIT {
    * generated to implement a query. */
   private static Function<List, Void> druidChecker(final String... lines) {
     return new Function<List, Void>() {
-      public Void apply(List list) {
+      @Override public Void apply(List list) {
         assertThat(list.size(), is(1));
         DruidQuery.QuerySpec querySpec = (DruidQuery.QuerySpec) list.get(0);
         for (String line : lines) {
@@ -382,7 +382,7 @@ public class DruidAdapterIT {
     sql("values 1")
         .withConnection(
             new Function<Connection, Void>() {
-              public Void apply(Connection c) {
+              @Override public Void apply(Connection c) {
                 try {
                   final DatabaseMetaData metaData = c.getMetaData();
                   final ResultSet r =
@@ -500,7 +500,7 @@ public class DruidAdapterIT {
     final String sql = "select count(*) as c from \"foodmart\"";
     sql(sql)
         .returns(new Function<ResultSet, Void>() {
-          public Void apply(ResultSet input) {
+          @Override public Void apply(ResultSet input) {
             try {
               assertThat(input.next(), is(true));
               assertThat(input.getInt(1), is(86829));
@@ -783,7 +783,7 @@ public class DruidAdapterIT {
   /** Tests a query that contains no GROUP BY and is therefore executed as a
    * Druid "select" query. */
   @Test public void testFilterSortDesc() {
-    final String sql = "select \"product_name\" from \"foodmart\"\n"
+    final String sql = "select * from \"foodmart\"\n"
         + "where \"product_id\" BETWEEN '1500' AND '1502'\n"
         + "order by \"state_province\" desc, \"product_id\"";
     final String druidQuery = "{'queryType':'scan','dataSource':'foodmart',"
@@ -797,7 +797,7 @@ public class DruidAdapterIT {
         .limit(4)
         .returns(
             new Function<ResultSet, Void>() {
-              public Void apply(ResultSet resultSet) {
+              @Override public Void apply(ResultSet resultSet) {
                 try {
                   for (int i = 0; i < 4; i++) {
                     assertTrue(resultSet.next());
@@ -816,7 +816,7 @@ public class DruidAdapterIT {
 
   /** As {@link #testFilterSortDesc()} but the bounds are numeric. */
   @Test public void testFilterSortDescNumeric() {
-    final String sql = "select \"product_name\" from \"foodmart\"\n"
+    final String sql = "select * from \"foodmart\"\n"
         + "where \"product_id\" BETWEEN 1500 AND 1502\n"
         + "order by \"state_province\" desc, \"product_id\"";
     final String druidQuery = "{'queryType':'scan','dataSource':'foodmart',"
@@ -830,7 +830,7 @@ public class DruidAdapterIT {
         .limit(4)
         .returns(
             new Function<ResultSet, Void>() {
-              public Void apply(ResultSet resultSet) {
+              @Override public Void apply(ResultSet resultSet) {
                 try {
                   for (int i = 0; i < 4; i++) {
                     assertTrue(resultSet.next());
@@ -849,7 +849,7 @@ public class DruidAdapterIT {
 
   /** Tests a query whose filter removes all rows. */
   @Test public void testFilterOutEverything() {
-    final String sql = "select \"product_name\" from \"foodmart\"\n"
+    final String sql = "select * from \"foodmart\"\n"
         + "where \"product_id\" = -1";
     final String druidQuery = "{'queryType':'scan','dataSource':'foodmart',"
         + "'intervals':['1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z'],"
@@ -866,7 +866,7 @@ public class DruidAdapterIT {
   /** As {@link #testFilterSortDescNumeric()} but with a filter that cannot
    * be pushed down to Druid. */
   @Test public void testNonPushableFilterSortDesc() {
-    final String sql = "select \"product_name\" from \"foodmart\"\n"
+    final String sql = "select * from \"foodmart\"\n"
         + "where cast(\"product_id\" as integer) - 1500 BETWEEN 0 AND 2\n"
         + "order by \"state_province\" desc, \"product_id\"";
     final String druidQuery = "{'queryType':'scan','dataSource':'foodmart',"
@@ -880,7 +880,7 @@ public class DruidAdapterIT {
         .limit(4)
         .returns(
             new Function<ResultSet, Void>() {
-              public Void apply(ResultSet resultSet) {
+              @Override public Void apply(ResultSet resultSet) {
                 try {
                   for (int i = 0; i < 4; i++) {
                     assertTrue(resultSet.next());
@@ -1999,7 +1999,7 @@ public class DruidAdapterIT {
         + "'upper':'10','upperStrict':true,'ordering':'numeric'}";
     sql("?")
         .withRel(new Function<RelBuilder, RelNode>() {
-          public RelNode apply(RelBuilder b) {
+          @Override public RelNode apply(RelBuilder b) {
             // select product_id
             // from foodmart.foodmart
             // where product_id < cast(10 as varchar)
@@ -2024,7 +2024,7 @@ public class DruidAdapterIT {
   @Test public void testPushFieldEqualsLiteral() {
     sql("?")
         .withRel(new Function<RelBuilder, RelNode>() {
-          public RelNode apply(RelBuilder b) {
+          @Override public RelNode apply(RelBuilder b) {
             // select count(*) as c
             // from foodmart.foodmart
             // where product_id = 'id'
@@ -2144,7 +2144,7 @@ public class DruidAdapterIT {
   }
 
   /**
-   * Turn on now count(distinct )
+   * Turn on now count(distinct ) will get pushed after CALC-1853
    */
   @Test public void testHyperUniquePostAggregator() {
     final String sqlQuery = "select \"store_state\", sum(\"store_cost\") / count(distinct "
@@ -2890,7 +2890,7 @@ public class DruidAdapterIT {
     String expectedSubExplain = "PLAN=EnumerableInterpreter\n"
         + "  DruidQuery(table=[[foodmart, foodmart]], intervals=[[1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z]], projects=[[$63]], groups=[{}], aggs=[[COUNT(DISTINCT $0)]])";
     String expectedAggregate = "{'type':'cardinality','name':"
-        + "'EXPR$0','fieldNames':['store_state']}";
+        + "'EXPR$0','fieldNames':['customer_id']}";
 
     testCountWithApproxDistinct(true, sql, expectedSubExplain, expectedAggregate);
   }
@@ -2900,7 +2900,7 @@ public class DruidAdapterIT {
    * are not acceptable
    */
   @Test public void testDistinctCountWhenApproxResultsNotAccepted() {
-    String sql = "select count(distinct \"store_state\") from \"foodmart\"";
+    String sql = "select count(distinct \"customer_id\") from \"foodmart\"";
     String expectedSubExplain = "  BindableAggregate(group=[{}], EXPR$0=[COUNT($0)])\n"
         + "    DruidQuery(table=[[foodmart, foodmart]], "
         + "intervals=[[1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z]], "
@@ -2955,7 +2955,7 @@ public class DruidAdapterIT {
 
   @Test public void testCountOnMetricRenamed() {
     String sql = "select \"B\", count(\"A\") from "
-        + "(select \"unit_sales\" as \"A\", \"store_state\" as \"B\" from \"foodmart\") "
+        + "(select \"unit_sales\" as \"A\", \"customer_id\" as \"B\" from \"foodmart\") "
         + "group by \"B\"";
     String expectedSubExplain = "PLAN=EnumerableInterpreter\n"
         + "  DruidQuery(table=[[foodmart, foodmart]], intervals=[[1900-01-09T00:00:00.000Z/"

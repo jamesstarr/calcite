@@ -16,7 +16,6 @@
  */
 package org.apache.calcite.prepare;
 
-import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.model.ModelHandler;
@@ -89,19 +88,18 @@ public class CalciteCatalogReader implements Prepare.CatalogReader {
   protected final RelDataTypeFactory typeFactory;
   private final List<List<String>> schemaPaths;
   protected final SqlNameMatcher nameMatcher;
-  protected final CalciteConnectionConfig config;
 
-  public CalciteCatalogReader(CalciteSchema rootSchema,
-      List<String> defaultSchema, RelDataTypeFactory typeFactory, CalciteConnectionConfig config) {
-    this(rootSchema, SqlNameMatchers.withCaseSensitive(config != null && config.caseSensitive()),
+  public CalciteCatalogReader(CalciteSchema rootSchema, boolean caseSensitive,
+      List<String> defaultSchema, RelDataTypeFactory typeFactory) {
+    this(rootSchema, SqlNameMatchers.withCaseSensitive(caseSensitive),
         ImmutableList.of(Preconditions.checkNotNull(defaultSchema),
             ImmutableList.<String>of()),
-        typeFactory, config);
+        typeFactory);
   }
 
   protected CalciteCatalogReader(CalciteSchema rootSchema,
       SqlNameMatcher nameMatcher, List<List<String>> schemaPaths,
-      RelDataTypeFactory typeFactory, CalciteConnectionConfig config) {
+      RelDataTypeFactory typeFactory) {
     this.rootSchema = Preconditions.checkNotNull(rootSchema);
     this.nameMatcher = nameMatcher;
     this.schemaPaths =
@@ -109,12 +107,11 @@ public class CalciteCatalogReader implements Prepare.CatalogReader {
             ? schemaPaths
             : new LinkedHashSet<>(schemaPaths));
     this.typeFactory = typeFactory;
-    this.config = config;
   }
 
   public CalciteCatalogReader withSchemaPath(List<String> schemaPath) {
     return new CalciteCatalogReader(rootSchema, nameMatcher,
-        ImmutableList.of(schemaPath, ImmutableList.<String>of()), typeFactory, config);
+        ImmutableList.of(schemaPath, ImmutableList.<String>of()), typeFactory);
   }
 
   public Prepare.PreparingTable getTable(final List<String> names) {
@@ -130,13 +127,8 @@ public class CalciteCatalogReader implements Prepare.CatalogReader {
     return null;
   }
 
-  @Override public CalciteConnectionConfig getConfig() {
-    return config;
-  }
-
   private Prepare.PreparingTable getTableFrom(List<String> names,
-                                              List<String> schemaNames,
-                                              SqlNameMatcher nameMatcher) {
+      List<String> schemaNames, SqlNameMatcher nameMatcher) {
     CalciteSchema schema =
         getSchema(Iterables.concat(schemaNames, Util.skipLast(names)),
             nameMatcher);

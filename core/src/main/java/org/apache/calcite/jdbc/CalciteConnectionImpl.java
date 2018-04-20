@@ -443,8 +443,8 @@ abstract class CalciteConnectionImpl
               : ImmutableList.of(schemaName);
       final SqlValidatorWithHints validator =
           new SqlAdvisorValidator(SqlStdOperatorTable.instance(),
-          new CalciteCatalogReader(rootSchema,
-              schemaPath, typeFactory, con.config()),
+          new CalciteCatalogReader(rootSchema, con.config().caseSensitive(),
+              schemaPath, typeFactory),
           typeFactory, SqlConformanceEnum.DEFAULT);
       return new SqlAdvisor(validator);
     }

@@ -35,8 +35,6 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.Holder;
 import org.apache.calcite.util.Util;
 
-import static org.apache.calcite.runtime.HttpUtils.post;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -49,7 +47,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -62,6 +59,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.apache.calcite.runtime.HttpUtils.post;
 
 /**
  * Implementation of {@link DruidConnection}.
@@ -516,19 +515,19 @@ class DruidConnectionImpl implements DruidConnection {
       final ExecutorService service)
       throws IOException {
     return new AbstractEnumerable<Row>() {
-      public Enumerator<Row> enumerator() {
+      @Override public Enumerator<Row> enumerator() {
         final BlockingQueueEnumerator<Row> enumerator =
             new BlockingQueueEnumerator<>();
         final RunnableQueueSink sink = new RunnableQueueSink() {
-          public void send(Row row) throws InterruptedException {
+          @Override public void send(Row row) throws InterruptedException {
             enumerator.queue.put(row);
           }
 
-          public void end() {
+          @Override public void end() {
             enumerator.done.set(true);
           }
 
-          @SuppressWarnings("deprecation")
+          @Override @SuppressWarnings("deprecation")
           public void setSourceEnumerable(Enumerable<Row> enumerable)
               throws InterruptedException {
             for (Row row : enumerable) {
@@ -537,7 +536,7 @@ class DruidConnectionImpl implements DruidConnection {
             end();
           }
 
-          public void run() {
+          @Override public void run() {
             try {
               final Page page = new Page();
               final List<ColumnMetaData.Rep> fieldTypes =
@@ -559,8 +558,7 @@ class DruidConnectionImpl implements DruidConnection {
   /** Reads segment metadata, and populates a list of columns and metrics. */
   void metadata(String dataSourceName, String timestampColumnName,
       List<Interval> intervals,
-      Map<String, SqlTypeName> fieldBuilder, Set<String> metricNameBuilder,
-      Map<String, List<ComplexMetric>> complexMetrics) {
+      Map<String, SqlTypeName> fieldBuilder, Set<String> metricNameBuilder) {
     final String url = this.url + "/druid/v2/?pretty";
     final Map<String, String> requestHeaders =
         ImmutableMap.of("Content-Type", "application/json");
@@ -586,8 +584,8 @@ class DruidConnectionImpl implements DruidConnection {
           }
           final DruidType druidType;
           try {
-            druidType = DruidType.getTypeFromMetaData(entry.getValue().type);
-          } catch (AssertionError e) {
+            druidType = DruidType.valueOf(entry.getValue().type);
+          } catch (IllegalArgumentException e) {
             // ignore exception; not a supported type
             continue;
           }
@@ -599,17 +597,7 @@ class DruidConnectionImpl implements DruidConnection {
             if (!fieldBuilder.containsKey(entry.getKey())) {
               continue;
             }
-            DruidType type = DruidType.getTypeFromMetaData(entry.getValue().type);
-            if (type.isComplex()) {
-              // Each complex type will get their own alias, equal to their actual name.
-              // Maybe we should have some smart string replacement strategies to make the column
-              // names more natural.
-              List<ComplexMetric> metricList = new ArrayList<>();
-              metricList.add(new ComplexMetric(entry.getKey(), type));
-              complexMetrics.put(entry.getKey(), metricList);
-            } else {
-              metricNameBuilder.add(entry.getKey());
-            }
+            metricNameBuilder.add(entry.getKey());
           }
         }
       }
@@ -670,14 +658,14 @@ class DruidConnectionImpl implements DruidConnection {
 
     E next;
 
-    public E current() {
+    @Override public E current() {
       if (next == null) {
         throw new NoSuchElementException();
       }
       return next;
     }
 
-    public boolean moveNext() {
+    @Override public boolean moveNext() {
       for (;;) {
         next = queue.poll();
         if (next != null) {
@@ -690,9 +678,9 @@ class DruidConnectionImpl implements DruidConnection {
       }
     }
 
-    public void reset() {}
+    @Override public void reset() {}
 
-    public void close() {
+    @Override public void close() {
       final Throwable e = throwableHolder.get();
       if (e != null) {
         throwableHolder.set(null);
@@ -744,9 +732,36 @@ class DruidConnectionImpl implements DruidConnection {
     public String fieldName;
 
     DruidType druidType() {
-      return DruidType.getTypeFromMetric(type);
+      if (type.startsWith("long")) {
+        return DruidType.LONG;
+      }
+      if (type.startsWith("double")) {
+        return DruidType.FLOAT;
+      }
+      if (type.equals("hyperUnique")) {
+        return DruidType.hyperUnique;
+      }
+      throw new AssertionError("unknown type " + type);
     }
   }
+
+  /** Druid type. */
+  enum DruidType {
+    LONG(SqlTypeName.BIGINT),
+    // SQL DOUBLE and FLOAT types are both 64 bit, but we use DOUBLE because
+    // people find FLOAT confusing.
+    FLOAT(SqlTypeName.DOUBLE),
+    STRING(SqlTypeName.VARCHAR),
+    hyperUnique(SqlTypeName.VARBINARY);
+
+    /** The corresponding SQL type. */
+    public final SqlTypeName sqlType;
+
+    DruidType(SqlTypeName sqlType) {
+      this.sqlType = sqlType;
+    }
+  }
+
 }
 
 // End DruidConnectionImpl.java

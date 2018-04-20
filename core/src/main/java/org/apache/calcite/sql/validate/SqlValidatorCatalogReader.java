@@ -16,7 +16,6 @@
  */
 package org.apache.calcite.sql.validate;
 
-import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeField;
@@ -109,9 +108,6 @@ public interface SqlValidatorCatalogReader extends Wrapper {
 
   /** Returns the root namespace for name resolution. */
   CalciteSchema getRootSchema();
-
-  /** Returns Config settings */
-  CalciteConnectionConfig getConfig();
 }
 
 // End SqlValidatorCatalogReader.java
