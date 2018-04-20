@@ -3490,10 +3490,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
               RESOURCE.naturalOrUsingColumnNotCompatible(id.getSimple(),
                   leftColType.toString(), rightColType.toString()));
         }
-<<<<<<< HEAD
-        checkRollUpInUsing(id, left, scope);
-        checkRollUpInUsing(id, right, scope);
-=======
       }
       break;
     default:
@@ -3693,7 +3689,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     // dialects you can refer to columns of the select list, e.g.
     // "SELECT empno AS x FROM emp ORDER BY x"
     validateOrderList(select);
->>>>>>> 0b7d6d6d5 (Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)")
   }
 
   protected SqlNode stripDot(SqlNode node) {
@@ -3703,117 +3698,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     return node;
   }
 
-<<<<<<< HEAD
-  protected void checkRollUp(SqlNode grandParent, SqlNode parent,
-                           SqlNode current, SqlValidatorScope scope, String optionalClause) {
-    current = stripAs(current);
-    if (current instanceof SqlCall && !(current instanceof SqlSelect)) {
-      // Validate OVER separately
-      checkRollUpInWindow(getWindowInOver(current), scope);
-      current = stripOver(current);
-
-      List<SqlNode> children = ((SqlCall) stripAs(stripDot(current))).getOperandList();
-      for (SqlNode child : children) {
-        checkRollUp(parent, current, child, scope, optionalClause);
-      }
-    } else if (current instanceof SqlIdentifier) {
-      SqlIdentifier id = (SqlIdentifier) current;
-      if (!id.isStar() && isRolledUpColumn(id, scope)) {
-        if (!isAggregation(parent.getKind())
-            || !isRolledUpColumnAllowedInAgg(id, scope, (SqlCall) parent, grandParent)) {
-          String context = optionalClause != null ? optionalClause : parent.getKind().toString();
-          throw newValidationError(id,
-              RESOURCE.rolledUpNotAllowed(deriveAlias(id, 0), context));
-        }
-      }
-    }
-  }
-
-  private void checkRollUp(SqlNode grandParent, SqlNode parent,
-                           SqlNode current, SqlValidatorScope scope) {
-    checkRollUp(grandParent, parent, current, scope, null);
-  }
-
-  protected SqlWindow getWindowInOver(SqlNode over) {
-    if (over.getKind() == SqlKind.OVER) {
-      SqlNode window = ((SqlCall) over).getOperandList().get(1);
-      if (window instanceof SqlWindow) {
-        return (SqlWindow) window;
-      }
-      // SqlIdentifier, gets validated elsewhere
-      return null;
-    }
-    return null;
-  }
-
-  protected static SqlNode stripOver(SqlNode node) {
-    switch (node.getKind()) {
-    case OVER:
-      return ((SqlCall) node).getOperandList().get(0);
-    default:
-      return node;
-    }
-  }
-
-  private Pair<String, String> findTableColumnPair(SqlIdentifier identifier,
-      SqlValidatorScope scope) {
-    final SqlCall call = makeNullaryCall(identifier);
-    if (call != null) {
-      return null;
-    }
-    SqlQualified qualified = scope.fullyQualify(identifier);
-    List<String> names = qualified.identifier.names;
-
-    if (names.size() < 2) {
-      return null;
-    }
-
-    return new Pair<>(names.get(names.size() - 2), Util.last(names));
-  }
-
-  // Returns true iff the given column is valid inside the given aggCall.
-  protected boolean isRolledUpColumnAllowedInAgg(SqlIdentifier identifier, SqlValidatorScope scope,
-                                               SqlCall aggCall, SqlNode parent) {
-    Pair<String, String> pair = findTableColumnPair(identifier, scope);
-
-    if (pair == null) {
-      return true;
-    }
-
-    String columnName = pair.right;
-
-    SqlValidatorTable sqlValidatorTable =
-        scope.fullyQualify(identifier).namespace.getTable();
-    if (sqlValidatorTable != null) {
-      Table table = sqlValidatorTable.unwrap(Table.class);
-      return table.rolledUpColumnValidInsideAgg(columnName, aggCall, parent,
-          catalogReader.getConfig());
-    }
-    return true;
-  }
-
-
-  // Returns true iff the given column is actually rolled up.
-  protected boolean isRolledUpColumn(SqlIdentifier identifier, SqlValidatorScope scope) {
-    Pair<String, String> pair = findTableColumnPair(identifier, scope);
-
-    if (pair == null) {
-      return false;
-    }
-
-    String columnName = pair.right;
-
-    SqlValidatorTable sqlValidatorTable =
-        scope.fullyQualify(identifier).namespace.getTable();
-    if (sqlValidatorTable != null) {
-      Table table = sqlValidatorTable.unwrap(Table.class);
-      return table.isRolledUp(columnName);
-    }
-    return false;
-  }
-
-<<<<<<< HEAD
-=======
   private Table findTable(CalciteSchema schema, String tableName, boolean caseSensitive) {
     CalciteSchema.TableEntry entry = schema.getTable(tableName, caseSensitive);
     if (entry != null) {
@@ -3878,7 +3762,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
   }
 
 =======
->>>>>>> 0b7d6d6d5 (Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)")
   /** Validates that a query can deliver the modality it promises. Only called
    * on the top-most SELECT or set operator in the tree. */
   private void validateModality(SqlNode query) {
@@ -4113,24 +3996,23 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
 
   public void validateSequenceValue(SqlValidatorScope scope, SqlIdentifier id) {
     // Resolve identifier as a table.
-    final SqlValidatorScope.ResolvedImpl resolved =
-        new SqlValidatorScope.ResolvedImpl();
-    scope.resolveTable(id.names, catalogReader.nameMatcher(),
-        SqlValidatorScope.Path.EMPTY, resolved);
-    if (resolved.count() != 1) {
+    final SqlValidatorNamespace ns = scope.getTableNamespace(id.names);
+    if (ns == null) {
       throw newValidationError(id, RESOURCE.tableNameNotFound(id.toString()));
     }
     // We've found a table. But is it a sequence?
-    final SqlValidatorNamespace ns = resolved.only().namespace;
-    if (ns instanceof TableNamespace) {
-      final Table table = ((RelOptTable) ns.getTable()).unwrap(Table.class);
-      switch (table.getJdbcTableType()) {
-      case SEQUENCE:
-      case TEMPORARY_SEQUENCE:
-        return;
-      }
+    if (!(ns instanceof TableNamespace)) {
+      throw newValidationError(id, RESOURCE.notASequence(id.toString()));
     }
-    throw newValidationError(id, RESOURCE.notASequence(id.toString()));
+    final SqlValidatorTable table = ns.getTable();
+    final Table table1 = ((RelOptTable) table).unwrap(Table.class);
+    switch (table1.getJdbcTableType()) {
+    case SEQUENCE:
+    case TEMPORARY_SEQUENCE:
+      break;
+    default:
+      throw newValidationError(id, RESOURCE.notASequence(id.toString()));
+    }
   }
 
   public SqlValidatorScope getWithScope(SqlNode withItem) {

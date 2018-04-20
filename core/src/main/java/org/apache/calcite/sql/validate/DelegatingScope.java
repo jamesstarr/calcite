@@ -193,14 +193,8 @@ public abstract class DelegatingScope implements SqlValidatorScope {
     return parent.nullifyType(node, type);
   }
 
-  @SuppressWarnings("deprecation")
   public SqlValidatorNamespace getTableNamespace(List<String> names) {
     return parent.getTableNamespace(names);
-  }
-
-  public void resolveTable(List<String> names, SqlNameMatcher nameMatcher,
-      Path path, Resolved resolved) {
-    parent.resolveTable(names, nameMatcher, path, resolved);
   }
 
   public SqlValidatorScope getOperandScope(SqlCall call) {

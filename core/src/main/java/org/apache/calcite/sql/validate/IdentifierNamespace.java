@@ -32,7 +32,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+
 import javax.annotation.Nullable;
 
 import static org.apache.calcite.util.Static.RESOURCE;
@@ -121,13 +121,13 @@ public class IdentifierNamespace extends AbstractNamespace {
   }
 
   private SqlValidatorNamespace resolveImpl(SqlIdentifier id) {
-    final SqlNameMatcher nameMatcher = validator.catalogReader.nameMatcher();
-    final SqlValidatorScope.ResolvedImpl resolved =
-        new SqlValidatorScope.ResolvedImpl();
-    final List<String> names = SqlIdentifier.toStar(id.names);
     try {
-      parentScope.resolveTable(names, nameMatcher,
-          SqlValidatorScope.Path.EMPTY, resolved);
+      SqlValidatorNamespace ns = parentScope.getTableNamespace(id.names);
+      if (ns == null) {
+        throw validator.newValidationError(id,
+            RESOURCE.tableNameNotFound(id.toString()));
+      }
+      return ns;
     } catch (CyclicDefinitionException e) {
       if (e.depth == 1) {
         throw validator.newValidationError(id,
@@ -137,6 +137,7 @@ public class IdentifierNamespace extends AbstractNamespace {
         throw new CyclicDefinitionException(e.depth - 1, e.path);
       }
     }
+<<<<<<< HEAD
     SqlValidatorScope.Resolve previousResolve = null;
     if (resolved.count() == 1) {
       final SqlValidatorScope.Resolve resolve =
@@ -193,6 +194,8 @@ public class IdentifierNamespace extends AbstractNamespace {
         id.isSimple() ? RESOURCE.objectNotFound(id.getComponent(0).toString())
                       : RESOURCE.objectNotFound(id.toString())
     );
+=======
+>>>>>>> ca38362df (Partial revert of CALCITE-1549)
   }
 
   public RelDataType validateImpl(RelDataType targetRowType) {

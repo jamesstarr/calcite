@@ -42,6 +42,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -228,7 +229,7 @@ class MultiJdbcSchemaJoinTest {
       fail("expected error, got " + rs);
     } catch (SQLException e) {
       assertThat(e.getCause().getCause().getMessage(),
-          equalTo("Object 'TABLE2' not found within 'DB'"));
+          equalTo("Table 'DB.TABLE2' not found"));
     }
 
     stmt1.execute("create table table2(id varchar(10) not null primary key, "

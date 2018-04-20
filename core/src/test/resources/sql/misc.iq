@@ -179,18 +179,19 @@ group by "hr"."emps"."empid";
 
 # Case-sensitive errors
 select empid from "hr"."emps";
-Column 'EMPID' not found in any table; did you mean 'empid'?
+Column 'EMPID' not found in any table
 !error
 
 select empid from "hr".emps;
-Object 'EMPS' not found within 'hr'; did you mean 'emps'?
+Table 'hr.EMPS' not found
 !error
 
 select empid from hr.emps;
-Object 'HR' not found; did you mean 'hr'?
+Table 'HR.EMPS' not found
 !error
 
 select empid from bad_schema.bad_table;
+<<<<<<< HEAD
 Object 'BAD_SCHEMA.BAD_TABLE' not found
 !error
 
@@ -216,30 +217,57 @@ Object 'CATALOG.hr.BAD_TABLE' not found
 
 select empid from catalog."hr".emp;
 Object 'CATALOG.hr.EMP' not found
+=======
+Table 'BAD_SCHEMA.BAD_TABLE' not found
+!error
+
+select empid from bad_cat.bad_schema.bad_table;
+Table 'BAD_CAT.BAD_SCHEMA.BAD_TABLE' not found
+!error
+
+select empid from "catalog".bad_schema.bad_table;
+Table 'catalog.BAD_SCHEMA.BAD_TABLE' not found
+!error
+
+select empid from catalog.bad_schema.bad_table;
+Table 'CATALOG.BAD_SCHEMA.BAD_TABLE' not found
+!error
+
+select empid from catalog.HR.bad_table;
+Table 'CATALOG.HR.BAD_TABLE' not found
+!error
+
+select empid from catalog."hr".bad_table;
+Table 'CATALOG.hr.BAD_TABLE' not found
+!error
+
+select empid from catalog."hr".emp;
+Table 'CATALOG.hr.EMP' not found
+>>>>>>> ca38362df (Partial revert of CALCITE-1549)
 !error
 
 select empid from HR.bad_table;
-Object 'HR' not found; did you mean 'hr'?
+Table 'HR.BAD_TABLE' not found
 !error
 
 select empid from "HR".bad_table;
-Object 'HR' not found; did you mean 'hr'?
+Table 'HR.BAD_TABLE' not found
 !error
 
 select empid from HR."emps";
-Object 'HR' not found; did you mean 'hr'?
+Table 'HR.emps' not found
 !error
 
 select empid from "hr".bad_table;
-Object 'BAD_TABLE' not found within 'hr'
+Table 'hr.BAD_TABLE' not found
 !error
 
 select empid from "hr".emps;
-Object 'EMPS' not found within 'hr'; did you mean 'emps'?
+Table 'hr.EMPS' not found
 !error
 
 select empid from "hr";
-Object 'hr' not found
+Table 'hr' not found
 !error
 
 # [CALCITE-307] CAST(timestamp AS DATE) gives ClassCastException

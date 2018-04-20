@@ -366,17 +366,6 @@ public class StreamTest {
     public Schema.TableType getJdbcTableType() {
       return Schema.TableType.TABLE;
     }
-<<<<<<< HEAD
-
-    @Override public boolean isRolledUp(String column) {
-      return false;
-    }
-
-    @Override public boolean rolledUpColumnValidInsideAgg(String column,
-        SqlCall call, SqlNode parent, CalciteConnectionConfig config) {
-      return false;
-    }
-=======
   }
 
   /** Mock table that returns a stream of orders from a fixed array. */
@@ -423,7 +412,6 @@ public class StreamTest {
     @Override public Table stream() {
       return new OrdersTable(rows);
     }
->>>>>>> 0b7d6d6d5 (Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)")
   }
 
   /**

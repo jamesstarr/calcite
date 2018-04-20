@@ -99,13 +99,10 @@ public abstract class ListScope extends DelegatingScope {
       // catalog & schema and the other is not.
       final SqlValidatorTable table = child.namespace.getTable();
       if (table != null) {
-        final ResolvedImpl resolved = new ResolvedImpl();
-        resolveTable(names, nameMatcher, Path.EMPTY, resolved);
-        if (resolved.count() == 1
-            && resolved.only().remainingNames.isEmpty()
-            && resolved.only().namespace instanceof TableNamespace
-            && resolved.only().namespace.getTable().getQualifiedName().equals(
-                table.getQualifiedName())) {
+        final SqlValidatorTable table2 =
+            validator.catalogReader.getTable(names);
+        if (table2 != null
+            && table.getQualifiedName().equals(table2.getQualifiedName())) {
           return child;
         }
       }
