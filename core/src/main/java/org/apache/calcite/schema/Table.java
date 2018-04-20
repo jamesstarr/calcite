@@ -16,11 +16,8 @@
  */
 package org.apache.calcite.schema;
 
-import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.sql.SqlCall;
-import org.apache.calcite.sql.SqlNode;
 
 /**
  * Table.
@@ -63,6 +60,7 @@ public interface Table {
   /** Type of table. */
   Schema.TableType getJdbcTableType();
 
+<<<<<<< HEAD
   /**
    * Determines whether the given {@code column} has been rolled up.
    * */
@@ -80,4 +78,6 @@ public interface Table {
    */
   boolean rolledUpColumnValidInsideAgg(String column, SqlCall call,
       SqlNode parent, CalciteConnectionConfig config);
+=======
+>>>>>>> 0b7d6d6d5 (Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)")
 }

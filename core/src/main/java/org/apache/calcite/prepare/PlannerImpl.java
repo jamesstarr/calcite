@@ -18,9 +18,7 @@ package org.apache.calcite.prepare;
 
 import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.config.CalciteConnectionConfig;
-import org.apache.calcite.config.CalciteConnectionConfigImpl;
-import org.apache.calcite.config.CalciteConnectionProperty;
-import org.apache.calcite.config.CalciteSystemProperty;
+>>>>>>> 0b7d6d6d5 (Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)")
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.plan.Context;
@@ -64,7 +62,6 @@ import com.google.common.collect.ImmutableList;
 
 import java.io.Reader;
 import java.util.List;
-import java.util.Properties;
 
 /** Implementation of {@link org.apache.calcite.tools.Planner}. */
 public class PlannerImpl implements Planner, ViewExpander {
@@ -317,12 +314,16 @@ public class PlannerImpl implements Planner, ViewExpander {
 
   // CalciteCatalogReader is stateless; no need to store one
   private CalciteCatalogReader createCatalogReader() {
+<<<<<<< HEAD
     final SchemaPlus rootSchema = rootSchema(defaultSchema);
 
+=======
+    SchemaPlus rootSchema = rootSchema(defaultSchema);
     return new CalciteCatalogReader(
         CalciteSchema.from(rootSchema),
+        parserConfig.caseSensitive(),
         CalciteSchema.from(defaultSchema).path(null),
-        typeFactory, connectionConfig);
+        typeFactory);
   }
 
   private SqlValidator createSqlValidator(CalciteCatalogReader catalogReader) {

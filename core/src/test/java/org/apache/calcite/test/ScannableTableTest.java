@@ -513,7 +513,6 @@ public class ScannableTableTest {
         }
       };
     }
-
   }
 
   /** Table that returns two columns via the ScannableTable interface. */

@@ -183,7 +183,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
 
   /**
    * Maps {@link SqlNode query node} objects to the {@link SqlValidatorScope}
-   * scope created from them.
+   * scope created from them}.
    */
   protected final Map<SqlNode, SqlValidatorScope> scopes =
       new IdentityHashMap<>();
@@ -669,17 +669,14 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
                 new SqlIdentifier(
                     ImmutableList.of(child.name, columnName),
                     startPosition);
-            // Don't add expanded rolled up columns
-            if (!isRolledUpColumn(exp, scope)) {
-              addOrExpandField(
-                      selectItems,
-                      aliases,
-                      fields,
-                      includeSystemVars,
-                      scope,
-                      exp,
-                      field);
-            }
+            addOrExpandField(
+                selectItems,
+                aliases,
+                types,
+                includeSystemVars,
+                scope,
+                exp,
+                field);
           }
         }
         if (child.nullable) {
@@ -3450,31 +3447,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     throw new AssertionError("OVER unexpected in this context");
   }
 
-  protected void validateUnnest(SqlCall call, SqlValidatorScope scope, RelDataType targetRowType) {
-    for (int i = 0; i < call.operandCount(); i++) {
-      SqlNode expandedItem = expand(call.operand(i), scope);
-      call.setOperand(i, expandedItem);
-    }
-    validateQuery(call, scope, targetRowType);
-  }
-
-  private void checkRollUpInUsing(SqlIdentifier identifier,
-      SqlNode leftOrRight, SqlValidatorScope scope) {
-    SqlValidatorNamespace namespace = getNamespace(leftOrRight, scope);
-    if (namespace != null) {
-      SqlValidatorTable sqlValidatorTable = namespace.getTable();
-      if (sqlValidatorTable != null) {
-        Table table = sqlValidatorTable.unwrap(Table.class);
-        String column = Util.last(identifier.names);
-
-        if (table.isRolledUp(column)) {
-          throw newValidationError(identifier,
-              RESOURCE.rolledUpNotAllowed(column, "USING"));
-        }
-      }
-    }
-  }
-
+>>>>>>> 0b7d6d6d5 (Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)")
   protected void validateJoin(SqlJoin join, SqlValidatorScope scope) {
     SqlNode left = join.getLeft();
     SqlNode right = join.getRight();
@@ -3502,7 +3475,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       join.setOperand(5, expandedCondition);
       condition = join.getCondition();
       validateWhereOrOn(joinScope, condition, "ON");
-      checkRollUp(null, join, condition, joinScope, "ON");
       break;
     case USING:
       SqlNodeList list = (SqlNodeList) condition;
@@ -3518,8 +3490,10 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
               RESOURCE.naturalOrUsingColumnNotCompatible(id.getSimple(),
                   leftColType.toString(), rightColType.toString()));
         }
+<<<<<<< HEAD
         checkRollUpInUsing(id, left, scope);
         checkRollUpInUsing(id, right, scope);
+=======
       }
       break;
     default:
@@ -3719,58 +3693,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     // dialects you can refer to columns of the select list, e.g.
     // "SELECT empno AS x FROM emp ORDER BY x"
     validateOrderList(select);
-
-    if (shouldCheckForRollUp(select.getFrom())) {
-      checkRollUpInSelectList(select);
-      checkRollUp(null, select, select.getWhere(), getWhereScope(select));
-      checkRollUp(null, select, select.getHaving(), getHavingScope(select));
-      checkRollUpInWindowDecl(select);
-      checkRollUpInGroupBy(select);
-      checkRollUpInOrderBy(select);
-    }
-  }
-
-  private void checkRollUpInSelectList(SqlSelect select) {
-    SqlValidatorScope scope = getSelectScope(select);
-    for (SqlNode item : select.getSelectList()) {
-      checkRollUp(null, select, item, scope);
-    }
-  }
-
-  private void checkRollUpInGroupBy(SqlSelect select) {
-    SqlNodeList group = select.getGroup();
-    if (group != null) {
-      for (SqlNode node : group) {
-        checkRollUp(null, select, node, getGroupScope(select), "GROUP BY");
-      }
-    }
-  }
-
-  private void checkRollUpInOrderBy(SqlSelect select) {
-    SqlNodeList orderList = select.getOrderList();
-    if (orderList != null) {
-      for (SqlNode node : orderList) {
-        checkRollUp(null, select, node, getOrderScope(select), "ORDER BY");
-      }
-    }
-  }
-
-  protected void checkRollUpInWindow(SqlWindow window, SqlValidatorScope scope) {
-    if (window != null) {
-      for (SqlNode node : window.getPartitionList()) {
-        checkRollUp(null, window, node, scope, "PARTITION BY");
-      }
-
-      for (SqlNode node : window.getOrderList()) {
-        checkRollUp(null, window, node, scope, "ORDER BY");
-      }
-    }
-  }
-
-  private void checkRollUpInWindowDecl(SqlSelect select) {
-    for (SqlNode decl : select.getWindowList()) {
-      checkRollUpInWindow((SqlWindow) decl, getSelectScope(select));
-    }
+>>>>>>> 0b7d6d6d5 (Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)")
   }
 
   protected SqlNode stripDot(SqlNode node) {
@@ -3780,6 +3703,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     return node;
   }
 
+<<<<<<< HEAD
   protected void checkRollUp(SqlNode grandParent, SqlNode parent,
                            SqlNode current, SqlValidatorScope scope, String optionalClause) {
     current = stripAs(current);
@@ -3945,7 +3869,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     return entry == null ? null : entry.getTable();
   }
 
->>>>>>> 2ac395fd9 (Revert "[CALCITE-2084] SqlValidatorImpl.findTable() method incorrectly handles table schema with few schema levels (Volodymyr Vysotskyi)")
   private boolean shouldCheckForRollUp(SqlNode from) {
     if (from != null) {
       SqlKind kind = stripAs(from).getKind();
@@ -3954,6 +3877,8 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     return false;
   }
 
+=======
+>>>>>>> 0b7d6d6d5 (Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)")
   /** Validates that a query can deliver the modality it promises. Only called
    * on the top-most SELECT or set operator in the tree. */
   private void validateModality(SqlNode query) {
@@ -4459,7 +4384,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
         scope,
         condition);
     condition.validate(this, scope);
-
     final RelDataType type = deriveType(scope, condition);
     if (!SqlTypeUtil.inBooleanFamily(type)) {
       throw newValidationError(condition, RESOURCE.condMustBeBoolean(clause));

@@ -99,9 +99,20 @@ public class DruidAdapterIT {
     return CalciteSystemProperty.TEST_DRUID.value();
   }
 
-  @BeforeAll
-  public static void assumeDruidTestsEnabled() {
-    assumeTrue(enabled(), "Druid tests disabled. Add -Dcalcite.test.druid to enable it");
+  /** Returns a function that checks that a particular Druid query is
+   * generated to implement a query. */
+  private static Function<List, Void> druidChecker(final String... lines) {
+    return new Function<List, Void>() {
+      @Override public Void apply(List list) {
+        assertThat(list.size(), is(1));
+        DruidQuery.QuerySpec querySpec = (DruidQuery.QuerySpec) list.get(0);
+        for (String line : lines) {
+          final String s = line.replace('\'', '"');
+          assertThat(querySpec.getQueryString(null, -1), containsString(s));
+        }
+        return null;
+      }
+    };
   }
 
   /**
@@ -361,29 +372,31 @@ public class DruidAdapterIT {
 
   @Test void testMetadataColumns() throws Exception {
     sql("values 1")
-        .withConnection(c -> {
-          try {
-            final DatabaseMetaData metaData = c.getMetaData();
-            final ResultSet r =
-                metaData.getColumns(null, null, "foodmart", null);
-            Multimap<String, Boolean> map = ArrayListMultimap.create();
-            while (r.next()) {
-              map.put(r.getString("TYPE_NAME"), true);
-            }
-            if (CalciteSystemProperty.DEBUG.value()) {
-              System.out.println(map);
-            }
-            // 1 timestamp, 2 float measure, 1 int measure, 88 dimensions
-            assertThat(map.keySet().size(), is(4));
-            assertThat(map.values().size(), is(92));
-            assertThat(map.get("TIMESTAMP_WITH_LOCAL_TIME_ZONE(0) NOT NULL").size(), is(1));
-            assertThat(map.get("DOUBLE").size(), is(2));
-            assertThat(map.get("BIGINT").size(), is(1));
-            assertThat(map.get(VARCHAR_TYPE).size(), is(88));
-          } catch (SQLException e) {
-            throw TestUtil.rethrow(e);
-          }
-        });
+        .withConnection(
+            new Function<Connection, Void>() {
+              @Override public Void apply(Connection c) {
+                try {
+                  final DatabaseMetaData metaData = c.getMetaData();
+                  final ResultSet r =
+                      metaData.getColumns(null, null, "foodmart", null);
+                  Multimap<String, Boolean> map = ArrayListMultimap.create();
+                  while (r.next()) {
+                    map.put(r.getString("TYPE_NAME"), true);
+                  }
+                  System.out.println(map);
+                  // 1 timestamp, 2 float measure, 1 int measure, 88 dimensions
+                  assertThat(map.keySet().size(), is(4));
+                  assertThat(map.values().size(), is(92));
+                  assertThat(map.get("TIMESTAMP_WITH_LOCAL_TIME_ZONE(0) NOT NULL").size(), is(1));
+                  assertThat(map.get("DOUBLE").size(), is(2));
+                  assertThat(map.get("BIGINT").size(), is(1));
+                  assertThat(map.get(VARCHAR_TYPE).size(), is(88));
+                } catch (SQLException e) {
+                  throw new RuntimeException(e);
+                }
+                return null;
+              }
+            });
   }
 
   @Test void testSelectDistinct() {
@@ -479,16 +492,19 @@ public class DruidAdapterIT {
   @Test void testSelectCount() {
     final String sql = "select count(*) as c from \"foodmart\"";
     sql(sql)
-        .returns(input -> {
-          try {
-            assertThat(input.next(), is(true));
-            assertThat(input.getInt(1), is(86829));
-            assertThat(input.getLong(1), is(86829L));
-            assertThat(input.getString(1), is("86829"));
-            assertThat(input.wasNull(), is(false));
-            assertThat(input.next(), is(false));
-          } catch (SQLException e) {
-            throw TestUtil.rethrow(e);
+        .returns(new Function<ResultSet, Void>() {
+          @Override public Void apply(ResultSet input) {
+            try {
+              assertThat(input.next(), is(true));
+              assertThat(input.getInt(1), is(86829));
+              assertThat(input.getLong(1), is(86829L));
+              assertThat(input.getString(1), is("86829"));
+              assertThat(input.wasNull(), is(false));
+              assertThat(input.next(), is(false));
+              return null;
+            } catch (SQLException e) {
+              throw new RuntimeException(e);
+            }
           }
         });
   }
@@ -779,8 +795,8 @@ public class DruidAdapterIT {
 
   /** Tests a query that contains no GROUP BY and is therefore executed as a
    * Druid "select" query. */
-  @Test void testFilterSortDesc() {
-    final String sql = "select \"product_name\" from \"foodmart\"\n"
+  @Test public void testFilterSortDesc() {
+    final String sql = "select * from \"foodmart\"\n"
         + "where \"product_id\" BETWEEN '1500' AND '1502'\n"
         + "order by \"state_province\" desc, \"product_id\"";
     final String druidQuery = "{'queryType':'scan','dataSource':'foodmart',"
@@ -792,24 +808,28 @@ public class DruidAdapterIT {
         + "'resultFormat':'compactedList'";
     sql(sql)
         .limit(4)
-        .returns(resultSet -> {
-          try {
-            for (int i = 0; i < 4; i++) {
-              assertTrue(resultSet.next());
-              assertThat(resultSet.getString("product_name"),
-                  is("Fort West Dried Apricots"));
-            }
-            assertFalse(resultSet.next());
-          } catch (SQLException e) {
-            throw TestUtil.rethrow(e);
-          }
-        })
-        .queryContains(new DruidChecker(druidQuery));
+        .returns(
+            new Function<ResultSet, Void>() {
+              @Override public Void apply(ResultSet resultSet) {
+                try {
+                  for (int i = 0; i < 4; i++) {
+                    assertTrue(resultSet.next());
+                    assertThat(resultSet.getString("product_name"),
+                        is("Fort West Dried Apricots"));
+                  }
+                  assertFalse(resultSet.next());
+                  return null;
+                } catch (SQLException e) {
+                  throw new RuntimeException(e);
+                }
+              }
+            })
+        .queryContains(druidChecker(druidQuery));
   }
 
   /** As {@link #testFilterSortDesc()} but the bounds are numeric. */
-  @Test void testFilterSortDescNumeric() {
-    final String sql = "select \"product_name\" from \"foodmart\"\n"
+  @Test public void testFilterSortDescNumeric() {
+    final String sql = "select * from \"foodmart\"\n"
         + "where \"product_id\" BETWEEN 1500 AND 1502\n"
         + "order by \"state_province\" desc, \"product_id\"";
     final String druidQuery = "{'queryType':'scan','dataSource':'foodmart',"
@@ -821,24 +841,28 @@ public class DruidAdapterIT {
         + "'resultFormat':'compactedList'";
     sql(sql)
         .limit(4)
-        .returns(resultSet -> {
-          try {
-            for (int i = 0; i < 4; i++) {
-              assertTrue(resultSet.next());
-              assertThat(resultSet.getString("product_name"),
-                  is("Fort West Dried Apricots"));
-            }
-            assertFalse(resultSet.next());
-          } catch (SQLException e) {
-            throw TestUtil.rethrow(e);
-          }
-        })
-        .queryContains(new DruidChecker(druidQuery));
+        .returns(
+            new Function<ResultSet, Void>() {
+              @Override public Void apply(ResultSet resultSet) {
+                try {
+                  for (int i = 0; i < 4; i++) {
+                    assertTrue(resultSet.next());
+                    assertThat(resultSet.getString("product_name"),
+                        is("Fort West Dried Apricots"));
+                  }
+                  assertFalse(resultSet.next());
+                  return null;
+                } catch (SQLException e) {
+                  throw new RuntimeException(e);
+                }
+              }
+            })
+        .queryContains(druidChecker(druidQuery));
   }
 
   /** Tests a query whose filter removes all rows. */
-  @Test void testFilterOutEverything() {
-    final String sql = "select \"product_name\" from \"foodmart\"\n"
+  @Test public void testFilterOutEverything() {
+    final String sql = "select * from \"foodmart\"\n"
         + "where \"product_id\" = -1";
     final String druidQuery = "{'queryType':'scan','dataSource':'foodmart',"
         + "'intervals':['1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z'],"
@@ -854,8 +878,8 @@ public class DruidAdapterIT {
 
   /** As {@link #testFilterSortDescNumeric()} but with a filter that cannot
    * be pushed down to Druid. */
-  @Test void testNonPushableFilterSortDesc() {
-    final String sql = "select \"product_name\" from \"foodmart\"\n"
+  @Test public void testNonPushableFilterSortDesc() {
+    final String sql = "select * from \"foodmart\"\n"
         + "where cast(\"product_id\" as integer) - 1500 BETWEEN 0 AND 2\n"
         + "order by \"state_province\" desc, \"product_id\"";
     final String druidQuery = "{'queryType':'scan','dataSource':'foodmart',"
@@ -867,19 +891,23 @@ public class DruidAdapterIT {
 
     sql(sql)
         .limit(4)
-        .returns(resultSet -> {
-          try {
-            for (int i = 0; i < 4; i++) {
-              assertTrue(resultSet.next());
-              assertThat(resultSet.getString("product_name"),
-                  is("Fort West Dried Apricots"));
-            }
-            assertFalse(resultSet.next());
-          } catch (SQLException e) {
-            throw TestUtil.rethrow(e);
-          }
-        })
-        .queryContains(new DruidChecker(druidQuery, druidFilter, druidQuery2));
+        .returns(
+            new Function<ResultSet, Void>() {
+              @Override public Void apply(ResultSet resultSet) {
+                try {
+                  for (int i = 0; i < 4; i++) {
+                    assertTrue(resultSet.next());
+                    assertThat(resultSet.getString("product_name"),
+                        is("Fort West Dried Apricots"));
+                  }
+                  assertFalse(resultSet.next());
+                  return null;
+                } catch (SQLException e) {
+                  throw new RuntimeException(e);
+                }
+              }
+            })
+        .queryContains(druidChecker(druidQuery, druidFilter, druidQuery2));
   }
 
   @Test void testUnionPlan() {
@@ -1976,39 +2004,43 @@ public class DruidAdapterIT {
     String druidQuery = "'filter':{'type':'bound','dimension':'product_id',"
         + "'upper':'10','upperStrict':true,'ordering':'numeric'}";
     sql("?")
-        .withRel(b -> {
-          // select product_id
-          // from foodmart.foodmart
-          // where product_id < cast(10 as varchar)
-          final RelDataType intType =
-              b.getTypeFactory().createSqlType(SqlTypeName.INTEGER);
-          return b.scan("foodmart", "foodmart")
-              .filter(
-                  b.call(SqlStdOperatorTable.LESS_THAN,
-                      b.getRexBuilder().makeCall(intType,
-                          SqlStdOperatorTable.CAST,
-                          ImmutableList.of(b.field("product_id"))),
-                      b.getRexBuilder().makeCall(intType,
-                          SqlStdOperatorTable.CAST,
-                          ImmutableList.of(b.literal("10")))))
-              .project(b.field("product_id"))
-              .build();
+        .withRel(new Function<RelBuilder, RelNode>() {
+          @Override public RelNode apply(RelBuilder b) {
+            // select product_id
+            // from foodmart.foodmart
+            // where product_id < cast(10 as varchar)
+            final RelDataType intType =
+                b.getTypeFactory().createSqlType(SqlTypeName.INTEGER);
+            return b.scan("foodmart", "foodmart")
+                .filter(
+                    b.call(SqlStdOperatorTable.LESS_THAN,
+                        b.getRexBuilder().makeCall(intType,
+                            SqlStdOperatorTable.CAST,
+                            ImmutableList.<RexNode>of(b.field("product_id"))),
+                        b.getRexBuilder().makeCall(intType,
+                            SqlStdOperatorTable.CAST,
+                            ImmutableList.of(b.literal("10")))))
+                .project(b.field("product_id"))
+                .build();
+          }
         })
         .queryContains(new DruidChecker(druidQuery));
   }
 
   @Test void testPushFieldEqualsLiteral() {
     sql("?")
-        .withRel(b -> {
-          // select count(*) as c
-          // from foodmart.foodmart
-          // where product_id = 'id'
-          return b.scan("foodmart", "foodmart")
-              .filter(
-                  b.call(SqlStdOperatorTable.EQUALS, b.field("product_id"),
-                      b.literal("id")))
-              .aggregate(b.groupKey(), b.countStar("c"))
-              .build();
+        .withRel(new Function<RelBuilder, RelNode>() {
+          @Override public RelNode apply(RelBuilder b) {
+            // select count(*) as c
+            // from foodmart.foodmart
+            // where product_id = 'id'
+            return b.scan("foodmart", "foodmart")
+                .filter(
+                    b.call(SqlStdOperatorTable.EQUALS, b.field("product_id"),
+                        b.literal("id")))
+                .aggregate(b.groupKey(), b.countStar("c"))
+                .build();
+          }
         })
         // Should return one row, "c=0"; logged
         // [CALCITE-1775] "GROUP BY ()" on empty relation should return 1 row
@@ -2118,7 +2150,7 @@ public class DruidAdapterIT {
   }
 
   /**
-   * Turn on now count(distinct )
+   * Turn on now count(distinct ) will get pushed after CALC-1853
    */
   @Test void testHyperUniquePostAggregator() {
     final String sqlQuery = "select \"store_state\", sum(\"store_cost\") / count(distinct "
@@ -2862,7 +2894,7 @@ public class DruidAdapterIT {
     String expectedSubExplain = "PLAN=EnumerableInterpreter\n"
         + "  DruidQuery(table=[[foodmart, foodmart]], intervals=[[1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z]], projects=[[$63]], groups=[{}], aggs=[[COUNT(DISTINCT $0)]])";
     String expectedAggregate = "{'type':'cardinality','name':"
-        + "'EXPR$0','fieldNames':['store_state']}";
+        + "'EXPR$0','fieldNames':['customer_id']}";
 
     testCountWithApproxDistinct(true, sql, expectedSubExplain, expectedAggregate);
   }
@@ -2871,8 +2903,8 @@ public class DruidAdapterIT {
    * Test to ensure that count(distinct ...) doesn't get pushed to Druid when approximate results
    * are not acceptable
    */
-  @Test void testDistinctCountWhenApproxResultsNotAccepted() {
-    String sql = "select count(distinct \"store_state\") from \"foodmart\"";
+  @Test public void testDistinctCountWhenApproxResultsNotAccepted() {
+    String sql = "select count(distinct \"customer_id\") from \"foodmart\"";
     String expectedSubExplain = "  BindableAggregate(group=[{}], EXPR$0=[COUNT($0)])\n"
         + "    DruidQuery(table=[[foodmart, foodmart]], "
         + "intervals=[[1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z]], "
@@ -2926,7 +2958,7 @@ public class DruidAdapterIT {
 
   @Test void testCountOnMetricRenamed() {
     String sql = "select \"B\", count(\"A\") from "
-        + "(select \"unit_sales\" as \"A\", \"store_state\" as \"B\" from \"foodmart\") "
+        + "(select \"unit_sales\" as \"A\", \"customer_id\" as \"B\" from \"foodmart\") "
         + "group by \"B\"";
     String expectedSubExplain = "PLAN=EnumerableInterpreter\n"
         + "  DruidQuery(table=[[foodmart, foodmart]], intervals=[[1900-01-09T00:00:00.000Z/"

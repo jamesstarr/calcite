@@ -155,8 +155,8 @@ class LookupOperatorOverloadsTest {
           statement.createPrepareContext();
       final JavaTypeFactory typeFactory = prepareContext.getTypeFactory();
       CalciteCatalogReader reader =
-          new CalciteCatalogReader(prepareContext.getRootSchema(),
-              ImmutableList.of(), typeFactory, prepareContext.config());
+          new CalciteCatalogReader(prepareContext.getRootSchema(), false,
+              ImmutableList.<String>of(), typeFactory);
 
       final List<SqlOperator> operatorList = new ArrayList<>();
       SqlIdentifier myFuncIdentifier =

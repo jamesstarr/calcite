@@ -470,19 +470,10 @@ abstract class CalciteConnectionImpl
               : ImmutableList.of(schemaName);
       final SqlValidatorWithHints validator =
           new SqlAdvisorValidator(SqlStdOperatorTable.instance(),
-              new CalciteCatalogReader(rootSchema,
-                  schemaPath, typeFactory, con.config()),
-              typeFactory, SqlValidator.Config.DEFAULT);
-      final CalciteConnectionConfig config = con.config();
-      // This duplicates org.apache.calcite.prepare.CalcitePrepareImpl.prepare2_
-      final SqlParser.Config parserConfig = SqlParser.configBuilder()
-          .setQuotedCasing(config.quotedCasing())
-          .setUnquotedCasing(config.unquotedCasing())
-          .setQuoting(config.quoting())
-          .setConformance(config.conformance())
-          .setCaseSensitive(config.caseSensitive())
-          .build();
-      return new SqlAdvisor(validator, parserConfig);
+          new CalciteCatalogReader(rootSchema, con.config().caseSensitive(),
+              schemaPath, typeFactory),
+          typeFactory, SqlConformanceEnum.DEFAULT);
+      return new SqlAdvisor(validator);
     }
 
     public SchemaPlus getRootSchema() {

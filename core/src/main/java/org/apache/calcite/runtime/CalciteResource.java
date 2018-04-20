@@ -16,8 +16,14 @@
  */
 package org.apache.calcite.runtime;
 
+import org.apache.calcite.runtime.Resources.BaseMessage;
+import org.apache.calcite.runtime.Resources.ExInst;
+import org.apache.calcite.runtime.Resources.ExInstWithCause;
+import org.apache.calcite.runtime.Resources.Inst;
+import org.apache.calcite.runtime.Resources.Property;
 import org.apache.calcite.sql.validate.SqlValidatorException;
 
+<<<<<<< HEAD
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static org.apache.calcite.runtime.Resources.BaseMessage;
@@ -26,6 +32,8 @@ import static org.apache.calcite.runtime.Resources.ExInstWithCause;
 import static org.apache.calcite.runtime.Resources.Inst;
 import static org.apache.calcite.runtime.Resources.Property;
 
+=======
+>>>>>>> 0b7d6d6d5 (Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)")
 /**
  * Compiler-checked resources for the Calcite project.
  */
@@ -801,9 +809,6 @@ public interface CalciteResource {
 
   @BaseMessage("Extended columns not allowed under the current SQL conformance level")
   ExInst<SqlValidatorException> extendNotAllowed();
-
-  @BaseMessage("Rolled up column ''{0}'' is not allowed in {1}")
-  ExInst<SqlValidatorException> rolledUpNotAllowed(String column, String context);
 
   @BaseMessage("Schema ''{0}'' already exists")
   ExInst<SqlValidatorException> schemaExists(String name);

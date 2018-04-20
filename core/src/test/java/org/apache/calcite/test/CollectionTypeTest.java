@@ -17,7 +17,6 @@
 package org.apache.calcite.test;
 
 import org.apache.calcite.DataContext;
-import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
@@ -31,8 +30,6 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Statistic;
 import org.apache.calcite.schema.Statistics;
 import org.apache.calcite.schema.impl.AbstractSchema;
-import org.apache.calcite.sql.SqlCall;
-import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.type.SqlTypeName;
 
 import org.junit.jupiter.api.Test;
@@ -402,16 +399,6 @@ class CollectionTypeTest {
         }
       };
     }
-
-    @Override public boolean isRolledUp(String column) {
-      return false;
-    }
-
-    @Override public boolean rolledUpColumnValidInsideAgg(String column,
-                                                          SqlCall call, SqlNode parent,
-                                                          CalciteConnectionConfig config) {
-      return false;
-    }
   }
 
   /** Table that returns columns which include complicated collection type via the ScannableTable
@@ -442,6 +429,7 @@ class CollectionTypeTest {
         }
       };
     }
+<<<<<<< HEAD
 
     @Override public boolean isRolledUp(String column) {
       return false;
@@ -451,5 +439,7 @@ class CollectionTypeTest {
         SqlCall call, SqlNode parent, CalciteConnectionConfig config) {
       return false;
     }
+=======
+>>>>>>> 0b7d6d6d5 (Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)")
   }
 }

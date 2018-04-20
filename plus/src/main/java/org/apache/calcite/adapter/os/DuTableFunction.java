@@ -17,7 +17,6 @@
 package org.apache.calcite.adapter.os;
 
 import org.apache.calcite.DataContext;
-import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -25,8 +24,6 @@ import org.apache.calcite.schema.ScannableTable;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.Statistic;
 import org.apache.calcite.schema.Statistics;
-import org.apache.calcite.sql.SqlCall;
-import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.ImmutableBitSet;
 
@@ -62,15 +59,6 @@ public class DuTableFunction {
 
       public Schema.TableType getJdbcTableType() {
         return Schema.TableType.TABLE;
-      }
-
-      public boolean isRolledUp(String column) {
-        return false;
-      }
-
-      public boolean rolledUpColumnValidInsideAgg(String column, SqlCall call,
-          SqlNode parent, CalciteConnectionConfig config) {
-        return true;
       }
     };
   }
