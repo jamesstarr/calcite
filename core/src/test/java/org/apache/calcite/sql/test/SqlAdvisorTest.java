@@ -68,7 +68,6 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
   protected static final List<String> SALES_TABLES =
       Arrays.asList(
           "SCHEMA(CATALOG.SALES)",
-          "SCHEMA(CATALOG.SALES.NEST)",
           "TABLE(CATALOG.SALES.EMP)",
           "TABLE(CATALOG.SALES.EMPDEFAULTS)",
           "TABLE(CATALOG.SALES.EMPNULLABLES)",
@@ -104,8 +103,7 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
           "SCHEMA(CATALOG.DYNAMIC)",
           "SCHEMA(CATALOG.SALES)",
           "SCHEMA(CATALOG.STRUCT)",
-          "SCHEMA(CATALOG.CUSTOMER)",
-          "SCHEMA(CATALOG.SALES.NEST)");
+          "SCHEMA(CATALOG.CUSTOMER)");
 
   private static final List<String> AB_TABLES =
       Arrays.asList(

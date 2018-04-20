@@ -3443,8 +3443,17 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
               catalogReader.nameMatcher().isCaseSensitive());
     }
 
-    CalciteSchema.TableEntry entry =
-        SqlValidatorUtil.getTableEntry(catalogReader, names);
+    String schemaName = names.get(0);
+    String tableName = names.get(1);
+
+    CalciteSchema schema = catalogReader.getRootSchema().getSubSchemaMap().get(schemaName);
+
+    if (schema == null) {
+      return null;
+    }
+
+    CalciteSchema.TableEntry entry = schema.getTable(tableName,
+            catalogReader.nameMatcher().isCaseSensitive());
 
     return entry == null ? null : entry.getTable();
   }

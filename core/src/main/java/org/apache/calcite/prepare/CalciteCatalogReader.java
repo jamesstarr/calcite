@@ -120,7 +120,36 @@ public class CalciteCatalogReader implements Prepare.CatalogReader {
   public Prepare.PreparingTable getTable(final List<String> names) {
     // First look in the default schema, if any.
     // If not found, look in the root schema.
-    CalciteSchema.TableEntry entry = SqlValidatorUtil.getTableEntry(this, names);
+    for (List<String> schemaPath : schemaPaths) {
+      Prepare.PreparingTable table =
+          getTableFrom(names, schemaPath, nameMatcher);
+      if (table != null) {
+        return table;
+      }
+    }
+    return null;
+  }
+
+  @Override public CalciteConnectionConfig getConfig() {
+    return config;
+  }
+
+  private Prepare.PreparingTable getTableFrom(List<String> names,
+                                              List<String> schemaNames,
+                                              SqlNameMatcher nameMatcher) {
+    CalciteSchema schema =
+        getSchema(Iterables.concat(schemaNames, Util.skipLast(names)),
+            nameMatcher);
+    if (schema == null) {
+      return null;
+    }
+    final String name = Util.last(names);
+    CalciteSchema.TableEntry entry =
+        schema.getTable(name, nameMatcher.isCaseSensitive());
+    if (entry == null) {
+      entry = schema.getTableBasedOnNullaryFunction(name,
+          nameMatcher.isCaseSensitive());
+    }
     if (entry != null) {
       final Table table = entry.getTable();
       if (table instanceof Wrapper) {
@@ -130,14 +159,10 @@ public class CalciteCatalogReader implements Prepare.CatalogReader {
           return relOptTable;
         }
       }
-      return RelOptTableImpl.create(this,
-          table.getRowType(typeFactory), entry, null);
+      return RelOptTableImpl.create(this, table.getRowType(typeFactory), entry,
+          null);
     }
     return null;
-  }
-
-  @Override public CalciteConnectionConfig getConfig() {
-    return config;
   }
 
   private Collection<Function> getFunctionsFrom(List<String> names) {
@@ -153,8 +178,7 @@ public class CalciteCatalogReader implements Prepare.CatalogReader {
       }
     } else {
       for (List<String> schemaPath : schemaPaths) {
-        CalciteSchema schema =
-            SqlValidatorUtil.getSchema(rootSchema, schemaPath, nameMatcher);
+        CalciteSchema schema = getSchema(schemaPath, nameMatcher);
         if (schema != null) {
           schemaNameList.addAll(schema.getPath());
         }
@@ -162,8 +186,8 @@ public class CalciteCatalogReader implements Prepare.CatalogReader {
     }
     for (List<String> schemaNames : schemaNameList) {
       CalciteSchema schema =
-          SqlValidatorUtil.getSchema(rootSchema,
-              Iterables.concat(schemaNames, Util.skipLast(names)), nameMatcher);
+          getSchema(Iterables.concat(schemaNames, Util.skipLast(names)),
+              nameMatcher);
       if (schema != null) {
         final String name = Util.last(names);
         functions2.addAll(schema.getFunctions(name, true));
@@ -172,13 +196,28 @@ public class CalciteCatalogReader implements Prepare.CatalogReader {
     return functions2;
   }
 
+  private CalciteSchema getSchema(Iterable<String> schemaNames,
+      SqlNameMatcher nameMatcher) {
+    CalciteSchema schema = rootSchema;
+    for (String schemaName : schemaNames) {
+      if (schema == rootSchema
+          && nameMatcher.matches(schemaName, schema.getName())) {
+        continue;
+      }
+      schema = schema.getSubSchema(schemaName, nameMatcher.isCaseSensitive());
+      if (schema == null) {
+        return null;
+      }
+    }
+    return schema;
+  }
+
   public RelDataType getNamedType(SqlIdentifier typeName) {
     return null;
   }
 
   public List<SqlMoniker> getAllSchemaObjectNames(List<String> names) {
-    final CalciteSchema schema =
-        SqlValidatorUtil.getSchema(rootSchema, names, nameMatcher);
+    final CalciteSchema schema = getSchema(names, nameMatcher);
     if (schema == null) {
       return ImmutableList.of();
     }
