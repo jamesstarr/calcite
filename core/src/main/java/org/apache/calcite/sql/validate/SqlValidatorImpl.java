@@ -3888,6 +3888,64 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     return false;
   }
 
+<<<<<<< HEAD
+=======
+  private Table findTable(CalciteSchema schema, String tableName, boolean caseSensitive) {
+    CalciteSchema.TableEntry entry = schema.getTable(tableName, caseSensitive);
+    if (entry != null) {
+      return entry.getTable();
+    }
+
+    // Check sub schemas
+    for (CalciteSchema subSchema : schema.getSubSchemaMap().values()) {
+      Table table = findTable(subSchema, tableName, caseSensitive);
+      if (table != null) {
+        return table;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Given a table alias, find the corresponding {@link Table} associated with it
+   * */
+  private Table findTable(String alias) {
+    List<String> names = null;
+    if (tableScope == null) {
+      // no tables to find
+      return null;
+    }
+
+    for (ScopeChild child : tableScope.children) {
+      if (catalogReader.nameMatcher().matches(child.name, alias)) {
+        names = ((SqlIdentifier) child.namespace.getNode()).names;
+        break;
+      }
+    }
+    if (names == null || names.size() == 0) {
+      return null;
+    } else if (names.size() == 1) {
+      return findTable(catalogReader.getRootSchema(), names.get(0),
+              catalogReader.nameMatcher().isCaseSensitive());
+    }
+
+    String schemaName = names.get(0);
+    String tableName = names.get(1);
+
+    CalciteSchema schema = catalogReader.getRootSchema().getSubSchemaMap().get(schemaName);
+
+    if (schema == null) {
+      return null;
+    }
+
+    CalciteSchema.TableEntry entry = schema.getTable(tableName,
+            catalogReader.nameMatcher().isCaseSensitive());
+
+    return entry == null ? null : entry.getTable();
+  }
+
+>>>>>>> 2ac395fd9 (Revert "[CALCITE-2084] SqlValidatorImpl.findTable() method incorrectly handles table schema with few schema levels (Volodymyr Vysotskyi)")
   private boolean shouldCheckForRollUp(SqlNode from) {
     if (from != null) {
       SqlKind kind = stripAs(from).getKind();

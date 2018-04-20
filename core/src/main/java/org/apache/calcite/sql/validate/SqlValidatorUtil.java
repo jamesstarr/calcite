@@ -16,10 +16,7 @@
  */
 package org.apache.calcite.sql.validate;
 
-import org.apache.calcite.config.CalciteConnectionConfig;
-import org.apache.calcite.config.CalciteConnectionConfigImpl;
-import org.apache.calcite.config.CalciteConnectionProperty;
-import org.apache.calcite.jdbc.CalciteSchema;
+>>>>>>> 2ac395fd9 (Revert "[CALCITE-2084] SqlValidatorImpl.findTable() method incorrectly handles table schema with few schema levels (Volodymyr Vysotskyi)")
 import org.apache.calcite.linq4j.Linq4j;
 import org.apache.calcite.linq4j.Ord;
 import org.apache.calcite.plan.RelOptSchemaWithSampling;
@@ -57,7 +54,6 @@ import org.apache.calcite.util.Util;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import java.nio.charset.Charset;
@@ -983,6 +979,7 @@ public class SqlValidatorUtil {
   }
 
   /**
+<<<<<<< HEAD
    * Finds a {@link org.apache.calcite.jdbc.CalciteSchema.TypeEntry} in a
    * given schema whose type has the given name, possibly qualified.
    *
@@ -1091,6 +1088,7 @@ public class SqlValidatorUtil {
   }
 
   /**
+=======
    * Returns whether there are any input columns that are sorted.
    *
    * <p>If so, it can be the default ORDER BY clause for a WINDOW specification.
