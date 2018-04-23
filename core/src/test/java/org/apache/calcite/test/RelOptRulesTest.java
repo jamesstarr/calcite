@@ -4192,35 +4192,9 @@ class RelOptRulesTest extends RelOptTestBase {
   @Test void testPushAggregateThroughJoin5() {
     final HepProgram preProgram = new HepProgramBuilder()
         .addRuleInstance(CoreRules.AGGREGATE_PROJECT_MERGE)
-  @Test public void testSortJoinTranspose1() {
-    final HepProgram preProgram = new HepProgramBuilder()
-        .addRuleInstance(CoreRules.SORT_PROJECT_TRANSPOSE)
-        .build();
-    final HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(CoreRules.SORT_JOIN_TRANSPOSE)
-        .build();
-    final String sql = "select * from sales.emp e left join (\n"
-            + "select * from sales.dept d) using (deptno)\n"
-            + "order by sal limit 10";
-    checkPlanning(tester, preProgram, new HepPlanner(program), sql);
-  }
-
-  @Test public void testSortJoinTranspose2() {
-    final HepProgram preProgram = new HepProgramBuilder()
-        .addRuleInstance(CoreRules.SORT_PROJECT_TRANSPOSE)
-        .build();
-    final HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(CoreRules.SORT_JOIN_TRANSPOSE)
-        .build();
-    final String sql = "select * from sales.emp e right join (\n"
-            + "select * from sales.dept d) using (deptno)\n"
-            + "order by name";
-<<<<<<< HEAD
-=======
         + "  select * from sales.dept d) d on e.deptno = d.deptno\n"
         + "order by name";
 =======
->>>>>>> 97b385c7d (Revert "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING")
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
   }
 
