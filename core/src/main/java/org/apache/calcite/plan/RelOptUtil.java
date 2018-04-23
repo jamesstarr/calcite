@@ -3585,6 +3585,7 @@ public abstract class RelOptUtil {
     case OR:
     case INPUT_REF:
     case LITERAL:
+    case NOT:
       return node;
     default:
       final ImmutableBitSet bits = RelOptUtil.InputFinder.bits(node);
