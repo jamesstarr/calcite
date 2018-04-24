@@ -2585,123 +2585,6 @@ public class RexImpTable {
       case HOUR:
       case MINUTE:
       case SECOND:
-<<<<<<< HEAD
-=======
-      case MILLISECOND:
-      case MICROSECOND:
-        switch (sqlTypeName) {
-        case DATE:
-          // convert to milliseconds
-          operand = Expressions.multiply(operand,
-              Expressions.constant(TimeUnit.DAY.multiplier.longValue()));
-          break;
-        case TIMESTAMP_WITH_LOCAL_TIME_ZONE:
-          operand = Expressions.call(
-              BuiltInMethod.TIMESTAMP_WITH_LOCAL_TIME_ZONE_TO_TIMESTAMP.method,
-              operand,
-              Expressions.call(BuiltInMethod.TIME_ZONE.method, translator.getRoot()));
-          break;
-        }
-        break;
-      }
-
-      operand = mod(operand, getFactor(unit));
-      if (unit == TimeUnit.QUARTER) {
-        operand = Expressions.subtract(operand, Expressions.constant(1L));
-      }
-      operand = Expressions.divide(operand,
-          Expressions.constant(unit.multiplier.longValue()));
-      if (unit == TimeUnit.QUARTER) {
-        operand = Expressions.add(operand, Expressions.constant(1L));
-      }
-      return operand;
-    }
-
-  }
-
-  private static Expression mod(Expression operand, long factor) {
-    if (factor == 1L) {
-      return operand;
-    } else {
-      return Expressions.call(BuiltInMethod.FLOOR_MOD.method,
-          operand, Expressions.constant(factor));
-    }
-  }
-
-  private static long getFactor(TimeUnit unit) {
-    switch (unit) {
-    case DAY:
-      return 1L;
-    case HOUR:
-      return TimeUnit.DAY.multiplier.longValue();
-    case MINUTE:
-      return TimeUnit.HOUR.multiplier.longValue();
-    case SECOND:
-      return TimeUnit.MINUTE.multiplier.longValue();
-    case MILLISECOND:
-      return TimeUnit.SECOND.multiplier.longValue();
-    case MONTH:
-      return TimeUnit.YEAR.multiplier.longValue();
-    case QUARTER:
-      return TimeUnit.YEAR.multiplier.longValue();
-    case YEAR:
-    case DECADE:
-    case CENTURY:
-    case MILLENNIUM:
-      return 1L;
-    default:
-      throw Util.unexpected(unit);
-    }
-  }
-
-  /** Implementor for the SQL {@code CASE} operator. */
-  private static class CaseImplementor implements CallImplementor {
-    public Expression implement(RexToLixTranslator translator, RexCall call,
-        NullAs nullAs) {
-      return implementRecurse(translator, call, nullAs, 0);
-    }
-
-    private Expression implementRecurse(RexToLixTranslator translator,
-        RexCall call, NullAs nullAs, int i) {
-      List<RexNode> operands = call.getOperands();
-      if (i == operands.size() - 1) {
-        // the "else" clause
-        return translator.translate(
-            translator.builder.ensureType(
-                call.getType(), operands.get(i), false), nullAs);
-      } else {
-        Expression ifTrue;
-        try {
-          ifTrue = translator.translate(
-              translator.builder.ensureType(call.getType(),
-                  operands.get(i + 1),
-                  false), nullAs);
-        } catch (RexToLixTranslator.AlwaysNull e) {
-          ifTrue = null;
-        }
-
-        Expression ifFalse;
-        try {
-          ifFalse = implementRecurse(translator, call, nullAs, i + 2);
-        } catch (RexToLixTranslator.AlwaysNull e) {
-          if (ifTrue == null) {
-            throw RexToLixTranslator.AlwaysNull.INSTANCE;
-          }
-          ifFalse = null;
-        }
-
-        Expression test = translator.translate(operands.get(i), NullAs.FALSE);
-
-        return ifTrue == null || ifFalse == null
-            ? Util.first(ifTrue, ifFalse)
-            : Expressions.condition(test, ifTrue, ifFalse);
-      }
-    }
-  }
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   /** Implementor for the SQL {@code COALESCE} operator. */
   private static class CoalesceImplementor implements CallImplementor {
     public Expression implement(RexToLixTranslator translator, RexCall call,
@@ -2726,7 +2609,6 @@ public class RexImpTable {
 <<<<<<< HEAD
 =======
 =======
->>>>>>> 9ea1621a9 (Reapply "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING"")
   /** Implementor for the SQL {@code CAST} function that optimizes if, say, the
    * argument is already of the desired type. */
   private static class CastOptimizedImplementor implements CallImplementor {

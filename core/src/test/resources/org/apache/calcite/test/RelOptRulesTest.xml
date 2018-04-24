@@ -8958,6 +8958,9 @@ LogicalAggregate(group=[{}], EXPR$0=[SUM($0)])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> fdda73d23 ([CALCITE-2278] AggregateJoinTransposeRule fails to split aggregate call if input contains an aggregate call and has distinct rows (Haisheng Yuan))
     <TestCase name="testPushAggregateThroughJoinWithUniqueInput">
         <Resource name="sql">
             <![CDATA[select A.job, B.mgr, A.deptno,
@@ -8966,7 +8969,12 @@ from sales.emp as A
 join (select mgr, sal, max(hiredate) as hiredate1,
     sum(comm) as comm1 from sales.emp group by mgr, sal) as B
 on A.sal=B.sal
+<<<<<<< HEAD
 group by A.job, B.mgr, A.deptno]]>
+=======
+group by A.job, B.mgr, A.deptno
+]]>
+>>>>>>> fdda73d23 ([CALCITE-2278] AggregateJoinTransposeRule fails to split aggregate call if input contains an aggregate call and has distinct rows (Haisheng Yuan))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -8981,8 +8989,13 @@ LogicalProject(JOB=[$0], MGR0=[$2], DEPTNO=[$1], HIREDATE1=[$3], COMM1=[$4])
         <Resource name="planAfter">
             <![CDATA[
 LogicalProject(JOB=[$0], MGR0=[$2], DEPTNO=[$1], HIREDATE1=[$3], COMM1=[$4])
+<<<<<<< HEAD
   LogicalAggregate(group=[{0, 1, 2}], HIREDATE1=[MAX($3)], COMM1=[SUM($4)])
     LogicalProject(JOB=[$0], DEPTNO=[$2], MGR=[$4], HIREDATE1=[$6], $f8=[CAST(*($3, $7)):INTEGER NOT NULL])
+=======
+  LogicalAggregate(group=[{0, 2, 4}], HIREDATE1=[MAX($6)], COMM1=[SUM($8)])
+    LogicalProject(JOB=[$0], SAL=[$1], DEPTNO=[$2], $f3=[$3], MGR=[$4], SAL0=[$5], HIREDATE1=[$6], COMM1=[$7], $f8=[CAST(*($3, $7)):INTEGER NOT NULL])
+>>>>>>> fdda73d23 ([CALCITE-2278] AggregateJoinTransposeRule fails to split aggregate call if input contains an aggregate call and has distinct rows (Haisheng Yuan))
       LogicalJoin(condition=[=($1, $5)], joinType=[inner])
         LogicalAggregate(group=[{2, 5, 7}], agg#0=[COUNT()])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -8991,9 +9004,12 @@ LogicalProject(JOB=[$0], MGR0=[$2], DEPTNO=[$1], HIREDATE1=[$3], COMM1=[$4])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+>>>>>>> fdda73d23 ([CALCITE-2278] AggregateJoinTransposeRule fails to split aggregate call if input contains an aggregate call and has distinct rows (Haisheng Yuan))
     <TestCase name="testPushAggregateSumThroughJoin">
         <Resource name="sql">
             <![CDATA[select e.job,sum(sal)
