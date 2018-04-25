@@ -868,18 +868,12 @@ public abstract class SqlImplementor {
     }
 
     protected SqlNode createLeftCall(SqlOperator op, List<SqlNode> nodeList) {
-<<<<<<< HEAD
-      SqlNode node = op.createCall(new SqlNodeList(nodeList.subList(0, 2), POS));
-      for (int i = 2; i < nodeList.size(); i++) {
-        node = op.createCall(new SqlNodeList(ImmutableList.of(node, nodeList.get(i)), POS));
-=======
       if (nodeList.size() == 2) {
         return op.createCall(new SqlNodeList(nodeList, POS));
       }
       return node;
     }
 
->>>>>>> 8761ab06e (DX-11273 Change Calcite's rel2sql classes to be more extensible)
     protected List<SqlNode> toSql(RexProgram program, List<RexNode> operandList) {
       final List<SqlNode> list = new ArrayList<>();
       for (RexNode rex : operandList) {
