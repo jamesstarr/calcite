@@ -7662,6 +7662,7 @@ public abstract class SqlOperatorBaseTest {
         "extract(second from date '2008-2-23')",
         "0",
         "BIGINT NOT NULL");
+<<<<<<< HEAD
 
     tester.checkScalar(
         "extract(millisecond from date '2008-2-23')",
@@ -7687,6 +7688,8 @@ public abstract class SqlOperatorBaseTest {
         "extract(minute from date '0001-1-1')",
         "0",
         "BIGINT NOT NULL");
+=======
+>>>>>>> cd02afaed (DX-11253: Fix EXTRACT(SECOND FROM <DATE>))
 
     tester.checkScalar(
         "extract(minute from date '2008-2-23')",

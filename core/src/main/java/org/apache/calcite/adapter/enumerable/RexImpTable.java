@@ -2730,6 +2730,11 @@ public class RexImpTable {
       case HOUR:
       case MINUTE:
       case SECOND:
+<<<<<<< HEAD
+=======
+      case MILLISECOND:
+      case MICROSECOND:
+>>>>>>> cd02afaed (DX-11253: Fix EXTRACT(SECOND FROM <DATE>))
         switch (sqlTypeName) {
         case DATE:
           // convert to milliseconds
