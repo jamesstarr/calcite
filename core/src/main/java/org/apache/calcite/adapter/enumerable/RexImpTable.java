@@ -2025,6 +2025,25 @@ public class RexImpTable {
           throw new AssertionError("unexpected " + sqlTypeName);
         }
         break;
+      case HOUR:
+      case MINUTE:
+      case SECOND:
+      case MILLISECOND:
+      case MICROSECOND:
+        switch (sqlTypeName) {
+        case DATE:
+          // convert to milliseconds
+          operand = Expressions.multiply(operand,
+              Expressions.constant(TimeUnit.DAY.multiplier.longValue()));
+          break;
+        case TIMESTAMP_WITH_LOCAL_TIME_ZONE:
+          operand = Expressions.call(
+              BuiltInMethod.TIMESTAMP_WITH_LOCAL_TIME_ZONE_TO_TIMESTAMP.method,
+              operand,
+              Expressions.call(BuiltInMethod.TIME_ZONE.method, translator.getRoot()));
+          break;
+        }
+        break;
       }
 
       operand = mod(operand, getFactor(unit));
