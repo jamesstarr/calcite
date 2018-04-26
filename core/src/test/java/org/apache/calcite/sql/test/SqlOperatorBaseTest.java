@@ -6151,6 +6151,10 @@ public abstract class SqlOperatorBaseTest {
     tester.checkScalar(
         "timestampadd(MONTH, 3, cast(null as timestamp))",
         null, "TIMESTAMP(0)");
+    tester.checkScalar(
+        "timestampadd(YEAR, 2, timestamp '2016-02-24 12:42:25')",
+        "2018-02-24 12:42:25",
+        "TIMESTAMP(0) NOT NULL");
 
     // TIMESTAMPADD with DATE; returns a TIMESTAMP value for sub-day intervals.
     tester.checkScalar("timestampadd(MONTH, 1, date '2016-06-15')",
