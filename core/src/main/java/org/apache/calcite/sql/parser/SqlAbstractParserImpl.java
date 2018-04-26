@@ -23,6 +23,7 @@ import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperator;
+import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.SqlSyntax;
 import org.apache.calcite.sql.SqlUnresolvedFunction;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
@@ -392,7 +393,7 @@ public abstract class SqlAbstractParserImpl {
     /// name when regenerating SQL).
     if (funName.isSimple()) {
       final List<SqlOperator> list = Lists.newArrayList();
-      opTab.lookupOperatorOverloads(funName, funcType, SqlSyntax.FUNCTION, list);
+      getOperatorTable().lookupOperatorOverloads(funName, funcType, SqlSyntax.FUNCTION, list);
       if (list.size() == 1) {
         fun = list.get(0);
       }
@@ -406,6 +407,15 @@ public abstract class SqlAbstractParserImpl {
     }
 
     return fun.createCall(functionQualifier, pos, operands);
+  }
+
+  /**
+   * Returns the {@link SqlOperatorTable operator table}.
+   *
+   * @return operator table
+   */
+  protected SqlOperatorTable getOperatorTable() {
+    return opTab;
   }
 
   /**
