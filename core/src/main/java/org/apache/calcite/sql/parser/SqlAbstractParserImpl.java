@@ -451,12 +451,9 @@ public abstract class SqlAbstractParserImpl {
     // preserve the correct syntax (i.e. don't quote builtin function
     /// name when regenerating SQL).
     if (funName.isSimple()) {
-      final List<SqlOperator> list = new ArrayList<>();
-      getOperatorTable().lookupOperatorOverloads(funName, funcType, SqlSyntax.FUNCTION, list,
-          SqlNameMatchers.withCaseSensitive(funName.isComponentQuoted(0)));
-      // Don't immediately resolve EXTRACT functions due to potential overloading
-      // between datetime EXTRACT and library-specific EXTRACT functions
-      if (list.size() == 1 && !"EXTRACT".equals(funName.getSimple())) {
+      final List<SqlOperator> list = Lists.newArrayList();
+      getOperatorTable().lookupOperatorOverloads(funName, funcType, SqlSyntax.FUNCTION, list);
+      if (list.size() == 1) {
         fun = list.get(0);
       }
     }
