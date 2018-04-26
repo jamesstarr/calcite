@@ -17,6 +17,7 @@
 package org.apache.calcite.adapter.druid;
 
 import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonGenerator;
+import org.apache.calcite.avatica.util.DateTimeUtils;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexLiteral;
@@ -35,7 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
+
 import javax.annotation.Nullable;
 
 /**
@@ -628,6 +629,18 @@ abstract class DruidJsonFilter implements DruidJson {
       generator.writeEndObject();
     }
   }
+<<<<<<< HEAD
+=======
+
+  private static SimpleDateFormat getDateFormatter() {
+    final SimpleDateFormat dateFormatter = new SimpleDateFormat(
+        TimeExtractionFunction.ISO_TIME_FORMAT,
+        Locale.ROOT);
+    dateFormatter.setTimeZone(DateTimeUtils.UTC_ZONE);
+    return dateFormatter;
+  }
+}
+>>>>>>> 41f568a78 ([CALCITE-2286] Support timestamp type for Druid adapter)
 
   private static SimpleDateFormat getDateFormatter() {
     final SimpleDateFormat dateFormatter = new SimpleDateFormat(

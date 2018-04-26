@@ -20,6 +20,7 @@ import org.apache.calcite.DataContext;
 import org.apache.calcite.avatica.ColumnMetaData;
 import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonFactory;
 import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonGenerator;
+import org.apache.calcite.avatica.util.DateTimeUtils;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.interpreter.BindableRel;
 import org.apache.calcite.interpreter.Bindables;
@@ -267,7 +268,11 @@ public class DruidQuery extends AbstractRelNode implements BindableRel {
     switch (rexNode.getKind()) {
     case INPUT_REF:
       columnName = extractColumnName(rexNode, rowType, druidQuery);
-      if (needUtcTimeExtract(rexNode)) {
+      if (rexNode.getType().getSqlTypeName() == SqlTypeName.DATE
+          || rexNode.getType().getSqlTypeName() == SqlTypeName.TIMESTAMP
+          || rexNode.getType().getSqlTypeName()
+          == SqlTypeName.TIMESTAMP_WITH_LOCAL_TIME_ZONE) {
+        // Use UTC for DATE and TIMESTAMP types
         extractionFunction = TimeExtractionFunction.createDefault(
             DateTimeUtils.UTC_ZONE.getID());
       } else {
@@ -314,7 +319,10 @@ public class DruidQuery extends AbstractRelNode implements BindableRel {
         return Pair.of(null, null);
       }
       RexNode floorValueNode = ((RexCall) rexNode).getOperands().get(0);
-      if (needUtcTimeExtract(floorValueNode)) {
+      if (floorValueNode.getType().getSqlTypeName() == SqlTypeName.DATE
+          || floorValueNode.getType().getSqlTypeName() == SqlTypeName.TIMESTAMP
+          || floorValueNode.getType().getSqlTypeName()
+          == SqlTypeName.TIMESTAMP_WITH_LOCAL_TIME_ZONE) {
         // Use 'UTC' at the extraction level, since all datetime types
         // are represented in 'UTC'
         extractionFunction =
@@ -332,9 +340,11 @@ public class DruidQuery extends AbstractRelNode implements BindableRel {
       }
       RexNode operand0 = ((RexCall) rexNode).getOperands().get(0);
       columnName =
-          extractColumnName(operand0, rowType, druidQuery);
-      if (needUtcTimeExtract(rexNode)) {
-        // CASE CAST to TIME/DATE need to make sure that we have valid extraction fn
+          extractColumnName(((RexCall) rexNode).getOperands().get(0), rowType, druidQuery);
+      // CASE CAST to TIME/DATE need to make sure that we have valid extraction fn
+      final SqlTypeName toTypeName = rexNode.getType().getSqlTypeName();
+      if (toTypeName == SqlTypeName.DATE || toTypeName == SqlTypeName.TIMESTAMP
+          || toTypeName == SqlTypeName.TIMESTAMP_WITH_LOCAL_TIME_ZONE) {
         extractionFunction = TimeExtractionFunction.translateCastToTimeExtract(rexNode,
             TimeZone.getTimeZone(druidQuery.getConnectionConfig().timeZone()));
         if (extractionFunction == null) {
@@ -1799,3 +1809,7 @@ public class DruidQuery extends AbstractRelNode implements BindableRel {
 
   }
 }
+<<<<<<< HEAD
+=======
+// End DruidQuery.java
+>>>>>>> 41f568a78 ([CALCITE-2286] Support timestamp type for Druid adapter)

@@ -42,27 +42,8 @@ import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
-
-/**
- * Utilities for generating intervals from RexNode.
- */
-@SuppressWarnings({"rawtypes", "unchecked" })
-public class DruidDateTimeUtils {
-
-  protected static final Logger LOGGER = CalciteTrace.getPlannerTracer();
-
-  private DruidDateTimeUtils() {
-  }
-
-  /**
-   * Generates a list of {@link Interval}s equivalent to a given
-   * expression. Assumes that all the predicates in the input
-   * reference a single column: the timestamp column.
-   */
-  @Nullable
-  public static List<Interval> createInterval(RexNode e) {
-    final List<Range<Long>> ranges = extractRanges(e, false);
+    final List<Range<Long>> ranges =
+        extractRanges(e, false);
     if (ranges == null) {
       // We did not succeed, bail out
       return null;
@@ -77,26 +58,29 @@ public class DruidDateTimeUtils {
 
   protected static List<Interval> toInterval(
       List<Range<Long>> ranges) {
-    List<Interval> intervals = Lists.transform(ranges, range -> {
-      if (!range.hasLowerBound() && !range.hasUpperBound()) {
-        return DruidTable.DEFAULT_INTERVAL;
-      }
-      long start = range.hasLowerBound()
-          ? range.lowerEndpoint().longValue()
-          : DruidTable.DEFAULT_INTERVAL.getStartMillis();
-      long end = range.hasUpperBound()
-          ? range.upperEndpoint().longValue()
-          : DruidTable.DEFAULT_INTERVAL.getEndMillis();
-      if (range.hasLowerBound()
-          && range.lowerBoundType() == BoundType.OPEN) {
-        start++;
-      }
-      if (range.hasUpperBound()
-          && range.upperBoundType() == BoundType.CLOSED) {
-        end++;
-      }
-      return new Interval(start, end, ISOChronology.getInstanceUTC());
-    });
+    List<Interval> intervals = Lists.transform(ranges,
+        new Function<Range<Long>, Interval>() {
+          public Interval apply(Range<Long> range) {
+            if (!range.hasLowerBound() && !range.hasUpperBound()) {
+              return DruidTable.DEFAULT_INTERVAL;
+            }
+            long start = range.hasLowerBound()
+                ? range.lowerEndpoint().longValue()
+                : DruidTable.DEFAULT_INTERVAL.getStartMillis();
+            long end = range.hasUpperBound()
+                ? range.upperEndpoint().longValue()
+                : DruidTable.DEFAULT_INTERVAL.getEndMillis();
+            if (range.hasLowerBound()
+                && range.lowerBoundType() == BoundType.OPEN) {
+              start++;
+            }
+            if (range.hasUpperBound()
+                && range.upperBoundType() == BoundType.CLOSED) {
+              end++;
+            }
+            return new Interval(start, end, ISOChronology.getInstanceUTC());
+          }
+        });
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("Converted time ranges " + ranges + " to interval " + intervals);
     }
@@ -120,7 +104,7 @@ public class DruidDateTimeUtils {
 
     case OR: {
       RexCall call = (RexCall) node;
-      List<Range<Long>> intervals = new ArrayList<>();
+      List<Range<Long>> intervals = Lists.newArrayList();
       for (RexNode child : call.getOperands()) {
         List<Range<Long>> extracted =
             extractRanges(child, withNot);
@@ -173,14 +157,16 @@ public class DruidDateTimeUtils {
     case GREATER_THAN_OR_EQUAL:
     {
       final Long value;
-      SqlKind kind = call.getKind();
+>>>>>>> 41f568a78 ([CALCITE-2286] Support timestamp type for Druid adapter)
       if (call.getOperands().get(0) instanceof RexInputRef
           && literalValue(call.getOperands().get(1)) != null) {
         value = literalValue(call.getOperands().get(1));
       } else if (call.getOperands().get(1) instanceof RexInputRef
           && literalValue(call.getOperands().get(0)) != null) {
         value = literalValue(call.getOperands().get(0));
+<<<<<<< HEAD
         kind = kind.reverse();
+=======
       } else {
         return null;
       }
