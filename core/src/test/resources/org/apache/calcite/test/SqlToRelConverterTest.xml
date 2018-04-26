@@ -651,7 +651,7 @@ lateral (select t2."$unnest" as fake_col3
 LogicalProject(C_NATIONKEY=[$1], FAKE_COL3=[$2])
   LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{0}])
     LogicalTableScan(table=[[CATALOG, SALES, CUSTOMER]])
-    LogicalProject(FAKE_COL3=[ITEM($0, 'FAKE_COL2')])
+    LogicalProject(FAKE_COL3=[$0])
       Uncollect
         LogicalProject(FAKE_COL=[$cor0.FAKE_COL])
           LogicalValues(tuples=[[{ 0 }]])
@@ -5089,9 +5089,10 @@ LogicalProject(DEPTNO=[$0], EMPNO=[$7])
   LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{6}])
     LogicalProject(DEPTNO=[$0], NAME=[$1], TYPE=[$2.TYPE], DESC=[$2.DESC], A=[$2.OTHERS.A], B=[$2.OTHERS.B], EMPLOYEES=[$3])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
-    Uncollect
-      LogicalProject(EMPLOYEES=[$cor0.EMPLOYEES_6])
-        LogicalValues(tuples=[[{ 0 }]])
+    LogicalProject(EMPNO=[$0], Y=[$1], Z=[$2])
+      Uncollect
+        LogicalProject(EMPLOYEES=[$cor0.EMPLOYEES_6])
+          LogicalValues(tuples=[[{ 0 }]])
 ]]>
         </Resource>
     </TestCase>
@@ -5661,6 +5662,42 @@ LogicalProject(**=[$1], R_REGIONKEY=[$2], R_NAME=[$3], R_COMMENT=[$4])
 ]]>
         </Resource>
     </TestCase>
+  <TestCase name="testStarDynamicSchemaUnnest">
+    <Resource name="sql">
+      <![CDATA[select *
+from SALES.CUSTOMER as t1,
+lateral (select t2."$unnest" as fake_col3
+         from unnest(t1.fake_col) as t2) as t3]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalProject(**=[$1], FAKE_COL3=[$2])
+  LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{0}])
+    LogicalTableScan(table=[[CATALOG, SALES, CUSTOMER]])
+    LogicalProject(FAKE_COL3=[$0])
+      Uncollect
+        LogicalProject(FAKE_COL=[$cor0.FAKE_COL])
+          LogicalValues(tuples=[[{ 0 }]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testStarDynamicSchemaUnnest2">
+    <Resource name="sql">
+      <![CDATA[select *
+from SALES.CUSTOMER as t1,
+unnest(t1.fake_col) as t2]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalProject(**=[$1], $unnest=[$2])
+  LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{0}])
+    LogicalTableScan(table=[[CATALOG, SALES, CUSTOMER]])
+    Uncollect
+      LogicalProject(FAKE_COL=[$cor0.FAKE_COL])
+        LogicalValues(tuples=[[{ 0 }]])
+]]>
+    </Resource>
+  </TestCase>
     <TestCase name="testGrpByColFromStarInSubQuery">
         <Resource name="sql">
             <![CDATA[SELECT n.n_nationkey AS col  from (SELECT * FROM SALES.NATION) as n  group by n.n_nationkey]]>

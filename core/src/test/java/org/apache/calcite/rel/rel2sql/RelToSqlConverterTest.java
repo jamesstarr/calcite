@@ -1124,109 +1124,127 @@ public class RelToSqlConverterTest {
    * support timestampadd</a>. */
   @Test public void testTimestampAddToTimestampAddMssql() {
     String query = "SELECT TIMESTAMPADD(MONTH, 10, \"hire_date\") FROM \"employee\"";
-    String expected = "SELECT DATEADD(MONTH, 10, [hire_date])\nFROM [foodmart].[employee]";
+    String expected = "SELECT DATEADD(MONTH, 10, [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(YEAR, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(YEAR, -10, [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(YEAR, -10, [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(YEAR, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(YEAR, 10, [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(YEAR, 10, [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(YEAR, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(YEAR, -10, [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(YEAR, -10, [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(DAY, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(DAY, 10, [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(DAY, 10, [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(DAY, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(DAY, -10, [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(DAY, -10, [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(HOUR, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(HOUR, 10, [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(HOUR, 10, [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(HOUR, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(HOUR, -10, [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(HOUR, -10, [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(MINUTE, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(MINUTE, 10, [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(MINUTE, 10, [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(MINUTE, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(MINUTE, -10, [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(MINUTE, -10, [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(SECOND, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(SECOND, 10, [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(SECOND, 10, [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(SECOND, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(SECOND, -10, [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(SECOND, -10, [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(QUARTER, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(QUARTER, 10, [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(QUARTER, 10, [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(QUARTER, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(QUARTER, -10, [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(QUARTER, -10, [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(WEEK, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(WEEK, 10, [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(WEEK, 10, [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(WEEK, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(WEEK, -10, [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(WEEK, -10, [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(WEEK, \"employee_id\", \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(WEEK, [employee_id], [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(WEEK, [employee_id], [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(QUARTER, \"employee_id\", \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(QUARTER, [employee_id], [hire_date])\nFROM [foodmart].[employee]";
+    expected = "SELECT DATEADD(QUARTER, [employee_id], [hire_date])\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
@@ -1235,7 +1253,8 @@ public class RelToSqlConverterTest {
         + " \"hire_date\"))  FROM \"employee\"";
 
     expected = "SELECT DATEADD(QUARTER, [employee_id], DATEADD(QUARTER, [employee_id],"
-        + " [hire_date]))\nFROM [foodmart].[employee]";
+        + " [hire_date]))\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
@@ -1435,52 +1454,59 @@ public class RelToSqlConverterTest {
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(MONTH, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + 1 MONTH * -10)\nFROM foodmart.employee AS employee";
+    expected = "SELECT (employee.hire_date + 1 MONTH * -10)\n"
+            + "FROM foodmart.employee AS employee";
     sql(query)
             .withDb2()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(HOUR, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + 1 HOUR * -10)\nFROM foodmart.employee AS employee";
+    expected = "SELECT (employee.hire_date + 1 HOUR * -10)\n"
+            + "FROM foodmart.employee AS employee";
     sql(query)
             .withDb2()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(HOUR, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + 1 HOUR * 10)\nFROM foodmart.employee AS employee";
+    expected = "SELECT (employee.hire_date + 1 HOUR * 10)\n"
+            + "FROM foodmart.employee AS employee";
     sql(query)
             .withDb2()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(WEEK, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + 7 DAY * 10)\nFROM foodmart.employee AS employee";
+    expected = "SELECT (employee.hire_date + 7 DAY * 10)\n"
+            + "FROM foodmart.employee AS employee";
     sql(query)
             .withDb2()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(WEEK, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + 7 DAY * -10)\nFROM foodmart.employee AS employee";
+    expected = "SELECT (employee.hire_date + 7 DAY * -10)\n"
+            + "FROM foodmart.employee AS employee";
     sql(query)
             .withDb2()
             .ok(expected);
 
 
     query = "SELECT TIMESTAMPADD(QUARTER, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + 3 MONTH * 10)\nFROM foodmart.employee AS employee";
+    expected = "SELECT (employee.hire_date + 3 MONTH * 10)\n"
+            + "FROM foodmart.employee AS employee";
     sql(query)
             .withDb2()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(WEEK, \"employee_id\", \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + 7 DAY * employee.employee_id)\nFROM "
-        + "foodmart.employee AS employee";
+    expected = "SELECT (employee.hire_date + 7 DAY * employee.employee_id)\n"
+            + "FROM foodmart.employee AS employee";
     sql(query)
             .withDb2()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(QUARTER, \"employee_id\", \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + 3 MONTH * employee.employee_id)\nFROM "
-        + "foodmart.employee AS employee";
+    expected = "SELECT (employee.hire_date"
+            + " + 3 MONTH * employee.employee_id)\n"
+            + "FROM foodmart.employee AS employee";
     sql(query)
             .withDb2()
             .ok(expected);
@@ -1488,44 +1514,51 @@ public class RelToSqlConverterTest {
 
   @Test public void testTimestampAddToDatetimePlusMySql() {
     String query = "SELECT TIMESTAMPADD(MONTH, 10, \"hire_date\") FROM \"employee\"";
-    String expected = "SELECT (`hire_date` + INTERVAL '1' MONTH * 10)\nFROM `foodmart`.`employee`";
+    String expected = "SELECT (`hire_date` + INTERVAL '1' MONTH * 10)\n"
+            + "FROM `foodmart`.`employee`";
     sql(query)
             .withMysql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(MONTH, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (`hire_date` + INTERVAL '1' MONTH * -10)\nFROM `foodmart`.`employee`";
+    expected = "SELECT (`hire_date` + INTERVAL '1' MONTH * -10)\n"
+            + "FROM `foodmart`.`employee`";
     sql(query)
             .withMysql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(HOUR, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (`hire_date` + INTERVAL '1' HOUR * -10)\nFROM `foodmart`.`employee`";
+    expected = "SELECT (`hire_date` + INTERVAL '1' HOUR * -10)\n"
+            + "FROM `foodmart`.`employee`";
     sql(query)
             .withMysql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(HOUR, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (`hire_date` + INTERVAL '1' HOUR * 10)\nFROM `foodmart`.`employee`";
+    expected = "SELECT (`hire_date` + INTERVAL '1' HOUR * 10)\n"
+            + "FROM `foodmart`.`employee`";
     sql(query)
             .withMysql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(WEEK, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (`hire_date` + INTERVAL '7' DAY * 10)\nFROM `foodmart`.`employee`";
+    expected = "SELECT (`hire_date` + INTERVAL '7' DAY * 10)\n"
+            + "FROM `foodmart`.`employee`";
     sql(query)
             .withMysql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(WEEK, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (`hire_date` + INTERVAL '7' DAY * -10)\nFROM `foodmart`.`employee`";
+    expected = "SELECT (`hire_date` + INTERVAL '7' DAY * -10)\n"
+            + "FROM `foodmart`.`employee`";
     sql(query)
             .withMysql()
             .ok(expected);
 
 
     query = "SELECT TIMESTAMPADD(QUARTER, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (`hire_date` + INTERVAL '3' MONTH * 10)\nFROM `foodmart`.`employee`";
+    expected = "SELECT (`hire_date` + INTERVAL '3' MONTH * 10)\n"
+            + "FROM `foodmart`.`employee`";
     sql(query)
             .withMysql()
             .ok(expected);
@@ -1538,8 +1571,8 @@ public class RelToSqlConverterTest {
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(QUARTER, \"employee_id\", \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (`hire_date` + INTERVAL '3' MONTH * `employee_id`)\nFROM"
-        + " `foodmart`.`employee`";
+    expected = "SELECT (`hire_date` + INTERVAL '3' MONTH * `employee_id`)\n"
+            + "FROM `foodmart`.`employee`";
     sql(query)
             .withMysql()
             .ok(expected);
@@ -1554,38 +1587,44 @@ public class RelToSqlConverterTest {
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(MONTH, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (\"hire_date\" + INTERVAL '1' MONTH * -10)\nFROM \"foodmart\".\"employee\"";
+    expected = "SELECT (\"hire_date\" + INTERVAL '1' MONTH * -10)\n"
+            + "FROM \"foodmart\".\"employee\"";
     sql(query)
             .withPostgresql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(HOUR, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (\"hire_date\" + INTERVAL '1' HOUR * -10)\nFROM \"foodmart\".\"employee\"";
+    expected = "SELECT (\"hire_date\" + INTERVAL '1' HOUR * -10)\n"
+            + "FROM \"foodmart\".\"employee\"";
     sql(query)
             .withPostgresql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(HOUR, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (\"hire_date\" + INTERVAL '1' HOUR * 10)\nFROM \"foodmart\".\"employee\"";
+    expected = "SELECT (\"hire_date\" + INTERVAL '1' HOUR * 10)\n"
+            + "FROM \"foodmart\".\"employee\"";
     sql(query)
             .withPostgresql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(WEEK, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (\"hire_date\" + INTERVAL '7' DAY * 10)\nFROM \"foodmart\".\"employee\"";
+    expected = "SELECT (\"hire_date\" + INTERVAL '7' DAY * 10)\n"
+            + "FROM \"foodmart\".\"employee\"";
     sql(query)
             .withPostgresql()
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(WEEK, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (\"hire_date\" + INTERVAL '7' DAY * -10)\nFROM \"foodmart\".\"employee\"";
+    expected = "SELECT (\"hire_date\" + INTERVAL '7' DAY * -10)\n"
+            + "FROM \"foodmart\".\"employee\"";
     sql(query)
             .withPostgresql()
             .ok(expected);
 
 
     query = "SELECT TIMESTAMPADD(QUARTER, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (\"hire_date\" + INTERVAL '3' MONTH * 10)\nFROM \"foodmart\".\"employee\"";
+    expected = "SELECT (\"hire_date\" + INTERVAL '3' MONTH * 10)\n"
+            + "FROM \"foodmart\".\"employee\"";
     sql(query)
             .withPostgresql()
             .ok(expected);
@@ -1598,7 +1637,8 @@ public class RelToSqlConverterTest {
             .ok(expected);
 
     query = "SELECT TIMESTAMPADD(QUARTER, \"employee_id\", \"hire_date\") FROM \"employee\"";
-    expected = "SELECT (\"hire_date\" + INTERVAL '3' MONTH * \"employee_id\")\n"
+    expected = "SELECT (\"hire_date\""
+            + " + INTERVAL '3' MONTH * \"employee_id\")\n"
         + "FROM \"foodmart\".\"employee\"";
     sql(query)
             .withPostgresql()
