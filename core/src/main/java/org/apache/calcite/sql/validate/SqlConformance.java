@@ -313,8 +313,7 @@ public interface SqlConformance {
    *
    * <p>Among the built-in conformance levels, true in
    * {@link SqlConformanceEnum#DEFAULT},
-   * {@link SqlConformanceEnum#LENIENT},
-   * {@link SqlConformanceEnum#PRESTO};
+   * {@link SqlConformanceEnum#LENIENT};
    * false otherwise.
    */
   boolean allowExplicitRowValueConstructor();

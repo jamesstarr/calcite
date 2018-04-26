@@ -1155,11 +1155,12 @@ public class SqlParserTest {
     final String whereRow2 = "select 1 from t2 where ^(x, y)^ < (a, b)";
     conformance = SqlConformanceEnum.DEFAULT;
     sql(whereRow2).sansCarets().ok(whereExpected);
-
-    // After this point, SqlUnparserTest has problems.
-    // We generate ROW in a dialect that does not allow ROW in all contexts.
-    // So bail out.
-    assumeFalse(isUnparserTest());
+    if (this instanceof SqlUnParserTest) {
+      // After this point, SqlUnparserTest has problems.
+      // We generate ROW in a dialect that does not allow ROW in all contexts.
+      // So bail out.
+      return;
+    }
     conformance = SqlConformanceEnum.SQL_SERVER_2008;
     sql(whereRow2).sansCarets().ok(whereExpected);
   }
@@ -1380,13 +1381,15 @@ public class SqlParserTest {
             + "FROM `T`\n"
             + "WHERE (`X` IS DISTINCT FROM (ROW(4, 5, 6)))");
 
-    sql("select * from t where x is distinct from row (4,5,6)")
-        .ok("SELECT *\n"
+    check(
+        "select * from t where x is distinct from row (4,5,6)",
+        "SELECT *\n"
             + "FROM `T`\n"
             + "WHERE (`X` IS DISTINCT FROM (ROW(4, 5, 6)))");
 
-    sql("select * from t where true is distinct from true")
-        .ok("SELECT *\n"
+    check(
+        "select * from t where true is distinct from true",
+        "SELECT *\n"
             + "FROM `T`\n"
             + "WHERE (TRUE IS DISTINCT FROM TRUE)");
 
@@ -9494,6 +9497,13 @@ public class SqlParserTest {
     public SqlList fails(String expectedMsgPattern) {
       getTester().checkFails(sql, true, expectedMsgPattern);
       return this;
+    }
+
+    /** Removes the carets from the SQL string. Useful if you want to run
+     * a test once at a conformance level where it fails, then run it again
+     * at a conformance level where it succeeds. */
+    public Sql sansCarets() {
+      return new Sql(sql.replace("^", ""), expression);
     }
   }
 

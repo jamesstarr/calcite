@@ -255,7 +255,10 @@ public enum SqlConformanceEnum implements SqlConformance {
     switch (this) {
     case DEFAULT:
     case LENIENT:
+<<<<<<< HEAD
     case PRESTO:
+=======
+>>>>>>> a73a101e3 ([CALCITE-2276] Allow explicit ROW value constructor in SELECT clause and elsewhere (Danny Chan))
       return true;
     default:
       return false;
