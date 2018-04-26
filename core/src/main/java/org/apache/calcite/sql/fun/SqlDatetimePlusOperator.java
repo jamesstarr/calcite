@@ -16,12 +16,63 @@
  */
 package org.apache.calcite.sql.fun;
 
->>>>>>> ef578f572 ([CALCITE-2188] JDBC adapter generates invalid SQL for DATE/INTERVAL arithmetic)
+import org.apache.calcite.avatica.util.TimeUnit;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperatorBinding;
 import org.apache.calcite.sql.SqlSpecialOperator;
+<<<<<<< HEAD
+=======
+import org.apache.calcite.sql.SqlSyntax;
+import org.apache.calcite.sql.SqlWriter;
+import org.apache.calcite.sql.type.InferTypes;
+import org.apache.calcite.sql.type.IntervalSqlType;
+import org.apache.calcite.sql.type.OperandTypes;
+import org.apache.calcite.sql.type.ReturnTypes;
+import org.apache.calcite.sql.validate.SqlMonotonicity;
+
+/**
+ * Operator that adds an INTERVAL to a DATETIME.
+ */
+public class SqlDatetimePlusOperator extends SqlSpecialOperator {
+  //~ Constructors -----------------------------------------------------------
+
+  SqlDatetimePlusOperator() {
+    super("+", SqlKind.PLUS, 40, true, ReturnTypes.ARG2_NULLABLE,
+        InferTypes.FIRST_KNOWN, OperandTypes.MINUS_DATE_OPERATOR);
+  }
+
+  //~ Methods ----------------------------------------------------------------
+
+  @Override public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
+    final RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+    final RelDataType leftType = opBinding.getOperandType(0);
+    final IntervalSqlType unitType =
+        (IntervalSqlType) opBinding.getOperandType(1);
+    final TimeUnit timeUnit = unitType.getIntervalQualifier().getStartUnit();
+    return SqlTimestampAddFunction.deduceType(typeFactory, timeUnit,
+        unitType, leftType);
+  }
+
+  public SqlSyntax getSyntax() {
+    return SqlSyntax.SPECIAL;
+  }
+
+  public void unparse(
+      SqlWriter writer,
+      SqlCall call,
+      int leftPrec,
+      int rightPrec) {
+    writer.getDialect().unparseSqlDatetimeArithmetic(
+        writer, call, SqlKind.PLUS, leftPrec, rightPrec);
+  }
+
+  @Override public SqlMonotonicity getMonotonicity(SqlOperatorBinding call) {
+    return SqlStdOperatorTable.PLUS.getMonotonicity(call);
+  }
+}
+>>>>>>> 0630a3332 ([CALCITE-2281] Return type of the TIMESTAMPADD function has wrong precision (Sudheesh Katkam))
 
 // End SqlDatetimePlusOperator.java

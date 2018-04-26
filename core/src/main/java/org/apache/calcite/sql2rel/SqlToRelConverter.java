@@ -2113,9 +2113,10 @@ public class SqlToRelConverter {
     switch (from.getKind()) {
     case AS:
       call = (SqlCall) from;
-      SqlNode firstOperand = call.operand(0);
-      final List<String> fieldNameList = new ArrayList<>();
-      if (call.operandCount() > 2) {
+      convertFrom(bb, call.operand(0));
+      if (call.operandCount() > 2
+          && (bb.root instanceof Values || bb.root instanceof Uncollect)) {
+        final List<String> fieldNames = new ArrayList<>();
         for (SqlNode node : Util.skip(call.getOperandList(), 2)) {
           fieldNameList.add(((SqlIdentifier) node).getSimple());
         }

@@ -16,13 +16,61 @@
  */
 package org.apache.calcite.sql;
 
-        // When there is one operand with unknown type (ANY), the return type
-        // is dynamic star
+import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.sql.type.ArraySqlType;
+import org.apache.calcite.sql.type.MapSqlType;
+import org.apache.calcite.sql.type.MultisetSqlType;
+import org.apache.calcite.sql.type.OperandTypes;
+import org.apache.calcite.sql.type.SqlOperandCountRanges;
+import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.util.Util;
+
+/**
+ * The <code>UNNEST</code> operator.
+ */
+public class SqlUnnestOperator extends SqlFunctionalOperator {
+  /** Whether {@code WITH ORDINALITY} was specified.
+   *
+   * <p>If so, the returned records include a column {@code ORDINALITY}. */
+  public final boolean withOrdinality;
+
+  public static final String ORDINALITY_COLUMN_NAME = "ORDINALITY";
+
+  public static final String MAP_KEY_COLUMN_NAME = "KEY";
+
+  public static final String MAP_VALUE_COLUMN_NAME = "VALUE";
+
+  //~ Constructors -----------------------------------------------------------
+
+  public SqlUnnestOperator(boolean withOrdinality) {
+    super(
+        "UNNEST",
+        SqlKind.UNNEST,
+        200,
+        true,
+        null,
+        null,
+        OperandTypes.repeat(SqlOperandCountRanges.from(1),
+            OperandTypes.SCALAR_OR_RECORD_COLLECTION_OR_MAP));
+    this.withOrdinality = withOrdinality;
+  }
+
+  //~ Methods ----------------------------------------------------------------
+
+  @Override public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
+    final RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+    final RelDataTypeFactory.Builder builder = typeFactory.builder();
+    for (Integer operand : Util.range(opBinding.getOperandCount())) {
+      RelDataType type = opBinding.getOperandType(operand);
+      if (type.getSqlTypeName() == SqlTypeName.ANY) {
+        // Unnest Operator in schema less systems returns one column as the output
+        // $unnest is a place holder to specify that one column with type ANY is output.
         return builder
-            .add(DynamicRecordType.DYNAMIC_STAR_PREFIX,
-                SqlTypeName.DYNAMIC_STAR)
+            .add("$unnest",
+                SqlTypeName.ANY)
             .nullable(true)
-            .buildDynamic();
+            .build();
       }
 
       if (type.isStruct()) {

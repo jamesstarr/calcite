@@ -54,6 +54,505 @@ import org.apache.calcite.rel.core.Union;
 import org.apache.calcite.rel.core.Values;
 import org.apache.calcite.rel.hint.Hintable;
 import org.apache.calcite.rel.hint.RelHint;
+<<<<<<< HEAD
+=======
+import org.apache.calcite.rel.logical.LogicalFilter;
+import org.apache.calcite.rel.logical.LogicalProject;
+import org.apache.calcite.rel.metadata.RelMetadataQuery;
+import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.rel.type.RelDataTypeField;
+import org.apache.calcite.rel.type.RelDataTypeFieldImpl;
+import org.apache.calcite.rex.RexBuilder;
+import org.apache.calcite.rex.RexCall;
+import org.apache.calcite.rex.RexCorrelVariable;
+import org.apache.calcite.rex.RexExecutor;
+import org.apache.calcite.rex.RexInputRef;
+import org.apache.calcite.rex.RexLiteral;
+import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.rex.RexShuttle;
+import org.apache.calcite.rex.RexSimplify;
+import org.apache.calcite.rex.RexSubQuery;
+import org.apache.calcite.rex.RexUtil;
+import org.apache.calcite.runtime.Hook;
+import org.apache.calcite.schema.SchemaPlus;
+import org.apache.calcite.server.CalciteServerStatement;
+import org.apache.calcite.sql.SqlAggFunction;
+import org.apache.calcite.sql.SqlKind;
+import org.apache.calcite.sql.SqlOperator;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.sql.validate.SqlValidatorUtil;
+import org.apache.calcite.util.Holder;
+import org.apache.calcite.util.ImmutableBeans;
+import org.apache.calcite.util.ImmutableBitSet;
+import org.apache.calcite.util.ImmutableIntList;
+import org.apache.calcite.util.ImmutableNullableList;
+import org.apache.calcite.util.Litmus;
+import org.apache.calcite.util.NlsString;
+import org.apache.calcite.util.Pair;
+import org.apache.calcite.util.Util;
+import org.apache.calcite.util.mapping.Mapping;
+import org.apache.calcite.util.mapping.Mappings;
+
+import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+
+import java.math.BigDecimal;
+import java.util.AbstractList;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import javax.annotation.Nonnull;
+
+import static org.apache.calcite.util.Static.RESOURCE;
+
+/**
+ * Builder for relational expressions.
+ *
+ * <p>{@code RelBuilder} does not make possible anything that you could not
+ * also accomplish by calling the factory methods of the particular relational
+ * expression. But it makes common tasks more straightforward and concise.
+ *
+ * <p>{@code RelBuilder} uses factories to create relational expressions.
+ * By default, it uses the default factories, which create logical relational
+ * expressions ({@link LogicalFilter},
+ * {@link LogicalProject} and so forth).
+ * But you could override those factories so that, say, {@code filter} creates
+ * instead a {@code HiveFilter}.
+ *
+ * <p>It is not thread-safe.
+ */
+public class RelBuilder {
+
+  protected final RelOptCluster cluster;
+  protected final RelOptSchema relOptSchema;
+  private final Deque<Frame> stack = new ArrayDeque<>();
+  private final boolean simplify;
+  private final RexSimplify simplifier;
+  private final RexSimplify simplifierUnknownAsFalse;
+  private final Config config;
+  private final RelFactories.Struct struct;
+
+  protected RelBuilder(Context context, RelOptCluster cluster,
+      RelOptSchema relOptSchema) {
+    this.cluster = cluster;
+    this.relOptSchema = relOptSchema;
+    if (context == null) {
+      context = Contexts.EMPTY_CONTEXT;
+    }
+    this.simplify = Hook.REL_BUILDER_SIMPLIFY.get(true);
+    this.config = getConfig(context);
+    this.struct =
+        Objects.requireNonNull(RelFactories.Struct.fromContext(context));
+    final RexExecutor executor =
+        Util.first(context.unwrap(RexExecutor.class),
+            Util.first(cluster.getPlanner().getExecutor(), RexUtil.EXECUTOR));
+    final RelOptPredicateList predicates = RelOptPredicateList.EMPTY;
+    this.simplifier =
+        new RexSimplify(cluster.getRexBuilder(), predicates, false, executor);
+    this.simplifierUnknownAsFalse =
+        new RexSimplify(cluster.getRexBuilder(), predicates, true, executor);
+  }
+
+  /** Derives the Config to be used for this RelBuilder.
+   *
+   * <p>Overrides {@link RelBuilder.Config#simplify} if
+   * {@link Hook#REL_BUILDER_SIMPLIFY} is set.
+   */
+  private Config getConfig(Context context) {
+    final Config config =
+        Util.first(context.unwrap(Config.class), Config.DEFAULT);
+    boolean simplify = Hook.REL_BUILDER_SIMPLIFY.get(config.simplify());
+    return config.withSimplify(simplify);
+  }
+
+  /** Creates a RelBuilder. */
+  public static RelBuilder create(FrameworkConfig config) {
+    final RelOptCluster[] clusters = {null};
+    final RelOptSchema[] relOptSchemas = {null};
+    Frameworks.withPrepare(
+        new Frameworks.PrepareAction<Void>(config) {
+          public Void apply(RelOptCluster cluster, RelOptSchema relOptSchema,
+              SchemaPlus rootSchema, CalciteServerStatement statement) {
+            clusters[0] = cluster;
+            relOptSchemas[0] = relOptSchema;
+            return null;
+          }
+        });
+    return new RelBuilder(config.getContext(), clusters[0], relOptSchemas[0]);
+  }
+
+  /** Creates a copy of this RelBuilder, with the same state as this, applying
+   * a transform to the config. */
+  public RelBuilder transform(UnaryOperator<Config> transform) {
+    final Context context =
+        Contexts.of(struct, transform.apply(config));
+    return new RelBuilder(context, cluster, relOptSchema);
+  }
+
+  /** Returns the type factory. */
+  public RelDataTypeFactory getTypeFactory() {
+    return cluster.getTypeFactory();
+  }
+
+  /** Returns the builder for {@link RexNode} expressions. */
+  public RexBuilder getRexBuilder() {
+    return cluster.getRexBuilder();
+  }
+
+  /** Creates a {@link RelBuilderFactory}, a partially-created RelBuilder.
+   * Just add a {@link RelOptCluster} and a {@link RelOptSchema} */
+  public static RelBuilderFactory proto(final Context context) {
+    return (cluster, schema) -> new RelBuilder(context, cluster, schema);
+  }
+
+  /** Creates a {@link RelBuilderFactory} that uses a given set of factories. */
+  public static RelBuilderFactory proto(Object... factories) {
+    return proto(Contexts.of(factories));
+  }
+
+  // Methods for manipulating the stack
+
+  /** Adds a relational expression to be the input to the next relational
+   * expression constructed.
+   *
+   * <p>This method is usual when you want to weave in relational expressions
+   * that are not supported by the builder. If, while creating such expressions,
+   * you need to use previously built expressions as inputs, call
+   * {@link #build()} to pop those inputs. */
+  public RelBuilder push(RelNode node) {
+    stack.push(new Frame(node));
+    return this;
+  }
+
+  /** Adds a rel node to the top of the stack while preserving the field names
+   * and aliases. */
+  private void replaceTop(RelNode node) {
+    final Frame frame = stack.pop();
+    stack.push(new Frame(node, frame.fields));
+  }
+
+  /** Pushes a collection of relational expressions. */
+  public RelBuilder pushAll(Iterable<? extends RelNode> nodes) {
+    for (RelNode node : nodes) {
+      push(node);
+    }
+    return this;
+  }
+
+  /** Returns the final relational expression.
+   *
+   * <p>Throws if the stack is empty.
+   */
+  public RelNode build() {
+    return stack.pop().rel;
+  }
+
+  /** Returns the relational expression at the top of the stack, but does not
+   * remove it. */
+  public RelNode peek() {
+    return peek_().rel;
+  }
+
+  private Frame peek_() {
+    return stack.peek();
+  }
+
+  /** Returns the relational expression {@code n} positions from the top of the
+   * stack, but does not remove it. */
+  public RelNode peek(int n) {
+    return peek_(n).rel;
+  }
+
+  private Frame peek_(int n) {
+    return Iterables.get(stack, n);
+  }
+
+  /** Returns the relational expression {@code n} positions from the top of the
+   * stack, but does not remove it. */
+  public RelNode peek(int inputCount, int inputOrdinal) {
+    return peek_(inputCount, inputOrdinal).rel;
+  }
+
+  private Frame peek_(int inputCount, int inputOrdinal) {
+    return peek_(inputCount - 1 - inputOrdinal);
+  }
+
+  /** Returns the number of fields in all inputs before (to the left of)
+   * the given input.
+   *
+   * @param inputCount Number of inputs
+   * @param inputOrdinal Input ordinal
+   */
+  private int inputOffset(int inputCount, int inputOrdinal) {
+    int offset = 0;
+    for (int i = 0; i < inputOrdinal; i++) {
+      offset += peek(inputCount, i).getRowType().getFieldCount();
+    }
+    return offset;
+  }
+
+  // Methods that return scalar expressions
+
+  /** Creates a literal (constant expression). */
+  public RexLiteral literal(Object value) {
+    final RexBuilder rexBuilder = cluster.getRexBuilder();
+    if (value == null) {
+      final RelDataType type = getTypeFactory().createSqlType(SqlTypeName.NULL);
+      return rexBuilder.makeNullLiteral(type);
+    } else if (value instanceof Boolean) {
+      return rexBuilder.makeLiteral((Boolean) value);
+    } else if (value instanceof BigDecimal) {
+      return rexBuilder.makeExactLiteral((BigDecimal) value);
+    } else if (value instanceof Float || value instanceof Double) {
+      return rexBuilder.makeApproxLiteral(
+              BigDecimal.valueOf(((Number) value).doubleValue()));
+    } else if (value instanceof Number) {
+      return rexBuilder.makeExactLiteral(
+              BigDecimal.valueOf(((Number) value).longValue()));
+    } else if (value instanceof String) {
+      return rexBuilder.makeLiteral((String) value);
+    } else if (value instanceof Enum) {
+      return rexBuilder.makeLiteral(value,
+              getTypeFactory().createSqlType(SqlTypeName.SYMBOL));
+    } else {
+      throw new IllegalArgumentException("cannot convert " + value
+              + " (" + value.getClass() + ") to a constant");
+    }
+  }
+
+  /** Creates a correlation variable for the current input, and writes it into
+   * a Holder. */
+  public RelBuilder variable(Holder<RexCorrelVariable> v) {
+    v.set((RexCorrelVariable)
+        getRexBuilder().makeCorrel(peek().getRowType(),
+            cluster.createCorrel()));
+    return this;
+  }
+
+  /** Creates a reference to a field by name.
+   *
+   * <p>Equivalent to {@code field(1, 0, fieldName)}.
+   *
+   * @param fieldName Field name
+   */
+  public RexInputRef field(String fieldName) {
+    return field(1, 0, fieldName);
+  }
+
+  /** Creates a reference to a field of given input relational expression
+   * by name.
+   *
+   * @param inputCount Number of inputs
+   * @param inputOrdinal Input ordinal
+   * @param fieldName Field name
+   */
+  public RexInputRef field(int inputCount, int inputOrdinal, String fieldName) {
+    final Frame frame = peek_(inputCount, inputOrdinal);
+    final List<String> fieldNames = Pair.left(frame.fields());
+    int i = fieldNames.indexOf(fieldName);
+    if (i >= 0) {
+      return field(inputCount, inputOrdinal, i);
+    } else {
+      throw new IllegalArgumentException("field [" + fieldName
+          + "] not found; input fields are: " + fieldNames);
+    }
+  }
+
+  /** Creates a reference to an input field by ordinal.
+   *
+   * <p>Equivalent to {@code field(1, 0, ordinal)}.
+   *
+   * @param fieldOrdinal Field ordinal
+   */
+  public RexInputRef field(int fieldOrdinal) {
+    return (RexInputRef) field(1, 0, fieldOrdinal, false);
+  }
+
+  /** Creates a reference to a field of a given input relational expression
+   * by ordinal.
+   *
+   * @param inputCount Number of inputs
+   * @param inputOrdinal Input ordinal
+   * @param fieldOrdinal Field ordinal within input
+   */
+  public RexInputRef field(int inputCount, int inputOrdinal, int fieldOrdinal) {
+    return (RexInputRef) field(inputCount, inputOrdinal, fieldOrdinal, false);
+  }
+
+  /** As {@link #field(int, int, int)}, but if {@code alias} is true, the method
+   * may apply an alias to make sure that the field has the same name as in the
+   * input frame. If no alias is applied the expression is definitely a
+   * {@link RexInputRef}. */
+  private RexNode field(int inputCount, int inputOrdinal, int fieldOrdinal,
+      boolean alias) {
+    final Frame frame = peek_(inputCount, inputOrdinal);
+    final RelNode input = frame.rel;
+    final RelDataType rowType = input.getRowType();
+    if (fieldOrdinal < 0 || fieldOrdinal > rowType.getFieldCount()) {
+      throw new IllegalArgumentException("field ordinal [" + fieldOrdinal
+          + "] out of range; input fields are: " + rowType.getFieldNames());
+    }
+    final RelDataTypeField field = rowType.getFieldList().get(fieldOrdinal);
+    final int offset = inputOffset(inputCount, inputOrdinal);
+    final RexInputRef ref = cluster.getRexBuilder()
+        .makeInputRef(field.getType(), offset + fieldOrdinal);
+    final RelDataTypeField aliasField = frame.fields().get(fieldOrdinal);
+    if (!alias || field.getName().equals(aliasField.getName())) {
+      return ref;
+    } else {
+      return alias(ref, aliasField.getName());
+    }
+  }
+
+  /** Creates a reference to a field of the current record which originated
+   * in a relation with a given alias. */
+  public RexNode field(String alias, String fieldName) {
+    return field(1, alias, fieldName);
+  }
+
+  /** Creates a reference to a field which originated in a relation with the
+   * given alias. Searches for the relation starting at the top of the
+   * stack. */
+  public RexNode field(int inputCount, String alias, String fieldName) {
+    Objects.requireNonNull(alias);
+    Objects.requireNonNull(fieldName);
+    final List<String> fields = new ArrayList<>();
+    for (int inputOrdinal = 0; inputOrdinal < inputCount; ++inputOrdinal) {
+      final Frame frame = peek_(inputOrdinal);
+      for (Ord<Field> p
+          : Ord.zip(frame.fields)) {
+        // If alias and field name match, reference that field.
+        if (p.e.left.contains(alias)
+            && p.e.right.getName().equals(fieldName)) {
+          return field(inputCount, inputCount - 1 - inputOrdinal, p.i);
+        }
+        fields.add(
+            String.format(Locale.ROOT, "{aliases=%s,fieldName=%s}", p.e.left,
+                p.e.right.getName()));
+      }
+    }
+    throw new IllegalArgumentException("no aliased field found; fields are: "
+        + fields);
+  }
+
+  /** Returns a reference to a given field of a record-valued expression. */
+  public RexNode field(RexNode e, String name) {
+    return getRexBuilder().makeFieldAccess(e, name, false);
+  }
+
+  /** Returns references to the fields of the top input. */
+  public ImmutableList<RexNode> fields() {
+    return fields(1, 0);
+  }
+
+  /** Returns references to the fields of a given input. */
+  public ImmutableList<RexNode> fields(int inputCount, int inputOrdinal) {
+    final RelNode input = peek(inputCount, inputOrdinal);
+    final RelDataType rowType = input.getRowType();
+    final ImmutableList.Builder<RexNode> nodes = ImmutableList.builder();
+    for (int fieldOrdinal : Util.range(rowType.getFieldCount())) {
+      nodes.add(field(inputCount, inputOrdinal, fieldOrdinal));
+    }
+    return nodes.build();
+  }
+
+  /** Returns references to fields for a given collation. */
+  public ImmutableList<RexNode> fields(RelCollation collation) {
+    final ImmutableList.Builder<RexNode> nodes = ImmutableList.builder();
+    for (RelFieldCollation fieldCollation : collation.getFieldCollations()) {
+      RexNode node = field(fieldCollation.getFieldIndex());
+      switch (fieldCollation.direction) {
+      case DESCENDING:
+        node = desc(node);
+      }
+      switch (fieldCollation.nullDirection) {
+      case FIRST:
+        node = nullsFirst(node);
+        break;
+      case LAST:
+        node = nullsLast(node);
+        break;
+      }
+      nodes.add(node);
+    }
+    return nodes.build();
+  }
+
+  /** Returns references to fields for a given list of input ordinals. */
+  public ImmutableList<RexNode> fields(List<? extends Number> ordinals) {
+    final ImmutableList.Builder<RexNode> nodes = ImmutableList.builder();
+    for (Number ordinal : ordinals) {
+      RexNode node = field(1, 0, ordinal.intValue(), false);
+      nodes.add(node);
+    }
+    return nodes.build();
+  }
+
+  /** Returns references to fields for a given bit set of input ordinals. */
+  public ImmutableList<RexNode> fields(ImmutableBitSet ordinals) {
+    return fields(ordinals.asList());
+  }
+
+  /** Returns references to fields identified by name. */
+  public ImmutableList<RexNode> fields(Iterable<String> fieldNames) {
+    final ImmutableList.Builder<RexNode> builder = ImmutableList.builder();
+    for (String fieldName : fieldNames) {
+      builder.add(field(fieldName));
+    }
+    return builder.build();
+  }
+
+  /** Returns references to fields identified by a mapping. */
+  public ImmutableList<RexNode> fields(Mappings.TargetMapping mapping) {
+    return fields(Mappings.asList(mapping));
+  }
+
+  /** Creates an access to a field by name. */
+  public RexNode dot(RexNode node, String fieldName) {
+    final RexBuilder builder = cluster.getRexBuilder();
+    return builder.makeFieldAccess(node, fieldName, true);
+  }
+
+  /** Creates an access to a field by ordinal. */
+  public RexNode dot(RexNode node, int fieldOrdinal) {
+    final RexBuilder builder = cluster.getRexBuilder();
+    return builder.makeFieldAccess(node, fieldOrdinal);
+  }
+
+  /** Creates a call to a scalar operator. */
+  public RexNode call(SqlOperator operator, RexNode... operands) {
+    return call(operator, ImmutableList.copyOf(operands));
+  }
+
+  /** Creates a call to a scalar operator. */
+  private RexNode call(SqlOperator operator, List<RexNode> operandList) {
+    final RexBuilder builder = cluster.getRexBuilder();
+    final RelDataType type = builder.deriveReturnType(operator, operandList);
+>>>>>>> 0630a3332 ([CALCITE-2281] Return type of the TIMESTAMPADD function has wrong precision (Sudheesh Katkam))
     if (type == null) {
       throw new IllegalArgumentException("cannot derive type: " + operator
           + "; operands: "
