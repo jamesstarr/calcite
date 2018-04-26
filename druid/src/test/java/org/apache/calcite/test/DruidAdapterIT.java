@@ -70,6 +70,10 @@ import static org.junit.Assert.assertTrue;
  *   <li>push SORT and/or LIMIT into "groupBy" query</li>
  *   <li>push HAVING into "groupBy" query</li>
  * </ul>
+ *
+ * These tests use "timestamp with local time zone" type for the
+ * Druid timestamp column, instead of "timestamp" type  as
+ * {@link DruidAdapterIT2}.
  */
 public class DruidAdapterIT {
   /** URL of the "druid-foodmart" model. */
@@ -347,8 +351,8 @@ public class DruidAdapterIT {
     final String druidQuery = "{'queryType':'scan',"
         + "'dataSource':'wikiticker',"
         + "'intervals':['1900-01-01T00:00:00.000Z/2015-10-12T00:00:00.000Z'],"
-        + "'virtualColumns':[{'type':'expression','name':'vc','expression':'\\'__time\\'','outputType':'LONG'}],'columns':['vc'],"
-        + "'resultFormat':'compactedList'";
+        + "'virtualColumns':[{'type':'expression','name':'vc','expression':";
+
     sql(sql, WIKI_AUTO2)
         .limit(2)
         .returnsUnordered("__time=2015-09-12 00:46:58",
@@ -3242,7 +3246,7 @@ public class DruidAdapterIT {
 
     final String druidQuery = "{'queryType':'scan','dataSource':'foodmart','intervals':"
         + "['1997-01-01T00:00:00.000Z/1997-04-01T00:00:00.000Z'],'virtualColumns':"
-        + "[{'type':'expression','name':'vc','expression':'timestamp_floor(\\'__time\\'";
+        + "[{'type':'expression','name':'vc','expression':'timestamp_floor(";
     sql(sql, FOODMART)
         .returnsOrdered("T=1997-01-01 00:00:00", "T=1997-01-01 00:00:00")
         .queryContains(
@@ -3285,7 +3289,7 @@ public class DruidAdapterIT {
         + "\"ordering\":\"lexicographic\",\"extractionFn\":{\"type\":\"timeFormat\","
         + "\"format\":\"yyyy-MM-dd";
     final String druidQueryPart2 = "\"granularity\":{\"type\":\"period\",\"period\":\"PT1H\","
-        + "\"timeZone\":\"IST\"},\"timeZone\":\"IST\","
+        + "\"timeZone\":\"Asia/Kolkata\"},\"timeZone\":\"UTC\","
         + "\"locale\":\"und\"}}";
 
     CalciteAssert.that()
@@ -3295,20 +3299,45 @@ public class DruidAdapterIT {
         .query(sql)
         .runs()
         .queryContains(druidChecker(druidQueryPart1, druidQueryPart2))
-        .returnsOrdered("T=2015-09-12 02:30:02");
+        .returnsOrdered("T=2015-09-12 14:00:01");
   }
 
   @Test public void testTimeWithFilterOnFloorOnTimeWithTimezoneConversion() {
     final String sql = "Select cast(\"__time\" as timestamp) as t, \"countryName\" as s, "
         + "count(*) as c from \"wikiticker\" where floor(\"__time\" to HOUR)"
-        + " >= '2015-09-12 08:00:00 IST' group by cast(\"__time\" as timestamp), \"countryName\""
+        + " >= '2015-09-12 08:00:00 Asia/Kolkata' group by cast(\"__time\" as timestamp), \"countryName\""
         + " order by t limit 4";
     final String druidQueryPart1 = "filter\":{\"type\":\"bound\",\"dimension\":\"__time\","
-        + "\"lower\":\"2015-09-12T08:00:00.000Z\",\"lowerStrict\":false,"
+        + "\"lower\":\"2015-09-12T02:30:00.000Z\",\"lowerStrict\":false,"
         + "\"ordering\":\"lexicographic\",\"extractionFn\":{\"type\":\"timeFormat\","
         + "\"format\":\"yyyy-MM-dd";
     final String druidQueryPart2 = "\"granularity\":{\"type\":\"period\",\"period\":\"PT1H\","
-        + "\"timeZone\":\"IST\"},\"timeZone\":\"IST\","
+        + "\"timeZone\":\"Asia/Kolkata\"},\"timeZone\":\"UTC\","
+        + "\"locale\":\"und\"}}";
+    CalciteAssert.that()
+        .enable(enabled())
+        .with(ImmutableMap.of("model", WIKI_AUTO2.getPath()))
+        .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "Asia/Kolkata")
+        .query(sql)
+        .runs()
+        .queryContains(druidChecker(druidQueryPart1, druidQueryPart2))
+        .returnsOrdered("T=2015-09-12 08:00:02; S=null; C=1",
+            "T=2015-09-12 08:00:04; S=null; C=1",
+            "T=2015-09-12 08:00:05; S=null; C=1",
+            "T=2015-09-12 08:00:07; S=null; C=1");
+  }
+
+  @Test public void testTimeWithFilterOnFloorOnTimeWithTimezoneConversionCast() {
+    final String sql = "Select cast(\"__time\" as timestamp) as t, \"countryName\" as s, "
+        + "count(*) as c from \"wikiticker\" where floor(\"__time\" to HOUR)"
+        + " >= '2015-09-12 08:00:00 Asia/Kolkata' group by cast(\"__time\" as timestamp), \"countryName\""
+        + " order by t limit 4";
+    final String druidQueryPart1 = "filter\":{\"type\":\"bound\",\"dimension\":\"__time\","
+        + "\"lower\":\"2015-09-12T02:30:00.000Z\",\"lowerStrict\":false,"
+        + "\"ordering\":\"lexicographic\",\"extractionFn\":{\"type\":\"timeFormat\","
+        + "\"format\":\"yyyy-MM-dd";
+    final String druidQueryPart2 = "\"granularity\":{\"type\":\"period\",\"period\":\"PT1H\","
+        + "\"timeZone\":\"Asia/Kolkata\"},\"timeZone\":\"UTC\","
         + "\"locale\":\"und\"}}";
 
     CalciteAssert.that()
@@ -3343,7 +3372,7 @@ public class DruidAdapterIT {
         + " limit 1";
     final String druidQuery = "{\"queryType\":\"scan\",\"dataSource\":\"foodmart\",\"intervals\":"
         + "[\"1997-04-30T18:30:00.000Z/1997-05-31T18:30:00.000Z\"],\"virtualColumns\":[{\"type\":"
-        + "\"expression\",\"name\":\"vc\",\"expression\":\"timestamp_floor(\\\"__time\\\"";
+        + "\"expression\",\"name\":\"vc\",\"expression\":\"timestamp_parse";
     CalciteAssert.that()
         .enable(enabled())
         .with(ImmutableMap.of("model", FOODMART.getPath()))
@@ -3351,7 +3380,7 @@ public class DruidAdapterIT {
         .query(sql)
         .runs()
         .queryContains(druidChecker(druidQuery))
-        .returnsOrdered("T=1997-04-30 18:30:00");
+        .returnsOrdered("T=1997-05-01 00:00:00");
   }
 
   @Test
@@ -3592,7 +3621,7 @@ public class DruidAdapterIT {
             + "groups=[{}], aggs=[[COUNT()]])")
         .queryContains(
             druidChecker("{\"type\":\"expression\","
-                + "\"expression\":\"(timestamp_format(timestamp_floor(\\\"__time\\\""))
+                + "\"expression\":\"(timestamp_format(timestamp_floor("))
         .returnsUnordered("EXPR$0=117");
   }
 
@@ -3643,9 +3672,46 @@ public class DruidAdapterIT {
 
   @Test
   public void testExtractHourFilterExpression() {
-    final String sql = "SELECT EXTRACT(HOUR from CAST(\"timestamp\" AS TIMESTAMP)) "
+    final String sql = "SELECT EXTRACT(HOUR from \"timestamp\") "
             + "from \"foodmart\" WHERE EXTRACT(HOUR from \"timestamp\") = 17 "
-            + "group by EXTRACT(HOUR from CAST(\"timestamp\" AS TIMESTAMP)) ";
+            + "group by EXTRACT(HOUR from \"timestamp\") ";
+    CalciteAssert.that()
+        .enable(enabled())
+        .with(ImmutableMap.of("model", FOODMART.getPath()))
+        .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "America/Los_Angeles")
+        .query(sql)
+        .runs()
+        .returnsOrdered("EXPR$0=17");
+
+    final String sql2 = "SELECT EXTRACT(HOUR from \"timestamp\") "
+            + "from \"foodmart\" WHERE"
+            + " EXTRACT(HOUR from \"timestamp\") = 19 "
+            + "group by EXTRACT(HOUR from \"timestamp\") ";
+    CalciteAssert.that()
+        .enable(enabled())
+        .with(ImmutableMap.of("model", FOODMART.getPath()))
+        .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "EST")
+        .query(sql2)
+        .runs()
+        .returnsOrdered("EXPR$0=19");
+
+    final String sql3 = "SELECT EXTRACT(HOUR from \"timestamp\") "
+            + "from \"foodmart\" WHERE EXTRACT(HOUR from \"timestamp\") = 0 "
+            + "group by EXTRACT(HOUR from \"timestamp\") ";
+    CalciteAssert.that()
+        .enable(enabled())
+        .with(ImmutableMap.of("model", FOODMART.getPath()))
+        .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC")
+        .query(sql3)
+        .runs()
+        .returnsOrdered("EXPR$0=0");
+  }
+
+  @Test
+  public void testExtractHourFilterExpressionWithCast() {
+    final String sql = "SELECT EXTRACT(HOUR from CAST(\"timestamp\" AS TIMESTAMP)) "
+        + "from \"foodmart\" WHERE EXTRACT(HOUR from \"timestamp\") = 17 "
+        + "group by EXTRACT(HOUR from CAST(\"timestamp\" AS TIMESTAMP)) ";
     CalciteAssert.that()
         .enable(enabled())
         .with(ImmutableMap.of("model", FOODMART.getPath()))
@@ -3655,9 +3721,9 @@ public class DruidAdapterIT {
         .returnsOrdered("EXPR$0=17");
 
     final String sql2 = "SELECT EXTRACT(HOUR from CAST(\"timestamp\" AS TIMESTAMP)) "
-            + "from \"foodmart\" WHERE"
-            + " EXTRACT(HOUR from CAST(\"timestamp\" AS TIMESTAMP)) = 19 "
-            + "group by EXTRACT(HOUR from CAST(\"timestamp\" AS TIMESTAMP)) ";
+        + "from \"foodmart\" WHERE"
+        + " EXTRACT(HOUR from CAST(\"timestamp\" AS TIMESTAMP)) = 19 "
+        + "group by EXTRACT(HOUR from CAST(\"timestamp\" AS TIMESTAMP)) ";
     CalciteAssert.that()
         .enable(enabled())
         .with(ImmutableMap.of("model", FOODMART.getPath()))
@@ -3667,8 +3733,8 @@ public class DruidAdapterIT {
         .returnsOrdered("EXPR$0=19");
 
     final String sql3 = "SELECT EXTRACT(HOUR from CAST(\"timestamp\" AS TIMESTAMP)) "
-            + "from \"foodmart\" WHERE EXTRACT(HOUR from CAST(\"timestamp\" AS TIMESTAMP)) = 0 "
-            + "group by EXTRACT(HOUR from CAST(\"timestamp\" AS TIMESTAMP)) ";
+        + "from \"foodmart\" WHERE EXTRACT(HOUR from CAST(\"timestamp\" AS TIMESTAMP)) = 0 "
+        + "group by EXTRACT(HOUR from CAST(\"timestamp\" AS TIMESTAMP)) ";
     CalciteAssert.that()
         .enable(enabled())
         .with(ImmutableMap.of("model", FOODMART.getPath()))
@@ -3707,7 +3773,7 @@ public class DruidAdapterIT {
         .queryContains(
             druidChecker("\"filter\":{\"type\":\"expression\",\"expression\":\""
                     + "(timestamp_floor(timestamp_parse(concat(concat(",
-                "== timestamp_floor(\\\"__time\\\""));
+                "== timestamp_floor("));
   }
 
   @Test
