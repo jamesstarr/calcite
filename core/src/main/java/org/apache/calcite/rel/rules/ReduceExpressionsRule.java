@@ -751,7 +751,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
       }
       RexReplacer replacer =
           new RexReplacer(simplify, removableCasts, reducedExprs,
-              Collections.nCopies(removableCasts.size(), false));
+              Collections.nCopies(removableCasts.size(), false), false);
       replacer.mutate(expList);
     }
 
@@ -767,7 +767,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
           Lists.newArrayList(predicates.constantMap.entrySet());
       RexReplacer replacer =
           new RexReplacer(simplify, Pair.left(pairs), Pair.right(pairs),
-              Collections.nCopies(pairs.size(), false));
+              Collections.nCopies(pairs.size(), false), false);
       replacer.mutate(constExps2);
     }
 
@@ -805,7 +805,8 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
     }
 
     RexReplacer replacer =
-        new RexReplacer(simplify, constExps, reducedValues, addCasts);
+        new RexReplacer(simplify, constExps, reducedValues, addCasts,
+            rel instanceof Project);
     replacer.mutate(expList);
     return true;
   }
@@ -926,7 +927,8 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
    * look for RexCall, since nothing else is reducible in the first place.
    */
   protected static class RexReplacer extends RexShuttle {
-    private final RexSimplify simplifier;
+    private final ExprSimplifier simplifier;
+    private final RexBuilder rexBuilder;
     private final List<RexNode> reducibleExps;
     private final RexBuilder rexBuilder;
     private final List<RexNode> reducedValues;
@@ -936,8 +938,10 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
         RexSimplify simplify,
         List<RexNode> reducibleExps,
         List<RexNode> reducedValues,
-        List<Boolean> addCasts) {
-      this.simplifier = simplify;
+        List<Boolean> addCasts,
+        boolean matchNullability) {
+      this.simplifier = new ExprSimplifier(simplify.withUnknownAsFalse(false), matchNullability);
+      this.rexBuilder = simplify.rexBuilder;
       this.reducibleExps = reducibleExps;
       this.reducedValues = reducedValues;
       this.addCasts = addCasts;
@@ -958,27 +962,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
         return node;
       }
       node = super.visitCall(call);
-      return node;
-    }
-
-    private RexNode visit(final RexNode call) {
-      int i = reducibleExps.indexOf(call);
-      if (i == -1) {
-        return null;
-      }
-      RexNode replacement = reducedValues.get(i);
-      if (addCasts.get(i)
-          && (replacement.getType() != call.getType())) {
-        // Handle change from nullable to NOT NULL by claiming
-        // that the result is still nullable, even though
-        // we know it isn't.
-        //
-        // Also, we cannot reduce CAST('abc' AS VARCHAR(4)) to 'abc'.
-        // If we make 'abc' of type VARCHAR(4), we may later encounter
-        // the same expression in a Project's digest where it has
-        // type VARCHAR(3), and that's wrong.
-        replacement =
-                rexBuilder.makeAbstractCast(call.getType(), replacement);
+            rexBuilder.makeAbstractCast(call.getType(), replacement);
       }
       return replacement;
     }

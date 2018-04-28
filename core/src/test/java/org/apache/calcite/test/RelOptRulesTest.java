@@ -157,14 +157,23 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.function.Predicate;
 
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+
+import javax.annotation.Nullable;
+
 import static org.apache.calcite.plan.RelOptRule.none;
 import static org.apache.calcite.plan.RelOptRule.operand;
-import static org.apache.calcite.plan.RelOptRule.operandJ;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EQUALS;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_NOT_DISTINCT_FROM;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit test for rules in {@code org.apache.calcite.rel} and subpackages.
@@ -7645,4 +7654,12 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).withPre(preProgram).with(program).check();
   }
 
+  @Test public void testPartialExpressionReduction() {
+    final String sql = "select "
+        + "EXTRACT(SECOND FROM CAST(CASE WHEN TRUE THEN {ts '2018-01-01 01:23:45'} ELSE NULL END AS TIMESTAMP)) = "
+        + "EXTRACT(SECOND FROM d) "
+        + "FROM (VALUES({ts '2018-01-01 01:23:45'})) tbl(d)";
+
+    checkPlanning(ReduceExpressionsRule.PROJECT_INSTANCE, sql);
+  }
 }
