@@ -111,9 +111,6 @@ import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.tools.RelBuilder;
 
-import static org.apache.calcite.plan.RelOptRule.none;
-import static org.apache.calcite.plan.RelOptRule.operand;
-
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -126,6 +123,9 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.annotation.Nullable;
+
+import static org.apache.calcite.plan.RelOptRule.none;
+import static org.apache.calcite.plan.RelOptRule.operand;
 
 import static org.junit.Assert.assertTrue;
 
@@ -3856,6 +3856,14 @@ public class RelOptRulesTest extends RelOptTestBase {
     sql(sql).with(program).withContext(context).check();
   }
 
+  @Test public void testPartialExpressionReduction() {
+    final String sql = "select "
+        + "EXTRACT(SECOND FROM CAST(CASE WHEN TRUE THEN {ts '2018-01-01 01:23:45'} ELSE NULL END AS TIMESTAMP)) = "
+        + "EXTRACT(SECOND FROM d) "
+        + "FROM (VALUES({ts '2018-01-01 01:23:45'})) tbl(d)";
+
+    checkPlanning(ReduceExpressionsRule.PROJECT_INSTANCE, sql);
+  }
 }
 
 // End RelOptRulesTest.java
