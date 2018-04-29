@@ -1326,14 +1326,14 @@ class UtilTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2287">[CALCITE-2287]
    * FlatList.equals throws StackOverflowError</a>. */
-  @Test void testFlat34Equals() {
+  @Test public void testFlat34Equals() {
     List f3list = FlatLists.of(1, 2, 3);
     List f4list = FlatLists.of(1, 2, 3, 4);
     assertThat(f3list.equals(f4list), is(false));
   }
 
   @SuppressWarnings("unchecked")
-  @Test void testFlatListN() {
+  @Test public void testFlatListN() {
     List<List<Object>> list = new ArrayList<>();
     list.add(FlatLists.of());
     list.add(FlatLists.<Object>copyOf());
@@ -1380,7 +1380,7 @@ class UtilTest {
     }
   }
 
-  @Test void testFlatListProduct() {
+  @Test public void testFlatListProduct() {
     final List<Enumerator<List<String>>> list = new ArrayList<>();
     list.add(Linq4j.enumerator(l2(l1("a"), l1("b"))));
     list.add(Linq4j.enumerator(l3(l2("x", "p"), l2("y", "q"), l2("z", "r"))));
