@@ -17,7 +17,7 @@
 package org.apache.calcite.sql.type;
 
 import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeSystem;
+import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
 
 import com.google.common.collect.Lists;
 
@@ -45,6 +45,44 @@ public class SqlTypeFactoryTest {
     RelDataType leastRestrictive =
         f.typeFactory.leastRestrictive(Lists.newArrayList(f.sqlBigInt, f.sqlInt));
     assertThat(leastRestrictive.getSqlTypeName(), is(SqlTypeName.BIGINT));
+  }
+
+  @Test public void testLeastRestrictiveTimestamps() {
+    Fixture f = new Fixture();
+    RelDataType leastRestrictive =
+        f.typeFactory.leastRestrictive(
+            Lists.newArrayList(f.sqlTimestamp3, f.sqlTimestamp6, f.sqlTimestamp9));
+    assertThat(leastRestrictive.getSqlTypeName(), is(SqlTypeName.TIMESTAMP));
+    assertThat(leastRestrictive.getPrecision(), is(9));
+    assertThat(leastRestrictive.isNullable(), is(false));
+  }
+
+  @Test public void testLeastRestrictiveTimestampsWithNullability() {
+    Fixture f = new Fixture();
+    RelDataType leastRestrictive =
+        f.typeFactory.leastRestrictive(
+            Lists.newArrayList(f.sqlTimestamp3, f.sqlTimestamp6, f.sqlNull));
+    assertThat(leastRestrictive.getSqlTypeName(), is(SqlTypeName.TIMESTAMP));
+    assertThat(leastRestrictive.getPrecision(), is(6));
+    assertThat(leastRestrictive.isNullable(), is(true));
+  }
+
+  @Test public void testLeastRestrictiveTimestampsAndDatesWithNullability() {
+    Fixture f = new Fixture();
+    RelDataType leastRestrictive =
+        f.typeFactory.leastRestrictive(
+            Lists.newArrayList(f.sqlTimestamp3, f.sqlDate, f.sqlNull));
+    assertThat(leastRestrictive.getSqlTypeName(), is(SqlTypeName.TIMESTAMP));
+    assertThat(leastRestrictive.getPrecision(), is(3));
+    assertThat(leastRestrictive.isNullable(), is(true));
+  }
+
+  @Test public void testLeastRestrictiveTimestampsAndIncompatible() {
+    Fixture f = new Fixture();
+    RelDataType leastRestrictive =
+        f.typeFactory.leastRestrictive(
+            Lists.newArrayList(f.sqlTimestamp3, f.sqlVarcharNullable));
+    assertThat(leastRestrictive, is((RelDataType) null));
   }
 
   @Test public void testLeastRestrictiveWithNullability() {
@@ -116,7 +154,14 @@ public class SqlTypeFactoryTest {
 
   /** Sets up data needed by a test. */
   private static class Fixture {
-    SqlTypeFactoryImpl typeFactory = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
+    SqlTypeFactoryImpl typeFactory = new SqlTypeFactoryImpl(new RelDataTypeSystemImpl() {
+      public int getMaxPrecision(SqlTypeName typeName) {
+        if (typeName == SqlTypeName.TIMESTAMP) {
+          return 9;
+        }
+        return super.getMaxPrecision(typeName);
+      };
+    });
     final RelDataType sqlBigInt = typeFactory.createTypeWithNullability(
         typeFactory.createSqlType(SqlTypeName.BIGINT), false);
     final RelDataType sqlBigIntNullable = typeFactory.createTypeWithNullability(
@@ -145,6 +190,14 @@ public class SqlTypeFactoryTest {
         typeFactory.createArrayType(arrayBigInt, -1), false);
     final RelDataType arrayOfArrayFloat = typeFactory.createTypeWithNullability(
         typeFactory.createArrayType(arrayFloat, -1), false);
+    final RelDataType sqlTimestamp3 = typeFactory.createTypeWithNullability(
+        typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 3), false);
+    final RelDataType sqlTimestamp6 = typeFactory.createTypeWithNullability(
+        typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 6), false);
+    final RelDataType sqlTimestamp9 = typeFactory.createTypeWithNullability(
+        typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 9), false);
+    final RelDataType sqlDate = typeFactory.createTypeWithNullability(
+            typeFactory.createSqlType(SqlTypeName.DATE), false);
   }
 
 }
