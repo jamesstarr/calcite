@@ -17,10 +17,7 @@
 package org.apache.calcite.sql.type;
 
 import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.rel.type.RelDataTypeField;
-import org.apache.calcite.rel.type.RelDataTypeFieldImpl;
-import org.apache.calcite.rel.type.RelRecordType;
+import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -57,8 +54,46 @@ class SqlTypeFactoryTest {
     assertThat(leastRestrictive.getSqlTypeName(), is(SqlTypeName.BIGINT));
   }
 
-  @Test void testLeastRestrictiveWithNullability() {
-    SqlTypeFixture f = new SqlTypeFixture();
+  @Test public void testLeastRestrictiveTimestamps() {
+    Fixture f = new Fixture();
+    RelDataType leastRestrictive =
+        f.typeFactory.leastRestrictive(
+            Lists.newArrayList(f.sqlTimestamp3, f.sqlTimestamp6, f.sqlTimestamp9));
+    assertThat(leastRestrictive.getSqlTypeName(), is(SqlTypeName.TIMESTAMP));
+    assertThat(leastRestrictive.getPrecision(), is(9));
+    assertThat(leastRestrictive.isNullable(), is(false));
+  }
+
+  @Test public void testLeastRestrictiveTimestampsWithNullability() {
+    Fixture f = new Fixture();
+    RelDataType leastRestrictive =
+        f.typeFactory.leastRestrictive(
+            Lists.newArrayList(f.sqlTimestamp3, f.sqlTimestamp6, f.sqlNull));
+    assertThat(leastRestrictive.getSqlTypeName(), is(SqlTypeName.TIMESTAMP));
+    assertThat(leastRestrictive.getPrecision(), is(6));
+    assertThat(leastRestrictive.isNullable(), is(true));
+  }
+
+  @Test public void testLeastRestrictiveTimestampsAndDatesWithNullability() {
+    Fixture f = new Fixture();
+    RelDataType leastRestrictive =
+        f.typeFactory.leastRestrictive(
+            Lists.newArrayList(f.sqlTimestamp3, f.sqlDate, f.sqlNull));
+    assertThat(leastRestrictive.getSqlTypeName(), is(SqlTypeName.TIMESTAMP));
+    assertThat(leastRestrictive.getPrecision(), is(3));
+    assertThat(leastRestrictive.isNullable(), is(true));
+  }
+
+  @Test public void testLeastRestrictiveTimestampsAndIncompatible() {
+    Fixture f = new Fixture();
+    RelDataType leastRestrictive =
+        f.typeFactory.leastRestrictive(
+            Lists.newArrayList(f.sqlTimestamp3, f.sqlVarcharNullable));
+    assertThat(leastRestrictive, is((RelDataType) null));
+  }
+
+  @Test public void testLeastRestrictiveWithNullability() {
+    Fixture f = new Fixture();
     RelDataType leastRestrictive =
         f.typeFactory.leastRestrictive(Lists.newArrayList(f.sqlVarcharNullable, f.sqlAny));
     assertThat(leastRestrictive.getSqlTypeName(), is(SqlTypeName.ANY));
@@ -163,82 +198,52 @@ class SqlTypeFactoryTest {
     assertThat(SqlTypeUtil.comparePrecision(p1, p1), is(0));
   }
 
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2464">[CALCITE-2464]
-   * Allow to set nullability for columns of structured types</a>. */
-  @Test void createStructTypeWithNullability() {
-    SqlTypeFixture f = new SqlTypeFixture();
-    RelDataTypeFactory typeFactory = f.typeFactory;
-    List<RelDataTypeField> fields = new ArrayList<>();
-    RelDataTypeField field0 = new RelDataTypeFieldImpl(
-            "i", 0, typeFactory.createSqlType(SqlTypeName.INTEGER));
-    RelDataTypeField field1 = new RelDataTypeFieldImpl(
-            "s", 1, typeFactory.createSqlType(SqlTypeName.VARCHAR));
-    fields.add(field0);
-    fields.add(field1);
-    final RelDataType recordType = new RelRecordType(fields); // nullable false by default
-    final RelDataType copyRecordType = typeFactory.createTypeWithNullability(recordType, true);
-    assertFalse(recordType.isNullable());
-    assertTrue(copyRecordType.isNullable());
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3429">[CALCITE-3429]
-   * AssertionError thrown for user-defined table function with map argument</a>. */
-  @Test void testCreateTypeWithJavaMapType() {
-    SqlTypeFixture f = new SqlTypeFixture();
-    RelDataType relDataType = f.typeFactory.createJavaType(Map.class);
-    assertThat(relDataType.getSqlTypeName(), is(SqlTypeName.MAP));
-    assertThat(relDataType.getKeyType().getSqlTypeName(), is(SqlTypeName.ANY));
-
-    try {
-      f.typeFactory.createSqlType(SqlTypeName.MAP);
-      fail();
-    } catch (AssertionError e) {
-      assertThat(e.getMessage(), is("use createMapType() instead"));
-    }
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3924">[CALCITE-3924]
-   * Fix flakey test to handle TIMESTAMP and TIMESTAMP(0) correctly</a>. */
-  @Test void testCreateSqlTypeWithPrecision() {
-    SqlTypeFixture f = new SqlTypeFixture();
-    checkCreateSqlTypeWithPrecision(f.typeFactory, SqlTypeName.TIME);
-    checkCreateSqlTypeWithPrecision(f.typeFactory, SqlTypeName.TIMESTAMP);
-    checkCreateSqlTypeWithPrecision(f.typeFactory, SqlTypeName.TIME_WITH_LOCAL_TIME_ZONE);
-    checkCreateSqlTypeWithPrecision(f.typeFactory, SqlTypeName.TIMESTAMP_WITH_LOCAL_TIME_ZONE);
-  }
-
-  private void checkCreateSqlTypeWithPrecision(
-      RelDataTypeFactory typeFactory, SqlTypeName sqlTypeName) {
-    RelDataType ts = typeFactory.createSqlType(sqlTypeName);
-    RelDataType tsWithoutPrecision = typeFactory.createSqlType(sqlTypeName, -1);
-    RelDataType tsWithPrecision0 = typeFactory.createSqlType(sqlTypeName, 0);
-    RelDataType tsWithPrecision1 = typeFactory.createSqlType(sqlTypeName, 1);
-    RelDataType tsWithPrecision2 = typeFactory.createSqlType(sqlTypeName, 2);
-    RelDataType tsWithPrecision3 = typeFactory.createSqlType(sqlTypeName, 3);
-    // for instance, 8 exceeds max precision for timestamp which is 3
-    RelDataType tsWithPrecision8 = typeFactory.createSqlType(sqlTypeName, 8);
-
-    assertThat(ts.toString(), is(sqlTypeName.getName() + "(0)"));
-    assertThat(ts.getFullTypeString(), is(sqlTypeName.getName() + "(0) NOT NULL"));
-    assertThat(tsWithoutPrecision.toString(), is(sqlTypeName.getName()));
-    assertThat(tsWithoutPrecision.getFullTypeString(), is(sqlTypeName.getName() + " NOT NULL"));
-    assertThat(tsWithPrecision0.toString(), is(sqlTypeName.getName() + "(0)"));
-    assertThat(tsWithPrecision0.getFullTypeString(), is(sqlTypeName.getName() + "(0) NOT NULL"));
-    assertThat(tsWithPrecision1.toString(), is(sqlTypeName.getName() + "(1)"));
-    assertThat(tsWithPrecision1.getFullTypeString(), is(sqlTypeName.getName() + "(1) NOT NULL"));
-    assertThat(tsWithPrecision2.toString(), is(sqlTypeName.getName() + "(2)"));
-    assertThat(tsWithPrecision2.getFullTypeString(), is(sqlTypeName.getName() + "(2) NOT NULL"));
-    assertThat(tsWithPrecision3.toString(), is(sqlTypeName.getName() + "(3)"));
-    assertThat(tsWithPrecision3.getFullTypeString(), is(sqlTypeName.getName() + "(3) NOT NULL"));
-    assertThat(tsWithPrecision8.toString(), is(sqlTypeName.getName() + "(3)"));
-    assertThat(tsWithPrecision8.getFullTypeString(), is(sqlTypeName.getName() + "(3) NOT NULL"));
-
-    assertThat(ts != tsWithoutPrecision, is(true));
-    assertThat(ts == tsWithPrecision0, is(true));
-    assertThat(tsWithPrecision3 == tsWithPrecision8, is(true));
+  /** Sets up data needed by a test. */
+  private static class Fixture {
+    SqlTypeFactoryImpl typeFactory = new SqlTypeFactoryImpl(new RelDataTypeSystemImpl() {
+      public int getMaxPrecision(SqlTypeName typeName) {
+        if (typeName == SqlTypeName.TIMESTAMP) {
+          return 9;
+        }
+        return super.getMaxPrecision(typeName);
+      };
+    });
+    final RelDataType sqlBigInt = typeFactory.createTypeWithNullability(
+        typeFactory.createSqlType(SqlTypeName.BIGINT), false);
+    final RelDataType sqlBigIntNullable = typeFactory.createTypeWithNullability(
+        typeFactory.createSqlType(SqlTypeName.BIGINT), true);
+    final RelDataType sqlInt = typeFactory.createTypeWithNullability(
+        typeFactory.createSqlType(SqlTypeName.INTEGER), false);
+    final RelDataType sqlVarcharNullable = typeFactory.createTypeWithNullability(
+        typeFactory.createSqlType(SqlTypeName.VARCHAR), true);
+    final RelDataType sqlNull = typeFactory.createTypeWithNullability(
+        typeFactory.createSqlType(SqlTypeName.NULL), false);
+    final RelDataType sqlAny = typeFactory.createTypeWithNullability(
+        typeFactory.createSqlType(SqlTypeName.ANY), false);
+    final RelDataType sqlFloat = typeFactory.createTypeWithNullability(
+        typeFactory.createSqlType(SqlTypeName.FLOAT), false);
+    final RelDataType arrayFloat = typeFactory.createTypeWithNullability(
+        typeFactory.createArrayType(sqlFloat, -1), false);
+    final RelDataType arrayBigInt = typeFactory.createTypeWithNullability(
+        typeFactory.createArrayType(sqlBigIntNullable, -1), false);
+    final RelDataType multisetFloat = typeFactory.createTypeWithNullability(
+        typeFactory.createMultisetType(sqlFloat, -1), false);
+    final RelDataType multisetBigInt = typeFactory.createTypeWithNullability(
+        typeFactory.createMultisetType(sqlBigIntNullable, -1), false);
+    final RelDataType arrayBigIntNullable = typeFactory.createTypeWithNullability(
+        typeFactory.createArrayType(sqlBigIntNullable, -1), true);
+    final RelDataType arrayOfArrayBigInt = typeFactory.createTypeWithNullability(
+        typeFactory.createArrayType(arrayBigInt, -1), false);
+    final RelDataType arrayOfArrayFloat = typeFactory.createTypeWithNullability(
+        typeFactory.createArrayType(arrayFloat, -1), false);
+    final RelDataType sqlTimestamp3 = typeFactory.createTypeWithNullability(
+        typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 3), false);
+    final RelDataType sqlTimestamp6 = typeFactory.createTypeWithNullability(
+        typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 6), false);
+    final RelDataType sqlTimestamp9 = typeFactory.createTypeWithNullability(
+        typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 9), false);
+    final RelDataType sqlDate = typeFactory.createTypeWithNullability(
+            typeFactory.createSqlType(SqlTypeName.DATE), false);
   }
 
 }
