@@ -7793,6 +7793,7 @@ LogicalSort(sort0=[$2], dir0=[ASC], fetch=[5])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testAggregateWithSameDigestInSubQueries">
         <Resource name="sql">
             <![CDATA[select
@@ -8151,4 +8152,24 @@ LogicalProject(EMPNO=[$0])
 ]]>
     </Resource>
   </TestCase>
+=======
+    <TestCase name="testCaseFlatten">
+        <Resource name="sql">
+            <![CDATA[SELECT (res1 = 'qwe') res2 
+FROM (
+  SELECT (
+    CASE WHEN (FALSE)
+      THEN NULL
+      ELSE 'qwe'
+    END) res1 FROM (values(1)))]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(RES2=[=($0, 'qwe')])
+  LogicalProject(RES1=[CAST('qwe'):CHAR(3) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"])
+    LogicalValues(tuples=[[{ 1 }]])
+]]>
+        </Resource>
+    </TestCase>
+>>>>>>> 12a8385b9 ([CALCITE-2290] Fix type issue while flattening)
 </Root>

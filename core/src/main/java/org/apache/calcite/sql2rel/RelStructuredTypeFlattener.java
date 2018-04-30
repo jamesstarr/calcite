@@ -949,6 +949,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
             targetType,
             input,
             true);
+<<<<<<< HEAD
       }
 
       if (rexCall.op == SqlStdOperatorTable.ITEM
@@ -974,6 +975,8 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
             return newRef;
           }
         }
+=======
+>>>>>>> 12a8385b9 ([CALCITE-2290] Fix type issue while flattening)
       }
       if (!rexCall.isA(SqlKind.COMPARISON)) {
         return super.visitCall(rexCall);
