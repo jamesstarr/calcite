@@ -2796,6 +2796,17 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
+  @Test public void testCaseFlatten() {
+    final String sql = "SELECT (res1 = 'qwe') res2 "
+        + "FROM ("
+        + "  SELECT ("
+        + "    CASE WHEN (FALSE) "
+        + "      THEN NULL"
+        + "      ELSE 'qwe'"
+        + "    END) res1 FROM (values(1)))";
+    sql(sql).ok();
+  }
+
   @Test public void testCorrelationIdHasColumnIndex() {
     final String sql = "select * from emp\n"
             + "where exists (\n"
