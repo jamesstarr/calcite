@@ -238,6 +238,7 @@ public abstract class QuidemTest {
         return CalciteAssert.that()
             .with(CalciteAssert.Config.REGULAR)
             .with(CalciteAssert.SchemaSpec.POST)
+<<<<<<< HEAD
             .connect();
       case "oraclefunc":
         return CalciteAssert.that()
@@ -247,6 +248,8 @@ public abstract class QuidemTest {
       case "mysqlfunc":
         return CalciteAssert.that()
             .with(CalciteConnectionProperty.FUN, "mysql")
+=======
+>>>>>>> 669a7299e ([CALCITE-2280] Babel SQL parser)
             .connect();
       case "catchall":
         return CalciteAssert.that()

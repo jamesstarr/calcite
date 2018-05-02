@@ -73,7 +73,7 @@ public interface SqlConformance {
    *
    * <p>Among the built-in conformance levels, true in
    * {@link SqlConformanceEnum#BABEL},
-   * {@link SqlConformanceEnum#BIG_QUERY},
+>>>>>>> 669a7299e ([CALCITE-2280] Babel SQL parser)
    * {@link SqlConformanceEnum#LENIENT},
    * {@link SqlConformanceEnum#MYSQL_5};
    * false otherwise.
@@ -99,7 +99,9 @@ public interface SqlConformance {
    *
    * <p>Among the built-in conformance levels, true in
    * {@link SqlConformanceEnum#BABEL},
+<<<<<<< HEAD
    * {@link SqlConformanceEnum#BIG_QUERY},
+=======
    * {@link SqlConformanceEnum#LENIENT},
    * {@link SqlConformanceEnum#MYSQL_5};
    * false otherwise.
@@ -379,6 +381,7 @@ public interface SqlConformance {
    *
    * <p>Among the built-in conformance levels, true in
    * {@link SqlConformanceEnum#BABEL},
+<<<<<<< HEAD
    * {@link SqlConformanceEnum#LENIENT},
    * {@link SqlConformanceEnum#MYSQL_5},
    * {@link SqlConformanceEnum#PRESTO},
@@ -430,6 +433,8 @@ public interface SqlConformance {
    *
    * <p>Among the built-in conformance levels, true in
    * {@link SqlConformanceEnum#BABEL},
+=======
+>>>>>>> 669a7299e ([CALCITE-2280] Babel SQL parser)
    * {@link SqlConformanceEnum#LENIENT},
    * {@link SqlConformanceEnum#MYSQL_5},
    * {@link SqlConformanceEnum#SQL_SERVER_2008};

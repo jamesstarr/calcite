@@ -255,9 +255,6 @@ public enum SqlConformanceEnum implements SqlConformance {
     switch (this) {
     case DEFAULT:
     case LENIENT:
-<<<<<<< HEAD
-    case PRESTO:
-=======
 >>>>>>> a73a101e3 ([CALCITE-2276] Allow explicit ROW value constructor in SELECT clause and elsewhere (Danny Chan))
       return true;
     default:
@@ -289,6 +286,7 @@ public enum SqlConformanceEnum implements SqlConformance {
   @Override public boolean isOffsetLimitAllowed() {
     switch (this) {
     case BABEL:
+<<<<<<< HEAD
     case LENIENT:
       return true;
     default:
@@ -328,6 +326,7 @@ public enum SqlConformanceEnum implements SqlConformance {
   public boolean allowExtendedTrim() {
     switch (this) {
     case BABEL:
+=======
     case LENIENT:
     case MYSQL_5:
     case SQL_SERVER_2008:

@@ -774,7 +774,7 @@ public class CalciteAssert {
   public static SchemaPlus addSchema(SchemaPlus rootSchema, SchemaSpec schema) {
     final SchemaPlus foodmart;
     final SchemaPlus jdbcScott;
-    final SchemaPlus scott;
+>>>>>>> 669a7299e ([CALCITE-2280] Babel SQL parser)
     final ConnectionSpec cs;
     final DataSource dataSource;
     switch (schema) {
@@ -798,7 +798,9 @@ public class CalciteAssert {
     case JDBC_FOODMART_WITH_LATTICE:
       foodmart = addSchemaIfNotExists(rootSchema, SchemaSpec.JDBC_FOODMART);
       foodmart.add(schema.schemaName,
+<<<<<<< HEAD
 
+=======
           Lattice.create(foodmart.unwrap(CalciteSchema.class),
               "select 1 from \"foodmart\".\"sales_fact_1997\" as s\n"
                   + "join \"foodmart\".\"time_by_day\" as t using (\"time_id\")\n"
@@ -810,16 +812,8 @@ public class CalciteAssert {
     case SCOTT:
       jdbcScott = addSchemaIfNotExists(rootSchema, SchemaSpec.JDBC_SCOTT);
       return rootSchema.add(schema.schemaName, new CloneSchema(jdbcScott));
-    case SCOTT_WITH_TEMPORAL:
-      scott = addSchemaIfNotExists(rootSchema, SchemaSpec.SCOTT);
-      scott.add("products_temporal", new StreamTest.ProductsTemporalTable());
-      scott.add("orders",
-          new StreamTest.OrdersHistoryTable(
-              StreamTest.OrdersStreamTableFactory.getRowList()));
-      return scott;
     case CLONE_FOODMART:
       foodmart = addSchemaIfNotExists(rootSchema, SchemaSpec.JDBC_FOODMART);
-
       return rootSchema.add("foodmart2", new CloneSchema(foodmart));
     case GEO:
       ModelHandler.addFunctions(rootSchema, null, ImmutableList.of(),
@@ -1132,13 +1126,6 @@ public class CalciteAssert {
 
     public final AssertThat withModel(String model) {
       return with(CalciteConnectionProperty.MODEL, "inline:" + model);
-<<<<<<< HEAD
-    }
-
-    public final AssertThat withModel(URL model) {
-      return with(CalciteConnectionProperty.MODEL,
-          Sources.of(model).file().getAbsolutePath());
-=======
     }
 
     public final AssertThat withMaterializations(String model,
@@ -1259,7 +1246,9 @@ public class CalciteAssert {
       }
     }
 
+<<<<<<< HEAD
 
+=======
     /** Use sparingly. Does not close the connection. */
     public Connection connect() throws SQLException {
       return connectionFactory.createConnection();
@@ -1373,7 +1362,7 @@ public class CalciteAssert {
         addSchema(rootSchema, schemaSpec);
       }
       con.setSchema(schemaSpec.schemaName);
-
+>>>>>>> 669a7299e ([CALCITE-2280] Babel SQL parser)
       return connection;
     }
   }
@@ -2087,7 +2076,9 @@ public class CalciteAssert {
   /** Specification for common test schemas. */
   public enum SchemaSpec {
     REFLECTIVE_FOODMART("foodmart"),
+<<<<<<< HEAD
     FAKE_FOODMART("foodmart"),
+=======
     JDBC_FOODMART("foodmart"),
     CLONE_FOODMART("foodmart2"),
     JDBC_FOODMART_WITH_LATTICE("lattice"),
@@ -2095,13 +2086,10 @@ public class CalciteAssert {
     HR("hr"),
     JDBC_SCOTT("JDBC_SCOTT"),
     SCOTT("scott"),
-    SCOTT_WITH_TEMPORAL("scott_temporal"),
     BLANK("BLANK"),
     LINGUAL("SALES"),
     POST("POST"),
-    ORINOCO("ORINOCO"),
-    AUX("AUX"),
-    BOOKSTORE("bookstore");
+    ORINOCO("ORINOCO");
 
     /** The name of the schema that is usually created from this specification.
      * (Names are not unique, and you can use another name if you wish.) */
