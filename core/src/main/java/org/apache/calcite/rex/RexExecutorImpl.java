@@ -28,6 +28,7 @@ import org.apache.calcite.linq4j.tree.IndexExpression;
 import org.apache.calcite.linq4j.tree.MethodCallExpression;
 import org.apache.calcite.linq4j.tree.MethodDeclaration;
 import org.apache.calcite.linq4j.tree.ParameterExpression;
+import org.apache.calcite.plan.RexImplicationChecker;
 import org.apache.calcite.prepare.CalcitePrepareImpl;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -126,6 +127,12 @@ public class RexExecutorImpl implements RexExecutor {
     final RexExecutable executable = new RexExecutable(code, constExps);
     executable.setDataContext(dataContext);
     executable.reduce(rexBuilder, constExps, reducedValues);
+  }
+
+  @Override public boolean implies(RexBuilder rexBuilder, RelDataType rowType, RexNode first,
+      RexNode second) {
+    RexImplicationChecker checker = new RexImplicationChecker(rexBuilder, this, rowType);
+    return checker.implies(first, second);
   }
 
   /**
