@@ -2581,8 +2581,10 @@ public class SubstitutionVisitor {
       return false;
     }
 
-    return implies(rel0.cluster, ((MutableFilter) rel0).condition,
-        ((MutableFilter) rel).condition, rel.rowType);
+    RexExecutor rex = rel.cluster.getPlanner().getExecutor();
+
+    return rex.implies(rel.cluster.getRexBuilder(), rel.rowType,
+        ((MutableFilter) rel0).condition, ((MutableFilter) rel).condition);
   }
 
   /** Returns whether two relational expressions have the same row-type. */
