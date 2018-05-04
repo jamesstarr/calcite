@@ -78,7 +78,9 @@ public class SqlDatetimeAddMinusOperator extends SqlSpecialOperator {
           typeFactory.createSqlType(SqlTypeName.TIMESTAMP),
           leftType.isNullable() || unitType.isNullable());
     default:
-      return leftType;
+      return typeFactory.createTypeWithNullability(
+          leftType,
+          leftType.isNullable() || unitType.isNullable());
     }
   }
 

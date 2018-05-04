@@ -60,6 +60,8 @@ class SqlTimestampAddFunction extends SqlFunction {
       new SqlReturnTypeInference() {
         public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
           final RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+          final RelDataType intervalType = opBinding.getOperandType(1);
+          final RelDataType datetimeType = opBinding.getOperandType(2);
           switch (opBinding.getOperandLiteralValue(0, TimeUnit.class)) {
           case HOUR:
           case MINUTE:
@@ -68,10 +70,11 @@ class SqlTimestampAddFunction extends SqlFunction {
           case MICROSECOND:
             return typeFactory.createTypeWithNullability(
                 typeFactory.createSqlType(SqlTypeName.TIMESTAMP),
-                opBinding.getOperandType(1).isNullable()
-                    || opBinding.getOperandType(2).isNullable());
+                    intervalType.isNullable() || datetimeType.isNullable());
           default:
-            return opBinding.getOperandType(2);
+            return typeFactory.createTypeWithNullability(
+                datetimeType,
+                intervalType.isNullable() || datetimeType.isNullable());
           }
         }
       };

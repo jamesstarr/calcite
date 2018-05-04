@@ -3549,6 +3549,16 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkExpType("TIME '8:8:8' - interval '1' hour", "TIME(0) NOT NULL");
     checkExpType("TIME '8:8:8' + interval '1' hour", "TIME(0) NOT NULL");
 
+    checkExpType("TIME '8:8:8' + cast(NULL AS interval hour)", "TIME(0)");
+    checkExpType("TIME '8:8:8' + cast(NULL AS interval YEAR)", "TIME(0)");
+    checkExpType("TIMESTAMP '1990-12-12 12:12:12' + cast(NULL AS interval hour)", "TIMESTAMP(0)");
+    checkExpType("TIMESTAMP '1990-12-12 12:12:12' + cast(NULL AS interval YEAR)", "TIMESTAMP(0)");
+
+    checkExpType("cast(NULL AS interval hour) + TIME '8:8:8'", "TIME(0)");
+    checkExpType("cast(NULL AS interval YEAR) + TIME '8:8:8'", "TIME(0)");
+    checkExpType("cast(NULL AS interval hour) + TIMESTAMP '1990-12-12 12:12:12'", "TIMESTAMP(0)");
+    checkExpType("cast(NULL AS interval YEAR) + TIMESTAMP '1990-12-12 12:12:12'", "TIMESTAMP(0)");
+
     checkExpType(
         "interval '1' day + interval '1' DAY(4)",
         "INTERVAL DAY(4) NOT NULL");
@@ -3660,6 +3670,10 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
       }
     }
 
+    checkExpType(
+            "timestampadd(SQL_TSI_SECOND, cast(NULL AS INTEGER), current_timestamp)", "TIMESTAMP(0)");
+    checkExpType(
+            "timestampadd(SQL_TSI_DAY, cast(NULL AS INTEGER), current_timestamp)", "TIMESTAMP(0)");
     checkExpType(
         "timestampadd(SQL_TSI_WEEK, 2, current_timestamp)", "TIMESTAMP(0) NOT NULL");
     checkExpType(
