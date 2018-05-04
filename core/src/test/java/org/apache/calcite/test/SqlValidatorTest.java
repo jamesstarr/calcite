@@ -3861,121 +3861,18 @@ class SqlValidatorTest extends SqlValidatorTestCase {
     checkExpType("TIME '8:8:8' + cast(NULL AS interval YEAR)", "TIME(0)");
     checkExpType("TIMESTAMP '1990-12-12 12:12:12' + cast(NULL AS interval hour)", "TIMESTAMP(0)");
     checkExpType("TIMESTAMP '1990-12-12 12:12:12' + cast(NULL AS interval YEAR)", "TIMESTAMP(0)");
-
-    checkExpType("cast(NULL AS interval hour) + TIME '8:8:8'", "TIME(0)");
-    checkExpType("cast(NULL AS interval YEAR) + TIME '8:8:8'", "TIME(0)");
-    checkExpType("cast(NULL AS interval hour) + TIMESTAMP '1990-12-12 12:12:12'", "TIMESTAMP(0)");
-    checkExpType("cast(NULL AS interval YEAR) + TIMESTAMP '1990-12-12 12:12:12'", "TIMESTAMP(0)");
-
-    expr("interval '1' day + interval '1' DAY(4)")
-        .columnType("INTERVAL DAY(4) NOT NULL");
-    expr("interval '1' day(5) + interval '1' DAY")
-        .columnType("INTERVAL DAY(5) NOT NULL");
-    expr("interval '1' day + interval '1' HOUR(10)")
-        .columnType("INTERVAL DAY TO HOUR NOT NULL");
-    expr("interval '1' day + interval '1' MINUTE")
-        .columnType("INTERVAL DAY TO MINUTE NOT NULL");
-    expr("interval '1' day + interval '1' second")
-        .columnType("INTERVAL DAY TO SECOND NOT NULL");
-
-    expr("interval '1:2' hour to minute + interval '1' second")
-        .columnType("INTERVAL HOUR TO SECOND NOT NULL");
-    expr("interval '1:3' hour to minute + interval '1 1:2:3.4' day to second")
-        .columnType("INTERVAL DAY TO SECOND NOT NULL");
-    expr("interval '1:2' hour to minute + interval '1 1' day to hour")
-        .columnType("INTERVAL DAY TO MINUTE NOT NULL");
-    expr("interval '1:2' hour to minute + interval '1 1' day to hour")
-        .columnType("INTERVAL DAY TO MINUTE NOT NULL");
-    expr("interval '1 2' day to hour + interval '1:1' minute to second")
-        .columnType("INTERVAL DAY TO SECOND NOT NULL");
-
-    expr("interval '1' year + interval '1' month")
-        .columnType("INTERVAL YEAR TO MONTH NOT NULL");
-    expr("interval '1' day - interval '1' hour")
-        .columnType("INTERVAL DAY TO HOUR NOT NULL");
-    expr("interval '1' year - interval '1' month")
-        .columnType("INTERVAL YEAR TO MONTH NOT NULL");
-    expr("interval '1' month - interval '1' year")
-        .columnType("INTERVAL YEAR TO MONTH NOT NULL");
-    wholeExpr("interval '1' year + interval '1' day")
-        .fails("(?s).*Cannot apply '\\+' to arguments of type "
-            + "'<INTERVAL YEAR> \\+ <INTERVAL DAY>'.*");
-    wholeExpr("interval '1' month + interval '1' second")
-        .fails("(?s).*Cannot apply '\\+' to arguments of type "
-            + "'<INTERVAL MONTH> \\+ <INTERVAL SECOND>'.*");
-    wholeExpr("interval '1' year - interval '1' day")
-        .fails("(?s).*Cannot apply '-' to arguments of type "
-            + "'<INTERVAL YEAR> - <INTERVAL DAY>'.*");
-    wholeExpr("interval '1' month - interval '1' second")
-        .fails("(?s).*Cannot apply '-' to arguments of type "
-            + "'<INTERVAL MONTH> - <INTERVAL SECOND>'.*");
-
-    // mixing between datetime and interval todo        checkExpType("date
-    // '1234-12-12' + INTERVAL '1' month + interval '1' day","DATE"); todo
-    //      checkExpFails("date '1234-12-12' + (INTERVAL '1' month +
-    // interval '1' day)","?");
-
-    // multiply operator
-    expr("interval '1' year * 2")
-        .columnType("INTERVAL YEAR NOT NULL");
-    expr("1.234*interval '1 1:2:3' day to second ")
-        .columnType("INTERVAL DAY TO SECOND NOT NULL");
-
-    // division operator
-    expr("interval '1' month / 0.1")
-        .columnType("INTERVAL MONTH NOT NULL");
-    expr("interval '1-2' year TO month / 0.1e-9")
-        .columnType("INTERVAL YEAR TO MONTH NOT NULL");
-    wholeExpr("1.234/interval '1 1:2:3' day to second")
-        .fails("(?s).*Cannot apply '/' to arguments of type "
-            + "'<DECIMAL.4, 3.> / <INTERVAL DAY TO SECOND>'.*");
-  }
-
-  @Test void testTimestampAddAndDiff() {
-    List<String> tsi = ImmutableList.<String>builder()
-        .add("FRAC_SECOND")
-        .add("MICROSECOND")
-        .add("MINUTE")
-        .add("HOUR")
-        .add("DAY")
-        .add("WEEK")
-        .add("MONTH")
-        .add("QUARTER")
-        .add("YEAR")
-        .add("SQL_TSI_FRAC_SECOND")
-        .add("SQL_TSI_MICROSECOND")
-        .add("SQL_TSI_MINUTE")
-        .add("SQL_TSI_HOUR")
-        .add("SQL_TSI_DAY")
-        .add("SQL_TSI_WEEK")
-        .add("SQL_TSI_MONTH")
-        .add("SQL_TSI_QUARTER")
-        .add("SQL_TSI_YEAR")
-        .build();
-
-    List<String> functions = ImmutableList.<String>builder()
-        .add("timestampadd(%s, 12, current_timestamp)")
-        .add("timestampdiff(%s, current_timestamp, current_timestamp)")
-        .build();
-
-    for (String interval : tsi) {
-      for (String function : functions) {
-        expr(String.format(Locale.ROOT, function, interval)).ok();
-      }
-    }
-
-    expr("timestampadd(SQL_TSI_WEEK, 2, current_timestamp)")
-        .columnType("TIMESTAMP(0) NOT NULL");
-    expr("timestampadd(SQL_TSI_SECOND, cast(NULL AS INTEGER), current_timestamp)")
-        .columnType("TIMESTAMP(0)");
-    expr("timestampadd(SQL_TSI_DAY, cast(NULL AS INTEGER), current_timestamp)")
-        .columnType("TIMESTAMP(0)");
-    expr("timestampadd(SQL_TSI_WEEK, 2, cast(null as timestamp))")
-        .columnType("TIMESTAMP(0)");
-    expr("timestampdiff(SQL_TSI_WEEK, current_timestamp, current_timestamp)")
-        .columnType("INTEGER NOT NULL");
-    expr("timestampdiff(SQL_TSI_WEEK, cast(null as timestamp), current_timestamp)")
-        .columnType("INTEGER");
+    checkExpType(
+            "timestampadd(SQL_TSI_SECOND, cast(NULL AS INTEGER), current_timestamp)", "TIMESTAMP(0)");
+    checkExpType(
+            "timestampadd(SQL_TSI_DAY, cast(NULL AS INTEGER), current_timestamp)", "TIMESTAMP(0)");
+    checkExpType(
+        "timestampadd(SQL_TSI_WEEK, 2, current_timestamp)", "TIMESTAMP(0) NOT NULL");
+    checkExpType(
+        "timestampadd(SQL_TSI_WEEK, 2, cast(null as timestamp))", "TIMESTAMP(0)");
+    checkExpType(
+        "timestampdiff(SQL_TSI_WEEK, current_timestamp, current_timestamp)", "INTEGER NOT NULL");
+    checkExpType(
+        "timestampdiff(SQL_TSI_WEEK, cast(null as timestamp), current_timestamp)", "INTEGER");
 
     wholeExpr("timestampadd(incorrect, 1, current_timestamp)")
         .fails("(?s).*Was expecting one of.*");
