@@ -2354,6 +2354,7 @@ where false;
 #
 #!ok
 #
+<<<<<<< HEAD
 # [CALCITE-2447] POWER, ATAN2 functions fail with NoSuchMethodException
 values power(0.5, 2);
 +--------+
@@ -2433,4 +2434,6 @@ EXPR$0, EXPR$1
 2019-12-31, 2019-12-31
 !ok
 
+=======
+>>>>>>> ffd60db46 (DX-11444: Prevent optimization of non-deterministic functions)
 # End misc.iq

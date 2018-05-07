@@ -376,9 +376,9 @@ public class RexSimplify {
     // Simplify "x <op> x"
     final RexNode o0 = operands.get(0);
     final RexNode o1 = operands.get(1);
-    if (o0.equals(o1)
-            && RexUtil.isDeterministic(o1)
-        && (unknownAs == FALSE
+    if (RexUtil.eq(o0, o1)
+        && RexUtil.isDeterministic(o1)
+        && (unknownAsFalse
             || (!o0.getType().isNullable()
                 && !o1.getType().isNullable()))) {
       switch (e.getKind()) {

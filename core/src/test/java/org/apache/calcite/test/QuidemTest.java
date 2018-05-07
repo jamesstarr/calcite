@@ -37,8 +37,10 @@ import com.google.common.io.PatternFilenameFilter;
 
 import net.hydromatic.quidem.Quidem;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.Test;
+import org.junit.internal.Throwables;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -182,16 +184,9 @@ public abstract class QuidemTest {
     final Method method = findMethod(path);
     if (method != null) {
       try {
-        method.invoke(this, path);
+        method.invoke(this);
       } catch (InvocationTargetException e) {
-        Throwable cause = e.getCause();
-        if (cause instanceof Exception) {
-          throw (Exception) cause;
-        }
-        if (cause instanceof Error) {
-          throw (Error) cause;
-        }
-        throw e;
+        throw Throwables.rethrowAsException(e.getCause());
       }
     } else {
       checkRun(path);
