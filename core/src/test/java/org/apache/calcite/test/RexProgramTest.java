@@ -388,6 +388,29 @@ public class RexProgramTest {
   }
 
   /**
+   * Tests how the condition is simplified.
+   */
+  @Test public void testSimplifyCondition3() {
+    final RexNode leftCall = rexBuilder.makeCall(SqlStdOperatorTable.RAND);
+    final RexNode rightCall = rexBuilder.makeCall(SqlStdOperatorTable.RAND);
+    final RexNode equalCall = rexBuilder.makeCall(SqlStdOperatorTable.EQUALS, leftCall, rightCall);
+    final RexNode result = simplify(equalCall);
+    assertThat(result.toString(), is(equalCall.toString()));
+
+    RelDataType inputRowType =
+        typeFactory.createStructType(
+            Arrays.asList(typeFactory.createSqlType(SqlTypeName.BOOLEAN)),
+            Arrays.asList("foo"));
+    final RexProgramBuilder builder = new RexProgramBuilder(inputRowType, rexBuilder);
+    //RexLocalRef ref = builder.addExpr(equalCall);
+    builder.addProject(equalCall, "x");
+    final RexProgram program = builder.getProgram(true);
+    assertThat(program.toString(),
+        is("(expr#0=[{inputs}], expr#1=[RAND()], expr#2=[RAND()], "
+            + "expr#3=[=($t1, $t2)], x=[$t3])"));
+  }
+
+  /**
    * Checks translation of AND(x, x).
    */
   @Test public void testDuplicateAnd() {
@@ -1916,6 +1939,8 @@ public class RexProgramTest {
     RexNode result = RexUtil.simplify(rexBuilder, emptyStringCast);
     assertThat(result, equalTo(emptyStringCast));
   }
+
+
 }
 
 // End RexProgramTest.java

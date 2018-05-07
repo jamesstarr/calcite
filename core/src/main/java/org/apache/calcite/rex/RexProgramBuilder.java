@@ -334,9 +334,13 @@ public class RexProgramBuilder {
     if (expr instanceof RexLocalRef) {
       key = null;
       ref = (RexLocalRef) expr;
-    } else {
+    } else if (RexUtil.isDeterministic(expr)) {
       key = RexUtil.makeKey(expr);
       ref = exprMap.get(key);
+    } else {
+      // non-deterministic expressions should not be reused
+      key = null;
+      ref = null;
     }
     if (ref == null) {
       if (validating) {
@@ -347,7 +351,9 @@ public class RexProgramBuilder {
 
       // Add expression to list, and return a new reference to it.
       ref = addExpr(expr);
-      exprMap.put(key, ref);
+      if (key != null) {
+        exprMap.put(key, ref);
+      }
     } else {
       if (force) {
         // Add expression to list, but return the previous ref.

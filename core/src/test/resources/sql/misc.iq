@@ -2138,5 +2138,18 @@ where false;
 (0 rows)
 
 !ok
-
+# [DX-11444] RAND = RAND simplified incorrectly
+# Disabled because requires non-trivial changes to linq4j
+# and are not necessary for Dremio
+#select rand() = rand() as x
+#from (values (1));
+#+-------+
+#| X     |
+#+-------+
+#| false |
+#+-------+
+#(1 rows)
+#
+#!ok
+#
 # End misc.iq
