@@ -877,12 +877,16 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
         EnumerableAggregate(group=[{0}], c=[COUNT()])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null], expr#5=[null], expr#6=[IS NULL($t5)], expr#7=[OR($t4, $t6)], cs=[$t3], $condition=[$t7])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:BOOLEAN], expr#5=[null:INTEGER], expr#6=[IS NULL($t5)], expr#7=[OR($t4, $t6)], cs=[$t3], $condition=[$t7])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], $condition=[$t5])
+>>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -1260,12 +1264,16 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
         EnumerableAggregate(group=[{0}], c=[COUNT()])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null], expr#5=[null], expr#6=[IS NULL($t5)], expr#7=[OR($t4, $t6)], cs=[$t3], $condition=[$t7])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:BOOLEAN], expr#5=[null:INTEGER], expr#6=[IS NULL($t5)], expr#7=[OR($t4, $t6)], cs=[$t3], $condition=[$t7])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], $condition=[$t5])
+>>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -1665,6 +1673,7 @@ select sal from "scott".emp
 
 !ok
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableValues(tuples=[[]])
 =======
 EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
@@ -1675,6 +1684,9 @@ EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
+=======
+EnumerableValues(tuples=[[]])
+>>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
 !plan
 
 # Test filter literal IN null non-correlated
@@ -2214,6 +2226,7 @@ select sal from "scott".emp e
 
 !ok
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
   EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
@@ -2227,6 +2240,9 @@ EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t2])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
+=======
+EnumerableValues(tuples=[[]])
+>>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
 !plan
 
 # Test filter literal IN null correlated
@@ -2413,7 +2429,7 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t3, $t5)], expr#
   EnumerableHashJoin(condition=[=($2, $4)], joinType=[left])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
-    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:BOOLEAN], expr#5=[null:INTEGER], expr#6=[IS NULL($t5)], expr#7=[OR($t4, $t6)], cs=[$t3], DEPTNO=[$t0], $condition=[$t7])
+    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], DEPTNO=[$t0], $condition=[$t5])
       EnumerableTableScan(table=[[scott, DEPT]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 !plan

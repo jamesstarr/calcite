@@ -4785,6 +4785,9 @@ LogicalProject(EXPR$0=[CAST(/($2, $3)):INTEGER NOT NULL])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
     <TestCase name="testOrAlwaysTrue">
         <Resource name="sql">
             <![CDATA[select * from EMPNULLABLES_20
@@ -4831,6 +4834,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testNoOversimplificationBelowIsNull">
         <Resource name="sql">
             <![CDATA[select * from emp where ( (empno=1 and mgr=1) or (empno=null and mgr=1) ) is null]]>
@@ -4853,6 +4857,8 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 =======
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 
+=======
+>>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
     <TestCase name="testWindowFunctionOnAggregations">
         <Resource name="sql">
             <![CDATA[SELECT
@@ -6533,6 +6539,7 @@ LogicalProject(EXPR$0=[1])
             <![CDATA[
 LogicalProject(EXPR$0=[1])
   LogicalJoin(condition=[=($0, $8)], joinType=[inner])
+<<<<<<< HEAD
     LogicalUnion(all=[true])
       LogicalProject(DEPTNO=[$7])
         LogicalFilter(condition=[>($7, 7)])
@@ -6540,6 +6547,16 @@ LogicalProject(EXPR$0=[1])
       LogicalProject(DEPTNO=[$7])
         LogicalFilter(condition=[>($7, 10)])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+=======
+    LogicalFilter(condition=[>($0, 7)])
+      LogicalUnion(all=[true])
+        LogicalProject(DEPTNO=[$7])
+          LogicalFilter(condition=[>($7, 7)])
+            LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+        LogicalProject(DEPTNO=[$7])
+          LogicalFilter(condition=[>($7, 10)])
+            LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+>>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
     LogicalFilter(condition=[>($7, 7)])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
