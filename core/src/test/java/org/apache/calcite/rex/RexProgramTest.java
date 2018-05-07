@@ -1509,6 +1509,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkSimplify2(and(le(hRef, literal1), ge(hRef, literal1)),
             "AND(<=(?0.h, 1), >=(?0.h, 1))",
             "=(?0.h, 1)");
@@ -1525,6 +1526,12 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
 =======
 >>>>>>> 5894084f1 (Revert "[CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)"):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+    checkSimplify2(and(le(hRef, literal1), ge(hRef, literal1)),
+            "AND(<=(?0.h, 1), >=(?0.h, 1))",
+            "=(?0.h, 1)");
+
+>>>>>>> 34395e939 ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify2(and(lt(hRef, literal1), eq(hRef, literal1), ge(hRef, literal1)),
         "AND(<(?0.h, 1), =(?0.h, 1), >=(?0.h, 1))",
         "false");
@@ -1749,7 +1756,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "false");
 
     checkSimplifyFilter(and(le(aRef, literal1), ge(aRef, literal1)),
-        "AND(<=(?0.a, 1), >=(?0.a, 1))");
+        "=(?0.a, 1)");
 
     checkSimplifyFilter(and(lt(aRef, literal1), eq(aRef, literal1), ge(aRef, literal1)),
         "false");
@@ -2263,6 +2270,187 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
   @Test public void testSimplifyDynamicParam() {
     checkSimplify(or(vBool(), vBool()), "?0.bool0");
+  }
+
+  @Test public void testSimplifyAndPush() {
+    final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
+    final RelDataType rowType = typeFactory.builder()
+        .add("a", intType)
+        .add("b", intType)
+        .build();
+
+    final RexDynamicParam range = rexBuilder.makeDynamicParam(rowType, 0);
+    final RexNode aRef = rexBuilder.makeFieldAccess(range, 0);
+    final RexNode bRef = rexBuilder.makeFieldAccess(range, 1);
+    final RexLiteral literal1 = rexBuilder.makeExactLiteral(BigDecimal.ONE);
+    final RexLiteral literal5 = rexBuilder.makeExactLiteral(BigDecimal.valueOf(5));
+    final RexLiteral literal10 = rexBuilder.makeExactLiteral(BigDecimal.TEN);
+
+    checkSimplifyFilter(
+        or(
+            or(eq(aRef, literal1),
+                eq(aRef, literal1)),
+            eq(aRef, literal1)),
+        "=(?0.a, 1)");
+
+    checkSimplifyFilter(
+        or(
+            and(eq(aRef, literal1),
+                eq(aRef, literal1)),
+            and(eq(aRef, literal10),
+                eq(aRef, literal1))),
+        "=(?0.a, 1)");
+
+    checkSimplifyFilter(
+        and(
+            eq(aRef, literal1),
+            or(eq(aRef, literal1),
+                eq(aRef, literal10))),
+        "=(?0.a, 1)");
+    checkSimplifyFilter(
+        and(
+            or(eq(aRef, literal1),
+                eq(aRef, literal10)),
+            eq(aRef, literal1)),
+        "=(?0.a, 1)");
+
+    checkSimplifyFilter(
+        and(gt(aRef, literal10),
+            gt(aRef, literal1)),
+        ">(?0.a, 10)");
+
+    checkSimplifyFilter(
+        and(gt(aRef, literal1),
+            gt(aRef, literal10)),
+        ">(?0.a, 10)");
+  }
+
+  @Test public void testSimplifyOrTerms() {
+    final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
+    final RelDataType rowType = typeFactory.builder()
+        .add("a", intType).nullable(false)
+        .add("b", intType).nullable(true)
+        .add("c", intType).nullable(true)
+        .build();
+
+    final RexDynamicParam range = rexBuilder.makeDynamicParam(rowType, 0);
+    final RexNode aRef = rexBuilder.makeFieldAccess(range, 0);
+    final RexNode bRef = rexBuilder.makeFieldAccess(range, 1);
+    final RexNode cRef = rexBuilder.makeFieldAccess(range, 2);
+    final RexLiteral literal1 = rexBuilder.makeExactLiteral(BigDecimal.ONE);
+    final RexLiteral literal2 = rexBuilder.makeExactLiteral(BigDecimal.valueOf(2));
+    final RexLiteral literal3 = rexBuilder.makeExactLiteral(BigDecimal.valueOf(3));
+    final RexLiteral literal4 = rexBuilder.makeExactLiteral(BigDecimal.valueOf(4));
+
+    // "a != 1 or a = 1" ==> "true"
+    checkSimplifyFilter(
+        or(ne(aRef, literal1),
+            eq(aRef, literal1)),
+        "true");
+
+    // TODO: make this simplify to "true"
+    checkSimplifyFilter(
+        or(eq(aRef, literal1),
+            ne(aRef, literal1)),
+        "OR(=(?0.a, 1), <>(?0.a, 1))");
+
+    // "b != 1 or b = 1" cannot be simplified, because b might be null
+    final RexNode neOrEq =
+            or(ne(bRef, literal1),
+                    eq(bRef, literal1));
+    checkSimplifyFilter(neOrEq, "OR(<>(?0.b, 1), =(?0.b, 1))");
+
+    // Careful of the excluded middle!
+    // We cannot simplify "b != 1 or b = 1" to "true" because if b is null, the
+    // result is unknown.
+    // TODO: "b is not unknown" would be the best simplification.
+    assertThat(simplify.withUnknownAsFalse(false).simplify(neOrEq).toString(),
+            equalTo("OR(<>(?0.b, 1), =(?0.b, 1))"));
+
+    // "a is null or a is not null" ==> "true"
+    checkSimplifyFilter(
+        or(isNull(aRef),
+            isNotNull(aRef)),
+        "true");
+
+    // "a is not null or a is null" ==> "true"
+    checkSimplifyFilter(
+        or(isNotNull(aRef),
+            isNull(aRef)),
+        "true");
+
+    // "b is not null or b is null" ==> "true" (valid even though b nullable)
+    checkSimplifyFilter(
+        or(isNotNull(bRef),
+            isNull(bRef)),
+        "true");
+
+    // "b is not null or c is null" unchanged
+    checkSimplifyFilter(
+        or(isNotNull(bRef),
+            isNull(cRef)),
+        "OR(IS NOT NULL(?0.b), IS NULL(?0.c))");
+
+    // multiple predicates are handled correctly
+    checkSimplifyFilter(
+        and(
+            or(eq(bRef, literal1),
+                eq(bRef, literal2)),
+            eq(bRef, literal2),
+            eq(aRef, literal3),
+            or(eq(aRef, literal3),
+                eq(aRef, literal4))),
+        "AND(=(?0.b, 2), =(?0.a, 3))");
+  }
+
+  @Test public void testSimplifyUnknown() {
+    final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
+    final RelDataType rowType = typeFactory.builder()
+            .add("a", intType).nullable(true)
+            .build();
+
+    final RexDynamicParam range = rexBuilder.makeDynamicParam(rowType, 0);
+    final RexNode aRef = rexBuilder.makeFieldAccess(range, 0);
+    final RexLiteral literal1 = rexBuilder.makeExactLiteral(BigDecimal.ONE);
+
+
+    checkSimplify2(
+            and(eq(aRef, literal1),
+                    nullInt),
+            "AND(=(?0.a, 1), null:INTEGER)",
+            "false");
+    checkSimplify2(
+            and(trueLiteral,
+                    nullBool),
+            "null:BOOLEAN",
+            "false");
+    checkSimplify(
+            and(falseLiteral,
+                    nullBool),
+            "false");
+
+    checkSimplify2(
+            and(nullBool,
+                    eq(aRef, literal1)),
+            "AND(null, =(?0.a, 1))",
+            "false");
+
+    checkSimplify3(
+            or(eq(aRef, literal1),
+                    nullBool),
+            "OR(=(?0.a, 1), null)",
+            "=(?0.a, 1)",
+            "true");
+    checkSimplify(
+            or(trueLiteral,
+                    nullBool),
+            "true");
+    checkSimplify3(
+            or(falseLiteral,
+                    nullBool),
+            "null:BOOLEAN",
+            "false",
+            "true");
   }
 
   /** Unit test for

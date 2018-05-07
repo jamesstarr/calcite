@@ -4947,8 +4947,11 @@ LogicalProject(EXPR$0=[CAST(/($2, $3)):INTEGER NOT NULL])
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
+=======
+>>>>>>> 34395e939 ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
     <TestCase name="testOrAlwaysTrue">
         <Resource name="sql">
             <![CDATA[select * from EMPNULLABLES_20
@@ -4996,8 +4999,11 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 72d688293 ([CALCITE-2726] ReduceExpressionRule oversimplifies filter conditions containing nulls)
+=======
+>>>>>>> 34395e939 ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
     <TestCase name="testNoOversimplificationBelowIsNull">
         <Resource name="sql">
             <![CDATA[select * from emp where ( (empno=1 and mgr=1) or (empno=null and mgr=1) ) is null]]>
@@ -6714,6 +6720,7 @@ LogicalProject(EXPR$0=[1])
   LogicalJoin(condition=[=($0, $8)], joinType=[inner])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 5894084f1 (Revert "[CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)")
     LogicalUnion(all=[true])
@@ -6725,6 +6732,8 @@ LogicalProject(EXPR$0=[1])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 34395e939 ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
     LogicalFilter(condition=[>($0, 7)])
       LogicalUnion(all=[true])
         LogicalProject(DEPTNO=[$7])
@@ -6733,11 +6742,15 @@ LogicalProject(EXPR$0=[1])
         LogicalProject(DEPTNO=[$7])
           LogicalFilter(condition=[>($7, 10)])
             LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+<<<<<<< HEAD
 >>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
     LogicalFilter(condition=[>($7, 7)])
 =======
     LogicalFilter(condition=[OR(>($7, 7), >($7, 10))])
 >>>>>>> 5894084f1 (Revert "[CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)")
+=======
+    LogicalFilter(condition=[>($7, 7)])
+>>>>>>> 34395e939 ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -7078,7 +7091,7 @@ LogicalProject(EXPR$0=[1])
       LogicalProject(DEPTNO=[$7])
         LogicalFilter(condition=[>($7, 1)])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
-    LogicalFilter(condition=[OR(>($7, 7), >($7, 10), >($7, 1))])
+    LogicalFilter(condition=[OR(>($7, 7), >($7, 1))])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
