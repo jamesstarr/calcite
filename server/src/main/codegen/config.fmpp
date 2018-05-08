@@ -59,10 +59,21 @@ data: {
       "ARCHIVE"
     ]
 
+<<<<<<< HEAD
     # List of non-reserved keywords to remove;
     # items in this list become reserved
     nonReservedKeywordsToRemove: [
     ]
+=======
+      # List of additional join types. Each is a method with no arguments.
+      # Example: LeftSemiJoin()
+      joinTypes: [
+      ]
+
+      # List of methods for parsing custom SQL statements.
+      statementParserMethods: [
+      ]
+>>>>>>> ed34cf8f8 ([CALCITE-2304] In Babel parser, allow Hive-style syntax "LEFT SEMI JOIN")
 
     # Return type of method implementation should be "SqlNode".
     # Return type of method implementation should be "SqlTypeNameSpec".

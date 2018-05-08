@@ -798,9 +798,6 @@ public class CalciteAssert {
     case JDBC_FOODMART_WITH_LATTICE:
       foodmart = addSchemaIfNotExists(rootSchema, SchemaSpec.JDBC_FOODMART);
       foodmart.add(schema.schemaName,
-<<<<<<< HEAD
-
-=======
           Lattice.create(foodmart.unwrap(CalciteSchema.class),
               "select 1 from \"foodmart\".\"sales_fact_1997\" as s\n"
                   + "join \"foodmart\".\"time_by_day\" as t using (\"time_id\")\n"
@@ -1064,7 +1061,6 @@ public class CalciteAssert {
         return with(SchemaSpec.SCOTT);
       case SPARK:
         return with(CalciteConnectionProperty.SPARK, true);
->>>>>>> 0f9894602 (Use real properties, not their names, in tests)
       default:
         throw Util.unexpected(config);
       }
@@ -1246,9 +1242,6 @@ public class CalciteAssert {
       }
     }
 
-<<<<<<< HEAD
-
-=======
     /** Use sparingly. Does not close the connection. */
     public Connection connect() throws SQLException {
       return connectionFactory.createConnection();
@@ -1362,7 +1355,6 @@ public class CalciteAssert {
         addSchema(rootSchema, schemaSpec);
       }
       con.setSchema(schemaSpec.schemaName);
->>>>>>> 669a7299e ([CALCITE-2280] Babel SQL parser)
       return connection;
     }
   }

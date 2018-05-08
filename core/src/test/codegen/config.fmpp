@@ -46,10 +46,22 @@ data: {
       "SECONDS"
       "YEARS"
 
+<<<<<<< HEAD
     # List of non-reserved keywords to add;
     # items in this list become non-reserved
     nonReservedKeywordsToAdd: [
     ]
+=======
+      # List of additional join types. Each is a method with no arguments.
+      # Example: LeftSemiJoin()
+      joinTypes: [
+      ]
+
+      # List of methods for parsing custom SQL statements.
+      statementParserMethods: [
+        "SqlDescribeSpacePower()"
+      ]
+>>>>>>> ed34cf8f8 ([CALCITE-2304] In Babel parser, allow Hive-style syntax "LEFT SEMI JOIN")
 
     # List of non-reserved keywords to remove;
     # items in this list become reserved
