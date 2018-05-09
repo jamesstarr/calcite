@@ -23,10 +23,13 @@ import org.apache.calcite.plan.RelOptPredicateList;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.Strong;
 import org.apache.calcite.rel.core.Project;
+import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.type.SqlOperandTypeChecker;
 import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
@@ -611,7 +614,7 @@ public class RexSimplify {
 
     // Add the predicates from the source to the range terms.
     for (RexNode predicate : predicates.pulledUpPredicates) {
-      final Comparison comparison = Comparison.of(predicate);
+      final Comparison comparison = Comparison.of(this, predicate);
       if (comparison != null
           && comparison.kind != SqlKind.NOT_EQUALS) { // not supported yet
         final C v0 = comparison.literal.getValueAs(clazz);
@@ -667,7 +670,7 @@ public class RexSimplify {
           RexCall rightCast = (RexCall) right;
           comparedOperands.add(rightCast.getOperands().get(0).toString());
         }
-        final Comparison comparison = Comparison.of(term);
+        final Comparison comparison = Comparison.of(this, term);
         // Check for comparison with null values
         if (comparison != null
             && comparison.literal.getValue() == null) {
@@ -810,7 +813,7 @@ public class RexSimplify {
 
   private <C extends Comparable<C>> RexNode simplifyUsingPredicates(RexNode e,
       Class<C> clazz) {
-    final Comparison comparison = Comparison.of(e);
+    final Comparison comparison = Comparison.of(this, e);
     // Check for comparison with null values
     if (comparison == null
         || comparison.kind == SqlKind.NOT_EQUALS
@@ -1294,7 +1297,7 @@ public class RexSimplify {
     }
 
     /** Creates a comparison, or returns null. */
-    static Comparison of(RexNode e) {
+    static Comparison of(RexSimplify simplify, RexNode e) {
       switch (e.getKind()) {
       case EQUALS:
       case NOT_EQUALS:
@@ -1302,9 +1305,29 @@ public class RexSimplify {
       case GREATER_THAN:
       case LESS_THAN_OR_EQUAL:
       case GREATER_THAN_OR_EQUAL:
+        final RexBuilder rexBuilder = simplify.rexBuilder;
         final RexCall call = (RexCall) e;
-        final RexNode left = call.getOperands().get(0);
-        final RexNode right = call.getOperands().get(1);
+        final List<RexNode> operands = call.getOperands();
+        final RexNode left;
+        final RexNode right;
+
+        // check if operands are comparable and convert if necessary
+        List<RelDataType> types = RexUtil.types(operands);
+        RelDataType type = SqlTypeUtil.consistentType(rexBuilder.getTypeFactory(),
+            SqlOperandTypeChecker.Consistency.COMPARE, types);
+        if (type != null) {
+          left = simplify.simplify(rexBuilder.ensureType(type, operands.get(0), true));
+          right = simplify.simplify(rexBuilder.ensureType(type, operands.get(1), true));
+
+          if (!(left instanceof RexLiteral || right instanceof RexLiteral)) {
+            return null;
+          }
+        } else {
+          left = operands.get(0);
+          right = operands.get(1);
+        }
+
+
         switch (right.getKind()) {
         case LITERAL:
           if (RexUtil.isReferenceOrAccess(left, true)) {
