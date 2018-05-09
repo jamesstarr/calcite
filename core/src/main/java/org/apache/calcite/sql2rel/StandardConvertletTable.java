@@ -21,7 +21,6 @@ import org.apache.calcite.avatica.util.TimeUnit;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.rel.type.RelDataTypeFamily;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexCallBinding;
@@ -65,7 +64,6 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.fun.SqlTrimFunction;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlOperandTypeChecker;
-import org.apache.calcite.sql.type.SqlTypeFamily;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.sql.validate.SqlValidator;
@@ -80,7 +78,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+>>>>>>> 3c8da1f95 (DX-11147: Fix RexSimplify#processRange cast issue)
 
 /**
  * Standard implementation of {@link SqlRexConvertletTable}.
@@ -873,7 +871,7 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
     }
     if (exprs.size() > 1) {
       final RelDataType type =
-          consistentType(cx, consistency, RexUtil.types(exprs));
+          SqlTypeUtil.consistentType(cx.getTypeFactory(), consistency, RexUtil.types(exprs));
       if (type != null) {
         final List<RexNode> oldExprs = Lists.newArrayList(exprs);
         exprs.clear();
@@ -885,50 +883,7 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
     return exprs;
   }
 
-  private static RelDataType consistentType(SqlRexContext cx,
-      SqlOperandTypeChecker.Consistency consistency, List<RelDataType> types) {
-    switch (consistency) {
-    case COMPARE:
-      final Set<RelDataTypeFamily> families =
-          Sets.newHashSet(RexUtil.families(types));
-      if (families.size() < 2) {
-        // All arguments are of same family. No need for explicit casts.
-        return null;
-      }
-      final List<RelDataType> nonCharacterTypes = Lists.newArrayList();
-      for (RelDataType type : types) {
-        if (type.getFamily() != SqlTypeFamily.CHARACTER) {
-          nonCharacterTypes.add(type);
-        }
-      }
-      if (!nonCharacterTypes.isEmpty()) {
-        final int typeCount = types.size();
-        types = nonCharacterTypes;
-        if (nonCharacterTypes.size() < typeCount) {
-          final RelDataTypeFamily family =
-              nonCharacterTypes.get(0).getFamily();
-          if (family instanceof SqlTypeFamily) {
-            // The character arguments might be larger than the numeric
-            // argument. Give ourselves some headroom.
-            switch ((SqlTypeFamily) family) {
-            case INTEGER:
-            case NUMERIC:
-              nonCharacterTypes.add(
-                  cx.getTypeFactory().createSqlType(SqlTypeName.BIGINT));
-            }
-          }
-        }
-      }
-      // fall through
-    case LEAST_RESTRICTIVE:
-      return cx.getTypeFactory().leastRestrictive(types);
-    default:
-      return null;
-    }
-  }
-
   private RexNode convertEqualsOrNotEquals(SqlRexContext cx, SqlCall call) {
->>>>>>> c6730b740 (DX-5173: Do not use DATETIME_MINUS operator for <DATE> - <DATE>)
 
     final RexCall convertedCall = (RexCall) convertCall(cx, call);
 

@@ -21,9 +21,7 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeFamily;
 import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rel.type.RelDataTypeFieldImpl;
-import org.apache.calcite.rel.type.RelRecordType;
 import org.apache.calcite.rex.RexUtil;
-import org.apache.calcite.sql.SqlBasicTypeNameSpec;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlCallBinding;
 import org.apache.calcite.sql.SqlCollation;
@@ -44,18 +42,7 @@ import org.apache.calcite.util.Util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
-
-import java.nio.charset.Charset;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static org.apache.calcite.rel.type.RelDataTypeImpl.NON_NULLABLE_SUFFIX;
 import static org.apache.calcite.util.Static.RESOURCE;
@@ -1614,6 +1601,52 @@ public abstract class SqlTypeUtil {
   public static boolean isArray(RelDataType type) {
     return type.getSqlTypeName() == SqlTypeName.ARRAY;
   }
+<<<<<<< HEAD
+=======
+
+  public static RelDataType consistentType(RelDataTypeFactory typeFactory,
+      SqlOperandTypeChecker.Consistency consistency, List<RelDataType> types) {
+    switch (consistency) {
+    case COMPARE:
+      final Set<RelDataTypeFamily> families =
+          Sets.newHashSet(RexUtil.families(types));
+      if (families.size() < 2) {
+        // All arguments are of same family. No need for explicit casts.
+        return null;
+      }
+      final List<RelDataType> nonCharacterTypes = Lists.newArrayList();
+      for (RelDataType type : types) {
+        if (type.getFamily() != SqlTypeFamily.CHARACTER) {
+          nonCharacterTypes.add(type);
+        }
+      }
+      if (!nonCharacterTypes.isEmpty()) {
+        final int typeCount = types.size();
+        types = nonCharacterTypes;
+        if (nonCharacterTypes.size() < typeCount) {
+          final RelDataTypeFamily family =
+              nonCharacterTypes.get(0).getFamily();
+          if (family instanceof SqlTypeFamily) {
+            // The character arguments might be larger than the numeric
+            // argument. Give ourselves some headroom.
+            switch ((SqlTypeFamily) family) {
+            case INTEGER:
+            case NUMERIC:
+              nonCharacterTypes.add(
+                  typeFactory.createSqlType(SqlTypeName.BIGINT));
+            }
+          }
+        }
+      }
+      // fall through
+    case LEAST_RESTRICTIVE:
+      return typeFactory.leastRestrictive(types);
+    default:
+      return null;
+    }
+  }
+}
+>>>>>>> 3c8da1f95 (DX-11147: Fix RexSimplify#processRange cast issue)
 
   public static RelDataType consistentType(RelDataTypeFactory typeFactory,
       SqlOperandTypeChecker.Consistency consistency, List<RelDataType> types) {
