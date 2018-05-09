@@ -514,36 +514,6 @@ class JdbcAdapterTest {
             + "FROM \"foodmart\".\"expense_fact\"");
   }
 
-<<<<<<< HEAD
-  @Test void testTablesNoCatalogSchema() {
-    final String model =
-        JdbcTest.FOODMART_MODEL
-            .replace("jdbcCatalog: 'foodmart'", "jdbcCatalog: null")
-            .replace("jdbcSchema: 'foodmart'", "jdbcSchema: null");
-    // Since Calcite uses PostgreSQL JDBC driver version >= 4.1,
-    // catalog/schema can be retrieved from JDBC connection and
-    // this test succeeds
-    CalciteAssert.model(model)
-        // Calcite uses PostgreSQL JDBC driver version >= 4.1
-        .enable(CalciteAssert.DB == DatabaseInstance.POSTGRESQL)
-        .query("select \"store_id\", \"account_id\", \"exp_date\","
-            + " \"time_id\", \"category_id\", \"currency_id\", \"amount\","
-            + " last_value(\"time_id\") over ()"
-            + " as \"last_version\" from \"expense_fact\"")
-        .runs();
-    // Since Calcite uses HSQLDB JDBC driver version < 4.1,
-    // catalog/schema cannot be retrieved from JDBC connection and
-    // this test fails
-    CalciteAssert.model(model)
-        .enable(CalciteAssert.DB == DatabaseInstance.HSQLDB)
-        .query("select \"store_id\", \"account_id\", \"exp_date\","
-            + " \"time_id\", \"category_id\", \"currency_id\", \"amount\","
-            + " last_value(\"time_id\") over ()"
-            + " as \"last_version\" from \"expense_fact\"")
-        .throws_("'expense_fact' not found");
-  }
-
-=======
 >>>>>>> 70f226063 ([CALCITE-2206] JDBC adapter incorrectly pushes windowed aggregates down to HSQLDB (Pavel Gubin))
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1506">[CALCITE-1506]
@@ -577,7 +547,10 @@ class JdbcAdapterTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2305">[CALCITE-2305]
    * JDBC adapter generates invalid casts on PostgreSQL, because PostgreSQL does
    * not have TINYINT and DOUBLE types</a>. */
+<<<<<<< HEAD
   @Test void testCast() {
+=======
+  @Test public void testCast() {
     CalciteAssert
         .model(JdbcTest.FOODMART_MODEL)
         .enable(CalciteAssert.DB == CalciteAssert.DatabaseInstance.POSTGRESQL)
@@ -590,7 +563,7 @@ class JdbcAdapterTest {
             + "FROM \"foodmart\".\"expense_fact\"");
   }
 
-  @Test void testOverRowsBetweenBoundFollowingAndFollowing() {
+  @Test public void testOverRowsBetweenBoundFollowingAndFollowing() {
     CalciteAssert
         .model(JdbcTest.FOODMART_MODEL)
         .enable(CalciteAssert.DB == CalciteAssert.DatabaseInstance.POSTGRESQL)
