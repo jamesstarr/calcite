@@ -66,6 +66,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -405,7 +406,11 @@ public class RexUtil {
       right = operands.get(1);
     } else {
       left = operands.get(0);
-      right = rexBuilder.makeNullLiteral(left.getType());
+      // make sure not to infer a wrong constant reduction to null if
+      // type is not nullable
+      right = left.getType().isNullable()
+          ? rexBuilder.makeNullLiteral(left.getType())
+          : left;
     }
     // Note that literals are immutable too, and they can only be compared
     // through values.
