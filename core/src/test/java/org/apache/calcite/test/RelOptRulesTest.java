@@ -4724,16 +4724,16 @@ class RelOptRulesTest extends RelOptTestBase {
   /** Test case for DX-11490
    * Make sure the planner doesn't fail over wrong push down
    * of is null */
-  @Test void testIsNullPushDown() {
+  @Test public void testIsNullPushDown() {
     HepProgramBuilder preBuilder = new HepProgramBuilder();
     preBuilder.addRuleClass(ProjectToWindowRule.class);
-    preBuilder.addRuleInstance(CoreRules.PROJECT_TO_LOGICAL_PROJECT_AND_WINDOW);
-    preBuilder.addRuleInstance(CoreRules.CALC_REDUCE_EXPRESSIONS);
+    preBuilder.addRuleInstance(ProjectToWindowRule.PROJECT);
+    preBuilder.addRuleInstance(ReduceExpressionsRule.CALC_INSTANCE);
 
     HepProgramBuilder builder = new HepProgramBuilder();
-    builder.addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
-    builder.addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS);
-    builder.addRuleInstance(CoreRules.CALC_REDUCE_EXPRESSIONS);
+    builder.addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE);
+    builder.addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE);
+    builder.addRuleInstance(ReduceExpressionsRule.CALC_INSTANCE);
     HepPlanner hepPlanner = new HepPlanner(builder.build());
 
     final String sql = "select empno, deptno, w_count from (\n"
@@ -4747,6 +4747,7 @@ class RelOptRulesTest extends RelOptTestBase {
         .check();
   }
 
+<<<<<<< HEAD
   @Test void testIsNullPushDown2() {
     HepProgramBuilder preBuilder = new HepProgramBuilder();
     preBuilder.addRuleInstance(CoreRules.PROJECT_TO_LOGICAL_PROJECT_AND_WINDOW);
@@ -4766,6 +4767,8 @@ class RelOptRulesTest extends RelOptTestBase {
         .check();
   }
 
+=======
+>>>>>>> e5770204d (DX-11490: Fix wrong constant reduction over windows function)
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-750">[CALCITE-750]
    * Allow windowed aggregate on top of regular aggregate</a>. */

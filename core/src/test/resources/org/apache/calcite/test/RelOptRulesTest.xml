@@ -282,6 +282,7 @@ LogicalProject(EMPNO=[$0], DEPTNO=[$1], W_COUNT=[$2])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testIsNullPushDown2">
         <Resource name="sql">
             <![CDATA[select w_count from (
@@ -306,6 +307,8 @@ LogicalProject(EMPNO=[$0], DEPTNO=[$1], W_COUNT=[$2])
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> e5770204d (DX-11490: Fix wrong constant reduction over windows function)
     <TestCase name="testProjectToWindowRuleForMultipleWindows">
         <Resource name="sql">
             <![CDATA[select

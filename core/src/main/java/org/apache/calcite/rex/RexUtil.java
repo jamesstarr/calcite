@@ -67,7 +67,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Predicate;
+
 import javax.annotation.Nonnull;
 
 import static org.apache.calcite.sql.type.SqlTypeName.INTERVAL_TYPES;
@@ -408,11 +408,11 @@ public class RexUtil {
       right = operands.get(1);
     } else { // is null
       left = operands.get(0);
-      if (!left.getType().isNullable()) {
-        // There's no sense in inferring $0=null when $0 is not nullable
-        return;
-      }
-      right = rexBuilder.makeNullLiteral(left.getType());
+      // make sure not to infer a wrong constant reduction to null if
+      // type is not nullable
+      right = left.getType().isNullable()
+          ? rexBuilder.makeNullLiteral(left.getType())
+          : left;
     }
     // Note that literals are immutable too, and they can only be compared
     // through values.
