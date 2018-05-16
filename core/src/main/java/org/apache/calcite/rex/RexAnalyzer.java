@@ -28,58 +28,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 
 import java.math.BigDecimal;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-/** Analyzes an expression, figures out what are the unbound variables,
- * assigns a variety of values to each unbound variable, and evaluates
- * the expression. */
-public class RexAnalyzer {
-  public final RexNode e;
-  public final List<RexNode> variables;
-  public final int unsupportedCount;
-
-  /** Creates a RexAnalyzer. */
-  public RexAnalyzer(RexNode e, RelOptPredicateList predicates) {
-    this.e = e;
-    final VariableCollector variableCollector = new VariableCollector();
-    e.accept(variableCollector);
-    predicates.pulledUpPredicates.forEach(p -> p.accept(variableCollector));
-    variables = ImmutableList.copyOf(variableCollector.builder);
-    unsupportedCount = variableCollector.unsupportedCount;
-  }
-
-  /** Generates a map of variables and lists of values that could be assigned
-   * to them. */
-  public Iterable<Map<RexNode, Comparable>> assignments() {
-    final List<List<Comparable>> generators =
-        variables.stream().map(RexAnalyzer::getComparables)
-            .collect(Util.toImmutableList());
-    final Iterable<List<Comparable>> product = Linq4j.product(generators);
-    //noinspection StaticPseudoFunctionalStyleMethod
-    return Iterables.transform(product,
-        values -> ImmutableMap.copyOf(Pair.zip(variables, values)));
-  }
-
-  private static List<Comparable> getComparables(RexNode variable) {
-    final ImmutableList.Builder<Comparable> values = ImmutableList.builder();
-    switch (variable.getType().getSqlTypeName()) {
-    case BOOLEAN:
-      values.add(true);
-      values.add(false);
-      break;
-    case INTEGER:
-      values.add(BigDecimal.valueOf(-1L));
-      values.add(BigDecimal.valueOf(0L));
-      values.add(BigDecimal.valueOf(1L));
-      values.add(BigDecimal.valueOf(1_000_000L));
-      break;
-    case DECIMAL:
-      values.add(BigDecimal.valueOf(-100L));
-      values.add(BigDecimal.valueOf(100L));
-      break;
+>>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values)
     case VARCHAR:
       values.add(new NlsString("", null, null));
       values.add(new NlsString("hello", null, null));
@@ -132,6 +81,7 @@ public class RexAnalyzer {
     }
 
     @Override public Void visitCall(RexCall call) {
+<<<<<<< HEAD
       if (!RexInterpreter.SUPPORTED_SQL_KIND.contains(call.getKind())) {
         ++unsupportedCount;
         return null;
@@ -140,3 +90,30 @@ public class RexAnalyzer {
     }
   }
 }
+=======
+      switch (call.getKind()) {
+      case CAST:
+        ++unsupportedCount;
+        return null;
+      case EQUALS:
+      case GREATER_THAN:
+      case GREATER_THAN_OR_EQUAL:
+      case LESS_THAN_OR_EQUAL:
+      case LESS_THAN:
+      case NOT_EQUALS:
+        final List<RexNode> operands = new ArrayList<>(call.getOperands());
+        final RexNode o0 = operands.get(0);
+        final RexNode o1 = operands.get(1);
+        if (o0.equals(o1) && !RexUtil.isDeterministic(o1)) {
+          ++unsupportedCount;
+          return null;
+        }
+        // fall through
+      default:
+        return super.visitCall(call);
+      }
+    }
+  }
+}
+
+// End RexAnalyzer.java

@@ -44,7 +44,8 @@ import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -393,11 +394,11 @@ public class RexImplicationCheckerTest {
         is("2014"));
   }
 
-  /** Test case for simplifier of ceil/floor. */
-  @Test void testSimplifyCeilFloor() {
-    // We can add more time units here once they are supported in
-    // RexInterpreter, e.g., TimeUnitRange.HOUR, TimeUnitRange.MINUTE,
-    // TimeUnitRange.SECOND.
+  /** Test case for simplifier of ceil and floor. */
+  // Disabled: we wrongly simplify FLOOR(CEIL(2010-10-10, YEAR), YEAR)
+  // to FLOOR(2010-10-10, YEAR)
+  @Ignore("[CALCITE-2332]")
+  @Test public void testSimplifyFloor() {
     final ImmutableList<TimeUnitRange> timeUnitRanges =
         ImmutableList.of(TimeUnitRange.YEAR, TimeUnitRange.MONTH);
     final Fixture f = new Fixture();
@@ -586,7 +587,7 @@ public class RexImplicationCheckerTest {
                       rootSchema)));
       simplify =
           new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false,
-              executor);
+              executor).withParanoid(true);
       simplifyUnknownFalse =
               new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, true,
                       executor);

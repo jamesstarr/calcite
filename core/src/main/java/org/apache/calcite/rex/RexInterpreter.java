@@ -20,7 +20,7 @@ import org.apache.calcite.avatica.util.DateTimeUtils;
 import org.apache.calcite.avatica.util.TimeUnit;
 import org.apache.calcite.avatica.util.TimeUnitRange;
 import org.apache.calcite.rel.metadata.NullSentinel;
-import org.apache.calcite.sql.SqlKind;
+>>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values)
 import org.apache.calcite.util.NlsString;
 import org.apache.calcite.util.Util;
 
@@ -30,7 +30,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Comparator;
+<<<<<<< HEAD
 import java.util.EnumSet;
+=======
 import java.util.List;
 import java.util.Map;
 import java.util.function.IntPredicate;
@@ -49,16 +51,7 @@ import java.util.function.IntPredicate;
 public class RexInterpreter implements RexVisitor<Comparable> {
   private static final NullSentinel N = NullSentinel.INSTANCE;
 
-  public static final EnumSet<SqlKind> SUPPORTED_SQL_KIND =
-      EnumSet.of(SqlKind.IS_NOT_DISTINCT_FROM, SqlKind.EQUALS, SqlKind.IS_DISTINCT_FROM,
-          SqlKind.NOT_EQUALS, SqlKind.GREATER_THAN, SqlKind.GREATER_THAN_OR_EQUAL,
-          SqlKind.LESS_THAN, SqlKind.LESS_THAN_OR_EQUAL, SqlKind.AND, SqlKind.OR,
-          SqlKind.NOT, SqlKind.CASE, SqlKind.IS_TRUE, SqlKind.IS_NOT_TRUE,
-          SqlKind.IS_FALSE, SqlKind.IS_NOT_FALSE, SqlKind.PLUS_PREFIX,
-          SqlKind.MINUS_PREFIX, SqlKind.PLUS, SqlKind.MINUS, SqlKind.TIMES,
-          SqlKind.DIVIDE, SqlKind.COALESCE, SqlKind.CEIL,
-          SqlKind.FLOOR, SqlKind.EXTRACT);
-
+>>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values)
   private final Map<RexNode, Comparable> environment;
 
   /** Creates an interpreter.
@@ -100,7 +93,10 @@ public class RexInterpreter implements RexVisitor<Comparable> {
   }
 
   public Comparable visitLiteral(RexLiteral literal) {
+<<<<<<< HEAD
     return Util.first(literal.getValue4(), N);
+=======
+    return Util.first(literal.getValue4(), NullSentinel.INSTANCE);
   }
 
   public Comparable visitOver(RexOver over) {
@@ -141,18 +137,8 @@ public class RexInterpreter implements RexVisitor<Comparable> {
       values.add(operand.accept(this));
     }
     switch (call.getKind()) {
-    case IS_NOT_DISTINCT_FROM:
-      if (containsNull(values)) {
-        return values.get(0).equals(values.get(1));
-      }
-      // falls through EQUALS
     case EQUALS:
       return compare(values, c -> c == 0);
-    case IS_DISTINCT_FROM:
-      if (containsNull(values)) {
-        return !values.get(0).equals(values.get(1));
-      }
-      // falls through NOT_EQUALS
     case NOT_EQUALS:
       return compare(values, c -> c != 0);
     case GREATER_THAN:
@@ -185,23 +171,9 @@ public class RexInterpreter implements RexVisitor<Comparable> {
       return values.get(0).equals(false);
     case IS_NOT_FALSE:
       return !values.get(0).equals(false);
-    case PLUS_PREFIX:
-      return values.get(0);
-    case MINUS_PREFIX:
-      return containsNull(values) ? N
-          : number(values.get(0)).negate();
     case PLUS:
       return containsNull(values) ? N
           : number(values.get(0)).add(number(values.get(1)));
-    case MINUS:
-      return containsNull(values) ? N
-          : number(values.get(0)).subtract(number(values.get(1)));
-    case TIMES:
-      return containsNull(values) ? N
-          : number(values.get(0)).multiply(number(values.get(1)));
-    case DIVIDE:
-      return containsNull(values) ? N
-          : number(values.get(0)).divide(number(values.get(1)));
     case CAST:
       return cast(call, values);
     case COALESCE:
@@ -358,7 +330,7 @@ public class RexInterpreter implements RexVisitor<Comparable> {
 
   private boolean containsNull(List<Comparable> values) {
     for (Comparable value : values) {
-      if (value == N) {
+      if (value == NullSentinel.INSTANCE) {
         return true;
       }
     }
@@ -386,3 +358,8 @@ public class RexInterpreter implements RexVisitor<Comparable> {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End RexInterpreter.java
+>>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values)

@@ -120,8 +120,8 @@ class MaterializationTest {
       new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
   private final RexBuilder rexBuilder = new RexBuilder(typeFactory);
   private final RexSimplify simplify =
-      new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, RexUtil.EXECUTOR)
-          .withParanoid(true);
+      new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false,
+          RexUtil.EXECUTOR).withParanoid(true);
 
   private static Sql sql() {
     return ImmutableBeans.create(Sql.class)

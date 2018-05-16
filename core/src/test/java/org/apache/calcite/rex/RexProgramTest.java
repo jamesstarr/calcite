@@ -23,6 +23,25 @@ import org.apache.calcite.plan.Strong;
 import org.apache.calcite.rel.metadata.NullSentinel;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+=======
+import org.apache.calcite.rel.type.RelDataTypeSystem;
+import org.apache.calcite.rex.RexBuilder;
+import org.apache.calcite.rex.RexCall;
+import org.apache.calcite.rex.RexDynamicParam;
+import org.apache.calcite.rex.RexExecutor;
+import org.apache.calcite.rex.RexExecutorImpl;
+import org.apache.calcite.rex.RexInputRef;
+import org.apache.calcite.rex.RexInterpreter;
+import org.apache.calcite.rex.RexLiteral;
+import org.apache.calcite.rex.RexLocalRef;
+import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.rex.RexProgram;
+import org.apache.calcite.rex.RexProgramBuilder;
+import org.apache.calcite.rex.RexSimplify;
+import org.apache.calcite.rex.RexUtil;
+import org.apache.calcite.schema.SchemaPlus;
+>>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSpecialOperator;
@@ -111,7 +130,8 @@ public class RexProgramTest {
     RexExecutor executor =
         new RexExecutorImpl(new DummyTestDataContext());
     simplify =
-        new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false, executor);
+        new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false, executor)
+            .withParanoid(true);
     trueLiteral = rexBuilder.makeLiteral(true);
     falseLiteral = rexBuilder.makeLiteral(false);
     final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
@@ -1360,6 +1380,7 @@ public class RexProgramTest {
         "false");
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkSimplify2(and(le(hRef, literal1), ge(hRef, literal1)),
             "AND(<=(?0.h, 1), >=(?0.h, 1))",
             "=(?0.h, 1)");
@@ -1368,6 +1389,11 @@ public class RexProgramTest {
         "AND(<=(?0.a, 1), >=(?0.a, 1))",
         "=(?0.a, 1)");
 >>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+    checkSimplify2(and(le(hRef, literal1), ge(hRef, literal1)),
+        "AND(<=(?0.h, 1), >=(?0.h, 1))",
+        "=(?0.h, 1)");
+>>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
     checkSimplify2(and(lt(hRef, literal1), eq(hRef, literal1), ge(hRef, literal1)),
         "AND(<(?0.h, 1), =(?0.h, 1), >=(?0.h, 1))",
@@ -1512,7 +1538,10 @@ public class RexProgramTest {
     final RexNode dRef = rexBuilder.makeFieldAccess(range, 3);
     final RexNode eRef = rexBuilder.makeFieldAccess(range, 4);
     final RexNode fRef = rexBuilder.makeFieldAccess(range, 5);
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     final RexNode iRef = rexBuilder.makeFieldAccess(range, 8);
+=======
+>>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     final RexLiteral literal1 = rexBuilder.makeExactLiteral(BigDecimal.ONE);
     final RexLiteral literal5 = rexBuilder.makeExactLiteral(new BigDecimal(5));
     final RexLiteral literal10 = rexBuilder.makeExactLiteral(BigDecimal.TEN);
@@ -1579,8 +1608,12 @@ public class RexProgramTest {
     // case: trailing false and null, remove
     checkSimplifyFilter(
         case_(cRef, trueLiteral, dRef, trueLiteral, eRef, falseLiteral, fRef,
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
             falseLiteral, nullBool),
         "OR(?0.c, ?0.d)");
+=======
+            falseLiteral, unknownLiteral), "CAST(OR(?0.c, ?0.d)):BOOLEAN");
+>>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
     // condition with null value for range
     checkSimplifyFilter(and(gt(aRef, nullBool), ge(bRef, literal1)), "false");
@@ -3125,6 +3158,7 @@ public class RexProgramTest {
     assertThat(result2.getOperands().get(0), is(booleanInput));
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyNot() {
     // "NOT(NOT(x))" => "x"
     checkSimplify(not(not(vBool())), "?0.bool0");
@@ -3197,17 +3231,37 @@ public class RexProgramTest {
     assertThat(eval(eq(nullInt, nullInt)),
         is(NullSentinel.INSTANCE));
     assertThat(eval(eq(this.trueLiteral, nullInt)),
+=======
+  private RexNode simplify(RexNode e) {
+    final RexSimplify simplify =
+        new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false,
+            RexUtil.EXECUTOR).withParanoid(true);
+    return simplify.simplify(e);
+  }
+
+  @Test public void testInterpreter() {
+    assertThat(eval(trueLiteral), is(true));
+    assertThat(eval(nullLiteral), is(NullSentinel.INSTANCE));
+    assertThat(eval(eq(nullLiteral, nullLiteral)),
+        is(NullSentinel.INSTANCE));
+    assertThat(eval(eq(this.trueLiteral, nullLiteral)),
+>>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
         is(NullSentinel.INSTANCE));
     assertThat(eval(eq(falseLiteral, trueLiteral)),
         is(false));
     assertThat(eval(ne(falseLiteral, trueLiteral)),
         is(true));
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     assertThat(eval(ne(falseLiteral, nullInt)),
+=======
+    assertThat(eval(ne(falseLiteral, nullLiteral)),
+>>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
         is(NullSentinel.INSTANCE));
     assertThat(eval(and(this.trueLiteral, falseLiteral)),
         is(false));
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testIsNullRecursion() {
     // make sure that simplifcation is visiting below isX expressions
     checkSimplify(
@@ -3455,6 +3509,10 @@ public class RexProgramTest {
     final RexNode call2 = rexBuilder.makeCall(ndc);
     final RexNode expr = eq(call1, call2);
     checkSimplifyUnchanged(expr);
+=======
+  private Comparable eval(RexNode e) {
+    return RexInterpreter.evaluate(e, ImmutableMap.of());
+>>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   // Empty string "" cannot be simplified to a number/bigint.  Instead of

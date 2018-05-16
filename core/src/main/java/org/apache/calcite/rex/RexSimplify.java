@@ -22,7 +22,7 @@ import org.apache.calcite.plan.RelOptPredicateList;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.Strong;
 import org.apache.calcite.rel.core.Project;
->>>>>>> 3c8da1f95 (DX-11147: Fix RexSimplify#processRange cast issue)
+import org.apache.calcite.rel.metadata.NullSentinel;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 import static org.apache.calcite.rex.RexUnknownAs.FALSE;
 import static org.apache.calcite.rex.RexUnknownAs.TRUE;
@@ -88,36 +89,18 @@ public class RexSimplify {
    * @param executor Executor for constant reduction, not null
    */
   public RexSimplify(RexBuilder rexBuilder, RelOptPredicateList predicates,
-                     RexExecutor executor) {
-    this(rexBuilder, predicates, UNKNOWN, true, false, executor, 40, 0);
-  }
-
-  /**
-   * Creates a RexSimplify.
-   *
-   * @param rexBuilder Rex builder
-   * @param predicates Predicates known to hold on input fields
-   * @param executor Executor for constant reduction, not null
-   * @param maxDepth Maximum amount of recursion depth for simplify
-   */
-  public RexSimplify(RexBuilder rexBuilder, RelOptPredicateList predicates,
-      RexExecutor executor, int maxDepth) {
-    this(rexBuilder, predicates, UNKNOWN, true, false, executor, maxDepth, 0);
+      boolean unknownAsFalse, RexExecutor executor) {
+    this(rexBuilder, predicates, unknownAsFalse, false, executor);
   }
 
   /** Internal constructor. */
   private RexSimplify(RexBuilder rexBuilder, RelOptPredicateList predicates,
-      RexUnknownAs defaultUnknownAs, boolean predicateElimination,
-      boolean paranoid, RexExecutor executor, int maxDepth, int currentDepth) {
-    this.rexBuilder = Objects.requireNonNull(rexBuilder);
-    this.predicates = Objects.requireNonNull(predicates);
-    this.defaultUnknownAs = Objects.requireNonNull(defaultUnknownAs);
-    this.predicateElimination = predicateElimination;
+      boolean unknownAsFalse, boolean paranoid, RexExecutor executor) {
+    this.rexBuilder = Preconditions.checkNotNull(rexBuilder);
+    this.predicates = Preconditions.checkNotNull(predicates);
+    this.unknownAsFalse = unknownAsFalse;
     this.paranoid = paranoid;
-    this.executor = Objects.requireNonNull(executor);
-    this.strong = new Strong();
-    this.maxDepth = maxDepth;
-    this.currentDepth = currentDepth;
+    this.executor = Preconditions.checkNotNull(executor);
   }
 
   @Deprecated // to be removed before 2.0
@@ -146,8 +129,8 @@ public class RexSimplify {
     final RexUnknownAs defaultUnknownAs = RexUnknownAs.falseIf(unknownAsFalse);
     return defaultUnknownAs == this.defaultUnknownAs
         ? this
-        : new RexSimplify(rexBuilder, predicates, defaultUnknownAs,
-            predicateElimination, paranoid, executor, maxDepth, currentDepth);
+        : new RexSimplify(rexBuilder, predicates, unknownAsFalse, paranoid,
+            executor);
   }
 
   /** Returns a RexSimplify the same as this but with a specified
@@ -155,8 +138,8 @@ public class RexSimplify {
   public RexSimplify withPredicates(RelOptPredicateList predicates) {
     return predicates == this.predicates
         ? this
-        : new RexSimplify(rexBuilder, predicates, defaultUnknownAs,
-            predicateElimination, paranoid, executor, maxDepth, currentDepth);
+        : new RexSimplify(rexBuilder, predicates, unknownAsFalse, paranoid,
+            executor);
   }
 
   /** Returns a RexSimplify the same as this but which verifies that
@@ -167,19 +150,8 @@ public class RexSimplify {
   public RexSimplify withParanoid(boolean paranoid) {
     return paranoid == this.paranoid
         ? this
-        : new RexSimplify(rexBuilder, predicates, defaultUnknownAs,
-            predicateElimination, paranoid, executor, maxDepth, currentDepth);
-  }
-
-  /** Returns a RexSimplify the same as this but with a specified {@link #predicateElimination}
-   * value.
-   * This is introduced temporarily; until CALCITE-2401 is fixed
-   */
-  private RexSimplify withPredicateElimination(boolean predicateElimination) {
-    return predicateElimination == this.predicateElimination
-              ? this
-              : new RexSimplify(rexBuilder, predicates, defaultUnknownAs,
-              predicateElimination, paranoid, executor, maxDepth, currentDepth);
+        : new RexSimplify(rexBuilder, predicates, unknownAsFalse, paranoid,
+            executor);
   }
 
   /** Simplifies a boolean expression, always preserving its type and its
@@ -224,6 +196,10 @@ public class RexSimplify {
    * @param e Expression to simplify
    */
   public RexNode simplify(RexNode e) {
+    return verify(e, simplifier -> simplifier.simplify_(e));
+  }
+
+  private RexNode simplify_(RexNode e) {
     try {
       switch (e.getKind()) {
       case AND:
@@ -234,6 +210,8 @@ public class RexSimplify {
         return simplifyNot((RexCall) e);
       case CASE:
         return simplifyCase((RexCall) e);
+      case COALESCE:
+        return simplifyCoalesce((RexCall) e);
       case CAST:
         return simplifyCast((RexCall) e);
       case CEIL:
@@ -368,8 +346,8 @@ public class RexSimplify {
       case GREATER_THAN_OR_EQUAL:
       case LESS_THAN_OR_EQUAL:
         // "x = x" simplifies to "x is not null" (similarly <= and >=)
-        return simplify(
-            rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL, o0), unknownAs);
+        return simplify_(
+            rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL, o0));
       default:
         // "x != x" simplifies to "false" (similarly < and >)
         return rexBuilder.makeLiteral(false);
@@ -495,23 +473,9 @@ public class RexSimplify {
     }
   }
 
-  // package-protected only for a deprecated method; treat as private
-  RexNode simplifyAnds(Iterable<? extends RexNode> nodes,
-      RexUnknownAs unknownAs) {
-    try {
-      final List<RexNode> terms = new ArrayList<>();
-      final List<RexNode> notTerms = new ArrayList<>();
-      for (RexNode e : nodes) {
-        RelOptUtil.decomposeConjunction(e, terms, notTerms);
-      }
-      simplifyList(terms, UNKNOWN);
-      simplifyList(notTerms, UNKNOWN);
-      if (unknownAs == FALSE) {
-        return simplifyAnd2ForUnknownAsFalse(terms, notTerms);
-      }
-      return simplifyAnd2(terms, notTerms);
-    } catch (ClassCastException e) {
-      return RexUtil.composeConjunction(rexBuilder, nodes);
+  private void simplifyList(List<RexNode> terms) {
+    for (int i = 0; i < terms.size(); i++) {
+      terms.set(i, withUnknownAsFalse(false).simplify_(terms.get(i)));
     }
   }
 
@@ -569,22 +533,17 @@ public class RexSimplify {
     switch (a.getKind()) {
     case NOT:
       // NOT NOT x ==> x
-      return simplify(((RexCall) a).getOperands().get(0), unknownAs);
-    case LITERAL:
-      if (a.getType().getSqlTypeName() == SqlTypeName.BOOLEAN
-          && !RexLiteral.isNullLiteral(a)) {
-        return rexBuilder.makeLiteral(!RexLiteral.booleanValue(a));
-      }
+      return simplify_(((RexCall) a).getOperands().get(0));
     }
     final SqlKind negateKind = a.getKind().negate();
     if (a.getKind() != negateKind) {
-      return simplify(
+      return simplify_(
           rexBuilder.makeCall(RexUtil.op(negateKind),
               ((RexCall) a).getOperands()), unknownAs);
     }
     final SqlKind negateKind2 = a.getKind().negateNullSafe();
     if (a.getKind() != negateKind2) {
-      return simplify(
+      return simplify_(
           rexBuilder.makeCall(RexUtil.op(negateKind2),
               ((RexCall) a).getOperands()), unknownAs);
     }
@@ -593,22 +552,20 @@ public class RexSimplify {
       final List<RexNode> newOperands = new ArrayList<>();
       for (RexNode operand : ((RexCall) a).getOperands()) {
         newOperands.add(
-            simplify(rexBuilder.makeCall(SqlStdOperatorTable.NOT, operand),
-                unknownAs));
+            simplify_(rexBuilder.makeCall(SqlStdOperatorTable.NOT, operand)));
       }
-      return simplify(
-          rexBuilder.makeCall(SqlStdOperatorTable.OR, newOperands), unknownAs);
+      return simplify_(
+          rexBuilder.makeCall(SqlStdOperatorTable.OR, newOperands));
     }
     if (a.getKind() == SqlKind.OR) {
       // NOT distributivity for OR
       final List<RexNode> newOperands = new ArrayList<>();
       for (RexNode operand : ((RexCall) a).getOperands()) {
         newOperands.add(
-            simplify(rexBuilder.makeCall(SqlStdOperatorTable.NOT, operand),
-                unknownAs));
+            simplify_(rexBuilder.makeCall(SqlStdOperatorTable.NOT, operand)));
       }
-      return simplify(
-          rexBuilder.makeCall(SqlStdOperatorTable.AND, newOperands), unknownAs);
+      return simplify_(
+          rexBuilder.makeCall(SqlStdOperatorTable.AND, newOperands));
     }
     if (a.getKind() == SqlKind.CASE) {
       final List<RexNode> newOperands = new ArrayList<>();
@@ -660,9 +617,6 @@ public class RexSimplify {
       return pred;
     }
 
-<<<<<<< HEAD
-    final RexNode simplified = simplifyIs2(kind, a, unknownAs);
-=======
     final RexNode simplified = simplifyIs2(kind, a);
     if (simplified != null) {
       return simplified;
@@ -705,6 +659,7 @@ public class RexSimplify {
       // x IS TRUE ==> x (if x is not nullable)
       // x IS NOT FALSE ==> x (if x is not nullable)
       if (!a.getType().isNullable()) {
+<<<<<<< HEAD
         return simplify(a, unknownAs);
       } else {
         RexNode newSub =
@@ -713,13 +668,15 @@ public class RexSimplify {
           return null;
         }
         return rexBuilder.makeCall(RexUtil.op(kind), ImmutableList.of(newSub));
+=======
+        return simplify_(a);
       }
     case IS_FALSE:
     case IS_NOT_TRUE:
       // x IS NOT TRUE ==> NOT x (if x is not nullable)
       // x IS FALSE ==> NOT x (if x is not nullable)
       if (!a.getType().isNullable()) {
-        return simplify(rexBuilder.makeCall(SqlStdOperatorTable.NOT, a), unknownAs);
+        return simplify_(rexBuilder.makeCall(SqlStdOperatorTable.NOT, a));
       }
       break;
     }
@@ -733,9 +690,9 @@ public class RexSimplify {
       // because of null values.
       final SqlOperator notKind = RexUtil.op(kind.negateNullSafe());
       final RexNode arg = ((RexCall) a).operands.get(0);
-      return simplify(rexBuilder.makeCall(notKind, arg), UNKNOWN);
+      return simplify_(rexBuilder.makeCall(notKind, arg));
     }
-    final RexNode a2 = simplify(a, UNKNOWN);
+    RexNode a2 = simplify_(a);
     if (a != a2) {
       return rexBuilder.makeCall(RexUtil.op(kind), ImmutableList.of(a2));
     }
@@ -786,6 +743,31 @@ public class RexSimplify {
     case AS_IS:
     default:
       return null;
+    }
+  }
+
+  private RexNode simplifyCoalesce(RexCall call) {
+    final Set<String> digests = new HashSet<>();
+    final List<RexNode> operands = new ArrayList<>();
+    for (RexNode operand : call.getOperands()) {
+      operand = simplify_(operand);
+      if (digests.add(operand.digest)) {
+        operands.add(operand);
+      }
+      if (!operand.getType().isNullable()) {
+        break;
+      }
+    }
+    switch (operands.size()) {
+    case 0:
+      return rexBuilder.makeNullLiteral(call.type);
+    case 1:
+      return operands.get(0);
+    default:
+      if (operands.equals(call.operands)) {
+        return call;
+      }
+      return call.clone(call.type, operands);
     }
   }
 
@@ -1012,6 +994,7 @@ public class RexSimplify {
     return branch;
   }
 
+  // public only to support a deprecated method; treat as private
   public RexNode simplifyAnd(RexCall e) {
     try {
       final List<RexNode> terms = new ArrayList<>();
@@ -1035,39 +1018,7 @@ public class RexSimplify {
     }
   }
 
-  @Deprecated // to be removed before 2.0
-  public RexNode simplifyAnd(RexCall e) {
-    ensureParanoidOff();
-    return simplifyAnd(e, defaultUnknownAs);
-  }
-
-  RexNode simplifyAnd(RexCall e, RexUnknownAs unknownAs) {
-    try {
-      List<RexNode> operands = RelOptUtil.conjunctions(e);
-
-      if (unknownAs == FALSE && predicateElimination) {
-        simplifyAndTerms(operands, FALSE);
-      } else {
-        simplifyList(operands, unknownAs);
-      }
-
-      final List<RexNode> terms = new ArrayList<>();
-      final List<RexNode> notTerms = new ArrayList<>();
-
-      for (RexNode o : operands) {
-        RelOptUtil.decomposeConjunction(o, terms, notTerms);
-      }
-
-      switch (unknownAs) {
-      case FALSE:
-        return simplifyAnd2ForUnknownAsFalse(terms, notTerms, Comparable.class);
-      }
-      return simplifyAnd2(terms, notTerms);
-    } catch (ClassCastException ex) {
-      return e;
-    }
-  }
-
+>>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values)
   // package-protected only to support a deprecated method; treat as private
   RexNode simplifyAnd2(List<RexNode> terms, List<RexNode> notTerms) {
     for (RexNode term : terms) {
@@ -1121,9 +1072,13 @@ public class RexSimplify {
     // Add the NOT disjunctions back in.
     for (RexNode notDisjunction : notTerms) {
       terms.add(
+<<<<<<< HEAD
           simplify(
               rexBuilder.makeCall(SqlStdOperatorTable.NOT, notDisjunction),
               UNKNOWN));
+=======
+          simplify_(
+              rexBuilder.makeCall(SqlStdOperatorTable.NOT, notDisjunction)));
     }
     return RexUtil.composeConjunction(rexBuilder, terms);
   }
@@ -1151,7 +1106,7 @@ public class RexSimplify {
     }
     if (terms.size() == 1 && notTerms.isEmpty()) {
       // Make sure "x OR y OR x" (a single-term conjunction) gets simplified.
-      return simplify(terms.get(0), FALSE);
+      return simplify_(terms.get(0));
     }
     // Try to simplify the expression
     final Multimap<RexNode, Pair<RexNode, RexNode>> equalityTerms =
@@ -1361,7 +1316,9 @@ public class RexSimplify {
     }
     // Add the NOT disjunctions back in.
     for (RexNode notDisjunction : notTerms) {
-      terms.add(rexBuilder.makeCall(SqlStdOperatorTable.NOT, notDisjunction));
+      final RexNode call =
+          rexBuilder.makeCall(SqlStdOperatorTable.NOT, notDisjunction);
+      terms.add(simplify_(call));
     }
     // The negated terms: only deterministic expressions
     for (RexNode negatedTerm : negatedTerms) {
@@ -1428,10 +1385,6 @@ public class RexSimplify {
       // Range is always satisfied given these predicates; but nullability might
       // be problematic
       return simplify(
-<<<<<<< HEAD
-              rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL, comparison.ref),
-              RexUnknownAs.UNKNOWN);
-=======
           rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL, comparison.ref));
     } else if (range2.lowerEndpoint().equals(range2.upperEndpoint())) {
       if (range2.lowerBoundType() == BoundType.OPEN
@@ -1516,6 +1469,10 @@ public class RexSimplify {
   public RexNode simplifyOrs(List<RexNode> terms) {
     final List<RexNode> originalTerms = new ArrayList<>(terms);
     try {
+      if (paranoid) {
+        final RexNode before = RexUtil.composeDisjunction(rexBuilder, terms);
+        return verify(before, simplifier -> simplifier.simplifyOrs(terms));
+      }
       for (int i = 0; i < terms.size(); i++) {
         final RexNode term = simplify(terms.get(i));
         switch (term.getKind()) {
@@ -1534,7 +1491,6 @@ public class RexSimplify {
               --i;
               continue;
             }
->>>>>>> 8adb4de59 (DX-19211: Catch ClassCastException in RexSimplify)
           }
         }
         terms.set(i, term);
@@ -1543,6 +1499,57 @@ public class RexSimplify {
     } catch (ClassCastException ex) {
       return RexUtil.composeDisjunction(rexBuilder, originalTerms);
     }
+  }
+
+  private RexNode verify(RexNode before,
+      Function<RexSimplify, RexNode> simplifier) {
+    final RexNode simplified = simplifier.apply(withParanoid(false));
+    if (!paranoid) {
+      return simplified;
+    }
+    final RexAnalyzer foo0 = new RexAnalyzer(before, predicates);
+    final RexAnalyzer foo1 = new RexAnalyzer(simplified, predicates);
+    if (foo0.unsupportedCount > 0 || foo1.unsupportedCount > 0) {
+      // Analyzer cannot handle this expression currently
+      return simplified;
+    }
+    if (!foo0.variables.containsAll(foo1.variables)) {
+      throw new AssertionError("variable mismatch: "
+          + before + " has " + foo0.variables + ", "
+          + simplified + " has " + foo1.variables);
+    }
+    assignment_loop:
+    for (Map<RexNode, Comparable> map : foo0.assignments()) {
+      for (RexNode predicate : predicates.pulledUpPredicates) {
+        final Comparable v = RexInterpreter.evaluate(predicate, map);
+        if (!v.equals(true)) {
+          continue assignment_loop;
+        }
+      }
+      Comparable v0 = RexInterpreter.evaluate(foo0.e, map);
+      if (v0 == null) {
+        throw new AssertionError("interpreter returned null for " + foo0.e);
+      }
+      Comparable v1 = RexInterpreter.evaluate(foo1.e, map);
+      if (v1 == null) {
+        throw new AssertionError("interpreter returned null for " + foo1.e);
+      }
+      if (unknownAsFalse
+          && before.getType().getSqlTypeName() == SqlTypeName.BOOLEAN) {
+        if (v0 == NullSentinel.INSTANCE) {
+          v0 = false;
+        }
+        if (v1 == NullSentinel.INSTANCE) {
+          v1 = false;
+        }
+      }
+      if (!v0.equals(v1)) {
+        throw new AssertionError("result mismatch: when applied to " + map
+            + ", " + before + " yielded " + v0
+            + ", and " + simplified + " yielded " + v1);
+      }
+    }
+    return simplified;
   }
 
   private RexNode simplifyCast(RexCall e) {
@@ -1646,9 +1653,10 @@ public class RexSimplify {
       // Bail out since we only simplify ceil/floor <date>
       return e;
     }
-    final RexNode operand = simplify(e.getOperands().get(0), UNKNOWN);
-    if (e.getKind() == operand.getKind()) {
-      assert e.getKind() == SqlKind.CEIL || e.getKind() == SqlKind.FLOOR;
+    final RexNode operand = simplify_(e.getOperands().get(0));
+    switch (operand.getKind()) {
+    case CEIL:
+    case FLOOR:
       // CEIL/FLOOR on top of CEIL/FLOOR
       final RexCall child = (RexCall) operand;
       if (child.getOperands().size() != 2) {
