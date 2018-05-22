@@ -19,8 +19,7 @@ package org.apache.calcite.sql.type;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
 
-import com.google.common.collect.ImmutableList;
-
+>>>>>>> 08b760679 ([CALCITE-2265] Allow comparison of ROW values (Dylan Adams))
 /**
  * Reusable {@link RelDataType} fixtures for tests.
  */
@@ -48,10 +47,12 @@ class SqlTypeFixture {
       typeFactory.createSqlType(SqlTypeName.ANY), false);
   final RelDataType sqlFloat = typeFactory.createTypeWithNullability(
       typeFactory.createSqlType(SqlTypeName.FLOAT), false);
+<<<<<<< HEAD
   final RelDataType sqlTimestampPrec0 = typeFactory.createTypeWithNullability(
       typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 0), false);
   final RelDataType sqlTimestampPrec3 = typeFactory.createTypeWithNullability(
       typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 3), false);
+=======
   final RelDataType arrayFloat = typeFactory.createTypeWithNullability(
       typeFactory.createArrayType(sqlFloat, -1), false);
   final RelDataType arrayBigInt = typeFactory.createTypeWithNullability(
@@ -66,32 +67,6 @@ class SqlTypeFixture {
       typeFactory.createArrayType(arrayBigInt, -1), false);
   final RelDataType arrayOfArrayFloat = typeFactory.createTypeWithNullability(
       typeFactory.createArrayType(arrayFloat, -1), false);
-  final RelDataType structOfInt = typeFactory.createTypeWithNullability(
-      typeFactory.createStructType(
-          ImmutableList.of(sqlInt, sqlInt),
-          ImmutableList.of("i", "j")), false);
-  final RelDataType structOfIntNullable = typeFactory.createTypeWithNullability(
-      typeFactory.createStructType(
-          ImmutableList.of(sqlInt, sqlInt),
-          ImmutableList.of("i", "j")), true);
-  final RelDataType mapOfInt = typeFactory.createTypeWithNullability(
-      typeFactory.createMapType(sqlInt, sqlInt), false);
-  final RelDataType mapOfIntNullable = typeFactory.createTypeWithNullability(
-      typeFactory.createMapType(sqlInt, sqlInt), true);
-  final RelDataType sqlChar1 = typeFactory.createTypeWithNullability(
-      typeFactory.createSqlType(SqlTypeName.CHAR, 1), false);
-  final RelDataType sqlChar10 = typeFactory.createTypeWithNullability(
-      typeFactory.createSqlType(SqlTypeName.CHAR, 10), false);
-  final RelDataType arraySqlChar10 = typeFactory.createTypeWithNullability(
-      typeFactory.createArrayType(sqlChar10, -1), false);
-  final RelDataType arraySqlChar1 = typeFactory.createTypeWithNullability(
-      typeFactory.createArrayType(sqlChar1, -1), false);
-  final RelDataType multisetSqlChar10Nullable = typeFactory.createTypeWithNullability(
-      typeFactory.createMultisetType(sqlChar10, -1), true);
-  final RelDataType multisetSqlChar1 = typeFactory.createTypeWithNullability(
-      typeFactory.createMultisetType(sqlChar1, -1), false);
-  final RelDataType mapSqlChar10Nullable = typeFactory.createTypeWithNullability(
-      typeFactory.createMapType(sqlChar10, sqlChar10), true);
-  final RelDataType mapSqlChar1 = typeFactory.createTypeWithNullability(
-      typeFactory.createMapType(sqlChar1, sqlChar1), false);
 }
+
+// End SqlTypeFixture.java

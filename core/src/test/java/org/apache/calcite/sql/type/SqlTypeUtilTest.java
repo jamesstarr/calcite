@@ -18,33 +18,25 @@ package org.apache.calcite.sql.type;
 
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.sql.SqlBasicTypeNameSpec;
-import org.apache.calcite.sql.SqlCollectionTypeNameSpec;
-import org.apache.calcite.sql.SqlIdentifier;
-import org.apache.calcite.sql.SqlRowTypeNameSpec;
+
+import static org.apache.calcite.sql.type.SqlTypeUtil.areSameFamily;
 
 import com.google.common.collect.ImmutableList;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.apache.calcite.sql.type.SqlTypeUtil.areSameFamily;
-import static org.apache.calcite.sql.type.SqlTypeUtil.convertTypeToSpec;
+import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test of {@link org.apache.calcite.sql.type.SqlTypeUtil}.
  */
-class SqlTypeUtilTest {
+public class SqlTypeUtilTest {
 
   private final SqlTypeFixture f = new SqlTypeFixture();
 
-  @Test void testTypesIsSameFamilyWithNumberTypes() {
+  @Test
+  public void testTypesIsSameFamilyWithNumberTypes() {
     assertThat(areSameFamily(ImmutableList.of(f.sqlBigInt, f.sqlBigInt)), is(true));
     assertThat(areSameFamily(ImmutableList.of(f.sqlInt, f.sqlBigInt)), is(true));
     assertThat(areSameFamily(ImmutableList.of(f.sqlFloat, f.sqlBigInt)), is(true));
@@ -52,20 +44,23 @@ class SqlTypeUtilTest {
         is(true));
   }
 
-  @Test void testTypesIsSameFamilyWithCharTypes() {
+  @Test
+  public void testTypesIsSameFamilyWithCharTypes() {
     assertThat(areSameFamily(ImmutableList.of(f.sqlVarchar, f.sqlVarchar)), is(true));
     assertThat(areSameFamily(ImmutableList.of(f.sqlVarchar, f.sqlChar)), is(true));
     assertThat(areSameFamily(ImmutableList.of(f.sqlVarchar, f.sqlVarcharNullable)),
         is(true));
   }
 
-  @Test void testTypesIsSameFamilyWithInconvertibleTypes() {
+  @Test
+  public void testTypesIsSameFamilyWithInconvertibleTypes() {
     assertThat(areSameFamily(ImmutableList.of(f.sqlBoolean, f.sqlBigInt)), is(false));
     assertThat(areSameFamily(ImmutableList.of(f.sqlFloat, f.sqlBoolean)), is(false));
     assertThat(areSameFamily(ImmutableList.of(f.sqlInt, f.sqlDate)), is(false));
   }
 
-  @Test void testTypesIsSameFamilyWithNumberStructTypes() {
+  @Test
+  public void testTypesIsSameFamilyWithNumberStructTypes() {
     final RelDataType bigIntAndFloat = struct(f.sqlBigInt, f.sqlFloat);
     final RelDataType floatAndBigInt = struct(f.sqlFloat, f.sqlBigInt);
 
@@ -79,7 +74,8 @@ class SqlTypeUtilTest {
         is(true));
   }
 
-  @Test void testTypesIsSameFamilyWithCharStructTypes() {
+  @Test
+  public void testTypesIsSameFamilyWithCharStructTypes() {
     final RelDataType varCharStruct = struct(f.sqlVarchar);
     final RelDataType charStruct = struct(f.sqlChar);
 
@@ -89,7 +85,8 @@ class SqlTypeUtilTest {
     assertThat(areSameFamily(ImmutableList.of(charStruct, charStruct)), is(true));
   }
 
-  @Test void testTypesIsSameFamilyWithInconvertibleStructTypes() {
+  @Test
+  public void testTypesIsSameFamilyWithInconvertibleStructTypes() {
     final RelDataType dateStruct = struct(f.sqlDate);
     final RelDataType boolStruct = struct(f.sqlBoolean);
     assertThat(areSameFamily(ImmutableList.of(dateStruct, boolStruct)), is(false));
@@ -105,57 +102,7 @@ class SqlTypeUtilTest {
         is(false));
   }
 
-  @Test void testConvertTypeToSpec() {
-    SqlBasicTypeNameSpec basicSpec =
-        (SqlBasicTypeNameSpec) convertTypeToSpec(f.sqlBigInt).getTypeNameSpec();
-    assertThat(basicSpec.getTypeName().getSimple(), is("BIGINT"));
-
-    SqlCollectionTypeNameSpec arraySpec =
-        (SqlCollectionTypeNameSpec) convertTypeToSpec(f.arrayBigInt).getTypeNameSpec();
-    assertThat(arraySpec.getTypeName().getSimple(), is("ARRAY"));
-    assertThat(arraySpec.getElementTypeName().getTypeName().getSimple(), is("BIGINT"));
-
-    SqlCollectionTypeNameSpec multisetSpec =
-        (SqlCollectionTypeNameSpec) convertTypeToSpec(f.multisetBigInt).getTypeNameSpec();
-    assertThat(multisetSpec.getTypeName().getSimple(), is("MULTISET"));
-    assertThat(multisetSpec.getElementTypeName().getTypeName().getSimple(), is("BIGINT"));
-
-    SqlRowTypeNameSpec rowSpec =
-        (SqlRowTypeNameSpec) convertTypeToSpec(f.structOfInt).getTypeNameSpec();
-    List<String> fieldNames = rowSpec.getFieldNames()
-        .stream()
-        .map(SqlIdentifier::getSimple)
-        .collect(Collectors.toList());
-    List<String> fieldTypeNames = rowSpec.getFieldTypes()
-        .stream()
-        .map(f -> f.getTypeName().getSimple())
-        .collect(Collectors.toList());
-    assertThat(rowSpec.getTypeName().getSimple(), is("ROW"));
-    assertThat(fieldNames, is(Arrays.asList("i", "j")));
-    assertThat(fieldTypeNames, is(Arrays.asList("INTEGER", "INTEGER")));
-  }
-
-  @Test void testModifyTypeCoercionMappings() {
-    SqlTypeMappingRules.Builder builder = SqlTypeMappingRules.builder();
-    final SqlTypeCoercionRule defaultRules = SqlTypeCoercionRule.instance();
-    builder.addAll(defaultRules.getTypeMapping());
-    // Do the tweak, for example, if we want to add a rule to allow
-    // coerce BOOLEAN to TIMESTAMP.
-    builder.add(SqlTypeName.TIMESTAMP,
-        builder.copyValues(SqlTypeName.TIMESTAMP)
-            .add(SqlTypeName.BOOLEAN).build());
-
-    // Initialize a SqlTypeCoercionRules with the new builder mappings.
-    SqlTypeCoercionRule typeCoercionRules = SqlTypeCoercionRule.instance(builder.map);
-    assertThat(SqlTypeUtil.canCastFrom(f.sqlTimestampPrec3, f.sqlBoolean, true),
-        is(false));
-    SqlTypeCoercionRule.THREAD_PROVIDERS.set(typeCoercionRules);
-    assertThat(SqlTypeUtil.canCastFrom(f.sqlTimestampPrec3, f.sqlBoolean, true),
-        is(true));
-    // Recover the mappings to default.
-    SqlTypeCoercionRule.THREAD_PROVIDERS.set(defaultRules);
-  }
-
+>>>>>>> 08b760679 ([CALCITE-2265] Allow comparison of ROW values (Dylan Adams))
   private RelDataType struct(RelDataType...relDataTypes) {
     final RelDataTypeFactory.Builder builder = f.typeFactory.builder();
     for (int i = 0; i < relDataTypes.length; i++) {
@@ -164,3 +111,7 @@ class SqlTypeUtilTest {
     return builder.build();
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlTypeUtilTest.java
