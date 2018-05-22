@@ -1498,7 +1498,7 @@ public abstract class SqlTypeUtil {
         return false;
       }
       for (Pair<RelDataTypeField, RelDataTypeField> pair
-              : Pair.zip(type1.getFieldList(), type2.getFieldList())) {
+          : Pair.zip(type1.getFieldList(), type2.getFieldList())) {
         if (!isSameFamily(pair.left.getType(), pair.right.getType())) {
           return false;
         }

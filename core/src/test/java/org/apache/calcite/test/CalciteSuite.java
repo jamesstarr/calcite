@@ -46,6 +46,7 @@ import org.apache.calcite.sql.test.SqlOperatorTest;
 import org.apache.calcite.sql.test.SqlPrettyWriterTest;
 import org.apache.calcite.sql.test.SqlTypeNameTest;
 import org.apache.calcite.sql.type.SqlTypeFactoryTest;
+import org.apache.calcite.sql.type.SqlTypeUtilTest;
 import org.apache.calcite.sql.validate.LexCaseSensitiveTest;
 import org.apache.calcite.sql.validate.LexEscapeTest;
 import org.apache.calcite.sql.validate.SqlValidatorUtilTest;
@@ -116,6 +117,7 @@ import org.junit.runners.Suite;
     RelOptPlanReaderTest.class,
     RexBuilderTest.class,
     SqlTypeFactoryTest.class,
+    SqlTypeUtilTest.class,
     SqlValidatorUtilTest.class,
     SqlHintsConverterTest.class,
 
