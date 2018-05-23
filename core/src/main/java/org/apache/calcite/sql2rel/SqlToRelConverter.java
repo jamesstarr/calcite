@@ -5519,18 +5519,19 @@ public class SqlToRelConverter {
      * extracting DESC, NULLS LAST and NULLS FIRST flags first.
      */
     public RexFieldCollation convertSortExpression(SqlNode expr,
-                                                   RelFieldCollation.Direction direction,
-                                                   RelFieldCollation.NullDirection nullDirection) {
+        RelFieldCollation.Direction direction,
+        RelFieldCollation.NullDirection nullDirection) {
       switch (expr.getKind()) {
       case DESCENDING:
         return convertSortExpression(((SqlCall) expr).operand(0),
-                RelFieldCollation.Direction.DESCENDING, nullDirection);
+            RelFieldCollation.Direction.DESCENDING, nullDirection);
       case NULLS_LAST:
         return convertSortExpression(((SqlCall) expr).operand(0),
-                direction, RelFieldCollation.NullDirection.LAST);
+            direction, RelFieldCollation.NullDirection.LAST);
       case NULLS_FIRST:
         return convertSortExpression(((SqlCall) expr).operand(0),
-                direction, RelFieldCollation.NullDirection.FIRST);
+            direction, RelFieldCollation.NullDirection.FIRST);
+
       default:
         final Set<SqlKind> flags = EnumSet.noneOf(SqlKind.class);
         switch (direction) {
@@ -5540,14 +5541,14 @@ public class SqlToRelConverter {
         switch (nullDirection) {
         case UNSPECIFIED:
           final RelFieldCollation.NullDirection nullDefaultDirection =
-                  validator.getDefaultNullCollation().last(desc(direction))
-                          ? RelFieldCollation.NullDirection.LAST
-                          : RelFieldCollation.NullDirection.FIRST;
+              validator.getDefaultNullCollation().last(desc(direction))
+                  ? RelFieldCollation.NullDirection.LAST
+                  : RelFieldCollation.NullDirection.FIRST;
           if (nullDefaultDirection != direction.defaultNullDirection()) {
             SqlKind nullDirectionSqlKind =
-                    validator.getDefaultNullCollation().last(desc(direction))
-                            ? SqlKind.NULLS_LAST
-                            : SqlKind.NULLS_FIRST;
+                validator.getDefaultNullCollation().last(desc(direction))
+                    ? SqlKind.NULLS_LAST
+                    : SqlKind.NULLS_FIRST;
             flags.add(nullDirectionSqlKind);
           }
           break;
