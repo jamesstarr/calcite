@@ -170,6 +170,18 @@ public class Driver extends UnregisteredDriver {
         .newConnection(this, factory, CONNECT_STRING_PREFIX, new Properties(),
             rootSchema, typeFactory);
   }
+<<<<<<< HEAD
+=======
+
+  /** Creates an internal connection. */
+  CalciteConnection connect(CalciteSchema rootSchema,
+      JavaTypeFactory typeFactory, Properties properties) {
+    return (CalciteConnection) ((CalciteFactory) factory)
+        .newConnection(this, factory, CONNECT_STRING_PREFIX, properties,
+            rootSchema, typeFactory);
+  }
+}
+>>>>>>> 9a0eb7222 ([CALCITE-2321] A union of CHAR columns of different lengths can now (based on a conformance setting) yield a VARCHAR column (Hequn Cheng))
 
   /** Creates an internal connection. */
   CalciteConnection connect(CalciteSchema rootSchema,
