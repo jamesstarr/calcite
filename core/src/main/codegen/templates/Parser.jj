@@ -5162,7 +5162,12 @@ SqlIntervalQualifier IntervalQualifier() :
 TimeUnit TimeUnit() :
 {}
 {
+<<<<<<< HEAD
     <MILLISECOND> { return TimeUnit.MILLISECOND; }
+=======
+    <MICROSECOND> { return TimeUnit.MICROSECOND; }
+|   <MILLISECOND> { return TimeUnit.MILLISECOND; }
+>>>>>>> 454c91488 ([CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin))
 |   <SECOND> { return TimeUnit.SECOND; }
 |   <MINUTE> { return TimeUnit.MINUTE; }
 |   <HOUR> { return TimeUnit.HOUR; }
@@ -8656,6 +8661,9 @@ void NonReservedKeyWord0of3() :
 
     |   <NANOSECOND>
 
+    |   <ISODOW>
+    |   <ISOYEAR>
+    |   <MILLISECOND>
     |   <${keyword}>
 </#if>
 </#list>
