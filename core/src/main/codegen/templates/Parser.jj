@@ -5258,6 +5258,7 @@ TimeUnit TimeUnit() :
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     <MILLISECOND> { return TimeUnit.MILLISECOND; }
 =======
     <MICROSECOND> { return TimeUnit.MICROSECOND; }
@@ -5275,11 +5276,18 @@ TimeUnit TimeUnit() :
 =======
     <SECOND> { return TimeUnit.SECOND; }
 >>>>>>> e4ce0a986 (Revert "Reapply [CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin)")
+=======
+    <MICROSECOND> { return TimeUnit.MICROSECOND; }
+|   <MILLISECOND> { return TimeUnit.MILLISECOND; }
+|   <SECOND> { return TimeUnit.SECOND; }
+>>>>>>> 7f011cb5c ([CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin))
 |   <MINUTE> { return TimeUnit.MINUTE; }
 |   <HOUR> { return TimeUnit.HOUR; }
 |   <DAY> { return TimeUnit.DAY; }
 |   <DOW> { return TimeUnit.DOW; }
 |   <DOY> { return TimeUnit.DOY; }
+|   <ISODOW> { return TimeUnit.ISODOW; }
+|   <ISOYEAR> { return TimeUnit.ISOYEAR; }
 |   <WEEK> { return TimeUnit.WEEK; }
 |   <MONTH> { return TimeUnit.MONTH; }
 |   <QUARTER> { return TimeUnit.QUARTER; }
@@ -6486,9 +6494,13 @@ SqlNode BuiltinFunctionCall() :
         <LPAREN>
         (
 <<<<<<< HEAD
+<<<<<<< HEAD
             <NANOSECOND> { unit = TimeUnit.NANOSECOND; }
         |   <MICROSECOND> { unit = TimeUnit.MICROSECOND; }
 =======
+=======
+            LOOKAHEAD(2)
+>>>>>>> 7f011cb5c ([CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin))
             <MICROSECOND> { unit = TimeUnit.MICROSECOND; }
 >>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
         |   unit = TimeUnit()
@@ -8747,6 +8759,8 @@ SqlPostfixOperator PostfixRowOperator() :
 |   < INTO: "INTO" >
 |   < INVOKER: "INVOKER" >
 |   < IS: "IS" >
+|   < ISODOW: "ISODOW" >
+|   < ISOYEAR: "ISOYEAR" >
 |   < ISOLATION: "ISOLATION" >
 |   < JAVA: "JAVA" >
 |   < JOIN: "JOIN" >
@@ -8830,6 +8844,7 @@ SqlPostfixOperator PostfixRowOperator() :
 |   < MESSAGE_TEXT: "MESSAGE_TEXT" >
 |   < METHOD: "METHOD" >
 |   < MICROSECOND: "MICROSECOND" >
+|   < MILLISECOND: "MILLISECOND" >
 |   < MILLENNIUM: "MILLENNIUM" >
 |   < MIN: "MIN" >
 |   < MINUTE: "MINUTE" >

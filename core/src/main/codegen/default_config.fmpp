@@ -199,6 +199,10 @@ parser: {
 <<<<<<< HEAD
     "ISODOW"
     "ISOLATION"
+<<<<<<< HEAD
+=======
+    "ISODOW"
+>>>>>>> 7f011cb5c ([CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin))
     "ISOYEAR"
     "JAVA"
     "JSON"
@@ -246,8 +250,12 @@ parser: {
     "MILLENNIUM"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "MILLISECOND"
     "MINUTES"
+=======
+    "MILLISECOND"
+>>>>>>> 7f011cb5c ([CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin))
     "MINVALUE"
     "MONTHS"
 =======
