@@ -34,7 +34,7 @@ adapters.
 Prerequisites are maven (3.5.2 or later)
 and Java (JDK 8, 9 or 10) on your path.
 
-Unpack the source distribution `.tar.gz` or `.zip` file,
+Unpack the source distribution `.tar.gz` file,
 `cd` to the root directory of the unpacked source,
 then build using maven:
 
@@ -592,12 +592,11 @@ The version will be automatically changed when performing the release for real.
   * apache-calcite-X.Y.Z-src.tar.gz.asc
   * apache-calcite-X.Y.Z-src.tar.gz.md5
   * apache-calcite-X.Y.Z-src.tar.gz.sha256
-  * apache-calcite-X.Y.Z-src.zip
-  * apache-calcite-X.Y.Z-src.zip.asc
+
   * apache-calcite-X.Y.Z-src.zip.md5
-  * apache-calcite-X.Y.Z-src.zip.sha256
+
 * Note that the file names start `apache-calcite-`.
-* In the two source distros `.tar.gz` and `.zip` (currently there is
+* In the source distro `.tar.gz` (currently there is
   no binary distro), check that all files belong to a directory called
   `apache-calcite-X.Y.Z-src`.
 * That directory must contain files `NOTICE`, `LICENSE`,
@@ -690,7 +689,7 @@ curl -O https://dist.apache.org/repos/dist/release/calcite/KEYS
 # (Assumes your O/S has 'md5' and 'sha1' commands.)
 function checkHash() {
   cd "$1"
-  for i in *.{zip,pom,gz}; do
+  for i in *.{pom,gz}; do
     if [ ! -f $i ]; then
       continue
     fi
@@ -744,10 +743,9 @@ The artifacts to be voted on are located here:
 https://dist.apache.org/repos/dist/dev/calcite/apache-calcite-X.Y.Z-rcN/
 
 The hashes of the artifacts are as follows:
-src.tar.gz.md5 XXXX
-src.tar.gz.sha1 XXXX
-src.zip.md5 XXXX
-src.zip.sha1 XXXX
+src.tar.gz.sha256 XXXX
+
+
 
 A staged Maven repository is available for review at:
 https://repository.apache.org/content/repositories/orgapachecalcite-NNNN
