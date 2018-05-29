@@ -628,7 +628,89 @@ public class RexToLixTranslator {
         break;
       }
     }
+    if (convert == null) {
+      convert = convert(operand, typeFactory.getJavaClass(targetType));
+    }
+    // Going from anything to CHAR(n) or VARCHAR(n), make sure value is no
+    // longer than n.
+    boolean pad = false;
+    boolean truncate = true;
+    switch (targetType.getSqlTypeName()) {
+    case CHAR:
+    case BINARY:
+      pad = true;
+      // fall through
+    case VARCHAR:
+    case VARBINARY:
+      final int targetPrecision = targetType.getPrecision();
+      if (targetPrecision >= 0) {
+        switch (sourceType.getSqlTypeName()) {
+        case CHAR:
+        case VARCHAR:
+        case BINARY:
+        case VARBINARY:
+          // If this is a widening cast, no need to truncate.
+          final int sourcePrecision = sourceType.getPrecision();
+          if (SqlTypeUtil.comparePrecision(sourcePrecision, targetPrecision)
+              <= 0) {
+            truncate = false;
+          }
+          // If this is a widening cast, no need to pad.
+          if (SqlTypeUtil.comparePrecision(sourcePrecision, targetPrecision)
+              >= 0
+              && targetPrecision != RelDataType.PRECISION_NOT_SPECIFIED) {
+            pad = false;
+          }
+          // fall through
+        default:
+          if (truncate || pad) {
+            convert =
+                Expressions.call(
+                    pad
+                        ? BuiltInMethod.TRUNCATE_OR_PAD.method
+                        : BuiltInMethod.TRUNCATE.method,
+                    convert,
+                    Expressions.constant(targetPrecision));
+          }
+        }
+      }
+      break;
+    case TIMESTAMP:
+      int targetScale = targetType.getScale();
+      if (targetScale == RelDataType.SCALE_NOT_SPECIFIED) {
+        targetScale = 0;
+      }
+      if (targetScale < sourceType.getScale()) {
+        convert =
+            Expressions.call(
+                BuiltInMethod.ROUND_LONG.method,
+                convert,
+                Expressions.constant(
+                    (long) Math.pow(10, 3 - targetScale)));
+      }
+      break;
+    case INTERVAL_YEAR:
+    case INTERVAL_YEAR_MONTH:
+    case INTERVAL_MONTH:
+    case INTERVAL_DAY:
+    case INTERVAL_DAY_HOUR:
+    case INTERVAL_DAY_MINUTE:
+    case INTERVAL_DAY_SECOND:
+    case INTERVAL_HOUR:
+    case INTERVAL_HOUR_MINUTE:
+    case INTERVAL_HOUR_SECOND:
+    case INTERVAL_MINUTE:
+    case INTERVAL_MINUTE_SECOND:
+    case INTERVAL_SECOND:
+      switch (sourceType.getSqlTypeName().getFamily()) {
+      case NUMERIC:
+        final BigDecimal multiplier = targetType.getSqlTypeName().getEndUnit().multiplier;
+        final BigDecimal divider = BigDecimal.ONE;
+        convert = RexImpTable.multiplyDivide(convert, multiplier, divider);
+      }
+    }
 
+    convert = scaleIntervalToNumber(sourceType, targetType, convert);
     return convert;
   }
 
@@ -1209,9 +1291,8 @@ public class RexToLixTranslator {
       case INTERVAL_SECOND:
         // Scale to the given field.
         final BigDecimal multiplier = BigDecimal.ONE;
-        final BigDecimal divider =
-            sourceType.getSqlTypeName().getEndUnit().multiplier;
-        return RexImpTable.multiplyDivide(operand, multiplier, divider);
+        final BigDecimal divider = sourceType.getSqlTypeName().getEndUnit().multiplier;
+        operand = RexImpTable.multiplyDivide(operand, multiplier, divider);
       }
     }
     return operand;
