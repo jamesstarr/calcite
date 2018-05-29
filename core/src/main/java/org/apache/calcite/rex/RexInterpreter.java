@@ -30,9 +30,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Comparator;
-<<<<<<< HEAD
-import java.util.EnumSet;
-=======
 import java.util.List;
 import java.util.Map;
 import java.util.function.IntPredicate;
@@ -51,7 +48,6 @@ import java.util.function.IntPredicate;
 public class RexInterpreter implements RexVisitor<Comparable> {
   private static final NullSentinel N = NullSentinel.INSTANCE;
 
->>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values)
   private final Map<RexNode, Comparable> environment;
 
   /** Creates an interpreter.
@@ -93,9 +89,6 @@ public class RexInterpreter implements RexVisitor<Comparable> {
   }
 
   public Comparable visitLiteral(RexLiteral literal) {
-<<<<<<< HEAD
-    return Util.first(literal.getValue4(), N);
-=======
     return Util.first(literal.getValue4(), NullSentinel.INSTANCE);
   }
 
@@ -362,4 +355,3 @@ public class RexInterpreter implements RexVisitor<Comparable> {
 =======
 
 // End RexInterpreter.java
->>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values)

@@ -659,16 +659,6 @@ public class RexSimplify {
       // x IS TRUE ==> x (if x is not nullable)
       // x IS NOT FALSE ==> x (if x is not nullable)
       if (!a.getType().isNullable()) {
-<<<<<<< HEAD
-        return simplify(a, unknownAs);
-      } else {
-        RexNode newSub =
-            simplify(a, kind == SqlKind.IS_TRUE ? RexUnknownAs.FALSE : RexUnknownAs.TRUE);
-        if (newSub == a) {
-          return null;
-        }
-        return rexBuilder.makeCall(RexUtil.op(kind), ImmutableList.of(newSub));
-=======
         return simplify_(a);
       }
     case IS_FALSE:
@@ -712,7 +702,6 @@ public class RexSimplify {
     if (predicates.pulledUpPredicates.contains(a)) {
       return rexBuilder.makeLiteral(true);
     }
->>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
     switch (Strong.policy(a.getKind())) {
     case NOT_NULL:
       return rexBuilder.makeLiteral(true);

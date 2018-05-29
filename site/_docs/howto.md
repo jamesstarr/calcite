@@ -683,6 +683,15 @@ git clean -xn
   * `apache-calcite-X.Y.Z-src.tar.gz.asc`
   * `apache-calcite-X.Y.Z-src.tar.gz.sha256`
 
+<<<<<<< HEAD
+=======
+* In the `target` directory should be these 8 files, among others:
+  * apache-calcite-X.Y.Z-src.tar.gz
+  * apache-calcite-X.Y.Z-src.tar.gz.asc
+  * apache-calcite-X.Y.Z-src.tar.gz.md5
+  * apache-calcite-X.Y.Z-src.tar.gz.sha256
+
+>>>>>>> 6ec775507 ([CALCITE-2333] Stop releasing zips)
   * apache-calcite-X.Y.Z-src.zip.md5
 
 * Note that the file names start `apache-calcite-`.
