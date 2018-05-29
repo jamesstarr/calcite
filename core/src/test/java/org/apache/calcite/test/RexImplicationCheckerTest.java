@@ -44,7 +44,6 @@ import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -394,11 +393,11 @@ public class RexImplicationCheckerTest {
         is("2014"));
   }
 
-  /** Test case for simplifier of ceil and floor. */
-  // Disabled: we wrongly simplify FLOOR(CEIL(2010-10-10, YEAR), YEAR)
-  // to FLOOR(2010-10-10, YEAR)
-  @Ignore("[CALCITE-2332]")
-  @Test public void testSimplifyFloor() {
+  /** Test case for simplifier of ceil/floor. */
+  @Test public void testSimplifyCeilFloor() {
+    // We can add more time units here once they are supported in
+    // RexInterpreter, e.g., TimeUnitRange.HOUR, TimeUnitRange.MINUTE,
+    // TimeUnitRange.SECOND.
     final ImmutableList<TimeUnitRange> timeUnitRanges =
         ImmutableList.of(TimeUnitRange.YEAR, TimeUnitRange.MONTH);
     final Fixture f = new Fixture();
@@ -419,18 +418,12 @@ public class RexImplicationCheckerTest {
         final RexNode outerCeilCall = f.rexBuilder.makeCall(
             SqlStdOperatorTable.CEIL, innerCeilCall,
             f.rexBuilder.makeFlag(timeUnitRanges.get(j)));
-        final RexCall floorSimplifiedExpr =
-            (RexCall) f.simplify.simplifyPreservingType(outerFloorCall,
-                RexUnknownAs.UNKNOWN, true);
+        final RexCall floorSimplifiedExpr = (RexCall) defaultSimplifier.apply(outerFloorCall);
         assertThat(floorSimplifiedExpr.getKind(), is(SqlKind.FLOOR));
-        assertThat(((RexLiteral) floorSimplifiedExpr.getOperands().get(1))
-                .getValue().toString(),
+        assertThat(((RexLiteral) floorSimplifiedExpr.getOperands().get(1)).getValue().toString(),
             is(timeUnitRanges.get(j).toString()));
-        assertThat(floorSimplifiedExpr.getOperands().get(0).toString(),
-            is(literalTs.toString()));
-        final RexCall ceilSimplifiedExpr =
-            (RexCall) f.simplify.simplifyPreservingType(outerCeilCall,
-                RexUnknownAs.UNKNOWN, true);
+        assertThat(floorSimplifiedExpr.getOperands().get(0).toString(), is(literalTs.toString()));
+        final RexCall ceilSimplifiedExpr = (RexCall) defaultSimplifier.apply(outerCeilCall);
         assertThat(ceilSimplifiedExpr.getKind(), is(SqlKind.CEIL));
         assertThat(((RexLiteral) ceilSimplifiedExpr.getOperands().get(1)).getValue().toString(),
             is(timeUnitRanges.get(j).toString()));
@@ -453,13 +446,9 @@ public class RexImplicationCheckerTest {
         final RexNode outerCeilCall = f.rexBuilder.makeCall(
             SqlStdOperatorTable.CEIL, innerCeilCall,
             f.rexBuilder.makeFlag(timeUnitRanges.get(j)));
-        final RexCall floorSimplifiedExpr =
-            (RexCall) f.simplify.simplifyPreservingType(outerFloorCall,
-                RexUnknownAs.UNKNOWN, true);
+        final RexCall floorSimplifiedExpr = (RexCall) defaultSimplifier.apply(outerFloorCall);
         assertThat(floorSimplifiedExpr.toString(), is(outerFloorCall.toString()));
-        final RexCall ceilSimplifiedExpr =
-            (RexCall) f.simplify.simplifyPreservingType(outerCeilCall,
-                RexUnknownAs.UNKNOWN, true);
+        final RexCall ceilSimplifiedExpr = (RexCall) defaultSimplifier.apply(outerCeilCall);
         assertThat(ceilSimplifiedExpr.toString(), is(outerCeilCall.toString()));
       }
     }

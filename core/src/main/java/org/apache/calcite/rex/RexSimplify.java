@@ -1643,9 +1643,8 @@ public class RexSimplify {
       return e;
     }
     final RexNode operand = simplify_(e.getOperands().get(0));
-    switch (operand.getKind()) {
-    case CEIL:
-    case FLOOR:
+    if (e.getKind() == operand.getKind()) {
+      assert e.getKind() == SqlKind.CEIL || e.getKind() == SqlKind.FLOOR;
       // CEIL/FLOOR on top of CEIL/FLOOR
       final RexCall child = (RexCall) operand;
       if (child.getOperands().size() != 2) {
