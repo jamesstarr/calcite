@@ -1213,7 +1213,7 @@ public class RexSimplify {
    *
    * <li>{@code ceil(floor($0, flag(hour)), flag(day))} returns {@code ceil($0, flag(day))}
    *
-   * <li>{@code floor(floor($0, flag(second)), flag(day))} returns {@code floor($0, flag(day))}
+   * <li>{@code ceil(ceil($0, flag(second)), flag(day))} returns {@code ceil($0, flag(day))}
    *
    * <li>{@code floor(ceil($0, flag(day)), flag(second))} does not change
    *
@@ -1225,9 +1225,8 @@ public class RexSimplify {
       return e;
     }
     final RexNode operand = simplify_(e.getOperands().get(0));
-    switch (operand.getKind()) {
-    case CEIL:
-    case FLOOR:
+    if (e.getKind() == operand.getKind()) {
+      assert e.getKind() == SqlKind.CEIL || e.getKind() == SqlKind.FLOOR;
       // CEIL/FLOOR on top of CEIL/FLOOR
       final RexCall child = (RexCall) operand;
       if (child.getOperands().size() != 2) {
