@@ -316,6 +316,10 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
     }
   }
 
+  public SqlTester enableTypeCoercion(boolean enabled) {
+    return with("enableTypeCoercion", enabled);
+  }
+
   public SqlTester withOperatorTable(SqlOperatorTable operatorTable) {
     return with("operatorTable", operatorTable);
   }
@@ -346,6 +350,16 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
       double delta) {
     String query =
         SqlTests.generateAggQuery(expr, inputValues);
+    check(query, SqlTests.ANY_TYPE_CHECKER, result, delta);
+  }
+
+  public void checkAggWithMultipleArgs(
+      String expr,
+      String[][] inputValues,
+      Object result,
+      double delta) {
+    String query =
+        SqlTests.generateAggQueryWithMultipleArgs(expr, inputValues);
     check(query, SqlTests.ANY_TYPE_CHECKER, result, delta);
   }
 

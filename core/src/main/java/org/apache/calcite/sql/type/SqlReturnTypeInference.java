@@ -30,6 +30,7 @@ import org.apache.calcite.sql.SqlOperatorBinding;
  * sense because many operators have similar, straightforward strategies, such
  * as to take the type of the first operand.</p>
  */
+@FunctionalInterface
 public interface SqlReturnTypeInference {
   //~ Methods ----------------------------------------------------------------
 

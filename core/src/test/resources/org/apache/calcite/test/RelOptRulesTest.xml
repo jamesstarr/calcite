@@ -16,6 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <Root>
+
     <TestCase name="testAggregateExtractProjectRule">
         <Resource name="sql">
             <![CDATA[select sum(sal)
@@ -222,6 +223,7 @@ LogicalProject(EMPNO=[$0], DEPTNO=[$1], W_COUNT=[$2])
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testProjectToWindowRuleForMultipleWindows">
         <Resource name="sql">
             <![CDATA[select
@@ -417,6 +419,7 @@ LogicalProject(EXPR$0=[1])
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testAddRedundantSemiJoinRule">
         <Resource name="sql">
             <![CDATA[select 1 from emp inner join dept on emp.deptno = dept.deptno]]>
@@ -985,6 +988,7 @@ LogicalAggregate(group=[{0}], EXPR$1=[SUM($1)], EXPR$2=[MIN($2)], EXPR$3=[SUM($0
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testMultipleDistinctWithGrouping">
         <Resource name="sql">
             <![CDATA[SELECT sal, SUM(comm), MIN(DISTINCT comm), SUM(DISTINCT sal)
@@ -1891,6 +1895,7 @@ LogicalProject(EXPR$0=[$1], EXPR$1=[$0])
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testPushProjectPastSetOp">
         <Resource name="sql">
             <![CDATA[select sal from (select * from emp e1 union all select * from emp e2)]]>
@@ -2019,6 +2024,7 @@ LogicalProject(DEPTNO=[$0])
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testReduceConstantsEliminatesFilter">
         <Resource name="sql">
             <![CDATA[select * from (values (1,2)) where 1 + 2 > 3 + CAST(NULL AS INTEGER)]]>
@@ -2384,7 +2390,7 @@ LogicalCalc(expr#0=[{inputs}], expr#1=['TABLE        '], expr#2=['t'], U=[$t1], 
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
-LogicalProject(EXPR$0=[CASE(IS NULL($1), IS NULL($0), =(CAST($1):INTEGER NOT NULL, $0))])
+LogicalProject(EXPR$0=[IS TRUE(=($1, $0))])
   LogicalProject(EXPR$0=[2], EXPR$1=[null])
     LogicalValues(tuples=[[{ 0 }]])
 ]]>
@@ -2813,6 +2819,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testIntersectToDistinct">
         <Resource name="sql">
             <![CDATA[select * from emp where deptno = 10
@@ -3275,6 +3282,7 @@ LogicalProject(EXPR$0=[CAST(/($0, $1)):INTEGER NOT NULL])
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testWindowFunctionOnAggregations">
         <Resource name="sql">
             <![CDATA[SELECT
@@ -4705,7 +4713,7 @@ UnionRel(all=[true])
         <Resource name="planBefore">
             <![CDATA[
 LogicalAggregate(group=[{1}], EXPR$1=[$SUM0($2)])
-  LogicalFilter(condition=[>(CAST($0):BIGINT NOT NULL, CAST('12'):BIGINT NOT NULL)])
+  LogicalFilter(condition=[>($0, CAST('12'):INTEGER NOT NULL)])
     LogicalAggregate(group=[{5, 7}], EXPR$1=[COUNT()])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
@@ -4714,7 +4722,7 @@ LogicalAggregate(group=[{1}], EXPR$1=[$SUM0($2)])
             <![CDATA[
 LogicalAggregate(group=[{1}], EXPR$1=[$SUM0($2)])
   LogicalAggregate(group=[{5, 7}], EXPR$1=[COUNT()])
-    LogicalFilter(condition=[>(CAST($5):BIGINT NOT NULL, 12)])
+    LogicalFilter(condition=[>($5, 12)])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -5338,6 +5346,7 @@ LogicalProject(EXPR$0=[1])
     <TestCase name="testPullConstantIntoProject">
         <Resource name="sql">
             <![CDATA[select deptno, deptno + 1, empno + deptno from sales.emp where deptno = 10]]>
+
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -5490,6 +5499,7 @@ LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testSemiJoinRuleExists">
         <Resource name="sql">
             <![CDATA[select * from dept where exists (
@@ -5679,6 +5689,7 @@ LogicalAggregate(group=[{0, 1}])
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testProjectWindowTransposeRule">
         <Resource name="sql">
             <![CDATA[select count(empno) over(), deptno from emp]]>
@@ -6385,6 +6396,7 @@ LogicalAggregate(group=[{}], EXPR$0=[SUM($3)])
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testPushAggregateSumThroughJoin">
         <Resource name="sql">
             <![CDATA[select e.job,sum(sal)
@@ -6479,6 +6491,7 @@ LogicalProject(EXPR$0=[CASE(=($1, 0), null, $0)])
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testReduceConstantsIsNotNull">
         <Resource name="sql">
             <![CDATA[select empno from emp
@@ -6787,6 +6800,7 @@ LogicalProject(DEPTNO=[$0], DEPTNO0=[$9])
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testReduceConstantsNullEqualsOne">
         <Resource name="sql">
             <![CDATA[select count(1) from emp where cast(null as integer) = 1]]>
@@ -6988,6 +7002,7 @@ LogicalAggregate(group=[{}], EXPR$0=[$SUM0($4)])
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testPushAggregateThroughJoinDistinct">
         <Resource name="sql">
             <![CDATA[select d.name,
@@ -7017,6 +7032,7 @@ LogicalProject(NAME=[$3], SUM_SAL=[$1], C=[$2])
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testReduceNullableCase2">
         <Resource name="sql">
             <![CDATA[SELECT deptno, ename, CASE WHEN 1=2 THEN substring(ename, 1, cast(2 as int)) ELSE NULL end from emp group by deptno, ename, case when 1=2 then substring(ename,1, cast(2 as int))  else null end]]>
@@ -7825,6 +7841,7 @@ LogicalProject(EXPR$0=[CAST(CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testExpandFilterExists">
         <Resource name="sql">
             <![CDATA[select empno
@@ -8077,6 +8094,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testSortUnionTranspose2">
         <Resource name="sql">
             <![CDATA[select a.name from dept a
@@ -8591,6 +8609,7 @@ LogicalProject(JOB=[$0], EMPNO=[10], SAL=[$1], S=[$2])
 ]]>
         </Resource>
     </TestCase>
+
     <TestCase name="testWhereExpressionInCorrelated">
         <Resource name="sql">
             <![CDATA[select ename from (
@@ -8915,6 +8934,7 @@ LogicalProject(EXPR$0=[+($1, $4)])
         <Resource name="sql">
             <![CDATA[SELECT e1.empno
             FROM emp e1, dept d1 where e1.deptno = d1.deptno and e1.deptno < 10 and d1.deptno < 15 and e1.sal > (select avg(sal) from emp e2 where e1.empno = e2.empno) order by e1.empno]]>
+
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -9169,6 +9189,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 ]]>
         </Resource>
         <Resource name="planMid">
+
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalFilter(condition=[AND(=($7, $9), =($5, $10))])

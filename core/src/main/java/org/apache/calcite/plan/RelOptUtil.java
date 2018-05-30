@@ -975,6 +975,24 @@ public abstract class RelOptUtil {
       List<Boolean> filterNulls) {
     final List<RexNode> nonEquiList = new ArrayList<>();
 
+    splitJoinCondition(left, right, condition, leftKeys, rightKeys,
+            filterNulls, nonEquiList);
+
+    return RexUtil.composeConjunction(
+            left.getCluster().getRexBuilder(), nonEquiList, false);
+  }
+
+  /** As
+   * {@link #splitJoinCondition(RelNode, RelNode, RexNode, List, List, List)},
+   * but writes non-equi conditions to a conjunctive list. */
+  public static void splitJoinCondition(
+      RelNode left,
+      RelNode right,
+      RexNode condition,
+      List<Integer> leftKeys,
+      List<Integer> rightKeys,
+      List<Boolean> filterNulls,
+      List<RexNode> nonEquiList) {
     splitJoinCondition(
         left.getCluster().getRexBuilder(),
         left.getRowType().getFieldCount(),
@@ -984,8 +1002,6 @@ public abstract class RelOptUtil {
         filterNulls,
         nonEquiList);
 
-    return RexUtil.composeConjunction(
-        left.getCluster().getRexBuilder(), nonEquiList, false);
   }
 
   @Deprecated // to be removed before 2.0
@@ -1682,11 +1698,22 @@ public abstract class RelOptUtil {
     RexCall opEqCall = (RexCall) op0;
     RexCall opNullEqCall = (RexCall) op1;
 
+    // Swapping the operands if necessary
     if (opEqCall.getKind() == SqlKind.AND
-        && opNullEqCall.getKind() == SqlKind.EQUALS) {
+        && (opNullEqCall.getKind() == SqlKind.EQUALS
+        || opNullEqCall.getKind() == SqlKind.IS_TRUE)) {
       RexCall temp = opEqCall;
       opEqCall = opNullEqCall;
       opNullEqCall = temp;
+    }
+
+    // Check if EQUALS is actually wrapped in IS TRUE expression
+    if (opEqCall.getKind() == SqlKind.IS_TRUE) {
+      RexNode tmp = opEqCall.getOperands().get(0);
+      if (!(tmp instanceof RexCall)) {
+        return call;
+      }
+      opEqCall = (RexCall) tmp;
     }
 
     if (opNullEqCall.getKind() != SqlKind.AND
@@ -1737,8 +1764,8 @@ public abstract class RelOptUtil {
       return call;
     }
 
-    if (!RexUtil.eq(ifCall, elseIfThenCall)
-        || !RexUtil.eq(thenCall, elseIfCall)) {
+    if (!ifCall.equals(elseIfThenCall)
+        || !thenCall.equals(elseIfCall)) {
       return call;
     }
 
@@ -2128,38 +2155,26 @@ public abstract class RelOptUtil {
       RexNode x,
       RexNode y,
       boolean neg) {
-    SqlOperator nullOp;
-    SqlOperator eqOp;
+
     if (neg) {
-      nullOp = SqlStdOperatorTable.IS_NULL;
-      eqOp = SqlStdOperatorTable.EQUALS;
+      // x is not distinct from y
+      // x=y IS TRUE or ((x is null) and (y is null)),
+      return rexBuilder.makeCall(SqlStdOperatorTable.OR,
+              rexBuilder.makeCall(SqlStdOperatorTable.AND,
+                      rexBuilder.makeCall(SqlStdOperatorTable.IS_NULL, x),
+                      rexBuilder.makeCall(SqlStdOperatorTable.IS_NULL, y)),
+              rexBuilder.makeCall(SqlStdOperatorTable.IS_TRUE,
+                      rexBuilder.makeCall(SqlStdOperatorTable.EQUALS, x, y)));
     } else {
-      nullOp = SqlStdOperatorTable.IS_NOT_NULL;
-      eqOp = SqlStdOperatorTable.NOT_EQUALS;
+      // x is distinct from y
+      // x=y IS NOT TRUE and ((x is not null) or (y is not null)),
+      return rexBuilder.makeCall(SqlStdOperatorTable.AND,
+              rexBuilder.makeCall(SqlStdOperatorTable.OR,
+                      rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL, x),
+                      rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL, y)),
+              rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_TRUE,
+                      rexBuilder.makeCall(SqlStdOperatorTable.EQUALS, x, y)));
     }
-    // By the time the ELSE is reached, x and y are known to be not null;
-    // therefore the whole CASE is not null.
-    RexNode[] whenThenElse = {
-        // when x is null
-        rexBuilder.makeCall(SqlStdOperatorTable.IS_NULL, x),
-
-        // then return y is [not] null
-        rexBuilder.makeCall(nullOp, y),
-
-        // when y is null
-        rexBuilder.makeCall(SqlStdOperatorTable.IS_NULL, y),
-
-        // then return x is [not] null
-        rexBuilder.makeCall(nullOp, x),
-
-        // else return x compared to y
-        rexBuilder.makeCall(eqOp,
-            rexBuilder.makeNotNull(x),
-            rexBuilder.makeNotNull(y))
-    };
-    return rexBuilder.makeCall(
-        SqlStdOperatorTable.CASE,
-        whenThenElse);
   }
 
   /**

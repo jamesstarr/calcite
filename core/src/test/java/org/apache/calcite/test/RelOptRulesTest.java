@@ -87,7 +87,6 @@ import org.apache.calcite.test.catalog.MockCatalogReader;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -1863,9 +1862,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   private void checkPlanning(String query) throws Exception {
     final Tester tester1 = tester.withCatalogReaderFactory(
-        new Function<RelDataTypeFactory, Prepare.CatalogReader>() {
-          public Prepare.CatalogReader apply(RelDataTypeFactory typeFactory) {
-            return new MockCatalogReader(typeFactory, true) {
+        (typeFactory, caseSensitive) -> new MockCatalogReader(typeFactory, caseSensitive) {
               @Override public MockCatalogReader init() {
                 // CREATE SCHEMA abc;
                 // CREATE TABLE a(a INT);
@@ -1884,8 +1881,6 @@ public class RelOptRulesTest extends RelOptTestBase {
                 return this;
               }
               // CHECKSTYLE: IGNORE 1
-            }.init();
-          }
         });
     HepProgram program = new HepProgramBuilder()
         .addMatchOrder(HepMatchOrder.BOTTOM_UP)
@@ -3358,7 +3353,7 @@ public class RelOptRulesTest extends RelOptTestBase {
   @Test public void testSortJoinTranspose4() {
     // Create a customized test with RelCollation trait in the test cluster.
     Tester tester = new TesterImpl(getDiffRepos(), true, true, false, false,
-        null, null) {
+        true, null, null) {
       @Override public RelOptPlanner createPlanner() {
         return new MockRelOptPlanner(Contexts.empty()) {
           @Override public List<RelTraitDef> getRelTraitDefs() {
@@ -4276,8 +4271,8 @@ public class RelOptRulesTest extends RelOptTestBase {
     VolcanoPlanner planner = new VolcanoPlanner(null, null);
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
     planner.addRelTraitDef(RelDistributionTraitDef.INSTANCE);
-    Tester tester = new TesterImpl(getDiffRepos(), false, true, false, false,
-            null, null)
+    Tester tester = new TesterImpl(getDiffRepos(), false, true, false,
+            false, false, null, null)
             .withClusterFactory(
               relOptCluster -> RelOptCluster.create(planner, relOptCluster.getRexBuilder()));
 

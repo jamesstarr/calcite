@@ -40,13 +40,13 @@ import org.apache.calcite.sql.validate.SqlValidatorScope;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Base class for all the type coercion rules. If you want to have a custom type coercion rules,
@@ -70,9 +70,10 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
 
   //~ Constructors -----------------------------------------------------------
 
-  AbstractTypeCoercion(RelDataTypeFactory typeFactory, SqlValidator validator) {
-    this.factory = Preconditions.checkNotNull(typeFactory, "typeFactory");
-    this.validator = Preconditions.checkNotNull(validator, "validator");
+  AbstractTypeCoercion(SqlValidator validator) {
+    Objects.requireNonNull(validator);
+    this.validator = validator;
+    this.factory = validator.getTypeFactory();
   }
 
   //~ Methods ----------------------------------------------------------------

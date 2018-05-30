@@ -89,9 +89,21 @@ public class SqlValidatorTestCase {
   }
 
   public final Sql sql(String sql) {
-    return new Sql(tester, sql);
+    return new Sql(tester, sql, true);
   }
 
+  public final Sql sql(String sql, boolean typeCoercion) {
+    final SqlTester tester1 = tester.enableTypeCoercion(typeCoercion);
+    return new Sql(tester1, sql, true);
+  }
+
+  public final Sql expr(String sql) {
+    return new Sql(tester, sql, false);
+  }
+
+  public final Sql winSql(String sql, boolean typeCoercion) {
+    return sql(sql, typeCoercion);
+  }
 
   public final Sql winSql(String sql) {
     return sql(sql);
@@ -107,6 +119,10 @@ public class SqlValidatorTestCase {
 
   public Sql winExp2(String sql) {
     return winSql("select " + sql + " from emp");
+  }
+
+  public Sql winExp2(String sql, boolean typeCoercion) {
+    return winSql("select " + sql + " from emp", typeCoercion);
   }
 
   public void check(String sql) {
@@ -130,12 +146,37 @@ public class SqlValidatorTestCase {
   }
 
   /**
+   * Checks that a SQL query gives a particular error, or succeeds if {@code
+   * expected} is null, with specified type coercion flag.
+   */
+  public final void checkFails(
+      String sql,
+      String expected,
+      boolean typeCoercion) {
+    sql(sql, typeCoercion).fails(expected);
+  }
+
+  /**
    * Checks that a SQL expression gives a particular error.
    */
   public final void checkExpFails(
       String sql,
       String expected) {
     tester.assertExceptionIsThrown(
+        AbstractSqlTester.buildQuery(sql),
+        expected);
+  }
+
+  /**
+   * Checks that a SQL expression gives a particular error,
+   * with specified type coercion flag.
+   */
+  public final void checkExpFails(
+      String sql,
+      String expected,
+      boolean typeCoercion) {
+    final SqlTester tester1 = tester.enableTypeCoercion(typeCoercion);
+    tester1.assertExceptionIsThrown(
         AbstractSqlTester.buildQuery(sql),
         expected);
   }
@@ -149,6 +190,18 @@ public class SqlValidatorTestCase {
       String expected) {
     assert sql.indexOf('^') < 0;
     checkExpFails("^" + sql + "^", expected);
+  }
+
+  /**
+   * Checks that a SQL expression gives a particular error, and that the
+   * location of the error is the whole expression, with specified type coercion flag.
+   */
+  public final void checkWholeExpFails(
+      String sql,
+      String expected,
+      boolean typeCoercion) {
+    assert sql.indexOf('^') < 0;
+    checkExpFails("^" + sql + "^", expected, typeCoercion);
   }
 
   public final void checkExpType(
@@ -213,6 +266,15 @@ public class SqlValidatorTestCase {
       String expectedMsgPattern) {
     assert expectedMsgPattern != null;
     tester.assertExceptionIsThrown(sql, expectedMsgPattern);
+  }
+
+  protected final void assertExceptionIsThrown(
+      String sql,
+      String expectedMsgPattern,
+      boolean typeCoercion) {
+    assert expectedMsgPattern != null;
+    final SqlTester tester1 = tester.enableTypeCoercion(typeCoercion);
+    tester1.assertExceptionIsThrown(sql, expectedMsgPattern);
   }
 
   public void checkCharset(
@@ -375,17 +437,23 @@ public class SqlValidatorTestCase {
     private final SqlTester tester;
     private final String sql;
 
-    Sql(SqlTester tester, String sql) {
+    /** Creates a Sql.
+     *
+     * @param tester Tester
+     * @param sql SQL query or expression
+     * @param query True if {@code sql} is a query, false if it is an expression
+     */
+    Sql(SqlTester tester, String sql, boolean query) {
       this.tester = tester;
-      this.sql = sql;
+      this.sql = query ? sql : AbstractSqlTester.buildQuery(sql);
     }
 
     Sql tester(SqlTester tester) {
-      return new Sql(tester, sql);
+      return new Sql(tester, sql, true);
     }
 
     public Sql sql(String sql) {
-      return new Sql(tester, sql);
+      return new Sql(tester, sql, true);
     }
 
     Sql withExtendedCatalog() {
@@ -449,7 +517,7 @@ public class SqlValidatorTestCase {
      * a test once at a conformance level where it fails, then run it again
      * at a conformance level where it succeeds. */
     public Sql sansCarets() {
-      return new Sql(tester, sql.replace("^", ""));
+      return new Sql(tester, sql.replace("^", ""), true);
     }
   }
 }

@@ -481,7 +481,7 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
     return typeSystem.deriveDecimalDivideType(this, type1, type2);
   }
 
-  @Override public RelDataType decimalOf(RelDataType type) {
+  public RelDataType decimalOf(RelDataType type) {
     // create decimal type and sync nullability
     return createTypeWithNullability(decimalOf2(type), type.isNullable());
   }

@@ -24,7 +24,6 @@ import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelTrait;
 import org.apache.calcite.plan.RelTraitDef;
 import org.apache.calcite.plan.RelTraitSet;
-import org.apache.calcite.prepare.Prepare;
 import org.apache.calcite.prepare.Prepare.CatalogReader;
 import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelNode;
@@ -42,20 +41,19 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.sql.SqlExplainLevel;
+import org.apache.calcite.sql.test.SqlTestFactory;
 import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
-import org.apache.calcite.test.catalog.MockCatalogReader;
 import org.apache.calcite.test.catalog.MockCatalogReaderExtended;
 import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
@@ -70,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
@@ -1710,7 +1709,8 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
 
   @Test public void testOverAvg3() {
     final Tester tester = new TesterImplWithNonStandardTypeFactory(getDiffRepos(),
-        false, false, true, false, null, null);
+        false, false, true, false,
+        false, null, null);
 
     // When using a different type factory, some extra casting might be required
     final String sql = "select var_pop(sal) over w1,\n"
@@ -1873,7 +1873,7 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     // Create a customized test with RelCollation trait in the test cluster.
     Tester tester = new TesterImpl(getDiffRepos(),
         false, true,
-        true, false,
+        true, false, true,
         null, null) {
       @Override public RelOptPlanner createPlanner() {
         return new MockRelOptPlanner(Contexts.empty()) {
@@ -2757,62 +2757,19 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).with(getTesterWithDynamicTable()).ok();
   }
 
-
-  private Tester getTesterWithDynamicTable() {
-    return tester.withCatalogReaderFactory(
-        new Function<RelDataTypeFactory, Prepare.CatalogReader>() {
-          public Prepare.CatalogReader apply(RelDataTypeFactory typeFactory) {
-            return new MockCatalogReader(typeFactory, true) {
-              @Override public MockCatalogReader init() {
-                // CREATE SCHEMA "SALES;
-                // CREATE DYNAMIC TABLE "NATION"
-                // CREATE DYNAMIC TABLE "CUSTOMER"
-
-                MockSchema schema = new MockSchema("SALES");
-                registerSchema(schema);
-
-                MockTable nationTable = new MockDynamicTable(this, schema.getCatalogName(),
-                    schema.getName(), "NATION", false, 100);
-                registerTable(nationTable);
-
-                MockTable customerTable = new MockDynamicTable(this, schema.getCatalogName(),
-                    schema.getName(), "CUSTOMER", false, 100);
-                registerTable(customerTable);
-
-                // CREATE TABLE "REGION" - static table with known schema.
-                final RelDataType intType =
-                    typeFactory.createSqlType(SqlTypeName.INTEGER);
-                final RelDataType varcharType =
-                    typeFactory.createSqlType(SqlTypeName.VARCHAR);
-
-                MockTable regionTable = MockTable.create(this, schema, "REGION", false, 100);
-                regionTable.addColumn("R_REGIONKEY", intType);
-                regionTable.addColumn("R_NAME", varcharType);
-                regionTable.addColumn("R_COMMENT", varcharType);
-                registerTable(regionTable);
-                return this;
-              }
-              // CHECKSTYLE: IGNORE 1
-            }.init();
-          }
-        });
-  }
-
   private Tester getExtendedTester() {
-    return tester.withCatalogReaderFactory(typeFactory ->
-        new MockCatalogReaderExtended(typeFactory, true).init());
+    return tester.withCatalogReaderFactory(MockCatalogReaderExtended::new);
   }
 
   @Test public void testLarge() {
-    SqlValidatorTest.checkLarge(400,
-        new Function<String, Void>() {
-          public Void apply(String input) {
-            final RelRoot root = tester.convertSqlToRel(input);
-            final String s = RelOptUtil.toString(root.project());
-            assertThat(s, notNullValue());
-            return null;
-          }
-        });
+    // Size factor used to be 400, but lambdas use a lot of stack
+    final int x = 300;
+    SqlValidatorTest.checkLarge(x, input -> {
+      final RelRoot root = tester.convertSqlToRel(input);
+      final String s = RelOptUtil.toString(root.project());
+      assertThat(s, notNullValue());
+      return null;
+    });
   }
 
   @Test public void testUnionInFrom() {
@@ -3178,31 +3135,23 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
   private final class TesterImplWithNonStandardTypeFactory extends TesterImpl {
     private TesterImplWithNonStandardTypeFactory(DiffRepository diffRepos,
         boolean enableDecorrelate, boolean enableTrim, boolean enableExpand,
-        boolean enableLateDecorrelate,
+        boolean enableLateDecorrelate, boolean enableLateTypeCoercion,
         Function<RelDataTypeFactory, CatalogReader> catalogReaderFactory,
         Function<RelOptCluster, RelOptCluster> clusterFactory) {
+
       super(diffRepos, enableDecorrelate, enableTrim, enableExpand, enableLateDecorrelate,
-          catalogReaderFactory, clusterFactory);
+        enableLateTypeCoercion, null, null, SqlToRelConverter.Config.DEFAULT,
+        SqlConformanceEnum.DEFAULT, Contexts.empty());
     }
 
     private TesterImplWithNonStandardTypeFactory(DiffRepository diffRepos,
         boolean enableDecorrelate, boolean enableTrim, boolean enableExpand,
-        boolean enableLateDecorrelate,
-        Function<RelDataTypeFactory, CatalogReader> catalogReaderFactory,
+        boolean enableLateDecorrelate, boolean enableLateTypeCoercion,
+        SqlTestFactory.MockCatalogReaderFactory catalogReaderFactory,
         Function<RelOptCluster, RelOptCluster> clusterFactory, Config config,
         SqlConformance conformance, Context context) {
       super(diffRepos, enableDecorrelate, enableTrim, enableExpand, enableLateDecorrelate,
-          catalogReaderFactory, clusterFactory, config, conformance, context);
-    }
-
-    @Override protected TesterImpl copy(DiffRepository diffRepos, boolean enableDecorrelate,
-        boolean enableTrim, boolean enableExpand, boolean enableLateDecorrelate,
-        Function<RelDataTypeFactory, CatalogReader> catalogReaderFactory,
-        Function<RelOptCluster, RelOptCluster> clusterFactory, Config config,
-        SqlConformance conformance, Context context) {
-      return new TesterImplWithNonStandardTypeFactory(diffRepos, enableDecorrelate, enableTrim,
-          enableExpand, enableLateDecorrelate,
-          catalogReaderFactory, clusterFactory, config, conformance, context);
+        enableLateTypeCoercion, catalogReaderFactory, clusterFactory, config, conformance, context);
     }
 
     @Override protected RelDataTypeFactory createTypeFactory() {

@@ -975,8 +975,13 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
     }
 
     @Override public Void visitInputRef(RexInputRef inputRef) {
-      if (constants.containsKey(inputRef)) {
-        stack.add(Constancy.REDUCIBLE_CONSTANT);
+      final RexNode constant = constants.get(inputRef);
+      if (constant != null) {
+        if (constant instanceof RexCall) {
+          constant.accept(this);
+        } else {
+          stack.add(Constancy.REDUCIBLE_CONSTANT);
+        }
         return null;
       }
       return pushVariable();

@@ -334,14 +334,9 @@ public class CalciteCatalogReader implements Prepare.CatalogReader {
       typeFamilies.add(
           Util.first(type.getSqlTypeName().getFamily(), SqlTypeFamily.ANY));
     }
-    final Predicate<Integer> optional =
-        new PredicateImpl<Integer>() {
-          public boolean test(Integer input) {
-            return function.getParameters().get(input).isOptional();
-          }
-        };
     final FamilyOperandTypeChecker typeChecker =
-        OperandTypes.family(typeFamilies, optional);
+        OperandTypes.family(typeFamilies, i ->
+            function.getParameters().get(i).isOptional());
     final List<RelDataType> paramTypes = toSql(typeFactory, argTypes);
     if (function instanceof ScalarFunction) {
       return new SqlUserDefinedFunction(name, infer((ScalarFunction) function),

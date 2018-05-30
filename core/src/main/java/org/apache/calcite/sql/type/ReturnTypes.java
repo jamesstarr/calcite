@@ -386,33 +386,30 @@ public abstract class ReturnTypes {
    * The result type of a call is a decimal with a scale of 0, and the same
    * precision and nullability as the first argument.
    */
-  public static final SqlReturnTypeInference DECIMAL_SCALE0 =
-      new SqlReturnTypeInference() {
-        public RelDataType inferReturnType(
-            SqlOperatorBinding opBinding) {
-          RelDataType type1 = opBinding.getOperandType(0);
-          if (SqlTypeUtil.isDecimal(type1)) {
-            if (type1.getScale() == 0) {
-              return type1;
-            } else {
-              int p = type1.getPrecision();
-              RelDataType ret;
-              ret =
-                  opBinding.getTypeFactory().createSqlType(
-                      SqlTypeName.DECIMAL,
-                      p,
-                      0);
-              if (type1.isNullable()) {
-                ret =
-                    opBinding.getTypeFactory()
-                        .createTypeWithNullability(ret, true);
-              }
-              return ret;
-            }
-          }
-          return null;
+  public static final SqlReturnTypeInference DECIMAL_SCALE0 = opBinding -> {
+    RelDataType type1 = opBinding.getOperandType(0);
+    if (SqlTypeUtil.isDecimal(type1)) {
+      if (type1.getScale() == 0) {
+        return type1;
+      } else {
+        int p = type1.getPrecision();
+        RelDataType ret;
+        ret =
+            opBinding.getTypeFactory().createSqlType(
+                SqlTypeName.DECIMAL,
+                p,
+                0);
+        if (type1.isNullable()) {
+          ret =
+             opBinding.getTypeFactory()
+                  .createTypeWithNullability(ret, true);
         }
-      };
+        return ret;
+      }
+    }
+    return null;
+  };
+
   /**
    * Type-inference strategy whereby the result type of a call is
    * {@link #DECIMAL_SCALE0} with a fallback to {@link #ARG0} This rule
@@ -456,7 +453,7 @@ public abstract class ReturnTypes {
 
   /**
    * Type-inference strategy whereby the result type of a call is the decimal
-   * product of two exact numeric operands where at least one of the operands
+   * quotient of two exact numeric operands where at least one of the operands
    * is a decimal.
    */
   public static final SqlReturnTypeInference DECIMAL_QUOTIENT = new SqlReturnTypeInference() {
@@ -483,8 +480,9 @@ public abstract class ReturnTypes {
    * are used for division.
    */
   public static final SqlReturnTypeInference QUOTIENT_NULLABLE =
-      chain(
-          DECIMAL_QUOTIENT_NULLABLE, ARG0_INTERVAL_NULLABLE, LEAST_RESTRICTIVE);
+      chain(DECIMAL_QUOTIENT_NULLABLE, ARG0_INTERVAL_NULLABLE,
+          LEAST_RESTRICTIVE);
+
   /**
    * Type-inference strategy whereby the result type of a call is the decimal
    * sum of two exact numeric operands where at least one of the operands is a
@@ -628,7 +626,12 @@ public abstract class ReturnTypes {
               (argType0.getSqlTypeName() == SqlTypeName.ANY)
                   || (argType1.getSqlTypeName() == SqlTypeName.ANY);
 
+        final boolean containsNullType =
+            (argType0.getSqlTypeName() == SqlTypeName.NULL)
+                || (argType1.getSqlTypeName() == SqlTypeName.NULL);
+
           if (!containsAnyType
+              && !containsNullType
               && !(SqlTypeUtil.inCharOrBinaryFamilies(argType0)
                   && SqlTypeUtil.inCharOrBinaryFamilies(argType1))) {
             Preconditions.checkArgument(
@@ -636,6 +639,7 @@ public abstract class ReturnTypes {
           }
           SqlCollation pickedCollation = null;
           if (!containsAnyType
+              && !containsNullType
               && SqlTypeUtil.inCharFamily(argType0)) {
             if (!SqlTypeUtil.isCharTypeComparable(
                 opBinding.collectOperandTypes().subList(0, 2))) {
@@ -685,6 +689,10 @@ public abstract class ReturnTypes {
             ret =
                 typeFactory.createTypeWithCharsetAndCollation(ret,
                     pickedType.getCharset(), pickedType.getCollation());
+        }
+        if (ret.getSqlTypeName() == SqlTypeName.NULL) {
+          ret = typeFactory.createTypeWithNullability(
+              typeFactory.createSqlType(SqlTypeName.VARCHAR), true);
           }
           return ret;
         }

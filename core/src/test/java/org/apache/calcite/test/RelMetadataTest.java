@@ -94,7 +94,6 @@ import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.SaffronProperties;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
@@ -183,6 +182,13 @@ public class RelMetadataTest extends SqlToRelTestBase {
   // ----------------------------------------------------------------------
 
   private RelNode convertSql(String sql) {
+    final RelRoot root = tester.convertSqlToRel(sql);
+    root.rel.getCluster().setMetadataProvider(DefaultRelMetadataProvider.INSTANCE);
+    return root.rel;
+  }
+
+  private RelNode convertSql(String sql, boolean typeCoercion) {
+    final Tester tester = typeCoercion ? this.tester : this.strictTester;
     final RelRoot root = tester.convertSqlToRel(sql);
     root.rel.getCluster().setMetadataProvider(DefaultRelMetadataProvider.INSTANCE);
     return root.rel;
@@ -946,16 +952,13 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final String sql = "select deptno, count(*) from emp where deptno > 10 "
         + "group by deptno having count(*) = 0";
     final RelRoot root = tester
-        .withClusterFactory(
-            new Function<RelOptCluster, RelOptCluster>() {
-              public RelOptCluster apply(RelOptCluster cluster) {
-                cluster.setMetadataProvider(
+        .withClusterFactory(cluster -> {
+          cluster.setMetadataProvider(
                     ChainedRelMetadataProvider.of(
                         ImmutableList.of(BrokenColTypeImpl.SOURCE,
                             cluster.getMetadataProvider())));
-                return cluster;
-              }
-            })
+          return cluster;
+        })
         .convertSqlToRel(sql);
 
     final RelNode rel = root.rel;
@@ -1026,19 +1029,16 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final String sql = "select deptno, count(*) from emp where deptno > 10 "
         + "group by deptno having count(*) = 0";
     final RelRoot root = tester
-        .withClusterFactory(
-            new Function<RelOptCluster, RelOptCluster>() {
-              public RelOptCluster apply(RelOptCluster cluster) {
-                // Create a custom provider that includes ColType.
-                // Include the same provider twice just to be devious.
-                final ImmutableList<RelMetadataProvider> list =
+        .withClusterFactory(cluster -> {
+          // Create a custom provider that includes ColType.
+          // Include the same provider twice just to be devious.
+          final ImmutableList<RelMetadataProvider> list =
                     ImmutableList.of(ColTypeImpl.SOURCE, ColTypeImpl.SOURCE,
                         cluster.getMetadataProvider());
-                cluster.setMetadataProvider(
+          cluster.setMetadataProvider(
                     ChainedRelMetadataProvider.of(list));
-                return cluster;
-              }
-            })
+          return cluster;
+        })
         .convertSqlToRel(sql);
     final RelNode rel = root.rel;
 
@@ -1659,7 +1659,8 @@ public class RelMetadataTest extends SqlToRelTestBase {
     // Lock to ensure that only one test is using this method at a time.
     try (final JdbcAdapterTest.LockWrapper ignore =
              JdbcAdapterTest.LockWrapper.lock(LOCK)) {
-      final RelNode rel = convertSql(sql);
+      // FIXME: fix timeout when enable implicit type coercion.
+      final RelNode rel = convertSql(sql, false);
       final RelMetadataQuery mq = RelMetadataQuery.instance();
       RelOptPredicateList inputSet = mq.getPulledUpPredicates(rel.getInput(0));
       assertThat(inputSet.pulledUpPredicates.size(), is(131089));

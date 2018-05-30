@@ -215,6 +215,8 @@ public class JavaTypeFactoryImpl
         return GeoFunctions.Geom.class;
       case ANY:
         return Object.class;
+      case NULL:
+        return Void.class;
       }
     }
     switch (type.getSqlTypeName()) {
