@@ -52,6 +52,7 @@ public class TypeCoercionImpl extends AbstractTypeCoercion {
   public TypeCoercionImpl(SqlValidator validator) {
     super(validator);
   }
+
   /**
    * Widen a SqlNode's field type to target type,
    * mainly used for set operations like UNION, INTERSECT and EXCEPT.

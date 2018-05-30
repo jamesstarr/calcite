@@ -4707,6 +4707,10 @@ public abstract class SqlOperatorBaseTest {
         + "'lax $.foo1' unknown on error)", Boolean.FALSE);
 
     // nulls
+    strictTester.checkFails("json_exists(^null^, "
+        + "'lax $' unknown on error)", "(?s).*Illegal use of 'NULL'.*", false);
+    tester.checkString("json_exists(null, 'lax $' unknown on error)",
+        null, "BOOLEAN");
     tester.checkNull("json_exists(cast(null as varchar), "
         + "'lax $.foo1' unknown on error)");
 
@@ -4785,6 +4789,9 @@ public abstract class SqlOperatorBaseTest {
         "empty", "VARCHAR(2000)");
 
     // nulls
+    strictTester.checkFails("json_value(^null^, 'strict $')",
+        "(?s).*Illegal use of 'NULL'.*", false);
+    tester.checkString("json_value(null, 'strict $')", null, "VARCHAR(2000)");
     tester.checkNull("json_value(cast(null as varchar), 'strict $')");
   }
 
@@ -4876,6 +4883,9 @@ public abstract class SqlOperatorBaseTest {
 
 
     // nulls
+    strictTester.checkFails("json_query(^null^, 'lax $')",
+        "(?s).*Illegal use of 'NULL'.*", false);
+    tester.checkString("json_query(null, 'lax $')", null, "VARCHAR(2000)");
     tester.checkNull("json_query(cast(null as varchar), 'lax $')");
   }
 
@@ -4888,6 +4898,9 @@ public abstract class SqlOperatorBaseTest {
         "null", "VARCHAR(2000)");
 
     // nulls
+    strictTester.checkFails("json_pretty(^null^)",
+        "(?s).*Illegal use of 'NULL'.*", false);
+    tester.checkString("json_pretty(null)", null, "VARCHAR(2000)");
     tester.checkNull("json_pretty(cast(null as varchar))");
   }
 
@@ -4907,6 +4920,11 @@ public abstract class SqlOperatorBaseTest {
     tester.checkString("json_storage_size('null')",
         "4", "INTEGER");
 
+    // nulls
+    strictTester.checkFails("json_storage_size(^null^)",
+        "(?s).*Illegal use of 'NULL'.*", false);
+    tester.checkString("json_storage_size(null)", null, "INTEGER");
+    tester.checkNull("json_storage_size(cast(null as varchar))");
   }
 
   @Test public void testJsonType() {
@@ -4932,6 +4950,9 @@ public abstract class SqlOperatorBaseTest {
         "STRING", "VARCHAR(20)");
 
     // nulls
+    strictTester.checkFails("json_type(^null^)",
+        "(?s).*Illegal use of 'NULL'.*", false);
+    tester.checkString("json_type(null)", null, "VARCHAR(20)");
     tester.checkNull("json_type(cast(null as varchar))");
   }
 
@@ -4963,6 +4984,9 @@ public abstract class SqlOperatorBaseTest {
         "5", "INTEGER");
 
     // nulls
+    strictTester.checkFails("json_depth(^null^)",
+        "(?s).*Illegal use of 'NULL'.*", false);
+    tester.checkString("json_depth(null)", null, "INTEGER");
     tester.checkNull("json_depth(cast(null as varchar))");
   }
 
@@ -5016,6 +5040,9 @@ public abstract class SqlOperatorBaseTest {
         "(?s).*No results for path.*", true);
 
     // nulls
+    strictTester.checkFails("json_length(^null^)",
+        "(?s).*Illegal use of 'NULL'.*", false);
+    tester.checkString("json_length(null)", null, "INTEGER");
     tester.checkNull("json_length(cast(null as varchar))");
   }
 
@@ -5068,6 +5095,11 @@ public abstract class SqlOperatorBaseTest {
     tester.checkFails("json_keys('{\"foo\":100}', 'strict $.foo1')",
         "(?s).*No results for path.*", true);
 
+    // nulls
+    strictTester.checkFails("json_keys(^null^)",
+        "(?s).*Illegal use of 'NULL'.*", false);
+    tester.checkString("json_keys(null)", null, "VARCHAR(2000)");
+    tester.checkNull("json_keys(cast(null as varchar))");
   }
 
   @Test public void testJsonRemove() {
@@ -5084,6 +5116,11 @@ public abstract class SqlOperatorBaseTest {
     tester.checkFails("json_remove('[\"a\", [\"b\", \"c\"], \"d\"]', '$')",
         "(?s).*Invalid input for.*", true);
 
+    // nulls
+    strictTester.checkFails("json_remove(^null^, '$')",
+        "(?s).*Illegal use of 'NULL'.*", false);
+    tester.checkString("json_remove(null, '$')", null, "VARCHAR(2000)");
+    tester.checkNull("json_remove(cast(null as varchar), '$')");
   }
 
   @Test public void testJsonObject() {
@@ -5110,8 +5147,8 @@ public abstract class SqlOperatorBaseTest {
     checkAggType(tester, "json_objectagg('foo': 'bar')", "VARCHAR(2000) NOT NULL");
     checkAggType(tester, "json_objectagg('foo': null)", "VARCHAR(2000) NOT NULL");
     checkAggType(tester, "json_objectagg(100: 'bar')", "VARCHAR(2000) NOT NULL");
-    tester.enableTypeCoercion(false).checkFails("^json_objectagg(100: 'bar')^",
-            "(?s).*Cannot apply.*", false);
+    strictTester.checkFails("^json_objectagg(100: 'bar')^",
+        "(?s).*Cannot apply.*", false);
     final String[][] values = {
         {"'foo'", "'bar'"},
         {"'foo2'", "cast(null as varchar(2000))"},
@@ -5136,6 +5173,7 @@ public abstract class SqlOperatorBaseTest {
     tester.checkScalar("'[1, 2, 3]' format json", "[1, 2, 3]", "ANY NOT NULL");
     tester.checkNull("cast(null as varchar) format json");
     tester.checkScalar("'null' format json", "null", "ANY NOT NULL");
+    strictTester.checkFails("^null^ format json", "(?s).*Illegal use of .NULL.*", false);
   }
 
   @Test public void testJsonArray() {
@@ -5748,6 +5786,7 @@ public abstract class SqlOperatorBaseTest {
         "^sign('abc')^",
         "Cannot apply 'SIGN' to arguments of type 'SIGN\\(<CHAR\\(3\\)>\\)'\\. Supported form\\(s\\): 'SIGN\\(<NUMERIC>\\)'",
         false);
+    tester.checkType("sign('abc')", "DECIMAL(19, 19) NOT NULL");
     tester.checkScalar(
         "sign(1)",
         1,
@@ -6698,12 +6737,14 @@ public abstract class SqlOperatorBaseTest {
     tester.checkAgg("collect(DISTINCT x)", values, 2, (double) 0);
   }
 
-  @Test public void testListaggFunc() {
+  @Test public void testListAggFunc() {
     tester.setFor(SqlStdOperatorTable.LISTAGG, VM_FENNEL, VM_JAVA);
     tester.checkFails("listagg(^*^)", "Unknown identifier '\\*'", false);
-    tester.enableTypeCoercion(false).checkFails("^listagg(12)^",
+    checkAggType(tester, "listagg(12)", "VARCHAR NOT NULL");
+    strictTester.checkFails("^listagg(12)^",
         "Cannot apply 'LISTAGG' to arguments of type .*'\n.*'", false);
-    tester.enableTypeCoercion(false).checkFails("^listagg(cast(12 as double))^",
+    checkAggType(tester, "listagg(cast(12 as double))", "VARCHAR NOT NULL");
+    strictTester.checkFails("^listagg(cast(12 as double))^",
         "Cannot apply 'LISTAGG' to arguments of type .*'\n.*'", false);
     tester.checkFails("^listagg()^",
         "Invalid number of arguments to function 'LISTAGG'. Was expecting 1 arguments",

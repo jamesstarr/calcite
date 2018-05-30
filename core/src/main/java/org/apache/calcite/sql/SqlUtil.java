@@ -546,7 +546,7 @@ public abstract class SqlUtil {
           List<RelDataType> paramTypes =
               Objects.requireNonNull(function).getParamTypes();
           if (paramTypes == null) {
-            // no parameter information for builtins; keep for now
+            // no parameter information for builtins; keep for now,
             // the type coerce will not work here.
             return true;
           }

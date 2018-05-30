@@ -766,7 +766,7 @@ public abstract class ReturnTypes {
                 || (argType1.getSqlTypeName() == SqlTypeName.NULL);
 
         if (!containsAnyType
-              && !containsNullType
+            && !containsNullType
             && !(SqlTypeUtil.inCharOrBinaryFamilies(argType0)
             && SqlTypeUtil.inCharOrBinaryFamilies(argType1))) {
           Preconditions.checkArgument(
@@ -774,7 +774,7 @@ public abstract class ReturnTypes {
         }
         SqlCollation pickedCollation = null;
         if (!containsAnyType
-              && !containsNullType
+            && !containsNullType
             && SqlTypeUtil.inCharFamily(argType0)) {
           if (!SqlTypeUtil.isCharTypeComparable(
               opBinding.collectOperandTypes().subList(0, 2))) {
@@ -830,7 +830,6 @@ public abstract class ReturnTypes {
               typeFactory.createSqlType(SqlTypeName.VARCHAR), true);
         }
         return ret;
-
       };
 
 

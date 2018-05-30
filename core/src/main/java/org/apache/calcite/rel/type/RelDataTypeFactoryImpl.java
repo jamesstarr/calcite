@@ -538,6 +538,7 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
     // create decimal type and sync nullability
     return createTypeWithNullability(decimalOf2(type), type.isNullable());
   }
+
   /** Create decimal type equivalent with the given {@code type} while sans nullability. */
   private RelDataType decimalOf2(RelDataType type) {
     assert SqlTypeUtil.isNumeric(type) || SqlTypeUtil.isNull(type);
