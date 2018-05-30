@@ -973,10 +973,19 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkExp("round(null,1)");
     checkExp("sign(null) + 1");
     checkExp("truncate(null,1) + 1");
+    checkExpFails("values 1.0 + ^NULL^", "(?s).*Illegal use of .NULL.*", false);
+    checkExpType("values 1.0 + NULL", "DECIMAL(2, 1)");
+    checkExpFails("1.0 + ^NULL^", "(?s).*Illegal use of .NULL.*", false);
+    checkExpType("1.0 + NULL", "DECIMAL(2, 1)");
+
     check("select null as a from emp");
     check("select avg(null) from emp");
+    check("select bit_and(null) from emp");
+    check("select bit_or(null) from emp");
+
     checkExp("substring(null from 1) + 1");
     checkExpFails("substring(^NULL^ from 1)", "(?s).*Illegal use of .NULL.*", false);
+
     checkExpFails("values 1.0 + ^NULL^", "(?s).*Illegal use of .NULL.*", false);
     checkExpType("values 1.0 + NULL", "DECIMAL(2, 1)");
     checkExpFails("1.0 + ^NULL^", "(?s).*Illegal use of .NULL.*", false);
@@ -1093,7 +1102,6 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkWholeExpFails(
         "cast(x'ff' as decimal(5,2))",
         "(?s).*Cast function cannot convert value of type BINARY\\(1\\) to type DECIMAL\\(5, 2\\)");
-
     checkWholeExpFails(
         "cast(DATE '1243-12-01' as TIME)",
         "(?s).*Cast function cannot convert value of type DATE to type TIME.*");
@@ -11587,6 +11595,8 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkExpType("'{}' format json", "ANY NOT NULL");
     checkExpType("'null' format json", "ANY NOT NULL");
     checkExpType("cast(null as varchar) format json", "ANY");
+    checkExpType("null format json", "ANY");
+    checkExpFails("^null^ format json", "(?s).*Illegal use of .NULL.*", false);
   }
 
   @Test public void testJsonExists() {
@@ -11606,7 +11616,7 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         + "returning integer default null on empty default null on error)", "INTEGER");
 
     checkExpType("json_value('{\"foo\":true}', 'lax $.foo'"
-        + "returning boolean default 100 on empty default 100 on error)", "BOOLEAN");
+            + "returning boolean default 100 on empty default 100 on error)", "BOOLEAN");
 
     // test type inference of default value
     checkExpType("json_value('{\"foo\":100}', 'lax $.foo' default 'empty' on empty)",
@@ -11660,7 +11670,6 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
       // see StandardConvertletTable.JsonOperatorValueExprConvertlet
       return;
     }
-    checkFails("select json_pretty(^NULL^) from emp", "(?s).*Illegal use of .NULL.*");
 
     if (!Bug.CALCITE_2869_FIXED) {
       // the case should throw an error but currently validation
@@ -11740,6 +11749,7 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkExpType("'[]' is not json array", "BOOLEAN NOT NULL");
     checkExpType("'100' is not json scalar", "BOOLEAN NOT NULL");
     checkExpType("100 is json value", "BOOLEAN NOT NULL");
+    checkExpFails("^100 is json value^", "(?s).*Cannot apply.*", false);
   }
 
   @Test public void testValidatorReportsOriginalQueryUsingReader()

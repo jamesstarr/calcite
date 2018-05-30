@@ -739,7 +739,7 @@ public abstract class SqlToRelTestBase {
     public SqlValidator createValidator(
         SqlValidatorCatalogReader catalogReader,
         RelDataTypeFactory typeFactory) {
-      return new FarragoTestValidator(
+      final SqlValidator validator = new FarragoTestValidator(
           getOperatorTable(),
           catalogReader,
           typeFactory,
@@ -747,6 +747,7 @@ public abstract class SqlToRelTestBase {
               .withSqlConformance(conformance)
               .withTypeCoercionEnabled(enableTypeCoercion)
               .withIdentifierExpansion(true));
+      return validator;
     }
 
     public final SqlOperatorTable getOperatorTable() {

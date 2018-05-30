@@ -184,17 +184,6 @@ public class CalciteConnectionConfigImpl extends ConnectionConfigImpl
         .getEnum(SqlConformanceEnum.class);
   }
 
-
-  public boolean typeCoercion() {
-    return CalciteConnectionProperty.TYPE_COERCION.wrap(properties)
-        .getBoolean();
-  }
-
-  public boolean lenientOperatorLookup() {
-    return CalciteConnectionProperty.LENIENT_OPERATOR_LOOKUP.wrap(properties)
-            .getBoolean();
-  }
-
   @Override public String timeZone() {
     return CalciteConnectionProperty.TIME_ZONE.wrap(properties)
             .getString();
@@ -203,6 +192,16 @@ public class CalciteConnectionConfigImpl extends ConnectionConfigImpl
   public String locale() {
     return CalciteConnectionProperty.LOCALE.wrap(properties)
         .getString();
+  }
+
+  public boolean typeCoercion() {
+    return CalciteConnectionProperty.TYPE_COERCION.wrap(properties)
+        .getBoolean();
+  }
+
+  public boolean lenientOperatorLookup() {
+    return CalciteConnectionProperty.LENIENT_OPERATOR_LOOKUP.wrap(properties)
+        .getBoolean();
   }
 }
 

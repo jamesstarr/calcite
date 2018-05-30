@@ -514,7 +514,7 @@ public abstract class ReturnTypes {
   /**
    * Type-inference strategy whereby the result type of a call is
    * {@link #DECIMAL_QUOTIENT_NULLABLE} with a fallback to
-   * {@link #ARG0_INTERVAL_NULLABLE} and {@link #LEAST_RESTRICTIVE} These rules
+   * {@link #ARG0_INTERVAL_NULLABLE} and {@link #LEAST_RESTRICTIVE}. These rules
    * are used for division.
    */
   public static final SqlReturnTypeInference QUOTIENT_NULLABLE =
@@ -655,7 +655,7 @@ public abstract class ReturnTypes {
                 || (argType1.getSqlTypeName() == SqlTypeName.NULL);
 
         if (!containsAnyType
-              && !containsNullType
+            && !containsNullType
             && !(SqlTypeUtil.inCharOrBinaryFamilies(argType0)
             && SqlTypeUtil.inCharOrBinaryFamilies(argType1))) {
           Preconditions.checkArgument(
@@ -663,7 +663,7 @@ public abstract class ReturnTypes {
         }
         SqlCollation pickedCollation = null;
         if (!containsAnyType
-              && !containsNullType
+            && !containsNullType
             && SqlTypeUtil.inCharFamily(argType0)) {
           if (!SqlTypeUtil.isCharTypeComparable(
               opBinding.collectOperandTypes().subList(0, 2))) {
@@ -719,7 +719,6 @@ public abstract class ReturnTypes {
               typeFactory.createSqlType(SqlTypeName.VARCHAR), true);
         }
         return ret;
-
       };
 
   /**
