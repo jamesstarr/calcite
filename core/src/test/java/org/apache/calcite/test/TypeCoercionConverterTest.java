@@ -18,14 +18,14 @@ package org.apache.calcite.test;
 
 import org.apache.calcite.sql.validate.implicit.TypeCoercion;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 /**
  * Test cases for implicit type coercion converter. see {@link TypeCoercion} doc
  * or <a href="https://docs.google.com/spreadsheets/d/1GhleX5h5W8-kJKh7NMJ4vtoE78pwfaZRJl88ULX_MgU/edit?usp=sharing">CalciteImplicitCasts</a>
  * for conversion details.
  */
-class TypeCoercionConverterTest extends SqlToRelTestBase {
+public class TypeCoercionConverterTest extends SqlToRelTestBase {
 
   @Override protected DiffRepository getDiffRepos() {
     return DiffRepository.lookup(TypeCoercionConverterTest.class);
@@ -37,7 +37,7 @@ class TypeCoercionConverterTest extends SqlToRelTestBase {
   }
 
   /** Test case for {@link TypeCoercion#commonTypeForBinaryComparison}. */
-  @Test void testBinaryComparable() {
+  @Test public void testBinaryComparable() {
     // for constant cast, there is reduce rule
     checkPlanEquals("select 1<'1' from (values true)");
   }
@@ -67,29 +67,22 @@ class TypeCoercionConverterTest extends SqlToRelTestBase {
   }
 
   /** Test cases for {@link TypeCoercion#inOperationCoercion}. */
-  @Test void testInOperation() {
+  @Test public void testInOperation() {
     checkPlanEquals("select 1 in ('1', '2', '3') from (values true)");
   }
 
-  @Test void testInOperation1() {
+  @Test public void testInOperation1() {
     checkPlanEquals("select (1, 2) in (select '1', '2' "
         + "from (values (true, true))) from (values true)");
   }
 
-  @Test void testInOperation2() {
+  @Test public void testInOperation2() {
     checkPlanEquals("select (1, 2) in (('1', '2'), ('3', '4')) from (values true)");
-  }
-
-  /** Test cases for {@link TypeCoercion#inOperationCoercion}. */
-  @Test void testInDateTimestamp() {
-    checkPlanEquals("select (t1_timestamp, t1_date)\n"
-        + "in ((DATE '2020-04-16', TIMESTAMP '2020-04-16 11:40:53'))\n"
-        + "from t1");
   }
 
   /** Test cases for
    * {@link org.apache.calcite.sql.validate.implicit.TypeCoercionImpl#booleanEquality}. */
-  @Test void testBooleanEquality() {
+  @Test public void testBooleanEquality() {
     // REVIEW Danny 2018-05-16: Now we do not support cast between numeric <-> boolean for
     // Calcite execution runtime, but we still add cast in the plan so other systems
     // using Calcite can rewrite Cast operator implementation.
@@ -118,19 +111,19 @@ class TypeCoercionConverterTest extends SqlToRelTestBase {
     checkPlanEquals("select 10000000000=true from (values true)");
   }
 
-  @Test void testCaseWhen() {
+  @Test public void testCaseWhen() {
     checkPlanEquals("select case when 1 > 0 then t2_bigint else t2_decimal end from t2");
   }
 
-  @Test void testBuiltinFunctionCoercion() {
+  @Test  public void testBuiltinFunctionCoercion() {
     checkPlanEquals("select 1||'a' from (values true)");
   }
 
-  @Test void testStarImplicitTypeCoercion() {
+  @Test public void testStarImplicitTypeCoercion() {
     checkPlanEquals("select * from (values(1, '3')) union select * from (values('2', 4))");
   }
 
-  @Test void testSetOperations() {
+  @Test public void testSetOperations() {
     // int decimal smallint double
     // char decimal float bigint
     // char decimal float double
@@ -142,61 +135,9 @@ class TypeCoercionConverterTest extends SqlToRelTestBase {
     checkPlanEquals(sql);
   }
 
-  @Test void testInsertQuerySourceCoercion() {
-    final String sql = "insert into t1 select t2_smallint, t2_int, t2_bigint, t2_float,\n"
-        + "t2_double, t2_decimal, t2_int, t2_date, t2_timestamp, t2_varchar20, t2_int from t2";
-    checkPlanEquals(sql);
-  }
-
   private void checkPlanEquals(String sql) {
     tester.assertConvertsTo(sql, "${plan}");
   }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-4897">[CALCITE-4897]
-   * Set operation in DML, implicit type conversion is not complete</a>. */
-  @Test void testInsertUnionQuerySourceCoercion() {
-    final String sql = "insert into t1 "
-        + "select 'a', 1, 1.0,"
-        + " 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false union "
-        + "select 'b', 2, 2,"
-        + " 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false union "
-        + "select 'c', CAST(3 AS SMALLINT), 3.0,"
-        + " 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false union "
-        + "select 'd', 4, 4.0,"
-        + " 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false union "
-        + "select 'e', 5, 5.0,"
-        + " 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false";
-    checkPlanEquals(sql);
-  }
-
-  @Test void testInsertValuesQuerySourceCoercion() {
-    final String sql = "insert into t1 values "
-        + "('a', 1, 1.0,"
-        + " 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false), "
-        + "('b', 2,  2,"
-        + " 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false), "
-        + "('c', CAST(3 AS SMALLINT),  3.0,"
-        + " 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false), "
-        + "('d', 4, 4.0,"
-        + " 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false), "
-        + "('e', 5, 5.0,"
-        + " 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false)";
-    checkPlanEquals(sql);
-  }
-
-  @Test void testUpdateQuerySourceCoercion() {
-    final String sql = "update t1 set t1_varchar20=123, "
-        + "t1_date=TIMESTAMP '2020-01-03 10:14:34', t1_int=12.3";
-    checkPlanEquals(sql);
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-5130">[CALCITE-5130]
-   * AssertionError: "Conversion to relational algebra failed to preserve datatypes"
-   * when union VARCHAR literal and CAST(null AS INTEGER) </a>. */
-  @Test void testCastNullAsIntUnionChar() {
-    String sql = "select CAST(null AS INTEGER) union select '10'";
-    checkPlanEquals(sql);
-  }
 }
+
+// End TypeCoercionConverterTest.java

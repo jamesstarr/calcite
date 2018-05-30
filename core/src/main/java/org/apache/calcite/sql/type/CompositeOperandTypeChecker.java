@@ -29,7 +29,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
@@ -240,7 +240,10 @@ public class CompositeOperandTypeChecker implements SqlOperandTypeChecker {
     // 1. Check eagerly for binary arithmetic expressions.
     // 2. Check the comparability.
     // 3. Check if the operands have the right type.
+<<<<<<< HEAD
     if (callBinding.isTypeCoercionEnabled()) {
+=======
+    if (callBinding.getValidator().isTypeCoercionEnabled()) {
       final TypeCoercion typeCoercion = callBinding.getValidator().getTypeCoercion();
       typeCoercion.binaryArithmeticCoercion(callBinding);
     }
@@ -292,7 +295,7 @@ public class CompositeOperandTypeChecker implements SqlOperandTypeChecker {
             callBinding.getCall().operand(ord.i),
             0,
             false)) {
-          if (callBinding.isTypeCoercionEnabled()) {
+          if (callBinding.getValidator().isTypeCoercionEnabled()) {
             // Try type coercion for the call,
             // collect SqlTypeFamily and data type of all the operands.
             final List<SqlTypeFamily> families = allowedRules.stream()
@@ -346,6 +349,25 @@ public class CompositeOperandTypeChecker implements SqlOperandTypeChecker {
       throw new AssertionError();
     }
   }
+<<<<<<< HEAD
+=======
+
+  private boolean checkWithoutTypeCoercion(SqlCallBinding callBinding) {
+    if (!callBinding.getValidator().isTypeCoercionEnabled()) {
+      return false;
+    }
+    for (SqlOperandTypeChecker rule : allowedRules) {
+      if (rule instanceof ImplicitCastOperandTypeChecker) {
+        ImplicitCastOperandTypeChecker rule1 = (ImplicitCastOperandTypeChecker) rule;
+        if (rule1.checkOperandTypesWithoutTypeCoercion(callBinding, false)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+}
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 
   private boolean checkWithoutTypeCoercion(SqlCallBinding callBinding) {
     if (!callBinding.isTypeCoercionEnabled()) {

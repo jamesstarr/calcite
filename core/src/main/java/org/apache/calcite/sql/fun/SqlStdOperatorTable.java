@@ -254,7 +254,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           60,
           true,
           ReturnTypes.QUOTIENT_NULLABLE,
-          InferTypes.LEAST_RESTRICTIVE,
+          InferTypes.FIRST_KNOWN,
           OperandTypes.DIVISION_OPERATOR);
 
   /**
@@ -314,8 +314,8 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           30,
           true,
           ReturnTypes.BOOLEAN_NULLABLE,
-          InferTypes.LEAST_RESTRICTIVE,
-          OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED_FOR_EQUALITY);
+          InferTypes.FIRST_KNOWN,
+          OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED);
 
   /**
    * Logical greater-than operator, '<code>&gt;</code>'.
@@ -1658,7 +1658,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
       new SqlFunction(
           "SIGN",
           SqlKind.OTHER_FUNCTION,
-          ReturnTypes.ARG0_OR_EXACT_NO_SCALE,
+          ReturnTypes.ARG0,
           null,
           OperandTypes.NUMERIC,
           SqlFunctionCategory.NUMERIC);

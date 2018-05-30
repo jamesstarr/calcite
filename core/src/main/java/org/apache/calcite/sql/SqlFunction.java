@@ -240,7 +240,8 @@ public class SqlFunction extends SqlOperator {
         (SqlFunction) SqlUtil.lookupRoutine(validator.getOperatorTable(),
             getNameAsId(), argTypes, argNames, getFunctionType(),
             SqlSyntax.FUNCTION, getKind(),
-            validator.getCatalogReader().nameMatcher());
+            validator.getCatalogReader().nameMatcher(),
+            false);
     try {
       // if we have a match on function name and parameter count, but
       // couldn't find a function with  a COLUMN_LIST type, retry, but
@@ -272,44 +273,23 @@ public class SqlFunction extends SqlOperator {
         return validator.deriveConstructorType(scope, call, this, function,
             argTypes);
       }
-
-      validCoercionType:
-      if (function == null) {
-        if (validator.config().typeCoercionEnabled()) {
-          // try again if implicit type coercion is allowed.
-          function = (SqlFunction)
-              SqlUtil.lookupRoutine(validator.getOperatorTable(), getNameAsId(),
-                  argTypes, argNames, getFunctionType(), SqlSyntax.FUNCTION,
-                  getKind(), validator.getCatalogReader().nameMatcher(), true);
-          // try to coerce the function arguments to the declared sql type name.
-          // if we succeed, the arguments would be wrapped with CAST operator.
-          if (function != null) {
-            TypeCoercion typeCoercion = validator.getTypeCoercion();
-            if (typeCoercion.userDefinedFunctionCoercion(scope, call, function)) {
-              break validCoercionType;
-            }
-          }
+      if (function == null && validator.isTypeCoercionEnabled()) {
+        // try again if implicit type coercion is allowed.
+        boolean changed = false;
+        function = (SqlFunction) SqlUtil.lookupRoutine(validator.getOperatorTable(),
+            getNameAsId(), argTypes, argNames, getFunctionType(), SqlSyntax.FUNCTION, getKind(),
+            validator.getCatalogReader().nameMatcher(),
+            true);
+        // try to coerce the function arguments to the declared sql type name.
+        // if we succeed, the arguments would be wrapped with CAST operator.
+        if (function != null) {
+          TypeCoercion typeCoercion = validator.getTypeCoercion();
+          changed = typeCoercion.userDefinedFunctionCoercion(scope, call, function);
         }
-
-        // check if the identifier represents type
-        final SqlFunction x = (SqlFunction) call.getOperator();
-        final SqlIdentifier identifier = Util.first(x.getSqlIdentifier(),
-            new SqlIdentifier(x.getName(), SqlParserPos.ZERO));
-        RelDataType type = validator.getCatalogReader().getNamedType(identifier);
-        if (type != null) {
-          function = new SqlTypeConstructorFunction(identifier, type);
-          break validCoercionType;
+        if (!changed) {
+          throw validator.handleUnresolvedFunction(call, this, argTypes,
+              argNames);
         }
-
-        // if function doesn't exist within operator table and known function
-        // handling is turned off then create a more permissive function
-        if (function == null && validator.config().lenientOperatorLookup()) {
-          function = new SqlUnresolvedFunction(identifier, null,
-              null, OperandTypes.VARIADIC, null, x.getFunctionType());
-          break validCoercionType;
-        }
-        throw validator.handleUnresolvedFunction(call, this, argTypes,
-            argNames);
       }
 
       // REVIEW jvs 25-Mar-2005:  This is, in a sense, expanding

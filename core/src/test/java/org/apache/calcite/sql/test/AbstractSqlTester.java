@@ -125,15 +125,6 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
     final SqlValidator validator;
     final SqlNode sqlNode;
     final StringAndPos sap = SqlParserUtil.findPos(sql);
-<<<<<<< HEAD
-=======
-  public void assertExceptionIsThrown(
-      String sql,
-      String expectedMsgPattern) {
-    SqlValidator validator;
-    SqlNode sqlNode;
-    StringAndPos sap = SqlParserUtil.findPos(sql);
-=======
 >>>>>>> 954dccdd1 ([CALCITE-2535] Enable SqlTester.checkFails (previously it was a no-op) (Hongze Zhang))
     try {
       sqlNode = parseQuery(sap.sql);
@@ -350,7 +341,6 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
     final SqlTesterImpl tester = with("conformance", conformance);
 =======
     final SqlTester tester = with("conformance", conformance);
->>>>>>> 954dccdd1 ([CALCITE-2535] Enable SqlTester.checkFails (previously it was a no-op) (Hongze Zhang))
     if (conformance instanceof SqlConformanceEnum) {
       return tester
           .withConnectionFactory(
@@ -366,6 +356,10 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
     return with("enableTypeCoercion", enabled);
 =======
 >>>>>>> 0f9894602 (Use real properties, not their names, in tests):core/src/test/java/org/apache/calcite/sql/test/SqlTesterImpl.java
+  }
+
+  public SqlTester enableTypeCoercion(boolean enabled) {
+    return with("enableTypeCoercion", enabled);
   }
 
   public SqlTester withOperatorTable(SqlOperatorTable operatorTable) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <!--
+<<<<<<< HEAD
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
   ~ this work for additional information regarding copyright ownership.
@@ -15,6 +16,23 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+=======
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 <Root>
     <TestCase name="testInOperation">
         <Resource name="sql">
@@ -34,17 +52,31 @@ from (values (true, true))) from (values true))]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CAST(OR(AND(IS NOT NULL($7), <>($1, 0)), AND(<($2, $1), null, <>($1, 0), IS NULL($7)))):BOOLEAN NOT NULL])
+=======
+LogicalProject(EXPR$0=[CAST(CASE(=($1, 0), false, IS NOT NULL($7), true, IS NULL($3), null, IS NULL($4), null, <($2, $1), null, false)):BOOLEAN NOT NULL])
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
   LogicalJoin(condition=[AND(=($3, $5), =($4, $6))], joinType=[left])
     LogicalProject(EXPR$0=[$0], $f0=[$1], $f1=[$2], $f3=[1], $f4=[2])
       LogicalJoin(condition=[true], joinType=[inner])
         LogicalValues(tuples=[[{ true }]])
         LogicalAggregate(group=[{}], agg#0=[COUNT()], agg#1=[COUNT($0, $1)])
+<<<<<<< HEAD
           LogicalProject(EXPR$0=[1], EXPR$1=[2], $f2=[1:BIGINT])
             LogicalValues(tuples=[[{ true, true }]])
     LogicalAggregate(group=[{0, 1}], agg#0=[MIN($2)])
       LogicalProject(EXPR$0=[1], EXPR$1=[2], $f2=[1:BIGINT])
         LogicalValues(tuples=[[{ true, true }]])
+=======
+          LogicalProject(EXPR$0=[$0], EXPR$1=[$1], $f2=[1])
+            LogicalProject(EXPR$0=[1], EXPR$1=[2])
+              LogicalValues(tuples=[[{ true, true }]])
+    LogicalAggregate(group=[{0, 1}], agg#0=[MIN($2)])
+      LogicalProject(EXPR$0=[$0], EXPR$1=[$1], $f2=[1])
+        LogicalProject(EXPR$0=[1], EXPR$1=[2])
+          LogicalValues(tuples=[[{ true, true }]])
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 ]]>
         </Resource>
     </TestCase>
@@ -98,7 +130,11 @@ LogicalProject(EXPR$0=[false])
         </Resource>
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[NOT($10)])
+=======
+LogicalProject(EXPR$0=[=(false, $10)])
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
   LogicalTableScan(table=[[CATALOG, SALES, T1]])
 ]]>
         </Resource>
@@ -109,7 +145,11 @@ LogicalProject(EXPR$0=[NOT($10)])
         </Resource>
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[=($1, CASE($10, 1:SMALLINT, 0:SMALLINT))])
+=======
+LogicalProject(EXPR$0=[=($1, CASE($10, 1, 0))])
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
   LogicalTableScan(table=[[CATALOG, SALES, T1]])
 ]]>
         </Resource>
@@ -208,7 +248,11 @@ LogicalProject(EXPR$0=[true])
         </Resource>
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[||('1':VARCHAR, 'a')])
+=======
+LogicalProject(EXPR$0=[||(CAST(1):VARCHAR CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL, 'a')])
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
   LogicalValues(tuples=[[{ true }]])
 ]]>
         </Resource>
@@ -220,9 +264,15 @@ LogicalProject(EXPR$0=[||('1':VARCHAR, 'a')])
         <Resource name="plan">
             <![CDATA[
 LogicalUnion(all=[false])
+<<<<<<< HEAD
   LogicalProject(EXPR$0=[CAST($0):VARCHAR NOT NULL], EXPR$1=[$1])
     LogicalValues(tuples=[[{ 1, '3' }]])
   LogicalProject(EXPR$0=[$0], EXPR$1=[CAST($1):VARCHAR NOT NULL])
+=======
+  LogicalProject(EXPR$0=[CAST($0):VARCHAR CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL], EXPR$1=[$1])
+    LogicalValues(tuples=[[{ 1, '3' }]])
+  LogicalProject(EXPR$0=[$0], EXPR$1=[CAST($1):VARCHAR CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL])
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
     LogicalValues(tuples=[[{ '2', 4 }]])
 ]]>
         </Resource>
@@ -239,6 +289,7 @@ union select t2_varchar20, t2_decimal, t2_smallint, t2_double from t2]]>
 LogicalUnion(all=[false])
   LogicalUnion(all=[false])
     LogicalUnion(all=[false])
+<<<<<<< HEAD
       LogicalProject(T1_INT=[CAST($2):VARCHAR NOT NULL], T1_DECIMAL=[$6], T1_SMALLINT=[$1], T1_DOUBLE=[$5])
         LogicalTableScan(table=[[CATALOG, SALES, T1]])
       LogicalProject(T2_VARCHAR20=[$0], T2_DECIMAL=[$6], T2_FLOAT=[$4], T2_BIGINT=[$3])
@@ -346,6 +397,9 @@ LogicalUnion(all=[false])
   LogicalUnion(all=[false])
     LogicalUnion(all=[false])
       LogicalProject(T1_INT=[CAST($2):VARCHAR NOT NULL], T1_DECIMAL=[$6], T1_SMALLINT=[$1], T1_DOUBLE=[$5])
+=======
+      LogicalProject(T1_INT=[CAST($2):VARCHAR CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL], T1_DECIMAL=[$6], T1_SMALLINT=[$1], T1_DOUBLE=[$5])
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
         LogicalTableScan(table=[[CATALOG, SALES, T1]])
       LogicalProject(T2_VARCHAR20=[$0], T2_DECIMAL=[$6], T2_FLOAT=[$4], T2_BIGINT=[$3])
         LogicalTableScan(table=[[CATALOG, SALES, T2]])
@@ -362,11 +416,16 @@ LogicalUnion(all=[false])
         </Resource>
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CAST($3):DECIMAL(19, 0) NOT NULL])
+=======
+LogicalProject(EXPR$0=[CASE(>(1, 0), CAST($3):DECIMAL(19, 0) NOT NULL, $6)])
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
   LogicalTableScan(table=[[CATALOG, SALES, T2]])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testInsertQuerySourceCoercion">
         <Resource name="sql">
             <![CDATA[insert into t1 select t2_smallint, t2_int, t2_bigint, t2_float,
@@ -392,4 +451,6 @@ LogicalTableModify(table=[[CATALOG, SALES, T1]], operation=[UPDATE], updateColum
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 </Root>

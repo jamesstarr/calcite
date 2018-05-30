@@ -50,3 +50,8 @@ public interface ImplicitCastOperandTypeChecker {
    */
   SqlTypeFamily getOperandSqlTypeFamily(int iFormalOperand);
 }
+<<<<<<< HEAD
+=======
+
+// End ImplicitCastOperandTypeChecker.java
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)

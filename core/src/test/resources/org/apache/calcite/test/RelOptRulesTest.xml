@@ -16,6 +16,7 @@
   ~ limitations under the License.
   -->
 <Root>
+<<<<<<< HEAD
     <TestCase name="testAggregateCaseToFilter">
         <Resource name="sql">
             <![CDATA[select
@@ -46,6 +47,9 @@ LogicalProject(SUM_SAL=[$0], COUNT_DISTINCT_CLERK=[$1], SUM_SAL_D10=[$2], SUM_SA
 ]]>
         </Resource>
     </TestCase>
+=======
+
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
     <TestCase name="testAggregateExtractProjectRule">
         <Resource name="sql">
             <![CDATA[select sum(sal)
@@ -283,6 +287,7 @@ LogicalProject(EMPNO=[$0], DEPTNO=[$1], W_COUNT=[$2])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testIsNullPushDown2">
         <Resource name="sql">
             <![CDATA[select w_count from (
@@ -309,6 +314,9 @@ LogicalProject(EMPNO=[$0], DEPTNO=[$1], W_COUNT=[$2])
     </TestCase>
 =======
 >>>>>>> e5770204d (DX-11490: Fix wrong constant reduction over windows function)
+=======
+
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
     <TestCase name="testProjectToWindowRuleForMultipleWindows">
         <Resource name="sql">
             <![CDATA[select
@@ -526,6 +534,7 @@ LogicalProject(EXPR$0=[1])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testNotPushExpression">
         <Resource name="sql">
             <![CDATA[select 1 from emp inner join dept
@@ -548,6 +557,9 @@ LogicalProject(EXPR$0=[1])
 ]]>
         </Resource>
     </TestCase>
+=======
+
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
     <TestCase name="testAddRedundantSemiJoinRule">
         <Resource name="sql">
             <![CDATA[select 1 from emp inner join dept on emp.deptno = dept.deptno]]>
@@ -1321,6 +1333,7 @@ LogicalAggregate(group=[{0}], EXPR$1=[SUM($1)], EXPR$2=[MIN($2)], EXPR$3=[SUM($0
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testRemoveDistinctOnAgg">
         <Resource name="sql">
             <![CDATA[SELECT empno, SUM(distinct sal), MIN(sal), MIN(distinct sal), MAX(distinct sal), bit_and(distinct sal), bit_or(sal), count(distinct sal) from sales.emp group by empno, deptno
@@ -1341,6 +1354,9 @@ LogicalProject(EMPNO=[$0], EXPR$1=[$5], EXPR$2=[$5], EXPR$3=[$5], EXPR$4=[$5], E
 ]]>
         </Resource>
     </TestCase>
+=======
+
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
     <TestCase name="testMultipleDistinctWithGrouping">
         <Resource name="sql">
             <![CDATA[SELECT sal, SUM(comm), AVG(DISTINCT comm), SUM(DISTINCT sal)
@@ -2422,6 +2438,7 @@ LogicalProject(EXPR$0=[$1], EXPR$1=[$0])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testPushProjectWithOverPastJoin1">
         <Resource name="sql">
             <![CDATA[select e.sal + b.comm,
@@ -2506,6 +2523,9 @@ LogicalProject(EXPR$0=[+($1, $4)], EXPR$1=[$5])
 ]]>
         </Resource>
     </TestCase>
+=======
+
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
     <TestCase name="testPushProjectPastSetOp">
         <Resource name="sql">
             <![CDATA[select sal from
@@ -2705,6 +2725,7 @@ LogicalProject(DEPTNO=[$0])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testReduceConstantsDup3">
         <Resource name="sql">
             <![CDATA[select d.deptno from dept d where d.deptno<>7 or d.deptno<>8]]>
@@ -2816,6 +2837,8 @@ LogicalProject(EMPNO=[$0])
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 
     <TestCase name="testReduceConstantsEliminatesFilter">
         <Resource name="sql">
@@ -3222,8 +3245,14 @@ from (values (2, cast(null as integer))) as t(p0, p1)]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[false])
   LogicalValues(tuples=[[{ 0 }]])
+=======
+LogicalProject(EXPR$0=[IS TRUE(=($1, $0))])
+  LogicalProject(EXPR$0=[2], EXPR$1=[null])
+    LogicalValues(tuples=[[{ 0 }]])
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 ]]>
         </Resource>
         <Resource name="planAfter">
@@ -3880,6 +3909,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testFilterProjectTranspose">
         <Resource name="sql">
             <![CDATA[SELECT e.empno
@@ -3943,6 +3973,9 @@ LogicalProject(EMPNO=[$0])
 ]]>
         </Resource>
     </TestCase>
+=======
+
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
     <TestCase name="testIntersectToDistinct">
         <Resource name="sql">
             <![CDATA[select * from emp where deptno = 10
@@ -4486,6 +4519,7 @@ LogicalProject(EXPR$0=[CAST(/($2, $3)):INTEGER NOT NULL])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testOrAlwaysTrue">
         <Resource name="sql">
             <![CDATA[select * from EMPNULLABLES_20
@@ -4551,6 +4585,8 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 
     <TestCase name="testWindowFunctionOnAggregations">
         <Resource name="sql">
@@ -6729,8 +6765,13 @@ LogicalProject(EXPR$0=[1])
 
     <TestCase name="testPullConstantIntoProject">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[select deptno, deptno + 1, empno + deptno
 from sales.emp where deptno = 10]]>
+=======
+            <![CDATA[select deptno, deptno + 1, empno + deptno from sales.emp where deptno = 10]]>
+
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -7353,6 +7394,7 @@ LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testCanNotPushAntiJoinConditionsToLeft">
         <Resource name="sql">
             <![CDATA[select * from emp
@@ -7410,6 +7452,9 @@ LogicalProject(DEPTNO=[$0])
 ]]>
         </Resource>
     </TestCase>
+=======
+
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
     <TestCase name="testSemiJoinRuleExists">
         <Resource name="sql">
             <![CDATA[select * from dept where exists (
@@ -7614,6 +7659,7 @@ LogicalAggregate(group=[{0, 1}])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testPullAggregateThroughUnionAndAddProjects">
         <Resource name="sql">
             <![CDATA[select job, deptno from (select job, deptno from emp as e1 group by job, deptno  union all select job, deptno from emp as e2 group by job, deptno) group by job, deptno]]>
@@ -7669,6 +7715,9 @@ LogicalAggregate(group=[{0, 1}])
 ]]>
         </Resource>
     </TestCase>
+=======
+
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
     <TestCase name="testProjectWindowTransposeRule">
         <Resource name="sql">
             <![CDATA[select count(empno) over(), deptno from emp]]>
@@ -8581,6 +8630,7 @@ LogicalAggregate(group=[{}], EXPR$0=[SUM($0)])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughJoinWithUniqueInput">
         <Resource name="sql">
             <![CDATA[select A.job, B.mgr, A.deptno,
@@ -8614,6 +8664,9 @@ LogicalProject(JOB=[$0], MGR0=[$2], DEPTNO=[$1], HIREDATE1=[$3], COMM1=[$4])
 ]]>
         </Resource>
     </TestCase>
+=======
+
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
     <TestCase name="testPushAggregateSumThroughJoin">
         <Resource name="sql">
             <![CDATA[select e.job,sum(sal)
@@ -8708,6 +8761,7 @@ LogicalProject(EXPR$0=[CASE(=($1, 0), null:INTEGER, $0)])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testReduceCaseNullabilityChange">
         <Resource name="sql">
             <![CDATA[select case when empno = 1 then 1
@@ -8807,6 +8861,9 @@ LogicalProject(SAL=[$0], T=[$1])
 ]]>
         </Resource>
     </TestCase>
+=======
+
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
     <TestCase name="testReduceConstantsIsNotNull">
         <Resource name="sql">
             <![CDATA[select empno from emp
@@ -9134,6 +9191,7 @@ LogicalProject(DEPTNO=[$0], DEPTNO0=[$9])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testReduceConstantsNonDeterministicFunction">
         <Resource name="sql">
             <![CDATA[select sal, r
@@ -9155,6 +9213,8 @@ LogicalFilter(condition=[>($1, 10)])
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 
     <TestCase name="testReduceConstantsNullEqualsOne">
         <Resource name="sql">
@@ -9357,6 +9417,7 @@ LogicalAggregate(group=[{}], EXPR$0=[$SUM0($0)])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughJoinOnEmptyLogicalValues">
         <Resource name="sql">
             <![CDATA[select count(*) volume, sum(C1.sal) C1_sum_sal from (select sal, ename from sales.emp where 1=2) C1 inner join (select ename from sales.emp) C2   on C1.ename = C2.ename ]]>
@@ -9463,6 +9524,9 @@ LogicalAggregate(group=[{2, 10}])
 ]]>
         </Resource>
     </TestCase>
+=======
+
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
     <TestCase name="testPushAggregateThroughJoinDistinct">
         <Resource name="sql">
             <![CDATA[select d.name,
@@ -9492,6 +9556,7 @@ LogicalProject(NAME=[$3], SUM_SAL=[$1], C=[$2])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testAggregateMerge1">
         <Resource name="sql">
             <![CDATA[select deptno c, min(y), max(z) z,
@@ -10280,6 +10345,9 @@ LogicalProject(DEPTNO=[$9], NAME=[$1])
 ]]>
         </Resource>
     </TestCase>
+=======
+
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
     <TestCase name="testReduceNullableCase2">
         <Resource name="sql">
             <![CDATA[SELECT deptno, ename, CASE WHEN 1=2 THEN substring(ename, 1, cast(2 as int)) ELSE NULL end from emp group by deptno, ename, case when 1=2 then substring(ename,1, cast(2 as int))  else null end]]>
@@ -11290,7 +11358,11 @@ LogicalProject(EXPR$0=[CAST(CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 >>>>>>> 2146c3b8f ([CALCITE-3031] Support for correlated ANY/SOME/ALL sub-query (Vineet Garg))
+=======
+
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
     <TestCase name="testExpandFilterExists">
         <Resource name="sql">
             <![CDATA[select empno
@@ -11760,9 +11832,13 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> df6d25e82 ([CALCITE-2986] Wrong results with =ANY subquery (Vineet Garg))
+=======
+
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
     <TestCase name="testSortUnionTranspose2">
         <Resource name="sql">
             <![CDATA[select a.name from dept a
@@ -12390,6 +12466,7 @@ LogicalProject(JOB=[$0], EMPNO=[10], SAL=[$1], S=[$2])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testAggregateProjectPullUpConstants2">
         <Resource name="sql">
             <![CDATA[select ename, sal
@@ -12412,6 +12489,9 @@ LogicalProject(ENAME=['John':VARCHAR(20)], SAL=[$0])
 ]]>
         </Resource>
     </TestCase>
+=======
+
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
     <TestCase name="testWhereExpressionInCorrelated">
         <Resource name="sql">
             <![CDATA[select ename from (
@@ -14092,6 +14172,7 @@ LogicalProject(EXPR$0=[+($1, $4)])
         <Resource name="sql">
             <![CDATA[SELECT e1.empno
             FROM emp e1, dept d1 where e1.deptno = d1.deptno and e1.deptno < 10 and d1.deptno < 15 and e1.sal > (select avg(sal) from emp e2 where e1.empno = e2.empno) order by e1.empno]]>
+
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -14346,6 +14427,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 ]]>
         </Resource>
         <Resource name="planMid">
+
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalFilter(condition=[AND(=($7, $9), =($5, $10))])

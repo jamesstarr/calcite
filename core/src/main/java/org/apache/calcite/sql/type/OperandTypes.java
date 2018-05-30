@@ -202,7 +202,9 @@ public abstract class OperandTypes {
   public static final SqlSingleOperandTypeChecker NUMERIC =
       family(SqlTypeFamily.NUMERIC);
 
->>>>>>> 76947f753 (DX-4549:  allow =(BOOLEAN, INTEGER) and <>(BOOLEAN, INTEGER))
+  public static final SqlSingleOperandTypeChecker INTEGER =
+      family(SqlTypeFamily.INTEGER);
+
   public static final SqlOperandTypeChecker BOOLEAN_INTEGER =
       family(SqlTypeFamily.BOOLEAN, SqlTypeFamily.INTEGER);
 

@@ -38,6 +38,222 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
+<<<<<<< HEAD
+=======
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Implementation of {@link JavaTypeFactory}.
+ *
+ * <p><strong>NOTE: This class is experimental and subject to
+ * change/removal without notice</strong>.</p>
+ */
+public class JavaTypeFactoryImpl
+    extends SqlTypeFactoryImpl
+    implements JavaTypeFactory {
+  private final Map<List<Pair<Type, Boolean>>, SyntheticRecordType>
+      syntheticTypes = new HashMap<>();
+
+  public JavaTypeFactoryImpl() {
+    this(RelDataTypeSystem.DEFAULT);
+  }
+
+  public JavaTypeFactoryImpl(RelDataTypeSystem typeSystem) {
+    super(typeSystem);
+  }
+
+  public RelDataType createStructType(Class type) {
+    final List<RelDataTypeField> list = new ArrayList<>();
+    for (Field field : type.getFields()) {
+      if (!Modifier.isStatic(field.getModifiers())) {
+        // FIXME: watch out for recursion
+        final Type fieldType = fieldType(field);
+        list.add(
+            new RelDataTypeFieldImpl(
+                field.getName(),
+                list.size(),
+                createType(fieldType)));
+      }
+    }
+    return canonize(new JavaRecordType(list, type));
+  }
+
+  /** Returns the type of a field.
+   *
+   * <p>Takes into account {@link org.apache.calcite.adapter.java.Array}
+   * annotations if present.
+   */
+  private Type fieldType(Field field) {
+    final Class<?> klass = field.getType();
+    final org.apache.calcite.adapter.java.Array array =
+        field.getAnnotation(org.apache.calcite.adapter.java.Array.class);
+    if (array != null) {
+      return new Types.ArrayType(array.component(), array.componentIsNullable(),
+          array.maximumCardinality());
+    }
+    final org.apache.calcite.adapter.java.Map map =
+        field.getAnnotation(org.apache.calcite.adapter.java.Map.class);
+    if (map != null) {
+      return new Types.MapType(map.key(), map.keyIsNullable(), map.value(),
+          map.valueIsNullable());
+    }
+    return klass;
+  }
+
+  public RelDataType createType(Type type) {
+    if (type instanceof RelDataType) {
+      return (RelDataType) type;
+    }
+    if (type instanceof SyntheticRecordType) {
+      final SyntheticRecordType syntheticRecordType =
+          (SyntheticRecordType) type;
+      return syntheticRecordType.relType;
+    }
+    if (type instanceof Types.ArrayType) {
+      final Types.ArrayType arrayType = (Types.ArrayType) type;
+      final RelDataType componentRelType =
+          createType(arrayType.getComponentType());
+      return createArrayType(
+          createTypeWithNullability(componentRelType,
+              arrayType.componentIsNullable()), arrayType.maximumCardinality());
+    }
+    if (type instanceof Types.MapType) {
+      final Types.MapType mapType = (Types.MapType) type;
+      final RelDataType keyRelType = createType(mapType.getKeyType());
+      final RelDataType valueRelType = createType(mapType.getValueType());
+      return createMapType(
+          createTypeWithNullability(keyRelType, mapType.keyIsNullable()),
+          createTypeWithNullability(valueRelType, mapType.valueIsNullable()));
+    }
+    if (!(type instanceof Class)) {
+      throw new UnsupportedOperationException("TODO: implement " + type);
+    }
+    final Class clazz = (Class) type;
+    switch (Primitive.flavor(clazz)) {
+    case PRIMITIVE:
+      return createJavaType(clazz);
+    case BOX:
+      return createJavaType(Primitive.ofBox(clazz).boxClass);
+    }
+    if (JavaToSqlTypeConversionRules.instance().lookup(clazz) != null) {
+      return createJavaType(clazz);
+    } else if (clazz.isArray()) {
+      return createMultisetType(
+          createType(clazz.getComponentType()), -1);
+    } else if (List.class.isAssignableFrom(clazz)) {
+      return createArrayType(
+          createTypeWithNullability(createSqlType(SqlTypeName.ANY), true), -1);
+    } else if (Map.class.isAssignableFrom(clazz)) {
+      return createMapType(
+          createTypeWithNullability(createSqlType(SqlTypeName.ANY), true),
+          createTypeWithNullability(createSqlType(SqlTypeName.ANY), true));
+    } else {
+      return createStructType(clazz);
+    }
+  }
+
+  public Type getJavaClass(RelDataType type) {
+    if (type instanceof JavaType) {
+      JavaType javaType = (JavaType) type;
+      return javaType.getJavaClass();
+    }
+    if (type.isStruct() && type.getFieldCount() == 1) {
+      return getJavaClass(type.getFieldList().get(0).getType());
+    }
+    if (type instanceof BasicSqlType || type instanceof IntervalSqlType) {
+      switch (type.getSqlTypeName()) {
+      case VARCHAR:
+      case CHAR:
+        return String.class;
+      case DATE:
+      case TIME:
+      case TIME_WITH_LOCAL_TIME_ZONE:
+      case INTEGER:
+      case INTERVAL_YEAR:
+      case INTERVAL_YEAR_MONTH:
+      case INTERVAL_MONTH:
+        return type.isNullable() ? Integer.class : int.class;
+      case TIMESTAMP:
+      case TIMESTAMP_WITH_LOCAL_TIME_ZONE:
+      case BIGINT:
+      case INTERVAL_DAY:
+      case INTERVAL_DAY_HOUR:
+      case INTERVAL_DAY_MINUTE:
+      case INTERVAL_DAY_SECOND:
+      case INTERVAL_HOUR:
+      case INTERVAL_HOUR_MINUTE:
+      case INTERVAL_HOUR_SECOND:
+      case INTERVAL_MINUTE:
+      case INTERVAL_MINUTE_SECOND:
+      case INTERVAL_SECOND:
+        return type.isNullable() ? Long.class : long.class;
+      case SMALLINT:
+        return type.isNullable() ? Short.class : short.class;
+      case TINYINT:
+        return type.isNullable() ? Byte.class : byte.class;
+      case DECIMAL:
+        return BigDecimal.class;
+      case BOOLEAN:
+        return type.isNullable() ? Boolean.class : boolean.class;
+      case DOUBLE:
+      case FLOAT: // sic
+        return type.isNullable() ? Double.class : double.class;
+      case REAL:
+        return type.isNullable() ? Float.class : float.class;
+      case BINARY:
+      case VARBINARY:
+        return ByteString.class;
+      case GEOMETRY:
+        return GeoFunctions.Geom.class;
+      case ANY:
+        return Object.class;
+      case NULL:
+        return Void.class;
+      }
+    }
+    switch (type.getSqlTypeName()) {
+    case ROW:
+      assert type instanceof RelRecordType;
+      if (type instanceof JavaRecordType) {
+        return ((JavaRecordType) type).clazz;
+      } else {
+        return createSyntheticType((RelRecordType) type);
+      }
+    case MAP:
+      return Map.class;
+    case ARRAY:
+    case MULTISET:
+      return List.class;
+    }
+    return null;
+  }
+
+  public RelDataType toSql(RelDataType type) {
+    return toSql(this, type);
+  }
+
+  /** Converts a type in Java format to a SQL-oriented type. */
+  public static RelDataType toSql(final RelDataTypeFactory typeFactory,
+      RelDataType type) {
+    return toSql(typeFactory, type, true);
+  }
+
+  private static RelDataType toSql(final RelDataTypeFactory typeFactory,
+      RelDataType type, boolean mustSetNullability) {
+    RelDataType sqlType = type;
+    if (type instanceof RelRecordType) {
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
       // We do not need to change the nullability of the nested fields,
       // since it can be overridden by the existing implementation of createTypeWithNullability
       // when we treat the nullability of the root struct type.

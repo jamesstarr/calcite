@@ -538,7 +538,7 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
 >>>>>>> 06c1d66b8 (DX-17294: Make calcite rules pluggable.)
   }
 
-  @Override public RelDataType decimalOf(RelDataType type) {
+  public RelDataType decimalOf(RelDataType type) {
     // create decimal type and sync nullability
     return createTypeWithNullability(decimalOf2(type), type.isNullable());
   }

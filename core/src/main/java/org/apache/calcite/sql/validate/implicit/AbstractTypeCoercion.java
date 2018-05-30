@@ -31,6 +31,36 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
+<<<<<<< HEAD
+=======
+import org.apache.calcite.sql.type.SqlTypeAssignmentRules;
+import org.apache.calcite.sql.type.SqlTypeFamily;
+import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.sql.type.SqlTypeUtil;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.sql.validate.SqlValidatorNamespace;
+import org.apache.calcite.sql.validate.SqlValidatorScope;
+import org.apache.calcite.util.Pair;
+import org.apache.calcite.util.Util;
+
+import com.google.common.collect.ImmutableList;
+
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+/**
+ * Base class for all the type coercion rules. If you want to have a custom type coercion rules,
+ * inheriting this class is not necessary, but would have some convenient tool methods.
+ *
+ * <p>We make tool methods: {@link #coerceOperandType}, {@link #coerceColumnType},
+ * {@link #needToCast}, {@link #updateInferredType}, {@link #updateInferredColumnType}
+ * all overridable by derived classes, you can define system specific type coercion logic.
+ *
+ * <p>Caution that these methods may modify the {@link SqlNode} tree, you should know what the
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
  * effect is when using these methods to customize your type coercion rules.</p>
  *
  * <p>This class also defines the default implementation of the type widening strategies, see
@@ -44,9 +74,10 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
 
   //~ Constructors -----------------------------------------------------------
 
-  AbstractTypeCoercion(RelDataTypeFactory typeFactory, SqlValidator validator) {
-    this.factory = Preconditions.checkNotNull(typeFactory, "typeFactory");
-    this.validator = Preconditions.checkNotNull(validator, "validator");
+  AbstractTypeCoercion(SqlValidator validator) {
+    Objects.requireNonNull(validator);
+    this.validator = validator;
+    this.factory = validator.getTypeFactory();
   }
 
   //~ Methods ----------------------------------------------------------------

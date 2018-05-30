@@ -17,8 +17,7 @@
 package org.apache.calcite.sql.validate.implicit;
 
 import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
->>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlCallBinding;
 import org.apache.calcite.sql.SqlFunction;
@@ -50,10 +49,9 @@ import java.util.List;
  */
 public class TypeCoercionImpl extends AbstractTypeCoercion {
 
-  public TypeCoercionImpl(RelDataTypeFactory typeFactory, SqlValidator validator) {
-    super(typeFactory, validator);
+  public TypeCoercionImpl(SqlValidator validator) {
+    super(validator);
   }
->>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
   /**
    * Widen a SqlNode's field type to target type,
    * mainly used for set operations like UNION, INTERSECT and EXCEPT.

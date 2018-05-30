@@ -225,7 +225,7 @@ class UdfTest {
     withUdf().query(sql).returns(expected);
   }
 
-  @Test void testUserDefinedFunctionWithNull() throws Exception {
+  @Test public void testUserDefinedFunctionWithNull() throws Exception {
     final String sql = "select \"adhoc\".my_det_plus(\"deptno\", 1 + null) as p\n"
         + "from \"adhoc\".EMPLOYEES where 1 > 0 or nullif(null, 1) is null";
     final AtomicInteger c = Smalls.MyDeterministicPlusFunction.INSTANCE_COUNT.get();
@@ -240,6 +240,7 @@ class UdfTest {
     assertThat(after, is(before + 1));
   }
 
+<<<<<<< HEAD
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3195">[CALCITE-3195]
    * Handle a UDF that throws checked exceptions in the Enumerable code generator</a>. */
@@ -269,6 +270,8 @@ class UdfTest {
     withUdf().query(sql3).returns(expected3);
   }
 
+=======
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-937">[CALCITE-937]
    * User-defined function within view</a>. */

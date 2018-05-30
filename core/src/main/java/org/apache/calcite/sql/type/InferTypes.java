@@ -42,7 +42,7 @@ public abstract class InferTypes {
   public static final SqlOperandTypeInference FIRST_KNOWN =
       (callBinding, returnType, operandTypes) -> {
         final RelDataType unknownType =
-            callBinding.getValidator().getUnknownType();
+              callBinding.getValidator().getUnknownType();
         RelDataType knownType = unknownType;
         for (SqlNode operand : callBinding.operands()) {
           knownType = callBinding.getValidator().deriveType(
@@ -68,20 +68,12 @@ public abstract class InferTypes {
    * the same number of fields as the number of operands.
    */
   public static final SqlOperandTypeInference RETURN_TYPE =
-      new SqlOperandTypeInference() {
-        public void inferOperandTypes(
-            SqlCallBinding callBinding,
-            RelDataType returnType,
-            RelDataType[] operandTypes) {
-          if (returnType == null) {
-            return;
-          }
-          for (int i = 0; i < operandTypes.length; ++i) {
-            operandTypes[i] =
-                returnType.isStruct()
-                    ? returnType.getFieldList().get(i).getType()
-                    : returnType;
-          }
+      (callBinding, returnType, operandTypes) -> {
+        for (int i = 0; i < operandTypes.length; ++i) {
+          operandTypes[i] =
+              returnType.isStruct()
+                  ? returnType.getFieldList().get(i).getType()
+                  : returnType;
         }
       };
 
@@ -94,7 +86,7 @@ public abstract class InferTypes {
         RelDataTypeFactory typeFactory = callBinding.getTypeFactory();
         for (int i = 0; i < operandTypes.length; ++i) {
           operandTypes[i] =
-              typeFactory.createSqlType(SqlTypeName.BOOLEAN);
+             typeFactory.createSqlType(SqlTypeName.BOOLEAN);
         }
       };
 
@@ -123,41 +115,13 @@ public abstract class InferTypes {
         RelDataTypeFactory typeFactory = callBinding.getTypeFactory();
         for (int i = 0; i < operandTypes.length; ++i) {
           operandTypes[i] =
-              typeFactory.createTypeWithNullability(
-                  typeFactory.createSqlType(SqlTypeName.ANY), true);
+                 typeFactory.createTypeWithNullability(
+                      typeFactory.createSqlType(SqlTypeName.ANY), true);
         }
       };
 
   public static final SqlOperandTypeInference LEAST_RESTRICTIVE =
         new SqlOperandTypeInference() {
-        public void inferOperandTypes(
-            SqlCallBinding callBinding,
-            RelDataType returnType,
-            RelDataType[] operandTypes) {
-          RelDataTypeFactory typeFactory = callBinding.getTypeFactory();
-          final RelDataType unknownType = callBinding.getValidator().getUnknownType();
-          RelDataType knownType = unknownType;
-          List<RelDataType> knownTypes = new ArrayList<>();
-          for (SqlNode operand : callBinding.operands()) {
-            knownType = callBinding.getValidator().deriveType(callBinding.getScope(), operand);
-            if (!knownType.equals(unknownType)) {
-              knownTypes.add(knownType);
-            }
-          }
-          final RelDataType inferType;
-          if (!knownTypes.isEmpty()) {
-            inferType = typeFactory.leastRestrictive(knownTypes);
-          } else {
-            inferType = unknownType;
-          }
-          for (int i = 0; i < operandTypes.length; ++i) {
-            operandTypes[i] = inferType;
-          }
-        }
-      };
-
-  public static final SqlOperandTypeInference LEAST_RESTRICTIVE =
-      new SqlOperandTypeInference() {
         public void inferOperandTypes(
             SqlCallBinding callBinding,
             RelDataType returnType,

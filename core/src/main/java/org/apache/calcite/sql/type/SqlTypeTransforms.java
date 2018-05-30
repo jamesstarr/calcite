@@ -82,17 +82,14 @@ public abstract class SqlTypeTransforms {
    * the arguments is NOT NULL; otherwise the type is unchanged.
    */
   public static final SqlTypeTransform LEAST_NULLABLE =
-      new SqlTypeTransform() {
-        public RelDataType transformType(SqlOperatorBinding opBinding,
-            RelDataType typeToTransform) {
-          for (RelDataType type : opBinding.collectOperandTypes()) {
-            if (!type.isNullable()) {
-              return opBinding.getTypeFactory()
-                  .createTypeWithNullability(typeToTransform, false);
-            }
+      (opBinding, typeToTransform) -> {
+        for (RelDataType type : opBinding.collectOperandTypes()) {
+          if (!type.isNullable()) {
+            return opBinding.getTypeFactory()
+                .createTypeWithNullability(typeToTransform, false);
           }
-          return typeToTransform;
         }
+        return typeToTransform;
       };
 
   /**
@@ -166,6 +163,7 @@ public abstract class SqlTypeTransforms {
   public static final SqlTypeTransform TO_MULTISET =
       (opBinding, typeToTransform) ->
           opBinding.getTypeFactory().createMultisetType(typeToTransform, -1);
+<<<<<<< HEAD
 
   /**
    * Parameter type-inference transform strategy that wraps a given type in a multiset or
@@ -208,6 +206,8 @@ public abstract class SqlTypeTransforms {
       (opBinding, typeToTransform) ->
           SqlTypeUtil.createMapTypeFromRecord(opBinding.getTypeFactory(),
               typeToTransform);
+=======
+>>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 
   /**
    * Parameter type-inference transform strategy where a derived type must be

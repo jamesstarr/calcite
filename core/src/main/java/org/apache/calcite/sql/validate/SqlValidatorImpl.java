@@ -95,201 +95,8 @@ import org.apache.calcite.sql.util.SqlBasicVisitor;
 import org.apache.calcite.sql.util.SqlShuttle;
 import org.apache.calcite.sql.util.SqlVisitor;
 import org.apache.calcite.sql.validate.implicit.TypeCoercion;
-import org.apache.calcite.util.BitString;
-import org.apache.calcite.util.Bug;
-import org.apache.calcite.util.ImmutableBitSet;
-import org.apache.calcite.util.ImmutableIntList;
-import org.apache.calcite.util.ImmutableNullableList;
-import org.apache.calcite.util.Litmus;
-import org.apache.calcite.util.Pair;
-import org.apache.calcite.util.Static;
-import org.apache.calcite.util.Util;
-import org.apache.calcite.util.trace.CalciteTrace;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
-import org.slf4j.Logger;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.AbstractList;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.function.BiFunction;
-import javax.annotation.Nullable;
-
-import static org.apache.calcite.sql.SqlUtil.stripAs;
-import static org.apache.calcite.util.Static.RESOURCE;
-
-import static java.util.Objects.requireNonNull;
-
-/**
- * Default implementation of {@link SqlValidator}.
- */
-public class SqlValidatorImpl implements SqlValidatorWithHints {
-  //~ Static fields/initializers ---------------------------------------------
-
-  public static final Logger TRACER = CalciteTrace.PARSER_LOGGER;
-
-  /**
-   * Alias generated for the source table when rewriting UPDATE to MERGE.
-   */
-  public static final String UPDATE_SRC_ALIAS = "SYS$SRC";
-
-  /**
-   * Alias generated for the target table when rewriting UPDATE to MERGE if no
-   * alias was specified by the user.
-   */
-  public static final String UPDATE_TGT_ALIAS = "SYS$TGT";
-
-  /**
-   * Alias prefix generated for source columns when rewriting UPDATE to MERGE.
-   */
-  public static final String UPDATE_ANON_PREFIX = "SYS$ANON";
-
-  //~ Instance fields --------------------------------------------------------
-
-  private final SqlOperatorTable opTab;
-  final SqlValidatorCatalogReader catalogReader;
-
-  /**
-   * Maps ParsePosition strings to the {@link SqlIdentifier} identifier
-   * objects at these positions
-   */
-  protected final Map<String, IdInfo> idPositions = new HashMap<>();
-
-  /**
-   * Maps {@link SqlNode query node} objects to the {@link SqlValidatorScope}
-   * scope created from them.
-   */
-  protected final Map<SqlNode, SqlValidatorScope> scopes =
-      new IdentityHashMap<>();
-
-  /**
-   * Maps a {@link SqlSelect} node to the scope used by its WHERE and HAVING
-   * clauses.
-   */
-  private final Map<SqlSelect, SqlValidatorScope> whereScopes =
-      new IdentityHashMap<>();
-
-  /**
-   * Maps a {@link SqlSelect} node to the scope used by its GROUP BY clause.
-   */
-  private final Map<SqlSelect, SqlValidatorScope> groupByScopes =
-      new IdentityHashMap<>();
-
-  /**
-   * Maps a {@link SqlSelect} node to the scope used by its SELECT and HAVING
-   * clauses.
-   */
-  private final Map<SqlSelect, SqlValidatorScope> selectScopes =
-      new IdentityHashMap<>();
-
-  /**
-   * Maps a {@link SqlSelect} node to the scope used by its ORDER BY clause.
-   */
-  private final Map<SqlSelect, SqlValidatorScope> orderScopes =
-      new IdentityHashMap<>();
-  protected final IdentityHashMap<SqlNode, SqlValidatorScope> lateralScopes =
-      new IdentityHashMap<>();
-
-  /**
-   * Maps a {@link SqlSelect} node that is the argument to a CURSOR
-   * constructor to the scope of the result of that select node
-   */
-  private final Map<SqlSelect, SqlValidatorScope> cursorScopes =
-      new IdentityHashMap<>();
-
-  /**
-   * The name-resolution scope of a LATERAL TABLE clause.
-   */
-  private final LateralTableScope tableScope = null;
-
-  /**
-   * Maps a {@link SqlNode node} to the
-   * {@link SqlValidatorNamespace namespace} which describes what columns they
-   * contain.
-   */
-  protected final Map<SqlNode, SqlValidatorNamespace> namespaces =
-      new IdentityHashMap<>();
-
-  /**
-   * Set of select expressions used as cursor definitions. In standard SQL,
-   * only the top-level SELECT is a cursor; Calcite extends this with
-   * cursors as inputs to table functions.
-   */
-  private final Set<SqlNode> cursorSet = Sets.newIdentityHashSet();
-
-  /**
-   * Stack of objects that maintain information about function calls. A stack
-   * is needed to handle nested function calls. The function call currently
-   * being validated is at the top of the stack.
-   */
-  protected final Deque<FunctionParamInfo> functionCallStack =
-      new ArrayDeque<>();
-
-  private int nextGeneratedId;
-  protected final RelDataTypeFactory typeFactory;
-
-  /** The type of dynamic parameters until a type is imposed on them. */
-  protected final RelDataType unknownType;
-  private final RelDataType booleanType;
-
-  /**
-   * Map of derived RelDataType for each node. This is an IdentityHashMap
-   * since in some cases (such as null literals) we need to discriminate by
-   * instance.
-   */
-  private final Map<SqlNode, RelDataType> nodeToTypeMap =
-      new IdentityHashMap<>();
-  private final AggFinder aggFinder;
-  private final AggFinder aggOrOverFinder;
-  private final AggFinder aggOrOverOrGroupFinder;
-  private final AggFinder groupFinder;
-  private final AggFinder overFinder;
-  private Config config;
-  private final Map<SqlNode, SqlNode> originalExprs = new HashMap<>();
-
-  private SqlNode top;
-
-  protected boolean lenientOperatorLookup;
-
-  private NullCollation nullCollation = NullCollation.HIGH;
-
-  // TODO jvs 11-Dec-2008:  make this local to performUnconditionalRewrites
-  // if it's OK to expand the signature of that method.
-  private boolean validatingSqlMerge;
-
-  private boolean inWindow;                        // Allow nested aggregates
-
-  private final SqlValidatorImpl.ValidationErrorFunction validationErrorFunction =
-      new SqlValidatorImpl.ValidationErrorFunction();
-
-  // TypeCoercion instance used for implicit type coercion.
-  private TypeCoercion typeCoercion;
-
-  // Validation message stores information from validation that can be displayed later.
-  private String validationMessage;
+  // Flag saying if we enable the implicit type coercion.
+  private boolean enableTypeCoercion;
 
   //~ Constructors -----------------------------------------------------------
 
@@ -363,6 +170,8 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     groupFinder = new AggFinder(opTab, false, false, true, null, nameMatcher);
     aggOrOverOrGroupFinder = new AggFinder(opTab, true, true, true, null,
         nameMatcher);
+    this.enableTypeCoercion = true;
+    this.typeCoercion = TypeCoercions.getTypeCoercion(this, conformance);
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -1972,7 +1781,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     if ((node instanceof SqlDynamicParam) || isNullLiteral) {
       if (inferredType.equals(unknownType)) {
         if (isNullLiteral) {
-          if (config.typeCoercionEnabled()) {
+          if (enableTypeCoercion) {
             // derive type of null literal
             deriveType(scope, node);
             return;
@@ -2606,9 +2415,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
             registerFrom(
                 parentScope,
                 selectScope,
-<<<<<<< HEAD
-                lateralScope,
-=======
                 true,
                 from,
                 from,
@@ -3990,6 +3796,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     return scopes.get(withItem);
   }
 
+<<<<<<< HEAD
   public SqlValidator setLenientOperatorLookup(boolean lenient) {
     this.lenientOperatorLookup = lenient;
     return this;
@@ -4001,11 +3808,14 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
 
   public SqlValidator setEnableTypeCoercion(boolean enabled) {
     this.config = this.config.withTypeCoercionEnabled(enabled);
+=======
+  public SqlValidator setEnableTypeCoercion(boolean enabled) {
+    this.enableTypeCoercion = enabled;
     return this;
   }
 
   public boolean isTypeCoercionEnabled() {
-    return this.config.typeCoercionEnabled();
+    return this.enableTypeCoercion;
   }
 
   public void setTypeCoercion(TypeCoercion typeCoercion) {
@@ -4014,36 +3824,8 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
   }
 
   public TypeCoercion getTypeCoercion() {
-    assert config.typeCoercionEnabled();
+    assert isTypeCoercionEnabled();
     return this.typeCoercion;
-  }
-
-  public void setSqlTypeCoercionRules(SqlTypeCoercionRule typeCoercionRules) {
-    SqlTypeCoercionRule.THREAD_PROVIDERS.set(typeCoercionRules);
-  }
-
-  public boolean hasValidationMessage() {
-    assert this.validationMessage != null;
-    return !this.validationMessage.isEmpty();
-  }
-
-  public void setValidationMessage(String message) {
-    assert message != null;
-    this.validationMessage = message;
-  }
-
-  public String getValidationMessage() {
-    assert this.validationMessage != null;
-    return this.validationMessage;
-  }
-
-  public Config config() {
-    return this.config;
-  }
-
-  public SqlValidator transform(UnaryOperator<Config> transform) {
-    this.config = transform.apply(this.config);
-    return this;
   }
 
   /**

@@ -100,7 +100,6 @@ import org.apache.calcite.test.catalog.MockCatalogReader;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -2311,25 +2310,24 @@ class RelOptRulesTest extends RelOptTestBase {
   private void checkPlanning(String query) throws Exception {
     final Tester tester1 = tester.withCatalogReaderFactory(
         (typeFactory, caseSensitive) -> new MockCatalogReader(typeFactory, caseSensitive) {
-
-          @Override public MockCatalogReader init() {
-            // CREATE SCHEMA abc;
-            // CREATE TABLE a(a INT);
-            // ...
-            // CREATE TABLE j(j INT);
-            MockSchema schema = new MockSchema("SALES");
-            registerSchema(schema);
-            final RelDataType intType =
-                typeFactory.createSqlType(SqlTypeName.INTEGER);
-            for (int i = 0; i < 10; i++) {
-              String t = String.valueOf((char) ('A' + i));
-              MockTable table = MockTable.create(this, schema, t, false, 100);
-              table.addColumn(t, intType);
-              registerTable(table);
-            }
-            return this;
-          }
-          // CHECKSTYLE: IGNORE 1
+              @Override public MockCatalogReader init() {
+                // CREATE SCHEMA abc;
+                // CREATE TABLE a(a INT);
+                // ...
+                // CREATE TABLE j(j INT);
+                MockSchema schema = new MockSchema("SALES");
+                registerSchema(schema);
+                final RelDataType intType =
+                    typeFactory.createSqlType(SqlTypeName.INTEGER);
+                for (int i = 0; i < 10; i++) {
+                  String t = String.valueOf((char) ('A' + i));
+                  MockTable table = MockTable.create(this, schema, t, false, 100);
+                  table.addColumn(t, intType);
+                  registerTable(table);
+                }
+                return this;
+              }
+              // CHECKSTYLE: IGNORE 1
         });
 
     HepProgram program = new HepProgramBuilder()
@@ -2863,9 +2861,6 @@ class RelOptRulesTest extends RelOptTestBase {
         .checkUnchanged();
   }
 
-<<<<<<< HEAD
-  @Test void testReduceCastAndConsts() throws Exception {
-=======
   @Test public void testReduceCastAndConsts() throws Exception {
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
@@ -4767,7 +4762,56 @@ class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.SORT_JOIN_TRANSPOSE)
         .build();
     final String sql = "select * from sales.emp e right join (\n"
+<<<<<<< HEAD
         + "  select * from sales.dept d) d on e.deptno = d.deptno\n"
+=======
+            + "select * from sales.dept d) using (deptno)\n"
+            + "order by name";
+    checkPlanning(tester, preProgram, new HepPlanner(program), sql);
+  }
+
+  @Test public void testSortJoinTranspose3() {
+    final HepProgram preProgram = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.SORT_PROJECT_TRANSPOSE)
+        .build();
+    final HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.SORT_JOIN_TRANSPOSE)
+        .build();
+    // This one cannot be pushed down
+    final String sql = "select * from sales.emp left join (\n"
+        + "select * from sales.dept) using (deptno)\n"
+        + "order by sal, name limit 10";
+    checkPlanning(tester, preProgram, new HepPlanner(program), sql, true);
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-931">[CALCITE-931]
+   * Wrong collation trait in SortJoinTransposeRule for right joins</a>. */
+  @Test public void testSortJoinTranspose4() {
+    // Create a customized test with RelCollation trait in the test cluster.
+    Tester tester = new TesterImpl(getDiffRepos(), true, true, false, false,
+        true, null, null) {
+      @Override public RelOptPlanner createPlanner() {
+        return new MockRelOptPlanner(Contexts.empty()) {
+          @Override public List<RelTraitDef> getRelTraitDefs() {
+            return ImmutableList.<RelTraitDef>of(RelCollationTraitDef.INSTANCE);
+          }
+          @Override public RelTraitSet emptyTraitSet() {
+            return RelTraitSet.createEmpty().plus(
+                RelCollationTraitDef.INSTANCE.getDefault());
+          }
+        };
+      }
+    };
+
+    final HepProgram preProgram = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.SORT_PROJECT_TRANSPOSE)
+        .build();
+    final HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.SORT_JOIN_TRANSPOSE)
+        .build();
+    final String sql = "select * from sales.emp e right join (\n"
+        + "select * from sales.dept d) using (deptno)\n"
         + "order by name";
     sql(sql).withPre(preProgram)
         .withRule(CoreRules.SORT_JOIN_TRANSPOSE)
@@ -6761,8 +6805,8 @@ class RelOptRulesTest extends RelOptTestBase {
     VolcanoPlanner planner = new VolcanoPlanner(null, null);
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
     planner.addRelTraitDef(RelDistributionTraitDef.INSTANCE);
-    Tester tester = new TesterImpl(getDiffRepos(), false, true, false, false,
-            null, null)
+    Tester tester = new TesterImpl(getDiffRepos(), false, true, false,
+            false, false, null, null)
             .withClusterFactory(
               relOptCluster -> RelOptCluster.create(planner, relOptCluster.getRexBuilder()));
 

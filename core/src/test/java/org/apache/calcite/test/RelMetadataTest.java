@@ -205,7 +205,9 @@ public class RelMetadataTest extends SqlToRelTestBase {
 
   private RelNode convertSql(String sql, boolean typeCoercion) {
     final Tester tester = typeCoercion ? this.tester : this.strictTester;
-    return convertSql(tester, sql);
+    final RelRoot root = tester.convertSqlToRel(sql);
+    root.rel.getCluster().setMetadataProvider(DefaultRelMetadataProvider.INSTANCE);
+    return root.rel;
   }
 
   private void checkPercentageOriginalRows(String sql, double expected) {
@@ -1056,9 +1058,9 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final RelRoot root = tester
         .withClusterFactory(cluster -> {
           cluster.setMetadataProvider(
-              ChainedRelMetadataProvider.of(
-                  ImmutableList.of(BrokenColTypeImpl.SOURCE,
-                      cluster.getMetadataProvider())));
+                    ChainedRelMetadataProvider.of(
+                        ImmutableList.of(BrokenColTypeImpl.SOURCE,
+                            cluster.getMetadataProvider())));
           return cluster;
         })
         .convertSqlToRel(sql);
@@ -1132,57 +1134,13 @@ public class RelMetadataTest extends SqlToRelTestBase {
         + "group by deptno having count(*) = 0";
     final RelRoot root = tester
         .withClusterFactory(cluster -> {
-          cluster.setMetadataProvider(
-              ChainedRelMetadataProvider.of(
-                  ImmutableList.of(BrokenColTypeImpl.SOURCE,
-                      cluster.getMetadataProvider())));
-          cluster.setMetadataQuerySupplier(MyRelMetadataQuery::new);
-          return cluster;
-        })
-        .convertSqlToRel(sql);
-
-    final RelNode rel = root.rel;
-    assertThat(rel, instanceOf(LogicalFilter.class));
-    assertThat(rel.getCluster().getMetadataQuery(), instanceOf(MyRelMetadataQuery.class));
-    final MyRelMetadataQuery mq = (MyRelMetadataQuery) rel.getCluster().getMetadataQuery();
-
-    try {
-      assertThat(colType(mq, rel, 0), equalTo("DEPTNO-rel"));
-      fail("expected error");
-    } catch (IllegalArgumentException e) {
-      final String value = "No handler for method [public abstract java.lang.String "
-          + "org.apache.calcite.test.RelMetadataTest$ColType.getColType(int)] "
-          + "applied to argument of type [interface org.apache.calcite.rel.RelNode]; "
-          + "we recommend you create a catch-all (RelNode) handler";
-      assertThat(e.getMessage(), is(value));
-    }
-  }
-
-  @Deprecated
-  public String colType(RelMetadataQuery mq, RelNode rel, int column) {
-    return rel.metadata(ColType.class, mq).getColType(column);
-  }
-
-  public String colType(MyRelMetadataQuery myRelMetadataQuery, RelNode rel, int column) {
-    return myRelMetadataQuery.colType(rel, column);
-  }
-
-  @Deprecated
-  @Test void testCustomProviderWithRelMetadataFactory() {
-    final List<String> buf = new ArrayList<>();
-    ColTypeImpl.THREAD_LIST.set(buf);
-
-    final String sql = "select deptno, count(*) from emp where deptno > 10 "
-        + "group by deptno having count(*) = 0";
-    final RelRoot root = tester
-        .withClusterFactory(cluster -> {
           // Create a custom provider that includes ColType.
           // Include the same provider twice just to be devious.
           final ImmutableList<RelMetadataProvider> list =
-              ImmutableList.of(ColTypeImpl.SOURCE, ColTypeImpl.SOURCE,
-                  cluster.getMetadataProvider());
+                    ImmutableList.of(ColTypeImpl.SOURCE, ColTypeImpl.SOURCE,
+                        cluster.getMetadataProvider());
           cluster.setMetadataProvider(
-              ChainedRelMetadataProvider.of(list));
+                    ChainedRelMetadataProvider.of(list));
           return cluster;
         })
         .convertSqlToRel(sql);
@@ -1783,7 +1741,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
              JdbcAdapterTest.LockWrapper.lock(LOCK)) {
       // FIXME: fix timeout when enable implicit type coercion.
       final RelNode rel = convertSql(sql, false);
-      final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
+      final RelMetadataQuery mq = RelMetadataQuery.instance();
       RelOptPredicateList inputSet = mq.getPulledUpPredicates(rel.getInput(0));
       assertThat(inputSet.pulledUpPredicates.size(), is(12));
     }

@@ -202,7 +202,7 @@ public class SqlCaseOperator extends SqlOperator {
     if (!foundNotNull) {
       // according to the sql standard we can not have all of the THEN
       // statements and the ELSE returning null
-      if (throwOnFailure && !callBinding.isTypeCoercionEnabled()) {
+      if (throwOnFailure && !callBinding.getValidator().isTypeCoercionEnabled()) {
         throw callBinding.newError(RESOURCE.mustNotNullInElse());
       }
       return false;
@@ -246,7 +246,7 @@ public class SqlCaseOperator extends SqlOperator {
     RelDataType ret = callBinding.getTypeFactory().leastRestrictive(argTypes);
     if (null == ret) {
       boolean coerced = false;
-      if (callBinding.isTypeCoercionEnabled()) {
+      if (callBinding.getValidator().isTypeCoercionEnabled()) {
         TypeCoercion typeCoercion = callBinding.getValidator().getTypeCoercion();
         RelDataType commonType = typeCoercion.getWiderTypeFor(argTypes, true);
         // commonType is always with nullability as false, we do not consider the

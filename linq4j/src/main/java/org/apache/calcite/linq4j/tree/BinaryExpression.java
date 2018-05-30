@@ -81,9 +81,11 @@ public class BinaryExpression extends Expression {
       case FLOAT:
         return evaluateFloat(expression0, evaluator) / evaluateFloat(expression1, evaluator);
       case DOUBLE:
-        return evaluateDouble(expression0, evaluator) / evaluateDouble(expression1, evaluator);
+        return (Double) expression0.evaluate(evaluator)
+            / (Double) expression1.evaluate(evaluator);
       case LONG:
-        return evaluateLong(expression0, evaluator) / evaluateLong(expression1, evaluator);
+        return (Long) expression0.evaluate(evaluator)
+            / (Long) expression1.evaluate(evaluator);
       default:
         throw cannotEvaluate();
       }

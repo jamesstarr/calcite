@@ -397,8 +397,14 @@ class TableFunctionTest {
   @Test void testUserDefinedTableFunction4() {
     final String q = "select \"c1\"\n"
         + "from table(\"s\".\"multiplication\"('2', 3, 100))\n"
-        + "where \"c1\" + 2 < \"c2\"";
-    with().query(q).returnsUnordered("c1=103");
+        + "where c1 + 2 < c2";
+    // With type coercion, a cast node with null as argument would be
+    // passed to the function to infer the table row type, we use
+    // SqlUserDefinedTableMacro#convertArguments to decide the type.
+    // For this table function: multiplication,
+    // it will just throw IllegalArgumentException.
+    final String e = "java.lang.IllegalArgumentException";
+    with().query(q).throws_(e);
   }
 
   @Test void testUserDefinedTableFunction5() {

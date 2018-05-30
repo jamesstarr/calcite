@@ -623,8 +623,8 @@ public class ReflectiveSchemaTest {
             "final Long inp13_ = ((org.apache.calcite.test.ReflectiveSchemaTest.EveryType) inputEnumerator.current()).wrapperLong;")
         .planContains(
             "return inp13_ == null ? (Long) null "
-                + ": Long.valueOf(Long.valueOf(inp13_.longValue() / inp13_.longValue()).longValue() "
-                + "+ Long.valueOf(inp13_.longValue() / inp13_.longValue()).longValue());")
+                + ": Long.valueOf(inp13_.longValue() / inp13_.longValue() "
+                + "+ inp13_.longValue() / inp13_.longValue());")
         .returns("C=null\n");
   }
 
