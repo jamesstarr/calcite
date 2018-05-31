@@ -378,7 +378,7 @@ public abstract class RelOptUtil {
         + "set type is " + expectedRowType.getFullTypeString()
         + "\nexpression type is " + actualRowType.getFullTypeString()
         + "\nset is " + equivalenceClass.toString()
-        + "\nexpression is " + newRel.toString();
+        + "\nexpression is " + RelOptUtil.toString(newRel);
     throw new AssertionError(s);
   }
 

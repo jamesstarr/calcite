@@ -3494,6 +3494,25 @@ public class RelOptRulesTest extends RelOptTestBase {
         .check();
   }
 
+  @Test public void testIsNullPushDown2() {
+    HepProgramBuilder preBuilder = new HepProgramBuilder();
+    preBuilder.addRuleInstance(CoreRules.PROJECT_TO_LOGICAL_PROJECT_AND_WINDOW);
+
+    HepProgramBuilder builder = new HepProgramBuilder();
+    builder.addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
+    builder.addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS);
+    HepPlanner hepPlanner = new HepPlanner(builder.build());
+
+    final String sql = "select empno, deptno, w_count from (\n"
+        + "  select empno, deptno, count(empno) over (ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) w_count\n"
+        + "  from emp\n"
+        + ") sub_query where w_count is null";
+    sql(sql)
+        .withPre(preBuilder.build())
+        .with(hepPlanner)
+        .check();
+  }
+
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-750">[CALCITE-750]
    * Allow windowed aggregate on top of regular aggregate</a>. */
