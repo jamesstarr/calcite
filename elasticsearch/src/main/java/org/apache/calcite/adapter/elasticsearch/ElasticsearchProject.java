@@ -27,14 +27,21 @@ import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.util.Pair;
+<<<<<<< HEAD:elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
 
 import com.google.common.collect.ImmutableList;
+=======
+>>>>>>> 130909e66 ([CALCITE-2347] running ElasticSearch in embedded mode for unit tests of ES adapter (Andrei Sereda)):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
 
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 /**
  * Implementation of {@link org.apache.calcite.rel.core.Project}
@@ -68,14 +75,56 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
 
     final List<String> fields = new ArrayList<>();
     final List<String> scriptFields = new ArrayList<>();
+<<<<<<< HEAD:elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
     // registers wherever "select *" is present
     boolean hasSelectStar = false;
+=======
+>>>>>>> 130909e66 ([CALCITE-2347] running ElasticSearch in embedded mode for unit tests of ES adapter (Andrei Sereda)):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
     for (Pair<RexNode, String> pair: getNamedProjects()) {
       final String name = pair.right;
       final String expr = pair.left.accept(translator);
 
+<<<<<<< HEAD:elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
       // "select *" present?
       hasSelectStar |= "_MAP".equals(name);
+=======
+      if (expr.equals("\"" + name + "\"")) {
+        fields.add(name);
+      } else if (expr.matches("\"literal\":.+")) {
+        scriptFields.add(ElasticsearchRules.quote(name)
+                + ":{\"script\": "
+                + expr.split(":")[1] + "}");
+      } else {
+        scriptFields.add(ElasticsearchRules.quote(name)
+                + ":{\"script\":"
+                // _source (ES2) vs params._source (ES5)
+                + "\"" + implementor.elasticsearchTable.scriptedFieldPrefix() + "."
+                + expr.replaceAll("\"", "") + "\"}");
+      }
+    }
+
+    StringBuilder query = new StringBuilder();
+    if (scriptFields.isEmpty()) {
+      List<String> newList = Lists.transform(fields, new Function<String, String>() {
+        @Nullable
+        @Override public String apply(@Nullable String input) {
+          return ElasticsearchRules.quote(input);
+        }
+      });
+
+      final String findString = String.join(", ", newList);
+      query.append("\"_source\" : [").append(findString).append("]");
+    } else {
+      // if scripted fields are present, ES ignores _source attribute
+      for (String field: fields) {
+        scriptFields.add(ElasticsearchRules.quote(field) + ":{\"script\": "
+                // _source (ES2) vs params._source (ES5)
+                + "\"" + implementor.elasticsearchTable.scriptedFieldPrefix() + "."
+                + field + "\"}");
+      }
+      query.append("\"script_fields\": {" + String.join(", ", scriptFields) + "}");
+    }
+>>>>>>> 130909e66 ([CALCITE-2347] running ElasticSearch in embedded mode for unit tests of ES adapter (Andrei Sereda)):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
 
       if (ElasticsearchRules.isItem(pair.left)) {
         implementor.addExpressionItemMapping(name, expr);
@@ -94,6 +143,7 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
                 + expr.replace("\"", "") + "\"}");
       }
     }
+<<<<<<< HEAD:elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
 
     if (hasSelectStar) {
       // means select * from elastic
@@ -124,5 +174,8 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
 
     implementor.list.removeIf(l -> l.startsWith("\"_source\""));
     implementor.add("{" + query.toString() + "}");
+=======
+    implementor.add(query.toString());
+>>>>>>> 130909e66 ([CALCITE-2347] running ElasticSearch in embedded mode for unit tests of ES adapter (Andrei Sereda)):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
   }
 }
