@@ -276,11 +276,11 @@ LogicalProject(EXPR$0=[COUNT() OVER (PARTITION BY $0 ORDER BY $0 RANGE BETWEEN U
     </TestCase>
     <TestCase name="testIsNullPushDown">
         <Resource name="sql">
-            <![CDATA[select empno, deptno, w_count from (
-  select empno, deptno, count(empno) over (w) w_count
+            <![CDATA[select w_count from (
+  select count(*) over (w) w_count
   from emp
-  window w as (partition by deptno order by empno)
-) sub_query where w_count is null]]>
+  window w as (partition by empno order by empno)
+) sub_query where w_count is null)]]>
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
@@ -301,6 +301,9 @@ LogicalProject(EMPNO=[$0], DEPTNO=[$1], W_COUNT=[$2])
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ec7200a1c ([CALCITE-2344] Avoid inferring $0=null predicate from $0 IS NULL when $0 is not nullable)
     <TestCase name="testIsNullPushDown2">
         <Resource name="sql">
             <![CDATA[select w_count from (
@@ -325,6 +328,7 @@ LogicalProject(EMPNO=[$0], DEPTNO=[$1], W_COUNT=[$2])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 >>>>>>> e5770204d (DX-11490: Fix wrong constant reduction over windows function)
 =======
@@ -332,6 +336,8 @@ LogicalProject(EMPNO=[$0], DEPTNO=[$1], W_COUNT=[$2])
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 =======
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+>>>>>>> ec7200a1c ([CALCITE-2344] Avoid inferring $0=null predicate from $0 IS NULL when $0 is not nullable)
     <TestCase name="testProjectToWindowRuleForMultipleWindows">
         <Resource name="sql">
             <![CDATA[select

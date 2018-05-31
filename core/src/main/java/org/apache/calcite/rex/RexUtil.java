@@ -389,13 +389,13 @@ public class RexUtil {
             || predicate.getKind() == SqlKind.IS_NOT_DISTINCT_FROM) {
       left = operands.get(0);
       right = operands.get(1);
-    } else {
+    } else { // is null
       left = operands.get(0);
-      // make sure not to infer a wrong constant reduction to null if
-      // type is not nullable
-      right = left.getType().isNullable()
-          ? rexBuilder.makeNullLiteral(left.getType())
-          : left;
+      if (!left.getType().isNullable()) {
+        // There's no sense in inferring $0=null when $0 is not nullable
+        return;
+      }
+      right = rexBuilder.makeNullLiteral(left.getType());
     }
     // Note that literals are immutable too, and they can only be compared
     // through values.
