@@ -146,4 +146,8 @@
 { "_id" : "98310", "city" : "BREMERTON", "loc" : [ -122.629913, 47.601916 ], "pop" : 49057, "state" : "WA" }
 { "_id" : "99504", "city" : "ANCHORAGE", "loc" : [ -149.74467, 61.203696 ], "pop" : 32383, "state" : "AK" }
 { "_id" : "99709", "city" : "FAIRBANKS", "loc" : [ -147.846917, 64.85437 ], "pop" : 23238, "state" : "AK" }
+<<<<<<< HEAD
 { "_id" : "99801", "city" : "JUNEAU", "loc" : [ -134.529429, 58.362767 ], "pop" : 24947, "state" : "AK" }
+=======
+{ "_id" : "99801", "city" : "JUNEAU", "loc" : [ -134.529429, 58.362767 ], "pop" : 24947, "state" : "AK" }
+>>>>>>> d1b71bea5 ([CALCITE-2345] Running Unit tests with Fongo and integration tests with real mongo instance (Andrei Sereda))
