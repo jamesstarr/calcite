@@ -30,6 +30,7 @@ import org.apache.calcite.rel.metadata.RelMdUtil;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.SqlAggFunction;
+import org.apache.calcite.sql.fun.SqlAnyValueAggFunction;
 import org.apache.calcite.sql.fun.SqlCountAggFunction;
 import org.apache.calcite.sql.fun.SqlMinMaxAggFunction;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
@@ -67,6 +68,7 @@ public class AggregateUnionTransposeRule
     SUPPORTED_AGGREGATES.put(SqlCountAggFunction.class, true);
     SUPPORTED_AGGREGATES.put(SqlSumAggFunction.class, true);
     SUPPORTED_AGGREGATES.put(SqlSumEmptyIsZeroAggFunction.class, true);
+    SUPPORTED_AGGREGATES.put(SqlAnyValueAggFunction.class, true);
   }
 
   /** Creates an AggregateUnionTransposeRule. */

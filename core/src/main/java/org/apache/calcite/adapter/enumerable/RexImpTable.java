@@ -95,6 +95,7 @@ import static org.apache.calcite.sql.fun.SqlLibraryOperators.TRANSLATE3;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.ABS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.ACOS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.AND;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.ANY_VALUE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.ARRAY_VALUE_CONSTRUCTOR;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.ASIN;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.ATAN;
@@ -460,6 +461,7 @@ public class RexImpTable {
         constructorSupplier(MinMaxImplementor.class);
     aggMap.put(MIN, minMax);
     aggMap.put(MAX, minMax);
+    aggMap.put(ANY_VALUE, minMax);
     aggMap.put(SINGLE_VALUE, constructorSupplier(SingleValueImplementor.class));
     aggMap.put(COLLECT, constructorSupplier(CollectImplementor.class));
     aggMap.put(PERCENTILE_CONT, constructorSupplier(PercentileContImplementor.class));
