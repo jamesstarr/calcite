@@ -237,11 +237,14 @@ public abstract class Match extends SingleRel {
       case ANY_VALUE:
         aggFunction = SqlStdOperatorTable.ANY_VALUE;
         break;
+<<<<<<< HEAD
       case BIT_AND:
       case BIT_OR:
       case BIT_XOR:
         aggFunction = new SqlBitOpAggFunction(call.getKind());
         break;
+=======
+>>>>>>> 40961f7ad ([CALCITE-2366] Add support for ANY_VALUE aggregate function (Gautam Parai))
       default:
         for (RexNode rex : call.getOperands()) {
           rex.accept(this);

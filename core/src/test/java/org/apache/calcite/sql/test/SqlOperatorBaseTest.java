@@ -1159,64 +1159,7 @@ public abstract class SqlOperatorBaseTest {
         0d);
   }
 
-  @Test void testEveryFunc() {
-    tester.setFor(SqlStdOperatorTable.EVERY, VM_EXPAND);
-    tester.checkFails(
-        "every(^*^)",
-        "Unknown identifier '\\*'",
-        false);
-    tester.checkType("every(1 = 1)", "BOOLEAN");
-    tester.checkType("every(1.2 = 1.2)", "BOOLEAN");
-    tester.checkType("every(1.5 = 1.4)", "BOOLEAN");
-    tester.checkFails(
-        "^every()^",
-        "Invalid number of arguments to function 'EVERY'. Was expecting 1 arguments",
-        false);
-    tester.checkFails(
-        "^every(1, 2)^",
-        "Invalid number of arguments to function 'EVERY'. Was expecting 1 arguments",
-        false);
-    final String[] values = {"0", "CAST(null AS INTEGER)", "2", "2"};
-    if (!enable) {
-      return;
-    }
-    tester.checkAgg(
-        "every(x = 2)",
-        values,
-        "false",
-        0d);
-  }
-
-  @Test void testSomeAggFunc() {
-    tester.setFor(SqlStdOperatorTable.SOME, VM_EXPAND);
-    tester.checkFails(
-        "some(^*^)",
-        "Unknown identifier '\\*'",
-        false);
-    tester.checkType("some(1 = 1)", "BOOLEAN");
-    tester.checkType("some(1.2 = 1.2)", "BOOLEAN");
-    tester.checkType("some(1.5 = 1.4)", "BOOLEAN");
-    tester.checkFails(
-        "^some()^",
-        "Invalid number of arguments to function 'SOME'. Was expecting 1 arguments",
-        false);
-    tester.checkFails(
-        "^some(1, 2)^",
-        "Invalid number of arguments to function 'SOME'. Was expecting 1 arguments",
-        false);
-    final String[] values = {"0", "CAST(null AS INTEGER)", "2", "2"};
-    if (!enable) {
-      return;
-    }
-    tester.checkAgg(
-        "some(x = 2)",
-        values,
-        "true",
-        0d);
-  }
-
-
-  @Test void testAnyValueFunc() {
+  @Test public void testAnyValueFunc() {
     tester.setFor(SqlStdOperatorTable.ANY_VALUE, VM_EXPAND);
     tester.checkFails(
         "any_value(^*^)",
@@ -1258,6 +1201,7 @@ public abstract class SqlOperatorBaseTest {
         "0",
         0d);
   }
+<<<<<<< HEAD
   @Test void testBitAndFunc() {
     tester.setFor(SqlStdOperatorTable.BIT_AND, VM_FENNEL, VM_JAVA);
     tester.checkFails("bit_and(^*^)", "Unknown identifier '\\*'", false);
@@ -1324,6 +1268,8 @@ public abstract class SqlOperatorBaseTest {
     tester.checkAgg("bit_xor(x)", values, 2, 0);
   }
 
+=======
+>>>>>>> 40961f7ad ([CALCITE-2366] Add support for ANY_VALUE aggregate function (Gautam Parai))
   /**
    * Tests that CAST fails when given a value just outside the valid range for
    * that type. For example,

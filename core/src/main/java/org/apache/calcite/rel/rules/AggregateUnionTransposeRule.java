@@ -31,7 +31,7 @@ import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.fun.SqlAnyValueAggFunction;
-import org.apache.calcite.sql.fun.SqlBitOpAggFunction;
+>>>>>>> 40961f7ad ([CALCITE-2366] Add support for ANY_VALUE aggregate function (Gautam Parai))
 import org.apache.calcite.sql.fun.SqlCountAggFunction;
 import org.apache.calcite.sql.fun.SqlMinMaxAggFunction;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
@@ -71,7 +71,9 @@ public class AggregateUnionTransposeRule
     SUPPORTED_AGGREGATES.put(SqlSumAggFunction.class, true);
     SUPPORTED_AGGREGATES.put(SqlSumEmptyIsZeroAggFunction.class, true);
     SUPPORTED_AGGREGATES.put(SqlAnyValueAggFunction.class, true);
+<<<<<<< HEAD
     SUPPORTED_AGGREGATES.put(SqlBitOpAggFunction.class, true);
+=======
   }
 
   /** Creates an AggregateUnionTransposeRule. */

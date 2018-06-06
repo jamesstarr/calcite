@@ -612,6 +612,7 @@ public class RexImpTable {
         constructorSupplier(MinMaxImplementor.class);
     aggMap.put(MIN, minMax);
     aggMap.put(MAX, minMax);
+    aggMap.put(ANY_VALUE, minMax);
     aggMap.put(SINGLE_VALUE, constructorSupplier(SingleValueImplementor.class));
     aggMap.put(COLLECT, constructorSupplier(CollectImplementor.class));
 =======
