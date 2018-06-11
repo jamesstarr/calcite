@@ -6180,6 +6180,16 @@ public abstract class SqlOperatorBaseTest {
         "BIGINT NOT NULL");
 
     tester.checkScalar(
+        "extract(minute from date '9999-2-23')",
+        "0",
+        "BIGINT NOT NULL");
+
+    tester.checkScalar(
+        "extract(minute from date '0001-1-1')",
+        "0",
+        "BIGINT NOT NULL");
+
+    tester.checkScalar(
         "extract(minute from date '2008-2-23')",
         "0",
         "BIGINT NOT NULL");
