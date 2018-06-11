@@ -294,7 +294,7 @@ public enum BuiltInMethod {
   MAP_PUT(Map.class, "put", Object.class, Object.class),
   COLLECTION_ADD(Collection.class, "add", Object.class),
   COLLECTION_ADDALL(Collection.class, "addAll", Collection.class),
-  COLLECTION_RETAIN_ALL(Collection.class, "retainAll", Collection.class),
+>>>>>>> f6e656f5b ([CALCITE-2355] Implement multiset operations (Sergey Nuyanzin))
   LIST_GET(List.class, "get", int.class),
   ITERATOR_HAS_NEXT(Iterator.class, "hasNext"),
   ITERATOR_NEXT(Iterator.class, "next"),
@@ -496,7 +496,6 @@ public enum BuiltInMethod {
   TIME_ZONE(SqlFunctions.class, "timeZone", DataContext.class),
   USER(SqlFunctions.class, "user", DataContext.class),
   SYSTEM_USER(SqlFunctions.class, "systemUser", DataContext.class),
->>>>>>> 7fa80a6fb (CALCITE-2742: Move SYSTEM_USER, USER to DataContext.)
   BOOLEAN_TO_STRING(SqlFunctions.class, "toString", boolean.class),
   JDBC_ARRAY_TO_LIST(SqlFunctions.class, "arrayToList", java.sql.Array.class),
   OBJECT_TO_STRING(Object.class, "toString"),

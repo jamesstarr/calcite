@@ -754,82 +754,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           null,
           OperandTypes.COLLECTION_OR_MAP);
 
-  public static final SqlPostfixOperator IS_JSON_VALUE =
-      new SqlPostfixOperator(
-          "IS JSON VALUE",
-          SqlKind.OTHER,
-          28,
-          ReturnTypes.BOOLEAN,
-          null,
-          OperandTypes.CHARACTER);
-
-  public static final SqlPostfixOperator IS_NOT_JSON_VALUE =
-      new SqlPostfixOperator(
-          "IS NOT JSON VALUE",
-          SqlKind.OTHER,
-          28,
-          ReturnTypes.BOOLEAN,
-          null,
-          OperandTypes.CHARACTER);
-
-  public static final SqlPostfixOperator IS_JSON_OBJECT =
-      new SqlPostfixOperator(
-          "IS JSON OBJECT",
-          SqlKind.OTHER,
-          28,
-          ReturnTypes.BOOLEAN,
-          null,
-          OperandTypes.CHARACTER);
-
-  public static final SqlPostfixOperator IS_NOT_JSON_OBJECT =
-      new SqlPostfixOperator(
-          "IS NOT JSON OBJECT",
-          SqlKind.OTHER,
-          28,
-          ReturnTypes.BOOLEAN,
-          null,
-          OperandTypes.CHARACTER);
-
-  public static final SqlPostfixOperator IS_JSON_ARRAY =
-      new SqlPostfixOperator(
-          "IS JSON ARRAY",
-          SqlKind.OTHER,
-          28,
-          ReturnTypes.BOOLEAN,
-          null,
-          OperandTypes.CHARACTER);
-
-  public static final SqlPostfixOperator IS_NOT_JSON_ARRAY =
-      new SqlPostfixOperator(
-          "IS NOT JSON ARRAY",
-          SqlKind.OTHER,
-          28,
-          ReturnTypes.BOOLEAN,
-          null,
-          OperandTypes.CHARACTER);
-
-  public static final SqlPostfixOperator IS_JSON_SCALAR =
-      new SqlPostfixOperator(
-          "IS JSON SCALAR",
-          SqlKind.OTHER,
-          28,
-          ReturnTypes.BOOLEAN,
-          null,
-          OperandTypes.CHARACTER);
-
-  public static final SqlPostfixOperator IS_NOT_JSON_SCALAR =
-      new SqlPostfixOperator(
-          "IS NOT JSON SCALAR",
-          SqlKind.OTHER,
-          28,
-          ReturnTypes.BOOLEAN,
-          null,
-          OperandTypes.CHARACTER);
-
-  public static final SqlPostfixOperator JSON_VALUE_EXPRESSION =
-      new SqlJsonValueExpressionOperator();
-
-
+>>>>>>> f6e656f5b ([CALCITE-2355] Implement multiset operations (Sergey Nuyanzin))
   //-------------------------------------------------------------
   //                   PREFIX OPERATORS
   //-------------------------------------------------------------
@@ -2297,6 +2222,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
    * The FUSION operator. Multiset aggregator function.
    */
   public static final SqlAggFunction FUSION =
+<<<<<<< HEAD
       SqlBasicAggFunction
           .create(SqlKind.FUSION, ReturnTypes.ARG0, OperandTypes.MULTISET)
           .withFunctionType(SqlFunctionCategory.SYSTEM);
@@ -2307,6 +2233,9 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
   public static final SqlAggFunction INTERSECTION =
       new SqlAggFunction("INTERSECTION", null,
           SqlKind.INTERSECTION,
+=======
+      new SqlAggFunction("FUSION", null,
+          SqlKind.FUSION,
           ReturnTypes.ARG0,
           null,
           OperandTypes.MULTISET,

@@ -1926,8 +1926,12 @@ and `LISTAGG`).
 | LISTAGG( [ ALL &#124; DISTINCT ] value [, separator]) | Returns values concatenated into a string, delimited by separator (default ',')
 | COUNT( [ ALL &#124; DISTINCT ] value [, value ]*) | Returns the number of input rows for which *value* is not null (wholly not null if *value* is composite)
 | COUNT(*)                           | Returns the number of input rows
+<<<<<<< HEAD
 | FUSION(multiset)                   | Returns the multiset union of *multiset* across all input values
 | INTERSECTION(multiset)             | Returns the multiset intersection of *multiset* across all input values
+=======
+| FUSION( multiset )                 | Returns the multiset union of *multiset* across all input values
+>>>>>>> f6e656f5b ([CALCITE-2355] Implement multiset operations (Sergey Nuyanzin))
 | APPROX_COUNT_DISTINCT(value [, value ]*)      | Returns the approximate number of distinct values of *value*; the database is allowed to use an approximation but is not required to
 | AVG( [ ALL &#124; DISTINCT ] numeric)         | Returns the average (arithmetic mean) of *numeric* across all input values
 | SUM( [ ALL &#124; DISTINCT ] numeric)         | Returns the sum of *numeric* across all input values

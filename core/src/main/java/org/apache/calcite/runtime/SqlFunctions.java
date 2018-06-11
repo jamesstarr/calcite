@@ -55,11 +55,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-<<<<<<< HEAD
-import java.util.Base64;
-import java.util.Collection;
-=======
 >>>>>>> 02d8ed362 ([CALCITE-3951] Support different string comparison based on SqlCollation)
+=======
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -69,7 +67,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
+>>>>>>> f6e656f5b ([CALCITE-2355] Implement multiset operations (Sergey Nuyanzin))
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -1313,9 +1311,14 @@ public class SqlFunctions {
   /** Support the MULTISET INTERSECT DISTINCT function. */
   public static <E> Collection<E> multisetIntersectDistinct(Collection<E> c1,
       Collection<E> c2) {
+<<<<<<< HEAD
     final Set<E> result = new HashSet<>(c1);
     result.retainAll(c2);
     return new ArrayList<>(result);
+=======
+    final Set<E> result = new HashSet<E>(c1);
+    result.retainAll(c2);
+    return new ArrayList<E>(result);
   }
 
   /** Support the MULTISET INTERSECT ALL function. */

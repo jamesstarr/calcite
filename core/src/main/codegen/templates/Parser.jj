@@ -7146,11 +7146,14 @@ SqlPostfixOperator PostfixRowOperator() :
         |   <UNKNOWN> { return SqlStdOperatorTable.IS_NOT_UNKNOWN; }
         |   <A> <SET> { return SqlStdOperatorTable.IS_NOT_A_SET; }
         |   <EMPTY> { return SqlStdOperatorTable.IS_NOT_EMPTY; }
+<<<<<<< HEAD
         |   LOOKAHEAD(2) <JSON> <VALUE> { return SqlStdOperatorTable.IS_NOT_JSON_VALUE; }
         |   LOOKAHEAD(2) <JSON> <OBJECT> { return SqlStdOperatorTable.IS_NOT_JSON_OBJECT; }
         |   LOOKAHEAD(2) <JSON> <ARRAY> { return SqlStdOperatorTable.IS_NOT_JSON_ARRAY; }
         |   LOOKAHEAD(2) <JSON> <SCALAR> { return SqlStdOperatorTable.IS_NOT_JSON_SCALAR; }
         |   <JSON> { return SqlStdOperatorTable.IS_NOT_JSON_VALUE; }
+=======
+>>>>>>> f6e656f5b ([CALCITE-2355] Implement multiset operations (Sergey Nuyanzin))
         )
     |
         (
@@ -7159,11 +7162,14 @@ SqlPostfixOperator PostfixRowOperator() :
         |   <FALSE> { return SqlStdOperatorTable.IS_FALSE; }
         |   <UNKNOWN> { return SqlStdOperatorTable.IS_UNKNOWN; }
         |   <EMPTY> { return SqlStdOperatorTable.IS_EMPTY; }
+<<<<<<< HEAD
         |   LOOKAHEAD(2) <JSON> <VALUE> { return SqlStdOperatorTable.IS_JSON_VALUE; }
         |   LOOKAHEAD(2) <JSON> <OBJECT> { return SqlStdOperatorTable.IS_JSON_OBJECT; }
         |   LOOKAHEAD(2) <JSON> <ARRAY> { return SqlStdOperatorTable.IS_JSON_ARRAY; }
         |   LOOKAHEAD(2) <JSON> <SCALAR> { return SqlStdOperatorTable.IS_JSON_SCALAR; }
         |   <JSON> { return SqlStdOperatorTable.IS_JSON_VALUE; }
+=======
+>>>>>>> f6e656f5b ([CALCITE-2355] Implement multiset operations (Sergey Nuyanzin))
         )
     )
 |

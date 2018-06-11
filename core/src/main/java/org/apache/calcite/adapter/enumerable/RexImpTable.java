@@ -196,14 +196,9 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.GROUPING;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.GROUPING_ID;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.HOP;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.INITCAP;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.INTERSECTION;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_A_SET;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_EMPTY;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_FALSE;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_JSON_ARRAY;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_JSON_OBJECT;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_JSON_SCALAR;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_JSON_VALUE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_NOT_A_SET;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_NOT_EMPTY;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_NOT_FALSE;
@@ -241,6 +236,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.LOWER;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MAP_VALUE_CONSTRUCTOR;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MAX;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MEDIAN;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MEMBER_OF;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MIN;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MINUS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MINUS_DATE;
@@ -258,7 +254,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.NOT_EQUALS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.NOT_LIKE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.NOT_SIMILAR_TO;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.NOT_SUBMULTISET_OF;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.NTH_VALUE;
+>>>>>>> f6e656f5b ([CALCITE-2355] Implement multiset operations (Sergey Nuyanzin))
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.NTILE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.OR;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.OVERLAY;
@@ -285,8 +281,10 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SIMILAR_TO;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SIN;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SINGLE_VALUE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SLICE;
+<<<<<<< HEAD
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SOME;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.STRUCT_ACCESS;
+=======
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SUBMULTISET_OF;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SUBSTRING;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SUM;
@@ -534,7 +532,7 @@ public class RexImpTable {
         NullPolicy.STRICT);
     defineMethod(SLICE, BuiltInMethod.SLICE.method, NullPolicy.NONE);
     defineMethod(ELEMENT, BuiltInMethod.ELEMENT.method, NullPolicy.STRICT);
-    defineMethod(STRUCT_ACCESS, BuiltInMethod.STRUCT_ACCESS.method, NullPolicy.ANY);
+>>>>>>> f6e656f5b ([CALCITE-2355] Implement multiset operations (Sergey Nuyanzin))
     defineMethod(MEMBER_OF, BuiltInMethod.MEMBER_OF.method, NullPolicy.NONE);
     final MethodImplementor isEmptyImplementor =
         new MethodImplementor(BuiltInMethod.IS_EMPTY.method);
@@ -669,7 +667,10 @@ public class RexImpTable {
     aggMap.put(COLLECT, constructorSupplier(CollectImplementor.class));
     aggMap.put(PERCENTILE_CONT, constructorSupplier(PercentileContImplementor.class));
     aggMap.put(PERCENTILE_DISC, constructorSupplier(PercentileDiscImplementor.class));
->>>>>>> bc9190d8d (Added PERCENTILE_CONT and PERCENTILE_DISC functions in the operator table list.)
+<<<<<<< HEAD
+=======
+    aggMap.put(FUSION, constructorSupplier(FusionImplementor.class));
+>>>>>>> f6e656f5b ([CALCITE-2355] Implement multiset operations (Sergey Nuyanzin))
     final Supplier<GroupingImplementor> grouping =
         constructorSupplier(GroupingImplementor.class);
     aggMap.put(GROUPING, grouping);
@@ -1575,6 +1576,28 @@ public class RexImpTable {
   static class PercentileDiscImplementor extends StrictAggImplementor {
 
     @Override protected void implementNotNullAdd(AggContext info, AggAddContext add) {
+    }
+  }
+
+  /** Implementor for the {@code FUSION} aggregate function. */
+  static class FusionImplementor extends StrictAggImplementor {
+    @Override protected void implementNotNullReset(AggContext info,
+        AggResetContext reset) {
+      // acc[0] = new ArrayList();
+      reset.currentBlock().add(
+          Expressions.statement(
+              Expressions.assign(reset.accumulator().get(0),
+                  Expressions.new_(ArrayList.class))));
+    }
+
+    @Override public void implementNotNullAdd(AggContext info,
+        AggAddContext add) {
+      // acc[0].add(arg);
+      add.currentBlock().add(
+          Expressions.statement(
+              Expressions.call(add.accumulator().get(0),
+                  BuiltInMethod.COLLECTION_ADDALL.method,
+                  add.arguments().get(0))));
     }
   }
 

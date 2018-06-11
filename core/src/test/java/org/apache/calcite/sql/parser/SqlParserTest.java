@@ -4913,44 +4913,35 @@ public class SqlParserTest {
             + "FROM `T`)))");
   }
 
-  @Test void testMultisetUnion() {
-    expr("a multiset union b")
-        .ok("(`A` MULTISET UNION ALL `B`)");
-    expr("a multiset union all b")
-        .ok("(`A` MULTISET UNION ALL `B`)");
-    expr("a multiset union distinct b")
-        .ok("(`A` MULTISET UNION DISTINCT `B`)");
+  @Test public void testMultisetUnion() {
+    checkExp("a multiset union b", "(`A` MULTISET UNION ALL `B`)");
+    checkExp("a multiset union all b", "(`A` MULTISET UNION ALL `B`)");
+    checkExp("a multiset union distinct b", "(`A` MULTISET UNION DISTINCT `B`)");
   }
 
-  @Test void testMultisetExcept() {
-    expr("a multiset EXCEPT b")
-        .ok("(`A` MULTISET EXCEPT ALL `B`)");
-    expr("a multiset EXCEPT all b")
-        .ok("(`A` MULTISET EXCEPT ALL `B`)");
-    expr("a multiset EXCEPT distinct b")
-        .ok("(`A` MULTISET EXCEPT DISTINCT `B`)");
+  @Test public void testMultisetExcept() {
+    checkExp("a multiset EXCEPT b", "(`A` MULTISET EXCEPT ALL `B`)");
+    checkExp("a multiset EXCEPT all b", "(`A` MULTISET EXCEPT ALL `B`)");
+    checkExp("a multiset EXCEPT distinct b", "(`A` MULTISET EXCEPT DISTINCT `B`)");
   }
 
-  @Test void testMultisetIntersect() {
-    expr("a multiset INTERSECT b")
-        .ok("(`A` MULTISET INTERSECT ALL `B`)");
-    expr("a multiset INTERSECT all b")
-        .ok("(`A` MULTISET INTERSECT ALL `B`)");
-    expr("a multiset INTERSECT distinct b")
-        .ok("(`A` MULTISET INTERSECT DISTINCT `B`)");
+  @Test public void testMultisetIntersect() {
+    checkExp("a multiset INTERSECT b", "(`A` MULTISET INTERSECT ALL `B`)");
+    checkExp(
+        "a multiset INTERSECT all b",
+        "(`A` MULTISET INTERSECT ALL `B`)");
+    checkExp(
+        "a multiset INTERSECT distinct b",
+        "(`A` MULTISET INTERSECT DISTINCT `B`)");
   }
 
-  @Test void testMultisetMixed() {
-    expr("multiset[1] MULTISET union b")
-        .ok("((MULTISET[1]) MULTISET UNION ALL `B`)");
-    final String sql = "a MULTISET union b "
-        + "multiset intersect c "
-        + "multiset except d "
-        + "multiset union e";
-    final String expected = "(((`A` MULTISET UNION ALL "
-        + "(`B` MULTISET INTERSECT ALL `C`)) "
-        + "MULTISET EXCEPT ALL `D`) MULTISET UNION ALL `E`)";
-    expr(sql).ok(expected);
+  @Test public void testMultisetMixed() {
+    checkExp(
+        "multiset[1] MULTISET union b",
+        "((MULTISET[1]) MULTISET UNION ALL `B`)");
+    checkExp(
+        "a MULTISET union b multiset intersect c multiset except d multiset union e",
+        "(((`A` MULTISET UNION ALL (`B` MULTISET INTERSECT ALL `C`)) MULTISET EXCEPT ALL `D`) MULTISET UNION ALL `E`)");
   }
 
   @Test void testMapItem() {
