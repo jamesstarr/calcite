@@ -1286,8 +1286,9 @@ public class RexToLixTranslator {
       case INTERVAL_SECOND:
         // Scale to the given field.
         final BigDecimal multiplier = BigDecimal.ONE;
-        final BigDecimal divider = sourceType.getSqlTypeName().getEndUnit().multiplier;
-        operand = RexImpTable.multiplyDivide(operand, multiplier, divider);
+        final BigDecimal divider =
+            sourceType.getSqlTypeName().getEndUnit().multiplier;
+        return RexImpTable.multiplyDivide(operand, multiplier, divider);
       }
     }
     return operand;
