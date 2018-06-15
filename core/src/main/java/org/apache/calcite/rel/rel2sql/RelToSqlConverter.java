@@ -46,7 +46,7 @@ import org.apache.calcite.rel.core.Window;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.logical.LogicalSort;
 import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeField;
+>>>>>>> d2b0f0597 ([CALCITE-2339] Add utility to convert datetime_plus to timestampadd (James Duong))
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexInputRef;
@@ -346,9 +346,11 @@ public class RelToSqlConverter extends SqlImplementor
     for (RexNode ref : e.getChildExps()) {
       SqlNode sqlExpr = builder.context.toSql(null,
           simplifyDatetimePlus(ref, e.getCluster().getRexBuilder()));
+<<<<<<< HEAD
       if (SqlUtil.isNullLiteral(sqlExpr, false)) {
         sqlExpr = castNullType(sqlExpr, e.getRowType().getFieldList().get(selectList.size()));
       }
+=======
       addSelect(selectList, sqlExpr, e.getRowType());
     }
 

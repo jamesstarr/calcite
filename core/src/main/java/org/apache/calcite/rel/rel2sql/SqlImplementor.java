@@ -775,6 +775,7 @@ public abstract class SqlImplementor {
             return createLeftCall(op, nodeList);
           }
         }
+
         return op.createCall(new SqlNodeList(nodeList, POS));
       }
     }

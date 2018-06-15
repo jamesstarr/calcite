@@ -54,10 +54,13 @@ public class MssqlSqlDialect extends SqlDialect {
           ReturnTypes.ARG0_NULLABLE_VARYING, null, null,
           SqlFunctionCategory.STRING);
 
+<<<<<<< HEAD
   /** Whether to generate "SELECT TOP(fetch)" rather than
    * "SELECT ... FETCH NEXT fetch ROWS ONLY". */
   private final boolean top;
 
+=======
+>>>>>>> d2b0f0597 ([CALCITE-2339] Add utility to convert datetime_plus to timestampadd (James Duong))
   private static final SqlFunction MSSQL_DATEADD =
       new SqlFunction("DATEADD", SqlStdOperatorTable.TIMESTAMP_ADD.getKind(),
           SqlStdOperatorTable.TIMESTAMP_ADD.getReturnTypeInference(),
@@ -147,6 +150,10 @@ public class MssqlSqlDialect extends SqlDialect {
 
   @Override public boolean supportsOrderByNullOrdering() {
     return false;
+  }
+
+  @Override public boolean useTimestampAddInsteadOfDatetimePlus() {
+    return true;
   }
 
   @Override public boolean supportsCharSet() {
