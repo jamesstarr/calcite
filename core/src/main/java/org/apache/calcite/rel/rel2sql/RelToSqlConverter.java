@@ -36,11 +36,13 @@ import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.core.Union;
 import org.apache.calcite.rel.core.Values;
 import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexLocalRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexProgram;
+import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.sql.JoinConditionType;
 import org.apache.calcite.sql.JoinType;
 import org.apache.calcite.sql.SqlCall;
@@ -131,7 +133,11 @@ public class RelToSqlConverter extends SqlImplementor
       joinType = JoinType.COMMA;
       condType = JoinConditionType.NONE.symbol(POS);
     } else {
-      sqlCondition = convertConditionToSqlNode(e.getCondition(),
+      final RexNode condition = e.getCondition() != null
+          ? simplifyDatetimePlus(e.getCondition(), e.getCluster().getRexBuilder())
+          : null;
+      sqlCondition = convertConditionToSqlNode(
+          condition,
           leftContext,
           rightContext,
           e.getLeft().getRowType().getFieldCount());
@@ -160,11 +166,17 @@ public class RelToSqlConverter extends SqlImplementor
       } else {
         builder = x.builder(e, Clause.HAVING);
       }
-      builder.setHaving(builder.context.toSql(null, e.getCondition()));
+      final RexNode condition = e.getCondition() != null
+          ? simplifyDatetimePlus(e.getCondition(), e.getCluster().getRexBuilder())
+          : null;
+      builder.setHaving(builder.context.toSql(null, condition));
       return builder.result();
     } else {
       final Builder builder = x.builder(e, Clause.WHERE);
-      builder.setWhere(builder.context.toSql(null, e.getCondition()));
+      final RexNode condition = e.getCondition() != null
+          ? simplifyDatetimePlus(e.getCondition(), e.getCluster().getRexBuilder())
+          : null;
+      builder.setWhere(builder.context.toSql(null, condition));
       return builder.result();
     }
   }
@@ -180,7 +192,8 @@ public class RelToSqlConverter extends SqlImplementor
         x.builder(e, Clause.SELECT);
     final List<SqlNode> selectList = new ArrayList<>();
     for (RexNode ref : e.getChildExps()) {
-      SqlNode sqlExpr = builder.context.toSql(null, ref);
+      SqlNode sqlExpr = builder.context.toSql(null,
+          simplifyDatetimePlus(ref, e.getCluster().getRexBuilder()));
       addSelect(selectList, sqlExpr, e.getRowType());
     }
 
@@ -552,6 +565,19 @@ public class RelToSqlConverter extends SqlImplementor
     for (CorrelationId id : relNode.getVariablesSet()) {
       correlTableMap.put(id, x.qualifiedContext());
     }
+  }
+
+  /**
+   * Transform a datetime plus operation to timestampadd if the dialect requires this.
+   */
+  protected RexNode simplifyDatetimePlus(RexNode node, RexBuilder builder) {
+    if (dialect.useTimestampAddInsteadOfDatetimePlus()) {
+      final RexNode converted = RexUtil.convertDatetimePlusToTimestampAdd(builder, node);
+      return converted != null
+          ? converted
+          : node;
+    }
+    return node;
   }
 
   /** Stack frame. */

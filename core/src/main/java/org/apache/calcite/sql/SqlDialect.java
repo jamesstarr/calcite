@@ -504,6 +504,14 @@ public class SqlDialect {
     return false;
   }
 
+  /**
+   * Indicates that datetime_plus operations should be unparsed as timestampadd
+   * when possible.
+   */
+  public boolean useTimestampAddInsteadOfDatetimePlus() {
+    return false;
+  }
+
   /** Returns whether this dialect supports a given function or operator. */
   public boolean supportsFunction(SqlOperator operator, RelDataType type,
       List<RelDataType> paramTypes) {
