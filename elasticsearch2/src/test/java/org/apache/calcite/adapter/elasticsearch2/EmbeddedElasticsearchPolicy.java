@@ -23,38 +23,39 @@ import org.elasticsearch.common.transport.TransportAddress;
 import org.junit.rules.ExternalResource;
 
 /**
- * Used to initialize a single elastic node. For performance reasons (node startup costs),
- * same instance is usually shared across multiple tests.
+ * Junit rule that is used to initialize a single Elasticsearch node for tests.
  *
- * This rule should be used as follows:
+ * <p>For performance reasons (node startup costs),
+ * the same instance is usually shared across multiple tests.
+ *
+ * <p>This rule should be used as follows:
  * <pre>
- *  {@code
  *
  *  public class MyTest {
- *    @literal @ClassRule
- *    public static final ElasticSearchRule RULE = ElasticSearchRule.create();
+ *    &#64;ClassRule
+ *    public static final EmbeddedElasticsearchPolicy POLICY =
+ *        EmbeddedElasticsearchPolicy.create();
  *
- *    @literal @BeforeClass
- *    public void setup() {
+ *    &#64;BeforeClass
+ *    public static void setup() {
  *       // ... populate instance
  *    }
  *
- *    @literal @Test
+ *    &#64;Test
  *    public void myTest() {
- *      TransportAddress address = RULE.httpAddress();
- *      // ....
+ *      TransportAddress address = POLICY.httpAddress();
+ *      // .... (connect)
  *    }
- *  }
- *  }
+ * }
  * </pre>
  *
  * @see ExternalResource
  */
-class EmbeddedElasticRule extends ExternalResource {
+class EmbeddedElasticsearchPolicy extends ExternalResource {
 
-  private final EmbeddedElasticNode node;
+  private final EmbeddedElasticsearchNode node;
 
-  private EmbeddedElasticRule(EmbeddedElasticNode resource) {
+  private EmbeddedElasticsearchPolicy(EmbeddedElasticsearchNode resource) {
     this.node = Preconditions.checkNotNull(resource, "resource");
   }
 
@@ -72,13 +73,17 @@ class EmbeddedElasticRule extends ExternalResource {
 
   /**
    * Factory method to create this rule.
+   *
+   * @return new rule instance to be used in unit tests
    */
-  public static EmbeddedElasticRule create() {
-    return new EmbeddedElasticRule(EmbeddedElasticNode.create());
+  public static EmbeddedElasticsearchPolicy create() {
+    return new EmbeddedElasticsearchPolicy(EmbeddedElasticsearchNode.create());
   }
 
   /**
    * Exposes current ES transport client.
+   *
+   * @return initialized instance of ES
    */
   Client client() {
     return node.client();
@@ -86,12 +91,12 @@ class EmbeddedElasticRule extends ExternalResource {
 
   /**
    * HTTP address for rest clients (can be ES native or any other).
+   *
+   * @return HTTP hostname/port to connect to this ES instance
    */
   TransportAddress httpAddress() {
     return node.httpAddress();
   }
-
-
 }
 
-// End EmbeddedElasticRule.java
+// End EmbeddedElasticsearchPolicy.java

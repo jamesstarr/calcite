@@ -14,55 +14,71 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.calcite.adapter.elasticsearch5;
+package org.apache.calcite.adapter.elasticsearch2;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
 
+import org.elasticsearch.Version;
 import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
-import org.elasticsearch.node.InternalSettingsPreparer;
 import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeValidationException;
-import org.elasticsearch.painless.PainlessPlugin;
+import org.elasticsearch.node.internal.InternalSettingsPreparer;
 import org.elasticsearch.plugins.Plugin;
-import org.elasticsearch.transport.Netty3Plugin;
+import org.elasticsearch.script.groovy.GroovyPlugin;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Represents a single elastic search node which can run embedded in a java application.
+ * Represents a single Elasticsearch node that can run embedded in a java application.
  * Intended for unit and integration tests. Settings and plugins are crafted for Calcite.
  */
-class EmbeddedElasticNode implements AutoCloseable {
+class EmbeddedElasticsearchNode implements AutoCloseable {
 
-  private final Node node;
+  private final LocalNode node;
   private volatile boolean  isStarted;
 
-  private EmbeddedElasticNode(Node node) {
+  private EmbeddedElasticsearchNode(LocalNode node) {
     this.node = Preconditions.checkNotNull(node, "node");
   }
 
+  /**
+   * Having separate class to expose (protected) constructor which allows to install
+   * different plugins. In our case it is {@code GroovyPlugin} for scripted fields like
+   * {@code loc[0]} or {@code loc[1]['foo']}.
+   */
+  private static class LocalNode extends Node {
+    private LocalNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins) {
+      super(InternalSettingsPreparer.prepareEnvironment(settings, null),
+          Version.CURRENT, classpathPlugins);
+    }
+  }
 
   /**
    * Creates an instance with existing settings
+   *
+   * @param settings ES settings for the node
+   * @return un-started node; call {@link #start()} to start the instance
    */
-  private static EmbeddedElasticNode create(Settings settings) {
+  private static EmbeddedElasticsearchNode create(Settings settings) {
     // ensure GroovyPlugin is installed or otherwise scripted fields would not work
-    Node node = new LocalNode(settings, Arrays.asList(Netty3Plugin.class, PainlessPlugin.class));
-    return new EmbeddedElasticNode(node);
+    LocalNode node = new LocalNode(settings, Collections.singleton(GroovyPlugin.class));
+    return new EmbeddedElasticsearchNode(node);
   }
 
   /**
    * Creates elastic node as single member of a cluster. Node will not be started
    * unless {@link #start()} is explicitly called.
+   *
+   * @return node with default configuration
    */
-  public static EmbeddedElasticNode create() {
+  public static EmbeddedElasticsearchNode create() {
     File data = Files.createTempDir();
     data.deleteOnExit();
     File home = Files.createTempDir();
@@ -72,9 +88,11 @@ class EmbeddedElasticNode implements AutoCloseable {
             .put("node.name", "fake-elastic")
             .put("path.home", home.getAbsolutePath())
             .put("path.data", data.getAbsolutePath())
-            .put("transport.type", "local")
-            .put("http.type", "netty3")
-            .put("script.inline", true)  // requires groovy or painless
+            .put("script.inline", true)  // requires GroovyPlugin
+            .put("script.indexed", true) // requires GroovyPlugin
+            .put("cluster.routing.allocation.disk.threshold_enabled", false)
+            .put("node.local", true)
+            .put("node.data", true)
             .put("network.host", "localhost")
             .build();
 
@@ -86,35 +104,34 @@ class EmbeddedElasticNode implements AutoCloseable {
    */
   public void start() {
     Preconditions.checkState(!isStarted, "already started");
-    try {
-      node.start();
-      this.isStarted = true;
-    } catch (NodeValidationException e) {
-      throw new RuntimeException(e);
-    }
+    node.start();
+    this.isStarted = true;
   }
 
   /**
-   * Returns current address to connect to with HTTP client.
+   * Returns the current address to connect to with HTTP client.
+   *
+   * @return {@code HTTP} address (hostname / port)
    */
   public TransportAddress httpAddress() {
     Preconditions.checkState(isStarted, "node is not started");
 
     NodesInfoResponse response =  client().admin().cluster().prepareNodesInfo()
             .execute().actionGet();
-    if (response.getNodes().size() != 1) {
+    if (response.getNodes().length != 1) {
       throw new IllegalStateException("Expected single node but got "
-              + response.getNodes().size());
+              + response.getNodes().length);
     }
-    NodeInfo node = response.getNodes().get(0);
+    NodeInfo node = response.getNodes()[0];
     return node.getHttp().address().boundAddresses()[0];
   }
 
   /**
-   * Exposes elastic
+   * Exposes an Elasticsearch
    * <a href="https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/transport-client.html">transport client</a>
-   *
    * (use of HTTP client is preferred).
+   *
+   * @return client API to access ES functionality
    */
   public Client client() {
     Preconditions.checkState(isStarted, "node is not started");
@@ -124,30 +141,14 @@ class EmbeddedElasticNode implements AutoCloseable {
   @Override public void close() throws Exception {
     node.close();
     // cleanup data dirs
-    for (String name: Arrays.asList("path.data", "path.home")) {
-      if (node.settings().get(name) != null) {
-        File file = new File(node.settings().get(name));
-        if (file.exists()) {
-          file.delete();
-        }
+    File data = new File(node.settings().get("path.data"));
+    File home = new File(node.settings().get("path.home"));
+    for (File file: Arrays.asList(data, home)) {
+      if (file.exists()) {
+        file.delete();
       }
-    }
-  }
-
-  /**
-   * Having separate class to expose (protected) constructor which allows to install
-   * different plugins. In our case it is {@code GroovyPlugin} for scripted fields
-   * like {@code loc[0]} or {@code loc[1]['foo']}.
-   *
-   * <p>This class is intended solely for tests
-   */
-  private static class LocalNode extends Node {
-
-    private LocalNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins) {
-      super(InternalSettingsPreparer.prepareEnvironment(settings, null),
-              classpathPlugins);
     }
   }
 }
 
-// End EmbeddedElasticNode.java
+// End EmbeddedElasticsearchNode.java

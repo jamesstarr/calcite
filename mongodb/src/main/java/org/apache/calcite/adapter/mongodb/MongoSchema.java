@@ -20,6 +20,56 @@ import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 
 import com.google.common.annotations.VisibleForTesting;
+<<<<<<< HEAD
+=======
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoDatabase;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Schema mapped onto a directory of MONGO files. Each table in the schema
+ * is a MONGO file in that directory.
+ */
+public class MongoSchema extends AbstractSchema {
+  final MongoDatabase mongoDb;
+
+  /**
+   * Creates a MongoDB schema.
+   *
+   * @param host Mongo host, e.g. "localhost"
+   * @param credentialsList Optional credentials (empty list for none)
+   * @param options Mongo connection options
+   * @param database Mongo database name, e.g. "foodmart"
+   */
+  MongoSchema(String host, String database,
+      List<MongoCredential> credentialsList, MongoClientOptions options) {
+    super();
+    try {
+      final MongoClient mongo =
+          new MongoClient(new ServerAddress(host), credentialsList, options);
+      this.mongoDb = mongo.getDatabase(database);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Allows tests to inject their instance of the database.
+   *
+   * @param mongoDb existing mongo database instance
+   */
+  @VisibleForTesting
+  MongoSchema(MongoDatabase mongoDb) {
+    super();
+>>>>>>> 5251854df ([CALCITE-2380] Javadoc warnings (Andrei Sereda))
     this.mongoDb = Preconditions.checkNotNull(mongoDb, "mongoDb");
   }
 
