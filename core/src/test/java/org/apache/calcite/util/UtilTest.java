@@ -845,6 +845,7 @@ public class UtilTest {
         Locale.getDefault(),
         Locale.US,
         Locale.TRADITIONAL_CHINESE,
+        Locale.ROOT,
     };
     for (Locale locale : locales) {
       assertEquals(locale, Util.parseLocale(locale.toString()));
