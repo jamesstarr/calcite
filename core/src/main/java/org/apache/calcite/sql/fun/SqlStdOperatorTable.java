@@ -885,6 +885,12 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
       new SqlFirstLastValueAggFunction(SqlKind.FIRST_VALUE);
 
   /**
+   * <code>NTH_VALUE</code> aggregate function.
+   */
+  public static final SqlAggFunction NTH_VALUE =
+      new SqlNthValueAggFunction(SqlKind.NTH_VALUE);
+
+  /**
    * <code>LEAD</code> aggregate function.
    */
   public static final SqlAggFunction LEAD =
@@ -2349,6 +2355,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
       throw new AssertionError(comparisonKind);
     }
   }
+
 }
 
 // End SqlStdOperatorTable.java
