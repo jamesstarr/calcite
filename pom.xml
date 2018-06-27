@@ -67,8 +67,8 @@ limitations under the License.
     <commons-lang3.version>3.2</commons-lang3.version>
     <commons-logging.version>1.1.3</commons-logging.version>
     <commons-pool2.version>2.5.0</commons-pool2.version>
-    <elasticsearch-java-driver.version>2.4.6</elasticsearch-java-driver.version>
-    <elasticsearch5-java-driver.version>5.6.9</elasticsearch5-java-driver.version>
+    <elasticsearch-java-driver.version>5.6.9</elasticsearch-java-driver.version>
+    <elasticsearch.version>6.2.4</elasticsearch.version>
     <esri-geometry-api.version>2.0.0</esri-geometry-api.version>
     <findbugs.version>3.0.1</findbugs.version>
     <fmpp-maven-plugin.version>1.0</fmpp-maven-plugin.version>
@@ -89,14 +89,13 @@ limitations under the License.
     <!-- Require Hadoop 2.7.4+ due to HADOOP-14586 -->
     <hadoop.version>2.7.5</hadoop.version>
     <hamcrest.version>1.3</hamcrest.version>
-    <hppc.version>0.7.1</hppc.version>
     <hsqldb.version>2.4.0</hsqldb.version>
     <httpclient.version>4.5.2</httpclient.version>
     <httpcore.version>4.4.4</httpcore.version>
     <hydromatic-resource.version>0.6</hydromatic-resource.version>
     <hydromatic-toolbox.version>0.3</hydromatic-toolbox.version>
     <hydromatic-tpcds.version>0.4</hydromatic-tpcds.version>
-
+    <jackson.version>2.9.4</jackson.version>
     <janino.version>2.7.6</janino.version>
     <java-diff.version>1.1.1</java-diff.version>
     <javacc-maven-plugin.version>2.4</javacc-maven-plugin.version>
@@ -155,8 +154,7 @@ limitations under the License.
     <module>cassandra</module>
     <module>core</module>
     <module>druid</module>
-    <module>elasticsearch2</module>
-    <module>elasticsearch5</module>
+    <module>elasticsearch</module>
     <module>example</module>
     <module>file</module>
     <module>geode</module>
@@ -247,11 +245,6 @@ limitations under the License.
         <version>${commons-pool2.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.carrotsearch</groupId>
-        <artifactId>hppc</artifactId>
-        <version>${hppc.version}</version>
-      </dependency>
-      <dependency>
         <groupId>com.datastax.cassandra</groupId>
         <artifactId>cassandra-driver-core</artifactId>
         <version>${cassandra-driver-core.version}</version>
@@ -262,8 +255,6 @@ limitations under the License.
         <version>${esri-geometry-api.version}</version>
       </dependency>
       <dependency>
-
-
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
         <version>${joda.version}</version>
@@ -473,11 +464,6 @@ limitations under the License.
       <dependency>
         <groupId>org.elasticsearch</groupId>
         <artifactId>elasticsearch</artifactId>
-        <version>${elasticsearch-java-driver.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.elasticsearch.module</groupId>
-        <artifactId>lang-groovy</artifactId>
         <version>${elasticsearch-java-driver.version}</version>
       </dependency>
       <dependency>

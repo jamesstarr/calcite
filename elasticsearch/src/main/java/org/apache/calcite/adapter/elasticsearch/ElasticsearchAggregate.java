@@ -16,6 +16,8 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
+import org.apache.calcite.avatica.com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.calcite.avatica.com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptCost;
 import org.apache.calcite.plan.RelOptPlanner;
@@ -31,8 +33,6 @@ import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.util.ImmutableBitSet;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
