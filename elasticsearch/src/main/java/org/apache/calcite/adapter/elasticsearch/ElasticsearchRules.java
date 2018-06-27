@@ -129,8 +129,7 @@ class ElasticsearchRules {
   }
 
   static String stripQuotes(String s) {
-    return s.length() > 1 && s.startsWith("\"") && s.endsWith("\"")
-        ? s.substring(1, s.length() - 1) : s;
+    return s.startsWith("\"") && s.endsWith("\"") ? s.substring(1, s.length() - 1) : s;
   }
 
   /**
@@ -186,11 +185,14 @@ class ElasticsearchRules {
         + "is not supported by ElasticsearchProject");
     }
 
+<<<<<<< HEAD
     private String stripQuotes(String s) {
       return s.startsWith("'") && s.endsWith("'") ? s.substring(1, s.length() - 1) : s;
 >>>>>>> 232030fd4 ([CALCITE-2632]: Add hashCode and equals implementations to RexNode):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchRules.java
     }
 
+=======
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
     List<String> visitList(List<RexNode> list) {
       final List<String> strings = new ArrayList<>();
       for (RexNode node: list) {

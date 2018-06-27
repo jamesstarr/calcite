@@ -17,13 +17,11 @@
 package org.apache.calcite.adapter.elasticsearch;
 
 import org.apache.calcite.adapter.java.AbstractQueryableTable;
+import org.apache.calcite.avatica.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.linq4j.QueryProvider;
 import org.apache.calcite.linq4j.Queryable;
-import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptTable;
-import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.SchemaPlus;
@@ -33,26 +31,33 @@ import org.apache.calcite.sql.type.SqlTypeName;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Table based on an Elasticsearch type.
  */
-public abstract class AbstractElasticsearchTable extends AbstractQueryableTable
+abstract class AbstractElasticsearchTable extends AbstractQueryableTable
     implements TranslatableTable {
-  protected final String indexName;
-  protected final String typeName;
+
+  final String indexName;
+  final String typeName;
+  final ObjectMapper mapper;
 
   /**
    * Creates an ElasticsearchTable.
+   * @param indexName Elastic Search index
+   * @param typeName Elastic Search index type
+   * @param mapper Jackson API to parse (and created) JSON documents
    */
-  public AbstractElasticsearchTable(String indexName, String typeName) {
+  AbstractElasticsearchTable(String indexName, String typeName, ObjectMapper mapper) {
     super(Object[].class);
-    this.indexName = indexName;
-    this.typeName = typeName;
+    this.indexName = Objects.requireNonNull(indexName, "indexName");
+    this.typeName = Objects.requireNonNull(typeName, "typeName");
+    this.mapper = Objects.requireNonNull(mapper, "mapper");
   }
 
   @Override public String toString() {
-    return "ElasticsearchTable{" + typeName + "}";
+    return "ElasticsearchTable{" + indexName + "/" + typeName + "}";
   }
 
   public RelDataType getRowType(RelDataTypeFactory relDataTypeFactory) {
@@ -69,23 +74,17 @@ public abstract class AbstractElasticsearchTable extends AbstractQueryableTable
     return new ElasticsearchQueryable<>(queryProvider, schema, this, tableName);
   }
 
-  public RelNode toRel(RelOptTable.ToRelContext context, RelOptTable relOptTable) {
-    final RelOptCluster cluster = context.getCluster();
-    return new ElasticsearchTableScan(cluster, cluster.traitSetOf(ElasticsearchRel.CONVENTION),
-        relOptTable, this, null);
-  }
 
   /**
    * In ES 5.x scripted fields start with {@code params._source.foo} while in ES2.x
    * {@code _source.foo}. Helper method to build correct query based on runtime version of elastic.
+   * Used to keep backwards compatibility with ES2.
    *
    * @see <a href="https://github.com/elastic/elasticsearch/issues/20068">_source variable</a>
    * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/master/modules-scripting-fields.html">Scripted Fields</a>
+   * @return string to be used for scripted fields
    */
-  protected String scriptedFieldPrefix() {
-    // this is default pattern starting 5.x
-    return "params._source";
-  }
+  protected abstract String scriptedFieldPrefix();
 
   /** Executes a "find" operation on the underlying type.
    *
@@ -108,7 +107,7 @@ public abstract class AbstractElasticsearchTable extends AbstractQueryableTable
    * @param <T> element type
    */
   public static class ElasticsearchQueryable<T> extends AbstractTableQueryable<T> {
-    public ElasticsearchQueryable(QueryProvider queryProvider, SchemaPlus schema,
+    ElasticsearchQueryable(QueryProvider queryProvider, SchemaPlus schema,
         AbstractElasticsearchTable table, String tableName) {
       super(queryProvider, schema, table, tableName);
     }
@@ -126,8 +125,10 @@ public abstract class AbstractElasticsearchTable extends AbstractQueryableTable
     }
 
     /** Called via code-generation.
-     *
+     * @param ops list of queries (as strings)
+     * @param fields projection
      * @see ElasticsearchMethod#ELASTICSEARCH_QUERYABLE_FIND
+     * @return result as enumerable
      */
     @SuppressWarnings("UnusedDeclaration")
     public Enumerable<Object> find(List<String> ops,

@@ -16,27 +16,15 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-import org.apache.calcite.schema.Schema;
-import org.apache.calcite.schema.SchemaFactory;
-import org.apache.calcite.schema.SchemaPlus;
-
-import org.apache.http.HttpHost;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 /**
  * Factory that creates an {@link ElasticsearchSchema}.
@@ -46,8 +34,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("UnusedDeclaration")
 public class ElasticsearchSchemaFactory implements SchemaFactory {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchSchemaFactory.class);
-
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
   public ElasticsearchSchemaFactory() {
   }
 
@@ -60,6 +47,7 @@ public class ElasticsearchSchemaFactory implements SchemaFactory {
     mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 
     try {
+<<<<<<< HEAD
 
       List<HttpHost> hosts;
 
@@ -91,6 +79,19 @@ public class ElasticsearchSchemaFactory implements SchemaFactory {
       final RestClient client = connect(hosts, pathPrefix);
       final String index = (String) map.get("index");
 
+=======
+      final Map<String, Integer> coordinates =
+          mapper.readValue((String) map.get("coordinates"),
+              new TypeReference<Map<String, Integer>>() { });
+
+      final RestClient client = connect(coordinates);
+
+      final Map<String, String> userConfig =
+          mapper.readValue((String) map.get("userConfig"),
+              new TypeReference<Map<String, String>>() { });
+
+      final String index = (String) map.get("index");
+      Preconditions.checkArgument(index != null, "index is missing in configuration");
       return new ElasticsearchSchema(client, new ObjectMapper(), index);
     } catch (IOException e) {
       throw new RuntimeException("Cannot parse values from json", e);
@@ -99,19 +100,20 @@ public class ElasticsearchSchemaFactory implements SchemaFactory {
 
   /**
    * Builds elastic rest client from user configuration
-   * @param hosts list of ES HTTP Hosts to connect to
+   * @param coordinates list of {@code hostname/port} to connect to
    * @return newly initialized low-level rest http client for ES
    */
-  private static RestClient connect(List<HttpHost> hosts, String pathPrefix) {
-
-    Objects.requireNonNull(hosts, "hosts or coordinates");
-    Preconditions.checkArgument(!hosts.isEmpty(), "no ES hosts specified");
-
-    RestClientBuilder builder = RestClient.builder(hosts.toArray(new HttpHost[hosts.size()]));
-    if (pathPrefix != null && !pathPrefix.isEmpty()) {
-      builder.setPathPrefix(pathPrefix);
+  private static RestClient connect(Map<String, Integer> coordinates) {
+    Objects.requireNonNull(coordinates, "coordinates");
+    Preconditions.checkArgument(!coordinates.isEmpty(), "no ES coordinates specified");
+    final Set<HttpHost> set = new LinkedHashSet<>();
+    for (Map.Entry<String, Integer> entry: coordinates.entrySet()) {
+      set.add(new HttpHost(entry.getKey(), entry.getValue()));
     }
-    return builder.build();
+
+    return RestClient.builder(set.toArray(new HttpHost[0])).build();
   }
 
 }
+
+// End ElasticsearchSchemaFactory.java

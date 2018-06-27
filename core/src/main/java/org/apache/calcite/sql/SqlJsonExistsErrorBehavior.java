@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+<<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/SqlJsonExistsErrorBehavior.java
 package org.apache.calcite.sql;
 
 /**
@@ -25,3 +26,38 @@ public enum SqlJsonExistsErrorBehavior implements Symbolizable {
   UNKNOWN,
   ERROR
 }
+========
+package org.apache.calcite.adapter.elasticsearch;
+
+import com.google.common.collect.ImmutableSet;
+
+import java.util.Set;
+
+/**
+ * Internal constants referenced in this package.
+ */
+interface ElasticsearchConstants {
+
+  String INDEX = "_index";
+  String TYPE = "_type";
+  String FIELDS = "fields";
+  String SOURCE_PAINLESS = "params._source";
+  String SOURCE_GROOVY = "_source";
+  String SOURCE = SOURCE_GROOVY;
+  String ID = "_id";
+  String UID = "_uid";
+
+  /* Aggregation pushdown operations supported */
+  String AGG_SUM = "SUM";
+  String AGG_SUM0 = "$SUM0";
+  String AGG_COUNT = "COUNT";
+  String AGG_MIN = "MIN";
+  String AGG_MAX = "MAX";
+  String AGG_AVG = "AVG";
+
+  Set<String> META_COLUMNS = ImmutableSet.of(UID, ID, TYPE, INDEX);
+
+}
+
+// End ElasticsearchConstants.java
+>>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda)):elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchConstants.java

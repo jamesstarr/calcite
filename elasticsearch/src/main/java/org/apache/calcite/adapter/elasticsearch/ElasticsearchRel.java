@@ -20,7 +20,7 @@ import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
 import org.apache.calcite.util.Pair;
 
 import java.util.ArrayList;
@@ -45,7 +45,9 @@ public interface ElasticsearchRel extends RelNode {
    * {@link ElasticsearchRel} nodes into an Elasticsearch query.
    */
   class Implementor {
+<<<<<<< HEAD
 
+=======
     final List<String> list = new ArrayList<>();
 
     /**
@@ -90,7 +92,7 @@ public interface ElasticsearchRel extends RelNode {
     RelOptTable table;
     ElasticsearchTable elasticsearchTable;
 
-    void add(String findOp) {
+    public void add(String findOp) {
       list.add(findOp);
     }
 
@@ -99,17 +101,14 @@ public interface ElasticsearchRel extends RelNode {
       groupBy.add(field);
     }
 
-    void addSort(String field, RelFieldCollation.Direction direction) {
-      Objects.requireNonNull(field, "field");
-      sort.add(new Pair<>(field, direction));
-    }
-
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
     void addAggregation(String field, String expression) {
       Objects.requireNonNull(field, "field");
       Objects.requireNonNull(expression, "expression");
       aggregations.add(new Pair<>(field, expression));
     }
 
+<<<<<<< HEAD
     void addExpressionItemMapping(String expressionId, String item) {
       Objects.requireNonNull(expressionId, "expressionId");
       Objects.requireNonNull(item, "item");
@@ -131,3 +130,12 @@ public interface ElasticsearchRel extends RelNode {
 
   }
 }
+=======
+    public void visitChild(int ordinal, RelNode input) {
+      assert ordinal == 0;
+      ((ElasticsearchRel) input).implement(this);
+    }
+  }
+}
+
+// End ElasticsearchRel.java

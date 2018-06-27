@@ -52,41 +52,7 @@ import static org.apache.calcite.adapter.elasticsearch.QueryBuilders.regexpQuery
 import static org.apache.calcite.adapter.elasticsearch.QueryBuilders.termQuery;
 
 import static java.lang.String.format;
-/**
- * Query predicate analyzer. Uses visitor pattern to traverse existing expression
- * and convert it to {@link QueryBuilder}.
- *
- * <p>Major part of this class have been copied from
- * <a href="https://www.dremio.com/">dremio</a> ES adapter
- * (thanks to their team for improving calcite-ES integration).
- */
-class PredicateAnalyzer {
-
-  /**
-   * Internal exception
-   */
-  @SuppressWarnings("serial")
-  private static final class PredicateAnalyzerException extends RuntimeException {
-
-    PredicateAnalyzerException(String message) {
-      super(message);
-    }
-
-    PredicateAnalyzerException(Throwable cause) {
-      super(cause);
-    }
-  }
-
-  /**
-   * Thrown when {@link org.apache.calcite.rel.RelNode} expression can't be processed
-   * (or converted into ES query)
-   */
-  static class ExpressionNotAnalyzableException extends Exception {
-    ExpressionNotAnalyzableException(String message, Throwable cause) {
-      super(message, cause);
-    }
-  }
-
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
   private PredicateAnalyzer() {}
 
   /**
@@ -165,7 +131,9 @@ class PredicateAnalyzer {
       switch (syntax) {
       case BINARY:
         switch (call.getKind()) {
+<<<<<<< HEAD
         case CONTAINS:
+=======
         case AND:
         case OR:
         case LIKE:
@@ -183,7 +151,7 @@ class PredicateAnalyzer {
         switch (call.getKind()) {
         case CAST:
         case LIKE:
-        case ITEM:
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
         case OTHER_FUNCTION:
           return true;
         case CASE:
@@ -198,6 +166,7 @@ class PredicateAnalyzer {
         case IS_NOT_NULL:
         case IS_NULL:
           return true;
+<<<<<<< HEAD
         }
       case PREFIX: // NOT()
         switch (call.getKind()) {
@@ -207,6 +176,13 @@ class PredicateAnalyzer {
       // fall through
       case FUNCTION_ID:
       case FUNCTION_STAR:
+=======
+        default: // fall through
+        }
+        // fall through
+      case FUNCTION_ID:
+      case FUNCTION_STAR:
+      case PREFIX: // NOT()
       default:
         return false;
       }
@@ -225,16 +201,17 @@ class PredicateAnalyzer {
         return binary(call);
       case POSTFIX:
         return postfix(call);
-      case PREFIX:
-        return prefix(call);
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
       case SPECIAL:
         switch (call.getKind()) {
         case CAST:
           return toCastExpression(call);
         case LIKE:
           return binary(call);
+<<<<<<< HEAD
         case CONTAINS:
           return binary(call);
+=======
         default:
           // manually process ITEM($0, 'foo') which in our case will be named attribute
           if (call.getOperator().getName().equalsIgnoreCase("ITEM")) {
@@ -282,19 +259,7 @@ class PredicateAnalyzer {
       }
     }
 
-    private QueryExpression prefix(RexCall call) {
-      Preconditions.checkArgument(call.getKind() == SqlKind.NOT,
-          "Expected %s got %s", SqlKind.NOT, call.getKind());
-
-      if (call.getOperands().size() != 1) {
-        String message = String.format(Locale.ROOT, "Unsupported NOT operator: [%s]", call);
-        throw new PredicateAnalyzerException(message);
-      }
-
-      QueryExpression expr = (QueryExpression) call.getOperands().get(0).accept(this);
-      return expr.not();
-    }
-
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
     private QueryExpression postfix(RexCall call) {
       Preconditions.checkArgument(call.getKind() == SqlKind.IS_NULL
           || call.getKind() == SqlKind.IS_NOT_NULL);
@@ -351,8 +316,10 @@ class PredicateAnalyzer {
       }
 
       switch (call.getKind()) {
+<<<<<<< HEAD
       case CONTAINS:
         return QueryExpression.create(pair.getKey()).contains(pair.getValue());
+=======
       case LIKE:
         throw new UnsupportedOperationException("LIKE not yet supported");
       case EQUALS:
@@ -545,13 +512,7 @@ class PredicateAnalyzer {
       return false;
     }
 
-    public abstract QueryExpression contains(LiteralExpression literal);
-
-    /**
-     * Negate {@code this} QueryExpression (not the next one).
-     */
-    public abstract QueryExpression not();
-
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
     public abstract QueryExpression exists();
 
     public abstract QueryExpression notExists();
@@ -585,7 +546,9 @@ class PredicateAnalyzer {
         throw new PredicateAnalyzerException(message);
       }
     }
+<<<<<<< HEAD
 
+=======
   }
 
   /**
@@ -594,7 +557,7 @@ class PredicateAnalyzer {
   static class CompoundQueryExpression extends QueryExpression {
 
     private final boolean partial;
-    private final BoolQueryBuilder builder;
+    private final BoolQueryBuilder builder = boolQuery();
 
     public static CompoundQueryExpression or(QueryExpression... expressions) {
       CompoundQueryExpression bqe = new CompoundQueryExpression(false);
@@ -621,28 +584,15 @@ class PredicateAnalyzer {
     }
 
     private CompoundQueryExpression(boolean partial) {
-      this(partial, boolQuery());
-    }
-
-    private CompoundQueryExpression(boolean partial, BoolQueryBuilder builder) {
       this.partial = partial;
-      this.builder = Objects.requireNonNull(builder, "builder");
     }
 
     @Override public boolean isPartial() {
       return partial;
     }
 
-
     @Override public QueryBuilder builder() {
-      if (builder == null) {
-        throw new IllegalStateException("builder was not set");
-      }
-      return builder;
-    }
-
-    @Override public QueryExpression not() {
-      return new CompoundQueryExpression(partial, QueryBuilders.boolQuery().mustNot(builder()));
+      return Objects.requireNonNull(builder);
     }
 
     @Override public QueryExpression exists() {
@@ -650,11 +600,7 @@ class PredicateAnalyzer {
           + "cannot be applied to a compound expression");
     }
 
-    @Override public QueryExpression contains(LiteralExpression literal) {
-      throw new PredicateAnalyzerException("SqlOperatorImpl ['contains'] "
-              + "cannot be applied to a compound expression");
-    }
-
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
     @Override public QueryExpression notExists() {
       throw new PredicateAnalyzerException("SqlOperatorImpl ['notExists'] "
           + "cannot be applied to a compound expression");
@@ -727,6 +673,7 @@ class PredicateAnalyzer {
     }
 
     @Override public QueryBuilder builder() {
+<<<<<<< HEAD
       if (builder == null) {
         throw new IllegalStateException("Builder was not initialized");
       }
@@ -736,6 +683,8 @@ class PredicateAnalyzer {
     @Override public QueryExpression not() {
       builder = boolQuery().mustNot(builder());
       return this;
+=======
+      return Objects.requireNonNull(builder);
     }
 
     @Override public QueryExpression exists() {
@@ -755,11 +704,7 @@ class PredicateAnalyzer {
       return this;
     }
 
-    @Override public QueryExpression contains(LiteralExpression literal) {
-      builder = QueryBuilders.matchQuery(getFieldReference(), literal.value());
-      return this;
-    }
-
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
     @Override public QueryExpression notLike(LiteralExpression literal) {
       builder = boolQuery()
               // NOT LIKE should return false when field is NULL
@@ -997,3 +942,7 @@ class PredicateAnalyzer {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End PredicateAnalyzer.java

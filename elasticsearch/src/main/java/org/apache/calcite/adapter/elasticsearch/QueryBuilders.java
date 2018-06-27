@@ -16,23 +16,12 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-import com.fasterxml.jackson.core.JsonGenerator;
+import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonGenerator;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-/**
- * Utility class to generate elastic search queries. Most query builders have
- * been copied from ES distribution. The reason we have separate definition is
- * high-level client dependency on core modules (like lucene, netty, XContent etc.) which
- * is not compatible between different major versions.
- *
- * <p>The goal of ES adapter is to
- * be compatible with any elastic version or even to connect to clusters with different
- * versions simultaneously.
- *
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
  * <p>Jackson API is used to generate ES query as JSON document.
  */
 class QueryBuilders {
@@ -60,6 +49,7 @@ class QueryBuilders {
   }
 
   /**
+<<<<<<< HEAD
    * A Query that matches documents containing a single character term.
    *
    * @param name  The name of the field
@@ -70,6 +60,7 @@ class QueryBuilders {
   }
 
   /**
+=======
    * A Query that matches documents containing a term.
    *
    * @param name  The name of the field
@@ -120,36 +111,7 @@ class QueryBuilders {
   }
 
   /**
-   * A filer for a field based on several terms matching on any of them.
-   *
-   * @param name   The field name
-   * @param values The terms
-   */
-  static MatchesQueryBuilder matchesQuery(String name, Iterable<?> values) {
-    return new MatchesQueryBuilder(name, values);
-  }
-
-  /**
-   * A Query that matches documents containing a term.
-   *
-   * @param name  The name of the field
-   * @param value The value of the term
-   */
-  static MatchQueryBuilder matchQuery(String name, Object value) {
-    return new MatchQueryBuilder(name, value);
-  }
-
-  /**
-   * A filer for a field based on several terms matching on any of them.
-   *
-   * @param name   The field name
-   * @param values The terms
-   */
-  static TermsQueryBuilder termsQuery(String name, Iterable<?> values) {
-    return new TermsQueryBuilder(name, values);
-  }
-
-  /**
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
    * A Query that matches documents within an range of terms.
    *
    * @param name The field name
@@ -196,6 +158,7 @@ class QueryBuilders {
   }
 
   /**
+<<<<<<< HEAD
    * A query that matches on all documents.
    */
   static MatchAllQueryBuilder matchAll() {
@@ -203,6 +166,7 @@ class QueryBuilders {
   }
 
   /**
+=======
    * Base class to build ES queries
    */
   abstract static class QueryBuilder {
@@ -296,102 +260,34 @@ class QueryBuilders {
       generator.writeFieldName("term");
       generator.writeStartObject();
       generator.writeFieldName(fieldName);
-      writeObject(generator, value);
+      writeScalar(generator, value);
       generator.writeEndObject();
       generator.writeEndObject();
     }
   }
 
   /**
-   * A filter for a field based on several terms matching on any of them.
-   */
-  private static class TermsQueryBuilder extends QueryBuilder {
-    private final String fieldName;
-    private final Iterable<?> values;
-
-    private TermsQueryBuilder(final String fieldName, final Iterable<?> values) {
-      this.fieldName = Objects.requireNonNull(fieldName, "fieldName");
-      this.values = Objects.requireNonNull(values, "values");
-    }
-
-    @Override void writeJson(final JsonGenerator generator) throws IOException {
-      generator.writeStartObject();
-      generator.writeFieldName("terms");
-      generator.writeStartObject();
-      generator.writeFieldName(fieldName);
-      generator.writeStartArray();
-      for (Object value: values) {
-        writeObject(generator, value);
-      }
-      generator.writeEndArray();
-      generator.writeEndObject();
-      generator.writeEndObject();
-    }
-  }
-
-
-
-  /**
-   * A Query that matches documents containing a term.
-   */
-  static class MatchQueryBuilder extends QueryBuilder {
-    private final String fieldName;
-    private final Object value;
-
-    private MatchQueryBuilder(final String fieldName, final Object value) {
-      this.fieldName = Objects.requireNonNull(fieldName, "fieldName");
-      this.value = Objects.requireNonNull(value, "value");
-    }
-
-    @Override void writeJson(final JsonGenerator generator) throws IOException {
-      generator.writeStartObject();
-      generator.writeFieldName("match");
-      generator.writeStartObject();
-      generator.writeFieldName(fieldName);
-      writeObject(generator, value);
-      generator.writeEndObject();
-      generator.writeEndObject();
-    }
-  }
-
-
-  /**
-   * A filter for a field based on several terms matching on any of them.
-   */
-  private static class MatchesQueryBuilder extends QueryBuilder {
-    private final String fieldName;
-    private final Iterable<?> values;
-
-    private MatchesQueryBuilder(final String fieldName, final Iterable<?> values) {
-      this.fieldName = Objects.requireNonNull(fieldName, "fieldName");
-      this.values = Objects.requireNonNull(values, "values");
-    }
-
-    @Override void writeJson(final JsonGenerator generator) throws IOException {
-      generator.writeStartObject();
-      generator.writeFieldName("match");
-      generator.writeStartObject();
-      generator.writeFieldName(fieldName);
-      generator.writeStartArray();
-      for (Object value: values) {
-        writeObject(generator, value);
-      }
-      generator.writeEndArray();
-      generator.writeEndObject();
-      generator.writeEndObject();
-    }
-  }
-
-  /**
-   * Write usually simple (scalar) value (string, number, boolean or null) to json output.
-   * In case of complex objects delegates to jackson serialization.
+   * Write single simple (scalar) value (string, number, boolean or null) to json output.
    *
    * @param generator api to generate JSON document
    * @param value JSON value to write
    * @throws IOException if can't write to output
    */
-  private static void writeObject(JsonGenerator generator, Object value) throws IOException {
-    generator.writeObject(value);
+  private static void writeScalar(JsonGenerator generator, Object value) throws IOException {
+    if (value == null) {
+      generator.writeNull();
+    } else if (value instanceof CharSequence) {
+      generator.writeString(Objects.toString(value));
+    } else if (value instanceof Number) {
+      // write numbers as string
+      generator.writeNumber(value.toString());
+    } else if (value instanceof Boolean) {
+      generator.writeBoolean((Boolean) value);
+    } else {
+      final String message = String.format(Locale.ROOT, "Unsupported type %s : %s",
+          value.getClass(), value);
+      throw new IllegalArgumentException(message);
+    }
   }
 
   /**
@@ -458,13 +354,13 @@ class QueryBuilders {
       if (gt != null) {
         final String op = gte ? "gte" : "gt";
         generator.writeFieldName(op);
-        writeObject(generator, gt);
+        writeScalar(generator, gt);
       }
 
       if (lt != null) {
         final String op = lte ? "lte" : "lt";
         generator.writeFieldName(op);
-        writeObject(generator, lt);
+        writeScalar(generator, lt);
       }
 
       if (format != null) {
@@ -536,25 +432,6 @@ class QueryBuilders {
       generator.writeEndObject();
     }
   }
-
-  /**
-   * A query that matches on all documents.
-   * <pre>
-   *   {
-   *     "match_all": {}
-   *   }
-   * </pre>
-   */
-  static class MatchAllQueryBuilder extends QueryBuilder {
-
-    private MatchAllQueryBuilder() {}
-
-    @Override void writeJson(final JsonGenerator generator) throws IOException {
-      generator.writeStartObject();
-      generator.writeFieldName("match_all");
-      generator.writeStartObject();
-      generator.writeEndObject();
-      generator.writeEndObject();
-    }
-  }
 }
+
+// End QueryBuilders.java

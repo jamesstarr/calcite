@@ -16,19 +16,20 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Basic tests for parsing ES version in different formats
  */
-class ElasticsearchVersionTest {
+public class ElasticsearchVersionTest {
 
-  @Test void versions() {
+  @Test
+  public void versions() {
     assertEquals(ElasticsearchVersion.fromString("2.3.4"), ElasticsearchVersion.ES2);
     assertEquals(ElasticsearchVersion.fromString("2.0.0"), ElasticsearchVersion.ES2);
     assertEquals(ElasticsearchVersion.fromString("5.6.1"), ElasticsearchVersion.ES5);
@@ -61,3 +62,8 @@ class ElasticsearchVersionTest {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End ElasticsearchVersionTest.java
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))

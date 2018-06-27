@@ -16,22 +16,13 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-import org.apache.calcite.util.Closer;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.common.transport.TransportAddress;
+import org.junit.rules.ExternalResource;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -39,18 +30,12 @@ import java.util.Objects;
 
 /**
  * Used to initialize a single elastic node. For performance reasons (node startup costs),
- * same instance is shared across multiple tests (Elasticsearch does not allow multiple
- * instances per JVM).
+ * same instance is usually shared across multiple tests.
  *
  * This rule should be used as follows:
  * <pre>
  *  public class MyTest {
- *    public static final EmbeddedElasticsearchPolicy RULE = EmbeddedElasticsearchPolicy.create();
- *
- *    &#64;BeforeClass
- *    public static void setup() {
- *       // ... populate instance
- *       // The collections must have different names so the tests could be executed concurrently
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
  *    }
  *
  *    &#64;Test
@@ -60,28 +45,32 @@ import java.util.Objects;
  *    }
  *  }
  *  </pre>
+<<<<<<< HEAD
  */
 class EmbeddedElasticsearchPolicy {
+=======
+ * @see ExternalResource
+ */
+class EmbeddedElasticsearchPolicy extends ExternalResource {
 
   private final EmbeddedElasticsearchNode node;
   private final ObjectMapper mapper;
   private final Closer closer;
   private RestClient client;
 
-  /** Singleton holder for the shared Elasticsearch instance. */
-  static class Singleton {
-    static final EmbeddedElasticsearchPolicy INSTANCE =
-        new EmbeddedElasticsearchPolicy(EmbeddedElasticsearchNode.create());
-  }
-
   private EmbeddedElasticsearchPolicy(EmbeddedElasticsearchNode resource) {
     this.node = Objects.requireNonNull(resource, "resource");
-    this.node.start();
     this.mapper = new ObjectMapper();
     this.closer = new Closer();
     closer.add(node);
-    // initialize client
-    restClient();
+  }
+
+  @Override protected void before() throws Throwable {
+    node.start();
+  }
+
+  @Override protected void after() {
+    closer.close();
   }
 
   /**
@@ -89,20 +78,11 @@ class EmbeddedElasticsearchPolicy {
    * @return managed resource to be used in unit tests
    */
   public static EmbeddedElasticsearchPolicy create() {
-    return Singleton.INSTANCE;
+    return new EmbeddedElasticsearchPolicy(EmbeddedElasticsearchNode.create());
   }
 
   /**
-   * Creates index in elastic search given a mapping. Mapping can contain nested fields expressed
-   * as dots({@code .}).
-   *
-   * <p>Example
-   * <pre>
-   *  {@code
-   *     b.a: long
-   *     b.b: keyword
-   *  }
-   * </pre>
+   * Creates index in elastic search given mapping.
    *
    * @param index index of the index
    * @param mapping field and field type mapping
@@ -112,49 +92,32 @@ class EmbeddedElasticsearchPolicy {
     Objects.requireNonNull(index, "index");
     Objects.requireNonNull(mapping, "mapping");
 
-    ObjectNode mappings = mapper().createObjectNode();
-
-    ObjectNode properties = mappings.with("mappings").with("properties");
+    ObjectNode json = mapper().createObjectNode();
     for (Map.Entry<String, String> entry: mapping.entrySet()) {
-      applyMapping(properties, entry.getKey(), entry.getValue());
+      json.set(entry.getKey(), json.objectNode().put("type", entry.getValue()));
     }
+
+    json = (ObjectNode) json.objectNode().set("properties", json);
+    json = (ObjectNode) json.objectNode().set(index, json);
+    json = (ObjectNode) json.objectNode().set("mappings", json);
 
     // create index and mapping
-    final HttpEntity entity = new StringEntity(mapper().writeValueAsString(mappings),
+    final HttpEntity entity = new StringEntity(mapper().writeValueAsString(json),
         ContentType.APPLICATION_JSON);
-    final Request r = new Request("PUT", "/" + index);
-    r.setEntity(entity);
-    restClient().performRequest(r);
-  }
-
-  /**
-   * Creates nested mappings for an index. This function is called recursively for each level.
-   *
-   * @param parent current parent
-   * @param key field name
-   * @param type ES mapping type ({@code keyword}, {@code long} etc.)
-   */
-  private static void applyMapping(ObjectNode parent, String key, String type) {
-    final int index = key.indexOf('.');
-    if (index > -1) {
-      String prefix  = key.substring(0, index);
-      String suffix = key.substring(index + 1, key.length());
-      applyMapping(parent.with(prefix).with("properties"), suffix, type);
-    } else {
-      parent.with(key).put("type", type);
-    }
+    restClient().performRequest("PUT", "/" + index, Collections.emptyMap(), entity);
   }
 
   void insertDocument(String index, ObjectNode document) throws IOException {
     Objects.requireNonNull(index, "index");
     Objects.requireNonNull(document, "document");
     String uri = String.format(Locale.ROOT,
-          "/%s/_doc?refresh", index);
+          "/%s/%s/?refresh", index, index);
     StringEntity entity = new StringEntity(mapper().writeValueAsString(document),
         ContentType.APPLICATION_JSON);
-    final Request r = new Request("POST", uri);
-    r.setEntity(entity);
-    restClient().performRequest(r);
+
+    restClient().performRequest("POST", uri,
+        Collections.emptyMap(),
+        entity);
   }
 
   void insertBulk(String index, List<ObjectNode> documents) throws IOException {
@@ -168,16 +131,18 @@ class EmbeddedElasticsearchPolicy {
 
     List<String> bulk = new ArrayList<>(documents.size() * 2);
     for (ObjectNode doc: documents) {
-      bulk.add(String.format(Locale.ROOT, "{\"index\": {\"_index\":\"%s\"}}", index));
+      bulk.add("{\"index\": {} }"); // index/type will be derived from _bulk URI
       bulk.add(mapper().writeValueAsString(doc));
     }
 
     final StringEntity entity = new StringEntity(String.join("\n", bulk) + "\n",
         ContentType.APPLICATION_JSON);
 
-    final Request r = new Request("POST", "/_bulk?refresh");
-    r.setEntity(entity);
-    restClient().performRequest(r);
+    final String uri = String.format(Locale.ROOT, "/%s/%s/_bulk?refresh", index, index);
+
+    restClient().performRequest("POST", uri,
+        Collections.emptyMap(),
+        entity);
   }
 
   /**
@@ -196,18 +161,15 @@ class EmbeddedElasticsearchPolicy {
     if (client != null) {
       return client;
     }
-
-    final RestClient client = RestClient.builder(httpHost()).build();
+    TransportAddress address = httpAddress();
+    RestClient client = RestClient.builder(new HttpHost(address.getAddress(), address.getPort()))
+            .build();
     closer.add(client);
     this.client = client;
     return client;
   }
 
-  HttpHost httpHost() {
-    final TransportAddress address = httpAddress();
-    return new HttpHost(address.getAddress(), address.getPort());
-  }
-
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
   /**
    * HTTP address for rest clients (can be ES native or any other).
    * @return http address to connect to
@@ -215,4 +177,10 @@ class EmbeddedElasticsearchPolicy {
   private TransportAddress httpAddress() {
     return node.httpAddress();
   }
+<<<<<<< HEAD
 }
+=======
+
+}
+
+// End EmbeddedElasticsearchPolicy.java

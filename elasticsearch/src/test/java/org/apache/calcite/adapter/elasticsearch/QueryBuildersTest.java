@@ -16,47 +16,32 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonGenerator;
+import org.apache.calcite.avatica.com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Check that internal queries are correctly converted to ES search query (as JSON)
  */
-class QueryBuildersTest {
+public class QueryBuildersTest {
 
   private final ObjectMapper mapper = new ObjectMapper();
 
-  /**
-   * Test for simple scalar terms (boolean, int etc.)
-   * @throws Exception not expected
-   */
-  @Test void term() throws Exception {
+  @Test
+  public void term() throws Exception {
     assertEquals("{\"term\":{\"foo\":\"bar\"}}",
         toJson(QueryBuilders.termQuery("foo", "bar")));
-    assertEquals("{\"term\":{\"bar\":\"foo\"}}",
-        toJson(QueryBuilders.termQuery("bar", "foo")));
-    assertEquals("{\"term\":{\"foo\":\"A\"}}",
-        toJson(QueryBuilders.termQuery("foo", 'A')));
     assertEquals("{\"term\":{\"foo\":true}}",
         toJson(QueryBuilders.termQuery("foo", true)));
     assertEquals("{\"term\":{\"foo\":false}}",
         toJson(QueryBuilders.termQuery("foo", false)));
-    assertEquals("{\"term\":{\"foo\":0}}",
-        toJson(QueryBuilders.termQuery("foo", (byte) 0)));
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
     assertEquals("{\"term\":{\"foo\":123}}",
         toJson(QueryBuilders.termQuery("foo", (long) 123)));
     assertEquals("{\"term\":{\"foo\":41}}",
@@ -65,6 +50,7 @@ class QueryBuildersTest {
         toJson(QueryBuilders.termQuery("foo", 42.42D)));
     assertEquals("{\"term\":{\"foo\":1.1}}",
         toJson(QueryBuilders.termQuery("foo", 1.1F)));
+<<<<<<< HEAD
     assertEquals("{\"term\":{\"foo\":1}}",
         toJson(QueryBuilders.termQuery("foo", new BigDecimal(1))));
     assertEquals("{\"term\":{\"foo\":121}}",
@@ -107,6 +93,11 @@ class QueryBuildersTest {
   }
 
   @Test void boolQuery() throws Exception {
+=======
+  }
+
+  @Test
+  public void boolQuery() throws Exception {
     QueryBuilders.QueryBuilder q1 = QueryBuilders.boolQuery()
         .must(QueryBuilders.termQuery("foo", "bar"));
 
@@ -127,12 +118,14 @@ class QueryBuildersTest {
 
   }
 
-  @Test void exists() throws Exception {
+  @Test
+  public void exists() throws Exception {
     assertEquals("{\"exists\":{\"field\":\"foo\"}}",
         toJson(QueryBuilders.existsQuery("foo")));
   }
 
-  @Test void range() throws Exception {
+  @Test
+  public void range() throws Exception {
     assertEquals("{\"range\":{\"f\":{\"lt\":0}}}",
         toJson(QueryBuilders.rangeQuery("f").lt(0)));
     assertEquals("{\"range\":{\"f\":{\"gt\":0}}}",
@@ -161,19 +154,7 @@ class QueryBuildersTest {
         toJson(QueryBuilders.rangeQuery("f").lt(1).lt(2).lte(3)));
   }
 
-  @Test void matchAll() throws IOException {
-    assertEquals("{\"match_all\":{}}",
-        toJson(QueryBuilders.matchAll()));
-  }
-
-  @Test void match() throws IOException {
-    assertEquals("{\"match\":{\"foo\":[\"bar\"]}}",
-        toJson(QueryBuilders.matchesQuery("foo", Collections.singleton("bar"))));
-
-    assertEquals("{\"match\":{\"foo\":[true]}}",
-        toJson(QueryBuilders.matchesQuery("foo", Collections.singleton(true))));
-  }
-
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
   private String toJson(QueryBuilders.QueryBuilder builder) throws IOException {
     StringWriter writer = new StringWriter();
     JsonGenerator gen = mapper.getFactory().createGenerator(writer);
@@ -183,3 +164,7 @@ class QueryBuildersTest {
     return writer.toString();
   }
 }
+<<<<<<< HEAD
+=======
+
+// End QueryBuildersTest.java

@@ -25,21 +25,11 @@ import java.util.Objects;
  */
 enum ElasticsearchVersion {
 
-  ES2(2),
-  ES5(5),
-  ES6(6),
-  ES7(7),
-  UNKNOWN(0);
-
-  private final int elasticVersionMajor;
-
-  ElasticsearchVersion(final int elasticVersionMajor) {
-    this.elasticVersionMajor = elasticVersionMajor;
-  }
-
-  public int elasticVersionMajor() {
-    return elasticVersionMajor;
-  }
+  ES2,
+  ES5,
+  ES6,
+  ES7,
+  UNKNOWN;
 
   static ElasticsearchVersion fromString(String version) {
     Objects.requireNonNull(version, "version");
@@ -64,3 +54,8 @@ enum ElasticsearchVersion {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End ElasticsearchVersion.java
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))

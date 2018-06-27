@@ -16,9 +16,9 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.calcite.avatica.com.fasterxml.jackson.annotation.JsonCreator;
+import org.apache.calcite.avatica.com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.calcite.avatica.com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Duration;
 import java.util.Iterator;
@@ -169,3 +169,8 @@ public class ElasticsearchSearchResult {
   }
 
 }
+<<<<<<< HEAD
+=======
+
+// End ElasticsearchSearchResult.java
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))

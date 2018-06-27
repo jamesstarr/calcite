@@ -24,11 +24,17 @@ limitations under the License.
     <version>1.16.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>calcite-elasticsearch5</artifactId>
+  <artifactId>calcite-elasticsearch</artifactId>
   <packaging>jar</packaging>
+<<<<<<< HEAD:elasticsearch5/pom.xml
   <version>1.16.0-SNAPSHOT</version>
   <name>Calcite Elasticsearch5</name>
   <description>Elasticsearch5 adapter for Calcite</description>
+=======
+  <version>1.17.0-SNAPSHOT</version>
+  <name>Calcite Elasticsearch</name>
+  <description>Elasticsearch adapter for Calcite</description>
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda)):elasticsearch/pom.xml
 
   <properties>
     <top.dir>${project.basedir}/..</top.dir>
@@ -65,18 +71,25 @@ limitations under the License.
     </dependency>
     <dependency>
       <groupId>org.elasticsearch.client</groupId>
-      <artifactId>transport</artifactId>
-      <version>${elasticsearch5-java-driver.version}</version>
+      <artifactId>elasticsearch-rest-client</artifactId>
+      <version>${elasticsearch.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+      <version>${httpcore.version}</version>
     </dependency>
     <dependency>
       <groupId>org.elasticsearch</groupId>
       <artifactId>elasticsearch</artifactId>
-      <version>${elasticsearch5-java-driver.version}</version>
+      <version>${elasticsearch.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
+      <!-- Using special netty transport to start embedded ES instance during tests -->
       <groupId>org.elasticsearch.plugin</groupId>
-      <artifactId>transport-netty3-client</artifactId>
-      <version>${elasticsearch5-java-driver.version}</version>
+      <artifactId>transport-netty4-client</artifactId>
+      <version>${elasticsearch.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -87,10 +100,11 @@ limitations under the License.
       -->
       <groupId>org.codelibs.elasticsearch.module</groupId>
       <artifactId>lang-painless</artifactId>
-      <version>${elasticsearch5-java-driver.version}</version>
+      <version>${elasticsearch.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
+      <!-- log4j2 is default logging framework for ES server -->
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
       <version>${log4j2.version}</version>
@@ -101,11 +115,6 @@ limitations under the License.
       <artifactId>log4j-core</artifactId>
       <version>${log4j2.version}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.carrotsearch</groupId>
-      <artifactId>hppc</artifactId>
-      <version>${hppc.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

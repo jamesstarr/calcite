@@ -16,19 +16,11 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-import org.apache.calcite.jdbc.CalciteConnection;
-import org.apache.calcite.schema.SchemaPlus;
-import org.apache.calcite.schema.impl.ViewTable;
-import org.apache.calcite.schema.impl.ViewTableMacro;
-import org.apache.calcite.test.CalciteAssert;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceAccessMode;
-import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -41,21 +33,21 @@ import java.util.Map;
 /**
  * Test of different boolean expressions (some more complex than others).
  */
-@ResourceLock(value = "elasticsearch-scrolls", mode = ResourceAccessMode.READ)
-class BooleanLogicTest {
+public class BooleanLogicTest {
 
+  @ClassRule
   public static final EmbeddedElasticsearchPolicy NODE = EmbeddedElasticsearchPolicy.create();
 
-  private static final String NAME = "booleanlogic";
+  private static final String NAME = "docs";
 
   /**
    * Used to create {@code zips} index and insert some data
    * @throws Exception when ES node setup failed
    */
-  @BeforeAll
+  @BeforeClass
   public static void setupInstance() throws Exception {
 
-    final Map<String, String> mapping = ImmutableMap.of("a", "keyword", "b", "keyword",
+    final Map<String, String> mapping = ImmutableMap.of("A", "keyword", "b", "keyword",
         "c", "keyword", "int", "long");
 
     NODE.createIndex(NAME, mapping);
@@ -81,8 +73,7 @@ class BooleanLogicTest {
                 +  " from \"elastic\".\"%s\"", NAME);
 
         ViewTableMacro macro = ViewTable.viewMacro(root, viewSql,
-            Collections.singletonList("elastic"),
-            Arrays.asList("elastic", "view"), false);
+                Collections.singletonList("elastic"), Arrays.asList("elastic", "view"), false);
         root.add("VIEW", macro);
 
         return connection;
@@ -90,7 +81,8 @@ class BooleanLogicTest {
     };
   }
 
-  @Test void expressions() {
+  @Test
+  public void expressions() {
     assertSingle("select * from view");
     assertSingle("select * from view where a = 'a'");
     assertEmpty("select * from view where a <> 'a'");
@@ -129,40 +121,9 @@ class BooleanLogicTest {
     assertSingle("select * from view where num > 41");
     assertSingle("select * from view where num > 0");
     assertSingle("select * from view where (a = 'a' and b = 'b') or (num = 42 and c = 'c')");
-    assertSingle("select * from view where c = 'c' and (a in ('a', 'b') or num in (41, 42))");
     assertSingle("select * from view where (a = 'a' or b = 'b') or (num = 42 and c = 'c')");
     assertSingle("select * from view where a = 'a' and (b = '0' or (b = 'b' and "
-        +  "(c = '0' or (c = 'c' and num = 42))))");
-  }
-
-  /**
-   * Tests negations ({@code NOT} operator).
-   */
-  @Test void notExpression() {
-    assertEmpty("select * from view where not a = 'a'");
-    assertSingle("select * from view where not not a = 'a'");
-    assertEmpty("select * from view where not not not a = 'a'");
-    assertSingle("select * from view where not a <> 'a'");
-    assertSingle("select * from view where not not not a <> 'a'");
-    assertEmpty("select * from view where not 'a' = a");
-    assertSingle("select * from view where not 'a' <> a");
-    assertSingle("select * from view where not a = 'b'");
-    assertSingle("select * from view where not 'b' = a");
-    assertEmpty("select * from view where not a in ('a')");
-    assertEmpty("select * from view where a not in ('a')");
-    assertSingle("select * from view where not a not in ('a')");
-    assertEmpty("select * from view where not a not in ('b')");
-    assertEmpty("select * from view where not not a not in ('a')");
-    assertSingle("select * from view where not not a not in ('b')");
-    assertEmpty("select * from view where not a in ('a', 'b')");
-    assertEmpty("select * from view where a not in ('a', 'b')");
-    assertEmpty("select * from view where not a not in ('z')");
-    assertEmpty("select * from view where not a not in ('z')");
-    assertSingle("select * from view where not a in ('z')");
-    assertSingle("select * from view where not (not num = 42 or not a in ('a', 'c'))");
-    assertEmpty("select * from view where not num > 0");
-    assertEmpty("select * from view where num = 42 and a not in ('a', 'c')");
-    assertSingle("select * from view where not (num > 42 or num < 42 and num = 42)");
+            +  "(c = '0' or (c = 'c' and num = 42))))");
   }
 
   private void assertSingle(String query) {
@@ -180,3 +141,8 @@ class BooleanLogicTest {
   }
 
 }
+<<<<<<< HEAD
+=======
+
+// End BooleanLogicTest.java
+>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
