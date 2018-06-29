@@ -87,7 +87,7 @@ class TableFunctionTest {
   /**
    * Tests a table function with literal arguments.
    */
-  @Test void testTableFunction() throws SQLException {
+  @Test public void testTableFunction() throws SQLException {
     try (Connection connection = DriverManager.getConnection("jdbc:calcite:")) {
       CalciteConnection calciteConnection =
           connection.unwrap(CalciteConnection.class);
@@ -103,42 +103,7 @@ class TableFunctionTest {
       assertThat(CalciteAssert.toString(resultSet),
           equalTo("N=4; C=abcd\n"));
     }
-  }
-
-  @Test void testTableFunctionWithArrayParameter() throws SQLException {
-    try (Connection connection = DriverManager.getConnection("jdbc:calcite:")) {
-      CalciteConnection calciteConnection =
-          connection.unwrap(CalciteConnection.class);
-      SchemaPlus rootSchema = calciteConnection.getRootSchema();
-      SchemaPlus schema = rootSchema.add("s", new AbstractSchema());
-      final TableFunction table =
-          TableFunctionImpl.create(Smalls.GENERATE_STRINGS_OF_INPUT_SIZE_METHOD);
-      schema.add("GenerateStringsOfInputSize", table);
-      final String sql = "select *\n"
-          + "from table(\"s\".\"GenerateStringsOfInputSize\"(ARRAY[5,4,3,1,2])) as t(n, c)\n"
-          + "where char_length(c) > 3";
-      ResultSet resultSet = connection.createStatement().executeQuery(sql);
-      assertThat(CalciteAssert.toString(resultSet),
-          equalTo("N=4; C=abcd\n"));
-    }
-  }
-
-  @Test void testTableFunctionWithMapParameter() throws SQLException {
-    try (Connection connection = DriverManager.getConnection("jdbc:calcite:")) {
-      CalciteConnection calciteConnection =
-          connection.unwrap(CalciteConnection.class);
-      SchemaPlus rootSchema = calciteConnection.getRootSchema();
-      SchemaPlus schema = rootSchema.add("s", new AbstractSchema());
-      final TableFunction table =
-          TableFunctionImpl.create(Smalls.GENERATE_STRINGS_OF_INPUT_MAP_SIZE_METHOD);
-      schema.add("GenerateStringsOfInputMapSize", table);
-      final String sql = "select *\n"
-          + "from table(\"s\".\"GenerateStringsOfInputMapSize\"(Map[5,4,3,1])) as t(n, c)\n"
-          + "where char_length(c) > 0";
-      ResultSet resultSet = connection.createStatement().executeQuery(sql);
-      assertThat(CalciteAssert.toString(resultSet),
-          equalTo("N=1; C=a\n"));
-    }
+>>>>>>> 38d0848a3 ([CALCITE-2382] Sub-query join lateral table function (pengzhiwei))
   }
 
   /**
@@ -471,8 +436,35 @@ class TableFunctionTest {
               "C=5; N=5");
     }
   }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2382">[CALCITE-2382]
+   * Sub-query lateral joined to table function</a>. */
+  @Test public void testInlineViewLateralTableFunction() throws SQLException {
+    try (Connection connection = DriverManager.getConnection("jdbc:calcite:")) {
+      CalciteConnection calciteConnection =
+          connection.unwrap(CalciteConnection.class);
+      SchemaPlus rootSchema = calciteConnection.getRootSchema();
+      SchemaPlus schema = rootSchema.add("s", new AbstractSchema());
+      final TableFunction table =
+          TableFunctionImpl.create(Smalls.GENERATE_STRINGS_METHOD);
+      schema.add("GenerateStrings", table);
+      Table tbl = new ScannableTableTest.SimpleTable();
+      schema.add("t", tbl);
+
+      final String sql = "select *\n"
+          + "from (select 5 as f0 from \"s\".\"t\") \"a\",\n"
+          + "  lateral table(\"s\".\"GenerateStrings\"(f0)) as t(n, c)\n"
+          + "where char_length(c) > 3";
+      ResultSet resultSet = connection.createStatement().executeQuery(sql);
+      final String expected = "F0=5; N=4; C=abcd\n"
+          + "F0=5; N=4; C=abcd\n"
+          + "F0=5; N=4; C=abcd\n"
+          + "F0=5; N=4; C=abcd\n";
+      assertThat(CalciteAssert.toString(resultSet), equalTo(expected));
+    }
+  }
 }
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3364">[CALCITE-3364]
