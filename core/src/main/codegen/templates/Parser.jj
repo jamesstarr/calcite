@@ -4551,7 +4551,8 @@ TimeUnit TimestampInterval() :
 {
     <FRAC_SECOND> { return TimeUnit.MICROSECOND; }
 |   <MICROSECOND> { return TimeUnit.MICROSECOND; }
-|   <SQL_TSI_FRAC_SECOND> { return TimeUnit.MICROSECOND; }
+|   <NANOSECOND> { return TimeUnit.NANOSECOND; }
+|   <SQL_TSI_FRAC_SECOND> { return TimeUnit.NANOSECOND; }
 |   <SQL_TSI_MICROSECOND> { return TimeUnit.MICROSECOND; }
 |   <SECOND> { return TimeUnit.SECOND; }
 |   <SQL_TSI_SECOND> { return TimeUnit.SECOND; }
@@ -6517,6 +6518,7 @@ SqlPostfixOperator PostfixRowOperator() :
 |   < MUMPS: "MUMPS" >
 |   < NAME: "NAME" >
 |   < NAMES: "NAMES" >
+|   < NANOSECOND: "NANOSECOND" >
 |   < NATIONAL: "NATIONAL" >
 |   < NATURAL: "NATURAL" >
 |   < NCHAR: "NCHAR" >
@@ -6890,6 +6892,9 @@ void NonReservedKeyWord0of3() :
 <#if keyword?index == 0>
         <${keyword}>
 <#elseif keyword?index % 3 == 0>
+
+    |   <NANOSECOND>
+
     |   <${keyword}>
 </#if>
 </#list>

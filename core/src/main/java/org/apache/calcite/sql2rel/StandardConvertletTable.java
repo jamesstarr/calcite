@@ -1524,13 +1524,27 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
       final RexBuilder rexBuilder = cx.getRexBuilder();
       final SqlLiteral unitLiteral = call.operand(0);
       final TimeUnit unit = unitLiteral.symbolValue(TimeUnit.class);
+      RexNode interval2Add;
+      SqlIntervalQualifier qualifier =
+          new SqlIntervalQualifier(unit, null, unitLiteral.getParserPosition());
+      RexNode op1 = cx.convertExpression(call.operand(1));
+      switch (unit) {
+      case MICROSECOND:
+      case NANOSECOND:
+        interval2Add =
+            divide(rexBuilder,
+                multiply(rexBuilder,
+                    rexBuilder.makeIntervalLiteral(BigDecimal.ONE, qualifier), op1),
+                BigDecimal.ONE.divide(unit.multiplier,
+                    RoundingMode.UNNECESSARY));
+        break;
+      default:
+        interval2Add = multiply(rexBuilder,
+            rexBuilder.makeIntervalLiteral(unit.multiplier, qualifier), op1);
+      }
+
       return rexBuilder.makeCall(SqlStdOperatorTable.DATETIME_PLUS,
-          cx.convertExpression(call.operand(2)),
-          multiply(rexBuilder,
-              rexBuilder.makeIntervalLiteral(unit.multiplier,
-                  new SqlIntervalQualifier(unit, null,
-                      unitLiteral.getParserPosition())),
-              cx.convertExpression(call.operand(1))));
+          cx.convertExpression(call.operand(2)), interval2Add);
     }
   }
 
@@ -1544,9 +1558,13 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
       TimeUnit unit = unitLiteral.symbolValue(TimeUnit.class);
       BigDecimal multiplier = BigDecimal.ONE;
       BigDecimal divider = BigDecimal.ONE;
+      SqlTypeName sqlTypeName = unit == TimeUnit.NANOSECOND
+          ? SqlTypeName.BIGINT
+          : SqlTypeName.INTEGER;
       switch (unit) {
       case MICROSECOND:
       case MILLISECOND:
+      case NANOSECOND:
       case WEEK:
         multiplier = BigDecimal.valueOf(DateTimeUtils.MILLIS_PER_SECOND);
         divider = unit.multiplier;
@@ -1570,7 +1588,7 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
           ImmutableList.of(op2, op1));
       final RelDataType intType =
           cx.getTypeFactory().createTypeWithNullability(
-              cx.getTypeFactory().createSqlType(SqlTypeName.INTEGER),
+              cx.getTypeFactory().createSqlType(sqlTypeName),
               SqlTypeUtil.containsNullable(rexCall.getType()));
       RexNode e = rexBuilder.makeCast(intType, rexCall);
       return rexBuilder.multiplyDivide(e, multiplier, divider);
