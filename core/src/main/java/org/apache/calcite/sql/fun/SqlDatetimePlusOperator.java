@@ -23,48 +23,5 @@ import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperatorBinding;
 import org.apache.calcite.sql.SqlSpecialOperator;
-<<<<<<< HEAD
-=======
-import org.apache.calcite.sql.SqlSyntax;
-import org.apache.calcite.sql.SqlWriter;
-import org.apache.calcite.sql.type.InferTypes;
-import org.apache.calcite.sql.type.IntervalSqlType;
-import org.apache.calcite.sql.type.OperandTypes;
-import org.apache.calcite.sql.type.ReturnTypes;
-    switch (unitType.getIntervalQualifier().getStartUnit()) {
-    case HOUR:
-    case MINUTE:
-    case SECOND:
-    case MILLISECOND:
-    case MICROSECOND:
-      return typeFactory.createTypeWithNullability(
-          typeFactory.createSqlType(SqlTypeName.TIMESTAMP),
-          leftType.isNullable() || unitType.isNullable());
-    default:
-      return leftType;
-    }
-  }
-
-
-  public SqlSyntax getSyntax() {
-    return SqlSyntax.SPECIAL;
-  }
-
-  public void unparse(
-      SqlWriter writer,
-      SqlCall call,
-      int leftPrec,
-      int rightPrec) {
-    writer.getDialect().unparseSqlDatetimeArithmetic(
-        writer, call, SqlKind.PLUS, leftPrec, rightPrec);
-  }
-
-  @Override public SqlMonotonicity getMonotonicity(SqlOperatorBinding call) {
-    return SqlStdOperatorTable.PLUS.getMonotonicity(call);
-  }
-}
-<<<<<<< HEAD
-=======
 
 // End SqlDatetimePlusOperator.java
->>>>>>> ef578f572 ([CALCITE-2188] JDBC adapter generates invalid SQL for DATE/INTERVAL arithmetic)
