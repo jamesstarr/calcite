@@ -30,6 +30,7 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlOperandTypeChecker;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
+import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
@@ -68,6 +69,7 @@ public class RexSimplify {
   /** How to treat UNKNOWN values, if one of the deprecated {@code
    * simplify} methods without an {@code unknownAs} argument is called. */
   final RexUnknownAs defaultUnknownAs;
+  final boolean predicateElimination;
   private final RexExecutor executor;
   private final Strong strong;
 
@@ -80,15 +82,17 @@ public class RexSimplify {
    */
   public RexSimplify(RexBuilder rexBuilder, RelOptPredicateList predicates,
                      RexExecutor executor) {
-    this(rexBuilder, predicates, UNKNOWN, false, executor);
+    this(rexBuilder, predicates, UNKNOWN, true, false, executor);
   }
 
   /** Internal constructor. */
   private RexSimplify(RexBuilder rexBuilder, RelOptPredicateList predicates,
-      RexUnknownAs defaultUnknownAs, boolean paranoid, RexExecutor executor) {
+      RexUnknownAs defaultUnknownAs, boolean predicateElimination,
+      boolean paranoid, RexExecutor executor) {
     this.rexBuilder = Objects.requireNonNull(rexBuilder);
     this.predicates = Objects.requireNonNull(predicates);
     this.defaultUnknownAs = Objects.requireNonNull(defaultUnknownAs);
+    this.predicateElimination = predicateElimination;
     this.paranoid = paranoid;
     this.executor = Objects.requireNonNull(executor);
     this.strong = new Strong();
@@ -98,13 +102,13 @@ public class RexSimplify {
   public RexSimplify(RexBuilder rexBuilder, boolean unknownAsFalse,
       RexExecutor executor) {
     this(rexBuilder, RelOptPredicateList.EMPTY,
-        RexUnknownAs.falseIf(unknownAsFalse), false, executor);
+        RexUnknownAs.falseIf(unknownAsFalse), true, false, executor);
   }
 
   @Deprecated // to be removed before 2.0
   public RexSimplify(RexBuilder rexBuilder, RelOptPredicateList predicates,
       boolean unknownAsFalse, RexExecutor executor) {
-    this(rexBuilder, predicates, RexUnknownAs.falseIf(unknownAsFalse),
+    this(rexBuilder, predicates, RexUnknownAs.falseIf(unknownAsFalse), true,
         false, executor);
   }
 
@@ -120,7 +124,8 @@ public class RexSimplify {
     final RexUnknownAs defaultUnknownAs = RexUnknownAs.falseIf(unknownAsFalse);
     return defaultUnknownAs == this.defaultUnknownAs
         ? this
-        : new RexSimplify(rexBuilder, predicates, defaultUnknownAs, paranoid, executor);
+        : new RexSimplify(rexBuilder, predicates, defaultUnknownAs,
+            predicateElimination, paranoid, executor);
   }
 
   /** Returns a RexSimplify the same as this but with a specified
@@ -128,7 +133,8 @@ public class RexSimplify {
   public RexSimplify withPredicates(RelOptPredicateList predicates) {
     return predicates == this.predicates
         ? this
-        : new RexSimplify(rexBuilder, predicates, defaultUnknownAs, paranoid, executor);
+        : new RexSimplify(rexBuilder, predicates, defaultUnknownAs,
+            predicateElimination, paranoid, executor);
   }
 
   /** Returns a RexSimplify the same as this but which verifies that
@@ -139,8 +145,19 @@ public class RexSimplify {
   public RexSimplify withParanoid(boolean paranoid) {
     return paranoid == this.paranoid
         ? this
-        : new RexSimplify(rexBuilder, predicates, defaultUnknownAs, paranoid,
-            executor);
+        : new RexSimplify(rexBuilder, predicates, defaultUnknownAs,
+            predicateElimination, paranoid, executor);
+  }
+
+  /** Returns a RexSimplify the same as this but with a specified {@link #predicateElimination}
+   * value.
+   * This is introduced temporarily; until CALCITE-2401 is fixed
+   */
+  private RexSimplify withPredicateElimination(boolean predicateElimination) {
+    return predicateElimination == this.predicateElimination
+              ? this
+              : new RexSimplify(rexBuilder, predicates, defaultUnknownAs,
+              predicateElimination, paranoid, executor);
   }
 
   /** Simplifies a boolean expression, always preserving its type and its
@@ -1038,11 +1055,9 @@ public class RexSimplify {
       final List<RexNode> notTerms = new ArrayList<>();
       RelOptUtil.decomposeConjunction(e, terms, notTerms);
 
-      switch (unknownAs) {
-      case FALSE:
+      if (unknownAs == FALSE && predicateElimination) {
         simplifyAndTerms(terms);
-        break;
-      default:
+      } else {
         simplifyList(terms, unknownAs);
       }
 
@@ -1461,7 +1476,9 @@ public class RexSimplify {
     try {
       assert call.getKind() == SqlKind.OR;
       final List<RexNode> terms = RelOptUtil.disjunctions(call);
-      simplifyOrTerms(terms);
+      if (predicateElimination) {
+        simplifyOrTerms(terms);
+      }
       return simplifyOrs(terms, unknownAs);
     } catch (ClassCastException ex) {
       return call;
@@ -2150,7 +2167,9 @@ public class RexSimplify {
    * @return simplified conjunction of predicates for the filter, null if always false
    */
   public RexNode simplifyFilterPredicates(Iterable<? extends RexNode> predicates) {
-    final RexNode simplifiedAnds = simplifyAnds(predicates, FALSE);
+    final RexNode simplifiedAnds =
+            withPredicateElimination(Bug.CALCITE_2401_FIXED)
+                    .simplifyAnds(predicates, FALSE);
     if (simplifiedAnds.isAlwaysFalse()) {
       return null;
     }
