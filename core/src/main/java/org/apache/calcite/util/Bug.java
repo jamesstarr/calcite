@@ -159,6 +159,12 @@ public abstract class Bug {
   public static final boolean CALCITE_2539_FIXED = false;
 
   /** Whether
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2401">[CALCITE-2401]
+   * Improve RelMdPredicates performance</a>
+   */
+  public static final boolean CALCITE_2401_FIXED = false;
+
+  /** Whether
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2776">[CALCITE-2776]
    * Wrong value when accessing struct types with one attribute</a> is fixed. */
   public static final boolean CALCITE_2776_FIXED = false;

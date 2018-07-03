@@ -6721,8 +6721,11 @@ LogicalProject(EXPR$0=[1])
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 5894084f1 (Revert "[CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)")
+=======
+>>>>>>> 1cbd28fef ([CALCITE-2384] Performance issue in getPulledUpPredicates (Zoltan Haindrich))
     LogicalUnion(all=[true])
       LogicalProject(DEPTNO=[$7])
         LogicalFilter(condition=[>($7, 7)])
@@ -6730,6 +6733,7 @@ LogicalProject(EXPR$0=[1])
       LogicalProject(DEPTNO=[$7])
         LogicalFilter(condition=[>($7, 10)])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 =======
@@ -6751,6 +6755,9 @@ LogicalProject(EXPR$0=[1])
 =======
     LogicalFilter(condition=[>($7, 7)])
 >>>>>>> 34395e939 ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
+=======
+    LogicalFilter(condition=[OR(>($7, 7), >($7, 10))])
+>>>>>>> 1cbd28fef ([CALCITE-2384] Performance issue in getPulledUpPredicates (Zoltan Haindrich))
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
