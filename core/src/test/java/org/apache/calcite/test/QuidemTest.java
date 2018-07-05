@@ -32,8 +32,6 @@ import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.Closer;
 import org.apache.calcite.util.Util;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.google.common.io.PatternFilenameFilter;
 
 import net.hydromatic.quidem.Quidem;
@@ -55,6 +53,7 @@ import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 import static org.junit.Assert.fail;
 
@@ -105,11 +104,7 @@ public abstract class QuidemTest {
           : "f: " + f.getAbsolutePath() + "; base: " + base;
       paths.add(f.getAbsolutePath().substring(base.length()));
     }
-    return Lists.transform(paths, new Function<String, Object[]>() {
-      public Object[] apply(String path) {
-        return new Object[] {path};
-      }
-    });
+    return Util.transform(paths, path -> new Object[] {path});
   }
 
   protected void checkRun(String path) throws Exception {
