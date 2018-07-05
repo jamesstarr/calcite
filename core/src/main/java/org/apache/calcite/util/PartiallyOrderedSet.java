@@ -16,8 +16,11 @@
  */
 package org.apache.calcite.util;
 
+<<<<<<< HEAD
 import org.apache.calcite.config.CalciteSystemProperty;
 
+=======
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import com.google.common.collect.ImmutableList;
 
 import java.util.AbstractSet;

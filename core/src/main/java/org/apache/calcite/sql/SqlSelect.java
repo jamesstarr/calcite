@@ -69,14 +69,14 @@ public class SqlSelect extends SqlCall {
       SqlNode fetch,
       SqlNodeList hints) {
     super(pos);
-    this.keywordList = Preconditions.checkNotNull(keywordList != null
+    this.keywordList = Objects.requireNonNull(keywordList != null
         ? keywordList : new SqlNodeList(pos));
     this.selectList = selectList;
     this.from = from;
     this.where = where;
     this.groupBy = groupBy;
     this.having = having;
-    this.windowDecls = Preconditions.checkNotNull(windowDecls != null
+    this.windowDecls = Objects.requireNonNull(windowDecls != null
         ? windowDecls : new SqlNodeList(pos));
     this.qualify = qualify;
     this.orderBy = orderBy;
@@ -121,7 +121,7 @@ public class SqlSelect extends SqlCall {
       having = operand;
       break;
     case 6:
-      windowDecls = Preconditions.checkNotNull((SqlNodeList) operand);
+      windowDecls = Objects.requireNonNull((SqlNodeList) operand);
       break;
     case 7:
       qualify = operand;

@@ -203,7 +203,7 @@ class CsvTest {
         assertThat(o, is(300L));
         assertThat(resultSet.next(), is(false));
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
     }).ok();
   }
@@ -359,9 +359,9 @@ class CsvTest {
       try {
         final List<String> lines = new ArrayList<>();
         CsvTest.collect(lines, resultSet);
-        assertEquals(Arrays.asList(expected), lines);
+        Assert.assertEquals(Arrays.asList(expected), lines);
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
     };
   }
@@ -376,9 +376,9 @@ class CsvTest {
         final List<String> lines = new ArrayList<>();
         CsvTest.collect(lines, resultSet);
         Collections.sort(lines);
-        assertEquals(expectedLines, lines);
+        Assert.assertEquals(expectedLines, lines);
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
     };
   }
@@ -989,7 +989,7 @@ class CsvTest {
     try {
       output(resultSet, System.out);
     } catch (SQLException e) {
-      throw TestUtil.rethrow(e);
+      throw new RuntimeException(e);
     }
     return null;
   }

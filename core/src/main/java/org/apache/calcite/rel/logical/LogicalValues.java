@@ -85,9 +85,7 @@ public class LogicalValues extends Values {
     final RelMetadataQuery mq = cluster.getMetadataQuery();
     final RelTraitSet traitSet = cluster.traitSetOf(Convention.NONE)
         .replaceIfs(RelCollationTraitDef.INSTANCE,
-            () -> RelMdCollation.values(mq, rowType, tuples))
-        .replaceIf(RelDistributionTraitDef.INSTANCE,
-            () -> RelMdDistribution.values(rowType, tuples));
+            () -> RelMdCollation.values(mq, rowType, tuples));
     return new LogicalValues(cluster, traitSet, rowType, tuples);
   }
 

@@ -62,7 +62,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
 /**
  * Factory for row expressions.
@@ -79,6 +79,7 @@ public class RexBuilder {
   public static final SqlSpecialOperator GET_OPERATOR =
       new SqlSpecialOperator("_get", SqlKind.OTHER_FUNCTION);
 
+<<<<<<< HEAD
   /** The smallest valid {@code int} value, as a {@link BigDecimal}. */
   private static final BigDecimal INT_MIN =
       BigDecimal.valueOf(Integer.MIN_VALUE);
@@ -87,6 +88,7 @@ public class RexBuilder {
   private static final BigDecimal INT_MAX =
       BigDecimal.valueOf(Integer.MAX_VALUE);
 
+=======
   //~ Instance fields --------------------------------------------------------
 
   protected final RelDataTypeFactory typeFactory;

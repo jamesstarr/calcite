@@ -16,20 +16,7 @@
  */
 package org.apache.calcite.adapter.tpcds;
 
-import org.apache.calcite.plan.RelTraitDef;
-import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.rel.core.JoinRelType;
-import org.apache.calcite.runtime.Hook;
-import org.apache.calcite.schema.SchemaPlus;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
-import org.apache.calcite.sql.parser.SqlParser;
-import org.apache.calcite.test.CalciteAssert;
-import org.apache.calcite.tools.Frameworks;
-import org.apache.calcite.tools.Program;
-import org.apache.calcite.tools.Programs;
-import org.apache.calcite.tools.RelBuilder;
-import org.apache.calcite.util.Bug;
-import org.apache.calcite.util.Holder;
+import org.apache.calcite.util.Pair;
 
 import net.hydromatic.tpcds.query.Query;
 
@@ -41,19 +28,15 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
 
-import static org.apache.calcite.test.Matchers.hasTree;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-
 /** Unit test for {@link org.apache.calcite.adapter.tpcds.TpcdsSchema}.
  *
- * <p>Only runs as part of slow test suite.</p>
- */
-@Tag("slow")
-class TpcdsTest {
-  private static Consumer<Holder<Program>> handler(
-      final boolean bushy, final int minJoinCount) {
-    return holder -> holder.set(
+ * <p>Only runs if {@code -Dcalcite.test.slow} is specified on the
+ * command-line.
+ * (See {@link org.apache.calcite.test.CalciteAssert#ENABLE_SLOW}.)</p> */
+public class TpcdsTest {
+  private static Consumer<Pair<List<Prepare.Materialization>, Holder<Program>>>
+      handler(boolean bushy, int minJoinCount) {
+    return pair -> pair.right.set(
         Programs.sequence(
             Programs.heuristicJoinOrder(Programs.RULE_SET, bushy,
                 minJoinCount),

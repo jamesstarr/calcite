@@ -78,13 +78,13 @@ import org.apache.calcite.rel.rules.ValuesReduceRule;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
+import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexExecutor;
 import org.apache.calcite.rex.RexExecutorImpl;
 import org.apache.calcite.rex.RexExecutorTest;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexOver;
 import org.apache.calcite.runtime.Hook;
-import org.apache.calcite.runtime.PredicateImpl;
 import org.apache.calcite.schema.Schemas;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
@@ -102,25 +102,25 @@ import org.apache.calcite.util.DateString;
 
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-
-import javax.annotation.Nullable;
+import java.util.function.Predicate;
 
 import static org.apache.calcite.plan.RelOptRule.none;
 import static org.apache.calcite.plan.RelOptRule.operand;
-
+import static org.apache.calcite.plan.RelOptRule.operandJ;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EQUALS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_NOT_DISTINCT_FROM;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit test for rules in {@code org.apache.calcite.rel} and subpackages.
@@ -2336,25 +2336,26 @@ class RelOptRulesTest extends RelOptTestBase {
   private void checkPlanning(String query) throws Exception {
     final Tester tester1 = tester.withCatalogReaderFactory(
         (typeFactory, caseSensitive) -> new MockCatalogReader(typeFactory, caseSensitive) {
-              @Override public MockCatalogReader init() {
-                // CREATE SCHEMA abc;
-                // CREATE TABLE a(a INT);
-                // ...
-                // CREATE TABLE j(j INT);
-                MockSchema schema = new MockSchema("SALES");
-                registerSchema(schema);
-                final RelDataType intType =
-                    typeFactory.createSqlType(SqlTypeName.INTEGER);
-                for (int i = 0; i < 10; i++) {
-                  String t = String.valueOf((char) ('A' + i));
-                  MockTable table = MockTable.create(this, schema, t, false, 100);
-                  table.addColumn(t, intType);
-                  registerTable(table);
-                }
-                return this;
-              }
-              // CHECKSTYLE: IGNORE 1
-        });
+
+          @Override public MockCatalogReader init() {
+            // CREATE SCHEMA abc;
+            // CREATE TABLE a(a INT);
+            // ...
+            // CREATE TABLE j(j INT);
+            MockSchema schema = new MockSchema("SALES");
+            registerSchema(schema);
+            final RelDataType intType =
+                typeFactory.createSqlType(SqlTypeName.INTEGER);
+            for (int i = 0; i < 10; i++) {
+              String t = String.valueOf((char) ('A' + i));
+              MockTable table = MockTable.create(this, schema, t, false, 100);
+              table.addColumn(t, intType);
+              registerTable(table);
+            }
+            return this;
+          }
+          // CHECKSTYLE: IGNORE 1
+        }.init());
 
     HepProgram program = new HepProgramBuilder()
         .addMatchOrder(HepMatchOrder.BOTTOM_UP)
@@ -3424,9 +3425,9 @@ class RelOptRulesTest extends RelOptTestBase {
     final RelRoot root = tester.convertSqlToRel(sql);
     final RelNode relInitial = root.rel;
 
-    assertTrue(relInitial != null);
+    assertThat(relInitial, notNullValue());
 
-    List<RelMetadataProvider> list = Lists.newArrayList();
+    List<RelMetadataProvider> list = new ArrayList<>();
     list.add(DefaultRelMetadataProvider.INSTANCE);
     planner.registerMetadataProviders(list);
     RelMetadataProvider plannerChain = ChainedRelMetadataProvider.of(list);
@@ -4462,7 +4463,7 @@ class RelOptRulesTest extends RelOptTestBase {
       @Override public RelOptPlanner createPlanner() {
         return new MockRelOptPlanner(Contexts.empty()) {
           @Override public List<RelTraitDef> getRelTraitDefs() {
-            return ImmutableList.<RelTraitDef>of(RelCollationTraitDef.INSTANCE);
+            return ImmutableList.of(RelCollationTraitDef.INSTANCE);
           }
           @Override public RelTraitSet emptyTraitSet() {
             return RelTraitSet.createEmpty().plus(

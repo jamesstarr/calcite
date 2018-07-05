@@ -23,6 +23,10 @@ import org.apache.calcite.sql.SqlOperator;
 
 import java.util.List;
 import java.util.Objects;
+<<<<<<< HEAD
+=======
+
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import javax.annotation.Nullable;
 
 /**

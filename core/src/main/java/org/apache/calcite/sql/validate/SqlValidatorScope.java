@@ -321,8 +321,8 @@ public interface SqlValidatorScope {
       this.namespace = Objects.requireNonNull(namespace);
       this.nullable = nullable;
       this.scope = scope;
-      this.path = Preconditions.checkNotNull(path);
-      this.remainingNames = remainingNames == null ? ImmutableList.<String>of()
+      this.path = Objects.requireNonNull(path);
+      this.remainingNames = remainingNames == null ? ImmutableList.of()
           : ImmutableList.copyOf(remainingNames);
     }
 

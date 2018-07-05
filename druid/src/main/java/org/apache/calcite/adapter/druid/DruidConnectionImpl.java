@@ -37,7 +37,6 @@ import org.apache.calcite.util.Util;
 
 import static org.apache.calcite.runtime.HttpUtils.post;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 

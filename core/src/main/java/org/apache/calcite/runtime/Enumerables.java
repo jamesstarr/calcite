@@ -22,14 +22,7 @@ import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.linq4j.function.Function1;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import java.util.function.Supplier;
 
 /**
@@ -68,6 +61,7 @@ public class Enumerables {
   public static com.google.common.base.Supplier<Enumerable<Row>> toRow(
       final com.google.common.base.Supplier<Enumerable<Object[]>> supplier) {
     return () -> toRow(supplier.get());
+<<<<<<< HEAD
   }
 
   public static <E, TKey, TResult> Enumerable<TResult> match(
@@ -180,6 +174,7 @@ public class Enumerables {
         };
       }
     };
+=======
   }
 
   /** Given a match (a list of rows, and their states) produces a list

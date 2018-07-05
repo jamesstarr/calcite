@@ -43,7 +43,7 @@ import static org.apache.calcite.plan.volcano.PlannerTests.PhysSingleRel;
 import static org.apache.calcite.plan.volcano.PlannerTests.TestSingleRel;
 import static org.apache.calcite.plan.volcano.PlannerTests.newCluster;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit test for {@link VolcanoPlanner}

@@ -86,42 +86,14 @@ public class VolcanoRelMetadataProvider implements RelMetadataProvider {
       // class rather than just the subset because many metadata providers
       // only know about logical metadata.
 
-        // Equivalence classes can get tangled up in interesting ways, so avoid
-        // an infinite loop.  REVIEW: There's a chance this will cause us to
-        // fail on metadata queries which invoke other queries, e.g.
-        // PercentageOriginalRows -> Selectivity.  If we implement caching at
-        // this level, we could probably kill two birds with one stone (use
-        // presence of pending cache entry to detect re-entrancy at the correct
-        // granularity).
-        if (subset.set.inMetadataQuery) {
-          return null;
-        }
-
-        subset.set.inMetadataQuery = true;
-        List<Metadata> metaDataList = new ArrayList<>();
-        try {
-          for (RelNode relCandidate : subset.set.rels) {
-            final UnboundMetadata<M> function =
-                provider.apply(relCandidate.getClass(), metadataClass);
-            if (function != null) {
-              final M result = function.bind(relCandidate, mq);
-              if (result != null) {
-                metaDataList.add(result);
-              }
-            }
-          }
-        } finally {
-          subset.set.inMetadataQuery = false;
-        }
-
-        if (metaDataList.size() > 0) {
-          return metadataClass.cast(
-                  Proxy.newProxyInstance(metadataClass.getClassLoader(),
-                          new Class[]{metadataClass},
-                          ChainedRelMetadataProvider.chainedInvocationHandlerOf(metaDataList)));
-        }
-
-        // Give up.
+      // Equivalence classes can get tangled up in interesting ways, so avoid
+      // an infinite loop.  REVIEW: There's a chance this will cause us to
+      // fail on metadata queries which invoke other queries, e.g.
+      // PercentageOriginalRows -> Selectivity.  If we implement caching at
+      // this level, we could probably kill two birds with one stone (use
+      // presence of pending cache entry to detect re-entrancy at the correct
+      // granularity).
+      if (subset.set.inMetadataQuery) {
         return null;
       }
 
@@ -148,6 +120,33 @@ public class VolcanoRelMetadataProvider implements RelMetadataProvider {
                           new Class[]{metadataClass},
                           ChainedRelMetadataProvider.chainedInvocationHandlerOf(metaDataList)));
       }
+<<<<<<< HEAD
+
+      subset.set.inMetadataQuery = true;
+      List<Metadata> metaDataList = new ArrayList<>();
+      try {
+        for (RelNode relCandidate : subset.set.rels) {
+          final UnboundMetadata<M> function =
+              provider.apply(relCandidate.getClass(), metadataClass);
+          if (function != null) {
+            final M result = function.bind(relCandidate, mq);
+            if (result != null) {
+              metaDataList.add(result);
+            }
+          }
+        }
+      } finally {
+        subset.set.inMetadataQuery = false;
+      }
+
+      if (metaDataList.size() > 0) {
+        return metadataClass.cast(
+                  Proxy.newProxyInstance(metadataClass.getClassLoader(),
+                          new Class[]{metadataClass},
+                          ChainedRelMetadataProvider.chainedInvocationHandlerOf(metaDataList)));
+      }
+=======
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
       // Give up.
       return null;
     };

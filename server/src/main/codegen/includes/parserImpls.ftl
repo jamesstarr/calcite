@@ -189,10 +189,14 @@ SqlNodeList AttributeDefList() :
 {
     final Span s;
 <<<<<<< HEAD
+<<<<<<< HEAD
     final List<SqlNode> list = new ArrayList<SqlNode>();
 =======
     final List<SqlNode> list = Lists.newArrayList();
 >>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
+=======
+    final List<SqlNode> list = new ArrayList<SqlNode>();
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 }
 {
     <LPAREN> { s = span(); }

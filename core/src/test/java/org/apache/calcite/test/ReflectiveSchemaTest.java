@@ -434,7 +434,7 @@ public class ReflectiveSchemaTest {
                     ++n;
                   }
                 } catch (SQLException e) {
-                  throw TestUtil.rethrow(e);
+                  throw new RuntimeException(e);
                 }
                 assertThat(n, equalTo(1));
               });
@@ -467,14 +467,16 @@ public class ReflectiveSchemaTest {
       return input.getTime(1);
     case java.sql.Types.TIMESTAMP:
       return input.getTimestamp(1);
-    case java.sql.Types.DECIMAL:
-      return input.getBigDecimal(1);
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
     default:
       throw new AssertionError(type);
     }
   }
 
+<<<<<<< HEAD
   @Test void testClassNames() throws Exception {
+=======
+  @Test public void testClassNames() throws Exception {
     CalciteAssert.that()
         .withSchema("s", CATCHALL).query("select * from \"s\".\"everyTypes\"")
         .returns(
@@ -503,7 +505,7 @@ public class ReflectiveSchemaTest {
                 check(metaData, "utilDate", Timestamp.class);
                 check(metaData, "string", String.class);
               } catch (SQLException e) {
-                throw TestUtil.rethrow(e);
+                throw new RuntimeException(e);
               }
             });
   }
@@ -517,10 +519,10 @@ public class ReflectiveSchemaTest {
         return;
       }
     }
-    fail("column not found: " + columnName);
+    Assert.fail("column not found: " + columnName);
   }
 
-  @Test void testJavaBoolean() throws Exception {
+  @Test public void testJavaBoolean() throws Exception {
     final CalciteAssert.AssertThat with =
         CalciteAssert.that().withSchema("s", CATCHALL);
     with.query("select count(*) as c from \"s\".\"everyTypes\"\n"
@@ -674,7 +676,7 @@ public class ReflectiveSchemaTest {
               buf.append(input.getInt(2)).append("\n");
             }
           } catch (SQLException e) {
-            throw TestUtil.rethrow(e);
+            throw new RuntimeException(e);
           }
           assertThat(buf.toString(), equalTo("0\n2147483647\n"));
         });

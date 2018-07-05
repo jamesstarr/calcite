@@ -349,9 +349,9 @@ class RelOptUtilTest {
 
   private static void splitJoinConditionHelper(RexNode joinCond, List<Integer> expLeftKeys,
       List<Integer> expRightKeys, List<Boolean> expFilterNulls, RexNode expRemaining) {
-    List<Integer> actLeftKeys = Lists.newArrayList();
-    List<Integer> actRightKeys = Lists.newArrayList();
-    List<Boolean> actFilterNulls = Lists.newArrayList();
+    List<Integer> actLeftKeys = new ArrayList<>();
+    List<Integer> actRightKeys = new ArrayList<>();
+    List<Boolean> actFilterNulls = new ArrayList<>();
 
     RexInputRef leftKeyInputRef = RexInputRef.of(leftJoinIndex, empDeptJoinRelFields);
     RexInputRef rightKeyInputRef =

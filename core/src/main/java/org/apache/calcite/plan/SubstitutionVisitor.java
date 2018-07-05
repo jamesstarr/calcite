@@ -53,8 +53,7 @@ import org.apache.calcite.rex.RexProgramBuilder;
 import org.apache.calcite.rex.RexShuttle;
 import org.apache.calcite.rex.RexSimplify;
 import org.apache.calcite.rex.RexUtil;
-import org.apache.calcite.rex.RexVisitor;
-import org.apache.calcite.rex.RexVisitorImpl;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.tools.RelBuilder;
@@ -1276,6 +1275,62 @@ public class SubstitutionVisitor {
     }
   }
 
+<<<<<<< HEAD
+=======
+  /** Implementation of {@link UnifyRule} that matches a
+   * {@link org.apache.calcite.rel.logical.LogicalAggregate} to a
+   * {@link org.apache.calcite.rel.logical.LogicalAggregate}, provided
+   * that they have the same child. */
+  private static class AggregateToAggregateUnifyRule extends AbstractUnifyRule {
+    public static final AggregateToAggregateUnifyRule INSTANCE =
+        new AggregateToAggregateUnifyRule();
+
+    private AggregateToAggregateUnifyRule() {
+      super(operand(MutableAggregate.class, query(0)),
+          operand(MutableAggregate.class, target(0)), 1);
+    }
+
+    public UnifyResult apply(UnifyRuleCall call) {
+      final MutableAggregate query = (MutableAggregate) call.query;
+      final MutableAggregate target = (MutableAggregate) call.target;
+      assert query != target;
+      // in.query can be rewritten in terms of in.target if its groupSet is
+      // a subset, and its aggCalls are a superset. For example:
+      //   query: SELECT x, COUNT(b) FROM t GROUP BY x
+      //   target: SELECT x, y, SUM(a) AS s, COUNT(b) AS cb FROM t GROUP BY x, y
+      // transforms to
+      //   result: SELECT x, SUM(cb) FROM (target) GROUP BY x
+      if (query.getInput() != target.getInput()) {
+        return null;
+      }
+      if (!target.groupSet.contains(query.groupSet)) {
+        return null;
+      }
+      MutableRel result = unifyAggregates(query, target);
+      if (result == null) {
+        return null;
+      }
+      return call.result(result);
+    }
+  }
+
+  public static MutableAggregate permute(MutableAggregate aggregate,
+      MutableRel input, Mapping mapping) {
+    ImmutableBitSet groupSet = Mappings.apply(mapping, aggregate.groupSet);
+    ImmutableList<ImmutableBitSet> groupSets =
+        Mappings.apply2(mapping, aggregate.groupSets);
+    List<AggregateCall> aggregateCalls =
+        apply(mapping, aggregate.aggCalls);
+    return MutableAggregate.of(input, groupSet, groupSets, aggregateCalls);
+  }
+
+  private static List<AggregateCall> apply(final Mapping mapping,
+      List<AggregateCall> aggCallList) {
+    return Lists.transform(aggCallList,
+        call -> call.copy(Mappings.apply2(mapping, call.getArgList()),
+            Mappings.apply(mapping, call.filterArg)));
+  }
+
   public static MutableRel unifyAggregates(MutableAggregate query,
       MutableAggregate target) {
     MutableRel result;
@@ -1303,12 +1358,7 @@ public class SubstitutionVisitor {
           return null;
         }
       }
-      final ImmutableBitSet groupSet = query.groupSet.permute(map);
-      ImmutableList<ImmutableBitSet> groupSets = null;
-      if (query.getGroupType() != Aggregate.Group.SIMPLE) {
-        groupSets = ImmutableBitSet.ORDERING.immutableSortedCopy(
-            ImmutableBitSet.permute(query.groupSets, map));
-      }
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
       final List<AggregateCall> aggregateCalls = new ArrayList<>();
       for (AggregateCall aggregateCall : query.aggCalls) {
         if (aggregateCall.isDistinct()) {
@@ -2733,6 +2783,57 @@ public class SubstitutionVisitor {
           visit(input);
         }
       }
+    }
+  }
+<<<<<<< HEAD
+=======
+
+  /**
+   * Rule that converts a {@link org.apache.calcite.rel.logical.LogicalFilter}
+   * on top of a {@link org.apache.calcite.rel.logical.LogicalProject} into a
+   * trivial filter (on a boolean column).
+   */
+  public static class FilterOnProjectRule extends RelOptRule {
+    public static final FilterOnProjectRule INSTANCE =
+        new FilterOnProjectRule(RelFactories.LOGICAL_BUILDER);
+
+    /**
+     * Creates a FilterOnProjectRule.
+     *
+     * @param relBuilderFactory Builder for relational expressions
+     */
+    public FilterOnProjectRule(RelBuilderFactory relBuilderFactory) {
+      super(
+          operandJ(LogicalFilter.class, null,
+              filter -> filter.getCondition() instanceof RexInputRef,
+              some(operand(LogicalProject.class, any()))),
+          relBuilderFactory, null);
+    }
+
+    public void onMatch(RelOptRuleCall call) {
+      final LogicalFilter filter = call.rel(0);
+      final LogicalProject project = call.rel(1);
+
+      final List<RexNode> newProjects = new ArrayList<>(project.getProjects());
+      newProjects.add(filter.getCondition());
+
+      final RelOptCluster cluster = filter.getCluster();
+      RelDataType newRowType =
+          cluster.getTypeFactory().builder()
+              .addAll(project.getRowType().getFieldList())
+              .add("condition", Util.last(newProjects).getType())
+              .build();
+      final RelNode newProject =
+          project.copy(project.getTraitSet(),
+              project.getInput(),
+              newProjects,
+              newRowType);
+
+      final RexInputRef newCondition =
+          cluster.getRexBuilder().makeInputRef(newProject,
+              newProjects.size() - 1);
+
+      call.transformTo(LogicalFilter.create(newProject, newCondition));
     }
   }
 }

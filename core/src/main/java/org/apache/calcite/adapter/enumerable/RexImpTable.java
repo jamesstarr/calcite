@@ -67,7 +67,7 @@ import org.apache.calcite.util.BuiltInMethod;
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -120,7 +120,6 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CBRT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CEIL;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CHARACTER_LENGTH;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CHAR_LENGTH;
->>>>>>> 97b385c7d (Revert "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING")
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.COLLECT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CONCAT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.COS;
@@ -276,10 +275,7 @@ public class RexImpTable {
       new HashMap<>();
   private final Map<SqlAggFunction, Supplier<? extends WinAggImplementor>> winAggMap =
       new HashMap<>();
-  private final Map<SqlMatchFunction, Supplier<? extends MatchImplementor>> matchMap =
-      new HashMap<>();
-  private final Map<SqlOperator, Supplier<? extends TableFunctionCallImplementor>>
-      tvfImplementorMap = new HashMap<>();
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
   RexImpTable() {
     defineMethod(ROW, BuiltInMethod.ARRAY.method, NullPolicy.ANY);
@@ -698,7 +694,9 @@ public class RexImpTable {
     case ANY:
     case STRICT:
     case SEMI_STRICT:
+<<<<<<< HEAD
     case ARG0:
+=======
       return (translator, call, nullAs) -> implementNullSemantics0(
           translator, call, nullAs, nullPolicy, harmonize,
           implementor);
@@ -721,10 +719,7 @@ public class RexImpTable {
             + String.valueOf(call.getOperator());
         final RexCall call2 = call2(false, translator, call);
         switch (nullAs) {
-        case NOT_POSSIBLE:
-          // This doesn't mean that none of the arguments might be null, ex: (s and s is not null)
-          nullAs = NullAs.TRUE;
-          // fallthru
+        case NOT_POSSIBLE: // Just foldAnd
         case TRUE:
           // AND call should return false iff has FALSEs,
           // thus if we convert nulls to true then no harm is made
@@ -766,10 +761,7 @@ public class RexImpTable {
             + String.valueOf(call.getOperator());
         final RexCall call2 = call2(harmonize, translator, call);
         switch (nullAs) {
-        case NOT_POSSIBLE:
-          // This doesn't mean that none of the arguments might be null, ex: (s or s is null)
-          nullAs = NullAs.FALSE;
-          // fallthru
+        case NOT_POSSIBLE: // Just foldOr
         case TRUE:
           // This should return false iff all arguments are FALSE,
           // thus we convert nulls to TRUE and foldOr

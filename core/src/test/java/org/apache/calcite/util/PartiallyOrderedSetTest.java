@@ -16,8 +16,10 @@
  */
 package org.apache.calcite.util;
 
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.apache.calcite.test.CalciteAssert;
+
+import org.junit.Assume;
+import org.junit.Test;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -178,7 +180,7 @@ class PartiallyOrderedSetTest {
     assertEqualsList("['ab', 'abcd']", poset.getAncestors("'a'"));
   }
 
-  @Test void testPosetTricky() {
+  @Test public void testPosetTricky() {
     final PartiallyOrderedSet<String> poset =
         new PartiallyOrderedSet<>(STRING_SUBSET_ORDERING);
 
@@ -294,7 +296,7 @@ class PartiallyOrderedSetTest {
     assertTrue(integers.isValid(true));
   }
 
-  @Test void testDivisorSeries() {
+  @Test public void testDivisorSeries() {
     checkPoset(PartiallyOrderedSetTest::isDivisor, DEBUG, range(1, SCALE * 3),
         false);
   }
@@ -325,7 +327,7 @@ class PartiallyOrderedSetTest {
     }
   }
 
-  @Test void testDivisorInverseSeries() {
+  @Test public void testDivisorInverseSeries() {
     checkPoset(PartiallyOrderedSetTest::isDivisorInverse, DEBUG,
         range(1, SCALE * 3), false);
   }
@@ -356,7 +358,7 @@ class PartiallyOrderedSetTest {
     }
   }
 
-  @Test void testSubsetSeries() {
+  @Test public void testSubsetSeries() {
     checkPoset(PartiallyOrderedSetTest::isBitSubset, DEBUG, range(1, SCALE / 2), false);
   }
 

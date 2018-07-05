@@ -76,7 +76,7 @@ import org.apache.calcite.rel.RelNode;
                 typeFactory.createJavaType(
                     Types.toClass(
                         Types.getElementType(call.targetExpression.getType()))),
-                ImmutableList.<String>of(),
+                ImmutableList.of(),
                 call.targetExpression),
             ImmutableList.of());
 
@@ -85,7 +85,7 @@ import org.apache.calcite.rel.RelNode;
             RelOptTableImpl.create(null,
                 typeFactory.createJavaType((Class)
                     ((ConstantExpression) call.expressions.get(1)).value),
-                ImmutableList.<String>of(),
+                ImmutableList.of(),
                 call.targetExpression),
             ImmutableList.of());
 

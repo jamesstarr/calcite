@@ -96,7 +96,7 @@ public class EnumerableMergeJoin extends Join implements EnumerableRel {
       traitSet = traitSet.replace(collations);
     }
     return new EnumerableMergeJoin(cluster, traitSet, left, right, condition,
-        ImmutableSet.of(), joinType);
+        leftKeys, rightKeys, ImmutableSet.of(), joinType);
   }
 
   @Override public EnumerableMergeJoin copy(RelTraitSet traitSet,

@@ -29,10 +29,9 @@ import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.util.Util;
 
-<<<<<<< HEAD
-=======
 import com.google.common.base.Supplier;
->>>>>>> 6435df1c4 ([CALCITE-3723] Following the change to add hints to RelNode, deprecate the old constructors)
+=======
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;

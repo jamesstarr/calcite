@@ -32,10 +32,12 @@ import static java.util.Comparator.naturalOrder;
  */
 class BinarySearchTest {
   private void search(int key, int lower, int upper, Integer... array) {
-    assertEquals(lower, lowerBound(array, key, naturalOrder()),
-        () -> "lower bound of " + key + " in " + Arrays.toString(array));
-    assertEquals(upper, upperBound(array, key, naturalOrder()),
-        () -> "upper bound of " + key + " in " + Arrays.toString(array));
+    Assert.assertEquals(
+        "lower bound of " + key + " in " + Arrays.toString(array), lower,
+        BinarySearch.lowerBound(array, key, Ordering.natural()));
+    Assert.assertEquals(
+        "upper bound of " + key + " in " + Arrays.toString(array), upper,
+        BinarySearch.upperBound(array, key, Ordering.natural()));
   }
 
   @Test void testSimple() {

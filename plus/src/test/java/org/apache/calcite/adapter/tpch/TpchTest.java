@@ -828,9 +828,9 @@ class TpchTest {
     checkQuery(2);
   }
 
-  @Disabled("Infinite planning")
-  @Test void testQuery02Conversion() {
-    query(2)
+  @Test public void testQuery02Conversion() {
+    query(2, true)
+        .enable(ENABLE)
         .convertMatches(relNode -> {
           String s = RelOptUtil.toString(relNode);
           assertThat(s, not(containsString("Correlator")));

@@ -39,45 +39,7 @@ import org.apache.calcite.util.DateString;
 import org.apache.calcite.util.NlsString;
 import org.apache.calcite.util.Util;
 
-import com.google.common.collect.ImmutableList;
-
-import org.hamcrest.Matcher;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.function.Function;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-/**
- * Unit test for {@link org.apache.calcite.rex.RexExecutorImpl}.
- */
-public class RexExecutorTest {
-  protected void check(final Action action) throws Exception {
-    Frameworks.withPrepare((cluster, relOptSchema, rootSchema, statement) -> {
-      final RexBuilder rexBuilder = cluster.getRexBuilder();
-      DataContext dataContext =
-          Schemas.createDataContext(statement.getConnection(), rootSchema);
-      final RexExecutorImpl executor = new RexExecutorImpl(dataContext);
-      action.check(rexBuilder, executor);
-      return null;
-    });
-  }
-
-  /** Tests an executor that uses variables stored in a {@link DataContext}.
-   * Can change the value of the variable and execute again. */
-  @Test void testVariableExecution() throws Exception {
+  @Test public void testVariableExecution() throws Exception {
     check((rexBuilder, executor) -> {
 
       Object[] values = new Object[1];
@@ -115,7 +77,7 @@ public class RexExecutorTest {
     });
   }
 
-  @Test void testConstant() throws Exception {
+  @Test public void testConstant() throws Exception {
     check((rexBuilder, executor) -> {
 
       final List<RexNode> reducedValues = new ArrayList<>();
@@ -168,7 +130,7 @@ public class RexExecutorTest {
   private void checkConstant(final Object operand,
       final Function<RexBuilder, RexNode> function) throws Exception {
     check((rexBuilder, executor) -> {
->>>>>>> 2ae7b774d ([CALCITE-2742] Read values of USER and SYSTEM_USER variables from DataContext (Siddharth Teotia, Jacques Nadeau))
+
       final List<RexNode> reducedValues = new ArrayList<>();
       final RexNode expression = function.apply(rexBuilder);
       assert expression != null;
@@ -189,9 +151,6 @@ public class RexExecutorTest {
     });
   }
 
-<<<<<<< HEAD
-  @Test void testUserFromContext() throws Exception {
-=======
   @Test public void testUserFromContext() throws Exception {
     testContextLiteral(SqlStdOperatorTable.USER,
         DataContext.Variable.USER, "happyCalciteUser");
@@ -247,6 +206,7 @@ public class RexExecutorTest {
   }
 
   @Test public void testSubstring() throws Exception {
+<<<<<<< HEAD
     check(new Action() {
       public void check(RexBuilder rexBuilder, RexExecutorImpl executor) {
         final List<RexNode> reducedValues = new ArrayList<>();
@@ -282,6 +242,13 @@ public class RexExecutorTest {
       final RexLiteral hello =
           rexBuilder.makeCharLiteral(
               new NlsString("Hello world!", null, null));
+=======
+    check((rexBuilder, executor) -> {
+
+      final List<RexNode> reducedValues = new ArrayList<>();
+      final RexLiteral hello =
+          rexBuilder.makeCharLiteral(
+              new NlsString("Hello world!", null, null));
       final RexNode plus =
           rexBuilder.makeCall(SqlStdOperatorTable.PLUS,
               rexBuilder.makeExactLiteral(BigDecimal.ONE),
@@ -303,7 +270,7 @@ public class RexExecutorTest {
     });
   }
 
-  @Test void testBinarySubstring() throws Exception {
+  @Test public void testBinarySubstring() throws Exception {
     check((rexBuilder, executor) -> {
 
       final List<RexNode> reducedValues = new ArrayList<>();
@@ -332,7 +299,7 @@ public class RexExecutorTest {
     });
   }
 
-  @Test void testDeterministic1() throws Exception {
+  @Test public void testDeterministic1() throws Exception {
     check((rexBuilder, executor) -> {
 
       final RexNode plus =
@@ -344,7 +311,7 @@ public class RexExecutorTest {
     });
   }
 
-  @Test void testDeterministic2() throws Exception {
+  @Test public void testDeterministic2() throws Exception {
     check((rexBuilder, executor) -> {
 
       final RexNode plus =
@@ -356,7 +323,7 @@ public class RexExecutorTest {
     });
   }
 
-  @Test void testDeterministic3() throws Exception {
+  @Test public void testDeterministic3() throws Exception {
     check((rexBuilder, executor) -> {
 
       final RexNode plus =

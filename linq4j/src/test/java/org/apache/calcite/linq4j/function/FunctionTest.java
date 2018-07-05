@@ -36,17 +36,17 @@ class FunctionTest {
   @Test void testFilter() {
     final List<String> abc = Arrays.asList("A", "B", "C", "D");
     // a miss, then a hit
-    assertEquals("[A, C, D]",
+    Assert.assertEquals("[A, C, D]",
         Functions.filter(abc, v1 -> !v1.equals("B")).toString());
     // a hit, then all misses
-    assertEquals("[A]",
+    Assert.assertEquals("[A]",
         Functions.filter(abc, v1 -> v1.equals("A")).toString());
     // two hits, then a miss
-    assertEquals("[A, B, D]",
+    Assert.assertEquals("[A, B, D]",
         Functions.filter(abc, v1 -> !v1.equals("C")).toString());
-    assertSame(Collections.emptyList(),
+    Assert.assertSame(Collections.emptyList(),
         Functions.filter(abc, Functions.falsePredicate1()));
-    assertSame(abc,
+    Assert.assertSame(abc,
         Functions.filter(abc, Functions.truePredicate1()));
   }
 
@@ -54,11 +54,11 @@ class FunctionTest {
   @Test void testExists() {
     final List<Integer> ints = Arrays.asList(1, 10, 2);
     final List<Integer> empty = Collections.emptyList();
-    assertFalse(
+    Assert.assertFalse(
         Functions.exists(ints, v1 -> v1 > 20));
-    assertFalse(
+    Assert.assertFalse(
         Functions.exists(empty, Functions.falsePredicate1()));
-    assertFalse(
+    Assert.assertFalse(
         Functions.exists(empty, Functions.truePredicate1()));
   }
 
@@ -66,15 +66,15 @@ class FunctionTest {
   @Test void testAll() {
     final List<Integer> ints = Arrays.asList(1, 10, 2);
     final List<Integer> empty = Collections.emptyList();
-    assertFalse(
+    Assert.assertFalse(
         Functions.all(ints, v1 -> v1 > 20));
-    assertTrue(
+    Assert.assertTrue(
         Functions.all(ints, v1 -> v1 < 20));
-    assertFalse(
+    Assert.assertFalse(
         Functions.all(ints, v1 -> v1 < 10));
-    assertTrue(
+    Assert.assertTrue(
         Functions.all(empty, Functions.falsePredicate1()));
-    assertTrue(
+    Assert.assertTrue(
         Functions.all(empty, Functions.truePredicate1()));
   }
 

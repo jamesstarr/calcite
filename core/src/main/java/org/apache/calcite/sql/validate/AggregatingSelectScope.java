@@ -35,7 +35,7 @@ import com.google.common.collect.Maps;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import static org.apache.calcite.sql.SqlUtil.stripAs;

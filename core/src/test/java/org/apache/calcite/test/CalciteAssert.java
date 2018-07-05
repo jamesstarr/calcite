@@ -73,10 +73,7 @@ import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultiset;
@@ -113,6 +110,9 @@ import java.util.Properties;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
 
@@ -251,27 +251,29 @@ public class CalciteAssert {
   static Function<RelNode, Void> checkRel(final String expected,
       final AtomicInteger counter) {
     return relNode -> {
-      if (counter != null) {
-        counter.incrementAndGet();
-      }
-      String s = RelOptUtil.toString(relNode);
-      assertThat(s, containsStringLinux(expected));
-      return null;
+
     };
   }
 
   static Consumer<Throwable> checkException(final String expected) {
     return p0 -> {
-      assertNotNull(p0, "expected exception but none was thrown");
-      String stack = TestUtil.printStackTrace(p0);
-      assertThat(stack, containsString(expected));
+
+      assertNotNull(
+          "expected exception but none was thrown", p0);
+      StringWriter stringWriter = new StringWriter();
+      PrintWriter printWriter = new PrintWriter(stringWriter);
+      p0.printStackTrace(printWriter);
+      printWriter.flush();
+      String stack = stringWriter.toString();
+      assertTrue(stack, stack.contains(expected));
+
     };
   }
 
   static Consumer<Throwable> checkValidationException(final String expected) {
     return new Consumer<Throwable>() {
       @Override public void accept(@Nullable Throwable throwable) {
-        assertNotNull(throwable, "Nothing was thrown");
+        assertNotNull("Nothing was thrown", throwable);
 
         Exception exception = containsCorrectException(throwable);
 
@@ -280,40 +282,7 @@ public class CalciteAssert {
           String stack = TestUtil.printStackTrace(exception);
           assertThat(stack, containsString(expected));
         }
-      }
-
-      private boolean isCorrectException(Throwable throwable) {
-        return throwable instanceof SqlValidatorException
-                || throwable instanceof CalciteException;
-      }
-
-      private Exception containsCorrectException(Throwable root) {
-        Throwable currentCause = root;
-        while (currentCause != null) {
-          if (isCorrectException(currentCause)) {
-            return (Exception) currentCause;
-          }
-          currentCause = currentCause.getCause();
-        }
-        return null;
-      }
-    };
-  }
-
-  static Consumer<ResultSet> checkResult(final String expected) {
-    return checkResult(expected, new ResultSetFormatter());
-  }
-
-  static Consumer<ResultSet> checkResult(final String expected,
-      final ResultSetFormatter resultSetFormatter) {
-    return resultSet -> {
-
-      try {
-        resultSetFormatter.resultSet(resultSet);
-        assertThat(resultSetFormatter.string(), isLinux(expected));
-
-      } catch (SQLException e) {
-        TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
 
     };
@@ -334,7 +303,7 @@ public class CalciteAssert {
             expected == null ? nullValue(String.class) : isLinux(expected));
 
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
 
     };
@@ -349,7 +318,7 @@ public class CalciteAssert {
         assertThat(count, expected);
 
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
 
     };
@@ -436,7 +405,7 @@ public class CalciteAssert {
         }
 
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
 
     };
@@ -453,7 +422,7 @@ public class CalciteAssert {
         }
 
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
 
     };
@@ -465,10 +434,12 @@ public class CalciteAssert {
 
       try {
         final String actual = Util.toLinux(toString(s));
-        assertEquals(count, countMatches(actual, expected),
-            () -> actual + " should have " + count + " occurrence of " + expected);
+        assertTrue(
+            actual + " should have " + count + " occurrence of " + expected,
+            StringUtils.countMatches(actual, expected) == count);
+
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
 
     };
@@ -480,11 +451,12 @@ public class CalciteAssert {
 
       try {
         final String actual = Util.toLinux(toString(s));
-        final String maskedActual = Matchers.trimNodeIds(actual);
+        final String maskedActual =
+            actual.replaceAll(", id = [0-9]+", "");
         assertThat(maskedActual, containsString(expected));
 
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
 
     };
@@ -498,7 +470,7 @@ public class CalciteAssert {
         assertEquals(expected, actual);
 
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
 
     };
@@ -524,10 +496,10 @@ public class CalciteAssert {
       String sql,
       int limit,
       boolean materializationsEnabled,
-      List<Pair<Hook, Function>> hooks,
-      Function<ResultSet, Void> resultChecker,
-      Function<Integer, Void> updateChecker,
-      Function<Throwable, Void> exceptionChecker) throws Exception {
+      List<Pair<Hook, Consumer>> hooks,
+      Consumer<ResultSet> resultChecker,
+      Consumer<Integer> updateChecker,
+      Consumer<Throwable> exceptionChecker) throws Exception {
     final String message =
         "With materializationsEnabled=" + materializationsEnabled
             + ", limit=" + limit;
@@ -802,6 +774,7 @@ public class CalciteAssert {
     case JDBC_FOODMART_WITH_LATTICE:
       foodmart = addSchemaIfNotExists(rootSchema, SchemaSpec.JDBC_FOODMART);
       foodmart.add(schema.schemaName,
+
           Lattice.create(foodmart.unwrap(CalciteSchema.class),
               "select 1 from \"foodmart\".\"sales_fact_1997\" as s\n"
                   + "join \"foodmart\".\"time_by_day\" as t using (\"time_id\")\n"
@@ -813,8 +786,10 @@ public class CalciteAssert {
     case SCOTT:
       jdbcScott = addSchemaIfNotExists(rootSchema, SchemaSpec.JDBC_SCOTT);
       return rootSchema.add(schema.schemaName, new CloneSchema(jdbcScott));
+
     case CLONE_FOODMART:
       foodmart = addSchemaIfNotExists(rootSchema, SchemaSpec.JDBC_FOODMART);
+
       return rootSchema.add("foodmart2", new CloneSchema(foodmart));
     case GEO:
       ModelHandler.addFunctions(rootSchema, null, ImmutableList.of(),
@@ -869,11 +844,7 @@ public class CalciteAssert {
                   + "    (30, 'Engineering'),\n"
                   + "    (40, 'Empty')) as t(deptno, dname)",
               ImmutableList.of(), ImmutableList.of("POST", "DEPT"),
-              null));
-      post.add("DEPT30",
-          ViewTable.viewMacro(post,
-              "select * from dept where deptno = 30",
-              ImmutableList.of("POST"), ImmutableList.of("POST", "DEPT30"),
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
               null));
       post.add("EMPS",
           ViewTable.viewMacro(post,
@@ -1010,7 +981,11 @@ public class CalciteAssert {
    */
   public static void assertArrayEqual(
       String message, Object[] expected, Object[] actual) {
+<<<<<<< HEAD
     assertEquals(str(expected), str(actual), message);
+=======
+    assertEquals(message, str(expected), str(actual));
+
   }
 
   private static String str(Object[] objects) {
@@ -1148,7 +1123,7 @@ public class CalciteAssert {
             map.put("view", table + "v");
           }
           String sql = materializations[i];
-          final String sql2 = sql.replace("`", "\"");
+          final String sql2 = sql.replaceAll("`", "\"");
           map.put("sql", sql2);
           list.add(map);
         }
@@ -1245,6 +1220,7 @@ public class CalciteAssert {
         return AssertThat.this;
       }
     }
+
 
     /** Use sparingly. Does not close the connection. */
     public Connection connect() throws SQLException {
@@ -1359,6 +1335,7 @@ public class CalciteAssert {
         addSchema(rootSchema, schemaSpec);
       }
       con.setSchema(schemaSpec.schemaName);
+
       return connection;
     }
   }
@@ -1448,7 +1425,7 @@ public class CalciteAssert {
     private int limit;
     private boolean materializationsEnabled = false;
     private final List<Pair<Hook, Consumer>> hooks = new ArrayList<>();
-    private PreparedStatementConsumer consumer;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
     private AssertQuery(ConnectionFactory connectionFactory, String sql) {
       this.sql = sql;
@@ -1466,11 +1443,17 @@ public class CalciteAssert {
 
     /** Performs an action using a connection, and closes the connection
      * afterwards. */
+<<<<<<< HEAD
     public final AssertQuery withConnection(Consumer<Connection> f) {
       try (Connection c = createConnection()) {
         f.accept(c);
       } catch (SQLException e) {
         throw TestUtil.rethrow(e);
+=======
+    public final AssertQuery withConnection(Consumer<Connection> f)
+        throws Exception {
+      try (Connection c = createConnection()) {
+        f.accept(c);
       }
       return this;
     }
@@ -1531,8 +1514,14 @@ public class CalciteAssert {
       }
     }
 
-    protected AssertQuery returns(String sql,
-        Function<ResultSet, Void> checker) {
+    @SuppressWarnings("Guava")
+    @Deprecated // to be removed in 2.0
+    public final AssertQuery returns(
+        com.google.common.base.Function<ResultSet, Void> checker) {
+      return returns(sql, checker::apply);
+    }
+
+    protected AssertQuery returns(String sql, Consumer<ResultSet> checker) {
       try (final Connection connection = createConnection()) {
         assertQuery(connection, sql, limit, materializationsEnabled,
             hooks, checker, null, null);
@@ -1761,46 +1750,35 @@ public class CalciteAssert {
     }
 
     public AssertQuery planUpdateHasSql(String expected, int count) {
-      return planContains(checkUpdateCount(count), JavaSql.fromSql(expected));
-    }
-
-    @Nonnull private AssertQuery planContains(Consumer<Integer> checkUpdate,
-        JavaSql expected) {
-      ensurePlan(checkUpdate);
-      if (expected.sql != null) {
-        final List<String> planSqls = JavaSql.fromJava(plan).extractSql();
-        final String planSql;
-        if (planSqls.size() == 1) {
-          planSql = planSqls.get(0);
-          assertThat(planSql, is(expected.sql));
-        } else {
-          assertThat("contains " + planSqls + " expected " + expected,
-              planSqls.contains(expected.sql), is(true));
-        }
-      } else {
-        final String message =
-            "Plan [" + plan + "] contains [" + expected.java + "]";
-        final String actualJava = toLinux(plan);
-        assertTrue(actualJava.contains(expected.java), message);
-      }
+      ensurePlan(checkUpdateCount(count));
+      expected = "getDataSource(), \""
+          + expected.replace("\\", "\\\\")
+          .replace("\"", "\\\"")
+          .replaceAll("\n", "\\\\n")
+          + "\"";
+      assertTrue(
+          "Plan [" + plan + "] contains [" + expected + "]",
+          Util.toLinux(plan)
+              .replaceAll("\\\\r\\\\n", "\\\\n")
+              .contains(expected));
       return this;
     }
 
     public AssertQuery planHasSql(String expected) {
-      return planContains(null, JavaSql.fromSql(expected));
+      return planContains(
+          "getDataSource(), \""
+              + expected.replace("\\", "\\\\")
+              .replace("\"", "\\\"")
+              .replaceAll("\n", "\\\\n")
+              + "\"");
     }
 
     private void ensurePlan(Consumer<Integer> checkUpdate) {
       if (plan != null) {
         return;
       }
-      addHook(Hook.JAVA_PLAN,
-          new Function<String, Void>() {
-            public Void apply(String a0) {
-              plan = a0;
-              return null;
-            }
-          });
+      addHook(Hook.JAVA_PLAN, (Consumer<String>) a0 -> plan = a0);
+
       try (final Connection connection = createConnection()) {
         assertQuery(connection, sql, limit, materializationsEnabled,
             hooks, null, checkUpdate, null);
@@ -1816,20 +1794,19 @@ public class CalciteAssert {
      * queries. The checker should throw to fail the test if it does not see
      * what it wants. This method can be used to check whether a particular
      * MongoDB or SQL query is generated, for instance. */
-    public AssertQuery queryContains(Function<List, Void> predicate1) {
-      final List<Object> list = Lists.newArrayList();
-      addHook(Hook.QUERY_PLAN,
-          new Function<Object, Void>() {
-            public Void apply(Object a0) {
-              list.add(a0);
-              return null;
-            }
-          });
+    public AssertQuery queryContains(Consumer<List> predicate1) {
+      final List<Object> list = new ArrayList<>();
+      addHook(Hook.QUERY_PLAN, list::add);
+
       try (final Connection connection = createConnection()) {
         assertQuery(connection, sql, limit, materializationsEnabled,
             hooks, null, null, null);
         predicate1.accept(list);
-      });
+        return this;
+      } catch (Exception e) {
+        throw new RuntimeException(
+            "exception while executing [" + sql + "]", e);
+      }
     }
 
     /** @deprecated Use {@link #queryContains(Consumer)}. */
@@ -1904,8 +1881,8 @@ public class CalciteAssert {
       return withHook(Hook.STRING_TO_QUERY,
           (Consumer<Pair<FrameworkConfig, Holder<CalcitePrepare.Query>>>)
           pair -> {
-            final FrameworkConfig config = forceDecorrelate(pair.left);
-            final RelBuilder b = RelBuilder.create(config);
+
+            final RelBuilder b = RelBuilder.create(pair.left);
             pair.right.set(CalcitePrepare.Query.of(relFn.apply(b)));
 
           });
@@ -1933,7 +1910,7 @@ public class CalciteAssert {
       this.function = function;
     }
 
-    public final AssertMetaData returns(Function<ResultSet, Void> checker) {
+    public final AssertMetaData returns(Consumer<ResultSet> checker) {
       try (final Connection c = connectionFactory.createConnection()) {
         final ResultSet resultSet = function.apply(c);
         checker.accept(resultSet);

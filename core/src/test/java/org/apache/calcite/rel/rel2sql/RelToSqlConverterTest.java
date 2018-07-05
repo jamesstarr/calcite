@@ -69,10 +69,7 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.apache.calcite.test.Matchers.isLinux;
 
@@ -98,13 +95,8 @@ class RelToSqlConverterTest {
   /** Initiates a test case with a given SQL query. */
   private Sql sql(String sql) {
     return new Sql(CalciteAssert.SchemaSpec.JDBC_FOODMART, sql,
-        CalciteSqlDialect.DEFAULT, SqlParser.Config.DEFAULT,
-        DEFAULT_REL_CONFIG, null, ImmutableList.of());
-  }
-
-  /** Initiates a test case with a given {@link RelNode} supplier. */
-  private Sql relFn(Function<RelBuilder, RelNode> relFn) {
-    return sql("?").relFn(relFn);
+        CalciteSqlDialect.DEFAULT, DEFAULT_REL_CONFIG,
+        ImmutableList.of());
   }
 
   private static Planner getPlanner(List<RelTraitDef> traitDefs,

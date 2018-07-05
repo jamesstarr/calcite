@@ -33,10 +33,9 @@ import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.util.Litmus;
 
-<<<<<<< HEAD
-=======
 import com.google.common.base.Supplier;
->>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
+=======
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Set;

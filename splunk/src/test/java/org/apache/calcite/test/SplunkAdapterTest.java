@@ -186,7 +186,7 @@ class SplunkAdapterTest {
   /**
    * Reads from a table.
    */
-  @Test void testSelect() throws SQLException {
+  @Test public void testSelect() throws SQLException {
     final String sql = "select \"source\", \"sourcetype\"\n"
         + "from \"splunk\".\"splunk\"";
     checkSql(sql, resultSet -> {
@@ -196,7 +196,7 @@ class SplunkAdapterTest {
         }
         return null;
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
     });
   }
@@ -219,7 +219,7 @@ class SplunkAdapterTest {
         assertThat(actual, equalTo(expected));
         return null;
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
     };
   }
@@ -238,7 +238,7 @@ class SplunkAdapterTest {
             assertThat(actual.contains("404"), is(true));
             return null;
           } catch (SQLException e) {
-            throw TestUtil.rethrow(e);
+            throw new RuntimeException(e);
           }
         });
   }

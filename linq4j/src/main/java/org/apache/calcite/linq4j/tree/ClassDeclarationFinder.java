@@ -92,7 +92,13 @@ public class ClassDeclarationFinder extends Shuttle {
       return a0 -> {
         try {
           return constructor.newInstance(a0);
-        } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
+        } catch (InstantiationException e) {
+          throw new IllegalStateException(
+              "Unable to create optimizer via " + constructor, e);
+        } catch (IllegalAccessException e) {
+          throw new IllegalStateException(
+              "Unable to create optimizer via " + constructor, e);
+        } catch (InvocationTargetException e) {
           throw new IllegalStateException(
               "Unable to create optimizer via " + constructor, e);
         }

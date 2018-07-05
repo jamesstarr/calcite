@@ -34,7 +34,7 @@ import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.calcite.schema.impl.AbstractTableQueryable;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.Bug;
-import org.apache.calcite.util.Util;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -43,8 +43,15 @@ import com.teradata.tpcds.Session;
 import com.teradata.tpcds.column.Column;
 import com.teradata.tpcds.column.ColumnType;
 
+<<<<<<< HEAD
 import java.math.BigDecimal;
 import java.util.ArrayList;
+=======
+import net.hydromatic.tpcds.TpcdsColumn;
+import net.hydromatic.tpcds.TpcdsEntity;
+import net.hydromatic.tpcds.TpcdsTable;
+
+import java.sql.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -146,8 +153,8 @@ public class TpcdsSchema extends AbstractSchema {
 
     @Override public Statistic getStatistic() {
       Bug.upgrade("add row count estimate to TpcdsTable, and use it");
-      Integer rowCount = TABLE_ROW_COUNTS.get(tpcdsTable.name());
-      assert rowCount != null : tpcdsTable;
+      Integer rowCount = TABLE_ROW_COUNTS.get(tpcdsTable.name);
+      assert rowCount != null : tpcdsTable.name;
       return Statistics.of(rowCount, ImmutableList.of());
     }
 

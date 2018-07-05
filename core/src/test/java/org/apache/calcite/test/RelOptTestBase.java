@@ -38,13 +38,13 @@ import org.apache.calcite.util.Closer;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.UnaryOperator;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -137,8 +137,11 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
 
     assertNotNull(relInitial);
 
+<<<<<<< HEAD
 =======
     List<RelMetadataProvider> list = Lists.newArrayList();
+=======
+    List<RelMetadataProvider> list = new ArrayList<>();
     list.add(DefaultRelMetadataProvider.INSTANCE);
     RelMetadataProvider plannerChain =
         ChainedRelMetadataProvider.of(list);
@@ -185,7 +188,7 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
 
   /** Sets the SQL statement for a test. */
   Sql sql(String sql) {
-    return new Sql(tester, sql, null, null,
+    return new Sql(sql, null, null,
         ImmutableMap.of(), ImmutableList.of());
   }
 
@@ -198,7 +201,7 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
     private final ImmutableMap<Hook, Consumer> hooks;
     private ImmutableList<Function<Tester, Tester>> transforms;
 
-    Sql(Tester tester, String sql, HepProgram preProgram, HepPlanner hepPlanner,
+    Sql(String sql, HepProgram preProgram, HepPlanner hepPlanner,
         ImmutableMap<Hook, Consumer> hooks,
         ImmutableList<Function<Tester, Tester>> transforms) {
       this.tester = tester;
@@ -253,7 +256,7 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
      * hook (by calling {@link Hook#addThread(Consumer)})
      * just before running the query, and remove the hook afterwards. */
     public <T> Sql withHook(Hook hook, Consumer<T> handler) {
-      return new Sql(tester, sql, preProgram, hepPlanner,
+      return new Sql(sql, preProgram, hepPlanner,
           FlatLists.append(hooks, hook, handler), transforms);
     }
 
@@ -308,7 +311,7 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
 
     @SuppressWarnings("unchecked")
     private void check(boolean unchanged) {
-      try (Closer closer = new Closer()) {
+      try (final Closer closer = new Closer()) {
         for (Map.Entry<Hook, Consumer> entry : hooks.entrySet()) {
           closer.add(entry.getKey().addThread(entry.getValue()));
         }

@@ -40,9 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
 /**
@@ -193,30 +191,7 @@ public class Matchers {
       // Convert RelNode to a string with Linux line-endings
       return Util.toLinux(RelOptUtil.toString(input));
     });
-  }
-
-  /**
-   * Creates a Matcher that matches a {@link RelNode} if its string
-   * representation, after converting Windows-style line endings ("\r\n")
-   * to Unix-style line endings ("\n"), contains the given {@code value}
-   * as a substring.
-   */
-  public static Matcher<RelNode> inTree(final String value) {
-    return compose(StringContains.containsString(value), input -> {
-      // Convert RelNode to a string with Linux line-endings
-      return Util.toLinux(RelOptUtil.toString(input));
-    });
-  }
-
-  /**
-   * Creates a {@link Matcher} that matches execution plan and trims {@code , id=123} node ids.
-   * {@link RelNode#getId()} is not stable across runs, so this matcher enables to trim those.
-   * @param value execpted execution plan
-   * @return matcher
-   */
-  @API(since = "1.22", status = API.Status.EXPERIMENTAL)
-  public static Matcher<String> containsWithoutNodeIds(String value) {
-    return compose(CoreMatchers.containsString(value), Matchers::trimNodeIds);
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
   }
 
   /**
@@ -237,6 +212,7 @@ public class Matchers {
    */
   public static Matcher<String> containsStringLinux(String value) {
     return compose(CoreMatchers.containsString(value), Util::toLinux);
+<<<<<<< HEAD
   }
 
   public static String trimNodeIds(String s) {
@@ -264,6 +240,7 @@ public class Matchers {
         description.appendText("is ").appendText(expected.toString());
       }
     };
+=======
   }
 
   /**

@@ -16,59 +16,6 @@
  */
 package org.apache.calcite.prepare;
 
-import org.apache.calcite.adapter.enumerable.EnumerableCalc;
-import org.apache.calcite.adapter.enumerable.EnumerableConvention;
-import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
-import org.apache.calcite.adapter.enumerable.EnumerableRel;
-import org.apache.calcite.adapter.enumerable.EnumerableRules;
-import org.apache.calcite.adapter.enumerable.RexToLixTranslator;
-import org.apache.calcite.adapter.java.JavaTypeFactory;
-import org.apache.calcite.avatica.AvaticaParameter;
-import org.apache.calcite.avatica.ColumnMetaData;
-import org.apache.calcite.avatica.Meta;
-import org.apache.calcite.config.CalciteConnectionConfig;
-import org.apache.calcite.config.CalciteSystemProperty;
-import org.apache.calcite.interpreter.BindableConvention;
-import org.apache.calcite.interpreter.Interpreters;
-import org.apache.calcite.jdbc.CalcitePrepare;
-import org.apache.calcite.jdbc.CalciteSchema;
-import org.apache.calcite.jdbc.CalciteSchema.LatticeEntry;
-import org.apache.calcite.linq4j.Linq4j;
-import org.apache.calcite.linq4j.Ord;
-import org.apache.calcite.linq4j.Queryable;
-import org.apache.calcite.linq4j.function.Function1;
-import org.apache.calcite.linq4j.tree.BinaryExpression;
-import org.apache.calcite.linq4j.tree.BlockStatement;
-import org.apache.calcite.linq4j.tree.Blocks;
-import org.apache.calcite.linq4j.tree.ConstantExpression;
-import org.apache.calcite.linq4j.tree.Expression;
-import org.apache.calcite.linq4j.tree.Expressions;
-import org.apache.calcite.linq4j.tree.MemberExpression;
-import org.apache.calcite.linq4j.tree.MethodCallExpression;
-import org.apache.calcite.linq4j.tree.NewExpression;
-import org.apache.calcite.linq4j.tree.ParameterExpression;
-import org.apache.calcite.materialize.MaterializationService;
-import org.apache.calcite.plan.Contexts;
-import org.apache.calcite.plan.Convention;
-import org.apache.calcite.plan.ConventionTraitDef;
-import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptCostFactory;
-import org.apache.calcite.plan.RelOptPlanner;
-import org.apache.calcite.plan.RelOptRule;
-import org.apache.calcite.plan.RelOptTable;
-import org.apache.calcite.plan.RelOptUtil;
-import org.apache.calcite.plan.volcano.VolcanoPlanner;
-import org.apache.calcite.rel.RelCollation;
-import org.apache.calcite.rel.RelCollationTraitDef;
-import org.apache.calcite.rel.RelCollations;
-import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.rel.RelRoot;
-import org.apache.calcite.rel.core.Filter;
-import org.apache.calcite.rel.core.Project;
-import org.apache.calcite.rel.core.Sort;
-import org.apache.calcite.rel.core.TableScan;
-<<<<<<< HEAD
-=======
 import org.apache.calcite.rel.rules.AbstractMaterializedViewRule;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.JoinPushThroughJoinRule;
@@ -117,7 +64,6 @@ import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -126,6 +72,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -171,7 +118,6 @@ public class CalcitePrepareImpl implements CalcitePrepare {
           "values 1",
           "VALUES 1");
 
->>>>>>> 8ef4c666a (DX-37375 Move ReduceExpressionsRule to Config API)
   public static final List<RelOptRule> ENUMERABLE_RULES =
       ImmutableList.of(
           EnumerableRules.ENUMERABLE_JOIN_RULE,

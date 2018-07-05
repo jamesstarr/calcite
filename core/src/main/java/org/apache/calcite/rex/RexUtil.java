@@ -48,8 +48,6 @@ import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 import org.apache.calcite.util.mapping.Mappings;
 
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
@@ -79,42 +77,6 @@ import static java.util.Objects.requireNonNull;
  * Utility methods concerning row-expressions.
  */
 public class RexUtil {
-
-  private static final Function<? super RexNode, ? extends RexNode> ADD_NOT =
-      new Function<RexNode, RexNode>() {
-        public RexNode apply(RexNode input) {
-          return new RexCall(input.getType(), SqlStdOperatorTable.NOT,
-              ImmutableList.of(input));
-        }
-      };
-
-  private static final Predicate1<RexNode> IS_FLAT_PREDICATE =
-      new Predicate1<RexNode>() {
-        public boolean apply(RexNode v1) {
-          return isFlat(v1);
-        }
-      };
-
-  private static final Function<Object, String> TO_STRING =
-      new Function<Object, String>() {
-        public String apply(Object input) {
-          return input.toString();
-        }
-      };
-
-  private static final Function<RexNode, RelDataType> TYPE_FN =
-      new Function<RexNode, RelDataType>() {
-        public RelDataType apply(RexNode input) {
-          return input.getType();
-        }
-      };
-
-  private static final Function<RelDataType, RelDataTypeFamily> FAMILY_FN =
-      new Function<RelDataType, RelDataTypeFamily>() {
-        public RelDataTypeFamily apply(RelDataType input) {
-          return input.getFamily();
-        }
-      };
 
   /** Executor for a bit of constant reduction. The user can pass in another executor. */
   public static final RexExecutor EXECUTOR =
@@ -607,7 +569,7 @@ public class RexUtil {
   }
 
   public static List<RexNode> retainDeterministic(List<RexNode> list) {
-    List<RexNode> conjuctions = Lists.newArrayList();
+    List<RexNode> conjuctions = new ArrayList<>();
     for (RexNode x : list) {
       if (isDeterministic(x)) {
         conjuctions.add(x);
@@ -1139,7 +1101,7 @@ public class RexUtil {
   @Nonnull public static RexNode composeDisjunction(RexBuilder rexBuilder,
       Iterable<? extends RexNode> nodes) {
     final RexNode e = composeDisjunction(rexBuilder, nodes, false);
-    return Preconditions.checkNotNull(e);
+    return Objects.requireNonNull(e);
   }
 
   /**
@@ -1301,12 +1263,7 @@ public class RexUtil {
   public static Iterable<RexNode> apply(Mappings.TargetMapping mapping,
       Iterable<? extends RexNode> nodes) {
     final RexPermuteInputsShuttle shuttle = RexPermuteInputsShuttle.of(mapping);
-    return Iterables.transform(
-        nodes, new Function<RexNode, RexNode>() {
-          public RexNode apply(RexNode input) {
-            return input.accept(shuttle);
-          }
-        });
+    return Iterables.transform(nodes, e -> e.accept(shuttle));
   }
 
   /**
@@ -1408,12 +1365,7 @@ public class RexUtil {
   private static boolean isFlat(
       List<? extends RexNode> exprs, final SqlOperator op) {
     return !isAssociative(op)
-        || !exists(exprs,
-            new Predicate1<RexNode>() {
-              public boolean apply(RexNode expr) {
-                return isCallTo(expr, op);
-              }
-            });
+        || !exists(exprs, (Predicate1<RexNode>) expr -> isCallTo(expr, op));
   }
 
   /**
@@ -1426,7 +1378,7 @@ public class RexUtil {
     }
     final RexCall call = (RexCall) expr;
     return isFlat(call.getOperands(), call.getOperator())
-        && all(call.getOperands(), IS_FLAT_PREDICATE);
+        && all(call.getOperands(), RexUtil::isFlat);
   }
 
   private static void flattenRecurse(
@@ -1697,11 +1649,11 @@ public class RexUtil {
 
   /** Transforms a list of expressions into a list of their types. */
   public static List<RelDataType> types(List<? extends RexNode> nodes) {
-    return Lists.transform(nodes, TYPE_FN);
+    return Lists.transform(nodes, RexNode::getType);
   }
 
   public static List<RelDataTypeFamily> families(List<RelDataType> types) {
-    return Lists.transform(types, FAMILY_FN);
+    return Lists.transform(types, RelDataType::getFamily);
   }
 
   /** Removes all expressions from a list that are equivalent to a given
@@ -1814,9 +1766,13 @@ public class RexUtil {
     case NOT:
       return ((RexCall) e).getOperands().get(0);
     default:
-      return new RexCall(e.getType(), SqlStdOperatorTable.NOT,
-          ImmutableList.of(e));
+      return addNot(e);
     }
+  }
+
+  private static RexNode addNot(RexNode e) {
+    return new RexCall(e.getType(), SqlStdOperatorTable.NOT,
+        ImmutableList.of(e));
   }
 
   static SqlOperator op(SqlKind kind) {
@@ -1943,25 +1899,23 @@ public class RexUtil {
       final RexCall call = (RexCall) e;
       if (call.getOperands().get(1) instanceof RexLiteral) {
         notTerms = Iterables.filter(notTerms,
-            new PredicateImpl<RexNode>() {
-              public boolean test(RexNode input) {
-                switch (input.getKind()) {
-                case EQUALS:
-                  RexCall call2 = (RexCall) input;
-                  if (call2.getOperands().get(0)
-                      .equals(call.getOperands().get(0))
-                      && call2.getOperands().get(1) instanceof RexLiteral) {
-                    return false;
-                  }
+            e2 -> {
+              switch (e2.getKind()) {
+              case EQUALS:
+                RexCall call2 = (RexCall) e2;
+                if (call2.getOperands().get(0)
+                    .equals(call.getOperands().get(0))
+                    && call2.getOperands().get(1) instanceof RexLiteral) {
+                  return false;
                 }
-                return true;
               }
+              return true;
             });
       }
     }
     return composeConjunction(rexBuilder,
         Iterables.concat(ImmutableList.of(e),
-            Iterables.transform(notTerms, notFn(rexBuilder))),
+            Iterables.transform(notTerms, e2 -> not(rexBuilder, e2))),
         false);
   }
 
@@ -1979,19 +1933,25 @@ public class RexUtil {
         && (call.operands.size() - i) % 2 == 1;
   }
 
-  /** Returns a function that applies NOT to its argument. */
-  public static Function<RexNode, RexNode> notFn(final RexBuilder rexBuilder) {
-    return new Function<RexNode, RexNode>() {
-      public RexNode apply(RexNode input) {
-        return input.isAlwaysTrue()
-            ? rexBuilder.makeLiteral(false)
-            : input.isAlwaysFalse()
-            ? rexBuilder.makeLiteral(true)
-            : input.getKind() == SqlKind.NOT
-            ? ((RexCall) input).operands.get(0)
-            : rexBuilder.makeCall(SqlStdOperatorTable.NOT, input);
-      }
-    };
+  /** Returns a function that applies NOT to its argument.
+   *
+   * @deprecated Use {@link #not} */
+  @SuppressWarnings("Guava")
+  @Deprecated // to be removed in 2.0
+  public static com.google.common.base.Function<RexNode, RexNode> notFn(
+      final RexBuilder rexBuilder) {
+    return e -> not(rexBuilder, e);
+  }
+
+  /** Applies NOT to an expression. */
+  static RexNode not(final RexBuilder rexBuilder, RexNode input) {
+    return input.isAlwaysTrue()
+        ? rexBuilder.makeLiteral(false)
+        : input.isAlwaysFalse()
+        ? rexBuilder.makeLiteral(true)
+        : input.getKind() == SqlKind.NOT
+        ? ((RexCall) input).operands.get(0)
+        : rexBuilder.makeCall(SqlStdOperatorTable.NOT, input);
   }
 
   /** Returns whether an expression contains a {@link RexCorrelVariable}. */
@@ -2140,6 +2100,7 @@ public class RexUtil {
 
     protected RexNode register(RexNode expr) {
       final RexNode previous = map.put(expr, expr);
+
       if (!allowDups && (previous != null)) {
         throw new SubExprExistsException(expr);
       }
@@ -2451,54 +2412,7 @@ public class RexUtil {
   /** Transforms a list of expressions to the list of digests. */
   public static List<String> strings(List<RexNode> list) {
     return Lists.transform(list, Object::toString);
-  }
-
-  /** Detects if the given RexNode has an interval data type. */
-  public static boolean isInterval(RexNode node) {
-    return INTERVAL_TYPES.contains(node.getType().getSqlTypeName());
-  }
-
-  /** Detects if the given RexNode is an interval literal. */
-  public static boolean isIntervalLiteral(RexNode node) {
-    return node instanceof RexLiteral && isInterval(node);
-  }
-
-  /**
-   * Finds all {@link CorrelationId} used in {@link RexSubQuery}.
-   *
-   * @param rexNode node to traverse
-   * @return A set of all {@link CorrelationId} used
-   */
-  public static Set<CorrelationId> findSubQueryCorrelationIds(RexNode rexNode) {
-    Set<CorrelationId> correlationIds = new HashSet<>();
-    findSubQueryCorrelationIds(correlationIds, rexNode);
-    return correlationIds;
-  }
-
-  /**
-   * Finds all {@link CorrelationId} used in {@link RexSubQuery}.
-   *
-   * @param rexNodes nodes to traverse
-   * @return A set of all {@link CorrelationId} used
-   */
-  public static Set<CorrelationId> findSubQueryCorrelationIds(Iterable<RexNode> rexNodes) {
-    Set<CorrelationId> correlationIds = new HashSet<>();
-    for (RexNode rexNode : rexNodes) {
-      findSubQueryCorrelationIds(correlationIds, rexNode);
-    }
-    return correlationIds;
-  }
-
-  private static void findSubQueryCorrelationIds(Set<CorrelationId> correlationIds,
-      RexNode rexNode) {
-    rexNode.accept(new RexVisitorImpl<Void>(true) {
-      @Override public Void visitSubQuery(RexSubQuery subQuery) {
-        if (subQuery.correlationId != null) {
-          correlationIds.add(subQuery.correlationId);
-        }
-        return super.visitSubQuery(subQuery);
-      }
-    });
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
   }
 
   /** Detects if the given RexNode has an interval data type. */
@@ -2592,7 +2506,7 @@ public class RexUtil {
       case OR:
         incrementAndCheck();
         operands = flattenOr(((RexCall) rex).getOperands());
-        final List<RexNode> dnfOperands = Lists.newArrayList();
+        final List<RexNode> dnfOperands = new ArrayList<>();
         for (RexNode node : operands) {
           RexNode dnf = toDnf2(node);
           switch (dnf.getKind()) {
@@ -2613,10 +2527,12 @@ public class RexUtil {
           return toDnf2(((RexCall) arg).getOperands().get(0));
         case OR:
           operands = ((RexCall) arg).getOperands();
-          return toDnf2(and(Lists.transform(flattenOr(operands), ADD_NOT)));
+          return toDnf(
+              and(Util.transform(flattenOr(operands), RexUtil::addNot)));
         case AND:
           operands = ((RexCall) arg).getOperands();
-          return toDnf2(or(Lists.transform(flattenAnd(operands), ADD_NOT)));
+          return toDnf(
+              or(Util.transform(flattenAnd(operands), RexUtil::addNot)));
         default:
           incrementAndCheck();
           return rex;
@@ -2648,11 +2564,11 @@ public class RexUtil {
     private static class OverflowError extends ControlFlowException {
       @SuppressWarnings("ThrowableInstanceNeverThrown")
       protected static final DnfHelper.OverflowError INSTANCE = new DnfHelper.OverflowError();
-
       private OverflowError() {}
     }
   }
 
+<<<<<<< HEAD
     private void incrementAndCheck() {
       if (maxNodeCount >= 0 && ++currentCount > maxNodeCount) {
         throw DnfHelper.OverflowError.INSTANCE;
@@ -2668,6 +2584,7 @@ public class RexUtil {
     }
   }
 
+=======
   /** Shuttle that adds {@code offset} to each {@link RexInputRef} in an
    * expression. */
   private static class RexShiftShuttle extends RexShuttle {
@@ -2860,245 +2777,4 @@ public class RexUtil {
       return simplify.rexBuilder.makeCast(call.getType(), simplifiedNode, matchNullability);
     }
   }
-<<<<<<< HEAD
-=======
-
-  /**
-   * Visitor class which transforms datetime_plus operators to timestamp_add operators.
-   */
-  private static class DateTimePlusToTsAddVisitor extends RexShuttle {
-    private final RexBuilder builder;
-
-    DateTimePlusToTsAddVisitor(RexBuilder builder) {
-      this.builder = builder;
-    }
-
-    private static TimeUnit getTimeUnitFromIntervalLiteral(RexNode intervalLiteral) {
-      final IntervalSqlType intervalType = (IntervalSqlType) intervalLiteral.getType();
-      return intervalType.getIntervalQualifier().getUnit();
-    }
-
-    private RexNode convertIntervalLiteralToInteger(TimeUnit unit,
-        RexNode intervalLiteral, RexNode coefficient, boolean negate) {
-      final RexLiteral intervalAsInt = builder.makeExactLiteral(((RexLiteral) intervalLiteral)
-          .getValueAs(BigDecimal.class).divide(unit.multiplier, 0, RoundingMode.HALF_DOWN));
-
-      // No co-efficient. Just return the original literal.
-      if (null == coefficient) {
-        if (!negate)  {
-          return intervalAsInt;
-        }
-        // Make the negation part of the integer literal.
-        return builder.makeExactLiteral(((RexLiteral) intervalLiteral)
-            .getValueAs(BigDecimal.class)
-            .divide(unit.multiplier, 0, RoundingMode.HALF_DOWN)
-            .negate());
-      }
-
-      RexNode result;
-      // Unit literal. Omit.
-      if (intervalAsInt.getValueAs(BigDecimal.class).equals(BigDecimal.ONE)) {
-        result = coefficient;
-      } else {
-        // Multiply the interval-as-int by the coefficient.
-        result = builder.makeCall(SqlStdOperatorTable.MULTIPLY, intervalAsInt, coefficient);
-      }
-
-      if (negate) {
-        result = builder.makeCall(SqlStdOperatorTable.UNARY_MINUS, result);
-      }
-
-      return result;
-    }
-
-    @Override public RexNode visitCall(RexCall call) {
-      // Only transform DATETIME_PLUS calls that are applied to a
-      // datetime <op> single-field interval.
-      if (call.getOperator() != SqlStdOperatorTable.DATETIME_PLUS
-          && ((call.getOperator() != SqlStdOperatorTable.MINUS_DATE)
-              || (call.getOperands().size() != 2)
-              || !(INTERVAL_TYPES.contains(
-                      call.getOperands().get(1).getType().getSqlTypeName())))) {
-        return super.visitCall(call);
-      }
-
-      RexNode datetime = call.getOperands().get(0);
-      final SqlTypeName datetimeType = datetime.getType().getSqlTypeName();
-      if (datetimeType != SqlTypeName.DATE
-          && datetimeType != SqlTypeName.TIME
-          && datetimeType != SqlTypeName.TIMESTAMP) {
-        return super.visitCall(call);
-      }
-
-      // The datetime argument might be another call to DATETIME_PLUS.
-      // Recursively transform this as well.
-      datetime = datetime.accept(this);
-
-      // Check the type of the interval parameter.
-      if (!isInterval(call.getOperands().get(1))) {
-        throw new Util.FoundOne(call);
-      }
-
-      final boolean negate = call.getOperator() == SqlStdOperatorTable.MINUS_DATE;
-
-      // TODO DX-13313: Support more types of interval expressions.
-
-      // Note that while we can CAST the interval argument to an integer, we wouldn't be able
-      // to represent this in a SQL dialect that doesn't support intervals (since there's no way
-      // to cast an interval). We will only try to do this conversion if the interval is either
-      // a literal, or a literal multiplied by an expression.
-      final RexNode interval = call.getOperands().get(1);
-
-      final RexNode intervalAsInt;
-      final TimeUnit unit;
-      if (interval instanceof RexLiteral) {
-        unit = getTimeUnitFromIntervalLiteral(interval);
-        intervalAsInt = convertIntervalLiteralToInteger(unit, interval, null, negate);
-      } else if (interval instanceof RexCall
-          && ((RexCall) interval).getOperator() == SqlStdOperatorTable.MULTIPLY) {
-        // Identify which, if any operand is an interval literal.
-        final RexCall multiplyOp = (RexCall) interval;
-        final RexNode leftOp = multiplyOp.getOperands().get(0);
-        final RexNode rightOp = multiplyOp.getOperands().get(1);
-
-        if (isIntervalLiteral(leftOp)) {
-          unit = getTimeUnitFromIntervalLiteral(leftOp);
-          intervalAsInt = convertIntervalLiteralToInteger(unit, leftOp, rightOp, negate);
-        } else if (isIntervalLiteral(rightOp)) {
-          unit = getTimeUnitFromIntervalLiteral(rightOp);
-          intervalAsInt = convertIntervalLiteralToInteger(unit, rightOp, leftOp, negate);
-        } else {
-          // Neither are single field interval literals. Don't convert.
-          // We could do a deeper search if these are multiply functions but this wouldn't
-          // be very common.
-          throw new Util.FoundOne(call);
-        }
-      } else {
-        throw new Util.FoundOne(call);
-      }
-
-      return builder.makeCall(SqlStdOperatorTable.TIMESTAMP_ADD,
-          builder.makeFlag(unit), intervalAsInt, datetime);
-    }
-  }
-}
-
-  /**
-   * Visitor class which transforms datetime_plus operators to timestamp_add operators.
-   */
-  private static class DateTimePlusToTsAddVisitor extends RexShuttle {
-    private final RexBuilder builder;
-
-    DateTimePlusToTsAddVisitor(RexBuilder builder) {
-      this.builder = builder;
-    }
-
-    private static TimeUnit getTimeUnitFromIntervalLiteral(RexNode intervalLiteral) {
-      final IntervalSqlType intervalType = (IntervalSqlType) intervalLiteral.getType();
-      return intervalType.getIntervalQualifier().getUnit();
-    }
-
-    private RexNode convertIntervalLiteralToInteger(TimeUnit unit,
-        RexNode intervalLiteral, RexNode coefficient, boolean negate) {
-      final RexLiteral intervalAsInt = builder.makeExactLiteral(((RexLiteral) intervalLiteral)
-          .getValueAs(BigDecimal.class).divide(unit.multiplier, 0, RoundingMode.HALF_DOWN));
-
-      // No co-efficient. Just return the original literal.
-      if (null == coefficient) {
-        if (!negate)  {
-          return intervalAsInt;
-        }
-        // Make the negation part of the integer literal.
-        return builder.makeExactLiteral(((RexLiteral) intervalLiteral)
-            .getValueAs(BigDecimal.class)
-            .divide(unit.multiplier, 0, RoundingMode.HALF_DOWN)
-            .negate());
-      }
-
-      RexNode result;
-      // Unit literal. Omit.
-      if (intervalAsInt.getValueAs(BigDecimal.class).equals(BigDecimal.ONE)) {
-        result = coefficient;
-      } else {
-        // Multiply the interval-as-int by the coefficient.
-        result = builder.makeCall(SqlStdOperatorTable.MULTIPLY, intervalAsInt, coefficient);
-      }
-
-      if (negate) {
-        result = builder.makeCall(SqlStdOperatorTable.UNARY_MINUS, result);
-      }
-
-      return result;
-    }
-
-    @Override public RexNode visitCall(RexCall call) {
-      // Only transform DATETIME_PLUS calls that are applied to a
-      // datetime <op> single-field interval.
-      if (call.getOperator() != SqlStdOperatorTable.DATETIME_PLUS
-          && ((call.getOperator() != SqlStdOperatorTable.MINUS_DATE)
-              || (call.getOperands().size() != 2)
-              || !(
-                  INTERVAL_TYPES.contains(
-                      call.getOperands().get(1).getType().getSqlTypeName())))) {
-        return super.visitCall(call);
-      }
-
-      RexNode datetime = call.getOperands().get(0);
-      final SqlTypeName datetimeType = datetime.getType().getSqlTypeName();
-      if (datetimeType != SqlTypeName.DATE
-          && datetimeType != SqlTypeName.TIME
-          && datetimeType != SqlTypeName.TIMESTAMP) {
-        return super.visitCall(call);
-      }
-
-      // The datetime argument might be another call to DATETIME_PLUS.
-      // Recursively transform this as well.
-      datetime = datetime.accept(this);
-
-      // Check the type of the interval parameter.
-      if (!isInterval(call.getOperands().get(1))) {
-        throw new Util.FoundOne(call);
-      }
-
-      final boolean negate = call.getOperator() == SqlStdOperatorTable.MINUS_DATE;
-
-      // TODO DX-13313: Support more types of interval expressions.
-
-      // Note that while we can CAST the interval argument to an integer, we wouldn't be able
-      // to represent this in a SQL dialect that doesn't support intervals (since there's no way
-      // to cast an interval). We will only try to do this conversion if the interval is either
-      // a literal, or a literal multiplied by an expression.
-      final RexNode interval = call.getOperands().get(1);
-      final RexNode intervalAsInt;
-      final TimeUnit unit;
-      if (interval instanceof RexLiteral) {
-        unit = getTimeUnitFromIntervalLiteral(interval);
-        intervalAsInt = convertIntervalLiteralToInteger(unit, interval, null, negate);
-      } else if (interval instanceof RexCall
-          && ((RexCall) interval).getOperator() == SqlStdOperatorTable.MULTIPLY) {
-        // Identify which, if any operand is an interval literal.
-        final RexCall multiplyOp = (RexCall) interval;
-        final RexNode leftOp = multiplyOp.getOperands().get(0);
-        final RexNode rightOp = multiplyOp.getOperands().get(1);
-
-        if (isIntervalLiteral(leftOp)) {
-          unit = getTimeUnitFromIntervalLiteral(leftOp);
-          intervalAsInt = convertIntervalLiteralToInteger(unit, leftOp, rightOp, negate);
-        } else if (isIntervalLiteral(rightOp)) {
-          unit = getTimeUnitFromIntervalLiteral(rightOp);
-          intervalAsInt = convertIntervalLiteralToInteger(unit, rightOp, leftOp, negate);
-        } else {
-          // Neither are single field interval literals. Don't convert.
-          // We could do a deeper search if these are multiply functions but this wouldn't
-          // be very common.
-          throw new Util.FoundOne(call);
-        }
-      } else {
-        throw new Util.FoundOne(call);
-      }
-
-      return builder.makeCall(SqlStdOperatorTable.TIMESTAMP_ADD,
-          builder.makeFlag(unit), intervalAsInt, datetime);
-    }
-  }
-}
+// End RexUtil.java

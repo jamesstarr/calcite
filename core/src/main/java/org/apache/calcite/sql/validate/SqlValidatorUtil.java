@@ -118,7 +118,7 @@ public class SqlValidatorUtil {
         final SqlValidatorTable validatorTable = tableNamespace.getTable();
         final List<RelDataTypeField> extendedFields = dmlNamespace.extendList == null
             ? ImmutableList.of()
-            : getExtendedColumns(namespace.getValidator(), validatorTable, dmlNamespace.extendList);
+            : getExtendedColumns(typeFactory, validatorTable, dmlNamespace.extendList);
         return getRelOptTable(
             tableNamespace, catalogReader, datasetName, usedDataset, extendedFields);
       }
@@ -836,7 +836,7 @@ public class SqlValidatorUtil {
    * grouped, and returns a bitmap indicating which expressions this tuple
    * is grouping. */
   private static List<ImmutableBitSet> analyzeGroupTuple(SqlValidatorScope scope,
-      GroupAnalyzer groupAnalyzer, List<SqlNode> operandList) {
+       GroupAnalyzer groupAnalyzer, List<SqlNode> operandList) {
     List<ImmutableBitSet> list = new ArrayList<>();
     for (SqlNode operand : operandList) {
       list.add(
@@ -1086,9 +1086,6 @@ public class SqlValidatorUtil {
   }
 
   /**
-<<<<<<< HEAD
-=======
-=======
    * Returns whether there are any input columns that are sorted.
    *
    * <p>If so, it can be the default ORDER BY clause for a WINDOW specification.
@@ -1286,9 +1283,11 @@ public class SqlValidatorUtil {
   public static final Suggester F_SUGGESTER =
       (original, attempt, size) -> Util.first(original, "$f")
           + Math.max(size, attempt);
+<<<<<<< HEAD
 
   public static final Suggester ATTEMPT_SUGGESTER =
       (original, attempt, size) -> Util.first(original, "$") + attempt;
+=======
 
   /** Builds a list of GROUP BY expressions. */
   static class GroupAnalyzer {

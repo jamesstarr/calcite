@@ -19,7 +19,7 @@ package org.apache.calcite.test;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.test.CalciteAssert.AssertThat;
 import org.apache.calcite.test.CalciteAssert.DatabaseInstance;
-import org.apache.calcite.util.TestUtil;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
 import org.hsqldb.jdbcDriver;
 import org.junit.jupiter.api.Test;
@@ -514,7 +514,6 @@ class JdbcAdapterTest {
             + "FROM \"foodmart\".\"expense_fact\"");
   }
 
->>>>>>> 70f226063 ([CALCITE-2206] JDBC adapter incorrectly pushes windowed aggregates down to HSQLDB (Pavel Gubin))
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1506">[CALCITE-1506]
    * Push OVER Clause to underlying SQL via JDBC adapter</a>.
@@ -547,9 +546,6 @@ class JdbcAdapterTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2305">[CALCITE-2305]
    * JDBC adapter generates invalid casts on PostgreSQL, because PostgreSQL does
    * not have TINYINT and DOUBLE types</a>. */
-<<<<<<< HEAD
-  @Test void testCast() {
-=======
   @Test public void testCast() {
     CalciteAssert
         .model(JdbcTest.FOODMART_MODEL)
@@ -704,7 +700,10 @@ class JdbcAdapterTest {
                 connection.getMetaData().getTables(null, null, "%", null);
             assertFalse(CalciteAssert.toString(resultSet).isEmpty());
           } catch (SQLException e) {
+<<<<<<< HEAD
             throw TestUtil.rethrow(e);
+=======
+            throw new RuntimeException(e);
           }
         });
   }
@@ -803,7 +802,7 @@ class JdbcAdapterTest {
             .explainContains(explain)
             .planUpdateHasSql(jdbcSql, 1);
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
     });
   }
@@ -839,12 +838,12 @@ class JdbcAdapterTest {
             .explainContains(explain)
             .planUpdateHasSql(jdbcSql, 2);
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
     });
   }
 
-  @Test void testTableModifyInsertWithSubQuery() throws Exception {
+  @Test public void testTableModifyInsertWithSubQuery() throws Exception {
     final AssertThat that = CalciteAssert
         .model(JdbcTest.FOODMART_MODEL)
         .enable(CalciteAssert.DB == DatabaseInstance.HSQLDB);
@@ -876,12 +875,12 @@ class JdbcAdapterTest {
             .explainContains(explain)
             .planUpdateHasSql(jdbcSql, 1);
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
     });
   }
 
-  @Test void testTableModifyUpdate() throws Exception {
+  @Test void testTableModifyInsertWithSubQuery() throws Exception {
     final AssertThat that = CalciteAssert
         .model(JdbcTest.FOODMART_MODEL)
         .enable(CalciteAssert.DB == DatabaseInstance.HSQLDB);
@@ -904,18 +903,19 @@ class JdbcAdapterTest {
             .planUpdateHasSql(jdbcSql, 1);
         return null;
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
     });
   }
 
-  @Test void testTableModifyDelete() throws Exception {
+  @Test void testTableModifyUpdate() throws Exception {
     final AssertThat that = CalciteAssert
         .model(JdbcTest.FOODMART_MODEL)
         .enable(CalciteAssert.DB == DatabaseInstance.HSQLDB);
 
     that.doWithConnection(connection -> {
       try (LockWrapper ignore = exclusiveCleanDb(connection)) {
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
         final String sql = "DELETE FROM \"foodmart\".\"expense_fact\"\n"
             + "WHERE \"store_id\"=666\n";
         final String explain = "PLAN=JdbcToEnumerableConverter\n"
@@ -928,7 +928,10 @@ class JdbcAdapterTest {
             .explainContains(explain)
             .planUpdateHasSql(jdbcSql, 1);
       } catch (SQLException e) {
+<<<<<<< HEAD
         throw TestUtil.rethrow(e);
+=======
+        throw new RuntimeException(e);
       }
     });
   }

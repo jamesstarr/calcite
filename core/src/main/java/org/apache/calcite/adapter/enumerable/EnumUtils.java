@@ -48,7 +48,10 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.runtime.Utilities;
 import org.apache.calcite.sql.SqlCollation;
 import org.apache.calcite.util.BuiltInMethod;
+<<<<<<< HEAD
 import org.apache.calcite.util.Pair;
+=======
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;

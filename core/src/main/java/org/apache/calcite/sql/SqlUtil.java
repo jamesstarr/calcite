@@ -542,59 +542,35 @@ public abstract class SqlUtil {
     //noinspection unchecked
     return (Iterator) Iterators.filter(
         Iterators.filter(routines, SqlFunction.class),
-        new PredicateImpl<SqlFunction>() {
-          public boolean test(SqlFunction function) {
-            List<RelDataType> paramTypes = function.getParamTypes();
-            if (paramTypes == null) {
-            // no parameter information for builtins; keep for now,
+        function -> {
+          List<RelDataType> paramTypes =
+              Objects.requireNonNull(function).getParamTypes();
+          if (paramTypes == null) {
+            // no parameter information for builtins; keep for now
             // the type coerce will not work here.
-              return true;
-            }
-            final List<RelDataType> permutedArgTypes;
-            if (argNames != null) {
-              // Arguments passed by name. Make sure that the function has
-              // parameters of all of these names.
-              final Map<Integer, Integer> map = new HashMap<>();
-              for (Ord<String> argName : Ord.zip(argNames)) {
-                final int i = function.getParamNames().indexOf(argName.e);
-                if (i < 0) {
-                  return false;
-                }
-                map.put(i, argName.i);
-              }
-              permutedArgTypes = Functions.generate(paramTypes.size(),
-                  new Function1<Integer, RelDataType>() {
-                    public RelDataType apply(Integer a0) {
-                      if (map.containsKey(a0)) {
-                        return argTypes.get(map.get(a0));
-                      } else {
-                        return null;
-                      }
-                    }
-                  });
-            } else {
-              permutedArgTypes = Lists.newArrayList(argTypes);
-              while (permutedArgTypes.size() < argTypes.size()) {
-                paramTypes.add(null);
-              }
-            }
-            for (Pair<RelDataType, RelDataType> p
-                : Pair.zip(paramTypes, permutedArgTypes)) {
-              final RelDataType argType = p.right;
-              final RelDataType paramType = p.left;
-              if (argType != null
-                  && !SqlTypeUtil.canCastFrom(paramType, argType, coerce)) {
-                return false;
-              }
-            }
             return true;
           }
           final List<RelDataType> permutedArgTypes;
           if (argNames != null) {
-            permutedArgTypes = permuteArgTypes(function, argNames, argTypes);
-            if (permutedArgTypes == null) {
-              return false;
+            // Arguments passed by name. Make sure that the function has
+            // parameters of all of these names.
+            final Map<Integer, Integer> map = new HashMap<>();
+            for (Ord<String> argName : Ord.zip(argNames)) {
+              final int i = function.getParamNames().indexOf(argName.e);
+              if (i < 0) {
+                return false;
+              }
+              map.put(i, argName.i);
             }
+            permutedArgTypes = Functions.generate(paramTypes.size(), a0 -> {
+
+              if (map.containsKey(a0)) {
+                return argTypes.get(map.get(a0));
+              } else {
+                return null;
+              }
+
+            });
           } else {
             permutedArgTypes = Lists.newArrayList(argTypes);
             while (permutedArgTypes.size() < argTypes.size()) {
@@ -666,10 +642,7 @@ public abstract class SqlUtil {
               if (paramTypes == null) {
                 return false;
               }
-              int index = argNames != null
-                  ? function.getParamNames().indexOf(argNames.get(argType.i))
-                  : argType.i;
-              final RelDataType paramType = paramTypes.get(index);
+              final RelDataType paramType = paramTypes.get(argType.i);
               return precList.compareTypePrecedence(paramType, bestMatch) >= 0;
             })
             .collect(Collectors.toList());

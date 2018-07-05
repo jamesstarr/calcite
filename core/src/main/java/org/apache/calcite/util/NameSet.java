@@ -25,7 +25,18 @@ import java.util.Set;
 
 /** Set of names that can be accessed with and without case sensitivity. */
 public class NameSet {
-  public static final Comparator<String> COMPARATOR = CaseInsensitiveComparator.COMPARATOR;
+  /** Comparator that compares all strings differently, but if two strings are
+   * equal in case-insensitive match they are right next to each other. In a
+   * collection sorted on this comparator, we can find case-insensitive matches
+   * for a given string using a range scan between the upper-case string and
+   * the lower-case string. */
+  public static final Comparator<String> COMPARATOR = (o1, o2) -> {
+    int c = o1.compareToIgnoreCase(o2);
+    if (c == 0) {
+      c = o1.compareTo(o2);
+    }
+    return c;
+  };
 
   private static final Object DUMMY = new Object();
 

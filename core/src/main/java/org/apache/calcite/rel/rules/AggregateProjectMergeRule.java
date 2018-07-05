@@ -39,41 +39,4 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-        .withOperandFor(Aggregate.class, Project.class);
-
-    @Override default AggregateProjectMergeRule toRule() {
-      return new AggregateProjectMergeRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Aggregate> aggregateClass,
-        Class<? extends Project> projectClass) {
-      return withOperandSupplier(b0 ->
-          b0.operand(aggregateClass).oneInput(b1 ->
-              b1.operand(projectClass).anyInputs())).as(Config.class);
-    }
-  }
-}
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-        .withOperandFor(Aggregate.class, Project.class);
-
-    @Override default AggregateProjectMergeRule toRule() {
-      return new AggregateProjectMergeRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Aggregate> aggregateClass,
-        Class<? extends Project> projectClass) {
-      return withOperandSupplier(b0 ->
-          b0.operand(aggregateClass).oneInput(b1 ->
-              b1.operand(projectClass).anyInputs())).as(Config.class);
-    }
-  }
-}
+// End AggregateProjectMergeRule.java

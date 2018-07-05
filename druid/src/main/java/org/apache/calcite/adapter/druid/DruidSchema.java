@@ -33,9 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-<<<<<<< HEAD
-=======
 import javax.annotation.Nonnull;
+=======
 
 /**
  * Schema mapped onto a Druid instance.
@@ -57,8 +56,8 @@ public class DruidSchema extends AbstractSchema {
    */
   public DruidSchema(String url, String coordinatorUrl,
       boolean discoverTables) {
-    this.url = Preconditions.checkNotNull(url);
-    this.coordinatorUrl = Preconditions.checkNotNull(coordinatorUrl);
+    this.url = Objects.requireNonNull(url);
+    this.coordinatorUrl = Objects.requireNonNull(coordinatorUrl);
     this.discoverTables = discoverTables;
   }
 
@@ -73,26 +72,30 @@ public class DruidSchema extends AbstractSchema {
 
 >>>>>>> 9d2c4bca7 (Revert "Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)"")
       tableMap = Compatible.INSTANCE.asMap(
-              ImmutableSet.copyOf(tableNames),
-              CacheBuilder.newBuilder()
-                .build(new CacheLoader<String, Table>() {
-                  @Override public Table load(@Nonnull String tableName) throws Exception {
-                    final Map<String, SqlTypeName> fieldMap = new LinkedHashMap<>();
-                    final Set<String> metricNameSet = new LinkedHashSet<>();
-                    final Map<String, List<ComplexMetric>> complexMetrics = new HashMap<>();
-
-                    connection.metadata(tableName, DruidTable.DEFAULT_TIMESTAMP_COLUMN,
-                            null, fieldMap, metricNameSet, complexMetrics);
-
-                    return DruidTable.create(DruidSchema.this, tableName, null,
-                            fieldMap, metricNameSet, DruidTable.DEFAULT_TIMESTAMP_COLUMN,
-                            complexMetrics);
-                  }
-                }));
+          ImmutableSet.copyOf(tableNames),
+          CacheBuilder.newBuilder()
+              .build(CacheLoader.from(name -> table(name, connection))));
     }
 
     return tableMap;
   }
+<<<<<<< HEAD
+=======
+
+  private Table table(String tableName, DruidConnectionImpl connection) {
+    final Map<String, SqlTypeName> fieldMap = new LinkedHashMap<>();
+    final Set<String> metricNameSet = new LinkedHashSet<>();
+    final Map<String, List<ComplexMetric>> complexMetrics = new HashMap<>();
+
+    connection.metadata(tableName, DruidTable.DEFAULT_TIMESTAMP_COLUMN,
+        null, fieldMap, metricNameSet, complexMetrics);
+
+    return DruidTable.create(DruidSchema.this, tableName, null,
+        fieldMap, metricNameSet, DruidTable.DEFAULT_TIMESTAMP_COLUMN,
+        complexMetrics);
+  }
+}
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
   private Table table(String tableName, DruidConnectionImpl connection) {
     final Map<String, SqlTypeName> fieldMap = new LinkedHashMap<>();

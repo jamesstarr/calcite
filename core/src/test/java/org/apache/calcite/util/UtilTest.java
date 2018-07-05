@@ -88,7 +88,7 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
-import javax.annotation.Nullable;
+import java.util.function.Function;
 
 import static org.apache.calcite.test.Matchers.isLinux;
 
@@ -1112,12 +1112,9 @@ class UtilTest {
     assertThat(list2.equals(list), is(false));
     //noinspection EqualsWithItself
     assertThat(list2.equals(list2), is(true));
-    assertThat(list2.appendAll(Collections.emptyList()), sameInstance(list2));
-    assertThat(list2.appendAll(list), sameInstance(list2));
-    //noinspection CollectionAddedToSelf
-    assertThat(list2.appendAll(list2), is(Arrays.asList(1, 3, 5, 1, 3, 5)));
-=======
 >>>>>>> 97b385c7d (Revert "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING")
+=======
+
   }
 
   /**
@@ -2433,7 +2430,7 @@ class UtilTest {
   }
 
   /** Tests {@link Util#transform(List, java.util.function.Function)}. */
-  @Test void testTransform() {
+  @Test public void testTransform() {
     final List<String> beatles =
         Arrays.asList("John", "Paul", "George", "Ringo");
     final List<String> empty = Collections.emptyList();
@@ -2449,6 +2446,7 @@ class UtilTest {
         not(instanceOf(RandomAccess.class)));
   }
 
+<<<<<<< HEAD
   /** Tests {@link Util#filter(Iterable, java.util.function.Predicate)}. */
   @Test void testFilter() {
     final List<String> beatles =
@@ -2583,15 +2581,17 @@ class UtilTest {
     return list;
   }
 
+=======
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
   static String mismatchDescription(Matcher m, Object item) {
     final StringDescription d = new StringDescription();
     m.describeMismatch(item, d);
     return d.toString();
   }
+
   static String describe(Matcher m) {
     final StringDescription d = new StringDescription();
     m.describeTo(d);
     return d.toString();
   }
-
 }

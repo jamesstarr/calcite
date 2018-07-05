@@ -39,7 +39,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
+<<<<<<< HEAD
 import java.util.Properties;
+=======
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.sql.DataSource;

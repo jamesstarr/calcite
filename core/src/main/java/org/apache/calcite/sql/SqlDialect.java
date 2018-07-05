@@ -48,7 +48,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
->>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
@@ -89,11 +89,6 @@ public class SqlDialect {
   private final DatabaseProduct databaseProduct;
   protected final NullCollation nullCollation;
   private final RelDataTypeSystem dataTypeSystem;
-<<<<<<< HEAD
-  private final Casing unquotedCasing;
-  private final Casing quotedCasing;
-  private final boolean caseSensitive;
-=======
 
   //~ Constructors -----------------------------------------------------------
 
@@ -150,16 +145,18 @@ public class SqlDialect {
    * @param context All the information necessary to create a dialect
    */
   public SqlDialect(Context context) {
-    this.nullCollation = Preconditions.checkNotNull(context.nullCollation());
+    this.nullCollation = Objects.requireNonNull(context.nullCollation());
     this.dataTypeSystem = Objects.requireNonNull(context.dataTypeSystem());
     this.databaseProduct =
         Objects.requireNonNull(context.databaseProduct());
+<<<<<<< HEAD
     this.literalQuoteString =
         Objects.requireNonNull(context.literalQuoteString());
     this.literalEndQuoteString =
         Objects.requireNonNull(context.literalQuoteString());
     this.literalEscapedQuote =
         Objects.requireNonNull(context.literalEscapedQuoteString());
+=======
     String identifierQuoteString = context.identifierQuoteString();
     if (identifierQuoteString != null) {
       identifierQuoteString = identifierQuoteString.trim();
@@ -1366,9 +1363,10 @@ public class SqlDialect {
       this.literalQuoteString = literalQuoteString;
       this.literalEscapedQuoteString = literalEscapedQuoteString;
       this.identifierQuoteString = identifierQuoteString;
-      this.nullCollation = Preconditions.checkNotNull(nullCollation);
+      this.nullCollation = Objects.requireNonNull(nullCollation);
       this.dataTypeSystem = Objects.requireNonNull(dataTypeSystem);
-      this.jethroInfo = Preconditions.checkNotNull(jethroInfo);
+      this.jethroInfo = Objects.requireNonNull(jethroInfo);
+
     }
 
     @Nonnull public DatabaseProduct databaseProduct() {

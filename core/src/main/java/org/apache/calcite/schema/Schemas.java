@@ -224,7 +224,7 @@ public final class Schemas {
    * array. */
   public static Enumerable<Object[]> enumerable(final FilterableTable table,
       final DataContext root) {
-    return table.scan(root, new ArrayList<>());
+    return table.scan(root, ImmutableList.of());
   }
 
   /** Returns an {@link org.apache.calcite.linq4j.Enumerable} over the rows of
@@ -232,7 +232,7 @@ public final class Schemas {
    * representing each row as an object array. */
   public static Enumerable<Object[]> enumerable(
       final ProjectableFilterableTable table, final DataContext root) {
-    return table.scan(root, new ArrayList<>(),
+    return table.scan(root, ImmutableList.of(),
         identity(table.getRowType(root.getTypeFactory()).getFieldCount()));
   }
 

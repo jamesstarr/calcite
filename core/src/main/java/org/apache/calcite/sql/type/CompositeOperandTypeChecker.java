@@ -24,12 +24,7 @@ import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.validate.implicit.TypeCoercion;
 import org.apache.calcite.util.Util;
 
-import com.google.common.collect.ImmutableList;
-
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.List;
->>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 

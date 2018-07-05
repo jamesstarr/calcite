@@ -73,7 +73,7 @@ class SqlTest {
         }
         assertEquals(expected, actual);
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
       return null;
     };
@@ -89,9 +89,9 @@ class SqlTest {
         final List<String> lines = new ArrayList<>();
         SqlTest.collect(lines, resultSet);
         Collections.sort(lines);
-        assertEquals(expectedLines, lines);
+        Assert.assertEquals(expectedLines, lines);
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
       return null;
     };
@@ -263,7 +263,7 @@ class SqlTest {
         String actual = toString(resultSet);
         assertThat(actual, is(""));
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
       return null;
     });

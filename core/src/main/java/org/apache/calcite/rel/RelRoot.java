@@ -26,6 +26,10 @@ import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.mapping.Mappings;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
@@ -94,7 +98,7 @@ public class RelRoot {
     this.validatedRowType = validatedRowType;
     this.kind = kind;
     this.fields = ImmutableList.copyOf(fields);
-    this.collation = Preconditions.checkNotNull(collation);
+    this.collation = Objects.requireNonNull(collation);
     this.hints = ImmutableList.copyOf(hints);
   }
 

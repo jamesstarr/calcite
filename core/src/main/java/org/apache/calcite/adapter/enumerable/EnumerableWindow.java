@@ -439,7 +439,8 @@ public class EnumerableWindow extends Window implements EnumerableRel {
                 result.physType.getRowType(),
                 constants,
                 argList);
-        List<RexNode> args = new ArrayList<>(inputTypes.size());
+        List<RexNode> args = new ArrayList<RexNode>(
+            inputTypes.size());
         for (int i = 0; i < argList.size(); i++) {
           Integer idx = argList.get(i);
           args.add(new RexInputRef(idx, inputTypes.get(i)));
@@ -542,7 +543,7 @@ public class EnumerableWindow extends Window implements EnumerableRel {
                 translatedConstants);
 
         return RexToLixTranslator.forAggregation(typeFactory,
-            block, inputGetter, conformance);
+            block, inputGetter);
       }
 
       public Expression computeIndex(Expression offset,
@@ -600,7 +601,7 @@ public class EnumerableWindow extends Window implements EnumerableRel {
       public Expression getRow(Expression rowIndex) {
         return block.append(
             "jRow",
-            EnumUtils.convert(
+            RexToLixTranslator.convert(
                 Expressions.arrayIndex(rows_, rowIndex),
                 inputPhysType.getJavaRowType()));
       }

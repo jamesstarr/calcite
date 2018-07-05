@@ -37,9 +37,16 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.util.BuiltInMethod;
 import org.apache.calcite.util.Pair;
 
+<<<<<<< HEAD:elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchToEnumerableConverter.java
 import java.util.AbstractList;
 import java.util.List;
 import java.util.stream.Collectors;
+=======
+import com.google.common.collect.Lists;
+
+import java.util.AbstractList;
+import java.util.List;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchToEnumerableConverter.java
 
 /**
  * Relational expression representing a scan of a table in an Elasticsearch data source.
@@ -120,6 +127,10 @@ public class ElasticsearchToEnumerableConverter extends ConverterImpl implements
    * @return list of constant expressions
    */
   private static <T> List<Expression> constantList(List<T> values) {
+<<<<<<< HEAD:elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchToEnumerableConverter.java
     return values.stream().map(Expressions::constant).collect(Collectors.toList());
+=======
+    return Lists.transform(values, Expressions::constant);
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchToEnumerableConverter.java
   }
 }

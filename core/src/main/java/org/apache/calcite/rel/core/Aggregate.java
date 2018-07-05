@@ -51,7 +51,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.math.IntMath;
 
 import java.util.ArrayList;
->>>>>>> a6cf08442 ([CALCITE-3590] Support SQL hints for Aggregate)
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -79,30 +79,26 @@ public abstract class Aggregate extends SingleRel implements Hintable {
   /**
    * @see org.apache.calcite.util.Bug#CALCITE_461_FIXED
    */
-  public static final Predicate<Aggregate> IS_SIMPLE =
-      new PredicateImpl<Aggregate>() {
-        public boolean test(Aggregate input) {
-          return input.getGroupType() == Group.SIMPLE;
-        }
-      };
-
   public static boolean isSimple(Aggregate aggregate) {
     return aggregate.getGroupType() == Group.SIMPLE;
   }
 
-  public static final Predicate<Aggregate> NO_INDICATOR =
-      new PredicateImpl<Aggregate>() {
-        public boolean test(Aggregate input) {
-          return !input.indicator;
-        }
-      };
 
-  public static final Predicate<Aggregate> IS_NOT_GRAND_TOTAL =
-      new PredicateImpl<Aggregate>() {
-        public boolean test(Aggregate input) {
-          return input.getGroupCount() > 0;
-        }
-      };
+  @SuppressWarnings("Guava")
+  @Deprecated // to be converted to Java Predicate before 2.0
+  public static final com.google.common.base.Predicate<Aggregate> IS_SIMPLE =
+      Aggregate::isSimple;
+
+
+  @SuppressWarnings("Guava")
+  @Deprecated // to be converted to Java Predicate before 2.0
+  public static final com.google.common.base.Predicate<Aggregate> NO_INDICATOR =
+      Aggregate::noIndicator;
+
+  @SuppressWarnings("Guava")
+  @Deprecated // to be converted to Java Predicate before 2.0
+  public static final com.google.common.base.Predicate<Aggregate>
+      IS_NOT_GRAND_TOTAL = Aggregate::isNotGrandTotal;
 
   /** Used internally; will removed when {@link #indicator} is removed,
    * before 2.0. */
@@ -395,7 +391,7 @@ public abstract class Aggregate extends SingleRel implements Hintable {
     assert groupList.size() == groupSet.cardinality();
     final RelDataTypeFactory.Builder builder = typeFactory.builder();
     final List<RelDataTypeField> fieldList = inputRowType.getFieldList();
-    final Set<String> containedNames = Sets.newHashSet();
+    final Set<String> containedNames = new HashSet<>();
     for (int groupKey : groupList) {
       final RelDataTypeField field = fieldList.get(groupKey);
       containedNames.add(field.getName());

@@ -46,13 +46,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import static org.apache.calcite.util.Static.RESOURCE;
-<<<<<<< HEAD
-=======
-
-import javax.annotation.Nullable;
-
-
->>>>>>> a691f7b6e ([CALCITE-4544] Deprecating Reflection base Rel Metadata(James Starr))
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 /**
  * Abstract base for implementations of the {@link RelOptPlanner} interface.
  */
@@ -442,6 +436,7 @@ public abstract class AbstractRelOptPlanner implements RelOptPlanner {
   /** Returns sub-classes of relational expression. */
   public Iterable<Class<? extends RelNode>> subClasses(
       final Class<? extends RelNode> clazz) {
+<<<<<<< HEAD
     return Util.filter(classes, c -> {
       // RelSubset must be exact type, not subclass
       if (c == RelSubset.class) {
@@ -518,5 +513,8 @@ public abstract class AbstractRelOptPlanner implements RelOptPlanner {
       }
       return sb.toString();
     }
+=======
+    return Iterables.filter(classes, clazz::isAssignableFrom);
+
   }
 }

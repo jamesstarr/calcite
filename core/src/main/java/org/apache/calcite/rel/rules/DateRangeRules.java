@@ -65,7 +65,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.function.Predicate;
+<<<<<<< HEAD
 import javax.annotation.Nonnull;
+=======
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
 /**
  * Collection of planner rules that convert

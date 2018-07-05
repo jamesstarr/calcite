@@ -25,7 +25,7 @@ import org.apache.calcite.util.Util;
 import com.google.common.base.Preconditions;
 
 import java.util.List;
->>>>>>> 232030fd4 ([CALCITE-2632]: Add hashCode and equals implementations to RexNode)
+import java.util.Objects;
 import javax.annotation.Nonnull;
 
 /**
@@ -99,6 +99,7 @@ public class RexOver extends RexCall {
       sb.append("DISTINCT ");
     }
     appendOperands(sb);
+
     sb.append(")");
     if (ignoreNulls) {
       sb.append(" IGNORE NULLS");

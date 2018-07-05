@@ -576,13 +576,7 @@ public class SqlParserTest {
 
   private static final ThreadLocal<boolean[]> LINUXIFY =
       ThreadLocal.withInitial(() -> new boolean[] {true});
-
-  private static final SqlWriterConfig SQL_WRITER_CONFIG =
-      SqlPrettyWriter.config()
-          .withAlwaysUseParentheses(true)
-          .withUpdateSetListNewline(false)
-          .withFromFolding(SqlWriterConfig.LineFolding.TALL)
-          .withIndentation(0);
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
   private static final SqlWriterConfig SQL_WRITER_CONFIG =
       SqlPrettyWriter.config()
@@ -2386,7 +2380,6 @@ public class SqlParserTest {
         + "where name like (select ^some^ name from emp)";
     sql(sql3).fails("(?s).*Encountered \"some name\" at .*");
 
->>>>>>> d192c11b0 (Implement [NOT] LIKE ANY/ALL/SOME as logical rewrites)
     final String sql5 = "select * from emp where empno = any (10,20)";
     final String expected5 = "SELECT *\n"
         + "FROM `EMP`\n"

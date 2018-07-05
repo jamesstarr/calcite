@@ -19,7 +19,7 @@ package org.apache.calcite.test;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.util.ImmutableBitSet;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ class InduceGroupingTypeTest {
     final ImmutableBitSet groupSet = ImmutableBitSet.of(1, 2, 4, 5);
 
     // SIMPLE
-    final List<ImmutableBitSet> groupSets = new ArrayList<>();
+    List<ImmutableBitSet> groupSets = new ArrayList<>();
     groupSets.add(groupSet);
     assertEquals(Aggregate.Group.SIMPLE,
         Aggregate.Group.induce(groupSet, groupSets));
@@ -62,7 +62,7 @@ class InduceGroupingTypeTest {
     assertThat(Aggregate.Group.isRollup(groupSet, groupSets0), is(false));
 
     // ROLLUP
-    groupSets.clear();
+    groupSets = new ArrayList<>();
     groupSets.add(ImmutableBitSet.of(1, 2, 4, 5));
     groupSets.add(ImmutableBitSet.of(1, 2, 4));
     groupSets.add(ImmutableBitSet.of(1, 2));
@@ -99,7 +99,7 @@ class InduceGroupingTypeTest {
         is("[5, 4, 2, 1]"));
 
     // OTHER
-    groupSets.clear();
+    groupSets = new ArrayList<>();
     groupSets.add(ImmutableBitSet.of(1, 2, 4, 5));
     groupSets.add(ImmutableBitSet.of(1, 2, 4));
     groupSets.add(ImmutableBitSet.of(1, 2));
@@ -107,7 +107,7 @@ class InduceGroupingTypeTest {
     assertEquals(Aggregate.Group.OTHER,
         Aggregate.Group.induce(groupSet, groupSets));
 
-    groupSets.clear();
+    groupSets = new ArrayList<>();
     groupSets.add(ImmutableBitSet.of(1, 2, 4, 5));
     groupSets.add(ImmutableBitSet.of(1, 2, 4));
     groupSets.add(ImmutableBitSet.of(1, 2));
@@ -115,16 +115,7 @@ class InduceGroupingTypeTest {
     assertEquals(Aggregate.Group.OTHER,
         Aggregate.Group.induce(groupSet, groupSets));
 
-    groupSets.clear();
-    groupSets.add(ImmutableBitSet.of(1, 2, 4, 5));
-    groupSets.add(ImmutableBitSet.of(1, 2, 4));
-    groupSets.add(ImmutableBitSet.of(1, 2));
-    groupSets.add(ImmutableBitSet.of(1, 4));
-    groupSets.add(ImmutableBitSet.of());
-    assertEquals(Aggregate.Group.OTHER,
-        Aggregate.Group.induce(groupSet, groupSets));
-
-    groupSets.clear();
+    groupSets = new ArrayList<>();
     groupSets.add(ImmutableBitSet.of(1, 2, 5));
     groupSets.add(ImmutableBitSet.of(1, 2, 4));
     groupSets.add(ImmutableBitSet.of(1, 2));
@@ -147,7 +138,11 @@ class InduceGroupingTypeTest {
     assertEquals(Aggregate.Group.OTHER,
         Aggregate.Group.induce(groupSet, groupSets));
 
-    groupSets.clear();
+    groupSets = new ArrayList<>();
+    assertEquals(Aggregate.Group.OTHER,
+        Aggregate.Group.induce(groupSet, groupSets));
+
+    groupSets = new ArrayList<>();
     groupSets.add(ImmutableBitSet.of());
     assertEquals(Aggregate.Group.OTHER,
         Aggregate.Group.induce(groupSet, groupSets));

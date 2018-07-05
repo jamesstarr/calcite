@@ -48,10 +48,9 @@ import org.apache.calcite.util.Util;
 import org.apache.calcite.util.trace.CalciteTrace;
 
 import com.google.common.base.Preconditions;
-<<<<<<< HEAD
-=======
 import com.google.common.base.Predicate;
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+=======
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import com.google.common.collect.ImmutableList;
 
 import org.slf4j.Logger;
@@ -67,7 +66,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.StringTokenizer;
-import java.util.UUID;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import java.util.function.Predicate;
 
 import static org.apache.calcite.util.Static.RESOURCE;
@@ -427,6 +426,7 @@ public final class SqlParserUtil {
    */
   public static StringAndPos findPos(String sql) {
     return StringAndPos.of(sql);
+
   }
 
   /**
@@ -789,9 +789,12 @@ public final class SqlParserUtil {
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
->>>>>>> ee1ef8208 (DX-36442: Clean up trivial method signatures)
+=======
+
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
   /** Implementation of
    * {@link org.apache.calcite.sql.SqlSpecialOperator.TokenSequence}
    * based on an existing parser. */

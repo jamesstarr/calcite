@@ -95,12 +95,13 @@ public class RexSimplify {
   private RexSimplify(RexBuilder rexBuilder, RelOptPredicateList predicates,
       boolean unknownAsFalse, boolean predicateElimination, boolean paranoid,
       RexExecutor executor) {
-    this.rexBuilder = Preconditions.checkNotNull(rexBuilder);
-    this.predicates = Preconditions.checkNotNull(predicates);
+    this.rexBuilder = Objects.requireNonNull(rexBuilder);
+    this.predicates = Objects.requireNonNull(predicates);
+
     this.unknownAsFalse = unknownAsFalse;
     this.predicateElimination = predicateElimination;
     this.paranoid = paranoid;
-    this.executor = Preconditions.checkNotNull(executor);
+    this.executor = Objects.requireNonNull(executor);
   }
 
   @Deprecated // to be removed before 2.0
@@ -1970,9 +1971,9 @@ public class RexSimplify {
     final RexLiteral literal;
 
     public Comparison(RexNode ref, SqlKind kind, RexLiteral literal) {
-      this.ref = Preconditions.checkNotNull(ref);
-      this.kind = Preconditions.checkNotNull(kind);
-      this.literal = Preconditions.checkNotNull(literal);
+      this.ref = Objects.requireNonNull(ref);
+      this.kind = Objects.requireNonNull(kind);
+      this.literal = Objects.requireNonNull(literal);
     }
 
     /**
@@ -2030,8 +2031,8 @@ public class RexSimplify {
     final SqlKind kind;
 
     private IsPredicate(RexNode ref, SqlKind kind) {
-      this.ref = Preconditions.checkNotNull(ref);
-      this.kind = Preconditions.checkNotNull(kind);
+      this.ref = Objects.requireNonNull(ref);
+      this.kind = Objects.requireNonNull(kind);
     }
 
   /**

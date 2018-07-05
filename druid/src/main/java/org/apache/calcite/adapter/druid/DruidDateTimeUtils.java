@@ -58,29 +58,26 @@ import java.util.List;
 
   protected static List<Interval> toInterval(
       List<Range<Long>> ranges) {
-    List<Interval> intervals = Lists.transform(ranges,
-        new Function<Range<Long>, Interval>() {
-          public Interval apply(Range<Long> range) {
-            if (!range.hasLowerBound() && !range.hasUpperBound()) {
-              return DruidTable.DEFAULT_INTERVAL;
-            }
-            long start = range.hasLowerBound()
-                ? range.lowerEndpoint().longValue()
-                : DruidTable.DEFAULT_INTERVAL.getStartMillis();
-            long end = range.hasUpperBound()
-                ? range.upperEndpoint().longValue()
-                : DruidTable.DEFAULT_INTERVAL.getEndMillis();
-            if (range.hasLowerBound()
-                && range.lowerBoundType() == BoundType.OPEN) {
-              start++;
-            }
-            if (range.hasUpperBound()
-                && range.upperBoundType() == BoundType.CLOSED) {
-              end++;
-            }
-            return new Interval(start, end, ISOChronology.getInstanceUTC());
-          }
-        });
+    List<Interval> intervals = Lists.transform(ranges, range -> {
+      if (!range.hasLowerBound() && !range.hasUpperBound()) {
+        return DruidTable.DEFAULT_INTERVAL;
+      }
+      long start = range.hasLowerBound()
+          ? range.lowerEndpoint().longValue()
+          : DruidTable.DEFAULT_INTERVAL.getStartMillis();
+      long end = range.hasUpperBound()
+          ? range.upperEndpoint().longValue()
+          : DruidTable.DEFAULT_INTERVAL.getEndMillis();
+      if (range.hasLowerBound()
+          && range.lowerBoundType() == BoundType.OPEN) {
+        start++;
+      }
+      if (range.hasUpperBound()
+          && range.upperBoundType() == BoundType.CLOSED) {
+        end++;
+      }
+      return new Interval(start, end, ISOChronology.getInstanceUTC());
+    });
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("Converted time ranges " + ranges + " to interval " + intervals);
     }
@@ -104,7 +101,7 @@ import java.util.List;
 
     case OR: {
       RexCall call = (RexCall) node;
-      List<Range<Long>> intervals = Lists.newArrayList();
+      List<Range<Long>> intervals = new ArrayList<>();
       for (RexNode child : call.getOperands()) {
         List<Range<Long>> extracted =
             extractRanges(child, withNot);

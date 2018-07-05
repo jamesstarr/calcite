@@ -2602,6 +2602,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
+
   @Test public void testUpdateSubQuery() {
     final String sql = "update emp\n"
         + "set empno = (\n"
@@ -3380,7 +3381,6 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
       final RelRoot root = tester.convertSqlToRel(input);
       final String s = RelOptUtil.toString(root.project());
       assertThat(s, notNullValue());
-      return null;
     });
   }
 

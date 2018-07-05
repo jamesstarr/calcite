@@ -25,7 +25,7 @@ import org.apache.calcite.avatica.remote.Service;
 import org.apache.calcite.avatica.server.AvaticaJsonHandler;
 import org.apache.calcite.avatica.server.HttpServer;
 import org.apache.calcite.avatica.server.Main;
-import org.apache.calcite.config.CalciteSystemProperty;
+import org.apache.calcite.prepare.CalcitePrepareImpl;
 import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.test.JdbcFrontLinqBackTest;
 import org.apache.calcite.test.JdbcTest;
@@ -35,11 +35,9 @@ import org.apache.calcite.util.Util;
 import com.google.common.collect.ImmutableList;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -108,7 +106,7 @@ class CalciteRemoteDriverTest {
         try {
           return connection.getMetaData().getSchemas();
         } catch (SQLException e) {
-          throw TestUtil.rethrow(e);
+          throw new RuntimeException(e);
         }
       };
 
@@ -117,7 +115,7 @@ class CalciteRemoteDriverTest {
         try {
           return connection.getMetaData().getCatalogs();
         } catch (SQLException e) {
-          throw TestUtil.rethrow(e);
+          throw new RuntimeException(e);
         }
       };
 
@@ -126,7 +124,7 @@ class CalciteRemoteDriverTest {
         try {
           return connection.getMetaData().getColumns(null, null, null, null);
         } catch (SQLException e) {
-          throw TestUtil.rethrow(e);
+          throw new RuntimeException(e);
         }
       };
 
@@ -135,7 +133,7 @@ class CalciteRemoteDriverTest {
         try {
           return connection.getMetaData().getTypeInfo();
         } catch (SQLException e) {
-          throw TestUtil.rethrow(e);
+          throw new RuntimeException(e);
         }
       };
 
@@ -144,7 +142,7 @@ class CalciteRemoteDriverTest {
         try {
           return connection.getMetaData().getTableTypes();
         } catch (SQLException e) {
-          throw TestUtil.rethrow(e);
+          throw new RuntimeException(e);
         }
       };
 
@@ -155,11 +153,8 @@ class CalciteRemoteDriverTest {
     localConnection = CalciteAssert.hr().connect();
 
     // Make sure we pick an ephemeral port for the server
-    start = Main.start(new String[]{Factory.class.getName()}, 0, new HandlerFactory() {
-      public AvaticaJsonHandler createHandler(Service service) {
-        return new AvaticaJsonHandler(service);
-      }
-    });
+    start = Main.start(new String[]{Factory.class.getName()}, 0,
+        AvaticaJsonHandler::new);
   }
 
   protected static Connection getRemoteConnection() throws SQLException {

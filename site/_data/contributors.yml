@@ -283,6 +283,7 @@
   org: Huawei
   role: Committer
 <<<<<<< HEAD
+<<<<<<< HEAD
 - name: Zhiwei Peng
   apacheId: zhiwei
   githubId: pengzhiwei2018
@@ -297,3 +298,6 @@
 =======
 # End contributors.yml
 >>>>>>> e7452f80f (Site: Add committer Kevin Risden)
+=======
+# End contributors.yml
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)

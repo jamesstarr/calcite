@@ -86,137 +86,43 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * query and one or more materializations (what Oracle calls materialized views)
  * and checks that the materialization is used.
  */
-class MaterializationTest {
+public class MaterializationTest {
   private static final Consumer<ResultSet> CONTAINS_M0 =
       CalciteAssert.checkResultContains(
           "EnumerableTableScan(table=[[hr, m0]])");
 
-  private static final Ordering<Iterable<String>> CASE_INSENSITIVE_LIST_COMPARATOR =
-      Ordering.from(String.CASE_INSENSITIVE_ORDER).lexicographical();
-
-  private static final Ordering<Iterable<List<String>>> CASE_INSENSITIVE_LIST_LIST_COMPARATOR =
-      CASE_INSENSITIVE_LIST_COMPARATOR.lexicographical();
-
-  private static final String HR_FKUK_SCHEMA = "{\n"
-      + "       type: 'custom',\n"
-      + "       name: 'hr',\n"
-      + "       factory: '"
-      + ReflectiveSchema.Factory.class.getName()
-      + "',\n"
-      + "       operand: {\n"
-      + "         class: '" + HrFKUKSchema.class.getName() + "'\n"
-      + "       }\n"
-      + "     }\n";
-
-  private static final String HR_FKUK_MODEL = "{\n"
-      + "  version: '1.0',\n"
-      + "  defaultSchema: 'hr',\n"
-      + "   schemas: [\n"
-      + HR_FKUK_SCHEMA
-      + "   ]\n"
-      + "}";
-
-  final JavaTypeFactoryImpl typeFactory =
-      new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
-  private final RexBuilder rexBuilder = new RexBuilder(typeFactory);
-  private final RexSimplify simplify =
-      new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false,
-          RexUtil.EXECUTOR).withParanoid(true);
-
-  private static Sql sql() {
-    return ImmutableBeans.create(Sql.class)
-        .withModel(HR_FKUK_MODEL)
-        .withRuleSet(RuleSets.ofList(ImmutableList.of()))
-        .withChecker(CONTAINS_M0);
-  }
-
-  private static Sql sql(String materialize, String query) {
-    return sql()
-        .withMaterialize(materialize)
-        .withQuery(query);
-  }
-
-  @Test void testScan() {
-    CalciteAssert.that()
-        .withMaterializations(
-            "{\n"
-                + "  version: '1.0',\n"
-                + "  defaultSchema: 'SCOTT_CLONE',\n"
-                + "  schemas: [ {\n"
-                + "    name: 'SCOTT_CLONE',\n"
-                + "    type: 'custom',\n"
-                + "    factory: 'org.apache.calcite.adapter.clone.CloneSchema$Factory',\n"
-                + "    operand: {\n"
-                + "      jdbcDriver: '" + JdbcTest.SCOTT.driver + "',\n"
-                + "      jdbcUser: '" + JdbcTest.SCOTT.username + "',\n"
-                + "      jdbcPassword: '" + JdbcTest.SCOTT.password + "',\n"
-                + "      jdbcUrl: '" + JdbcTest.SCOTT.url + "',\n"
-                + "      jdbcSchema: 'SCOTT'\n"
-                + "   } } ]\n"
-                + "}",
-            "m0",
-            "select empno, deptno from emp order by deptno")
-        .query(
-            "select empno, deptno from emp")
-        .enableMaterializations(true)
-        .explainContains("EnumerableTableScan(table=[[SCOTT_CLONE, m0]])")
-        .sameResultWithMaterializationsDisabled();
-  }
-
-  @Test void testFilter() {
-    CalciteAssert.that()
-        .withMaterializations(
-            HR_FKUK_MODEL,
-            "m0",
-            "select * from \"emps\" where \"deptno\" = 10")
-        .query(
-            "select \"empid\" + 1 from \"emps\" where \"deptno\" = 10")
-        .enableMaterializations(true)
-        .explainContains("EnumerableTableScan(table=[[hr, m0]])")
-        .sameResultWithMaterializationsDisabled();
-  }
-
-  @Test void testFilterToProject0() {
-    String union =
-        "select * from \"emps\" where \"empid\" > 300\n"
-            + "union all select * from \"emps\" where \"empid\" < 200";
-    String mv = "select *, \"empid\" * 2 from (" + union + ")";
-    String query = "select * from (" + union + ") where (\"empid\" * 2) > 3";
-    sql(mv, query).ok();
-  }
-
-  @Test void testFilterToProject1() {
-    String agg =
-        "select \"deptno\", count(*) as \"c\", sum(\"salary\") as \"s\"\n"
-            + "from \"emps\" group by \"deptno\"";
-    String mv = "select \"c\", \"s\", \"s\" from (" + agg + ")";
-    String query = "select * from (" + agg + ") where (\"s\" * 0.8) > 10000";
-    sql(mv, query).noMat();
-  }
-
-  @Test void testFilterQueryOnProjectView() {
-    try (TryThreadLocal.Memo ignored = Prepare.THREAD_TRIM.push(true)) {
-      MaterializationService.setThreadLocal();
-      CalciteAssert.that()
-          .withMaterializations(
-              HR_FKUK_MODEL,
-              "m0",
-              "select \"deptno\", \"empid\" from \"emps\"")
-          .query(
-              "select \"empid\" + 1 as x from \"emps\" where \"deptno\" = 10")
-          .enableMaterializations(true)
-          .explainContains("EnumerableTableScan(table=[[hr, m0]])")
-          .sameResultWithMaterializationsDisabled();
-    }
+  private void checkMaterialize(String materialize, String query) {
+    checkMaterialize(materialize, query, HR_FKUK_MODEL, CONTAINS_M0,
+        RuleSets.ofList(ImmutableList.of()));
   }
 
   /** Checks that a given query can use a materialized view with a given
    * definition. */
-  static CalciteAssert.AssertQuery checkThatMaterialize_(String materialize,
+  private void checkMaterializeWithRules(String materialize, String query, RuleSet rules) {
+    checkMaterialize(materialize, query, HR_FKUK_MODEL, CONTAINS_M0, rules);
+  }
+
+  /** Checks that a given query can use a materialized view with a given
+   * definition. */
+  private void checkMaterialize(String materialize, String query, String model,
+      Consumer<ResultSet> explainChecker) {
+    checkMaterialize(materialize, query, model, explainChecker,
+        RuleSets.ofList(ImmutableList.of()));
+  }
+
+
+  private void checkMaterialize(String materialize, String query, String model,
+      Consumer<ResultSet> explainChecker, final RuleSet rules) {
+    checkThatMaterialize(materialize, query, "m0", false, model, explainChecker,
+        rules).sameResultWithMaterializationsDisabled();
+  }
+
+  /** Checks that a given query can use a materialized view with a given
+   * definition. */
+  private CalciteAssert.AssertQuery checkThatMaterialize(String materialize,
       String query, String name, boolean existing, String model,
-      Consumer<ResultSet> explainChecker, final RuleSet rules,
-      boolean onlyBySubstitution) {
-    try (TryThreadLocal.Memo ignored = Prepare.THREAD_TRIM.push(true)) {
+      Consumer<ResultSet> explainChecker, final RuleSet rules) {
+    try (final TryThreadLocal.Memo ignored = Prepare.THREAD_TRIM.push(true)) {
       MaterializationService.setThreadLocal();
       CalciteAssert.AssertQuery that = CalciteAssert.that()
           .withMaterializations(model, existing, name, materialize)
@@ -224,15 +130,10 @@ class MaterializationTest {
           .enableMaterializations(true);
 
       // Add any additional rules required for the test
-      if (rules.iterator().hasNext() || onlyBySubstitution) {
+      if (rules.iterator().hasNext()) {
         that.withHook(Hook.PLANNER, (Consumer<RelOptPlanner>) planner -> {
           for (RelOptRule rule : rules) {
             planner.addRule(rule);
-          }
-          if (onlyBySubstitution) {
-            RelOptRules.MATERIALIZATION_RULES.forEach(rule -> {
-              planner.removeRule(rule);
-            });
           }
         });
       }
@@ -2607,12 +2508,13 @@ class MaterializationTest {
             + "join \"depts\" on (\"emps\".\"deptno\" = \"depts\".\"deptno\")",
         "select \"depts\".\"name\"\n"
             + "from \"depts\"\n"
-            + "join \"emps\" on (\"emps\".\"deptno\" = \"depts\".\"deptno\")")
-        .withViewName("matview")
-        .withExisting(true)
-        .withResultContains(
-            "EnumerableValues(tuples=[[{ 'noname' }]])")
-        .that()
+            + "join \"emps\" on (\"emps\".\"deptno\" = \"depts\".\"deptno\")",
+        "matview",
+        true,
+        HR_FKUK_MODEL,
+        CalciteAssert.checkResultContains(
+            "EnumerableValues(tuples=[[{ 'noname' }]])"),
+        RuleSets.ofList(ImmutableList.of()))
         .returnsValue("noname");
   }
 
@@ -2664,9 +2566,9 @@ class MaterializationTest {
               HR_FKUK_MODEL, builder -> {
                 final Map<String, Object> map = builder.map();
                 map.put("table", "locations");
-                String sql = "select distinct `deptno` as `empid`, '' as `name`\n"
+                String sql = "select `deptno` as `empid`, '' as `name`\n"
                     + "from `emps`";
-                final String sql2 = sql.replace("`", "\"");
+                final String sql2 = sql.replaceAll("`", "\"");
                 map.put("sql", sql2);
                 return ImmutableList.of(map);
               })

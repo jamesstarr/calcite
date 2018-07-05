@@ -16,11 +16,7 @@
  */
 package org.apache.calcite.rel;
 
-import org.apache.calcite.util.ImmutableIntList;
-import org.apache.calcite.util.mapping.Mapping;
-import org.apache.calcite.util.mapping.Mappings;
-
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;

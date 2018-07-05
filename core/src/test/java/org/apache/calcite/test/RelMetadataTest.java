@@ -36,13 +36,12 @@ import org.apache.calcite.rel.SingleRel;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.core.Correlate;
-import org.apache.calcite.rel.core.Exchange;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.core.Minus;
 import org.apache.calcite.rel.core.Project;
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableModify;
 import org.apache.calcite.rel.core.TableScan;
@@ -86,7 +85,7 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexProgram;
 import org.apache.calcite.rex.RexTableInputRef;
 import org.apache.calcite.rex.RexTableInputRef.RelTableRef;
-import org.apache.calcite.runtime.SqlFunctions;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSpecialOperator;
@@ -342,6 +341,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     Set<RelColumnOrigin> result = checkColumnOrigin(sql);
     assertNotNull(result);
     assertThat(result.size(), is(1));
+
     RelColumnOrigin rco = result.iterator().next();
     checkColumnOrigin(
         rco, expectedTableName, expectedColumnName, expectedDerived);
@@ -358,6 +358,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     Set<RelColumnOrigin> result = checkColumnOrigin(sql);
     assertNotNull(result);
     assertThat(result.size(), is(2));
+
     for (RelColumnOrigin rco : result) {
       RelOptTable actualTable = rco.getOriginTable();
       List<String> actualTableName = actualTable.getQualifiedName();
@@ -1013,6 +1014,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     }
   }
 
+<<<<<<< HEAD
   @Test void testGroupByEmptyUniqueKeys() {
     checkGetUniqueKeys("select count(*) from emp",
         ImmutableSet.of(ImmutableBitSet.of()));
@@ -1047,6 +1049,48 @@ public class RelMetadataTest extends SqlToRelTestBase {
         + "select *\n"
         + "from (select distinct deptno, sal from emp)\n"
         + "where 1000=sal");
+=======
+  @Test public void testGroupByEmptyUniqueKeys() {
+    RelNode rel = convertSql("select count(*) from emp");
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
+    assertThat(result,
+        CoreMatchers.equalTo(
+            ImmutableSet.of(ImmutableBitSet.of())));
+    assertUniqueConsistent(rel);
+  }
+
+  @Test public void testGroupByEmptyHavingUniqueKeys() {
+    RelNode rel = convertSql("select count(*) from emp where 1 = 1");
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
+    assertThat(result,
+        CoreMatchers.equalTo(
+            ImmutableSet.of(ImmutableBitSet.of())));
+    assertUniqueConsistent(rel);
+  }
+
+  @Test public void testGroupBy() {
+    RelNode rel = convertSql("select deptno, count(*), sum(sal) from emp\n"
+            + "group by deptno");
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
+    assertThat(result,
+        CoreMatchers.equalTo(
+            ImmutableSet.of(ImmutableBitSet.of(0))));
+    assertUniqueConsistent(rel);
+  }
+
+  @Test public void testUnion() {
+    RelNode rel = convertSql("select deptno from emp\n"
+            + "union\n"
+            + "select deptno from dept");
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
+    assertThat(result,
+        CoreMatchers.equalTo(
+            ImmutableSet.of(ImmutableBitSet.of(0))));
+    assertUniqueConsistent(rel);
   }
 
   @Test public void testBrokenCustomProviderWithMetadataFactory() {
@@ -1058,9 +1102,9 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final RelRoot root = tester
         .withClusterFactory(cluster -> {
           cluster.setMetadataProvider(
-                    ChainedRelMetadataProvider.of(
-                        ImmutableList.of(BrokenColTypeImpl.SOURCE,
-                            cluster.getMetadataProvider())));
+              ChainedRelMetadataProvider.of(
+                  ImmutableList.of(BrokenColTypeImpl.SOURCE,
+                      cluster.getMetadataProvider())));
           return cluster;
         })
         .convertSqlToRel(sql);
@@ -1124,7 +1168,6 @@ public class RelMetadataTest extends SqlToRelTestBase {
     return myRelMetadataQuery.colType(rel, column);
   }
 
-
   @Deprecated
   @Test public void testCustomProviderWithRelMetadataFactory() {
     final List<String> buf = new ArrayList<>();
@@ -1137,10 +1180,10 @@ public class RelMetadataTest extends SqlToRelTestBase {
           // Create a custom provider that includes ColType.
           // Include the same provider twice just to be devious.
           final ImmutableList<RelMetadataProvider> list =
-                    ImmutableList.of(ColTypeImpl.SOURCE, ColTypeImpl.SOURCE,
-                        cluster.getMetadataProvider());
+              ImmutableList.of(ColTypeImpl.SOURCE, ColTypeImpl.SOURCE,
+                  cluster.getMetadataProvider());
           cluster.setMetadataProvider(
-                    ChainedRelMetadataProvider.of(list));
+              ChainedRelMetadataProvider.of(list));
           return cluster;
         })
         .convertSqlToRel(sql);
@@ -1370,10 +1413,10 @@ public class RelMetadataTest extends SqlToRelTestBase {
   /** Unit test for
    * {@link org.apache.calcite.rel.metadata.RelMdColumnUniqueness#areColumnsUnique}
    * applied to {@link Values}. */
-  @Test void testColumnUniquenessForValues() {
+  @Test public void testColumnUniquenessForValues() {
     Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
       final RexBuilder rexBuilder = cluster.getRexBuilder();
-      final RelMetadataQuery mq = cluster.getMetadataQuery();
+      final RelMetadataQuery mq = RelMetadataQuery.instance();
       final RelDataType rowType = cluster.getTypeFactory().builder()
           .add("a", SqlTypeName.INTEGER)
           .add("b", SqlTypeName.VARCHAR)
@@ -1544,7 +1587,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     // Join
     final LogicalJoin join =
         LogicalJoin.create(empScan, deptProject, ImmutableList.of(),
-            rexBuilder.makeLiteral(true), ImmutableSet.<CorrelationId>of(),
+            rexBuilder.makeLiteral(true), ImmutableSet.of(),
             JoinRelType.INNER);
     rowSize = mq.getAverageRowSize(join);
     columnSizes = mq.getAverageColumnSizes(join);

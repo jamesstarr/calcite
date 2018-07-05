@@ -23,12 +23,7 @@ import org.apache.calcite.materialize.MaterializationService;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptUtil;
-import org.apache.calcite.rel.rules.materialize.MaterializedViewOnlyAggregateRule;
-import org.apache.calcite.rel.rules.materialize.MaterializedViewOnlyFilterRule;
-import org.apache.calcite.rel.rules.materialize.MaterializedViewOnlyJoinRule;
-import org.apache.calcite.rel.rules.materialize.MaterializedViewProjectAggregateRule;
-import org.apache.calcite.rel.rules.materialize.MaterializedViewProjectFilterRule;
-import org.apache.calcite.rel.rules.materialize.MaterializedViewProjectJoinRule;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import org.apache.calcite.runtime.Hook;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.util.ImmutableBitSet;
@@ -223,6 +218,7 @@ class LatticeTest {
               lattice.sql(ImmutableBitSet.of(0, 1), false,
                   ImmutableList.of()),
               is(sql2));
+<<<<<<< HEAD
         });
   }
 
@@ -245,6 +241,7 @@ class LatticeTest {
           assertThat(lattice.firstColumn("PC"), is(-1));
           assertThat(lattice.defaultMeasures.size(), is(1));
           assertThat(lattice.rootNode.descendants.size(), is(3));
+=======
         });
   }
 
@@ -318,17 +315,6 @@ class LatticeTest {
         + "join \"foodmart\".\"product\" as p using (\"product_id\")\n"
         + "left join \"foodmart\".\"time_by_day\" as t on s.\"product_id\" = p.\"product_id\"")
         .connectThrows("only non nulls-generating join allowed, but got LEFT");
-<<<<<<< HEAD
-  }
-
-  /** Each lattice table must have a parent. */
-  @Test void testLatticeInvalidSql3() {
-    modelWithLattice("star",
-        "select 1 from \"foodmart\".\"sales_fact_1997\" as s\n"
-        + "join \"foodmart\".\"product\" as p using (\"product_id\")\n"
-        + "join \"foodmart\".\"time_by_day\" as t on s.\"product_id\" = p.\"product_id\"")
-        .connectThrows("child node must have precisely one parent");
-=======
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
   }
 
@@ -384,10 +370,16 @@ class LatticeTest {
                   containsStringLinux(
                       "LogicalProject(brand_name=[$1], customer_id=[$0])\n"
                       + "  LogicalAggregate(group=[{2, 10}])\n"
+<<<<<<< HEAD
                       + "    StarTableScan(table=[[adhoc, star]])\n"),
                   containsStringLinux(
                       "LogicalAggregate(group=[{2, 10}])\n"
                       + "  StarTableScan(table=[[adhoc, star]])\n")));
+=======
+                      + "    LogicalTableScan(table=[[adhoc, star]])\n"),
+                  containsStringLinux(
+                      "LogicalAggregate(group=[{2, 10}])\n"
+                      + "  LogicalTableScan(table=[[adhoc, star]])\n")));
           return null;
         });
     assertThat(counter.intValue(), equalTo(2));
@@ -622,7 +614,7 @@ class LatticeTest {
 
   /** Tests that two queries of the same dimensionality that use different
    * measures can use the same materialization. */
-  @Test void testGroupByEmpty3() {
+  @Test public void testGroupByEmpty3() {
     final List<String> mats = new ArrayList<>();
     final CalciteAssert.AssertThat that = foodmartModel().pooled();
     that.query("select sum(\"unit_sales\") as s, count(*) as c\n"

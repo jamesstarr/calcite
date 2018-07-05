@@ -219,8 +219,7 @@ public abstract class Mappings {
   public static ImmutableList<ImmutableBitSet> apply2(final Mapping mapping,
       Iterable<ImmutableBitSet> bitSets) {
     return ImmutableList.copyOf(
-        ImmutableBitSet.ORDERING.sortedCopy(
-            Iterables.transform(bitSets, input1 -> apply(mapping, input1))));
+        Iterables.transform(bitSets, input1 -> apply(mapping, input1)));
   }
 
   /**

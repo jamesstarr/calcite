@@ -16,7 +16,7 @@
  */
 package org.apache.calcite.util;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.BitSet;
@@ -190,7 +190,7 @@ class BitSetsTest {
   /**
    * Tests the method {@link BitSets#closure(java.util.SortedMap)}
    */
-  @Test void testClosure() {
+  @Test public void testClosure() {
     final SortedMap<Integer, BitSet> empty = new TreeMap<>();
     assertThat(BitSets.closure(empty), equalTo(empty));
 

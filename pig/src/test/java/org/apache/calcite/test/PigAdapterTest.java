@@ -16,8 +16,7 @@
  */
 package org.apache.calcite.test;
 
-import org.apache.calcite.util.Sources;
-
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import com.google.common.collect.ImmutableMap;
 
 import org.junit.jupiter.api.Test;
@@ -168,7 +167,11 @@ class PigAdapterTest extends AbstractPigTest {
           actual == null || actual.isEmpty()
               ? null
               : (String) actual.get(0);
+<<<<<<< HEAD
       assertEquals(strings[0], actualArray, "expected Pig script not found");
+=======
+      assertEquals("expected Pig script not found",
+          strings[0], actualArray);
     };
   }
 }

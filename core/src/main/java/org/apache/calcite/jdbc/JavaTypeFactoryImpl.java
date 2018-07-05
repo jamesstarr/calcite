@@ -38,9 +38,8 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
-<<<<<<< HEAD
-=======
 import com.google.common.base.Preconditions;
+=======
 import com.google.common.collect.Lists;
 
 import java.lang.reflect.Field;
@@ -52,6 +51,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Implementation of {@link JavaTypeFactory}.

@@ -26,8 +26,7 @@ import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.mapping.IntPair;
 
-import com.google.common.collect.ImmutableList;
-
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -48,11 +47,16 @@ public class JoinInfo {
   public final ImmutableList<RexNode> nonEquiConditions;
 
   /** Creates a JoinInfo. */
+<<<<<<< HEAD
   protected JoinInfo(ImmutableIntList leftKeys, ImmutableIntList rightKeys,
       ImmutableList<RexNode> nonEquiConditions) {
     this.leftKeys = Objects.requireNonNull(leftKeys);
     this.rightKeys = Objects.requireNonNull(rightKeys);
     this.nonEquiConditions = Objects.requireNonNull(nonEquiConditions);
+=======
+  protected JoinInfo(ImmutableIntList leftKeys, ImmutableIntList rightKeys) {
+    this.leftKeys = Objects.requireNonNull(leftKeys);
+    this.rightKeys = Objects.requireNonNull(rightKeys);
     assert leftKeys.size() == rightKeys.size();
   }
 
@@ -107,4 +111,42 @@ public class JoinInfo {
     return FlatLists.of(leftKeys, rightKeys);
   }
 
+<<<<<<< HEAD
+=======
+  /** JoinInfo that represents an equi-join. */
+  private static class EquiJoinInfo extends JoinInfo {
+    protected EquiJoinInfo(ImmutableIntList leftKeys,
+        ImmutableIntList rightKeys) {
+      super(leftKeys, rightKeys);
+    }
+
+    @Override public boolean isEqui() {
+      return true;
+    }
+
+    @Override public RexNode getRemaining(RexBuilder rexBuilder) {
+      return rexBuilder.makeLiteral(true);
+    }
+  }
+
+  /** JoinInfo that represents a non equi-join. */
+  private static class NonEquiJoinInfo extends JoinInfo {
+    public final RexNode remaining;
+
+    protected NonEquiJoinInfo(ImmutableIntList leftKeys,
+        ImmutableIntList rightKeys, RexNode remaining) {
+      super(leftKeys, rightKeys);
+      this.remaining = Objects.requireNonNull(remaining);
+      assert !remaining.isAlwaysTrue();
+    }
+
+    @Override public boolean isEqui() {
+      return false;
+    }
+
+    @Override public RexNode getRemaining(RexBuilder rexBuilder) {
+      return remaining;
+    }
+  }
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 }

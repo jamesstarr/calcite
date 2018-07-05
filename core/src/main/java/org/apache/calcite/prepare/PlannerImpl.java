@@ -25,7 +25,7 @@ import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.plan.Context;
 import org.apache.calcite.plan.ConventionTraitDef;
 import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptCostFactory;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptTable.ViewExpander;
 import org.apache.calcite.plan.RelOptUtil;
@@ -47,7 +47,6 @@ import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.util.ChainedSqlOperatorTable;
->>>>>>> e62a96083 ([CALCITE-3900] Add Config for SqlValidator)
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.RelDecorrelator;
 import org.apache.calcite.sql2rel.SqlRexConvertletTable;
@@ -173,15 +172,12 @@ public class PlannerImpl implements Planner {
     }
     ensure(State.STATE_1_RESET);
     Frameworks.withPlanner(
-        new Frameworks.PlannerAction<Void>() {
-          public Void apply(RelOptCluster cluster, RelOptSchema relOptSchema,
-              SchemaPlus rootSchema) {
-            Util.discard(rootSchema); // use our own defaultSchema
-            typeFactory = (JavaTypeFactory) cluster.getTypeFactory();
-            planner = cluster.getPlanner();
-            planner.setExecutor(executor);
-            return null;
-          }
+        (cluster, relOptSchema, rootSchema) -> {
+          Util.discard(rootSchema); // use our own defaultSchema
+          typeFactory = (JavaTypeFactory) cluster.getTypeFactory();
+          planner = cluster.getPlanner();
+          planner.setExecutor(executor);
+          return null;
         },
         config);
 

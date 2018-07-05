@@ -49,7 +49,7 @@ import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.util.BuiltInMethod;
 
-import com.google.common.annotations.VisibleForTesting;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -80,6 +80,9 @@ public class EnumerableRelImplementor extends JavaRelImplementor {
       new HashMap<>();
   private final Map<Object, ParameterExpression> stashedParameters =
       new IdentityHashMap<>();
+<<<<<<< HEAD
+=======
+  int windowCount = 0;
 
   protected final Function1<String, RexToLixTranslator.InputGetter> allCorrelateVariables =
       this::getCorrelVariableGetter;
@@ -183,7 +186,7 @@ public class EnumerableRelImplementor extends JavaRelImplementor {
             type.getName(),
             null,
             ImmutableList.of(Serializable.class),
-            new ArrayList<>());
+            new ArrayList<MemberDeclaration>());
 
     // For each field:
     //   public T0 f0;

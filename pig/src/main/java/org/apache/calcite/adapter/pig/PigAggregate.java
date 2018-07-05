@@ -27,10 +27,10 @@ import org.apache.calcite.util.ImmutableBitSet;
 
 import org.apache.pig.scripting.Pig;
 
-<<<<<<< HEAD
-=======
 import com.google.common.base.Joiner;
->>>>>>> 6435df1c4 ([CALCITE-3723] Following the change to add hints to RelNode, deprecate the old constructors)
+=======
+
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;

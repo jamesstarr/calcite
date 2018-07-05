@@ -36,7 +36,7 @@ import org.apache.calcite.schema.TableFactory;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.calcite.util.TestUtil;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
 import com.google.common.collect.ImmutableList;
 
@@ -266,8 +266,11 @@ public class StreamTest {
           }
           // With a 3 millisecond delay, typically n is between 200 - 400
           // before cancel takes effect.
+<<<<<<< HEAD
           assertThat(n,
               ComparatorMatcherBuilder.<Integer>usingNaturalOrdering().greaterThan(5));
+=======
+          assertTrue("n is " + n, n > 5);
         });
   }
 
@@ -340,7 +343,7 @@ public class StreamTest {
           assertThat(actualRow, equalTo(expectedRow));
         }
       } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
     };
   }
@@ -375,8 +378,7 @@ public class StreamTest {
     }
 
     @Override public boolean rolledUpColumnValidInsideAgg(String column,
-                                                          SqlCall call, SqlNode parent,
-                                                          CalciteConnectionConfig config) {
+        SqlCall call, SqlNode parent, CalciteConnectionConfig config) {
       return false;
     }
   }
@@ -431,8 +433,7 @@ public class StreamTest {
     }
 
     @Override public boolean rolledUpColumnValidInsideAgg(String column,
-                                                          SqlCall call, SqlNode parent,
-                                                          CalciteConnectionConfig config) {
+        SqlCall call, SqlNode parent, CalciteConnectionConfig config) {
       return false;
     }
   }
@@ -459,17 +460,12 @@ public class StreamTest {
       implements StreamableTable {
     public Enumerable<Object[]> scan(DataContext root) {
       return Linq4j.asEnumerable(() -> new Iterator<Object[]>() {
-        private final String[] items = {"paint", "paper", "brush"};
-        private int counter = 0;
-
         public boolean hasNext() {
           return true;
         }
 
         public Object[] next() {
-          final int index = counter++;
-          return new Object[]{
-              System.currentTimeMillis(), index, items[index % items.length], 10};
+          return ROW_GENERATOR.apply();
         }
 
         public void remove() {
@@ -548,56 +544,10 @@ public class StreamTest {
     }
 
     @Override public boolean rolledUpColumnValidInsideAgg(String column,
-<<<<<<< HEAD
-        SqlCall call, SqlNode parent, CalciteConnectionConfig config) {
-      return false;
-    }
-  }
-
-  /**
-   * Table representing the PRODUCTS_TEMPORAL temporal table.
-   */
-  public static class ProductsTemporalTable implements TemporalTable {
-
-    private final RelProtoDataType protoRowType = a0 -> a0.builder()
-        .add("ID", SqlTypeName.VARCHAR, 32)
-        .add("SUPPLIER", SqlTypeName.INTEGER)
-        .add("SYS_START", SqlTypeName.TIMESTAMP)
-        .add("SYS_END", SqlTypeName.TIMESTAMP)
-        .build();
-
-    @Override public String getSysStartFieldName() {
-      return "SYS_START";
-    }
-
-    @Override public String getSysEndFieldName() {
-      return "SYS_END";
-    }
-
-    @Override public RelDataType getRowType(RelDataTypeFactory typeFactory) {
-      return protoRowType.apply(typeFactory);
-    }
-
-    @Override public Statistic getStatistic() {
-      return Statistics.of(200d, ImmutableList.of());
-    }
-
-    @Override public Schema.TableType getJdbcTableType() {
-      return Schema.TableType.TABLE;
-    }
-
-    @Override public boolean isRolledUp(String column) {
-      return false;
-    }
-
-    @Override public boolean rolledUpColumnValidInsideAgg(String column,
-        SqlCall call, SqlNode parent, CalciteConnectionConfig config) {
-      return false;
-    }
-=======
 =======
                                                           SqlCall call, SqlNode parent,
                                                           CalciteConnectionConfig config) {
+=======
       return false;
     }
   }

@@ -16,10 +16,7 @@
  */
 package org.apache.calcite.util;
 
-import org.apache.commons.io.input.ReaderInputStream;
-
-import com.google.common.io.CharSource;
-
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -31,8 +28,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+<<<<<<< HEAD
 import java.nio.file.Paths;
 import java.util.Locale;
+=======
 import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 
@@ -50,9 +49,6 @@ public abstract class Sources {
     return new FileSource(url);
   }
 
-<<<<<<< HEAD
-
-=======
 >>>>>>> 1d2fb0f01 ([CALCITE-3017] Re-organize how we represent built-in operators that are not in the standard operator table)
   public static Source file(File baseDirectory, String fileName) {
     final File file = new File(fileName);
@@ -170,64 +166,20 @@ public abstract class Sources {
 
     private FileSource(URL url) {
       this.url = Objects.requireNonNull(url);
+<<<<<<< HEAD
       this.file = urlToFile(url);
       this.urlGenerated = false;
+=======
+      if (url.getProtocol().equals("file")) {
+        this.file = new File(url.getFile());
+      } else {
+        this.file = null;
+      }
     }
 
     private FileSource(File file) {
       this.file = Objects.requireNonNull(file);
-      this.url = fileToUrl(file);
-      this.urlGenerated = true;
-    }
-
-    private static File urlToFile(URL url) {
-      if (!"file".equals(url.getProtocol())) {
-        return null;
-      }
-      URI uri;
-      try {
-        uri = url.toURI();
-      } catch (URISyntaxException e) {
-        throw new IllegalArgumentException("Unable to convert URL " + url + " to URI", e);
-      }
-      if (uri.isOpaque()) {
-        // It is like file:test%20file.c++
-        // getSchemeSpecificPart would return "test file.c++"
-        return new File(uri.getSchemeSpecificPart());
-      }
-      // See https://stackoverflow.com/a/17870390/1261287
-      return Paths.get(uri).toFile();
-    }
-
-    private static URL fileToUrl(File file) {
-      String filePath = file.getPath();
-      if (!file.isAbsolute()) {
-        // convert relative file paths
-        filePath = filePath.replace(File.separatorChar, '/');
-        if (file.isDirectory() && !filePath.endsWith("/")) {
-          filePath += "/";
-        }
-        try {
-          // We need to encode path. For instance, " " should become "%20"
-          // That is why java.net.URLEncoder.encode(java.lang.String, java.lang.String) is not
-          // suitable because it replaces " " with "+".
-          String encodedPath = new URI(null, null, filePath, null).getRawPath();
-          return new URL("file", null, 0, encodedPath);
-        } catch (MalformedURLException | URISyntaxException e) {
-          throw new IllegalArgumentException("Unable to create URL for file " + filePath, e);
-        }
-      }
-
-      URI uri = null;
-      try {
-        // convert absolute file paths
-        uri = file.toURI();
-        return uri.toURL();
-      } catch (SecurityException e) {
-        throw new IllegalArgumentException("No access to the underlying file " + filePath, e);
-      } catch (MalformedURLException e) {
-        throw new IllegalArgumentException("Unable to convert URI " + uri + " to URL", e);
-      }
+      this.url = null;
     }
 
     @Override public String toString() {

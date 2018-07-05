@@ -2577,6 +2577,7 @@ EnumerableCalc(expr#0..1=[{inputs}], ANYEMPNO=[$t1])
 !plan
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 # BIT_AND, BIT_OR, BIT_XOR aggregate functions
 select bit_and(deptno), bit_or(deptno), bit_xor(deptno) from "scott".emp;
@@ -2789,3 +2790,6 @@ EnumerableAggregate(group=[{2}], EXPR$1=[JSON_OBJECTAGG_NULL_ON_NULL($0, $1)], E
 =======
 # End agg.iq
 >>>>>>> 40961f7ad ([CALCITE-2366] Add support for ANY_VALUE aggregate function (Gautam Parai))
+=======
+# End agg.iq
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)

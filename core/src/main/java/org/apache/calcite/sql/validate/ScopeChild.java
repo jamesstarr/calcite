@@ -22,11 +22,11 @@ package org.apache.calcite.sql.validate;
  * <p>Most commonly, it is an item in a FROM clause, and consists of a namespace
  * (the columns it provides), and optional name (table alias), and ordinal
  * within the FROM clause. */
-public class ScopeChild {
-  public final int ordinal;
-  public final String name;
-  public final SqlValidatorNamespace namespace;
-  public final boolean nullable;
+class ScopeChild {
+  final int ordinal;
+  final String name;
+  final SqlValidatorNamespace namespace;
+  final boolean nullable;
 
   /** Creates a ScopeChild.
    *

@@ -90,11 +90,133 @@ import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-    final List<RelCollation> collationList = Lists.newArrayList();
+import java.util.Set;
+
+/**
+ * Mock implementation of {@link SqlValidatorCatalogReader} which returns tables
+ * "EMP", "DEPT", "BONUS", "SALGRADE" (same as Oracle's SCOTT schema).
+ * Also two streams "ORDERS", "SHIPMENTS";
+ * and a view "EMP_20".
+ */
+public abstract class MockCatalogReader extends CalciteCatalogReader {
+  //~ Static fields/initializers ---------------------------------------------
+
+  static final String DEFAULT_CATALOG = "CATALOG";
+  static final String DEFAULT_SCHEMA = "SALES";
+  static final List<String> PREFIX = ImmutableList.of(DEFAULT_SCHEMA);
+
+  //~ Instance fields --------------------------------------------------------
+
+  //~ Constructors -----------------------------------------------------------
+
+  /**
+   * Creates a MockCatalogReader.
+   *
+   * <p>Caller must then call {@link #init} to populate with data.</p>
+   *
+   * @param typeFactory Type factory
+   */
+  public MockCatalogReader(RelDataTypeFactory typeFactory,
+      boolean caseSensitive) {
+    super(CalciteSchema.createRootSchema(false, true, DEFAULT_CATALOG),
+        SqlNameMatchers.withCaseSensitive(caseSensitive),
+        ImmutableList.of(PREFIX, ImmutableList.of()),
+        typeFactory, null);
+  }
+
+  @Override public boolean isCaseSensitive() {
+    return nameMatcher.isCaseSensitive();
+  }
+
+  public SqlNameMatcher nameMatcher() {
+    return nameMatcher;
+  }
+
+  /**
+   * Initializes this catalog reader.
+   */
+  public abstract MockCatalogReader init();
+
+  protected void registerTablesWithRollUp(MockSchema schema, Fixture f) {
+    // Register "EMP_R" table. Contains a rolled up column.
+    final MockTable empRolledTable =
+            MockTable.create(this, schema, "EMP_R", false, 14);
+    empRolledTable.addColumn("EMPNO", f.intType, true);
+    empRolledTable.addColumn("DEPTNO", f.intType);
+    empRolledTable.addColumn("SLACKER", f.booleanType);
+    empRolledTable.addColumn("SLACKINGMIN", f.intType);
+    empRolledTable.registerRolledUpColumn("SLACKINGMIN");
+    registerTable(empRolledTable);
+
+    // Register the "DEPT_R" table. Doesn't contain a rolled up column,
+    // but is useful for testing join
+    MockTable deptSlackingTable = MockTable.create(this, schema, "DEPT_R", false, 4);
+    deptSlackingTable.addColumn("DEPTNO", f.intType, true);
+    deptSlackingTable.addColumn("SLACKINGMIN", f.intType);
+    registerTable(deptSlackingTable);
+
+    // Register nested schema NEST that contains table with a rolled up column.
+    MockSchema nestedSchema = new MockSchema("NEST");
+    registerNestedSchema(schema, nestedSchema);
+
+    // Register "EMP_R" table which contains a rolled up column in NEST schema.
+    ImmutableList<String> tablePath =
+        ImmutableList.of(schema.getCatalogName(), schema.name, nestedSchema.name, "EMP_R");
+    final MockTable nestedEmpRolledTable = MockTable.create(this, tablePath, false, 14);
+    nestedEmpRolledTable.addColumn("EMPNO", f.intType, true);
+    nestedEmpRolledTable.addColumn("DEPTNO", f.intType);
+    nestedEmpRolledTable.addColumn("SLACKER", f.booleanType);
+    nestedEmpRolledTable.addColumn("SLACKINGMIN", f.intType);
+    nestedEmpRolledTable.registerRolledUpColumn("SLACKINGMIN");
+    registerTable(nestedEmpRolledTable);
+  }
+
+  //~ Methods ----------------------------------------------------------------
+
+  protected void registerType(final List<String> names, final RelProtoDataType relProtoDataType) {
+    assert names.get(0).equals(DEFAULT_CATALOG);
+    final List<String> schemaPath = Util.skipLast(names);
+    final CalciteSchema schema = SqlValidatorUtil.getSchema(rootSchema,
+        schemaPath, SqlNameMatchers.withCaseSensitive(true));
+    schema.add(Util.last(names), relProtoDataType);
+  }
+
+  protected void registerTable(final MockTable table) {
+    table.onRegister(typeFactory);
+    final WrapperTable wrapperTable = new WrapperTable(table);
+    if (table.stream) {
+      registerTable(table.names,
+          new StreamableWrapperTable(table) {
+            public Table stream() {
+              return wrapperTable;
+            }
+          });
+    } else {
+      registerTable(table.names, wrapperTable);
+    }
+  }
+
+  private void registerTable(final List<String> names, final Table table) {
+    assert names.get(0).equals(DEFAULT_CATALOG);
+    final List<String> schemaPath = Util.skipLast(names);
+    final String tableName = Util.last(names);
+    final CalciteSchema schema = SqlValidatorUtil.getSchema(rootSchema,
+        schemaPath, SqlNameMatchers.withCaseSensitive(true));
+    schema.add(tableName, table);
+  }
+
+  protected void registerSchema(MockSchema schema) {
+    rootSchema.add(schema.name, new AbstractSchema());
+  }
+
+  private void registerNestedSchema(MockSchema parentSchema, MockSchema schema) {
+    rootSchema.getSubSchema(parentSchema.getName(), true)
+        .add(schema.name, new AbstractSchema());
+  }
+
+  private static List<RelCollation> deduceMonotonicity(
+      Prepare.PreparingTable table) {
+    final List<RelCollation> collationList = new ArrayList<>();
 
     // Deduce which fields the table is sorted on.
     int i = -1;
@@ -125,7 +247,7 @@ import java.util.Map;
 
   /** Mock schema. */
   public static class MockSchema {
-    private final List<String> tableNames = Lists.newArrayList();
+    private final List<String> tableNames = new ArrayList<>();
     private String name;
 
     public MockSchema(String name) {
@@ -161,7 +283,7 @@ import java.util.Map;
     protected RelDataType rowType;
     protected List<RelCollation> collationList;
     protected final List<String> names;
-    protected final Set<String> monotonicColumnSet = Sets.newHashSet();
+    protected final Set<String> monotonicColumnSet = new HashSet<>();
     protected StructKind kind = StructKind.FULLY_QUALIFIED;
     protected final ColumnResolver resolver;
     protected final InitializerExpressionFactory initializerFactory;
@@ -589,7 +711,7 @@ import java.util.Map;
         final ImmutableList.Builder<Pair<String, Schema>> builder =
             ImmutableList.builder();
         for (String name : fromTable.names) {
-          builder.add(Pair.<String, Schema>of(name, null));
+          builder.add(Pair.of(name, null));
         }
         return Schemas.path(builder.build());
       }
@@ -823,6 +945,14 @@ import java.util.Map;
     }
   }
 
+
+
+
+
+
+
+
+
   /** Wrapper around a {@link MockTable}, giving it a {@link Table} interface.
    * You can get the {@code MockTable} by calling {@link #unwrap(Class)}. */
   private static class WrapperTable implements Table, Wrapper {
@@ -871,8 +1001,7 @@ import java.util.Map;
     }
 
     @Override public boolean rolledUpColumnValidInsideAgg(String column,
-                                                          SqlCall call, SqlNode parent,
-                                                          CalciteConnectionConfig config) {
+        SqlCall call, SqlNode parent, CalciteConnectionConfig config) {
       // For testing
       return call.getKind() != SqlKind.MAX
               && (parent.getKind() == SqlKind.SELECT || parent.getKind() == SqlKind.FILTER);

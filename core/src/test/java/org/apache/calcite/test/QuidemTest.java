@@ -55,9 +55,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
-<<<<<<< HEAD
-import java.util.regex.Pattern;
-=======
 >>>>>>> a32df1d74 ([CALCITE-2403] Upgrade quidem to 0.9)
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -83,6 +80,26 @@ public abstract class QuidemTest {
           return Bug.CALCITE_1048_FIXED;
         case "calcite2776":
           return Bug.CALCITE_2776_FIXED;
+        }
+        return null;
+      };
+    default:
+      return null;
+    }
+  }
+
+  private static Object getEnv(String varName) {
+    switch (varName) {
+    case "jdk18":
+      return System.getProperty("java.version").startsWith("1.8");
+    case "fixed":
+      // Quidem requires a Guava function
+      return (com.google.common.base.Function<String, Object>) v -> {
+        switch (v) {
+        case "calcite1045":
+          return Bug.CALCITE_1045_FIXED;
+        case "calcite1048":
+          return Bug.CALCITE_1048_FIXED;
         }
         return null;
       };
@@ -135,9 +152,14 @@ public abstract class QuidemTest {
       outFile = new File(inFile.getAbsoluteFile().getParent(), u2n("surefire/") + path);
     }
     Util.discard(outFile.getParentFile().mkdirs());
+<<<<<<< HEAD
     try (Reader reader = Util.reader(inFile);
          Writer writer = Util.printWriter(outFile);
          Closer closer = new Closer()) {
+=======
+    try (final Reader reader = Util.reader(inFile);
+         final Writer writer = Util.printWriter(outFile);
+         final Closer closer = new Closer()) {
       new Quidem(reader, writer, QuidemTest::getEnv, createConnectionFactory())
           .withPropertyHandler((propertyName, value) -> {
 
@@ -181,10 +203,8 @@ public abstract class QuidemTest {
         : s;
   }
 
-  @ParameterizedTest
-  @MethodSource("data")
-  public void test(String path) throws Exception {
-    final Method method = findMethod(path);
+
+  @Test public void test() throws Exception {
     if (method != null) {
       try {
         method.invoke(this);

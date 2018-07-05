@@ -754,7 +754,7 @@ public final class AggregateExpandDistinctAggregatesRule
     // where {f0, f1, ...} are the GROUP BY fields.
     final List<RelDataTypeField> distinctFields =
         relBuilder.peek().getRowType().getFieldList();
-    final List<RexNode> conditions = Lists.newArrayList();
+    final List<RexNode> conditions = new ArrayList<>();
     for (i = 0; i < groupCount; ++i) {
       // null values form its own group
       // use "is not distinct from" so that the join condition

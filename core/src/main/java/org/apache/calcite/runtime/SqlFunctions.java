@@ -91,31 +91,20 @@ public class SqlFunctions {
   private static final TimeZone LOCAL_TZ = TimeZone.getDefault();
 
   private static final Function1<List<Object>, Enumerable<Object>> LIST_AS_ENUMERABLE =
-      new Function1<List<Object>, Enumerable<Object>>() {
-        public Enumerable<Object> apply(List<Object> list) {
-          return Linq4j.asEnumerable(list);
-        }
-      };
+      Linq4j::asEnumerable;
 
   private static final Function1<Object[], Enumerable<Object[]>> ARRAY_CARTESIAN_PRODUCT =
-      new Function1<Object[], Enumerable<Object[]>>() {
-        public Enumerable<Object[]> apply(Object[] lists) {
-          final List<Enumerator<Object>> enumerators = new ArrayList<>();
-          for (Object list : lists) {
-            enumerators.add(Linq4j.enumerator((List) list));
-          }
-          final Enumerator<List<Object>> product = Linq4j.product(enumerators);
-          return new AbstractEnumerable<Object[]>() {
-            public Enumerator<Object[]> enumerator() {
-              return Linq4j.transform(product,
-                  new Function1<List<Object>, Object[]>() {
-                    public Object[] apply(List<Object> list) {
-                      return list.toArray();
-                    }
-                  });
-            }
-          };
+      lists -> {
+        final List<Enumerator<Object>> enumerators = new ArrayList<>();
+        for (Object list : lists) {
+          enumerators.add(Linq4j.enumerator((List) list));
         }
+        final Enumerator<List<Object>> product = Linq4j.product(enumerators);
+        return new AbstractEnumerable<Object[]>() {
+          public Enumerator<Object[]> enumerator() {
+            return Linq4j.transform(product, List::toArray);
+          }
+        };
       };
 
   /** Holds, for each thread, a map from sequence name to sequence current
@@ -125,11 +114,7 @@ public class SqlFunctions {
    * that sequences can be parsed, validated and planned. A real application
    * will want persistent values for sequences, shared among threads. */
   private static final ThreadLocal<Map<String, AtomicLong>> THREAD_SEQUENCES =
-      new ThreadLocal<Map<String, AtomicLong>>() {
-        @Override protected Map<String, AtomicLong> initialValue() {
-          return new HashMap<String, AtomicLong>();
-        }
-      };
+      ThreadLocal.withInitial(HashMap::new);
 
   private SqlFunctions() {
   }
@@ -2289,9 +2274,6 @@ public class SqlFunctions {
     return resultCollection;
   }
 
-<<<<<<< HEAD
-=======
-=======
   public static Function1<Object, Enumerable<ComparableList<Comparable>>> flatProduct(
       final int[] fieldCounts, final boolean withOrdinality,
       final FlatProductInputType[] inputTypes) {
@@ -2301,7 +2283,10 @@ public class SqlFunctions {
         return (Function1) LIST_AS_ENUMERABLE;
       } else {
         return row -> p2(new Object[] { row }, fieldCounts, withOrdinality,
+<<<<<<< HEAD
             inputTypes);
+=======
+              inputTypes);
       }
     }
     return lists -> p2((Object[]) lists, fieldCounts, withOrdinality,

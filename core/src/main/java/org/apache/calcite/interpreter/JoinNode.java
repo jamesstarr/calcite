@@ -22,7 +22,7 @@ import org.apache.calcite.rel.core.JoinRelType;
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import java.util.List;
 import java.util.Set;
 
@@ -50,6 +50,7 @@ public class JoinNode implements Node {
   }
 
   public void run() throws InterruptedException {
+<<<<<<< HEAD
 
     final int fieldCount = rel.getLeft().getRowType().getFieldCount()
         + rel.getRight().getRowType().getFieldCount();
@@ -75,6 +76,19 @@ public class JoinNode implements Node {
         Row innerRow = null;
         while ((innerRow = innerSource.receive()) != null) {
           innerRows.add(innerRow);
+=======
+    List<Row> rightList = null;
+    final int leftCount = rel.getLeft().getRowType().getFieldCount();
+    final int rightCount = rel.getRight().getRowType().getFieldCount();
+    context.values = new Object[rel.getRowType().getFieldCount()];
+    Row left;
+    Row right;
+    while ((left = leftSource.receive()) != null) {
+      System.arraycopy(left.getValues(), 0, context.values, 0, leftCount);
+      if (rightList == null) {
+        rightList = new ArrayList<>();
+        while ((right = rightSource.receive()) != null) {
+          rightList.add(right);
         }
       }
       matchRowSet.addAll(doJoin(outerRow, innerRows, rel.getJoinType()));

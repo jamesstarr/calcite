@@ -142,4 +142,7 @@ on the site immediately, the committer should then cherry-pick the
 change into the "site" branch.  If there have been no feature-related
 changes on the site since the release, then "site" should be a
 fast-forward merge of "master".
+<<<<<<< HEAD
 >>>>>>> e7452f80f (Site: Add committer Kevin Risden)
+=======
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)

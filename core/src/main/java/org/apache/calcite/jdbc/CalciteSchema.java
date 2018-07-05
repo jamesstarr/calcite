@@ -106,16 +106,12 @@ public abstract class CalciteSchema {
       this.functionMap = Objects.requireNonNull(functionMap);
       this.functionNames = Objects.requireNonNull(functionNames);
       this.nullaryFunctionMap = Objects.requireNonNull(nullaryFunctionMap);
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
     }
     if (typeMap == null) {
       this.typeMap = new NameMap<>();
     } else {
       this.typeMap = Objects.requireNonNull(typeMap);
-    }
-    if (typeMap == null) {
-      this.typeMap = new NameMap<>();
-    } else {
-      this.typeMap = Preconditions.checkNotNull(typeMap);
     }
     this.path = path;
   }
@@ -180,11 +176,13 @@ public abstract class CalciteSchema {
   /** Creates a TableEntryImpl with no SQLs. */
   protected TableEntryImpl tableEntry(String name, Table table) {
     return new TableEntryImpl(this, name, table, ImmutableList.of());
+<<<<<<< HEAD
   }
 
   /** Creates a TableEntryImpl with no SQLs. */
   protected TypeEntryImpl typeEntry(String name, RelProtoDataType relProtoDataType) {
     return new TypeEntryImpl(this, name, relProtoDataType);
+=======
   }
 
   /** Creates a TableEntryImpl with no SQLs. */
@@ -778,6 +776,10 @@ public abstract class CalciteSchema {
     public TableEntryImpl(CalciteSchema schema, String name, Table table,
         ImmutableList<String> sqls) {
       super(schema, name, sqls);
+<<<<<<< HEAD
+=======
+      assert table != null;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
       this.table = Objects.requireNonNull(table);
     }
 

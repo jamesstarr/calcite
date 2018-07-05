@@ -86,7 +86,10 @@ import com.google.common.collect.SortedSetMultimap;
 >>>>>>> af4516c57 ([CALCITE-3138] RelStructuredTypeFlattener doesn't restructure ROW type fields (Igor Guzenko))
 import java.util.ArrayList;
 import java.util.Collections;
+<<<<<<< HEAD
 import java.util.Deque;
+=======
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -36,6 +36,8 @@ import java.util.Locale;
 
 import static com.google.common.collect.Lists.newArrayList;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -62,10 +64,8 @@ class EnumerablesTest {
           + ", " + (v1 == null ? null : v1.name)
           + "}";
 
-  private static final Predicate2<Emp, Dept> EMP_DEPT_EQUAL_DEPTNO =
+  private static final Predicate2<Emp, Dept> EQUAL_DEPTNO =
       (e, d) -> e.deptno == d.deptno;
-  private static final Predicate2<Dept, Emp> DEPT_EMP_EQUAL_DEPTNO =
-      (d, e) -> d.deptno == e.deptno;
 
   @Test void testSemiJoinEmp() {
     assertThat(
@@ -176,19 +176,19 @@ class EnumerablesTest {
         Lists.newArrayList(1, 3, 5),
         equalTo("[]"));
     // Left empty
-    testIntersect(
-        new ArrayList<>(),
-        newArrayList(1, 3, 4, 6),
+    assertThat(
+        intersect(new ArrayList<>(),
+            newArrayList(1, 3, 4, 6)).toList().toString(),
         equalTo("[]"));
     // Right empty
-    testIntersect(
-        newArrayList(3, 7),
-        new ArrayList<>(),
+    assertThat(
+        intersect(newArrayList(3, 7),
+            new ArrayList<>()).toList().toString(),
         equalTo("[]"));
     // Both empty
-    testIntersect(
-        new ArrayList<Integer>(),
-        new ArrayList<>(),
+    assertThat(
+        intersect(new ArrayList<Integer>(),
+            new ArrayList<>()).toList().toString(),
         equalTo("[]"));
   }
 
@@ -265,7 +265,7 @@ class EnumerablesTest {
     assertThat(
         EnumerableDefaults.nestedLoopJoin(EMPS.take(0), DEPTS, EQUAL_DEPTNO,
             EMP_DEPT_TO_STRING, true, true)
-            .orderBy(Functions.<String>identitySelector()).toList().toString(),
+            .orderBy(Functions.identitySelector()).toList().toString(),
         equalTo("[{null, null, 15, Marketing}, {null, null, 20, Sales}]"));
   }
 

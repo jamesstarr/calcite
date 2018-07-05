@@ -451,7 +451,7 @@ public abstract class SqlAbstractParserImpl {
     // preserve the correct syntax (i.e. don't quote builtin function
     /// name when regenerating SQL).
     if (funName.isSimple()) {
-      final List<SqlOperator> list = Lists.newArrayList();
+      final List<SqlOperator> list = new ArrayList<>();
       getOperatorTable().lookupOperatorOverloads(funName, funcType, SqlSyntax.FUNCTION, list,
           SqlNameMatchers.withCaseSensitive(funName.isComponentQuoted(0)));
       if (list.size() == 1) {

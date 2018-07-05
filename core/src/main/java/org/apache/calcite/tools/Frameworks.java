@@ -257,10 +257,6 @@ public class Frameworks {
       executor = config.getExecutor();
       costFactory = config.getCostFactory();
       typeSystem = config.getTypeSystem();
-<<<<<<< HEAD
-      evolveLattice = config.isEvolveLattice();
-      statisticProvider = config.getStatisticProvider();
-=======
     }
 
     public FrameworkConfig build() {
@@ -306,16 +302,18 @@ public class Frameworks {
 
     public ConfigBuilder parserConfig(SqlParser.Config parserConfig) {
       this.parserConfig = Objects.requireNonNull(parserConfig);
+<<<<<<< HEAD
       return this;
     }
 
     public ConfigBuilder sqlValidatorConfig(SqlValidator.Config sqlValidatorConfig) {
       this.sqlValidatorConfig = Objects.requireNonNull(sqlValidatorConfig, "sqlValidatorConfig");
+=======
       return this;
     }
 
     public ConfigBuilder sqlValidatorConfig(SqlValidator.Config sqlValidatorConfig) {
-      this.sqlValidatorConfig = Preconditions.checkNotNull(sqlValidatorConfig);
+      this.sqlValidatorConfig = Objects.requireNonNull(sqlValidatorConfig, "sqlValidatorConfig");
       return this;
     }
 
@@ -356,6 +354,7 @@ public class Frameworks {
 
     public ConfigBuilder typeSystem(RelDataTypeSystem typeSystem) {
       this.typeSystem = Objects.requireNonNull(typeSystem);
+<<<<<<< HEAD
       return this;
     }
 
@@ -372,6 +371,8 @@ public class Frameworks {
 
     public ConfigBuilder viewExpander(RelOptTable.ViewExpander viewExpander) {
       this.viewExpander = viewExpander;
+=======
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
       return this;
     }
   }

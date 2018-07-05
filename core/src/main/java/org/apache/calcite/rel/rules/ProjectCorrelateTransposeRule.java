@@ -30,7 +30,7 @@ import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexCorrelVariable;
 import org.apache.calcite.rex.RexFieldAccess;
 import org.apache.calcite.rex.RexNode;
-import org.apache.calcite.rex.RexOver;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import org.apache.calcite.rex.RexShuttle;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.BitSets;
@@ -44,10 +44,16 @@ import java.util.Map;
 /**
  * Push Project under Correlate to apply on Correlate's left and right child
  */
+<<<<<<< HEAD
 public class ProjectCorrelateTransposeRule extends RelOptRule {
 
   public static final ProjectCorrelateTransposeRule INSTANCE =
       new ProjectCorrelateTransposeRule(expr -> !(expr instanceof RexOver),
+=======
+public class ProjectCorrelateTransposeRule  extends RelOptRule {
+
+  public static final ProjectCorrelateTransposeRule INSTANCE =
+      new ProjectCorrelateTransposeRule(expr -> true,
           RelFactories.LOGICAL_BUILDER);
 
   //~ Instance fields --------------------------------------------------------
@@ -208,3 +214,8 @@ public class ProjectCorrelateTransposeRule extends RelOptRule {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End ProjectCorrelateTransposeRule.java
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)

@@ -37,6 +37,10 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexProgram;
 import org.apache.calcite.util.Util;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
@@ -108,11 +112,7 @@ public final class LogicalCalc extends Calc {
         .replaceIfs(RelCollationTraitDef.INSTANCE,
             () -> RelMdCollation.calc(mq, input, program))
         .replaceIf(RelDistributionTraitDef.INSTANCE,
-            new Supplier<RelDistribution>() {
-              public RelDistribution get() {
-                return RelMdDistribution.calc(mq, input, program);
-              }
-            });
+            () -> RelMdDistribution.calc(mq, input, program));
     return new LogicalCalc(cluster, traitSet, ImmutableList.of(), input, program);
   }
 

@@ -41,7 +41,7 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
-import com.google.common.collect.ImmutableList;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -102,6 +102,9 @@ public class JdbcSchema implements Schema {
   private JdbcSchema(DataSource dataSource, SqlDialect dialect,
       JdbcConvention convention, String catalog, String schema,
       ImmutableMap<String, JdbcTable> tableMap) {
+<<<<<<< HEAD
+=======
+    super();
     this.dataSource = Objects.requireNonNull(dataSource);
     this.dialect = Objects.requireNonNull(dialect);
     this.convention = convention;

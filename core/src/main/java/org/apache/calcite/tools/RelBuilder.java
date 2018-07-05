@@ -44,19 +44,21 @@ import org.apache.calcite.rel.core.Match;
 import org.apache.calcite.rel.core.Minus;
 import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.RelFactories;
-import org.apache.calcite.rel.core.RepeatUnion;
-import org.apache.calcite.rel.core.Snapshot;
+import org.apache.calcite.rel.core.SemiJoin;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.Spool;
 import org.apache.calcite.rel.core.TableFunctionScan;
 import org.apache.calcite.rel.core.TableScan;
-import org.apache.calcite.rel.core.TableSpool;
-import org.apache.calcite.rel.core.Uncollect;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import org.apache.calcite.rel.core.Union;
 import org.apache.calcite.rel.core.Values;
 import org.apache.calcite.rel.hint.Hintable;
 import org.apache.calcite.rel.hint.RelHint;
->>>>>>> a532c10f9 ([CALCITE-3730] Add hints to RelBuilder)
+<<<<<<< HEAD
+=======
+import org.apache.calcite.rel.logical.LogicalFilter;
+import org.apache.calcite.rel.logical.LogicalProject;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -99,7 +101,7 @@ import org.apache.calcite.util.Util;
 import org.apache.calcite.util.mapping.Mapping;
 import org.apache.calcite.util.mapping.Mappings;
 
-import com.google.common.base.Function;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -125,6 +127,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -642,6 +645,13 @@ public class RelBuilder {
   private @Nonnull RexNode call(SqlOperator operator, List<RexNode> operandList) {
     final RexBuilder builder = cluster.getRexBuilder();
     final RelDataType type = builder.deriveReturnType(operator, operandList);
+<<<<<<< HEAD
+=======
+    if (type == null) {
+      throw new IllegalArgumentException("cannot derive type: " + operator
+          + "; operands: "
+          + Lists.transform(operandList, e -> e + ": " + e.getType()));
+    }
     return builder.makeCall(type, operator, operandList);
   }
 
@@ -1211,81 +1221,7 @@ public class RelBuilder {
     return scan(ImmutableList.copyOf(tableNames));
   }
 
-  /** Creates a {@link Snapshot} of a given snapshot period.
-   *
-   * <p>Returns this builder.
-   *
-   * @param period Name of table (can optionally be qualified)
-   */
-  public RelBuilder snapshot(RexNode period) {
-    final Frame frame = stack.pop();
-    final RelNode snapshot =
-        struct.snapshotFactory.createSnapshot(frame.rel, period);
-    stack.push(new Frame(snapshot, frame.fields));
-    return this;
-  }
-
-
-  /**
-   * Gets column mappings of the operator.
-   *
-   * @param op operator instance
-   * @return column mappings associated with this function
-   */
-  private Set<RelColumnMapping> getColumnMappings(SqlOperator op) {
-    SqlReturnTypeInference inference = op.getReturnTypeInference();
-    if (inference instanceof TableFunctionReturnTypeInference) {
-      return ((TableFunctionReturnTypeInference) inference).getColumnMappings();
-    } else {
-      return null;
-    }
-  }
-
-  /**
-   * Creates a RexCall to the {@code CURSOR} function by ordinal.
-   *
-   * @param inputCount Number of inputs
-   * @param ordinal The reference to the relational input
-   * @return RexCall to CURSOR function
-   */
-  public RexNode cursor(int inputCount, int ordinal) {
-    if (inputCount <= ordinal || ordinal < 0) {
-      throw new IllegalArgumentException("bad input count or ordinal");
-    }
-    // Refer to the "ordinal"th input as if it were a field
-    // (because that's how things are laid out inside a TableFunctionScan)
-    final RelNode input = peek(inputCount, ordinal);
-    return call(SqlStdOperatorTable.CURSOR,
-        getRexBuilder().makeInputRef(input.getRowType(), ordinal));
-  }
-
-  /** Creates a {@link TableFunctionScan}. */
-  public RelBuilder functionScan(SqlOperator operator,
-      int inputCount, RexNode... operands) {
-    return functionScan(operator, inputCount, ImmutableList.copyOf(operands));
-  }
-
-  /** Creates a {@link TableFunctionScan}. */
-  public RelBuilder functionScan(SqlOperator operator,
-      int inputCount, Iterable<? extends RexNode> operands) {
-    if (inputCount < 0 || inputCount > stack.size()) {
-      throw new IllegalArgumentException("bad input count");
-    }
-
-    // Gets inputs.
-    final List<RelNode> inputs = new LinkedList<>();
-    for (int i = 0; i < inputCount; i++) {
-      inputs.add(0, build());
-    }
-
-    final RexNode call = call(operator, ImmutableList.copyOf(operands));
-    final RelNode functionScan =
-        struct.tableFunctionScanFactory.createTableFunctionScan(cluster,
-            inputs, call, null, getColumnMappings(operator));
-    push(functionScan);
-    return this;
-  }
-
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
   /** Creates a {@link Filter} of an array of
    * predicates.
    *
@@ -1329,12 +1265,14 @@ public class RelBuilder {
     return this;
   }
 
+<<<<<<< HEAD
   /** Creates a {@link Project} of the given
    * expressions. */
   public RelBuilder project(RexNode... nodes) {
     return project(ImmutableList.copyOf(nodes));
   }
 
+=======
   /** Creates a {@link Project} of the given list
    * of expressions.
    *
@@ -1359,260 +1297,13 @@ public class RelBuilder {
   }
 
   /** Creates a {@link Project} of the given list
-  private RelBuilder project_(
-      Iterable<? extends RexNode> nodes,
-      Iterable<String> fieldNames,
-      Iterable<RelHint> hints,
-      boolean force) {
-    final Frame frame = stack.peek();
-    final RelDataType inputRowType = frame.rel.getRowType();
-    final List<RexNode> nodeList = Lists.newArrayList(nodes);
-
-    // Perform a quick check for identity. We'll do a deeper check
-    // later when we've derived column names.
-    if (!force && Iterables.isEmpty(fieldNames)
-        && RexUtil.isIdentity(nodeList, inputRowType)) {
-      return this;
-    }
-
-    final List<String> fieldNameList = Lists.newArrayList(fieldNames);
-    while (fieldNameList.size() < nodeList.size()) {
-      fieldNameList.add(null);
-    }
-
-    if (frame.rel instanceof Project
-        && shouldMergeProject(nodeList, ((Project) frame.rel).getProjects())) {
-      final Project project = (Project) frame.rel;
-      // Populate field names. If the upper expression is an input ref and does
-      // not have a recommended name, use the name of the underlying field.
-      for (int i = 0; i < fieldNameList.size(); i++) {
-        if (fieldNameList.get(i) == null) {
-          final RexNode node = nodeList.get(i);
-          if (node instanceof RexInputRef) {
-            final RexInputRef ref = (RexInputRef) node;
-            fieldNameList.set(i,
-                project.getRowType().getFieldNames().get(ref.getIndex()));
-          }
-        }
-      }
-      final List<RexNode> newNodes =
-          RelOptUtil.pushPastProject(nodeList, project);
-
-      // Carefully build a list of fields, so that table aliases from the input
-      // can be seen for fields that are based on a RexInputRef.
-      final Frame frame1 = stack.pop();
-      final List<Field> fields = new ArrayList<>();
-      for (RelDataTypeField f
-          : project.getInput().getRowType().getFieldList()) {
-        fields.add(new Field(ImmutableSet.of(), f));
-      }
-      for (Pair<RexNode, Field> pair
-          : Pair.zip(project.getProjects(), frame1.fields)) {
-        switch (pair.left.getKind()) {
-        case INPUT_REF:
-          final int i = ((RexInputRef) pair.left).getIndex();
-          final Field field = fields.get(i);
-          final ImmutableSet<String> aliases = pair.right.left;
-          fields.set(i, new Field(aliases, field.right));
-          break;
-        }
-      }
-      stack.push(new Frame(project.getInput(), ImmutableList.copyOf(fields)));
-      return project(newNodes, fieldNameList, force);
-    }
-
-    // Simplify expressions.
-    if (config.simplify()) {
-      for (int i = 0; i < nodeList.size(); i++) {
-        nodeList.set(i, simplifier.simplifyPreservingType(nodeList.get(i)));
-      }
-    }
-
-    // Replace null names with generated aliases.
-    for (int i = 0; i < fieldNameList.size(); i++) {
-      if (fieldNameList.get(i) == null) {
-        fieldNameList.set(i, inferAlias(nodeList, nodeList.get(i), i));
-      }
-    }
-
-    final ImmutableList.Builder<Field> fields = ImmutableList.builder();
-    final Set<String> uniqueNameList =
-        getTypeFactory().getTypeSystem().isSchemaCaseSensitive()
-        ? new HashSet<>()
-        : new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-    // calculate final names and build field list
-    for (int i = 0; i < fieldNameList.size(); ++i) {
-      final RexNode node = nodeList.get(i);
-      String name = fieldNameList.get(i);
-      String originalName = name;
-      Field field;
-      if (name == null || uniqueNameList.contains(name)) {
-        int j = 0;
-        if (name == null) {
-          j = i;
-        }
-        do {
-          name = SqlValidatorUtil.F_SUGGESTER.apply(originalName, j, j++);
-        } while (uniqueNameList.contains(name));
-        fieldNameList.set(i, name);
-      }
-      RelDataTypeField fieldType =
-          new RelDataTypeFieldImpl(name, i, node.getType());
-      switch (node.getKind()) {
-      case INPUT_REF:
-        // preserve rel aliases for INPUT_REF fields
-        final int index = ((RexInputRef) node).getIndex();
-        field = new Field(frame.fields.get(index).left, fieldType);
-        break;
-      default:
-        field = new Field(ImmutableSet.of(), fieldType);
-        break;
-      }
-      uniqueNameList.add(name);
-      fields.add(field);
-    }
-    if (!force && RexUtil.isIdentity(nodeList, inputRowType)) {
-      if (fieldNameList.equals(inputRowType.getFieldNames())) {
-        // Do not create an identity project if it does not rename any fields
-        return this;
-      } else {
-        // create "virtual" row type for project only rename fields
-        stack.pop();
-        // Ignore the hints.
-        stack.push(new Frame(frame.rel, fields.build()));
-      }
-      return this;
-    }
-    final RelNode project =
-        struct.projectFactory.createProject(frame.rel,
-            ImmutableList.copyOf(hints),
-            ImmutableList.copyOf(exprList),
-            names);
-    stack.pop();
-    stack.push(new Frame(project, fields.build()));
-    return this;
+  /** Creates a {@link Project} of the given
+   * expressions. */
+  public RelBuilder project(RexNode... nodes) {
+    return project(ImmutableList.copyOf(nodes));
   }
-
-  /** Whether to attempt to merge consecutive {@link Project} operators.
-   *
-   * Check if the child project contains sql function, if so then do not merge the
-   * projects as we could lose some important nodes with sql functions.
-   * Also, we do not merge {@link Project} when it contains window functions.
-   * Also, we do not merge if the top node contains subqueries
-   */
-  protected boolean shouldMergeProject(List<RexNode> nodes, List<RexNode> childNodes) {
-    for (RexNode node: childNodes) {
-      if (RexOver.containsOver(node)
-          || (node instanceof RexCall
-          && ((RexCall) node).getOperator() instanceof SqlFunction)) {
-        return false;
-      }
-    }
-    for (RexNode node : nodes) {
-      if (RexOver.containsOver(node)) {
-        return false;
-      }
-
-      // MODIFICATION BEGIN:
-      // This can be removed once we bring in CALCITE-5127
-      if (containsSubQuery(node)) {
-        return false;
-      }
-      // MODIFICATION END
-    }
-    return true;
-  }
-
-  /**
-   * Helper method to recursively check if a RexNode contains a RexSubQuery.
-   */
-  private boolean containsSubQuery(RexNode node) {
-    if (node instanceof RexSubQuery) {
-      return true;
-    }
-    if (node instanceof RexCall) {
-      for (RexNode operand : ((RexCall) node).getOperands()) {
-        if (containsSubQuery(operand)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Method to check if the child project contains sql function, if so then do not merge the
-   * projects as it could eliminate some important projects with sql functions.
-   * @param projects list of nodes in child project
-   * @return
-   */
 
   /** Creates a {@link Project} of the given
-   * expressions and field names, and optionally optimizing.
-   *
-   * <p>If {@code fieldNames} is null, or if a particular entry in
-   * {@code fieldNames} is null, derives field names from the input
-   * expressions.
-   *
-   * <p>If {@code force} is false,
-   * and the input is a {@code Project},
-   * and the expressions  make the trivial projection ($0, $1, ...),
-   * modifies the input.
-   *
-   * @param nodes       Expressions
-   * @param fieldNames  Suggested field names, or null to generate
-   * @param force       Whether to create a renaming Project if the
-   *                    projections are trivial
-   */
-  public RelBuilder projectNamed(Iterable<? extends RexNode> nodes,
-      Iterable<String> fieldNames, boolean force) {
-    @SuppressWarnings("unchecked") final List<? extends RexNode> nodeList =
-        nodes instanceof List ? (List) nodes : ImmutableList.copyOf(nodes);
-    final List<String> fieldNameList =
-        fieldNames == null ? null
-          : fieldNames instanceof List ? (List<String>) fieldNames
-          : ImmutableNullableList.copyOf(fieldNames);
-    final RelNode input = peek();
-    final RelDataType rowType =
-        RexUtil.createStructType(cluster.getTypeFactory(), nodeList,
-            fieldNameList, SqlValidatorUtil.F_SUGGESTER);
-    if (!force
-        && RexUtil.isIdentity(nodeList, input.getRowType())) {
-      if (input instanceof Project && fieldNames != null) {
-        // Rename columns of child projection if desired field names are given.
-        final Frame frame = stack.pop();
-        final Project childProject = (Project) frame.rel;
-        final Project newInput = childProject.copy(childProject.getTraitSet(),
-            childProject.getInput(), childProject.getProjects(), rowType);
-        stack.push(new Frame(newInput.attachHints(childProject.getHints()), frame.fields));
-      }
-    } else {
-      project(nodeList, rowType.getFieldNames(), force);
-    }
-    return this;
-  }
-
-  /**
-   * Creates an {@link Uncollect} with given item aliases.
-   *
-   * @param itemAliases   Operand item aliases, never null
-   * @param withOrdinality If {@code withOrdinality}, the output contains an extra
-   * {@code ORDINALITY} column
-   */
-  public RelBuilder uncollect(List<String> itemAliases, boolean withOrdinality) {
-    Frame frame = stack.pop();
-    stack.push(
-        new Frame(
-          new Uncollect(
-            cluster,
-            cluster.traitSetOf(Convention.NONE),
-            frame.rel,
-            withOrdinality,
-            Objects.requireNonNull(itemAliases))));
-    return this;
-  }
-
-  /** Creates a {@link org.apache.calcite.rel.core.Project} of the given
    * expressions and field names, and optionally optimizing.
    *
    * <p>If {@code fieldNames} is null, or if a particular entry in
@@ -1733,15 +1424,7 @@ public class RelBuilder {
     return aggregate(groupKey, ImmutableList.copyOf(aggCalls));
   }
 
-  /** Creates an {@link Aggregate} with an array of
-   * {@link AggregateCall}s. */
-  public RelBuilder aggregate(GroupKey groupKey, List<AggregateCall> aggregateCalls) {
-    return aggregate(groupKey,
-        aggregateCalls.stream()
-            .map(AggCallImpl2::new)
-            .collect(Collectors.toList()));
-  }
-
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
   /** Creates an {@link Aggregate} with a list of
    * calls. */
   public RelBuilder aggregate(GroupKey groupKey, Iterable<AggCall> aggCalls) {
@@ -1965,6 +1648,7 @@ public class RelBuilder {
     return setOp(all, SqlKind.EXCEPT, n);
   }
 
+<<<<<<< HEAD
   /**
    * Creates a {@link TableScan} on a {@link TransientTable} with the given name, using as type
    * the top of the stack's type.
@@ -2073,6 +1757,7 @@ public class RelBuilder {
   }
 
 
+=======
   /** Creates a {@link Join}. */
   public RelBuilder join(JoinRelType joinType, RexNode condition0,
       RexNode... conditions) {
@@ -2152,7 +1837,6 @@ public class RelBuilder {
       CorrelationId correlationId, Iterable<? extends RexNode> requiredFields) {
     Frame right = stack.pop();
     final Registrar registrar = new Registrar();
-
     registrar.extraNodes.addAll(fields());
     registrar.names.addAll(peek().getRowType().getFieldNames());
 
@@ -2175,7 +1859,7 @@ public class RelBuilder {
     return this;
   }
 
-  /** Creates a {@link org.apache.calcite.rel.core.Join} using USING syntax.
+  /** Creates a {@link Join} using USING syntax.
    *
    * <p>For each of the field names, both left and right inputs must have a
    * field of that name. Constructs a join condition that the left and right
@@ -2195,23 +1879,7 @@ public class RelBuilder {
     return join(joinType, conditions);
   }
 
-  /** Creates a semi-join.
-   *
-   * <p>A semi-join is a form of join that combines two relational expressions
-   * according to some condition, and outputs only rows from the left input for
-   * which at least one row from the right input matches. It only outputs
-   * columns from the left input, and ignores duplicates on the right.
-   *
-   * <p>For example, {@code EMP semi-join DEPT} finds all {@code EMP} records
-   * that do not have a corresponding {@code DEPT} record, similar to the
-   * following SQL:
-   *
-   * <blockquote><pre>
-   * SELECT * FROM EMP
-   * WHERE EXISTS (SELECT 1 FROM DEPT
-   *     WHERE DEPT.DEPTNO = EMP.DEPTNO)</pre>
-   * </blockquote>
-   */
+  /** Creates a {@link SemiJoin}. */
   public RelBuilder semiJoin(Iterable<? extends RexNode> conditions) {
     final Frame right = stack.pop();
     final RelNode semiJoin =
@@ -2274,7 +1942,9 @@ public class RelBuilder {
   public RelBuilder as(final String alias) {
     final Frame pair = stack.pop();
     List<Field> newFields =
-            Util.transform(pair.fields, field -> field.addAlias(alias));
+        Lists.transform(pair.fields, field ->
+            new Field(ImmutableSet.<String>builder().addAll(field.left)
+                .add(alias).build(), field.right));
 
     stack.push(new Frame(pair.rel, ImmutableList.copyOf(newFields)));
     return this;
@@ -2457,24 +2127,7 @@ public class RelBuilder {
   /** Creates a limit without a sort. */
   public RelBuilder limit(int offset, int fetch) {
     return sortLimit(offset, fetch, ImmutableList.of());
-  }
-
-  /** Creates an Exchange by distribution. */
-  public RelBuilder exchange(RelDistribution distribution) {
-    RelNode exchange =
-        struct.exchangeFactory.createExchange(peek(), distribution);
-    replaceTop(exchange);
-    return this;
-  }
-
-  /** Creates a SortExchange by distribution and collation. */
-  public RelBuilder sortExchange(RelDistribution distribution,
-      RelCollation collation) {
-    RelNode exchange =
-        struct.sortExchangeFactory.createSortExchange(peek(), distribution,
-            collation);
-    replaceTop(exchange);
-    return this;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
   }
 
   /** Creates a {@link Sort} by field ordinals.
@@ -2630,6 +2283,15 @@ public class RelBuilder {
       exprList.add(field(mapping.getSource(i)));
     }
     return project(exprList);
+  }
+
+<<<<<<< HEAD
+=======
+  public RelBuilder aggregate(GroupKey groupKey,
+      List<AggregateCall> aggregateCalls) {
+    return aggregate(groupKey,
+        Lists.transform(aggregateCalls, AggCallImpl2::new));
+
   }
 
   /** Creates a {@link Match}. */
@@ -3015,7 +2677,7 @@ public class RelBuilder {
     GroupKey alias(String alias);
   }
 
-  /** Implementation of {@link RelBuilder.GroupKey}. */
+  /** Implementation of {@link GroupKey}. */
   protected static class GroupKeyImpl implements GroupKey {
     final ImmutableList<RexNode> nodes;
     final ImmutableList<ImmutableList<RexNode>> nodeLists;
@@ -3023,7 +2685,7 @@ public class RelBuilder {
 
     GroupKeyImpl(ImmutableList<RexNode> nodes,
         ImmutableList<ImmutableList<RexNode>> nodeLists, String alias) {
-      this.nodes = Preconditions.checkNotNull(nodes);
+      this.nodes = Objects.requireNonNull(nodes);
       this.nodeLists = nodeLists;
       this.alias = alias;
     }
@@ -3039,7 +2701,7 @@ public class RelBuilder {
     }
   }
 
-  /** Implementation of {@link RelBuilder.AggCall}. */
+  /** Implementation of {@link AggCall}. */
   private class AggCallImpl implements AggCallPlus {
     private final SqlAggFunction aggFunction;
     private final boolean distinct;
@@ -3164,63 +2826,7 @@ public class RelBuilder {
 
     AggCallImpl2(AggregateCall aggregateCall) {
       this.aggregateCall = Objects.requireNonNull(aggregateCall);
-    }
-
-    @Override public String toString() {
-      return aggregateCall.toString();
-    }
-
-    @Override public SqlAggFunction op() {
-      return aggregateCall.getAggregation();
-    }
-
-    @Override public String alias() {
-      return aggregateCall.name;
-    }
-
-    @Override public AggregateCall aggregateCall() {
-      return aggregateCall;
-    }
-
-    @Override public AggregateCall aggregateCall(Registrar registrar,
-        ImmutableBitSet groupSet, RelNode r) {
-      return aggregateCall;
-    }
-
-    @Override public void register(Registrar registrar) {
-      // nothing to do
-    }
-
-    public AggCall sort(Iterable<RexNode> orderKeys) {
-      throw new UnsupportedOperationException();
-    }
-
-    public AggCall sort(RexNode... orderKeys) {
-      throw new UnsupportedOperationException();
-    }
-
-    public AggCall approximate(boolean approximate) {
-      throw new UnsupportedOperationException();
-    }
-
-    public AggCall filter(RexNode condition) {
-      throw new UnsupportedOperationException();
-    }
-
-    public AggCall as(String alias) {
-      throw new UnsupportedOperationException();
-    }
-
-    public AggCall distinct(boolean distinct) {
-      throw new UnsupportedOperationException();
-    }
-
-    public AggCall distinct() {
-      throw new UnsupportedOperationException();
-    }
-
-    public AggCall ignoreNulls(boolean ignoreNulls) {
-      throw new UnsupportedOperationException();
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
     }
 
     @Override public String toString() {
@@ -3408,9 +3014,12 @@ public class RelBuilder {
   /** Shuttle that shifts a predicate's inputs to the left, replacing early
    * ones with references to a
 <<<<<<< HEAD
+<<<<<<< HEAD
    * {@link RexCorrelVariable}. */
 =======
    * {@link org.apache.calcite.rex.RexCorrelVariable}. */
+=======
+   * {@link RexCorrelVariable}. */
   public static class Shifter extends RexShuttle {
     private final RelNode left;
     private final CorrelationId id;

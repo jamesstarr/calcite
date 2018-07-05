@@ -44,6 +44,95 @@ import org.apache.calcite.linq4j.tree.Expressions;
 import org.apache.calcite.materialize.Lattice;
 import org.apache.calcite.materialize.MaterializationService;
 import org.apache.calcite.prepare.CalciteCatalogReader;
+<<<<<<< HEAD
+=======
+import org.apache.calcite.rel.type.DelegatingTypeSystem;
+import org.apache.calcite.rel.type.RelDataTypeSystem;
+import org.apache.calcite.runtime.Hook;
+import org.apache.calcite.schema.SchemaPlus;
+import org.apache.calcite.schema.SchemaVersion;
+import org.apache.calcite.schema.Schemas;
+import org.apache.calcite.schema.impl.AbstractSchema;
+import org.apache.calcite.schema.impl.LongSchemaVersion;
+import org.apache.calcite.server.CalciteServer;
+import org.apache.calcite.server.CalciteServerStatement;
+import org.apache.calcite.sql.advise.SqlAdvisor;
+import org.apache.calcite.sql.advise.SqlAdvisorValidator;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.sql.validate.SqlValidatorWithHints;
+import org.apache.calcite.tools.RelRunner;
+import org.apache.calcite.util.BuiltInMethod;
+import org.apache.calcite.util.Holder;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
+import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+/**
+ * Implementation of JDBC connection
+ * in the Calcite engine.
+ *
+ * <p>Abstract to allow newer versions of JDBC to add methods.</p>
+ */
+abstract class CalciteConnectionImpl
+    extends AvaticaConnection
+    implements CalciteConnection, QueryProvider {
+  public final JavaTypeFactory typeFactory;
+
+  final CalciteSchema rootSchema;
+  final Function0<CalcitePrepare> prepareFactory;
+  final CalciteServer server = new CalciteServerImpl();
+
+  // must be package-protected
+  static final Trojan TROJAN = createTrojan();
+
+  /**
+   * Creates a CalciteConnectionImpl.
+   *
+   * <p>Not public; method is called only from the driver.</p>
+   *
+   * @param driver Driver
+   * @param factory Factory for JDBC objects
+   * @param url Server URL
+   * @param info Other connection properties
+   * @param rootSchema Root schema, or null
+   * @param typeFactory Type factory, or null
+   */
+  protected CalciteConnectionImpl(Driver driver, AvaticaFactory factory,
+      String url, Properties info, CalciteSchema rootSchema,
+      JavaTypeFactory typeFactory) {
+    super(driver, factory, url, info);
+    CalciteConnectionConfig cfg = new CalciteConnectionConfigImpl(info);
+    this.prepareFactory = driver.prepareFactory;
+    if (typeFactory != null) {
+      this.typeFactory = typeFactory;
+    } else {
+      RelDataTypeSystem typeSystem =
+          cfg.typeSystem(RelDataTypeSystem.class, RelDataTypeSystem.DEFAULT);
+      if (cfg.conformance().shouldConvertRaggedUnionTypesToVarying()) {
+        typeSystem =
+            new DelegatingTypeSystem(typeSystem) {
+              @Override public boolean
+              shouldConvertRaggedUnionTypesToVarying() {
+                return true;
+              }
+            };
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
         cfg.typeSystem(RelDataTypeSystem.class, RelDataTypeSystem.DEFAULT);
       }
       this.typeFactory = new JavaTypeFactoryImpl(typeSystem);

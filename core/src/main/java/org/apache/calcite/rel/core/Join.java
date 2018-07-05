@@ -95,10 +95,9 @@ public abstract class Join extends BiRel implements Hintable {
       Set<CorrelationId> variablesSet,
       JoinRelType joinType) {
     super(cluster, traitSet, left, right);
-    this.condition = Preconditions.checkNotNull(condition);
+    this.condition = Objects.requireNonNull(condition);
     this.variablesSet = ImmutableSet.copyOf(variablesSet);
->>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
-    this.joinType = Preconditions.checkNotNull(joinType);
+    this.joinType = Objects.requireNonNull(joinType);
     this.hints = ImmutableList.copyOf(hints);
   }
 

@@ -1786,11 +1786,10 @@ public abstract class EnumerableDefaults {
                 ? inner.select(innerKeySelector).distinct()
                 : inner.select(innerKeySelector).distinct(comparer));
 
-        final Predicate1<TSource> predicate = anti
-            ? v0 -> !innerLookup.get().contains(outerKeySelector.apply(v0))
-            : v0 -> innerLookup.get().contains(outerKeySelector.apply(v0));
-
-        return EnumerableDefaults.where(outer.enumerator(), predicate);
+        return EnumerableDefaults.where(outer.enumerator(), v0 -> {
+          final TKey key = outerKeySelector.apply(v0);
+          return innerLookup.contains(key);
+        });
       }
     };
   }
@@ -1802,25 +1801,11 @@ public abstract class EnumerableDefaults {
       final Enumerable<TSource> outer, final Enumerable<TInner> inner,
       final Predicate2<TSource, TInner> predicate,
       Function2<TSource, TInner, TResult> resultSelector,
-      final JoinType joinType) {
-    if (!joinType.generatesNullsOnLeft()) {
-      return nestedLoopJoinOptimized(outer, inner, predicate, resultSelector, joinType);
-    }
-    return nestedLoopJoinAsList(outer, inner, predicate, resultSelector, joinType);
-  }
-
-  /**
-   * Implementation of nested loop join that builds the complete result as a list
-   * and then returns it. This is an easy-to-implement solution, but hogs memory.
-   */
-  private static <TSource, TInner, TResult> Enumerable<TResult> nestedLoopJoinAsList(
-      final Enumerable<TSource> outer, final Enumerable<TInner> inner,
-      final Predicate2<TSource, TInner> predicate,
-      Function2<TSource, TInner, TResult> resultSelector,
-      final JoinType joinType) {
-    final boolean generateNullsOnLeft = joinType.generatesNullsOnLeft();
-    final boolean generateNullsOnRight = joinType.generatesNullsOnRight();
+      final boolean generateNullsOnLeft,
+      final boolean generateNullsOnRight) {
+    // Building the result as a list is easy but hogs memory. We should iterate.
     final List<TResult> result = new ArrayList<>();
+    final Enumerator<TSource> lefts = outer.enumerator();
     final List<TInner> rightList = inner.toList();
     final Set<TInner> rightUnmatched;
     if (generateNullsOnLeft) {
@@ -2409,17 +2394,13 @@ public abstract class EnumerableDefaults {
   public static <TSource, TKey> Enumerable<TSource> orderBy(
       Enumerable<TSource> source, Function1<TSource, TKey> keySelector,
       Comparator<TKey> comparator) {
-    return new AbstractEnumerable<TSource>() {
-      @Override public Enumerator<TSource> enumerator() {
-        // NOTE: TreeMap allows null comparator. But the caller of this method
-        // must supply a comparator if the key does not extend Comparable.
-        // Otherwise there will be a ClassCastException while retrieving.
-        final Map<TKey, List<TSource>> map = new TreeMap<>(comparator);
-        final LookupImpl<TKey, TSource> lookup = toLookup_(map, source, keySelector,
-            Functions.identitySelector());
-        return lookup.valuesEnumerable().enumerator();
-      }
-    };
+    // NOTE: TreeMap allows null comparator. But the caller of this method
+    // must supply a comparator if the key does not extend Comparable.
+    // Otherwise there will be a ClassCastException while retrieving.
+    final Map<TKey, List<TSource>> map = new TreeMap<>(comparator);
+    LookupImpl<TKey, TSource> lookup = toLookup_(map, source, keySelector,
+        Functions.identitySelector());
+    return lookup.valuesEnumerable();
   }
 
   /**

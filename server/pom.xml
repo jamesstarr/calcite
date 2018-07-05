@@ -53,10 +53,6 @@ limitations under the License.
     </dependency>
 
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-    </dependency>
-    <dependency>
       <groupId>net.hydromatic</groupId>
       <artifactId>quidem</artifactId>
       <scope>test</scope>

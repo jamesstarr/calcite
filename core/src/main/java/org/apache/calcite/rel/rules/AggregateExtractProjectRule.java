@@ -105,9 +105,10 @@ public class AggregateExtractProjectRule extends RelOptRule {
     final ImmutableBitSet newGroupSet =
         Mappings.apply(mapping, aggregate.getGroupSet());
 
-    final Iterable<ImmutableBitSet> newGroupSets =
-        Iterables.transform(aggregate.getGroupSets(),
-            bitSet -> Mappings.apply(mapping, bitSet));
+    final ImmutableList<ImmutableBitSet> newGroupSets =
+        ImmutableList.copyOf(
+            Iterables.transform(aggregate.getGroupSets(),
+                bitSet -> Mappings.apply(mapping, bitSet)));
     final List<RelBuilder.AggCall> newAggCallList = new ArrayList<>();
     for (AggregateCall aggCall : aggregate.getAggCallList()) {
       final ImmutableList<RexNode> args =

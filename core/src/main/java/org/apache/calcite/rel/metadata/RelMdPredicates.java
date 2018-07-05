@@ -665,7 +665,7 @@ public class RelMdPredicates
         }
       }
 
-      equivalence = new TreeMap();
+      equivalence = new TreeMap<>();
       equalityPredicates = new HashSet<>();
       for (int i = 0; i < nSysFields + nFieldsLeft + nFieldsRight; i++) {
         equivalence.put(i, BitSets.of(i));
@@ -836,7 +836,8 @@ public class RelMdPredicates
 
     RexNode compose(RexBuilder rexBuilder, Iterable<RexNode> exprs) {
       exprs = Linq4j.asEnumerable(exprs).where(Objects::nonNull);
-      return RexUtil.composeConjunction(rexBuilder, exprs);
+
+      return RexUtil.composeConjunction(rexBuilder, exprs, false);
     }
 
     /**

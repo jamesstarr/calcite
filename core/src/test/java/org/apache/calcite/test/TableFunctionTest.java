@@ -28,8 +28,8 @@ import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.util.Smalls;
 import org.apache.calcite.util.TestUtil;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -429,7 +429,7 @@ class TableFunctionTest {
             assertThat(numbers.toString(),
                 is("[1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233]"));
           } catch (SQLException e) {
-            throw TestUtil.rethrow(e);
+            throw new RuntimeException(e);
           }
         });
   }

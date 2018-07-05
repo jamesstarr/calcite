@@ -42,10 +42,8 @@ import java.util.Objects;
 import org.apache.calcite.util.ImmutableNullableList;
 import org.apache.calcite.util.Pair;
 
-import com.google.common.base.Preconditions;
-
 import java.util.List;
->>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen)):server/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
+import java.util.Objects;
 
 /**
  * Parse tree for {@code CREATE TYPE} statement.
@@ -63,11 +61,10 @@ public class SqlCreateType extends SqlCreate
   SqlCreateType(SqlParserPos pos, boolean replace, SqlIdentifier name,
       SqlNodeList attributeDefs, SqlDataTypeSpec dataType) {
     super(OPERATOR, pos, replace, false);
-<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
-    this.name = Objects.requireNonNull(name);
-=======
     this.name = Preconditions.checkNotNull(name);
->>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen)):server/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
+=======
+    this.name = Objects.requireNonNull(name);
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
     this.attributeDefs = attributeDefs; // may be null
     this.dataType = dataType; // may be null
   }

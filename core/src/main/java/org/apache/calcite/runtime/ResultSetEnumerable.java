@@ -94,7 +94,7 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
           //noinspection unchecked
           return (Function0) () -> {
             try {
-              final List<Object> list = new ArrayList<>();
+              final List<Object> list = new ArrayList<Object>();
               for (int i = 0; i < columnCount; i++) {
                 if (metaData.getColumnType(i + 1) == Types.TIMESTAMP) {
                   long v = resultSet.getLong(i + 1);
@@ -426,7 +426,7 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
       //noinspection unchecked
       return (Function0) () -> {
         try {
-          final List<Object> list = new ArrayList<>();
+          final List<Object> list = new ArrayList<Object>();
           for (int i = 0; i < columnCount; i++) {
             list.add(primitives[i].jdbcGet(resultSet, i + 1));
           }

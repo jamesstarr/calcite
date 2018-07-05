@@ -433,44 +433,41 @@ class RelWriterTest {
    */
   @Test void testWriter2() {
     String s =
-        Frameworks.withPlanner(
-            new Frameworks.PlannerAction<String>() {
-              public String apply(RelOptCluster cluster,
-                  RelOptSchema relOptSchema, SchemaPlus rootSchema) {
-                rootSchema.add("hr",
-                    new ReflectiveSchema(new JdbcTest.HrSchema()));
-                LogicalTableScan scan =
-                    LogicalTableScan.create(cluster,
-                        relOptSchema.getTableForMember(
+        Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
+          rootSchema.add("hr",
+              new ReflectiveSchema(new JdbcTest.HrSchema()));
+          LogicalTableScan scan =
+              LogicalTableScan.create(cluster,
+                  relOptSchema.getTableForMember(
                             Arrays.asList("hr", "emps")),
                         ImmutableList.of());
-                final RexBuilder rexBuilder = cluster.getRexBuilder();
-                LogicalFilter filter =
-                    LogicalFilter.create(scan,
-                        rexBuilder.makeCall(
-                            SqlStdOperatorTable.EQUALS,
-                            rexBuilder.makeFieldAccess(
-                                rexBuilder.makeRangeReference(scan),
-                                "deptno", true),
-                            rexBuilder.makeExactLiteral(BigDecimal.TEN)));
-                final RelJsonWriter writer = new RelJsonWriter();
-                final RelDataType bigIntType =
-                    cluster.getTypeFactory().createSqlType(SqlTypeName.BIGINT);
-                LogicalAggregate aggregate =
+          final RexBuilder rexBuilder = cluster.getRexBuilder();
+          LogicalFilter filter =
+              LogicalFilter.create(scan,
+                  rexBuilder.makeCall(
+                      SqlStdOperatorTable.EQUALS,
+                      rexBuilder.makeFieldAccess(
+                          rexBuilder.makeRangeReference(scan),
+                          "deptno", true),
+                      rexBuilder.makeExactLiteral(BigDecimal.TEN)));
+          final RelJsonWriter writer = new RelJsonWriter();
+          final RelDataType bigIntType =
+              cluster.getTypeFactory().createSqlType(SqlTypeName.BIGINT);
+          LogicalAggregate aggregate =
                     LogicalAggregate.create(filter,
                         ImmutableList.of(),
                         ImmutableBitSet.of(0), null,
-                        ImmutableList.of(
-                            AggregateCall.create(SqlStdOperatorTable.COUNT,
-                                true, false, ImmutableList.of(1), -1,
+                  ImmutableList.of(
+                      AggregateCall.create(SqlStdOperatorTable.COUNT,
+                          true, false, ImmutableList.of(1), -1,
                                 RelCollations.EMPTY, bigIntType, "c"),
-                            AggregateCall.create(SqlStdOperatorTable.COUNT,
-                                false, false, ImmutableList.<Integer>of(), -1,
+                      AggregateCall.create(SqlStdOperatorTable.COUNT,
+                          false, false, ImmutableList.of(), -1,
                                 RelCollations.EMPTY, bigIntType, "d")));
-                aggregate.explain(writer);
-                return writer.asString();
-              }
-            });
+          aggregate.explain(writer);
+          return writer.asString();
+
+        });
     assertThat(s, is(XX));
   }
 
@@ -480,49 +477,13 @@ class RelWriterTest {
   @Test void testReader2() {
     String s =
         Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
-          SchemaPlus schema =
-              rootSchema.add("hr",
-                  new ReflectiveSchema(new JdbcTest.HrSchema()));
-          final RelJsonReader reader =
-              new RelJsonReader(cluster, relOptSchema, schema);
-          RelNode node;
-          try {
-            node = reader.read(XX2);
+            node = reader.read(XX);
           } catch (IOException e) {
-            throw TestUtil.rethrow(e);
+            throw new RuntimeException(e);
           }
           return RelOptUtil.dumpPlan("", node, SqlExplainFormat.TEXT,
               SqlExplainLevel.EXPPLAN_ATTRIBUTES);
-        });
 
-    assertThat(s,
-        isLinux("LogicalProject(field0=[$0],"
-            + " field1=[COUNT($0) OVER (PARTITION BY $2 ORDER BY $1 NULLS LAST ROWS BETWEEN"
-            + " UNBOUNDED PRECEDING AND CURRENT ROW)],"
-            + " field2=[SUM($0) OVER (PARTITION BY $2 ORDER BY $1 NULLS LAST RANGE BETWEEN"
-            + " CURRENT ROW AND 1 FOLLOWING)])\n"
-            + "  LogicalTableScan(table=[[hr, emps]])\n"));
-  }
-
-  /**
-   * Unit test for {@link org.apache.calcite.rel.externalize.RelJsonReader}.
-   */
-  @Test void testReaderNull() {
-    String s =
-        Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
-          SchemaPlus schema =
-              rootSchema.add("hr",
-                  new ReflectiveSchema(new JdbcTest.HrSchema()));
-          final RelJsonReader reader =
-              new RelJsonReader(cluster, relOptSchema, schema);
-          RelNode node;
-          try {
-            node = reader.read(XXNULL);
-          } catch (IOException e) {
-            throw TestUtil.rethrow(e);
-          }
-          return RelOptUtil.dumpPlan("", node, SqlExplainFormat.TEXT,
-              SqlExplainLevel.EXPPLAN_ATTRIBUTES);
         });
 
     assertThat(s,

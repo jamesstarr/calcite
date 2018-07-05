@@ -33,7 +33,6 @@ import com.google.common.collect.ImmutableList;
 =======
 >>>>>>> 130909e66 ([CALCITE-2347] running ElasticSearch in embedded mode for unit tests of ES adapter (Andrei Sereda)):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -41,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
 
 /**
  * Implementation of {@link org.apache.calcite.rel.core.Project}
@@ -105,12 +103,8 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
 
     StringBuilder query = new StringBuilder();
     if (scriptFields.isEmpty()) {
-      List<String> newList = Lists.transform(fields, new Function<String, String>() {
-        @Nullable
-        @Override public String apply(@Nullable String input) {
-          return ElasticsearchRules.quote(input);
-        }
-      });
+      List<String> newList = Lists.transform(fields, ElasticsearchRules::quote);
+
 
       final String findString = String.join(", ", newList);
       query.append("\"_source\" : [").append(findString).append("]");
@@ -118,11 +112,13 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
       // if scripted fields are present, ES ignores _source attribute
       for (String field: fields) {
         scriptFields.add(ElasticsearchRules.quote(field) + ":{\"script\": "
-                // _source (ES2) vs params._source (ES5)
-                + "\"" + implementor.elasticsearchTable.scriptedFieldPrefix() + "."
-                + field + "\"}");
+            // _source (ES2) vs params._source (ES5)
+            + "\"" + implementor.elasticsearchTable.scriptedFieldPrefix() + "."
+            + field + "\"}");
       }
-      query.append("\"script_fields\": {" + String.join(", ", scriptFields) + "}");
+      query.append("\"script_fields\": {")
+          .append(String.join(", ", scriptFields))
+          .append("}");
     }
 >>>>>>> 130909e66 ([CALCITE-2347] running ElasticSearch in embedded mode for unit tests of ES adapter (Andrei Sereda)):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
 

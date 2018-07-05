@@ -81,10 +81,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.function.Predicate;
 
 /**
@@ -186,8 +184,8 @@ public class Bindables {
         RelOptTable table, ImmutableList<RexNode> filters,
         ImmutableIntList projects) {
       super(cluster, traitSet, ImmutableList.of(), table);
-      this.filters = Preconditions.checkNotNull(filters);
-      this.projects = Preconditions.checkNotNull(projects);
+      this.filters = Objects.requireNonNull(filters);
+      this.projects = Objects.requireNonNull(projects);
       Preconditions.checkArgument(canHandle(table));
     }
 
@@ -282,7 +280,7 @@ public class Bindables {
      */
     public BindableFilterRule(RelBuilderFactory relBuilderFactory) {
       super(LogicalFilter.class,
-          (Predicate<LogicalFilter>) RelOptUtil::notContainsWindowedAgg,
+          (Predicate<LogicalFilter>) RelOptUtil::containsMultisetOrWindowedAgg,
           Convention.NONE, BindableConvention.INSTANCE, relBuilderFactory,
           "BindableFilterRule");
     }
@@ -349,7 +347,7 @@ public class Bindables {
      */
     public BindableProjectRule(RelBuilderFactory relBuilderFactory) {
       super(LogicalProject.class,
-          (Predicate<LogicalProject>) RelOptUtil::notContainsWindowedAgg,
+          (Predicate<LogicalProject>) RelOptUtil::containsMultisetOrWindowedAgg,
           Convention.NONE, BindableConvention.INSTANCE, relBuilderFactory,
           "BindableProjectRule");
     }
@@ -536,23 +534,7 @@ public class Bindables {
      * @param relBuilderFactory Builder for relational expressions
      */
     public BindableUnionRule(RelBuilderFactory relBuilderFactory) {
-      super(relBuilderFactory);
-    }
-  }
-
-  /**
-   * Rule to convert an {@link SetOp} to a {@link BindableUnion}
-   * or {@link BindableIntersect} or {@link BindableMinus}.
-   */
-  public static class BindableSetOpRule extends ConverterRule {
-
-    /**
-     * Creates a BindableSetOpRule.
-     *
-     * @param relBuilderFactory Builder for relational expressions
-     */
-    public BindableSetOpRule(RelBuilderFactory relBuilderFactory) {
-      super(SetOp.class, (Predicate<RelNode>) r -> true,
+      super(LogicalUnion.class, (Predicate<RelNode>) r -> true,
           Convention.NONE, BindableConvention.INSTANCE, relBuilderFactory,
           "BindableSetOpRule");
     }

@@ -71,9 +71,6 @@ public class AggregateUnionTransposeRule
     SUPPORTED_AGGREGATES.put(SqlSumAggFunction.class, true);
     SUPPORTED_AGGREGATES.put(SqlSumEmptyIsZeroAggFunction.class, true);
     SUPPORTED_AGGREGATES.put(SqlAnyValueAggFunction.class, true);
-<<<<<<< HEAD
-    SUPPORTED_AGGREGATES.put(SqlBitOpAggFunction.class, true);
-=======
   }
 
   /** Creates an AggregateUnionTransposeRule. */
@@ -224,7 +221,6 @@ public class AggregateUnionTransposeRule
     }
   }
 }
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

@@ -465,7 +465,7 @@ public abstract class ReturnTypes {
                 0);
         if (type1.isNullable()) {
           ret =
-             opBinding.getTypeFactory()
+              opBinding.getTypeFactory()
                   .createTypeWithNullability(ret, true);
         }
         return ret;
@@ -487,13 +487,11 @@ public abstract class ReturnTypes {
    * product of two exact numeric operands where at least one of the operands
    * is a decimal.
    */
-  public static final SqlReturnTypeInference DECIMAL_PRODUCT = new SqlReturnTypeInference() {
-    public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
-      RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-      RelDataType type1 = opBinding.getOperandType(0);
-      RelDataType type2 = opBinding.getOperandType(1);
-      return typeFactory.getTypeSystem().deriveDecimalMultiplyType(typeFactory, type1, type2);
-    }
+  public static final SqlReturnTypeInference DECIMAL_PRODUCT = opBinding -> {
+    RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+    RelDataType type1 = opBinding.getOperandType(0);
+    RelDataType type2 = opBinding.getOperandType(1);
+    return typeFactory.createDecimalProduct(type1, type2);
   };
 
   /**
@@ -520,13 +518,11 @@ public abstract class ReturnTypes {
    * quotient of two exact numeric operands where at least one of the operands
    * is a decimal.
    */
-  public static final SqlReturnTypeInference DECIMAL_QUOTIENT = new SqlReturnTypeInference() {
-    public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
-      RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-      RelDataType type1 = opBinding.getOperandType(0);
-      RelDataType type2 = opBinding.getOperandType(1);
-      return typeFactory.getTypeSystem().deriveDecimalDivideType(typeFactory, type1, type2);
-    }
+  public static final SqlReturnTypeInference DECIMAL_QUOTIENT = opBinding -> {
+    RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+    RelDataType type1 = opBinding.getOperandType(0);
+    RelDataType type2 = opBinding.getOperandType(1);
+    return typeFactory.createDecimalQuotient(type1, type2);
   };
 
   /**
@@ -552,14 +548,11 @@ public abstract class ReturnTypes {
    * sum of two exact numeric operands where at least one of the operands is a
    * decimal.
    */
-  public static final SqlReturnTypeInference DECIMAL_SUM = new SqlReturnTypeInference() {
-    public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
-      RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-      RelDataType type1 = opBinding.getOperandType(0);
-      RelDataType type2 = opBinding.getOperandType(1);
-      return typeFactory.getTypeSystem().deriveDecimalPlusType(typeFactory, type1, type2);
-    }
-
+  public static final SqlReturnTypeInference DECIMAL_SUM = opBinding -> {
+    RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+    RelDataType type1 = opBinding.getOperandType(0);
+    RelDataType type2 = opBinding.getOperandType(1);
+    return typeFactory.getTypeSystem().deriveDecimalPlusType(typeFactory, type1, type2);
   };
 
   /**
@@ -725,7 +718,6 @@ public abstract class ReturnTypes {
       new SqlReturnTypeInferenceChain(
           DECIMAL_SUM_NULLABLE, TIMESTAMP_MINUS, DATE_MINUS, LEAST_RESTRICTIVE);
 
-
   /**
    * Type-inference strategy whereby the result type of a call is
    *
@@ -757,75 +749,16 @@ public abstract class ReturnTypes {
             (argType0.getSqlTypeName() == SqlTypeName.NULL)
                 || (argType1.getSqlTypeName() == SqlTypeName.NULL);
 
-          if (!containsAnyType
+        if (!containsAnyType
               && !containsNullType
-              && !(SqlTypeUtil.inCharOrBinaryFamilies(argType0)
-                  && SqlTypeUtil.inCharOrBinaryFamilies(argType1))) {
-            Preconditions.checkArgument(
-                SqlTypeUtil.sameNamedType(argType0, argType1));
-          }
-          SqlCollation pickedCollation = null;
-          if (!containsAnyType
-              && !containsNullType
-              && SqlTypeUtil.inCharFamily(argType0)) {
-            if (!SqlTypeUtil.isCharTypeComparable(
-                opBinding.collectOperandTypes().subList(0, 2))) {
-              throw opBinding.newError(
-                  RESOURCE.typeNotComparable(
-                      argType0.getFullTypeString(),
-                      argType1.getFullTypeString()));
-            }
-
-            pickedCollation =
-                SqlCollation.getCoercibilityDyadicOperator(
-                    argType0.getCollation(), argType1.getCollation());
-            assert null != pickedCollation;
-          }
-
-          // Determine whether result is variable-length
-          SqlTypeName typeName =
-              argType0.getSqlTypeName();
-          if (SqlTypeUtil.isBoundedVariableWidth(argType1)) {
-            typeName = argType1.getSqlTypeName();
-          }
-
-          RelDataType ret;
-          int typePrecision;
-          final long x =
-              (long) argType0.getPrecision() + (long) argType1.getPrecision();
-          final RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-          final RelDataTypeSystem typeSystem = typeFactory.getTypeSystem();
-          if (argType0.getPrecision() == RelDataType.PRECISION_NOT_SPECIFIED
-              || argType1.getPrecision() == RelDataType.PRECISION_NOT_SPECIFIED
-              || x > typeSystem.getMaxPrecision(typeName)) {
-            typePrecision = RelDataType.PRECISION_NOT_SPECIFIED;
-          } else {
-            typePrecision = (int) x;
-          }
-
-          ret = typeFactory.createSqlType(typeName, typePrecision);
-          if (null != pickedCollation) {
-            RelDataType pickedType;
-            if (argType0.getCollation().equals(pickedCollation)) {
-              pickedType = argType0;
-            } else if (argType1.getCollation().equals(pickedCollation)) {
-              pickedType = argType1;
-            } else {
-              throw new AssertionError("should never come here");
-            }
-            ret =
-                typeFactory.createTypeWithCharsetAndCollation(ret,
-                    pickedType.getCharset(), pickedType.getCollation());
-        }
-        if (ret.getSqlTypeName() == SqlTypeName.NULL) {
-          ret = typeFactory.createTypeWithNullability(
-              typeFactory.createSqlType(SqlTypeName.VARCHAR), true);
-          }
-          return ret;
+            && !(SqlTypeUtil.inCharOrBinaryFamilies(argType0)
+            && SqlTypeUtil.inCharOrBinaryFamilies(argType1))) {
+          Preconditions.checkArgument(
+              SqlTypeUtil.sameNamedType(argType0, argType1));
         }
         SqlCollation pickedCollation = null;
         if (!containsAnyType
-            && !containsNullType
+              && !containsNullType
             && SqlTypeUtil.inCharFamily(argType0)) {
           if (!SqlTypeUtil.isCharTypeComparable(
               opBinding.collectOperandTypes().subList(0, 2))) {
@@ -881,6 +814,7 @@ public abstract class ReturnTypes {
               typeFactory.createSqlType(SqlTypeName.VARCHAR), true);
         }
         return ret;
+
       };
 
 

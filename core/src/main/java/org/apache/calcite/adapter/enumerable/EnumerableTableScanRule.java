@@ -45,8 +45,7 @@ public class EnumerableTableScanRule extends ConverterRule {
    * @param relBuilderFactory Builder for relational expressions
    */
   public EnumerableTableScanRule(RelBuilderFactory relBuilderFactory) {
-    super(LogicalTableScan.class,
-        (Predicate<LogicalTableScan>) r -> EnumerableTableScan.canHandle(r.getTable()),
+    super(LogicalTableScan.class, (Predicate<RelNode>) r -> true,
         Convention.NONE, EnumerableConvention.INSTANCE, relBuilderFactory,
         "EnumerableTableScanRule");
   }

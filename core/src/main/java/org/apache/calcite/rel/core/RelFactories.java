@@ -289,7 +289,7 @@ public class RelFactories {
         RexNode condition, Set<CorrelationId> variablesSet,
         JoinRelType joinType, boolean semiJoinDone) {
       return LogicalJoin.create(left, right, hints, condition, variablesSet, joinType,
-          semiJoinDone, ImmutableList.<RelDataTypeField>of());
+          semiJoinDone, ImmutableList.of());
     }
 
     public RelNode createJoin(RelNode left, RelNode right, RexNode condition,

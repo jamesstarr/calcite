@@ -105,15 +105,14 @@ public final class LogicalTableScan extends TableScan {
     final Table table = relOptTable.unwrap(Table.class);
     final RelTraitSet traitSet =
         cluster.traitSetOf(Convention.NONE)
-            .replaceIfs(RelCollationTraitDef.INSTANCE,
-                new Supplier<List<RelCollation>>() {
-                  public List<RelCollation> get() {
-                    if (table != null) {
-                      return table.getStatistic().getCollations();
-                    }
-                    return ImmutableList.of();
-                  }
-                });
+            .replaceIfs(RelCollationTraitDef.INSTANCE, () -> {
+
+              if (table != null) {
+                return table.getStatistic().getCollations();
+              }
+              return ImmutableList.of();
+
+            });
     return new LogicalTableScan(cluster, traitSet, hints, relOptTable);
   }
 

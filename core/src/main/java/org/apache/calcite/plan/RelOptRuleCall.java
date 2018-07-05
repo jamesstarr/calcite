@@ -265,6 +265,7 @@ public abstract class RelOptRuleCall {
    */
   public final void transformTo(RelNode rel) {
     transformTo(rel, ImmutableMap.of());
+<<<<<<< HEAD
   }
 
   /**
@@ -285,6 +286,8 @@ public abstract class RelOptRuleCall {
    */
   public final void transformTo(RelNode rel, RelHintsPropagator handler) {
     transformTo(rel, ImmutableMap.of(), handler);
+=======
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
   }
 
   /**

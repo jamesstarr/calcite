@@ -116,7 +116,40 @@ public class RexToLixTranslator {
     }
   }
 
-  private RexToLixTranslator(RexProgram program,
+  private RexToLixTranslator(RexProgram program, JavaTypeFactory typeFactory,
+      Expression root, InputGetter inputGetter, BlockBuilder list) {
+    this(program, typeFactory, root, inputGetter, list,
+        Collections.emptyMap(),
+        new RexBuilder(typeFactory));
+  }
+
+  private RexToLixTranslator(
+      RexProgram program,
+      JavaTypeFactory typeFactory,
+      Expression root,
+      InputGetter inputGetter,
+      BlockBuilder list,
+      Map<RexNode, Boolean> exprNullableMap,
+      RexBuilder builder) {
+    this(program, typeFactory, root, inputGetter, list, exprNullableMap,
+        builder, null);
+  }
+
+  private RexToLixTranslator(
+      RexProgram program,
+      JavaTypeFactory typeFactory,
+      Expression root,
+      InputGetter inputGetter,
+      BlockBuilder list,
+      Map<? extends RexNode, Boolean> exprNullableMap,
+      RexBuilder builder,
+      RexToLixTranslator parent) {
+    this(program, typeFactory, root, inputGetter, list, exprNullableMap,
+        builder, parent, null);
+  }
+
+  private RexToLixTranslator(
+      RexProgram program,
       JavaTypeFactory typeFactory,
       Expression root,
       InputGetter inputGetter,
@@ -1128,313 +1161,7 @@ public class RexToLixTranslator {
         program.getCondition(),
         RexImpTable.NullAs.FALSE);
   }
-<<<<<<< HEAD
-=======
-  public static Expression convert(Expression operand, Type toType) {
-    final Type fromType = operand.getType();
-    return convert(operand, fromType, toType);
-  }
-
-  public static Expression convert(Expression operand, Type fromType,
-      Type toType) {
-    if (fromType.equals(toType)) {
-      return operand;
-    }
-    // E.g. from "Short" to "int".
-    // Generate "x.intValue()".
-    final Primitive toPrimitive = Primitive.of(toType);
-    final Primitive toBox = Primitive.ofBox(toType);
-    final Primitive fromBox = Primitive.ofBox(fromType);
-    final Primitive fromPrimitive = Primitive.of(fromType);
-    final boolean fromNumber = fromType instanceof Class
-        && Number.class.isAssignableFrom((Class) fromType);
-    if (fromType == String.class) {
-      if (toPrimitive != null) {
-        switch (toPrimitive) {
-        case CHAR:
-        case SHORT:
-        case INT:
-        case LONG:
-        case FLOAT:
-        case DOUBLE:
-          // Generate "SqlFunctions.toShort(x)".
-          return Expressions.call(
-              SqlFunctions.class,
-              "to" + SqlFunctions.initcap(toPrimitive.primitiveName),
-              operand);
-        default:
-          // Generate "Short.parseShort(x)".
-          return Expressions.call(
-              toPrimitive.boxClass,
-              "parse" + SqlFunctions.initcap(toPrimitive.primitiveName),
-              operand);
-        }
-      }
-      if (toBox != null) {
-        switch (toBox) {
-        case CHAR:
-          // Generate "SqlFunctions.toCharBoxed(x)".
-          return Expressions.call(
-              SqlFunctions.class,
-              "to" + SqlFunctions.initcap(toBox.primitiveName) + "Boxed",
-              operand);
-        default:
-          // Generate "Short.valueOf(x)".
-          return Expressions.call(
-              toBox.boxClass,
-              "valueOf",
-              operand);
-        }
-      }
-    }
-    if (toPrimitive != null) {
-      if (fromPrimitive != null) {
-        // E.g. from "float" to "double"
-        return Expressions.convert_(
-            operand, toPrimitive.primitiveClass);
-      }
-      if (fromNumber || fromBox == Primitive.CHAR) {
-        // Generate "x.shortValue()".
-        return Expressions.unbox(operand, toPrimitive);
-      } else {
-        // E.g. from "Object" to "short".
-        // Generate "SqlFunctions.toShort(x)"
-        return Expressions.call(
-            SqlFunctions.class,
-            "to" + SqlFunctions.initcap(toPrimitive.primitiveName),
-            operand);
-      }
-    } else if (fromNumber && toBox != null) {
-      // E.g. from "Short" to "Integer"
-      // Generate "x == null ? null : Integer.valueOf(x.intValue())"
-      return Expressions.condition(
-          Expressions.equal(operand, RexImpTable.NULL_EXPR),
-          RexImpTable.NULL_EXPR,
-          Expressions.box(
-              Expressions.unbox(operand, toBox),
-              toBox));
-    } else if (fromPrimitive != null && toBox != null) {
-      // E.g. from "int" to "Long".
-      // Generate Long.valueOf(x)
-      // Eliminate primitive casts like Long.valueOf((long) x)
-      if (operand instanceof UnaryExpression) {
-        UnaryExpression una = (UnaryExpression) operand;
-        if (una.nodeType == ExpressionType.Convert
-            || Primitive.of(una.getType()) == toBox) {
-          return Expressions.box(una.expression, toBox);
-        }
-      }
-      return Expressions.box(operand, toBox);
-    } else if (fromType == java.sql.Date.class) {
-      if (toBox == Primitive.INT) {
-        return Expressions.call(BuiltInMethod.DATE_TO_INT.method, operand);
-      } else {
-        return Expressions.convert_(operand, toType);
-      }
-    } else if (toType == java.sql.Date.class) {
-      // E.g. from "int" or "Integer" to "java.sql.Date",
-      // generate "SqlFunctions.internalToDate".
-      if (isA(fromType, Primitive.INT)) {
-        return Expressions.call(BuiltInMethod.INTERNAL_TO_DATE.method, operand);
-      } else {
-        return Expressions.convert_(operand, java.sql.Date.class);
-      }
-    } else if (toType == java.sql.Time.class) {
-      // E.g. from "int" or "Integer" to "java.sql.Time",
-      // generate "SqlFunctions.internalToTime".
-      if (isA(fromType, Primitive.INT)) {
-        return Expressions.call(BuiltInMethod.INTERNAL_TO_TIME.method, operand);
-      } else {
-        return Expressions.convert_(operand, java.sql.Time.class);
-      }
-    } else if (toType == java.sql.Timestamp.class) {
-      // E.g. from "long" or "Long" to "java.sql.Timestamp",
-      // generate "SqlFunctions.internalToTimestamp".
-      if (isA(fromType, Primitive.LONG)) {
-        return Expressions.call(BuiltInMethod.INTERNAL_TO_TIMESTAMP.method,
-            operand);
-      } else {
-        return Expressions.convert_(operand, java.sql.Timestamp.class);
-      }
-    } else if (toType == BigDecimal.class) {
-      if (fromBox != null) {
-        // E.g. from "Integer" to "BigDecimal".
-        // Generate "x == null ? null : new BigDecimal(x.intValue())"
-        return Expressions.condition(
-            Expressions.equal(operand, RexImpTable.NULL_EXPR),
-            RexImpTable.NULL_EXPR,
-            Expressions.new_(
-                BigDecimal.class,
-                Expressions.unbox(operand, fromBox)));
-      }
-      if (fromPrimitive != null) {
-        // E.g. from "int" to "BigDecimal".
-        // Generate "new BigDecimal(x)"
-        // Fix CALCITE-2325, we should decide null here for int type.
-        return Expressions.condition(
-            Expressions.equal(operand, RexImpTable.NULL_EXPR),
-            RexImpTable.NULL_EXPR,
-            Expressions.new_(
-                BigDecimal.class,
-                operand));
-      }
-      // E.g. from "Object" to "BigDecimal".
-      // Generate "x == null ? null : SqlFunctions.toBigDecimal(x)"
-      return Expressions.condition(
-          Expressions.equal(operand, RexImpTable.NULL_EXPR),
-          RexImpTable.NULL_EXPR,
-          Expressions.call(
-              SqlFunctions.class,
-              "toBigDecimal",
-              operand));
-    } else if (toType == String.class) {
-      if (fromPrimitive != null) {
-        switch (fromPrimitive) {
-        case DOUBLE:
-        case FLOAT:
-          // E.g. from "double" to "String"
-          // Generate "SqlFunctions.toString(x)"
-          return Expressions.call(
-              SqlFunctions.class,
-              "toString",
-              operand);
-        default:
-          // E.g. from "int" to "String"
-          // Generate "Integer.toString(x)"
-          return Expressions.call(
-              fromPrimitive.boxClass,
-              "toString",
-              operand);
-        }
-      } else if (fromType == BigDecimal.class) {
-        // E.g. from "BigDecimal" to "String"
-        // Generate "x.toString()"
-        return Expressions.condition(
-            Expressions.equal(operand, RexImpTable.NULL_EXPR),
-            RexImpTable.NULL_EXPR,
-            Expressions.call(
-                SqlFunctions.class,
-                "toString",
-                operand));
-      } else {
-        // E.g. from "BigDecimal" to "String"
-        // Generate "x == null ? null : x.toString()"
-        return Expressions.condition(
-            Expressions.equal(operand, RexImpTable.NULL_EXPR),
-            RexImpTable.NULL_EXPR,
-            Expressions.call(
-                operand,
-                "toString"));
-      }
-    }
-    return Expressions.convert_(operand, toType);
-  }
-
-  static boolean isA(Type fromType, Primitive primitive) {
-    return Primitive.of(fromType) == primitive
-        || Primitive.ofBox(fromType) == primitive;
-  }
->>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
-
-  public Expression translateConstructor(
-      List<RexNode> operandList, SqlKind kind) {
-    switch (kind) {
-    case MAP_VALUE_CONSTRUCTOR:
-      Expression map =
-          list.append(
-              "map",
-              Expressions.new_(LinkedHashMap.class),
-              false);
-      for (int i = 0; i < operandList.size(); i++) {
-        RexNode key = operandList.get(i++);
-        RexNode value = operandList.get(i);
-        list.add(
-            Expressions.statement(
-                Expressions.call(
-                    map,
-                    BuiltInMethod.MAP_PUT.method,
-                    Expressions.box(translate(key)),
-                    Expressions.box(translate(value)))));
-      }
-      return map;
-    case ARRAY_VALUE_CONSTRUCTOR:
-      Expression lyst =
-          list.append(
-              "list",
-              Expressions.new_(ArrayList.class),
-              false);
-      for (RexNode value : operandList) {
-        list.add(
-            Expressions.statement(
-                Expressions.call(
-                    lyst,
-                    BuiltInMethod.COLLECTION_ADD.method,
-                    Expressions.box(translate(value)))));
-      }
-      return lyst;
-    default:
-      throw new AssertionError("unexpected: " + kind);
-    }
-  }
-
-  /** Returns whether an expression is nullable. Even if its type says it is
-   * nullable, if we have previously generated a check to make sure that it is
-   * not null, we will say so.
-   *
-   * <p>For example, {@code WHERE a == b} translates to
-   * {@code a != null && b != null && a.equals(b)}. When translating the
-   * 3rd part of the disjunction, we already know a and b are not null.</p>
-   *
-   * @param e Expression
-   * @return Whether expression is nullable in the current translation context
-   */
-  public boolean isNullable(RexNode e) {
-    if (!e.getType().isNullable()) {
-      return false;
-    }
-    final Boolean b = isKnownNullable(e);
-    return b == null || b;
-  }
-
-  /**
-   * Walks parent translator chain and verifies if the expression is nullable.
-   *
-   * @param node RexNode to check if it is nullable or not
-   * @return null when nullability is not known, true or false otherwise
-   */
-  protected Boolean isKnownNullable(RexNode node) {
-    if (!exprNullableMap.isEmpty()) {
-      Boolean nullable = exprNullableMap.get(node);
-      if (nullable != null) {
-        return nullable;
-      }
-    }
-    return parent == null ? null : parent.isKnownNullable(node);
-  }
-
-  /** Creates a read-only copy of this translator that records that a given
-   * expression is nullable. */
-  public RexToLixTranslator setNullable(RexNode e, boolean nullable) {
-    return setNullable(Collections.singletonMap(e, nullable));
-  }
-
-  /** Creates a read-only copy of this translator that records that a given
-   * expression is nullable. */
-  public RexToLixTranslator setNullable(
-      Map<? extends RexNode, Boolean> nullable) {
-    if (nullable == null || nullable.isEmpty()) {
-      return this;
-    }
-    return new RexToLixTranslator(program, typeFactory, root, inputGetter, list,
-        nullable, builder, conformance, this, correlates);
-  }
-
-  public RexToLixTranslator setBlock(BlockBuilder block) {
-    if (block == list) {
-      return this;
-    }
-    return new RexToLixTranslator(program, typeFactory, root, inputGetter,
-        block, ImmutableMap.of(), builder, conformance, this, correlates);
+        block, ImmutableMap.of(), builder, this, correlates);
   }
 
   public RexToLixTranslator setCorrelates(
@@ -1443,15 +1170,7 @@ public class RexToLixTranslator {
       return this;
     }
     return new RexToLixTranslator(program, typeFactory, root, inputGetter, list,
-        Collections.emptyMap(), builder, conformance, this, correlates);
-  }
-
-  private RexToLixTranslator withConformance(SqlConformance conformance) {
-    if (conformance == this.conformance) {
-      return this;
-    }
-    return new RexToLixTranslator(program, typeFactory, root, inputGetter, list,
-        Collections.emptyMap(), builder, conformance, this, correlates);
+        Collections.emptyMap(), builder, this, correlates);
   }
 
   public RelDataType nullifyType(RelDataType type, boolean nullable) {

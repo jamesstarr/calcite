@@ -52,8 +52,12 @@ import com.google.common.collect.Interners;
 public abstract class RelTraitDef<T extends RelTrait> {
   //~ Instance fields --------------------------------------------------------
 
-  /**
-   * Cache of traits.
+  private final LoadingCache<T, T> canonicalMap =
+      CacheBuilder.newBuilder()
+          .softValues()
+          .build(CacheLoader.from(key -> key));
+
+  /** Cache of composite traits.
    *
    * <p>Uses weak interner to allow GC.
    */

@@ -26,8 +26,8 @@ import org.apache.calcite.runtime.Hook;
 import org.apache.calcite.tools.Frameworks;
 import org.apache.calcite.util.TestUtil;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.After;
+import org.junit.Before;
 
 import java.io.IOException;
 
@@ -37,7 +37,7 @@ import java.io.IOException;
 class SqlToRelConverterExtendedTest extends SqlToRelConverterTest {
   Hook.Closeable closeable;
 
-  @BeforeEach public void before() {
+  @Before public void before() {
     this.closeable =
         Hook.CONVERTED.addThread(SqlToRelConverterExtendedTest::foo);
   }
@@ -72,7 +72,7 @@ class SqlToRelConverterExtendedTest extends SqlToRelConverterTest {
       try {
         RelNode x = reader.read(json);
       } catch (IOException e) {
-        throw TestUtil.rethrow(e);
+        throw new RuntimeException(e);
       }
       return null;
     });

@@ -413,46 +413,6 @@ public abstract class MutableRels {
           tableFunctionScan.getRowType(), inputs, tableFunctionScan.getCall(),
           tableFunctionScan.getElementType(), tableFunctionScan.getColumnMappings());
     }
-<<<<<<< HEAD
-=======
-    // It is necessary that SemiJoin is placed in front of Join here, since SemiJoin
-    // is a sub-class of Join.
->>>>>>> 08c4ce185 ([CALCITE-3126] Remove deprecated SemiJoin usage completely)
-    if (rel instanceof Join) {
-      final Join join = (Join) rel;
-      final MutableRel left = toMutable(join.getLeft());
-      final MutableRel right = toMutable(join.getRight());
-      return MutableJoin.of(join.getRowType(), left, right,
-          join.getCondition(), join.getJoinType(), join.getVariablesSet());
-    }
-    if (rel instanceof Correlate) {
-      final Correlate correlate = (Correlate) rel;
-      final MutableRel left = toMutable(correlate.getLeft());
-      final MutableRel right = toMutable(correlate.getRight());
-      return MutableCorrelate.of(correlate.getRowType(), left, right,
-          correlate.getCorrelationId(), correlate.getRequiredColumns(),
-          correlate.getJoinType());
-    }
-    if (rel instanceof Union) {
-      final Union union = (Union) rel;
-      final List<MutableRel> inputs = toMutables(union.getInputs());
-      return MutableUnion.of(union.getRowType(), inputs, union.all);
-    }
-    if (rel instanceof Minus) {
-      final Minus minus = (Minus) rel;
-      final List<MutableRel> inputs = toMutables(minus.getInputs());
-      return MutableMinus.of(minus.getRowType(), inputs, minus.all);
-    }
-    if (rel instanceof Intersect) {
-      final Intersect intersect = (Intersect) rel;
-      final List<MutableRel> inputs = toMutables(intersect.getInputs());
-      return MutableIntersect.of(intersect.getRowType(), inputs, intersect.all);
-    }
-    throw new RuntimeException("cannot translate " + rel + " to MutableRel");
-  }
-
-  private static List<MutableRel> toMutables(List<RelNode> nodes) {
-    return nodes.stream().map(MutableRels::toMutable)
-        .collect(Collectors.toList());
+    return Lists.transform(nodes, MutableRels::toMutable);
   }
 }

@@ -28,7 +28,14 @@ import org.apache.calcite.sql.validate.SqlValidatorScope;
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.Util;
 
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collector;
 
 /**
  * A <code>SqlNode</code> is a SQL parse tree.
@@ -123,79 +130,7 @@ public abstract class SqlNode implements Cloneable {
         .withSelectListItemsOnSeparateLines(false)
         .withUpdateSetListNewline(false)
         .withIndentation(0)).getSql();
-<<<<<<< HEAD
-=======
-  }
 
-  /**
-   * Returns the SQL text of the tree of which this <code>SqlNode</code> is
-   * the root.
-   *
-   * <p>Typical return values are:
-   *
-   * <ul>
-   * <li>'It''s a bird!'
-   * <li>NULL
-   * <li>12.3
-   * <li>DATE '1969-04-29'
-   * </ul>
-   *
-   * @param transform   Transform that sets desired writer configuration
-   */
-  public SqlString toSqlString(UnaryOperator<SqlWriterConfig> transform) {
-    final SqlWriterConfig config = transform.apply(SqlPrettyWriter.config());
-    SqlPrettyWriter writer = new SqlPrettyWriter(config);
-    unparse(writer, 0, 0);
-    return writer.toSqlString();
-  }
-
-  /**
-   * Returns the SQL text of the tree of which this <code>SqlNode</code> is
-   * the root.
-   *
-   * <p>Typical return values are:
-   *
-   * <ul>
-   * <li>'It''s a bird!'
-   * <li>NULL
-   * <li>12.3
-   * <li>DATE '1969-04-29'
-   * </ul>
-   *
-   * @param transform   Transform that sets desired writer configuration
-   */
-  public SqlString toSqlString(UnaryOperator<SqlWriterConfig> transform) {
-    final SqlWriterConfig config = transform.apply(SqlPrettyWriter.config());
-    SqlPrettyWriter writer = new SqlPrettyWriter(config);
-    unparse(writer, 0, 0);
-    return writer.toSqlString();
-  }
-
-  /**
-   * Returns the SQL text of the tree of which this <code>SqlNode</code> is
-   * the root.
-   *
-   * <p>Typical return values are:
-   *
-   * <ul>
-   * <li>'It''s a bird!'
-   * <li>NULL
-   * <li>12.3
-   * <li>DATE '1969-04-29'
-   * </ul>
-   *
-   * @param dialect     Dialect (null for ANSI SQL)
-   * @param forceParens Whether to wrap all expressions in parentheses;
-   *                    useful for parse test, but false by default
-   */
-  public SqlString toSqlString(SqlDialect dialect, boolean forceParens) {
-    return toSqlString(c ->
-        c.withDialect(Util.first(dialect, AnsiSqlDialect.DEFAULT))
-            .withAlwaysUseParentheses(forceParens)
-            .withSelectListItemsOnSeparateLines(false)
-            .withUpdateSetListNewline(false)
-            .withIndentation(0));
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
   }
 
   public SqlString toSqlString(SqlDialect dialect) {

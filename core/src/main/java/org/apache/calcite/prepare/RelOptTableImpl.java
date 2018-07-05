@@ -108,6 +108,7 @@ public class RelOptTableImpl extends Prepare.AbstractPreparingTable {
       Expression expression) {
     return new RelOptTableImpl(schema, rowType, names, null,
         c -> expression, null);
+<<<<<<< HEAD
   }
 
   public static RelOptTableImpl create(
@@ -118,6 +119,8 @@ public class RelOptTableImpl extends Prepare.AbstractPreparingTable {
       Expression expression) {
     return new RelOptTableImpl(schema, rowType, names, table,
         c -> expression, table.getStatistic().getRowCount());
+=======
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
   }
 
   public static RelOptTableImpl create(RelOptSchema schema, RelDataType rowType,

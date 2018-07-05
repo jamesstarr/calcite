@@ -42,7 +42,7 @@ import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -362,7 +362,7 @@ public abstract class PruneEmptyRules implements SubstitutionRule {
     /** Creates a simple RemoveEmptySingleRule. */
     public <R extends SingleRel> RemoveEmptySingleRule(Class<R> clazz,
         String description) {
-      this(clazz, (Predicate<R>) singleRel -> true, RelFactories.LOGICAL_BUILDER,
+      this(clazz, (Predicate<R>) project -> true, RelFactories.LOGICAL_BUILDER,
           description);
     }
 

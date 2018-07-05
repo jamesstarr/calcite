@@ -19,8 +19,7 @@ package org.apache.calcite.runtime;
 import org.apache.calcite.rel.RelRoot;
 import org.apache.calcite.util.Holder;
 
-import org.apiguardian.api.API;
-
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -91,6 +90,7 @@ public enum Hook {
    * pipeline expressions (for the MongoDB adapter), et cetera. */
   QUERY_PLAN,
 
+<<<<<<< HEAD
   /**
    * Called when a plan is about to be implemented (e.g. implemented via Enumerable, Bindable,
    * and so on).
@@ -99,6 +99,7 @@ public enum Hook {
   @API(since = "1.22", status = API.Status.EXPERIMENTAL)
   PLAN_BEFORE_IMPLEMENTATION;
 
+=======
   private final List<Consumer<Object>> handlers =
       new CopyOnWriteArrayList<>();
 
@@ -122,15 +123,13 @@ public enum Hook {
    *     than expected. Use with caution. Prefer thread-local hooks.
    * @see #addThread(Consumer)
    */
-  @API(status = API.Status.MAINTAINED)
-  @Deprecated
-  public <T> Closeable add(final Consumer<T> handler) {
+  public <T, R> Closeable add(final Consumer<T> handler) {
     //noinspection unchecked
     handlers.add((Consumer<Object>) handler);
     return () -> remove(handler);
   }
 
-  /** @deprecated Use {@link #add(Consumer)}. */
+  /** @deprecated Use {@link #addThread(Consumer)}. */
   @SuppressWarnings("Guava")
   @Deprecated // to be removed in 2.0
   public <T, R> Closeable add(final Function<T, R> handler) {

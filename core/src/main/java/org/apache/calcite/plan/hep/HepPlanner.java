@@ -141,8 +141,15 @@ public class HepPlanner extends AbstractRelOptPlanner {
       RelOptCostFactory costFactory) {
     super(costFactory, context);
     this.mainProgram = program;
-    this.onCopyHook = Util.first(onCopyHook, Functions.ignore2());
-    this.noDag = noDag;
+    this.onCopyHook =
+        Util.first(onCopyHook, Functions.ignore2());
+    mapDigestToVertex = new HashMap<>();
+    graph = DefaultDirectedGraph.create();
+
+    // NOTE jvs 24-Apr-2006:  We use LinkedHashSet here and below
+    // in order to provide deterministic behavior.
+    allRules = new LinkedHashSet<>();
+    this.noDAG = noDAG;
   }
 
   //~ Methods ----------------------------------------------------------------

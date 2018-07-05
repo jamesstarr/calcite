@@ -18,10 +18,14 @@ package org.apache.calcite.adapter.druid;
 
 import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonGenerator;
 
-import com.google.common.base.Preconditions;
+
 
 import java.io.IOException;
 import java.util.Objects;
+<<<<<<< HEAD
+=======
+
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import javax.annotation.Nullable;
 
 import static org.apache.calcite.adapter.druid.DruidQuery.writeField;

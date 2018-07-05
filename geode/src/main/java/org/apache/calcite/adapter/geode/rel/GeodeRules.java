@@ -39,6 +39,10 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 
+<<<<<<< HEAD
+=======
+import java.util.AbstractList;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;

@@ -47,8 +47,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
 /**
  * An assistant which offers hints and corrections to a partially-formed SQL
@@ -378,7 +377,11 @@ public class SqlAdvisor {
       final SqlParserPos pos, String hintToken) {
     List<SqlNode> nodes = SqlUtil.getAncestry(root,
         input -> input instanceof SqlIdentifier
+<<<<<<< HEAD
             && ((SqlIdentifier) input).names.contains(hintToken),
+=======
+            && Util.last(((SqlIdentifier) input).names)
+                .equals(UPPER_HINT_TOKEN),
         input -> Objects.requireNonNull(input).getParserPosition()
             .startsAt(pos));
     assert nodes.get(0) == root;

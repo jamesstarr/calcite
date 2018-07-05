@@ -422,7 +422,7 @@ class ImmutableBitSetTest {
 
   /** Tests the method
    * {@link org.apache.calcite.util.BitSets#closure(java.util.SortedMap)}. */
-  @Test void testClosure() {
+  @Test public void testClosure() {
     final SortedMap<Integer, ImmutableBitSet> empty = new TreeMap<>();
     assertThat(ImmutableBitSet.closure(empty), equalTo(empty));
 

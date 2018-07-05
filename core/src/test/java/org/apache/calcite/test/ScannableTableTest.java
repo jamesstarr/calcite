@@ -463,35 +463,13 @@ public class ScannableTableTest {
     }
   }
 
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3758">[CALCITE-3758]
-   * FilterTableScanRule generate wrong mapping for filter condition
-   * when underlying is BindableTableScan</a>. */
-  @Test public void testPFTableInBindableConvention() {
-    final StringBuilder buf = new StringBuilder();
-    final Table table = new BeatlesProjectableFilterableTable(buf, true);
-    try (Hook.Closeable ignored = Hook.ENABLE_BINDABLE.addThread(Hook.propertyJ(true))) {
-      final String explain = "PLAN="
-          + "BindableTableScan(table=[[s, beatles]], filters=[[=($1, 'John')]], projects=[[1]])";
-      CalciteAssert.that()
-          .with(newSchema("s", Pair.of("beatles", table)))
-          .query("select \"j\" from \"s\".\"beatles\" where \"j\" = 'John'")
-          .explainContains(explain)
-          .returnsUnordered("j=John");
-      assertThat(buf.toString(),
-          is("returnCount=1, filter=<1, John>, projects=[1]"));
-    }
-  }
-
   protected ConnectionPostProcessor newSchema(final String schemaName,
-      Pair<String, Table>... tables) {
+      final String tableName, final Table table) {
     return connection -> {
       CalciteConnection con = connection.unwrap(CalciteConnection.class);
       SchemaPlus rootSchema = con.getRootSchema();
       SchemaPlus schema = rootSchema.add(schemaName, new AbstractSchema());
-      for (Pair<String, Table> t : tables) {
-        schema.add(t.left, t.right);
-      }
+      schema.add(tableName, table);
       connection.setSchema(schemaName);
       return connection;
     };
