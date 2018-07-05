@@ -40,9 +40,7 @@ import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 import org.apache.calcite.util.mapping.Mappings;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -57,6 +55,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.apache.calcite.rel.rules.LoptMultiJoin.Edge;
+import static org.apache.calcite.util.mapping.Mappings.TargetMapping;
 
 import javax.annotation.Nullable;
 
@@ -123,7 +124,7 @@ public class MultiJoinOptimizeBushyRule
 
     final LoptMultiJoin multiJoin = new LoptMultiJoin(multiJoinRel);
 
-    final List<Vertex> vertexes = Lists.newArrayList();
+    final List<Vertex> vertexes = new ArrayList<>();
     int x = 0;
     for (int i = 0; i < multiJoin.getNumJoinFactors(); i++) {
       final RelNode rel = multiJoin.getJoinFactor(i);
@@ -138,7 +139,7 @@ public class MultiJoinOptimizeBushyRule
     }
     assert x == multiJoin.getNumTotalFields();
 
-    final List<LoptMultiJoin.Edge> unusedEdges = Lists.newArrayList();
+    final List<Edge> unusedEdges = new ArrayList<>();
     List<RexNode> remainingConditions = new ArrayList<>();
     for (RexNode node : multiJoin.getJoinFilters()) {
       Edge e = multiJoin.createEdge(node);
@@ -184,7 +185,7 @@ public class MultiJoinOptimizeBushyRule
     unusedEdges.addAll(edgeMap.values());
 
 
-    final List<LoptMultiJoin.Edge> usedEdges = Lists.newArrayList();
+    final List<Edge> usedEdges = new ArrayList<>();
     for (;;) {
       final int edgeOrdinal = chooseBestEdge(unusedEdges, edgeComparator);
       if (pw != null) {
@@ -240,7 +241,7 @@ public class MultiJoinOptimizeBushyRule
               rowReduction(unusedEdges.get(edgeOrdinal),
               multiJoin, vertexes, false, mq));
       }
-      final List<RexNode> conditions = Lists.newArrayList();
+      final List<RexNode> conditions = new ArrayList<>();
       final Iterator<LoptMultiJoin.Edge> edgeIterator = unusedEdges.iterator();
       while (edgeIterator.hasNext()) {
         LoptMultiJoin.Edge edge = edgeIterator.next();
@@ -289,7 +290,7 @@ public class MultiJoinOptimizeBushyRule
     }
 
     // We have a winner!
-    List<Pair<RelNode, Mappings.TargetMapping>> relNodes = Lists.newArrayList();
+    List<Pair<RelNode, TargetMapping>> relNodes = new ArrayList<>();
     for (Vertex vertex : vertexes) {
       if (vertex instanceof LeafVertex) {
         LeafVertex leafVertex = (LeafVertex) vertex;
@@ -684,7 +685,7 @@ public class MultiJoinOptimizeBushyRule
       super(id, factors, cost, rowReduction);
       this.leftFactor = leftFactor;
       this.rightFactor = rightFactor;
-      this.conditions = Preconditions.checkNotNull(conditions);
+      this.conditions = Objects.requireNonNull(conditions);
       this.coreFactor = coreFactor;
     }
 

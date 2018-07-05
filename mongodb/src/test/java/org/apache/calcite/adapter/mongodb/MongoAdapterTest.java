@@ -26,8 +26,7 @@ import org.apache.calcite.test.MongoAssertions;
 import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.Util;
 
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
+
 import com.google.common.io.LineProcessor;
 import com.google.common.io.Resources;
 import com.mongodb.client.MongoCollection;
@@ -53,13 +52,15 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.sql.ResultSet;
+
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Testing mongo adapter functionality. By default runs with
@@ -108,7 +109,7 @@ public class MongoAdapterTest implements SchemaFactory {
 
   private static void populate(MongoCollection<Document> collection, URL resource)
       throws IOException {
-    Preconditions.checkNotNull(collection, "collection");
+    Objects.requireNonNull(collection, "collection");
 
     if (collection.count() > 0) {
       // delete any existing documents (run from a clean set)
@@ -145,7 +146,7 @@ public class MongoAdapterTest implements SchemaFactory {
   }
 
   private CalciteAssert.AssertThat assertModel(URL url) {
-    Preconditions.checkNotNull(url, "url");
+    Objects.requireNonNull(url, "url");
     try {
       return assertModel(Resources.toString(url, StandardCharsets.UTF_8));
     } catch (IOException e) {
@@ -739,18 +740,17 @@ public class MongoAdapterTest implements SchemaFactory {
   @Test public void testCountViaInt() {
     assertModel(MODEL)
         .query("select count(*) from zips")
-        .returns(
-            new Function<ResultSet, Void>() {
-              public Void apply(ResultSet input) {
-                try {
-                  Assert.assertThat(input.next(), CoreMatchers.is(true));
-                  Assert.assertThat(input.getInt(1), CoreMatchers.is(ZIPS_SIZE));
-                  return null;
-                } catch (SQLException e) {
-                  throw new RuntimeException(e);
-                }
-              }
-            });
+        .returns(input -> {
+
+          try {
+            Assert.assertThat(input.next(), CoreMatchers.is(true));
+            Assert.assertThat(input.getInt(1), CoreMatchers.is(ZIPS_SIZE));
+
+          } catch (SQLException e) {
+            throw new RuntimeException(e);
+          }
+
+        });
   }
 
   /**
@@ -760,17 +760,16 @@ public class MongoAdapterTest implements SchemaFactory {
    * @param strings Expected expressions
    * @return validation function
    */
-  private static Function<List, Void> mongoChecker(final String... strings) {
-    return new Function<List, Void>() {
-      public Void apply(List actual) {
-        Object[] actualArray =
-            actual == null || actual.isEmpty()
-                ? null
-                : ((List) actual.get(0)).toArray();
-        CalciteAssert.assertArrayEqual("expected MongoDB query not found",
-            strings, actualArray);
-        return null;
-      }
+  private static Consumer<List> mongoChecker(final String... strings) {
+    return actual -> {
+
+      Object[] actualArray =
+          actual == null || actual.isEmpty()
+              ? null
+              : ((List) actual.get(0)).toArray();
+      CalciteAssert.assertArrayEqual("expected MongoDB query not found",
+          strings, actualArray);
+
     };
   }
 }

@@ -61,20 +61,14 @@ public abstract class SqlTests {
   /**
    * Checker which allows any type.
    */
-  public static final TypeChecker ANY_TYPE_CHECKER =
-      new TypeChecker() {
-        public void checkType(RelDataType type) {
-        }
-      };
+  public static final TypeChecker ANY_TYPE_CHECKER = type -> {
+  };
 
   /**
    * Checker that allows any number or type of parameters.
    */
-  public static final ParameterChecker ANY_PARAMETER_CHECKER =
-      new ParameterChecker() {
-        public void checkParameters(RelDataType parameterRowType) {
-        }
-      };
+  public static final ParameterChecker ANY_PARAMETER_CHECKER = parameterRowType -> {
+  };
 
   /**
    * Checker that allows any result.

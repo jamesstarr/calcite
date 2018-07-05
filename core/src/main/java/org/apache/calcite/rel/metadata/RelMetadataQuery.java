@@ -33,7 +33,6 @@ import com.google.common.collect.Multimap;
 
 import java.util.Collections;
 import java.util.List;
-
 import java.util.Set;
 
 /**
@@ -74,7 +73,6 @@ import java.util.Set;
 public class RelMetadataQuery extends RelMetadataQueryBase {
   private static final RelMetadataQuery PROTOTYPE =
       new RelMetadataQuery(JaninoRelMetadataHandlerProvider.INSTANCE);
-
   private BuiltInMetadata.Collation.Handler collationHandler;
   private BuiltInMetadata.ColumnOrigin.Handler columnOriginHandler;
   private BuiltInMetadata.ExpressionLineage.Handler expressionLineageHandler;
@@ -186,6 +184,7 @@ public class RelMetadataQuery extends RelMetadataQueryBase {
     this.sizeHandler = prototype.sizeHandler;
     this.uniqueKeysHandler = prototype.uniqueKeysHandler;
   }
+
   //~ Methods ----------------------------------------------------------------
 
   /**
@@ -195,7 +194,6 @@ public class RelMetadataQuery extends RelMetadataQueryBase {
   public static RelMetadataQuery instance() {
     return new RelMetadataQuery();
   }
-
 
   /** Re-generates the handler for a given kind of metadata, adding support for
    * {@code class_} if it is not already present. */
@@ -660,7 +658,7 @@ public class RelMetadataQuery extends RelMetadataQueryBase {
   public List<Double> getAverageColumnSizesNotNull(RelNode rel) {
     final List<Double> averageColumnSizes = getAverageColumnSizes(rel);
     return averageColumnSizes == null
-        ? Collections.<Double>nCopies(rel.getRowType().getFieldCount(), null)
+        ? Collections.nCopies(rel.getRowType().getFieldCount(), null)
         : averageColumnSizes;
   }
 

@@ -42,7 +42,6 @@ import org.apache.calcite.util.BuiltInMethod;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.Util;
 
-import com.google.common.base.Function;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -200,14 +199,9 @@ public class RelMdAllPredicates
               RelTableRef.of(rightRef.getTable(), shift + rightRef.getEntityNumber()));
         }
         final List<RexNode> updatedPreds = Lists.newArrayList(
-            Iterables.transform(
-                inputPreds.pulledUpPredicates,
-                new Function<RexNode, RexNode>() {
-                  @Override public RexNode apply(RexNode e) {
-                    return RexUtil.swapTableReferences(rexBuilder, e, currentTablesMapping);
-                  }
-                }
-          ));
+            Iterables.transform(inputPreds.pulledUpPredicates,
+                e -> RexUtil.swapTableReferences(rexBuilder, e,
+                    currentTablesMapping)));
         newPreds = newPreds.union(rexBuilder,
             RelOptPredicateList.of(rexBuilder, updatedPreds));
       }
@@ -297,14 +291,9 @@ public class RelMdAllPredicates
         }
         // Update preds
         final List<RexNode> updatedPreds = Lists.newArrayList(
-            Iterables.transform(
-                inputPreds.pulledUpPredicates,
-                new Function<RexNode, RexNode>() {
-                  @Override public RexNode apply(RexNode e) {
-                    return RexUtil.swapTableReferences(rexBuilder, e, currentTablesMapping);
-                  }
-                }
-          ));
+            Iterables.transform(inputPreds.pulledUpPredicates,
+                e -> RexUtil.swapTableReferences(rexBuilder, e,
+                    currentTablesMapping)));
         newPreds = newPreds.union(rexBuilder,
             RelOptPredicateList.of(rexBuilder, updatedPreds));
       }

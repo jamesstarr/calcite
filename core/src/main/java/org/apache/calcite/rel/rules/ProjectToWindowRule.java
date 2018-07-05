@@ -46,10 +46,9 @@ import org.apache.calcite.util.graph.DefaultEdge;
 import org.apache.calcite.util.graph.DirectedGraph;
 import org.apache.calcite.util.graph.TopologicalOrderIterator;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -181,11 +180,8 @@ public abstract class ProjectToWindowRule
           if (!program.projectsOnlyIdentity()) {
             relBuilder.project(
                 Lists.transform(program.getProjectList(),
-                    new Function<RexLocalRef, RexNode>() {
-                      public RexNode apply(RexLocalRef a0) {
-                        return program.expandLocalRef(a0);
-                      }
-                    }),
+                    program::expandLocalRef),
+
                 calc.getRowType().getFieldNames());
           }
           return relBuilder.build();
@@ -319,7 +315,7 @@ public abstract class ProjectToWindowRule
 
           // This RexOver cannot be added into any existing cohort
           if (!isFound) {
-            final Set<Integer> newSet = Sets.newHashSet(i);
+            final Set<Integer> newSet = new HashSet<>(ImmutableList.of(i));
             windowToIndices.add(Pair.of(over.getWindow(), newSet));
           }
         }

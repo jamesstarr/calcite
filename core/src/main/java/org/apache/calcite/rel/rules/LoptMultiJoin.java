@@ -35,7 +35,6 @@ import org.apache.calcite.util.Pair;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -465,8 +464,8 @@ public class LoptMultiJoin {
    * references
    */
   private void setJoinFilterRefs() {
-    fieldsRefByJoinFilter = Maps.newHashMap();
-    factorsRefByJoinFilter = Maps.newHashMap();
+    fieldsRefByJoinFilter = new HashMap<>();
+    factorsRefByJoinFilter = new HashMap<>();
     ListIterator<RexNode> filterIter = allJoinFilters.listIterator();
     while (filterIter.hasNext()) {
       RexNode joinFilter = filterIter.next();

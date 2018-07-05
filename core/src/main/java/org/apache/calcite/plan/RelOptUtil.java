@@ -81,7 +81,6 @@ import org.apache.calcite.rex.RexToSqlNodeConverterImpl;
 import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.rex.RexVisitorImpl;
 import org.apache.calcite.runtime.CalciteContextException;
-import org.apache.calcite.runtime.PredicateImpl;
 import org.apache.calcite.schema.ModifiableView;
 import org.apache.calcite.sql.SqlExplainFormat;
 import org.apache.calcite.sql.SqlExplainLevel;
@@ -103,14 +102,10 @@ import org.apache.calcite.util.mapping.Mapping;
 import org.apache.calcite.util.mapping.MappingType;
 import org.apache.calcite.util.mapping.Mappings;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 import java.io.PrintWriter;
@@ -120,6 +115,7 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -129,6 +125,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 
 /**
  * <code>RelOptUtil</code> defines static utility methods for use in optimizing
@@ -137,49 +134,25 @@ import java.util.TreeSet;
 public abstract class RelOptUtil {
   //~ Static fields/initializers ---------------------------------------------
 
+  static final boolean B = false;
   public static final double EPSILON = 1.0e-5;
 
-  /** Predicate for whether a filter contains multisets or windowed
-   * aggregates. */
-  public static final Predicate<Filter> FILTER_PREDICATE =
-      new PredicateImpl<Filter>() {
-        public boolean test(Filter filter) {
-          return !(B
-              && RexMultisetUtil.containsMultiset(filter.getCondition(), true)
-              || RexOver.containsOver(filter.getCondition()));
-        }
-      };
+  @SuppressWarnings("Guava")
+  @Deprecated // to be removed before 2.0
+  public static final com.google.common.base.Predicate<Filter>
+      FILTER_PREDICATE =
+      RelOptUtil::containsMultisetOrWindowedAgg;
 
-  /** Predicate for whether a project contains multisets or windowed
-   * aggregates. */
-  public static final Predicate<Project> PROJECT_PREDICATE =
-      new PredicateImpl<Project>() {
-        public boolean test(Project project) {
-          return !(B
-              && RexMultisetUtil.containsMultiset(project.getProjects(), true)
-              || RexOver.containsOver(project.getProjects(), null));
-        }
-      };
+  @SuppressWarnings("Guava")
+  @Deprecated // to be removed before 2.0
+  public static final com.google.common.base.Predicate<Project>
+      PROJECT_PREDICATE =
+      RelOptUtil::containsMultisetOrWindowedAgg;
 
-  /** Predicate for whether a calc contains multisets or windowed
-   * aggregates. */
-  public static final Predicate<Calc> CALC_PREDICATE =
-      new PredicateImpl<Calc>() {
-        public boolean test(Calc calc) {
-          return !(B
-              && RexMultisetUtil.containsMultiset(calc.getProgram())
-              || calc.getProgram().containsAggs());
-        }
-      };
-
-  static final boolean B = false;
-
-  private static final Function<RelDataTypeField, RelDataType> GET_TYPE =
-      new Function<RelDataTypeField, RelDataType>() {
-        public RelDataType apply(RelDataTypeField field) {
-          return field.getType();
-        }
-      };
+  @SuppressWarnings("Guava")
+  @Deprecated // to be removed before 2.0
+  public static final com.google.common.base.Predicate<Calc> CALC_PREDICATE =
+      RelOptUtil::containsMultisetOrWindowedAgg;
 
   //~ Methods ----------------------------------------------------------------
 
@@ -247,11 +220,8 @@ public abstract class RelOptUtil {
    */
   public static List<String> findAllTableQualifiedNames(RelNode rel) {
     return Lists.transform(findAllTables(rel),
-        new Function<RelOptTable, String>() {
-          @Override public String apply(RelOptTable arg0) {
-            return arg0.getQualifiedName().toString();
-          }
-        });
+        table -> table.getQualifiedName().toString());
+
   }
 
   /**
@@ -350,7 +320,7 @@ public abstract class RelOptUtil {
    * @see org.apache.calcite.rel.type.RelDataType#getFieldNames()
    */
   public static List<RelDataType> getFieldTypeList(final RelDataType type) {
-    return Lists.transform(type.getFieldList(), GET_TYPE);
+    return Lists.transform(type.getFieldList(), RelDataTypeField::getType);
   }
 
   public static boolean areRowTypesEqual(
@@ -642,7 +612,7 @@ public abstract class RelOptUtil {
     if (!outerJoin) {
       final LogicalAggregate aggregate =
           LogicalAggregate.create(ret, ImmutableList.of(), ImmutableBitSet.range(keyCount), null,
-              ImmutableList.<AggregateCall>of());
+              ImmutableList.of());
       return new Exists(aggregate, false, false);
     }
 
@@ -704,7 +674,7 @@ public abstract class RelOptUtil {
       assert inputField.getType().equals(outputField.getType());
       final RexBuilder rexBuilder = rel.getCluster().getRexBuilder();
       renames.add(
-          Pair.<RexNode, String>of(
+          Pair.of(
               rexBuilder.makeInputRef(inputField.getType(),
                   inputField.getIndex()),
               outputField.getName()));
@@ -910,7 +880,7 @@ public abstract class RelOptUtil {
     return LogicalAggregate.create(rel,
         ImmutableList.of(),
         ImmutableBitSet.range(rel.getRowType().getFieldCount()), null,
-        ImmutableList.<AggregateCall>of());
+        ImmutableList.of());
   }
 
   @Deprecated // to be removed before 2.0
@@ -1019,7 +989,6 @@ public abstract class RelOptUtil {
         rightKeys,
         filterNulls,
         nonEquiList);
-
   }
 
   @Deprecated // to be removed before 2.0
@@ -1937,7 +1906,7 @@ public abstract class RelOptUtil {
       for (int fieldIndex : outputProj) {
         final RelDataTypeField field = joinOutputFields.get(fieldIndex);
         newProjects.add(
-            Pair.<RexNode, String>of(
+            Pair.of(
                 rexBuilder.makeInputRef(field.getType(), fieldIndex),
                 field.getName()));
       }
@@ -2492,7 +2461,7 @@ public abstract class RelOptUtil {
     final RexBuilder rexBuilder = new RexBuilder(typeFactory);
     final RexNode constraint =
         modifiableViewTable.getConstraint(rexBuilder, targetRowType);
-    final Map<Integer, RexNode> projectMap = Maps.newHashMap();
+    final Map<Integer, RexNode> projectMap = new HashMap<>();
     final List<RexNode> filters = new ArrayList<>();
     RelOptUtil.inferViewPredicates(projectMap, filters, constraint);
     assert filters.isEmpty();
@@ -2639,7 +2608,7 @@ public abstract class RelOptUtil {
     ImmutableBitSet rightBitmap =
         ImmutableBitSet.range(nSysFields + nFieldsLeft, nTotalFields);
 
-    final List<RexNode> filtersToRemove = Lists.newArrayList();
+    final List<RexNode> filtersToRemove = new ArrayList<>();
     for (RexNode filter : filters) {
       final InputFinder inputFinder = InputFinder.analyze(filter);
       final ImmutableBitSet inputBits = inputFinder.build();
@@ -2906,7 +2875,7 @@ public abstract class RelOptUtil {
 
     // create new copies of the bitmaps
     List<RelNode> multiJoinInputs = multiJoin.getInputs();
-    List<BitSet> newProjFields = Lists.newArrayList();
+    List<BitSet> newProjFields = new ArrayList<>();
     for (RelNode multiJoinInput : multiJoinInputs) {
       newProjFields.add(
           new BitSet(multiJoinInput.getRowType().getFieldCount()));
@@ -2937,7 +2906,7 @@ public abstract class RelOptUtil {
         multiJoin.isFullOuterJoin(),
         multiJoin.getOuterJoinConditions(),
         multiJoin.getJoinTypes(),
-        Lists.transform(newProjFields, ImmutableBitSet.FROM_BIT_SET),
+        Lists.transform(newProjFields, ImmutableBitSet::fromBitSet),
         multiJoin.getJoinFieldRefCountsMap(),
         multiJoin.getPostJoinFilter());
   }
@@ -3312,8 +3281,8 @@ public abstract class RelOptUtil {
     if (mapping.isIdentity()) {
       return rel;
     }
-    final List<String> outputNameList = Lists.newArrayList();
-    final List<RexNode> exprList = Lists.newArrayList();
+    final List<String> outputNameList = new ArrayList<>();
+    final List<RexNode> exprList = new ArrayList<>();
     final List<RelDataTypeField> fields = rel.getRowType().getFieldList();
     final RexBuilder rexBuilder = rel.getCluster().getRexBuilder();
     for (int i = 0; i < mapping.getTargetCount(); i++) {
@@ -3327,6 +3296,30 @@ public abstract class RelOptUtil {
       exprList.add(rexBuilder.makeInputRef(rel, source));
     }
     return projectFactory.createProject(rel, ImmutableList.of(), exprList, outputNameList);
+  }
+
+  /** Predicate for whether a {@link Calc} contains multisets or windowed
+   * aggregates. */
+  public static boolean containsMultisetOrWindowedAgg(Calc calc) {
+    return !(B
+        && RexMultisetUtil.containsMultiset(calc.getProgram())
+        || calc.getProgram().containsAggs());
+  }
+
+  /** Predicate for whether a {@link Filter} contains multisets or windowed
+   * aggregates. */
+  public static boolean containsMultisetOrWindowedAgg(Filter filter) {
+    return !(B
+        && RexMultisetUtil.containsMultiset(filter.getCondition(), true)
+        || RexOver.containsOver(filter.getCondition()));
+  }
+
+  /** Predicate for whether a {@link Project} contains multisets or windowed
+   * aggregates. */
+  public static boolean containsMultisetOrWindowedAgg(Project project) {
+    return !(B
+        && RexMultisetUtil.containsMultiset(project.getProjects(), true)
+        || RexOver.containsOver(project.getProjects(), null));
   }
 
   /** Policies for handling two- and three-valued boolean logic. */
@@ -3440,7 +3433,7 @@ public abstract class RelOptUtil {
             public Pair<RexNode, String> get(int index) {
               if (index < leftCount) {
                 RelDataTypeField field = fields.get(index);
-                return Pair.<RexNode, String>of(
+                return Pair.of(
                     new RexInputRef(index, field.getType()), field.getName());
               } else {
                 return Pair.of(extraLeftExprs.get(index - leftCount), null);
@@ -3464,7 +3457,7 @@ public abstract class RelOptUtil {
             public Pair<RexNode, String> get(int index) {
               if (index < rightCount) {
                 RelDataTypeField field = fields.get(index);
-                return Pair.<RexNode, String>of(
+                return Pair.of(
                     new RexInputRef(index, field.getType()),
                     field.getName());
               } else {
@@ -3484,7 +3477,6 @@ public abstract class RelOptUtil {
     relBuilder.push(
         originalJoin.copy(originalJoin.getTraitSet(),
             joinCond, left, right, joinType, originalJoin.isSemiJoinDone()));
-
     if (!extraLeftExprs.isEmpty() || !extraRightExprs.isEmpty()) {
       Mappings.TargetMapping mapping =
           Mappings.createShiftMapping(

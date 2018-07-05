@@ -34,7 +34,6 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.ImmutableList;
@@ -51,6 +50,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -82,12 +82,13 @@ public class RexSimplify {
   private RexSimplify(RexBuilder rexBuilder, RelOptPredicateList predicates,
       boolean unknownAsFalse, boolean predicateElimination, boolean paranoid,
       RexExecutor executor) {
-    this.rexBuilder = Preconditions.checkNotNull(rexBuilder);
-    this.predicates = Preconditions.checkNotNull(predicates);
+    this.rexBuilder = Objects.requireNonNull(rexBuilder);
+    this.predicates = Objects.requireNonNull(predicates);
+
     this.unknownAsFalse = unknownAsFalse;
     this.predicateElimination = predicateElimination;
     this.paranoid = paranoid;
-    this.executor = Preconditions.checkNotNull(executor);
+    this.executor = Objects.requireNonNull(executor);
   }
 
   @Deprecated // to be removed before 2.0
@@ -1214,8 +1215,8 @@ public class RexSimplify {
         break;
       }
       final List<RexNode> reducedValues = new ArrayList<>();
-      executor.reduce(rexBuilder, ImmutableList.<RexNode>of(e), reducedValues);
-      return Preconditions.checkNotNull(
+      executor.reduce(rexBuilder, ImmutableList.of(e), reducedValues);
+      return Objects.requireNonNull(
           Iterables.getOnlyElement(reducedValues));
     default:
       return e;
@@ -1554,9 +1555,9 @@ public class RexSimplify {
     final RexLiteral literal;
 
     public Comparison(RexNode ref, SqlKind kind, RexLiteral literal) {
-      this.ref = Preconditions.checkNotNull(ref);
-      this.kind = Preconditions.checkNotNull(kind);
-      this.literal = Preconditions.checkNotNull(literal);
+      this.ref = Objects.requireNonNull(ref);
+      this.kind = Objects.requireNonNull(kind);
+      this.literal = Objects.requireNonNull(literal);
     }
 
     /**
@@ -1615,8 +1616,8 @@ public class RexSimplify {
     final SqlKind kind;
 
     private IsPredicate(RexNode ref, SqlKind kind) {
-      this.ref = Preconditions.checkNotNull(ref);
-      this.kind = Preconditions.checkNotNull(kind);
+      this.ref = Objects.requireNonNull(ref);
+      this.kind = Objects.requireNonNull(kind);
     }
 
   /**

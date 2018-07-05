@@ -25,6 +25,7 @@ import org.apache.calcite.util.Util;
 import com.google.common.base.Preconditions;
 
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 
 /**
@@ -67,7 +68,7 @@ public class RexOver extends RexCall {
       boolean distinct) {
     super(type, op, operands);
     Preconditions.checkArgument(op.isAggregator());
-    this.window = Preconditions.checkNotNull(window);
+    this.window = Objects.requireNonNull(window);
     this.distinct = distinct;
   }
 
@@ -95,6 +96,7 @@ public class RexOver extends RexCall {
       sb.append("DISTINCT ");
     }
     appendOperands(sb);
+
     sb.append(")");
     if (withType) {
       sb.append(":");

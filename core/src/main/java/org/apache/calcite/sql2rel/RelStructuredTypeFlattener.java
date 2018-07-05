@@ -77,13 +77,12 @@ import org.apache.calcite.util.ReflectiveVisitor;
 import org.apache.calcite.util.Util;
 import org.apache.calcite.util.mapping.Mappings;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.SortedSetMultimap;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -136,7 +135,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
   private final RexBuilder rexBuilder;
   private final boolean restructure;
 
-  private final Map<RelNode, RelNode> oldToNewRelMap = Maps.newHashMap();
+  private final Map<RelNode, RelNode> oldToNewRelMap = new HashMap<>();
   private RelNode currentRel;
   private int iRestructureInput;
   private RelDataType flattenedRootType;
@@ -227,7 +226,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
    *         into original structure to return correct type for client
    */
   private List<RexNode> restructureFields(RelDataType structuredType) {
-    final List<RexNode> structuringExps = Lists.newArrayList();
+    final List<RexNode> structuringExps = new ArrayList<>();
     for (RelDataTypeField field : structuredType.getFieldList()) {
       final RelDataType fieldType = field.getType();
       RexNode expr;
@@ -330,11 +329,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
   private Mappings.TargetMapping getNewForOldInputMapping(RelNode oldRel) {
     final RelNode newRel = getNewForOldRel(oldRel);
     return Mappings.target(
-        new Function<Integer, Integer>() {
-          public Integer apply(Integer oldInput) {
-            return getNewForOldInput(oldInput);
-          }
-        },
+        this::getNewForOldInput,
         oldRel.getRowType().getFieldCount(),
         newRel.getRowType().getFieldCount());
   }
@@ -517,7 +512,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
     }
 
     // Convert the projections.
-    final List<Pair<RexNode, String>> flattenedExpList = Lists.newArrayList();
+    final List<Pair<RexNode, String>> flattenedExpList = new ArrayList<>();
     List<String> fieldNames = rel.getRowType().getFieldNames();
     flattenProjections(new RewriteRexShuttle(),
         program.getProjectList(),
@@ -609,7 +604,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
         }
         flattenProjections(shuttle,
             call.getOperands(),
-            Collections.<String>nCopies(call.getOperands().size(), null),
+            Collections.nCopies(call.getOperands().size(), null),
             fieldName,
             flattenedExps);
       } else if (exp instanceof RexCall) {
@@ -930,7 +925,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
         RexBuilder rexBuilder,
         SqlOperator op,
         List<RexNode> exprs) {
-      final List<Pair<RexNode, String>> flattenedExps = Lists.newArrayList();
+      final List<Pair<RexNode, String>> flattenedExps = new ArrayList<>();
       flattenProjections(this, exprs, null, "", flattenedExps);
       int n = flattenedExps.size() / 2;
       boolean negate = false;

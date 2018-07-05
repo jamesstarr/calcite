@@ -21,7 +21,6 @@ import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.Util;
 import org.apache.calcite.util.mapping.Mappings;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -43,7 +42,7 @@ public class RelCollations {
    */
   public static final RelCollation EMPTY =
       RelCollationTraitDef.INSTANCE.canonize(
-          new RelCollationImpl(ImmutableList.<RelFieldCollation>of()));
+          new RelCollationImpl(ImmutableList.of()));
 
   /**
    * A collation that cannot be replicated by applying a sort. The only
@@ -134,12 +133,7 @@ public class RelCollations {
   /** Returns the indexes of the fields in a list of field collations. */
   public static List<Integer> ordinals(
       List<RelFieldCollation> fieldCollations) {
-    return Lists.transform(fieldCollations,
-        new Function<RelFieldCollation, Integer>() {
-          public Integer apply(RelFieldCollation input) {
-            return input.getFieldIndex();
-          }
-        });
+    return Lists.transform(fieldCollations, RelFieldCollation::getFieldIndex);
   }
 
   /** Returns whether a collation indicates that the collection is sorted on

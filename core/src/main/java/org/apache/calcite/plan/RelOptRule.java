@@ -22,13 +22,12 @@ import org.apache.calcite.rel.convert.ConverterRule;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.tools.RelBuilderFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -96,8 +95,8 @@ public abstract class RelOptRule {
    */
   public RelOptRule(RelOptRuleOperand operand,
       RelBuilderFactory relBuilderFactory, String description) {
-    this.operand = Preconditions.checkNotNull(operand);
-    this.relBuilderFactory = Preconditions.checkNotNull(relBuilderFactory);
+    this.operand = Objects.requireNonNull(operand);
+    this.relBuilderFactory = Objects.requireNonNull(relBuilderFactory);
     if (description == null) {
       description = guessDescription(getClass().getName());
     }
@@ -633,11 +632,7 @@ public abstract class RelOptRule {
   protected static List<RelNode> convertList(List<RelNode> rels,
       final RelTrait trait) {
     return Lists.transform(rels,
-        new Function<RelNode, RelNode>() {
-          public RelNode apply(RelNode rel) {
-            return convert(rel, rel.getTraitSet().replace(trait));
-          }
-        });
+        rel -> convert(rel, rel.getTraitSet().replace(trait)));
   }
 
   /**
@@ -680,7 +675,7 @@ public abstract class RelOptRule {
     <R extends RelNode> ConverterRelOptRuleOperand(Class<R> clazz, RelTrait in,
         Predicate<? super R> predicate) {
       super(clazz, in, predicate, RelOptRuleOperandChildPolicy.ANY,
-          ImmutableList.<RelOptRuleOperand>of());
+          ImmutableList.of());
     }
 
     public boolean matches(RelNode rel) {

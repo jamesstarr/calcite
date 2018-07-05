@@ -78,7 +78,7 @@ public class SqlTestGen {
         list.add(method);
       }
     }
-    return list.toArray(new Method[list.size()]);
+    return list.toArray(new Method[0]);
   }
 
   //~ Inner Classes ----------------------------------------------------------

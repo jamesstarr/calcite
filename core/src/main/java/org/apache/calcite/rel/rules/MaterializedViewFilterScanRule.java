@@ -86,7 +86,7 @@ public class MaterializedViewFilterScanRule
     List<RelOptMaterialization> materializations =
         (planner instanceof VolcanoPlanner)
             ? ((VolcanoPlanner) planner).getMaterializations()
-            : ImmutableList.<RelOptMaterialization>of();
+            : ImmutableList.of();
     if (!materializations.isEmpty()) {
       RelNode root = filter.copy(filter.getTraitSet(),
           Collections.singletonList((RelNode) scan));

@@ -29,7 +29,6 @@ import org.apache.calcite.sql.SqlValuesOperator;
 import org.apache.calcite.sql.fun.SqlRowOperator;
 import org.apache.calcite.sql.util.SqlBasicVisitor;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
@@ -98,13 +97,12 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
-import javax.annotation.Nullable;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Miscellaneous utility functions.
@@ -151,16 +149,11 @@ public class Util {
    * Maps classes to the map of their enum values. Uses a weak map so that
    * classes are not prevented from being unloaded.
    */
+  @SuppressWarnings("unchecked")
   private static final LoadingCache<Class, Map<String, Enum>> ENUM_CONSTANTS =
       CacheBuilder.newBuilder()
           .weakKeys()
-          .build(
-              new CacheLoader<Class, Map<String, Enum>>() {
-                @Override public Map<String, Enum> load(Class clazz) {
-                  //noinspection unchecked
-                  return enumConstants(clazz);
-                }
-              });
+          .build(CacheLoader.from(Util::enumConstants));
 
   //~ Methods ----------------------------------------------------------------
   /**
@@ -823,7 +816,7 @@ public class Util {
    * but we don't require Guava version 20 yet. */
   public static void throwIfUnchecked(Throwable throwable) {
     Bug.upgrade("Remove when minimum Guava version is 20");
-    checkNotNull(throwable);
+    Objects.requireNonNull(throwable);
     if (throwable instanceof RuntimeException) {
       throw (RuntimeException) throwable;
     }
@@ -935,7 +928,7 @@ public class Util {
   }
 
   /** @deprecated Use {@link Preconditions#checkArgument}
-   * or {@link Preconditions#checkNotNull(Object)} */
+   * or {@link Objects#requireNonNull(Object)} */
   @Deprecated // to be removed before 2.0
   public static void pre(boolean b, String description) {
     if (!b) {
@@ -944,7 +937,7 @@ public class Util {
   }
 
   /** @deprecated Use {@link Preconditions#checkArgument}
-   * or {@link Preconditions#checkNotNull(Object)} */
+   * or {@link Objects#requireNonNull(Object)} */
   @Deprecated // to be removed before 2.0
   public static void post(boolean b, String description) {
     if (!b) {
@@ -1670,11 +1663,8 @@ public class Util {
   public static <E> Iterable<E> cast(
       final Iterable<? super E> iterable,
       final Class<E> clazz) {
-    return new Iterable<E>() {
-      public Iterator<E> iterator() {
-        return cast(iterable.iterator(), clazz);
-      }
-    };
+    return () -> cast(iterable.iterator(), clazz);
+
   }
 
   /**
@@ -1698,11 +1688,8 @@ public class Util {
   public static <E> Iterable<E> filter(
       final Iterable<?> iterable,
       final Class<E> includeFilter) {
-    return new Iterable<E>() {
-      public Iterator<E> iterator() {
-        return new Filterator<>(iterable.iterator(), includeFilter);
-      }
-    };
+    return () -> new Filterator<>(iterable.iterator(), includeFilter);
+
   }
 
   public static <E> Collection<E> filter(
@@ -1965,7 +1952,7 @@ public class Util {
   }
 
   public static <T> Iterable<T> orEmpty(Iterable<T> v0) {
-    return v0 != null ? v0 : ImmutableList.<T>of();
+    return v0 != null ? v0 : ImmutableList.of();
   }
 
   /** Returns the last element of a list.
@@ -2272,16 +2259,11 @@ public class Util {
    * @param <V> Value type
    * @return Map that is a view onto the values
    */
-  public static <K, V> Map<K, V> asIndexMap(
+  public static <K, V> Map<K, V> asIndexMapJ(
       final Collection<V> values,
       final Function<V, K> function) {
     final Collection<Map.Entry<K, V>> entries =
-        Collections2.transform(values,
-            new Function<V, Map.Entry<K, V>>() {
-              public Map.Entry<K, V> apply(@Nullable V input) {
-                return Pair.of(function.apply(input), input);
-              }
-            });
+        Collections2.transform(values, v -> Pair.of(function.apply(v), v));
     final Set<Map.Entry<K, V>> entrySet =
         new AbstractSet<Map.Entry<K, V>>() {
           public Iterator<Map.Entry<K, V>> iterator() {
@@ -2297,6 +2279,14 @@ public class Util {
         return entrySet;
       }
     };
+  }
+
+  @SuppressWarnings("Guava")
+  @Deprecated
+  public static <K, V> Map<K, V> asIndexMap(
+      final Collection<V> values,
+      final com.google.common.base.Function<V, K> function) {
+    return asIndexMapJ(values, function::apply);
   }
 
   /**
@@ -2360,7 +2350,8 @@ public class Util {
     if (n == 0) {
       // Lists are already immutable. Furthermore, if the outer list is
       // immutable we will just return "lists" unchanged.
-      return ImmutableList.copyOf((Iterable) lists);
+      //noinspection unchecked
+      return ImmutableList.copyOf((Iterable<List<E>>) lists);
     }
     final ImmutableList.Builder<List<E>> builder =
         ImmutableList.builder();

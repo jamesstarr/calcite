@@ -40,7 +40,6 @@ import org.apache.calcite.util.Util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import java.nio.charset.Charset;
@@ -48,6 +47,7 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.apache.calcite.rel.type.RelDataTypeImpl.NON_NULLABLE_SUFFIX;
@@ -70,7 +70,7 @@ public abstract class SqlTypeUtil {
     assert argTypes.size() >= 2;
 
     // Filter out ANY and NULL elements.
-    List<RelDataType> argTypes2 = Lists.newArrayList();
+    List<RelDataType> argTypes2 = new ArrayList<>();
     for (RelDataType t : argTypes) {
       if (!isAny(t) && !isNull(t)) {
         argTypes2.add(t);
@@ -228,7 +228,7 @@ public abstract class SqlTypeUtil {
       final RelDataTypeFactory typeFactory,
       final List<RelDataType> argTypes,
       RelDataType type) {
-    Preconditions.checkNotNull(type);
+    Objects.requireNonNull(type);
     if (containsNullable(argTypes)) {
       type = typeFactory.createTypeWithNullability(type, true);
     }
@@ -1313,8 +1313,8 @@ public abstract class SqlTypeUtil {
   public static RelDataType createEmptyStructType(
       RelDataTypeFactory typeFactory) {
     return typeFactory.createStructType(
-        ImmutableList.<RelDataType>of(),
-        ImmutableList.<String>of());
+        ImmutableList.of(),
+        ImmutableList.of());
   }
 
   /** Returns whether a type is flat. It is not flat if it is a record type that
@@ -1587,7 +1587,7 @@ public abstract class SqlTypeUtil {
         // All arguments are of same family. No need for explicit casts.
         return null;
       }
-      final List<RelDataType> nonCharacterTypes = Lists.newArrayList();
+      final List<RelDataType> nonCharacterTypes = new ArrayList<>();
       for (RelDataType type : types) {
         if (type.getFamily() != SqlTypeFamily.CHARACTER) {
           nonCharacterTypes.add(type);

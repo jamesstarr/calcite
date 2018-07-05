@@ -154,7 +154,7 @@ public class JoinProjectTransposeRule
             JoinRelType.INNER,
             joinRel.getCluster().getTypeFactory(),
             null,
-            Collections.<RelDataTypeField>emptyList());
+            Collections.emptyList());
 
     // Create projection expressions, combining the projection expressions
     // from the projects that feed into the join.  For the RHS projection

@@ -17,7 +17,6 @@
 package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.RelOptCluster;
-
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
@@ -34,10 +33,10 @@ import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.ImmutableIntList;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Planner rule that creates a {@code SemiJoin} from a
@@ -97,7 +96,7 @@ public abstract class SemiJoinRule
     switch (join.getJoinType()) {
     case SEMI:
     case INNER:
-      final List<Integer> newRightKeyBuilder = Lists.newArrayList();
+      final List<Integer> newRightKeyBuilder = new ArrayList<>();
       final List<Integer> aggregateKeys = aggregate.getGroupSet().asList();
       for (int key : joinInfo.rightKeys) {
         newRightKeyBuilder.add(aggregateKeys.get(key));

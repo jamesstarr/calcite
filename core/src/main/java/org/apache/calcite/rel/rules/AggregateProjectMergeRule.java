@@ -34,6 +34,7 @@ import org.apache.calcite.util.mapping.Mappings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,7 +136,7 @@ public class AggregateProjectMergeRule
     final List<Integer> newKeys =
         Lists.transform(aggregate.getGroupSet().asList(), map::get);
     if (!newKeys.equals(newGroupSet.asList())) {
-      final List<Integer> posList = Lists.newArrayList();
+      final List<Integer> posList = new ArrayList<>();
       for (int newKey : newKeys) {
         posList.add(newGroupSet.indexOf(newKey));
       }
@@ -167,5 +168,4 @@ public class AggregateProjectMergeRule
     }
   }
 }
-
 // End AggregateProjectMergeRule.java

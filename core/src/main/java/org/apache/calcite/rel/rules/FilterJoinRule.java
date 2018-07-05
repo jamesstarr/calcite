@@ -33,12 +33,13 @@ import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBeans;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import static org.apache.calcite.plan.RelOptUtil.conjunctions;
 
 /**
  * Planner rule that pushes filters above and
@@ -86,8 +87,8 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
 
     final List<RexNode> aboveFilters =
         filter != null
-            ? RelOptUtil.conjunctions(filter.getCondition())
-            : Lists.<RexNode>newArrayList();
+            ? conjunctions(filter.getCondition())
+            : new ArrayList<>();
     final ImmutableList<RexNode> origAboveFilters =
         ImmutableList.copyOf(aboveFilters);
 

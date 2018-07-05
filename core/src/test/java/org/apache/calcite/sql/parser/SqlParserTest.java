@@ -563,11 +563,7 @@ public class SqlParserTest {
   private static final String ANY = "(?s).*";
 
   private static final ThreadLocal<boolean[]> LINUXIFY =
-      new ThreadLocal<boolean[]>() {
-        @Override protected boolean[] initialValue() {
-          return new boolean[] {true};
-        }
-      };
+      ThreadLocal.withInitial(() -> new boolean[] {true});
 
   private static final SqlWriterConfig SQL_WRITER_CONFIG =
       SqlPrettyWriter.config()

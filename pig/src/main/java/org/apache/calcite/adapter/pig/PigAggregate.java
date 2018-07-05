@@ -27,7 +27,7 @@ import org.apache.calcite.util.ImmutableBitSet;
 
 import org.apache.pig.scripting.Pig;
 
-import com.google.common.base.Joiner;
+
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
@@ -106,8 +106,8 @@ public class PigAggregate extends Aggregate implements PigRel {
       for (int fieldIndex : groupedFieldIndexes) {
         groupedFieldNames.add(allFields.get(fieldIndex).getName());
       }
-      return relAlias + " = GROUP " + relAlias + " BY (" + Joiner.on(", ").join(groupedFieldNames)
-          + ");";
+      return relAlias + " = GROUP " + relAlias + " BY ("
+          + String.join(", ", groupedFieldNames) + ");";
     }
   }
 
@@ -123,7 +123,7 @@ public class PigAggregate extends Aggregate implements PigRel {
     final String generateCall = getPigGenerateCall(implementor);
     final List<String> distinctCalls = getDistinctCalls(implementor);
     return relAlias + " = FOREACH " + relAlias + " {\n"
-        + Joiner.on(";\n").join(distinctCalls) + generateCall + "\n};";
+        + String.join(";\n", distinctCalls) + generateCall + "\n};";
   }
 
   private String getPigGenerateCall(Implementor implementor) {
@@ -141,7 +141,7 @@ public class PigAggregate extends Aggregate implements PigRel {
     List<String> allFields = new ArrayList<>(groupFields.size() + pigAggCalls.size());
     allFields.addAll(groupFields);
     allFields.addAll(pigAggCalls);
-    return "  GENERATE " + Joiner.on(", ").join(allFields) + ';';
+    return "  GENERATE " + String.join(", ", allFields) + ';';
   }
 
   private List<String> getPigAggregateCalls(Implementor implementor) {
@@ -156,7 +156,7 @@ public class PigAggregate extends Aggregate implements PigRel {
   private String getPigAggregateCall(String relAlias, AggregateCall aggCall) {
     final PigAggFunction aggFunc = toPigAggFunc(aggCall);
     final String alias = aggCall.getName();
-    final String fields = Joiner.on(", ").join(getArgNames(relAlias, aggCall));
+    final String fields = String.join(", ", getArgNames(relAlias, aggCall));
     return aggFunc.name() + "(" + fields + ") AS " + alias;
   }
 

@@ -42,7 +42,7 @@ public abstract class InferTypes {
   public static final SqlOperandTypeInference FIRST_KNOWN =
       (callBinding, returnType, operandTypes) -> {
         final RelDataType unknownType =
-              callBinding.getValidator().getUnknownType();
+            callBinding.getValidator().getUnknownType();
         RelDataType knownType = unknownType;
         for (SqlNode operand : callBinding.operands()) {
           knownType = callBinding.getValidator().deriveType(
@@ -86,7 +86,7 @@ public abstract class InferTypes {
         RelDataTypeFactory typeFactory = callBinding.getTypeFactory();
         for (int i = 0; i < operandTypes.length; ++i) {
           operandTypes[i] =
-             typeFactory.createSqlType(SqlTypeName.BOOLEAN);
+              typeFactory.createSqlType(SqlTypeName.BOOLEAN);
         }
       };
 
@@ -154,5 +154,4 @@ public abstract class InferTypes {
     return new ExplicitOperandTypeInference(ImmutableList.copyOf(types));
   }
 }
-
 // End InferTypes.java

@@ -178,16 +178,12 @@ import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 import org.apache.calcite.util.trace.CalciteTrace;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import org.slf4j.Logger;
 
@@ -207,10 +203,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.annotation.Nonnull;
@@ -334,7 +332,7 @@ public class SqlToRelConverter {
     this.config = new ConfigBuilder().withConfig(config).build();
     this.relBuilder = config.getRelBuilderFactory().create(cluster, null);
     this.hintStrategies = config.getHintStrategyTable();
-    this.cluster = Preconditions.checkNotNull(cluster)
+    this.cluster = Objects.requireNonNull(cluster)
         .withHintStrategies(this.hintStrategies);
   }
 
@@ -779,9 +777,9 @@ public class SqlToRelConverter {
         return;
       }
 
-      final Map<Integer, Integer> squished = Maps.newHashMap();
+      final Map<Integer, Integer> squished = new HashMap<>();
       final List<RelDataTypeField> fields = rel.getRowType().getFieldList();
-      final List<Pair<RexNode, String>> newProjects = Lists.newArrayList();
+      final List<Pair<RexNode, String>> newProjects = new ArrayList<>();
       for (int i = 0; i < fields.size(); i++) {
         if (origins.get(i) == i) {
           squished.put(i, newProjects.size());
@@ -797,7 +795,7 @@ public class SqlToRelConverter {
 
       // Create the expressions to reverse the mapping.
       // Project($0, $1, $0, $2).
-      final List<Pair<RexNode, String>> undoProjects = Lists.newArrayList();
+      final List<Pair<RexNode, String>> undoProjects = new ArrayList<>();
       for (int i = 0; i < fields.size(); i++) {
         final int origin = origins.get(i);
         RelDataTypeField field = fields.get(i);
@@ -823,7 +821,7 @@ public class SqlToRelConverter {
     final ImmutableBitSet groupSet =
         ImmutableBitSet.range(rel.getRowType().getFieldCount());
     rel = createAggregate(bb, groupSet, ImmutableList.of(groupSet),
-        ImmutableList.<AggregateCall>of());
+        ImmutableList.of());
 
     bb.setRoot(
         rel,
@@ -1112,7 +1110,7 @@ public class SqlToRelConverter {
       final List<RexNode> leftKeys;
       switch (leftKeyNode.getKind()) {
       case ROW:
-        leftKeys = Lists.newArrayList();
+        leftKeys = new ArrayList<>();
         for (SqlNode sqlExpr : ((SqlBasicCall) leftKeyNode).getOperandList()) {
           leftKeys.add(bb.convertExpression(sqlExpr));
         }
@@ -1517,14 +1515,11 @@ public class SqlToRelConverter {
                 rexBuilder,
                 Iterables.transform(
                     Pair.zip(leftKeys, call.getOperandList()),
-                    new Function<Pair<RexNode, SqlNode>, RexNode>() {
-                      public RexNode apply(Pair<RexNode, SqlNode> pair) {
-                        return rexBuilder.makeCall(comparisonOp,
-                            pair.left,
-                            ensureSqlType(pair.left.getType(),
-                                bb.convertExpression(pair.right)));
-                      }
-                    }),
+                    pair -> rexBuilder.makeCall(comparisonOp, pair.left,
+
+                        ensureSqlType(pair.left.getType(),
+                            bb.convertExpression(pair.right)))),
+
                 false);
       }
       comparisons.add(rexComparison);
@@ -2121,8 +2116,8 @@ public class SqlToRelConverter {
 
     case JOIN:
       convertJoin(bb, (SqlJoin) from);
-      return;
 
+      return;
     case SELECT:
     case INTERSECT:
     case EXCEPT:
@@ -2227,7 +2222,7 @@ public class SqlToRelConverter {
         new SqlBasicVisitor<RexNode>() {
           @Override public RexNode visit(SqlCall call) {
             List<SqlNode> operands = call.getOperandList();
-            List<RexNode> newOperands = Lists.newArrayList();
+            List<RexNode> newOperands = new ArrayList<>();
             for (SqlNode node : operands) {
               newOperands.add(node.accept(this));
             }
@@ -2259,7 +2254,7 @@ public class SqlToRelConverter {
 
     // convert subset
     final SqlNodeList subsets = matchRecognize.getSubsetList();
-    final Map<String, TreeSet<String>> subsetMap = Maps.newHashMap();
+    final Map<String, TreeSet<String>> subsetMap = new HashMap<>();
     for (SqlNode node : subsets) {
       List<SqlNode> operands = ((SqlCall) node).getOperandList();
       SqlIdentifier left = (SqlIdentifier) operands.get(0);
@@ -2678,7 +2673,7 @@ public class SqlToRelConverter {
       return null;
     }
     final ImmutableBitSet.Builder requiredColumns = ImmutableBitSet.builder();
-    final List<CorrelationId> correlNames = Lists.newArrayList();
+    final List<CorrelationId> correlNames = new ArrayList<>();
 
     // All correlations must refer the same namespace since correlation
     // produces exactly one correlation source.
@@ -2921,7 +2916,6 @@ public class SqlToRelConverter {
             rightNamespace.getRowType());
     return convertUsing(leftNamespace, rightNamespace, columnList);
   }
-
   private RexNode convertUsingCondition(
       SqlJoin join,
       SqlValidatorNamespace leftNamespace,
@@ -2936,6 +2930,7 @@ public class SqlToRelConverter {
       nameList.add(name);
     }
     return convertUsing(leftNamespace, rightNamespace, nameList);
+
   }
 
   /**
@@ -3000,7 +2995,7 @@ public class SqlToRelConverter {
       SqlValidatorNamespace rightNamespace,
       List<String> nameList) {
     final SqlNameMatcher nameMatcher = catalogReader.nameMatcher();
-    final List<RexNode> list = Lists.newArrayList();
+    final List<RexNode> list = new ArrayList<>();
     for (String name : nameList) {
       List<RexNode> operands = new ArrayList<>();
       int offset = 0;
@@ -3115,7 +3110,7 @@ public class SqlToRelConverter {
     }
 
     final RexNode havingExpr;
-    final List<Pair<RexNode, String>> projects = Lists.newArrayList();
+    final List<Pair<RexNode, String>> projects = new ArrayList<>();
 
     try {
       Preconditions.checkArgument(bb.agg == null, "already in agg mode");
@@ -3604,12 +3599,12 @@ public class SqlToRelConverter {
             NullInitializerExpressionFactory.INSTANCE);
 
     // Lazily create a blackboard that contains all non-generated columns.
-    final Supplier<Blackboard> bb = new Supplier<Blackboard>() {
-      public Blackboard get() {
-        RexNode sourceRef = rexBuilder.makeRangeReference(scan);
-        return createInsertBlackboard(table, sourceRef,
-            table.getRowType().getFieldNames());
-      }
+    final Supplier<Blackboard> bb = () -> {
+
+      RexNode sourceRef = rexBuilder.makeRangeReference(scan);
+      return createInsertBlackboard(table, sourceRef,
+          table.getRowType().getFieldNames());
+
     };
 
     int virtualCount = 0;
@@ -3675,10 +3670,10 @@ public class SqlToRelConverter {
     final List<RelDataTypeField> targetFields = targetRowType.getFieldList();
     final List<RexNode> sourceExps =
         new ArrayList<>(
-            Collections.<RexNode>nCopies(targetFields.size(), null));
+            Collections.nCopies(targetFields.size(), null));
     final List<String> fieldNames =
         new ArrayList<>(
-            Collections.<String>nCopies(targetFields.size(), null));
+            Collections.nCopies(targetFields.size(), null));
 
     final InitializerExpressionFactory initializerFactory =
         getInitializerFactory(validator.getNamespace(call).getTable());
@@ -3695,12 +3690,9 @@ public class SqlToRelConverter {
     }
 
     // Lazily create a blackboard that contains all non-generated columns.
-    final Supplier<Blackboard> bb = new Supplier<Blackboard>() {
-      public Blackboard get() {
-        return createInsertBlackboard(targetTable, sourceRef,
-            targetColumnNames);
-      }
-    };
+    final Supplier<Blackboard> bb = () ->
+        createInsertBlackboard(targetTable, sourceRef, targetColumnNames);
+
 
     // Walk the expression list and get default values for any columns
     // that were not supplied in the statement. Get field names too.
@@ -4228,7 +4220,7 @@ public class SqlToRelConverter {
               relNode,
               ImmutableList.of(),
               rexBuilder.makeLiteral(true),
-              ImmutableSet.<CorrelationId>of(),
+              ImmutableSet.of(),
               JoinRelType.INNER,
               false);
     }
@@ -4705,12 +4697,12 @@ public class SqlToRelConverter {
       final RexNode joinCond;
       final int origLeftInputCount = root.getRowType().getFieldCount();
       if (leftKeys != null) {
-        List<RexNode> newLeftInputExprs = Lists.newArrayList();
+        List<RexNode> newLeftInputExprs = new ArrayList<>();
         for (int i = 0; i < origLeftInputCount; i++) {
           newLeftInputExprs.add(rexBuilder.makeInputRef(root, i));
         }
 
-        final List<Integer> leftJoinKeys = Lists.newArrayList();
+        final List<Integer> leftJoinKeys = new ArrayList<>();
         for (RexNode leftKey : leftKeys) {
           int index = newLeftInputExprs.indexOf(leftKey);
           if (index < 0 || joinType == JoinRelType.LEFT) {
@@ -5210,8 +5202,8 @@ public class SqlToRelConverter {
       case CURSOR:
       case IN:
       case NOT_IN:
-        subQuery = Preconditions.checkNotNull(getSubQuery(expr));
-        rex = Preconditions.checkNotNull(subQuery.expr);
+        subQuery = Objects.requireNonNull(getSubQuery(expr));
+        rex = Objects.requireNonNull(subQuery.expr);
         return StandardConvertletTable.castToValidatedType(expr, rex,
             validator, rexBuilder);
 
@@ -5258,7 +5250,7 @@ public class SqlToRelConverter {
 
       // Apply standard conversions.
       rex = expr.accept(this);
-      return Preconditions.checkNotNull(rex);
+      return Objects.requireNonNull(rex);
     }
 
 
@@ -5496,7 +5488,7 @@ public class SqlToRelConverter {
     private final Blackboard bb;
     public final AggregatingSelectScope aggregatingSelectScope;
 
-    private final Map<String, String> nameMap = Maps.newHashMap();
+    private final Map<String, String> nameMap = new HashMap<>();
 
     /**
      * The group-by expressions, in {@link SqlNode} format.
@@ -6010,7 +6002,7 @@ public class SqlToRelConverter {
                 rexBuilder.getTypeFactory(),
                 SqlStdOperatorTable.HISTOGRAM_AGG,
                 exprs,
-                ImmutableList.<RelCollation>of());
+                ImmutableList.of());
 
         RexNode over =
             rexBuilder.makeOver(

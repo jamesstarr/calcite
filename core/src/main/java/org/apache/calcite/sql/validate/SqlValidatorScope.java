@@ -25,8 +25,6 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlWindow;
 import org.apache.calcite.util.Pair;
 
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -35,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Name-resolution scope. Represents any position in a parse tree than an
@@ -240,12 +239,7 @@ public interface SqlValidatorScope {
 
     /** Returns a list ["step1", "step2"]. */
     List<String> stepNames() {
-      return Lists.transform(steps(),
-          new Function<Step, String>() {
-            public String apply(Step input) {
-              return input.name;
-            }
-          });
+      return Lists.transform(steps(), input -> input.name);
     }
 
     protected void build(ImmutableList.Builder<Step> paths) {
@@ -270,11 +264,11 @@ public interface SqlValidatorScope {
 
     Step(Path parent, RelDataType rowType, int i, String name,
         StructKind kind) {
-      this.parent = Preconditions.checkNotNull(parent);
+      this.parent = Objects.requireNonNull(parent);
       this.rowType = rowType; // may be null
       this.i = i;
       this.name = name;
-      this.kind = Preconditions.checkNotNull(kind);
+      this.kind = Objects.requireNonNull(kind);
     }
 
     @Override public int stepCount() {
@@ -324,11 +318,11 @@ public interface SqlValidatorScope {
 
     Resolve(SqlValidatorNamespace namespace, boolean nullable,
         SqlValidatorScope scope, Path path, List<String> remainingNames) {
-      this.namespace = Preconditions.checkNotNull(namespace);
+      this.namespace = Objects.requireNonNull(namespace);
       this.nullable = nullable;
       this.scope = scope;
-      this.path = Preconditions.checkNotNull(path);
-      this.remainingNames = remainingNames == null ? ImmutableList.<String>of()
+      this.path = Objects.requireNonNull(path);
+      this.remainingNames = remainingNames == null ? ImmutableList.of()
           : ImmutableList.copyOf(remainingNames);
     }
 

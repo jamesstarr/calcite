@@ -38,12 +38,12 @@ import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.Util;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -93,9 +93,9 @@ public abstract class Join extends BiRel implements Hintable {
       Set<CorrelationId> variablesSet,
       JoinRelType joinType) {
     super(cluster, traitSet, left, right);
-    this.condition = Preconditions.checkNotNull(condition);
+    this.condition = Objects.requireNonNull(condition);
     this.variablesSet = ImmutableSet.copyOf(variablesSet);
-    this.joinType = Preconditions.checkNotNull(joinType);
+    this.joinType = Objects.requireNonNull(joinType);
     this.hints = ImmutableList.copyOf(hints);
   }
 

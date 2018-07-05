@@ -46,8 +46,8 @@ import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.mapping.AbstractSourceMapping;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -137,7 +137,7 @@ public class AggregateStarTableRule
             + aggregate.getGroupSet());
       }
       assert tileKey.dimensions.contains(aggregate.getGroupSet());
-      final List<AggregateCall> aggCalls = Lists.newArrayList();
+      final List<AggregateCall> aggCalls = new ArrayList<>();
       ImmutableBitSet.Builder groupSet = ImmutableBitSet.builder();
       for (int key : aggregate.getGroupSet()) {
         groupSet.set(tileKey.dimensions.indexOf(key));
@@ -215,7 +215,7 @@ public class AggregateStarTableRule
     // Second, try to satisfy the aggregation based on group set columns.
   tryGroup:
     {
-      List<Integer> newArgs = Lists.newArrayList();
+      List<Integer> newArgs = new ArrayList<>();
       for (Integer arg : aggregateCall.getArgList()) {
         int z = tileKey.dimensions.indexOf(arg);
         if (z < 0) {

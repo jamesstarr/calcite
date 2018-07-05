@@ -18,9 +18,10 @@ package org.apache.calcite.adapter.druid;
 
 import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonGenerator;
 
-import com.google.common.base.Preconditions;
+
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Default implementation of DimensionSpec.
@@ -35,8 +36,8 @@ public class DefaultDimensionSpec implements DimensionSpec {
   private final DruidType outputType;
 
   public DefaultDimensionSpec(String dimension, String outputName, DruidType outputType) {
-    this.dimension = Preconditions.checkNotNull(dimension);
-    this.outputName = Preconditions.checkNotNull(outputName);
+    this.dimension = Objects.requireNonNull(dimension);
+    this.outputName = Objects.requireNonNull(outputName);
     this.outputType = outputType == null ? DruidType.STRING : outputType;
   }
 

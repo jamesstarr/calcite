@@ -35,9 +35,9 @@ import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.Pair;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -133,8 +133,8 @@ public class JoinToMultiJoinRule
 
     // combine the children MultiJoin inputs into an array of inputs
     // for the new MultiJoin
-    final List<ImmutableBitSet> projFieldsList = Lists.newArrayList();
-    final List<int[]> joinFieldRefCountsList = Lists.newArrayList();
+    final List<ImmutableBitSet> projFieldsList = new ArrayList<>();
+    final List<int[]> joinFieldRefCountsList = new ArrayList<>();
     final List<RelNode> newInputs =
         combineInputs(
             origJoin,
@@ -146,7 +146,7 @@ public class JoinToMultiJoinRule
     // combine the outer join information from the left and right
     // inputs, and include the outer join information from the current
     // join, if it's a left/right outer join
-    final List<Pair<JoinRelType, RexNode>> joinSpecs = Lists.newArrayList();
+    final List<Pair<JoinRelType, RexNode>> joinSpecs = new ArrayList<>();
     combineOuterJoins(
         origJoin,
         newInputs,
@@ -205,7 +205,7 @@ public class JoinToMultiJoinRule
       RelNode right,
       List<ImmutableBitSet> projFieldsList,
       List<int[]> joinFieldRefCountsList) {
-    final List<RelNode> newInputs = Lists.newArrayList();
+    final List<RelNode> newInputs = new ArrayList<>();
 
     // leave the null generating sides of an outer join intact; don't
     // pull up those children inputs into the array we're constructing
@@ -389,7 +389,7 @@ public class JoinToMultiJoinRule
     // AND the join condition if this isn't a left or right outer join;
     // in those cases, the outer join condition is already tracked
     // separately
-    final List<RexNode> filters = Lists.newArrayList();
+    final List<RexNode> filters = new ArrayList<>();
     if ((joinType != JoinRelType.LEFT) && (joinType != JoinRelType.RIGHT)) {
       filters.add(joinRel.getCondition());
     }
@@ -487,7 +487,7 @@ public class JoinToMultiJoinRule
     joinCondition.accept(new InputReferenceCounter(joinCondRefCounts));
 
     // first, make a copy of the ref counters
-    final Map<Integer, int[]> refCountsMap = Maps.newHashMap();
+    final Map<Integer, int[]> refCountsMap = new HashMap<>();
     int nInputs = multiJoinInputs.size();
     int currInput = 0;
     for (int[] origRefCounts : origJoinFieldRefCounts) {
@@ -538,7 +538,7 @@ public class JoinToMultiJoinRule
       Join joinRel,
       RelNode left,
       RelNode right) {
-    final List<RexNode> filters = Lists.newArrayList();
+    final List<RexNode> filters = new ArrayList<>();
     if (right instanceof MultiJoin) {
       final MultiJoin multiRight = (MultiJoin) right;
       filters.add(

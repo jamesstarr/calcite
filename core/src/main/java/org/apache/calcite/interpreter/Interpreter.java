@@ -44,7 +44,6 @@ import org.apache.calcite.util.ReflectiveVisitDispatcher;
 import org.apache.calcite.util.ReflectiveVisitor;
 import org.apache.calcite.util.Util;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
@@ -63,6 +62,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 /**
  * Interpreter.
@@ -79,7 +79,7 @@ public class Interpreter extends AbstractEnumerable<Object[]>
 
   /** Creates an Interpreter. */
   public Interpreter(DataContext dataContext, RelNode rootRel) {
-    this.dataContext = Preconditions.checkNotNull(dataContext);
+    this.dataContext = Objects.requireNonNull(dataContext);
     final RelNode rel = optimize(rootRel);
     final CompilerImpl compiler =
         new Nodes.CoreCompiler(this, rootRel.getCluster());
@@ -264,7 +264,7 @@ public class Interpreter extends AbstractEnumerable<Object[]>
     private final Enumerator<Row> enumerator;
 
     EnumeratorSource(final Enumerator<Row> enumerator) {
-      this.enumerator = Preconditions.checkNotNull(enumerator);
+      this.enumerator = Objects.requireNonNull(enumerator);
     }
 
     @Override public Row receive() {

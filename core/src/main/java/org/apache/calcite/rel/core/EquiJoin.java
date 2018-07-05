@@ -22,7 +22,6 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.util.ImmutableIntList;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import java.util.Objects;
@@ -65,8 +64,8 @@ public abstract class EquiJoin extends Join {
       JoinRelType joinType) {
     super(cluster, traits, ImmutableList.of(), left, right, condition, variablesSet, joinType);
     this.joinInfo = JoinInfo.of(left, right, condition);
-    this.leftKeys = Preconditions.checkNotNull(leftKeys);
-    this.rightKeys = Preconditions.checkNotNull(rightKeys);
+    this.leftKeys = Objects.requireNonNull(leftKeys, "leftKeys");
+    this.rightKeys = Objects.requireNonNull(rightKeys, "rightKeys");
   }
 
   @Deprecated // to be removed before 2.0
@@ -86,5 +85,4 @@ public abstract class EquiJoin extends Join {
     return rightKeys;
   }
 }
-
 // End EquiJoin.java

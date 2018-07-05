@@ -114,8 +114,6 @@ import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 import org.apache.calcite.util.trace.CalciteTrace;
 
-import com.google.common.collect.Lists;
-
 import org.slf4j.Logger;
 
 import java.io.Reader;
@@ -1182,7 +1180,7 @@ SqlNode TableRefWithHintsOpt() :
  */
 SqlSelect SqlSelect() :
 {
-    final List<SqlLiteral> keywords = Lists.newArrayList();
+    final List<SqlLiteral> keywords = new ArrayList<SqlLiteral>();
     final SqlNodeList keywordList;
     List<SqlNode> selectList;
     final SqlNode fromClause;
@@ -1443,7 +1441,7 @@ SqlNode NamedRoutineCall(
     ExprContext exprContext) :
 {
     SqlIdentifier name;
-    final List<SqlNode> list = Lists.newArrayList();
+    final List<SqlNode> list = new ArrayList<SqlNode>();
     final Span s;
 }
 {
@@ -1472,7 +1470,7 @@ SqlNode NamedRoutineCall(
  */
 SqlNode SqlInsert() :
 {
-    final List<SqlLiteral> keywords = Lists.newArrayList();
+    final List<SqlLiteral> keywords = new ArrayList<SqlLiteral>();
     final SqlNodeList keywordList;
     SqlNode table;
     SqlNodeList extendList = null;
@@ -1680,7 +1678,7 @@ SqlUpdate WhenMatchedClause(SqlNode table, SqlIdentifier alias) :
 SqlInsert WhenNotMatchedClause(SqlNode table) :
 {
     final Span insertSpan, valuesSpan;
-    final List<SqlLiteral> keywords = Lists.newArrayList();
+    final List<SqlLiteral> keywords = new ArrayList<SqlLiteral>();
     final SqlNodeList keywordList;
     SqlNodeList insertColumnList = null;
     SqlNode rowConstructor;
@@ -2183,7 +2181,7 @@ SqlNode Tablesample(SqlNode tableRef) :
 SqlNodeList ExtendList() :
 {
     final Span s;
-    List<SqlNode> list = Lists.newArrayList();
+    List<SqlNode> list = new ArrayList<SqlNode>();
 }
 {
     <LPAREN> { s = span(); }
@@ -2406,7 +2404,7 @@ SqlNode WhereOpt() :
  */
 SqlNodeList GroupByOpt() :
 {
-    List<SqlNode> list = Lists.newArrayList();
+    List<SqlNode> list = new ArrayList<SqlNode>();
     final Span s;
 }
 {
@@ -2422,7 +2420,7 @@ SqlNodeList GroupByOpt() :
 
 List<SqlNode> GroupingElementList() :
 {
-    List<SqlNode> list = Lists.newArrayList();
+    List<SqlNode> list = new ArrayList<SqlNode>();
     SqlNode e;
 }
 {

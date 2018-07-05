@@ -16,15 +16,12 @@
  */
 package org.apache.calcite.rel.rules;
 
-
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.Project;
-
-
 import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.type.RelDataTypeField;
@@ -42,7 +39,6 @@ import java.util.List;
  * past a {@link org.apache.calcite.rel.core.Join}
  * by splitting the projection into a projection on top of each child of
  * the join.
-
  *
  * @see CoreRules#PROJECT_JOIN_TRANSPOSE
 
@@ -57,7 +53,6 @@ public class ProjectJoinTransposeRule
   }
 
   @Deprecated // to be removed before 2.0
-
   public ProjectJoinTransposeRule(
           Class<? extends Project> projectClass,
           Class<? extends Join> joinClass,

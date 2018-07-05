@@ -21,9 +21,8 @@ import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorScope;
 import org.apache.calcite.util.ImmutableNullableList;
 
-import com.google.common.base.Preconditions;
-
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 
 /**
@@ -70,14 +69,14 @@ public class SqlSelect extends SqlCall {
       SqlNode fetch,
       SqlNodeList hints) {
     super(pos);
-    this.keywordList = Preconditions.checkNotNull(keywordList != null
+    this.keywordList = Objects.requireNonNull(keywordList != null
         ? keywordList : new SqlNodeList(pos));
     this.selectList = selectList;
     this.from = from;
     this.where = where;
     this.groupBy = groupBy;
     this.having = having;
-    this.windowDecls = Preconditions.checkNotNull(windowDecls != null
+    this.windowDecls = Objects.requireNonNull(windowDecls != null
         ? windowDecls : new SqlNodeList(pos));
     this.qualify = qualify;
     this.orderBy = orderBy;
@@ -104,7 +103,7 @@ public class SqlSelect extends SqlCall {
   @Override public void setOperand(int i, SqlNode operand) {
     switch (i) {
     case 0:
-      keywordList = Preconditions.checkNotNull((SqlNodeList) operand);
+      keywordList = Objects.requireNonNull((SqlNodeList) operand);
       break;
     case 1:
       selectList = (SqlNodeList) operand;
@@ -122,7 +121,7 @@ public class SqlSelect extends SqlCall {
       having = operand;
       break;
     case 6:
-      windowDecls = Preconditions.checkNotNull((SqlNodeList) operand);
+      windowDecls = Objects.requireNonNull((SqlNodeList) operand);
       break;
     case 7:
       qualify = operand;

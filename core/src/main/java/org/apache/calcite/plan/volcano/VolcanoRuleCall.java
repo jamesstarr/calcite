@@ -81,7 +81,7 @@ public class VolcanoRuleCall extends RelOptRuleCall {
         planner,
         operand,
         new RelNode[operand.getRule().operands.size()],
-        ImmutableMap.<RelNode, List<RelNode>>of());
+        ImmutableMap.of());
   }
 
   //~ Methods ----------------------------------------------------------------

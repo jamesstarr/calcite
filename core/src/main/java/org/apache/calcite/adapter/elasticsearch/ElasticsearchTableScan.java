@@ -27,10 +27,10 @@ import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Relational expression representing a scan of an Elasticsearch type.
@@ -55,7 +55,7 @@ public class ElasticsearchTableScan extends TableScan implements ElasticsearchRe
        RelOptTable table, AbstractElasticsearchTable elasticsearchTable,
        RelDataType projectRowType) {
     super(cluster, traitSet, ImmutableList.of(), table);
-    this.elasticsearchTable = Preconditions.checkNotNull(elasticsearchTable);
+    this.elasticsearchTable = Objects.requireNonNull(elasticsearchTable);
     this.projectRowType = projectRowType;
 
     assert getConvention() == ElasticsearchRel.CONVENTION;

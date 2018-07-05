@@ -46,16 +46,14 @@ import org.apache.calcite.util.Util;
 import org.apache.calcite.util.mapping.Mapping;
 import org.apache.calcite.util.mapping.Mappings;
 
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -176,9 +174,9 @@ public class AggregateJoinTransposeRule
         aggregateColumns.union(joinColumns);
 
     // Split join condition
-    final List<Integer> leftKeys = Lists.newArrayList();
-    final List<Integer> rightKeys = Lists.newArrayList();
-    final List<Boolean> filterNulls = Lists.newArrayList();
+    final List<Integer> leftKeys = new ArrayList<>();
+    final List<Integer> rightKeys = new ArrayList<>();
+    final List<Boolean> filterNulls = new ArrayList<>();
     RexNode nonEquiConj =
         RelOptUtil.splitJoinCondition(join.getLeft(), join.getRight(),
             join.getCondition(), leftKeys, rightKeys, filterNulls);
@@ -246,7 +244,7 @@ public class AggregateJoinTransposeRule
         for (Ord<AggregateCall> aggCall : Ord.zip(aggregate.getAggCallList())) {
           final SqlAggFunction aggregation = aggCall.e.getAggregation();
           final SqlSplittableAggFunction splitter =
-              Preconditions.checkNotNull(
+              Objects.requireNonNull(
                   aggregation.unwrap(SqlSplittableAggFunction.class));
           if (!aggCall.e.getArgList().isEmpty()
               && fieldSet.contains(ImmutableBitSet.of(aggCall.e.getArgList()))) {
@@ -272,7 +270,7 @@ public class AggregateJoinTransposeRule
         for (Ord<AggregateCall> aggCall : Ord.zip(aggregate.getAggCallList())) {
           final SqlAggFunction aggregation = aggCall.e.getAggregation();
           final SqlSplittableAggFunction splitter =
-              Preconditions.checkNotNull(
+              Objects.requireNonNull(
                   aggregation.unwrap(SqlSplittableAggFunction.class));
           final AggregateCall call1;
           if (fieldSet.contains(ImmutableBitSet.of(aggCall.e.getArgList()))) {
@@ -307,11 +305,8 @@ public class AggregateJoinTransposeRule
 
     // Update condition
     final Mapping mapping = (Mapping) Mappings.target(
-        new Function<Integer, Integer>() {
-          public Integer apply(Integer a0) {
-            return map.get(a0);
-          }
-        },
+        map::get,
+
         join.getRowType().getFieldCount(),
         belowOffset);
     final RexNode newCondition =
@@ -332,7 +327,7 @@ public class AggregateJoinTransposeRule
     for (Ord<AggregateCall> aggCall : Ord.zip(aggregate.getAggCallList())) {
       final SqlAggFunction aggregation = aggCall.e.getAggregation();
       final SqlSplittableAggFunction splitter =
-          Preconditions.checkNotNull(
+          Objects.requireNonNull(
               aggregation.unwrap(SqlSplittableAggFunction.class));
       final Integer leftSubTotal = sides.get(0).split.get(aggCall.i);
       final Integer rightSubTotal = sides.get(1).split.get(aggCall.i);
@@ -428,15 +423,15 @@ public class AggregateJoinTransposeRule
    * that is a view of a list. */
   private static <E> SqlSplittableAggFunction.Registry<E> registry(
       final List<E> list) {
-    return new SqlSplittableAggFunction.Registry<E>() {
-      public int register(E e) {
-        int i = list.indexOf(e);
-        if (i < 0) {
-          i = list.size();
-          list.add(e);
-        }
-        return i;
+    return e -> {
+
+      int i = list.indexOf(e);
+      if (i < 0) {
+        i = list.size();
+        list.add(e);
       }
+      return i;
+
     };
   }
 

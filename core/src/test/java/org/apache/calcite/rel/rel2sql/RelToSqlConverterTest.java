@@ -50,14 +50,12 @@ import org.apache.calcite.tools.Programs;
 import org.apache.calcite.tools.RuleSet;
 import org.apache.calcite.tools.RuleSets;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 
 import org.junit.Test;
 
 import java.util.List;
-
-import junit.framework.AssertionFailedError;
+import java.util.function.Function;
 
 import static org.apache.calcite.test.Matchers.isLinux;
 
@@ -86,7 +84,7 @@ public class RelToSqlConverterTest {
   private Sql sql(String sql) {
     return new Sql(CalciteAssert.SchemaSpec.JDBC_FOODMART, sql,
         CalciteSqlDialect.DEFAULT, DEFAULT_REL_CONFIG,
-        ImmutableList.<Function<RelNode, RelNode>>of());
+        ImmutableList.of());
   }
 
   private static Planner getPlanner(List<RelTraitDef> traitDefs,
@@ -3243,7 +3241,7 @@ public class RelToSqlConverterTest {
     Sql throws_(String errorMessage) {
       try {
         final String s = exec();
-        throw new AssertionFailedError("Expected exception with message `"
+        throw new AssertionError("Expected exception with message `"
             + errorMessage + "` but nothing was thrown; got " + s);
       } catch (Exception e) {
         assertThat(e.getMessage(), is(errorMessage));

@@ -18,7 +18,6 @@ package org.apache.calcite.rel.metadata;
 
 import org.apache.calcite.linq4j.Linq4j;
 import org.apache.calcite.linq4j.Ord;
-import org.apache.calcite.linq4j.function.Predicate1;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptPredicateList;
 import org.apache.calcite.plan.RelOptUtil;
@@ -661,7 +660,7 @@ public class RelMdPredicates
         }
       }
 
-      equivalence = new TreeMap();
+      equivalence = new TreeMap<>();
       equalityPredicates = new HashSet<>();
       for (int i = 0; i < nSysFields + nFieldsLeft + nFieldsRight; i++) {
         equivalence.put(i, BitSets.of(i));
@@ -831,11 +830,8 @@ public class RelMdPredicates
     }
 
     RexNode compose(RexBuilder rexBuilder, Iterable<RexNode> exprs) {
-      exprs = Linq4j.asEnumerable(exprs).where(new Predicate1<RexNode>() {
-        public boolean apply(RexNode expr) {
-          return expr != null;
-        }
-      });
+      exprs = Linq4j.asEnumerable(exprs).where(Objects::nonNull);
+
       return RexUtil.composeConjunction(rexBuilder, exprs, false);
     }
 

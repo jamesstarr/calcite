@@ -108,7 +108,7 @@ class LixToRelTranslator implements RelOptTable.ToRelContext {
                 typeFactory.createJavaType(
                     Types.toClass(
                         Types.getElementType(call.targetExpression.getType()))),
-                ImmutableList.<String>of(),
+                ImmutableList.of(),
                 call.targetExpression),
             ImmutableList.of());
 
@@ -117,7 +117,7 @@ class LixToRelTranslator implements RelOptTable.ToRelContext {
             RelOptTableImpl.create(null,
                 typeFactory.createJavaType((Class)
                     ((ConstantExpression) call.expressions.get(1)).value),
-                ImmutableList.<String>of(),
+                ImmutableList.of(),
                 call.targetExpression),
             ImmutableList.of());
 

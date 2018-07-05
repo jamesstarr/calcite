@@ -29,8 +29,6 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexNode;
 
-import com.google.common.base.Preconditions;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -83,8 +81,8 @@ public class RelOptCluster {
       Map<String, RelNode> mapCorrelToRel) {
     this.nextCorrel = nextCorrel;
     this.mapCorrelToRel = mapCorrelToRel;
-    this.planner = Preconditions.checkNotNull(planner);
-    this.typeFactory = Preconditions.checkNotNull(typeFactory);
+    this.planner = Objects.requireNonNull(planner);
+    this.typeFactory = Objects.requireNonNull(typeFactory);
     this.rexBuilder = rexBuilder;
     this.originalExpression = rexBuilder.makeLiteral("?");
 

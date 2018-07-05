@@ -28,10 +28,11 @@ import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.sql.validate.SqlDelegatingConformance;
 
-import com.google.common.base.Preconditions;
+
 import com.google.common.collect.ImmutableSet;
 
 import java.io.StringReader;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -146,6 +147,7 @@ public class SqlParser {
       return parser.parseSqlStmtEof();
     } catch (Throwable ex) {
       throw handleException(ex);
+
     }
   }
 
@@ -260,17 +262,17 @@ public class SqlParser {
     }
 
     public ConfigBuilder setQuotedCasing(Casing quotedCasing) {
-      this.quotedCasing = Preconditions.checkNotNull(quotedCasing);
+      this.quotedCasing = Objects.requireNonNull(quotedCasing);
       return this;
     }
 
     public ConfigBuilder setUnquotedCasing(Casing unquotedCasing) {
-      this.unquotedCasing = Preconditions.checkNotNull(unquotedCasing);
+      this.unquotedCasing = Objects.requireNonNull(unquotedCasing);
       return this;
     }
 
     public ConfigBuilder setQuoting(Quoting quoting) {
-      this.quoting = Preconditions.checkNotNull(quoting);
+      this.quoting = Objects.requireNonNull(quoting);
       return this;
     }
 
@@ -309,7 +311,7 @@ public class SqlParser {
     }
 
     public ConfigBuilder setParserFactory(SqlParserImplFactory factory) {
-      this.parserFactory = Preconditions.checkNotNull(factory);
+      this.parserFactory = Objects.requireNonNull(factory);
       return this;
     }
 
@@ -349,12 +351,13 @@ public class SqlParser {
         SqlParserImplFactory parserFactory) {
       this.identifierMaxLength = identifierMaxLength;
       this.caseSensitive = caseSensitive;
-      this.conformance = Preconditions.checkNotNull(conformance);
-      this.quotedCasing = Preconditions.checkNotNull(quotedCasing);
-      this.unquotedCasing = Preconditions.checkNotNull(unquotedCasing);
-      this.quoting = Preconditions.checkNotNull(quoting);
+      this.conformance = Objects.requireNonNull(conformance);
+      this.quotedCasing = Objects.requireNonNull(quotedCasing);
+      this.unquotedCasing = Objects.requireNonNull(unquotedCasing);
+      this.quoting = Objects.requireNonNull(quoting);
       this.charLiteralStyles = charLiteralStyles;
-      this.parserFactory = Preconditions.checkNotNull(parserFactory);
+      this.parserFactory = Objects.requireNonNull(parserFactory);
+
     }
 
     public int identifierMaxLength() {

@@ -25,8 +25,7 @@ import org.apache.calcite.sql.SqlSyntax;
 import org.apache.calcite.sql.fun.SqlAbstractGroupFunction;
 import org.apache.calcite.sql.util.SqlBasicVisitor;
 
-import com.google.common.collect.Lists;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
@@ -87,7 +86,7 @@ abstract class AggVisitor extends SqlBasicVisitor<Void> {
     if (operator instanceof SqlFunction) {
       final SqlFunction sqlFunction = (SqlFunction) operator;
       if (sqlFunction.getFunctionType().isUserDefinedNotSpecificFunction()) {
-        final List<SqlOperator> list = Lists.newArrayList();
+        final List<SqlOperator> list = new ArrayList<>();
         opTab.lookupOperatorOverloads(sqlFunction.getSqlIdentifier(),
             sqlFunction.getFunctionType(), SqlSyntax.FUNCTION, list,
             nameMatcher);

@@ -77,7 +77,7 @@ public class MockRelOptPlanner extends AbstractRelOptPlanner {
 
   public List<RelOptRule> getRules() {
     return rule == null
-        ? ImmutableList.<RelOptRule>of() : ImmutableList.of(rule);
+        ? ImmutableList.of() : ImmutableList.of(rule);
   }
 
   public boolean addRule(RelOptRule rule) {
@@ -127,7 +127,7 @@ public class MockRelOptPlanner extends AbstractRelOptPlanner {
           new MockRuleCall(
               this,
               rule.getOperand(),
-              bindings.toArray(new RelNode[bindings.size()]));
+              bindings.toArray(new RelNode[0]));
       if (rule.matches(call)) {
         rule.onMatch(call);
       }
@@ -232,7 +232,7 @@ public class MockRelOptPlanner extends AbstractRelOptPlanner {
           planner,
           operand,
           rels,
-          Collections.<RelNode, List<RelNode>>emptyMap());
+          Collections.emptyMap());
     }
 
     // implement RelOptRuleCall

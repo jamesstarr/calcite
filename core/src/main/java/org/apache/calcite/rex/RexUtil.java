@@ -32,7 +32,6 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeFamily;
 import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexTableInputRef.RelTableRef;
-import org.apache.calcite.runtime.PredicateImpl;
 import org.apache.calcite.schema.Schemas;
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlKind;
@@ -49,8 +48,6 @@ import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 import org.apache.calcite.util.mapping.Mappings;
 
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
@@ -80,42 +77,6 @@ import static java.util.Objects.requireNonNull;
  * Utility methods concerning row-expressions.
  */
 public class RexUtil {
-
-  private static final Function<? super RexNode, ? extends RexNode> ADD_NOT =
-      new Function<RexNode, RexNode>() {
-        public RexNode apply(RexNode input) {
-          return new RexCall(input.getType(), SqlStdOperatorTable.NOT,
-              ImmutableList.of(input));
-        }
-      };
-
-  private static final Predicate1<RexNode> IS_FLAT_PREDICATE =
-      new Predicate1<RexNode>() {
-        public boolean apply(RexNode v1) {
-          return isFlat(v1);
-        }
-      };
-
-  private static final Function<Object, String> TO_STRING =
-      new Function<Object, String>() {
-        public String apply(Object input) {
-          return input.toString();
-        }
-      };
-
-  private static final Function<RexNode, RelDataType> TYPE_FN =
-      new Function<RexNode, RelDataType>() {
-        public RelDataType apply(RexNode input) {
-          return input.getType();
-        }
-      };
-
-  private static final Function<RelDataType, RelDataTypeFamily> FAMILY_FN =
-      new Function<RelDataType, RelDataTypeFamily>() {
-        public RelDataTypeFamily apply(RelDataType input) {
-          return input.getFamily();
-        }
-      };
 
   /** Executor for a bit of constant reduction. The user can pass in another executor. */
   public static final RexExecutor EXECUTOR =
@@ -608,7 +569,7 @@ public class RexUtil {
   }
 
   public static List<RexNode> retainDeterministic(List<RexNode> list) {
-    List<RexNode> conjuctions = Lists.newArrayList();
+    List<RexNode> conjuctions = new ArrayList<>();
     for (RexNode x : list) {
       if (isDeterministic(x)) {
         conjuctions.add(x);
@@ -1140,7 +1101,7 @@ public class RexUtil {
   @Nonnull public static RexNode composeDisjunction(RexBuilder rexBuilder,
       Iterable<? extends RexNode> nodes) {
     final RexNode e = composeDisjunction(rexBuilder, nodes, false);
-    return Preconditions.checkNotNull(e);
+    return Objects.requireNonNull(e);
   }
 
   /**
@@ -1302,12 +1263,7 @@ public class RexUtil {
   public static Iterable<RexNode> apply(Mappings.TargetMapping mapping,
       Iterable<? extends RexNode> nodes) {
     final RexPermuteInputsShuttle shuttle = RexPermuteInputsShuttle.of(mapping);
-    return Iterables.transform(
-        nodes, new Function<RexNode, RexNode>() {
-          public RexNode apply(RexNode input) {
-            return input.accept(shuttle);
-          }
-        });
+    return Iterables.transform(nodes, e -> e.accept(shuttle));
   }
 
   /**
@@ -1409,12 +1365,7 @@ public class RexUtil {
   private static boolean isFlat(
       List<? extends RexNode> exprs, final SqlOperator op) {
     return !isAssociative(op)
-        || !exists(exprs,
-            new Predicate1<RexNode>() {
-              public boolean apply(RexNode expr) {
-                return isCallTo(expr, op);
-              }
-            });
+        || !exists(exprs, (Predicate1<RexNode>) expr -> isCallTo(expr, op));
   }
 
   /**
@@ -1427,7 +1378,7 @@ public class RexUtil {
     }
     final RexCall call = (RexCall) expr;
     return isFlat(call.getOperands(), call.getOperator())
-        && all(call.getOperands(), IS_FLAT_PREDICATE);
+        && all(call.getOperands(), RexUtil::isFlat);
   }
 
   private static void flattenRecurse(
@@ -1698,11 +1649,11 @@ public class RexUtil {
 
   /** Transforms a list of expressions into a list of their types. */
   public static List<RelDataType> types(List<? extends RexNode> nodes) {
-    return Lists.transform(nodes, TYPE_FN);
+    return Lists.transform(nodes, RexNode::getType);
   }
 
   public static List<RelDataTypeFamily> families(List<RelDataType> types) {
-    return Lists.transform(types, FAMILY_FN);
+    return Lists.transform(types, RelDataType::getFamily);
   }
 
   /** Removes all expressions from a list that are equivalent to a given
@@ -1815,9 +1766,13 @@ public class RexUtil {
     case NOT:
       return ((RexCall) e).getOperands().get(0);
     default:
-      return new RexCall(e.getType(), SqlStdOperatorTable.NOT,
-          ImmutableList.of(e));
+      return addNot(e);
     }
+  }
+
+  private static RexNode addNot(RexNode e) {
+    return new RexCall(e.getType(), SqlStdOperatorTable.NOT,
+        ImmutableList.of(e));
   }
 
   static SqlOperator op(SqlKind kind) {
@@ -1944,25 +1899,23 @@ public class RexUtil {
       final RexCall call = (RexCall) e;
       if (call.getOperands().get(1) instanceof RexLiteral) {
         notTerms = Iterables.filter(notTerms,
-            new PredicateImpl<RexNode>() {
-              public boolean test(RexNode input) {
-                switch (input.getKind()) {
-                case EQUALS:
-                  RexCall call2 = (RexCall) input;
-                  if (call2.getOperands().get(0)
-                      .equals(call.getOperands().get(0))
-                      && call2.getOperands().get(1) instanceof RexLiteral) {
-                    return false;
-                  }
+            e2 -> {
+              switch (e2.getKind()) {
+              case EQUALS:
+                RexCall call2 = (RexCall) e2;
+                if (call2.getOperands().get(0)
+                    .equals(call.getOperands().get(0))
+                    && call2.getOperands().get(1) instanceof RexLiteral) {
+                  return false;
                 }
-                return true;
               }
+              return true;
             });
       }
     }
     return composeConjunction(rexBuilder,
         Iterables.concat(ImmutableList.of(e),
-            Iterables.transform(notTerms, notFn(rexBuilder))),
+            Iterables.transform(notTerms, e2 -> not(rexBuilder, e2))),
         false);
   }
 
@@ -1980,19 +1933,25 @@ public class RexUtil {
         && (call.operands.size() - i) % 2 == 1;
   }
 
-  /** Returns a function that applies NOT to its argument. */
-  public static Function<RexNode, RexNode> notFn(final RexBuilder rexBuilder) {
-    return new Function<RexNode, RexNode>() {
-      public RexNode apply(RexNode input) {
-        return input.isAlwaysTrue()
-            ? rexBuilder.makeLiteral(false)
-            : input.isAlwaysFalse()
-            ? rexBuilder.makeLiteral(true)
-            : input.getKind() == SqlKind.NOT
-            ? ((RexCall) input).operands.get(0)
-            : rexBuilder.makeCall(SqlStdOperatorTable.NOT, input);
-      }
-    };
+  /** Returns a function that applies NOT to its argument.
+   *
+   * @deprecated Use {@link #not} */
+  @SuppressWarnings("Guava")
+  @Deprecated // to be removed in 2.0
+  public static com.google.common.base.Function<RexNode, RexNode> notFn(
+      final RexBuilder rexBuilder) {
+    return e -> not(rexBuilder, e);
+  }
+
+  /** Applies NOT to an expression. */
+  static RexNode not(final RexBuilder rexBuilder, RexNode input) {
+    return input.isAlwaysTrue()
+        ? rexBuilder.makeLiteral(false)
+        : input.isAlwaysFalse()
+        ? rexBuilder.makeLiteral(true)
+        : input.getKind() == SqlKind.NOT
+        ? ((RexCall) input).operands.get(0)
+        : rexBuilder.makeCall(SqlStdOperatorTable.NOT, input);
   }
 
   /** Returns whether an expression contains a {@link RexCorrelVariable}. */
@@ -2141,6 +2100,7 @@ public class RexUtil {
 
     protected RexNode register(RexNode expr) {
       final RexNode previous = map.put(expr, expr);
+
       if (!allowDups && (previous != null)) {
         throw new SubExprExistsException(expr);
       }
@@ -2310,7 +2270,7 @@ public class RexUtil {
       case AND:
         incrementAndCheck();
         operands = flattenAnd(((RexCall) rex).getOperands());
-        final List<RexNode> cnfOperands = Lists.newArrayList();
+        final List<RexNode> cnfOperands = new ArrayList<>();
         for (RexNode node : operands) {
           RexNode cnf = toCnf2(node);
           switch (cnf.getKind()) {
@@ -2333,7 +2293,7 @@ public class RexUtil {
         final RexNode tail = or(Util.skip(operands));
         final RexNode tailCnf = toCnf2(tail);
         final List<RexNode> tailCnfs = RelOptUtil.conjunctions(tailCnf);
-        final List<RexNode> list = Lists.newArrayList();
+        final List<RexNode> list = new ArrayList<>();
         for (RexNode h : headCnfs) {
           for (RexNode t : tailCnfs) {
             list.add(or(ImmutableList.of(h, t)));
@@ -2347,10 +2307,12 @@ public class RexUtil {
           return toCnf2(((RexCall) arg).getOperands().get(0));
         case OR:
           operands = ((RexCall) arg).getOperands();
-          return toCnf2(and(Lists.transform(flattenOr(operands), ADD_NOT)));
+          return toCnf2(
+              and(Lists.transform(flattenOr(operands), RexUtil::addNot)));
         case AND:
           operands = ((RexCall) arg).getOperands();
-          return toCnf2(or(Lists.transform(flattenAnd(operands), ADD_NOT)));
+          return toCnf2(
+              or(Lists.transform(flattenAnd(operands), RexUtil::addNot)));
         default:
           incrementAndCheck();
           return rex;
@@ -2388,7 +2350,7 @@ public class RexUtil {
         if (factors.isEmpty()) {
           return or(operands);
         }
-        final List<RexNode> list = Lists.newArrayList();
+        final List<RexNode> list = new ArrayList<>();
         for (RexNode operand : operands) {
           list.add(removeFactor(factors, operand));
         }
@@ -2399,7 +2361,7 @@ public class RexUtil {
     }
 
     private List<RexNode> pullList(List<RexNode> nodes) {
-      final List<RexNode> list = Lists.newArrayList();
+      final List<RexNode> list = new ArrayList<>();
       for (RexNode node : nodes) {
         RexNode pulled = pull(node);
         switch (pulled.getKind()) {
@@ -2449,7 +2411,7 @@ public class RexUtil {
 
   /** Transforms a list of expressions to the list of digests. */
   public static List<String> strings(List<RexNode> list) {
-    return Lists.transform(list, TO_STRING);
+    return Lists.transform(list, Object::toString);
   }
 
   /** Detects if the given RexNode has an interval data type. */
@@ -2533,7 +2495,7 @@ public class RexUtil {
         final RexNode tail = and(Util.skip(operands));
         final RexNode tailDnf = toDnf2(tail);
         final List<RexNode> tailDnfs = RelOptUtil.disjunctions(tailDnf);
-        final List<RexNode> list = Lists.newArrayList();
+        final List<RexNode> list = new ArrayList<>();
         for (RexNode h : headDnfs) {
           for (RexNode t : tailDnfs) {
             list.add(and(ImmutableList.of(h, t)));
@@ -2543,7 +2505,7 @@ public class RexUtil {
       case OR:
         incrementAndCheck();
         operands = flattenOr(((RexCall) rex).getOperands());
-        final List<RexNode> dnfOperands = Lists.newArrayList();
+        final List<RexNode> dnfOperands = new ArrayList<>();
         for (RexNode node : operands) {
           RexNode dnf = toDnf2(node);
           switch (dnf.getKind()) {
@@ -2564,10 +2526,12 @@ public class RexUtil {
           return toDnf2(((RexCall) arg).getOperands().get(0));
         case OR:
           operands = ((RexCall) arg).getOperands();
-          return toDnf2(and(Lists.transform(flattenOr(operands), ADD_NOT)));
+          return toDnf(
+              and(Util.transform(flattenOr(operands), RexUtil::addNot)));
         case AND:
           operands = ((RexCall) arg).getOperands();
-          return toDnf2(or(Lists.transform(flattenAnd(operands), ADD_NOT)));
+          return toDnf(
+              or(Util.transform(flattenAnd(operands), RexUtil::addNot)));
         default:
           incrementAndCheck();
           return rex;
@@ -2597,11 +2561,9 @@ public class RexUtil {
     private static class OverflowError extends ControlFlowException {
       @SuppressWarnings("ThrowableInstanceNeverThrown")
       protected static final DnfHelper.OverflowError INSTANCE = new DnfHelper.OverflowError();
-
       private OverflowError() {}
     }
   }
-
 
   /** Shuttle that adds {@code offset} to each {@link RexInputRef} in an
    * expression. */
@@ -2877,7 +2839,6 @@ public class RexUtil {
       // to cast an interval). We will only try to do this conversion if the interval is either
       // a literal, or a literal multiplied by an expression.
       final RexNode interval = call.getOperands().get(1);
-
       final RexNode intervalAsInt;
       final TimeUnit unit;
       if (interval instanceof RexLiteral) {
@@ -2911,5 +2872,4 @@ public class RexUtil {
     }
   }
 }
-
 // End RexUtil.java

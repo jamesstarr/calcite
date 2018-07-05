@@ -29,10 +29,10 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -169,7 +169,7 @@ public class RexSubQuery extends RexCall {
     RexSubQuery rexCall = (RexSubQuery) obj;
     return toString().equals(((RexCall) obj).toString())
           && type.equals(rexCall.getType())
-          && Objects.equal(correlationId, ((RexSubQuery) obj).correlationId);
+          && Objects.equals(correlationId, ((RexSubQuery) obj).correlationId);
   }
 
   @Override public int hashCode() {

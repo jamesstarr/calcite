@@ -19,9 +19,7 @@ package org.apache.calcite.rel.logical;
 import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelTraitSet;
-import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelCollationTraitDef;
-import org.apache.calcite.rel.RelDistribution;
 import org.apache.calcite.rel.RelDistributionTraitDef;
 import org.apache.calcite.rel.RelInput;
 import org.apache.calcite.rel.RelNode;
@@ -34,10 +32,8 @@ import org.apache.calcite.rel.metadata.RelMdDistribution;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rex.RexNode;
 
-import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableSet;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -77,7 +73,7 @@ public final class LogicalFilter extends Filter {
       RelTraitSet traitSet,
       RelNode child,
       RexNode condition) {
-    this(cluster, traitSet, child, condition, ImmutableSet.<CorrelationId>of());
+    this(cluster, traitSet, child, condition, ImmutableSet.of());
   }
 
   @Deprecated // to be removed before 2.0
@@ -86,7 +82,7 @@ public final class LogicalFilter extends Filter {
       RelNode child,
       RexNode condition) {
     this(cluster, cluster.traitSetOf(Convention.NONE), child, condition,
-        ImmutableSet.<CorrelationId>of());
+        ImmutableSet.of());
   }
 
   /**
@@ -99,7 +95,7 @@ public final class LogicalFilter extends Filter {
 
   /** Creates a LogicalFilter. */
   public static LogicalFilter create(final RelNode input, RexNode condition) {
-    return create(input, condition, ImmutableSet.<CorrelationId>of());
+    return create(input, condition, ImmutableSet.of());
   }
 
   /** Creates a LogicalFilter. */
@@ -109,17 +105,9 @@ public final class LogicalFilter extends Filter {
     final RelMetadataQuery mq = cluster.getMetadataQuery();
     final RelTraitSet traitSet = cluster.traitSetOf(Convention.NONE)
         .replaceIfs(RelCollationTraitDef.INSTANCE,
-            new Supplier<List<RelCollation>>() {
-              public List<RelCollation> get() {
-                return RelMdCollation.filter(mq, input);
-              }
-            })
+            () -> RelMdCollation.filter(mq, input))
         .replaceIf(RelDistributionTraitDef.INSTANCE,
-            new Supplier<RelDistribution>() {
-              public RelDistribution get() {
-                return RelMdDistribution.filter(mq, input);
-              }
-            });
+            () -> RelMdDistribution.filter(mq, input));
     return new LogicalFilter(cluster, traitSet, input, condition, variablesSet);
   }
 

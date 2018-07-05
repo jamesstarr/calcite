@@ -45,7 +45,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -125,9 +124,8 @@ public class RelMdExpressionLineage
       final RexNode inputRef = RexTableInputRef.of(
           RelTableRef.of(rel.getTable(), 0),
           RexInputRef.of(idx, rel.getRowType().getFieldList()));
-      final Set<RexNode> originalExprs = Sets.newHashSet(inputRef);
       final RexInputRef ref = RexInputRef.of(idx, rel.getRowType().getFieldList());
-      mapping.put(ref, originalExprs);
+      mapping.put(ref, ImmutableSet.of(inputRef));
     }
 
     // Return result
@@ -408,7 +406,7 @@ public class RelMdExpressionLineage
 
     if (predFieldsUsed.isEmpty()) {
       // The unique expression is the input expression
-      return Sets.newHashSet(expr);
+      return ImmutableSet.of(expr);
     }
 
     try {

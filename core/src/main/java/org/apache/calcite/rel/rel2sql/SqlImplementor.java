@@ -72,7 +72,6 @@ import org.apache.calcite.util.TimeString;
 import org.apache.calcite.util.TimestampString;
 import org.apache.calcite.util.Util;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -92,6 +91,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -108,7 +108,7 @@ public abstract class SqlImplementor {
   protected final Map<CorrelationId, Context> correlTableMap = new HashMap<>();
 
   protected SqlImplementor(SqlDialect dialect) {
-    this.dialect = Preconditions.checkNotNull(dialect);
+    this.dialect = Objects.requireNonNull(dialect);
   }
 
   public abstract Result visitChild(int i, RelNode e);
@@ -1135,7 +1135,7 @@ public abstract class SqlImplementor {
         return this;
       } else {
         return makeNewResult(node, clauses, neededAlias, neededType,
-            ImmutableMap.<String, RelDataType>of(neededAlias, neededType));
+            ImmutableMap.of(neededAlias, neededType));
       }
     }
   }
