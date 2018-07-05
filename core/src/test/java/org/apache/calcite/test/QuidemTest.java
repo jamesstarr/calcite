@@ -55,7 +55,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
+<<<<<<< HEAD
 import java.util.regex.Pattern;
+=======
+>>>>>>> a32df1d74 ([CALCITE-2403] Upgrade quidem to 0.9)
 
 import static org.junit.jupiter.api.Assertions.fail;
 
