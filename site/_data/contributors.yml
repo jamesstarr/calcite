@@ -258,6 +258,7 @@
   githubId: vvysotskyi
   org:
 <<<<<<< HEAD
+<<<<<<< HEAD
   role: PMC
 - name: Wang Yanlin
   apacheId: yanlin
@@ -266,6 +267,9 @@
   role: Committer
 =======
   role: Committer
+=======
+  role: PMC
+>>>>>>> 7066e2e4c (Add Volodymyr to PMC on site)
 
 >>>>>>> e7452f80f (Site: Add committer Kevin Risden)
 - name: Zhen Wang
