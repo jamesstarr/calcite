@@ -98,6 +98,7 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -2487,6 +2488,18 @@ public class Util {
     return new TransformingIterator<>(iterator, function);
   }
 
+  /** Filters an iterable. */
+  public static <E> Iterable<E> filter(Iterable<E> iterable,
+      Predicate<E> predicate) {
+    return () -> filter(iterable.iterator(), predicate);
+  }
+
+  /** Filters an iterator. */
+  public static <E> Iterator<E> filter(Iterator<E> iterator,
+      Predicate<E> predicate) {
+    return new FilteringIterator<>(iterator, predicate);
+  }
+
   //~ Inner Classes ----------------------------------------------------------
 
   /**
@@ -2606,6 +2619,45 @@ public class Util {
     RandomAccessTransformingIndexedList(List<? extends F> list,
         BiFunction<? super F, Integer, ? extends T> function) {
       super(list, function);
+    }
+  }
+
+  /** Iterator that applies a predicate to each element.
+   *
+   * @param <T> Element type */
+  private static class FilteringIterator<T> implements Iterator<T> {
+    private static final Object DUMMY = new Object();
+    final Iterator<? extends T> iterator;
+    private final Predicate<? super T> predicate;
+    T current;
+
+    FilteringIterator(Iterator<? extends T> iterator,
+        Predicate<? super T> predicate) {
+      this.iterator = iterator;
+      this.predicate = predicate;
+      @SuppressWarnings("method.invocation.invalid")
+      T current = moveNext();
+      this.current = current;
+    }
+
+    @Override public boolean hasNext() {
+      return current != DUMMY;
+    }
+
+    @Override public T next() {
+      final T t = this.current;
+      current = moveNext();
+      return t;
+    }
+
+    protected T moveNext() {
+      while (iterator.hasNext()) {
+        T t = iterator.next();
+        if (predicate.test(t)) {
+          return t;
+        }
+      }
+      return (T) DUMMY;
     }
   }
 
