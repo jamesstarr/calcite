@@ -42,7 +42,7 @@ import java.util.Objects;
  *
  *    &#64;Test
  *    public void myTest() {
- *      TransportAddress address = RULE.httpAddress();
+ *      RestClient client = RULE.restClient();
  *      // .... (connect to ES)
  *    }
  *  }
@@ -92,7 +92,7 @@ class EmbeddedElasticsearchPolicy extends ExternalResource {
    *
    * @return {@code HTTP} connection parameters
    */
-  TransportAddress httpAddress() {
+  private TransportAddress httpAddress() {
     return node.httpAddress();
   }
 
