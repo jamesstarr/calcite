@@ -39,10 +39,6 @@ import java.util.stream.Collectors;
  *
  * <p>Requires {@link RelCollationTraitDef}.
  */
-<<<<<<< HEAD
-public class SortRemoveConstantKeysRule extends RelOptRule
-    implements SubstitutionRule {
-=======
 public class SortRemoveConstantKeysRule extends RelOptRule {
   public static final SortRemoveConstantKeysRule INSTANCE =
       new SortRemoveConstantKeysRule();
@@ -91,4 +87,3 @@ public class SortRemoveConstantKeysRule extends RelOptRule {
 =======
 
 // End SortRemoveConstantKeysRule.java
->>>>>>> d0e86c5a6 ([CALCITE-873] Add a planner rule, SortRemoveConstantKeysRule, that removes constant keys from Sort (Atri Sharma))

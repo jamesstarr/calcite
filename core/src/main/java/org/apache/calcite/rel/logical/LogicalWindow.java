@@ -346,7 +346,7 @@ public final class LogicalWindow extends Window {
     // Look up or create a window.
     RelCollation orderKeys = getCollation(
         Lists.newArrayList(
-            Iterables.filter(aggWindow.orderKeys,
+            Util.filter(aggWindow.orderKeys,
                 rexFieldCollation ->
                     // If ORDER BY references constant (i.e. RexInputRef),
                     // then we can ignore such ORDER BY key.

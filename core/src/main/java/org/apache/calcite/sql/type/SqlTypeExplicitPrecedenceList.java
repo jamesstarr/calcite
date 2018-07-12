@@ -22,31 +22,8 @@ import org.apache.calcite.util.Glossary;
 import org.apache.calcite.util.ImmutableNullableList;
 import org.apache.calcite.util.Util;
 
-import com.google.common.collect.ImmutableMap;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-/**
- * SqlTypeExplicitPrecedenceList implements the
- * {@link RelDataTypePrecedenceList} interface via an explicit list of
- * {@link SqlTypeName} entries.
- */
-public class SqlTypeExplicitPrecedenceList
-    implements RelDataTypePrecedenceList {
-  //~ Static fields/initializers ---------------------------------------------
-
-  private static final List<SqlTypeName> NUMERIC_TYPES =
-      ImmutableNullableList.of(
-          SqlTypeName.TINYINT,
-          SqlTypeName.SMALLINT,
-          SqlTypeName.INTEGER,
-          SqlTypeName.BIGINT,
-          SqlTypeName.DECIMAL,
-          SqlTypeName.REAL,
-          SqlTypeName.FLOAT,
-          SqlTypeName.DOUBLE);
+  private static final List<SqlTypeName> COMPACT_NUMERIC_TYPES =
+      ImmutableList.copyOf(Util.filter(NUMERIC_TYPES, Objects::nonNull));
 
   /**
    * Map from SqlTypeName to corresponding precedence list.

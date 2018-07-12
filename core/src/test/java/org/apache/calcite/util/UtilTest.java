@@ -46,8 +46,8 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -76,7 +76,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
-import java.util.NoSuchElementException;
+>>>>>>> f85467c1b (Util.filter replaces Guava Iterables.filter)
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Random;
@@ -1112,7 +1112,6 @@ class UtilTest {
     assertThat(list2.equals(list), is(false));
     //noinspection EqualsWithItself
     assertThat(list2.equals(list2), is(true));
->>>>>>> 97b385c7d (Revert "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING")
 =======
 
     assertThat(list2.appendAll(Collections.emptyList()), sameInstance(list2));
@@ -2450,9 +2449,8 @@ class UtilTest {
         not(instanceOf(RandomAccess.class)));
   }
 
-<<<<<<< HEAD
   /** Tests {@link Util#filter(Iterable, java.util.function.Predicate)}. */
-  @Test void testFilter() {
+  @Test public void testFilter() {
     final List<String> beatles =
         Arrays.asList("John", "Paul", "George", "Ringo");
     final List<String> empty = Collections.emptyList();
@@ -2473,97 +2471,7 @@ class UtilTest {
         isIterable(Arrays.asList("John", "Paul", "Ringo")));
   }
 
-  /** Tests {@link Util#select(List, List)}. */
-  @Test void testSelect() {
-    final List<String> beatles =
-        Arrays.asList("John", "Paul", "George", "Ringo");
-    final List<String> nullBeatles =
-        Arrays.asList("John", "Paul", null, "Ringo");
-
-    final List<Integer> emptyOrdinals = Collections.emptyList();
-    assertThat(Util.select(beatles, emptyOrdinals).isEmpty(), is(true));
-    assertThat(Util.select(beatles, emptyOrdinals).toString(), is("[]"));
-
-    final List<Integer> ordinal0 = Collections.singletonList(0);
-    assertThat(Util.select(beatles, ordinal0).isEmpty(), is(false));
-    assertThat(Util.select(beatles, ordinal0).toString(), is("[John]"));
-
-    final List<Integer> ordinal20 = Arrays.asList(2, 0);
-    assertThat(Util.select(beatles, ordinal20).isEmpty(), is(false));
-    assertThat(Util.select(beatles, ordinal20).toString(),
-        is("[George, John]"));
-
-    final List<Integer> ordinal232 = Arrays.asList(2, 3, 2);
-    assertThat(Util.select(beatles, ordinal232).isEmpty(), is(false));
-    assertThat(Util.select(beatles, ordinal232).toString(),
-        is("[George, Ringo, George]"));
-    assertThat(Util.select(beatles, ordinal232),
-        isIterable(Arrays.asList("George", "Ringo", "George")));
-
-    assertThat(Util.select(nullBeatles, ordinal232).isEmpty(), is(false));
-    assertThat(Util.select(nullBeatles, ordinal232).toString(),
-        is("[null, Ringo, null]"));
-    assertThat(Util.select(nullBeatles, ordinal232),
-        isIterable(Arrays.asList(null, "Ringo", null)));
-  }
-
-  @Test void testEquivalenceSet() {
-    final EquivalenceSet<String> c = new EquivalenceSet<>();
-    assertThat(c.size(), is(0));
-    assertThat(c.classCount(), is(0));
-    c.add("abc");
-    assertThat(c.size(), is(1));
-    assertThat(c.classCount(), is(1));
-    c.add("Abc");
-    assertThat(c.size(), is(2));
-    assertThat(c.classCount(), is(2));
-    assertThat(c.areEquivalent("abc", "Abc"), is(false));
-    assertThat(c.areEquivalent("abc", "abc"), is(true));
-    assertThat(c.areEquivalent("abc", "ABC"), is(false));
-    c.equiv("abc", "ABC");
-    assertThat(c.size(), is(3));
-    assertThat(c.classCount(), is(2));
-    assertThat(c.areEquivalent("abc", "ABC"), is(true));
-    assertThat(c.areEquivalent("ABC", "abc"), is(true));
-    assertThat(c.areEquivalent("abc", "abc"), is(true));
-    assertThat(c.areEquivalent("abc", "Abc"), is(false));
-    c.equiv("Abc", "ABC");
-    assertThat(c.size(), is(3));
-    assertThat(c.classCount(), is(1));
-    assertThat(c.areEquivalent("abc", "Abc"), is(true));
-
-    c.add("de");
-    c.equiv("fg", "fG");
-    assertThat(c.size(), is(6));
-    assertThat(c.classCount(), is(3));
-    final SortedMap<String, SortedSet<String>> map = c.map();
-    assertThat(map.toString(),
-        is("{ABC=[ABC, Abc, abc], de=[de], fG=[fG, fg]}"));
-
-    c.clear();
-    assertThat(c.size(), is(0));
-    assertThat(c.classCount(), is(0));
-  }
-
-  @Test void testBlackHoleMap() {
-    final Map<Integer, Integer> map = BlackholeMap.of();
-
-    for (int i = 0; i < 100; i++) {
-      assertThat(map.put(i, i * i), is(nullValue()));
-      assertThat(map.size(), is(0));
-      assertThat(map.entrySet().add(new SimpleEntry<>(i, i * i)), is(true));
-      assertThat(map.entrySet().size(), is(0));
-      assertThat(map.keySet().size(), is(0));
-      assertThat(map.values().size(), is(0));
-      assertThat(map.entrySet().iterator().hasNext(), is(false));
-      try {
-        map.entrySet().iterator().next();
-        fail();
-      } catch (NoSuchElementException e) {
-        // Success
-      }
-    }
-  }
+>>>>>>> f85467c1b (Util.filter replaces Guava Iterables.filter)
   private static <E> Matcher<Iterable<E>> isIterable(final Iterable<E> iterable) {
     final List<E> list = toList(iterable);
     return new TypeSafeMatcher<Iterable<E>>() {
@@ -2585,8 +2493,10 @@ class UtilTest {
     return list;
   }
 
+<<<<<<< HEAD
 =======
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+=======
+>>>>>>> f85467c1b (Util.filter replaces Guava Iterables.filter)
   static String mismatchDescription(Matcher m, Object item) {
     final StringDescription d = new StringDescription();
     m.describeMismatch(item, d);
