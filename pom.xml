@@ -27,7 +27,11 @@ limitations under the License.
   <groupId>org.apache.calcite</groupId>
   <artifactId>calcite</artifactId>
   <packaging>pom</packaging>
+<<<<<<< HEAD
   <version>1.16.0-SNAPSHOT</version>
+=======
+  <version>1.18.0-SNAPSHOT</version>
+>>>>>>> a8362b70b ([maven-release-plugin] prepare for next development iteration)
 
   <!-- More project information. -->
   <name>Calcite</name>

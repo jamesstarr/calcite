@@ -21,14 +21,23 @@ limitations under the License.
   <parent>
     <groupId>org.apache.calcite</groupId>
     <artifactId>calcite</artifactId>
+<<<<<<< HEAD:elasticsearch2/pom.xml
     <version>1.16.0-SNAPSHOT</version>
+=======
+    <version>1.18.0-SNAPSHOT</version>
+>>>>>>> a8362b70b ([maven-release-plugin] prepare for next development iteration):spark/pom.xml
   </parent>
 
   <artifactId>calcite-elasticsearch2</artifactId>
   <packaging>jar</packaging>
+<<<<<<< HEAD:elasticsearch2/pom.xml
   <version>1.16.0-SNAPSHOT</version>
   <name>Calcite Elasticsearch</name>
   <description>Elasticsearch adapter for Calcite</description>
+=======
+  <version>1.18.0-SNAPSHOT</version>
+  <name>Calcite Spark</name>
+>>>>>>> a8362b70b ([maven-release-plugin] prepare for next development iteration):spark/pom.xml
 
   <properties>
     <top.dir>${project.basedir}/..</top.dir>
