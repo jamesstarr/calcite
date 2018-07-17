@@ -50,7 +50,6 @@ public class SqlSelect extends SqlCall {
   SqlNodeList orderBy;
   SqlNode offset;
   SqlNode fetch;
-  SqlMatchRecognize matchRecognize;
   SqlNodeList hints;
 
   //~ Constructors -----------------------------------------------------------
@@ -229,14 +228,6 @@ public class SqlSelect extends SqlCall {
 
   public void setFetch(SqlNode fetch) {
     this.fetch = fetch;
-  }
-
-  public SqlMatchRecognize getMatchRecognize() {
-    return matchRecognize;
-  }
-
-  public void setMatchRecognize(SqlMatchRecognize matchRecognize) {
-    this.matchRecognize = matchRecognize;
   }
 
   public void setHints(SqlNodeList hints) {
