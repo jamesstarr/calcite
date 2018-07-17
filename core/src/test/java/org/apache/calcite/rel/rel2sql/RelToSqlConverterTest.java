@@ -4338,43 +4338,7 @@ class RelToSqlConverterTest {
         List<Function<RelNode, RelNode>> transforms) {
       final SchemaPlus rootSchema = Frameworks.createRootSchema(true);
       this.schema = CalciteAssert.addSchema(rootSchema, schemaSpec);
-      this.sql = sql;
-      this.dialect = dialect;
-      this.relFn = relFn;
-      this.transforms = ImmutableList.copyOf(transforms);
-      this.parserConfig = parserConfig;
-      this.config = config;
-    }
-
-    Sql(SchemaPlus schema, String sql, SqlDialect dialect,
-        SqlParser.Config parserConfig, SqlToRelConverter.Config config,
-        Function<RelBuilder, RelNode> relFn,
-        List<Function<RelNode, RelNode>> transforms) {
-      this.schema = schema;
-      this.sql = sql;
-      this.dialect = dialect;
-      this.relFn = relFn;
-      this.transforms = ImmutableList.copyOf(transforms);
-      this.parserConfig = parserConfig;
-      this.config = config;
-    }
-
-    Sql dialect(SqlDialect dialect) {
-      return new Sql(schema, sql, dialect, parserConfig, config, relFn,
-          transforms);
-    }
-
-    Sql relFn(Function<RelBuilder, RelNode> relFn) {
-      return new Sql(schema, sql, dialect, parserConfig, config, relFn,
-          transforms);
-    }
-
-    Sql withCalcite() {
-      return dialect(SqlDialect.DatabaseProduct.CALCITE.getDialect());
-    }
-
-    Sql withClickHouse() {
-      return dialect(SqlDialect.DatabaseProduct.CLICKHOUSE.getDialect());
+      return new Sql(schema, sql, dialect, config, transforms);
     }
 
     Sql withDb2() {
@@ -4430,16 +4394,6 @@ class RelToSqlConverterTest {
       return dialect(SqlDialect.DatabaseProduct.SYBASE.getDialect());
     }
 
-<<<<<<< HEAD
-    Sql withRedshift() {
-      return dialect(DatabaseProduct.REDSHIFT.getDialect());
-    }
-
-    Sql withSnowflake() {
-      return dialect(DatabaseProduct.SNOWFLAKE.getDialect());
-    }
-
-=======
     Sql withVertica() {
       return dialect(SqlDialect.DatabaseProduct.VERTICA.getDialect());
     }
@@ -4492,6 +4446,7 @@ class RelToSqlConverterTest {
     }
 
     Sql config(SqlToRelConverter.Config config) {
+<<<<<<< HEAD
       return new Sql(schema, sql, dialect, parserConfig, config, relFn,
           transforms);
     }
@@ -4506,6 +4461,15 @@ class RelToSqlConverterTest {
                         new HepProgramBuilder().addRuleClass(RelOptRule.class)
                             .build()));
             return program.run(p, r, r.getTraitSet(),
+=======
+      return new Sql(schema, sql, dialect, config, transforms);
+    }
+
+    Sql optimize(final RuleSet ruleSet, final RelOptPlanner relOptPlanner) {
+      return new Sql(schema, sql, dialect, config,
+          FlatLists.append(transforms, r -> {
+            Program program = Programs.of(ruleSet);
+            return program.run(relOptPlanner, r, r.getTraitSet(),
                 ImmutableList.of(), ImmutableList.of());
           }));
     }
@@ -4527,6 +4491,11 @@ class RelToSqlConverterTest {
     }
 
     String exec() {
+<<<<<<< HEAD
+=======
+      final Planner planner =
+          getPlanner(null, SqlParser.Config.DEFAULT, schema, config);
+>>>>>>> ca3727fe0 ([CALCITE-2417] Fix ClassCastException in RelToSqlConverter with structs (Benoit Hanotte))
       try {
         RelNode rel;
         if (relFn != null) {

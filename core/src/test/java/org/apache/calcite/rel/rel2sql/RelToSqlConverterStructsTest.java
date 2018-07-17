@@ -34,14 +34,17 @@ import org.apache.calcite.schema.Table;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.dialect.CalciteSqlDialect;
-import org.apache.calcite.sql.parser.SqlParser;
+>>>>>>> ca3727fe0 ([CALCITE-2417] Fix ClassCastException in RelToSqlConverter with structs (Benoit Hanotte))
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.ImmutableBitSet;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+<<<<<<< HEAD
 import org.junit.jupiter.api.Test;
+=======
+import org.junit.Test;
 
 import java.util.Collection;
 import java.util.List;
@@ -51,7 +54,7 @@ import java.util.Set;
  * Tests for {@link RelToSqlConverter} on a schema that has nested structures of multiple
  * levels.
  */
-class RelToSqlConverterStructsTest {
+public class RelToSqlConverterStructsTest {
 
   private static final Schema SCHEMA = new Schema() {
     @Override public Table getTable(String name) {
@@ -99,34 +102,26 @@ class RelToSqlConverterStructsTest {
     }
   };
 
+  // Table schema is as following:
+  // { a: INT, n1: { n11: { b INT }, n12: {c: Int } }, n2: { d: Int }, e: Int }
   private static final Table TABLE = new Table() {
-    /**
-     * Table schema is as following:
-     *  myTable(
-     *          a: BIGINT,
-     *          n1: STRUCT<
-     *                n11: STRUCT<b: BIGINT>,
-     *                n12: STRUCT<c: BIGINT>
-     *              >,
-     *          n2: STRUCT<d: BIGINT>,
-     *          e: BIGINT
-     *  )
-     */
-    @Override public RelDataType getRowType(RelDataTypeFactory tf) {
-      RelDataType bigint = tf.createSqlType(SqlTypeName.BIGINT);
-      RelDataType n1Type = tf.createStructType(
-          ImmutableList.of(
-              tf.createStructType(ImmutableList.of(bigint),
-                  ImmutableList.of("b")),
-              tf.createStructType(ImmutableList.of(bigint),
-                  ImmutableList.of("c"))),
-          ImmutableList.of("n11", "n12"));
-      RelDataType n2Type = tf.createStructType(
-          ImmutableList.of(bigint),
-          ImmutableList.of("d"));
-      return tf.createStructType(
-          ImmutableList.of(bigint, n1Type, n2Type, bigint),
-          ImmutableList.of("a", "n1", "n2", "e"));
+    @Override public RelDataType getRowType(RelDataTypeFactory typeFactory) {
+      final RelDataType aType = typeFactory.createSqlType(SqlTypeName.BIGINT);
+      final RelDataType bType = typeFactory.createSqlType(SqlTypeName.BIGINT);
+      final RelDataType cType = typeFactory.createSqlType(SqlTypeName.BIGINT);
+      final RelDataType dType = typeFactory.createSqlType(SqlTypeName.BIGINT);
+      final RelDataType eType = typeFactory.createSqlType(SqlTypeName.BIGINT);
+      final RelDataType n11Type = typeFactory
+          .createStructType(ImmutableList.of(bType), ImmutableList.of("b"));
+      final RelDataType n12Type = typeFactory
+          .createStructType(ImmutableList.of(cType), ImmutableList.of("c"));
+      final RelDataType n1Type = typeFactory
+          .createStructType(ImmutableList.of(n11Type, n12Type), ImmutableList.of("n11", "n12"));
+      final RelDataType n2Type = typeFactory
+          .createStructType(ImmutableList.of(dType), ImmutableList.of("d"));
+      return typeFactory.createStructType(
+              ImmutableList.of(aType, n1Type, n2Type, eType),
+              ImmutableList.of("a", "n1", "n2", "e"));
     }
 
     @Override public Statistic getStatistic() {
@@ -141,11 +136,10 @@ class RelToSqlConverterStructsTest {
       return false;
     }
 
-    @Override public boolean rolledUpColumnValidInsideAgg(
-        String column,
-        SqlCall call,
-        SqlNode parent,
-        CalciteConnectionConfig config) {
+    @Override public boolean rolledUpColumnValidInsideAgg(String column,
+                                                          SqlCall call,
+                                                          SqlNode parent,
+                                                          CalciteConnectionConfig config) {
       return false;
     }
   };
@@ -159,10 +153,7 @@ class RelToSqlConverterStructsTest {
       return false;
     }
 
-    @Override public List<ImmutableBitSet> getKeys() {
-      return ImmutableList.of();
-    }
-
+>>>>>>> ca3727fe0 ([CALCITE-2417] Fix ClassCastException in RelToSqlConverter with structs (Benoit Hanotte))
     @Override public List<RelReferentialConstraint> getReferentialConstraints() {
       return ImmutableList.of();
     }
@@ -181,6 +172,7 @@ class RelToSqlConverterStructsTest {
 
   private RelToSqlConverterTest.Sql sql(String sql) {
     return new RelToSqlConverterTest.Sql(ROOT_SCHEMA, sql,
+<<<<<<< HEAD
         CalciteSqlDialect.DEFAULT, SqlParser.Config.DEFAULT,
         RelToSqlConverterTest.DEFAULT_REL_CONFIG, null, ImmutableList.of());
   }
@@ -190,12 +182,23 @@ class RelToSqlConverterStructsTest {
     String expected = "SELECT \"a\", "
         + "ROW(ROW(\"n1\".\"n11\".\"b\"), ROW(\"n1\".\"n12\".\"c\")) AS \"n1\", "
         + "ROW(\"n2\".\"d\") AS \"n2\", "
+=======
+        CalciteSqlDialect.DEFAULT, RelToSqlConverterTest.DEFAULT_REL_CONFIG,
+        ImmutableList.of());
+  }
+
+  @Test public void testNestedSchemaSelectStar() {
+    String query = "SELECT * FROM \"myTable\"";
+    String expected = "SELECT \"a\", "
+        + "\"n1\".\"n11\".\"b\" AS \"n1\", "
+        + "\"n1\".\"n12\".\"c\" AS \"n12\", "
+        + "\"n2\".\"d\" AS \"n2\", "
         + "\"e\"\n"
         + "FROM \"myDb\".\"myTable\"";
     sql(query).ok(expected);
   }
 
-  @Test void testNestedSchemaRootColumns() {
+  @Test public void testNestedSchemaRootColumns() {
     String query = "SELECT \"a\", \"e\" FROM \"myTable\"";
     String expected = "SELECT \"a\", "
         + "\"e\"\n"
@@ -203,7 +206,7 @@ class RelToSqlConverterStructsTest {
     sql(query).ok(expected);
   }
 
-  @Test void testNestedSchemaNestedColumns() {
+  @Test public void testNestedSchemaNestedColumns() {
     String query = "SELECT \"a\", \"e\", "
         + "\"myTable\".\"n1\".\"n11\".\"b\", "
         + "\"myTable\".\"n2\".\"d\" "
@@ -216,3 +219,7 @@ class RelToSqlConverterStructsTest {
     sql(query).ok(expected);
   }
 }
+<<<<<<< HEAD
+=======
+// End RelToSqlConverterStructsTest.java
+>>>>>>> ca3727fe0 ([CALCITE-2417] Fix ClassCastException in RelToSqlConverter with structs (Benoit Hanotte))

@@ -558,16 +558,13 @@ public abstract class SqlImplementor {
         switch (referencedExpr.getKind()) {
         case CORREL_VARIABLE:
           final RexCorrelVariable variable = (RexCorrelVariable) referencedExpr;
-          final Context correlAliasContext = getAliasContext(variable);
+          final Context correlAliasContext = correlTableMap.get(variable.id);
           final RexFieldAccess lastAccess = accesses.pollLast();
           assert lastAccess != null;
           sqlIdentifier = (SqlIdentifier) correlAliasContext
               .field(lastAccess.getField().getIndex());
           break;
-        case ROW:
-          final SqlNode expr = toSql(program, referencedExpr);
-          sqlIdentifier = new SqlIdentifier(expr.toString(), POS);
-          break;
+>>>>>>> ca3727fe0 ([CALCITE-2417] Fix ClassCastException in RelToSqlConverter with structs (Benoit Hanotte))
         default:
           sqlIdentifier = (SqlIdentifier) toSql(program, referencedExpr);
         }
@@ -803,7 +800,6 @@ public abstract class SqlImplementor {
       return createOverCall(sqlAggregateFunction, nodeList, sqlWindow);
     }
 
->>>>>>> 8761ab06e (DX-11273 Change Calcite's rel2sql classes to be more extensible)
     protected SqlNode toSql(RexProgram program, RexFieldCollation rfc) {
       SqlNode node = toSql(program, rfc.left);
       switch (rfc.getDirection()) {
