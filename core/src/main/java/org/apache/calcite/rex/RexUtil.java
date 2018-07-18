@@ -71,10 +71,6 @@ import javax.annotation.Nonnull;
 
 import static org.apache.calcite.sql.type.SqlTypeName.INTERVAL_TYPES;
 
-<<<<<<< HEAD
-import static java.util.Objects.requireNonNull;
-
-=======
 /**
  * Utility methods concerning row-expressions.
  */
@@ -2994,7 +2990,6 @@ public class RexUtil {
     }
   }
 }
->>>>>>> d2b0f0597 ([CALCITE-2339] Add utility to convert datetime_plus to timestampadd (James Duong))
 
   /**
    * Visitor class which transforms datetime_plus operators to timestamp_add operators.

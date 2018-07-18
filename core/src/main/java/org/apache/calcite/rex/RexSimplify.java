@@ -30,9 +30,6 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlOperandTypeChecker;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
-<<<<<<< HEAD
-import org.apache.calcite.util.Bug;
-=======
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
@@ -497,8 +494,22 @@ public class RexSimplify {
    */
   @Deprecated // to be removed before 2.0
   public RexNode simplifyAnds(Iterable<? extends RexNode> nodes) {
+<<<<<<< HEAD
     ensureParanoidOff();
     return simplifyAnds(nodes, defaultUnknownAs);
+=======
+    final List<RexNode> terms = new ArrayList<>();
+    final List<RexNode> notTerms = new ArrayList<>();
+    for (RexNode e : nodes) {
+      RelOptUtil.decomposeConjunction(e, terms, notTerms);
+    }
+
+    simplifyList(terms);
+    simplifyList(notTerms);
+    if (unknownAsFalse) {
+      return simplifyAnd2ForUnknownAsFalse(terms, notTerms);
+    }
+    return simplifyAnd2(terms, notTerms);
   }
 
   // package-protected only for a deprecated method; treat as private
@@ -1410,7 +1421,7 @@ public class RexSimplify {
   private <C extends Comparable<C>> RexNode simplifyAnd2ForUnknownAsFalse(
       List<RexNode> terms, List<RexNode> notTerms, Class<C> clazz) {
     for (int i = 0; i < terms.size(); i++) {
-      terms.set(i, simplify(terms.get(i), FALSE));
+      terms.set(i, simplify(terms.get(i)));
     }
     for (RexNode term : terms) {
       if (term.isAlwaysFalse() || RexLiteral.isNullLiteral(term)) {

@@ -1923,7 +1923,11 @@ class RexProgramTest extends RexProgramTestBase {
     assertThat(result.getType().getSqlTypeName(), is(SqlTypeName.BOOLEAN));
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyAnd2() {
+=======
+  @Test public void testSimplifyAnd2() {
+>>>>>>> 096387bac (DX-12328: Fix RexSimplify for AND expression):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     RelDataType integerNullableType =
         typeFactory.createTypeWithNullability(
             typeFactory.createSqlType(SqlTypeName.INTEGER), false);
@@ -1933,6 +1937,7 @@ class RexProgramTest extends RexProgramTestBase {
         eq(rexBuilder.makeInputRef(integerNullableType, 1),
             rexBuilder.makeInputRef(integerNullableType, 1)));
     checkSimplifyFilter(andCondition, "true");
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 
     // "null AND NOT(null OR x)" => "null AND NOT(x)"
     checkSimplify3(
@@ -1963,6 +1968,23 @@ class RexProgramTest extends RexProgramTestBase {
   }
 
   @Test void testSimplifyIsNotNull() {
+=======
+  }
+
+  @Test public void testSimplifyAnd3() {
+    RelDataType integerNullableType =
+        typeFactory.createTypeWithNullability(
+            typeFactory.createSqlType(SqlTypeName.INTEGER), true);
+    RexNode andCondition = and(
+        eq(rexBuilder.makeInputRef(integerNullableType, 0),
+            rexBuilder.makeInputRef(integerNullableType, 0)),
+        eq(rexBuilder.makeInputRef(integerNullableType, 1),
+            rexBuilder.makeInputRef(integerNullableType, 1)));
+    checkSimplifyFilter(andCondition, "AND(IS NOT NULL($0), IS NOT NULL($1))");
+  }
+
+  @Test public void testSimplifyIsNotNull() {
+>>>>>>> 096387bac (DX-12328: Fix RexSimplify for AND expression):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     RelDataType intType =
         typeFactory.createTypeWithNullability(
             typeFactory.createSqlType(SqlTypeName.INTEGER), false);
