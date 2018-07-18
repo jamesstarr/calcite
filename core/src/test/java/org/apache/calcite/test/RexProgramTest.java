@@ -1530,6 +1530,30 @@ public class RexProgramTest {
     assertThat(result.getType().getSqlTypeName(), is(SqlTypeName.BOOLEAN));
   }
 
+  @Test public void testSimplifyAnd2() {
+    RelDataType integerNullableType =
+        typeFactory.createTypeWithNullability(
+            typeFactory.createSqlType(SqlTypeName.INTEGER), false);
+    RexNode andCondition = and(
+        eq(rexBuilder.makeInputRef(integerNullableType, 0),
+            rexBuilder.makeInputRef(integerNullableType, 0)),
+        eq(rexBuilder.makeInputRef(integerNullableType, 1),
+            rexBuilder.makeInputRef(integerNullableType, 1)));
+    checkSimplifyFilter(andCondition, "true");
+  }
+
+  @Test public void testSimplifyAnd3() {
+    RelDataType integerNullableType =
+        typeFactory.createTypeWithNullability(
+            typeFactory.createSqlType(SqlTypeName.INTEGER), true);
+    RexNode andCondition = and(
+        eq(rexBuilder.makeInputRef(integerNullableType, 0),
+            rexBuilder.makeInputRef(integerNullableType, 0)),
+        eq(rexBuilder.makeInputRef(integerNullableType, 1),
+            rexBuilder.makeInputRef(integerNullableType, 1)));
+    checkSimplifyFilter(andCondition, "AND(IS NOT NULL($0), IS NOT NULL($1))");
+  }
+
   @Test public void testSimplifyIsNotNull() {
     RelDataType intType =
         typeFactory.createTypeWithNullability(

@@ -256,6 +256,7 @@ public class RexSimplify {
     for (RexNode e : nodes) {
       RelOptUtil.decomposeConjunction(e, terms, notTerms);
     }
+
     simplifyList(terms);
     simplifyList(notTerms);
     if (unknownAsFalse) {
@@ -590,6 +591,9 @@ public class RexSimplify {
 
   private <C extends Comparable<C>> RexNode simplifyAnd2ForUnknownAsFalse(
       List<RexNode> terms, List<RexNode> notTerms, Class<C> clazz) {
+    for (int i = 0; i < terms.size(); i++) {
+      terms.set(i, simplify(terms.get(i)));
+    }
     for (RexNode term : terms) {
       if (term.isAlwaysFalse()) {
         return rexBuilder.makeLiteral(false);
