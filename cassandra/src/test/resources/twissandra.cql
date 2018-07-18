@@ -56,7 +56,11 @@ CREATE TABLE twissandra.timeline (
     PRIMARY KEY (username, time)
 ) WITH CLUSTERING ORDER BY (time DESC);
 
+<<<<<<< HEAD
 CREATE MATERIALIZED VIEW twissandra."Tweets_By_User" AS
+=======
+CREATE MATERIALIZED VIEW twissandra.tweets_by_user AS
+>>>>>>> 6c2e00988 ([CALCITE-2419] Use embedded Cassandra for tests)
     SELECT username, tweet_id
     FROM twissandra.tweets
     WHERE username IS NOT NULL

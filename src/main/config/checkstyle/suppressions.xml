@@ -47,6 +47,10 @@ limitations under the License.
 
   <suppress checks=".*" files="git.properties"/>
   <suppress checks=".*" files="release.properties"/>
+<<<<<<< HEAD
+=======
+  <suppress checks=".*" files="log4j.*.properties"/>
+>>>>>>> 6c2e00988 ([CALCITE-2419] Use embedded Cassandra for tests)
   <suppress checks=".*" files="auth-users.properties"/>
 
   <!-- This file triggers https://github.com/checkstyle/checkstyle/issues/92,

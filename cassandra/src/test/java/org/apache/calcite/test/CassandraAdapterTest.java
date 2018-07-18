@@ -16,16 +16,25 @@
  */
 package org.apache.calcite.test;
 
-import com.datastax.driver.core.Session;
+import org.apache.calcite.util.Util;
+
+import org.apache.cassandra.config.DatabaseDescriptor;
+
 import com.google.common.collect.ImmutableMap;
 
-import org.cassandraunit.CQLDataLoader;
+import net.jcip.annotations.NotThreadSafe;
+
+import org.cassandraunit.CassandraCQLUnit;
 import org.cassandraunit.dataset.cql.ClassPathCQLDataSet;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
+
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.rules.ExternalResource;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
+
+import static org.junit.Assume.assumeTrue;
 
 /**
  * Tests for the {@code org.apache.calcite.adapter.cassandra} package.
@@ -33,23 +42,76 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
  * <p>Will start embedded cassandra cluster and populate it from local {@code twissandra.cql} file.
  * All configuration files are located in test classpath.
  *
- * <p>Note that tests will be skipped if running on JDK11+
- * (which is not yet supported by cassandra) see
- * <a href="https://issues.apache.org/jira/browse/CASSANDRA-9608">CASSANDRA-9608</a>.
+ * <p>Note that tests will be skipped if running on JDK11 (which is not yet supported by cassandra)
+ * see <a href="https://issues.apache.org/jira/browse/CASSANDRA-9608">CASSANDRA-9608</a>.
  *
  */
-@Execution(ExecutionMode.SAME_THREAD)
-@ExtendWith(CassandraExtension.class)
-class CassandraAdapterTest {
+// force tests to run sequentially (maven surefire and failsafe are running them in parallel)
+// seems like some of our code is sharing static variables (like Hooks) which causes tests
+// to fail non-deterministically (flaky tests).
+@NotThreadSafe
+public class CassandraAdapterTest {
+
+  @ClassRule
+  public static final ExternalResource RULE = initCassandraIfEnabled();
 
   /** Connection factory based on the "mongo-zips" model. */
   private static final ImmutableMap<String, String> TWISSANDRA =
-          CassandraExtension.getDataset("/model.json");
+      ImmutableMap.of("model",
+          CassandraAdapterTest.class.getResource("/model.json")
+              .getPath());
 
-  @BeforeAll
-  static void load(Session session) {
-    new CQLDataLoader(session)
-        .load(new ClassPathCQLDataSet("twissandra.cql"));
+  /**
+   * Whether to run this test.
+   * <p>Enabled by default, unless explicitly disabled
+   * from command line ({@code -Dcalcite.test.cassandra=false}) or running on incompatible JDK
+   * version (see below).
+   *
+   * <p>As of this wiring Cassandra 4.x is not yet released and we're using 3.x
+   * (which fails on JDK11). All cassandra tests will be skipped if running on JDK11.
+   * TODO: remove JDK check once current adapter supports Cassandra 4.x
+   *
+   * @see <a href="https://issues.apache.org/jira/browse/CASSANDRA-9608">CASSANDRA-9608</a>
+   * @return {@code true} if test is compatible with current environment,
+   *         {@code false} otherwise
+   */
+  private static boolean enabled() {
+    final boolean enabled =
+        Util.getBooleanProperty("calcite.test.cassandra", true);
+    final int major = Integer.parseInt(System.getProperty("java.version").split("\\.")[0]);
+    final boolean compatibleJdk = major != 11;
+
+    return enabled && compatibleJdk;
+  }
+
+  private static ExternalResource initCassandraIfEnabled() {
+    if (!enabled()) {
+      // Return NOP resource (to avoid nulls)
+      return new ExternalResource() {
+        @Override public Statement apply(final Statement base, final Description description) {
+          return super.apply(base, description);
+        }
+      };
+    }
+
+    CassandraCQLUnit rule = new CassandraCQLUnit(
+        new ClassPathCQLDataSet("twissandra.cql"));
+
+    // This static init is necessary otherwise tests fail with CassandraUnit in IntelliJ (jdk10)
+    // should be called right after constructor
+    // NullPointerException for DatabaseDescriptor.getDiskFailurePolicy
+    // for more info see
+    // https://github.com/jsevellec/cassandra-unit/issues/249
+    // https://github.com/jsevellec/cassandra-unit/issues/221
+    DatabaseDescriptor.daemonInitialization();
+
+    return rule;
+  }
+
+  @BeforeClass
+  public static void setUp() {
+    // run tests only if explicitly enabled
+    assumeTrue("test explicitly disabled", enabled());
   }
 
   @Test void testSelect() {
@@ -154,3 +216,8 @@ class CassandraAdapterTest {
         .explainContains("CassandraTableScan(table=[[twissandra, Tweets_By_User]])");
   }
 }
+<<<<<<< HEAD
+=======
+
+// End CassandraAdapterTest.java
+>>>>>>> 6c2e00988 ([CALCITE-2419] Use embedded Cassandra for tests)

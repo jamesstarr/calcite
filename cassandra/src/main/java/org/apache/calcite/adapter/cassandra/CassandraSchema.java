@@ -56,9 +56,8 @@ import com.google.common.collect.ImmutableMap;
 
 import org.slf4j.Logger;
 
-<<<<<<< HEAD
-import java.net.InetSocketAddress;
 =======
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
