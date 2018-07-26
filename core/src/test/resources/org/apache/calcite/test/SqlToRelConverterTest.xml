@@ -9453,8 +9453,29 @@ LogicalProject(JOB_NAME=[CASE(OR(=($1, '810000'), =($1, '820000')), $1, 'error':
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 18d19aaba ([CALCITE-3456] AssertionError throws for aggregation with same digest IN subqueries in same scope)
 =======
+=======
+    <TestCase name="testStarDynamicSchemaUnnestNestedSubquery">
+        <Resource name="sql">
+            <![CDATA[select t2.c1
+            from (select * from SALES.CUSTOMER) as t1, unnest(t1.fake_col) as t2(c1)]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(C1=[$1])
+  LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{0}])
+    LogicalProject(**=[$0])
+      LogicalTableScan(table=[[CATALOG, SALES, CUSTOMER]])
+    LogicalProject(C1=[$0])
+      Uncollect
+        LogicalProject(EXPR$0=[ITEM($cor0.**, 'FAKE_COL')])
+          LogicalValues(tuples=[[{ 0 }]])
+]]>
+        </Resource>
+    </TestCase>
+>>>>>>> 616f372b2 ([CALCITE-2422] Query with unnest of column from nested subquery fails when dynamic table is used)
     <TestCase name="testAnyValueAggregateFunctionNoGroupBy">
         <Resource name="sql">
             <![CDATA[SELECT any_value(empno) as anyempno FROM emp AS e]]>
