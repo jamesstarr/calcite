@@ -19,6 +19,7 @@ package org.apache.calcite.rel.rules;
 import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
+import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.tools.RelBuilder;
@@ -34,21 +35,22 @@ import org.apache.calcite.tools.RelBuilderFactory;
  */
 public class ProjectMultiJoinMergeRule extends RelOptRule {
   public static final ProjectMultiJoinMergeRule INSTANCE =
-      new ProjectMultiJoinMergeRule(RelFactories.LOGICAL_BUILDER);
+      new ProjectMultiJoinMergeRule(LogicalProject.class, RelFactories.LOGICAL_BUILDER);
 
   //~ Constructors -----------------------------------------------------------
 
   /** Creates a ProjectMultiJoinMergeRule. */
-  public ProjectMultiJoinMergeRule(RelBuilderFactory relBuilderFactory) {
+  public ProjectMultiJoinMergeRule(Class<? extends Project> projectClass,
+      RelBuilderFactory relBuilderFactory) {
     super(
-        operand(LogicalProject.class,
+        operand(projectClass,
             operand(MultiJoin.class, any())), relBuilderFactory, null);
   }
 
   //~ Methods ----------------------------------------------------------------
 
   public void onMatch(RelOptRuleCall call) {
-    LogicalProject project = call.rel(0);
+    Project project = call.rel(0);
     MultiJoin multiJoin = call.rel(1);
 
     // if all inputs have their projFields set, then projection information

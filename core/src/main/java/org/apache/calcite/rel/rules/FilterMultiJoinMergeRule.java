@@ -18,6 +18,7 @@ package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
+import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.tools.RelBuilderFactory;
@@ -32,16 +33,17 @@ import org.apache.calcite.tools.RelBuilderFactory;
  */
 public class FilterMultiJoinMergeRule extends RelOptRule {
   public static final FilterMultiJoinMergeRule INSTANCE =
-      new FilterMultiJoinMergeRule(RelFactories.LOGICAL_BUILDER);
+      new FilterMultiJoinMergeRule(LogicalFilter.class, RelFactories.LOGICAL_BUILDER);
 
   //~ Constructors -----------------------------------------------------------
 
   /**
    * Creates a FilterMultiJoinMergeRule.
    */
-  public FilterMultiJoinMergeRule(RelBuilderFactory relBuilderFactory) {
+  public FilterMultiJoinMergeRule(Class<? extends Filter> filterClass,
+      RelBuilderFactory relBuilderFactory) {
     super(
-        operand(LogicalFilter.class,
+        operand(filterClass,
             operand(MultiJoin.class, any())),
         relBuilderFactory, null);
   }
@@ -49,7 +51,7 @@ public class FilterMultiJoinMergeRule extends RelOptRule {
   //~ Methods ----------------------------------------------------------------
 
   public void onMatch(RelOptRuleCall call) {
-    LogicalFilter filter = call.rel(0);
+    Filter filter = call.rel(0);
     MultiJoin multiJoin = call.rel(1);
 
     MultiJoin newMultiJoin =
