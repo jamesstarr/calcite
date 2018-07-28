@@ -18,8 +18,8 @@ package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
-import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.core.Project;
+import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
@@ -33,32 +33,23 @@ import org.apache.calcite.tools.RelBuilderFactory;
  * @see org.apache.calcite.rel.rules.FilterMultiJoinMergeRule
  * @see CoreRules#PROJECT_MULTI_JOIN_MERGE
  */
-public class ProjectMultiJoinMergeRule
-        extends RelRule<ProjectMultiJoinMergeRule.Config>
-        implements TransformationRule {
+public class ProjectMultiJoinMergeRule extends RelOptRule {
+  public static final ProjectMultiJoinMergeRule INSTANCE =
+      new ProjectMultiJoinMergeRule(LogicalProject.class, RelFactories.LOGICAL_BUILDER);
+
+  //~ Constructors -----------------------------------------------------------
 
   /** Creates a ProjectMultiJoinMergeRule. */
-  protected ProjectMultiJoinMergeRule(Config config) {
-    super(config);
-  }
-
-  @Deprecated // to be removed before 2.0
-  public ProjectMultiJoinMergeRule(RelBuilderFactory relBuilderFactory) {
-    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
-            .as(Config.class));
-  }
-
-  @Deprecated // to be removed before 2.0
   public ProjectMultiJoinMergeRule(Class<? extends Project> projectClass,
-                                   RelBuilderFactory relBuilderFactory) {
-    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
-            .as(Config.class)
-            .withOperandFor(projectClass, MultiJoin.class));
+      RelBuilderFactory relBuilderFactory) {
+    super(
+        operand(projectClass,
+            operand(MultiJoin.class, any())), relBuilderFactory, null);
   }
 
   //~ Methods ----------------------------------------------------------------
 
-  @Override public void onMatch(RelOptRuleCall call) {
+  public void onMatch(RelOptRuleCall call) {
     Project project = call.rel(0);
     MultiJoin multiJoin = call.rel(1);
 

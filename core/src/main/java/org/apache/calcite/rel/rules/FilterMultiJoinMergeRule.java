@@ -17,11 +17,9 @@
 package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.RelOptRuleCall;
-import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.core.Filter;
-import org.apache.calcite.rex.RexBuilder;
-import org.apache.calcite.rex.RexNode;
-import org.apache.calcite.rex.RexUtil;
+import org.apache.calcite.rel.core.RelFactories;
+import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.tools.RelBuilderFactory;
 
 import java.util.ArrayList;
@@ -35,32 +33,29 @@ import java.util.List;
  * @see org.apache.calcite.rel.rules.ProjectMultiJoinMergeRule
  * @see CoreRules#FILTER_MULTI_JOIN_MERGE
  */
-public class FilterMultiJoinMergeRule
-        extends RelRule<FilterMultiJoinMergeRule.Config>
-        implements TransformationRule {
+public class FilterMultiJoinMergeRule extends RelOptRule {
+  public static final FilterMultiJoinMergeRule INSTANCE =
+      new FilterMultiJoinMergeRule(LogicalFilter.class, RelFactories.LOGICAL_BUILDER);
 
   /** Creates a FilterMultiJoinMergeRule. */
   protected FilterMultiJoinMergeRule(Config config) {
     super(config);
   }
 
-  @Deprecated // to be removed before 2.0
-  public FilterMultiJoinMergeRule(RelBuilderFactory relBuilderFactory) {
-    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
-            .as(Config.class));
-  }
-
-  @Deprecated // to be removed before 2.0
+  /**
+   * Creates a FilterMultiJoinMergeRule.
+   */
   public FilterMultiJoinMergeRule(Class<? extends Filter> filterClass,
-                                  RelBuilderFactory relBuilderFactory) {
-    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
-            .as(Config.class)
-            .withOperandFor(filterClass, MultiJoin.class));
+      RelBuilderFactory relBuilderFactory) {
+    super(
+        operand(filterClass,
+            operand(MultiJoin.class, any())),
+        relBuilderFactory, null);
   }
 
   //~ Methods ----------------------------------------------------------------
 
-  @Override public void onMatch(RelOptRuleCall call) {
+  public void onMatch(RelOptRuleCall call) {
     Filter filter = call.rel(0);
     MultiJoin multiJoin = call.rel(1);
 
