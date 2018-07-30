@@ -62,7 +62,7 @@ public class NameMultimap<V> {
 
   /** Adds an entry to this multimap. */
   public void put(String name, V v) {
-    List<V> list = map().computeIfAbsent(name, k -> new ArrayList<>());
+    List<V> list = map.computeIfAbsent(name, k -> new ArrayList<>());
     list.add(v);
   }
 
