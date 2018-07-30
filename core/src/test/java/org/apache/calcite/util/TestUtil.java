@@ -17,10 +17,17 @@
 package org.apache.calcite.util;
 
 import com.google.common.annotations.VisibleForTesting;
+<<<<<<< HEAD
+=======
+
+import org.junit.ComparisonFailure;
+>>>>>>> 66076440e ([CALCITE-2428] Cassandra unit test fails to parse JDK version string (Andrei Sereda))
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -220,6 +227,7 @@ public abstract class TestUtil {
       throw new IllegalArgumentException("Can't parse (detect) JDK version from " + version);
     }
     return Integer.parseInt(matcher.group());
+<<<<<<< HEAD
   }
 
   /** Checks if exceptions have give substring. That is handy to prevent logging SQL text twice */
@@ -256,6 +264,8 @@ public abstract class TestUtil {
     t.printStackTrace(pw);
     pw.flush();
     return sw.toString();
+=======
+>>>>>>> 66076440e ([CALCITE-2428] Cassandra unit test fails to parse JDK version string (Andrei Sereda))
   }
 
   /** Rethrows given exception keeping stacktraces clean and compact. */
