@@ -3030,7 +3030,7 @@ public class SqlToRelConverter {
   }
 
   protected RelNode decorrelateQuery(RelNode rootRel) {
-    return RelDecorrelator.decorrelateQuery(rootRel);
+    return RelDecorrelator.decorrelateQuery(rootRel, false);
   }
 
   /**

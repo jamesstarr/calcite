@@ -119,6 +119,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -168,16 +169,20 @@ public class RelDecorrelator implements ReflectiveVisitor {
 
   private final HashSet<LogicalCorrelate> generatedCorRels = Sets.newHashSet();
 
+  // Force value generator to be created similar to Calcite 1.12
+  private boolean forceValueGenerator;
   //~ Constructors -----------------------------------------------------------
 
   private RelDecorrelator(
       RelOptCluster cluster,
       CorelMap cm,
-      Context context) {
+      Context context,
+      boolean forceValueGenerator) {
     this.cm = cm;
     this.rexBuilder = cluster.getRexBuilder();
     this.context = context;
     relBuilder = RelFactories.LOGICAL_BUILDER.create(cluster, null);
+    this.forceValueGenerator = forceValueGenerator;
 
   }
 
@@ -188,11 +193,12 @@ public class RelDecorrelator implements ReflectiveVisitor {
    * <p>This is the main entry point to {@code RelDecorrelator}.
    *
    * @param rootRel Root node of the query
+   * @param forceValueGenerator force value generator to be created when decorrelating filters
    *
    * @return Equivalent query with all
    * {@link org.apache.calcite.rel.logical.LogicalCorrelate} instances removed
    */
-  public static RelNode decorrelateQuery(RelNode rootRel) {
+  public static RelNode decorrelateQuery(RelNode rootRel, boolean forceValueGenerator) {
     final CorelMap corelMap = new CorelMapBuilder().build(rootRel);
     if (!corelMap.hasCorrelation()) {
       return rootRel;
@@ -201,7 +207,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
     final RelOptCluster cluster = rootRel.getCluster();
     final RelDecorrelator decorrelator =
         new RelDecorrelator(cluster, corelMap,
-            cluster.getPlanner().getContext());
+            cluster.getPlanner().getContext(), forceValueGenerator);
 
     RelNode newRootRel = decorrelator.removeCorrelationViaRule(rootRel);
 
@@ -856,7 +862,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
 
     // Try to populate correlation variables using local fields.
     // This means that we do not need a value generator.
-    if (rel instanceof Filter) {
+    if (!forceValueGenerator && rel instanceof Filter) {
       SortedMap<CorDef, Integer> map = new TreeMap<>();
       List<RexNode> projects = new ArrayList<>();
       for (CorRef correlation : corVarList) {
@@ -998,7 +1004,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
 
     // If this Filter has correlated reference, create value generator
     // and produce the correlated variables in the new output.
-    if (false) {
+    if (forceValueGenerator) {
       if (cm.mapRefRelToCorRef.containsKey(rel)) {
         frame = decorrelateInputWithValueGenerator(rel, frame);
       }

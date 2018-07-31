@@ -187,7 +187,7 @@ public class MutableRelTest {
     };
     RelNode origRel = test.createTester().convertSqlToRel(sql).rel;
     if (decorrelate) {
-      origRel = RelDecorrelator.decorrelateQuery(origRel);
+      origRel = RelDecorrelator.decorrelateQuery(origRel, false);
     }
     if (rules != null) {
       final HepProgram hepProgram =
