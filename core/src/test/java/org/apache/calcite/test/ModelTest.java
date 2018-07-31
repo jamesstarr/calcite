@@ -16,6 +16,7 @@
  */
 package org.apache.calcite.test;
 
+import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.model.JsonColumn;
 import org.apache.calcite.model.JsonCustomSchema;
 import org.apache.calcite.model.JsonCustomTable;
@@ -349,6 +350,37 @@ class ModelTest {
           equalTo("each element of a string list must be a string; found: 2"));
     }
   }
+<<<<<<< HEAD
+=======
+
+  @Test public void testYamlInlineDetection() throws Exception {
+    // yaml model with different line endings
+    final String yamlModel = "version: 1.0\r\n"
+        + "schemas: \n"
+        + "- type: custom\r\n"
+        + "  name: 'MyCustomSchema'\n"
+        + "  factory: " + JdbcTest.MySchemaFactory.class.getName() + "\r\n";
+    CalciteAssert.model(yamlModel).doWithConnection(calciteConnection -> null);
+    // with a comment
+    CalciteAssert.model("\n  \r\n# comment\n " + yamlModel)
+        .doWithConnection(calciteConnection -> null);
+    // if starts with { => treated as json
+    CalciteAssert.model("  { " + yamlModel + " }")
+        .connectThrows("Unexpected character ('s' (code 115)): "
+            + "was expecting comma to separate Object entries");
+    // if starts with /* => treated as json
+    CalciteAssert.model("  /* " + yamlModel)
+        .connectThrows("Unexpected end-of-input in a comment");
+  }
+
+  @Test public void testYamlFileDetection() throws Exception {
+    final URL inUrl = ModelTest.class.getResource("/empty-model.yaml");
+    CalciteAssert.that()
+        .with(CalciteConnectionProperty.MODEL, inUrl.getFile())
+        .doWithConnection(calciteConnection -> null);
+  }
+}
+>>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
 
   @Test void testYamlInlineDetection() throws Exception {
     // yaml model with different line endings

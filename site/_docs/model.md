@@ -44,7 +44,11 @@ Models can also be built programmatically using the `Schema` SPI.
 {% highlight yaml %}
 version: 1.0
 defaultSchema: mongo
+<<<<<<< HEAD
 schemas:
+=======
+schemas: 
+>>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
 - [Schema...]
 {% endhighlight %}
 
@@ -73,10 +77,17 @@ Occurs within `root.schemas`.
 #### YAML
 {% highlight yaml %}
 name: foodmart
+<<<<<<< HEAD
 path:
   lib
 cache: true
 materializations:
+=======
+path: 
+  lib
+cache: true
+materializations: 
+>>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
 - [ Materialization... ]
 {% endhighlight %}
 
@@ -100,7 +111,11 @@ strings. For example,
 
 #### YAML
 {% highlight yaml %}
+<<<<<<< HEAD
 path:
+=======
+path: 
+>>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
 - [usr, lib]
 - lib
 {% endhighlight %}
@@ -138,7 +153,11 @@ immediately, and are never flushed.
 
 Like base class <a href="#schema">Schema</a>, occurs within `root.schemas`.
 
+<<<<<<< HEAD
 #### JSON
+=======
+#### JSON 
+>>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
 {% highlight json %}
 {
   name: 'foodmart',
@@ -153,11 +172,19 @@ Like base class <a href="#schema">Schema</a>, occurs within `root.schemas`.
 {% highlight yaml %}
 name: foodmart
 type: map
+<<<<<<< HEAD
 tables:
 - [ Table... ]
 functions:
 - [ Function... ]
 types:
+=======
+tables: 
+- [ Table... ]
+functions: 
+- [ Function... ]
+types: 
+>>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
 - [ Type... ]
 {% endhighlight %}
 
@@ -194,7 +221,11 @@ Like base class <a href="#schema">Schema</a>, occurs within `root.schemas`.
 name: mongo
 type: custom
 factory: org.apache.calcite.adapter.mongodb.MongoSchemaFactory
+<<<<<<< HEAD
 operand:
+=======
+operand: 
+>>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
   host: localhost
   database: test
 {% endhighlight %}
@@ -303,7 +334,11 @@ Occurs within `root.schemas.tables`.
 #### YAML
 {% highlight yaml %}
 name: sales_fact
+<<<<<<< HEAD
 columns:
+=======
+columns: 
+>>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
   [ Column... ]
 {% endhighlight %}
 
@@ -393,7 +428,11 @@ Like base class <a href="#table">Table</a>, occurs within `root.schemas.tables`.
 name: female_emps
 type: custom
 factory: TODO
+<<<<<<< HEAD
 operand:
+=======
+operand: 
+>>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
   todo: TODO
 {% endhighlight %}
 
@@ -469,7 +508,11 @@ Occurs within `root.schemas.functions`.
 name: MY_PLUS
 className: com.example.functions.MyPlusFunction
 methodName: apply
+<<<<<<< HEAD
 path: {}
+=======
+path: {}  
+>>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
 {% endhighlight %}
 
 `name` (required string) is the name of this function.
@@ -499,9 +542,13 @@ if found, creates an aggregate function.
 Occurs within `root.schemas.types`.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #### JSON
 =======
 >>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
+=======
+#### JSON
+>>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
 {% highlight json %}
 {
   name: 'mytype1',
@@ -516,17 +563,27 @@ Occurs within `root.schemas.types`.
 {% endhighlight %}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
 #### YAML
 {% highlight yaml %}
 name: mytype1
 type: BIGINT
+<<<<<<< HEAD
 attributes:
+=======
+attributes:  
+>>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
 - name: f1
   type: BIGINT
 {% endhighlight %}
 
+<<<<<<< HEAD
 =======
 >>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
+=======
+>>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
 `name` (required string) is the name of this type.
 
 `type` (optional) is the SQL type.
@@ -583,11 +640,19 @@ auto: false
 algorithm: true
 algorithmMaxMillis: 10000
 rowCountEstimate: 86837
+<<<<<<< HEAD
 defaultMeasures:
 - agg: count
 tiles:
 - dimensions: [ 'the_year', ['t', 'quarter'] ]
   measures:
+=======
+defaultMeasures: 
+- agg: count
+tiles: 
+- dimensions: [ 'the_year', ['t', 'quarter'] ] 
+  measures: 
+>>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
   - agg: sum
     args: unit_sales
   - agg: sum
@@ -669,8 +734,13 @@ Occurs within `root.schemas.lattices.tiles`.
 
 #### YAML
 {% highlight yaml %}
+<<<<<<< HEAD
 dimensions: [ 'the_year', ['t', 'quarter'] ]
 measures:
+=======
+dimensions: [ 'the_year', ['t', 'quarter'] ] 
+measures: 
+>>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
 - agg: sum
   args: unit_sales
 - agg: sum
