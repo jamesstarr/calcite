@@ -117,7 +117,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
+import java.util.TreeSet;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -172,12 +173,17 @@ public class RelDecorrelator implements ReflectiveVisitor {
   protected RelDecorrelator(
       CorelMap cm,
       Context context,
-      RelBuilder relBuilder,
+>>>>>>> e1b02e7b9 (DX-12456: Legacy decorrelator)
       boolean forceValueGenerator) {
     this.cm = cm;
     this.context = context;
+<<<<<<< HEAD
     this.forceValueGenerator = forceValueGenerator;
     this.relBuilder = relBuilder;
+=======
+    relBuilder = RelFactories.LOGICAL_BUILDER.create(cluster, null);
+    this.forceValueGenerator = forceValueGenerator;
+
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -195,13 +201,16 @@ public class RelDecorrelator implements ReflectiveVisitor {
    *
    * @param rootRel Root node of the query
    * @param forceValueGenerator force value generator to be created when decorrelating filters
-   * @param relBuilder        Builder for relational expressions
+>>>>>>> e1b02e7b9 (DX-12456: Legacy decorrelator)
    *
    * @return Equivalent query with all
    * {@link org.apache.calcite.rel.core.Correlate} instances removed
    */
+<<<<<<< HEAD
   public static RelNode decorrelateQuery(RelNode rootRel,
       RelBuilder relBuilder, boolean forceValueGenerator) {
+=======
+  public static RelNode decorrelateQuery(RelNode rootRel, boolean forceValueGenerator) {
     final CorelMap corelMap = new CorelMapBuilder().build(rootRel);
     if (!corelMap.hasCorrelation()) {
       return rootRel;
@@ -209,8 +218,8 @@ public class RelDecorrelator implements ReflectiveVisitor {
 
     final RelOptCluster cluster = rootRel.getCluster();
     final RelDecorrelator decorrelator =
-        new RelDecorrelator(corelMap,
-            cluster.getPlanner().getContext(), relBuilder, forceValueGenerator);
+        new RelDecorrelator(cluster, corelMap,
+            cluster.getPlanner().getContext(), forceValueGenerator);
 
     RelNode newRootRel = decorrelator.removeCorrelationViaRule(rootRel);
 

@@ -252,10 +252,7 @@ public class PlannerImpl implements Planner, ViewExpander {
     root =
         sqlToRelConverter.convertQuery(validatedSqlNode, false, true);
     root = root.withRel(sqlToRelConverter.flattenTypes(root.rel, true));
-    final RelBuilder relBuilder =
-        config.getRelBuilderFactory().create(cluster, null);
-    root = root.withRel(
-        RelDecorrelator.decorrelateQuery(root.rel, relBuilder, false));
+    root = root.withRel(RelDecorrelator.decorrelateQuery(root.rel, false));
     state = State.STATE_5_CONVERTED;
     return root;
   }
@@ -264,7 +261,42 @@ public class PlannerImpl implements Planner, ViewExpander {
    * directly. */
   @Deprecated
   public class ViewExpanderImpl implements ViewExpander {
-    ViewExpanderImpl() {
+    @Override public RelRoot expandView(RelDataType rowType, String queryString,
+      List<String> schemaPath, List<String> viewPath) {
+      SqlParser parser = SqlParser.create(queryString, parserConfig);
+      SqlNode sqlNode;
+      try {
+        sqlNode = parser.parseQuery();
+      } catch (SqlParseException e) {
+        throw new RuntimeException("parse failed", e);
+      }
+
+      final SqlConformance conformance = conformance();
+      final CalciteCatalogReader catalogReader =
+          createCatalogReader().withSchemaPath(schemaPath);
+      final SqlValidator validator =
+          new CalciteSqlValidator(operatorTable, catalogReader, typeFactory,
+              conformance);
+      validator.setIdentifierExpansion(true);
+      final SqlNode validatedSqlNode = validator.validate(sqlNode);
+
+      final RexBuilder rexBuilder = createRexBuilder();
+      final RelOptCluster cluster = RelOptCluster.create(planner, rexBuilder);
+      final SqlToRelConverter.Config config = SqlToRelConverter
+          .configBuilder()
+          .withConfig(sqlToRelConverterConfig)
+          .withTrimUnusedFields(false)
+          .withConvertTableAccess(false)
+          .build();
+      final SqlToRelConverter sqlToRelConverter =
+          new SqlToRelConverter(new ViewExpanderImpl(), validator,
+              catalogReader, cluster, convertletTable, config);
+
+      root = sqlToRelConverter.convertQuery(validatedSqlNode, true, false);
+      root = root.withRel(sqlToRelConverter.flattenTypes(root.rel, true));
+      root = root.withRel(RelDecorrelator.decorrelateQuery(root.rel, false));
+
+      return PlannerImpl.this.root;
     }
 
     public RelRoot expandView(RelDataType rowType, String queryString,

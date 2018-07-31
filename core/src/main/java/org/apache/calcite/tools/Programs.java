@@ -351,9 +351,7 @@ public class Programs {
       final CalciteConnectionConfig config =
           planner.getContext().unwrap(CalciteConnectionConfig.class);
       if (config != null && config.forceDecorrelate()) {
-        final RelBuilder relBuilder =
-            RelFactories.LOGICAL_BUILDER.create(rel.getCluster(), null);
-        return RelDecorrelator.decorrelateQuery(rel, relBuilder, false);
+        return RelDecorrelator.decorrelateQuery(rel, false);
       }
       return rel;
     }

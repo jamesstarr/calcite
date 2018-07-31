@@ -3119,7 +3119,7 @@ import org.apache.calcite.rel.logical.LogicalValues;
   }
 
   protected RelNode decorrelateQuery(RelNode rootRel) {
-    return RelDecorrelator.decorrelateQuery(rootRel, relBuilder, false);
+    return RelDecorrelator.decorrelateQuery(rootRel, false);
   }
 
   /**
