@@ -1137,14 +1137,6 @@ public enum SqlKind {
   /** {@code DROP TYPE} DDL statement. */
   DROP_TYPE,
 
-<<<<<<< HEAD
-  /** {@code CREATE FUNCTION} DDL statement. */
-  CREATE_FUNCTION,
-
-  /** {@code DROP FUNCTION} DDL statement. */
-  DROP_FUNCTION,
-
-=======
 >>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
   /** DDL statement not handled above.
    *
@@ -1355,6 +1347,7 @@ public enum SqlKind {
           LESS_THAN, LESS_THAN_OR_EQUAL,
           IS_DISTINCT_FROM, IS_NOT_DISTINCT_FROM);
 
+<<<<<<< HEAD
   /**
    * Category of operators that do not depend on the argument order.
    *
@@ -1378,6 +1371,7 @@ public enum SqlKind {
       EnumSet.of(
           PLUS, TIMES);
 
+=======
   /** Lower-case name. */
   public final String lowerName = name().toLowerCase(Locale.ROOT);
   public final String sql;

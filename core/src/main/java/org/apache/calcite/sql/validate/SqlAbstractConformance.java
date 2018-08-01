@@ -103,19 +103,5 @@ public abstract class SqlAbstractConformance implements SqlConformance {
     return SqlConformanceEnum.DEFAULT.shouldConvertRaggedUnionTypesToVarying();
   }
 
-  public boolean allowExtendedTrim() {
-    return SqlConformanceEnum.DEFAULT.allowExtendedTrim();
-  }
-
-  public boolean allowPluralTimeUnits() {
-    return SqlConformanceEnum.DEFAULT.allowPluralTimeUnits();
-  }
-
-  public boolean allowQualifyingCommonColumn() {
-    return SqlConformanceEnum.DEFAULT.allowQualifyingCommonColumn();
-  }
-
-  public boolean allowAliasUnnestItems() {
-    return SqlConformanceEnum.DEFAULT.allowAliasUnnestItems();
-  }
 }
+// End SqlAbstractConformance.java

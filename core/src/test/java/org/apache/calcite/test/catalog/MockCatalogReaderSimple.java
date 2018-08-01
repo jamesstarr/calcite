@@ -86,7 +86,7 @@ public class MockCatalogReaderSimple extends MockCatalogReader {
     // Register "EMP" table.
     final MockTable empTable =
         MockTable.create(this, salesSchema, "EMP", false, 14, null,
-            countingInitializerExpressionFactory, false);
+            countingInitializerExpressionFactory);
     empTable.addColumn("EMPNO", fixture.intType, true);
     empTable.addColumn("ENAME", fixture.varchar20Type);
     empTable.addColumn("JOB", fixture.varchar10Type);
@@ -115,7 +115,7 @@ public class MockCatalogReaderSimple extends MockCatalogReader {
     // Register "EMPDEFAULTS" table with default values for some columns.
     final MockTable empDefaultsTable =
         MockTable.create(this, salesSchema, "EMPDEFAULTS", false, 14, null,
-            new EmpInitializerExpressionFactory(), false);
+            new EmpInitializerExpressionFactory());
     empDefaultsTable.addColumn("EMPNO", fixture.intType, true);
     empDefaultsTable.addColumn("ENAME", fixture.varchar20Type);
     empDefaultsTable.addColumn("JOB", fixture.varchar10TypeNull);
@@ -153,19 +153,8 @@ public class MockCatalogReaderSimple extends MockCatalogReader {
         MockTable.create(this, salesSchema, "DEPT_NESTED", false, 4);
     deptNestedTable.addColumn("DEPTNO", fixture.intType, true);
     deptNestedTable.addColumn("NAME", fixture.varchar10Type);
-    deptNestedTable.addColumn("SKILL", fixture.skillRecordType);
     deptNestedTable.addColumn("EMPLOYEES", fixture.empListType);
     registerTable(deptNestedTable);
-
-    // Register "DEPT_NESTED_EXPANDED" table.
-    MockTable deptNestedExpandedTable =
-        MockTable.create(this, salesSchema, "DEPT_NESTED_EXPANDED", false, 4);
-    deptNestedExpandedTable.addColumn("DEPTNO", fixture.intType, true);
-    deptNestedExpandedTable.addColumn("NAME", fixture.varchar10Type);
-    deptNestedExpandedTable.addColumn("EMPLOYEES", fixture.empListType);
-    deptNestedExpandedTable.addColumn("ADMINS", fixture.varchar5ArrayType);
-    deptNestedExpandedTable.addColumn("OFFICES", fixture.rectilinearPeekCoordMultisetType);
-    registerTable(deptNestedExpandedTable);
 
     // Register "BONUS" table.
     MockTable bonusTable =
@@ -192,76 +181,7 @@ public class MockCatalogReaderSimple extends MockCatalogReader {
     contactAddressTable.addColumn("MAILING_ADDRESS", addressType);
     registerTable(contactAddressTable);
 
-    // Register "CUSTOMER" schema.
-    MockSchema customerSchema = new MockSchema("CUSTOMER");
-    registerSchema(customerSchema);
-
-    // Register "CONTACT" table.
-    MockTable contactTable = MockTable.create(this, customerSchema, "CONTACT",
-        false, 1000);
-    contactTable.addColumn("CONTACTNO", fixture.intType);
-    contactTable.addColumn("FNAME", fixture.varchar10Type);
-    contactTable.addColumn("LNAME", fixture.varchar10Type);
-    contactTable.addColumn("EMAIL", fixture.varchar20Type);
-    contactTable.addColumn("COORD", fixture.rectilinearCoordType);
-    registerTable(contactTable);
-
-    // Register "CONTACT_PEEK" table. The
-    MockTable contactPeekTable =
-        MockTable.create(this, customerSchema, "CONTACT_PEEK", false, 1000);
-    contactPeekTable.addColumn("CONTACTNO", fixture.intType);
-    contactPeekTable.addColumn("FNAME", fixture.varchar10Type);
-    contactPeekTable.addColumn("LNAME", fixture.varchar10Type);
-    contactPeekTable.addColumn("EMAIL", fixture.varchar20Type);
-    contactPeekTable.addColumn("COORD", fixture.rectilinearPeekCoordType);
-    contactPeekTable.addColumn("COORD_NE", fixture.rectilinearPeekNoExpandCoordType);
-    registerTable(contactPeekTable);
-
-    // Register "ACCOUNT" table.
-    MockTable accountTable = MockTable.create(this, customerSchema, "ACCOUNT",
-        false, 457);
-    accountTable.addColumn("ACCTNO", fixture.intType);
-    accountTable.addColumn("TYPE", fixture.varchar20Type);
-    accountTable.addColumn("BALANCE", fixture.intType);
-    registerTable(accountTable);
-
-    // Register "ORDERS" stream.
-    MockTable ordersStream = MockTable.create(this, salesSchema, "ORDERS",
-        true, Double.POSITIVE_INFINITY);
-    ordersStream.addColumn("ROWTIME", fixture.timestampType);
-    ordersStream.addMonotonic("ROWTIME");
-    ordersStream.addColumn("PRODUCTID", fixture.intType);
-    ordersStream.addColumn("ORDERID", fixture.intType);
-    registerTable(ordersStream);
-
-    // Register "SHIPMENTS" stream.
-    // "ROWTIME" is not column 0, just to mix things up.
-    MockTable shipmentsStream = MockTable.create(this, salesSchema, "SHIPMENTS",
-        true, Double.POSITIVE_INFINITY);
-    shipmentsStream.addColumn("ORDERID", fixture.intType);
-    shipmentsStream.addColumn("ROWTIME", fixture.timestampType);
-    shipmentsStream.addMonotonic("ROWTIME");
-    registerTable(shipmentsStream);
-
-    // Register "PRODUCTS" table.
-    MockTable productsTable = MockTable.create(this, salesSchema, "PRODUCTS",
-        false, 200D);
-    productsTable.addColumn("PRODUCTID", fixture.intType);
-    productsTable.addColumn("NAME", fixture.varchar20Type);
-    productsTable.addColumn("SUPPLIERID", fixture.intType);
-    registerTable(productsTable);
-
-    // Register "PRODUCTS_TEMPORAL" table.
-    MockTable productsTemporalTable =
-        MockTable.create(this, salesSchema, "PRODUCTS_TEMPORAL", false, 200D,
-        null, NullInitializerExpressionFactory.INSTANCE, true);
-    productsTemporalTable.addColumn("PRODUCTID", fixture.intType);
-    productsTemporalTable.addColumn("NAME", fixture.varchar20Type);
-    productsTemporalTable.addColumn("SUPPLIERID", fixture.intType);
-    productsTemporalTable.addColumn("SYS_START", fixture.timestampType);
-    productsTemporalTable.addColumn("SYS_END", fixture.timestampType);
-    registerTable(productsTemporalTable);
-
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
     // Register "SUPPLIERS" table.
     MockTable suppliersTable = MockTable.create(this, salesSchema, "SUPPLIERS",
         false, 10D);
@@ -300,7 +220,10 @@ public class MockCatalogReaderSimple extends MockCatalogReader {
                         salField.getIndex()),
                     rexBuilder.makeExactLiteral(BigDecimal.valueOf(1000L),
                         salField.getType())));
+<<<<<<< HEAD
             return RexUtil.composeConjunction(rexBuilder, nodes);
+=======
+            return RexUtil.composeConjunction(rexBuilder, nodes, false);
           }
         };
     salesSchema.addTable(Util.last(emp20View.getQualifiedName()));
@@ -335,7 +258,7 @@ public class MockCatalogReaderSimple extends MockCatalogReader {
                         salField.getIndex()),
                     rexBuilder.makeExactLiteral(BigDecimal.valueOf(1000L),
                         salField.getType())));
-            return RexUtil.composeConjunction(rexBuilder, nodes);
+            return RexUtil.composeConjunction(rexBuilder, nodes, false);
           }
         };
     salesSchema.addTable(Util.last(empNullables20View.getQualifiedName()));
@@ -425,3 +348,8 @@ public class MockCatalogReaderSimple extends MockCatalogReader {
 
   }
 }
+<<<<<<< HEAD
+=======
+
+// End MockCatalogReaderSimple.java
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)

@@ -189,9 +189,7 @@ public class SqlTypeAssignmentRule implements SqlTypeMappingRule {
     // MAP is assignable from ...
     rules.add(SqlTypeName.MAP, EnumSet.of(SqlTypeName.MAP));
 
-    // UUID is assignable from
-    rules.add(SqlTypeName.UUID, EnumSet.of(SqlTypeName.UUID));
-
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
     // ANY is assignable from ...
     rule.clear();
     rule.add(SqlTypeName.TINYINT);
@@ -220,3 +218,6 @@ public class SqlTypeAssignmentRule implements SqlTypeMappingRule {
     return this.map;
   }
 }
+<<<<<<< HEAD
+=======
+// End SqlTypeAssignmentRule.java

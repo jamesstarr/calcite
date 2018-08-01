@@ -240,10 +240,13 @@ public enum SqlTypeFamily implements RelDataTypeFamily {
       return factory.createSqlType(SqlTypeName.CURSOR);
     case COLUMN_LIST:
       return factory.createSqlType(SqlTypeName.COLUMN_LIST);
+<<<<<<< HEAD
     case VARIANT:
       return factory.createSqlType(SqlTypeName.VARIANT);
     case UUID:
       return factory.createSqlType(SqlTypeName.UUID);
+=======
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
     default:
       return null;
     }

@@ -85,7 +85,7 @@ class SqlTestGen {
    */
   private static class SqlValidatorSpooler extends SqlValidatorTest {
     private static final SqlTestFactory SPOOLER_VALIDATOR = SqlTestFactory.INSTANCE.withValidator(
-        (opTab, catalogReader, typeFactory, config) ->
+        (opTab, catalogReader, typeFactory, conformance) ->
             (SqlValidator) Proxy.newProxyInstance(
                 SqlValidatorSpooler.class.getClassLoader(),
                 new Class[]{SqlValidator.class},
@@ -98,7 +98,7 @@ class SqlTestGen {
     }
 
     public SqlTester getTester() {
-      return new SqlValidatorTester(SPOOLER_VALIDATOR) {
+      return new SqlTesterImpl(SPOOLER_VALIDATOR) {
         public void assertExceptionIsThrown(
             String sql,
             String expectedMsgPattern) {

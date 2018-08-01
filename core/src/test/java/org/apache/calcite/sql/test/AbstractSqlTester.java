@@ -110,6 +110,7 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/sql/test/AbstractSqlTester.java
   public final SqlValidator getValidator() {
     return factory.getValidator();
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/sql/test/AbstractSqlTester.java
 =======
   public SqlValidator getValidator() {
 =======
@@ -117,6 +118,8 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
 >>>>>>> 796f37225 (Revert "[CALCITE-4172] Expand columnar identifiers before resolving (James Starr)"):core/src/test/java/org/apache/calcite/sql/test/SqlTesterImpl.java
     return factory.getValidator(factory);
 >>>>>>> 08c2dc4de ([CALCITE-4172] Expand columnar identifiers before resolving (James Starr)):core/src/test/java/org/apache/calcite/sql/test/SqlTesterImpl.java
+=======
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory):core/src/test/java/org/apache/calcite/sql/test/SqlTesterImpl.java
   }
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/sql/test/AbstractSqlTester.java
@@ -357,8 +360,13 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
     return with("connectionFactory", connectionFactory);
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/sql/test/AbstractSqlTester.java
   protected final SqlTester with(final String name, final Object value) {
     return with(factory.with(name, value));
+=======
+  protected SqlTesterImpl with(final String name, final Object value) {
+    return new SqlTesterImpl(factory.with(name, value));
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory):core/src/test/java/org/apache/calcite/sql/test/SqlTesterImpl.java
   }
 
   protected abstract SqlTester with(SqlTestFactory factory);

@@ -146,3 +146,8 @@ final class CompoundNameColumnResolver implements MockCatalogReader.ColumnResolv
         });
   }
 }
+<<<<<<< HEAD
+=======
+
+// End CompoundNameColumnResolver.java
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)

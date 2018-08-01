@@ -60,3 +60,8 @@ public interface SqlTypeMappingRule {
     return rule.contains(from);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlTypeMappingRule.java
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)

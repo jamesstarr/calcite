@@ -16,9 +16,7 @@
  */
 package org.apache.calcite.test;
 
-import org.apache.calcite.avatica.util.Casing;
-import org.apache.calcite.avatica.util.Quoting;
-import org.apache.calcite.config.Lex;
+
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.SqlCollation;
 import org.apache.calcite.sql.SqlNode;
@@ -26,8 +24,7 @@ import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParserUtil;
 import org.apache.calcite.sql.parser.StringAndPos;
-import org.apache.calcite.sql.test.DefaultSqlTestFactory;
-import org.apache.calcite.sql.test.DelegatingSqlTestFactory;
+
 import org.apache.calcite.sql.test.SqlTestFactory;
 import org.apache.calcite.sql.test.SqlTester;
 import org.apache.calcite.sql.test.SqlValidatorTester;
@@ -36,12 +33,8 @@ import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.sql.validate.SqlMonotonicity;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.test.catalog.MockCatalogReaderExtended;
-
-import com.google.common.base.Preconditions;
-
-import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.platform.commons.support.AnnotationSupport;
+import org.apache.calcite.util.TestUtil;
+import org.apache.calcite.util.Util;
 
 import java.nio.charset.Charset;
 import java.util.Objects;
@@ -73,35 +66,7 @@ public class SqlValidatorTestCase {
 
   private static final SqlTestFactory EXTENDED_TEST_FACTORY =
       SqlTestFactory.INSTANCE.withCatalogReader(MockCatalogReaderExtended::new);
-
-  static final SqlTester EXTENDED_CATALOG_TESTER =
-      new SqlValidatorTester(EXTENDED_TEST_FACTORY);
-
-  static final SqlTester EXTENDED_CATALOG_TESTER_2003 =
-      new SqlValidatorTester(EXTENDED_TEST_FACTORY)
-          .withConformance(SqlConformanceEnum.PRAGMATIC_2003);
-
-  static final SqlTester EXTENDED_CATALOG_TESTER_LENIENT =
-      new SqlValidatorTester(EXTENDED_TEST_FACTORY)
-          .withConformance(SqlConformanceEnum.LENIENT);
-
-  protected SqlTester tester;
-
-  /**
-   * Creates a test case.
-   */
-  public SqlValidatorTestCase() {
-    this.tester = getTester();
-  }
-
-  //~ Methods ----------------------------------------------------------------
-
-  /**
-   * Returns a tester. Derived classes should override this method to run the
-   * same set of tests in a different testing environment.
-   */
-  public SqlTester getTester() {
-    return new SqlValidatorTester(SqlTestFactory.INSTANCE);
+    return new SqlTesterImpl(SqlTestFactory.INSTANCE);
   }
 
   /** Creates a test context with a SQL query. */

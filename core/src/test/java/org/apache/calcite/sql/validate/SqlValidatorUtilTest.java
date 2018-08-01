@@ -21,8 +21,7 @@ import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.test.SqlTestFactory;
-import org.apache.calcite.sql.test.SqlTester;
-import org.apache.calcite.sql.test.SqlValidatorTester;
+import org.apache.calcite.sql.test.SqlTesterImpl;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -125,8 +124,8 @@ class SqlValidatorUtilTest {
     final List<SqlNode> newList = new ArrayList<>(2);
     newList.add(new SqlIdentifier(Arrays.asList("f0", "c0"), SqlParserPos.ZERO));
     newList.add(new SqlIdentifier(Arrays.asList("f0", "c0"), SqlParserPos.ZERO));
-    final SqlTester tester =
-        new SqlValidatorTester(SqlTestFactory.INSTANCE);
+    final SqlTesterImpl tester =
+        new SqlTesterImpl(SqlTestFactory.INSTANCE);
     final SqlValidatorImpl validator =
         (SqlValidatorImpl) tester.getValidator();
     try {

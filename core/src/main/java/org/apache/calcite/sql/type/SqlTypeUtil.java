@@ -64,7 +64,7 @@ public abstract class SqlTypeUtil {
     assert argTypes.size() >= 2;
 
     // Filter out ANY and NULL elements.
-    List<RelDataType> argTypes2 = new ArrayList<>();
+    List<RelDataType> argTypes2 = Lists.newArrayList();
     for (RelDataType t : argTypes) {
       if (!isAny(t) && !isNull(t)) {
         argTypes2.add(t);
@@ -1220,38 +1220,7 @@ public abstract class SqlTypeUtil {
   }
 
   /**
-   * This is a poorman's
-   * {@link #equalSansNullability(RelDataTypeFactory, RelDataType, RelDataType)}.
-   *
-   * <p>We assume that "not null" is represented in the type's digest
-   * as a trailing "NOT NULL" (case sensitive).
-   *
-   * <p>If you got a type factory,
-   * {@link #equalSansNullability(RelDataTypeFactory, RelDataType, RelDataType)}
-   * is preferred.
-   *
-   * @param type1 First type
-   * @param type2 Second type
-   * @return true if the types are equal or the only difference is nullability
-   */
-  public static boolean equalSansNullability(RelDataType type1, RelDataType type2) {
-    if (type1 == type2) {
-      return true;
-    }
-    String x = type1.getFullTypeString();
-    String y = type2.getFullTypeString();
-    if (x.length() < y.length()) {
-      String c = x;
-      x = y;
-      y = c;
-    }
-
-    return (x.length() == y.length()
-            || x.length() == y.length() + NON_NULLABLE_SUFFIX.length()
-            && x.endsWith(NON_NULLABLE_SUFFIX)) && x.startsWith(y);
-  }
-
-  /**
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
    * Returns whether two struct types are equal, ignoring nullability.
    *
    * <p>They do not need to come from the same factory.
@@ -1259,9 +1228,12 @@ public abstract class SqlTypeUtil {
    * @param factory       Type factory
    * @param type1         First type
    * @param type2         Second type
+<<<<<<< HEAD
    * @param nameMatcher   Name matcher used to compare the field names, if null,
    *                      the field names are also ignored
    *
+=======
+   * @param nameMatcher   Name matcher used to compare the field names
    * @return Whether types are equal, ignoring nullability
    */
   public static boolean equalAsStructSansNullability(
@@ -1278,8 +1250,7 @@ public abstract class SqlTypeUtil {
 
     for (Pair<RelDataTypeField, RelDataTypeField> pair
         : Pair.zip(type1.getFieldList(), type2.getFieldList())) {
-      if (nameMatcher != null
-          && !nameMatcher.matches(pair.left.getName(), pair.right.getName())) {
+      if (!nameMatcher.matches(pair.left.getName(), pair.right.getName())) {
         return false;
       }
       if (!equalSansNullability(factory, pair.left.getType(), pair.right.getType())) {
@@ -1644,6 +1615,102 @@ public abstract class SqlTypeUtil {
     default:
       return null;
     }
+  }
+
+  /**
+   * @return true if type is MAP
+   */
+  public static boolean isMap(RelDataType type) {
+    SqlTypeName typeName = type.getSqlTypeName();
+    if (typeName == null) {
+      return false;
+    }
+
+    return type.getSqlTypeName() == SqlTypeName.MAP;
+  }
+
+  /**
+   * @return true if type is CHARACTER
+   */
+  public static boolean isCharacter(RelDataType type) {
+    SqlTypeName typeName = type.getSqlTypeName();
+    if (typeName == null) {
+      return false;
+    }
+
+    return SqlTypeFamily.CHARACTER.contains(type);
+  }
+
+  /**
+   * @return true if the type is a CHARACTER or contains a CHARACTER type
+   */
+  public static boolean hasCharactor(RelDataType type) {
+    if (isCharacter(type)) {
+      return true;
+    }
+    if (isArray(type)) {
+      return hasCharactor(type.getComponentType());
+    }
+    return false;
+  }
+
+  /**
+   * @return true if type is STRING
+   */
+  public static boolean isString(RelDataType type) {
+    SqlTypeName typeName = type.getSqlTypeName();
+    if (typeName == null) {
+      return false;
+    }
+
+    return SqlTypeFamily.STRING.contains(type);
+  }
+
+  /**
+   * @return true if type is BOOLEAN
+   */
+  public static boolean isBoolean(RelDataType type) {
+    SqlTypeName typeName = type.getSqlTypeName();
+    if (typeName == null) {
+      return false;
+    }
+
+    return SqlTypeFamily.BOOLEAN.contains(type);
+  }
+
+  /**
+   * @return true if type is BINARY
+   */
+  public static boolean isBinary(RelDataType type) {
+    SqlTypeName typeName = type.getSqlTypeName();
+    if (typeName == null) {
+      return false;
+    }
+
+    return SqlTypeFamily.BINARY.contains(type);
+  }
+
+  /**
+   * @return true if type is Atomic
+   */
+  public static boolean isAtomic(RelDataType type) {
+    SqlTypeName typeName = type.getSqlTypeName();
+    if (typeName == null) {
+      return false;
+    }
+
+    return SqlTypeUtil.isDatetime(type)
+        || SqlTypeUtil.isNumeric(type)
+        || SqlTypeUtil.isString(type)
+        || SqlTypeUtil.isBoolean(type);
+  }
+
+  /** Get decimal with max precision/scale for the current type system. */
+  public static RelDataType getMaxPrecisionScaleDecimal(RelDataTypeFactory factory) {
+    int maxPrecision = factory.getTypeSystem().getMaxNumericPrecision();
+    int maxScale = factory.getTypeSystem().getMaxNumericScale();
+
+    return factory.createSqlType(SqlTypeName.DECIMAL, maxPrecision, maxScale);
   }
 }
 >>>>>>> 3c8da1f95 (DX-11147: Fix RexSimplify#processRange cast issue)

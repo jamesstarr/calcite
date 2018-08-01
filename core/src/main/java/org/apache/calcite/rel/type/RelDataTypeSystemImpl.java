@@ -246,6 +246,9 @@ public abstract class RelDataTypeSystemImpl implements RelDataTypeSystem {
     return true;
   }
 
+  @Override public boolean shouldConvertRaggedUnionTypesToVarying() {
+    return false;
+  }
 
   @Override public RelDataType deriveDecimalPlusType(RelDataTypeFactory typeFactory,
       RelDataType type1, RelDataType type2) {

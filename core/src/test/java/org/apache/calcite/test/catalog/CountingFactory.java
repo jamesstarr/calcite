@@ -78,3 +78,8 @@ public class CountingFactory extends NullInitializerExpressionFactory {
        constructorArgs, context);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End CountingFactory.java
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)

@@ -96,10 +96,7 @@ import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.RelDecorrelator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.test.catalog.MockCatalogReader;
-import org.apache.calcite.tools.FrameworkConfig;
-import org.apache.calcite.tools.Frameworks;
-import org.apache.calcite.tools.Program;
-import org.apache.calcite.tools.Programs;
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 
@@ -1926,7 +1923,6 @@ class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testReduceConstants() throws Exception {
     HepProgram program = new HepProgramBuilder()
->>>>>>> 8ef4c666a (DX-37375 Move ReduceExpressionsRule to Config API)
         .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
         .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)

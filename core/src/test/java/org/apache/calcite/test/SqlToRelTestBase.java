@@ -67,7 +67,7 @@ import org.apache.calcite.sql2rel.RelFieldTrimmer;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
 import org.apache.calcite.test.catalog.MockCatalogReader;
-import org.apache.calcite.test.catalog.MockCatalogReaderDynamic;
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
 import org.apache.calcite.test.catalog.MockCatalogReaderSimple;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.util.ImmutableBitSet;
@@ -772,7 +772,10 @@ public abstract class SqlToRelTestBase {
       } else {
         catalogReader = new MockCatalogReaderSimple(typeFactory, true);
       }
+<<<<<<< HEAD
       return catalogReader.init();
+=======
+      return new MockCatalogReaderSimple(typeFactory, true).init();
     }
 
     public RelOptPlanner createPlanner() {

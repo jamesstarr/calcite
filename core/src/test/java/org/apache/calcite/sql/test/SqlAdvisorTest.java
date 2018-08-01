@@ -16,20 +16,17 @@
  */
 package org.apache.calcite.sql.test;
 
-import org.apache.calcite.config.Lex;
+
 import org.apache.calcite.sql.advise.SqlAdvisor;
 import org.apache.calcite.sql.advise.SqlAdvisorValidator;
 import org.apache.calcite.sql.advise.SqlSimpleParser;
-import org.apache.calcite.sql.parser.SqlParser;
+
 import org.apache.calcite.sql.parser.SqlParserUtil;
 import org.apache.calcite.sql.parser.StringAndPos;
-import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
-import org.apache.calcite.sql.validate.SqlConformance;
+
 import org.apache.calcite.sql.validate.SqlMoniker;
 import org.apache.calcite.sql.validate.SqlMonikerType;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql.validate.SqlValidatorWithHints;
-import org.apache.calcite.test.MockCatalogReader;
+
 import org.apache.calcite.test.SqlValidatorTestCase;
 
 import org.junit.Assert;
@@ -52,6 +49,9 @@ import static org.junit.Assert.fail;
  * for SqlAdvisor.
  */
 public class SqlAdvisorTest extends SqlValidatorTestCase {
+  public static final SqlTestFactory ADVISOR_TEST_FACTORY = SqlTestFactory.INSTANCE.withValidator(
+      SqlAdvisorValidator::new);
+
   //~ Static fields/initializers ---------------------------------------------
 
   private static final List<String> STAR_KEYWORD =
@@ -194,6 +194,7 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
           "KEYWORD(NULLIF)",
           "KEYWORD(OCTET_LENGTH)",
           "KEYWORD(OVERLAY)",
+
           "KEYWORD(PERCENTILE_CONT)",
           "KEYWORD(PERCENTILE_DISC)",
           "KEYWORD(PERCENT_RANK)",
@@ -428,9 +429,8 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
   protected void assertHint(
       String sql,
       String expectedResults) throws Exception {
-    SqlValidatorWithHints validator =
-        (SqlValidatorWithHints) tester.getValidator();
-    SqlAdvisor advisor = tester.getFactory().createAdvisor(validator);
+    SqlAdvisor advisor = tester.getFactory().createAdvisor();
+
 
     StringAndPos sap = SqlParserUtil.findPos(sql);
 
@@ -451,9 +451,8 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
    * @param expected Expected result after simplification.
    */
   protected void assertSimplify(String sql, String expected) {
-    SqlValidatorWithHints validator =
-        (SqlValidatorWithHints) tester.getValidator();
-    SqlAdvisor advisor = tester.getFactory().createAdvisor(validator);
+    SqlAdvisor advisor = tester.getFactory().createAdvisor();
+
 
     StringAndPos sap = SqlParserUtil.findPos(sql);
     String actual = advisor.simplifySql(sap.sql, sap.cursor);
@@ -519,21 +518,10 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
   protected void assertComplete(
       String sql,
       String expectedResults,
-      String expectedWord,
-      Map<String, String> replacements) {
-    assertComplete(tester, sql, expectedResults, expectedWord, replacements);
-  }
+      String expectedWord) {
+    SqlAdvisor advisor = tester.getFactory().createAdvisor();
 
-<<<<<<< HEAD
-  protected void assertComplete(
-      SqlTester customTester,
-      String sql,
-      String expectedResults,
-      String expectedWord,
-      Map<String, String> replacements) {
-    SqlAdvisor advisor = customTester.getFactory().createAdvisor();
 
-=======
     StringAndPos sap = SqlParserUtil.findPos(sql);
     final String[] replaced = {null};
     List<SqlMoniker> results =
@@ -618,7 +606,10 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
   }
 
   @Override public SqlTester getTester() {
+<<<<<<< HEAD
     return new SqlValidatorTester(ADVISOR_TEST_FACTORY);
+=======
+    return new SqlTesterImpl(ADVISOR_TEST_FACTORY);
   }
 
   /**
@@ -1640,18 +1631,6 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
     assertSimplify(sql, simplified);
   }
 
-  @WithLex(Lex.SQL_SERVER) @Test void testMssql() {
-    // Manually apply SQL Server lexical configuration since @WithLex doesn't work in JUnit 5
-    SqlTester sqlServerTester = tester.withLex(Lex.SQL_SERVER);
-
-    String sql =
-        "select 1 from [emp] union select 2 from [DEPT] a where ^ and deptno < 5";
-    String simplified =
-        "SELECT * FROM [DEPT] a WHERE _suggest_ and deptno < 5";
-
-    // Use the SQL Server tester for assertions
-    assertSimplify(sqlServerTester, sql, simplified);
-    assertComplete(sqlServerTester, sql, EXPR_KEYWORDS, Arrays.asList("TABLE(a)"), DEPT_COLUMNS);
-  }
+}
 
 }

@@ -49,7 +49,8 @@ import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.sql.validate.SqlDelegatingConformance;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
->>>>>>> e2ed3e98d (DX-11250: Fix AvgVarianceConvertlet)
+import org.apache.calcite.test.catalog.MockCatalogReader;
+import org.apache.calcite.test.catalog.MockCatalogReaderExtended;
 import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.TestUtil;
@@ -3514,43 +3515,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).with(getTesterWithDynamicTable()).ok();
   }
 
-  @Test void testWindowAndGroupByWithDynamicStar() {
-    final String sql = "SELECT\n"
-        + "n_regionkey,\n"
-        + "MAX(MIN(n_nationkey)) OVER (PARTITION BY n_regionkey)\n"
-        + "FROM (SELECT * FROM SALES.NATION)\n"
-        + "GROUP BY n_regionkey";
-
-    sql(sql).conformance(new SqlDelegatingConformance(SqlConformanceEnum.DEFAULT) {
-      @Override public boolean isGroupByAlias() {
-        return true;
-      }
-    }).with(getTesterWithDynamicTable()).ok();
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2366">[CALCITE-2366]
-   * Add support for ANY_VALUE aggregate function</a>. */
-  @Test void testAnyValueAggregateFunctionNoGroupBy() throws Exception {
-    final String sql = "SELECT any_value(empno) as anyempno FROM emp AS e";
-    sql(sql).ok();
-  }
-
-  @Test void testAnyValueAggregateFunctionGroupBy() throws Exception {
-    final String sql = "SELECT any_value(empno) as anyempno FROM emp AS e group by e.sal";
-    sql(sql).ok();
-  }
-
-  @Test void testSomeAndEveryAggregateFunctions() throws Exception {
-    final String sql = "SELECT some(empno = 130) as someempnoexists,\n"
-        + " every(empno > 0) as everyempnogtzero\n"
-        + " FROM emp AS e group by e.sal";
-    sql(sql).ok();
-  }
-
-  private Tester getExtendedTester() {
-    return tester.withCatalogReaderFactory(MockCatalogReaderExtended::new);
-  }
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
 
   @Test void testLarge() {
     // Size factor used to be 400, but lambdas use a lot of stack
@@ -3562,7 +3527,27 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     });
   }
 
+<<<<<<< HEAD
   @Test void testUnionInFrom() {
+=======
+  private Tester getExtendedTester() {
+    return tester.withCatalogReaderFactory(typeFactory ->
+        new MockCatalogReaderExtended(typeFactory, true).init());
+  }
+
+  @Test public void testLarge() {
+    SqlValidatorTest.checkLarge(400,
+        new Function<String, Void>() {
+          public Void apply(String input) {
+            final RelRoot root = tester.convertSqlToRel(input);
+            final String s = RelOptUtil.toString(root.project());
+            assertThat(s, notNullValue());
+            return null;
+          }
+        });
+  }
+
+  @Test public void testUnionInFrom() {
     final String sql = "select x0, x1 from (\n"
         + "  select 'a' as x0, 'a' as x1, 'a' as x2 from emp\n"
         + "  union all\n"

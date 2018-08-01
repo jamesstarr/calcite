@@ -18,24 +18,29 @@ package org.apache.calcite.sql.validate.implicit;
 
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.rel.type.RelDataTypeField;
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlCallBinding;
 import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlIdentifier;
+<<<<<<< HEAD
 import org.apache.calcite.sql.SqlInsert;
+=======
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSelect;
-import org.apache.calcite.sql.SqlUpdate;
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
 import org.apache.calcite.sql.SqlWith;
 import org.apache.calcite.sql.fun.SqlCase;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlTypeFamily;
 import org.apache.calcite.sql.type.SqlTypeUtil;
+<<<<<<< HEAD
+=======
+import org.apache.calcite.sql.validate.SqlUserDefinedTableMacro;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorScope;
 
@@ -52,7 +57,7 @@ public class TypeCoercionImpl extends AbstractTypeCoercion {
   public TypeCoercionImpl(RelDataTypeFactory typeFactory, SqlValidator validator) {
     super(typeFactory, validator);
   }
-
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
   /**
    * Widen a SqlNode's field type to target type,
    * mainly used for set operations like UNION, INTERSECT and EXCEPT.
@@ -61,14 +66,19 @@ public class TypeCoercionImpl extends AbstractTypeCoercion {
    * <pre>
    *
    *       type1, type2  type3       select a, b, c from t1
+<<<<<<< HEAD
    *          \      \      \
    *         type4  type5  type6              UNION
    *          /      /      /
+=======
+   *         |      |      |
+   *       type4  type5  type6              union
+   *         |      |      |
    *       type7  type8  type9       select d, e, f from t2
    * </pre>
    * For struct type (type1, type2, type3) union type (type4, type5, type6),
    * infer the first result column type type7 as the wider type of type1 and type4,
-   * the second column type as the wider type of type2 and type5 and so on.
+   * the second column type as the wider type of type2 and type5 and so forth.
    *
    * @param scope       validator scope
    * @param query       query node to update the field type for
@@ -101,27 +111,20 @@ public class TypeCoercionImpl extends AbstractTypeCoercion {
       return true;
     case WITH:
       SqlNode body = ((SqlWith) query).body;
-      return rowTypeCoercion(validator.getOverScope(query), body, columnIndex, targetType);
+      return rowTypeCoercion(validator.getWithScope(query), body, columnIndex, targetType);
     case UNION:
     case INTERSECT:
     case EXCEPT:
       // Set operations are binary for now.
-      final SqlCall operand0 = ((SqlCall) query).operand(0);
-      final SqlCall operand1 = ((SqlCall) query).operand(1);
-      final boolean coerced = rowTypeCoercion(scope, operand0, columnIndex, targetType)
-          && rowTypeCoercion(scope, operand1, columnIndex, targetType);
-      // Update the nested SET operator node type.
-      if (coerced) {
-        updateInferredColumnType(scope, query, columnIndex, targetType);
-      }
-      return coerced;
+      return rowTypeCoercion(scope, ((SqlCall) query).operand(0), columnIndex, targetType)
+          && rowTypeCoercion(scope, ((SqlCall) query).operand(1), columnIndex, targetType);
     default:
       return false;
     }
   }
 
   /**
-   * Coerce operands in binary arithmetic expressions to NUMERIC types.
+   * Coerce operands in binary arithmetic expressions to Numeric types.
    *
    * <p>Rules:</p>
    * <ul>
@@ -202,7 +205,7 @@ public class TypeCoercionImpl extends AbstractTypeCoercion {
   }
 
   /**
-   * For NUMERIC and STRING operands, cast STRING to data type of the other operand.
+   * For numeric and string operands, cast string to data type of the other operand.
    **/
   protected boolean binaryArithmeticWithStrings(
       SqlCallBinding binding,
@@ -261,8 +264,7 @@ public class TypeCoercionImpl extends AbstractTypeCoercion {
    * Cast "BOOLEAN = NUMERIC" to "NUMERIC = NUMERIC". Expressions like 1=`expr` and
    * 0=`expr` can be simplified to `expr` and `not expr`, but this better happens
    * in {@link org.apache.calcite.rex.RexSimplify}.
-   *
-   * <p>There are 2 cases that need type coercion here:
+   * There are 2 cases that need type coercion here:
    * <ol>
    *   <li>Case1: `boolean expr1` = 1 or `boolean expr1` = 0, replace the numeric literal with
    *   `true` or `false` boolean literal.</li>
@@ -357,28 +359,21 @@ public class TypeCoercionImpl extends AbstractTypeCoercion {
   /**
    * STRATEGIES
    *
-   * <p>With(Without) sub-query:
-   *
+   * <p>with/Without subquery:</p>
    * <ul>
-   *
-   * <li>With sub-query: find the common type through comparing the left hand
-   * side (LHS) expression types with corresponding right hand side (RHS)
-   * expression derived from the sub-query expression's row type. Wrap the
-   * fields of the LHS and RHS in CAST operators if it is needed.
-   *
-   * <li>Without sub-query: convert the nodes of the RHS to the common type by
-   * checking all the argument types and find out the minimum common type that
-   * all the arguments can be cast to.
-   *
+   * <li>With subquery: find the common type through comparing the left hand side (LHS)
+   * expression types with corresponding right hand side (RHS) expression derived
+   * from the subquery expression's row type. Wrap the fields of the
+   * LHS and RHS in CAST operators if it is needed.</li>
+   * <li>Without subquery: convert the nodes of the RHS to the
+   * common type by checking all the argument types and find out
+   * the minimum common type that all the arguments can be cast to.</li>
    * </ul>
    *
-   * <p>How to find the common type:
-   *
+   * How to find the common type:
    * <ul>
-   *
-   * <li>For both struct sql types (LHS and RHS), find the common type of every
-   * LHS and RHS fields pair:
-   *
+   *   <li>For both struct sql types(LHS and RHS), find the common type of every LHS and RHS
+   *   fields pair:
    *<pre>
    * (field1, field2, field3)    (field4, field5, field6)
    *    |        |       |          |       |       |
@@ -453,7 +448,7 @@ public class TypeCoercionImpl extends AbstractTypeCoercion {
           coerced = coerceOperandType(scope, binding.getCall(), 0, desired)
               || coerced;
         }
-        // RHS may be a row values expression or sub-query.
+        // RSH may be a row values expression or subquery.
         if (node2 instanceof SqlNodeList) {
           final SqlNodeList node3 = (SqlNodeList) node2;
           boolean listCoerced = false;
@@ -474,7 +469,7 @@ public class TypeCoercionImpl extends AbstractTypeCoercion {
             }
           }
         } else {
-          // Another sub-query.
+          // Another subquery.
           SqlValidatorScope scope1 = node2 instanceof SqlSelect
               ? validator.getSelectScope((SqlSelect) node2)
               : scope;
@@ -513,83 +508,6 @@ public class TypeCoercionImpl extends AbstractTypeCoercion {
     final List<RelDataType> paramTypes = function.getParamTypes();
     assert paramTypes != null;
     boolean coerced = false;
-    for (int i = 0; i < call.operandCount(); i++) {
-      SqlNode operand = call.operand(i);
-      if (operand.getKind() == SqlKind.ARGUMENT_ASSIGNMENT) {
-        final List<SqlNode> operandList = ((SqlCall) operand).getOperandList();
-        String name = ((SqlIdentifier) operandList.get(1)).getSimple();
-        int formalIndex = function.getParamNames().indexOf(name);
-        if (formalIndex < 0) {
-          return false;
-        }
-        // Column list operand type is not supported now.
-        coerced = coerceOperandType(scope, (SqlCall) operand, 0,
-            paramTypes.get(formalIndex)) || coerced;
-      } else {
-        coerced = coerceOperandType(scope, call, i, paramTypes.get(i)) || coerced;
-      }
-    }
-    return coerced;
-  }
-
-  public boolean querySourceCoercion(SqlValidatorScope scope,
-      RelDataType sourceRowType, RelDataType targetRowType, SqlNode query) {
-    final List<RelDataTypeField> sourceFields = sourceRowType.getFieldList();
-    final List<RelDataTypeField> targetFields = targetRowType.getFieldList();
-    final int sourceCount = sourceFields.size();
-    for (int i = 0; i < sourceCount; i++) {
-      RelDataType sourceType = sourceFields.get(i).getType();
-      RelDataType targetType = targetFields.get(i).getType();
-      if (!SqlTypeUtil.equalSansNullability(validator.getTypeFactory(), sourceType, targetType)
-          && !SqlTypeUtil.canCastFrom(targetType, sourceType, true)) {
-        // Returns early if types not equals and can not do type coercion.
-        return false;
-      }
-    }
-    boolean coerced = false;
-    for (int i = 0; i < sourceFields.size(); i++) {
-      RelDataType targetType = targetFields.get(i).getType();
-      coerced = coerceSourceRowType(scope, query, i, targetType) || coerced;
-    }
-    return coerced;
-  }
-
-  /**
-   * Coerces the field expression at index {@code columnIndex} of source
-   * in an INSERT or UPDATE query to target type.
-   *
-   * @param sourceScope  Query source scope
-   * @param query        Query
-   * @param columnIndex  Source column index to coerce type
-   * @param targetType   Target type
-   *
-   * @return True if any type coercion happens
-   */
-  private boolean coerceSourceRowType(
-      SqlValidatorScope sourceScope,
-      SqlNode query,
-      int columnIndex,
-      RelDataType targetType) {
-    switch (query.getKind()) {
-    case INSERT:
-      SqlInsert insert = (SqlInsert) query;
-      return coerceSourceRowType(sourceScope,
-          insert.getSource(),
-          columnIndex,
-          targetType);
-    case UPDATE:
-      SqlUpdate update = (SqlUpdate) query;
-      if (update.getSourceExpressionList() != null) {
-        final SqlNodeList sourceExpressionList = update.getSourceExpressionList();
-        return coerceColumnType(sourceScope, sourceExpressionList, columnIndex, targetType);
-      } else {
-        return coerceSourceRowType(sourceScope,
-            update.getSourceSelect(),
-            columnIndex,
-            targetType);
-      }
-    default:
-      return rowTypeCoercion(sourceScope, query, columnIndex, targetType);
-    }
-  }
 }
+
+// End TypeCoercionImpl.java
