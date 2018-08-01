@@ -146,7 +146,7 @@ public class SqlTestFactory {
   public SqlAdvisor createAdvisor() {
     SqlValidator validator = getValidator();
     if (validator instanceof SqlValidatorWithHints) {
-      return new SqlAdvisor((SqlValidatorWithHints) validator);
+      return new SqlAdvisor((SqlValidatorWithHints) validator, parserConfig.get());
     }
     throw new UnsupportedOperationException(
         "Validator should implement SqlValidatorWithHints, actual validator is " + validator);

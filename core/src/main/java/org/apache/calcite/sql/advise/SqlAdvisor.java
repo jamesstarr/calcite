@@ -62,6 +62,7 @@ public class SqlAdvisor {
 
   // Flags indicating precision/scale combinations
   private final SqlValidatorWithHints validator;
+  private final SqlParser.Config parserConfig;
 
   //~ Constructors -----------------------------------------------------------
 
@@ -72,10 +73,32 @@ public class SqlAdvisor {
    */
   public SqlAdvisor(
       SqlValidatorWithHints validator) {
+    this(validator, SqlParser.Config.DEFAULT);
+  }
+
+  /**
+   * Creates a SqlAdvisor with a validator instance and given parser configuration
+   *
+   * @param validator Validator
+   * @param parserConfig parser config
+   */
+  public SqlAdvisor(
+      SqlValidatorWithHints validator,
+      SqlParser.Config parserConfig) {
     this.validator = validator;
+    this.parserConfig = parserConfig;
   }
 
   //~ Methods ----------------------------------------------------------------
+
+  private char quoteStart() {
+    return parserConfig.quoting().string.charAt(0);
+  }
+
+  private char quoteEnd() {
+    char quote = quoteStart();
+    return quote == '[' ? ']' : quote;
+  }
 
   /**
    * Gets completion hints for a partially completed or syntactically incorrect
@@ -107,7 +130,7 @@ public class SqlAdvisor {
       --wordStart;
     }
     if ((wordStart > 0)
-        && (sql.charAt(wordStart - 1) == '"')) {
+        && (sql.charAt(wordStart - 1) == quoteStart())) {
       quoted = true;
       --wordStart;
     }
@@ -125,7 +148,7 @@ public class SqlAdvisor {
     }
     if (quoted
         && (wordEnd < sql.length())
-        && (sql.charAt(wordEnd) == '"')) {
+        && (sql.charAt(wordEnd) == quoteEnd())) {
       ++wordEnd;
     }
 
@@ -325,7 +348,7 @@ public class SqlAdvisor {
    * @return whether SQL statement is valid
    */
   public boolean isValid(String sql) {
-    SqlSimpleParser simpleParser = new SqlSimpleParser(HINT_TOKEN);
+    SqlSimpleParser simpleParser = new SqlSimpleParser(HINT_TOKEN, parserConfig);
     String simpleSql = simpleParser.simplifySql(sql);
     SqlNode sqlNode;
     try {
@@ -392,7 +415,7 @@ public class SqlAdvisor {
    * @return a completed, valid (and possibly simplified SQL statement
    */
   public String simplifySql(String sql, int cursor) {
-    SqlSimpleParser parser = new SqlSimpleParser(HINT_TOKEN);
+    SqlSimpleParser parser = new SqlSimpleParser(HINT_TOKEN, parserConfig);
     return parser.simplifySql(sql, cursor);
   }
 
@@ -421,7 +444,7 @@ public class SqlAdvisor {
    * @return metadata
    */
   protected SqlAbstractParserImpl.Metadata getParserMetadata() {
-    SqlParser parser = SqlParser.create("");
+    SqlParser parser = SqlParser.create("", parserConfig);
     return parser.getMetadata();
   }
 
@@ -435,7 +458,7 @@ public class SqlAdvisor {
    * @throws SqlParseException if not syntactically valid
    */
   protected SqlNode parseQuery(String sql) throws SqlParseException {
-    SqlParser parser = SqlParser.create(sql);
+    SqlParser parser = SqlParser.create(sql, parserConfig);
     return parser.parseStmt();
   }
 
