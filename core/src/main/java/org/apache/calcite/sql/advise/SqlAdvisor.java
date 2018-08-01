@@ -66,6 +66,7 @@ public class SqlAdvisor {
   // Flags indicating precision/scale combinations
   private final SqlValidatorWithHints validator;
   private final SqlParser.Config parserConfig;
+<<<<<<< HEAD
 
   // Cache for getPreferredCasing
   private String prevWord;
@@ -74,6 +75,8 @@ public class SqlAdvisor {
   // Reserved words cache
   private Set<String> reservedWordsSet;
   private List<String> reservedWordsList;
+=======
+>>>>>>> 0a81a4bc3 ([CALCITE-2433] SqlAdvisor: support configurable quoting characters)
 
   //~ Constructors -----------------------------------------------------------
 

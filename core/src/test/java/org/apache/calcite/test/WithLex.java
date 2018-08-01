@@ -31,3 +31,8 @@ import java.lang.annotation.Target;
 public @interface WithLex {
   Lex value() default Lex.ORACLE;
 }
+<<<<<<< HEAD
+=======
+
+// End WithLex.java
+>>>>>>> 0a81a4bc3 ([CALCITE-2433] SqlAdvisor: support configurable quoting characters)

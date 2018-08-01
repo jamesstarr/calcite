@@ -150,7 +150,7 @@ public class SqlSimpleParser {
    */
   public String simplifySql(String sql) {
     Tokenizer tokenizer = new Tokenizer(sql, hintToken, parserConfig.quoting());
-    List<Token> list = new ArrayList<>();
+    List<Token> list = new ArrayList<Token>();
     while (true) {
       Token token = tokenizer.nextToken();
       if (token == null) {

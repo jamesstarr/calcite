@@ -16,17 +16,22 @@
  */
 package org.apache.calcite.sql.test;
 
+import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.advise.SqlAdvisor;
 import org.apache.calcite.sql.advise.SqlAdvisorValidator;
 import org.apache.calcite.sql.advise.SqlSimpleParser;
+import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.parser.SqlParserUtil;
 import org.apache.calcite.sql.parser.StringAndPos;
 import org.apache.calcite.sql.validate.SqlMoniker;
 import org.apache.calcite.sql.validate.SqlMonikerType;
 import org.apache.calcite.test.SqlValidatorTestCase;
+import org.apache.calcite.test.WithLex;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.MethodRule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +53,8 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
 
   public static final SqlTestFactory ADVISOR_TEST_FACTORY =
       SqlTestFactory.INSTANCE.withValidator(SqlAdvisorValidator::new);
+
+  @Rule public MethodRule configureTester = SqlValidatorTestCase.TESTER_CONFIGURATION_RULE;
 
   //~ Static fields/initializers ---------------------------------------------
 
@@ -398,7 +405,8 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
 
   private void assertTokenizesTo(String sql, String expected) {
     SqlSimpleParser.Tokenizer tokenizer =
-        new SqlSimpleParser.Tokenizer(sql, "xxxxx");
+        new SqlSimpleParser.Tokenizer(sql, "xxxxx",
+            tester.getFactory().getParserConfig().quoting());
     StringBuilder buf = new StringBuilder();
     while (true) {
       SqlSimpleParser.Token token = tokenizer.nextToken();
@@ -1271,19 +1279,19 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
     assertSimplify(sql, expected);
   }
 
-  @WithLex(Lex.SQL_SERVER) @Test void testSimpleParserQuotedIdSqlServer() {
+  @WithLex(Lex.SQL_SERVER) @Test public void testSimpleParserQuotedIdSqlServer() {
     testSimpleParserQuotedIdImpl();
   }
 
-  @WithLex(Lex.MYSQL) @Test void testSimpleParserQuotedIdMySql() {
+  @WithLex(Lex.MYSQL) @Test public void testSimpleParserQuotedIdMySql() {
     testSimpleParserQuotedIdImpl();
   }
 
-  @WithLex(Lex.JAVA) @Test void testSimpleParserQuotedIdJava() {
+  @WithLex(Lex.JAVA) @Test public void testSimpleParserQuotedIdJava() {
     testSimpleParserQuotedIdImpl();
   }
 
-  @Test void testSimpleParserQuotedIdDefault() {
+  @Test public void testSimpleParserQuotedIdDefault() {
     testSimpleParserQuotedIdImpl();
   }
 
@@ -1478,136 +1486,28 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
     assertComplete(sql, "", null);
   }
 
-  @Test void testNestSchema() throws Exception {
+  @Test public void testNestSchema() throws Exception {
     String sql;
     sql = "select * from sales.n^";
     assertComplete(
         sql,
-        "SCHEMA(CATALOG.SALES.NEST)\n",
-        "n",
-        ImmutableMap.of("SCHEMA(CATALOG.SALES.NEST)", "nest"));
+        Collections.singletonList("SCHEMA(CATALOG.SALES.NEST)"));
 
-    sql = "select * from sales.\"n^asfasdf";
+    sql = "select * from sales.n^asfasdf";
     assertComplete(
         sql,
-        "SCHEMA(CATALOG.SALES.NEST)\n",
-        "\"n",
-        ImmutableMap.of("SCHEMA(CATALOG.SALES.NEST)", "\"NEST\""));
+        Collections.singletonList("SCHEMA(CATALOG.SALES.NEST)"));
 
     sql = "select * from sales.n^est";
     assertComplete(
         sql,
-        "SCHEMA(CATALOG.SALES.NEST)\n",
-        "n",
-        ImmutableMap.of("SCHEMA(CATALOG.SALES.NEST)", "nest"));
+        Collections.singletonList("SCHEMA(CATALOG.SALES.NEST)"));
 
     sql = "select * from sales.nu^";
-    assertComplete(sql, "", "nu");
+    assertComplete(sql, "", null);
   }
 
-  @Disabled("The set of completion results is empty")
-  @Test void testNestTable1() throws Exception {
-    String sql;
-    // select scott.emp.deptno from scott.emp; # valid
-    sql = "select catalog.sales.emp.em^ from catalog.sales.emp";
-    assertComplete(
-        sql,
-        "COLUMN(EMPNO)\n",
-        "em",
-        ImmutableMap.of("COLUMN(EMPNO)", "empno"));
-
-    sql = "select catalog.sales.em^ from catalog.sales.emp";
-    assertComplete(
-        sql,
-        "TABLE(EMP)\n",
-        "em",
-        ImmutableMap.of("TABLE(EMP)", "emp"));
-  }
-
-  @Test void testNestTable2() throws Exception {
-    String sql;
-    // select scott.emp.deptno from scott.emp as e; # not valid
-    sql = "select catalog.sales.emp.em^ from catalog.sales.emp as e";
-    assertComplete(
-        sql,
-        "",
-        "em");
-  }
-
-
-  @Disabled("The set of completion results is empty")
-  @Test void testNestTable3() throws Exception {
-    String sql;
-    // select scott.emp.deptno from emp; # valid
-    sql = "select catalog.sales.emp.em^ from emp";
-    assertComplete(
-        sql,
-        "COLUMN(EMPNO)\n",
-        "em",
-        ImmutableMap.of("COLUMN(EMP)", "empno"));
-
-    sql = "select catalog.sales.em^ from emp";
-    assertComplete(
-        sql,
-        "TABLE(EMP)\n",
-        "em",
-        ImmutableMap.of("TABLE(EMP)", "emp"));
-  }
-
-  @Test void testNestTable4() throws Exception {
-    String sql;
-    // select scott.emp.deptno from emp as emp; # not valid
-    sql = "select catalog.sales.emp.em^ from catalog.sales.emp as emp";
-    assertComplete(
-        sql,
-        "",
-        "em");
-  }
-
-  @Test void testNestTableSchemaMustMatch() throws Exception {
-    String sql;
-    // select foo.emp.deptno from emp; # not valid
-    sql = "select sales.nest.em^ from catalog.sales.emp_r";
-    assertComplete(
-        sql,
-        "",
-        "em");
-  }
-
-  @WithLex(Lex.SQL_SERVER) @Test void testNestSchemaSqlServer() throws Exception {
-    // Manually apply SQL Server lexical configuration since @WithLex doesn't work in JUnit 5
-    SqlTester sqlServerTester = tester.withLex(Lex.SQL_SERVER);
-
-    String sql;
-    sql = "select * from SALES.N^";
-    assertComplete(
-        sqlServerTester,
-        sql,
-        "SCHEMA(CATALOG.SALES.NEST)\n",
-        "N",
-        ImmutableMap.of("SCHEMA(CATALOG.SALES.NEST)", "NEST"));
-
-    sql = "select * from SALES.[n^asfasdf";
-    assertComplete(
-        sqlServerTester,
-        sql,
-        "SCHEMA(CATALOG.SALES.NEST)\n",
-        "[n",
-        ImmutableMap.of("SCHEMA(CATALOG.SALES.NEST)", "[NEST]"));
-
-    sql = "select * from SALES.[N^est";
-    assertComplete(
-        sqlServerTester,
-        sql,
-        "SCHEMA(CATALOG.SALES.NEST)\n",
-        "[N",
-        ImmutableMap.of("SCHEMA(CATALOG.SALES.NEST)", "[NEST]"));
-
-    sql = "select * from SALES.NU^";
-    assertComplete(sqlServerTester, sql, "", "NU");
-  }
-
-  @Test void testUnion() throws Exception {
+  @Test public void testUnion() throws Exception {
     // we simplify set ops such as UNION by removing other queries -
     // thereby avoiding validation errors due to mismatched select lists
     String sql =
@@ -1626,6 +1526,15 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
     sql = "select 1 from emp group by ^ except select 2 from dept a";
     simplified = "SELECT * FROM emp GROUP BY _suggest_";
     assertSimplify(sql, simplified);
+  }
+
+  @WithLex(Lex.SQL_SERVER) @Test public void testMssql() {
+    String sql =
+        "select 1 from [emp] union select 2 from [DEPT] a where ^ and deptno < 5";
+    String simplified =
+        "SELECT * FROM [DEPT] a WHERE _suggest_ and deptno < 5";
+    assertSimplify(sql, simplified);
+    assertComplete(sql, EXPR_KEYWORDS, Arrays.asList("TABLE(a)"), DEPT_COLUMNS);
   }
 
 }

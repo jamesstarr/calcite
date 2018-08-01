@@ -27,6 +27,293 @@ import org.apache.calcite.sql.parser.StringAndPos;
 import org.apache.calcite.sql.test.AbstractSqlTester;
 import org.apache.calcite.sql.test.SqlTestFactory;
 import org.apache.calcite.sql.test.SqlTester;
+<<<<<<< HEAD
+=======
+import org.apache.calcite.sql.test.SqlValidatorTester;
+import org.apache.calcite.sql.validate.SqlConformance;
+import org.apache.calcite.sql.validate.SqlConformanceEnum;
+import org.apache.calcite.sql.validate.SqlMonotonicity;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.test.catalog.MockCatalogReaderExtended;
+import org.apache.calcite.util.TestUtil;
+import org.apache.calcite.util.Util;
+
+import org.junit.rules.MethodRule;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.Statement;
+
+import java.nio.charset.Charset;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+/**
+ * An abstract base class for implementing tests against {@link SqlValidator}.
+ *
+ * <p>A derived class can refine this test in two ways. First, it can add <code>
+ * testXxx()</code> methods, to test more functionality.
+ *
+ * <p>Second, it can override the {@link #getTester} method to return a
+ * different implementation of the {@link Tester} object. This encapsulates the
+ * differences between test environments, for example, which SQL parser or
+ * validator to use.</p>
+ */
+public class SqlValidatorTestCase {
+  //~ Static fields/initializers ---------------------------------------------
+
+  private static final Pattern LINE_COL_PATTERN =
+      Pattern.compile("At line ([0-9]+), column ([0-9]+)");
+
+  private static final Pattern LINE_COL_TWICE_PATTERN =
+      Pattern.compile(
+          "(?s)From line ([0-9]+), column ([0-9]+) to line ([0-9]+), column ([0-9]+): (.*)");
+
+  private static final SqlTestFactory EXTENDED_TEST_FACTORY =
+      SqlTestFactory.INSTANCE.withCatalogReader(MockCatalogReaderExtended::new);
+
+  static final SqlTester EXTENDED_CATALOG_TESTER =
+      new SqlValidatorTester(EXTENDED_TEST_FACTORY);
+
+  static final SqlTester EXTENDED_CATALOG_TESTER_2003 =
+      new SqlValidatorTester(EXTENDED_TEST_FACTORY)
+          .withConformance(SqlConformanceEnum.PRAGMATIC_2003);
+
+  static final SqlTester EXTENDED_CATALOG_TESTER_LENIENT =
+      new SqlValidatorTester(EXTENDED_TEST_FACTORY)
+          .withConformance(SqlConformanceEnum.LENIENT);
+
+  public static final MethodRule TESTER_CONFIGURATION_RULE = new TesterConfigurationRule();
+
+  //~ Instance fields --------------------------------------------------------
+
+  protected SqlTester tester;
+
+  //~ Constructors -----------------------------------------------------------
+
+  /**
+   * Creates a test case.
+   */
+  public SqlValidatorTestCase() {
+    this.tester = getTester();
+  }
+
+  //~ Methods ----------------------------------------------------------------
+
+  /**
+   * Returns a tester. Derived classes should override this method to run the
+   * same set of tests in a different testing environment.
+   */
+  public SqlTester getTester() {
+    return new SqlValidatorTester(SqlTestFactory.INSTANCE);
+  }
+
+  public final Sql sql(String sql) {
+    return new Sql(tester, sql, true);
+  }
+
+  public final Sql sql(String sql, boolean typeCoercion) {
+    final SqlTester tester1 = tester.enableTypeCoercion(typeCoercion);
+    return new Sql(tester1, sql, true);
+  }
+
+  public final Sql expr(String sql) {
+    return new Sql(tester, sql, false);
+  }
+
+  public final Sql winSql(String sql, boolean typeCoercion) {
+    return sql(sql, typeCoercion);
+  }
+
+  public final Sql winSql(String sql) {
+    return sql(sql);
+  }
+
+  public final Sql win(String sql) {
+    return sql("select * from emp " + sql);
+  }
+
+  public Sql winExp(String sql) {
+    return winSql("select " + sql + " from emp window w as (order by deptno)");
+  }
+
+  public Sql winExp2(String sql) {
+    return winSql("select " + sql + " from emp");
+  }
+
+  public Sql winExp2(String sql, boolean typeCoercion) {
+    return winSql("select " + sql + " from emp", typeCoercion);
+  }
+
+  public void check(String sql) {
+    sql(sql).ok();
+  }
+
+  public void checkExp(String sql) {
+    tester.assertExceptionIsThrown(
+        AbstractSqlTester.buildQuery(sql),
+        null);
+  }
+
+  /**
+   * Checks that a SQL query gives a particular error, or succeeds if {@code
+   * expected} is null.
+   */
+  public final void checkFails(
+      String sql,
+      String expected) {
+    sql(sql).fails(expected);
+  }
+
+  /**
+   * Checks that a SQL query gives a particular error, or succeeds if {@code
+   * expected} is null, with specified type coercion flag.
+   */
+  public final void checkFails(
+      String sql,
+      String expected,
+      boolean typeCoercion) {
+    sql(sql, typeCoercion).fails(expected);
+  }
+
+  /**
+   * Checks that a SQL expression gives a particular error.
+   */
+  public final void checkExpFails(
+      String sql,
+      String expected) {
+    tester.assertExceptionIsThrown(
+        AbstractSqlTester.buildQuery(sql),
+        expected);
+  }
+
+  /**
+   * Checks that a SQL expression gives a particular error,
+   * with specified type coercion flag.
+   */
+  public final void checkExpFails(
+      String sql,
+      String expected,
+      boolean typeCoercion) {
+    final SqlTester tester1 = tester.enableTypeCoercion(typeCoercion);
+    tester1.assertExceptionIsThrown(
+        AbstractSqlTester.buildQuery(sql),
+        expected);
+  }
+
+  /**
+   * Checks that a SQL expression gives a particular error, and that the
+   * location of the error is the whole expression.
+   */
+  public final void checkWholeExpFails(
+      String sql,
+      String expected) {
+    assert sql.indexOf('^') < 0;
+    checkExpFails("^" + sql + "^", expected);
+  }
+
+  /**
+   * Checks that a SQL expression gives a particular error, and that the
+   * location of the error is the whole expression, with specified type coercion flag.
+   */
+  public final void checkWholeExpFails(
+      String sql,
+      String expected,
+      boolean typeCoercion) {
+    assert sql.indexOf('^') < 0;
+    checkExpFails("^" + sql + "^", expected, typeCoercion);
+  }
+
+  public final void checkExpType(
+      String sql,
+      String expected) {
+    checkColumnType(
+        AbstractSqlTester.buildQuery(sql),
+        expected);
+  }
+
+  /**
+   * Checks that a query returns a single column, and that the column has the
+   * expected type. For example,
+   *
+   * <blockquote><code>checkColumnType("SELECT empno FROM Emp", "INTEGER NOT
+   * NULL");</code></blockquote>
+   *
+   * @param sql      Query
+   * @param expected Expected type, including nullability
+   */
+  public final void checkColumnType(
+      String sql,
+      String expected) {
+    tester.checkColumnType(sql, expected);
+  }
+
+  /**
+   * Checks that a query returns a row of the expected type. For example,
+   *
+   * <blockquote><code>checkResultType("select empno, name from emp","{EMPNO
+   * INTEGER NOT NULL, NAME VARCHAR(10) NOT NULL}");</code></blockquote>
+   *
+   * @param sql      Query
+   * @param expected Expected row type
+   */
+  public final void checkResultType(
+      String sql,
+      String expected) {
+    tester.checkResultType(sql, expected);
+  }
+
+  /**
+   * Checks that the first column returned by a query has the expected type.
+   * For example,
+   *
+   * <blockquote><code>checkQueryType("SELECT empno FROM Emp", "INTEGER NOT
+   * NULL");</code></blockquote>
+   *
+   * @param sql      Query
+   * @param expected Expected type, including nullability
+   */
+  public final void checkIntervalConv(
+      String sql,
+      String expected) {
+    tester.checkIntervalConv(
+        AbstractSqlTester.buildQuery(sql),
+        expected);
+  }
+
+  protected final void assertExceptionIsThrown(
+      String sql,
+      String expectedMsgPattern) {
+    assert expectedMsgPattern != null;
+    tester.assertExceptionIsThrown(sql, expectedMsgPattern);
+  }
+
+  protected final void assertExceptionIsThrown(
+      String sql,
+      String expectedMsgPattern,
+      boolean typeCoercion) {
+    assert expectedMsgPattern != null;
+    final SqlTester tester1 = tester.enableTypeCoercion(typeCoercion);
+    tester1.assertExceptionIsThrown(sql, expectedMsgPattern);
+  }
+
+  public void checkCharset(
+      String sql,
+      Charset expectedCharset) {
+    tester.checkCharset(sql, expectedCharset);
+  }
+
+  public void checkCollation(
+      String sql,
+      String expectedCollationName,
+      SqlCollation.Coercibility expectedCoercibility) {
+    tester.checkCollation(sql, expectedCollationName, expectedCoercibility);
+  }
+
+  /**
+>>>>>>> 0a81a4bc3 ([CALCITE-2433] SqlAdvisor: support configurable quoting characters)
    * Checks whether an exception matches the expected pattern. If <code>
    * sap</code> contains an error location, checks this too.
    *
@@ -459,6 +746,30 @@ import org.apache.calcite.sql.test.SqlTester;
      * at a conformance level where it succeeds. */
     public Sql sansCarets() {
       return new Sql(tester, sql.replace("^", ""), true);
+    }
+  }
+
+  /**
+   * Enables to configure {@link #tester} behavior on a per-test basis.
+   * {@code tester} object is created in the test object constructor, and there's no
+   * trivial way to override its features.
+   * <p>This JUnit rule enables post-process test object on a per test method basis</p>
+   */
+  private static class TesterConfigurationRule implements MethodRule {
+    @Override public Statement apply(Statement statement, FrameworkMethod frameworkMethod,
+        Object o) {
+      return new Statement() {
+        @Override public void evaluate() throws Throwable {
+          SqlValidatorTestCase tc = (SqlValidatorTestCase) o;
+          SqlTester tester = tc.tester;
+          WithLex lex = frameworkMethod.getAnnotation(WithLex.class);
+          if (lex != null) {
+            tester = tester.withLex(lex.value());
+          }
+          tc.tester = tester;
+          statement.evaluate();
+        }
+      };
     }
   }
 }
