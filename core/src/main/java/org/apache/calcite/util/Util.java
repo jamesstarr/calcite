@@ -59,6 +59,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -124,6 +125,9 @@ public class Util {
   public static final String LINE_SEPARATOR =
       System.getProperty("line.separator");
 
+  /**
+   * System-dependent file separator, for example, "/" or "\."
+   */
   public static final String FILE_SEPARATOR =
       System.getProperty("file.separator");
 
@@ -826,6 +830,69 @@ public class Util {
     if (throwable instanceof Error) {
       throw (Error) throwable;
     }
+  }
+
+  /**
+   * This method rethrows input throwable as is (if its unchecked) or
+   * wraps it with {@link RuntimeException} and throws.
+   * <p>The typical usage would be {@code throw throwAsRuntime(...)}, where {@code throw} statement
+   * is needed so Java compiler knows the execution stops at that line.</p>
+   *
+   * @param throwable input throwable
+   * @return the method never returns, it always throws an unchecked exception
+   */
+  public static RuntimeException throwAsRuntime(Throwable throwable) {
+    throwIfUnchecked(throwable);
+    throw new RuntimeException(throwable);
+  }
+
+  /**
+   * This method rethrows input throwable as is (if its unchecked) with an extra message or
+   * wraps it with {@link RuntimeException} and throws.
+   * <p>The typical usage would be {@code throw throwAsRuntime(...)}, where {@code throw} statement
+   * is needed so Java compiler knows the execution stops at that line.</p>
+   *
+   * @param throwable input throwable
+   * @return the method never returns, it always throws an unchecked exception
+   */
+  public static RuntimeException throwAsRuntime(String message, Throwable throwable) {
+    if (throwable instanceof RuntimeException) {
+      throwable.addSuppressed(new Throwable(message));
+      throw (RuntimeException) throwable;
+    }
+    if (throwable instanceof Error) {
+      throwable.addSuppressed(new Throwable(message));
+      throw (Error) throwable;
+    }
+    if (throwable instanceof IOException) {
+      return new UncheckedIOException(message, (IOException) throwable);
+    }
+    throw new RuntimeException(message, throwable);
+  }
+
+  /**
+   * Wraps an exception with {@link RuntimeException} and return it.
+   * If the exception is already an instance of RuntimeException,
+   * returns it directly.
+   */
+  public static RuntimeException toUnchecked(Exception e) {
+    if (e instanceof RuntimeException) {
+      return (RuntimeException) e;
+    }
+    if (e instanceof IOException) {
+      return new UncheckedIOException((IOException) e);
+    }
+    return new RuntimeException(e);
+  }
+
+  /**
+   * Returns cause of the given throwable if it is non-null or the throwable itself.
+   * @param throwable input throwable
+   * @return cause of the given throwable if it is non-null or the throwable itself
+   */
+  public static Throwable causeOrSelf(Throwable throwable) {
+    Throwable cause = throwable.getCause();
+    return cause != null ? cause : throwable;
   }
 
   /**

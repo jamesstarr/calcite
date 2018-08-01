@@ -48,6 +48,8 @@ import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
+import org.apache.calcite.test.catalog.MockCatalogReader;
+import org.apache.calcite.test.catalog.MockCatalogReaderExtended;
 import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.TestUtil;
@@ -2755,15 +2757,6 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).with(getTesterWithDynamicTable()).ok();
   }
 
-  private Tester getExtendedTester() {
-    return tester.withCatalogReaderFactory(
-      new Function<RelDataTypeFactory, Prepare.CatalogReader>() {
-        public Prepare.CatalogReader apply(RelDataTypeFactory typeFactory) {
-          return new MockCatalogReader(typeFactory, true)
-              .init().init2();
-        }
-      });
-  }
 
   private Tester getTesterWithDynamicTable() {
     return tester.withCatalogReaderFactory(
@@ -2803,6 +2796,11 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
             }.init();
           }
         });
+  }
+
+  private Tester getExtendedTester() {
+    return tester.withCatalogReaderFactory(typeFactory ->
+        new MockCatalogReaderExtended(typeFactory, true).init());
   }
 
   @Test public void testLarge() {

@@ -101,7 +101,7 @@ public class SqlTesterImpl implements SqlTester, AutoCloseable {
   }
 
   public final SqlValidator getValidator() {
-    return factory.getValidator(factory);
+    return factory.getValidator();
   }
 
   public void assertExceptionIsThrown(
@@ -166,7 +166,7 @@ public class SqlTesterImpl implements SqlTester, AutoCloseable {
   }
 
   public SqlNode parseQuery(String sql) throws SqlParseException {
-    SqlParser parser = factory.createParser(factory, sql);
+    SqlParser parser = factory.createParser(sql);
     return parser.parseQuery();
   }
 
@@ -315,16 +315,8 @@ public class SqlTesterImpl implements SqlTester, AutoCloseable {
     return with("connectionFactory", connectionFactory);
   }
 
-  protected SqlTesterImpl with(final String name2, final Object value) {
-    return new SqlTesterImpl(
-        new DelegatingSqlTestFactory(factory) {
-          @Override public Object get(String name) {
-            if (name.equals(name2)) {
-              return value;
-            }
-            return super.get(name);
-          }
-        });
+  protected SqlTesterImpl with(final String name, final Object value) {
+    return new SqlTesterImpl(factory.with(name, value));
   }
 
   // SqlTester methods

@@ -29,6 +29,7 @@ import org.apache.calcite.sql.SqlDataTypeSpec;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.calcite.sql.validate.SqlNameMatcher;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorScope;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
@@ -66,10 +67,10 @@ public abstract class SqlTypeUtil {
     assert argTypes != null;
     assert argTypes.size() >= 2;
 
-    // Filter out ANY elements.
+    // Filter out ANY and NULL elements.
     List<RelDataType> argTypes2 = Lists.newArrayList();
     for (RelDataType t : argTypes) {
-      if (!isAny(t)) {
+      if (!isAny(t) && !isNull(t)) {
         argTypes2.add(t);
       }
     }
@@ -289,6 +290,25 @@ public abstract class SqlTypeUtil {
   }
 
   /**
+   * @return true if type is DATE
+   */
+  public static boolean isDate(RelDataType type) {
+    SqlTypeName typeName = type.getSqlTypeName();
+    if (typeName == null) {
+      return false;
+    }
+
+    return type.getSqlTypeName() == SqlTypeName.DATE;
+  }
+
+  /**
+   * @return true if type is TIMESTAMP
+   */
+  public static boolean isTimestamp(RelDataType type) {
+    return SqlTypeFamily.TIMESTAMP.contains(type);
+  }
+
+  /**
    * @return true if type is some kind of INTERVAL
    */
   public static boolean isInterval(RelDataType type) {
@@ -400,6 +420,17 @@ public abstract class SqlTypeUtil {
   }
 
   /**
+   * @return true if type is double
+   */
+  public static boolean isDouble(RelDataType type) {
+    SqlTypeName typeName = type.getSqlTypeName();
+    if (typeName == null) {
+      return false;
+    }
+    return typeName == SqlTypeName.DOUBLE;
+  }
+
+  /**
    * @return true if type is bigint
    */
   public static boolean isBigint(RelDataType type) {
@@ -477,6 +508,19 @@ public abstract class SqlTypeUtil {
    */
   public static boolean isNumeric(RelDataType type) {
     return isExactNumeric(type) || isApproximateNumeric(type);
+  }
+
+  /**
+   * @return true if type is null.
+   */
+  public static boolean isNull(RelDataType type) {
+    SqlTypeName typeName = type.getSqlTypeName();
+
+    if (typeName == null) {
+      return false;
+    }
+
+    return typeName == SqlTypeName.NULL;
   }
 
   /**
@@ -1123,6 +1167,42 @@ public abstract class SqlTypeUtil {
   }
 
   /**
+   * Returns whether two struct types are equal, ignoring nullability.
+   *
+   * <p>They do not need to come from the same factory.
+   *
+   * @param factory       Type factory
+   * @param type1         First type
+   * @param type2         Second type
+   * @param nameMatcher   Name matcher used to compare the field names
+   * @return Whether types are equal, ignoring nullability
+   */
+  public static boolean equalAsStructSansNullability(
+      RelDataTypeFactory factory,
+      RelDataType type1,
+      RelDataType type2,
+      SqlNameMatcher nameMatcher) {
+    assert type1.isStruct();
+    assert type2.isStruct();
+
+    if (type1.getFieldCount() != type2.getFieldCount()) {
+      return false;
+    }
+
+    for (Pair<RelDataTypeField, RelDataTypeField> pair
+        : Pair.zip(type1.getFieldList(), type2.getFieldList())) {
+      if (!nameMatcher.matches(pair.left.getName(), pair.right.getName())) {
+        return false;
+      }
+      if (!equalSansNullability(factory, pair.left.getType(), pair.right.getType())) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
    * Returns the ordinal of a given field in a record type, or -1 if the field
    * is not found.
    *
@@ -1334,6 +1414,9 @@ public abstract class SqlTypeUtil {
     return Integer.compare(p0, p1);
   }
 
+  /**
+   * @return true if type is ARRAY
+   */
   public static boolean isArray(RelDataType type) {
     return type.getSqlTypeName() == SqlTypeName.ARRAY;
   }
@@ -1378,6 +1461,102 @@ public abstract class SqlTypeUtil {
     default:
       return null;
     }
+  }
+
+  /**
+   * @return true if type is MAP
+   */
+  public static boolean isMap(RelDataType type) {
+    SqlTypeName typeName = type.getSqlTypeName();
+    if (typeName == null) {
+      return false;
+    }
+
+    return type.getSqlTypeName() == SqlTypeName.MAP;
+  }
+
+  /**
+   * @return true if type is CHARACTER
+   */
+  public static boolean isCharacter(RelDataType type) {
+    SqlTypeName typeName = type.getSqlTypeName();
+    if (typeName == null) {
+      return false;
+    }
+
+    return SqlTypeFamily.CHARACTER.contains(type);
+  }
+
+  /**
+   * @return true if the type is a CHARACTER or contains a CHARACTER type
+   */
+  public static boolean hasCharactor(RelDataType type) {
+    if (isCharacter(type)) {
+      return true;
+    }
+    if (isArray(type)) {
+      return hasCharactor(type.getComponentType());
+    }
+    return false;
+  }
+
+  /**
+   * @return true if type is STRING
+   */
+  public static boolean isString(RelDataType type) {
+    SqlTypeName typeName = type.getSqlTypeName();
+    if (typeName == null) {
+      return false;
+    }
+
+    return SqlTypeFamily.STRING.contains(type);
+  }
+
+  /**
+   * @return true if type is BOOLEAN
+   */
+  public static boolean isBoolean(RelDataType type) {
+    SqlTypeName typeName = type.getSqlTypeName();
+    if (typeName == null) {
+      return false;
+    }
+
+    return SqlTypeFamily.BOOLEAN.contains(type);
+  }
+
+  /**
+   * @return true if type is BINARY
+   */
+  public static boolean isBinary(RelDataType type) {
+    SqlTypeName typeName = type.getSqlTypeName();
+    if (typeName == null) {
+      return false;
+    }
+
+    return SqlTypeFamily.BINARY.contains(type);
+  }
+
+  /**
+   * @return true if type is Atomic
+   */
+  public static boolean isAtomic(RelDataType type) {
+    SqlTypeName typeName = type.getSqlTypeName();
+    if (typeName == null) {
+      return false;
+    }
+
+    return SqlTypeUtil.isDatetime(type)
+        || SqlTypeUtil.isNumeric(type)
+        || SqlTypeUtil.isString(type)
+        || SqlTypeUtil.isBoolean(type);
+  }
+
+  /** Get decimal with max precision/scale for the current type system. */
+  public static RelDataType getMaxPrecisionScaleDecimal(RelDataTypeFactory factory) {
+    int maxPrecision = factory.getTypeSystem().getMaxNumericPrecision();
+    int maxScale = factory.getTypeSystem().getMaxNumericScale();
+
+    return factory.createSqlType(SqlTypeName.DECIMAL, maxPrecision, maxScale);
   }
 }
 

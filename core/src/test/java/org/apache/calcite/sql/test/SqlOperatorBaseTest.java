@@ -7481,7 +7481,7 @@ public abstract class SqlOperatorBaseTest {
   }
 
   public static SqlTester tester() {
-    return new TesterImpl(DefaultSqlTestFactory.INSTANCE);
+    return new TesterImpl(SqlTestFactory.INSTANCE);
   }
 
   /**
@@ -7512,16 +7512,8 @@ public abstract class SqlOperatorBaseTest {
       }
     }
 
-    @Override protected TesterImpl with(final String name2, final Object value) {
-      return new TesterImpl(
-          new DelegatingSqlTestFactory(factory) {
-            @Override public Object get(String name) {
-              if (name.equals(name2)) {
-                return value;
-              }
-              return super.get(name);
-            }
-          });
+    @Override protected TesterImpl with(final String name, final Object value) {
+      return new TesterImpl(factory.with(name, value));
     }
   }
 
