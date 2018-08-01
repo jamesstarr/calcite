@@ -41,6 +41,7 @@ Site generation currently works best with ruby-2.5.1.
 ### Add javadoc
 
 1. `cd ..`
+<<<<<<< HEAD
 2. `./gradlew javadocAggregate`
 3. `rm -rf site/target/javadocAggregate`
    `rmdir site\target\javadocAggregate /S /Q` (Windows)
@@ -48,6 +49,13 @@ Site generation currently works best with ruby-2.5.1.
    `mkdir site\target` (Windows)
 4. `mv build/docs/javadocAggregate site/target`
    `for /d %a in (build\docs\javadocAggregate*) do move %a site\target` (Windows)
+=======
+2. `mvn -DskipTests site`
+3. `rm -rf site/target/apidocs site/target/testapidocs`
+   `rmdir site\target\apidocs site\target\testapidocs /S /Q` (Windows)
+4. `mv target/site/apidocs target/site/testapidocs site/target`
+   `for /d %a in (target\site\apidocs* target\site\testapidocs*) do move %a site\target` (Windows)
+>>>>>>> fcc1c2e7a ([CALCITE-2436] Steps for building site under Windows, misprint fix in SQL Language page)
 
 ### Running locally
 

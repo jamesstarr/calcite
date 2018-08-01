@@ -2182,12 +2182,16 @@ Not implemented:
 * CUME_DIST(value) OVER window
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 * NTH_VALUE(value, nth) OVER window
 >>>>>>> 391a8883e (Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)")
 =======
 * NTH_VALUE(value, nth) [ FROM { FIRST | LAST } ] IGNORE NULLS OVER window
 >>>>>>> 3564ebb7c (Revert "Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)"")
+=======
+* NTH_VALUE(value, nth) [ FROM { FIRST &#124; LAST } ] IGNORE NULLS OVER window
+>>>>>>> fcc1c2e7a ([CALCITE-2436] Steps for building site under Windows, misprint fix in SQL Language page)
 
 ### Grouping functions
 
