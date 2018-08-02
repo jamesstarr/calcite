@@ -103,12 +103,6 @@ public class SqlTestFactory {
         () -> createParserConfig(options));
   }
 
-  public static MockCatalogReader createCatalogReader(
-      RelDataTypeFactory typeFactory,
-      boolean caseSensitive) {
-    return new MockCatalogReaderSimple(typeFactory, caseSensitive).init();
-  }
-
   private static SqlOperatorTable createOperatorTable(SqlOperatorTable opTab0) {
     MockSqlOperatorTable opTab = new MockSqlOperatorTable(opTab0);
     MockSqlOperatorTable.addRamp(opTab);
