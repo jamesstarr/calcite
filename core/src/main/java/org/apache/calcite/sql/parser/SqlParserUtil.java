@@ -426,7 +426,6 @@ public final class SqlParserUtil {
    */
   public static StringAndPos findPos(String sql) {
     return StringAndPos.of(sql);
-
   }
 
   /**

@@ -59,6 +59,7 @@ import org.apache.calcite.server.CalciteServerStatement;
 import org.apache.calcite.sql.advise.SqlAdvisor;
 import org.apache.calcite.sql.advise.SqlAdvisorValidator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorWithHints;
 import org.apache.calcite.tools.RelRunner;
@@ -473,7 +474,16 @@ abstract class CalciteConnectionImpl
           new CalciteCatalogReader(rootSchema,
               schemaPath, typeFactory, con.config()),
               typeFactory, SqlValidator.Config.DEFAULT);
-      return new SqlAdvisor(validator);
+      final CalciteConnectionConfig config = con.config();
+      // This duplicates org.apache.calcite.prepare.CalcitePrepareImpl.prepare2_
+      final SqlParser.Config parserConfig = SqlParser.configBuilder()
+          .setQuotedCasing(config.quotedCasing())
+          .setUnquotedCasing(config.unquotedCasing())
+          .setQuoting(config.quoting())
+          .setConformance(config.conformance())
+          .setCaseSensitive(config.caseSensitive())
+          .build();
+      return new SqlAdvisor(validator, parserConfig);
     }
 
     public SchemaPlus getRootSchema() {

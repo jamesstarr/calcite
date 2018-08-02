@@ -66,17 +66,11 @@ public class SqlAdvisor {
   // Flags indicating precision/scale combinations
   private final SqlValidatorWithHints validator;
   private final SqlParser.Config parserConfig;
-<<<<<<< HEAD
+>>>>>>> 0a81a4bc3 ([CALCITE-2433] SqlAdvisor: support configurable quoting characters)
 
   // Cache for getPreferredCasing
   private String prevWord;
   private Casing prevPreferredCasing;
-
-  // Reserved words cache
-  private Set<String> reservedWordsSet;
-  private List<String> reservedWordsList;
-=======
->>>>>>> 0a81a4bc3 ([CALCITE-2433] SqlAdvisor: support configurable quoting characters)
 
   //~ Constructors -----------------------------------------------------------
 
@@ -190,29 +184,17 @@ public class SqlAdvisor {
 
     // If cursor was part of the way through a word, only include hints
     // which start with that word in the result.
-    final List<SqlMoniker> result;
-    if (word.length() > 0) {
-      result = new ArrayList<SqlMoniker>();
-      if (quoted) {
-        // Quoted identifier. Case-sensitive match.
-        word = word.substring(1);
-        for (SqlMoniker hint : completionHints) {
-          String cname = hint.toString();
-          if (cname.startsWith(word)) {
-            result.add(hint);
-          }
-        }
-      } else {
-        // Regular identifier. Case-insensitive match.
-        for (SqlMoniker hint : completionHints) {
-          List<String> fullyQualifiedNames = hint.getFullyQualifiedNames();
-          String cname = hint.toString();
-          String scopedIdentifier = fullyQualifiedNames.get(fullyQualifiedNames.size() - 1);
-          if (cname.regionMatches(true, 0, word, 0, word.length())
-              || scopedIdentifier.regionMatches(true, 0, word, 0, word.length())) {
-            result.add(hint);
-          }
-        }
+    final List<SqlMoniker> result = new ArrayList<>();
+    Casing preferredCasing = getPreferredCasing(word);
+
+    boolean ignoreCase = preferredCasing != Casing.UNCHANGED;
+    for (SqlMoniker hint : completionHints) {
+      List<String> names = hint.getFullyQualifiedNames();
+      // For now we treat only simple cases where the added name is the last
+      // See [CALCITE-2439] Smart complete for SqlAdvisor
+      String cname = Util.last(names);
+      if (cname.regionMatches(ignoreCase, 0, word, 0, word.length())) {
+        result.add(hint);
       }
     }
 
@@ -264,8 +246,11 @@ public class SqlAdvisor {
 
   public String getReplacement(SqlMoniker hint, String word) {
     Casing preferredCasing = getPreferredCasing(word);
+<<<<<<< HEAD
     boolean quoted = !word.isEmpty() && word.charAt(0) == quoteStart();
     return getReplacement(hint, quoted, preferredCasing);
+=======
+    return getReplacement(hint, !word.isEmpty() && word.charAt(0) == quoteStart(), preferredCasing);
   }
 
   public String getReplacement(SqlMoniker hint, boolean quoted, Casing preferredCasing) {
@@ -275,10 +260,7 @@ public class SqlAdvisor {
     // on quotedCasing/unquotedCasing
     quoted &= !isKeyword;
 
-    if (!quoted && !isKeyword && getReservedAndKeyWordsSet().contains(name)) {
-      quoted = true;
-    }
-
+>>>>>>> bc2544869 ([CALCITE-2434] SqlAdvisor: support hints for nested tables/schemas)
     StringBuilder sb =
         new StringBuilder(name.length() + (quoted ? 2 : 0));
 
@@ -380,10 +362,13 @@ public class SqlAdvisor {
       final SqlParserPos pos, String hintToken) {
     List<SqlNode> nodes = SqlUtil.getAncestry(root,
         input -> input instanceof SqlIdentifier
+<<<<<<< HEAD
             && Util.last(((SqlIdentifier) input).names)
                 .equals(UPPER_HINT_TOKEN),
 =======
             && ((SqlIdentifier) input).names.contains(UPPER_HINT_TOKEN),
+=======
+            && ((SqlIdentifier) input).names.contains(hintToken),
         input -> Objects.requireNonNull(input).getParserPosition()
             .startsAt(pos));
     assert nodes.get(0) == root;
