@@ -164,6 +164,7 @@ import org.junit.runners.Suite;
     JdbcFrontJdbcBackLinqMiddleTest.class,
     SqlToRelConverterTest.class,
     ProfilerTest.class,
+    SqlAdvisorJdbcTest.class,
     CoreQuidemTest.class,
     CalciteRemoteDriverTest.class,
     StreamTest.class,
