@@ -45,9 +45,7 @@ import org.apache.calcite.runtime.Hook;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.TableFunction;
-import org.apache.calcite.schema.Wrapper;
 import org.apache.calcite.schema.impl.AbstractSchema;
-import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.calcite.schema.impl.TableFunctionImpl;
 import org.apache.calcite.schema.impl.ViewTable;
 import org.apache.calcite.schema.impl.ViewTableMacro;
@@ -64,8 +62,7 @@ import org.apache.calcite.util.Holder;
 import org.apache.calcite.util.JsonBuilder;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Smalls;
-import org.apache.calcite.util.Sources;
-import org.apache.calcite.util.TestUtil;
+>>>>>>> 603d2e95d ([CALCITE-2446] Lateral joins do not work when saved as custom views (Piotr Bojko))
 import org.apache.calcite.util.Util;
 
 import org.apache.commons.dbcp2.PoolableConnectionFactory;
@@ -844,7 +841,6 @@ public class CalciteAssert {
                   + "    (30, 'Engineering'),\n"
                   + "    (40, 'Empty')) as t(deptno, dname)",
               ImmutableList.of(), ImmutableList.of("POST", "DEPT"),
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
               null));
       post.add("EMPS",
           ViewTable.viewMacro(post,
@@ -884,48 +880,7 @@ public class CalciteAssert {
             ImmutableList.<String>of(), ImmutableList.of("POST", "TICKER"),
             null));
       return post;
-    case FAKE_FOODMART:
-      // Similar to FOODMART, but not based on JdbcSchema.
-      // Contains 2 tables that do not extend JdbcTable.
-      // They redirect requests for SqlDialect and DataSource to the real JDBC
-      // FOODMART, and this allows statistics queries to be executed.
-      foodmart = addSchemaIfNotExists(rootSchema, SchemaSpec.JDBC_FOODMART);
-      final Wrapper salesTable = (Wrapper) foodmart.getTable("sales_fact_1997");
-      SchemaPlus fake =
-          rootSchema.add(schema.schemaName, new AbstractSchema());
-      fake.add("time_by_day", new AbstractTable() {
-        public RelDataType getRowType(RelDataTypeFactory typeFactory) {
-          return typeFactory.builder()
-              .add("time_id", SqlTypeName.INTEGER)
-              .add("the_year", SqlTypeName.INTEGER)
-              .build();
-        }
-
-        public <C> C unwrap(Class<C> aClass) {
-          if (aClass.isAssignableFrom(SqlDialect.class)
-              || aClass.isAssignableFrom(DataSource.class)) {
-            return salesTable.unwrap(aClass);
-          }
-          return super.unwrap(aClass);
-        }
-      });
-      fake.add("sales_fact_1997", new AbstractTable() {
-        public RelDataType getRowType(RelDataTypeFactory typeFactory) {
-          return typeFactory.builder()
-              .add("time_id", SqlTypeName.INTEGER)
-              .add("customer_id", SqlTypeName.INTEGER)
-              .build();
-        }
-
-        public <C> C unwrap(Class<C> aClass) {
-          if (aClass.isAssignableFrom(SqlDialect.class)
-              || aClass.isAssignableFrom(DataSource.class)) {
-            return salesTable.unwrap(aClass);
-          }
-          return super.unwrap(aClass);
-        }
-      });
-      return fake;
+>>>>>>> 603d2e95d ([CALCITE-2446] Lateral joins do not work when saved as custom views (Piotr Bojko))
     case AUX:
       SchemaPlus aux =
           rootSchema.add(schema.schemaName, new AbstractSchema());
@@ -948,9 +903,11 @@ public class CalciteAssert {
           ViewTable.viewMacro(aux, lateralSql, ImmutableList.of(),
               ImmutableList.of("AUX", "VIEWLATERAL"), null));
       return aux;
+<<<<<<< HEAD
     case BOOKSTORE:
       return rootSchema.add(schema.schemaName,
           new ReflectiveSchema(new BookstoreSchema()));
+=======
     default:
       throw new AssertionError("unknown schema " + schema);
     }
@@ -1037,6 +994,8 @@ public class CalciteAssert {
         return with(SchemaSpec.SCOTT);
       case SPARK:
         return with(CalciteConnectionProperty.SPARK, true);
+      case AUX:
+        return with(SchemaSpec.AUX, SchemaSpec.POST);
       default:
         throw Util.unexpected(config);
       }
@@ -1439,13 +1398,6 @@ public class CalciteAssert {
 
     /** Performs an action using a connection, and closes the connection
      * afterwards. */
-<<<<<<< HEAD
-    public final AssertQuery withConnection(Consumer<Connection> f) {
-      try (Connection c = createConnection()) {
-        f.accept(c);
-      } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
-=======
     public final AssertQuery withConnection(Consumer<Connection> f)
         throws Exception {
       try (Connection c = createConnection()) {
@@ -2072,6 +2024,7 @@ public class CalciteAssert {
 
   /** Specification for common test schemas. */
   public enum SchemaSpec {
+<<<<<<< HEAD
     REFLECTIVE_FOODMART,
     JDBC_FOODMART,
     CLONE_FOODMART,
@@ -2085,6 +2038,28 @@ public class CalciteAssert {
     POST,
     ORINOCO
 =======
+=======
+    REFLECTIVE_FOODMART("foodmart"),
+    JDBC_FOODMART("foodmart"),
+    CLONE_FOODMART("foodmart2"),
+    JDBC_FOODMART_WITH_LATTICE("lattice"),
+    GEO("GEO"),
+    HR("hr"),
+    JDBC_SCOTT("JDBC_SCOTT"),
+    SCOTT("scott"),
+    BLANK("BLANK"),
+    LINGUAL("SALES"),
+    POST("POST"),
+    ORINOCO("ORINOCO"),
+    AUX("AUX");
+
+    /** The name of the schema that is usually created from this specification.
+     * (Names are not unique, and you can use another name if you wish.) */
+    public final String schemaName;
+
+    SchemaSpec(String schemaName) {
+      this.schemaName = schemaName;
+    }
   }
 
   /** Converts a {@link ResultSet} to string. */

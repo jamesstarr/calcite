@@ -62,3 +62,8 @@ public class CodesFunction {
     };
   }
 }
+<<<<<<< HEAD
+=======
+
+// End CodesFunction.java
+>>>>>>> 603d2e95d ([CALCITE-2446] Lateral joins do not work when saved as custom views (Piotr Bojko))

@@ -6316,7 +6316,7 @@ public class JdbcTest {
   }
 
   /** Unit test for LATERAL CROSS JOIN to table function. */
-  @Test void testLateralJoin() {
+  @Test public void testLateralJoin() {
     final String sql = "SELECT *\n"
         + "FROM AUX.SIMPLETABLE ST\n"
         + "CROSS JOIN LATERAL TABLE(AUX.TBLFUN(ST.INTCOL))";
@@ -6332,7 +6332,7 @@ public class JdbcTest {
   }
 
   /** Unit test for view expansion with lateral join. */
-  @Test void testExpandViewWithLateralJoin() {
+  @Test public void testExpandViewWithLateralJoin() {
     final String sql = "SELECT * FROM AUX.VIEWLATERAL";
     CalciteAssert.that(CalciteAssert.Config.AUX)
         .query(sql)
