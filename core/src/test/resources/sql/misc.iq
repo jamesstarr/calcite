@@ -2452,6 +2452,9 @@ where false;
 #
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 044695b7e ([CALCITE-2447] POWER, ATAN2 functions fail with NoSuchMethodException)
 # [CALCITE-2447] POWER, ATAN2 functions fail with NoSuchMethodException
 values power(0.5, 2);
 +--------+
@@ -2474,8 +2477,11 @@ values atan2(0.5, 2);
 
 !ok
 
+<<<<<<< HEAD
 =======
 >>>>>>> 8fb9e5d96 ([CALCITE-1167] OVERLAPS should match even if operands are in (high, low) order)
+=======
+>>>>>>> 044695b7e ([CALCITE-2447] POWER, ATAN2 functions fail with NoSuchMethodException)
 !set outputformat csv
 
 # [CALCITE-1167] OVERLAPS should match even if operands are in (high, low) order
