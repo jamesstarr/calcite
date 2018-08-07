@@ -3216,6 +3216,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testIsNullRecursion() {
     // make sure that simplifcation is visiting below isX expressions
     checkSimplify(
@@ -3261,60 +3262,107 @@ public class RexProgramTest extends RexProgramBuilderBase {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2438">[CALCITE-2438]
    * RexCall#isAlwaysTrue returns incorrect result</a>. */
   @Test void testIsAlwaysTrueAndFalseXisNullisNotNullisFalse() {
+=======
+  /** Unit tests for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2438">[CALCITE-2438]
+   * RexCall#isAlwaysTrue returns incorrect result</a>. */
+  @Test public void testIsAlwaysTrueAndFalseXisNullisNotNullisFalse() {
+>>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "((x IS NULL) IS NOT NULL) IS FALSE" -> false
     checkIs(isFalse(isNotNull(isNull(vBool()))), false);
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testIsAlwaysTrueAndFalseNotXisNullisNotNullisFalse() {
+=======
+  @Test public void testIsAlwaysTrueAndFalseNotXisNullisNotNullisFalse() {
+>>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "(NOT ((x IS NULL) IS NOT NULL)) IS FALSE" -> true
     checkIs(isFalse(not(isNotNull(isNull(vBool())))), true);
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testIsAlwaysTrueAndFalseXisNullisNotNullisTrue() {
+=======
+  @Test public void testIsAlwaysTrueAndFalseXisNullisNotNullisTrue() {
+>>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "((x IS NULL) IS NOT NULL) IS TRUE" -> true
     checkIs(isTrue(isNotNull(isNull(vBool()))), true);
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testIsAlwaysTrueAndFalseNotXisNullisNotNullisTrue() {
+=======
+  @Test public void testIsAlwaysTrueAndFalseNotXisNullisNotNullisTrue() {
+>>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "(NOT ((x IS NULL) IS NOT NULL)) IS TRUE" -> false
     checkIs(isTrue(not(isNotNull(isNull(vBool())))), false);
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testIsAlwaysTrueAndFalseNotXisNullisNotNullisNotTrue() {
+=======
+  @Test public void testIsAlwaysTrueAndFalseNotXisNullisNotNullisNotTrue() {
+>>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "(NOT ((x IS NULL) IS NOT NULL)) IS NOT TRUE" -> true
     checkIs(isNotTrue(not(isNotNull(isNull(vBool())))), true);
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testIsAlwaysTrueAndFalseXisNullisNotNull() {
+=======
+  @Test public void testIsAlwaysTrueAndFalseXisNullisNotNull() {
+>>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "(x IS NULL) IS NOT NULL" -> true
     checkIs(isNotNull(isNull(vBool())), true);
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testIsAlwaysTrueAndFalseXisNotNullisNotNull() {
+=======
+  @Test public void testIsAlwaysTrueAndFalseXisNotNullisNotNull() {
+>>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "(x IS NOT NULL) IS NOT NULL" -> true
     checkIs(isNotNull(isNotNull(vBool())), true);
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testIsAlwaysTrueAndFalseXisNullisNull() {
+=======
+  @Test public void testIsAlwaysTrueAndFalseXisNullisNull() {
+>>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "(x IS NULL) IS NULL" -> false
     checkIs(isNull(isNull(vBool())), false);
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testIsAlwaysTrueAndFalseXisNotNullisNull() {
+=======
+  @Test public void testIsAlwaysTrueAndFalseXisNotNullisNull() {
+>>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "(x IS NOT NULL) IS NULL" -> false
     checkIs(isNull(isNotNull(vBool())), false);
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testIsAlwaysTrueAndFalseXisNullisNotNullisNotFalse() {
+=======
+  @Test public void testIsAlwaysTrueAndFalseXisNullisNotNullisNotFalse() {
+>>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "((x IS NULL) IS NOT NULL) IS NOT FALSE" -> true
     checkIs(isNotFalse(isNotNull(isNull(vBool()))), true);
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testIsAlwaysTrueAndFalseXisNullisNotNullisNotTrue() {
+=======
+  @Test public void testIsAlwaysTrueAndFalseXisNullisNotNullisNotTrue() {
+>>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "((x IS NULL) IS NOT NULL) IS NOT TRUE" -> false
     checkIs(isNotTrue(isNotNull(isNull(vBool()))), false);
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   /** Unit test for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2842">[CALCITE-2842]
    * Computing digest of IN expressions leads to Exceptions</a>. */
@@ -3464,6 +3512,18 @@ public class RexProgramTest extends RexProgramBuilderBase {
     final RexNode expr = eq(call1, call2);
     checkSimplifyUnchanged(expr);
 =======
+=======
+  /** Checks that {@link RexNode#isAlwaysTrue()},
+   * {@link RexNode#isAlwaysTrue()} and {@link RexSimplify} agree that
+   * an expression reduces to true or false. */
+  private void checkIs(RexNode e, boolean expected) {
+    assertThat("isAlwaysTrue() of expression: " + e.toString(), e.isAlwaysTrue(), is(expected));
+    assertThat("isAlwaysFalse() of expression: " + e.toString(), e.isAlwaysFalse(), is(!expected));
+    assertThat("Simplification is not using isAlwaysX informations", simplify(e).toString(),
+            is(expected ? "true" : "false"));
+  }
+
+>>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   private Comparable eval(RexNode e) {
     return RexInterpreter.evaluate(e, ImmutableMap.of());
 >>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
