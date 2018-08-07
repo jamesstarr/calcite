@@ -22,7 +22,7 @@ import org.apache.calcite.rex.RexFieldAccess;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexVisitorImpl;
-import org.apache.calcite.sql.SqlKind;
+>>>>>>> 2640ba45b ([CALCITE-2504] Add randomized test for better code coverage of rex node create and simplification)
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
@@ -38,13 +38,15 @@ import java.util.Map;
  * For instance, it converts {@code AND(=(?0.bool0, true), =(?0.bool1, true))} to
  * {@code isTrue(and(eq(vBool(0), trueLiteral), eq(vBool(1), trueLiteral)))}.
  */
+<<<<<<< HEAD
 class RexToTestCodeShuttle extends RexVisitorImpl<String> {
+=======
+public class RexToTestCodeShuttle extends RexVisitorImpl<String> {
   private static final Map<SqlOperator, String> OP_METHODS =
       ImmutableMap.<SqlOperator, String>builder()
           .put(SqlStdOperatorTable.AND, "and")
           .put(SqlStdOperatorTable.OR, "or")
-          .put(SqlStdOperatorTable.CASE, "case_")
-          .put(SqlStdOperatorTable.CAST, "abstractCast")
+>>>>>>> 2640ba45b ([CALCITE-2504] Add randomized test for better code coverage of rex node create and simplification)
           .put(SqlStdOperatorTable.COALESCE, "coalesce")
           .put(SqlStdOperatorTable.IS_NULL, "isNull")
           .put(SqlStdOperatorTable.IS_NOT_NULL, "isNotNull")
@@ -67,7 +69,9 @@ class RexToTestCodeShuttle extends RexVisitorImpl<String> {
           .put(SqlStdOperatorTable.UNARY_PLUS, "unaryPlus")
           .put(SqlStdOperatorTable.MINUS, "sub")
           .put(SqlStdOperatorTable.UNARY_MINUS, "unaryMinus")
+<<<<<<< HEAD
           .put(SqlStdOperatorTable.MULTIPLY, "mul")
+=======
           .build();
 
 
@@ -97,15 +101,7 @@ class RexToTestCodeShuttle extends RexVisitorImpl<String> {
       }
       sb.append(operand.accept(this));
     }
-    if (operator.kind == SqlKind.CAST) {
-      sb.append(", t");
-      appendSqlType(sb, call.getType());
-      sb.append('(');
-      if (call.getType().isNullable()) {
-        sb.append("true");
-      }
-      sb.append(')');
-    }
+>>>>>>> 2640ba45b ([CALCITE-2504] Add randomized test for better code coverage of rex node create and simplification)
     sb.append(')');
     return sb.toString();
   }
@@ -137,6 +133,7 @@ class RexToTestCodeShuttle extends RexVisitorImpl<String> {
     StringBuilder sb = new StringBuilder();
     sb.append("v");
     RelDataType type = fieldAccess.getType();
+<<<<<<< HEAD
     appendSqlType(sb, type);
     if (!type.isNullable()) {
       sb.append("NotNull");
@@ -148,6 +145,7 @@ class RexToTestCodeShuttle extends RexVisitorImpl<String> {
   }
 
   private void appendSqlType(StringBuilder sb, RelDataType type) {
+=======
     switch (type.getSqlTypeName()) {
     case BOOLEAN:
       sb.append("Bool");
@@ -159,5 +157,14 @@ class RexToTestCodeShuttle extends RexVisitorImpl<String> {
       sb.append("Varchar");
       break;
     }
+    if (!type.isNullable()) {
+      sb.append("NotNull");
+    }
+    sb.append("(");
+    sb.append(fieldAccess.getField().getIndex() % 10);
+    sb.append(")");
+    return sb.toString();
   }
 }
+
+// End RexToTestCodeShuttle.java

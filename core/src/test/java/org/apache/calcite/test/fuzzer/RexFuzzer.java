@@ -20,10 +20,10 @@ import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexNode;
-import org.apache.calcite.rex.RexProgramBuilderBase;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.test.RexProgramBuilderBase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,51 +107,7 @@ public class RexFuzzer extends RexProgramBuilderBase {
     nullableIntType = typeFactory.createTypeWithNullability(intType, true);
   }
 
-  public RexNode getExpression(Random r, int depth) {
-    return getComparableExpression(r, depth);
-  }
-
-  private RexNode fuzzOperator(Random r, SqlOperator[] operators, RexNode... args) {
-    return rexBuilder.makeCall(operators[r.nextInt(operators.length)], args);
-  }
-
-  private RexNode fuzzOperator(Random r, SqlOperator[] operators, int length,
-      Function<Random, RexNode> factory) {
-    List<RexNode> args = new ArrayList<>(length);
-    for (int i = 0; i < length; i++) {
-      args.add(factory.apply(r));
-    }
-    return rexBuilder.makeCall(operators[r.nextInt(operators.length)], args);
-  }
-
-  public RexNode getComparableExpression(Random r, int depth) {
-    int v = r.nextInt(2);
-    switch (v) {
-    case 0:
-      return getBoolExpression(r, depth);
-    case 1:
-      return getIntExpression(r, depth);
-    }
-    throw new AssertionError("should not reach here");
-  }
-
-  public RexNode getSimpleBool(Random r) {
-    int v = r.nextInt(2);
-    switch (v) {
-    case 0:
-      boolean nullable = r.nextBoolean();
-      int field = r.nextInt(MAX_VARS);
-      return nullable ? vBool(field) : vBoolNotNull(field);
-    case 1:
-      return r.nextBoolean() ? trueLiteral : falseLiteral;
-    case 2:
-      return nullBool;
-    }
-    throw new AssertionError("should not reach here");
-  }
-
-  public RexNode getBoolExpression(Random r, int depth) {
-    int v = depth <= 0 ? 0 : r.nextInt(7);
+    int v = depth <= 0 ? 0 : r.nextInt(6);
     switch (v) {
     case 0:
       return getSimpleBool(r);
@@ -168,9 +124,7 @@ public class RexFuzzer extends RexProgramBuilderBase {
     case 5:
       return fuzzOperator(r, BOOL_TO_BOOL_MULTI_ARG, r.nextInt(3) + 2,
           x -> getBoolExpression(x, depth - 1));
-    case 6:
-      return fuzzCase(r, depth - 1,
-          x -> getBoolExpression(x, depth - 1));
+>>>>>>> 2640ba45b ([CALCITE-2504] Add randomized test for better code coverage of rex node create and simplification)
     }
     throw new AssertionError("should not reach here");
   }
@@ -194,7 +148,10 @@ public class RexFuzzer extends RexProgramBuilderBase {
   }
 
   public RexNode getIntExpression(Random r, int depth) {
+<<<<<<< HEAD
     int v = depth <= 0 ? 0 : r.nextInt(5);
+=======
+    int v = depth <= 0 ? 0 : r.nextInt(4);
     switch (v) {
     case 0:
       return getSimpleInt(r);
@@ -206,13 +163,12 @@ public class RexFuzzer extends RexProgramBuilderBase {
     case 3:
       return fuzzOperator(r, ANY_SAME_TYPE_MULTI_ARG, r.nextInt(3) + 2,
           x -> getIntExpression(x, depth - 1));
-    case 4:
-      return fuzzCase(r, depth - 1,
-          x -> getIntExpression(x, depth - 1));
+>>>>>>> 2640ba45b ([CALCITE-2504] Add randomized test for better code coverage of rex node create and simplification)
     }
     throw new AssertionError("should not reach here");
   }
 
+<<<<<<< HEAD
   public RexNode fuzzCase(Random r, int depth, Function<Random, RexNode> resultFactory) {
     boolean caseArgWhen = r.nextBoolean();
     int caseBranches = 1 + (depth <= 0 ? 0 : r.nextInt(3));
@@ -249,3 +205,7 @@ public class RexFuzzer extends RexProgramBuilderBase {
   }
 
 }
+=======
+}
+
+// End RexFuzzer.java

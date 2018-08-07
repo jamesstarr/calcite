@@ -51,6 +51,7 @@ import org.apache.calcite.sql.validate.LexCaseSensitiveTest;
 import org.apache.calcite.sql.validate.LexEscapeTest;
 import org.apache.calcite.sql.validate.SqlValidatorUtilTest;
 import org.apache.calcite.test.enumerable.EnumerableCorrelateTest;
+import org.apache.calcite.test.fuzzer.RexProgramFuzzyTest;
 import org.apache.calcite.tools.FrameworksTest;
 import org.apache.calcite.tools.PlannerTest;
 import org.apache.calcite.util.BitSetsTest;
@@ -164,6 +165,7 @@ import org.junit.runners.Suite;
     LinqFrontJdbcBackTest.class,
     JdbcFrontJdbcBackLinqMiddleTest.class,
     SqlToRelConverterTest.class,
+    RexProgramFuzzyTest.class,
     ProfilerTest.class,
     SqlAdvisorJdbcTest.class,
     CoreQuidemTest.class,

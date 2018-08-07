@@ -42,3 +42,8 @@ class SimplifyTask implements Comparable<SimplifyTask> {
     return Integer.compare(node.toString().length(), o.node.toString().length());
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SimplifyTask.java
+>>>>>>> 2640ba45b ([CALCITE-2504] Add randomized test for better code coverage of rex node create and simplification)
