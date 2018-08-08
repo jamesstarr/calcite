@@ -165,7 +165,10 @@ public class SqlParser {
       return parser.parseSqlStmtEof();
     } catch (Throwable ex) {
       throw handleException(ex);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6b74b695a ([CALCITE-2453] Parse list of SQL statements separated with a semicolon (Chunwei Lei, charbel yazbeck))
     }
   }
 
