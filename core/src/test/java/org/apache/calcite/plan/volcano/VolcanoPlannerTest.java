@@ -28,9 +28,6 @@ import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelCollationTraitDef;
-<<<<<<< HEAD
-import org.apache.calcite.rel.RelCollations;
-=======
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.convert.ConverterImpl;
 import org.apache.calcite.rel.convert.ConverterRule;
@@ -241,9 +238,13 @@ class VolcanoPlannerTest {
     assertThat(sort(buf),
         equalTo(
             sort(
+<<<<<<< HEAD
                 "NoneSingleRel:Subset#0.NONE.[]",
                 "PhysSingleRel:Subset#0.PHYS.[0]",
                 "PhysSingleRel:Subset#0.PHYS.[]")));
+=======
+                "NoneSingleRel:Subset#0.NONE",
+                "PhysSingleRel:Subset#0.PHYS")));
   }
 
   private static <E extends Comparable> List<E> sort(List<E> list) {

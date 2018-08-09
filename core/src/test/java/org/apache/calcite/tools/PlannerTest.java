@@ -49,7 +49,8 @@ import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.ProjectMergeRule;
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
+import org.apache.calcite.rel.rules.PruneEmptyRules;
+import org.apache.calcite.rel.rules.UnionMergeRule;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.SchemaPlus;
@@ -75,6 +76,7 @@ import org.apache.calcite.sql.util.SqlOperatorTables;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorScope;
 import org.apache.calcite.test.CalciteAssert;
+import org.apache.calcite.test.RelBuilderTest;
 import org.apache.calcite.util.Optionality;
 import org.apache.calcite.util.Util;
 
@@ -395,7 +397,7 @@ public class PlannerTest {
   }
 
   /** Unit test that parses, validates, converts and plans. */
-  @Test void trimEmptyUnion2() throws Exception {
+  @Test public void trimEmptyUnion2() throws Exception {
     checkUnionPruning("values(1) union all select * from (values(2)) where false",
         "EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n");
 
@@ -403,11 +405,11 @@ public class PlannerTest {
         "EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n");
   }
 
-  @Test void trimEmptyUnion31() throws Exception {
+  @Test public void trimEmptyUnion31() throws Exception {
     emptyUnions31();
   }
 
-  @Test void trimEmptyUnion31withUnionMerge() throws Exception {
+  @Test public void trimEmptyUnion31withUnionMerge() throws Exception {
     emptyUnions31(CoreRules.UNION_MERGE);
   }
 
@@ -430,15 +432,15 @@ public class PlannerTest {
         plan, extraRules);
   }
 
-  @Disabled("[CALCITE-2773] java.lang.AssertionError: rel"
+  @Ignore("[CALCITE-2773] java.lang.AssertionError: rel"
       + " [rel#69:EnumerableUnion.ENUMERABLE.[](input#0=RelSubset#78,input#1=RelSubset#71,all=true)]"
       + " has lower cost {4.0 rows, 4.0 cpu, 0.0 io} than best cost {5.0 rows, 5.0 cpu, 0.0 io}"
       + " of subset [rel#67:Subset#6.ENUMERABLE.[]]")
-  @Test void trimEmptyUnion32() throws Exception {
+  @Test public void trimEmptyUnion32() throws Exception {
     emptyUnions32();
   }
 
-  @Test void trimEmptyUnion32withUnionMerge() throws Exception {
+  @Test public void trimEmptyUnion32withUnionMerge() throws Exception {
     emptyUnions32(CoreRules.UNION_MERGE);
   }
 
@@ -472,7 +474,8 @@ public class PlannerTest {
         EnumerableRules.ENUMERABLE_PROJECT_RULE,
         EnumerableRules.ENUMERABLE_FILTER_RULE,
         EnumerableRules.ENUMERABLE_VALUES_RULE,
-        EnumerableRules.ENUMERABLE_UNION_RULE);
+        EnumerableRules.ENUMERABLE_UNION_RULE
+    );
     rules.add(extraRules);
     Program program = Programs.ofRules(rules.build());
     Planner planner = getPlanner(null, program);
@@ -486,11 +489,11 @@ public class PlannerTest {
         toString(transform), equalTo(plan));
   }
 
-  @Disabled("[CALCITE-2773] java.lang.AssertionError: rel"
+  @Ignore("[CALCITE-2773] java.lang.AssertionError: rel"
       + " [rel#17:EnumerableUnion.ENUMERABLE.[](input#0=RelSubset#26,input#1=RelSubset#19,all=true)]"
       + " has lower cost {4.0 rows, 4.0 cpu, 0.0 io}"
       + " than best cost {5.0 rows, 5.0 cpu, 0.0 io} of subset [rel#15:Subset#5.ENUMERABLE.[]]")
-  @Test void trimEmptyUnion32viaRelBuidler() throws Exception {
+  @Test public void trimEmptyUnion32viaRelBuidler() throws Exception {
     RelBuilder relBuilder = RelBuilder.create(RelBuilderTest.config().build());
 
     // This somehow blows up (see trimEmptyUnion32, the second case)
@@ -508,6 +511,39 @@ public class PlannerTest {
         .build();
 
     RelOptPlanner planner = relNode.getCluster().getPlanner();
+<<<<<<< HEAD
+=======
+    RuleSet ruleSet =
+        RuleSets.ofList(
+            PruneEmptyRules.UNION_INSTANCE,
+            CoreRules.FILTER_VALUES_MERGE,
+            EnumerableRules.ENUMERABLE_PROJECT_RULE,
+            EnumerableRules.ENUMERABLE_FILTER_RULE,
+            EnumerableRules.ENUMERABLE_VALUES_RULE,
+            EnumerableRules.ENUMERABLE_UNION_RULE);
+    Program program = Programs.of(ruleSet);
+
+    RelTraitSet toTraits = relNode.getTraitSet()
+        .replace(EnumerableConvention.INSTANCE);
+
+    RelNode output = program.run(planner, relNode, toTraits,
+        ImmutableList.of(), ImmutableList.of());
+
+    // Expected outcomes are:
+    // 1) relation is optimized to simple VALUES
+    // 2) the number of rule invocations is reasonable
+    // 3) planner does not throw OutOfMemoryError
+    assertThat("empty union should be pruned out of " + toString(relNode),
+        Util.toLinux(toString(output)),
+        equalTo("EnumerableUnion(all=[true])\n"
+            + "  EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n"
+            + "  EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 2 }]])\n"));
+  }
+
+  /** Unit test that parses, validates, converts and
+   * plans for query using order by */
+  @Test public void testSortPlan() throws Exception {
+>>>>>>> 8873490bb ([CALCITE-2456] VolcanoRuleCall doesn't match unordered child operand when the operand is not the first operand. PruneEmptyRules UNION and MINUS with empty inputs cause infinite cycle. (Zuozhi Wang))
     RuleSet ruleSet =
         RuleSets.ofList(
             CoreRules.SORT_REMOVE,

@@ -20,11 +20,9 @@ import org.apache.calcite.plan.RelHintsPropagator;
 import org.apache.calcite.plan.RelOptListener;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptRuleOperand;
-<<<<<<< HEAD
-import org.apache.calcite.plan.RelOptRuleOperandChildPolicy;
-import org.apache.calcite.plan.SubstitutionRule;
-=======
 >>>>>>> a509374ba ([CALCITE-2899] Deprecate RelTraitPropagationVisitor and remove its usages)
+=======
+import org.apache.calcite.plan.RelOptRuleOperandChildPolicy;
 import org.apache.calcite.rel.RelNode;
 
 import com.google.common.collect.ImmutableList;
@@ -37,6 +35,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <code>VolcanoRuleCall</code> implements the {@link RelOptRuleCall} interface
@@ -307,10 +306,7 @@ public class VolcanoRuleCall extends RelOptRuleCall {
         // because unordered can match child in any ordinal
         if (parentOperand.childPolicy == RelOptRuleOperandChildPolicy.UNORDERED) {
           if (operand.getMatchedClass() == RelSubset.class) {
-            // Find all the sibling subsets that satisfy this subset's traitSet
-            successors = inputs.stream()
-              .flatMap(subset -> ((RelSubset) subset).getSubsetsSatisfyingThis())
-              .collect(Collectors.toList());
+            successors = inputs;
           } else {
             List<RelNode> allRelsInAllSubsets = new ArrayList<>();
             Set<RelNode> duplicates = new HashSet<>();
@@ -336,9 +332,8 @@ public class VolcanoRuleCall extends RelOptRuleCall {
           final RelSubset subset =
               (RelSubset) inputs.get(operand.ordinalInParent);
           if (operand.getMatchedClass() == RelSubset.class) {
-            // Find all the sibling subsets that satisfy this subset'straitSet
-            successors =
-              subset.getSubsetsSatisfyingThis().collect(Collectors.toList());
+            // If the rule wants the whole subset, we just provide it
+            successors = ImmutableList.of(subset);
           } else {
             successors = subset.getRelList();
           }

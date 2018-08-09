@@ -19,8 +19,11 @@ package org.apache.calcite.rel.rules;
 import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
+<<<<<<< HEAD
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.plan.SubstitutionRule;
+=======
+>>>>>>> 8873490bb ([CALCITE-2456] VolcanoRuleCall doesn't match unordered child operand when the operand is not the first operand. PruneEmptyRules UNION and MINUS with empty inputs cause infinite cycle. (Zuozhi Wang))
 import org.apache.calcite.plan.hep.HepRelVertex;
 import org.apache.calcite.plan.volcano.RelSubset;
 import org.apache.calcite.rel.RelNode;
@@ -42,7 +45,6 @@ import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
