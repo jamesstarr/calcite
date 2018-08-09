@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,10 +19,21 @@ package org.apache.calcite
 
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+=======
+package org.apache.calcite
+
+import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.junit.JUnitAsserter
+>>>>>>> 1ff1a5da8 ([CALCITE-2458] Add Kotlin as a test dependency)
 
 class TestKtTest {
     @Test
     fun `a test to verify how Kotlin test passes in CI`() {
+<<<<<<< HEAD
+=======
+        JUnitAsserter.hashCode() // make maven-dependency-plugin happy
+>>>>>>> 1ff1a5da8 ([CALCITE-2458] Add Kotlin as a test dependency)
         assertEquals("Hello, world", "Hello, world", message = "42")
     }
 }
