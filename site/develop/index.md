@@ -67,6 +67,7 @@ helps to agree on the general approach. Log a
 [JIRA case](https://issues.apache.org/jira/browse/CALCITE) for your
 proposed feature or start a discussion on the dev list.
 
+<<<<<<< HEAD
 Before opening up a new JIRA case, have a look in the existing issues.
 The feature or bug that you plan to work on may already be there.
 
@@ -127,6 +128,8 @@ the contributor(s) involved in the discussion should:
  * select the appropriate resolution cause ("Duplicate", "Invalid", "Won't fix", etc.);
  * add a comment with the reasoning if that's not obvious.
 
+=======
+>>>>>>> 92e7e6af6 (Site: Add instructions for updating PRs based on the discussion in the dev list (Stamatis Zampetakis))
 Fork the GitHub repository, and create a branch for your feature.
 
 Develop your feature and test cases, and make sure that
@@ -143,6 +146,7 @@ If your change had multiple commits, use `git rebase -i master` to
 squash them into a single commit, and to bring your code up to date
 with the latest on the main line.
 
+<<<<<<< HEAD
 In order to keep the commit history clean and uniform, you should
 respect the following guidelines.
  * Read the messages of previous commits, and follow their style.
@@ -164,6 +168,8 @@ the implementation ("Add handler for FileNotFound").
  * If you are not a committer, add your name in parentheses at the end
  of the message.
 
+=======
+>>>>>>> 92e7e6af6 (Site: Add instructions for updating PRs based on the discussion in the dev list (Stamatis Zampetakis))
 Then push your commit(s) to GitHub, and create a pull request from
 your branch to the calcite master branch. Update the JIRA case
 to reference your pull request, and a committer will review your
