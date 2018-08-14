@@ -31,11 +31,14 @@ import org.apache.calcite.rel.logical.LogicalUnion;
 import org.apache.calcite.rel.rules.CoerceInputsRule;
 import org.apache.calcite.rel.rules.CoreRules;
 
+import com.google.common.collect.ImmutableList;
+
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+
 
 /**
  * HepPlannerTest is a unit test for {@link HepPlanner}. See
@@ -399,6 +402,19 @@ public class HepPlannerTest extends RelOptTestBase {
   }
 
   @Test void testMaterialization() throws Exception {
+    HepPlanner planner = new HepPlanner(HepProgram.builder().build());
+    RelNode tableRel = tester.convertSqlToRel("select * from dept").rel;
+    RelNode queryRel = tableRel;
+    RelOptMaterialization mat1 = new RelOptMaterialization(
+        tableRel, queryRel, null, ImmutableList.of("default", "mv"));
+    planner.addMaterialization(mat1);
+    assertEquals(planner.getMaterializations().size(), 1);
+    assertEquals(planner.getMaterializations().get(0), mat1);
+    planner.clear();
+    assertEquals(planner.getMaterializations().size(), 0);
+  }
+
+  @Test public void testMaterialization() throws Exception {
     HepPlanner planner = new HepPlanner(HepProgram.builder().build());
     RelNode tableRel = tester.convertSqlToRel("select * from dept").rel;
     RelNode queryRel = tableRel;

@@ -32,9 +32,8 @@ import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.tools.RelBuilderFactory;
 
 import com.google.common.base.Suppliers;
-<<<<<<< HEAD
-=======
 import com.google.common.collect.ImmutableList;
+=======
 
 import java.util.Collections;
 import java.util.List;
@@ -83,11 +82,9 @@ public class MaterializedViewFilterScanRule
   }
 
   protected void apply(RelOptRuleCall call, Filter filter, TableScan scan) {
-    RelOptPlanner planner = call.getPlanner();
-    List<RelOptMaterialization> materializations =
-        (planner instanceof VolcanoPlanner)
-            ? ((VolcanoPlanner) planner).getMaterializations()
-            : ImmutableList.of();
+    final RelOptPlanner planner = call.getPlanner();
+    final List<RelOptMaterialization> materializations =
+        planner.getMaterializations();
     if (!materializations.isEmpty()) {
       RelNode root = filter.copy(filter.getTraitSet(),
           Collections.singletonList((RelNode) scan));
