@@ -24,13 +24,14 @@ import org.apache.calcite.rel.metadata.NullSentinel;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 =======
 import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.rex.RexBuilder;
+=======
+>>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexDynamicParam;
-import org.apache.calcite.rex.RexExecutor;
-import org.apache.calcite.rex.RexExecutorImpl;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexInterpreter;
 import org.apache.calcite.rex.RexLiteral;
@@ -40,8 +41,11 @@ import org.apache.calcite.rex.RexProgram;
 import org.apache.calcite.rex.RexProgramBuilder;
 import org.apache.calcite.rex.RexSimplify;
 import org.apache.calcite.rex.RexUtil;
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 import org.apache.calcite.schema.SchemaPlus;
 >>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+>>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSpecialOperator;
@@ -101,6 +105,7 @@ import static org.junit.Assert.assertThat;
  * {@link org.apache.calcite.rex.RexProgramBuilder}.
  */
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 class RexProgramTest extends RexProgramTestBase {
 =======
 public class RexProgramTest {
@@ -115,6 +120,9 @@ public class RexProgramTest {
 
   //~ Methods ----------------------------------------------------------------
 
+=======
+public class RexProgramTest extends RexProgramBuilderBase {
+>>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   /**
    * Creates a RexProgramTest.
    */
@@ -122,48 +130,8 @@ public class RexProgramTest {
     super();
   }
 
-  @Before
-  public void setUp() {
-    typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
-    rexBuilder = new RexBuilder(typeFactory);
-    RexExecutor executor =
-        new RexExecutorImpl(new DummyTestDataContext());
-    simplify =
-        new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false, executor)
-            .withParanoid(true);
-    trueLiteral = rexBuilder.makeLiteral(true);
-    falseLiteral = rexBuilder.makeLiteral(false);
-    final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
-    nullLiteral = rexBuilder.makeNullLiteral(intType);
-    unknownLiteral = rexBuilder.makeNullLiteral(trueLiteral.getType());
-  }
-
-  /** Dummy data context for test. */
-  private static class DummyTestDataContext implements DataContext {
-    private final ImmutableMap<String, Object> map;
-
-    DummyTestDataContext() {
-      this.map =
-          ImmutableMap.of(
-              Variable.TIME_ZONE.camelName, TimeZone.getTimeZone("America/Los_Angeles"),
-              Variable.CURRENT_TIMESTAMP.camelName, 1311120000000L);
-    }
-
-    public SchemaPlus getRootSchema() {
-      return null;
-    }
-
-    public JavaTypeFactory getTypeFactory() {
-      return null;
-    }
-
-    public QueryProvider getQueryProvider() {
-      return null;
-    }
-
-    public Object get(String name) {
-      return map.get(name);
-    }
+  @Before public void setUp() {
+    super.setUp();
   }
 
   private void checkCnf(RexNode node, String expected) {
@@ -185,6 +153,23 @@ public class RexProgramTest {
     assertThat("RexUtil.pullFactors(rexBuilder, " + node + ")",
         RexUtil.pullFactors(rexBuilder, node).toString(),
         equalTo(expected));
+  }
+
+  /**
+   * Asserts that given node has expected string representation with account of node type
+   * @param message extra message that clarifies where the node came from
+   * @param expected expected string representation of the node
+   * @param node node to check
+   */
+  private void assertNode(String message, String expected, RexNode node) {
+    String actual;
+    if (node.isA(SqlKind.CAST) || node.isA(SqlKind.NEW_SPECIFICATION)) {
+      // toString contains type (see RexCall.toString)
+      actual = node.toString();
+    } else {
+      actual = node + ":" + node.getType() + (node.getType().isNullable() ? "" : " NOT NULL");
+    }
+    assertEquals(message, expected, actual);
   }
 
   /** Simplifies an expression and checks that the result is as expected. */
@@ -239,6 +224,7 @@ public class RexProgramTest {
     return n;
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   private RexNode isNull(RexNode node) {
     return rexBuilder.makeCall(SqlStdOperatorTable.IS_NULL, node);
   }
@@ -331,6 +317,8 @@ public class RexProgramTest {
 >>>>>>> 9ea1621a9 (Reapply "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING""):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 =======
 >>>>>>> 0c5880c91 (Revert "Reapply "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING"""):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+>>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   /**
    * Tests construction of a RexProgram.
    */
@@ -2100,6 +2088,7 @@ public class RexProgramTest {
   }
 
   @Test public void testSimplifyCaseNullableBoolean() {
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     RexNode condition = eq(
         rexBuilder.makeInputRef(
             typeFactory.createTypeWithNullability(
@@ -2108,6 +2097,10 @@ public class RexProgramTest {
         rexBuilder.makeLiteral("S"));
     RexCall caseNode = (RexCall) case_(condition, trueLiteral, falseLiteral);
 >>>>>>> 4d6cc46fe (DX-20400: Fix long pre-logical time):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+    RexNode condition = eq(input(tVarchar(), 0), literal("S"));
+    RexNode caseNode = case_(condition, trueLiteral, falseLiteral);
+>>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
     // Verify that consistent type would be TIMESTAMP (using public API)
     List<RelDataType> types = RexUtil.types(Arrays.asList(timestampRef, charLiteral));
@@ -2137,6 +2130,7 @@ public class RexProgramTest {
     assertThat(result, is(condition));
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyRecurseIntoArithmetics() {
     checkSimplify(
         plus(literal(1),
@@ -2157,6 +2151,11 @@ public class RexProgramTest {
             literal(2)),
         "CASE(OR(?0.bool0, IS NOT TRUE(?0.bool0)), 1, 2)");
   }
+=======
+  @Test public void testSimplifyCaseNullableVarChar() {
+    RexNode condition = eq(input(tVarchar(), 0), literal("S"));
+    RexNode caseNode = case_(condition, literal("A"), literal("B"));
+>>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
   @Test void testSimplifyCaseBranchesCollapse2() {
     // case when x is true then 1 when true then 1 else 2 end
@@ -2387,6 +2386,7 @@ public class RexProgramTest {
     checkSimplify(isNotNull(cast(i2, intType)), "true");
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   /** Unit test for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2929">[CALCITE-2929]
    * Simplification of IS NULL checks are incorrectly assuming that CAST-s are possible</a>. */
@@ -2402,6 +2402,9 @@ public class RexProgramTest {
   }
 
   @Test void checkSimplifyDynamicParam() {
+=======
+  @Test public void checkSimplifyDynamicParam() {
+>>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify(isNotNull(lt(vInt(0), vInt(1))),
         "AND(IS NOT NULL(?0.int0), IS NOT NULL(?0.int1))");
     checkSimplify(isNotNull(lt(vInt(0), vIntNotNull(2))),
@@ -2412,7 +2415,11 @@ public class RexProgramTest {
     checkSimplify(isNotNull(lt(vInt(0), null_(tInt()))), "false");
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCastLiteral() {
+=======
+  @Test public void testSimplifyCastLiteral() {
+>>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     final List<RexLiteral> literals = new ArrayList<>();
     literals.add(
         rexBuilder.makeExactLiteral(BigDecimal.ONE,
@@ -2510,7 +2517,11 @@ public class RexProgramTest {
     }
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testCastLiteral() {
+=======
+  @Test public void testCastLiteral() {
+>>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     assertNode("cast(literal int not null)",
         "42:INTEGER NOT NULL", cast(literal(42), tInt()));
     assertNode("cast(literal int)",
@@ -2522,7 +2533,11 @@ public class RexProgramTest {
         "CAST(42):INTEGER", abstractCast(literal(42), nullable(tInt())));
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCastLiteral2() {
+=======
+  @Test public void testSimplifyCastLiteral2() {
+>>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     final RexLiteral literalAbc = rexBuilder.makeLiteral("abc");
     final RexLiteral literalOne = rexBuilder.makeExactLiteral(BigDecimal.ONE);
     final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
@@ -2725,6 +2740,7 @@ public class RexProgramTest {
     checkSimplifyUnchanged(le(literalAbc, literalZero));
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testBooleanComparisions() {
     checkSimplify(eq(vBool(), trueLiteral), "?0.bool0");
     checkSimplify(ge(vBool(), trueLiteral), "?0.bool0");
@@ -2749,6 +2765,9 @@ public class RexProgramTest {
   }
 
   @Test void testSimpleDynamicVars() {
+=======
+  @Test public void testSimpleDynamicVars() {
+>>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     assertTypeAndToString(
         vBool(2), "?0.bool2", "BOOLEAN");
     assertTypeAndToString(
@@ -2767,12 +2786,21 @@ public class RexProgramTest {
 
   private void assertTypeAndToString(
       RexNode rexNode, String representation, String type) {
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     assertEquals(representation, rexNode.toStringRaw());
     assertEquals(type, rexNode.getType().toString()
         + (rexNode.getType().isNullable() ? "" : " NOT NULL"), "type of " + rexNode);
   }
 
   @Test void testIsDeterministic() {
+=======
+    assertEquals(representation, rexNode.toString());
+    assertEquals("type of " + rexNode, type, rexNode.getType().toString()
+        + (rexNode.getType().isNullable() ? "" : " NOT NULL"));
+  }
+
+  @Test public void testIsDeterministic() {
+>>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     SqlOperator ndc = new SqlSpecialOperator(
             "NDC",
             SqlKind.OTHER_FUNCTION,
