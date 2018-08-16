@@ -68,6 +68,7 @@ import org.apache.calcite.rex.RexExecutor;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.rex.RexOver;
 import org.apache.calcite.rex.RexShuttle;
 import org.apache.calcite.rex.RexSimplify;
 import org.apache.calcite.rex.RexSubQuery;
@@ -76,10 +77,12 @@ import org.apache.calcite.runtime.Hook;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.server.CalciteServerStatement;
 import org.apache.calcite.sql.SqlAggFunction;
+import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.util.Holder;
 import org.apache.calcite.util.ImmutableBeans;
@@ -110,7 +113,6 @@ import java.util.BitSet;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -1218,14 +1220,6 @@ public class RelBuilder {
     final RelNode scan = struct.scanFactory.createScan(cluster, relOptTable, ImmutableList.of());
     push(scan);
     rename(relOptTable.getRowType().getFieldNames());
-<<<<<<< HEAD
-
-    // When the node is not a TableScan but from expansion,
-    // we need to explicitly add the alias.
-    if (!(scan instanceof TableScan)) {
-      as(Util.last(ImmutableList.copyOf(tableNames)));
-    }
-=======
 >>>>>>> ca65868f2 ([CALCITE-2441] RelBuilder.scan should expand TranslatableTable and views)
     return this;
   }
@@ -1286,6 +1280,12 @@ public class RelBuilder {
     return this;
   }
 
+  /** Creates a {@link Project} of the given
+   * expressions. */
+  public RelBuilder project(RexNode... nodes) {
+    return project(ImmutableList.copyOf(nodes));
+  }
+
   /** Creates a {@link Project} of the given list
    * of expressions.
    *
@@ -1310,11 +1310,284 @@ public class RelBuilder {
   }
 
   /** Creates a {@link Project} of the given list
+<<<<<<< HEAD
   /** Creates a {@link Project} of the given
    * expressions. */
   public RelBuilder project(RexNode... nodes) {
     return project(ImmutableList.copyOf(nodes));
+=======
+   * of expressions, using the given names.
+   *
+   * <p>Names are deduced as follows:
+   * <ul>
+   *   <li>If the length of {@code fieldNames} is greater than the index of
+   *     the current entry in {@code nodes}, and the entry in
+   *     {@code fieldNames} is not null, uses it; otherwise
+   *   <li>If an expression projects an input field,
+   *     or is a cast an input field,
+   *     uses the input field name; otherwise
+   *   <li>If an expression is a call to
+   *     {@link SqlStdOperatorTable#AS}
+   *     (see {@link #alias}), removes the call but uses the intended alias.
+   * </ul>
+   *
+   * <p>After the field names have been inferred, makes the
+   * field names unique by appending numeric suffixes.
+   *
+   * @param nodes Expressions
+   * @param fieldNames Suggested field names
+   * @param force create project even if it is identity
+   */
+  public RelBuilder project(Iterable<? extends RexNode> nodes,
+      Iterable<String> fieldNames, boolean force) {
+    return project_(nodes, fieldNames, ImmutableList.of(), force);
   }
+
+  /** Creates a {@link Project} of all original fields, plus the given
+   * expressions. */
+  public RelBuilder projectPlus(RexNode... nodes) {
+    return projectPlus(ImmutableList.copyOf(nodes));
+  }
+
+  /** Creates a {@link Project} of all original fields, plus the given list of
+   * expressions. */
+  public RelBuilder projectPlus(Iterable<RexNode> nodes) {
+    final ImmutableList.Builder<RexNode> builder = ImmutableList.builder();
+    return project(builder.addAll(fields()).addAll(nodes).build());
+  }
+
+  /** Creates a {@link Project} of all original fields, except the given
+   * expressions.
+   *
+   * @throws IllegalArgumentException if the given expressions contain duplicates
+   *    or there is an expression that does not match an existing field
+   */
+  public RelBuilder projectExcept(RexNode... expressions) {
+    return projectExcept(ImmutableList.copyOf(expressions));
+  }
+
+  /** Creates a {@link Project} of all original fields, except the given list of
+   * expressions.
+   *
+   * @throws IllegalArgumentException if the given expressions contain duplicates
+   *    or there is an expression that does not match an existing field
+   */
+  public RelBuilder projectExcept(Iterable<RexNode> expressions) {
+    List<RexNode> allExpressions = new ArrayList<>(fields());
+    Set<RexNode> excludeExpressions = new HashSet<>();
+    for (RexNode excludeExp : expressions) {
+      if (!excludeExpressions.add(excludeExp)) {
+        throw new IllegalArgumentException(
+          "Input list contains duplicates. Expression " + excludeExp + " exists multiple times.");
+      }
+      if (!allExpressions.remove(excludeExp)) {
+        throw new IllegalArgumentException("Expression " + excludeExp.toString() + " not found.");
+      }
+    }
+    return this.project(allExpressions);
+  }
+
+  /** Creates a {@link Project} of the given list
+   * of expressions, using the given names.
+   *
+   * <p>Names are deduced as follows:
+   * <ul>
+   *   <li>If the length of {@code fieldNames} is greater than the index of
+   *     the current entry in {@code nodes}, and the entry in
+   *     {@code fieldNames} is not null, uses it; otherwise
+   *   <li>If an expression projects an input field,
+   *     or is a cast an input field,
+   *     uses the input field name; otherwise
+   *   <li>If an expression is a call to
+   *     {@link SqlStdOperatorTable#AS}
+   *     (see {@link #alias}), removes the call but uses the intended alias.
+   * </ul>
+   *
+   * <p>After the field names have been inferred, makes the
+   * field names unique by appending numeric suffixes.
+   *
+   * @param nodes Expressions
+   * @param fieldNames Suggested field names
+   * @param hints Hints
+   * @param force create project even if it is identity
+   */
+  private RelBuilder project_(
+      Iterable<? extends RexNode> nodes,
+      Iterable<String> fieldNames,
+      Iterable<RelHint> hints,
+      boolean force) {
+    final Frame frame = stack.peek();
+    final RelDataType inputRowType = frame.rel.getRowType();
+    final List<RexNode> nodeList = Lists.newArrayList(nodes);
+
+    // Perform a quick check for identity. We'll do a deeper check
+    // later when we've derived column names.
+    if (!force && Iterables.isEmpty(fieldNames)
+        && RexUtil.isIdentity(nodeList, inputRowType)) {
+      return this;
+    }
+
+    final List<String> fieldNameList = Lists.newArrayList(fieldNames);
+    while (fieldNameList.size() < nodeList.size()) {
+      fieldNameList.add(null);
+    }
+
+    if (frame.rel instanceof Project
+            && shouldMergeProject(nodeList, ((Project) frame.rel).getProjects())
+            && isNotRestructuringProjection(frame.rel.getRowType(), nodeList)) {
+      final Project project = (Project) frame.rel;
+      // Populate field names. If the upper expression is an input ref and does
+      // not have a recommended name, use the name of the underlying field.
+      for (int i = 0; i < fieldNameList.size(); i++) {
+        if (fieldNameList.get(i) == null) {
+          final RexNode node = nodeList.get(i);
+          if (node instanceof RexInputRef) {
+            final RexInputRef ref = (RexInputRef) node;
+            fieldNameList.set(i,
+                project.getRowType().getFieldNames().get(ref.getIndex()));
+          }
+        }
+      }
+      final List<RexNode> newNodes =
+          RelOptUtil.pushPastProject(nodeList, project);
+
+      // Carefully build a list of fields, so that table aliases from the input
+      // can be seen for fields that are based on a RexInputRef.
+      final Frame frame1 = stack.pop();
+      final List<Field> fields = new ArrayList<>();
+      for (RelDataTypeField f
+          : project.getInput().getRowType().getFieldList()) {
+        fields.add(new Field(ImmutableSet.of(), f));
+      }
+      for (Pair<RexNode, Field> pair
+          : Pair.zip(project.getProjects(), frame1.fields)) {
+        switch (pair.left.getKind()) {
+        case INPUT_REF:
+          final int i = ((RexInputRef) pair.left).getIndex();
+          final Field field = fields.get(i);
+          final ImmutableSet<String> aliases = pair.right.left;
+          fields.set(i, new Field(aliases, field.right));
+          break;
+        }
+      }
+      stack.push(new Frame(project.getInput(), ImmutableList.copyOf(fields)));
+      return project(newNodes, fieldNameList, force);
+    }
+
+    // Simplify expressions.
+    if (simplify) {
+      for (int i = 0; i < nodeList.size(); i++) {
+        nodeList.set(i, simplifier.simplifyPreservingType(nodeList.get(i)));
+      }
+    }
+
+    // Replace null names with generated aliases.
+    for (int i = 0; i < fieldNameList.size(); i++) {
+      if (fieldNameList.get(i) == null) {
+        fieldNameList.set(i, inferAlias(nodeList, nodeList.get(i), i));
+      }
+    }
+
+    final ImmutableList.Builder<Field> fields = ImmutableList.builder();
+    final Set<String> uniqueNameList =
+        getTypeFactory().getTypeSystem().isSchemaCaseSensitive()
+        ? new HashSet<>()
+        : new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    // calculate final names and build field list
+    for (int i = 0; i < fieldNameList.size(); ++i) {
+      final RexNode node = nodeList.get(i);
+      String name = fieldNameList.get(i);
+      Field field;
+      if (name == null || uniqueNameList.contains(name)) {
+        int j = 0;
+        if (name == null) {
+          j = i;
+        }
+        do {
+          name = SqlValidatorUtil.F_SUGGESTER.apply(name, j, j++);
+        } while (uniqueNameList.contains(name));
+        fieldNameList.set(i, name);
+      }
+      RelDataTypeField fieldType =
+          new RelDataTypeFieldImpl(name, i, node.getType());
+      switch (node.getKind()) {
+      case INPUT_REF:
+        // preserve rel aliases for INPUT_REF fields
+        final int index = ((RexInputRef) node).getIndex();
+        field = new Field(frame.fields.get(index).left, fieldType);
+        break;
+      default:
+        field = new Field(ImmutableSet.of(), fieldType);
+        break;
+      }
+      uniqueNameList.add(name);
+      fields.add(field);
+    }
+    if (!force && RexUtil.isIdentity(nodeList, inputRowType)) {
+      if (fieldNameList.equals(inputRowType.getFieldNames())) {
+        // Do not create an identity project if it does not rename any fields
+        return this;
+      } else {
+        // create "virtual" row type for project only rename fields
+        stack.pop();
+        // Ignore the hints.
+        stack.push(new Frame(frame.rel, fields.build()));
+      }
+      return this;
+    }
+    final RelNode project =
+        struct.projectFactory.createProject(frame.rel,
+            ImmutableList.copyOf(hints),
+            ImmutableList.copyOf(nodeList),
+                fieldNameList);
+    stack.pop();
+    stack.push(new Frame(project, fields.build()));
+    return this;
+  }
+
+  /**
+   * Restructuring projection is when inputProjection returns flat type
+   * but new projection collects flatten types back into struct columns.
+   * Given method negates the condition to know whether projects can be merged.
+   *
+   * @param inputProjectionType input projection result type
+   * @param newProjects         new projections
+   * @return whether new projections don't do restructuring
+   * (collection of flattened fields back into struct fields)
+   */
+  private boolean isNotRestructuringProjection(RelDataType inputProjectionType,
+                                               List<RexNode> newProjects) {
+    return SqlTypeUtil.isFlat(newProjects) || !SqlTypeUtil.isFlat(inputProjectionType);
+  }
+
+  /** Whether to attempt to merge consecutive {@link Project} operators.
+   *
+   * Check if the child project contains sql function, if so then do not merge the
+   * projects as we could lose some important nodes with sql functions.
+   * Also, we do not merge {@link Project} when it contains window functions.
+   */
+  protected boolean shouldMergeProject(List<RexNode> nodes, List<RexNode> childNodes) {
+    for (RexNode node: childNodes) {
+      if (RexOver.containsOver(node)
+              || (node instanceof RexCall
+                && ((RexCall) node).getOperator() instanceof SqlFunction)) {
+        return false;
+      }
+    }
+    for (RexNode node: nodes) {
+      if (RexOver.containsOver(node)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Method to check if the child project contains sql function, if so then do not merge the
+   * projects as it could eliminate some important projects with sql functions.
+   * @param projects list of nodes in child project
+   * @return
+   */
 
   /** Creates a {@link Project} of the given
    * expressions and field names, and optionally optimizing.
@@ -1844,9 +2117,7 @@ public class RelBuilder {
   public RelBuilder as(final String alias) {
     final Frame pair = stack.pop();
     List<Field> newFields =
-        Lists.transform(pair.fields, field ->
-            new Field(ImmutableSet.<String>builder().addAll(field.left)
-                .add(alias).build(), field.right));
+            Util.transform(pair.fields, field -> field.addAlias(alias));
 
     stack.push(new Frame(pair.rel, ImmutableList.copyOf(newFields)));
     return this;

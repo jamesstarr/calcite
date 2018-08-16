@@ -69,10 +69,9 @@ public final class LogicalFilter extends Filter {
       Set<CorrelationId> variablesSet) {
     super(cluster, traitSet, child, condition);
     this.variablesSet = ImmutableSet.copyOf(variablesSet);
-<<<<<<< HEAD
-    assert isValid(Litmus.THROW, null);
-=======
 >>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
+=======
+    assert isValid(Litmus.THROW, null);
   }
 
   @Deprecated // to be removed before 2.0

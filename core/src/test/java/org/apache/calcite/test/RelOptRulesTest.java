@@ -86,6 +86,7 @@ import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexExecutor;
 import org.apache.calcite.rex.RexExecutorImpl;
 import org.apache.calcite.rex.RexExecutorTest;
+import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexOver;
 import org.apache.calcite.runtime.Hook;
@@ -6765,10 +6766,9 @@ class RelOptRulesTest extends RelOptTestBase {
 
     final RexBuilder rexB = relBuilder.getRexBuilder();
 
-    final RexNode dateLiteral = rexB.makeDateLiteral(new DateString(2020, 12, 11));
+    final RexNode dateLiteral = dateLiteral(rexB, 2020, 12, 11);
 
-    RexNode dateInput4 = rexB.makeInputRef(
-            rexB.getTypeFactory().createSqlType(SqlTypeName.DATE), 4);
+    RexNode dateInput4 = dateInput(rexB, 4, true);
 
     final RexNode filterCond = rexB.makeCall(IS_NOT_DISTINCT_FROM,
             dateInput4,
@@ -6808,17 +6808,11 @@ class RelOptRulesTest extends RelOptTestBase {
 
     final RexBuilder rexB = relBuilder.getRexBuilder();
 
-    RelDataTypeFactory typeFactory = rexB.getTypeFactory();
+    RexNode dateInput4 = dateInput(rexB, 4, true);
 
-    RelDataType dateType = typeFactory.createTypeWithNullability(
-            typeFactory.createSqlType(SqlTypeName.DATE), true);
+    RexNode dateInput8 = dateInput(rexB, 8, true);
 
-    RexNode dateInput4 = rexB.makeInputRef(dateType, 4);
-
-    RexNode dateInput8 = rexB.makeInputRef(dateType, 8);
-
-    final RexNode dateLiteral = rexB.makeDateLiteral(
-            new DateString(2020, 12, 11));
+    final RexNode dateLiteral = dateLiteral(rexB, 2020, 12, 11);
 
     final RexNode filterCond = rexB.makeCall(IS_NOT_DISTINCT_FROM,
             dateInput4,
@@ -6881,4 +6875,15 @@ class RelOptRulesTest extends RelOptTestBase {
     final String planAfter = NL + RelOptUtil.toString(relAfter);
     diffRepos.assertEquals("planAfter", "${planAfter}", planAfter);
   }
+
+  private RexNode dateLiteral(RexBuilder rexB, int year, int month, int day) {
+    return rexB.makeDateLiteral(new DateString(year, month, day));
+  }
+
+  private RexInputRef dateInput(RexBuilder rexB, int input, boolean nullable) {
+    return rexB.makeInputRef(rexB.getTypeFactory()
+            .createTypeWithNullability(
+                    rexB.getTypeFactory().createSqlType(SqlTypeName.DATE), nullable), input);
+  }
+
 }

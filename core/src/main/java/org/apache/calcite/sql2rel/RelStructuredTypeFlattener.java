@@ -515,7 +515,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
     List<RexNode> newProjects = Pair.left(flattenedExpList);
     List<String> newNames = Pair.right(flattenedExpList);
     RelNode newRel = relBuilder.push(newInput)
-        .project(newProjects, newNames, true)
+        .projectNamed(newProjects, newNames, true)
         .build();
     newRel = RelOptUtil.copyRelHints(rel, newRel);
     setNewForOldRel(rel, newRel);
@@ -745,7 +745,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
       List<RexNode> projects = Pair.left(flattenedExpList);
       List<String> fieldNames = Pair.right(flattenedExpList);
       newRel = relBuilder.push(newRel)
-          .project(projects, fieldNames, true)
+          .projectNamed(projects, fieldNames, true)
           .build();
     }
     newRel = RelOptUtil.copyRelHints(rel, newRel);
@@ -851,20 +851,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
     @Override public RexNode visitInputRef(RexInputRef input) {
       final int oldIndex = input.getIndex();
       final Ord<RelDataType> field = getNewFieldForOldInput(oldIndex);
-      RelDataTypeField inputFieldByOldIndex = currentRel.getInputs().stream()
-          .flatMap(relInput -> relInput.getRowType().getFieldList().stream())
-          .skip(oldIndex)
-          .findFirst()
-          .orElseThrow(() ->
-              new AssertionError("Found input ref with index not found in old inputs"));
-      if (inputFieldByOldIndex.getType().isStruct()) {
-        iRestructureInput = field.i;
-        List<RexNode> rexNodes = restructureFields(inputFieldByOldIndex.getType());
-        return rexBuilder.makeCall(
-            inputFieldByOldIndex.getType(),
-            SqlStdOperatorTable.ROW,
-            rexNodes);
-      }
+>>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
 
       // Use the actual flattened type, which may be different from the current
       // type.
@@ -884,9 +871,11 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
       // the desired input number
       int iInput = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       RelDataType fieldType = removeDistinct(fieldAccess.getType());
->>>>>>> d52497861 ([CALCITE-2404] Implement access to structured-types in enumerable runtime (Stamatis Zampetakis))
+=======
+>>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
       Deque<Integer> accessOrdinals = new ArrayDeque<>();
 
       for (;;) {
@@ -902,15 +891,10 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
           // is flattened (no struct types). We just have to create a new RexInputRef with the
           // correct ordinal and type.
           RexInputRef inputRef = (RexInputRef) refExp;
-          if (noFlatteningForInput(inputRef.getIndex())) {
-            // Sanity check, the input must not have struct type fields.
-            // We better have a record for each old input field
-            // whether it is flattened.
-            return fieldAccess;
-          }
           final Ord<RelDataType> newField =
-              getNewFieldForOldInput(inputRef.getIndex(), iInput);
-          return new RexInputRef(newField.getKey(), removeDistinct(newField.getValue()));
+              getNewFieldForOldInput(inputRef.getIndex());
+          iInput += newField.i;
+          return new RexInputRef(iInput, removeDistinct(newField.e));
         } else if (refExp instanceof RexCorrelVariable) {
           RelDataType refType =
               SqlTypeUtil.flattenRecordType(

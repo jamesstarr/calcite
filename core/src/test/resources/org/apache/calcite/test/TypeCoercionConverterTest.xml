@@ -68,6 +68,7 @@ LogicalProject(EXPR$0=[CAST(CASE(=($1, 0), false, IS NOT NULL($7), true, IS NULL
         LogicalAggregate(group=[{}], agg#0=[COUNT()], agg#1=[COUNT($0, $1)])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           LogicalProject(EXPR$0=[1], EXPR$1=[2], $f2=[1:BIGINT])
             LogicalValues(tuples=[[{ true, true }]])
     LogicalAggregate(group=[{0, 1}], agg#0=[MIN($2)])
@@ -85,6 +86,13 @@ LogicalProject(EXPR$0=[CAST(CASE(=($1, 0), false, IS NOT NULL($7), true, IS NULL
         LogicalProject(EXPR$0=[1], EXPR$1=[2])
           LogicalValues(tuples=[[{ true, true }]])
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+          LogicalProject(EXPR$0=[1], EXPR$1=[2], $f2=[1:BIGINT])
+            LogicalValues(tuples=[[{ true, true }]])
+    LogicalAggregate(group=[{0, 1}], agg#0=[MIN($2)])
+      LogicalProject(EXPR$0=[1], EXPR$1=[2], $f2=[1:BIGINT])
+        LogicalValues(tuples=[[{ true, true }]])
+>>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
 ]]>
         </Resource>
     </TestCase>

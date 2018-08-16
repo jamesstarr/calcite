@@ -123,13 +123,13 @@ public enum Hook {
    *     than expected. Use with caution. Prefer thread-local hooks.
    * @see #addThread(Consumer)
    */
-  public <T, R> Closeable add(final Consumer<T> handler) {
+  public <T> Closeable add(final Consumer<T> handler) {
     //noinspection unchecked
     handlers.add((Consumer<Object>) handler);
     return () -> remove(handler);
   }
 
-  /** @deprecated Use {@link #addThread(Consumer)}. */
+  /** @deprecated Use {@link #add(Consumer)}. */
   @SuppressWarnings("Guava")
   @Deprecated // to be removed in 2.0
   public <T, R> Closeable add(final Function<T, R> handler) {

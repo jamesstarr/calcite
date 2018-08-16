@@ -1315,7 +1315,9 @@ public class PlannerTest {
     assertThat(plan,
         equalTo("LogicalSort(sort0=[$0], dir0=[ASC])\n"
         + "  LogicalProject(psPartkey=[$0])\n"
-        + "    LogicalTableScan(table=[[tpch, partsupp]])\n"));
+        + "    LogicalSort(sort0=[$0], sort1=[$1], dir0=[ASC], dir1=[ASC])\n"
+        + "      LogicalProject(psPartkey=[$0], psSupplyCost=[$1])\n"
+        + "        EnumerableTableScan(table=[[tpch, partsupp]])\n"));
   }
 
   /** Test case for
@@ -1335,8 +1337,7 @@ public class PlannerTest {
   @Test public void testView() throws Exception {
     final String sql = "select * FROM dept";
     final String expected = "LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
-        + "  LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
-        + "    LogicalValues(type=[RecordType(INTEGER DEPTNO, CHAR(11) DNAME)], "
+        + "  LogicalValues(type=[RecordType(INTEGER DEPTNO, CHAR(11) DNAME)], "
         + "tuples=[[{ 10, 'Sales      ' },"
         + " { 20, 'Marketing  ' },"
         + " { 30, 'Engineering' },"
@@ -1347,10 +1348,9 @@ public class PlannerTest {
   @Test public void testViewOnView() throws Exception {
     final String sql = "select * FROM dept30";
     final String expected = "LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
-        + "  LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
-        + "    LogicalFilter(condition=[=($0, 30)])\n"
-        + "      LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
-        + "        LogicalValues(type=[RecordType(INTEGER DEPTNO, CHAR(11) DNAME)], "
+        + "  LogicalFilter(condition=[=($0, 30)])\n"
+        + "    LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
+        + "      LogicalValues(type=[RecordType(INTEGER DEPTNO, CHAR(11) DNAME)], "
         + "tuples=[[{ 10, 'Sales      ' },"
         + " { 20, 'Marketing  ' },"
         + " { 30, 'Engineering' },"

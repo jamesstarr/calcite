@@ -444,10 +444,13 @@ order by "deptno", ar, br limit 5;
 |     10 | 110 | 110 |
 =======
 |     10 | 110 | 110 |
-|     10 | 110 | 110 |
-|     10 | 110 | 110 |
 |     20 | 200 | 200 |
+<<<<<<< HEAD
 >>>>>>> 07a2c7256 ([CALCITE-2271] Join of two views with window aggregates produces incorrect results or NPE)
+=======
+|     10 | 110 | 110 |
+|     10 | 110 | 110 |
+>>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
 +--------+-----+-----+
 (5 rows)
 
