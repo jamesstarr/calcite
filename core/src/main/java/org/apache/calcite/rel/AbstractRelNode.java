@@ -183,84 +183,13 @@ public abstract class AbstractRelNode implements RelNode {
     return this;
   }
 
-<<<<<<< HEAD
-=======
-  @SuppressWarnings("deprecation")
-  public final RelOptCost computeSelfCost(RelOptPlanner planner) {
-    return computeSelfCost(planner, getCluster().getMetadataQuery());
-  }
+  public String recomputeDigest() {
+    String tempDigest = computeDigest();
+    assert tempDigest != null : "computeDigest() should be non-null";
 
->>>>>>> 3d7bdad35 ([] use RelMetadataProvider/RelMetadataQuery set in cluster instead of the default/empty ones)
-  public RelOptCost computeSelfCost(RelOptPlanner planner,
-      RelMetadataQuery mq) {
-    // by default, assume cost is proportional to number of rows
-    double rowCount = mq.getRowCount(this);
-    double bytesPerRow = 1;
-    return planner.getCostFactory().makeCost(rowCount, rowCount, 0);
-  }
-
-  @Deprecated // to be removed before 2.0
-  public final <M extends Metadata> M metadata(Class<M> metadataClass,
-      RelMetadataQuery mq) {
-    final MetadataFactory factory = cluster.getMetadataFactory();
-    final M metadata = factory.query(this, mq, metadataClass);
-    assert metadata != null
-        : "no provider found (rel=" + this + ", m=" + metadataClass
-        + "); a backstop provider is recommended";
-    // Usually the metadata belongs to the rel that created it. RelSubset and
-    // HepRelVertex are notable exceptions, so disable the assert. It's not
-    // worth the performance hit to override this method for them.
-    //   assert metadata.rel() == this : "someone else's metadata";
-    return metadata;
-  }
-
-  public void explain(RelWriter pw) {
-    explainTerms(pw).done(this);
-  }
-
-  /**
-   * Describes the inputs and attributes of this relational expression.
-   * Each node should call {@code super.explainTerms}, then call the
-   * {@link org.apache.calcite.rel.externalize.RelWriterImpl#input(String, RelNode)}
-   * and
-   * {@link org.apache.calcite.rel.externalize.RelWriterImpl#item(String, Object)}
-   * methods for each input and attribute.
-   *
-   * @param pw Plan writer
-   * @return Plan writer for fluent-explain pattern
-   */
-  public RelWriter explainTerms(RelWriter pw) {
-    return pw;
-  }
-
-  public RelNode onRegister(RelOptPlanner planner) {
-    List<RelNode> oldInputs = getInputs();
-    List<RelNode> inputs = new ArrayList<>(oldInputs.size());
-    for (final RelNode input : oldInputs) {
-      RelNode e = planner.ensureRegistered(input, null);
-      if (e != input) {
-        // TODO: change 'equal' to 'eq', which is stronger.
-        assert RelOptUtil.equal(
-            "rowtype of rel before registration",
-            input.getRowType(),
-            "rowtype of rel after registration",
-            e.getRowType(),
-            Litmus.THROW);
-      }
-      inputs.add(e);
-    }
-    RelNode r = this;
-    if (!Util.equalShallow(oldInputs, inputs)) {
-      r = copy(getTraitSet(), inputs);
-    }
-    r.recomputeDigest();
-    assert r.isValid(Litmus.THROW, null);
-    return r;
-  }
-
-  public void recomputeDigest() {
-    digest = computeDigest();
-    assert digest != null : "computeDigest() should be non-null";
+    this.desc = "rel#" + id + ":" + tempDigest;
+    this.digest = tempDigest;
+    return this.digest;
   }
 
   public void replaceInput(
@@ -311,74 +240,27 @@ public abstract class AbstractRelNode implements RelNode {
    */
   private static final class RelDigestWriter implements RelWriter {
 
-    private final List<Pair<String, Object>> values = new ArrayList<>();
-
-    String digest = null;
-
-    @Override public void explain(final RelNode rel, final List<Pair<String, Object>> valueList) {
-      throw new IllegalStateException("Should not be called for computing digest");
-    }
-
-    @Override public SqlExplainLevel getDetailLevel() {
-      return SqlExplainLevel.DIGEST_ATTRIBUTES;
-    }
-
-    @Override public RelWriter item(String term, Object value) {
-      values.add(Pair.of(term, value));
-      return this;
-    }
-
-    @Override public RelWriter done(RelNode node) {
-      StringBuilder sb = new StringBuilder();
-      sb.append(node.getRelTypeName());
-
-      for (RelTrait trait : node.getTraitSet()) {
-        sb.append('.');
-        sb.append(trait.toString());
-      }
-
-      sb.append('(');
-      int j = 0;
-      for (Pair<String, Object> value : values) {
-        if (j++ > 0) {
-          sb.append(',');
-        }
-        sb.append(value.left);
-        sb.append('=');
-        if (value.right instanceof RelNode) {
-          RelNode input = (RelNode) value.right;
-          sb.append(input.getRelTypeName());
-          sb.append('#');
-          sb.append(input.getId());
-        } else {
-          sb.append(value.right);
-        }
-      }
-      sb.append(')');
-      digest = sb.toString();
-      return this;
-    }
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * <p>This method (and {@link #hashCode} is intentionally final. We do not want
-   * sub-classes of {@link RelNode} to redefine identity. Various algorithms
-   * (e.g. visitors, planner) can define the identity as meets their needs.
-   */
-  @Override public final boolean equals(Object obj) {
-    return super.equals(obj);
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * <p>This method (and {@link #equals} is intentionally final. We do not want
-   * sub-classes of {@link RelNode} to redefine identity. Various algorithms
-   * (e.g. visitors, planner) can define the identity as meets their needs.
-   */
-  @Override public final int hashCode() {
-    return super.hashCode();
+            pw.write("(");
+            int j = 0;
+            for (Pair<String, Object> value : values) {
+              if (j++ > 0) {
+                pw.write(",");
+              }
+              pw.write(value.left);
+              pw.write("=");
+              if (value.right instanceof RelNode) {
+                RelNode input = (RelNode) value.right;
+                pw.write(input.getRelTypeName());
+                pw.write("#");
+                pw.write(Integer.toString(input.getId()));
+              } else {
+                pw.write(String.valueOf(value.right));
+              }
+            }
+            pw.write(")");
+          }
+        };
+    explain(pw);
+    return sw.toString();
   }
 }

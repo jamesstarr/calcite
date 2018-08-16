@@ -24,18 +24,8 @@ import org.apache.calcite.plan.hep.HepProgram;
 import org.apache.calcite.plan.hep.HepProgramBuilder;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
-import org.apache.calcite.rel.logical.LogicalIntersect;
-import org.apache.calcite.rel.logical.LogicalUnion;
-import org.apache.calcite.rel.rules.CoerceInputsRule;
-import org.apache.calcite.rel.rules.CoreRules;
-
-import com.google.common.collect.ImmutableList;
-
-import org.junit.jupiter.api.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * HepPlannerTest is a unit test for {@link HepPlanner}. See
@@ -128,7 +118,7 @@ class HepPlannerTest extends RelOptTestBase {
    * Ensures {@link org.apache.calcite.rel.AbstractRelNode} digest does not include
    * full digest tree.
    */
-  @Test void relDigestLength() {
+  @Test public void relDigestLength() {
     HepProgramBuilder programBuilder = HepProgram.builder();
     HepPlanner planner =
         new HepPlanner(
@@ -149,7 +139,7 @@ class HepPlannerTest extends RelOptTestBase {
     // Bad digest includes full tree like rel#66:LogicalProject(input=rel#64:LogicalUnion(...))
     // So the assertion is to ensure digest includes LogicalUnion exactly once
 
-    assertIncludesExactlyOnce("best.getDescription()", best.toString(), "LogicalUnion");
+    assertIncludesExactlyOnce("best.getDescription()", best.getDescription(), "LogicalUnion");
     assertIncludesExactlyOnce("best.getDigest()", best.getDigest(), "LogicalUnion");
   }
 
@@ -162,12 +152,12 @@ class HepPlannerTest extends RelOptTestBase {
         cnt++;
       }
     }
-    assertEquals(1, cnt,
-        () -> message + " should include <<" + substring + ">> exactly once"
-            + ", actual value is " + digest);
+    assertEquals(
+        message + " should include <<" + substring + ">> exactly once, actual value is " + digest,
+        1, cnt);
   }
 
-  @Test void testMatchLimitOneTopDown() throws Exception {
+  @Test public void testMatchLimitOneTopDown() throws Exception {
     // Verify that only the top union gets rewritten.
 
     HepProgramBuilder programBuilder = HepProgram.builder();
