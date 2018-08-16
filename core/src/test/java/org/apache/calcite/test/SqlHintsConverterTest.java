@@ -126,9 +126,8 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
     final String sql = "select /*+ resource(parallelism='3') */ empno\n"
         + "from (select /*+ resource(mem='20Mb')*/ empno, ename from emp)";
     sql(sql).ok(
-            Arrays.asList("Project:[[RESOURCE inheritPath:{} options:{PARALLELISM=3}]]",
-                    "Project:[[RESOURCE inheritPath:{} options:{MEM=20Mb}],"
-                    + " [RESOURCE inheritPath:{0} options:{PARALLELISM=3}]]"));
+            Collections.singletonList(
+                    "Project:[[RESOURCE inheritPath:{} options:{PARALLELISM=3}]]"));
   }
 
   @Test public void testTwoLevelNestedQueryHint() {
@@ -136,11 +135,9 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
         + "from (select /*+ resource(mem='20Mb')*/ empno, ename\n"
         + "from emp left join dept on emp.deptno = dept.deptno)";
     final List<String> expectedHints = Arrays.asList(
-        "Project:[[RESOURCE inheritPath:{} options:{PARALLELISM=3}]"
-            + ", [NO_HASH_JOIN inheritPath:{}]]",
-            "Project:[[RESOURCE inheritPath:{} options:{MEM=20Mb}],"
-            + " [RESOURCE inheritPath:{0} options:{PARALLELISM=3}]]",
-        "LogicalJoin:[[NO_HASH_JOIN inheritPath:{0}]]");
+            "Project:[[RESOURCE inheritPath:{} options:{PARALLELISM=3}]"
+                    + ", [NO_HASH_JOIN inheritPath:{}]]",
+            "LogicalJoin:[[NO_HASH_JOIN inheritPath:{0}]]");
     sql(sql).ok(expectedHints);
   }
 

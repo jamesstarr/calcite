@@ -4309,7 +4309,7 @@ public class SqlToRelConverter {
             .collect(Collectors.toList());
     RelNode projectionWithoutQualify = relBuilder
             .push(filter)
-            .project(inputRefs, fieldNames)
+            .project(inputRefs, projectionFromSelect.getRowType().getFieldNames())
             .build();
 
     // Update the root

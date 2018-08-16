@@ -272,6 +272,11 @@ public class Matchers {
     public void describeTo(Description description) {
       matcher.describeTo(description);
     }
+
+    @Override protected void describeMismatchSafely(F item,
+        Description mismatchDescription) {
+      mismatchDescription.appendText("was ").appendValue(f.apply(item));
+    }
   }
 }
 

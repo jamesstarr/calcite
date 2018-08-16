@@ -1744,7 +1744,7 @@ public class MaterializationTest {
             + "join \"dependents\" on (\"depts\".\"name\" = \"dependents\".\"name\")",
         HR_FKUK_MODEL,
         CalciteAssert.checkResultContains(
-            "EnumerableCalc(expr#0..2=[{inputs}], empid0=[$t1])\n"
+            "EnumerableCalc(expr#0..2=[{inputs}], empid=[$t1])\n"
                 + "  EnumerableHashJoin(condition=[=($0, $2)], joinType=[inner])\n"
                 + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR], name=[$t1])\n"
                 + "      EnumerableTableScan(table=[[hr, m0]])\n"

@@ -263,7 +263,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
 
   /**
    * Maps the ordinal of a field pre-flattening to the ordinal of the
-   * corresponding field post-flattening, and optionally returns its type.
+   * corresponding field post-flattening.
    *
    * @param oldOrdinal Pre-flattening ordinal
    * @return Post-flattening ordinal
@@ -490,7 +490,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
     List<RexNode> newProjects = Pair.left(flattenedExpList);
     List<String> newNames = Pair.right(flattenedExpList);
     RelNode newRel = relBuilder.push(newInput)
-        .project(newProjects, newNames, true)
+        .projectNamed(newProjects, newNames, true)
         .build();
     newRel = RelOptUtil.copyRelHints(rel, newRel);
     setNewForOldRel(rel, newRel);
@@ -530,10 +530,9 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
     // Translate the condition.
     final RexLocalRef conditionRef = program.getCondition();
     if (conditionRef != null) {
-      programBuilder.addCondition(
-          new RexLocalRef(
-              getNewForOldInput(conditionRef.getIndex()),
-              conditionRef.getType()));
+      final Ord<RelDataType> newField =
+          getNewFieldForOldInput(conditionRef.getIndex());
+      programBuilder.addCondition(new RexLocalRef(newField.i, newField.e));
     }
 
     RexProgram newProgram = programBuilder.getProgram();
@@ -721,7 +720,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
       List<RexNode> projects = Pair.left(flattenedExpList);
       List<String> fieldNames = Pair.right(flattenedExpList);
       newRel = relBuilder.push(newRel)
-          .project(projects, fieldNames, true)
+          .projectNamed(projects, fieldNames, true)
           .build();
     }
     newRel = RelOptUtil.copyRelHints(rel, newRel);
@@ -803,15 +802,12 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
   private class RewriteRexShuttle extends RexShuttle {
     @Override public RexNode visitInputRef(RexInputRef input) {
       final int oldIndex = input.getIndex();
-      final int newIndex = getNewForOldInput(oldIndex);
+      final Ord<RelDataType> field = getNewFieldForOldInput(oldIndex);
 
-      // FIXME: jhyde, 2005/12/3: Once indicator fields have been
-      //  introduced, the new field type may be very different to the
-      //  old field type. We should look at the actual flattened types,
-      //  rather than trying to deduce the type from the current type.
-      RelDataType fieldType = removeDistinct(input.getType());
-      RexInputRef newInput = new RexInputRef(newIndex, fieldType);
-      return newInput;
+      // Use the actual flattened type, which may be different from the current
+      // type.
+      RelDataType fieldType = removeDistinct(field.e);
+      return new RexInputRef(field.i, fieldType);
     }
 
     private RelDataType removeDistinct(RelDataType type) {
@@ -825,7 +821,6 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
       // walk down the field access path expression, calculating
       // the desired input number
       int iInput = 0;
-      RelDataType fieldType = removeDistinct(fieldAccess.getType());
       Deque<Integer> accessOrdinals = new ArrayDeque<>();
 
       for (;;) {
@@ -841,8 +836,10 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
           // is flattened (no struct types). We just have to create a new RexInputRef with the
           // correct ordinal and type.
           RexInputRef inputRef = (RexInputRef) refExp;
-          iInput += getNewForOldInput(inputRef.getIndex());
-          return new RexInputRef(iInput, fieldType);
+          final Ord<RelDataType> newField =
+              getNewFieldForOldInput(inputRef.getIndex());
+          iInput += newField.i;
+          return new RexInputRef(iInput, removeDistinct(newField.e));
         } else if (refExp instanceof RexCorrelVariable) {
           RelDataType refType =
               SqlTypeUtil.flattenRecordType(
