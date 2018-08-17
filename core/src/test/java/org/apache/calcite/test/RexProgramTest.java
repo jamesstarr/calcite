@@ -1221,6 +1221,14 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplify(gt(hRef, hRef), "false");
     checkSimplify2(gt(iRef, iRef), ">(?0.i, ?0.i)", "false");
     checkSimplify(gt(iRef, hRef), ">(?0.i, ?0.h)");
+
+    // "(not x) is null" to "x is null"
+    checkSimplify(isNull(not(vBool())), "IS NULL(?0.bool0)");
+    checkSimplify(isNull(not(vBoolNotNull())), "false");
+
+    // "(not x) is not null" to "x is not null"
+    checkSimplify(isNotNull(not(vBool())), "IS NOT NULL(?0.bool0)");
+    checkSimplify(isNotNull(not(vBoolNotNull())), "true");
   }
 
   @Test public void testSimplifyFilter() {
@@ -1519,15 +1527,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
   @Test public void testSimplifyAnd3() {
-    RelDataType integerNullableType =
-        typeFactory.createTypeWithNullability(
-            typeFactory.createSqlType(SqlTypeName.INTEGER), true);
-    RexNode andCondition = and(
-        eq(rexBuilder.makeInputRef(integerNullableType, 0),
-            rexBuilder.makeInputRef(integerNullableType, 0)),
-        eq(rexBuilder.makeInputRef(integerNullableType, 1),
-            rexBuilder.makeInputRef(integerNullableType, 1)));
-    checkSimplifyFilter(andCondition, "AND(IS NOT NULL($0), IS NOT NULL($1))");
+    // in the case of 3-valued logic, the result must be unknown if a is unknown
+    checkSimplify2(
+            and(vBool(), not(vBool())),
+            "AND(null, IS NULL(?0.bool0))",
+            "false");
   }
 
   @Test public void testSimplifyIsNotNull() {
@@ -1942,10 +1946,9 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
   @Test public void notDistinct() {
-    checkSimplify2(
-        isFalse(isNotDistinctFrom(vBool(0), vBool(1))),
-        "IS DISTINCT FROM(?0.bool0, ?0.bool1)",
-        "IS DISTINCT FROM(?0.bool0, ?0.bool1)");
+    checkSimplify(
+            isFalse(isNotDistinctFrom(vBool(0), vBool(1))),
+            "IS DISTINCT FROM(?0.bool0, ?0.bool1)");
   }
 
   @Test public void testSimplifyCoalesce() {
