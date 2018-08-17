@@ -968,10 +968,14 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkCnf(trueLiteral, "true");
     checkCnf(falseLiteral, "false");
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkCnf(nullBool, "null:BOOLEAN");
 =======
     checkCnf(unknownLiteral, "null:BOOLEAN");
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+    checkCnf(nullBool, "null:BOOLEAN");
+>>>>>>> 11c579765 ([CALCITE-2462] RexProgramTest: replace nullLiteral->nullInt, unknownLiteral->nullBool for brevity):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkCnf(and(aRef, bRef), "AND(?0.a, ?0.b)");
     checkCnf(and(aRef, bRef, cRef), "AND(?0.a, ?0.b, ?0.c)");
 
@@ -1203,10 +1207,14 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkPullFactors(trueLiteral, "true");
     checkPullFactors(falseLiteral, "false");
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkPullFactors(nullBool, "null:BOOLEAN");
 =======
     checkPullFactors(unknownLiteral, "null:BOOLEAN");
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+    checkPullFactors(nullBool, "null:BOOLEAN");
+>>>>>>> 11c579765 ([CALCITE-2462] RexProgramTest: replace nullLiteral->nullInt, unknownLiteral->nullBool for brevity):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkPullFactors(and(aRef, bRef), "AND(?0.a, ?0.b)");
     checkPullFactors(and(aRef, bRef, cRef), "AND(?0.a, ?0.b, ?0.c)");
 
@@ -1336,7 +1344,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "OR(?0.a, ?0.b, NOT(?0.c))");
 =======
     checkSimplify2(
-        case_(aRef, trueLiteral, bRef, trueLiteral, cRef, falseLiteral, unknownLiteral),
+        case_(aRef, trueLiteral, bRef, trueLiteral, cRef, falseLiteral, nullBool),
         "CASE(?0.a, true, ?0.b, true, ?0.c, false, null:BOOLEAN)",
         "CAST(OR(?0.a, ?0.b)):BOOLEAN");
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
@@ -1617,11 +1625,15 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplifyFilter(
         case_(cRef, trueLiteral, dRef, trueLiteral, eRef, falseLiteral, fRef,
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
             falseLiteral, nullBool),
         "OR(?0.c, ?0.d)");
 =======
             falseLiteral, unknownLiteral), "CAST(OR(?0.c, ?0.d)):BOOLEAN");
 >>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+            falseLiteral, nullBool), "CAST(OR(?0.c, ?0.d)):BOOLEAN");
+>>>>>>> 11c579765 ([CALCITE-2462] RexProgramTest: replace nullLiteral->nullInt, unknownLiteral->nullBool for brevity):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
     // condition with null value for range
     checkSimplifyFilter(and(gt(aRef, nullBool), ge(bRef, literal1)), "false");
@@ -3090,21 +3102,29 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
   @Test public void testInterpreter() {
     assertThat(eval(trueLiteral), is(true));
-    assertThat(eval(nullLiteral), is(NullSentinel.INSTANCE));
-    assertThat(eval(eq(nullLiteral, nullLiteral)),
+    assertThat(eval(nullInt), is(NullSentinel.INSTANCE));
+    assertThat(eval(eq(nullInt, nullInt)),
         is(NullSentinel.INSTANCE));
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     assertThat(eval(eq(this.trueLiteral, nullLiteral)),
 >>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+    assertThat(eval(eq(this.trueLiteral, nullInt)),
+>>>>>>> 11c579765 ([CALCITE-2462] RexProgramTest: replace nullLiteral->nullInt, unknownLiteral->nullBool for brevity):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
         is(NullSentinel.INSTANCE));
     assertThat(eval(eq(falseLiteral, trueLiteral)),
         is(false));
     assertThat(eval(ne(falseLiteral, trueLiteral)),
         is(true));
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     assertThat(eval(ne(falseLiteral, nullInt)),
 =======
     assertThat(eval(ne(falseLiteral, nullLiteral)),
 >>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+    assertThat(eval(ne(falseLiteral, nullInt)),
+>>>>>>> 11c579765 ([CALCITE-2462] RexProgramTest: replace nullLiteral->nullInt, unknownLiteral->nullBool for brevity):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
         is(NullSentinel.INSTANCE));
     assertThat(eval(and(this.trueLiteral, falseLiteral)),
         is(false));
