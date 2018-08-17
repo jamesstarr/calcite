@@ -862,10 +862,6 @@ public class SqlFunctions {
     return Math.exp(b0.doubleValue());
   }
 
-  public static double exp(long b0) {
-    return Math.exp(b0);
-  }
-
   // POWER
 
   /** SQL <code>POWER</code> operator applied to double values. */
@@ -877,20 +873,12 @@ public class SqlFunctions {
     return Math.pow(b0, b1.doubleValue());
   }
 
-  public static double power(long b0, long b1) {
-    return Math.pow(b0, b1);
+  public static double power(BigDecimal b0, double b1) {
+    return Math.pow(b0.doubleValue(), b1);
   }
 
   public static double power(BigDecimal b0, BigDecimal b1) {
     return Math.pow(b0.doubleValue(), b1.doubleValue());
-  }
-
-  public static double power(long b0, BigDecimal b1) {
-    return Math.pow(b0, b1.doubleValue());
-  }
-
-  public static double power(BigDecimal b0, long b1) {
-    return Math.pow(b0.doubleValue(), b1);
   }
 
   // LN
@@ -898,11 +886,6 @@ public class SqlFunctions {
   /** SQL {@code LN(number)} function applied to double values. */
   public static double ln(double d) {
     return Math.log(d);
-  }
-
-  /** SQL {@code LN(number)} function applied to long values. */
-  public static double ln(long b0) {
-    return Math.log(b0);
   }
 
   /** SQL {@code LN(number)} function applied to BigDecimal values. */
@@ -914,11 +897,6 @@ public class SqlFunctions {
 
   /** SQL <code>LOG10(numeric)</code> operator applied to double values. */
   public static double log10(double b0) {
-    return Math.log10(b0);
-  }
-
-  /** SQL {@code LOG10(number)} function applied to long values. */
-  public static double log10(long b0) {
     return Math.log10(b0);
   }
 
@@ -1120,11 +1098,6 @@ public class SqlFunctions {
   }
 
   // ACOS
-  /** SQL <code>ACOS</code> operator applied to long values. */
-  public static double acos(long b0) {
-    return Math.acos(b0);
-  }
-
   /** SQL <code>ACOS</code> operator applied to BigDecimal values. */
   public static double acos(BigDecimal b0) {
     return Math.acos(b0.doubleValue());
@@ -1136,11 +1109,6 @@ public class SqlFunctions {
   }
 
   // ASIN
-  /** SQL <code>ASIN</code> operator applied to long values. */
-  public static double asin(long b0) {
-    return Math.asin(b0);
-  }
-
   /** SQL <code>ASIN</code> operator applied to BigDecimal values. */
   public static double asin(BigDecimal b0) {
     return Math.asin(b0.doubleValue());
@@ -1152,11 +1120,6 @@ public class SqlFunctions {
   }
 
   // ATAN
-  /** SQL <code>ATAN</code> operator applied to long values. */
-  public static double atan(long b0) {
-    return Math.atan(b0);
-  }
-
   /** SQL <code>ATAN</code> operator applied to BigDecimal values. */
   public static double atan(BigDecimal b0) {
     return Math.atan(b0.doubleValue());
@@ -1168,18 +1131,13 @@ public class SqlFunctions {
   }
 
   // ATAN2
-  /** SQL <code>ATAN2</code> operator applied to long values. */
-  public static double atan2(long b0, long b1) {
-    return Math.atan2(b0, b1);
-  }
-
-  /** SQL <code>ATAN2</code> operator applied to long/BigDecimal values. */
-  public static double atan2(long b0, BigDecimal b1) {
+  /** SQL <code>ATAN2</code> operator applied to double/BigDecimal values. */
+  public static double atan2(double b0, BigDecimal b1) {
     return Math.atan2(b0, b1.doubleValue());
   }
 
-  /** SQL <code>ATAN2</code> operator applied to BigDecimal/long values. */
-  public static double atan2(BigDecimal b0, long b1) {
+  /** SQL <code>ATAN2</code> operator applied to BigDecimal/double values. */
+  public static double atan2(BigDecimal b0, double b1) {
     return Math.atan2(b0.doubleValue(), b1);
   }
 
@@ -1194,11 +1152,6 @@ public class SqlFunctions {
   }
 
   // COS
-  /** SQL <code>COS</code> operator applied to long values. */
-  public static double cos(long b0) {
-    return Math.cos(b0);
-  }
-
   /** SQL <code>COS</code> operator applied to BigDecimal values. */
   public static double cos(BigDecimal b0) {
     return Math.cos(b0.doubleValue());
@@ -1210,11 +1163,6 @@ public class SqlFunctions {
   }
 
   // COT
-  /** SQL <code>COT</code> operator applied to long values. */
-  public static double cot(long b0) {
-    return 1.0d / Math.tan(b0);
-  }
-
   /** SQL <code>COT</code> operator applied to BigDecimal values. */
   public static double cot(BigDecimal b0) {
     return 1.0d / Math.tan(b0.doubleValue());
@@ -1226,11 +1174,6 @@ public class SqlFunctions {
   }
 
   // DEGREES
-  /** SQL <code>DEGREES</code> operator applied to long values. */
-  public static double degrees(long b0) {
-    return Math.toDegrees(b0);
-  }
-
   /** SQL <code>DEGREES</code> operator applied to BigDecimal values. */
   public static double degrees(BigDecimal b0) {
     return Math.toDegrees(b0.doubleValue());
@@ -1242,11 +1185,6 @@ public class SqlFunctions {
   }
 
   // RADIANS
-  /** SQL <code>RADIANS</code> operator applied to long values. */
-  public static double radians(long b0) {
-    return Math.toRadians(b0);
-  }
-
   /** SQL <code>RADIANS</code> operator applied to BigDecimal values. */
   public static double radians(BigDecimal b0) {
     return Math.toRadians(b0.doubleValue());
@@ -1359,11 +1297,6 @@ public class SqlFunctions {
   }
 
   // SIN
-  /** SQL <code>SIN</code> operator applied to long values. */
-  public static double sin(long b0) {
-    return Math.sin(b0);
-  }
-
   /** SQL <code>SIN</code> operator applied to BigDecimal values. */
   public static double sin(BigDecimal b0) {
     return Math.sin(b0.doubleValue());
@@ -1375,11 +1308,6 @@ public class SqlFunctions {
   }
 
   // TAN
-  /** SQL <code>TAN</code> operator applied to long values. */
-  public static double tan(long b0) {
-    return Math.tan(b0);
-  }
-
   /** SQL <code>TAN</code> operator applied to BigDecimal values. */
   public static double tan(BigDecimal b0) {
     return Math.tan(b0.doubleValue());
