@@ -174,7 +174,11 @@
   apacheId: mmior
   githubId: michaelmior
   org: Rochester Institute of Technology
+<<<<<<< HEAD
   role: PMC
+=======
+  role: PMC Chair
+>>>>>>> b8bb0b3b8 (Update Michael Mior's affiliation)
   homepage: https://michael.mior.ca/
 - name: Milinda Pathirage
   apacheId: milinda
