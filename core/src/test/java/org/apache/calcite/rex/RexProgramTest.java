@@ -1523,6 +1523,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 =======
 >>>>>>> 9ea1621a9 (Reapply "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING""):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
@@ -1548,6 +1549,16 @@ public class RexProgramTest extends RexProgramBuilderBase {
 >>>>>>> f2f5c9ef9 ([CALCITE-2580] RexSimplify: coalesce(null > null, true) produces wrong result filter expressions (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 =======
 >>>>>>> 080ac220f ([CALCITE-2506] RexSimplify: coalesce(unaryPlus(nullInt), unaryPlus(vInt())) results in AssertionError: result mismatch (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+
+    // "(not x) is null" to "x is null"
+    checkSimplify(isNull(not(vBool())), "IS NULL(?0.bool0)");
+    checkSimplify(isNull(not(vBoolNotNull())), "false");
+
+    // "(not x) is not null" to "x is not null"
+    checkSimplify(isNotNull(not(vBool())), "IS NOT NULL(?0.bool0)");
+    checkSimplify(isNotNull(not(vBoolNotNull())), "true");
+>>>>>>> 82b258588 ([CALCITE-2469] RexSimplify should optimize '(NOT x) IS NULL' to 'x IS NULL' (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   @Test void simplifyStrong() {
@@ -2397,15 +2408,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
   @Test public void testSimplifyAnd3() {
-    RelDataType integerNullableType =
-        typeFactory.createTypeWithNullability(
-            typeFactory.createSqlType(SqlTypeName.INTEGER), true);
-    RexNode andCondition = and(
-        eq(rexBuilder.makeInputRef(integerNullableType, 0),
-            rexBuilder.makeInputRef(integerNullableType, 0)),
-        eq(rexBuilder.makeInputRef(integerNullableType, 1),
-            rexBuilder.makeInputRef(integerNullableType, 1)));
-    checkSimplifyFilter(andCondition, "AND(IS NOT NULL($0), IS NOT NULL($1))");
+    // in the case of 3-valued logic, the result must be unknown if a is unknown
+    checkSimplify2(
+            and(vBool(), not(vBool())),
+            "AND(null, IS NULL(?0.bool0))",
+            "false");
   }
 
   @Test public void testSimplifyIsNotNull() {
@@ -3035,10 +3042,9 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
   @Test public void notDistinct() {
-    checkSimplify2(
-        isFalse(isNotDistinctFrom(vBool(0), vBool(1))),
-        "IS DISTINCT FROM(?0.bool0, ?0.bool1)",
-        "IS DISTINCT FROM(?0.bool0, ?0.bool1)");
+    checkSimplify(
+            isFalse(isNotDistinctFrom(vBool(0), vBool(1))),
+            "IS DISTINCT FROM(?0.bool0, ?0.bool1)");
   }
 
   @Test public void testSimplifyCoalesce() {
