@@ -246,10 +246,6 @@ public class SqlAdvisor {
 
   public String getReplacement(SqlMoniker hint, String word) {
     Casing preferredCasing = getPreferredCasing(word);
-<<<<<<< HEAD
-    boolean quoted = !word.isEmpty() && word.charAt(0) == quoteStart();
-    return getReplacement(hint, quoted, preferredCasing);
-=======
     return getReplacement(hint, !word.isEmpty() && word.charAt(0) == quoteStart(), preferredCasing);
   }
 
@@ -260,7 +256,6 @@ public class SqlAdvisor {
     // on quotedCasing/unquotedCasing
     quoted &= !isKeyword;
 
->>>>>>> bc2544869 ([CALCITE-2434] SqlAdvisor: support hints for nested tables/schemas)
     StringBuilder sb =
         new StringBuilder(name.length() + (quoted ? 2 : 0));
 

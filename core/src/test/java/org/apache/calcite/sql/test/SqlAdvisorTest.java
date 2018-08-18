@@ -492,24 +492,11 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
   }
 
   protected void assertComplete(
-<<<<<<< HEAD
-      SqlTester customTester,
-      String sql,
-      Map<String, String> replacements,
-      List<String>... expectedResults) {
-    List<String> expectedList = plus(expectedResults);
-    String expected = toString(new TreeSet<>(expectedList));
-    assertComplete(customTester, sql, expected, null, replacements);
-  }
-
-  protected void assertComplete(
-=======
       String sql,
       String expectedResults,
       String expectedWord) {
     assertComplete(sql, expectedResults, expectedWord, null);
   }
->>>>>>> bc2544869 ([CALCITE-2434] SqlAdvisor: support hints for nested tables/schemas)
   /**
    * Tests that a given SQL which may be invalid or incomplete simplifies
    * itself and yields the salesTables set of completion hints. This is an
@@ -531,12 +518,6 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
     final String[] replaced = {null};
     List<SqlMoniker> results =
         advisor.getCompletionHints(sap.sql, sap.cursor, replaced);
-<<<<<<< HEAD
-    Assertions.assertEquals(expectedResults, convertCompletionHints(results),
-        () -> "Completion hints for " + sql);
-    if (expectedWord != null) {
-      Assertions.assertEquals(expectedWord, replaced[0], "replaced[0] for " + sql);
-=======
     Assert.assertEquals("Completion hints for " + sql,
         expectedResults, convertCompletionHints(results));
     if (expectedWord != null) {
@@ -1279,7 +1260,10 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
 
     // skip comments
     sql =
+<<<<<<< HEAD
         "-- test test\nselect -- here is from\n'cat' as foobar, 1 as x from t group by t.^ order by 123";
+=======
+        "-- test test \nselect -- here is from \n 'cat' as foobar, 1 as x from t group by t.^ order by 123";
     expected = "SELECT * FROM t GROUP BY t. _suggest_";
     assertSimplify(sql, expected);
   }
