@@ -47,7 +47,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * An assistant which offers hints and corrections to a partially-formed SQL
@@ -71,6 +72,10 @@ public class SqlAdvisor {
   // Cache for getPreferredCasing
   private String prevWord;
   private Casing prevPreferredCasing;
+
+  // Reserved words cache
+  private Set<String> reservedWordsSet;
+  private List<String> reservedWordsList;
 
   //~ Constructors -----------------------------------------------------------
 
@@ -246,7 +251,8 @@ public class SqlAdvisor {
 
   public String getReplacement(SqlMoniker hint, String word) {
     Casing preferredCasing = getPreferredCasing(word);
-    return getReplacement(hint, !word.isEmpty() && word.charAt(0) == quoteStart(), preferredCasing);
+    boolean quoted = !word.isEmpty() && word.charAt(0) == quoteStart();
+    return getReplacement(hint, quoted, preferredCasing);
   }
 
   public String getReplacement(SqlMoniker hint, boolean quoted, Casing preferredCasing) {
@@ -255,6 +261,10 @@ public class SqlAdvisor {
     // If replacement has mixed case, we need to quote it (or not depending
     // on quotedCasing/unquotedCasing
     quoted &= !isKeyword;
+
+    if (!quoted && !isKeyword && getReservedAndKeyWordsSet().contains(name)) {
+      quoted = true;
+    }
 
     StringBuilder sb =
         new StringBuilder(name.length() + (quoted ? 2 : 0));
