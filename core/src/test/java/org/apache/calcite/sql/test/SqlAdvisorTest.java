@@ -685,6 +685,12 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
     assertComplete(sql, list);
   }
 
+  @Test public void testSimplifyStarAlias() {
+    String sql;
+    sql = "select ax^ from (select * from dummy a)";
+    assertSimplify(sql, "SELECT ax _suggest_ FROM ( SELECT * FROM dummy a )");
+  }
+
   @Test public void testSimlifyMinus() {
     String sql;
     sql = "select ^ from dummy a minus select * from dummy b";
