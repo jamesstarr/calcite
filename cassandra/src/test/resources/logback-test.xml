@@ -48,6 +48,7 @@ limitations under the License.
   </root>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   <!-- Avoid showing connection errors on cassandra shutdown -->
   <logger name="com.datastax.driver.core.ControlConnection" level="off" additivity="false"/>
 
@@ -55,3 +56,6 @@ limitations under the License.
 =======
 </configuration>
 >>>>>>> 6c2e00988 ([CALCITE-2419] Use embedded Cassandra for tests)
+=======
+</configuration>
+>>>>>>> d689de383 ([CALCITE-2480] NameSet.contains wrongly returns false when element in set is upper-case and seek is lower-case)

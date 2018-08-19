@@ -71,6 +71,20 @@ public class NameSet {
         && names.equals(((NameSet) obj).names);
   }
 
+  @Override public String toString() {
+    return names.toString();
+  }
+
+  @Override public int hashCode() {
+    return names.hashCode();
+  }
+
+  @Override public boolean equals(Object obj) {
+    return this == obj
+        || obj instanceof NameSet
+        && names.equals(((NameSet) obj).names);
+  }
+
   public void add(String name) {
     names.put(name, DUMMY);
   }
@@ -85,7 +99,21 @@ public class NameSet {
   /** Returns whether this set contains the given name, with a given
    * case-sensitivity. */
   public boolean contains(String name, boolean caseSensitive) {
-    return names.containsKey(name, caseSensitive);
+    if (names.contains(name)) {
+      return true;
+    }
+    if (!caseSensitive) {
+      final String lowerName = name.toLowerCase(Locale.ROOT);
+      final String ceiling = names.ceiling(lowerName);
+      if (ceiling != null && ceiling.equalsIgnoreCase(name)) {
+        return true;
+      }
+      final String floor = names.floor(lowerName);
+      if (floor != null && floor.equalsIgnoreCase(name)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /** Returns the contents as an iterable. */

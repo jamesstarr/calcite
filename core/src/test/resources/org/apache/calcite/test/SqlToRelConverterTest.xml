@@ -9454,13 +9454,17 @@ LogicalProject(JOB_NAME=[CASE(OR(=($1, '810000'), =($1, '820000')), $1, 'error':
     </TestCase>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 18d19aaba ([CALCITE-3456] AssertionError throws for aggregation with same digest IN subqueries in same scope)
 =======
 =======
     <TestCase name="testStarDynamicSchemaUnnestNestedSubquery">
+=======
+    <TestCase name="testStarDynamicSchemaUnnestNestedSubQuery">
+>>>>>>> d689de383 ([CALCITE-2480] NameSet.contains wrongly returns false when element in set is upper-case and seek is lower-case)
         <Resource name="sql">
-            <![CDATA[select t2.c1
-            from (select * from SALES.CUSTOMER) as t1, unnest(t1.fake_col) as t2(c1)]]>
+            <![CDATA[select t2.c1 from (select * from SALES.CUSTOMER)
+            as t1, unnest(t1.fake_col) as t2(c1)]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[

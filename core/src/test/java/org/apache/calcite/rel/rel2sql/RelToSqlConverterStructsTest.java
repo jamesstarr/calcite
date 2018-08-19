@@ -210,6 +210,6 @@ public class RelToSqlConverterStructsTest {
     sql(query).ok(expected);
   }
 }
-<<<<<<< HEAD
 =======
+
 // End RelToSqlConverterStructsTest.java

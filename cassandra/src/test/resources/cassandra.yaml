@@ -615,9 +615,15 @@ encryption_options:
     # algorithm: SunX509
     # store_type: JKS
 <<<<<<< HEAD
+<<<<<<< HEAD
     # cipher_suites: [TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA]
 
 # End cassandra.yaml
 =======
     # cipher_suites: [TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA]
 >>>>>>> 6c2e00988 ([CALCITE-2419] Use embedded Cassandra for tests)
+=======
+    # cipher_suites: [TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA]
+
+# End cassandra.yaml
+>>>>>>> d689de383 ([CALCITE-2480] NameSet.contains wrongly returns false when element in set is upper-case and seek is lower-case)
