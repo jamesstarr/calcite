@@ -685,50 +685,7 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
     assertComplete(sql, list);
   }
 
-  @Test void testSimplifyStarAlias() {
-    String sql;
-    sql = "select ax^ from (select * from dummy a)";
-    assertSimplify(sql, "SELECT ax _suggest_ FROM ( SELECT * FROM dummy a )");
-  }
-
-  @Test void testSimlifySubQueryStar() {
-    String sql;
-    sql = "select ax^ from (select (select * from dummy) axc from dummy a)";
-    assertSimplify(sql,
-        "SELECT ax _suggest_ FROM ( SELECT ( SELECT * FROM dummy ) axc FROM dummy a )");
-    assertComplete(sql, "COLUMN(AXC)\n", "ax");
-
-    sql =
-        "select ax^ from (select a.x+0 axa, b.x axb, (select * from dummy) axbc from dummy a, dummy b)";
-    assertSimplify(sql,
-        "SELECT ax _suggest_ FROM ( SELECT a.x+0 axa , b.x axb , ( SELECT * FROM dummy ) axbc FROM dummy a , dummy b )");
-    assertComplete(sql,
-        "COLUMN(AXA)\nCOLUMN(AXB)\nCOLUMN(AXBC)\n", "ax");
-
-    sql = "select ^ from (select * from dummy)";
-    assertSimplify(sql, "SELECT _suggest_ FROM ( SELECT * FROM dummy )");
-
-    sql = "select ^ from (select x.* from dummy x)";
-    assertSimplify(sql, "SELECT _suggest_ FROM ( SELECT x.* FROM dummy x )");
-
-    sql = "select ^ from (select a.x + b.y from dummy a, dummy b)";
-    assertSimplify(sql, "SELECT _suggest_ FROM ( SELECT a.x + b.y FROM dummy a , dummy b )");
-  }
-
-  @Test void testSimlifySubQueryMultipleFrom() {
-    String sql;
-    // "dummy b" should be removed
-    sql = "select axc from (select (select ^ from dummy) axc from dummy a), dummy b";
-    assertSimplify(sql,
-        "SELECT * FROM ( SELECT ( SELECT _suggest_ FROM dummy ) axc FROM dummy a )");
-
-    // "dummy b" should be removed
-    sql = "select axc from dummy b, (select (select ^ from dummy) axc from dummy a)";
-    assertSimplify(sql,
-        "SELECT * FROM ( SELECT ( SELECT _suggest_ FROM dummy ) axc FROM dummy a )");
-  }
-
-  @Test void testSimlifyMinus() {
+  @Test public void testSimlifyMinus() {
     String sql;
     sql = "select ^ from dummy a minus select * from dummy b";
     assertSimplify(sql, "SELECT _suggest_ FROM dummy a");
@@ -737,7 +694,7 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
     assertSimplify(sql, "SELECT _suggest_ FROM dummy b");
   }
 
-  @Test void testOnCondition() throws Exception {
+  @Test public void testOnCondition() throws Exception {
     String sql;
 
     sql =
@@ -1260,9 +1217,6 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
 
     // skip comments
     sql =
-<<<<<<< HEAD
-        "-- test test\nselect -- here is from\n'cat' as foobar, 1 as x from t group by t.^ order by 123";
-=======
         "-- test test \nselect -- here is from \n 'cat' as foobar, 1 as x from t group by t.^ order by 123";
     expected = "SELECT * FROM t GROUP BY t. _suggest_";
     assertSimplify(sql, expected);
@@ -1336,7 +1290,6 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
         "COLUMN(EMPNO)\n"
             + "COLUMN(ENAME)\n"
             + "KEYWORD(ELEMENT)\n"
->>>>>>> bc2544869 ([CALCITE-2434] SqlAdvisor: support hints for nested tables/schemas)
             + "KEYWORD(EXISTS)\n"
             + "KEYWORD(EXP)\n"
             + "KEYWORD(EXTRACT)\n"
