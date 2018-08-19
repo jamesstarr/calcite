@@ -209,4 +209,5 @@ public class RelToSqlConverterStructsTest {
     sql(query).ok(expected);
   }
 }
+
 // End RelToSqlConverterStructsTest.java
