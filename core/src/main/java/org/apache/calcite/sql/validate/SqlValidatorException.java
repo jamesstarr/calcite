@@ -16,7 +16,7 @@
  */
 package org.apache.calcite.sql.validate;
 
-import org.apache.calcite.config.CalciteSystemProperty;
+import org.apache.calcite.prepare.CalcitePrepareImpl;
 import org.apache.calcite.util.CalciteValidatorException;
 
 import org.slf4j.Logger;
@@ -57,7 +57,7 @@ public class SqlValidatorException extends Exception
 
     // TODO: see note in CalciteException constructor
     LOGGER.trace("SqlValidatorException", this);
-    if (CalciteSystemProperty.DEBUG.value()) {
+    if (CalcitePrepareImpl.DEBUG) {
       LOGGER.error(toString());
     }
   }
