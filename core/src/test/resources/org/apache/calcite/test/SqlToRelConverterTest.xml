@@ -2257,8 +2257,14 @@ from (select row(row(1)) r from dept) t]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(MYROW=[ROW(ROW(1))])
   LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+=======
+LogicalProject(MYROW=[$0])
+  LogicalProject(R$$0$$0=[1])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+>>>>>>> 8485a2311 ([CALCITE-2468] Validator throws IndexOutOfBoundsException when trying to infer operand type from STRUCT return type (Rong Rong))
 ]]>
         </Resource>
     </TestCase>
