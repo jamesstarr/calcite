@@ -38,9 +38,8 @@ public class NameSet {
     return c;
   };
 
-  private static final Object DUMMY = new Object();
-
-  private final NameMap<Object> names;
+  private final NavigableSet<String> names;
+  private final NameHelper helper = new NameHelper();
 
   /** Creates a NameSet based on an existing set. */
   private NameSet(NameMap<Object> names) {
@@ -93,7 +92,15 @@ public class NameSet {
    * name. If case-sensitive, that iterable will have 0 or 1 elements; if
    * case-insensitive, it may have 0 or more. */
   public Collection<String> range(String name, boolean caseSensitive) {
-    return names.range(name, caseSensitive).keySet();
+    if (caseSensitive) {
+      if (names.contains(name)) {
+        return ImmutableList.of(name);
+      } else {
+        return ImmutableList.of();
+      }
+    } else {
+      return helper.set(names, name);
+    }
   }
 
   /** Returns whether this set contains the given name, with a given

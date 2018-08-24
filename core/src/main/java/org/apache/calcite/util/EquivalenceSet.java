@@ -138,3 +138,8 @@ public class EquivalenceSet<E extends Comparable<E>> {
     return new HashSet<>(parents.values()).size();
   }
 }
+<<<<<<< HEAD
+=======
+
+// End EquivalenceSet.java
+>>>>>>> 7cda3c574 ([CALCITE-2481] NameSet assumes lower-case characters have greater codes, which does not hold for certain characters)

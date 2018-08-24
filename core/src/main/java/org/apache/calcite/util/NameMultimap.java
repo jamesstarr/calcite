@@ -33,7 +33,8 @@ import static org.apache.calcite.util.CaseInsensitiveComparator.COMPARATOR;
  *
  * @param <V> Value type */
 public class NameMultimap<V> {
-  private final NameMap<List<V>> map;
+  private final NavigableMap<String, List<V>> map;
+  private final NameHelper helper = new NameHelper();
 
   /** Creates a NameMultimap based on an existing map. */
   private NameMultimap(NameMap<List<V>> map) {
@@ -96,11 +97,21 @@ public class NameMultimap<V> {
    * given name. */
   public Collection<Map.Entry<String, V>> range(String name,
       boolean caseSensitive) {
-    NavigableMap<String, List<V>> range = map.range(name, caseSensitive);
-    List<Pair<String, V>> result = range.entrySet().stream()
-        .flatMap(e -> e.getValue().stream().map(v -> Pair.of(e.getKey(), v)))
-        .collect(Collectors.toList());
-    return Collections.unmodifiableList(result);
+    if (caseSensitive) {
+      final List<V> list = map.get(name);
+      if (list != null && !list.isEmpty()) {
+        final ImmutableList.Builder<Map.Entry<String, V>> builder =
+            ImmutableList.builder();
+        for (V v : list) {
+          builder.add(Pair.of(name, v));
+        }
+        return builder.build();
+      } else {
+        return ImmutableList.of();
+      }
+    } else {
+      return helper.multimap(map, name);
+    }
   }
 
   /** Returns whether this map contains a given key, with a given
