@@ -437,10 +437,17 @@ order by "deptno", ar, br limit 5;
 | deptno | AR  | BR  |
 +--------+-----+-----+
 |     10 | 110 | 100 |
+<<<<<<< HEAD
 |     10 | 110 | 100 |
 |     10 | 110 | 100 |
 |     10 | 110 | 110 |
 |     10 | 110 | 110 |
+=======
+|     10 | 110 | 110 |
+|     10 | 110 | 110 |
+|     10 | 110 | 150 |
+|     20 | 200 | 200 |
+>>>>>>> 07a2c7256 ([CALCITE-2271] Join of two views with window aggregates produces incorrect results or NPE)
 +--------+-----+-----+
 (5 rows)
 
@@ -448,6 +455,9 @@ order by "deptno", ar, br limit 5;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 07a2c7256 ([CALCITE-2271] Join of two views with window aggregates produces incorrect results or NPE)
 select a."empid", a."deptno", a."commission", a.r as ar, b.r as br
 from (
   select "empid", "deptno", "commission", first_value("empid") over w as r
@@ -501,8 +511,11 @@ from
 
 !ok
 
+<<<<<<< HEAD
 =======
 >>>>>>> 3564ebb7c (Revert "Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)"")
+=======
+>>>>>>> 07a2c7256 ([CALCITE-2271] Join of two views with window aggregates produces incorrect results or NPE)
 # NTH_VALUE
 select emp."ENAME", emp."DEPTNO",
  nth_value(emp."DEPTNO", 1) over() as "first_value",
