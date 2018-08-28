@@ -46,6 +46,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.apache.calcite.sql.type.SqlTypeName.BOOLEAN_TYPES;
 import static org.apache.calcite.sql.type.SqlTypeName.CHAR;
 
 /**
@@ -387,7 +388,13 @@ public class GeodeFilter extends Filter implements GeodeRel {
      * Combines a field name, operator, and literal to produce a predicate string.
      */
     private String translateOp2(String op, String name, RexLiteral right) {
-      String valueString = quoteCharLiteral(right);
+      String valueString = literalValue(right);
+      SqlTypeName typeName = rowType.getField(name, true, false).getType().getSqlTypeName();
+      if (NUMERIC_TYPES.contains(typeName) || BOOLEAN_TYPES.contains(typeName)) {
+        // leave the value as it is
+      } else if (typeName != SqlTypeName.CHAR) {
+        valueString = "'" + valueString + "'";
+      }
       return name + " " + op + " " + valueString;
     }
   }
