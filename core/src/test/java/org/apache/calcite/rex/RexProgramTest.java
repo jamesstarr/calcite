@@ -769,6 +769,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testItemStrong() {
     final ImmutableBitSet c0 = ImmutableBitSet.of(0);
     RexNode item = item(input(tArray(tInt()), 0), literal(0));
@@ -784,6 +785,9 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
   @Test void xAndNotX() {
+=======
+  @Test public void xAndNotX() {
+>>>>>>> f070f34c8 ([CALCITE-2327] RexSimplify: AND(x, y, NOT(y)) ==> AND(x, null, IS NULL(y))):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify2(
         and(vBool(), not(vBool()),
             vBool(1), not(vBool(1))),
@@ -796,9 +800,16 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "AND(?0.bool0, null, IS NULL(?0.bool1))",
         "false");
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkSimplify(
         and(vBool(), not(vBool()),
             vBoolNotNull(1), not(vBoolNotNull(1))),
+=======
+    checkSimplify2(
+        and(vBool(), not(vBool()),
+            vBoolNotNull(1), not(vBoolNotNull(1))),
+        "false",
+>>>>>>> f070f34c8 ([CALCITE-2327] RexSimplify: AND(x, y, NOT(y)) ==> AND(x, null, IS NULL(y))):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
         "false");
   }
 
