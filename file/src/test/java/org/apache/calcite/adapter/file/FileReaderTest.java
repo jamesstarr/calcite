@@ -63,8 +63,8 @@ class FileReaderTest {
     return Sources.of(FileReaderTest.class.getResource("/" + path));
   }
 
-  private static String resourcePath(String path) {
-    return resource(path).file().getAbsolutePath();
+  private static String resourcePath(String path) throws Exception {
+    return Sources.of(FileReaderTest.class.getResource("/" + path)).file().getAbsolutePath();
   }
 
   /** Tests {@link FileReader} URL instantiation - no path. */
@@ -74,12 +74,12 @@ class FileReaderTest {
     //   sun.security.validator.ValidatorException: PKIX path building failed:
     //   sun.security.provider.certpath.SunCertPathBuilderException:
     //   unable to find valid certification path to requested target
-    final String r = getProperty("java.runtime.name");
+    final String r = System.getProperty("java.runtime.name");
     // http://openjdk.java.net/jeps/319 => root certificates are bundled with JEP 10
-    assumeTrue(!r.equals("OpenJDK Runtime Environment")
-            || getJavaMajorVersion() > 10,
-        "Java 10+ should have root certificates (JEP 319). Runtime is "
-            + r + ", Jave major version is " + getJavaMajorVersion());
+    Assume.assumeTrue("Java 10+ should have root certificates (JEP 319). Runtime is "
+            + r + ", Jave major version is " + TestUtil.getJavaMajorVersion(),
+        !r.equals("OpenJDK Runtime Environment")
+            || TestUtil.getJavaMajorVersion() > 10);
 
     FileReader t = new FileReader(STATES_SOURCE);
     t.refresh();

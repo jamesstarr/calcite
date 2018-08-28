@@ -28,6 +28,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 
@@ -161,20 +162,37 @@ public abstract class Sources {
 
     private FileSource(URL url) {
       this.url = Objects.requireNonNull(url);
-<<<<<<< HEAD
-      this.file = urlToFile(url);
-      this.urlGenerated = false;
-=======
       if (url.getProtocol().equals("file")) {
         this.file = new File(url.getFile());
       } else {
         this.file = null;
       }
+=======
+      this.file = urlToFile(url);
     }
 
     private FileSource(File file) {
       this.file = Objects.requireNonNull(file);
       this.url = null;
+    }
+
+    private File urlToFile(URL url) {
+      if (!"file".equals(url.getProtocol())) {
+        return null;
+      }
+      URI uri;
+      try {
+        uri = url.toURI();
+      } catch (URISyntaxException e) {
+        throw new IllegalArgumentException("Unable to convert URL " + url + " to URI", e);
+      }
+      if (uri.isOpaque()) {
+        // It is like file:test%20file.c++
+        // getSchemeSpecificPart would return "test file.c++"
+        return new File(uri.getSchemeSpecificPart());
+      }
+      // See https://stackoverflow.com/a/17870390/1261287
+      return Paths.get(uri).toFile();
     }
 
     @Override public String toString() {
@@ -196,7 +214,7 @@ public abstract class Sources {
       return file != null ? "file" : url.getProtocol();
     }
 
-    @Override public String path() {
+    public String path() {
       if (file != null) {
         return file.getPath();
       }
@@ -242,7 +260,7 @@ public abstract class Sources {
       }
     }
 
-    @Override public Source append(Source child) {
+    public Source append(Source child) {
       if (isFile(child)) {
         if (child.file().isAbsolute()) {
           return child;
@@ -259,7 +277,7 @@ public abstract class Sources {
         }
       }
       String path = child.path();
-      if (!urlGenerated) {
+      if (url != null) {
         String encodedPath = new File(".").toURI().relativize(new File(path).toURI())
             .getRawSchemeSpecificPart();
         return Sources.url(url + "/" + encodedPath);

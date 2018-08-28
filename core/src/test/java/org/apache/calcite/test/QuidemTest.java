@@ -54,8 +54,11 @@ import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+<<<<<<< HEAD
 import java.util.function.Function;
 >>>>>>> a32df1d74 ([CALCITE-2403] Upgrade quidem to 0.9)
+=======
+>>>>>>> d6c0815c2 ([CALCITE-2495] Support encoded URLs in calcite.util.Source, and use it for URL->File conversion in tests)
 
 import static org.junit.jupiter.api.Assertions.fail;
 

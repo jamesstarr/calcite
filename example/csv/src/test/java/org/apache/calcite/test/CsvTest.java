@@ -22,7 +22,10 @@ import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.util.Sources;
+<<<<<<< HEAD
 import org.apache.calcite.util.TestUtil;
+=======
+>>>>>>> d6c0815c2 ([CALCITE-2495] Support encoded URLs in calcite.util.Source, and use it for URL->File conversion in tests)
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableMap;

@@ -23,7 +23,7 @@ import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.util.Holder;
 import org.apache.calcite.util.Sources;
-import org.apache.calcite.util.TestUtil;
+>>>>>>> d6c0815c2 ([CALCITE-2495] Support encoded URLs in calcite.util.Source, and use it for URL->File conversion in tests)
 import org.apache.calcite.util.Util;
 
 import org.hamcrest.CoreMatchers;
@@ -40,7 +40,6 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.function.Consumer;
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -74,7 +73,10 @@ class OsAdapterTest {
   /** Returns whether there is a ".git" directory in this directory or in a
    * directory between this directory and root. */
   private static boolean hasGit() {
+<<<<<<< HEAD
     assumeToolExists("git");
+=======
+>>>>>>> d6c0815c2 ([CALCITE-2495] Support encoded URLs in calcite.util.Source, and use it for URL->File conversion in tests)
     final String path = Sources.of(OsAdapterTest.class.getResource("/"))
         .file().getAbsolutePath();
     File f = new File(path);

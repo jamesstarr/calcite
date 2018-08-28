@@ -70,8 +70,7 @@ public class FileReader implements Iterable<Elements> {
         // known protocols handled by URL
         doc = Jsoup.parse(source.url(), (int) TimeUnit.SECONDS.toMillis(20));
       } else {
-        // generically read this source
-        doc = Jsoup.parse(source.openStream(), charset.name(), "");
+        doc = Jsoup.parse(source.url(), (int) TimeUnit.SECONDS.toMillis(20));
       }
     } catch (IOException e) {
       throw new FileReaderException("Cannot read " + source, e);

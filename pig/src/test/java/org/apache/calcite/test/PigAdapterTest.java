@@ -16,7 +16,8 @@
  */
 package org.apache.calcite.test;
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import org.apache.calcite.util.Sources;
+
 import com.google.common.collect.ImmutableMap;
 
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ class PigAdapterTest extends AbstractPigTest {
           Sources.of(PigAdapterTest.class.getResource("/model.json"))
               .file().getAbsolutePath());
 
-  @Test void testScanAndFilter() throws Exception {
+  @Test public void testScanAndFilter() throws Exception {
     CalciteAssert.that()
         .with(MODEL)
         .query("select * from \"t\" where \"tc0\" > 'abc'")

@@ -36,20 +36,16 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.apache.calcite.util.Sources.file;
-import static org.apache.calcite.util.Sources.of;
 import static org.apache.calcite.util.Sources.url;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link Source}.
  */
-class SourceTest {
+public class SourceTest {
   private static final String ROOT_PREFIX = getRootPrefix();
 
   private static String getRootPrefix() {
@@ -62,66 +58,7 @@ class SourceTest {
         "Unsupported operation system detected. Both / and c:/ produce relative paths");
   }
 
-  /**
-   * Read lines from {@link CharSource}
-   */
-  @Test public void charSource() throws IOException {
-    Source source = Sources.fromCharSource(CharSource.wrap("a\nb"));
-    for (Reader r: Arrays.asList(source.reader(),
-        new InputStreamReader(source.openStream(), StandardCharsets.UTF_8.name()))) {
-      try (BufferedReader reader = new BufferedReader(r)) {
-        assertEquals("a", reader.readLine());
-        assertEquals("b", reader.readLine());
-        assertNull(reader.readLine());
-      }
-    }
-  }
-
-  static Stream<Arguments> relativePaths() {
-    return Stream.of(
-        arguments("abc def.txt", "file:abc%20def.txt"),
-        arguments("abc+def.txt", "file:abc+def.txt"),
-        arguments("path 1/ subfolder 2/abc.t x t", "file:path%201/%20subfolder%202/abc.t%20x%20t"),
-        arguments(
-            "маленькой ёлочке холодно зимой.txt",
-            "file:маленькой%20ёлочке%20холодно%20зимой.txt"
-        )
-    );
-  }
-
-  private static String slashify(String path) {
-    return path.replace(File.separatorChar, '/');
-  }
-
-  @ParameterizedTest
-  @MethodSource("relativePaths")
-  void testRelativeFileToUrl(String path, String expectedUrl) {
-    URL url = of(new File(path)).url();
-
-    assertNotNull(url, () -> "No URL generated for Sources.of(file " + path + ")");
-    assertEquals(expectedUrl, url.toString(),
-        () -> "Sources.of(file " + path + ").url()");
-    assertEquals(path, slashify(Sources.of(url).file().getPath()),
-        () -> "Sources.of(Sources.of(file " + path + ").url()).file().getPath()");
-  }
-
-  @ParameterizedTest
-  @MethodSource("relativePaths")
-  @Disabled // Open when we really fix that
-  void testAbsoluteFileToUrl(String path, String expectedUrl) throws URISyntaxException {
-    File absoluteFile = new File(path).getAbsoluteFile();
-    URL url = of(absoluteFile).url();
-
-    assertNotNull(url, () -> "No URL generated for Sources.of(file(" + path + ").absoluteFile)");
-    // Sources.of(url).file().getPath() does not always work
-    // e.g. it might throw java.nio.file.InvalidPathException: Malformed input or input contains
-    // unmappable characters: /home/.../ws/core/????????? ?????? ??????? ?????.txt
-    //        at java.base/sun.nio.fs.UnixPath.encode(UnixPath.java:145)
-    assertEquals(absoluteFile.getAbsolutePath(), url.toURI().getSchemeSpecificPart(),
-        () -> "Sources.of(Sources.of(file(" + path + ").absolutePath).url()).file().getPath()");
-  }
-
-  @Test void testAppendWithSpaces() {
+  @Test public void testAppendWithSpaces() {
     String fooRelative = "fo o+";
     String fooAbsolute = ROOT_PREFIX + "fo o+";
     String barRelative = "b ar+";
@@ -151,7 +88,7 @@ class SourceTest {
     assertAppend(url(urlFooAbsolute), file(null, barAbsolute), barAbsolute);
   }
 
-  @Test void testAppendHttp() {
+  @Test public void testAppendHttp() {
     // I've truly no idea what append of two URLs should be, yet it does something
     assertAppendUrl(url("http://fo%20o+/ba%20r+"), file(null, "no idea what I am doing+"),
         "http://fo%20o+/ba%20r+/no%20idea%20what%20I%20am%20doing+");
@@ -176,23 +113,23 @@ class SourceTest {
         is(expected));
   }
 
-  @Test void testSpaceInUrl() {
+  @Test public void testSpaceInUrl() {
     String url = "file:" + ROOT_PREFIX + "dir%20name/test%20file.json";
     final Source foo = url(url);
-    assertEquals(new File(ROOT_PREFIX + "dir name/test file.json").getAbsolutePath(),
-        foo.file().getAbsolutePath(),
-        () -> url + " .file().getAbsolutePath()");
+    assertEquals(url + " .file().getAbsolutePath()",
+        new File(ROOT_PREFIX + "dir name/test file.json").getAbsolutePath(),
+        foo.file().getAbsolutePath());
   }
 
-  @Test void testSpaceInRelativeUrl() {
+  @Test public void testSpaceInRelativeUrl() {
     String url = "file:dir%20name/test%20file.json";
     final Source foo = url(url);
-    assertEquals("dir name/test file.json",
-        foo.file().getPath().replace('\\', '/'),
-        () -> url + " .file().getAbsolutePath()");
+    assertEquals(url + " .file().getAbsolutePath()",
+        "dir name/test file.json",
+        foo.file().getPath().replace('\\', '/'));
   }
 
-  @Test void testRelative() {
+  @Test public void testRelative() {
     final Source fooBar = file(null, ROOT_PREFIX + "foo/bar");
     final Source foo = file(null, ROOT_PREFIX + "foo");
     final Source baz = file(null, ROOT_PREFIX + "baz");

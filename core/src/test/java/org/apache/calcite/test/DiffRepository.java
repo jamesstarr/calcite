@@ -766,8 +766,18 @@ public class DiffRepository {
   public static DiffRepository lookup(Class<?> clazz,
       DiffRepository baseRepository,
       Filter filter) {
-    final Key key = new Key(clazz, baseRepository, filter);
-    return REPOSITORY_CACHE.getUnchecked(key);
+    DiffRepository diffRepository = MAP_CLASS_TO_REPOSITORY.get(clazz);
+    if (diffRepository == null) {
+      final URL refFile = findFile(clazz, ".xml");
+      final File logFile =
+          new File(
+              Sources.of(refFile).file().getAbsolutePath()
+                  .replace("test-classes", "surefire"));
+      diffRepository =
+          new DiffRepository(refFile, logFile, baseRepository, filter);
+      MAP_CLASS_TO_REPOSITORY.put(clazz, diffRepository);
+    }
+    return diffRepository;
   }
 
   /**

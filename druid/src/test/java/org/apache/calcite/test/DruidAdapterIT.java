@@ -134,7 +134,7 @@ public class DruidAdapterIT {
   private CalciteAssert.AssertQuery approxQuery(URL url, String sql) {
     return CalciteAssert.that()
             .enable(enabled())
-            .with(CalciteConnectionProperty.MODEL, url.getPath())
+            .withModel(url)
             .with(CalciteConnectionProperty.APPROXIMATE_DISTINCT_COUNT, true)
             .with(CalciteConnectionProperty.APPROXIMATE_TOP_N, true)
             .with(CalciteConnectionProperty.APPROXIMATE_DECIMAL, true)
@@ -145,7 +145,7 @@ public class DruidAdapterIT {
   private CalciteAssert.AssertQuery sql(String sql, URL url) {
     return CalciteAssert.that()
         .enable(enabled())
-        .with(CalciteConnectionProperty.MODEL, url.getPath())
+        .withModel(url)
         .query(sql);
   }
 
@@ -684,7 +684,7 @@ public class DruidAdapterIT {
         + "aggs=[[SUM($1)]], sort0=[1], dir0=[DESC], fetch=[3])";
     CalciteAssert.that()
         .enable(enabled())
-        .with(CalciteConnectionProperty.MODEL, FOODMART.getPath())
+        .withModel(FOODMART)
         .with(CalciteConnectionProperty.APPROXIMATE_TOP_N, approx)
         .query(sql)
         .runs()
@@ -2973,7 +2973,7 @@ public class DruidAdapterIT {
       String expectedDruidQuery) {
     CalciteAssert.that()
         .enable(enabled())
-        .with(CalciteConnectionProperty.MODEL, FOODMART.getPath())
+        .withModel(FOODMART)
         .with(CalciteConnectionProperty.APPROXIMATE_DISTINCT_COUNT, approx)
         .query(sql)
         .runs()
@@ -3273,7 +3273,7 @@ public class DruidAdapterIT {
 
     CalciteAssert.that()
         .enable(enabled())
-        .with(CalciteConnectionProperty.MODEL, WIKI_AUTO2.getPath())
+        .withModel(WIKI_AUTO2)
         .with(CalciteConnectionProperty.TIME_ZONE, "Asia/Kolkata")
         .query(sql)
         .runs()
@@ -3295,7 +3295,7 @@ public class DruidAdapterIT {
         + "\"locale\":\"und\"}}";
     CalciteAssert.that()
         .enable(enabled())
-        .with(ImmutableMap.of("model", WIKI_AUTO2.getPath()))
+        .withModel(WIKI_AUTO2)
         .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "Asia/Kolkata")
         .query(sql)
         .runs()
@@ -3321,7 +3321,7 @@ public class DruidAdapterIT {
 
     CalciteAssert.that()
         .enable(enabled())
-        .with(CalciteConnectionProperty.MODEL, WIKI_AUTO2.getPath())
+        .withModel(WIKI_AUTO2)
         .with(CalciteConnectionProperty.TIME_ZONE, "Asia/Kolkata")
         .query(sql)
         .runs()
@@ -3629,7 +3629,7 @@ public class DruidAdapterIT {
             + "group by EXTRACT(HOUR from \"timestamp\") ";
     CalciteAssert.that()
         .enable(enabled())
-        .with(ImmutableMap.of("model", FOODMART.getPath()))
+        .withModel(FOODMART)
         .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "America/Los_Angeles")
         .query(sql)
         .runs()
@@ -3641,7 +3641,7 @@ public class DruidAdapterIT {
             + "group by EXTRACT(HOUR from \"timestamp\") ";
     CalciteAssert.that()
         .enable(enabled())
-        .with(ImmutableMap.of("model", FOODMART.getPath()))
+        .withModel(FOODMART)
         .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "EST")
         .query(sql2)
         .runs()
@@ -3652,7 +3652,7 @@ public class DruidAdapterIT {
             + "group by EXTRACT(HOUR from \"timestamp\") ";
     CalciteAssert.that()
         .enable(enabled())
-        .with(ImmutableMap.of("model", FOODMART.getPath()))
+        .withModel(FOODMART)
         .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC")
         .query(sql3)
         .runs()

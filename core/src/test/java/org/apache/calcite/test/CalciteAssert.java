@@ -62,7 +62,7 @@ import org.apache.calcite.util.Holder;
 import org.apache.calcite.util.JsonBuilder;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Smalls;
->>>>>>> 603d2e95d ([CALCITE-2446] Lateral joins do not work when saved as custom views (Piotr Bojko))
+import org.apache.calcite.util.Sources;
 import org.apache.calcite.util.Util;
 
 import org.apache.commons.dbcp2.PoolableConnectionFactory;
@@ -1057,6 +1057,11 @@ public class CalciteAssert {
 
     public final AssertThat withModel(String model) {
       return with(CalciteConnectionProperty.MODEL, "inline:" + model);
+    }
+
+    public final AssertThat withModel(URL model) {
+      return with(CalciteConnectionProperty.MODEL,
+          Sources.of(model).file().getAbsolutePath());
     }
 
     public final AssertThat withMaterializations(String model,
