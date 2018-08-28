@@ -18,10 +18,9 @@ package org.apache.calcite.schema;
 
 import org.apache.calcite.materialize.Lattice;
 import org.apache.calcite.rel.type.RelProtoDataType;
-<<<<<<< HEAD
-=======
 import org.apache.calcite.util.Bug;
->>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
+=======
+>>>>>>> 1f02c1401 ([CALCITE-2497] Update Janino version to 3.0.9)
 
 import com.google.common.collect.ImmutableList;
 
