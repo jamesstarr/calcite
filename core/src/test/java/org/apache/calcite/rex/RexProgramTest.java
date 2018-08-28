@@ -97,6 +97,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 =======
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
 >>>>>>> 5926c2361 ([CALCITE-2205] JoinPushTransitivePredicatesRule should not create Filter on top of equivalent Filter (Vitalii Diravka)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
@@ -2048,6 +2050,17 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "AND(=(?0.int2, 2), OR(=(?0.int3, 3), =(?0.int0, 1)))"
 
     );
+  }
+
+  @Test public void fieldAccessEqualsHashCode() {
+    assertEquals("vBool() instances should be equal", vBool(), vBool());
+    assertEquals("vBool().hashCode()", vBool().hashCode(), vBool().hashCode());
+    assertNotSame("vBool() is expected to produce new RexFieldAccess", vBool(), vBool());
+    assertNotEquals("vBool(0) != vBool(1)", vBool(0), vBool(1));
+  }
+
+  @Test public void testSimplifyDynamicParam() {
+    checkSimplify2(or(vBool(), vBool()), "?0.bool0", "?0.bool0");
   }
 
   /** Unit test for
