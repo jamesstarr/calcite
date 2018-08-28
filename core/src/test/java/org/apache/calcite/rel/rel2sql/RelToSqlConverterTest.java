@@ -27,6 +27,7 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.ProjectJoinTransposeRule;
 import org.apache.calcite.rel.rules.UnionMergeRule;
+import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.runtime.FlatLists;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.SqlCall;
@@ -41,8 +42,7 @@ import org.apache.calcite.sql.dialect.HiveSqlDialect;
 import org.apache.calcite.sql.dialect.JethroDataSqlDialect;
 import org.apache.calcite.sql.dialect.MssqlSqlDialect;
 import org.apache.calcite.sql.dialect.MysqlSqlDialect;
-import org.apache.calcite.sql.dialect.OracleSqlDialect;
-import org.apache.calcite.sql.dialect.PostgresqlSqlDialect;
+>>>>>>> cc876bda9 ([CALCITE-2444] Handle IN expressions when converting SqlNode to SQL (Zoltan Haindrich))
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
@@ -50,7 +50,9 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.util.SqlShuttle;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.test.CalciteAssert;
+<<<<<<< HEAD
 import org.apache.calcite.test.MockSqlOperatorTable;
+=======
 import org.apache.calcite.test.RelBuilderTest;
 import org.apache.calcite.tools.FrameworkConfig;
 import org.apache.calcite.tools.Frameworks;
@@ -91,6 +93,9 @@ class RelToSqlConverterTest {
           .withTrimUnusedFields(false)
           .withExpand(false)
           .build();
+
+  final RelBuilder builder = RelBuilder.create(RelBuilderTest.config().build());
+  final RelBuilder empScan = builder.scan("EMP");
 
   /** Initiates a test case with a given SQL query. */
   private Sql sql(String sql) {
@@ -1097,226 +1102,12 @@ class RelToSqlConverterTest {
     sql(query).withHive().ok(expected);
   }
 
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3282">[CALCITE-3282]
-   * HiveSqlDialect unparse Interger type as Int in order
-   * to be compatible with Hive1.x</a>. */
-  @Test void testHiveCastAsInt() {
-    String query = "select cast( cast(\"employee_id\" as varchar) as int) "
-        + "from \"foodmart\".\"reserve_employee\" ";
-    final String expected = "SELECT CAST(CAST(employee_id AS VARCHAR) AS INT)\n"
-        + "FROM foodmart.reserve_employee";
-    sql(query).withHive().ok(expected);
-  }
 
-  @Test void testBigQueryCast() {
-    String query = "select cast(cast(\"employee_id\" as varchar) as bigint), "
-            + "cast(cast(\"employee_id\" as varchar) as smallint), "
-            + "cast(cast(\"employee_id\" as varchar) as tinyint), "
-            + "cast(cast(\"employee_id\" as varchar) as integer), "
-            + "cast(cast(\"employee_id\" as varchar) as float), "
-            + "cast(cast(\"employee_id\" as varchar) as char), "
-            + "cast(cast(\"employee_id\" as varchar) as binary), "
-            + "cast(cast(\"employee_id\" as varchar) as varbinary), "
-            + "cast(cast(\"employee_id\" as varchar) as timestamp), "
-            + "cast(cast(\"employee_id\" as varchar) as double), "
-            + "cast(cast(\"employee_id\" as varchar) as decimal), "
-            + "cast(cast(\"employee_id\" as varchar) as date), "
-            + "cast(cast(\"employee_id\" as varchar) as time), "
-            + "cast(cast(\"employee_id\" as varchar) as boolean) "
-            + "from \"foodmart\".\"reserve_employee\" ";
-    final String expected = "SELECT CAST(CAST(employee_id AS STRING) AS INT64), "
-            + "CAST(CAST(employee_id AS STRING) AS INT64), "
-            + "CAST(CAST(employee_id AS STRING) AS INT64), "
-            + "CAST(CAST(employee_id AS STRING) AS INT64), "
-            + "CAST(CAST(employee_id AS STRING) AS FLOAT64), "
-            + "CAST(CAST(employee_id AS STRING) AS STRING), "
-            + "CAST(CAST(employee_id AS STRING) AS BYTES), "
-            + "CAST(CAST(employee_id AS STRING) AS BYTES), "
-            + "CAST(CAST(employee_id AS STRING) AS TIMESTAMP), "
-            + "CAST(CAST(employee_id AS STRING) AS FLOAT64), "
-            + "CAST(CAST(employee_id AS STRING) AS NUMERIC), "
-            + "CAST(CAST(employee_id AS STRING) AS DATE), "
-            + "CAST(CAST(employee_id AS STRING) AS TIME), "
-            + "CAST(CAST(employee_id AS STRING) AS BOOL)\n"
-            + "FROM foodmart.reserve_employee";
-    sql(query).withBigQuery().ok(expected);
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3220">[CALCITE-3220]
-   * HiveSqlDialect should transform the SQL-standard TRIM function to TRIM,
-   * LTRIM or RTRIM</a>,
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3663">[CALCITE-3663]
-   * Support for TRIM function in BigQuery dialect</a>, and
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3771">[CALCITE-3771]
-   * Support of TRIM function for SPARK dialect and improvement in HIVE
-   * Dialect</a>. */
-  @Test void testHiveSparkAndBqTrim() {
-    final String query = "SELECT TRIM(' str ')\n"
-        + "from \"foodmart\".\"reserve_employee\"";
-    final String expected = "SELECT TRIM(' str ')\n"
-        + "FROM foodmart.reserve_employee";
-    sql(query)
-      .withHive()
-      .ok(expected)
-      .withSpark()
-      .ok(expected)
-      .withBigQuery()
-      .ok(expected);
-  }
-
-  @Test void testHiveSparkAndBqTrimWithBoth() {
-    final String query = "SELECT TRIM(both ' ' from ' str ')\n"
-        + "from \"foodmart\".\"reserve_employee\"";
-    final String expected = "SELECT TRIM(' str ')\n"
-        + "FROM foodmart.reserve_employee";
-    sql(query)
-      .withHive()
-      .ok(expected)
-      .withSpark()
-      .ok(expected)
-      .withBigQuery()
-      .ok(expected);
-  }
-
-  @Test void testHiveSparkAndBqTrimWithLeading() {
-    final String query = "SELECT TRIM(LEADING ' ' from ' str ')\n"
-        + "from \"foodmart\".\"reserve_employee\"";
-    final String expected = "SELECT LTRIM(' str ')\n"
-        + "FROM foodmart.reserve_employee";
-    sql(query)
-      .withHive()
-      .ok(expected)
-      .withSpark()
-      .ok(expected)
-      .withBigQuery()
-      .ok(expected);
-  }
-
-
-  @Test void testHiveSparkAndBqTrimWithTailing() {
-    final String query = "SELECT TRIM(TRAILING ' ' from ' str ')\n"
-        + "from \"foodmart\".\"reserve_employee\"";
-    final String expected = "SELECT RTRIM(' str ')\n"
-        + "FROM foodmart.reserve_employee";
-    sql(query)
-      .withHive()
-      .ok(expected)
-      .withSpark()
-      .ok(expected)
-      .withBigQuery()
-      .ok(expected);
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3663">[CALCITE-3663]
-   * Support for TRIM function in Bigquery dialect</a>. */
-
-  @Test void testBqTrimWithLeadingChar() {
-    final String query = "SELECT TRIM(LEADING 'a' from 'abcd')\n"
-        + "from \"foodmart\".\"reserve_employee\"";
-    final String expected = "SELECT LTRIM('abcd', 'a')\n"
-        + "FROM foodmart.reserve_employee";
-    final String expectedHS = "SELECT REGEXP_REPLACE('abcd', '^(a)*', '')\n"
-        + "FROM foodmart.reserve_employee";
-    sql(query)
-      .withBigQuery()
-      .ok(expected);
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3771">[CALCITE-3771]
-   * Support of TRIM function for SPARK dialect and improvement in HIVE Dialect</a>. */
-
-  @Test void testHiveAndSparkTrimWithLeadingChar() {
-    final String query = "SELECT TRIM(LEADING 'a' from 'abcd')\n"
-        + "from \"foodmart\".\"reserve_employee\"";
-    final String expected = "SELECT REGEXP_REPLACE('abcd', '^(a)*', '')\n"
-        + "FROM foodmart.reserve_employee";
-    sql(query)
-        .withHive()
-        .ok(expected)
-        .withSpark()
-        .ok(expected);
-  }
-
-  @Test void testBqTrimWithBothChar() {
-    final String query = "SELECT TRIM(both 'a' from 'abcda')\n"
-        + "from \"foodmart\".\"reserve_employee\"";
-    final String expected = "SELECT TRIM('abcda', 'a')\n"
-        + "FROM foodmart.reserve_employee";
-    sql(query)
-      .withBigQuery()
-      .ok(expected);
-  }
-
-  @Test void testHiveAndSparkTrimWithBothChar() {
-    final String query = "SELECT TRIM(both 'a' from 'abcda')\n"
-        + "from \"foodmart\".\"reserve_employee\"";
-    final String expected = "SELECT REGEXP_REPLACE('abcda', '^(a)*|(a)*$', '')\n"
-        + "FROM foodmart.reserve_employee";
-    sql(query)
-        .withHive()
-        .ok(expected)
-        .withSpark()
-        .ok(expected);
-  }
-
-  @Test void testHiveBqTrimWithTailingChar() {
-    final String query = "SELECT TRIM(TRAILING 'a' from 'abcd')\n"
-        + "from \"foodmart\".\"reserve_employee\"";
-    final String expected = "SELECT RTRIM('abcd', 'a')\n"
-        + "FROM foodmart.reserve_employee";
-    sql(query)
-      .withBigQuery()
-      .ok(expected);
-  }
-
-  @Test void testHiveAndSparkTrimWithTailingChar() {
-    final String query = "SELECT TRIM(TRAILING 'a' from 'abcd')\n"
-        + "from \"foodmart\".\"reserve_employee\"";
-    final String expected = "SELECT REGEXP_REPLACE('abcd', '(a)*$', '')\n"
-        + "FROM foodmart.reserve_employee";
-    sql(query)
-        .withHive()
-        .ok(expected)
-        .withSpark()
-        .ok(expected);
-  }
-
-  @Test void testBqTrimWithBothSpecialCharacter() {
-    final String query = "SELECT TRIM(BOTH '$@*A' from '$@*AABC$@*AADCAA$@*A')\n"
-        + "from \"foodmart\".\"reserve_employee\"";
-    final String expected = "SELECT TRIM('$@*AABC$@*AADCAA$@*A', '$@*A')\n"
-        + "FROM foodmart.reserve_employee";
-    sql(query)
-      .withBigQuery()
-      .ok(expected);
-  }
-
-  @Test void testHiveAndSparkTrimWithBothSpecialCharacter() {
-    final String query = "SELECT TRIM(BOTH '$@*A' from '$@*AABC$@*AADCAA$@*A')\n"
-        + "from \"foodmart\".\"reserve_employee\"";
-    final String expected = "SELECT REGEXP_REPLACE('$@*AABC$@*AADCAA$@*A',"
-        + " '^(\\$\\@\\*A)*|(\\$\\@\\*A)*$', '')\n"
-        + "FROM foodmart.reserve_employee";
-    sql(query)
-        .withHive()
-        .ok(expected)
-        .withSpark()
-        .ok(expected);
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2715">[CALCITE-2715]
-   * MS SQL Server does not support character set as part of data type</a>. */
-  @Test void testMssqlCharacterSet() {
-    String query = "select \"hire_date\", cast(\"hire_date\" as varchar(10))\n"
-        + "from \"foodmart\".\"reserve_employee\"";
-    final String expected = "SELECT [hire_date], CAST([hire_date] AS VARCHAR(10))\n"
-        + "FROM [foodmart].[reserve_employee]";
-    sql(query).withMssql().ok(expected);
+  private String unparseRelTree(RelNode root) {
+    SqlDialect dialect = SqlDialect.DatabaseProduct.CALCITE.getDialect();
+    final RelToSqlConverter converter = new RelToSqlConverter(dialect);
+    final SqlNode sqlNode = converter.visitChild(0, root).asStatement();
+    return sqlNode.toSqlString(dialect).getSql();
   }
 
   /**
@@ -1325,68 +1116,60 @@ class RelToSqlConverterTest {
    * <p>This cannot be tested using "sql", because because Calcite's SQL parser
    * replaces INs with ORs or sub-queries.
    */
-  @Test void testUnparseIn1() {
-    final Function<RelBuilder, RelNode> relFn = b ->
-        b.scan("EMP")
-            .filter(
-                b.call(SqlStdOperatorTable.IN, b.field("DEPTNO"),
-                    b.literal(21)))
-            .build();
+  @Test public void testUnparseIn1() {
+    final RexNode condition =
+        builder.call(SqlStdOperatorTable.IN, builder.field("DEPTNO"),
+            builder.literal(21));
+    final String sql = unparseRelTree(empScan.filter(condition).build());
     final String expectedSql = "SELECT *\n"
         + "FROM \"scott\".\"EMP\"\n"
         + "WHERE \"DEPTNO\" IN (21)";
-    relFn(relFn).ok(expectedSql);
+    assertThat(sql, is(expectedSql));
   }
 
-  @Test void testUnparseIn2() {
-    final Function<RelBuilder, RelNode> relFn = b -> b
-        .scan("EMP")
-        .filter(
-            b.call(SqlStdOperatorTable.IN, b.field("DEPTNO"),
-                b.literal(20), b.literal(21)))
-        .build();
+  @Test public void testUnparseIn2() {
+    final RexNode filter =
+        builder.call(SqlStdOperatorTable.IN, builder.field("DEPTNO"),
+            builder.literal(20), builder.literal(21));
+    final String sql = unparseRelTree(empScan.filter(filter).build());
     final String expectedSql = "SELECT *\n"
         + "FROM \"scott\".\"EMP\"\n"
         + "WHERE \"DEPTNO\" IN (20, 21)";
-    relFn(relFn).ok(expectedSql);
+    assertThat(sql, is(expectedSql));
   }
 
-  @Test void testUnparseInStruct1() {
-    final Function<RelBuilder, RelNode> relFn = b ->
-        b.scan("EMP")
-            .filter(
-                b.call(SqlStdOperatorTable.IN,
-                    b.call(SqlStdOperatorTable.ROW,
-                        b.field("DEPTNO"), b.field("JOB")),
-                    b.call(SqlStdOperatorTable.ROW, b.literal(1),
-                        b.literal("PRESIDENT"))))
-            .build();
+  @Test public void testUnparseInStruct1() {
+    final RexNode condition =
+        builder.call(SqlStdOperatorTable.IN,
+            builder.call(SqlStdOperatorTable.ROW, builder.field("DEPTNO"),
+                builder.field("JOB")),
+            builder.call(SqlStdOperatorTable.ROW, builder.literal(1),
+                builder.literal("PRESIDENT")));
+    final String sql = unparseRelTree(empScan.filter(condition).build());
     final String expectedSql = "SELECT *\n"
         + "FROM \"scott\".\"EMP\"\n"
         + "WHERE ROW(\"DEPTNO\", \"JOB\") IN (ROW(1, 'PRESIDENT'))";
-    relFn(relFn).ok(expectedSql);
+    assertThat(sql, is(expectedSql));
   }
 
-  @Test void testUnparseInStruct2() {
-    final Function<RelBuilder, RelNode> relFn = b ->
-        b.scan("EMP")
-            .filter(
-                b.call(SqlStdOperatorTable.IN,
-                    b.call(SqlStdOperatorTable.ROW,
-                        b.field("DEPTNO"), b.field("JOB")),
-                    b.call(SqlStdOperatorTable.ROW, b.literal(1),
-                b.literal("PRESIDENT")),
-                    b.call(SqlStdOperatorTable.ROW, b.literal(2),
-                        b.literal("PRESIDENT"))))
-            .build();
+  @Test public void testUnparseInStruct2() {
+    final RexNode condition =
+        builder.call(SqlStdOperatorTable.IN,
+            builder.call(SqlStdOperatorTable.ROW, builder.field("DEPTNO"),
+                builder.field("JOB")),
+            builder.call(SqlStdOperatorTable.ROW, builder.literal(1),
+                builder.literal("PRESIDENT")),
+            builder.call(SqlStdOperatorTable.ROW, builder.literal(2),
+                builder.literal("PRESIDENT")));
+    final String sql = unparseRelTree(empScan.filter(condition).build());
     final String expectedSql = "SELECT *\n"
         + "FROM \"scott\".\"EMP\"\n"
         + "WHERE ROW(\"DEPTNO\", \"JOB\") IN (ROW(1, 'PRESIDENT'), ROW(2, 'PRESIDENT'))";
-    relFn(relFn).ok(expectedSql);
+    assertThat(sql, is(expectedSql));
   }
 
-  @Test void testSelectQueryWithLimitClause() {
-    String query = "select \"product_id\" from \"product\" limit 100 offset 10";
+  @Test public void testSelectQueryWithLimitClause() {
+    String query = "select \"product_id\"  from \"product\" limit 100 offset 10";
     final String expected = "SELECT product_id\n"
         + "FROM foodmart.product\n"
         + "LIMIT 100\nOFFSET 10";

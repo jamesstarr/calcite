@@ -671,7 +671,7 @@ public abstract class SqlImplementor {
         if (rex instanceof RexSubQuery) {
           subQuery = (RexSubQuery) rex;
           sqlSubQuery =
-              implementor().visitChild(0, subQuery.rel).asQueryOrValues();
+              visitChild(0, subQuery.rel).asQueryOrValues();
           final List<RexNode> operands = subQuery.operands;
           SqlNode op0;
           if (operands.size() == 1) {
