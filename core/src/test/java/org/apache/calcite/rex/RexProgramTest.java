@@ -74,6 +74,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 =======
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 >>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
@@ -3008,6 +3009,13 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplify3(nullBool, "null:BOOLEAN", "false", "true");
     // null int must not be simplified to false
     checkSimplifyUnchanged(nullInt);
+  }
+
+  @Ignore("[CALCITE-2505] java.lang.AssertionError: wrong operand count 1 for IS DISTINCT FROM")
+  @Test public void notDistinct() {
+    checkSimplify2(
+        isFalse(isNotDistinctFrom(vBool(0), vBool(1))),
+        "...", "...");
   }
 
   /** Converts a map to a string, sorting on the string representation of its
