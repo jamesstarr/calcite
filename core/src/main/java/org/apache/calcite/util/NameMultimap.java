@@ -33,8 +33,7 @@ import static org.apache.calcite.util.CaseInsensitiveComparator.COMPARATOR;
  *
  * @param <V> Value type */
 public class NameMultimap<V> {
-  private final NavigableMap<String, List<V>> map;
-  private final NameHelper helper = new NameHelper();
+  private final NameMap<List<V>> map;
 
   /** Creates a NameMultimap based on an existing map. */
   private NameMultimap(NameMap<List<V>> map) {
@@ -45,6 +44,7 @@ public class NameMultimap<V> {
   /** Creates a NameMultimap, initially empty. */
   public NameMultimap() {
     this(new NameMap<>());
+<<<<<<< HEAD
   }
 
   @Override public String toString() {
@@ -59,6 +59,8 @@ public class NameMultimap<V> {
     return this == obj
         || obj instanceof NameMultimap
         && map.equals(((NameMultimap) obj).map);
+=======
+>>>>>>> 84a6add37 ([CALCITE-2491] Refactor NameSet, NameMap, and NameMultimap)
   }
 
   @Override public String toString() {
@@ -77,7 +79,7 @@ public class NameMultimap<V> {
 
   /** Adds an entry to this multimap. */
   public void put(String name, V v) {
-    List<V> list = map.computeIfAbsent(name, k -> new ArrayList<>());
+    List<V> list = map().computeIfAbsent(name, k -> new ArrayList<>());
     list.add(v);
   }
 
@@ -97,21 +99,11 @@ public class NameMultimap<V> {
    * given name. */
   public Collection<Map.Entry<String, V>> range(String name,
       boolean caseSensitive) {
-    if (caseSensitive) {
-      final List<V> list = map.get(name);
-      if (list != null && !list.isEmpty()) {
-        final ImmutableList.Builder<Map.Entry<String, V>> builder =
-            ImmutableList.builder();
-        for (V v : list) {
-          builder.add(Pair.of(name, v));
-        }
-        return builder.build();
-      } else {
-        return ImmutableList.of();
-      }
-    } else {
-      return helper.multimap(map, name);
-    }
+    NavigableMap<String, List<V>> range = map.range(name, caseSensitive);
+    List<Pair<String, V>> result = range.entrySet().stream()
+        .flatMap(e -> e.getValue().stream().map(v -> Pair.of(e.getKey(), v)))
+        .collect(Collectors.toList());
+    return Collections.unmodifiableList(result);
   }
 
   /** Returns whether this map contains a given key, with a given

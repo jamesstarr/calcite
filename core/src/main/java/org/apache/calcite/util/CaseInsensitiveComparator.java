@@ -27,8 +27,8 @@ import java.util.Comparator;
  *
  * <p>In a collection sorted on this comparator, we can find case-insensitive matches
  * for a given string using
- * {@link #floorKey(java.lang.String)}
- * and {@link #ceilingKey(java.lang.String)}.
+ * {@link org.apache.calcite.util.CaseInsensitiveComparator#floorKey(java.lang.String)}
+ * and {@link org.apache.calcite.util.CaseInsensitiveComparator#ceilingKey(java.lang.String)}.
  */
 class CaseInsensitiveComparator implements Comparator {
   static final CaseInsensitiveComparator COMPARATOR = new CaseInsensitiveComparator();
@@ -50,11 +50,11 @@ class CaseInsensitiveComparator implements Comparator {
     }
   }
 
-  Object floorKey(String key) {
+  static Object floorKey(String key) {
     return new Key(key, -1);
   }
 
-  Object ceilingKey(String key) {
+  static Object ceilingKey(String key) {
     return new Key(key, 1);
   }
 
@@ -74,3 +74,8 @@ class CaseInsensitiveComparator implements Comparator {
     return s1.compareTo(s2);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End CaseInsensitiveComparator.java
+>>>>>>> 84a6add37 ([CALCITE-2491] Refactor NameSet, NameMap, and NameMultimap)

@@ -20,7 +20,7 @@ import org.apache.calcite.linq4j.function.Experimental;
 
 import com.google.common.collect.ImmutableSortedMap;
 
->>>>>>> 7cda3c574 ([CALCITE-2481] NameSet assumes lower-case characters have greater codes, which does not hold for certain characters)
+import java.util.Collections;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -33,7 +33,6 @@ import static org.apache.calcite.util.CaseInsensitiveComparator.COMPARATOR;
  * @param <V> Value type */
 public class NameMap<V> {
   private final NavigableMap<String, V> map;
-  private final NameHelper helper = new NameHelper();
 
   /** Creates a NameSet based on an existing set. */
   private NameMap(NavigableMap<String, V> map) {
@@ -79,11 +78,10 @@ public class NameMap<V> {
       floorKey = name;
       ceilingKey = name;
     } else {
-<<<<<<< HEAD
+      return helper.map(map, name);
+=======
       floorKey = COMPARATOR.floorKey(name);
       ceilingKey = COMPARATOR.ceilingKey(name);
-=======
-      return helper.map(map, name);
     }
     NavigableMap subMap = ((NavigableMap) map).subMap(floorKey, true, ceilingKey, true);
     return Collections.unmodifiableNavigableMap((NavigableMap<String, V>) subMap);

@@ -25,21 +25,11 @@ import java.util.Set;
 
 /** Set of names that can be accessed with and without case sensitivity. */
 public class NameSet {
-  /** Comparator that compares all strings differently, but if two strings are
-   * equal in case-insensitive match they are right next to each other. In a
-   * collection sorted on this comparator, we can find case-insensitive matches
-   * for a given string using a range scan between the upper-case string and
-   * the lower-case string. */
-  public static final Comparator<String> COMPARATOR = (o1, o2) -> {
-    int c = o1.compareToIgnoreCase(o2);
-    if (c == 0) {
-      c = o1.compareTo(o2);
-    }
-    return c;
-  };
+  public static final Comparator<String> COMPARATOR = CaseInsensitiveComparator.COMPARATOR;
 
-  private final NavigableSet<String> names;
-  private final NameHelper helper = new NameHelper();
+  private static final Object DUMMY = new Object();
+
+  private final NameMap<Object> names;
 
   /** Creates a NameSet based on an existing set. */
   private NameSet(NameMap<Object> names) {
@@ -54,6 +44,7 @@ public class NameSet {
   /** Creates a NameSet that is an immutable copy of a given collection. */
   public static NameSet immutableCopyOf(Set<String> names) {
     return new NameSet(NameMap.immutableCopyOf(Maps.asMap(names, (k) -> DUMMY)));
+<<<<<<< HEAD
   }
 
   @Override public String toString() {
@@ -68,10 +59,12 @@ public class NameSet {
     return this == obj
         || obj instanceof NameSet
         && names.equals(((NameSet) obj).names);
+=======
+>>>>>>> 84a6add37 ([CALCITE-2491] Refactor NameSet, NameMap, and NameMultimap)
   }
 
   @Override public String toString() {
-    return names.toString();
+    return names.map().keySet().toString();
   }
 
   @Override public int hashCode() {
@@ -92,35 +85,13 @@ public class NameSet {
    * name. If case-sensitive, that iterable will have 0 or 1 elements; if
    * case-insensitive, it may have 0 or more. */
   public Collection<String> range(String name, boolean caseSensitive) {
-    if (caseSensitive) {
-      if (names.contains(name)) {
-        return ImmutableList.of(name);
-      } else {
-        return ImmutableList.of();
-      }
-    } else {
-      return helper.set(names, name);
-    }
+    return names.range(name, caseSensitive).keySet();
   }
 
   /** Returns whether this set contains the given name, with a given
    * case-sensitivity. */
   public boolean contains(String name, boolean caseSensitive) {
-    if (names.contains(name)) {
-      return true;
-    }
-    if (!caseSensitive) {
-      final String lowerName = name.toLowerCase(Locale.ROOT);
-      final String ceiling = names.ceiling(lowerName);
-      if (ceiling != null && ceiling.equalsIgnoreCase(name)) {
-        return true;
-      }
-      final String floor = names.floor(lowerName);
-      if (floor != null && floor.equalsIgnoreCase(name)) {
-        return true;
-      }
-    }
-    return false;
+    return names.containsKey(name, caseSensitive);
   }
 
   /** Returns the contents as an iterable. */
