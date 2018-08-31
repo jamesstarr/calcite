@@ -7818,7 +7818,12 @@ FROM (SELECT * FROM SALES.NATION) GROUP BY n_regionkey)]]>
 LogicalProject(N_REGIONKEY=[$0], EXPR$1=[MAX($1) OVER (PARTITION BY $0 RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)])
   LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
     LogicalProject(N_REGIONKEY=[ITEM($0, 'N_REGIONKEY')], $f1=[ITEM($0, 'N_NATIONKEY')])
+<<<<<<< HEAD
       LogicalTableScan(table=[[CATALOG, SALES, NATION]])
+=======
+      LogicalProject(**=[$0])
+        LogicalTableScan(table=[[CATALOG, SALES, NATION]])
+>>>>>>> 0d334d369 ([CALCITE-2514] Add SqlIdentifier conversion to ITEM operator for dynamic tables in ExtendedExpander (Arina Ielchiieva))
 ]]>
         </Resource>
     </TestCase>

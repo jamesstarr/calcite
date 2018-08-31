@@ -3370,6 +3370,20 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).with(getTesterWithDynamicTable()).ok();
   }
 
+  @Test public void testWindowAndGroupByWithDynamicStar() {
+    final String sql = "SELECT\n"
+        + "n_regionkey,\n"
+        + "MAX(MIN(n_nationkey)) OVER (PARTITION BY n_regionkey)\n"
+        + "FROM (SELECT * FROM SALES.NATION)\n"
+        + "GROUP BY n_regionkey";
+
+    sql(sql).conformance(new SqlDelegatingConformance(SqlConformanceEnum.DEFAULT) {
+      @Override public boolean isGroupByAlias() {
+        return true;
+      }
+    }).with(getTesterWithDynamicTable()).ok();
+  }
+
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2366">[CALCITE-2366]
    * Add support for ANY_VALUE aggregate function</a>. */

@@ -6440,7 +6440,9 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
         }
         expr = stripAs(expr);
         if (expr instanceof SqlIdentifier) {
-          expr = getScope().fullyQualify((SqlIdentifier) expr).identifier;
+          SqlIdentifier sid = (SqlIdentifier) expr;
+          final SqlIdentifier fqId = getScope().fullyQualify(sid).identifier;
+          expr = expandDynamicStar(sid, fqId);
         }
         return expr;
       }
