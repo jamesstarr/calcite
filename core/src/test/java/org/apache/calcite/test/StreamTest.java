@@ -456,12 +456,17 @@ public class StreamTest {
       implements StreamableTable {
     public Enumerable<Object[]> scan(DataContext root) {
       return Linq4j.asEnumerable(() -> new Iterator<Object[]>() {
+        private final String[] items = new String[]{"paint", "paper", "brush"};
+        private int counter = 0;
+
         public boolean hasNext() {
           return true;
         }
 
         public Object[] next() {
-          return ROW_GENERATOR.apply();
+          final int index = counter++;
+          return new Object[]{
+              System.currentTimeMillis(), index, items[index % items.length], 10};
         }
 
         public void remove() {
