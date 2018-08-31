@@ -1499,8 +1499,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplify(isNotNull(not(vBool())), "IS NOT NULL(?0.bool0)");
     checkSimplify(isNotNull(not(vBoolNotNull())), "true");
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     // "null is null" to "true"
     checkSimplify(isNull(nullBool), "true");
+=======
+>>>>>>> 3f4dc4cca (Following [CALCITE-2469] simplify "f(x, y) IS NULL" to "x IS NULL OR y IS NULL" if "f" is strong):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "(x + y) is null" simplifies to "x is null or y is null"
     checkSimplify(isNull(plus(vInt(0), vInt(1))),
         "OR(IS NULL(?0.int0), IS NULL(?0.int1))");
@@ -1516,6 +1519,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplify(isNotNull(plus(vIntNotNull(0), vIntNotNull(1))), "true");
     checkSimplify(isNotNull(plus(vIntNotNull(0), vInt(1))),
         "IS NOT NULL(?0.int1)");
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 =======
     checkSimplify(gt(iRef, hRef), ">(?0.i, ?0.h)");
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
@@ -1559,6 +1563,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplify(isNotNull(not(vBool())), "IS NOT NULL(?0.bool0)");
     checkSimplify(isNotNull(not(vBoolNotNull())), "true");
 >>>>>>> 82b258588 ([CALCITE-2469] RexSimplify should optimize '(NOT x) IS NULL' to 'x IS NULL' (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+>>>>>>> 3f4dc4cca (Following [CALCITE-2469] simplify "f(x, y) IS NULL" to "x IS NULL OR y IS NULL" if "f" is strong):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   @Test void simplifyStrong() {
