@@ -42,8 +42,12 @@ script:
   - ./gradlew --no-daemon build $TEST_TAGS
 =======
   - unset _JAVA_OPTIONS
+<<<<<<< HEAD
   - $DOCKERRUN $IMAGE mvn -Dsurefire.useFile=false -Dsurefire.threadCount=1 -Dsurefire.perCoreThreadCount=false -Djavax.net.ssl.trustStorePassword=changeit test
 >>>>>>> 03a2afad5 ([CALCITE-2519] Silence ERROR logs from CalciteException, SqlValidatorException during tests)
+=======
+  - $DOCKERRUN $IMAGE mvn -Dcheckstyle.skip -Dsurefire.useFile=false -Dsurefire.threadCount=1 -Dsurefire.perCoreThreadCount=false -Djavax.net.ssl.trustStorePassword=changeit test
+>>>>>>> ade0edbab (Skip second Checkstyle execution during Travis CI build)
 git:
   depth: 100
 cache:
