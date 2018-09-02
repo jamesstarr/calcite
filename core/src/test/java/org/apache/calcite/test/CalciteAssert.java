@@ -1480,7 +1480,6 @@ public class CalciteAssert {
             hooks, checker, null, null);
         return this;
       } catch (Exception e) {
-        e.printStackTrace();
         throw new RuntimeException(
             "exception while executing [" + sql + "]", e);
       }
