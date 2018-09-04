@@ -7912,7 +7912,11 @@ void NonReservedKeyWord0of3() :
 }
 {
     (
+<<<<<<< HEAD
 <#list (parser.nonReservedKeywords!default.parser.nonReservedKeywords) + (parser.nonReservedKeywordsToAdd!default.parser.nonReservedKeywordsToAdd) as keyword>
+=======
+<#list parser.nonReservedKeywords as keyword>
+>>>>>>> 38576ceb2 ([CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved)
 <#if keyword?index == 0>
         <${keyword}>
 <#elseif keyword?index % 3 == 0>
@@ -7928,7 +7932,11 @@ void NonReservedKeyWord1of3() :
 }
 {
     (
+<<<<<<< HEAD
 <#list (parser.nonReservedKeywords!default.parser.nonReservedKeywords) + (parser.nonReservedKeywordsToAdd!default.parser.nonReservedKeywordsToAdd) as keyword>
+=======
+<#list parser.nonReservedKeywords as keyword>
+>>>>>>> 38576ceb2 ([CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved)
 <#if keyword?index == 1>
         <${keyword}>
 <#elseif keyword?index % 3 == 1>
@@ -7944,7 +7952,11 @@ void NonReservedKeyWord2of3() :
 }
 {
     (
+<<<<<<< HEAD
 <#list (parser.nonReservedKeywords!default.parser.nonReservedKeywords) + (parser.nonReservedKeywordsToAdd!default.parser.nonReservedKeywordsToAdd) as keyword>
+=======
+<#list parser.nonReservedKeywords as keyword>
+>>>>>>> 38576ceb2 ([CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved)
 <#if keyword?index == 2>
         <${keyword}>
 <#elseif keyword?index % 3 == 2>

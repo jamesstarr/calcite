@@ -81,11 +81,9 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * A <code>SqlParserTest</code> is a unit-test for
@@ -1717,29 +1715,11 @@ public class SqlParserTest {
     sql("values a similar to b like c similar to d escape e escape f")
         .ok("VALUES (ROW((`A` SIMILAR TO (`B` LIKE (`C` SIMILAR TO `D` ESCAPE `E`) ESCAPE `F`))))");
 
-    // Mixed LIKE and SIMILAR TO and LIKE ANY
-    check(
-            "values a similar to b like c like any (d, e) escape f",
-            "VALUES (ROW((`A` SIMILAR TO (`B` LIKE (`C` LIKE ANY (`D`, `E`)) ESCAPE `F`))))");
-
-    // Mixed LIKE and SIMILAR TO and LIKE SOME
-    check(
-            "values a similar to b like c like some (d, e) escape f",
-            "VALUES (ROW((`A` SIMILAR TO (`B` LIKE (`C` LIKE SOME (`D`, `E`)) ESCAPE `F`))))");
-
-
-    // Mixed LIKE and SIMILAR TO and LIKE ALL
-    check(
-            "values a similar to b like c like all (d, e) escape f",
-            "VALUES (ROW((`A` SIMILAR TO (`B` LIKE (`C` LIKE ALL (`D`, `E`)) ESCAPE `F`))))");
-
-    check(
-            "values ((a like b) and ((c not like all (d, e)) or (e not like any (f, g))))",
-            "VALUES (ROW(((`A` LIKE `B`) AND ((`C` NOT LIKE ALL (`D`, `E`)) OR (`E` NOT LIKE ANY (`F`, `G`))))))");
-
     if (isReserved("ESCAPE")) {
-      sql("select * from t where ^escape^ 'e'")
-          .fails("(?s).*Encountered \"escape\" at .*");
+      // FIXME should fail at "escape"
+      checkFails(
+          "select * from t ^where^ escape 'e'",
+          "(?s).*Encountered \"where escape\" at .*");
     }
 
     // LIKE with +
@@ -1752,35 +1732,17 @@ public class SqlParserTest {
 
     // ESCAPE with no expression
     if (isReserved("ESCAPE")) {
-      sql("values a ^like^ escape d")
-          .fails("(?s).*Encountered \"like escape\" at .*");
+      // FIXME should fail at "escape"
+      checkFails(
+          "values a ^like^ escape d",
+          "(?s).*Encountered \"like escape\" at .*");
     }
 
     // ESCAPE with no expression
     if (isReserved("ESCAPE")) {
-      sql("values a like b || c ^escape^ and false")
-          .fails("(?s).*Encountered \"escape and\" at line 1, column 22.*");
-    }
-
-    // ESCAPE with LIKE ANY
-    if (isReserved("ESCAPE")) {
       checkFails(
-              "values a like any (b, c) ^escape^ d",
-              "(?s).*Encountered \"escape\" at line 1, column 26.*");
-    }
-
-    // ESCAPE with LIKE SOME
-    if (isReserved("ESCAPE")) {
-      checkFails(
-              "values a like some (b, c) ^escape^ d",
-              "(?s).*Encountered \"escape\" at line 1, column 27.*");
-    }
-
-    // ESCAPE with LIKE ALL
-    if (isReserved("ESCAPE")) {
-      checkFails(
-              "values a like all (b, c) ^escape^ d",
-              "(?s).*Encountered \"escape\" at line 1, column 26.*");
+          "values a like b || c ^escape^ and false",
+          "(?s).*Encountered \"escape and\" at line 1, column 22.*");
     }
 
     // basic SIMILAR TO
@@ -4050,7 +4012,7 @@ public class SqlParserTest {
     }
   }
 
-  @Test void testUpsertSelect() {
+  @Test public void testUpsertSelect() {
     final String sql = "upsert into emps select * from emp as e";
     final String expected = "UPSERT INTO `EMPS`\n"
         + "(SELECT *\n"
@@ -4060,7 +4022,7 @@ public class SqlParserTest {
     }
   }
 
-  @Test void testExplainUpsert() {
+  @Test public void testExplainUpsert() {
     final String sql = "explain plan for upsert into emps1 values (1, 2)";
     final String expected = "EXPLAIN PLAN INCLUDING ATTRIBUTES"
         + " WITH IMPLEMENTATION FOR\n"
@@ -4341,12 +4303,14 @@ public class SqlParserTest {
         .fails("(?s).*when1.*");
   }
 
-  @Test void testNullIf() {
-    expr("nullif(v1,v2)")
-        .ok("(NULLIF(`V1`, `V2`))");
+  @Test public void testNullIf() {
+    checkExp(
+        "nullif(v1,v2)",
+        "(NULLIF(`V1`, `V2`))");
     if (isReserved("NULLIF")) {
-      expr("1 + ^nullif^ + 3")
-          .fails("(?s)Encountered \"nullif \\+\" at line 1, column 5.*");
+      checkExpFails(
+          "1 + ^nullif^ + 3",
+          "(?s)Encountered \"nullif \\+\" at line 1, column 5.*");
     }
   }
 
@@ -4398,6 +4362,24 @@ public class SqlParserTest {
   }
 
   @Test void testDateLiteral() {
+    final String expected = "SELECT DATE '1980-01-01'\n"
+        + "FROM `T`";
+    sql("select date '1980-01-01' from t").ok(expected);
+    final String expected1 = "SELECT TIME '00:00:00'\n"
+        + "FROM `T`";
+    sql("select time '00:00:00' from t").ok(expected1);
+    final String expected2 = "SELECT TIMESTAMP '1980-01-01 00:00:00'\n"
+        + "FROM `T`";
+    sql("select timestamp '1980-01-01 00:00:00' from t").ok(expected2);
+    final String expected3 = "SELECT INTERVAL '3' DAY\n"
+        + "FROM `T`";
+    sql("select interval '3' day from t").ok(expected3);
+    final String expected4 = "SELECT INTERVAL '5:6' HOUR TO MINUTE\n"
+        + "FROM `T`";
+    sql("select interval '5:6' hour to minute from t").ok(expected4);
+  }
+
+  @Test public void testDateLiteral() {
     final String expected = "SELECT DATE '1980-01-01'\n"
         + "FROM `T`";
     sql("select date '1980-01-01' from t").ok(expected);
