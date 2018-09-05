@@ -2058,7 +2058,7 @@ public class RelOptRulesTest extends RelOptTestBase {
             return this;
           }
           // CHECKSTYLE: IGNORE 1
-        }.init());
+        });
 
     HepProgram program = new HepProgramBuilder()
         .addMatchOrder(HepMatchOrder.BOTTOM_UP)
