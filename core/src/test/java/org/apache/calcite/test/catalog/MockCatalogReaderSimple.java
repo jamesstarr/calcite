@@ -182,7 +182,65 @@ public class MockCatalogReaderSimple extends MockCatalogReader {
     contactAddressTable.addColumn("MAILING_ADDRESS", addressType);
     registerTable(contactAddressTable);
 
->>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
+    // Register "CUSTOMER" schema.
+    MockSchema customerSchema = new MockSchema("CUSTOMER");
+    registerSchema(customerSchema);
+
+    // Register "CONTACT" table.
+    MockTable contactTable = MockTable.create(this, customerSchema, "CONTACT",
+        false, 1000);
+    contactTable.addColumn("CONTACTNO", fixture.intType);
+    contactTable.addColumn("FNAME", fixture.varchar10Type);
+    contactTable.addColumn("LNAME", fixture.varchar10Type);
+    contactTable.addColumn("EMAIL", fixture.varchar20Type);
+    contactTable.addColumn("COORD", fixture.rectilinearCoordType);
+    registerTable(contactTable);
+
+    // Register "CONTACT_PEEK" table. The
+    MockTable contactPeekTable =
+        MockTable.create(this, customerSchema, "CONTACT_PEEK", false, 1000);
+    contactPeekTable.addColumn("CONTACTNO", fixture.intType);
+    contactPeekTable.addColumn("FNAME", fixture.varchar10Type);
+    contactPeekTable.addColumn("LNAME", fixture.varchar10Type);
+    contactPeekTable.addColumn("EMAIL", fixture.varchar20Type);
+    contactPeekTable.addColumn("COORD", fixture.rectilinearPeekCoordType);
+    contactPeekTable.addColumn("COORD_NE", fixture.rectilinearPeekNoExpandCoordType);
+    registerTable(contactPeekTable);
+
+    // Register "ACCOUNT" table.
+    MockTable accountTable = MockTable.create(this, customerSchema, "ACCOUNT",
+        false, 457);
+    accountTable.addColumn("ACCTNO", fixture.intType);
+    accountTable.addColumn("TYPE", fixture.varchar20Type);
+    accountTable.addColumn("BALANCE", fixture.intType);
+    registerTable(accountTable);
+
+    // Register "ORDERS" stream.
+    MockTable ordersStream = MockTable.create(this, salesSchema, "ORDERS",
+        true, Double.POSITIVE_INFINITY);
+    ordersStream.addColumn("ROWTIME", fixture.timestampType);
+    ordersStream.addMonotonic("ROWTIME");
+    ordersStream.addColumn("PRODUCTID", fixture.intType);
+    ordersStream.addColumn("ORDERID", fixture.intType);
+    registerTable(ordersStream);
+
+    // Register "SHIPMENTS" stream.
+    // "ROWTIME" is not column 0, just to mix things up.
+    MockTable shipmentsStream = MockTable.create(this, salesSchema, "SHIPMENTS",
+        true, Double.POSITIVE_INFINITY);
+    shipmentsStream.addColumn("ORDERID", fixture.intType);
+    shipmentsStream.addColumn("ROWTIME", fixture.timestampType);
+    shipmentsStream.addMonotonic("ROWTIME");
+    registerTable(shipmentsStream);
+
+    // Register "PRODUCTS" table.
+    MockTable productsTable = MockTable.create(this, salesSchema, "PRODUCTS",
+        false, 200D);
+    productsTable.addColumn("PRODUCTID", fixture.intType);
+    productsTable.addColumn("NAME", fixture.varchar20Type);
+    productsTable.addColumn("SUPPLIERID", fixture.intType);
+    registerTable(productsTable);
+
     // Register "SUPPLIERS" table.
     MockTable suppliersTable = MockTable.create(this, salesSchema, "SUPPLIERS",
         false, 10D);
