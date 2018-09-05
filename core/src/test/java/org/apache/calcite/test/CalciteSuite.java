@@ -130,6 +130,7 @@ import org.junit.runners.Suite;
     SqlSetOptionOperatorTest.class,
     SqlPrettyWriterTest.class,
     SqlValidatorTest.class,
+    SqlValidatorDynamicTest.class,
     SqlValidatorMatchTest.class,
     SqlAdvisorTest.class,
     RelMetadataTest.class,
