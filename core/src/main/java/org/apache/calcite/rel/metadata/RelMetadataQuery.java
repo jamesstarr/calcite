@@ -24,7 +24,9 @@ import org.apache.calcite.rel.RelDistribution;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexTableInputRef.RelTableRef;
+import org.apache.calcite.runtime.FlatLists;
 import org.apache.calcite.sql.SqlExplainLevel;
+import org.apache.calcite.util.BuiltInMethod;
 import org.apache.calcite.util.ImmutableBitSet;
 
 import com.google.common.base.Preconditions;
@@ -32,6 +34,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -73,14 +80,87 @@ import java.util.Set;
  * providers. Then supply that instance to the planner via the appropriate
  * plugin mechanism.
  */
-public abstract class RelMetadataQuery {
+public class RelMetadataQuery {
+
+  /** Invocation handler to create {@code Metadata} instances guarding for
+   * cycles and managing local cache
+   */
+  private final class MetadataInvocationHandler implements InvocationHandler {
+    private final Metadata metadata;
+
+    private MetadataInvocationHandler(Metadata metadata) {
+      this.metadata = metadata;
+    }
+
+    @Override public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+      // Skip cycle check/caching for metadata.rel() and metadata.toString()
+      if (BuiltInMethod.METADATA_REL.method.equals(method)
+          || BuiltInMethod.OBJECT_TO_STRING.method.equals(method)) {
+        return method.invoke(metadata, args);
+      }
+
+      final List<?> key = newKey(method, args);
+      final Object cached = visited.putIfAbsent(key, NullSentinel.ACTIVE);
+      if (cached == NullSentinel.ACTIVE) {
+        throw CyclicMetadataException.INSTANCE;
+      }
+
+      // Execute underlying metadata method
+      try {
+        final Object result = method.invoke(metadata, args);
+        return result;
+      } catch (InvocationTargetException e) {
+        throw e.getTargetException();
+      } finally {
+        visited.remove(key);
+      }
+    }
+
+    private List<?> newKey(Method method, Object... args) {
+      final RelNode rel = metadata.rel();
+      final Object[] safeArgs = args != null ? args : new Object[0];
+      final int length = safeArgs.length;
+      switch (length) {
+      case 4:
+        return FlatLists.of(rel, method, mask(safeArgs[0]), mask(safeArgs[1]), mask(safeArgs[2]),
+            mask(safeArgs[3]));
+
+      case 3:
+        return FlatLists.of(rel, method, mask(safeArgs[0]), mask(safeArgs[1]), mask(safeArgs[2]));
+
+      case 2:
+        return FlatLists.of(rel, method, mask(safeArgs[0]), mask(safeArgs[1]));
+
+      case 1:
+        return FlatLists.of(rel, method, mask(safeArgs[0]));
+
+      case 0:
+        return FlatLists.of(rel, method);
+
+      default:
+        Object[] key = new Object[2 + length];
+        key[0] = rel;
+        key[1] = method;
+        for (int i = 0; i < length; i++) {
+          key[i + 2] = mask(safeArgs[i]);
+        }
+        return Collections.unmodifiableList(Arrays.asList(key));
+      }
+    }
+
+    private Object mask(Object value) {
+      // Can't use RexNode.equals - it is not deep
+      if (value instanceof RexNode) {
+        return value.toString();
+      }
+      return NullSentinel.mask(value);
+    }
+  }
 
   /** Set of active metadata queries, and cache of previous results. */
-  public final Map<List, Object> map = new HashMap<>();
-  public final RelMetadataProvider metadataProvider;
+  private final Map<List<?>, Object> visited = new HashMap<>();
 
-  protected RelMetadataQuery(RelMetadataProvider metadataProvider) {
-    this.metadataProvider = Preconditions.checkNotNull(metadataProvider);
+  public RelMetadataQuery() {
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -89,12 +169,9 @@ public abstract class RelMetadataQuery {
    * Returns an instance of RelMetadataQuery. It ensures that cycles do not
    * occur while computing metadata.
    */
-  public static RelMetadataQuery instance() {
-    return JaninoRelMetadataQuery.THREAD_PROVIDERS.get().getRelMetadataQuery();
-  }
 
-  public static RelMetadataQuery instance(RelMetadataProvider provider) {
-    return provider.getRelMetadataQuery();
+  public static RelMetadataQuery instance() {
+    return new RelMetadataQuery();
   }
 
   /**
@@ -106,7 +183,7 @@ public abstract class RelMetadataQuery {
    */
   public Multimap<Class<? extends RelNode>, RelNode> getNodeTypes(RelNode rel) {
     final BuiltInMetadata.NodeTypes metadata =
-        rel.metadata(BuiltInMetadata.NodeTypes.class, this);
+        metadata(rel, BuiltInMetadata.NodeTypes.class);
     return metadata.getNodeTypes();
   }
 
@@ -121,7 +198,7 @@ public abstract class RelMetadataQuery {
    */
   public Double getRowCount(RelNode rel) {
     final BuiltInMetadata.RowCount metadata =
-        rel.metadata(BuiltInMetadata.RowCount.class, this);
+        metadata(rel, BuiltInMetadata.RowCount.class);
     Double result = metadata.getRowCount();
     return validateResult(result);
   }
@@ -136,7 +213,7 @@ public abstract class RelMetadataQuery {
    */
   public Double getMaxRowCount(RelNode rel) {
     final BuiltInMetadata.MaxRowCount metadata =
-        rel.metadata(BuiltInMetadata.MaxRowCount.class, this);
+        metadata(rel, BuiltInMetadata.MaxRowCount.class);
     return metadata.getMaxRowCount();
   }
 
@@ -150,7 +227,7 @@ public abstract class RelMetadataQuery {
    */
   public Double getMinRowCount(RelNode rel) {
     final BuiltInMetadata.MinRowCount metadata =
-        rel.metadata(BuiltInMetadata.MinRowCount.class, this);
+        metadata(rel, BuiltInMetadata.MinRowCount.class);
     return metadata.getMinRowCount();
   }
 
@@ -164,7 +241,7 @@ public abstract class RelMetadataQuery {
    */
   public RelOptCost getCumulativeCost(RelNode rel) {
     final BuiltInMetadata.CumulativeCost metadata =
-        rel.metadata(BuiltInMetadata.CumulativeCost.class, this);
+        metadata(rel, BuiltInMetadata.CumulativeCost.class);
     return metadata.getCumulativeCost();
   }
 
@@ -178,7 +255,7 @@ public abstract class RelMetadataQuery {
    */
   public RelOptCost getNonCumulativeCost(RelNode rel) {
     final BuiltInMetadata.NonCumulativeCost metadata =
-        rel.metadata(BuiltInMetadata.NonCumulativeCost.class, this);
+        metadata(rel, BuiltInMetadata.NonCumulativeCost.class);
     return metadata.getNonCumulativeCost();
   }
 
@@ -193,7 +270,7 @@ public abstract class RelMetadataQuery {
    */
   public Double getPercentageOriginalRows(RelNode rel) {
     final BuiltInMetadata.PercentageOriginalRows metadata =
-        rel.metadata(BuiltInMetadata.PercentageOriginalRows.class, this);
+        metadata(rel, BuiltInMetadata.PercentageOriginalRows.class);
     Double result = metadata.getPercentageOriginalRows();
     assert isPercentage(result, true);
     return result;
@@ -212,7 +289,7 @@ public abstract class RelMetadataQuery {
    */
   public Set<RelColumnOrigin> getColumnOrigins(RelNode rel, int column) {
     final BuiltInMetadata.ColumnOrigin metadata =
-        rel.metadata(BuiltInMetadata.ColumnOrigin.class, this);
+        metadata(rel, BuiltInMetadata.ColumnOrigin.class);
     return metadata.getColumnOrigins(column);
   }
 
@@ -243,7 +320,7 @@ public abstract class RelMetadataQuery {
    */
   public Set<RexNode> getExpressionLineage(RelNode rel, RexNode expression) {
     final BuiltInMetadata.ExpressionLineage metadata =
-        rel.metadata(BuiltInMetadata.ExpressionLineage.class, this);
+        metadata(rel, BuiltInMetadata.ExpressionLineage.class);
     return metadata.getExpressionLineage(expression);
   }
 
@@ -252,7 +329,7 @@ public abstract class RelMetadataQuery {
    */
   public Set<RelTableRef> getTableReferences(RelNode rel) {
     final BuiltInMetadata.TableReferences metadata =
-        rel.metadata(BuiltInMetadata.TableReferences.class, this);
+        metadata(rel, BuiltInMetadata.TableReferences.class);
     return metadata.getTableReferences();
   }
 
@@ -288,7 +365,7 @@ public abstract class RelMetadataQuery {
    */
   public Double getSelectivity(RelNode rel, RexNode predicate) {
     final BuiltInMetadata.Selectivity metadata =
-        rel.metadata(BuiltInMetadata.Selectivity.class, this);
+        metadata(rel, BuiltInMetadata.Selectivity.class);
     Double result = metadata.getSelectivity(predicate);
     assert isPercentage(result, true);
     return result;
@@ -322,7 +399,7 @@ public abstract class RelMetadataQuery {
   public Set<ImmutableBitSet> getUniqueKeys(RelNode rel,
       boolean ignoreNulls) {
     final BuiltInMetadata.UniqueKeys metadata =
-        rel.metadata(BuiltInMetadata.UniqueKeys.class, this);
+        metadata(rel, BuiltInMetadata.UniqueKeys.class);
     return metadata.getUniqueKeys(false);
   }
 
@@ -375,7 +452,7 @@ public abstract class RelMetadataQuery {
   public Boolean areColumnsUnique(RelNode rel, ImmutableBitSet columns,
       boolean ignoreNulls) {
     final BuiltInMetadata.ColumnUniqueness metadata =
-        rel.metadata(BuiltInMetadata.ColumnUniqueness.class, this);
+        metadata(rel, BuiltInMetadata.ColumnUniqueness.class);
     return metadata.areColumnsUnique(columns, ignoreNulls);
   }
 
@@ -390,7 +467,7 @@ public abstract class RelMetadataQuery {
    */
   public ImmutableList<RelCollation> collations(RelNode rel) {
     final BuiltInMetadata.Collation metadata =
-        rel.metadata(BuiltInMetadata.Collation.class, this);
+        metadata(rel, BuiltInMetadata.Collation.class);
     return metadata.collations();
   }
 
@@ -405,7 +482,7 @@ public abstract class RelMetadataQuery {
    */
   public RelDistribution distribution(RelNode rel) {
     final BuiltInMetadata.Distribution metadata =
-        rel.metadata(BuiltInMetadata.Distribution.class, this);
+        metadata(rel, BuiltInMetadata.Distribution.class);
     return metadata.distribution();
   }
 
@@ -424,7 +501,7 @@ public abstract class RelMetadataQuery {
   public Double getPopulationSize(RelNode rel,
       ImmutableBitSet groupKey) {
     final BuiltInMetadata.PopulationSize metadata =
-        rel.metadata(BuiltInMetadata.PopulationSize.class, this);
+        metadata(rel, BuiltInMetadata.PopulationSize.class);
     Double result = metadata.getPopulationSize(groupKey);
     return validateResult(result);
   }
@@ -439,7 +516,7 @@ public abstract class RelMetadataQuery {
      */
   public Double getAverageRowSize(RelNode rel) {
     final BuiltInMetadata.Size metadata =
-        rel.metadata(BuiltInMetadata.Size.class, this);
+        metadata(rel, BuiltInMetadata.Size.class);
     return metadata.averageRowSize();
   }
 
@@ -455,7 +532,7 @@ public abstract class RelMetadataQuery {
    */
   public List<Double> getAverageColumnSizes(RelNode rel) {
     final BuiltInMetadata.Size metadata =
-        rel.metadata(BuiltInMetadata.Size.class, this);
+        metadata(rel, BuiltInMetadata.Size.class);
     return metadata.averageColumnSizes();
   }
 
@@ -480,7 +557,7 @@ public abstract class RelMetadataQuery {
    */
   public Boolean isPhaseTransition(RelNode rel) {
     final BuiltInMetadata.Parallelism metadata =
-        rel.metadata(BuiltInMetadata.Parallelism.class, this);
+        metadata(rel, BuiltInMetadata.Parallelism.class);
     return metadata.isPhaseTransition();
   }
 
@@ -494,7 +571,7 @@ public abstract class RelMetadataQuery {
    */
   public Integer splitCount(RelNode rel) {
     final BuiltInMetadata.Parallelism metadata =
-        rel.metadata(BuiltInMetadata.Parallelism.class, this);
+        metadata(rel, BuiltInMetadata.Parallelism.class);
     return metadata.splitCount();
   }
 
@@ -510,7 +587,7 @@ public abstract class RelMetadataQuery {
    */
   public Double memory(RelNode rel) {
     final BuiltInMetadata.Memory metadata =
-        rel.metadata(BuiltInMetadata.Memory.class, this);
+        metadata(rel, BuiltInMetadata.Memory.class);
     return metadata.memory();
   }
 
@@ -526,7 +603,7 @@ public abstract class RelMetadataQuery {
    */
   public Double cumulativeMemoryWithinPhase(RelNode rel) {
     final BuiltInMetadata.Memory metadata =
-        rel.metadata(BuiltInMetadata.Memory.class, this);
+        metadata(rel, BuiltInMetadata.Memory.class);
     return metadata.cumulativeMemoryWithinPhase();
   }
 
@@ -542,7 +619,7 @@ public abstract class RelMetadataQuery {
    */
   public Double cumulativeMemoryWithinPhaseSplit(RelNode rel) {
     final BuiltInMetadata.Memory metadata =
-        rel.metadata(BuiltInMetadata.Memory.class, this);
+        metadata(rel, BuiltInMetadata.Memory.class);
     return metadata.cumulativeMemoryWithinPhaseSplit();
   }
 
@@ -562,7 +639,7 @@ public abstract class RelMetadataQuery {
       ImmutableBitSet groupKey,
       RexNode predicate) {
     final BuiltInMetadata.DistinctRowCount metadata =
-        rel.metadata(BuiltInMetadata.DistinctRowCount.class, this);
+        metadata(rel, BuiltInMetadata.DistinctRowCount.class);
     Double result = metadata.getDistinctRowCount(groupKey, predicate);
     return validateResult(result);
   }
@@ -577,7 +654,7 @@ public abstract class RelMetadataQuery {
    */
   public RelOptPredicateList getPulledUpPredicates(RelNode rel) {
     final BuiltInMetadata.Predicates metadata =
-        rel.metadata(BuiltInMetadata.Predicates.class, this);
+        metadata(rel, BuiltInMetadata.Predicates.class);
     return metadata.getPredicates();
   }
 
@@ -591,7 +668,7 @@ public abstract class RelMetadataQuery {
    */
   public RelOptPredicateList getAllPredicates(RelNode rel) {
     final BuiltInMetadata.AllPredicates metadata =
-        rel.metadata(BuiltInMetadata.AllPredicates.class, this);
+        metadata(rel, BuiltInMetadata.AllPredicates.class);
     return metadata.getAllPredicates();
   }
 
@@ -608,30 +685,34 @@ public abstract class RelMetadataQuery {
   public boolean isVisibleInExplain(RelNode rel,
       SqlExplainLevel explainLevel) {
     final BuiltInMetadata.ExplainVisibility metadata =
-        rel.metadata(BuiltInMetadata.ExplainVisibility.class, this);
+        metadata(rel, BuiltInMetadata.ExplainVisibility.class);
     Boolean b = metadata.isVisibleInExplain(explainLevel);
     return b == null || b;
+  }
+
+  /**
+   * Get a metadata instance guarding for cycles
+   *
+   * @param rel the relational expression
+   * @param metadataClass the metadata class
+   * @return a metadata instance guarding for cycles
+   */
+  protected <M extends Metadata> M metadata(RelNode rel,
+      Class<? extends M> metadataClass) {
+    Metadata metadata = rel.metadata(metadataClass, this);
+    Preconditions.checkArgument(metadata != null,
+        "no provider found (rel=%s, m=%s); a backstop provider is recommended",
+        rel,
+        metadataClass);
+    return (M) Proxy.newProxyInstance(
+        metadataClass.getClassLoader(),
+        new Class[] { metadataClass },
+        new MetadataInvocationHandler(metadata));
   }
 
   protected static Double validatePercentage(Double result) {
     assert isPercentage(result, true);
     return result;
-  }
-
-  /**
-   * Returns the
-   * {@link BuiltInMetadata.Distribution#distribution()}
-   * statistic.
-   *
-   * @param rel          the relational expression
-   *
-   * @return description of how the rows in the relational expression are
-   * physically distributed
-   */
-  public RelDistribution getDistribution(RelNode rel) {
-    final BuiltInMetadata.Distribution metadata =
-        rel.metadata(BuiltInMetadata.Distribution.class, this);
-    return metadata.distribution();
   }
 
   protected static boolean isPercentage(Double result, boolean fail) {
@@ -678,7 +759,6 @@ public abstract class RelMetadataQuery {
     }
     return result;
   }
-
 }
 
 // End RelMetadataQuery.java

@@ -148,11 +148,7 @@ public class RelOptCluster {
    * for example if you are in a {@link RelOptRule#onMatch(RelOptRuleCall)}
    * method, then use {@link RelOptRuleCall#getMetadataQuery()} instead. */
   public RelMetadataQuery getMetadataQuery() {
-    if (metadataProvider == null) {
-      return RelMetadataQuery.instance();
-    } else {
-      return RelMetadataQuery.instance(this.metadataProvider);
-    }
+    return RelMetadataQuery.instance();
   }
 
   /**

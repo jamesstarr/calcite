@@ -18,7 +18,6 @@ package org.apache.calcite.rel.metadata;
 
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rex.RexNode;
-import org.apache.calcite.runtime.FlatLists;
 import org.apache.calcite.util.BuiltInMethod;
 import org.apache.calcite.util.ImmutableNullableList;
 import org.apache.calcite.util.Pair;
@@ -167,30 +166,13 @@ public class ReflectiveRelMetadataProvider
                             + " for " + rel);
                       }
                       final Object[] args1;
-                      final List key;
                       if (args == null) {
                         args1 = new Object[]{rel, mq};
-                        key = FlatLists.of(rel, method);
                       } else {
                         args1 = new Object[args.length + 2];
                         args1[0] = rel;
                         args1[1] = mq;
                         System.arraycopy(args, 0, args1, 2, args.length);
-
-                        final Object[] args2 = args1.clone();
-                        args2[1] = method; // replace RelMetadataQuery with method
-                        for (int j = 0; j < args2.length; j++) {
-                          if (args2[j] == null) {
-                            args2[j] = NullSentinel.INSTANCE;
-                          } else if (args2[j] instanceof RexNode) {
-                            // Can't use RexNode.equals - it is not deep
-                            args2[j] = args2[j].toString();
-                          }
-                        }
-                        key = FlatLists.copyOf(args2);
-                      }
-                      if (mq.map.put(key, NullSentinel.INSTANCE) != null) {
-                        throw CyclicMetadataException.INSTANCE;
                       }
                       try {
                         return handlerMethod.invoke(target, args1);
@@ -198,8 +180,6 @@ public class ReflectiveRelMetadataProvider
                           | UndeclaredThrowableException e) {
                         Util.throwIfUnchecked(e.getCause());
                         throw new RuntimeException(e.getCause());
-                      } finally {
-                        mq.map.remove(key);
                       }
                     }
                   });
@@ -222,10 +202,6 @@ public class ReflectiveRelMetadataProvider
       }
     }
     return builder.build();
-  }
-
-  @Override public RelMetadataQuery getRelMetadataQuery() {
-    return new JaninoRelMetadataQuery(JaninoRelMetadataProvider.of(this));
   }
 
   private static boolean couldImplement(Method handlerMethod, Method method) {
