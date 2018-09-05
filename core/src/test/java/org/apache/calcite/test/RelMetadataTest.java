@@ -64,9 +64,7 @@ import org.apache.calcite.rel.logical.LogicalValues;
 import org.apache.calcite.rel.metadata.BuiltInMetadata;
 import org.apache.calcite.rel.metadata.ChainedRelMetadataProvider;
 import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
-import org.apache.calcite.rel.metadata.JaninoRelMetadataHandlerProvider;
-import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
-import org.apache.calcite.rel.metadata.JaninoRelMetadataQuery;
+>>>>>>> acbf6771f (DX-12806: Remove JaninoRelMetadataProvider)
 import org.apache.calcite.rel.metadata.Metadata;
 import org.apache.calcite.rel.metadata.MetadataDef;
 import org.apache.calcite.rel.metadata.MetadataHandler;
@@ -132,6 +130,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -875,6 +874,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
         within(DEFAULT_COMP_SELECTIVITY * DEFAULT_EQUAL_SELECTIVITY, EPSILON));
   }
 
+<<<<<<< HEAD
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1808">[CALCITE-1808]
    * JaninoRelMetadataProvider loading cache might cause
@@ -900,6 +900,8 @@ public class RelMetadataTest extends SqlToRelTestBase {
   }
 
   @Test void testDistinctRowCountTable() {
+=======
+  @Test public void testDistinctRowCountTable() {
     // no unique key information is available so return null
     RelNode rel = convertSql("select * from emp where deptno = 10");
     final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
@@ -1323,11 +1325,13 @@ public class RelMetadataTest extends SqlToRelTestBase {
     try {
       assertThat(colType(mq, rel, 0), equalTo("DEPTNO-rel"));
       fail("expected error");
-    } catch (IllegalArgumentException e) {
-      final String value = "No handler for method [public abstract java.lang.String "
-          + "org.apache.calcite.test.RelMetadataTest$ColType.getColType(int)] "
-          + "applied to argument of type [interface org.apache.calcite.rel.RelNode]; "
-          + "we recommend you create a catch-all (RelNode) handler";
+    } catch (AssertionError e) {
+      final String value = String.format(
+          Locale.ROOT,
+          "no provider found (rel=%s, "
+          + "m=interface org.apache.calcite.test.RelMetadataTest$ColType); "
+          + "a backstop provider is recommended",
+          rel);
       assertThat(e.getMessage(), is(value));
     }
   }
@@ -2112,8 +2116,8 @@ public class RelMetadataTest extends SqlToRelTestBase {
 
   @Test void testDistributionSimple() {
     RelNode rel = convertSql("select * from emp where deptno = 10");
-    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-    RelDistribution d = mq.getDistribution(rel);
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    RelDistribution d = mq.distribution(rel);
     assertThat(d, is(RelDistributions.BROADCAST_DISTRIBUTED));
   }
 
@@ -2122,8 +2126,8 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final RelDistribution dist = RelDistributions.hash(ImmutableList.of(1));
     final LogicalExchange exchange = LogicalExchange.create(rel, dist);
 
-    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-    RelDistribution d = mq.getDistribution(exchange);
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    RelDistribution d = mq.distribution(exchange);
     assertThat(d, is(dist));
   }
 
@@ -2132,8 +2136,8 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final RelDistribution dist = RelDistributions.hash(ImmutableList.<Integer>of());
     final LogicalExchange exchange = LogicalExchange.create(rel, dist);
 
-    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-    RelDistribution d = mq.getDistribution(exchange);
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    RelDistribution d = mq.distribution(exchange);
     assertThat(d, is(dist));
   }
 
@@ -2142,8 +2146,8 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final RelDistribution dist = RelDistributions.SINGLETON;
     final LogicalExchange exchange = LogicalExchange.create(rel, dist);
 
-    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-    RelDistribution d = mq.getDistribution(exchange);
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    RelDistribution d = mq.distribution(exchange);
     assertThat(d, is(dist));
   }
 
@@ -3158,22 +3162,14 @@ public class RelMetadataTest extends SqlToRelTestBase {
   /** Extension to {@link RelMetadataQuery} to support {@link ColType}.
    *
    * <p>Illustrates how you would package up a user-defined metadata type. */
-  private static class MyRelMetadataQuery extends JaninoRelMetadataQuery {
-    private ColType.Handler colTypeHandler;
-
+  private static class MyRelMetadataQuery extends RelMetadataQuery {
     MyRelMetadataQuery() {
-      super(JaninoRelMetadataProvider.DEFAULT);
-      colTypeHandler = initialHandler(ColType.Handler.class);
+      super();
     }
 
     public String colType(RelNode rel, int column) {
-      for (;;) {
-        try {
-          return colTypeHandler.getColType(rel, this, column);
-        } catch (RelMetadataHandlerProvider.NoHandler e) {
-          colTypeHandler = revise(e.relClass, ColType.DEF);
-        }
-      }
+      ColType metadata = metadata(rel, ColType.class);
+      return metadata.getColType(column);
     }
   }
 

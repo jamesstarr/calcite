@@ -65,8 +65,496 @@ import org.apache.calcite.rel.logical.LogicalTableModify;
 import org.apache.calcite.rel.logical.LogicalTableScan;
 import org.apache.calcite.rel.logical.LogicalUnion;
 import org.apache.calcite.rel.logical.LogicalValues;
-    JaninoRelMetadataQuery.THREAD_PROVIDERS.set(
-        JaninoRelMetadataProvider.of(cluster.getMetadataProvider()));
+import org.apache.calcite.rel.metadata.RelColumnMapping;
+import org.apache.calcite.rel.stream.Delta;
+import org.apache.calcite.rel.stream.LogicalDelta;
+import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.rel.type.RelDataTypeField;
+import org.apache.calcite.rex.RexBuilder;
+import org.apache.calcite.rex.RexCall;
+import org.apache.calcite.rex.RexCallBinding;
+import org.apache.calcite.rex.RexCorrelVariable;
+import org.apache.calcite.rex.RexDynamicParam;
+import org.apache.calcite.rex.RexFieldAccess;
+import org.apache.calcite.rex.RexFieldCollation;
+import org.apache.calcite.rex.RexInputRef;
+import org.apache.calcite.rex.RexLiteral;
+import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.rex.RexPatternFieldRef;
+import org.apache.calcite.rex.RexRangeRef;
+import org.apache.calcite.rex.RexShuttle;
+import org.apache.calcite.rex.RexSubQuery;
+import org.apache.calcite.rex.RexUtil;
+import org.apache.calcite.rex.RexWindowBound;
+import org.apache.calcite.schema.ColumnStrategy;
+import org.apache.calcite.schema.ModifiableTable;
+import org.apache.calcite.schema.ModifiableView;
+import org.apache.calcite.schema.Table;
+import org.apache.calcite.schema.TranslatableTable;
+import org.apache.calcite.schema.Wrapper;
+import org.apache.calcite.sql.JoinConditionType;
+import org.apache.calcite.sql.JoinType;
+import org.apache.calcite.sql.SemiJoinType;
+import org.apache.calcite.sql.SqlAggFunction;
+import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlCall;
+import org.apache.calcite.sql.SqlCallBinding;
+import org.apache.calcite.sql.SqlDataTypeSpec;
+import org.apache.calcite.sql.SqlDelete;
+import org.apache.calcite.sql.SqlDynamicParam;
+import org.apache.calcite.sql.SqlExplainFormat;
+import org.apache.calcite.sql.SqlExplainLevel;
+import org.apache.calcite.sql.SqlFunction;
+import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.SqlInsert;
+import org.apache.calcite.sql.SqlIntervalQualifier;
+import org.apache.calcite.sql.SqlJoin;
+import org.apache.calcite.sql.SqlKind;
+import org.apache.calcite.sql.SqlLiteral;
+import org.apache.calcite.sql.SqlMatchRecognize;
+import org.apache.calcite.sql.SqlMerge;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlNodeList;
+import org.apache.calcite.sql.SqlNumericLiteral;
+import org.apache.calcite.sql.SqlOperator;
+import org.apache.calcite.sql.SqlOperatorTable;
+import org.apache.calcite.sql.SqlOrderBy;
+import org.apache.calcite.sql.SqlSampleSpec;
+import org.apache.calcite.sql.SqlSelect;
+import org.apache.calcite.sql.SqlSelectKeyword;
+import org.apache.calcite.sql.SqlSetOperator;
+import org.apache.calcite.sql.SqlUnnestOperator;
+import org.apache.calcite.sql.SqlUpdate;
+import org.apache.calcite.sql.SqlUtil;
+import org.apache.calcite.sql.SqlValuesOperator;
+import org.apache.calcite.sql.SqlWindow;
+import org.apache.calcite.sql.SqlWith;
+import org.apache.calcite.sql.SqlWithItem;
+import org.apache.calcite.sql.fun.SqlCountAggFunction;
+import org.apache.calcite.sql.fun.SqlInOperator;
+import org.apache.calcite.sql.fun.SqlQuantifyOperator;
+import org.apache.calcite.sql.fun.SqlRowOperator;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.calcite.sql.type.SqlReturnTypeInference;
+import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.sql.type.SqlTypeUtil;
+import org.apache.calcite.sql.type.TableFunctionReturnTypeInference;
+import org.apache.calcite.sql.util.SqlBasicVisitor;
+import org.apache.calcite.sql.util.SqlVisitor;
+import org.apache.calcite.sql.validate.AggregatingSelectScope;
+import org.apache.calcite.sql.validate.CollectNamespace;
+import org.apache.calcite.sql.validate.DelegatingScope;
+import org.apache.calcite.sql.validate.ListScope;
+import org.apache.calcite.sql.validate.MatchRecognizeScope;
+import org.apache.calcite.sql.validate.ParameterScope;
+import org.apache.calcite.sql.validate.SelectScope;
+import org.apache.calcite.sql.validate.SqlMonotonicity;
+import org.apache.calcite.sql.validate.SqlNameMatcher;
+import org.apache.calcite.sql.validate.SqlQualified;
+import org.apache.calcite.sql.validate.SqlUserDefinedTableFunction;
+import org.apache.calcite.sql.validate.SqlUserDefinedTableMacro;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.sql.validate.SqlValidatorImpl;
+import org.apache.calcite.sql.validate.SqlValidatorNamespace;
+import org.apache.calcite.sql.validate.SqlValidatorScope;
+import org.apache.calcite.sql.validate.SqlValidatorTable;
+import org.apache.calcite.sql.validate.SqlValidatorUtil;
+import org.apache.calcite.tools.RelBuilder;
+import org.apache.calcite.tools.RelBuilderFactory;
+import org.apache.calcite.util.ImmutableBitSet;
+import org.apache.calcite.util.ImmutableIntList;
+import org.apache.calcite.util.Litmus;
+import org.apache.calcite.util.NlsString;
+import org.apache.calcite.util.NumberUtil;
+import org.apache.calcite.util.Pair;
+import org.apache.calcite.util.Util;
+import org.apache.calcite.util.trace.CalciteTrace;
+
+import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Supplier;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import org.slf4j.Logger;
+
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.util.AbstractList;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static org.apache.calcite.sql.SqlUtil.stripAs;
+
+/**
+ * Converts a SQL parse tree (consisting of
+ * {@link org.apache.calcite.sql.SqlNode} objects) into a relational algebra
+ * expression (consisting of {@link org.apache.calcite.rel.RelNode} objects).
+ *
+ * <p>The public entry points are: {@link #convertQuery},
+ * {@link #convertExpression(SqlNode)}.
+ */
+public class SqlToRelConverter {
+  //~ Static fields/initializers ---------------------------------------------
+
+  protected static final Logger SQL2REL_LOGGER =
+      CalciteTrace.getSqlToRelTracer();
+
+  private static final BigDecimal TWO = BigDecimal.valueOf(2L);
+
+  /** Size of the smallest IN list that will be converted to a semijoin to a
+   * static table. */
+  public static final int DEFAULT_IN_SUB_QUERY_THRESHOLD = 20;
+
+  @Deprecated // to be removed before 2.0
+  public static final int DEFAULT_IN_SUBQUERY_THRESHOLD =
+      DEFAULT_IN_SUB_QUERY_THRESHOLD;
+
+  //~ Instance fields --------------------------------------------------------
+
+  protected final SqlValidator validator;
+  protected final RexBuilder rexBuilder;
+  protected final Prepare.CatalogReader catalogReader;
+  protected final RelOptCluster cluster;
+  private SubQueryConverter subQueryConverter;
+  protected final List<RelNode> leaves = new ArrayList<>();
+  private final List<SqlDynamicParam> dynamicParamSqlNodes = new ArrayList<>();
+  private final SqlOperatorTable opTab;
+  protected final RelDataTypeFactory typeFactory;
+  private final SqlNodeToRexConverter exprConverter;
+  private int explainParamCount;
+  public final SqlToRelConverter.Config config;
+  private final RelBuilder relBuilder;
+
+  /**
+   * Fields used in name resolution for correlated sub-queries.
+   */
+  private final Map<CorrelationId, DeferredLookup> mapCorrelToDeferred =
+      new HashMap<>();
+
+  /**
+   * Stack of names of datasets requested by the <code>
+   * TABLE(SAMPLE(&lt;datasetName&gt;, &lt;query&gt;))</code> construct.
+   */
+  private final Deque<String> datasetStack = new ArrayDeque<>();
+
+  /**
+   * Mapping of non-correlated sub-queries that have been converted to their
+   * equivalent constants. Used to avoid re-evaluating the sub-query if it's
+   * already been evaluated.
+   */
+  private final Map<SqlNode, RexNode> mapConvertedNonCorrSubqs =
+      new HashMap<>();
+
+  public final RelOptTable.ViewExpander viewExpander;
+
+  //~ Constructors -----------------------------------------------------------
+  /**
+   * Creates a converter.
+   *
+   * @param viewExpander    Preparing statement
+   * @param validator       Validator
+   * @param catalogReader   Schema
+   * @param planner         Planner
+   * @param rexBuilder      Rex builder
+   * @param convertletTable Expression converter
+   */
+  @Deprecated // to be removed before 2.0
+  public SqlToRelConverter(
+      RelOptTable.ViewExpander viewExpander,
+      SqlValidator validator,
+      Prepare.CatalogReader catalogReader,
+      RelOptPlanner planner,
+      RexBuilder rexBuilder,
+      SqlRexConvertletTable convertletTable) {
+    this(viewExpander, validator, catalogReader,
+        RelOptCluster.create(planner, rexBuilder), convertletTable,
+        Config.DEFAULT);
+  }
+
+  @Deprecated // to be removed before 2.0
+  public SqlToRelConverter(
+      RelOptTable.ViewExpander viewExpander,
+      SqlValidator validator,
+      Prepare.CatalogReader catalogReader,
+      RelOptCluster cluster,
+      SqlRexConvertletTable convertletTable) {
+    this(viewExpander, validator, catalogReader, cluster, convertletTable,
+        Config.DEFAULT);
+  }
+
+  /* Creates a converter. */
+  public SqlToRelConverter(
+      RelOptTable.ViewExpander viewExpander,
+      SqlValidator validator,
+      Prepare.CatalogReader catalogReader,
+      RelOptCluster cluster,
+      SqlRexConvertletTable convertletTable,
+      Config config) {
+    this.viewExpander = viewExpander;
+    this.opTab =
+        (validator
+            == null) ? SqlStdOperatorTable.instance()
+            : validator.getOperatorTable();
+    this.validator = validator;
+    this.catalogReader = catalogReader;
+    this.subQueryConverter = new NoOpSubQueryConverter();
+    this.rexBuilder = cluster.getRexBuilder();
+    this.typeFactory = rexBuilder.getTypeFactory();
+    this.cluster = Preconditions.checkNotNull(cluster);
+    this.exprConverter = new SqlNodeToRexConverterImpl(convertletTable);
+    this.explainParamCount = 0;
+    this.config = new ConfigBuilder().withConfig(config).build();
+    this.relBuilder = config.getRelBuilderFactory().create(cluster, null);
+  }
+
+  //~ Methods ----------------------------------------------------------------
+
+  /**
+   * @return the RelOptCluster in use.
+   */
+  public RelOptCluster getCluster() {
+    return cluster;
+  }
+
+  /**
+   * Returns the row-expression builder.
+   */
+  public RexBuilder getRexBuilder() {
+    return rexBuilder;
+  }
+
+  /**
+   * Returns the number of dynamic parameters encountered during translation;
+   * this must only be called after {@link #convertQuery}.
+   *
+   * @return number of dynamic parameters
+   */
+  public int getDynamicParamCount() {
+    return dynamicParamSqlNodes.size();
+  }
+
+  /**
+   * Returns the type inferred for a dynamic parameter.
+   *
+   * @param index 0-based index of dynamic parameter
+   * @return inferred type, never null
+   */
+  public RelDataType getDynamicParamType(int index) {
+    SqlNode sqlNode = dynamicParamSqlNodes.get(index);
+    if (sqlNode == null) {
+      throw Util.needToImplement("dynamic param type inference");
+    }
+    return validator.getValidatedNodeType(sqlNode);
+  }
+
+  /**
+   * Returns the current count of the number of dynamic parameters in an
+   * EXPLAIN PLAN statement.
+   *
+   * @param increment if true, increment the count
+   * @return the current count before the optional increment
+   */
+  public int getDynamicParamCountInExplain(boolean increment) {
+    int retVal = explainParamCount;
+    if (increment) {
+      ++explainParamCount;
+    }
+    return retVal;
+  }
+
+  /**
+   * @return mapping of non-correlated sub-queries that have been converted to
+   * the constants that they evaluate to
+   */
+  public Map<SqlNode, RexNode> getMapConvertedNonCorrSubqs() {
+    return mapConvertedNonCorrSubqs;
+  }
+
+  /**
+   * Adds to the current map of non-correlated converted sub-queries the
+   * elements from another map that contains non-correlated sub-queries that
+   * have been converted by another SqlToRelConverter.
+   *
+   * @param alreadyConvertedNonCorrSubqs the other map
+   */
+  public void addConvertedNonCorrSubqs(
+      Map<SqlNode, RexNode> alreadyConvertedNonCorrSubqs) {
+    mapConvertedNonCorrSubqs.putAll(alreadyConvertedNonCorrSubqs);
+  }
+
+  /**
+   * Sets a new SubQueryConverter. To have any effect, this must be called
+   * before any convert method.
+   *
+   * @param converter new SubQueryConverter
+   */
+  public void setSubQueryConverter(SubQueryConverter converter) {
+    subQueryConverter = converter;
+  }
+
+  /**
+   * Sets the number of dynamic parameters in the current EXPLAIN PLAN
+   * statement.
+   *
+   * @param explainParamCount number of dynamic parameters in the statement
+   */
+  public void setDynamicParamCountInExplain(int explainParamCount) {
+    assert config.isExplain();
+    this.explainParamCount = explainParamCount;
+  }
+
+  private void checkConvertedType(SqlNode query, RelNode result) {
+    if (query.isA(SqlKind.DML)) {
+      return;
+    }
+    // Verify that conversion from SQL to relational algebra did
+    // not perturb any type information.  (We can't do this if the
+    // SQL statement is something like an INSERT which has no
+    // validator type information associated with its result,
+    // hence the namespace check above.)
+    final List<RelDataTypeField> validatedFields =
+        validator.getValidatedNodeType(query).getFieldList();
+    final RelDataType validatedRowType =
+        validator.getTypeFactory().createStructType(
+            Pair.right(validatedFields),
+            SqlValidatorUtil.uniquify(Pair.left(validatedFields),
+                catalogReader.nameMatcher().isCaseSensitive()));
+
+    final List<RelDataTypeField> convertedFields =
+        result.getRowType().getFieldList().subList(0, validatedFields.size());
+    final RelDataType convertedRowType =
+        validator.getTypeFactory().createStructType(convertedFields);
+
+    if (!RelOptUtil.equal("validated row type", validatedRowType,
+        "converted row type", convertedRowType, Litmus.IGNORE)) {
+      throw new AssertionError("Conversion to relational algebra failed to "
+          + "preserve datatypes:\n"
+          + "validated type:\n"
+          + validatedRowType.getFullTypeString()
+          + "\nconverted type:\n"
+          + convertedRowType.getFullTypeString()
+          + "\nrel:\n"
+          + RelOptUtil.toString(result));
+    }
+  }
+
+  public RelNode flattenTypes(
+      RelNode rootRel,
+      boolean restructure) {
+    RelStructuredTypeFlattener typeFlattener =
+        new RelStructuredTypeFlattener(rexBuilder, createToRelContext(), restructure);
+    return typeFlattener.rewrite(rootRel);
+  }
+
+  /**
+   * If sub-query is correlated and decorrelation is enabled, performs
+   * decorrelation.
+   *
+   * @param query   Query
+   * @param rootRel Root relational expression
+   * @return New root relational expression after decorrelation
+   */
+  public RelNode decorrelate(SqlNode query, RelNode rootRel) {
+    if (!enableDecorrelation()) {
+      return rootRel;
+    }
+    final RelNode result = decorrelateQuery(rootRel);
+    if (result != rootRel) {
+      checkConvertedType(query, result);
+    }
+    return result;
+  }
+
+  /**
+   * Walks over a tree of relational expressions, replacing each
+   * {@link RelNode} with a 'slimmed down' relational expression that projects
+   * only the fields required by its consumer.
+   *
+   * <p>This may make things easier for the optimizer, by removing crud that
+   * would expand the search space, but is difficult for the optimizer itself
+   * to do it, because optimizer rules must preserve the number and type of
+   * fields. Hence, this transform that operates on the entire tree, similar
+   * to the {@link RelStructuredTypeFlattener type-flattening transform}.
+   *
+   * <p>Currently this functionality is disabled in farrago/luciddb; the
+   * default implementation of this method does nothing.
+   *
+   * @param ordered Whether the relational expression must produce results in
+   * a particular order (typically because it has an ORDER BY at top level)
+   * @param rootRel Relational expression that is at the root of the tree
+   * @return Trimmed relational expression
+   */
+  public RelNode trimUnusedFields(boolean ordered, RelNode rootRel) {
+    // Trim fields that are not used by their consumer.
+    if (isTrimUnusedFields()) {
+      final RelFieldTrimmer trimmer = newFieldTrimmer();
+      final List<RelCollation> collations =
+          rootRel.getTraitSet().getTraits(RelCollationTraitDef.INSTANCE);
+      rootRel = trimmer.trim(rootRel);
+      if (!ordered
+          && collations != null
+          && !collations.isEmpty()
+          && !collations.equals(ImmutableList.of(RelCollations.EMPTY))) {
+        final RelTraitSet traitSet = rootRel.getTraitSet()
+            .replace(RelCollationTraitDef.INSTANCE, collations);
+        rootRel = rootRel.copy(traitSet, rootRel.getInputs());
+      }
+      if (SQL2REL_LOGGER.isDebugEnabled()) {
+        SQL2REL_LOGGER.debug(
+            RelOptUtil.dumpPlan("Plan after trimming unused fields", rootRel,
+                SqlExplainFormat.TEXT, SqlExplainLevel.EXPPLAN_ATTRIBUTES));
+      }
+    }
+    return rootRel;
+  }
+
+  /**
+   * Creates a RelFieldTrimmer.
+   *
+   * @return Field trimmer
+   */
+  protected RelFieldTrimmer newFieldTrimmer() {
+    return new RelFieldTrimmer(validator, relBuilder);
+  }
+
+  /**
+   * Converts an unvalidated query's parse tree into a relational expression.
+   *
+   * @param query           Query to convert
+   * @param needsValidation Whether to validate the query before converting;
+   *                        <code>false</code> if the query has already been
+   *                        validated.
+   * @param top             Whether the query is top-level, say if its result
+   *                        will become a JDBC result set; <code>false</code> if
+   *                        the query will be part of a view.
+   */
+  public RelRoot convertQuery(
+      SqlNode query,
+      final boolean needsValidation,
+      final boolean top) {
+    if (needsValidation) {
+      query = validator.validate(query);
+    }
+
     RelNode result = convertQueryRecursive(query, top, null).rel;
     if (top) {
       if (isStream(query)) {
