@@ -670,7 +670,15 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
           Litmus.THROW);
       set = getSet(equivRel);
     }
-    return registerImpl(rel, set);
+    final RelSubset subset = registerImpl(rel, set);
+
+    // Checking if tree is valid considerably slows down planning
+    // Only doing it if logger level is debug or finer
+    if (LOGGER.isDebugEnabled()) {
+      assert isValid(Litmus.THROW);
+    }
+
+    return subset;
   }
 
   public RelSubset ensureRegistered(RelNode rel, RelNode equivRel) {
@@ -701,11 +709,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
    * Checks internal consistency.
    */
   protected boolean isValid(Litmus litmus) {
-    if (this.getRoot() == null) {
-      return true;
-    }
-
-    RelMetadataQuery metaQuery = this.getRoot().getCluster().getMetadataQuerySupplier().get();
+>>>>>>> 262a4de5d ([CALCITE-2537] Use litmus for VolcanoPlanner#validate)
     for (RelSet set : allSets) {
       if (set.equivalentSet != null) {
         return litmus.fail("set [{}] has been merged: it should not be in the list", set);
@@ -713,7 +717,10 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
       for (RelSubset subset : set.subsets) {
         if (subset.set != set) {
           return litmus.fail("subset [{}] is in wrong set [{}]",
+<<<<<<< HEAD
               subset, set);
+=======
+              subset.getDescription(), set);
         }
 
         if (subset.best != null) {
@@ -738,14 +745,10 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
         }
 
         for (RelNode rel : subset.getRels()) {
-          try {
-            RelOptCost relCost = getCost(rel, metaQuery);
-            if (relCost.isLt(subset.bestCost)) {
-              return litmus.fail("rel [{}] has lower cost {} than best cost {} of subset [{}]",
-                  rel, relCost, subset.bestCost, subset);
-            }
-          } catch (CyclicMetadataException e) {
-            // ignore
+          RelOptCost relCost = getCost(rel, rel.getCluster().getMetadataQuery());
+          if (relCost.isLt(subset.bestCost)) {
+            return litmus.fail("rel [{}] has lower cost {} than best cost {} of subset [{}]",
+                rel.getDescription(), relCost, subset.bestCost, subset.getDescription());
           }
         }
       }

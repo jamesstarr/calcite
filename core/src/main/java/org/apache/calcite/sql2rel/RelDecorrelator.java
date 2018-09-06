@@ -177,10 +177,6 @@ public class RelDecorrelator implements ReflectiveVisitor {
       boolean forceValueGenerator) {
     this.cm = cm;
     this.context = context;
-<<<<<<< HEAD
-    this.forceValueGenerator = forceValueGenerator;
-    this.relBuilder = relBuilder;
-=======
     relBuilder = RelFactories.LOGICAL_BUILDER.create(cluster, null);
     this.forceValueGenerator = forceValueGenerator;
 
@@ -201,7 +197,6 @@ public class RelDecorrelator implements ReflectiveVisitor {
    *
    * @param rootRel Root node of the query
    * @param forceValueGenerator force value generator to be created when decorrelating filters
->>>>>>> e1b02e7b9 (DX-12456: Legacy decorrelator)
    *
    * @return Equivalent query with all
    * {@link org.apache.calcite.rel.core.Correlate} instances removed
