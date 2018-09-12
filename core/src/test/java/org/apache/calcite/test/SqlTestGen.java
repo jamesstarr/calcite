@@ -98,7 +98,7 @@ class SqlTestGen {
     }
 
     public SqlTester getTester() {
-      return new SqlTesterImpl(SPOOLER_VALIDATOR) {
+      return new SqlValidatorTester(SPOOLER_VALIDATOR) {
         public void assertExceptionIsThrown(
             String sql,
             String expectedMsgPattern) {

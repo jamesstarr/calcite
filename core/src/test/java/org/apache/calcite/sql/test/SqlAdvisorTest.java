@@ -606,10 +606,9 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
   }
 
   @Override public SqlTester getTester() {
-<<<<<<< HEAD
-    return new SqlValidatorTester(ADVISOR_TEST_FACTORY);
-=======
     return new SqlTesterImpl(ADVISOR_TEST_FACTORY);
+=======
+    return new SqlValidatorTester(ADVISOR_TEST_FACTORY);
   }
 
   /**

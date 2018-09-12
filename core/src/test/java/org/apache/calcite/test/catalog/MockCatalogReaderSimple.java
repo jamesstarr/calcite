@@ -220,9 +220,6 @@ public class MockCatalogReaderSimple extends MockCatalogReader {
                         salField.getIndex()),
                     rexBuilder.makeExactLiteral(BigDecimal.valueOf(1000L),
                         salField.getType())));
-<<<<<<< HEAD
-            return RexUtil.composeConjunction(rexBuilder, nodes);
-=======
             return RexUtil.composeConjunction(rexBuilder, nodes, false);
           }
         };
@@ -352,4 +349,3 @@ public class MockCatalogReaderSimple extends MockCatalogReader {
 =======
 
 // End MockCatalogReaderSimple.java
->>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)

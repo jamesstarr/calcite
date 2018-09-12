@@ -41,10 +41,10 @@ import static org.apache.calcite.sql.test.SqlTester.TypeChecker;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Utility methods.
@@ -69,6 +69,24 @@ public abstract class SqlTests {
    */
   public static final ParameterChecker ANY_PARAMETER_CHECKER = parameterRowType -> {
   };
+
+  /**
+   * Checker that allows any result.
+   */
+  public static final ResultChecker ANY_RESULT_CHECKER = result -> {
+    while (true) {
+      if (!result.next()) {
+        break;
+      }
+    }
+  };
+
+  private static final Pattern LINE_COL_PATTERN =
+      Pattern.compile("At line ([0-9]+), column ([0-9]+)");
+
+  private static final Pattern LINE_COL_TWICE_PATTERN =
+      Pattern.compile(
+          "(?s)From line ([0-9]+), column ([0-9]+) to line ([0-9]+), column ([0-9]+): (.*)");
 
   /**
    * Checker that allows any result.

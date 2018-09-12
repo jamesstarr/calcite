@@ -1228,11 +1228,6 @@ public abstract class SqlTypeUtil {
    * @param factory       Type factory
    * @param type1         First type
    * @param type2         Second type
-<<<<<<< HEAD
-   * @param nameMatcher   Name matcher used to compare the field names, if null,
-   *                      the field names are also ignored
-   *
-=======
    * @param nameMatcher   Name matcher used to compare the field names
    * @return Whether types are equal, ignoring nullability
    */
@@ -1713,7 +1708,6 @@ public abstract class SqlTypeUtil {
     return factory.createSqlType(SqlTypeName.DECIMAL, maxPrecision, maxScale);
   }
 }
->>>>>>> 3c8da1f95 (DX-11147: Fix RexSimplify#processRange cast issue)
 
   public static RelDataType consistentType(RelDataTypeFactory typeFactory,
       SqlOperandTypeChecker.Consistency consistency, List<RelDataType> types) {

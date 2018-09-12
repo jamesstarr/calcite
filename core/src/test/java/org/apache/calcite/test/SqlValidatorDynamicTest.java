@@ -21,8 +21,8 @@ import org.apache.calcite.sql.test.SqlTester;
 import org.apache.calcite.sql.test.SqlValidatorTester;
 import org.apache.calcite.test.catalog.MockCatalogReaderDynamic;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,14 +94,14 @@ public class SqlValidatorDynamicTest extends SqlValidatorTestCase {
   }
 
   @Override public SqlTester getTester() {
-    // Dynamic schema should not be reused since it is mutable, so
+    // Dymamic schema should not be reused since it is mutable, so
     // we create new SqlTestFactory for each test
     return new SqlValidatorTester(SqlTestFactory.INSTANCE
         .withCatalogReader(MockCatalogReaderDynamic::new));
   }
 //~ Methods ----------------------------------------------------------------
 
-  @BeforeAll public static void setUSLocale() {
+  @BeforeClass public static void setUSLocale() {
     // This ensures numbers in exceptions are printed as in asserts.
     // For example, 1,000 vs 1 000
     Locale.setDefault(Locale.US);
@@ -146,3 +146,8 @@ public class SqlValidatorDynamicTest extends SqlValidatorTestCase {
   }
 
 }
+<<<<<<< HEAD
+=======
+
+// End SqlValidatorDynamicTest.java
+>>>>>>> 954dccdd1 ([CALCITE-2535] Enable SqlTester.checkFails (previously it was a no-op) (Hongze Zhang))

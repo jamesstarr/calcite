@@ -30,9 +30,6 @@ import org.apache.calcite.sql.validate.SqlValidator;
  *
  * @see SqlValidator.Config#withTypeCoercionFactory
  */
-<<<<<<< HEAD
-@API(status = API.Status.EXPERIMENTAL, since = "1.23")
-=======
 public interface TypeCoercionFactory {
 
   /**
@@ -46,4 +43,3 @@ public interface TypeCoercionFactory {
 <<<<<<< HEAD
 =======
 // End TypeCoercionFactory.java
->>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)

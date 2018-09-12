@@ -21,27 +21,18 @@ import org.apache.calcite.sql.parser.SqlParserUtil;
 import org.apache.calcite.sql.parser.StringAndPos;
 import org.apache.calcite.sql.validate.SqlValidator;
 
-import java.util.function.UnaryOperator;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Tester of {@link SqlValidator} and runtime execution of the input SQL.
  */
-class SqlRuntimeTester extends AbstractSqlTester {
-  SqlRuntimeTester(SqlTestFactory factory,
-      UnaryOperator<SqlValidator> validatorTransform) {
-    super(factory, validatorTransform);
+public class SqlRuntimeTester extends AbstractSqlTester {
+  public SqlRuntimeTester(SqlTestFactory factory) {
+    super(factory);
   }
 
   @Override protected SqlTester with(SqlTestFactory factory) {
-    return new SqlRuntimeTester(factory, validatorTransform);
-  }
-
-  public SqlTester withValidatorTransform(
-      UnaryOperator<UnaryOperator<SqlValidator>> transform) {
-    return new SqlRuntimeTester(factory,
-        transform.apply(validatorTransform));
+    return new SqlRuntimeTester(factory);
   }
 
   @Override public void checkFails(String expression, String expectedError,
@@ -94,3 +85,8 @@ class SqlRuntimeTester extends AbstractSqlTester {
     SqlTests.checkEx(thrown, expectedMsgPattern, sap, stage);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlRuntimeTester.java
+>>>>>>> 954dccdd1 ([CALCITE-2535] Enable SqlTester.checkFails (previously it was a no-op) (Hongze Zhang))

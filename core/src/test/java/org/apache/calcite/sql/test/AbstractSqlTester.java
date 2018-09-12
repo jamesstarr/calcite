@@ -83,10 +83,8 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
   protected final SqlTestFactory factory;
   protected final UnaryOperator<SqlValidator> validatorTransform;
 
-  public AbstractSqlTester(SqlTestFactory factory,
-      UnaryOperator<SqlValidator> validatorTransform) {
-    this.factory = Objects.requireNonNull(factory);
-    this.validatorTransform = Objects.requireNonNull(validatorTransform);
+  public AbstractSqlTester(SqlTestFactory factory) {
+    this.factory = factory;
   }
 
   public final SqlTestFactory getFactory() {
@@ -122,11 +120,12 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
 >>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory):core/src/test/java/org/apache/calcite/sql/test/SqlTesterImpl.java
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/sql/test/AbstractSqlTester.java
+>>>>>>> 954dccdd1 ([CALCITE-2535] Enable SqlTester.checkFails (previously it was a no-op) (Hongze Zhang))
   public void assertExceptionIsThrown(String sql, String expectedMsgPattern) {
     final SqlValidator validator;
     final SqlNode sqlNode;
     final StringAndPos sap = SqlParserUtil.findPos(sql);
+<<<<<<< HEAD
 =======
   public void assertExceptionIsThrown(
       String sql,
@@ -134,7 +133,8 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
     SqlValidator validator;
     SqlNode sqlNode;
     StringAndPos sap = SqlParserUtil.findPos(sql);
->>>>>>> ee1ef8208 (DX-36442: Clean up trivial method signatures):core/src/test/java/org/apache/calcite/sql/test/SqlTesterImpl.java
+=======
+>>>>>>> 954dccdd1 ([CALCITE-2535] Enable SqlTester.checkFails (previously it was a no-op) (Hongze Zhang))
     try {
       sqlNode = parseQuery(sap.sql);
       validator = getValidator();
@@ -151,6 +151,24 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
     }
 
     SqlTests.checkEx(thrown, expectedMsgPattern, sap, SqlTests.Stage.VALIDATE);
+  }
+
+  protected void checkParseEx(Throwable e, String expectedMsgPattern, String sql) {
+    try {
+      throw e;
+    } catch (SqlParseException spe) {
+      String errMessage = spe.getMessage();
+      if (expectedMsgPattern == null) {
+        throw new RuntimeException("Error while parsing query:" + sql, spe);
+      } else if (errMessage == null
+          || !errMessage.matches(expectedMsgPattern)) {
+        throw new RuntimeException("Error did not match expected ["
+            + expectedMsgPattern + "] while parsing query ["
+            + sql + "]", spe);
+      }
+    } catch (Throwable t) {
+      throw new RuntimeException("Error while parsing query: " + sql, t);
+    }
   }
 
   protected void checkParseEx(Throwable e, String expectedMsgPattern, String sql) {
@@ -329,11 +347,10 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
     if (conformance == null) {
       conformance = SqlConformanceEnum.DEFAULT;
     }
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/sql/test/AbstractSqlTester.java
-    final SqlTester tester = with("conformance", conformance);
-=======
     final SqlTesterImpl tester = with("conformance", conformance);
->>>>>>> 0f9894602 (Use real properties, not their names, in tests):core/src/test/java/org/apache/calcite/sql/test/SqlTesterImpl.java
+=======
+    final SqlTester tester = with("conformance", conformance);
+>>>>>>> 954dccdd1 ([CALCITE-2535] Enable SqlTester.checkFails (previously it was a no-op) (Hongze Zhang))
     if (conformance instanceof SqlConformanceEnum) {
       return tester
           .withConnectionFactory(
@@ -360,13 +377,12 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
     return with("connectionFactory", connectionFactory);
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/sql/test/AbstractSqlTester.java
-  protected final SqlTester with(final String name, final Object value) {
-    return with(factory.with(name, value));
-=======
   protected SqlTesterImpl with(final String name, final Object value) {
     return new SqlTesterImpl(factory.with(name, value));
->>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory):core/src/test/java/org/apache/calcite/sql/test/SqlTesterImpl.java
+=======
+  protected final SqlTester with(final String name, final Object value) {
+    return with(factory.with(name, value));
+>>>>>>> 954dccdd1 ([CALCITE-2535] Enable SqlTester.checkFails (previously it was a no-op) (Hongze Zhang))
   }
 
   protected abstract SqlTester with(SqlTestFactory factory);
@@ -727,3 +743,8 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
   }
 
 }
+<<<<<<< HEAD
+=======
+
+// End AbstractSqlTester.java
+>>>>>>> 954dccdd1 ([CALCITE-2535] Enable SqlTester.checkFails (previously it was a no-op) (Hongze Zhang))

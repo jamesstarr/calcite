@@ -31,32 +31,6 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-<<<<<<< HEAD
-=======
-import org.apache.calcite.sql.type.SqlTypeAssignmentRules;
-import org.apache.calcite.sql.type.SqlTypeFamily;
-import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.calcite.sql.type.SqlTypeUtil;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql.validate.SqlValidatorNamespace;
-import org.apache.calcite.sql.validate.SqlValidatorScope;
-import org.apache.calcite.util.Pair;
-import org.apache.calcite.util.Util;
-
->>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
-
-/**
- * Base class for all the type coercion rules. If you want to have a custom type coercion rules,
- * inheriting this class is not necessary, but would have some convenient tool methods.
- *
- * <p>We make tool methods: {@link #coerceOperandType}, {@link #coerceColumnType},
- * {@link #needToCast}, {@link #updateInferredType}, {@link #updateInferredColumnType}
- * all overridable by derived classes, you can define system specific type coercion logic.
- *
- * <p>Caution that these methods may modify the {@link SqlNode} tree, you should know what the
-<<<<<<< HEAD
- * effect is when using these methods to customize your type coercion rules.
-=======
  * effect is when using these methods to customize your type coercion rules.</p>
  *
  * <p>This class also defines the default implementation of the type widening strategies, see
@@ -77,7 +51,6 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
 
   //~ Methods ----------------------------------------------------------------
 
->>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
     // Check it early.
     if (!needToCast(scope, operand, targetType)) {
       return false;
@@ -125,12 +98,6 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
     }
 
     final SqlNode node = nodeList.get(index);
-<<<<<<< HEAD
-    if (node instanceof SqlDynamicParam) {
-      // Do not support implicit type coercion for dynamic param.
-      return false;
-    }
-=======
     if (node instanceof SqlIdentifier) {
       // Do not expand a star/dynamic table col.
       SqlIdentifier node1 = (SqlIdentifier) node;
@@ -385,7 +352,6 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
     if (SqlTypeUtil.isCharacter(type1) && SqlTypeUtil.isAtomic(type2)) {
       resultType = factory.createSqlType(SqlTypeName.VARCHAR);
     }
->>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
     return resultType;
   }
 

@@ -2009,10 +2009,7 @@ public abstract class SqlOperatorBaseTest {
     tester.checkScalar("{fn TIMESTAMPDIFF(HOUR,"
         + " TIMESTAMP '2014-03-29 12:34:56',"
         + " TIMESTAMP '2014-03-29 12:34:56')}", "0", "INTEGER NOT NULL");
-    tester.checkScalar("{fn TIMESTAMPDIFF(MONTH,"
-        + " TIMESTAMP '2019-09-01 00:00:00',"
-        + " TIMESTAMP '2020-03-01 00:00:00')}", "6", "INTEGER NOT NULL");
-
+>>>>>>> 954dccdd1 ([CALCITE-2535] Enable SqlTester.checkFails (previously it was a no-op) (Hongze Zhang))
     if (Bug.CALCITE_2539_FIXED) {
       tester.checkFails("{fn WEEK(DATE '2014-12-10')}",
           "cannot translate call EXTRACT.*",
@@ -4167,15 +4164,17 @@ public abstract class SqlOperatorBaseTest {
             + "                    \\^",
         true);
 
-    tester.checkFails(
-        "'cd' similar to '[(a-e)]d' ",
-        "Invalid regular expression: \\[\\(a-e\\)\\]d at 1",
-        true);
+    if (Bug.CALCITE_2539_FIXED) {
+      tester.checkFails(
+          "'cd' similar to '[(a-e)]d' ",
+          "Invalid regular expression: \\[\\(a-e\\)\\]d at 1",
+          true);
 
-    tester.checkFails(
-        "'yd' similar to '[(a-e)]d' ",
-        "Invalid regular expression: \\[\\(a-e\\)\\]d at 1",
-        true);
+      tester.checkFails(
+          "'yd' similar to '[(a-e)]d' ",
+          "Invalid regular expression: \\[\\(a-e\\)\\]d at 1",
+          true);
+    }
 
     // all the following tests wrong results due to missing functionality
     // or defect (FRG-375, 377).
@@ -5863,6 +5862,386 @@ public abstract class SqlOperatorBaseTest {
         "Invalid number of arguments to function 'COLLECT'. Was expecting 1 arguments",
         false);
     final String[] values = {"0", "CAST(null AS INTEGER)", "2", "2"};
+<<<<<<< HEAD
+=======
+    tester.checkAgg("collect(x)", values, Arrays.asList("[0, 2, 2]"), (double) 0);
+    tester.checkAgg("collect(x) within group(order by x desc)", values,
+        Collections.singletonList("[2, 2, 0]"), (double) 0);
+    Object result1 = -3;
+    if (!enable) {
+      return;
+    }
+    tester.checkAgg("collect(CASE x WHEN 0 THEN NULL ELSE -1 END)", values,
+        result1, (double) 0);
+    Object result = -1;
+    tester.checkAgg("collect(DISTINCT CASE x WHEN 0 THEN NULL ELSE -1 END)",
+        values, result, (double) 0);
+    tester.checkAgg("collect(DISTINCT x)", values, 2, (double) 0);
+  }
+
+  @Test public void testFusionFunc() {
+    tester.setFor(SqlStdOperatorTable.FUSION, VM_FENNEL, VM_JAVA);
+  }
+
+  @Test public void testYear() {
+    tester.setFor(
+        SqlStdOperatorTable.YEAR,
+        VM_FENNEL,
+        VM_JAVA);
+
+    tester.checkScalar(
+        "year(date '2008-1-23')",
+        "2008",
+        "BIGINT NOT NULL");
+    tester.checkNull("year(cast(null as date))");
+  }
+
+  @Test public void testQuarter() {
+    tester.setFor(
+        SqlStdOperatorTable.QUARTER,
+        VM_FENNEL,
+        VM_JAVA);
+
+    tester.checkScalar(
+        "quarter(date '2008-1-23')",
+        "1",
+        "BIGINT NOT NULL");
+    tester.checkScalar(
+        "quarter(date '2008-2-23')",
+        "1",
+        "BIGINT NOT NULL");
+    tester.checkScalar(
+        "quarter(date '2008-3-23')",
+        "1",
+        "BIGINT NOT NULL");
+    tester.checkScalar(
+        "quarter(date '2008-4-23')",
+        "2",
+        "BIGINT NOT NULL");
+    tester.checkScalar(
+        "quarter(date '2008-5-23')",
+        "2",
+        "BIGINT NOT NULL");
+    tester.checkScalar(
+        "quarter(date '2008-6-23')",
+        "2",
+        "BIGINT NOT NULL");
+    tester.checkScalar(
+        "quarter(date '2008-7-23')",
+        "3",
+        "BIGINT NOT NULL");
+    tester.checkScalar(
+        "quarter(date '2008-8-23')",
+        "3",
+        "BIGINT NOT NULL");
+    tester.checkScalar(
+        "quarter(date '2008-9-23')",
+        "3",
+        "BIGINT NOT NULL");
+    tester.checkScalar(
+        "quarter(date '2008-10-23')",
+        "4",
+        "BIGINT NOT NULL");
+    tester.checkScalar(
+        "quarter(date '2008-11-23')",
+        "4",
+        "BIGINT NOT NULL");
+    tester.checkScalar(
+        "quarter(date '2008-12-23')",
+        "4",
+        "BIGINT NOT NULL");
+    tester.checkNull("quarter(cast(null as date))");
+  }
+
+  @Test public void testMonth() {
+    tester.setFor(
+        SqlStdOperatorTable.MONTH,
+        VM_FENNEL,
+        VM_JAVA);
+
+    tester.checkScalar(
+        "month(date '2008-1-23')",
+        "1",
+        "BIGINT NOT NULL");
+    tester.checkNull("month(cast(null as date))");
+  }
+
+  @Test public void testWeek() {
+    tester.setFor(
+        SqlStdOperatorTable.WEEK,
+        VM_FENNEL,
+        VM_JAVA);
+    if (Bug.CALCITE_2539_FIXED) {
+      // TODO: Not implemented in operator test execution code
+      tester.checkFails(
+          "week(date '2008-1-23')",
+          "cannot translate call EXTRACT.*",
+          true);
+      tester.checkFails(
+          "week(cast(null as date))",
+          "cannot translate call EXTRACT.*",
+          true);
+    }
+  }
+
+  @Test public void testDayOfYear() {
+    tester.setFor(
+        SqlStdOperatorTable.DAYOFYEAR,
+        VM_FENNEL,
+        VM_JAVA);
+    if (Bug.CALCITE_2539_FIXED) {
+      // TODO: Not implemented in operator test execution code
+      tester.checkFails(
+          "dayofyear(date '2008-1-23')",
+          "cannot translate call EXTRACT.*",
+          true);
+      tester.checkFails(
+          "dayofyear(cast(null as date))",
+          "cannot translate call EXTRACT.*",
+          true);
+    }
+  }
+
+  @Test public void testDayOfMonth() {
+    tester.setFor(
+        SqlStdOperatorTable.DAYOFMONTH,
+        VM_FENNEL,
+        VM_JAVA);
+    tester.checkScalar(
+        "dayofmonth(date '2008-1-23')",
+        "23",
+        "BIGINT NOT NULL");
+    tester.checkNull("dayofmonth(cast(null as date))");
+  }
+
+  @Test public void testDayOfWeek() {
+    tester.setFor(
+        SqlStdOperatorTable.DAYOFWEEK,
+        VM_FENNEL,
+        VM_JAVA);
+    if (Bug.CALCITE_2539_FIXED) {
+      // TODO: Not implemented in operator test execution code
+      tester.checkFails(
+          "dayofweek(date '2008-1-23')",
+          "cannot translate call EXTRACT.*",
+          true);
+      tester.checkFails("dayofweek(cast(null as date))",
+          "cannot translate call EXTRACT.*",
+          true);
+    }
+  }
+
+  @Test public void testHour() {
+    tester.setFor(
+        SqlStdOperatorTable.HOUR,
+        VM_FENNEL,
+        VM_JAVA);
+
+    tester.checkScalar(
+        "hour(timestamp '2008-1-23 12:34:56')",
+        "12",
+        "BIGINT NOT NULL");
+    tester.checkNull("hour(cast(null as timestamp))");
+  }
+
+  @Test public void testMinute() {
+    tester.setFor(
+        SqlStdOperatorTable.MINUTE,
+        VM_FENNEL,
+        VM_JAVA);
+
+    tester.checkScalar(
+        "minute(timestamp '2008-1-23 12:34:56')",
+        "34",
+        "BIGINT NOT NULL");
+    tester.checkNull("minute(cast(null as timestamp))");
+  }
+
+  @Test public void testSecond() {
+    tester.setFor(
+        SqlStdOperatorTable.SECOND,
+        VM_FENNEL,
+        VM_JAVA);
+
+    tester.checkScalar(
+        "second(timestamp '2008-1-23 12:34:56')",
+        "56",
+        "BIGINT NOT NULL");
+    tester.checkNull("second(cast(null as timestamp))");
+  }
+
+  @Test public void testExtractIntervalYearMonth() {
+    tester.setFor(
+        SqlStdOperatorTable.EXTRACT,
+        VM_FENNEL,
+        VM_JAVA);
+
+    if (TODO) {
+      // Not supported, fails in type validation because the extract
+      // unit is not YearMonth interval type.
+
+      tester.checkScalar(
+          "extract(epoch from interval '4-2' year to month)",
+          // number of seconds elapsed since timestamp
+          // '1970-01-01 00:00:00' + input interval
+          "131328000",
+          "BIGINT NOT NULL");
+
+      tester.checkScalar(
+          "extract(second from interval '4-2' year to month)",
+          "0",
+          "BIGINT NOT NULL");
+
+      tester.checkScalar(
+          "extract(minute from interval '4-2' year to month)",
+          "0",
+          "BIGINT NOT NULL");
+
+      tester.checkScalar(
+          "extract(hour from interval '4-2' year to month)",
+          "0",
+          "BIGINT NOT NULL");
+
+      tester.checkScalar(
+          "extract(day from interval '4-2' year to month)",
+          "0",
+          "BIGINT NOT NULL");
+    }
+
+    // Postgres doesn't support DOW, DOY and WEEK on INTERVAL YEAR MONTH type.
+    // SQL standard doesn't have extract units for DOW, DOY and WEEK.
+    tester.checkFails("^extract(doy from interval '4-2' year to month)^",
+        INVALID_EXTRACT_UNIT_VALIDATION_ERROR, false);
+    tester.checkFails("^extract(dow from interval '4-2' year to month)^",
+        INVALID_EXTRACT_UNIT_VALIDATION_ERROR, false);
+    tester.checkFails("^extract(week from interval '4-2' year to month)^",
+        INVALID_EXTRACT_UNIT_VALIDATION_ERROR, false);
+
+    tester.checkScalar(
+        "extract(month from interval '4-2' year to month)",
+        "2",
+        "BIGINT NOT NULL");
+
+    tester.checkScalar(
+        "extract(quarter from interval '4-2' year to month)",
+        "1",
+        "BIGINT NOT NULL");
+
+    tester.checkScalar(
+        "extract(year from interval '4-2' year to month)",
+        "4",
+        "BIGINT NOT NULL");
+
+    tester.checkScalar(
+        "extract(decade from interval '426-3' year(3) to month)",
+        "42",
+        "BIGINT NOT NULL");
+
+    tester.checkScalar(
+        "extract(century from interval '426-3' year(3) to month)",
+        "4",
+        "BIGINT NOT NULL");
+
+    tester.checkScalar(
+        "extract(millennium from interval '2005-3' year(4) to month)",
+        "2",
+        "BIGINT NOT NULL");
+  }
+
+  @Test public void testExtractIntervalDayTime() {
+    tester.setFor(
+        SqlStdOperatorTable.EXTRACT,
+        VM_FENNEL,
+        VM_JAVA);
+
+    if (TODO) {
+      // Not implemented in operator test
+      tester.checkScalar(
+          "extract(epoch from interval '2 3:4:5.678' day to second)",
+          // number of seconds elapsed since timestamp
+          // '1970-01-01 00:00:00' + input interval
+          "183845.678",
+          "BIGINT NOT NULL");
+    }
+
+    tester.checkScalar(
+        "extract(second from interval '2 3:4:5.678' day to second)",
+        "5",
+        "BIGINT NOT NULL");
+
+    tester.checkScalar(
+        "extract(minute from interval '2 3:4:5.678' day to second)",
+        "4",
+        "BIGINT NOT NULL");
+
+    tester.checkScalar(
+        "extract(hour from interval '2 3:4:5.678' day to second)",
+        "3",
+        "BIGINT NOT NULL");
+
+    tester.checkScalar(
+        "extract(day from interval '2 3:4:5.678' day to second)",
+        "2",
+        "BIGINT NOT NULL");
+
+    // Postgres doesn't support DOW, DOY and WEEK on INTERVAL DAY TIME type.
+    // SQL standard doesn't have extract units for DOW, DOY and WEEK.
+    if (Bug.CALCITE_2539_FIXED) {
+      tester.checkFails("extract(doy from interval '2 3:4:5.678' day to second)",
+          INVALID_EXTRACT_UNIT_CONVERTLET_ERROR, true);
+      tester.checkFails("extract(dow from interval '2 3:4:5.678' day to second)",
+          INVALID_EXTRACT_UNIT_CONVERTLET_ERROR, true);
+      tester.checkFails("extract(week from interval '2 3:4:5.678' day to second)",
+          INVALID_EXTRACT_UNIT_CONVERTLET_ERROR, true);
+      tester.checkFails("extract(isodow from interval '2 3:4:5.678' day to second)",
+          INVALID_EXTRACT_UNIT_CONVERTLET_ERROR, true);
+    }
+
+    tester.checkFails(
+        "^extract(month from interval '2 3:4:5.678' day to second)^",
+        "(?s)Cannot apply 'EXTRACT' to arguments of type 'EXTRACT\\(<INTERVAL "
+            + "MONTH> FROM <INTERVAL DAY TO SECOND>\\)'\\. Supported "
+            + "form\\(s\\):.*",
+        false);
+
+    tester.checkFails(
+        "^extract(quarter from interval '2 3:4:5.678' day to second)^",
+        "(?s)Cannot apply 'EXTRACT' to arguments of type 'EXTRACT\\(<INTERVAL "
+            + "QUARTER> FROM <INTERVAL DAY TO SECOND>\\)'\\. Supported "
+            + "form\\(s\\):.*",
+        false);
+
+    tester.checkFails(
+        "^extract(year from interval '2 3:4:5.678' day to second)^",
+        "(?s)Cannot apply 'EXTRACT' to arguments of type 'EXTRACT\\(<INTERVAL "
+            + "YEAR> FROM <INTERVAL DAY TO SECOND>\\)'\\. Supported "
+            + "form\\(s\\):.*",
+        false);
+
+    tester.checkFails(
+        "^extract(century from interval '2 3:4:5.678' day to second)^",
+        "(?s)Cannot apply 'EXTRACT' to arguments of type 'EXTRACT\\(<INTERVAL "
+            + "CENTURY> FROM <INTERVAL DAY TO SECOND>\\)'\\. Supported "
+            + "form\\(s\\):.*",
+        false);
+  }
+
+  @Test public void testExtractDate() {
+    tester.setFor(
+        SqlStdOperatorTable.EXTRACT,
+        VM_FENNEL,
+        VM_JAVA);
+
+    tester.checkScalar(
+        "extract(epoch from date '2008-2-23')",
+        "1203724800", // number of seconds elapsed since timestamp
+                      // '1970-01-01 00:00:00' for given date
+        "BIGINT NOT NULL");
+
+    tester.checkScalar(
+        "extract(second from date '2008-2-23')",
+        "0",
+        "BIGINT NOT NULL");
 
     tester.checkScalar(
         "extract(minute from date '2008-2-23')",
@@ -6027,11 +6406,6 @@ public abstract class SqlOperatorBaseTest {
         "BIGINT NOT NULL");
 
     if (Bug.CALCITE_2539_FIXED) {
-      tester.checkScalar(
-          "extract(isoyear from timestamp '2008-2-23 12:34:56')",
-          "2008",
-          "BIGINT NOT NULL");
-
       // TODO: Not implemented in operator test execution code
       tester.checkFails(
           "extract(doy from timestamp '2008-2-23 12:34:56')",
@@ -6046,6 +6420,7 @@ public abstract class SqlOperatorBaseTest {
 
       // TODO: Not implemented in operator test execution code
       tester.checkFails(
+>>>>>>> 954dccdd1 ([CALCITE-2535] Enable SqlTester.checkFails (previously it was a no-op) (Hongze Zhang))
           "extract(week from timestamp '2008-2-23 12:34:56')",
           "cannot translate call EXTRACT.*",
           true);
@@ -7983,11 +8358,15 @@ public abstract class SqlOperatorBaseTest {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     @Override protected SqlTester with(SqlTestFactory factory) {
       return new TesterImpl(factory);
 =======
     @Override protected TesterImpl with(final String name, final Object value) {
       return new TesterImpl(factory.with(name, value));
+=======
+    @Override protected SqlTester with(SqlTestFactory factory) {
+      return new TesterImpl(factory);
     }
   }
 
