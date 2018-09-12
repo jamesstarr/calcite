@@ -105,7 +105,8 @@ public class CassandraAdapterTest {
 
     CassandraCQLUnit rule = new CassandraCQLUnit(
         new ClassPathCQLDataSet("twissandra.cql"),
-        configurationFileName, startUpTimeoutMillis);
+        configurationFileName,
+        startUpTimeoutMillis);
 
     // This static init is necessary otherwise tests fail with CassandraUnit in IntelliJ (jdk10)
     // should be called right after constructor
