@@ -3011,11 +3011,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplifyUnchanged(nullInt);
   }
 
-  @Ignore("[CALCITE-2505] java.lang.AssertionError: wrong operand count 1 for IS DISTINCT FROM")
   @Test public void notDistinct() {
     checkSimplify2(
         isFalse(isNotDistinctFrom(vBool(0), vBool(1))),
-        "...", "...");
+        "IS DISTINCT FROM(?0.bool0, ?0.bool1)",
+        "IS DISTINCT FROM(?0.bool0, ?0.bool1)");
   }
 
   @Ignore("[CALCITE-2505] java.lang.AssertionError: result mismatch")

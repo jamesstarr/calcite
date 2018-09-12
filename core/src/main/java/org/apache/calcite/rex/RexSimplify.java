@@ -487,7 +487,7 @@ public class RexSimplify {
     if (a.getKind() != negateKind) {
       return simplify_(
           rexBuilder.makeCall(RexUtil.op(negateKind),
-              ((RexCall) a).getOperands()), unknownAs);
+              ((RexCall) a).getOperands()));
     }
     final SqlKind negateKind2 = a.getKind().negateNullSafe();
     if (a.getKind() != negateKind2) {
