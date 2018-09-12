@@ -117,7 +117,7 @@ class ProfilerTest {
                 || ((Profiler.Distribution) statistic).cardinality < 14
                 && ((Profiler.Distribution) statistic).minimal)
         .unordered(
-<<<<<<< HEAD
+>>>>>>> aae3c7e14 ([CALCITE-2546] Reduce precision of Profiler's surprise and cardinality attributes to avoid FP discrepancies (Alisha Prabhu))
             "{type:distribution,columns:[COMM,DEPTNO0],cardinality:5}",
             "{type:distribution,columns:[COMM,DEPTNO],cardinality:5}",
             "{type:distribution,columns:[COMM,DNAME],cardinality:5}",
@@ -161,6 +161,7 @@ class ProfilerTest {
             "{type:distribution,columns:[SAL,LOC],cardinality:12}",
             "{type:distribution,columns:[SAL],values:[800.00,950.00,1100.00,1250.00,1300.00,1500.00,1600.00,2450.00,2850.00,2975.00,3000.00,5000.00],cardinality:12}",
             "{type:distribution,columns:[],cardinality:1}",
+<<<<<<< HEAD
 =======
             "{type:distribution,columns:[COMM,DEPTNO0],cardinality:5.0}",
             "{type:distribution,columns:[COMM,DEPTNO],cardinality:5.0}",
@@ -205,6 +206,7 @@ class ProfilerTest {
             "{type:distribution,columns:[SAL,LOC],cardinality:12.0}",
             "{type:distribution,columns:[SAL],values:[800.00,950.00,1100.00,1250.00,1300.00,1500.00,1600.00,2450.00,2850.00,2975.00,3000.00,5000.00],cardinality:12.0}",
             "{type:distribution,columns:[],cardinality:1.0}",
+=======
             "{type:fd,columns:[DEPTNO0],dependentColumn:DEPTNO}",
             "{type:fd,columns:[DEPTNO0],dependentColumn:DNAME}",
             "{type:fd,columns:[DEPTNO0],dependentColumn:LOC}",
