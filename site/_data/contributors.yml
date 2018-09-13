@@ -33,7 +33,11 @@
 - name: Andrei Sereda
   apacheId: sereda
   githubId: asereda-gs
+<<<<<<< HEAD
   org:
+=======
+  org: 
+>>>>>>> 0aae1eb4f (Site: Add Andrei Sereda as committer)
   role: Committer
 - name: Ashutosh Chauhan
   apacheId: hashutosh
