@@ -16,20 +16,17 @@
  */
 package org.apache.calcite.adapter.geode.rel;
 
-import org.apache.geode.cache.Region;
-import org.apache.geode.pdx.PdxInstance;
-import org.apache.geode.pdx.PdxInstanceFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+>>>>>>> 1b41ebada ([CALCITE-2588] Run Geode Adapter tests with an Embedded Instance)
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.List;
+=======
 import java.util.Map;
 import java.util.Objects;
 
@@ -53,21 +50,12 @@ class JsonLoader {
   private void load(Reader reader) throws IOException {
     Objects.requireNonNull(reader, "reader");
     try (BufferedReader br = new BufferedReader(reader)) {
-      List<Map<String, Object>> mapList = new ArrayList<>();
+      int key = 0;
       for (String line; (line = br.readLine()) != null;) {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> jsonMap = mapper.readValue(line, Map.class);
-        mapList.add(jsonMap);
+        Map jsonMap = mapper.readValue(line, Map.class);
+        PdxInstance pdxInstance = mapToPdx(rootPackage, jsonMap);
+        region.put(key++, pdxInstance);
       }
-      loadMapList(mapList);
-    }
-  }
-
-  void loadMapList(List<Map<String, Object>> mapList) {
-    int key = 0;
-    for (Map<String, Object> jsonMap : mapList) {
-      PdxInstance pdxInstance = mapToPdx(rootPackage, jsonMap);
-      region.put(key++, pdxInstance);
     }
   }
 
@@ -98,3 +86,8 @@ class JsonLoader {
   }
 
 }
+<<<<<<< HEAD
+=======
+
+// End JsonLoader.java
+>>>>>>> 1b41ebada ([CALCITE-2588] Run Geode Adapter tests with an Embedded Instance)

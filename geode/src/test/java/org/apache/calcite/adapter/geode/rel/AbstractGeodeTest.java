@@ -13,23 +13,40 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+<<<<<<<< HEAD:file/src/test/resources/sales-json.json
+ *
+ * A JSON model of a Calcite schema based on CSV files.
  */
+{
+  "version": "1.0",
+  "defaultSchema": "SALES",
+  "schemas": [
+    {
+      "name": "SALES",
+      "type": "custom",
+      "factory": "org.apache.calcite.adapter.file.FileSchemaFactory",
+      "operand": {
+        "directory": "sales-json"
+      }
+    }
+  ]
+========
+ */
+
 package org.apache.calcite.adapter.geode.rel;
 
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.ClassRule;
 
 /**
- * Base class that allows sharing same geode instance across all tests.
- *
- * <p>Also, due to legacy reasons, there can't be more than one Geode
- * instance (running in parallel) for a single JVM.
+ * Base class which allows sharing same geode instance across all tests. Also due to legacy
+ * reasons there can't be more than one Geode instance (running in parallel) for a single JVM.
  */
-@Execution(ExecutionMode.CONCURRENT)
 public abstract class AbstractGeodeTest {
 
-  @RegisterExtension
+  @ClassRule
   public static final GeodeEmbeddedPolicy POLICY = GeodeEmbeddedPolicy.create().share();
 
+>>>>>>>> 1b41ebada ([CALCITE-2588] Run Geode Adapter tests with an Embedded Instance):geode/src/test/java/org/apache/calcite/adapter/geode/rel/AbstractGeodeTest.java
 }
+
+// End AbstractGeodeTest.java

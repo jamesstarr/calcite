@@ -23,9 +23,7 @@ import org.apache.geode.distributed.ServerLauncher;
 
 import com.google.common.base.Preconditions;
 
-import org.junit.jupiter.api.extension.AfterAllCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.rules.ExternalResource;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -38,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Manages embedded Geode instance using native {@link ServerLauncher}.
  */
-public class GeodeEmbeddedPolicy implements BeforeAllCallback, AfterAllCallback {
+public class GeodeEmbeddedPolicy extends ExternalResource {
 
   private final ServerLauncher launcher;
 
@@ -48,12 +46,12 @@ public class GeodeEmbeddedPolicy implements BeforeAllCallback, AfterAllCallback 
     this.launcher = launcher;
   }
 
-  @Override public void beforeAll(ExtensionContext context) {
+  @Override protected void before() {
     requireStatus(AbstractLauncher.Status.NOT_RESPONDING);
     launcher.start();
   }
 
-  @Override public void afterAll(ExtensionContext context) {
+  @Override protected void after() {
     if (launcher.status().getStatus() == AbstractLauncher.Status.ONLINE) {
       CacheFactory.getAnyInstance().close();
     }
@@ -74,7 +72,8 @@ public class GeodeEmbeddedPolicy implements BeforeAllCallback, AfterAllCallback 
   /**
    * Allows this instance to be shared by multiple test classes (in parallel). Guarantees that
    * {@code before()} and {@code after()} methods will be called only once. This setup is useful
-   * for concurrent test execution which may initialize (or destroy) same resource multiple times.
+   * for maven (surefire) plugin which executes tests in parallel (including {@code @ClassRule}
+   * methods) and may initialize (or destroy) same resource multiple times.
    */
   GeodeEmbeddedPolicy share() {
     return new RefCountPolicy(this);
@@ -111,10 +110,9 @@ public class GeodeEmbeddedPolicy implements BeforeAllCallback, AfterAllCallback 
 
   /**
    * Calls {@code before()} and {@code after()} methods only once (for first and last subscriber
-   * respectively). The implementation counts number of times
-   * {@link #beforeAll(ExtensionContext)} was called which determines number of "clients".
-   * Delegate {@link #afterAll(ExtensionContext)} is called when that count reaches zero again
-   * (when last "client" called that method).
+   * respectively). The implementation counts number of times {@link #before()} was called
+   * which determines number of "clients". Delegate {@link #after()} is called when that count
+   * reaches zero again (when last "client" called that method).
    */
   private static class RefCountPolicy extends GeodeEmbeddedPolicy {
 
@@ -133,18 +131,27 @@ public class GeodeEmbeddedPolicy implements BeforeAllCallback, AfterAllCallback 
       return this;
     }
 
-    @Override public synchronized void beforeAll(ExtensionContext context) {
-      if (refCount.getAndIncrement() == 0) {
-        // initialize only once
-        policy.beforeAll(context);
+    @Override public synchronized void before() {
+      try {
+        if (refCount.get() == 0) {
+          // initialize only once
+          policy.before();
+        }
+      } finally {
+        refCount.incrementAndGet();
       }
     }
 
-    @Override public void afterAll(ExtensionContext context) {
+    @Override protected void after() {
       if (refCount.decrementAndGet() == 0) {
         // destroy only once
-        policy.afterAll(context);
+        policy.after();
       }
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End GeodeEmbeddedPolicy.java
+>>>>>>> 1b41ebada ([CALCITE-2588] Run Geode Adapter tests with an Embedded Instance)

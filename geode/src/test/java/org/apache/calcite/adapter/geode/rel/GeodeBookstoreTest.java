@@ -23,8 +23,8 @@ import org.apache.calcite.test.CalciteAssert;
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.Region;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -34,9 +34,9 @@ import java.util.Arrays;
 /**
  * Tests using {@code Bookshop} schema.
  */
-class GeodeBookstoreTest extends AbstractGeodeTest {
+public class GeodeBookstoreTest extends AbstractGeodeTest {
 
-  @BeforeAll
+  @BeforeClass
   public static void setUp() throws Exception {
     Cache cache = POLICY.cache();
     Region<?, ?> bookMaster =  cache.<String, Object>createRegionFactory().create("BookMaster");
@@ -64,15 +64,15 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
         .with(newConnectionFactory());
   }
 
-  @Test void testSelect() {
+  @Test
+  public void testSelect() {
     calciteAssert()
         .query("select * from geode.BookMaster")
         .returnsCount(3);
   }
 
-  @Test void testWhereEqual() {
-    String expectedQuery = "SELECT * FROM /BookMaster WHERE itemNumber = 123";
-
+  @Test
+  public void testWhereEqual() {
     calciteAssert()
         .query("select * from geode.BookMaster WHERE itemNumber = 123")
         .returnsCount(1)
@@ -81,11 +81,11 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "Treatises\n")
         .explainContains("PLAN=GeodeToEnumerableConverter\n"
             + "  GeodeFilter(condition=[=(CAST($0):INTEGER, 123)])\n"
-            + "    GeodeTableScan(table=[[geode, BookMaster]])")
-        .queryContains(GeodeAssertions.query(expectedQuery));
+            + "    GeodeTableScan(table=[[geode, BookMaster]])");
   }
 
-  @Test void testWhereWithAnd() {
+  @Test
+  public void testWhereWithAnd() {
     calciteAssert()
         .query("select * from geode.BookMaster WHERE itemNumber > 122 "
             + "AND itemNumber <= 123")
@@ -95,16 +95,11 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "Treatises\n")
         .explainContains("PLAN=GeodeToEnumerableConverter\n"
             + "  GeodeFilter(condition=[AND(>($0, 122), <=($0, 123))])\n"
-            + "    GeodeTableScan(table=[[geode, BookMaster]])")
-        .queryContains(
-            GeodeAssertions.query("SELECT * FROM /BookMaster "
-                + "WHERE itemNumber > 122 AND itemNumber <= 123"));
+            + "    GeodeTableScan(table=[[geode, BookMaster]])");
   }
 
-  @Test void testWhereWithOr() {
-    String expectedQuery = "SELECT author AS author FROM /BookMaster "
-        + "WHERE itemNumber IN SET(123, 789)";
-
+  @Test
+  public void testWhereWithOr() {
     calciteAssert()
         .query("select author from geode.BookMaster "
             + "WHERE itemNumber = 123 OR itemNumber = 789")
@@ -114,12 +109,11 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "  GeodeProject(author=[$4])\n"
             + "    GeodeFilter(condition=[OR(=(CAST($0):INTEGER, 123), "
             + "=(CAST($0):INTEGER, 789))])\n"
-            + "      GeodeTableScan(table=[[geode, BookMaster]])\n")
-        .queryContains(
-            GeodeAssertions.query(expectedQuery));
+            + "      GeodeTableScan(table=[[geode, BookMaster]])\n");
   }
 
-  @Test void testWhereWithAndOr() {
+  @Test
+  public void testWhereWithAndOr() {
     calciteAssert()
         .query("SELECT author from geode.BookMaster "
             + "WHERE (itemNumber > 123 AND itemNumber = 789) "
@@ -131,14 +125,12 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "    GeodeFilter(condition=[OR(AND(>($0, 123), =(CAST($0):INTEGER, 789)), "
             + "=(CAST($4):VARCHAR, 'Daisy Mae West'))])\n"
             + "      GeodeTableScan(table=[[geode, BookMaster]])\n"
-            + "\n")
-        .queryContains(
-            GeodeAssertions.query("SELECT author AS author FROM /BookMaster "
-                + "WHERE (itemNumber > 123 AND itemNumber = 789) OR author = 'Daisy Mae West'"));
+            + "\n");
   }
 
   // TODO: Not supported YET
-  @Test void testWhereWithOrAnd() {
+  @Test
+  public void testWhereWithOrAnd() {
     calciteAssert()
         .query("SELECT author from geode.BookMaster "
             + "WHERE (itemNumber > 100 OR itemNumber = 789) "
@@ -148,7 +140,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
         .explainContains("");
   }
 
-  @Test void testProjectionsAndWhereGreatThan() {
+  @Test
+  public void testProjectionsAndWhereGreatThan() {
     calciteAssert()
         .query("select author from geode.BookMaster WHERE itemNumber > 123")
         .returnsCount(2)
@@ -157,13 +150,11 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
         .explainContains("PLAN=GeodeToEnumerableConverter\n"
             + "  GeodeProject(author=[$4])\n"
             + "    GeodeFilter(condition=[>($0, 123)])\n"
-            + "      GeodeTableScan(table=[[geode, BookMaster]])")
-        .queryContains(
-            GeodeAssertions.query("SELECT author AS author "
-                + "FROM /BookMaster WHERE itemNumber > 123"));
+            + "      GeodeTableScan(table=[[geode, BookMaster]])");
   }
 
-  @Test void testLimit() {
+  @Test
+  public void testLimit() {
     calciteAssert()
         .query("select * from geode.BookMaster LIMIT 1")
         .returnsCount(1)
@@ -175,7 +166,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "    GeodeTableScan(table=[[geode, BookMaster]])");
   }
 
-  @Test void testSortWithProjection() {
+  @Test
+  public void testSortWithProjection() {
     calciteAssert()
         .query("select yearPublished from geode.BookMaster ORDER BY yearPublished ASC")
         .returnsCount(3)
@@ -188,7 +180,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "      GeodeTableScan(table=[[geode, BookMaster]])\n");
   }
 
-  @Test void testSortWithProjectionAndLimit() {
+  @Test
+  public void testSortWithProjectionAndLimit() {
     calciteAssert()
         .query("select yearPublished from geode.BookMaster ORDER BY yearPublished "
             + "LIMIT 2")
@@ -201,7 +194,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "      GeodeTableScan(table=[[geode, BookMaster]])\n");
   }
 
-  @Test void testSortBy2Columns() {
+  @Test
+  public void testSortBy2Columns() {
     calciteAssert()
         .query("select yearPublished, itemNumber from geode.BookMaster ORDER BY "
             + "yearPublished ASC, itemNumber DESC")
@@ -223,7 +217,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
    * OQL Error: Query contains group by columns not present in projected fields
    * Solution: Automatically expand the projections to include all missing GROUP By columns.
    */
-  @Test void testAddMissingGroupByColumnToProjectedFields() {
+  @Test
+  public void testAddMissingGroupByColumnToProjectedFields() {
     calciteAssert()
         .query("select yearPublished from geode.BookMaster GROUP BY  yearPublished, "
             + "author")
@@ -241,7 +236,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
    * When the group by columns match the projected fields, the optimizers removes the projected
    * relation.
    */
-  @Test void testMissingProjectRelationOnGroupByColumnMatchingProjectedFields() {
+  @Test
+  public void testMissingProjectRelationOnGroupByColumnMatchingProjectedFields() {
     calciteAssert()
         .query("select yearPublished from geode.BookMaster GROUP BY yearPublished")
         .returnsCount(2)
@@ -256,7 +252,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
    * When the group by columns match the projected fields, the optimizers removes the projected
    * relation.
    */
-  @Test void testMissingProjectRelationOnGroupByColumnMatchingProjectedFields2() {
+  @Test
+  public void testMissingProjectRelationOnGroupByColumnMatchingProjectedFields2() {
     calciteAssert()
         .query("select yearPublished, MAX(retailCost) from geode.BookMaster GROUP BY "
             + "yearPublished")
@@ -268,7 +265,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "    GeodeTableScan(table=[[geode, BookMaster]])");
   }
 
-  @Test void testCount() {
+  @Test
+  public void testCount() {
     calciteAssert()
         .query("select COUNT(retailCost) from geode.BookMaster")
         .returnsCount(1)
@@ -279,7 +277,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "    GeodeTableScan(table=[[geode, BookMaster]])\n");
   }
 
-  @Test void testCountStar() {
+  @Test
+  public void testCountStar() {
     calciteAssert()
         .query("select COUNT(*) from geode.BookMaster")
         .returnsCount(1)
@@ -289,7 +288,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "    GeodeTableScan(table=[[geode, BookMaster]])\n");
   }
 
-  @Test void testCountInGroupBy() {
+  @Test
+  public void testCountInGroupBy() {
     calciteAssert()
         .query("select yearPublished, COUNT(retailCost) from geode.BookMaster GROUP BY "
             + "yearPublished")
@@ -301,7 +301,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "    GeodeTableScan(table=[[geode, BookMaster]])\n");
   }
 
-  @Test void testMaxMinSumAvg() {
+  @Test
+  public void testMaxMinSumAvg() {
     calciteAssert()
         .query("select MAX(retailCost), MIN(retailCost), SUM(retailCost), AVG"
             + "(retailCost) from geode.BookMaster")
@@ -314,7 +315,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "    GeodeTableScan(table=[[geode, BookMaster]])\n");
   }
 
-  @Test void testMaxMinSumAvgInGroupBy() {
+  @Test
+  public void testMaxMinSumAvgInGroupBy() {
     calciteAssert()
         .query("select yearPublished, MAX(retailCost), MIN(retailCost), SUM"
             + "(retailCost), AVG(retailCost) from geode.BookMaster "
@@ -330,7 +332,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "    GeodeTableScan(table=[[geode, BookMaster]])\n");
   }
 
-  @Test void testGroupBy() {
+  @Test
+  public void testGroupBy() {
     calciteAssert()
         .query("select yearPublished, MAX(retailCost) AS MAXCOST, author from "
             + "geode.BookMaster GROUP BY yearPublished, author")
@@ -344,7 +347,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "      GeodeTableScan(table=[[geode, BookMaster]])\n");
   }
 
-  @Test void testSelectWithNestedPdx() {
+  @Test
+  public void testSelectWithNestedPdx() {
     calciteAssert()
         .query("select * from geode.BookCustomer limit 2")
         .returnsCount(2)
@@ -353,7 +357,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "    GeodeTableScan(table=[[geode, BookCustomer]])\n");
   }
 
-  @Test void testSelectWithNestedPdx2() {
+  @Test
+  public void testSelectWithNestedPdx2() {
     calciteAssert()
         .query("select primaryAddress from geode.BookCustomer limit 2")
         .returnsCount(2)
@@ -367,7 +372,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "      GeodeTableScan(table=[[geode, BookCustomer]])\n");
   }
 
-  @Test void testSelectWithNestedPdxFieldAccess() {
+  @Test
+  public void testSelectWithNestedPdxFieldAccess() {
     calciteAssert()
         .query("select primaryAddress['city'] as city from geode.BookCustomer limit 2")
         .returnsCount(2)
@@ -379,7 +385,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "      GeodeTableScan(table=[[geode, BookCustomer]])\n");
   }
 
-  @Test void testSelectWithNullFieldValue() {
+  @Test
+  public void testSelectWithNullFieldValue() {
     calciteAssert()
         .query("select primaryAddress['addressLine2'] from geode.BookCustomer limit"
             + " 2")
@@ -392,7 +399,8 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
             + "      GeodeTableScan(table=[[geode, BookCustomer]])\n");
   }
 
-  @Test void testFilterWithNestedField() {
+  @Test
+  public void testFilterWithNestedField() {
     calciteAssert()
         .query("SELECT primaryAddress['postalCode'] AS postalCode\n"
             + "FROM geode.BookCustomer\n"
@@ -404,93 +412,71 @@ class GeodeBookstoreTest extends AbstractGeodeTest {
         .explainContains("PLAN=GeodeToEnumerableConverter\n"
             + "  GeodeProject(postalCode=[ITEM($3, 'postalCode')])\n"
             + "    GeodeFilter(condition=[>(ITEM($3, 'postalCode'), '0')])\n"
-            + "      GeodeTableScan(table=[[geode, BookCustomer]])\n")
-        .queryContains(
-            GeodeAssertions.query("SELECT primaryAddress.postalCode AS postalCode "
-                + "FROM /BookCustomer WHERE primaryAddress.postalCode > '0'"));
+            + "      GeodeTableScan(table=[[geode, BookCustomer]])\n");
   }
 
-  @Test void testSqlSimple() {
+  @Test
+  public void testSqlSimple() throws SQLException {
     calciteAssert()
         .query("SELECT itemNumber FROM geode.BookMaster WHERE itemNumber > 123")
-        .runs()
-        .queryContains(
-            GeodeAssertions.query("SELECT itemNumber AS itemNumber "
-                + "FROM /BookMaster WHERE itemNumber > 123"));
+        .runs();
   }
 
-  @Test void testSqlSingleNumberWhereFilter() {
+  @Test
+  public void testSqlSingleNumberWhereFilter() throws SQLException {
     calciteAssert().query("SELECT * FROM geode.BookMaster "
-        + "WHERE itemNumber = 123")
-        .runs()
-        .queryContains(
-            GeodeAssertions.query("SELECT * FROM /BookMaster "
-                + "WHERE itemNumber = 123"));
+        + "WHERE itemNumber = 123").runs();
   }
 
-  @Test void testSqlDistinctSort() {
+  @Test
+  public void testSqlDistinctSort() throws SQLException {
     calciteAssert().query("SELECT DISTINCT itemNumber, author "
         + "FROM geode.BookMaster ORDER BY itemNumber, author").runs();
   }
 
-  @Test void testSqlDistinctSort2() {
+  @Test
+  public void testSqlDistinctSort2() throws SQLException {
     calciteAssert().query("SELECT itemNumber, author "
         + "FROM geode.BookMaster GROUP BY itemNumber, author ORDER BY itemNumber, "
         + "author").runs();
   }
 
-  @Test void testSqlDistinctSort3() {
+  @Test
+  public void testSqlDistinctSort3() throws SQLException {
     calciteAssert().query("SELECT DISTINCT * FROM geode.BookMaster").runs();
   }
 
 
-  @Test void testSqlLimit2() {
+  @Test
+  public void testSqlLimit2() throws SQLException {
     calciteAssert().query("SELECT DISTINCT * FROM geode.BookMaster LIMIT 2").runs();
   }
 
 
-  @Test void testSqlDisjunction() {
-    String expectedQuery = "SELECT author AS author FROM /BookMaster "
-        + "WHERE itemNumber IN SET(789, 123)";
-
+  @Test
+  public void testSqlDisjunciton() throws SQLException {
     calciteAssert().query("SELECT author FROM geode.BookMaster "
-        + "WHERE itemNumber = 789 OR itemNumber = 123").runs()
-        .queryContains(
-            GeodeAssertions.query(expectedQuery));
+        + "WHERE itemNumber = 789 OR itemNumber = 123").runs();
   }
 
-  @Test void testSqlConjunction() {
+  @Test
+  public void testSqlConjunciton() throws SQLException {
     calciteAssert().query("SELECT author FROM geode.BookMaster "
-        + "WHERE itemNumber = 789 AND author = 'Jim Heavisides'")
-        .runs()
-        .queryContains(
-            GeodeAssertions.query("SELECT author AS author FROM /BookMaster "
-                + "WHERE itemNumber = 789 AND author = 'Jim Heavisides'"));
+        + "WHERE itemNumber = 789 AND author = 'Jim Heavisides'").runs();
   }
 
-  @Test void testSqlBookMasterWhere() {
+  @Test
+  public void testSqlBookMasterWhere() throws SQLException {
     calciteAssert().query("select author, title from geode.BookMaster "
         + "WHERE author = 'Jim Heavisides' LIMIT 2")
-        .runs()
-        .queryContains(
-            GeodeAssertions.query("SELECT author AS author, title AS title FROM /BookMaster "
-                + "WHERE author = 'Jim Heavisides' LIMIT 2"));
+        .runs();
   }
 
-  @Test void testSqlBookMasterCount() {
+  @Test
+  public void testSqlBookMasterCount() throws SQLException {
     calciteAssert().query("select count(*) from geode.BookMaster").runs();
   }
 
-  @Test void testInSetFilterWithNestedStringField() {
-    String expectedQuery = "SELECT primaryAddress.city AS city FROM /BookCustomer "
-        + "WHERE primaryAddress.city IN SET('Topeka', 'San Francisco')";
-
-    calciteAssert()
-        .query("SELECT primaryAddress['city'] AS city\n"
-            + "FROM geode.BookCustomer\n"
-            + "WHERE primaryAddress['city'] = 'Topeka' OR primaryAddress['city'] = 'San Francisco'\n")
-        .returnsCount(3)
-        .queryContains(
-            GeodeAssertions.query(expectedQuery));
-  }
 }
+
+// End GeodeBookstoreTest.java
