@@ -46,7 +46,7 @@ public class GeodeTableScan extends TableScan implements GeodeRel {
    * @param geodeTable     Geode table
    * @param projectRowType Fields and types to project; null to project raw row
    */
-  protected GeodeTableScan(RelOptCluster cluster, RelTraitSet traitSet,
+  GeodeTableScan(RelOptCluster cluster, RelTraitSet traitSet,
       RelOptTable table, GeodeTable geodeTable, RelDataType projectRowType) {
     super(cluster, traitSet, ImmutableList.of(), table);
     this.geodeTable = geodeTable;
