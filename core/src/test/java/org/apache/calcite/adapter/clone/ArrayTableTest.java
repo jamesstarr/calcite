@@ -35,8 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Unit test for {@link ArrayTable} and {@link ColumnLoader}.
  */
-class ArrayTableTest {
-  @Test void testPrimitiveArray() {
+public class ArrayTableTest {
+  @Test public void testPrimitiveArray() {
     long[] values = {0, 0};
     ArrayTable.BitSlicedPrimitiveArray.orLong(4, values, 0, 0x0F);
     assertEquals(0x0F, values[0]);
