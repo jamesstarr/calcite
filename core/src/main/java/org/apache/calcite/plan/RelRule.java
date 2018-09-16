@@ -29,7 +29,6 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
 import javax.annotation.Nullable;
 
 /**

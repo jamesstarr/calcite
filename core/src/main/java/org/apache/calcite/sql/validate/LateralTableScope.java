@@ -19,7 +19,6 @@ package org.apache.calcite.sql.validate;
 import org.apache.calcite.sql.SqlNode;
 
 import java.util.Objects;
-
 import javax.annotation.Nullable;
 
 /**

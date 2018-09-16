@@ -31,7 +31,6 @@ import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.TimeZone;
-
 import javax.annotation.Nullable;
 
 import static org.apache.calcite.adapter.druid.DruidQuery.writeFieldIf;

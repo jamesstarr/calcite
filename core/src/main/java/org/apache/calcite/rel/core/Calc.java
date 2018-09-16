@@ -34,7 +34,6 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexOver;
 import org.apache.calcite.rex.RexProgram;
 import org.apache.calcite.rex.RexShuttle;
-
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.Util;
 

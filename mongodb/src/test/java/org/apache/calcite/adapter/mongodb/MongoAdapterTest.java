@@ -21,11 +21,8 @@ import org.apache.calcite.schema.SchemaFactory;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.test.MongoAssertions;
-
-
 import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.Util;
-
 
 import com.google.common.io.LineProcessor;
 import com.google.common.io.Resources;
@@ -39,9 +36,7 @@ import org.bson.BsonDocument;
 import org.bson.BsonInt32;
 import org.bson.BsonString;
 import org.bson.Document;
-
 import org.hamcrest.CoreMatchers;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -52,7 +47,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;

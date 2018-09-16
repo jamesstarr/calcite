@@ -135,9 +135,9 @@ public abstract class QuidemTest {
       outFile = new File(inFile.getAbsoluteFile().getParent(), u2n("surefire/") + path);
     }
     Util.discard(outFile.getParentFile().mkdirs());
-    try (final Reader reader = Util.reader(inFile);
-         final Writer writer = Util.printWriter(outFile);
-         final Closer closer = new Closer()) {
+    try (Reader reader = Util.reader(inFile);
+         Writer writer = Util.printWriter(outFile);
+         Closer closer = new Closer()) {
       new Quidem(reader, writer, QuidemTest::getEnv, createConnectionFactory())
           .withPropertyHandler((propertyName, value) -> {
 

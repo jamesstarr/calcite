@@ -26,7 +26,6 @@ import org.apache.calcite.util.ImmutableBeans;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nullable;
 
 /**

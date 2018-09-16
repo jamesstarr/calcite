@@ -34,7 +34,6 @@ import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.ImmutableIntList;
 
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.function.Predicate;
 
