@@ -22,7 +22,7 @@ import org.apache.calcite.test.CalciteAssert.DatabaseInstance;
 >>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
 import org.hsqldb.jdbcDriver;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

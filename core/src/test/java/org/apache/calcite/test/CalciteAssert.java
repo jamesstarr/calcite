@@ -500,7 +500,7 @@ public class CalciteAssert {
     final String message =
         "With materializationsEnabled=" + materializationsEnabled
             + ", limit=" + limit;
-    try (final Closer closer = new Closer()) {
+    try (Closer closer = new Closer()) {
       if (connection.isWrapperFor(CalciteConnection.class)) {
         final CalciteConnection calciteConnection =
             connection.unwrap(CalciteConnection.class);
@@ -1457,7 +1457,7 @@ public class CalciteAssert {
     }
 
     public final AssertQuery updates(int count) {
-      try (final Connection connection = createConnection()) {
+      try (Connection connection = createConnection()) {
         assertQuery(connection, sql, limit, materializationsEnabled,
             hooks, null, checkUpdateCount(count), null);
         return this;
@@ -1475,7 +1475,7 @@ public class CalciteAssert {
     }
 
     protected AssertQuery returns(String sql, Consumer<ResultSet> checker) {
-      try (final Connection connection = createConnection()) {
+      try (Connection connection = createConnection()) {
         assertQuery(connection, sql, limit, materializationsEnabled,
             hooks, checker, null, null);
         return this;
@@ -1498,7 +1498,7 @@ public class CalciteAssert {
     }
 
     public AssertQuery throws_(String message) {
-      try (final Connection connection = createConnection()) {
+      try (Connection connection = createConnection()) {
         assertQuery(connection, sql, limit, materializationsEnabled,
             hooks, null, null, checkException(message));
         return this;
@@ -1515,7 +1515,7 @@ public class CalciteAssert {
      * @param optionalMessage An optional message to check for in the output stacktrace
      * */
     public AssertQuery failsAtValidation(String optionalMessage) {
-      try (final Connection connection = createConnection()) {
+      try (Connection connection = createConnection()) {
         assertQuery(connection, sql, limit, materializationsEnabled,
             hooks, null, null, checkValidationException(optionalMessage));
         return this;
@@ -1534,7 +1534,7 @@ public class CalciteAssert {
     }
 
     public AssertQuery runs() {
-      try (final Connection connection = createConnection()) {
+      try (Connection connection = createConnection()) {
         assertQuery(connection, sql, limit, materializationsEnabled,
             hooks, null, null, null);
         return this;
@@ -1545,7 +1545,7 @@ public class CalciteAssert {
     }
 
     public AssertQuery typeIs(String expected) {
-      try (final Connection connection = createConnection()) {
+      try (Connection connection = createConnection()) {
         assertQuery(connection, sql, limit, false,
             hooks, checkResultType(expected), null, null);
         return this;
@@ -1568,7 +1568,7 @@ public class CalciteAssert {
     }
 
     public AssertQuery convertMatches(final Function<RelNode, Void> checker) {
-      try (final Connection connection = createConnection()) {
+      try (Connection connection = createConnection()) {
         assertPrepare(connection, sql, this.materializationsEnabled,
             checker, null);
         return this;
@@ -1580,7 +1580,7 @@ public class CalciteAssert {
 
     public AssertQuery substitutionMatches(
         final Function<RelNode, Void> checker) {
-      try (final Connection connection = createConnection()) {
+      try (Connection connection = createConnection()) {
         assertPrepare(connection, sql, materializationsEnabled, null, checker);
         return this;
       } catch (Exception e) {
@@ -1730,8 +1730,7 @@ public class CalciteAssert {
         return;
       }
       addHook(Hook.JAVA_PLAN, (Consumer<String>) a0 -> plan = a0);
-
-      try (final Connection connection = createConnection()) {
+      try (Connection connection = createConnection()) {
         assertQuery(connection, sql, limit, materializationsEnabled,
             hooks, null, checkUpdate, null);
         assertNotNull(plan);
@@ -1749,8 +1748,7 @@ public class CalciteAssert {
     public AssertQuery queryContains(Consumer<List> predicate1) {
       final List<Object> list = new ArrayList<>();
       addHook(Hook.QUERY_PLAN, list::add);
-
-      try (final Connection connection = createConnection()) {
+      try (Connection connection = createConnection()) {
         assertQuery(connection, sql, limit, materializationsEnabled,
             hooks, null, null, null);
         predicate1.accept(list);
@@ -1863,7 +1861,7 @@ public class CalciteAssert {
     }
 
     public final AssertMetaData returns(Consumer<ResultSet> checker) {
-      try (final Connection c = connectionFactory.createConnection()) {
+      try (Connection c = connectionFactory.createConnection()) {
         final ResultSet resultSet = function.apply(c);
         checker.accept(resultSet);
         resultSet.close();

@@ -22,10 +22,9 @@ import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonGenerator;
 
 import java.io.IOException;
 import java.util.Objects;
-<<<<<<< HEAD
-=======
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+=======
+>>>>>>> c1d7f8f6f ([CALCITE-2559] Update Checkstyle to 7.8.2)
 import javax.annotation.Nullable;
 
 import static org.apache.calcite.adapter.druid.DruidQuery.writeField;

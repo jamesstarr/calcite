@@ -37,10 +37,9 @@ import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.ImmutableIntList;
 
 import java.util.ArrayList;
-<<<<<<< HEAD
-=======
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+=======
+>>>>>>> c1d7f8f6f ([CALCITE-2559] Update Checkstyle to 7.8.2)
 import java.util.List;
 import java.util.function.Predicate;
 

@@ -68,7 +68,7 @@ class CoreQuidemTest extends QuidemTest {
   }
 
   /** Override settings for "sql/scalar.iq". */
-  public void testSqlScalar(String path) throws Exception {
+  public void testSqlScalar() throws Exception {
     try (TryThreadLocal.Memo ignored = Prepare.THREAD_EXPAND.push(true)) {
       checkRun(path);
     }
@@ -78,7 +78,7 @@ class CoreQuidemTest extends QuidemTest {
    * which you may use as scratch space during development. */
 
   // Do not disable this test; just remember not to commit changes to dummy.iq
-  public void testSqlDummy(String path) throws Exception {
+  public void testSqlDummy() throws Exception {
     try (TryThreadLocal.Memo ignored = Prepare.THREAD_EXPAND.push(true)) {
       checkRun(path);
     }

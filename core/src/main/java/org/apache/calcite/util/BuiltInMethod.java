@@ -129,9 +129,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
-import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+>>>>>>> c1d7f8f6f ([CALCITE-2559] Update Checkstyle to 7.8.2)
 import javax.sql.DataSource;
 
 /**
@@ -268,7 +266,6 @@ public enum BuiltInMethod {
   MAP_GET(Map.class, "get", Object.class),
   MAP_PUT(Map.class, "put", Object.class, Object.class),
   COLLECTION_ADD(Collection.class, "add", Object.class),
->>>>>>> 53857d63a (Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)")
 =======
   COLLECTION_ADDALL(Collection.class, "addAll", Collection.class),
   LIST_GET(List.class, "get", int.class),

@@ -43,10 +43,13 @@ class CalciteHandler extends Handler {
   }
 
   @Override protected void dump(RelNode rel) {
+<<<<<<< HEAD
     dump(rel, writer);
   }
 
   public static void dump(RelNode rel, Writer writer) {
+=======
+>>>>>>> c1d7f8f6f ([CALCITE-2559] Update Checkstyle to 7.8.2)
     try (PreparedStatement preparedStatement = RelRunners.run(rel)) {
       final ResultSet resultSet = preparedStatement.executeQuery();
       dump(resultSet, true, new PrintWriter(writer));

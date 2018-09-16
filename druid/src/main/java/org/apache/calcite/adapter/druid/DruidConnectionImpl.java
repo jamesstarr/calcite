@@ -125,7 +125,7 @@ class DruidConnectionImpl implements DruidConnection {
       try {
         final byte[] bytes = AvaticaUtils.readFullyToBytes(in);
         System.out.println("Response: "
-            + bytes.toString()); // CHECKSTYLE: IGNORE 0
+            + new String(bytes, StandardCharsets.UTF_8)); // CHECKSTYLE: IGNORE 0
         in = new ByteArrayInputStream(bytes);
       } catch (IOException e) {
         throw new RuntimeException(e);
@@ -645,7 +645,7 @@ class DruidConnectionImpl implements DruidConnection {
         final byte[] bytes = AvaticaUtils.readFullyToBytes(in);
         in.close();
         System.out.println("Response: "
-            + bytes.toString()); // CHECKSTYLE: IGNORE 0
+            + new String(bytes, StandardCharsets.UTF_8)); // CHECKSTYLE: IGNORE 0
         in = new ByteArrayInputStream(bytes);
       } catch (IOException e) {
         throw new RuntimeException(e);

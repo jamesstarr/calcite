@@ -42,6 +42,29 @@ import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+<<<<<<< HEAD
+=======
+import javax.annotation.Nullable;
+
+/**
+ * Utilities for generating intervals from RexNode.
+ */
+@SuppressWarnings({"rawtypes", "unchecked" })
+public class DruidDateTimeUtils {
+
+  protected static final Logger LOGGER = CalciteTrace.getPlannerTracer();
+
+  private DruidDateTimeUtils() {
+  }
+
+  /**
+   * Generates a list of {@link Interval}s equivalent to a given
+   * expression. Assumes that all the predicates in the input
+   * reference a single column: the timestamp column.
+   */
+  @Nullable
+  public static List<Interval> createInterval(RexNode e) {
+>>>>>>> c1d7f8f6f ([CALCITE-2559] Update Checkstyle to 7.8.2)
     final List<Range<Long>> ranges =
         extractRanges(e, false);
     if (ranges == null) {

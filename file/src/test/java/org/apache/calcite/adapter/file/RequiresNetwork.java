@@ -16,10 +16,18 @@
  */
 package org.apache.calcite.adapter.file;
 
+<<<<<<< HEAD:file/src/test/java/org/apache/calcite/adapter/file/RequiresNetwork.java
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+=======
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+
+import java.io.IOException;
+import java.net.Socket;
+>>>>>>> c1d7f8f6f ([CALCITE-2559] Update Checkstyle to 7.8.2):file/src/test/java/org/apache/calcite/adapter/file/FileSuite.java
 
 /**
  * Enables to activate test conditionally if the specified host is reachable.

@@ -38,14 +38,6 @@ import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.teradata.tpcds.Results;
-import com.teradata.tpcds.Session;
-import com.teradata.tpcds.column.Column;
-import com.teradata.tpcds.column.ColumnType;
-
-import net.hydromatic.tpcds.TpcdsColumn;
-import net.hydromatic.tpcds.TpcdsEntity;
-import net.hydromatic.tpcds.TpcdsTable;
 =======
 import com.teradata.tpcds.Results;
 import com.teradata.tpcds.Session;

@@ -33,7 +33,6 @@ import org.apache.calcite.rex.RexProgram;
 import org.apache.calcite.rex.RexProgramBuilder;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.tools.RelBuilder;
-
 import org.apache.calcite.util.Pair;
 
 import com.google.common.collect.ImmutableList;

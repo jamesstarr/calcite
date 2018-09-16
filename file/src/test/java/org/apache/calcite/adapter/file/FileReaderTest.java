@@ -21,10 +21,18 @@ import org.apache.calcite.util.Sources;
 import org.apache.calcite.util.TestUtil;
 
 import org.jsoup.select.Elements;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Assume;
+import org.junit.Ignore;
+import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
 import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.sql.DriverManager;

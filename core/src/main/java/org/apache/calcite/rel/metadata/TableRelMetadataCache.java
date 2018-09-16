@@ -21,9 +21,7 @@ import org.apache.calcite.rel.RelNode;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
-
 import java.util.Map;
-
 import javax.annotation.Nullable;
 
 /**

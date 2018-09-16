@@ -66,7 +66,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
-
 import javax.annotation.Nonnull;
 
 import static org.apache.calcite.sql.type.SqlTypeName.INTERVAL_TYPES;

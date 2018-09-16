@@ -91,61 +91,8 @@ public class MaterializationTest {
       CalciteAssert.checkResultContains(
           "EnumerableTableScan(table=[[hr, m0]])");
 
-  private void checkMaterialize(String materialize, String query) {
-    checkMaterialize(materialize, query, HR_FKUK_MODEL, CONTAINS_M0,
-        RuleSets.ofList(ImmutableList.of()));
-  }
-
-  /** Checks that a given query can use a materialized view with a given
-   * definition. */
-  private void checkMaterializeWithRules(String materialize, String query, RuleSet rules) {
-    checkMaterialize(materialize, query, HR_FKUK_MODEL, CONTAINS_M0, rules);
-  }
-
-  /** Checks that a given query can use a materialized view with a given
-   * definition. */
-  private void checkMaterialize(String materialize, String query, String model,
-      Consumer<ResultSet> explainChecker) {
-    checkMaterialize(materialize, query, model, explainChecker,
-        RuleSets.ofList(ImmutableList.of()));
-  }
-
-
-  private void checkMaterialize(String materialize, String query, String model,
-      Consumer<ResultSet> explainChecker, final RuleSet rules) {
-    checkThatMaterialize(materialize, query, "m0", false, model, explainChecker,
-        rules).sameResultWithMaterializationsDisabled();
-  }
-
-  /** Checks that a given query can use a materialized view with a given
-   * definition. */
-  private CalciteAssert.AssertQuery checkThatMaterialize(String materialize,
-      String query, String name, boolean existing, String model,
-      Consumer<ResultSet> explainChecker, final RuleSet rules) {
-    try (final TryThreadLocal.Memo ignored = Prepare.THREAD_TRIM.push(true)) {
-      MaterializationService.setThreadLocal();
-      CalciteAssert.AssertQuery that = CalciteAssert.that()
-          .withMaterializations(model, existing, name, materialize)
-          .query(query)
-          .enableMaterializations(true);
-
-      // Add any additional rules required for the test
-      if (rules.iterator().hasNext()) {
-        that.withHook(Hook.PLANNER, (Consumer<RelOptPlanner>) planner -> {
-          for (RelOptRule rule : rules) {
-            planner.addRule(rule);
-          }
-        });
-      }
-
-      return that.explainMatches("", explainChecker);
-    }
-  }
-
-  /** Checks that a given query CAN NOT use a materialized view with a given
-   * definition. */
-  private static void checkNoMaterialize_(String materialize, String query,
-      String model, boolean onlyBySubstitution) {
+  private void checkNoMaterialize(String materialize, String query,
+      String model) {
     try (TryThreadLocal.Memo ignored = Prepare.THREAD_TRIM.push(true)) {
       MaterializationService.setThreadLocal();
       CalciteAssert.AssertQuery that = CalciteAssert.that()
@@ -234,7 +181,7 @@ public class MaterializationTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-988">[CALCITE-988]
    * FilterToProjectUnifyRule.invert(MutableRel, MutableRel, MutableProject)
    * works incorrectly</a>. */
-  @Test void testFilterQueryOnProjectView8() {
+  @Test public void testFilterQueryOnProjectView8() {
     try (TryThreadLocal.Memo ignored = Prepare.THREAD_TRIM.push(true)) {
       MaterializationService.setThreadLocal();
       final String m = "select \"salary\", \"commission\",\n"
@@ -2557,8 +2504,8 @@ public class MaterializationTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-761">[CALCITE-761]
    * Pre-populated materializations</a>. */
-  @Test void testPrePopulated() {
-    String q = "select distinct \"deptno\" from \"emps\"";
+  @Test public void testPrePopulated() {
+    String q = "select \"deptno\" from \"emps\"";
     try (TryThreadLocal.Memo ignored = Prepare.THREAD_TRIM.push(true)) {
       MaterializationService.setThreadLocal();
       CalciteAssert.that()
@@ -2578,7 +2525,7 @@ public class MaterializationTest {
     }
   }
 
-  @Test void testViewSchemaPath() {
+  @Test public void testViewSchemaPath() {
     try (TryThreadLocal.Memo ignored = Prepare.THREAD_TRIM.push(true)) {
       MaterializationService.setThreadLocal();
       final String m = "select empno, deptno from emp";

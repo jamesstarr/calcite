@@ -26,8 +26,7 @@ import org.apache.calcite.util.ImmutableBeans;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
-
+>>>>>>> c1d7f8f6f ([CALCITE-2559] Update Checkstyle to 7.8.2)
 import javax.annotation.Nullable;
 
 /**
@@ -135,7 +134,6 @@ public class CoerceInputsRule
     }
   }
 }
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

@@ -34,7 +34,6 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexShuttle;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
-
 import org.apache.calcite.util.ImmutableBeans;
 
 import com.google.common.collect.ImmutableList;

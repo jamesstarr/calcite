@@ -16,7 +16,7 @@
  */
 package org.apache.calcite.sql.test;
 
-  import org.apache.calcite.sql.SqlFunction;
+import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSpecialOperator;
 import org.apache.calcite.sql.fun.SqlLibrary;

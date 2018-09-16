@@ -124,7 +124,6 @@ import java.util.TreeSet;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
 import javax.annotation.Nonnull;
 
 import static org.apache.calcite.util.Static.RESOURCE;
