@@ -5100,7 +5100,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     if (orderBy != null) {
       for (SqlNode node : orderBy) {
         node.validate(this, scope);
-        SqlIdentifier identifier = null;
+        SqlIdentifier identifier;
         if (node instanceof SqlBasicCall) {
           identifier = (SqlIdentifier) ((SqlBasicCall) node).getOperands()[0];
         } else {

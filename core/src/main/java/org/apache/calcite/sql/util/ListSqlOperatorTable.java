@@ -39,7 +39,7 @@ public class ListSqlOperatorTable implements SqlOperatorTable {
   //~ Constructors -----------------------------------------------------------
 
   public ListSqlOperatorTable() {
-    this(new ArrayList<SqlOperator>());
+    this(new ArrayList<>());
   }
 
   public ListSqlOperatorTable(List<SqlOperator> operatorList) {

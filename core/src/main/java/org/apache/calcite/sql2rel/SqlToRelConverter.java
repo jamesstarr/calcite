@@ -2260,7 +2260,7 @@ public class SqlToRelConverter {
       SqlIdentifier left = (SqlIdentifier) operands.get(0);
       patternVarsSet.add(left.getSimple());
       SqlNodeList rights = (SqlNodeList) operands.get(1);
-      final TreeSet<String> list = new TreeSet<String>();
+      final TreeSet<String> list = new TreeSet<>();
       for (SqlNode right : rights) {
         assert right instanceof SqlIdentifier;
         list.add(((SqlIdentifier) right).getSimple());
@@ -5715,7 +5715,7 @@ public class SqlToRelConverter {
       int filterArg = -1;
       final List<RelDataType> argTypes =
           call.getOperator() instanceof SqlCountAggFunction
-              ? new ArrayList<RelDataType>(call.getOperandList().size())
+              ? new ArrayList<>(call.getOperandList().size())
               : null;
       try {
         // switch out of agg mode

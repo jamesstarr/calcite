@@ -86,7 +86,7 @@ public class FilterTableFunctionTransposeRule
         return;
       }
     }
-    final List<RelNode> newFuncInputs = new ArrayList<RelNode>();
+    final List<RelNode> newFuncInputs = new ArrayList<>();
     final RelOptCluster cluster = funcRel.getCluster();
     final RexNode condition = filter.getCondition();
 

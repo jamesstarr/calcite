@@ -98,7 +98,7 @@ public class RelOptCluster {
   public static RelOptCluster create(RelOptPlanner planner,
       RexBuilder rexBuilder) {
     return new RelOptCluster(planner, rexBuilder.getTypeFactory(),
-        rexBuilder, new AtomicInteger(0), new HashMap<String, RelNode>());
+        rexBuilder, new AtomicInteger(0), new HashMap<>());
   }
 
   //~ Methods ----------------------------------------------------------------

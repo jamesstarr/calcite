@@ -87,7 +87,7 @@ public class JoinUnionTransposeRule
         return;
       }
     }
-    List<RelNode> newUnionInputs = new ArrayList<RelNode>();
+    List<RelNode> newUnionInputs = new ArrayList<>();
     for (RelNode input : unionRel.getInputs()) {
       RelNode joinLeft;
       RelNode joinRight;

@@ -225,7 +225,7 @@ public class ReduceDecimalsRule
     private RexExpander defaultExpander;
 
     private ExpanderMap(RexBuilder rexBuilder) {
-      map = new HashMap<SqlOperator, RexExpander>();
+      map = new HashMap<>();
       registerExpanders(rexBuilder);
     }
 

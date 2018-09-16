@@ -76,7 +76,7 @@ class LixToRelTranslator implements RelOptTable.ToRelContext {
 
   public <T> RelNode translate(Queryable<T> queryable) {
     QueryableRelBuilder<T> translatorQueryable =
-        new QueryableRelBuilder<T>(this);
+        new QueryableRelBuilder<>(this);
     return translatorQueryable.toRel(queryable);
   }
 
@@ -140,7 +140,7 @@ class LixToRelTranslator implements RelOptTable.ToRelContext {
         CalcitePrepareImpl.EmptyScalarTranslator
             .empty(rexBuilder)
             .bind(expression.parameterList, list);
-    final List<RexNode> rexList = new ArrayList<RexNode>();
+    final List<RexNode> rexList = new ArrayList<>();
     final Expression simple = Blocks.simple(expression.body);
     for (Expression expression1 : fieldExpressions(simple)) {
       rexList.add(translator.toRex(expression1));
@@ -161,7 +161,7 @@ class LixToRelTranslator implements RelOptTable.ToRelContext {
   List<RexNode> toRexList(
       FunctionExpression expression,
       RelNode... inputs) {
-    List<RexNode> list = new ArrayList<RexNode>();
+    List<RexNode> list = new ArrayList<>();
     RexBuilder rexBuilder = cluster.getRexBuilder();
     for (RelNode input : inputs) {
       list.add(rexBuilder.makeRangeReference(input));
@@ -174,7 +174,7 @@ class LixToRelTranslator implements RelOptTable.ToRelContext {
   RexNode toRex(
       FunctionExpression expression,
       RelNode... inputs) {
-    List<RexNode> list = new ArrayList<RexNode>();
+    List<RexNode> list = new ArrayList<>();
     RexBuilder rexBuilder = cluster.getRexBuilder();
     for (RelNode input : inputs) {
       list.add(rexBuilder.makeRangeReference(input));

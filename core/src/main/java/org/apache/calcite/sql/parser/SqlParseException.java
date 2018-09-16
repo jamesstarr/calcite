@@ -134,7 +134,7 @@ public class SqlParseException extends Exception
       hintOffset = hintImageIdx == expectedTokenSequence[0] ? 1 : 0;
       maxLength = Math.max(expectedTokenSequence.length - hintOffset, maxLength);
     }
-    final Set<String> set = new TreeSet<String>();
+    final Set<String> set = new TreeSet<>();
     for (int[] expectedTokenSequence : expectedTokenSequences) {
       hintOffset = hintImageIdx == expectedTokenSequence[0] ? 1 : 0;
       if (expectedTokenSequence.length - hintOffset == maxLength) {

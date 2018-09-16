@@ -47,7 +47,7 @@ public class HepRuleCall extends RelOptRuleCall {
       List<RelNode> parents) {
     super(planner, operand, rels, nodeChildren, parents);
 
-    results = new ArrayList<RelNode>();
+    results = new ArrayList<>();
   }
 
   //~ Methods ----------------------------------------------------------------
