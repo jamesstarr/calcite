@@ -3050,6 +3050,7 @@ public abstract class Expressions {
    */
   public static <T> FluentList<T> list(Iterable<T> ts) {
     return new FluentArrayList<>(toList(ts));
+<<<<<<< HEAD
   }
 
   /**
@@ -3059,6 +3060,8 @@ public abstract class Expressions {
     Objects.requireNonNull(node);
     final Evaluator evaluator = new Evaluator();
     return ((AbstractNode) node).evaluate(evaluator);
+=======
+>>>>>>> 42ca94873 (Apply small refactorings to Calcite codebase (Java 5, Java 7, Java 8))
   }
 
   // ~ Private helper methods ------------------------------------------------

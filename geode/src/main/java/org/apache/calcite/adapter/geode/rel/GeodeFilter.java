@@ -257,10 +257,13 @@ public class GeodeFilter extends Filter implements GeodeRel {
 
     private String translateOr(List<RexNode> disjunctions) {
       List<String> predicates = new ArrayList<>();
+<<<<<<< HEAD
 
       List<String> leftFieldNameList = new ArrayList<>();
       List<String> inSetLeftFieldNameList = new ArrayList<>();
 
+=======
+>>>>>>> 42ca94873 (Apply small refactorings to Calcite codebase (Java 5, Java 7, Java 8))
       for (RexNode node : disjunctions) {
         final String leftNodeFieldName = getLeftNodeFieldNameForNode(node);
         // If any one left node is processed with IN SET predicate

@@ -67,6 +67,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -503,13 +504,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     unmapRuleDescription(rule);
 
     // Remove operands.
-    for (Iterator<RelOptRuleOperand> iter = classOperands.values().iterator();
-         iter.hasNext();) {
-      RelOptRuleOperand entry = iter.next();
-      if (entry.getRule().equals(rule)) {
-        iter.remove();
-      }
-    }
+    classOperands.values().removeIf(entry -> entry.getRule().equals(rule));
 
     // Remove trait mappings. (In particular, entries from conversion
     // graph.)
@@ -1176,7 +1171,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     pw.println("Original rel:");
     pw.println(originalRootString);
     pw.println("Sets:");
-    Ordering<RelSet> ordering = Ordering.from((o1, o2) -> o1.id - o2.id);
+    Ordering<RelSet> ordering = Ordering.from(Comparator.comparingInt(o -> o.id));
     for (RelSet set : ordering.immutableSortedCopy(allSets)) {
       pw.println("Set#" + set.id
           + ", type: " + set.subsets.get(0).getRowType());

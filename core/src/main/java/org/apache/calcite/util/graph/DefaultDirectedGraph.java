@@ -21,7 +21,7 @@ import com.google.common.collect.Ordering;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+>>>>>>> 42ca94873 (Apply small refactorings to Calcite codebase (Java 5, Java 7, Java 8))
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -37,7 +37,11 @@ import java.util.Set;
 public class DefaultDirectedGraph<V, E extends DefaultEdge>
     implements DirectedGraph<V, E> {
   final Set<E> edges = new LinkedHashSet<>();
+<<<<<<< HEAD
   final Map<V, VertexInfo<V, E>> vertexMap = new LinkedHashMap<>();
+=======
+  final Map<V, VertexInfo<V, E>> vertexMap =
+      new LinkedHashMap<>();
   final EdgeFactory<V, E> edgeFactory;
 
   /** Creates a graph. */
@@ -52,12 +56,7 @@ public class DefaultDirectedGraph<V, E extends DefaultEdge>
   public static <V, E extends DefaultEdge> DefaultDirectedGraph<V, E> create(
       EdgeFactory<V, E> edgeFactory) {
     return new DefaultDirectedGraph<>(edgeFactory);
-  }
-
-  public String toStringUnordered() {
-    return "graph("
-        + "vertices: " + vertexMap.keySet()
-        + ", edges: " + edges + ")";
+>>>>>>> 42ca94873 (Apply small refactorings to Calcite codebase (Java 5, Java 7, Java 8))
   }
 
   @Override public String toString() {
@@ -155,6 +154,7 @@ public class DefaultDirectedGraph<V, E extends DefaultEdge>
   }
 
   public void removeAllVertices(Collection<V> collection) {
+<<<<<<< HEAD
     // The point at which collection is large enough to make the 'majority'
     // algorithm more efficient.
     final float threshold = 0.35f;
@@ -205,6 +205,11 @@ public class DefaultDirectedGraph<V, E extends DefaultEdge>
     for (VertexInfo<V, E> info : vertexMap.values()) {
       info.outEdges.removeIf(e -> vertexSet.contains((V) e.target));
       info.inEdges.removeIf(e -> vertexSet.contains((V) e.source));
+=======
+    vertexMap.keySet().removeAll(collection);
+    for (VertexInfo<V, E> info : vertexMap.values()) {
+      //noinspection SuspiciousMethodCalls
+      info.outEdges.removeIf(next -> collection.contains(next.target));
     }
   }
 
@@ -213,7 +218,15 @@ public class DefaultDirectedGraph<V, E extends DefaultEdge>
   }
 
   public List<E> getInwardEdges(V target) {
-    return vertexMap.get(target).inEdges;
+    final ArrayList<E> list = new ArrayList<>();
+    for (VertexInfo<V, E> info : vertexMap.values()) {
+      for (E edge : info.outEdges) {
+        if (edge.target.equals(target)) {
+          list.add(edge);
+        }
+      }
+    }
+    return list;
   }
 
   final V source(E edge) {
@@ -233,7 +246,6 @@ public class DefaultDirectedGraph<V, E extends DefaultEdge>
    * @param <E> Edge type
    */
   static class VertexInfo<V, E> {
-    final List<E> outEdges = new ArrayList<>();
-    final List<E> inEdges = new ArrayList<>();
+    public List<E> outEdges = new ArrayList<>();
   }
 }

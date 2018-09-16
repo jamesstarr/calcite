@@ -983,9 +983,12 @@ public abstract class SqlTypeUtil {
     }
     List<RelDataType> types = new ArrayList<>();
     List<String> fieldNames = new ArrayList<>();
+<<<<<<< HEAD
     Map<String, Long> fieldCnt = fieldList.stream()
         .map(RelDataTypeField::getName)
         .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+=======
+>>>>>>> 42ca94873 (Apply small refactorings to Calcite codebase (Java 5, Java 7, Java 8))
     int i = -1;
     for (RelDataTypeField field : fieldList) {
       ++i;

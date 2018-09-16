@@ -278,8 +278,7 @@ public class SqlCaseOperator extends SqlOperator {
       List<RelDataType> argTypes) {
     assert (argTypes.size() % 2) == 1 : "odd number of arguments expected: "
         + argTypes.size();
-    assert argTypes.size() > 1 : "CASE must have more than 1 argument. Given "
-      + argTypes.size() + ", " + argTypes;
+    assert argTypes.size() > 1 : argTypes.size();
     List<RelDataType> thenTypes = new ArrayList<>();
     for (int j = 1; j < (argTypes.size() - 1); j += 2) {
       thenTypes.add(argTypes.get(j));

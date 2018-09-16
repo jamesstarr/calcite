@@ -94,7 +94,7 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
           //noinspection unchecked
           return (Function0) () -> {
             try {
-              final List<Object> list = new ArrayList<Object>();
+              final List<Object> list = new ArrayList<>();
               for (int i = 0; i < columnCount; i++) {
                 if (metaData.getColumnType(i + 1) == Types.TIMESTAMP) {
                   long v = resultSet.getLong(i + 1);
@@ -152,6 +152,7 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
       String sql,
       Function1<ResultSet, Function0<T>> rowBuilderFactory) {
     return new ResultSetEnumerable<>(dataSource, sql, rowBuilderFactory);
+<<<<<<< HEAD
   }
 
   /** Executes a SQL query and returns the results as an enumerator, using a
@@ -244,6 +245,8 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
     } else {
       preparedStatement.setObject(i, value);
     }
+=======
+>>>>>>> 42ca94873 (Apply small refactorings to Calcite codebase (Java 5, Java 7, Java 8))
   }
 
   public Enumerator<T> enumerator() {
@@ -426,7 +429,7 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
       //noinspection unchecked
       return (Function0) () -> {
         try {
-          final List<Object> list = new ArrayList<Object>();
+          final List<Object> list = new ArrayList<>();
           for (int i = 0; i < columnCount; i++) {
             list.add(primitives[i].jdbcGet(resultSet, i + 1));
           }

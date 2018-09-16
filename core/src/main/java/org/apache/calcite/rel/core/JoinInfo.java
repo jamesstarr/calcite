@@ -58,11 +58,16 @@ public class JoinInfo {
     final List<Integer> leftKeys = new ArrayList<>();
     final List<Integer> rightKeys = new ArrayList<>();
     final List<Boolean> filterNulls = new ArrayList<>();
-    final List<RexNode> nonEquiList = new ArrayList<>();
-    RelOptUtil.splitJoinCondition(left, right, condition, leftKeys, rightKeys,
-        filterNulls, nonEquiList);
-    return new JoinInfo(ImmutableIntList.copyOf(leftKeys),
-        ImmutableIntList.copyOf(rightKeys), ImmutableList.copyOf(nonEquiList));
+    RexNode remaining =
+        RelOptUtil.splitJoinCondition(left, right, condition, leftKeys,
+            rightKeys, filterNulls);
+    if (remaining.isAlwaysTrue()) {
+      return new EquiJoinInfo(ImmutableIntList.copyOf(leftKeys),
+          ImmutableIntList.copyOf(rightKeys));
+    } else {
+      return new NonEquiJoinInfo(ImmutableIntList.copyOf(leftKeys),
+          ImmutableIntList.copyOf(rightKeys), remaining);
+    }
   }
 
   /** Creates an equi-join. */

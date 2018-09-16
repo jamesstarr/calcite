@@ -1251,7 +1251,7 @@ public abstract class AbstractMaterializedViewRule extends RelOptRule {
       if (topProject != null && !unionRewriting) {
         // We have a Project on top, gather only what is needed
         final RelOptUtil.InputFinder inputFinder =
-            new RelOptUtil.InputFinder(new LinkedHashSet<RelDataTypeField>());
+            new RelOptUtil.InputFinder(new LinkedHashSet<>());
         for (RexNode e : topProject.getProjects()) {
           e.accept(inputFinder);
         }

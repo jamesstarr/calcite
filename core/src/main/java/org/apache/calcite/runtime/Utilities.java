@@ -21,7 +21,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
->>>>>>> 02d8ed362 ([CALCITE-3951] Support different string comparison based on SqlCollation)
+import java.util.Objects;
 
 /**
  * Utility methods called by generated code.
