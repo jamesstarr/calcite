@@ -107,10 +107,6 @@ public class Lattice {
       }
     }
 
-    List<String> nameList = new ArrayList<>();
-    for (Column column : columns) {
-      nameList.add(column.alias);
-    }
     uniqueColumnNames =
         ImmutableList.copyOf(
             SqlValidatorUtil.uniquify(
