@@ -116,7 +116,141 @@ public class Lattice {
 
     assert isValid(Litmus.THROW);
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+    uniqueColumnNames =
+        ImmutableList.copyOf(
+            SqlValidatorUtil.uniquify(
+                Lists.transform(columns, input -> input.alias), true));
+    if (rowCountEstimate == null) {
+      // We could improve this when we fix
+      // [CALCITE-429] Add statistics SPI for lattice optimization algorithm
+      rowCountEstimate = 1000d;
+    }
+    Preconditions.checkArgument(rowCountEstimate > 0d);
+    this.rowCountEstimate = rowCountEstimate;
+    this.statisticProvider =
+        Objects.requireNonNull(statisticProviderFactory.apply(this));
+  }
+
+  /** Creates a Lattice. */
+  public static Lattice create(CalciteSchema schema, String sql, boolean auto) {
+    return builder(schema, sql).auto(auto).build();
+  }
+
+  private static void populateAliases(SqlNode from, List<String> aliases,
+      String current) {
+    if (from instanceof SqlJoin) {
+      SqlJoin join = (SqlJoin) from;
+      populateAliases(join.getLeft(), aliases, null);
+      populateAliases(join.getRight(), aliases, null);
+    } else if (from.getKind() == SqlKind.AS) {
+      populateAliases(SqlUtil.stripAs(from), aliases,
+          SqlValidatorUtil.getAlias(from, -1));
+    } else {
+      if (current == null) {
+        current = SqlValidatorUtil.getAlias(from, -1);
+      }
+      aliases.add(current);
+    }
+  }
+
+  private static boolean populate(List<RelNode> nodes, List<int[][]> tempLinks,
+      RelNode rel) {
+    if (nodes.isEmpty() && rel instanceof LogicalProject) {
+      return populate(nodes, tempLinks, ((LogicalProject) rel).getInput());
+    }
+    if (rel instanceof TableScan) {
+      nodes.add(rel);
+      return true;
+    }
+    if (rel instanceof LogicalJoin) {
+      LogicalJoin join = (LogicalJoin) rel;
+      if (join.getJoinType().isOuterJoin()) {
+        throw new RuntimeException("only non nulls-generating join allowed, but got "
+            + join.getJoinType());
+      }
+      populate(nodes, tempLinks, join.getLeft());
+      populate(nodes, tempLinks, join.getRight());
+      for (RexNode rex : RelOptUtil.conjunctions(join.getCondition())) {
+        tempLinks.add(grab(nodes, rex));
+      }
+      return true;
+    }
+    throw new RuntimeException("Invalid node type "
+        + rel.getClass().getSimpleName() + " in lattice query");
+  }
+
+  /** Converts an "t1.c1 = t2.c2" expression into two (input, field) pairs. */
+  private static int[][] grab(List<RelNode> leaves, RexNode rex) {
+    switch (rex.getKind()) {
+    case EQUALS:
+      break;
+    default:
+      throw new AssertionError("only equi-join allowed");
+    }
+    final List<RexNode> operands = ((RexCall) rex).getOperands();
+    return new int[][] {
+        inputField(leaves, operands.get(0)),
+        inputField(leaves, operands.get(1))};
+  }
+
+  /** Converts an expression into an (input, field) pair. */
+  private static int[] inputField(List<RelNode> leaves, RexNode rex) {
+    if (!(rex instanceof RexInputRef)) {
+      throw new RuntimeException("only equi-join of columns allowed: " + rex);
+    }
+    RexInputRef ref = (RexInputRef) rex;
+    int start = 0;
+    for (int i = 0; i < leaves.size(); i++) {
+      final RelNode leaf = leaves.get(i);
+      final int end = start + leaf.getRowType().getFieldCount();
+      if (ref.getIndex() < end) {
+        return new int[] {i, ref.getIndex() - start};
+      }
+      start = end;
+    }
+    throw new AssertionError("input not found");
+  }
+
+  /** Generates a SQL query to populate a tile of the lattice specified by a
+   * given set of columns and measures. */
+  public String sql(ImmutableBitSet groupSet, List<Measure> aggCallList) {
+    return sql(groupSet, true, aggCallList);
+  }
+
+  /** Generates a SQL query to populate a tile of the lattice specified by a
+   * given set of columns and measures, optionally grouping. */
+  public String sql(ImmutableBitSet groupSet, boolean group,
+      List<Measure> aggCallList) {
+    final List<Node> usedNodes = new ArrayList<>();
+    if (group) {
+      final ImmutableBitSet.Builder columnSetBuilder = groupSet.rebuild();
+      for (Measure call : aggCallList) {
+        for (Column arg : call.args) {
+          columnSetBuilder.set(arg.ordinal);
+        }
+      }
+      final ImmutableBitSet columnSet = columnSetBuilder.build();
+
+      // Figure out which nodes are needed. Use a node if its columns are used
+      // or if has a child whose columns are used.
+      for (Node node : nodes) {
+        if (ImmutableBitSet.range(node.startCol, node.endCol)
+            .intersects(columnSet)) {
+          use(usedNodes, node);
+        }
+      }
+      if (usedNodes.isEmpty()) {
+        usedNodes.add(nodes.get(0));
+      }
+    } else {
+      usedNodes.addAll(nodes);
+    }
+
+    final SqlDialect dialect = SqlDialect.DatabaseProduct.CALCITE.getDialect();
+    final StringBuilder buf = new StringBuilder("SELECT ");
+    final StringBuilder groupBuf = new StringBuilder("\nGROUP BY ");
+    int k = 0;
+    final Set<String> columnNames = new HashSet<>();
     if (groupSet != null) {
       for (int i : groupSet) {
         if (k++ > 0) {

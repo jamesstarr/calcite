@@ -37,9 +37,6 @@ import java.util.Set;
 public class DefaultDirectedGraph<V, E extends DefaultEdge>
     implements DirectedGraph<V, E> {
   final Set<E> edges = new LinkedHashSet<>();
-<<<<<<< HEAD
-  final Map<V, VertexInfo<V, E>> vertexMap = new LinkedHashMap<>();
-=======
   final Map<V, VertexInfo<V, E>> vertexMap =
       new LinkedHashMap<>();
   final EdgeFactory<V, E> edgeFactory;
@@ -56,7 +53,6 @@ public class DefaultDirectedGraph<V, E extends DefaultEdge>
   public static <V, E extends DefaultEdge> DefaultDirectedGraph<V, E> create(
       EdgeFactory<V, E> edgeFactory) {
     return new DefaultDirectedGraph<>(edgeFactory);
->>>>>>> 42ca94873 (Apply small refactorings to Calcite codebase (Java 5, Java 7, Java 8))
   }
 
   @Override public String toString() {
