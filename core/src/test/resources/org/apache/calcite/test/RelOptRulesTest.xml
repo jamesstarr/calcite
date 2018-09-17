@@ -6301,8 +6301,7 @@ LogicalProject(EXPR$0=[$0], EXPR$1=[$1])
         <Resource name="planAfter">
             <![CDATA[
 LogicalProject(EXPR$0=[$0], EXPR$1=[$1])
-  LogicalFilter(condition=[>(+(1, 2), +(3, null))])
-    LogicalValues(tuples=[[{ 1, 2 }]])
+  LogicalValues(tuples=[[]])
 ]]>
         </Resource>
     </TestCase>
@@ -6659,7 +6658,7 @@ LogicalProject(EXPR$0=[OR(AND(IS NULL($3), IS NULL($12)), IS TRUE(=($3, $12)))])
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
-LogicalProject(EXPR$0=[OR(IS NULL($12), IS TRUE(=(null, $12)))])
+LogicalProject(EXPR$0=[IS NULL($12)])
   LogicalFilter(condition=[IS NULL($3)])
     LogicalJoin(condition=[=($3, $12)], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])

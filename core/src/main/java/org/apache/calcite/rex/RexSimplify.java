@@ -63,6 +63,7 @@ public class RexSimplify {
   private final RelOptPredicateList predicates;
   final boolean unknownAsFalse;
   private final RexExecutor executor;
+  private final Strong strong;
 
   /**
    * Creates a RexSimplify.
@@ -86,6 +87,7 @@ public class RexSimplify {
     this.unknownAsFalse = unknownAsFalse;
     this.paranoid = paranoid;
     this.executor = Objects.requireNonNull(executor);
+    this.strong = new Strong();
   }
 
   @Deprecated // to be removed before 2.0
@@ -171,6 +173,12 @@ public class RexSimplify {
 
   private RexNode simplify_(RexNode e) {
     try {
+      if (strong.isNull(e)) {
+        if (unknownAsFalse) {
+          return rexBuilder.makeLiteral(false);
+        }
+        return rexBuilder.makeNullLiteral(e.getType());
+      }
       switch (e.getKind()) {
       case AND:
         return simplifyAnd((RexCall) e);
@@ -250,7 +258,8 @@ public class RexSimplify {
     // "1 != '1'" is unchanged because the types are not the same.
     if (o0.isA(SqlKind.LITERAL)
         && o1.isA(SqlKind.LITERAL)
-        && o0.getType().equals(o1.getType())) {
+        && SqlTypeUtil.equalSansNullability(rexBuilder.getTypeFactory(),
+              o0.getType(), o1.getType())) {
       final C v0 = ((RexLiteral) o0).getValueAs(clazz);
       final C v1 = ((RexLiteral) o1).getValueAs(clazz);
       if (v0 == null || v1 == null) {
@@ -418,7 +427,7 @@ public class RexSimplify {
       final RexNode arg = ((RexCall) a).operands.get(0);
       return simplify_(rexBuilder.makeCall(notKind, arg));
     }
-    RexNode a2 = simplify_(a);
+    RexNode a2 = withUnknownAsFalse(false).simplify_(a);
     if (a != a2) {
       return rexBuilder.makeCall(RexUtil.op(kind), ImmutableList.of(a2));
     }
