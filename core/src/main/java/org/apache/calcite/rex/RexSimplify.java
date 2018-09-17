@@ -69,14 +69,7 @@ public class RexSimplify {
   final boolean unknownAsFalse;
   private final RexExecutor executor;
   private final Strong strong;
-  /**
-   * {@code simplify} calls itself recursively multiple times, creating the possibility
-   * of an exponential increase in the time required to simplify a {@link RexNode}.
-   * These variables limit the maximum depth the recursive calls can reach; a more
-   * proper fix is in progress (Calcite-2449).
-   */
-  private final int maxDepth;
-  private int currentDepth;
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
 
   /**
    * Creates a RexSimplify.
@@ -99,6 +92,7 @@ public class RexSimplify {
     this.unknownAsFalse = unknownAsFalse;
     this.paranoid = paranoid;
     this.executor = Objects.requireNonNull(executor);
+    this.strong = new Strong();
   }
 
   @Deprecated // to be removed before 2.0
@@ -198,6 +192,12 @@ public class RexSimplify {
 
   private RexNode simplify_(RexNode e) {
     try {
+      if (strong.isNull(e)) {
+        if (unknownAsFalse) {
+          return rexBuilder.makeLiteral(false);
+        }
+        return rexBuilder.makeNullLiteral(e.getType());
+      }
       switch (e.getKind()) {
       case AND:
         return simplifyAnd((RexCall) e);
@@ -563,7 +563,6 @@ public class RexSimplify {
   private RexNode simplifyIs(RexCall call, RexUnknownAs unknownAs) {
     final SqlKind kind = call.getKind();
     final RexNode a = call.getOperands().get(0);
->>>>>>> 5894084f1 (Revert "[CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)")
     final RexNode simplified = simplifyIs2(kind, a);
     if (simplified != null) {
       return simplified;
@@ -617,7 +616,7 @@ public class RexSimplify {
       final RexNode arg = ((RexCall) a).operands.get(0);
       return simplify_(rexBuilder.makeCall(notKind, arg));
     }
-    RexNode a2 = simplify_(a);
+    RexNode a2 = withUnknownAsFalse(false).simplify_(a);
     if (a != a2) {
       return rexBuilder.makeCall(RexUtil.op(kind), ImmutableList.of(a2));
     }

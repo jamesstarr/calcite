@@ -9214,10 +9214,14 @@ LogicalProject(EXPR$0=[OR(AND(IS NULL($3), IS NULL($12)), IS TRUE(=($3, $12)))])
         <Resource name="planAfter">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[IS NULL($12)])
 =======
 LogicalProject(EXPR$0=[OR(IS NULL($12), IS TRUE(=(null, $12)))])
 >>>>>>> a609b49b6 ([CALCITE-2687] Is distinct from could lead to Exceptions in ReduceExpressionRule (Zoltan Haindrich))
+=======
+LogicalProject(EXPR$0=[IS NULL($12)])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
   LogicalFilter(condition=[IS NULL($3)])
     LogicalJoin(condition=[=($3, $12)], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])

@@ -1567,6 +1567,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
 >>>>>>> 3f4dc4cca (Following [CALCITE-2469] simplify "f(x, y) IS NULL" to "x IS NULL OR y IS NULL" if "f" is strong):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void simplifyStrong() {
     checkSimplify(ge(trueLiteral, falseLiteral), "true");
     checkSimplify3(ge(trueLiteral, nullBool), "null:BOOLEAN", "false", "true");
@@ -1586,6 +1587,27 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
   @Test void testSimplifyFilter() {
+=======
+  @Test public void simplifyStrong() {
+    checkSimplify2(ge(trueLiteral, falseLiteral), "true", "true");
+    checkSimplify2(ge(trueLiteral, nullBool), "null:BOOLEAN", "false");
+    checkSimplify2(ge(nullBool, nullBool), "null:BOOLEAN", "false");
+    checkSimplify2(gt(trueLiteral, nullBool), "null:BOOLEAN", "false");
+    checkSimplify2(le(trueLiteral, nullBool), "null:BOOLEAN", "false");
+    checkSimplify2(lt(trueLiteral, nullBool), "null:BOOLEAN", "false");
+
+    checkSimplify2(not(nullBool), "null:BOOLEAN", "false");
+    checkSimplify2(ne(vInt(), nullBool), "null:BOOLEAN", "false");
+    checkSimplify2(eq(vInt(), nullBool), "null:BOOLEAN", "false");
+
+    checkSimplify2(plus(vInt(), nullInt), "null:INTEGER", "false");
+    checkSimplify2(sub(vInt(), nullInt), "null:INTEGER", "false");
+    checkSimplify2(mul(vInt(), nullInt), "null:INTEGER", "false");
+    checkSimplify2(div(vInt(), nullInt), "null:INTEGER", "false");
+  }
+
+  @Test public void testSimplifyFilter() {
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     final RelDataType booleanType =
         typeFactory.createSqlType(SqlTypeName.BOOLEAN);
     final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);

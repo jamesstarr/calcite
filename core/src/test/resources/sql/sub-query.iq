@@ -883,6 +883,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null], expr#5=[null], expr#6=[IS NULL($t5)], expr#7=[OR($t4, $t6)], cs=[$t3], $condition=[$t7])
@@ -895,6 +896,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:INTEGER], expr#5=[=($t4, $t4)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
 >>>>>>> d0e86c5a6 ([CALCITE-873] Add a planner rule, SortRemoveConstantKeysRule, that removes constant keys from Sort (Atri Sharma))
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], $condition=[$t5])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -990,6 +994,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
         EnumerableAggregate(group=[{0}], c=[COUNT()])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[1], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t4)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
@@ -997,6 +1002,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[1], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t4)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], $condition=[$t5])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -1051,6 +1059,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
         EnumerableAggregate(group=[{0}], c=[COUNT()])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
@@ -1058,6 +1067,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], $condition=[$t5])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -1112,6 +1124,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
         EnumerableAggregate(group=[{0}], c=[COUNT()])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[IS NULL($t4)], expr#9=[OR($t6, $t7, $t8)], cs=[$t3], $condition=[$t9])
@@ -1119,6 +1132,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[IS NULL($t4)], expr#9=[OR($t6, $t7, $t8)], cs=[$t3], $condition=[$t9])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[CAST($t0):TINYINT], expr#5=[IS NULL($t4)], expr#6=[null:INTEGER], expr#7=[IS NULL($t6)], expr#8=[OR($t5, $t7)], cs=[$t3], $condition=[$t8])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -1274,6 +1290,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null], expr#5=[null], expr#6=[IS NULL($t5)], expr#7=[OR($t4, $t6)], cs=[$t3], $condition=[$t7])
@@ -1286,6 +1303,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:INTEGER], expr#5=[=($t4, $t4)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
 >>>>>>> d0e86c5a6 ([CALCITE-873] Add a planner rule, SortRemoveConstantKeysRule, that removes constant keys from Sort (Atri Sharma))
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], $condition=[$t5])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -1381,6 +1401,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
         EnumerableAggregate(group=[{0}], c=[COUNT()])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[1], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t4)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
@@ -1388,6 +1409,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[1], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t4)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], $condition=[$t5])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -1442,6 +1466,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
         EnumerableAggregate(group=[{0}], c=[COUNT()])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
@@ -1449,6 +1474,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], $condition=[$t5])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -1503,6 +1531,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
         EnumerableAggregate(group=[{0}], c=[COUNT()])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[IS NULL($t4)], expr#9=[OR($t6, $t7, $t8)], cs=[$t3], $condition=[$t9])
@@ -1510,6 +1539,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[IS NULL($t4)], expr#9=[OR($t6, $t7, $t8)], cs=[$t3], $condition=[$t9])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[CAST($t0):TINYINT], expr#5=[IS NULL($t4)], expr#6=[null:INTEGER], expr#7=[IS NULL($t6)], expr#8=[OR($t5, $t7)], cs=[$t3], $condition=[$t8])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -1664,6 +1696,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
         EnumerableAggregate(group=[{0}], c=[COUNT()])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
@@ -1671,6 +1704,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], $condition=[$t5])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -1684,6 +1720,7 @@ select sal from "scott".emp
 (0 rows)
 
 !ok
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1705,6 +1742,9 @@ EnumerableValues(tuples=[[]])
 >>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
 =======
 >>>>>>> 5894084f1 (Revert "[CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)")
+=======
+EnumerableValues(tuples=[[]])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
 !plan
 
 # Test filter literal IN null non-correlated
@@ -1718,6 +1758,7 @@ select sal from "scott".emp
 
 !ok
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableValues(tuples=[[]])
 =======
 EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
@@ -1728,6 +1769,9 @@ EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
+=======
+EnumerableValues(tuples=[[]])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
 !plan
 
 # Test filter null IN literal non-correlated
@@ -1741,6 +1785,7 @@ select sal from "scott".emp
 
 !ok
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableValues(tuples=[[]])
 =======
 EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
@@ -1751,6 +1796,9 @@ EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
+=======
+EnumerableValues(tuples=[[]])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
 !plan
 
 # Test filter null IN required
@@ -1764,6 +1812,7 @@ select sal from "scott".emp
 
 !ok
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableValues(tuples=[[]])
 =======
 EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
@@ -1774,6 +1823,9 @@ EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
+=======
+EnumerableValues(tuples=[[]])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
 !plan
 
 # Test filter null IN nullable
@@ -1787,6 +1839,7 @@ select sal from "scott".emp
 
 !ok
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableValues(tuples=[[]])
 =======
 EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
@@ -1797,6 +1850,9 @@ EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
+=======
+EnumerableValues(tuples=[[]])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
 !plan
 
 # Test filter literal IN required
@@ -1921,6 +1977,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
         EnumerableAggregate(group=[{0}], c=[COUNT()])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null], expr#5=[=($t4, $t4)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
@@ -1928,6 +1985,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:INTEGER], expr#5=[=($t4, $t4)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], $condition=[$t5])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -2005,6 +2065,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
         EnumerableAggregate(group=[{0}], c=[COUNT()])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[1], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t4)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
@@ -2012,6 +2073,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[1], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t4)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], $condition=[$t5])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -2051,6 +2115,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
         EnumerableAggregate(group=[{0}], c=[COUNT()])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
@@ -2058,6 +2123,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], $condition=[$t5])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -2098,6 +2166,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[IS NULL($t4)], expr#9=[OR($t6, $t7, $t8)], cs=[$t3], $condition=[$t9])
@@ -2108,6 +2177,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t4)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
 >>>>>>> 82b258588 ([CALCITE-2469] RexSimplify should optimize '(NOT x) IS NULL' to 'x IS NULL' (pengzhiwei))
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], $condition=[$t5])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -2229,6 +2301,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
         EnumerableAggregate(group=[{0}], c=[COUNT()])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
@@ -2236,6 +2309,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], $condition=[$t5])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -2251,6 +2327,7 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2275,6 +2352,13 @@ EnumerableValues(tuples=[[]])
 >>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
 =======
 >>>>>>> 5894084f1 (Revert "[CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)")
+=======
+EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
+  EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
+    EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
+      EnumerableTableScan(table=[[scott, EMP]])
+    EnumerableValues(tuples=[[]])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
 !plan
 
 # Test filter literal IN null correlated
@@ -2288,6 +2372,7 @@ select sal from "scott".emp e
 
 !ok
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableValues(tuples=[[]])
 =======
 EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t2])
@@ -2297,6 +2382,9 @@ EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t2])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
+=======
+EnumerableValues(tuples=[[]])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
 !plan
 
 # Test filter null IN literal correlated
@@ -2309,6 +2397,7 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
+<<<<<<< HEAD
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
   EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
@@ -2323,6 +2412,13 @@ EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t2])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
+=======
+EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
+  EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
+    EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
+      EnumerableTableScan(table=[[scott, EMP]])
+    EnumerableValues(tuples=[[]])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
 !plan
 
 # Test filter null IN required correlated
@@ -2335,6 +2431,7 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
+<<<<<<< HEAD
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
   EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
@@ -2349,6 +2446,13 @@ EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t2])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
+=======
+EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
+  EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
+    EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
+      EnumerableTableScan(table=[[scott, EMP]])
+    EnumerableValues(tuples=[[]])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
 !plan
 
 # Test filter null IN nullable correlated
@@ -2361,6 +2465,7 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
+<<<<<<< HEAD
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
   EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
@@ -2375,6 +2480,13 @@ EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t2])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
+=======
+EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
+  EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
+    EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
+      EnumerableTableScan(table=[[scott, EMP]])
+    EnumerableValues(tuples=[[]])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
 !plan
 
 # Test filter literal IN required correlated
@@ -2461,7 +2573,7 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t3, $t5)], expr#
   EnumerableHashJoin(condition=[=($2, $4)], joinType=[left])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
-    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:BOOLEAN], expr#5=[null:INTEGER], expr#6=[IS NULL($t5)], expr#7=[OR($t4, $t6)], cs=[$t3], DEPTNO=[$t0], $condition=[$t7])
+    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], DEPTNO=[$t0], $condition=[$t5])
       EnumerableTableScan(table=[[scott, DEPT]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 !plan
@@ -2488,11 +2600,15 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t3, $t5)], expr#
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
 <<<<<<< HEAD
+<<<<<<< HEAD
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[123], expr#5=[null], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], DEPTNO=[$t0], $condition=[$t8])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[123], expr#5=[null:INTEGER], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], DEPTNO=[$t0], $condition=[$t8])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], DEPTNO=[$t0], $condition=[$t5])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
       EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -2521,7 +2637,7 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#
   EnumerableHashJoin(condition=[=($2, $3)], joinType=[left])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
-    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[1], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t4)], expr#8=[OR($t6, $t7)], DEPTNO=[$t0], $f1=[$t3], $condition=[$t8])
+    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], DEPTNO=[$t0], $f1=[$t3], $condition=[$t5])
       EnumerableTableScan(table=[[scott, DEPT]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 !plan
@@ -2551,7 +2667,7 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#
   EnumerableHashJoin(condition=[=($2, $3)], joinType=[left])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
-    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], DEPTNO1=[$t0], $f1=[$t3], $condition=[$t7])
+    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], DEPTNO1=[$t0], $f1=[$t3], $condition=[$t5])
       EnumerableTableScan(table=[[scott, DEPT]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 !plan
@@ -2581,7 +2697,7 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t3, $t5)], expr#
   EnumerableHashJoin(condition=[=($2, $4)], joinType=[left])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
-    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t4)], expr#8=[OR($t6, $t7)], cs=[$t3], DEPTNO=[$t0], $condition=[$t8])
+    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], DEPTNO=[$t0], $condition=[$t5])
       EnumerableTableScan(table=[[scott, DEPT]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 !plan
@@ -2712,8 +2828,12 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#
   EnumerableHashJoin(condition=[=($2, $3)], joinType=[left])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
+<<<<<<< HEAD
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], DEPTNO1=[$t0], $f1=[$t3], $condition=[$t7])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], DEPTNO1=[$t0], $f1=[$t3], $condition=[$t5])
+>>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
       EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
