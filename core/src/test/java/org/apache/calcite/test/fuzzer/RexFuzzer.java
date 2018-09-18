@@ -148,9 +148,6 @@ public class RexFuzzer extends RexProgramBuilderBase {
   }
 
   public RexNode getIntExpression(Random r, int depth) {
-<<<<<<< HEAD
-    int v = depth <= 0 ? 0 : r.nextInt(5);
-=======
     int v = depth <= 0 ? 0 : r.nextInt(4);
     switch (v) {
     case 0:
@@ -163,7 +160,6 @@ public class RexFuzzer extends RexProgramBuilderBase {
     case 3:
       return fuzzOperator(r, ANY_SAME_TYPE_MULTI_ARG, r.nextInt(3) + 2,
           x -> getIntExpression(x, depth - 1));
->>>>>>> 2640ba45b ([CALCITE-2504] Add randomized test for better code coverage of rex node create and simplification)
     }
     throw new AssertionError("should not reach here");
   }

@@ -38,15 +38,11 @@ import java.util.Map;
  * For instance, it converts {@code AND(=(?0.bool0, true), =(?0.bool1, true))} to
  * {@code isTrue(and(eq(vBool(0), trueLiteral), eq(vBool(1), trueLiteral)))}.
  */
-<<<<<<< HEAD
-class RexToTestCodeShuttle extends RexVisitorImpl<String> {
-=======
 public class RexToTestCodeShuttle extends RexVisitorImpl<String> {
   private static final Map<SqlOperator, String> OP_METHODS =
       ImmutableMap.<SqlOperator, String>builder()
           .put(SqlStdOperatorTable.AND, "and")
           .put(SqlStdOperatorTable.OR, "or")
->>>>>>> 2640ba45b ([CALCITE-2504] Add randomized test for better code coverage of rex node create and simplification)
           .put(SqlStdOperatorTable.COALESCE, "coalesce")
           .put(SqlStdOperatorTable.IS_NULL, "isNull")
           .put(SqlStdOperatorTable.IS_NOT_NULL, "isNotNull")
@@ -69,9 +65,6 @@ public class RexToTestCodeShuttle extends RexVisitorImpl<String> {
           .put(SqlStdOperatorTable.UNARY_PLUS, "unaryPlus")
           .put(SqlStdOperatorTable.MINUS, "sub")
           .put(SqlStdOperatorTable.UNARY_MINUS, "unaryMinus")
-<<<<<<< HEAD
-          .put(SqlStdOperatorTable.MULTIPLY, "mul")
-=======
           .build();
 
 
@@ -101,7 +94,6 @@ public class RexToTestCodeShuttle extends RexVisitorImpl<String> {
       }
       sb.append(operand.accept(this));
     }
->>>>>>> 2640ba45b ([CALCITE-2504] Add randomized test for better code coverage of rex node create and simplification)
     sb.append(')');
     return sb.toString();
   }
