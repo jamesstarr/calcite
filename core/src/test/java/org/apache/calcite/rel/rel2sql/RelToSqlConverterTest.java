@@ -397,7 +397,7 @@ public class RelToSqlConverterTest {
     final String expectedSql = "SELECT *\n"
         + "FROM \"scott\".\"EMP\"\n"
         + "WHERE \"DEPTNO\" IN (21)";
-    assertThat(sql, is(expectedSql));
+    assertThat(sql, isLinux(expectedSql));
   }
 
   @Test public void testUnparseIn2() {
@@ -408,7 +408,7 @@ public class RelToSqlConverterTest {
     final String expectedSql = "SELECT *\n"
         + "FROM \"scott\".\"EMP\"\n"
         + "WHERE \"DEPTNO\" IN (20, 21)";
-    assertThat(sql, is(expectedSql));
+    assertThat(sql, isLinux(expectedSql));
   }
 
   @Test public void testUnparseInStruct1() {
@@ -422,7 +422,7 @@ public class RelToSqlConverterTest {
     final String expectedSql = "SELECT *\n"
         + "FROM \"scott\".\"EMP\"\n"
         + "WHERE ROW(\"DEPTNO\", \"JOB\") IN (ROW(1, 'PRESIDENT'))";
-    assertThat(sql, is(expectedSql));
+    assertThat(sql, isLinux(expectedSql));
   }
 
   @Test public void testUnparseInStruct2() {
@@ -438,7 +438,7 @@ public class RelToSqlConverterTest {
     final String expectedSql = "SELECT *\n"
         + "FROM \"scott\".\"EMP\"\n"
         + "WHERE ROW(\"DEPTNO\", \"JOB\") IN (ROW(1, 'PRESIDENT'), ROW(2, 'PRESIDENT'))";
-    assertThat(sql, is(expectedSql));
+    assertThat(sql, isLinux(expectedSql));
   }
 
   @Test public void testSelectQueryWithLimitClause() {
