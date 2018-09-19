@@ -29,6 +29,418 @@ import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 
 import java.util.ArrayDeque;
+<<<<<<< HEAD
+=======
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Priority queue of relexps whose rules have not been called, and rule-matches
+ * which have not yet been acted upon.
+ */
+class RuleQueue {
+  //~ Static fields/initializers ---------------------------------------------
+
+  private static final Logger LOGGER = CalciteTrace.getPlannerTracer();
+
+  private static final Set<String> ALL_RULES = ImmutableSet.of("<ALL RULES>");
+
+  /**
+   * Largest value which is less than one.
+   */
+  private static final double ONE_MINUS_EPSILON = computeOneMinusEpsilon();
+
+  //~ Instance fields --------------------------------------------------------
+
+  /**
+   * The importance of each subset.
+   */
+  final Map<RelSubset, Double> subsetImportances = new HashMap<>();
+
+  /**
+   * The set of RelSubsets whose importance is currently in an artificially
+   * raised state. Typically this only includes RelSubsets which have only
+   * logical RelNodes.
+   */
+  final Set<RelSubset> boostedSubsets = new HashSet<>();
+
+  /**
+   * Map of {@link VolcanoPlannerPhase} to a list of rule-matches. Initially,
+   * there is an empty {@link PhaseMatchList} for each planner phase. As the
+   * planner invokes {@link #addMatch(VolcanoRuleMatch)} the rule-match is
+   * added to the appropriate PhaseMatchList(s). As the planner completes
+   * phases, the matching entry is removed from this list to avoid unused
+   * work.
+   */
+  final Map<VolcanoPlannerPhase, PhaseMatchList> matchListMap =
+      new EnumMap<>(VolcanoPlannerPhase.class);
+
+  /**
+   * Sorts rule-matches into decreasing order of importance.
+   */
+  private static final Comparator<VolcanoRuleMatch> MATCH_COMPARATOR =
+      new RuleMatchImportanceComparator();
+
+  private final VolcanoPlanner planner;
+
+  /**
+   * Compares relexps according to their cached 'importance'.
+   */
+  private final Ordering<RelSubset> relImportanceOrdering =
+      Ordering.from(new RelImportanceComparator());
+
+  /**
+   * Maps a {@link VolcanoPlannerPhase} to a set of rule names.  Named rules
+   * may be invoked in their corresponding phase.
+   */
+  private final Map<VolcanoPlannerPhase, Set<String>> phaseRuleMapping;
+
+  //~ Constructors -----------------------------------------------------------
+
+  RuleQueue(VolcanoPlanner planner) {
+    this.planner = planner;
+
+    phaseRuleMapping = new EnumMap<>(VolcanoPlannerPhase.class);
+
+    // init empty sets for all phases
+    for (VolcanoPlannerPhase phase : VolcanoPlannerPhase.values()) {
+      phaseRuleMapping.put(phase, new HashSet<>());
+    }
+
+    // configure phases
+    planner.getPhaseRuleMappingInitializer().initialize(phaseRuleMapping);
+
+    for (VolcanoPlannerPhase phase : VolcanoPlannerPhase.values()) {
+      // empty phases get converted to "all rules"
+      if (phaseRuleMapping.get(phase).isEmpty()) {
+        phaseRuleMapping.put(phase, ALL_RULES);
+      }
+
+      // create a match list data structure for each phase
+      PhaseMatchList matchList = new PhaseMatchList(phase);
+
+      matchListMap.put(phase, matchList);
+    }
+  }
+
+  //~ Methods ----------------------------------------------------------------
+  /**
+   * Clear internal data structure for this rule queue.
+   */
+  public void clear() {
+    this.subsetImportances.clear();
+    this.boostedSubsets.clear();
+    for (PhaseMatchList matchList : matchListMap.values()) {
+      matchList.clear();
+    }
+  }
+
+  /**
+   * Removes the {@link PhaseMatchList rule-match list} for the given planner
+   * phase.
+   */
+  public void phaseCompleted(VolcanoPlannerPhase phase) {
+    matchListMap.get(phase).clear();
+  }
+
+  /**
+   * Computes the importance of a set (which is that of its most important
+   * subset).
+   */
+  public double getImportance(RelSet set) {
+    double importance = 0;
+    for (RelSubset subset : set.subsets) {
+      importance =
+          Math.max(
+              importance,
+              getImportance(subset));
+    }
+    return importance;
+  }
+
+  /**
+   * Recomputes the importance of the given RelSubset.
+   *
+   * @param subset RelSubset whose importance is to be recomputed
+   * @param force  if true, forces an importance update even if the subset has
+   *               not been registered
+   */
+  public void recompute(RelSubset subset, boolean force) {
+    Double previousImportance = subsetImportances.get(subset);
+    if (previousImportance == null) {
+      if (!force) {
+        // Subset has not been registered yet. Don't worry about it.
+        return;
+      }
+
+      previousImportance = Double.NEGATIVE_INFINITY;
+    }
+
+    double importance = computeImportance(subset);
+    if (previousImportance == importance) {
+      return;
+    }
+
+    updateImportance(subset, importance);
+  }
+
+  /**
+   * Equivalent to
+   * {@link #recompute(RelSubset, boolean) recompute(subset, false)}.
+   */
+  public void recompute(RelSubset subset) {
+    recompute(subset, false);
+  }
+
+  /**
+   * Artificially boosts the importance of the given {@link RelSubset}s by a
+   * given factor.
+   *
+   * <p>Iterates over the currently boosted RelSubsets and removes their
+   * importance boost, forcing a recalculation of the RelSubsets' importances
+   * (see {@link #recompute(RelSubset)}).
+   *
+   * <p>Once RelSubsets have been restored to their normal importance, the
+   * given RelSubsets have their importances boosted. A RelSubset's boosted
+   * importance is always less than 1.0 (and never equal to 1.0).
+   *
+   * @param subsets RelSubsets to boost importance (priority)
+   * @param factor  the amount to boost their importances (e.g., 1.25 increases
+   *                importance by 25%)
+   */
+  public void boostImportance(Collection<RelSubset> subsets, double factor) {
+    LOGGER.trace("boostImportance({}, {})", factor, subsets);
+    final List<RelSubset> boostRemovals = new ArrayList<>();
+    final Iterator<RelSubset> iter = boostedSubsets.iterator();
+    while (iter.hasNext()) {
+      RelSubset subset = iter.next();
+
+      if (!subsets.contains(subset)) {
+        iter.remove();
+        boostRemovals.add(subset);
+      }
+    }
+
+    boostRemovals.sort(new Comparator<RelSubset>() {
+      public int compare(RelSubset o1, RelSubset o2) {
+        int o1children = countChildren(o1);
+        int o2children = countChildren(o2);
+        int c = Integer.compare(o1children, o2children);
+        if (c == 0) {
+          // for determinism
+          c = Integer.compare(o1.getId(), o2.getId());
+        }
+        return c;
+      }
+
+      private int countChildren(RelSubset subset) {
+        int count = 0;
+        for (RelNode rel : subset.getRels()) {
+          count += rel.getInputs().size();
+        }
+        return count;
+      }
+    });
+
+    for (RelSubset subset : boostRemovals) {
+      subset.propagateBoostRemoval(planner);
+    }
+
+    for (RelSubset subset : subsets) {
+      double importance = subsetImportances.get(subset);
+
+      updateImportance(
+          subset,
+          Math.min(ONE_MINUS_EPSILON, importance * factor));
+
+      subset.boosted = true;
+      boostedSubsets.add(subset);
+    }
+  }
+
+  void updateImportance(RelSubset subset, Double importance) {
+    subsetImportances.put(subset, importance);
+
+    for (PhaseMatchList matchList : matchListMap.values()) {
+      Multimap<RelSubset, VolcanoRuleMatch> relMatchMap =
+          matchList.matchMap;
+      if (relMatchMap.containsKey(subset)) {
+        for (VolcanoRuleMatch match : relMatchMap.get(subset)) {
+          match.clearCachedImportance();
+        }
+      }
+    }
+  }
+
+  /**
+   * Returns the importance of an equivalence class of relational expressions.
+   * Subset importances are held in a lookup table, and importance changes
+   * gradually propagate through that table.
+   *
+   * <p>If a subset in the same set but with a different calling convention is
+   * deemed to be important, then this subset has at least half of its
+   * importance. (This rule is designed to encourage conversions to take
+   * place.)</p>
+   */
+  double getImportance(RelSubset rel) {
+    assert rel != null;
+
+    double importance = 0;
+    final RelSet set = planner.getSet(rel);
+    assert set != null;
+    for (RelSubset subset2 : set.subsets) {
+      final Double d = subsetImportances.get(subset2);
+      if (d == null) {
+        continue;
+      }
+      double subsetImportance = d;
+      if (subset2 != rel) {
+        subsetImportance /= 2;
+      }
+      if (subsetImportance > importance) {
+        importance = subsetImportance;
+      }
+    }
+    return importance;
+  }
+
+  /**
+   * Adds a rule match. The rule-matches are automatically added to all
+   * existing {@link PhaseMatchList per-phase rule-match lists} which allow
+   * the rule referenced by the match.
+   */
+  void addMatch(VolcanoRuleMatch match) {
+    final String matchName = match.toString();
+    for (PhaseMatchList matchList : matchListMap.values()) {
+      if (!matchList.names.add(matchName)) {
+        // Identical match has already been added.
+        continue;
+      }
+
+      String ruleClassName = match.getRule().getClass().getSimpleName();
+
+      Set<String> phaseRuleSet = phaseRuleMapping.get(matchList.phase);
+      if (phaseRuleSet != ALL_RULES) {
+        if (!phaseRuleSet.contains(ruleClassName)) {
+          continue;
+        }
+      }
+
+      LOGGER.trace("{} Rule-match queued: {}", matchList.phase.toString(), matchName);
+
+      matchList.list.add(match);
+
+      matchList.matchMap.put(
+          planner.getSubset(match.rels[0]), match);
+    }
+  }
+
+  /**
+   * Computes the <dfn>importance</dfn> of a node. Importance is defined as
+   * follows:
+   *
+   * <ul>
+   * <li>the root {@link RelSubset} has an importance of 1</li>
+   * <li>the importance of any other subset is the sum of its importance to
+   * its parents</li>
+   * <li>The importance of children is pro-rated according to the cost of the
+   * children. Consider a node which has a cost of 3, and children with costs
+   * of 2 and 5. The total cost is 10. If the node has an importance of .5,
+   * then the children will have importance of .1 and .25. The retains .15
+   * importance points, to reflect the fact that work needs to be done on the
+   * node's algorithm.</li>
+   * </ul>
+   *
+   * <p>The formula for the importance <i>I</i> of node n is:
+   *
+   * <blockquote>I<sub>n</sub> = Sum<sub>parents p of n</sub>{I<sub>p</sub> .
+   * W <sub>n, p</sub>}</blockquote>
+   *
+   * <p>where W<sub>n, p</sub>, the weight of n within its parent p, is
+   *
+   * <blockquote>W<sub>n, p</sub> = Cost<sub>n</sub> / (SelfCost<sub>p</sub> +
+   * Cost<sub>n0</sub> + ... + Cost<sub>nk</sub>)
+   * </blockquote>
+   */
+  double computeImportance(RelSubset subset) {
+    double importance;
+    if (subset == planner.root) {
+      // The root always has importance = 1
+      importance = 1.0;
+    } else {
+      final RelMetadataQuery mq = subset.getCluster().getMetadataQuery();
+
+      // The importance of a subset is the max of its importance to its
+      // parents
+      importance = 0.0;
+      for (RelSubset parent : subset.getParentSubsets(planner)) {
+        final double childImportance =
+            computeImportanceOfChild(mq, subset, parent);
+        importance = Math.max(importance, childImportance);
+      }
+    }
+    LOGGER.trace("Importance of [{}] is {}", subset, importance);
+    return importance;
+  }
+
+  private void dump() {
+    if (LOGGER.isTraceEnabled()) {
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      dump(pw);
+      pw.flush();
+      LOGGER.trace(sw.toString());
+    }
+  }
+
+  private void dump(PrintWriter pw) {
+    planner.dump(pw);
+    pw.print("Importances: {");
+    for (RelSubset subset
+        : relImportanceOrdering.sortedCopy(subsetImportances.keySet())) {
+      pw.print(" " + subset.toString() + "=" + subsetImportances.get(subset));
+    }
+    pw.println("}");
+  }
+
+  /**
+   * Removes the rule match with the highest importance, and returns it.
+   *
+   * <p>Returns {@code null} if there are no more matches.</p>
+   *
+   * <p>Note that the VolcanoPlanner may still decide to reject rule matches
+   * which have become invalid, say if one of their operands belongs to an
+   * obsolete set or has importance=0.
+   *
+   * @throws java.lang.AssertionError if this method is called with a phase
+   *                              previously marked as completed via
+   *                              {@link #phaseCompleted(VolcanoPlannerPhase)}.
+   */
+  VolcanoRuleMatch popMatch(VolcanoPlannerPhase phase) {
+    dump();
+
+    PhaseMatchList phaseMatchList = matchListMap.get(phase);
+    if (phaseMatchList == null) {
+      throw new AssertionError("Used match list for phase " + phase
+          + " after phase complete");
+    }
+
+    final List<VolcanoRuleMatch> matchList = phaseMatchList.list;
+    VolcanoRuleMatch match;
+    for (;;) {
+      if (matchList.isEmpty()) {
+        return null;
+      }
+>>>>>>> aa1d61783 ([CALCITE-2518] Add failOnWarnings to maven-javadoc-plugin configuration)
       if (LOGGER.isTraceEnabled()) {
         matchList.sort(MATCH_COMPARATOR);
         match = matchList.remove(0);

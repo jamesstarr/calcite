@@ -734,10 +734,19 @@ limitations under the License.
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <additionalparam>-html5</additionalparam>
+          <doclint>all,-missing</doclint>
+          <failOnWarnings>true</failOnWarnings>
           <links>
             <link>https://docs.oracle.com/javase/9/docs/api/</link>
           </links>
+<<<<<<< HEAD
           <excludePackageNames>org.apache.calcite.benchmarks.generated,org.apache.calcite.sql.parser.ddl,org.apache.calcite.sql.parser.impl,org.apache.calcite.sql.parser.parserextensiontesting,org.apache.calcite.piglet.parser,org.openjdk.jmh</excludePackageNames>
+=======
+          <notimestamp>true</notimestamp>
+          <excludePackageNames>org.apache.calcite.benchmarks.generated,org.apache.calcite.sql.parser.ddl,org.apache.calcite.sql.parser.impl,org.apache.calcite.sql.parser.parserextensiontesting,org.apache.calcite.piglet.parser,org.openjdk.jmh,org.apache.calcite.adapter.elasticsearch2</excludePackageNames>
+          <excludePackageNames>${maven-javadoc-plugin.excludePackageNames}</excludePackageNames>
+          <quiet>true</quiet>
+>>>>>>> aa1d61783 ([CALCITE-2518] Add failOnWarnings to maven-javadoc-plugin configuration)
           <show>private</show>
         </configuration>
       </plugin>
