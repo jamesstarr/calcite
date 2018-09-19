@@ -52,7 +52,42 @@ import static org.apache.calcite.adapter.elasticsearch.QueryBuilders.regexpQuery
 import static org.apache.calcite.adapter.elasticsearch.QueryBuilders.termQuery;
 
 import static java.lang.String.format;
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
+
+/**
+ * Query predicate analyzer. Uses visitor pattern to traverse existing expression
+ * and convert it to {@link QueryBuilder}.
+ *
+ * <p>Major part of this class have been copied from
+ * <a href="https://www.dremio.com/">dremio</a> ES adapter
+ * (thanks to their team for improving calcite-ES integration).
+ */
+class PredicateAnalyzer {
+
+  /**
+   * Internal exception
+   */
+  @SuppressWarnings("serial")
+  private static final class PredicateAnalyzerException extends RuntimeException {
+
+    PredicateAnalyzerException(String message) {
+      super(message);
+    }
+
+    PredicateAnalyzerException(Throwable cause) {
+      super(cause);
+    }
+  }
+
+  /**
+   * Thrown when {@link org.apache.calcite.rel.RelNode} expression can't be processed
+   * (or converted into ES query)
+   */
+  static class ExpressionNotAnalyzableException extends Exception {
+    ExpressionNotAnalyzableException(String message, Throwable cause) {
+      super(message, cause);
+    }
+  }
+
   private PredicateAnalyzer() {}
 
   /**

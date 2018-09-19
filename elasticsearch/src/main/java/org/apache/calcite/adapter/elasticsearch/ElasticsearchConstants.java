@@ -14,17 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-  String SOURCE = SOURCE_GROOVY;
+package org.apache.calcite.adapter.elasticsearch;
+
+import com.google.common.collect.ImmutableSet;
+
+import java.util.Set;
+
+/**
+ * Internal constants referenced in this package.
+ */
+interface ElasticsearchConstants {
+
+  String INDEX = "_index";
+  String TYPE = "_type";
+  String FIELDS = "fields";
+  String SOURCE_PAINLESS = "params._source";
+  String SOURCE_GROOVY = "_source";
   String ID = "_id";
   String UID = "_uid";
-
-  /* Aggregation pushdown operations supported */
-  String AGG_SUM = "SUM";
-  String AGG_SUM0 = "$SUM0";
-  String AGG_COUNT = "COUNT";
-  String AGG_MIN = "MIN";
-  String AGG_MAX = "MAX";
-  String AGG_AVG = "AVG";
 
   Set<String> META_COLUMNS = ImmutableSet.of(UID, ID, TYPE, INDEX);
 

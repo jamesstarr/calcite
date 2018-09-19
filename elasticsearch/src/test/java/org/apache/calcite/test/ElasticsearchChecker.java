@@ -16,16 +16,33 @@
  */
 package org.apache.calcite.test;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Internal util methods for ElasticSearch tests
  */
 public class ElasticsearchChecker {
 
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .enable(SerializationFeature.INDENT_OUTPUT)
+      .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES) // user-friendly settings to
+      .enable(JsonParser.Feature.ALLOW_SINGLE_QUOTES); // avoid too much quoting
+
   private ElasticsearchChecker() {}
 
 
@@ -36,7 +53,7 @@ public class ElasticsearchChecker {
    */
   public static Consumer<List> elasticsearchChecker(final String... strings) {
     Objects.requireNonNull(strings, "strings");
-<<<<<<< HEAD
+>>>>>>> ca1b4e02e ([CALCITE-2528] Support Aggregates in ElasticSearch adapter (Andrei Sereda))
     return a -> {
       ObjectNode actual = a == null || a.isEmpty() ? null
             : ((ObjectNode) a.get(0));
@@ -49,12 +66,23 @@ public class ElasticsearchChecker {
         expected = expandDots(expected);
 
         if (!expected.equals(actual)) {
+<<<<<<< HEAD
           assertEquals(MAPPER.writeValueAsString(expected), MAPPER.writeValueAsString(actual),
               "expected and actual Elasticsearch queries do not match");
+=======
+          assertEquals("expected and actual Elasticsearch queries do not match",
+              MAPPER.writeValueAsString(expected),
+              MAPPER.writeValueAsString(actual));
         }
       } catch (IOException e) {
         throw new UncheckedIOException(e);
       }
+    return actual -> {
+      Object[] actualArray = actual == null || actual.isEmpty() ? null
+            : ((List) actual.get(0)).toArray();
+      CalciteAssert.assertArrayEqual("expected Elasticsearch query not found", strings,
+            actualArray);
+=======
     };
   }
 
@@ -105,15 +133,6 @@ public class ElasticsearchChecker {
     return (T) copy;
   }
 
-}
-=======
-    return actual -> {
-      Object[] actualArray = actual == null || actual.isEmpty() ? null
-            : ((List) actual.get(0)).toArray();
-      CalciteAssert.assertArrayEqual("expected Elasticsearch query not found", strings,
-            actualArray);
-    };
-  }
 }
 
 // End ElasticsearchChecker.java

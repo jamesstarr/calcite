@@ -179,10 +179,9 @@ class ElasticsearchRules {
         }
       }
       throw new IllegalArgumentException("Translation of " + call
-<<<<<<< HEAD:elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchRules.java
-        + " is not supported by ElasticsearchProject");
-=======
         + "is not supported by ElasticsearchProject");
+=======
+        + " is not supported by ElasticsearchProject");
     }
 
 <<<<<<< HEAD

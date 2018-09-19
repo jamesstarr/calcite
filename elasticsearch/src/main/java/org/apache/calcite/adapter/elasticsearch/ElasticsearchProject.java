@@ -119,55 +119,8 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
     }
 >>>>>>> 130909e66 ([CALCITE-2347] running ElasticSearch in embedded mode for unit tests of ES adapter (Andrei Sereda)):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
 
-      if (ElasticsearchRules.isItem(pair.left)) {
-        implementor.addExpressionItemMapping(name, expr);
-        fields.add(expr);
-      } else if (expr.equals(name)) {
-        fields.add(name);
-      } else if (expr.matches("\"literal\":.+")) {
-        scriptFields.add(ElasticsearchRules.quote(name)
-                + ":{\"script\": "
-                + expr.split(":")[1] + "}");
-      } else {
-        scriptFields.add(ElasticsearchRules.quote(name)
-                + ":{\"script\":"
-                // _source (ES2) vs params._source (ES5)
-                + "\"" + implementor.elasticsearchTable.scriptedFieldPrefix() + "."
-                + expr.replace("\"", "") + "\"}");
-      }
-    }
-<<<<<<< HEAD:elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
-
-    if (hasSelectStar) {
-      // means select * from elastic
-      // this does not yet cover select *, _MAP['foo'], _MAP['bar'][0] from elastic
-      return;
-    }
-
-    final StringBuilder query = new StringBuilder();
-    if (scriptFields.isEmpty()) {
-      List<String> newList = fields.stream()
-          // _id field is available implicitly
-          .filter(f -> !ElasticsearchConstants.ID.equals(f))
-          .map(ElasticsearchRules::quote)
-          .collect(Collectors.toList());
-
-      final String findString = String.join(", ", newList);
-      query.append("\"_source\" : [").append(findString).append("]");
-    } else {
-      // if scripted fields are present, ES ignores _source attribute
-      for (String field: fields) {
-        scriptFields.add(ElasticsearchRules.quote(field) + ":{\"script\": "
-                // _source (ES2) vs params._source (ES5)
-                + "\"" + implementor.elasticsearchTable.scriptedFieldPrefix() + "."
-                + field + "\"}");
-      }
-      query.append("\"script_fields\": {" + String.join(", ", scriptFields) + "}");
-    }
-
-    implementor.list.removeIf(l -> l.startsWith("\"_source\""));
-    implementor.add("{" + query.toString() + "}");
 =======
+    implementor.list.removeIf(l -> l.startsWith("\"_source\""));
     implementor.add(query.toString());
 >>>>>>> 130909e66 ([CALCITE-2347] running ElasticSearch in embedded mode for unit tests of ES adapter (Andrei Sereda)):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
   }

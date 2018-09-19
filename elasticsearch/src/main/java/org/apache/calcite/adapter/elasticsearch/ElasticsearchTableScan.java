@@ -63,15 +63,13 @@ public class ElasticsearchTableScan extends TableScan implements ElasticsearchRe
        RelOptTable table, ElasticsearchTable elasticsearchTable,
        RelDataType projectRowType) {
     super(cluster, traitSet, ImmutableList.of(), table);
-<<<<<<< HEAD:elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchTableScan.java
-<<<<<<< HEAD:elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchTableScan.java
-    this.elasticsearchTable = Objects.requireNonNull(elasticsearchTable, "elasticsearchTable");
-=======
     this.elasticsearchTable = Preconditions.checkNotNull(elasticsearchTable);
->>>>>>> 6435df1c4 ([CALCITE-3723] Following the change to add hints to RelNode, deprecate the old constructors):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchTableScan.java
 =======
     this.elasticsearchTable = Objects.requireNonNull(elasticsearchTable);
 >>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchTableScan.java
+=======
+    this.elasticsearchTable = Objects.requireNonNull(elasticsearchTable, "elasticsearchTable");
+>>>>>>> ca1b4e02e ([CALCITE-2528] Support Aggregates in ElasticSearch adapter (Andrei Sereda))
     this.projectRowType = projectRowType;
 
     assert getConvention() == ElasticsearchRel.CONVENTION;

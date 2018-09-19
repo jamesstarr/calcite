@@ -30,7 +30,7 @@ import org.elasticsearch.client.RestClient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -55,6 +55,8 @@ public class ElasticsearchSchema extends AbstractSchema {
 
   private final ObjectMapper mapper;
 
+  private final Map<String, Table> tableMap;
+
   /**
    * Allows schema to be instantiated from existing elastic search client.
    * This constructor is used in tests.
@@ -63,20 +65,33 @@ public class ElasticsearchSchema extends AbstractSchema {
    * @param index name of ES index
    */
   public ElasticsearchSchema(RestClient client, ObjectMapper mapper, String index) {
+    this(client, mapper, index, null);
+  }
+
+  public ElasticsearchSchema(RestClient client, ObjectMapper mapper, String index, String type) {
     super();
     this.client = Objects.requireNonNull(client, "client");
     this.mapper = Objects.requireNonNull(mapper, "mapper");
     this.index = Objects.requireNonNull(index, "index");
+    if (type == null) {
+      try {
+        this.tableMap = createTables(listTypesFromElastic());
+      } catch (IOException e) {
+        throw new UncheckedIOException("Couldn't get types for " + index, e);
+      }
+    } else {
+      this.tableMap = createTables(Collections.singleton(type));
+    }
   }
 
   @Override protected Map<String, Table> getTableMap() {
+    return tableMap;
+  }
+
+  private Map<String, Table> createTables(Iterable<String> types) {
     final ImmutableMap.Builder<String, Table> builder = ImmutableMap.builder();
-    try {
-      for (String type: listTypes()) {
-        builder.put(type, new ElasticsearchTable(client, mapper, index, type));
-      }
-    } catch (IOException e) {
-      throw new UncheckedIOException("Failed to get types for " + index, e);
+    for (String type : types) {
+      builder.put(type, new ElasticsearchTable(client, mapper, index, type));
     }
     return builder.build();
   }
@@ -88,7 +103,7 @@ public class ElasticsearchSchema extends AbstractSchema {
    * @throws IOException for any IO related issues
    * @throws IllegalStateException if reply is not understood
    */
-  private Set<String> listTypes() throws IOException  {
+  private Set<String> listTypesFromElastic() throws IOException  {
     final String endpoint = "/" + index + "/_mapping";
     final Response response = client.performRequest("GET", endpoint);
     try (InputStream is = response.getEntity().getContent()) {

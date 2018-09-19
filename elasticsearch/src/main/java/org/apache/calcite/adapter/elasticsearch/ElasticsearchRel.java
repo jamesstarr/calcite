@@ -45,6 +45,7 @@ public interface ElasticsearchRel extends RelNode {
    * {@link ElasticsearchRel} nodes into an Elasticsearch query.
    */
   class Implementor {
+
     final List<String> list = new ArrayList<>();
 
     /**
@@ -89,7 +90,7 @@ public interface ElasticsearchRel extends RelNode {
     RelOptTable table;
     ElasticsearchTable elasticsearchTable;
 
-    public void add(String findOp) {
+    void add(String findOp) {
       list.add(findOp);
     }
 
@@ -98,19 +99,18 @@ public interface ElasticsearchRel extends RelNode {
       groupBy.add(field);
     }
 
+    void addSort(String field, RelFieldCollation.Direction direction) {
+      Objects.requireNonNull(field, "field");
+      sort.add(new Pair<>(field, direction));
+    }
+
     void addAggregation(String field, String expression) {
       Objects.requireNonNull(field, "field");
       Objects.requireNonNull(expression, "expression");
       aggregations.add(new Pair<>(field, expression));
     }
 
-<<<<<<< HEAD
-    void addExpressionItemMapping(String expressionId, String item) {
-      Objects.requireNonNull(expressionId, "expressionId");
-      Objects.requireNonNull(item, "item");
-      expressionItemMap.put(expressionId, item);
-    }
-
+>>>>>>> ca1b4e02e ([CALCITE-2528] Support Aggregates in ElasticSearch adapter (Andrei Sereda))
     void offset(long offset) {
       this.offset = offset;
     }
@@ -120,6 +120,7 @@ public interface ElasticsearchRel extends RelNode {
     }
 
     void visitChild(int ordinal, RelNode input) {
+<<<<<<< HEAD
       assert ordinal == 0;
       ((ElasticsearchRel) input).implement(this);
     }
@@ -128,9 +129,11 @@ public interface ElasticsearchRel extends RelNode {
 }
 =======
     public void visitChild(int ordinal, RelNode input) {
+=======
       assert ordinal == 0;
       ((ElasticsearchRel) input).implement(this);
     }
+
   }
 }
 

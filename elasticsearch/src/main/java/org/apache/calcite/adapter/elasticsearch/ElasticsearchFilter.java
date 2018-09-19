@@ -23,7 +23,6 @@ import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Filter;
-import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexInputRef;
@@ -40,24 +39,44 @@ import com.google.common.collect.Multimap;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UncheckedIOException;
-    List<String> fieldNames;
-    if (input instanceof Project) {
-      final List<RexNode> projects = ((Project) input).getProjects();
-      fieldNames = new ArrayList<>(projects.size());
-      for (RexNode project : projects) {
-        String name = project.accept(MapProjectionFieldVisitor.INSTANCE);
-        fieldNames.add(name);
-      }
-    } else {
-      fieldNames = ElasticsearchRules.elasticsearchFieldNames(getRowType());
-    }
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+
+/**
+ * Implementation of a {@link org.apache.calcite.rel.core.Filter}
+ * relational expression in Elasticsearch.
+ */
+public class ElasticsearchFilter extends Filter implements ElasticsearchRel {
+  ElasticsearchFilter(RelOptCluster cluster, RelTraitSet traitSet, RelNode child,
+      RexNode condition) {
+    super(cluster, traitSet, child, condition);
+    assert getConvention() == ElasticsearchRel.CONVENTION;
+    assert getConvention() == child.getConvention();
+  }
+
+  @Override public RelOptCost computeSelfCost(RelOptPlanner planner, RelMetadataQuery mq) {
+    return super.computeSelfCost(planner, mq).multiplyBy(0.1);
+  }
+
+  @Override public Filter copy(RelTraitSet relTraitSet, RelNode input, RexNode condition) {
+    return new ElasticsearchFilter(getCluster(), relTraitSet, input, condition);
+  }
+
+  @Override public void implement(Implementor implementor) {
+    implementor.visitChild(0, getInput());
     ObjectMapper mapper = implementor.elasticsearchTable.mapper;
     PredicateAnalyzerTranslator translator = new PredicateAnalyzerTranslator(mapper);
     try {
       implementor.add(translator.translateMatch(condition));
     } catch (IOException e) {
       throw new UncheckedIOException(e);
-    } catch (ExpressionNotAnalyzableException e) {
+    } catch (PredicateAnalyzer.ExpressionNotAnalyzableException e) {
       throw new RuntimeException(e);
     }
   }
@@ -73,7 +92,8 @@ import java.io.UncheckedIOException;
       this.mapper = Objects.requireNonNull(mapper, "mapper");
     }
 
-    String translateMatch(RexNode condition) throws IOException, ExpressionNotAnalyzableException {
+    String translateMatch(RexNode condition) throws IOException,
+        PredicateAnalyzer.ExpressionNotAnalyzableException {
 
       StringWriter writer = new StringWriter();
       JsonGenerator generator = mapper.getFactory().createGenerator(writer);
