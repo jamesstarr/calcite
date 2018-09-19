@@ -1515,10 +1515,15 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplify(isNotNull(not(vBoolNotNull())), "true");
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     // "null is null" to "true"
     checkSimplify(isNull(nullBool), "true");
 =======
 >>>>>>> 3f4dc4cca (Following [CALCITE-2469] simplify "f(x, y) IS NULL" to "x IS NULL OR y IS NULL" if "f" is strong):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+    // "null is null" to "true"
+    checkSimplify(isNull(nullBool), "true");
+>>>>>>> 58f40d369 ([CALCITE-2567] Simplify IS NULL(null) to true (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "(x + y) is null" simplifies to "x is null or y is null"
     checkSimplify(isNull(plus(vInt(0), vInt(1))),
         "OR(IS NULL(?0.int0), IS NULL(?0.int1))");

@@ -4463,27 +4463,6 @@ class RelToSqlConverterTest {
       return dialect(SqlDialect.DatabaseProduct.VERTICA.getDialect());
     }
 
-<<<<<<< HEAD
-    Sql withBigQuery() {
-      return dialect(SqlDialect.DatabaseProduct.BIG_QUERY.getDialect());
-    }
-
-    Sql withSpark() {
-      return dialect(DatabaseProduct.SPARK.getDialect());
-    }
-
-    Sql withPostgresqlModifiedTypeSystem() {
-      // Postgresql dialect with max length for varchar set to 256
-      final PostgresqlSqlDialect postgresqlSqlDialect =
-          new PostgresqlSqlDialect(PostgresqlSqlDialect.DEFAULT_CONTEXT
-              .withDataTypeSystem(new RelDataTypeSystemImpl() {
-                @Override public int getMaxPrecision(SqlTypeName typeName) {
-                  switch (typeName) {
-                  case VARCHAR:
-                    return 256;
-                  default:
-                    return super.getMaxPrecision(typeName);
-=======
     Sql withPostgresqlModifiedTypeSystem() {
       // Postgresql dialect with max length for varchar set to 256
       final PostgresqlSqlDialect postgresqlSqlDialect =
@@ -4527,7 +4506,6 @@ class RelToSqlConverterTest {
     }
 
 =======
->>>>>>> 0cc58462f ([CALCITE-2713] JDBC adapter may generate casts on PostgreSQL for VARCHAR type exceeding max length)
     Sql config(SqlToRelConverter.Config config) {
       return new Sql(schema, sql, dialect, config, transforms);
     }
