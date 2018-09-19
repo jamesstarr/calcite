@@ -338,9 +338,9 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
     }
     slowestTasks = new TopN<>(topnSlowest > 0 ? topnSlowest : 1);
     Random r = new Random();
-    if (SEED != 0) {
-      LOGGER.info("Using seed {} for rex fuzzing", SEED);
-      r.setSeed(SEED);
+    if (startSeed != 0) {
+      LOGGER.info("Using seed {} for rex fuzzing", startSeed);
+      r.setSeed(startSeed);
     }
     long start = System.currentTimeMillis();
     long deadline = start + testDuration.toMillis();
@@ -350,8 +350,8 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
     int dup = 0;
     int fail = 0;
     RexFuzzer fuzzer = new RexFuzzer(rexBuilder, typeFactory);
-    while (System.currentTimeMillis() < deadline && exceptions.size() < MAX_FAILURES
-        && (TEST_ITERATIONS == 0 || total < TEST_ITERATIONS)) {
+    while (System.currentTimeMillis() < deadline && exceptions.size() < maxFailures
+        && (testIterations == 0 || total < testIterations)) {
       long seed = r.nextLong();
       this.currentSeed = seed;
       r.setSeed(seed);
@@ -385,7 +385,7 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
         "Rex fuzzing results: number of cases tested={}, failed cases={}, duplicate failures={}, fuzz rate={} per second",
         total, fail, dup, rate);
 
-    if (TOPN_SLOWEST > 0) {
+    if (topnSlowest > 0) {
       LOGGER.info("The 5 slowest to simplify nodes were");
       SimplifyTask task;
       RexToTestCodeShuttle v = new RexToTestCodeShuttle();
@@ -407,7 +407,8 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
             <Throwable>comparingInt(t -> t.getMessage() == null ? -1 : t.getMessage().length())
             .thenComparing(Throwable::getMessage));
 
-    for (int i = 0; i < exceptions.size() && i < 100; i++) {
+    // The first exception will be thrown, so the others go to printStackTrace
+    for (int i = 1; i < exceptions.size() && i < 100; i++) {
       Throwable exception = exceptions.get(i);
       exception.printStackTrace();
     }
@@ -416,7 +417,10 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
     if (ex instanceof Error) {
       throw (Error) ex;
     }
-    throw new RuntimeException("Exception in testFuzzy", ex);
+    if (ex instanceof RuntimeException) {
+      throw (RuntimeException) ex;
+    }
+    throw new RuntimeException("Exception in runRexFuzzer", ex);
   }
 
   private void generateRexAndCheckTrueFalse(RexFuzzer fuzzer, Random r) {
