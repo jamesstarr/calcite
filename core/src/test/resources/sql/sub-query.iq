@@ -1300,6 +1300,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[=($t4, $t0)], cs=[$t3], $condition=[$t5])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
@@ -1310,6 +1311,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[=($t4, $t0)], cs=[$t3], $condition=[$t5])
 >>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
+>>>>>>> 8bead079a ([CALCITE-2554] Enrich enumerable join operators with order preserving information (Stamatis Zampetakis))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -1800,6 +1804,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[=($t4, $t0)], cs=[$t3], $condition=[$t5])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
@@ -1810,6 +1815,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[=($t4, $t0)], cs=[$t3], $condition=[$t5])
 >>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
+>>>>>>> 8bead079a ([CALCITE-2554] Enrich enumerable join operators with order preserving information (Stamatis Zampetakis))
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 

@@ -33,7 +33,7 @@ import org.apache.calcite.rel.core.Calc;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
-import org.apache.calcite.rel.core.Match;
+>>>>>>> 8bead079a ([CALCITE-2554] Enrich enumerable join operators with order preserving information (Stamatis Zampetakis))
 import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.SortExchange;
@@ -173,7 +173,27 @@ public class RelMdCollation
         RelMdCollation.enumerableCorrelate(mq, join.getLeft(), join.getRight(),
             join.getJoinType()));
 =======
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+  }
+
+  public ImmutableList<RelCollation> collations(EnumerableHashJoin join,
+      RelMetadataQuery mq) {
+    return ImmutableList.copyOf(
+        RelMdCollation.enumerableHashJoin(mq, join.getLeft(), join.getRight(), join.getJoinType()));
+  }
+
+  public ImmutableList<RelCollation> collations(EnumerableNestedLoopJoin join,
+      RelMetadataQuery mq) {
+    return ImmutableList.copyOf(
+        RelMdCollation.enumerableNestedLoopJoin(mq, join.getLeft(), join.getRight(),
+                join.getJoinType())
+    );
+  }
+
+  public ImmutableList<RelCollation> collations(EnumerableCorrelate join,
+      RelMetadataQuery mq) {
+    return ImmutableList.copyOf(
+        RelMdCollation.enumerableCorrelate(mq, join.getLeft(), join.getRight(), join.getJoinType())
+    );
   }
 
   public ImmutableList<RelCollation> collations(Sort sort,
@@ -449,6 +469,66 @@ public class RelMdCollation
     }
     return builder.build();
   }
+<<<<<<< HEAD
+=======
+
+  /**
+   * Returns the collation of {@link EnumerableHashJoin} based on its inputs and the join type.
+   */
+  public static List<RelCollation> enumerableHashJoin(RelMetadataQuery mq,
+      RelNode left, RelNode right, JoinRelType joinType) {
+    return enumerableJoin0(mq, left, right, joinType);
+  }
+
+  /**
+   * Returns the collation of {@link EnumerableNestedLoopJoin} based on its inputs
+   * and the join type.
+   */
+  public static List<RelCollation> enumerableNestedLoopJoin(RelMetadataQuery mq,
+      RelNode left, RelNode right, JoinRelType joinType) {
+    return enumerableJoin0(mq, left, right, joinType);
+  }
+
+  public static List<RelCollation> enumerableCorrelate(RelMetadataQuery mq,
+      RelNode left, RelNode right, JoinRelType joinType) {
+    // The current implementation always preserve the sort order of the left input
+    return mq.collations(left);
+  }
+
+  public static List<RelCollation> enumerableSemiJoin(RelMetadataQuery mq,
+      RelNode left, RelNode right) {
+    // The current implementation always preserve the sort order of the left input
+    return mq.collations(left);
+  }
+
+  private static List<RelCollation> enumerableJoin0(RelMetadataQuery mq,
+      RelNode left, RelNode right, JoinRelType joinType) {
+    // The current implementation can preserve the sort order of the left input if one of the
+    // following conditions hold:
+    // (i) join type is INNER or LEFT;
+    // (ii) RelCollation always orders nulls last.
+    final ImmutableList<RelCollation> leftCollations = mq.collations(left);
+    switch (joinType) {
+    case SEMI:
+    case ANTI:
+    case INNER:
+    case LEFT:
+      return leftCollations;
+    case RIGHT:
+    case FULL:
+      for (RelCollation collation : leftCollations) {
+        for (RelFieldCollation field : collation.getFieldCollations()) {
+          if (!(RelFieldCollation.NullDirection.LAST == field.nullDirection)) {
+            return ImmutableList.of();
+          }
+        }
+      }
+      return leftCollations;
+    }
+    return ImmutableList.of();
+  }
+}
+>>>>>>> 8bead079a ([CALCITE-2554] Enrich enumerable join operators with order preserving information (Stamatis Zampetakis))
 
   /**
    * Returns the collation of {@link EnumerableHashJoin} based on its inputs and the join type.

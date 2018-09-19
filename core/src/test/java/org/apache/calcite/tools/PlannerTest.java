@@ -531,16 +531,19 @@ public class PlannerTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2554">[CALCITE-2554]
    * Enrich EnumerableJoin operator with order preserving information</a>.
    *
-   * <p>Since the left input to the join is sorted, and this join preserves
-   * order, there shouldn't be any sort operator above the join.
+   * Since left input to the join is sorted, and this join preserves order, there shouldn't be
+   * any sort operator above the join.
    */
-  @Test void testRedundantSortOnJoinPlan() throws Exception {
+  @Test public void testRedundantSortOnJoinPlan() throws Exception {
     RuleSet ruleSet =
         RuleSets.ofList(
             CoreRules.SORT_REMOVE,
             CoreRules.SORT_JOIN_TRANSPOSE,
             CoreRules.SORT_PROJECT_TRANSPOSE,
+<<<<<<< HEAD
             EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
+=======
+>>>>>>> 8bead079a ([CALCITE-2554] Enrich enumerable join operators with order preserving information (Stamatis Zampetakis))
             EnumerableRules.ENUMERABLE_LIMIT_RULE,
             EnumerableRules.ENUMERABLE_JOIN_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE,
