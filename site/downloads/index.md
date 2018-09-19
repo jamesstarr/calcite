@@ -77,6 +77,7 @@ Release          | Date       | Commit   | Download
 {% endcomment %}
 {% endfor %}
 
+<<<<<<< HEAD
 To download a source distribution for a particular release, click on
 the *tar* link (for older releases, *zip* format is also available).
 
@@ -87,6 +88,14 @@ For fast downloads, current source distributions are hosted on mirror servers;
 older source distributions are in the
 [archive](https://archive.apache.org/dist/calcite/)
 or [incubator archive](https://archive.apache.org/dist/incubator/calcite/).
+=======
+Choose a source distribution in either *tar* or *zip* format.
+
+For fast downloads, current source distributions are hosted on mirror servers;
+older source distributions are in the
+[archive](http://archive.apache.org/dist/calcite/) 
+or [incubator archive](http://archive.apache.org/dist/incubator/calcite/).
+>>>>>>> cb15bf503 ([CALCITE-2574] Update download page to include instructions for verifying)
 If a download from a mirror fails, retry, and the second download will likely
 succeed.
 
@@ -95,15 +104,24 @@ For security, hash and signature files are always hosted at
 
 # Verify the integrity of the files
 
+<<<<<<< HEAD
 You must verify the integrity of the downloaded file using the PGP
 signature (.asc file) or a hash (.sha256; .md5 for older releases).
 For more information why this must be done, please read
 [Verifying Apache Software Foundation Releases](https://www.apache.org/info/verification.html).
+=======
+You must verify the integrity of the downloaded file using the PGP signature (.asc file) or a hash (.sha256, .md5 for older
+releases). For more information why this must be done, please read [Verifying Apache Software Foundation Releases](https://www.apache.org/info/verification.html).
+>>>>>>> cb15bf503 ([CALCITE-2574] Update download page to include instructions for verifying)
 
 To verify the signature using GPG or PGP, please do the following:
 
 1. Download the release artifact and the corresponding PGP signature from the table above.
+<<<<<<< HEAD
 2. Download the [Apache Calcite KEYS](https://www.apache.org/dist/calcite/KEYS) file.
+=======
+2. Download the [Apache Calcite KEYS](http://www.apache.org/dist/calcite/KEYS) file.
+>>>>>>> cb15bf503 ([CALCITE-2574] Update download page to include instructions for verifying)
 3. Import the KEYS file and verify the downloaded artifact using one of the following methods:
 {% highlight shell %}
 % gpg --import KEYS
