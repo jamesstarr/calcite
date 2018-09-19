@@ -107,6 +107,7 @@ import org.apache.calcite.sql.parser.SqlParserImplFactory;
 import org.apache.calcite.sql.type.ExtraSqlTypes;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.util.SqlOperatorTables;
+import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlRexConvertletTable;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
@@ -1218,6 +1219,8 @@ public class CalcitePrepareImpl implements CalcitePrepare {
 
         try {
           CatalogReader.THREAD_LOCAL.set(catalogReader);
+          final SqlConformance conformance = context.config().conformance();
+          internalParameters.put("_conformance", conformance);
           bindable = EnumerableInterpretable.toBindable(internalParameters,
               context.spark(), enumerable, prefer);
         } finally {
