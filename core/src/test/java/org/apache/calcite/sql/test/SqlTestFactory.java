@@ -191,6 +191,13 @@ public class SqlTestFactory {
         }
       };
     }
+    if (conformance.allowExtendedTrim()) {
+      typeSystem = new DelegatingTypeSystem(typeSystem) {
+        public boolean allowExtendedTrim() {
+          return true;
+        }
+      };
+    }
     return new JavaTypeFactoryImpl(typeSystem);
   }
 

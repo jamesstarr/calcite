@@ -2030,6 +2030,7 @@ public class RexImpTable {
           translatedOperands.get(1),
           translatedOperands.get(2),
           Expressions.constant(strict));
+<<<<<<< HEAD
     }
   }
 
@@ -2066,6 +2067,8 @@ public class RexImpTable {
           Expressions.call(BuiltInMethod.LOCALE.method, translator.getRoot());
       return Expressions.call(builtInMethod.method.getDeclaringClass(),
           builtInMethod.method.getName(), operand, locale);
+=======
+>>>>>>> 39c3e45da ([CALCITE-2571] TRIM function now trims more than one character (Andrew Pilloud))
     }
   }
 

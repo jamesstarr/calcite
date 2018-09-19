@@ -133,6 +133,38 @@ public class EnumerableNestedLoopJoin extends Join implements EnumerableRel {
                 Expressions.constant(EnumUtils.toLinq4jJoinType(joinType))))
             .toBlock());
   }
+<<<<<<< HEAD
+=======
+
+  Expression predicate(EnumerableRelImplementor implementor,
+      BlockBuilder builder, PhysType leftPhysType, PhysType rightPhysType,
+      RexNode condition) {
+    final ParameterExpression left_ =
+        Expressions.parameter(leftPhysType.getJavaRowType(), "left");
+    final ParameterExpression right_ =
+        Expressions.parameter(rightPhysType.getJavaRowType(), "right");
+    final RexProgramBuilder program =
+        new RexProgramBuilder(
+            implementor.getTypeFactory().builder()
+                .addAll(left.getRowType().getFieldList())
+                .addAll(right.getRowType().getFieldList())
+                .build(),
+            getCluster().getRexBuilder());
+    program.addCondition(condition);
+    builder.add(
+        Expressions.return_(null,
+            RexToLixTranslator.translateCondition(program.getProgram(),
+                implementor.getTypeFactory(),
+                builder,
+                new RexToLixTranslator.InputGetterImpl(
+                    ImmutableList.of(Pair.of((Expression) left_, leftPhysType),
+                        Pair.of((Expression) right_, rightPhysType))),
+                implementor.allCorrelateVariables,
+                implementor.getConformance())));
+    return Expressions.lambda(Predicate2.class, builder.toBlock(), left_,
+        right_);
+  }
+>>>>>>> 39c3e45da ([CALCITE-2571] TRIM function now trims more than one character (Andrew Pilloud))
 }
 <<<<<<< HEAD
 =======

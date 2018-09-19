@@ -295,7 +295,8 @@ public class EnumerableAggregate extends Aggregate implements EnumerableRel {
                   currentBlock(),
                   new RexToLixTranslator.InputGetterImpl(
                       Collections.singletonList(
-                          Pair.of(inParameter, inputPhysType))))
+                          Pair.of((Expression) inParameter, inputPhysType))),
+                  implementor.getConformance())
                   .setNullable(currentNullables());
             }
           };

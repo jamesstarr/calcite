@@ -310,6 +310,19 @@ public enum SqlConformanceEnum implements SqlConformance {
       return false;
     }
   }
+
+  public boolean allowExtendedTrim() {
+    switch (this) {
+    case BABEL:
+    case LENIENT:
+    case MYSQL_5:
+    case SQL_SERVER_2008:
+      return true;
+    default:
+      return false;
+    }
+  }
+
 }
 >>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
 

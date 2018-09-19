@@ -103,5 +103,9 @@ public abstract class SqlAbstractConformance implements SqlConformance {
     return SqlConformanceEnum.DEFAULT.shouldConvertRaggedUnionTypesToVarying();
   }
 
+  public boolean allowExtendedTrim() {
+    return SqlConformanceEnum.DEFAULT.allowExtendedTrim();
+  }
+
 }
 // End SqlAbstractConformance.java

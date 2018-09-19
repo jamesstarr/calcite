@@ -71,14 +71,15 @@ public class EnumerableTableFunctionScan extends TableFunctionScan
     } else {
       return defaultTableFunctionImplement(implementor, pref);
     }
-  }
-
-  private boolean isImplementorDefined(RexCall call) {
-    if (call.getOperator() instanceof SqlWindowTableFunction
-        && RexImpTable.INSTANCE.get((SqlWindowTableFunction) call.getOperator()) != null) {
-      return true;
-    }
-    return false;
+    final PhysType physType =
+        PhysTypeImpl.of(implementor.getTypeFactory(), getRowType(), format,
+            false);
+    RexToLixTranslator t = RexToLixTranslator.forAggregation(
+        (JavaTypeFactory) getCluster().getTypeFactory(), bb, null,
+        implementor.getConformance());
+    t = t.setCorrelates(implementor.allCorrelateVariables);
+    bb.add(Expressions.return_(null, t.translate(getCall())));
+    return implementor.result(physType, bb.toBlock());
   }
 
   private boolean isQueryable() {

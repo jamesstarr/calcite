@@ -364,6 +364,10 @@ public abstract class RelDataTypeSystemImpl implements RelDataTypeSystem {
     return null;
   }
 
+  public boolean allowExtendedTrim() {
+    return false;
+  }
+
 }
 
   @Override public RelDataType deriveDecimalPlusType(RelDataTypeFactory typeFactory,

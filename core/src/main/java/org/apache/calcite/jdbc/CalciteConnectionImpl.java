@@ -133,8 +133,11 @@ abstract class CalciteConnectionImpl
                 return true;
               }
             };
+<<<<<<< HEAD
 >>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
         cfg.typeSystem(RelDataTypeSystem.class, RelDataTypeSystem.DEFAULT);
+=======
+>>>>>>> 39c3e45da ([CALCITE-2571] TRIM function now trims more than one character (Andrew Pilloud))
       }
       this.typeFactory = new JavaTypeFactoryImpl(typeSystem);
     }

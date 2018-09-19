@@ -542,7 +542,7 @@ public class EnumerableWindow extends Window implements EnumerableRel {
                 translatedConstants);
 
         return RexToLixTranslator.forAggregation(typeFactory,
-            block, inputGetter);
+            block, inputGetter, conformance);
       }
 
       public Expression computeIndex(Expression offset,
