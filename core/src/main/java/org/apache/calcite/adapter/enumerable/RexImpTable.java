@@ -524,64 +524,7 @@ public class RexImpTable {
     // Sequences
     defineMethod(CURRENT_VALUE, BuiltInMethod.SEQUENCE_CURRENT_VALUE.method, NullPolicy.STRICT);
     defineMethod(NEXT_VALUE, BuiltInMethod.SEQUENCE_NEXT_VALUE.method, NullPolicy.STRICT);
-
-    // Compression Operators
-    defineMethod(COMPRESS, BuiltInMethod.COMPRESS.method, NullPolicy.ARG0);
-
-    // Xml Operators
-    defineMethod(EXTRACT_VALUE, BuiltInMethod.EXTRACT_VALUE.method, NullPolicy.ARG0);
-    defineMethod(XML_TRANSFORM, BuiltInMethod.XML_TRANSFORM.method, NullPolicy.ARG0);
-    defineMethod(EXTRACT_XML, BuiltInMethod.EXTRACT_XML.method, NullPolicy.ARG0);
-    defineMethod(EXISTS_NODE, BuiltInMethod.EXISTS_NODE.method, NullPolicy.ARG0);
-
-    // Json Operators
-    defineMethod(JSON_VALUE_EXPRESSION,
-        BuiltInMethod.JSON_VALUE_EXPRESSION.method, NullPolicy.STRICT);
-    defineMethod(JSON_EXISTS, BuiltInMethod.JSON_EXISTS.method, NullPolicy.ARG0);
-    defineImplementor(JSON_VALUE, NullPolicy.ARG0,
-        new JsonValueImplementor(BuiltInMethod.JSON_VALUE.method), false);
-    defineMethod(JSON_QUERY, BuiltInMethod.JSON_QUERY.method, NullPolicy.ARG0);
-    defineMethod(JSON_TYPE, BuiltInMethod.JSON_TYPE.method, NullPolicy.ARG0);
-    defineMethod(JSON_DEPTH, BuiltInMethod.JSON_DEPTH.method, NullPolicy.ARG0);
-    defineMethod(JSON_REMOVE, BuiltInMethod.JSON_REMOVE.method, NullPolicy.ARG0);
-    defineMethod(JSON_STORAGE_SIZE, BuiltInMethod.JSON_STORAGE_SIZE.method, NullPolicy.ARG0);
-    defineMethod(JSON_KEYS, BuiltInMethod.JSON_KEYS.method, NullPolicy.ARG0);
-    defineMethod(JSON_PRETTY, BuiltInMethod.JSON_PRETTY.method, NullPolicy.ARG0);
-    defineMethod(JSON_LENGTH, BuiltInMethod.JSON_LENGTH.method, NullPolicy.ARG0);
-    defineMethod(JSON_OBJECT, BuiltInMethod.JSON_OBJECT.method, NullPolicy.NONE);
-    defineMethod(JSON_ARRAY, BuiltInMethod.JSON_ARRAY.method, NullPolicy.NONE);
-    aggMap.put(JSON_OBJECTAGG.with(SqlJsonConstructorNullClause.ABSENT_ON_NULL),
-        JsonObjectAggImplementor
-            .supplierFor(BuiltInMethod.JSON_OBJECTAGG_ADD.method));
-    aggMap.put(JSON_OBJECTAGG.with(SqlJsonConstructorNullClause.NULL_ON_NULL),
-        JsonObjectAggImplementor
-            .supplierFor(BuiltInMethod.JSON_OBJECTAGG_ADD.method));
-    aggMap.put(JSON_ARRAYAGG.with(SqlJsonConstructorNullClause.ABSENT_ON_NULL),
-        JsonArrayAggImplementor
-            .supplierFor(BuiltInMethod.JSON_ARRAYAGG_ADD.method));
-    aggMap.put(JSON_ARRAYAGG.with(SqlJsonConstructorNullClause.NULL_ON_NULL),
-        JsonArrayAggImplementor
-            .supplierFor(BuiltInMethod.JSON_ARRAYAGG_ADD.method));
-    defineImplementor(IS_JSON_VALUE, NullPolicy.NONE,
-        new MethodImplementor(BuiltInMethod.IS_JSON_VALUE.method), false);
-    defineImplementor(IS_JSON_OBJECT, NullPolicy.NONE,
-        new MethodImplementor(BuiltInMethod.IS_JSON_OBJECT.method), false);
-    defineImplementor(IS_JSON_ARRAY, NullPolicy.NONE,
-        new MethodImplementor(BuiltInMethod.IS_JSON_ARRAY.method), false);
-    defineImplementor(IS_JSON_SCALAR, NullPolicy.NONE,
-        new MethodImplementor(BuiltInMethod.IS_JSON_SCALAR.method), false);
-    defineImplementor(IS_NOT_JSON_VALUE, NullPolicy.NONE,
-        NotImplementor.of(
-            new MethodImplementor(BuiltInMethod.IS_JSON_VALUE.method)), false);
-    defineImplementor(IS_NOT_JSON_OBJECT, NullPolicy.NONE,
-        NotImplementor.of(
-            new MethodImplementor(BuiltInMethod.IS_JSON_OBJECT.method)), false);
-    defineImplementor(IS_NOT_JSON_ARRAY, NullPolicy.NONE,
-        NotImplementor.of(
-            new MethodImplementor(BuiltInMethod.IS_JSON_ARRAY.method)), false);
-    defineImplementor(IS_NOT_JSON_SCALAR, NullPolicy.NONE,
-        NotImplementor.of(
-            new MethodImplementor(BuiltInMethod.IS_JSON_SCALAR.method)), false);
+>>>>>>> 9c97f231c (Remove "Now, do something with table " from standard output when implementing sequences)
 
     // System functions
     final SystemFunctionImplementor systemFunctionImplementor =
@@ -2232,6 +2175,7 @@ public class RexImpTable {
     }
   }
 
+<<<<<<< HEAD
   /**
    * Implementor for JSON_VALUE function, convert to solid format
    * "JSON_VALUE(json_doc, path, empty_behavior, empty_default, error_behavior, error default)"
@@ -2309,6 +2253,7 @@ public class RexImpTable {
     return null;
   }
 
+=======
   /** Implementor for SQL functions that generates calls to a given method name.
    *
    * <p>Use this, as opposed to {@link MethodImplementor}, if the SQL function
