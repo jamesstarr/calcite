@@ -151,7 +151,6 @@ public class RelMdCollation
     return ImmutableList.copyOf(
         RelMdCollation.mergeJoin(mq, join.getLeft(), join.getRight(),
             join.analyzeCondition().leftKeys, join.analyzeCondition().rightKeys));
-<<<<<<< HEAD
   }
 
   public ImmutableList<RelCollation> collations(EnumerableHashJoin join,
@@ -172,28 +171,6 @@ public class RelMdCollation
     return ImmutableList.copyOf(
         RelMdCollation.enumerableCorrelate(mq, join.getLeft(), join.getRight(),
             join.getJoinType()));
-=======
-  }
-
-  public ImmutableList<RelCollation> collations(EnumerableHashJoin join,
-      RelMetadataQuery mq) {
-    return ImmutableList.copyOf(
-        RelMdCollation.enumerableHashJoin(mq, join.getLeft(), join.getRight(), join.getJoinType()));
-  }
-
-  public ImmutableList<RelCollation> collations(EnumerableNestedLoopJoin join,
-      RelMetadataQuery mq) {
-    return ImmutableList.copyOf(
-        RelMdCollation.enumerableNestedLoopJoin(mq, join.getLeft(), join.getRight(),
-                join.getJoinType())
-    );
-  }
-
-  public ImmutableList<RelCollation> collations(EnumerableCorrelate join,
-      RelMetadataQuery mq) {
-    return ImmutableList.copyOf(
-        RelMdCollation.enumerableCorrelate(mq, join.getLeft(), join.getRight(), join.getJoinType())
-    );
   }
 
   public ImmutableList<RelCollation> collations(Sort sort,
@@ -528,7 +505,6 @@ public class RelMdCollation
     return ImmutableList.of();
   }
 }
->>>>>>> 8bead079a ([CALCITE-2554] Enrich enumerable join operators with order preserving information (Stamatis Zampetakis))
 
   /**
    * Returns the collation of {@link EnumerableHashJoin} based on its inputs and the join type.

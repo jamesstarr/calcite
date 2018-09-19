@@ -612,6 +612,7 @@ order by empno limit 10;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..10=[{inputs}], expr#11=[COALESCE($t7, $t8)], DEPTNO=[$t11], EMPNO=[$t0], ENAME=[$t1], JOB=[$t2], MGR=[$t3], HIREDATE=[$t4], SAL=[$t5], COMM=[$t6], DNAME=[$t9], LOC=[$t10])
   EnumerableLimit(fetch=[10])
 =======
@@ -735,4 +736,13 @@ EnumerableCalc(expr#0..10=[{inputs}], expr#11=[COALESCE($t7, $t8)], DEPTNO=[$t11
 >>>>>>> 0c5880c91 (Revert "Reapply "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING""")
 =======
 >>>>>>> 8bead079a ([CALCITE-2554] Enrich enumerable join operators with order preserving information (Stamatis Zampetakis))
+=======
+EnumerableLimit(fetch=[10])
+  EnumerableHashJoin(condition=[=($7, $8)], joinType=[left])
+    EnumerableLimit(fetch=[10])
+      EnumerableTableScan(table=[[scott, EMP]])
+    EnumerableTableScan(table=[[scott, DEPT]])
+!plan
+
+>>>>>>> 317265201 ([CALCITE-2554] Enrich enumerable join operators with order preserving information (Stamatis Zampetakis))
 # End join.iq
