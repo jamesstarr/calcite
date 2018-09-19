@@ -38,6 +38,8 @@ import java.util.List;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+
+
 /**
  * Test validating the order preserving properties of join algorithms in
  * {@link org.apache.calcite.linq4j.ExtendedEnumerable}. The correctness of the

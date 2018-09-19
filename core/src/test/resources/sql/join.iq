@@ -555,12 +555,4 @@ order by empno limit 10;
 (10 rows)
 
 !ok
-EnumerableLimit(fetch=[10])
-  EnumerableSort(sort0=[$0], dir0=[ASC])
-    EnumerableHashJoin(condition=[=($7, $8)], joinType=[left])
-      EnumerableLimit(fetch=[10])
-        EnumerableTableScan(table=[[scott, EMP]])
-      EnumerableTableScan(table=[[scott, DEPT]])
-!plan
-
 # End join.iq

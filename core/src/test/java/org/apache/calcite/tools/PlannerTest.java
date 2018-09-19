@@ -391,6 +391,46 @@ public class PlannerTest {
             + "    EnumerableTableScan(table=[[hr, emps]])\n"));
   }
 
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2554">[CALCITE-2554]
+   * Enrich EnumerableJoin operator with order preserving information</a>.
+   *
+   * Since left input to the join is sorted, and this join preserves order, there shouldn't be
+   * any sort operator above the join.
+   */
+  @Test public void testRedundantSortOnJoinPlan() throws Exception {
+    RuleSet ruleSet =
+        RuleSets.ofList(
+            CoreRules.SORT_REMOVE,
+            CoreRules.SORT_JOIN_TRANSPOSE,
+            CoreRules.SORT_PROJECT_TRANSPOSE,
+            EnumerableRules.ENUMERABLE_LIMIT_RULE,
+            EnumerableRules.ENUMERABLE_JOIN_RULE,
+            EnumerableRules.ENUMERABLE_PROJECT_RULE,
+            EnumerableRules.ENUMERABLE_SORT_RULE);
+    Planner planner = getPlanner(null, Programs.of(ruleSet));
+    SqlNode parse = planner.parse(
+        "select e.\"deptno\" from \"emps\" e "
+            + "left outer join \"depts\" d "
+            + " on e.\"deptno\" = d.\"deptno\" "
+            + "order by e.\"deptno\" "
+            + "limit 10");
+    SqlNode validate = planner.validate(parse);
+    RelNode convert = planner.rel(validate).rel;
+    RelTraitSet traitSet = convert.getTraitSet()
+        .replace(EnumerableConvention.INSTANCE).simplify();
+    RelNode transform = planner.transform(0, traitSet, convert);
+    assertThat(toString(transform),
+        equalTo("EnumerableProject(deptno=[$1])\n"
+        + "  EnumerableLimit(fetch=[10])\n"
+        + "    EnumerableHashJoin(condition=[=($1, $5)], joinType=[left])\n"
+        + "      EnumerableLimit(fetch=[10])\n"
+        + "        EnumerableSort(sort0=[$1], dir0=[ASC])\n"
+        + "          EnumerableTableScan(table=[[hr, emps]])\n"
+        + "      EnumerableProject(deptno=[$0], name=[$1], employees=[$2], x=[$3.x], y=[$3.y])\n"
+        + "        EnumerableTableScan(table=[[hr, depts]])\n"));
+  }
+
   /** Unit test that parses, validates, converts and
    * plans for query using two duplicate order by.
    * The duplicate order by should be removed by SortRemoveRule. */

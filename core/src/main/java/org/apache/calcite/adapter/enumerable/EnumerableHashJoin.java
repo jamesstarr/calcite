@@ -24,11 +24,13 @@ import org.apache.calcite.plan.RelOptCost;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.InvalidRelException;
+import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelNodes;
 import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.core.EquiJoin;
 import org.apache.calcite.rel.core.JoinRelType;
+import org.apache.calcite.rel.metadata.RelMdCollation;
 import org.apache.calcite.rel.metadata.RelMdUtil;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rex.RexNode;
@@ -82,8 +84,11 @@ public class EnumerableHashJoin extends EquiJoin implements EnumerableRel {
       JoinRelType joinType)
       throws InvalidRelException {
     final RelOptCluster cluster = left.getCluster();
+    final RelMetadataQuery mq = cluster.getMetadataQuery();
     final RelTraitSet traitSet =
-        cluster.traitSetOf(EnumerableConvention.INSTANCE);
+        cluster.traitSetOf(EnumerableConvention.INSTANCE)
+            .replaceIfs(RelCollationTraitDef.INSTANCE,
+                () -> RelMdCollation.enumerableHashJoin(mq, left, right, joinType));
     return new EnumerableHashJoin(cluster, traitSet, left, right, condition,
         variablesSet, joinType);
   }
