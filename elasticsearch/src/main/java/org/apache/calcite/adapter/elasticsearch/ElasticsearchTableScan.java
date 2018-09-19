@@ -55,7 +55,7 @@ public class ElasticsearchTableScan extends TableScan implements ElasticsearchRe
        RelOptTable table, ElasticsearchTable elasticsearchTable,
        RelDataType projectRowType) {
     super(cluster, traitSet, ImmutableList.of(), table);
-    this.elasticsearchTable = Objects.requireNonNull(elasticsearchTable);
+    this.elasticsearchTable = Objects.requireNonNull(elasticsearchTable, "elasticsearchTable");
     this.projectRowType = projectRowType;
 
     assert getConvention() == ElasticsearchRel.CONVENTION;
