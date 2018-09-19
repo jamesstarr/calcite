@@ -144,15 +144,14 @@ public class RelMdCollation
       RelMetadataQuery mq) {
     return ImmutableList.copyOf(
         RelMdCollation.enumerableNestedLoopJoin(mq, join.getLeft(), join.getRight(),
-                join.getJoinType())
-    );
+            join.getJoinType()));
   }
 
   public ImmutableList<RelCollation> collations(EnumerableCorrelate join,
       RelMetadataQuery mq) {
     return ImmutableList.copyOf(
-        RelMdCollation.enumerableCorrelate(mq, join.getLeft(), join.getRight(), join.getJoinType())
-    );
+        RelMdCollation.enumerableCorrelate(mq, join.getLeft(), join.getRight(),
+            join.getJoinType()));
   }
 
   public ImmutableList<RelCollation> collations(Sort sort,

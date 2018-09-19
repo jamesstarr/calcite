@@ -201,8 +201,7 @@ public final class SortRemoveRuleTest {
     assertThat(
         toString(actualPlan),
         allOf(
-            containsString("EnumerableHashJoin"),
-            not(containsString("EnumerableSort"))));
+            containsString("EnumerableHashJoin")));
   }
 
   private String toString(RelNode rel) {

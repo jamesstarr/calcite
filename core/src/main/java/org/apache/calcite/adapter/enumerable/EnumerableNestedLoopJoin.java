@@ -101,6 +101,10 @@ public class EnumerableNestedLoopJoin extends Join implements EnumerableRel {
     // and have the same cost. To make the results stable between versions of
     // the planner, make one of the versions slightly more expensive.
     switch (joinType) {
+    case SEMI:
+    case ANTI:
+      // SEMI and ANTI join cannot be flipped
+      break;
     case RIGHT:
       rowCount = RelMdUtil.addEpsilon(rowCount);
       break;
