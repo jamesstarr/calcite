@@ -70,8 +70,7 @@ public class DruidSchema extends AbstractSchema {
       final DruidConnectionImpl connection = new DruidConnectionImpl(url, coordinatorUrl);
       Set<String> tableNames = connection.tableNames();
 
->>>>>>> 9d2c4bca7 (Revert "Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)"")
-      tableMap = Compatible.INSTANCE.asMap(
+      tableMap = Maps.asMap(
           ImmutableSet.copyOf(tableNames),
           CacheBuilder.newBuilder()
               .build(CacheLoader.from(name -> table(name, connection))));

@@ -350,6 +350,7 @@ public abstract class CalciteSchema {
     // Add implicit tables, case-sensitive.
     addImplicitTableToBuilder(builder);
     return builder.build();
+<<<<<<< HEAD
   }
 
   /** Returns the set of all types names. */
@@ -371,6 +372,8 @@ public abstract class CalciteSchema {
       return entry.getValue();
     }
     return getImplicitType(name, caseSensitive);
+=======
+>>>>>>> 2d7bf015a (Remove dead code: Compatible, CompatibleGuava11)
   }
 
   /** Returns the set of all types names. */
@@ -381,7 +384,7 @@ public abstract class CalciteSchema {
     builder.addAll(typeMap.map().keySet());
     // Add implicit types.
     addImplicitTypeNamesToBuilder(builder);
-    return Compatible.INSTANCE.navigableSet(builder.build());
+    return builder.build();
   }
 
   /** Returns a type, explicit and implicit, with a given
