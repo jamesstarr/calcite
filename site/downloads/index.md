@@ -93,9 +93,14 @@ Choose a source distribution in either *tar* or *zip* format.
 
 For fast downloads, current source distributions are hosted on mirror servers;
 older source distributions are in the
+<<<<<<< HEAD
 [archive](http://archive.apache.org/dist/calcite/) 
 or [incubator archive](http://archive.apache.org/dist/incubator/calcite/).
 >>>>>>> cb15bf503 ([CALCITE-2574] Update download page to include instructions for verifying)
+=======
+[archive](https://archive.apache.org/dist/calcite/) 
+or [incubator archive](https://archive.apache.org/dist/incubator/calcite/).
+>>>>>>> d35cac654 ([CALCITE-2577] Update links on download page to HTTPS)
 If a download from a mirror fails, retry, and the second download will likely
 succeed.
 
@@ -118,10 +123,14 @@ To verify the signature using GPG or PGP, please do the following:
 
 1. Download the release artifact and the corresponding PGP signature from the table above.
 <<<<<<< HEAD
+<<<<<<< HEAD
 2. Download the [Apache Calcite KEYS](https://www.apache.org/dist/calcite/KEYS) file.
 =======
 2. Download the [Apache Calcite KEYS](http://www.apache.org/dist/calcite/KEYS) file.
 >>>>>>> cb15bf503 ([CALCITE-2574] Update download page to include instructions for verifying)
+=======
+2. Download the [Apache Calcite KEYS](https://www.apache.org/dist/calcite/KEYS) file.
+>>>>>>> d35cac654 ([CALCITE-2577] Update links on download page to HTTPS)
 3. Import the KEYS file and verify the downloaded artifact using one of the following methods:
 {% highlight shell %}
 % gpg --import KEYS
