@@ -116,6 +116,8 @@ public class SqlNodeToRexConverterImpl implements SqlNodeToRexConverter {
 
     case CHAR:
       return rexBuilder.makeCharLiteral(literal.getValueAs(NlsString.class));
+    case VARCHAR:
+      return rexBuilder.makeVarCharLiteral(literal.getValueAs(NlsString.class));
     case BOOLEAN:
       return rexBuilder.makeLiteral(literal.getValueAs(Boolean.class));
     case BINARY:
