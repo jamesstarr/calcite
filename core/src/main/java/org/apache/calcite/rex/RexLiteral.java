@@ -352,11 +352,7 @@ public class RexLiteral extends RexNode {
       // fall through
     case BINARY:
       return value instanceof ByteString;
-    case VARCHAR: // not allowed -- use Char
-      if (strict) {
-        throw Util.unexpected(typeName);
-      }
-      // fall through
+    case VARCHAR:
     case CHAR:
       // A SqlLiteral's charset and collation are optional; not so a
       // RexLiteral.
@@ -587,49 +583,93 @@ public class RexLiteral extends RexNode {
       Comparable value,
       Appendable destination,
       SqlTypeName typeName,
-      boolean java, RexDigestIncludeType includeType) {
-    try {
-      switch (typeName) {
-      case CHAR:
-        NlsString nlsString = (NlsString) value;
-        if (java) {
-          Util.printJavaString(
-              destination,
-              nlsString.getValue(),
-              true);
-        } else {
-          boolean includeCharset =
-              (nlsString.getCharsetName() != null)
-                  && !nlsString.getCharsetName().equals(
-                  CalciteSystemProperty.DEFAULT_CHARSET.value());
-          destination.append(nlsString.asSql(includeCharset, false));
-        }
-        break;
-      case BOOLEAN:
-        assert value instanceof Boolean;
-        destination.append(value.toString());
-        break;
-      case DECIMAL:
-        assert value instanceof BigDecimal;
-        destination.append(value.toString());
-        break;
-      case DOUBLE:
-        assert value instanceof BigDecimal;
-        destination.append(Util.toScientificNotation((BigDecimal) value));
-        break;
-      case BIGINT:
-        assert value instanceof BigDecimal;
-        long narrowLong = ((BigDecimal) value).longValue();
-        destination.append(String.valueOf(narrowLong));
-        destination.append('L');
-        break;
-      case BINARY:
-        assert value instanceof ByteString;
-        destination.append("X'");
-        destination.append(((ByteString) value).toString(16));
-        destination.append("'");
-        break;
-      case NULL:
+      boolean java) {
+    switch (typeName) {
+    case VARCHAR:
+    case CHAR:
+      NlsString nlsString = (NlsString) value;
+      if (java) {
+        Util.printJavaString(
+            pw,
+            nlsString.getValue(),
+            true);
+      } else {
+        boolean includeCharset =
+            (nlsString.getCharsetName() != null)
+                && !nlsString.getCharsetName().equals(
+                    SaffronProperties.INSTANCE.defaultCharset().get());
+        pw.print(nlsString.asSql(includeCharset, false));
+      }
+      break;
+    case BOOLEAN:
+      assert value instanceof Boolean;
+      pw.print(((Boolean) value).booleanValue());
+      break;
+    case DECIMAL:
+      assert value instanceof BigDecimal;
+      pw.print(value.toString());
+      break;
+    case DOUBLE:
+      assert value instanceof BigDecimal;
+      pw.print(Util.toScientificNotation((BigDecimal) value));
+      break;
+    case BIGINT:
+      assert value instanceof BigDecimal;
+      pw.print(((BigDecimal) value).longValue());
+      pw.print('L');
+      break;
+    case BINARY:
+      assert value instanceof ByteString;
+      pw.print("X'");
+      pw.print(((ByteString) value).toString(16));
+      pw.print("'");
+      break;
+    case NULL:
+      assert value == null;
+      pw.print("null");
+      break;
+    case SYMBOL:
+      assert value instanceof Enum;
+      pw.print("FLAG(");
+      pw.print(value);
+      pw.print(")");
+      break;
+    case DATE:
+      assert value instanceof DateString;
+      pw.print(value);
+      break;
+    case TIME:
+      assert value instanceof TimeString;
+      pw.print(value);
+      break;
+    case TIME_WITH_LOCAL_TIME_ZONE:
+      assert value instanceof TimeString;
+      pw.print(value);
+      break;
+    case TIMESTAMP:
+      assert value instanceof TimestampString;
+      pw.print(value);
+      break;
+    case TIMESTAMP_WITH_LOCAL_TIME_ZONE:
+      assert value instanceof TimestampString;
+      pw.print(value);
+      break;
+    case INTERVAL_YEAR:
+    case INTERVAL_YEAR_MONTH:
+    case INTERVAL_MONTH:
+    case INTERVAL_DAY:
+    case INTERVAL_DAY_HOUR:
+    case INTERVAL_DAY_MINUTE:
+    case INTERVAL_DAY_SECOND:
+    case INTERVAL_HOUR:
+    case INTERVAL_HOUR_MINUTE:
+    case INTERVAL_HOUR_SECOND:
+    case INTERVAL_MINUTE:
+    case INTERVAL_MINUTE_SECOND:
+    case INTERVAL_SECOND:
+      if (value instanceof BigDecimal) {
+        pw.print(value.toString());
+      } else {
         assert value == null;
         destination.append("null");
         break;
@@ -882,6 +922,7 @@ public class RexLiteral extends RexNode {
     }
     switch (typeName) {
     case CHAR:
+    case VARCHAR:
       return getValueAs(String.class);
     case DECIMAL:
     case TIMESTAMP:
