@@ -74,13 +74,11 @@ final class ElasticsearchJson {
     Objects.requireNonNull(aggregations, "aggregations");
     Objects.requireNonNull(consumer, "consumer");
 
-    List<Bucket> buckets = new ArrayList<>();
-
     Map<RowKey, List<MultiValue>> rows = new LinkedHashMap<>();
 
     BiConsumer<RowKey, MultiValue> cons = (r, v) ->
         rows.computeIfAbsent(r, ignore -> new ArrayList<>()).add(v);
-    aggregations.forEach(a -> visitValueNodes(a, buckets, cons));
+    aggregations.forEach(a -> visitValueNodes(a, new ArrayList<>(), cons));
     rows.forEach((k, v) -> {
       Map<String, Object> row = new LinkedHashMap<>(k.keys);
       v.forEach(val -> row.put(val.getName(), val.value()));
@@ -132,7 +130,7 @@ final class ElasticsearchJson {
       BiConsumer<RowKey, MultiValue> consumer) {
 
     if (aggregation instanceof MultiValue) {
-      // publish one value of the row
+      // this is a leaf. publish value of the row.
       RowKey key = new RowKey(parents);
       consumer.accept(key, (MultiValue) aggregation);
       return;
@@ -140,6 +138,11 @@ final class ElasticsearchJson {
 
     if (aggregation instanceof Bucket) {
       Bucket bucket = (Bucket) aggregation;
+      if (bucket.hasNoAggregations()) {
+        // bucket with no aggregations is also considered a leaf node
+        visitValueNodes(MultiValue.of(bucket.getName(), bucket.key()), parents, consumer);
+        return;
+      }
       parents.add(bucket);
       bucket.getAggregations().forEach(a -> visitValueNodes(a, parents, consumer));
       parents.remove(parents.size() - 1);
@@ -148,11 +151,7 @@ final class ElasticsearchJson {
       children.getAggregations().forEach(a -> visitValueNodes(a, parents, consumer));
     } else if (aggregation instanceof MultiBucketsAggregation) {
       MultiBucketsAggregation multi = (MultiBucketsAggregation) aggregation;
-      multi.buckets().forEach(b -> {
-        parents.add(b);
-        b.getAggregations().forEach(a -> visitValueNodes(a, parents, consumer));
-        parents.remove(parents.size() - 1);
-      });
+      multi.buckets().forEach(b -> visitValueNodes(b, parents, consumer));
     }
 
   }
@@ -470,6 +469,13 @@ final class ElasticsearchJson {
     }
 
     /**
+     * Means current bucket has no aggregations.
+     */
+    boolean hasNoAggregations() {
+      return aggregations.asList().isEmpty();
+    }
+
+    /**
      * @return  The sub-aggregations of this bucket
      */
     @Override public Aggregations getAggregations() {
@@ -508,10 +514,20 @@ final class ElasticsearchJson {
      */
     Object value() {
       if (!values().containsKey("value")) {
-        throw new IllegalStateException("'value' field not present in this aggregation");
+        String message = String.format(Locale.ROOT, "'value' field not present in "
+            + "%s aggregation", getName());
+
+        throw new IllegalStateException(message);
       }
 
       return values().get("value");
+    }
+
+    /**
+     * Constructs a {@link MultiValue} instance with a single value.
+     */
+    static MultiValue of(String name, Object value) {
+      return new MultiValue(name, Collections.singletonMap("value", value));
     }
 
   }

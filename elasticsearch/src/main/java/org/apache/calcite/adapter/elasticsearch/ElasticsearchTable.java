@@ -33,7 +33,6 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.TranslatableTable;
 import org.apache.calcite.schema.impl.AbstractTableQueryable;
 import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.calcite.util.Util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -129,11 +128,10 @@ public class ElasticsearchTable extends AbstractQueryableTable implements Transl
     }
 
     final ObjectNode query = mapper.createObjectNode();
-
     // manually parse from previously concatenated string
-    query.setAll(
-        (ObjectNode) mapper.readTree("{"
-            + Util.toString(ops, "", ", ", "") + "}"));
+    for (String op: ops) {
+      query.setAll((ObjectNode) mapper.readTree(op));
+    }
 
     if (!sort.isEmpty()) {
       ArrayNode sortNode = query.withArray("sort");
@@ -185,9 +183,10 @@ public class ElasticsearchTable extends AbstractQueryableTable implements Transl
     }
 
     final ObjectNode query = mapper.createObjectNode();
-
     // manually parse into JSON from previously concatenated strings
-    query.setAll((ObjectNode) mapper.readTree("{" + Util.toString(ops, "", ", ", "") + "}"));
+    for (String op: ops) {
+      query.setAll((ObjectNode) mapper.readTree(op));
+    }
 
     // remove / override attributes which are not applicable to aggregations
     query.put("_source", false);
