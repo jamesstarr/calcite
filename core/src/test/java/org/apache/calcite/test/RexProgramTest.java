@@ -2002,6 +2002,13 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "COALESCE(?0.int0, ?0.int1)");
   }
 
+  @Test
+  public void simplifyNull() {
+    checkSimplify2(nullBool, "null:BOOLEAN", "false");
+    // null int must not be simplified to false
+    checkSimplify2(nullInt, "null:INTEGER", "null");
+  }
+
   /** Converts a map to a string, sorting on the string representation of its
    * keys. */
   private static String getString(ImmutableMap<RexNode, RexNode> map) {
