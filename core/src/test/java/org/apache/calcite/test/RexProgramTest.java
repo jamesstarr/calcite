@@ -1278,6 +1278,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
         .add("f", booleanType)
         .add("g", booleanType)
         .add("h", intType)
+        .add("i", intType).nullable(true)
         .build();
 
     final RexDynamicParam range = rexBuilder.makeDynamicParam(rowType, 0);
@@ -1287,6 +1288,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
     final RexNode dRef = rexBuilder.makeFieldAccess(range, 3);
     final RexNode eRef = rexBuilder.makeFieldAccess(range, 4);
     final RexNode fRef = rexBuilder.makeFieldAccess(range, 5);
+    final RexNode iRef = rexBuilder.makeFieldAccess(range, 8);
     final RexLiteral literal1 = rexBuilder.makeExactLiteral(BigDecimal.ONE);
     final RexLiteral literal5 = rexBuilder.makeExactLiteral(new BigDecimal(5));
     final RexLiteral literal10 = rexBuilder.makeExactLiteral(BigDecimal.TEN);
@@ -1454,6 +1456,14 @@ public class RexProgramTest extends RexProgramBuilderBase {
         RelOptPredicateList.of(rexBuilder,
             ImmutableList.of(le(aRef, literal5), le(bRef, literal5))),
         "false");
+
+    // "b is null or b is not false" unchanged
+    checkSimplifyFilter(
+            or(isNull(iRef),
+                    isNotFalse(iRef)),
+            "OR(IS NULL(?0.i), IS NOT FALSE(?0.i))"
+    );
+
   }
 
   @Test public void fieldAccessEqualsHashCode() {
