@@ -1631,9 +1631,13 @@ public class RexProgramTest extends RexProgramBuilderBase {
     final RexNode eRef = rexBuilder.makeFieldAccess(range, 4);
     final RexNode fRef = rexBuilder.makeFieldAccess(range, 5);
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     final RexNode iRef = rexBuilder.makeFieldAccess(range, 8);
 =======
 >>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+    final RexNode iRef = rexBuilder.makeFieldAccess(range, 8);
+>>>>>>> d84e7489d (DX-64510: [CALCITE-2527] Simplify (c IS NULL) OR (c IS ...) might result in AssertionError: result mismatch (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     final RexLiteral literal1 = rexBuilder.makeExactLiteral(BigDecimal.ONE);
     final RexLiteral literal5 = rexBuilder.makeExactLiteral(new BigDecimal(5));
     final RexLiteral literal10 = rexBuilder.makeExactLiteral(BigDecimal.TEN);
@@ -1828,6 +1832,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
             "OR(IS NULL(?0.i), IS NOT FALSE(?0.i))"
     );
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkSimplify3(
             or(lt(vInt(), nullInt),
                     ne(literal(0), vInt())),
@@ -2124,6 +2129,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "AND(=(?0.int2, 2), OR(=(?0.int3, 3), =(?0.int0, 1)))"
 
     );
+=======
+>>>>>>> d84e7489d (DX-64510: [CALCITE-2527] Simplify (c IS NULL) OR (c IS ...) might result in AssertionError: result mismatch (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   @Test public void fieldAccessEqualsHashCode() {
