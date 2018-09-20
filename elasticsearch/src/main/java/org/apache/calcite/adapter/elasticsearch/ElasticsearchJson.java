@@ -74,7 +74,11 @@ final class ElasticsearchJson {
     Objects.requireNonNull(aggregations, "aggregations");
     Objects.requireNonNull(consumer, "consumer");
 
-    aggregations.forEach(a -> visitValueNodes(a, buckets, cons));
+    Map<RowKey, List<MultiValue>> rows = new LinkedHashMap<>();
+
+    BiConsumer<RowKey, MultiValue> cons = (r, v) ->
+        rows.computeIfAbsent(r, ignore -> new ArrayList<>()).add(v);
+    aggregations.forEach(a -> visitValueNodes(a, new ArrayList<>(), cons));
     rows.forEach((k, v) -> {
       Map<String, Object> row = new LinkedHashMap<>(k.keys);
       v.forEach(val -> row.put(val.getName(), val.value()));
@@ -127,7 +131,7 @@ final class ElasticsearchJson {
       BiConsumer<RowKey, MultiValue> consumer) {
 
     if (aggregation instanceof MultiValue) {
-      // publish one value of the row
+      // this is a leaf. publish value of the row.
       RowKey key = new RowKey(parents);
       consumer.accept(key, (MultiValue) aggregation);
       return;
@@ -135,6 +139,11 @@ final class ElasticsearchJson {
 
     if (aggregation instanceof Bucket) {
       Bucket bucket = (Bucket) aggregation;
+      if (bucket.hasNoAggregations()) {
+        // bucket with no aggregations is also considered a leaf node
+        visitValueNodes(MultiValue.of(bucket.getName(), bucket.key()), parents, consumer);
+        return;
+      }
       parents.add(bucket);
       bucket.getAggregations().forEach(a -> visitValueNodes(a, parents, consumer));
       parents.remove(parents.size() - 1);
@@ -143,11 +152,7 @@ final class ElasticsearchJson {
       children.getAggregations().forEach(a -> visitValueNodes(a, parents, consumer));
     } else if (aggregation instanceof MultiBucketsAggregation) {
       MultiBucketsAggregation multi = (MultiBucketsAggregation) aggregation;
-      multi.buckets().forEach(b -> {
-        parents.add(b);
-        b.getAggregations().forEach(a -> visitValueNodes(a, parents, consumer));
-        parents.remove(parents.size() - 1);
-      });
+      multi.buckets().forEach(b -> visitValueNodes(b, parents, consumer));
     }
 
   }
@@ -159,21 +164,6 @@ final class ElasticsearchJson {
   static class Result {
     private final SearchHits hits;
     private final Aggregations aggregations;
-<<<<<<< HEAD
-=======
-    private final String scrollId;
->>>>>>> 1e9b7360a ([CALCITE-2651] Enable scrolling in ElasticSearch adapter for basic search queries)
-    private final long took;
-
-    /**
-     * Constructor for this instance.
-     * @param hits list of matched documents
-     * @param took time taken (in took) for this query to execute
-     */
-    @JsonCreator
-    Result(@JsonProperty("hits") SearchHits hits,
-        @JsonProperty("aggregations") Aggregations aggregations,
-=======
         @JsonProperty("_scroll_id") String scrollId,
         @JsonProperty("took") long took) {
       this.hits = Objects.requireNonNull(hits, "hits");
@@ -227,7 +217,6 @@ final class ElasticsearchJson {
   }
 
   /**
->>>>>>> ca1b4e02e ([CALCITE-2528] Support Aggregates in ElasticSearch adapter (Andrei Sereda))
    * Concrete result record which matched the query. Similar to {@code SearchHit} in ES.
    */
   @JsonIgnoreProperties(ignoreUnknown = true)
@@ -470,6 +459,13 @@ final class ElasticsearchJson {
     }
 
     /**
+     * Means current bucket has no aggregations.
+     */
+    boolean hasNoAggregations() {
+      return aggregations.asList().isEmpty();
+    }
+
+    /**
      * @return  The sub-aggregations of this bucket
      */
     @Override public Aggregations getAggregations() {
@@ -508,10 +504,20 @@ final class ElasticsearchJson {
      */
     Object value() {
       if (!values().containsKey("value")) {
-        throw new IllegalStateException("'value' field not present in this aggregation");
+        String message = String.format(Locale.ROOT, "'value' field not present in "
+            + "%s aggregation", getName());
+
+        throw new IllegalStateException(message);
       }
 
       return values().get("value");
+    }
+
+    /**
+     * Constructs a {@link MultiValue} instance with a single value.
+     */
+    static MultiValue of(String name, Object value) {
+      return new MultiValue(name, Collections.singletonMap("value", value));
     }
 
   }

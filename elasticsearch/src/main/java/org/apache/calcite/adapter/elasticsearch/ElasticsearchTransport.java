@@ -185,9 +185,6 @@ final class ElasticsearchTransport {
     Objects.requireNonNull(httpParams, "httpParams");
     return query -> {
       Hook.QUERY_PLAN.run(query);
-<<<<<<< HEAD
-      String path = String.format(Locale.ROOT, "/%s/_search", indexName);
-=======
       String path = String.format(Locale.ROOT, "/%s/%s/_search", indexName, typeName);
       final HttpPost post;
       try {
@@ -284,4 +281,3 @@ final class ElasticsearchTransport {
 =======
 
 // End ElasticsearchTransport.java
->>>>>>> 1e9b7360a ([CALCITE-2651] Enable scrolling in ElasticSearch adapter for basic search queries)

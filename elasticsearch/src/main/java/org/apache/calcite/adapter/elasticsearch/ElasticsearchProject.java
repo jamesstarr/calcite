@@ -121,7 +121,6 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
 
 =======
     implementor.list.removeIf(l -> l.startsWith("\"_source\""));
-    implementor.add(query.toString());
->>>>>>> 130909e66 ([CALCITE-2347] running ElasticSearch in embedded mode for unit tests of ES adapter (Andrei Sereda)):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
+    implementor.add("{" + query.toString() + "}");
   }
 }
