@@ -1582,6 +1582,23 @@ public class RexProgramTest extends RexProgramBuilderBase {
         eq(rexBuilder.makeInputRef(integerNullableType, 1),
             rexBuilder.makeInputRef(integerNullableType, 1)));
     checkSimplifyFilter(andCondition, "true");
+
+    checkSimplify2(
+            and(nullBool,
+                    not(or(nullBool, vBool()))),
+            "AND(null, NOT(?0.bool0))",
+            "false");
+
+    // "x1 AND x2 AND x3 AND NOT(x1) AND NOT(x2) AND NOT(x0)" =>
+    // "x3 AND null AND x1 IS NULL AND x2 IS NULL AND NOT(x0)"
+    checkSimplify2(
+            and(vBool(1), vBool(2),
+                    vBool(3), not(vBool(1)),
+                    not(vBool(2)), not(vBool())),
+            "AND(?0.bool3, null, IS NULL(?0.bool1),"
+                    + " IS NULL(?0.bool2), NOT(?0.bool0))",
+            "false"
+    );
   }
 
   @Test public void testSimplifyAnd3() {
