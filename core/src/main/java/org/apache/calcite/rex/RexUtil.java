@@ -2730,7 +2730,7 @@ public class RexUtil {
         return super.visitCall(call);
       }
 
-      final RexNode datetime = call.getOperands().get(0);
+      RexNode datetime = call.getOperands().get(0);
       final SqlTypeName datetimeType = datetime.getType().getSqlTypeName();
       if (datetimeType != SqlTypeName.DATE
           && datetimeType != SqlTypeName.TIME
@@ -2738,12 +2738,18 @@ public class RexUtil {
         return super.visitCall(call);
       }
 
+      // The datetime argument might be another call to DATETIME_PLUS.
+      // Recursively transform this as well.
+      datetime = datetime.accept(this);
+
       // Check the type of the interval parameter.
       if (!isInterval(call.getOperands().get(1))) {
         throw new Util.FoundOne(call);
       }
 
       final boolean negate = call.getOperator() == SqlStdOperatorTable.DATETIME_MINUS;
+
+      // TODO DX-13313: Support more types of interval expressions.
 
       // Note that while we can CAST the interval argument to an integer, we wouldn't be able
       // to represent this in a SQL dialect that doesn't support intervals (since there's no way

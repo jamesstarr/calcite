@@ -1160,6 +1160,15 @@ public class RelToSqlConverterTest {
     sql(query)
             .withMssql()
             .ok(expected);
+
+    query = "SELECT TIMESTAMPADD(QUARTER, \"employee_id\", TIMESTAMPADD(QUARTER, \"employee_id\","
+        + " \"hire_date\"))  FROM \"employee\"";
+
+    expected = "SELECT DATEADD(QUARTER, [employee_id], DATEADD(QUARTER, [employee_id],"
+        + " [hire_date]))\nFROM [foodmart].[employee]";
+    sql(query)
+            .withMssql()
+            .ok(expected);
   }
 
   @Test public void testDatetimePlusToTimestampAddMssql() {
@@ -1221,6 +1230,37 @@ public class RelToSqlConverterTest {
     query = "SELECT \"hire_date\" + INTERVAL -'10' SECOND * \"employee_id\" FROM \"employee\"";
     expected = "SELECT DATEADD(SECOND, -10 * [employee_id], [hire_date])\n"
         + "FROM [foodmart].[employee]";
+    sql(query)
+            .withMssql()
+            .ok(expected);
+
+    query = "SELECT \"hire_date\" + INTERVAL -'10' SECOND * \"employee_id\" FROM \"employee\"";
+    expected = "SELECT DATEADD(SECOND, -10 * [employee_id], [hire_date])\n"
+            + "FROM [foodmart].[employee]";
+    sql(query)
+            .withMssql()
+            .ok(expected);
+
+    query = "SELECT \"hire_date\" + INTERVAL '10' MONTH + INTERVAL '10' MONTH FROM \"employee\"";
+    expected = "SELECT DATEADD(MONTH, 10, DATEADD(MONTH, 10, [hire_date]))\n"
+            + "FROM [foodmart].[employee]";
+    sql(query)
+            .withMssql()
+            .ok(expected);
+
+    query = "SELECT cast(cast(\"hire_date\" AS VARCHAR) as DATE) + "
+            + "INTERVAL -'10' SECOND * \"employee_id\" FROM \"employee\"";
+    expected = "SELECT DATEADD(SECOND, -10 * [employee_id], "
+            + "CAST(CAST([hire_date] AS VARCHAR) AS DATE))\n"
+            + "FROM [foodmart].[employee]";
+    sql(query)
+            .withMssql()
+            .ok(expected);
+
+    query = "SELECT cast((\"hire_date\" + INTERVAL '10' MONTH + INTERVAL '10' MONTH) as varchar) "
+            + "FROM \"employee\"";
+    expected = "SELECT CAST(DATEADD(MONTH, 10, DATEADD(MONTH, 10, [hire_date])) AS VARCHAR)\n"
+            + "FROM [foodmart].[employee]";
     sql(query)
             .withMssql()
             .ok(expected);
