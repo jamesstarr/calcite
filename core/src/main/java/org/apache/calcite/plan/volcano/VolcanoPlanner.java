@@ -242,13 +242,6 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
   }
 
   public void setRoot(RelNode rel) {
-<<<<<<< HEAD
-    // We've registered all the rules, and therefore RelNode classes,
-    // we're interested in, and have not yet started calling metadata providers.
-    // So now is a good time to tell the metadata layer what to expect.
-    registerMetadataRels();
-
-=======
     this.root = registerImpl(rel, null);
     if (this.originalRoot == null) {
       this.originalRoot = rel;
@@ -545,7 +538,6 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     return cheapest;
   }
 
->>>>>>> acbf6771f (DX-12806: Remove JaninoRelMetadataProvider)
   /** Ensures that the subset that is the root relational expression contains
    * converters to all other subsets in its equivalence set.
    *
