@@ -2429,6 +2429,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
             rexBuilder.makeInputRef(integerNullableType, 1)));
     checkSimplifyFilter(andCondition, "true");
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 
     // "null AND NOT(null OR x)" => "null AND NOT(x)"
     checkSimplify3(
@@ -2437,6 +2438,14 @@ public class RexProgramTest extends RexProgramBuilderBase {
             "AND(null, NOT(?0.bool0))",
             "false",
             "NOT(?0.bool0)");
+=======
+
+    checkSimplify2(
+            and(nullBool,
+                    not(or(nullBool, vBool()))),
+            "AND(null, NOT(?0.bool0))",
+            "false");
+>>>>>>> af29791d2 ([CALCITE-2581] Avoid errors in simplifying "null and not (null or ...)" (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
     // "x1 AND x2 AND x3 AND NOT(x1) AND NOT(x2) AND NOT(x0)" =>
     // "x3 AND null AND x1 IS NULL AND x2 IS NULL AND NOT(x0)"
@@ -2448,6 +2457,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
                     + " IS NULL(?0.bool2), NOT(?0.bool0))",
             "false"
     );
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   }
 
   @Test void testSimplifyAnd3() {
@@ -2460,6 +2470,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
   @Test void testSimplifyIsNotNull() {
 =======
+=======
+>>>>>>> af29791d2 ([CALCITE-2581] Avoid errors in simplifying "null and not (null or ...)" (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   @Test public void testSimplifyAnd3() {
