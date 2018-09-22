@@ -915,6 +915,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
   @Test public void removeRedundantCast() {
     checkSimplify(cast(vInt(), nullable(tInt())), "?0.int0");
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkSimplifyUnchanged(cast(vInt(), tInt()));
     checkSimplify(cast(vIntNotNull(), nullable(tInt())), "?0.notNullInt0");
     checkSimplify(cast(vIntNotNull(), tInt()), "?0.notNullInt0");
@@ -946,6 +947,16 @@ public class RexProgramTest extends RexProgramBuilderBase {
           + " operand types: [VARCHAR, INTEGER]";
       assertThat(e.getMessage(), is(expected));
     }
+=======
+    checkSimplify(cast(vInt(), tInt()), "CAST(?0.int0):INTEGER NOT NULL");
+    checkSimplify(cast(vIntNotNull(), nullable(tInt())), "CAST(?0.notNullInt0):INTEGER");
+    checkSimplify(cast(vIntNotNull(), tInt()), "?0.notNullInt0");
+
+    // Nested int int cast is removed
+    checkSimplify(cast(cast(vVarchar(), tInt()), tInt()), "CAST(?0.varchar0):INTEGER NOT NULL");
+    checkSimplify(cast(cast(vVarchar(), tInt()), tVarchar()),
+        "CAST(CAST(?0.varchar0):INTEGER NOT NULL):VARCHAR NOT NULL");
+>>>>>>> 714ffd845 ([CALCITE-2590] Remove redundant CAST when operand has exactly the same type as it is casted to):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   /** Unit test for {@link org.apache.calcite.rex.RexUtil#toCnf}. */

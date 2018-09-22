@@ -3012,12 +3012,11 @@ class RelOptRulesTest extends RelOptTestBase {
         .build();
 
     // The resulting plan should have no cast expressions
-    final String sql = "select cast(d.name as varchar(128)), cast(e.empno as integer)\n"
-        + "from dept as d inner join emp as e\n"
-        + "on cast(d.deptno as integer) = cast(e.deptno as integer)\n"
-        + "where cast(e.job as varchar(1)) = 'Manager'";
-    sql(sql).with(program)
-        .checkUnchanged();
+    checkPlanUnchanged(new HepPlanner(program),
+        "select cast(d.name as varchar(128)), cast(e.empno as integer) "
+            + "from dept as d inner join emp as e "
+            + "on cast(d.deptno as integer) = cast(e.deptno as integer) "
+            + "where cast(e.job as varchar(1)) = 'Manager'");
   }
 
   /** Tests that a cast from a TIME to a TIMESTAMP is not reduced. It is not

@@ -982,11 +982,6 @@ public class RexSimplify {
     // Add the NOT disjunctions back in.
     for (RexNode notDisjunction : notTerms) {
       terms.add(
-<<<<<<< HEAD
-          simplify(
-              rexBuilder.makeCall(SqlStdOperatorTable.NOT, notDisjunction),
-              UNKNOWN));
-=======
           simplify_(
               rexBuilder.makeCall(SqlStdOperatorTable.NOT, notDisjunction)));
     }
@@ -1528,11 +1523,17 @@ public class RexSimplify {
       return Objects.requireNonNull(
           Iterables.getOnlyElement(reducedValues));
     default:
+<<<<<<< HEAD
       if (operand == e.getOperands().get(0)) {
         return e;
       } else {
         return rexBuilder.makeCast(e.getType(), operand);
       }
+=======
+      if (operand.getType().equals(e.getType())) {
+        return simplify_(operand);
+      }
+      return e;
     }
   }
 

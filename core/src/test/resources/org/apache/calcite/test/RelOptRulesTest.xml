@@ -3245,6 +3245,7 @@ where cast(e.job as varchar(1)) = 'Manager']]>
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) NOT NULL], EXPR$1=[$2])
   LogicalFilter(condition=[=(CAST(CAST($4):VARCHAR(1) NOT NULL):VARCHAR(7) NOT NULL, 'Manager')])
 =======
@@ -3257,6 +3258,9 @@ LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) CHARACTER SET "ISO-8859-1" COLLATE 
 >>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
 =======
 LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) NOT NULL], EXPR$1=[CAST($2):INTEGER NOT NULL])
+=======
+LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) NOT NULL], EXPR$1=[$2])
+>>>>>>> 714ffd845 ([CALCITE-2590] Remove redundant CAST when operand has exactly the same type as it is casted to)
   LogicalFilter(condition=[=(CAST(CAST($4):VARCHAR(1) NOT NULL):VARCHAR(7) NOT NULL, 'Manager')])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$3], ENAME=[$4], JOB=[$5], MGR=[$6], HIREDATE=[$7], SAL=[$8], COMM=[$9], DEPTNO1=[$10], SLACKER=[$11])
