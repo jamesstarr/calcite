@@ -3038,7 +3038,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
     return map2.toString();
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyFalse() {
+=======
+  @Test public void testSimplifyFalse() {
+>>>>>>> 40dbae0b2 ([CALCITE-2556] Simplify not(true/false) to false/true (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     final RelDataType booleanNullableType =
         typeFactory.createTypeWithNullability(
             typeFactory.createSqlType(SqlTypeName.BOOLEAN), true);
@@ -3062,7 +3066,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyNot() {
+=======
+  @Test public void testSimplifyNot() {
+>>>>>>> 40dbae0b2 ([CALCITE-2556] Simplify not(true/false) to false/true (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "NOT(NOT(x))" => "x"
     checkSimplify(not(not(vBool())), "?0.bool0");
     // "NOT(true)"  => "false"
@@ -3070,6 +3078,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
     // "NOT(false)" => "true"
     checkSimplify(not(falseLiteral), "true");
     // "NOT(IS FALSE(x))" => "IS NOT FALSE(x)"
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkSimplify3(not(isFalse(vBool())),
         "IS NOT FALSE(?0.bool0)", "IS NOT FALSE(?0.bool0)", "?0.bool0");
     // "NOT(IS TRUE(x))" => "IS NOT TRUE(x)"
@@ -3077,6 +3086,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "IS NOT TRUE(?0.bool0)",
         "IS NOT TRUE(?0.bool0)",
         "NOT(?0.bool0)");
+=======
+    checkSimplify(not(isFalse(vBool())), "IS NOT FALSE(?0.bool0)");
+    // "NOT(IS TRUE(x))" => "IS NOT TRUE(x)"
+    checkSimplify(not(isTrue(vBool())), "IS NOT TRUE(?0.bool0)");
+>>>>>>> 40dbae0b2 ([CALCITE-2556] Simplify not(true/false) to false/true (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "NOT(IS NULL(x))" => "IS NOT NULL(x)"
     checkSimplify(not(isNull(vBool())), "IS NOT NULL(?0.bool0)");
     // "NOT(IS NOT NULL(x)) => "IS NULL(x)"
@@ -3089,6 +3103,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "AND(NOT(?0.bool0), NOT(?0.bool1))");
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyAndNot() {
     // "x > 1 AND NOT (y > 2)" -> "x > 1 AND y <= 2"
     checkSimplify(and(gt(vInt(1), literal(1)), not(gt(vInt(2), literal(2)))),
@@ -3135,6 +3150,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
         is(NullSentinel.INSTANCE));
     assertThat(eval(eq(this.trueLiteral, nullInt)),
 =======
+=======
+>>>>>>> 40dbae0b2 ([CALCITE-2556] Simplify not(true/false) to false/true (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   private RexNode simplify(RexNode e) {
     final RexSimplify simplify =
         new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false,
