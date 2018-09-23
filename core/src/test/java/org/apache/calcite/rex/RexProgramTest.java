@@ -1943,6 +1943,9 @@ public class RexProgramTest extends RexProgramBuilderBase {
     );
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+=======
+>>>>>>> 034a677c0 ([CALCITE-2526] Add test for OR with nullable comparisons (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify3(
             or(lt(vInt(), nullInt),
                     ne(literal(0), vInt())),
@@ -1950,6 +1953,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
             "<>(0, ?0.int0)",
             "true");
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   }
 
   @Test public void fieldAccessEqualsHashCode() {
@@ -2241,6 +2245,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
     );
 =======
 >>>>>>> d84e7489d (DX-64510: [CALCITE-2527] Simplify (c IS NULL) OR (c IS ...) might result in AssertionError: result mismatch (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+>>>>>>> 034a677c0 ([CALCITE-2526] Add test for OR with nullable comparisons (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   @Test public void fieldAccessEqualsHashCode() {
