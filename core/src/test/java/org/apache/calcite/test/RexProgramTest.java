@@ -1516,6 +1516,13 @@ public class RexProgramTest extends RexProgramBuilderBase {
             "OR(IS NULL(?0.i), IS NOT FALSE(?0.i))"
     );
 
+    checkSimplify3(
+            or(lt(vInt(), nullInt),
+                    ne(literal(0), vInt())),
+            "OR(null, <>(0, ?0.int0))",
+            "<>(0, ?0.int0)",
+            "true");
+
   }
 
   @Test public void fieldAccessEqualsHashCode() {
