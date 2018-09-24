@@ -445,7 +445,7 @@ order by "deptno", ar, br limit 5;
 =======
 |     10 | 110 | 110 |
 |     10 | 110 | 110 |
-|     10 | 110 | 150 |
+|     10 | 110 | 110 |
 |     20 | 200 | 200 |
 >>>>>>> 07a2c7256 ([CALCITE-2271] Join of two views with window aggregates produces incorrect results or NPE)
 +--------+-----+-----+

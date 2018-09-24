@@ -213,7 +213,13 @@ public abstract class QuidemTest {
       try {
         method.invoke(this);
       } catch (InvocationTargetException e) {
-        throw Throwables.rethrowAsException(e.getCause());
+        Throwable cause = e.getCause();
+        if (cause instanceof Exception) {
+          throw Throwables.rethrowAsException(cause);
+        }
+        if (cause instanceof Error) {
+          throw (Error) cause;
+        }
       }
     } else {
       checkRun(path);
