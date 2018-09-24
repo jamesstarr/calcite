@@ -135,6 +135,8 @@ limitations under the License.
     <xerces.version>2.9.1</xerces.version>
     <sketches.version>0.9.0</sketches.version>
     <fmpp.version>0.9.14</fmpp.version>
+    <!-- Java 1.8 does not support -html5, so override via profile for Java 1.8 -->
+    <maven-javadoc-html5>-html5</maven-javadoc-html5>
   </properties>
 
   <issueManagement>
@@ -718,25 +720,8 @@ limitations under the License.
         <artifactId>maven-enforcer-plugin</artifactId>
       </plugin>
       <plugin>
-        <!-- This is the configuration used by "mvn javadoc:javadoc". It is
-             configured strict, so that it shows errors such as broken links in
-             javadoc on private methods. The configuration for "mvn site" is
-             under "reporting", and is more lenient. -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <additionalparam>-html5</additionalparam>
-          <doclint>all,-missing</doclint>
-          <failOnWarnings>true</failOnWarnings>
-          <links>
-            <link>https://docs.oracle.com/javase/9/docs/api/</link>
-          </links>
-          <notimestamp>true</notimestamp>
-          <excludePackageNames>org.apache.calcite.benchmarks.generated,org.apache.calcite.sql.parser.ddl,org.apache.calcite.sql.parser.impl,org.apache.calcite.sql.parser.parserextensiontesting,org.apache.calcite.piglet.parser,org.openjdk.jmh,org.apache.calcite.adapter.elasticsearch2</excludePackageNames>
-          <excludePackageNames>${maven-javadoc-plugin.excludePackageNames}</excludePackageNames>
-          <quiet>true</quiet>
-          <show>private</show>
-        </configuration>
       </plugin>
       <plugin>
         <!-- Override apache parent POM's definition of release
@@ -898,6 +883,23 @@ limitations under the License.
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
+          <!-- This is the configuration used by "mvn javadoc:javadoc". It is
+               configured strict, so that it shows errors such as broken links in
+               javadoc on private methods. The configuration for "mvn site" is
+               under "reporting", and is more lenient. -->
+          <configuration>
+            <additionalOptions>${maven-javadoc-html5}</additionalOptions>
+            <doclint>all,-missing</doclint>
+            <failOnWarnings>true</failOnWarnings>
+            <links>
+              <link>${maven-javadoc-plugin.link}</link>
+            </links>
+            <notimestamp>true</notimestamp>
+            <excludePackageNames>${maven-javadoc-plugin.excludePackageNames}</excludePackageNames>
+            <quiet>true</quiet>
+            <show>private</show>
+            <windowtitle>Apache Calcite API</windowtitle>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -967,14 +969,6 @@ limitations under the License.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <links>
-            <link>https://docs.oracle.com/javase/8/docs/api/</link>
-          </links>
-          <excludePackageNames>org.apache.calcite.benchmarks.generated,org.apache.calcite.sql.parser.ddl,org.apache.calcite.sql.parser.impl,org.apache.calcite.sql.parser.parserextensiontesting,org.apache.calcite.piglet.parser,org.openjdk.jmh,org.apache.calcite.adapter.elasticsearch2</excludePackageNames>
-          <notimestamp>true</notimestamp>
-          <windowtitle>Apache Calcite API</windowtitle>
-        </configuration>
       </plugin>
     </plugins>
   </reporting>
@@ -1172,6 +1166,15 @@ limitations under the License.
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>java8</id>
+      <activation>
+        <jdk>1.8</jdk>
+      </activation>
+      <properties>
+        <maven-javadoc-html5/>
+      </properties>
     </profile>
   </profiles>
 </project>
