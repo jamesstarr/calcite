@@ -143,6 +143,12 @@ limitations under the License.
     <xalan.version>2.7.1</xalan.version>
     <xerces.version>2.9.1</xerces.version>
     <sketches.version>0.9.0</sketches.version>
+<<<<<<< HEAD
+=======
+    <fmpp.version>0.9.14</fmpp.version>
+    <!-- Java 1.8 does not support -html5, so override via profile for Java 1.8 -->
+    <maven-javadoc-html5>-html5</maven-javadoc-html5>
+>>>>>>> aeee89c7f (Fix JavaDoc warnings for Java 9+, and check JavaDoc in Travis CI)
   </properties>
 
   <issueManagement>
@@ -726,12 +732,9 @@ limitations under the License.
         <artifactId>maven-enforcer-plugin</artifactId>
       </plugin>
       <plugin>
-        <!-- This is the configuration used by "mvn javadoc:javadoc". It is
-             configured strict, so that it shows errors such as broken links in
-             javadoc on private methods. The configuration for "mvn site" is
-             under "reporting", and is more lenient. -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+<<<<<<< HEAD
         <configuration>
           <additionalparam>-html5</additionalparam>
           <doclint>all,-missing</doclint>
@@ -749,6 +752,8 @@ limitations under the License.
 >>>>>>> aa1d61783 ([CALCITE-2518] Add failOnWarnings to maven-javadoc-plugin configuration)
           <show>private</show>
         </configuration>
+=======
+>>>>>>> aeee89c7f (Fix JavaDoc warnings for Java 9+, and check JavaDoc in Travis CI)
       </plugin>
       <plugin>
         <!-- Override apache parent POM's definition of release
@@ -899,6 +904,23 @@ limitations under the License.
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
+          <!-- This is the configuration used by "mvn javadoc:javadoc". It is
+               configured strict, so that it shows errors such as broken links in
+               javadoc on private methods. The configuration for "mvn site" is
+               under "reporting", and is more lenient. -->
+          <configuration>
+            <additionalOptions>${maven-javadoc-html5}</additionalOptions>
+            <doclint>all,-missing</doclint>
+            <failOnWarnings>true</failOnWarnings>
+            <links>
+              <link>${maven-javadoc-plugin.link}</link>
+            </links>
+            <notimestamp>true</notimestamp>
+            <excludePackageNames>${maven-javadoc-plugin.excludePackageNames}</excludePackageNames>
+            <quiet>true</quiet>
+            <show>private</show>
+            <windowtitle>Apache Calcite API</windowtitle>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -968,6 +990,7 @@ limitations under the License.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+<<<<<<< HEAD
         <configuration>
           <links>
             <link>https://docs.oracle.com/javase/8/docs/api/</link>
@@ -976,6 +999,8 @@ limitations under the License.
           <notimestamp>true</notimestamp>
           <windowtitle>Apache Calcite API</windowtitle>
         </configuration>
+=======
+>>>>>>> aeee89c7f (Fix JavaDoc warnings for Java 9+, and check JavaDoc in Travis CI)
       </plugin>
     </plugins>
   </reporting>
@@ -1173,6 +1198,15 @@ limitations under the License.
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>java8</id>
+      <activation>
+        <jdk>1.8</jdk>
+      </activation>
+      <properties>
+        <maven-javadoc-html5/>
+      </properties>
     </profile>
   </profiles>
 </project>

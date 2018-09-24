@@ -17,8 +17,6 @@
 package org.apache.calcite.adapter;
 
 /**
- * JavaDoc from Java 9 seems to fail when package contents is empty.
- * The sole purpose of this class it to make package non empty.
- */
-class Java9Workaround {
-}
+
+// End Java9Workaround.java
+>>>>>>>> aeee89c7f (Fix JavaDoc warnings for Java 9+, and check JavaDoc in Travis CI):core/src/main/java/org/apache/calcite/adapter/Java9Workaround.java
