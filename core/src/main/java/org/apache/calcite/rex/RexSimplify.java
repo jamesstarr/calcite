@@ -725,6 +725,95 @@ public class RexSimplify {
     default:
       return null;
     }
+<<<<<<< HEAD
+=======
+    assert newOperands.size() % 2 == 1;
+    if (newOperands.size() == 1 || values.size() == 1) {
+      final RexNode last = Util.last(newOperands);
+      if (!call.getType().equals(last.getType())) {
+        return rexBuilder.makeAbstractCast(call.getType(), last);
+      }
+      return last;
+    }
+  trueFalse:
+    if (call.getType().getSqlTypeName() == SqlTypeName.BOOLEAN) {
+      // Optimize CASE where every branch returns constant true or constant
+      // false.
+      final List<Pair<RexNode, RexNode>> pairs =
+          casePairs(rexBuilder, newOperands);
+      // 1) Possible simplification if unknown is treated as false:
+      //   CASE
+      //   WHEN p1 THEN TRUE
+      //   WHEN p2 THEN TRUE
+      //   ELSE FALSE
+      //   END
+      // can be rewritten to: (p1 or p2)
+      if (unknownAsFalse) {
+        final List<RexNode> terms = new ArrayList<>();
+        int pos = 0;
+        for (; pos < pairs.size(); pos++) {
+          // True block
+          Pair<RexNode, RexNode> pair = pairs.get(pos);
+          if (!pair.getValue().isAlwaysTrue()) {
+            break;
+          }
+          terms.add(pair.getKey());
+        }
+        for (; pos < pairs.size(); pos++) {
+          // False block
+          Pair<RexNode, RexNode> pair = pairs.get(pos);
+          if (!pair.getValue().isAlwaysFalse()
+              && !RexUtil.isNull(pair.getValue())) {
+            break;
+          }
+        }
+        if (pos == pairs.size()) {
+          final RexNode disjunction =
+              RexUtil.composeDisjunction(rexBuilder, terms);
+          if (!call.getType().equals(disjunction.getType())) {
+            return rexBuilder.makeCast(call.getType(), disjunction);
+          }
+          return disjunction;
+        }
+      }
+      // 2) Another simplification
+      //   CASE
+      //   WHEN p1 THEN TRUE
+      //   WHEN p2 THEN FALSE
+      //   WHEN p3 THEN TRUE
+      //   ELSE FALSE
+      //   END
+      // if p1...pn cannot be nullable
+      for (Ord<Pair<RexNode, RexNode>> pair : Ord.zip(pairs)) {
+        if (pair.e.getKey().getType().isNullable()) {
+          break trueFalse;
+        }
+        if (!pair.e.getValue().isAlwaysTrue()
+            && !pair.e.getValue().isAlwaysFalse()
+            && (!unknownAsFalse || !RexUtil.isNull(pair.e.getValue()))) {
+          break trueFalse;
+        }
+      }
+      final List<RexNode> terms = new ArrayList<>();
+      final List<RexNode> notTerms = new ArrayList<>();
+      for (Ord<Pair<RexNode, RexNode>> pair : Ord.zip(pairs)) {
+        if (pair.e.getValue().isAlwaysTrue()) {
+          terms.add(RexUtil.andNot(rexBuilder, pair.e.getKey(), notTerms));
+        } else {
+          notTerms.add(pair.e.getKey());
+        }
+      }
+      RexNode disjunction = RexUtil.composeDisjunction(rexBuilder, terms);
+      if (!call.getType().equals(disjunction.getType())) {
+        disjunction = rexBuilder.makeCast(call.getType(), disjunction);
+      }
+      return simplify_(disjunction);
+    }
+    if (newOperands.equals(operands)) {
+      return call;
+    }
+    return call.clone(call.getType(), newOperands);
+>>>>>>> 8f2387fc2 ([CALCITE-2586] RexSimplify: case with repeated branches results in assertion error (pengzhiwei))
   }
 
   /**
