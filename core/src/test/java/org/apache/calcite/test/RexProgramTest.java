@@ -1222,6 +1222,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplify(gt(hRef, hRef), "false");
     checkSimplify2(gt(iRef, iRef), ">(?0.i, ?0.i)", "false");
     checkSimplify(gt(iRef, hRef), ">(?0.i, ?0.h)");
+    checkSimplify2(coalesce(gt(nullInt, nullInt), trueLiteral),
+        "COALESCE(null:BOOLEAN, true)", "COALESCE(null:BOOLEAN, true)");
   }
 
   @Test public void testSimplifyFilter() {
