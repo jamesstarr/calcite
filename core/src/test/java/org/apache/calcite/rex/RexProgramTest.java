@@ -1522,6 +1522,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 =======
 >>>>>>> 9ea1621a9 (Reapply "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING""):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
@@ -1541,6 +1542,10 @@ public class RexProgramTest extends RexProgramBuilderBase {
 >>>>>>> 9ea1621a9 (Reapply "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING""):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 =======
 >>>>>>> 0c5880c91 (Revert "Reapply "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING"""):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+    checkSimplify2(coalesce(gt(nullInt, nullInt), trueLiteral),
+        "COALESCE(null:BOOLEAN, true)", "COALESCE(null:BOOLEAN, true)");
+>>>>>>> f2f5c9ef9 ([CALCITE-2580] RexSimplify: coalesce(null > null, true) produces wrong result filter expressions (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   @Test void simplifyStrong() {
