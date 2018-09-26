@@ -83,13 +83,12 @@ import org.apache.calcite.util.mapping.Mappings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.SortedSetMultimap;
 
->>>>>>> af4516c57 ([CALCITE-3138] RelStructuredTypeFlattener doesn't restructure ROW type fields (Igor Guzenko))
+>>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+=======
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
-<<<<<<< HEAD
 import java.util.Deque;
-=======
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -884,6 +883,10 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
       // walk down the field access path expression, calculating
       // the desired input number
       int iInput = 0;
+<<<<<<< HEAD
+=======
+      RelDataType fieldType = removeDistinct(fieldAccess.getType());
+>>>>>>> d52497861 ([CALCITE-2404] Implement access to structured-types in enumerable runtime (Stamatis Zampetakis))
       Deque<Integer> accessOrdinals = new ArrayDeque<>();
 
       for (;;) {

@@ -323,7 +323,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2404">[CALCITE-2404]
    * Accessing structured-types is not implemented by the runtime</a>. */
-  @Test void testSelectWithFieldAccessOnFirstLevelRecordType() {
+  @Test public void testSelectWithFieldAccessOnFirstLevelRecordType() {
     CalciteAssert.that()
         .with(CalciteAssert.SchemaSpec.BOOKSTORE)
         .query("select au.\"birthPlace\".\"city\" as city from \"bookstore\".\"authors\" au\n")
@@ -333,7 +333,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2404">[CALCITE-2404]
    * Accessing structured-types is not implemented by the runtime</a>. */
-  @Test void testSelectWithFieldAccessOnSecondLevelRecordType() {
+  @Test public void testSelectWithFieldAccessOnSecondLevelRecordType() {
     CalciteAssert.that()
         .with(CalciteAssert.SchemaSpec.BOOKSTORE)
         .query("select au.\"birthPlace\".\"coords\".\"latitude\" as lat\n"
@@ -344,7 +344,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2404">[CALCITE-2404]
    * Accessing structured-types is not implemented by the runtime</a>. */
-  @Test void testWhereWithFieldAccessOnFirstLevelRecordType() {
+  @Test public void testWhereWithFieldAccessOnFirstLevelRecordType() {
     CalciteAssert.that()
         .with(CalciteAssert.SchemaSpec.BOOKSTORE)
         .query("select au.\"aid\" as aid from \"bookstore\".\"authors\" au\n"
@@ -355,7 +355,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2404">[CALCITE-2404]
    * Accessing structured-types is not implemented by the runtime</a>. */
-  @Test void testWhereWithFieldAccessOnSecondLevelRecordType() {
+  @Test public void testWhereWithFieldAccessOnSecondLevelRecordType() {
     CalciteAssert.that()
         .with(CalciteAssert.SchemaSpec.BOOKSTORE)
         .query("select au.\"aid\" as aid from \"bookstore\".\"authors\" au\n"
@@ -366,7 +366,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2404">[CALCITE-2404]
    * Accessing structured-types is not implemented by the runtime</a>. */
-  @Test void testSelectWithFieldAccessOnFirstLevelRecordTypeArray() {
+  @Test public void testSelectWithFieldAccessOnFirstLevelRecordTypeArray() {
     CalciteAssert.that()
         .with(CalciteAssert.SchemaSpec.BOOKSTORE)
         .query("select au.\"books\"[1].\"title\" as title from \"bookstore\".\"authors\" au\n")
@@ -376,7 +376,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2404">[CALCITE-2404]
    * Accessing structured-types is not implemented by the runtime</a>. */
-  @Test void testSelectWithFieldAccessOnSecondLevelRecordTypeArray() {
+  @Test public void testSelectWithFieldAccessOnSecondLevelRecordTypeArray() {
     CalciteAssert.that()
         .with(CalciteAssert.SchemaSpec.BOOKSTORE)
         .query("select au.\"books\"[1].\"pages\"[1].\"pageNo\" as pno\n"
@@ -387,7 +387,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2404">[CALCITE-2404]
    * Accessing structured-types is not implemented by the runtime</a>. */
-  @Test void testWhereWithFieldAccessOnFirstLevelRecordTypeArray() {
+  @Test public void testWhereWithFieldAccessOnFirstLevelRecordTypeArray() {
     CalciteAssert.that()
         .with(CalciteAssert.SchemaSpec.BOOKSTORE)
         .query("select au.\"aid\" as aid from \"bookstore\".\"authors\" au\n"
@@ -398,7 +398,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2404">[CALCITE-2404]
    * Accessing structured-types is not implemented by the runtime</a>. */
-  @Test void testWhereWithFieldAccessOnSecondLevelRecordTypeArray() {
+  @Test public void testWhereWithFieldAccessOnSecondLevelRecordTypeArray() {
     CalciteAssert.that()
         .with(CalciteAssert.SchemaSpec.BOOKSTORE)
         .query("select au.\"aid\" as aid from \"bookstore\".\"authors\" au\n"

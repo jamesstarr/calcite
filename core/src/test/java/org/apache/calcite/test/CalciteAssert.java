@@ -903,11 +903,10 @@ public class CalciteAssert {
           ViewTable.viewMacro(aux, lateralSql, ImmutableList.of(),
               ImmutableList.of("AUX", "VIEWLATERAL"), null));
       return aux;
-<<<<<<< HEAD
+=======
     case BOOKSTORE:
       return rootSchema.add(schema.schemaName,
           new ReflectiveSchema(new BookstoreSchema()));
-=======
     default:
       throw new AssertionError("unknown schema " + schema);
     }
@@ -2053,7 +2052,8 @@ public class CalciteAssert {
     LINGUAL("SALES"),
     POST("POST"),
     ORINOCO("ORINOCO"),
-    AUX("AUX");
+    AUX("AUX"),
+    BOOKSTORE("bookstore");
 
     /** The name of the schema that is usually created from this specification.
      * (Names are not unique, and you can use another name if you wish.) */

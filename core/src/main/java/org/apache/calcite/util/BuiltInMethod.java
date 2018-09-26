@@ -559,15 +559,8 @@ public enum BuiltInMethod {
   CONTEXT_ROOT(Context.class, "root", true),
   DATA_CONTEXT_GET_QUERY_PROVIDER(DataContext.class, "getQueryProvider"),
   METADATA_REL(Metadata.class, "rel"),
-<<<<<<< HEAD
-  STRUCT_ACCESS(SqlFunctions.class, "structAccess", Object.class, int.class, String.class),
-  SOURCE_SORTER(SourceSorter.class, Function2.class, Function1.class,
-      Comparator.class),
-  BASIC_LAZY_ACCUMULATOR(BasicLazyAccumulator.class, Function2.class),
-  LAZY_AGGREGATE_LAMBDA_FACTORY(LazyAggregateLambdaFactory.class,
-      Function0.class, List.class),
-  BASIC_AGGREGATE_LAMBDA_FACTORY(BasicAggregateLambdaFactory.class,
 =======
+  STRUCT_ACCESS(SqlFunctions.class, "structAccess", Object.class, int.class, String.class),
   SOURCE_SORTER(SourceSorter.class, Function2.class, Function1.class,
       Comparator.class),
   ORDERED_AGGREGATE_LAMBDA_FACTORY(OrderedAggregateLambdaFactory.class,

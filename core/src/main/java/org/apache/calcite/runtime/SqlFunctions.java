@@ -2170,37 +2170,6 @@ public class SqlFunctions {
     return result;
   }
 
-  /**
-   * Implements the {@code .} (field access) operator on an object
-   * whose type is not known until runtime.
-   *
-   * <p>A struct object can be represented in various ways by the
-   * runtime and depends on the
-   * {@link org.apache.calcite.adapter.enumerable.JavaRowFormat}.
-   */
-  @Experimental
-  private static Object structAccess(Object structObject, int index, String fieldName) {
-    if (structObject == null) {
-      return null;
-    }
-
-    if (structObject instanceof Object[]) {
-      return ((Object[]) structObject)[index];
-    } else if (structObject instanceof List) {
-      return ((List) structObject).get(index);
-    } else if (structObject instanceof Row) {
-      return ((Row) structObject).getObject(index);
-    } else {
-      Class<?> beanClass = structObject.getClass();
-      try {
-        Field structField = beanClass.getDeclaredField(fieldName);
-        return structField.get(structObject);
-      } catch (NoSuchFieldException | IllegalAccessException ex) {
-        throw new RuntimeException(ex);
-      }
-    }
-  }
-
   /** Support the ELEMENT function. */
   public static Object element(List list) {
     switch (list.size()) {
@@ -2317,9 +2286,6 @@ public class SqlFunctions {
         return (Function1) LIST_AS_ENUMERABLE;
       } else {
         return row -> p2(new Object[] { row }, fieldCounts, withOrdinality,
-<<<<<<< HEAD
-            inputTypes);
-=======
               inputTypes);
       }
     }
@@ -2481,11 +2447,17 @@ public class SqlFunctions {
   }
 
   /**
+<<<<<<< HEAD
    * Implements the {@code .} (field access) operator on an object
    * whose type is not known until runtime.
    *
    * <p>A struct object can be represented in various ways by the
    * runtime and depends on the
+=======
+   * Implements the {@code .} (field access) operator on an object whose type is not known until
+   * runtime.
+   *
+   * A struct object can be represented in various ways by the runtime and depends on the
    * {@link org.apache.calcite.adapter.enumerable.JavaRowFormat}.
    */
   @Experimental
@@ -2506,7 +2478,8 @@ public class SqlFunctions {
         Field structField = beanClass.getDeclaredField(fieldName);
         return structField.get(structObject);
       } catch (NoSuchFieldException | IllegalAccessException ex) {
-        throw RESOURCE.failedToAccessField(fieldName, beanClass.getName()).ex(ex);
+        throw new IllegalStateException("Failed to access field '" + fieldName
+            + "' of object of type " + beanClass.getName(), ex);
       }
     }
   }

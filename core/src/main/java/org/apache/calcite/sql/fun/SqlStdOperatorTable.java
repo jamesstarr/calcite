@@ -2092,12 +2092,10 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
       };
 
   /**
-   * The internal {@code $STRUCT_ACCESS} operator is used to access a
-   * field of a record.
+   * The internal {@code $STRUCT_ACCESS} operator is used to access a field of a record.
    *
-   * <p>In contrast with {@link #DOT} operator, it never appears in an
-   * {@link SqlNode} tree and allows to access fields by position and
-   * not by name.
+   * In contrast with {@link #DOT} operator it never appears in an {@link SqlNode} tree and allows
+   * to access fields by position and not by name.
    */
   public static final SqlInternalOperator STRUCT_ACCESS =
       new SqlInternalOperator("$STRUCT_ACCESS", SqlKind.OTHER);

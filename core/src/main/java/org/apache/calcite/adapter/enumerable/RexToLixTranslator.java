@@ -47,9 +47,7 @@ import org.apache.calcite.runtime.variant.VariantValue;
 import org.apache.calcite.sql.SqlIntervalQualifier;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
-import org.apache.calcite.sql.SqlWindowTableFunction;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
-import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.util.BuiltInMethod;
@@ -872,9 +870,7 @@ public class RexToLixTranslator {
         }
         InputGetter getter =
             correlates.apply(((RexCorrelVariable) target).getName());
-        Expression y = getter.field(list, fieldIndex, storageType);
-        Expression input = list.append("corInp" + fieldIndex + "_", y); // safe to share
-        return handleNullUnboxingIfNecessary(input, nullAs, storageType);
+        return getter.field(list, fieldIndex, storageType);
       default:
         RexNode rxIndex = builder.makeLiteral(fieldIndex, typeFactory.createType(int.class), true);
         RexNode rxName = builder.makeLiteral(fieldName, typeFactory.createType(String.class), true);
@@ -884,7 +880,7 @@ public class RexToLixTranslator {
             ImmutableList.of(target, rxIndex, rxName));
         return translateCall(accessCall, nullAs);
       }
-    }
+>>>>>>> d52497861 ([CALCITE-2404] Implement access to structured-types in enumerable runtime (Stamatis Zampetakis))
     default:
       if (expr instanceof RexCall) {
         return translateCall((RexCall) expr, nullAs);
@@ -1100,7 +1096,6 @@ public class RexToLixTranslator {
     return list;
   }
 
->>>>>>> 39c3e45da ([CALCITE-2571] TRIM function now trims more than one character (Andrew Pilloud))
   public static Expression translateCondition(RexProgram program,
       JavaTypeFactory typeFactory, BlockBuilder list, InputGetter inputGetter,
       Function1<String, InputGetter> correlates, SqlConformance conformance) {
