@@ -23,10 +23,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-<<<<<<< HEAD
-import java.util.ArrayList;
-import java.util.List;
-=======
 import java.util.Map;
 import java.util.Objects;
 
@@ -90,4 +86,3 @@ class JsonLoader {
 =======
 
 // End JsonLoader.java
->>>>>>> 1b41ebada ([CALCITE-2588] Run Geode Adapter tests with an Embedded Instance)

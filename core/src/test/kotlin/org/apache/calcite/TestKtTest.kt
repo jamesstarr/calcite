@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8718191eb (Add license to TestKtTest and add apache-rat:check to Travis CI)
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,11 +18,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+<<<<<<< HEAD
 package org.apache.calcite
 
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 =======
+=======
+>>>>>>> 8718191eb (Add license to TestKtTest and add apache-rat:check to Travis CI)
 package org.apache.calcite
 
 import org.junit.Test

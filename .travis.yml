@@ -22,6 +22,7 @@ matrix:
   fast_finish: true
   include:
 <<<<<<< HEAD
+<<<<<<< HEAD
     - jdk: openjdk8
     - jdk: openjdk11
     - jdk: openjdk11
@@ -30,6 +31,9 @@ matrix:
     - jdk: openjdk14
 =======
     - env: IMAGE=maven:3-jdk-11 JDOC=Y
+=======
+    - env: IMAGE=maven:3-jdk-11 JDOC=Y RAT=Y
+>>>>>>> 8718191eb (Add license to TestKtTest and add apache-rat:check to Travis CI)
     - env: IMAGE=maven:3-jdk-10
     - env: IMAGE=maven:3-jdk-9
     - env: IMAGE=maven:3-jdk-8 JDOC=Y
@@ -58,8 +62,13 @@ script:
 >>>>>>> ade0edbab (Skip second Checkstyle execution during Travis CI build)
 =======
   - if [ $JDOC = "Y" ]; then export JDOC=javadoc:javadoc; fi
+<<<<<<< HEAD
   - $DOCKERRUN $IMAGE mvn -Dcheckstyle.skip -Dsurefire.useFile=false -Dsurefire.threadCount=1 -Dsurefire.perCoreThreadCount=false -Djavax.net.ssl.trustStorePassword=changeit test $JDOC
 >>>>>>> aeee89c7f (Fix JavaDoc warnings for Java 9+, and check JavaDoc in Travis CI)
+=======
+  - if [ $RAT = "Y" ]; then export RAT="apache-rat:check -Drat.consoleOutput"; fi
+  - $DOCKERRUN $IMAGE mvn -Dcheckstyle.skip -Dsurefire.useFile=false -Dsurefire.threadCount=1 -Dsurefire.perCoreThreadCount=false -Djavax.net.ssl.trustStorePassword=changeit test $JDOC $RAT
+>>>>>>> 8718191eb (Add license to TestKtTest and add apache-rat:check to Travis CI)
 git:
   depth: 100
 cache:
