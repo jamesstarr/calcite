@@ -712,25 +712,7 @@ public class RexToLixTranslator {
     return convert;
   }
 
-  Expression handleVariantInCast(
-      RelDataType targetType,
-      Expression operand) {
-    // Converting VARIANT to VARIANT uses the default conversion
-    if (targetType.getSqlTypeName() == SqlTypeName.VARIANT) {
-      return EnumUtils.convert(operand, typeFactory.getJavaClass(targetType));
-    }
-
-    // Converting a VARIANT to any other type calls the Variant.cast method
-    // First cast operand to a VariantValue (it may be an Object)
-    Expression operandCast = Expressions.convert_(operand, VariantValue.class);
-    Expression cast =
-        Expressions.call(operandCast, BuiltInMethod.VARIANT_CAST.method,
-            RuntimeTypeInformation.createExpression(targetType));
-    // The cast returns an Object, so we need a convert to the expected Java type
-    RelDataType nullableTarget = typeFactory.createTypeWithNullability(targetType, true);
-    return Expressions.convert_(cast, typeFactory.getJavaClass(nullableTarget));
-  }
-
+>>>>>>> 7feb6b7bd ([CALCITE-2596] When translating correlated variables in enumerable convention, convert not-null boxed primitive values to primitive (Stamatis Zampetakis))
   private Expression handleNullUnboxingIfNecessary(
       Expression input,
       RexImpTable.NullAs nullAs,
@@ -822,22 +804,18 @@ public class RexToLixTranslator {
       nullAs = RexImpTable.NullAs.NOT_POSSIBLE;
     }
     switch (expr.getKind()) {
+<<<<<<< HEAD
     case INPUT_REF:
     {
+=======
+    case INPUT_REF: {
       final int index = ((RexInputRef) expr).getIndex();
       Expression x = inputGetter.field(list, index, storageType);
 
       Expression input = list.append("inp" + index + "_", x); // safe to share
       return handleNullUnboxingIfNecessary(input, nullAs, storageType);
     }
-    case PATTERN_INPUT_REF:
-    {
-      final int index = ((RexInputRef) expr).getIndex();
-      Expression x = inputGetter.field(list, index, storageType);
-
-      Expression input = list.append("inp" + index + "_", x); // safe to share
-      return handleNullUnboxingIfNecessary(input, nullAs, storageType);
-    }
+>>>>>>> 7feb6b7bd ([CALCITE-2596] When translating correlated variables in enumerable convention, convert not-null boxed primitive values to primitive (Stamatis Zampetakis))
     case LOCAL_REF:
       return translate(
           deref(expr),
@@ -870,7 +848,9 @@ public class RexToLixTranslator {
         }
         InputGetter getter =
             correlates.apply(((RexCorrelVariable) target).getName());
-        return getter.field(list, fieldIndex, storageType);
+        Expression y = getter.field(list, fieldIndex, storageType);
+        Expression input = list.append("corInp" + fieldIndex + "_", y); // safe to share
+        return handleNullUnboxingIfNecessary(input, nullAs, storageType);
       default:
         RexNode rxIndex = builder.makeLiteral(fieldIndex, typeFactory.createType(int.class), true);
         RexNode rxName = builder.makeLiteral(fieldName, typeFactory.createType(String.class), true);
@@ -880,7 +860,10 @@ public class RexToLixTranslator {
             ImmutableList.of(target, rxIndex, rxName));
         return translateCall(accessCall, nullAs);
       }
->>>>>>> d52497861 ([CALCITE-2404] Implement access to structured-types in enumerable runtime (Stamatis Zampetakis))
+<<<<<<< HEAD
+=======
+    }
+>>>>>>> 7feb6b7bd ([CALCITE-2596] When translating correlated variables in enumerable convention, convert not-null boxed primitive values to primitive (Stamatis Zampetakis))
     default:
       if (expr instanceof RexCall) {
         return translateCall((RexCall) expr, nullAs);

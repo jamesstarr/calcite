@@ -154,7 +154,7 @@ public class EnumerableCorrelateTest {
             "empid=150; name=Sebastian");
   }
 
-  @Test void simpleCorrelateWithConditionIncludingBoxedPrimitive() {
+  @Test public void simpleCorrelateWithConditionIncludingBoxedPrimitive() {
     final String sql = "select empid from emps e where not exists (\n"
         + "  select 1 from depts d where d.deptno=e.commission)";
     tester(false, new JdbcTest.HrSchema())
@@ -166,6 +166,7 @@ public class EnumerableCorrelateTest {
             "empid=200");
   }
 
+<<<<<<< HEAD
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2920">[CALCITE-2920]
    * RelBuilder: new method to create an anti-join</a>. */
@@ -279,6 +280,8 @@ public class EnumerableCorrelateTest {
         .returnsUnordered("empid=200; name=Eric");
   }
 
+=======
+>>>>>>> 7feb6b7bd ([CALCITE-2596] When translating correlated variables in enumerable convention, convert not-null boxed primitive values to primitive (Stamatis Zampetakis))
   private CalciteAssert.AssertThat tester(boolean forceDecorrelate,
       Object schema) {
     return CalciteAssert.that()
