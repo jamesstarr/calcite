@@ -406,7 +406,7 @@ LogicalAggregate(group=[{0}], groups=[[{0}, {}]])
         </Resource>
         <Resource name="plan">
             <![CDATA[
-LogicalProject(EXPR$0=[DOT(ITEM(DOT(DOT(ITEM($6, 1), 'DETAIL'), 'SKILLS'), +(2, 3)), 'DESC')])
+LogicalProject(EXPR$0=[ITEM(ITEM($6, 1).DETAIL.SKILLS, +(2, 3)).DESC])
   LogicalProject(DEPTNO=[$0], NAME=[$1], TYPE=[$2.TYPE], DESC=[$2.DESC], A=[$2.OTHERS.A], B=[$2.OTHERS.B], EMPLOYEES=[$3])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
 ]]>
@@ -419,7 +419,7 @@ LogicalProject(EXPR$0=[DOT(ITEM(DOT(DOT(ITEM($6, 1), 'DETAIL'), 'SKILLS'), +(2, 
         <Resource name="plan">
             <![CDATA[
 LogicalSort(sort0=[$0], dir0=[ASC])
-  LogicalProject(EXPR$0=[DOT(ITEM(DOT(DOT(ITEM($6, 1), 'DETAIL'), 'SKILLS'), +(2, 3)), 'DESC')])
+  LogicalProject(EXPR$0=[ITEM(ITEM($6, 1).DETAIL.SKILLS, +(2, 3)).DESC])
     LogicalProject(DEPTNO=[$0], NAME=[$1], TYPE=[$2.TYPE], DESC=[$2.DESC], A=[$2.OTHERS.A], B=[$2.OTHERS.B], EMPLOYEES=[$3])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
 ]]>
