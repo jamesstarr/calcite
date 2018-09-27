@@ -2885,6 +2885,53 @@ public class RelToSqlConverterTest {
         callsUnparseCallOnSqlSelect[0]);
   }
 
+  @Test public void testWithinGroup1() {
+    final String query = "select \"product_class_id\", collect(\"net_weight\") "
+        + "within group (order by \"net_weight\" desc) "
+        + "from \"product\" group by \"product_class_id\"";
+    final String expected = "SELECT \"product_class_id\", COLLECT(\"net_weight\") "
+        + "WITHIN GROUP (ORDER BY \"net_weight\" DESC)\n"
+        + "FROM \"foodmart\".\"product\"\n"
+        + "GROUP BY \"product_class_id\"";
+    sql(query).ok(expected);
+  }
+
+  @Test public void testWithinGroup2() {
+    final String query = "select \"product_class_id\", collect(\"net_weight\") "
+        + "within group (order by \"low_fat\", \"net_weight\" desc nulls last) "
+        + "from \"product\" group by \"product_class_id\"";
+    final String expected = "SELECT \"product_class_id\", COLLECT(\"net_weight\") "
+        + "WITHIN GROUP (ORDER BY \"low_fat\", \"net_weight\" DESC NULLS LAST)\n"
+        + "FROM \"foodmart\".\"product\"\n"
+        + "GROUP BY \"product_class_id\"";
+    sql(query).ok(expected);
+  }
+
+  @Test public void testWithinGroup3() {
+    final String query = "select \"product_class_id\", collect(\"net_weight\") "
+        + "within group (order by \"net_weight\" desc), "
+        + "min(\"low_fat\")"
+        + "from \"product\" group by \"product_class_id\"";
+    final String expected = "SELECT \"product_class_id\", COLLECT(\"net_weight\") "
+        + "WITHIN GROUP (ORDER BY \"net_weight\" DESC), MIN(\"low_fat\")\n"
+        + "FROM \"foodmart\".\"product\"\n"
+        + "GROUP BY \"product_class_id\"";
+    sql(query).ok(expected);
+  }
+
+  @Test public void testWithinGroup4() {
+    // filter in AggregateCall is not unparsed
+    final String query = "select \"product_class_id\", collect(\"net_weight\") "
+        + "within group (order by \"net_weight\" desc) filter (where \"net_weight\" > 0)"
+        + "from \"product\" group by \"product_class_id\"";
+    final String expected = "SELECT \"product_class_id\", COLLECT(\"net_weight\") "
+        + "WITHIN GROUP (ORDER BY \"net_weight\" DESC)\n"
+        + "FROM \"foodmart\".\"product\"\n"
+        + "GROUP BY \"product_class_id\"";
+    sql(query).ok(expected);
+  }
+
+
   /** Fluid interface to run tests. */
   private static class Sql {
     private CalciteAssert.SchemaSpec schemaSpec;

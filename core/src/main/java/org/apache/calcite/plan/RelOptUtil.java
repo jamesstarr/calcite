@@ -18,6 +18,7 @@ package org.apache.calcite.plan;
 
 import org.apache.calcite.avatica.AvaticaConnection;
 import org.apache.calcite.linq4j.Ord;
+import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelHomogeneousShuttle;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
@@ -507,6 +508,7 @@ public abstract class RelOptUtil {
               false,
               ImmutableList.of(0),
               -1,
+              RelCollations.EMPTY,
               0,
               ret,
               null,
@@ -599,6 +601,7 @@ public abstract class RelOptUtil {
             false,
             ImmutableList.of(projectedKeyCount),
             -1,
+            RelCollations.EMPTY,
             projectedKeyCount,
             ret,
             null,
@@ -797,15 +800,14 @@ public abstract class RelOptUtil {
   public static RelNode createSingleValueAggRel(
       RelOptCluster cluster,
       RelNode rel) {
-    // assert (rel.getRowType().getFieldCount() == 1);
     final int aggCallCnt = rel.getRowType().getFieldCount();
     final List<AggregateCall> aggCalls = new ArrayList<>();
 
     for (int i = 0; i < aggCallCnt; i++) {
       aggCalls.add(
-          AggregateCall.create(
-              SqlStdOperatorTable.SINGLE_VALUE, false, false,
-              ImmutableList.of(i), -1, 0, rel, null, null));
+          AggregateCall.create(SqlStdOperatorTable.SINGLE_VALUE, false, false,
+              ImmutableList.of(i), -1, RelCollations.EMPTY, 0, rel, null,
+              null));
     }
 
     return LogicalAggregate.create(rel, ImmutableBitSet.of(), null, aggCalls);

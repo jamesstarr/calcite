@@ -471,8 +471,8 @@ public abstract class SubQueryRemoveRule extends RelOptRule {
         // Builds the cross join
         builder.aggregate(builder.groupKey(),
             builder.count(false, "c"),
-            builder.aggregateCall(SqlStdOperatorTable.COUNT, false, false, null,
-                "ck", builder.fields()));
+            builder.aggregateCall(SqlStdOperatorTable.COUNT, builder.fields())
+              .as("ck"));
         builder.as("ct");
         if (!variablesSet.isEmpty()) {
           builder.join(JoinRelType.LEFT, builder.literal(true), variablesSet);

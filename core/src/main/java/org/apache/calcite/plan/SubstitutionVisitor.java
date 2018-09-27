@@ -1310,7 +1310,8 @@ public class SubstitutionVisitor {
             AggregateCall.create(getRollup(aggregateCall.getAggregation()),
                 aggregateCall.isDistinct(), aggregateCall.isApproximate(),
                 ImmutableList.of(target.groupSet.cardinality() + i), -1,
-                aggregateCall.type, aggregateCall.name));
+                aggregateCall.collation, aggregateCall.type,
+                aggregateCall.name));
       }
       result = MutableAggregate.of(target, groupSet.build(), null,
           aggregateCalls);

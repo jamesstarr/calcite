@@ -279,6 +279,7 @@ public class AggregateReduceFunctionsRule extends RelOptRule {
         oldCall.isApproximate(),
         ImmutableIntList.of(argOrdinal),
         oldCall.filterArg,
+        oldCall.collation,
         aggFunction.inferReturnType(binding),
         null);
   }
@@ -302,6 +303,7 @@ public class AggregateReduceFunctionsRule extends RelOptRule {
             oldCall.isApproximate(),
             oldCall.getArgList(),
             oldCall.filterArg,
+            oldCall.collation,
             oldAggRel.getGroupCount(),
             oldAggRel.getInput(),
             null,
@@ -312,6 +314,7 @@ public class AggregateReduceFunctionsRule extends RelOptRule {
             oldCall.isApproximate(),
             oldCall.getArgList(),
             oldCall.filterArg,
+            oldCall.collation,
             oldAggRel.getGroupCount(),
             oldAggRel.getInput(),
             null,
@@ -358,14 +361,15 @@ public class AggregateReduceFunctionsRule extends RelOptRule {
     final AggregateCall sumZeroCall =
         AggregateCall.create(SqlStdOperatorTable.SUM0, oldCall.isDistinct(),
             oldCall.isApproximate(), oldCall.getArgList(), oldCall.filterArg,
-            oldAggRel.getGroupCount(), oldAggRel.getInput(), null,
-            oldCall.name);
+            oldCall.collation, oldAggRel.getGroupCount(), oldAggRel.getInput(),
+            null, oldCall.name);
     final AggregateCall countCall =
         AggregateCall.create(SqlStdOperatorTable.COUNT,
             oldCall.isDistinct(),
             oldCall.isApproximate(),
             oldCall.getArgList(),
             oldCall.filterArg,
+            oldCall.collation,
             oldAggRel.getGroupCount(),
             oldAggRel,
             null,
@@ -457,6 +461,7 @@ public class AggregateReduceFunctionsRule extends RelOptRule {
             oldCall.isApproximate(),
             ImmutableIntList.of(argOrdinal),
             oldCall.filterArg,
+            oldCall.collation,
             oldAggRel.getGroupCount(),
             oldAggRel.getInput(),
             null,
@@ -480,6 +485,7 @@ public class AggregateReduceFunctionsRule extends RelOptRule {
             oldCall.isApproximate(),
             oldCall.getArgList(),
             oldCall.filterArg,
+            oldCall.collation,
             oldAggRel.getGroupCount(),
             oldAggRel,
             null,

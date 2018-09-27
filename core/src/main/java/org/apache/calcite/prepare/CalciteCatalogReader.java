@@ -61,6 +61,7 @@ import org.apache.calcite.sql.validate.SqlUserDefinedFunction;
 import org.apache.calcite.sql.validate.SqlUserDefinedTableFunction;
 import org.apache.calcite.sql.validate.SqlUserDefinedTableMacro;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
+import org.apache.calcite.util.Optionality;
 import org.apache.calcite.util.Util;
 
 import com.google.common.base.Preconditions;
@@ -372,7 +373,8 @@ public class CalciteCatalogReader implements Prepare.CatalogReader {
     } else if (function instanceof AggregateFunction) {
       return new SqlUserDefinedAggFunction(name,
           infer((AggregateFunction) function), InferTypes.explicit(argTypes),
-          typeChecker, (AggregateFunction) function, false, false, typeFactory);
+          typeChecker, (AggregateFunction) function, false, false,
+          Optionality.FORBIDDEN, typeFactory);
     } else if (function instanceof TableMacro) {
       return new SqlUserDefinedTableMacro(name, ReturnTypes.CURSOR,
           InferTypes.explicit(argTypes), typeChecker, paramTypes,

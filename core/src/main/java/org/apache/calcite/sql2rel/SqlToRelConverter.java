@@ -200,6 +200,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import static org.apache.calcite.sql.SqlUtil.stripAs;
 
@@ -1135,9 +1136,10 @@ public class SqlToRelConverter {
             LogicalAggregate.create(seek, ImmutableBitSet.of(), null,
                 ImmutableList.of(
                     AggregateCall.create(SqlStdOperatorTable.COUNT, false,
-                        false, ImmutableList.<Integer>of(), -1, longType, null),
+                        false, ImmutableList.of(), -1, RelCollations.EMPTY,
+                        longType, null),
                     AggregateCall.create(SqlStdOperatorTable.COUNT, false,
-                        false, args, -1, longType, null)));
+                        false, args, -1, RelCollations.EMPTY, longType, null)));
         LogicalJoin join =
             LogicalJoin.create(bb.root, aggregate, rexBuilder.makeLiteral(true),
                 ImmutableSet.<CorrelationId>of(), JoinRelType.INNER);
@@ -1908,12 +1910,13 @@ public class SqlToRelConverter {
     }
     final ImmutableList.Builder<RexFieldCollation> orderKeys =
         ImmutableList.builder();
-    final Set<SqlKind> flags = EnumSet.noneOf(SqlKind.class);
     for (SqlNode order : orderList) {
-      flags.clear();
-      RexNode e = bb.convertSortExpression(order, flags);
-      orderKeys.add(new RexFieldCollation(e, flags));
+      orderKeys.add(
+          bb.convertSortExpression(order,
+              RelFieldCollation.Direction.ASCENDING,
+              RelFieldCollation.NullDirection.UNSPECIFIED));
     }
+
     try {
       Preconditions.checkArgument(bb.window == null,
           "already in window agg mode");
@@ -2797,6 +2800,10 @@ public class SqlToRelConverter {
 
     // also replace sub-queries inside filters in the aggregates
     replaceSubQueries(bb, aggregateFinder.filterList,
+        RelOptUtil.Logic.TRUE_FALSE_UNKNOWN);
+
+    // also replace sub-queries inside ordering spec in the aggregates
+    replaceSubQueries(bb, aggregateFinder.orderList,
         RelOptUtil.Logic.TRUE_FALSE_UNKNOWN);
 
     // If group-by clause is missing, pretend that it has zero elements.
@@ -4727,19 +4734,50 @@ public class SqlToRelConverter {
     }
 
     /**
-     * Converts an item in an ORDER BY clause, extracting DESC, NULLS LAST
-     * and NULLS FIRST flags first.
+     * Converts an item in an ORDER BY clause inside a window (OVER) clause,
+     * extracting DESC, NULLS LAST and NULLS FIRST flags first.
      */
-    public RexNode convertSortExpression(SqlNode expr, Set<SqlKind> flags) {
+    public RexFieldCollation convertSortExpression(SqlNode expr,
+                                                   RelFieldCollation.Direction direction,
+                                                   RelFieldCollation.NullDirection nullDirection) {
       switch (expr.getKind()) {
       case DESCENDING:
+        return convertSortExpression(((SqlCall) expr).operand(0),
+                RelFieldCollation.Direction.DESCENDING, nullDirection);
       case NULLS_LAST:
+        return convertSortExpression(((SqlCall) expr).operand(0),
+                direction, RelFieldCollation.NullDirection.LAST);
       case NULLS_FIRST:
-        flags.add(expr.getKind());
-        final SqlNode operand = ((SqlCall) expr).operand(0);
-        return convertSortExpression(operand, flags);
+        return convertSortExpression(((SqlCall) expr).operand(0),
+                direction, RelFieldCollation.NullDirection.FIRST);
       default:
-        return convertExpression(expr);
+        final Set<SqlKind> flags = EnumSet.noneOf(SqlKind.class);
+        switch (direction) {
+        case DESCENDING:
+          flags.add(SqlKind.DESCENDING);
+        }
+        switch (nullDirection) {
+        case UNSPECIFIED:
+          final RelFieldCollation.NullDirection nullDefaultDirection =
+                  validator.getDefaultNullCollation().last(desc(direction))
+                          ? RelFieldCollation.NullDirection.LAST
+                          : RelFieldCollation.NullDirection.FIRST;
+          if (nullDefaultDirection != direction.defaultNullDirection()) {
+            SqlKind nullDirectionSqlKind =
+                    validator.getDefaultNullCollation().last(desc(direction))
+                            ? SqlKind.NULLS_LAST
+                            : SqlKind.NULLS_FIRST;
+            flags.add(nullDirectionSqlKind);
+          }
+          break;
+        case FIRST:
+          flags.add(SqlKind.NULLS_FIRST);
+          break;
+        case LAST:
+          flags.add(SqlKind.NULLS_LAST);
+          break;
+        }
+        return new RexFieldCollation(convertExpression(expr), flags);
       }
     }
 
@@ -4816,7 +4854,9 @@ public class SqlToRelConverter {
       if (agg != null) {
         final SqlOperator op = call.getOperator();
         if (window == null
-            && (op.isAggregator() || op.getKind() == SqlKind.FILTER)) {
+            && (op.isAggregator()
+            || op.getKind() == SqlKind.FILTER
+            || op.getKind() == SqlKind.WITHIN_GROUP)) {
           return agg.lookupAggregates(call);
         }
       }
@@ -5068,7 +5108,8 @@ public class SqlToRelConverter {
     public Void visit(SqlCall call) {
       switch (call.getKind()) {
       case FILTER:
-        translateAgg((SqlCall) call.operand(0), call.operand(1), call);
+      case WITHIN_GROUP:
+        translateAgg(call);
         return null;
       case SELECT:
         // rchen 2006-10-17:
@@ -5102,7 +5143,7 @@ public class SqlToRelConverter {
           inOver = false;
         } else {
           // We're beyond the one ignored level
-          translateAgg(call, null, call);
+          translateAgg(call);
           return null;
         }
       }
@@ -5117,8 +5158,24 @@ public class SqlToRelConverter {
       return null;
     }
 
-    private void translateAgg(SqlCall call, SqlNode filter, SqlCall outerCall) {
+    private void translateAgg(SqlCall call) {
+      translateAgg(call, null, null, call);
+    }
+
+    private void translateAgg(SqlCall call, SqlNode filter,
+        SqlNodeList orderList, SqlCall outerCall) {
       assert bb.agg == this;
+      assert outerCall != null;
+      switch (call.getKind()) {
+      case FILTER:
+        assert filter == null;
+        translateAgg(call.operand(0), call.operand(1), orderList, outerCall);
+        return;
+      case WITHIN_GROUP:
+        assert orderList == null;
+        translateAgg(call.operand(0), filter, call.operand(1), outerCall);
+        return;
+      }
       final List<Integer> args = new ArrayList<>();
       int filterArg = -1;
       final List<RelDataType> argTypes =
@@ -5176,6 +5233,24 @@ public class SqlToRelConverter {
         distinct = true;
         approximate = true;
       }
+      final RelCollation collation;
+      if (orderList == null || orderList.size() == 0) {
+        collation = RelCollations.EMPTY;
+      } else {
+        collation = RelCollations.of(
+            orderList.getList()
+                .stream()
+                .map(order ->
+                    bb.convertSortExpression(order,
+                        RelFieldCollation.Direction.ASCENDING,
+                        RelFieldCollation.NullDirection.UNSPECIFIED))
+                .map(fieldCollation ->
+                    new RelFieldCollation(
+                        lookupOrCreateGroupExpr(fieldCollation.left),
+                        fieldCollation.getDirection(),
+                        fieldCollation.getNullDirection()))
+                .collect(Collectors.toList()));
+      }
       final AggregateCall aggCall =
           AggregateCall.create(
               aggFunction,
@@ -5183,6 +5258,7 @@ public class SqlToRelConverter {
               approximate,
               args,
               filterArg,
+              collation,
               type,
               nameMap.get(outerCall.toString()));
       final AggregatingSelectScope.Resolved r =
@@ -5508,6 +5584,7 @@ public class SqlToRelConverter {
   private static class AggregateFinder extends SqlBasicVisitor<Void> {
     final SqlNodeList list = new SqlNodeList(SqlParserPos.ZERO);
     final SqlNodeList filterList = new SqlNodeList(SqlParserPos.ZERO);
+    final SqlNodeList orderList = new SqlNodeList(SqlParserPos.ZERO);
 
     @Override public Void visit(SqlCall call) {
       // ignore window aggregates and ranking functions (associated with OVER operator)
@@ -5522,6 +5599,16 @@ public class SqlToRelConverter {
         final SqlNode whereCall = call.getOperandList().get(1);
         list.add(aggCall);
         filterList.add(whereCall);
+        return null;
+      }
+
+      if (call.getOperator().getKind() == SqlKind.WITHIN_GROUP) {
+        // the WHERE in a WITHIN_GROUP must be tracked too so we can call replaceSubQueries on it.
+        // see https://issues.apache.org/jira/browse/CALCITE-1910
+        final SqlNode aggCall = call.getOperandList().get(0);
+        final SqlNodeList orderList = (SqlNodeList) call.getOperandList().get(1);
+        list.add(aggCall);
+        orderList.getList().forEach(this.orderList::add);
         return null;
       }
 

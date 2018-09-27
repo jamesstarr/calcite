@@ -19,6 +19,7 @@ package org.apache.calcite.rel;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.Util;
+import org.apache.calcite.util.mapping.Mappings;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
@@ -27,7 +28,9 @@ import com.google.common.collect.Lists;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Utilities concerning {@link org.apache.calcite.rel.RelCollation}
@@ -191,6 +194,25 @@ public class RelCollations {
       fieldCollations.add(fc.shift(offset));
     }
     return new RelCollationImpl(fieldCollations.build());
+  }
+
+  /** Creates a copy of this collation that changes the ordinals of input
+   * fields. */
+  public static RelCollation permute(RelCollation collation,
+      Map<Integer, Integer> mapping) {
+    return of(collation.getFieldCollations().stream()
+      .map(fc -> fc.copy(mapping.get(fc.getFieldIndex())))
+      .collect(Collectors.toList()));
+  }
+
+  /** Creates a copy of this collation that changes the ordinals of input
+   * fields. */
+  public static RelCollation permute(RelCollation collation,
+      Mappings.TargetMapping mapping) {
+    return of(
+      collation.getFieldCollations().stream()
+        .map(fc -> fc.copy(mapping.getTarget(fc.getFieldIndex())))
+        .collect(Collectors.toList()));
   }
 }
 
