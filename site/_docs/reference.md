@@ -1950,6 +1950,7 @@ and `LISTAGG`).
 
 Not implemented:
 
+* LISTAGG(string)
 * REGR_AVGX(numeric1, numeric2)
 * REGR_AVGY(numeric1, numeric2)
 * REGR_COUNT(numeric1, numeric2)

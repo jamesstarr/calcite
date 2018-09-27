@@ -48,7 +48,7 @@ public class SqlWithinGroupOperator extends SqlBinaryOperator {
     final SqlWriter.Frame orderFrame =
         writer.startList(SqlWriter.FrameTypeEnum.ORDER_BY_LIST, "(", ")");
     writer.keyword("ORDER BY");
-    ((SqlNodeList) call.operand(1)).unparse(writer, 0, 0);
+    ((SqlNodeList) call.operand(1)).commaList(writer);
     writer.endList(orderFrame);
   }
 
@@ -81,3 +81,8 @@ public class SqlWithinGroupOperator extends SqlBinaryOperator {
     return validateOperands(validator, scope, call);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlWithinGroupOperator.java
+>>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))

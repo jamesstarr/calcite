@@ -44,3 +44,8 @@ public interface AggregateLambdaFactory<TSource, TOrigAccumulate, TAccumulate,
   Function2<TKey, TAccumulate, TResult> resultSelector(
       Function2<TKey, TOrigAccumulate, TResult> resultSelector);
 }
+<<<<<<< HEAD
+=======
+
+// End AggregateLambdaFactory.java
+>>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))

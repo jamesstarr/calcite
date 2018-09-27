@@ -25,15 +25,13 @@ import java.util.List;
 
 /**
  * Helper that combines the sorting process and accumulating process against the
- * aggregate execution, used with {@link LazyAggregateLambdaFactory}.
+ * aggregate execution, used with {@link OrderedAggregateLambdaFactory}.
  *
  * @param <TAccumulate> Type of the accumulator
- * @param <TSource>     Type of the enumerable input source
- * @param <TSortKey>    Type of the sort key
+ * @param <TSource> Type of the enumerable input source
+ * @param <TSortKey> Type of the sort key
  */
-public class SourceSorter<TAccumulate, TSource, TSortKey>
-    implements LazyAggregateLambdaFactory.LazyAccumulator<TAccumulate, TSource> {
-
+public class SourceSorter<TAccumulate, TSource, TSortKey> {
   private final Function2<TAccumulate, TSource, TAccumulate> accumulatorAdder;
   private final Function1<TSource, TSortKey> keySelector;
   private final Comparator<TSortKey> comparator;
@@ -47,12 +45,7 @@ public class SourceSorter<TAccumulate, TSource, TSortKey>
     this.comparator = comparator;
   }
 
-  @Override public void accumulate(Iterable<TSource> sourceIterable,
-      TAccumulate accumulator) {
-    sortAndAccumulate(sourceIterable, accumulator);
-  }
-
-  private void sortAndAccumulate(Iterable<TSource> sourceIterable,
+  public void sortAndAccumulate(Iterable<TSource> sourceIterable,
       TAccumulate accumulator) {
     List<TSource> sorted = Linq4j.asEnumerable(sourceIterable)
         .orderBy(keySelector, comparator)
@@ -63,3 +56,8 @@ public class SourceSorter<TAccumulate, TSource, TSortKey>
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SourceSorter.java
+>>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))

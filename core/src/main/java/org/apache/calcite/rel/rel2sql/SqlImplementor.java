@@ -912,33 +912,7 @@ public abstract class SqlImplementor {
       orderByList.add(toSql(field));
     }
 
-    /** Converts a RexFieldCollation to an ORDER BY item. */
-    private void addOrderItem(List<SqlNode> orderByList,
-                              RexProgram program, RexFieldCollation field) {
-      SqlNode node = toSql(program, field.left);
-      SqlNode nullDirectionNode = null;
-      if (field.getNullDirection() != RelFieldCollation.NullDirection.UNSPECIFIED) {
-        final boolean first =
-                  field.getNullDirection() == RelFieldCollation.NullDirection.FIRST;
-        nullDirectionNode = dialect.emulateNullDirection(
-                node, first, field.getDirection().isDescending());
-      }
-      if (nullDirectionNode != null) {
-        orderByList.add(nullDirectionNode);
-        switch (field.getDirection()) {
-        case DESCENDING:
-        case STRICTLY_DESCENDING:
-          node = SqlStdOperatorTable.DESC.createCall(POS, node);
-          break;
-        default:
-          break;
-        }
-        orderByList.add(node);
-      } else {
-        orderByList.add(toSql(program, field));
-      }
-    }
-
+>>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
     /** Converts a call to an aggregate function to an expression. */
     public SqlNode toSql(AggregateCall aggCall) {
       final SqlOperator op = aggCall.getAggregation();
@@ -946,12 +920,14 @@ public abstract class SqlImplementor {
       for (int arg : aggCall.getArgList()) {
         operandList.add(field(arg));
       }
+<<<<<<< HEAD
 
       if ((op instanceof SqlCountAggFunction) && operandList.isEmpty()) {
         // If there is no parameter in "count" function, add a star identifier to it
         operandList.add(SqlIdentifier.STAR);
       }
 
+=======
       final SqlLiteral qualifier =
           aggCall.isDistinct() ? SqlSelectKeyword.DISTINCT.symbol(POS) : null;
       final SqlNode[] operands = operandList.toArray(new SqlNode[0]);

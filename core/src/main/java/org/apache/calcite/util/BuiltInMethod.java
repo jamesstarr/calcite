@@ -18,11 +18,8 @@ package org.apache.calcite.util;
 
 import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.enumerable.AggregateLambdaFactory;
-import org.apache.calcite.adapter.enumerable.BasicAggregateLambdaFactory;
-import org.apache.calcite.adapter.enumerable.BasicLazyAccumulator;
-import org.apache.calcite.adapter.enumerable.EnumUtils;
-import org.apache.calcite.adapter.enumerable.LazyAggregateLambdaFactory;
-import org.apache.calcite.adapter.enumerable.MatchUtils;
+import org.apache.calcite.adapter.enumerable.OrderedAggregateLambdaFactory;
+import org.apache.calcite.adapter.enumerable.SequencedAdderAggregateLambdaFactory;
 import org.apache.calcite.adapter.enumerable.SourceSorter;
 import org.apache.calcite.adapter.java.ReflectiveSchema;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
@@ -499,9 +496,6 @@ public enum BuiltInMethod {
   TIME_ZONE(SqlFunctions.class, "timeZone", DataContext.class),
   USER(SqlFunctions.class, "user", DataContext.class),
   SYSTEM_USER(SqlFunctions.class, "systemUser", DataContext.class),
-<<<<<<< HEAD
-  LOCALE(SqlFunctions.class, "locale", DataContext.class),
-=======
 >>>>>>> 7fa80a6fb (CALCITE-2742: Move SYSTEM_USER, USER to DataContext.)
   BOOLEAN_TO_STRING(SqlFunctions.class, "toString", boolean.class),
   JDBC_ARRAY_TO_LIST(SqlFunctions.class, "arrayToList", java.sql.Array.class),
@@ -593,6 +587,7 @@ public enum BuiltInMethod {
   CONTEXT_ROOT(Context.class, "root", true),
   DATA_CONTEXT_GET_QUERY_PROVIDER(DataContext.class, "getQueryProvider"),
   METADATA_REL(Metadata.class, "rel"),
+<<<<<<< HEAD
   STRUCT_ACCESS(SqlFunctions.class, "structAccess", Object.class, int.class, String.class),
   SOURCE_SORTER(SourceSorter.class, Function2.class, Function1.class,
       Comparator.class),
@@ -600,6 +595,12 @@ public enum BuiltInMethod {
   LAZY_AGGREGATE_LAMBDA_FACTORY(LazyAggregateLambdaFactory.class,
       Function0.class, List.class),
   BASIC_AGGREGATE_LAMBDA_FACTORY(BasicAggregateLambdaFactory.class,
+=======
+  SOURCE_SORTER(SourceSorter.class, Function2.class, Function1.class,
+      Comparator.class),
+  ORDERED_AGGREGATE_LAMBDA_FACTORY(OrderedAggregateLambdaFactory.class,
+      Function0.class, List.class),
+  SEQUENCED_ADDER_AGGREGATE_LAMBDA_FACTORY(SequencedAdderAggregateLambdaFactory.class,
       Function0.class, List.class),
   AGG_LAMBDA_FACTORY_ACC_INITIALIZER(AggregateLambdaFactory.class,
       "accumulatorInitializer"),
@@ -607,18 +608,7 @@ public enum BuiltInMethod {
   AGG_LAMBDA_FACTORY_ACC_RESULT_SELECTOR(AggregateLambdaFactory.class,
       "resultSelector", Function2.class),
   AGG_LAMBDA_FACTORY_ACC_SINGLE_GROUP_RESULT_SELECTOR(AggregateLambdaFactory.class,
-      "singleGroupResultSelector", Function1.class),
-  TUMBLING(EnumUtils.class, "tumbling", Enumerable.class, Function1.class),
-  VARIANT_CREATE(VariantSqlValue.class, "create", RoundingMode.class,
-      Object.class, RuntimeTypeInformation.class),
-  VARIANT_CAST(VariantValue.class, "cast", RuntimeTypeInformation.class),
-  TYPEOF(VariantValue.class, "getTypeString", VariantValue.class),
-  VARIANT_ITEM(SqlFunctions.class, "item", VariantValue.class, Object.class),
-  VARIANTNULL(VariantNull.class, "getInstance"),
-  HOPPING(EnumUtils.class, "hopping", Enumerator.class, int.class, long.class,
-      long.class),
-  SESSIONIZATION(EnumUtils.class, "sessionize", Enumerator.class, int.class, int.class,
-      long.class);
+      "singleGroupResultSelector", Function1.class);
 
   public final Method method;
   public final Constructor constructor;

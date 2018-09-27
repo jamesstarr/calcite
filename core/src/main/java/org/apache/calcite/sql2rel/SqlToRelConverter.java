@@ -204,6 +204,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import static org.apache.calcite.sql.SqlUtil.stripAs;
 
@@ -1190,10 +1191,10 @@ public class SqlToRelConverter {
                 null,
                 ImmutableList.of(
                     AggregateCall.create(SqlStdOperatorTable.COUNT, false,
-                        false, false, ImmutableList.of(), -1, RelCollations.EMPTY,
+                        false, ImmutableList.of(), -1, RelCollations.EMPTY,
                         longType, null),
                     AggregateCall.create(SqlStdOperatorTable.COUNT, false,
-                        false, false, args, -1, RelCollations.EMPTY, longType, null)));
+                        false, args, -1, RelCollations.EMPTY, longType, null)));
         LogicalJoin join =
             LogicalJoin.create(bb.root, aggregate, ImmutableList.of(),
                 rexBuilder.makeLiteral(true), ImmutableSet.<CorrelationId>of(),
@@ -3133,8 +3134,13 @@ public class SqlToRelConverter {
         replaceSubQueries(bb, e, RelOptUtil.Logic.TRUE_FALSE_UNKNOWN));
 
     // also replace sub-queries inside ordering spec in the aggregates
-    aggregateFinder.orderList.forEach(e ->
-        replaceSubQueries(bb, e, RelOptUtil.Logic.TRUE_FALSE_UNKNOWN));
+    replaceSubQueries(bb, aggregateFinder.orderList,
+        RelOptUtil.Logic.TRUE_FALSE_UNKNOWN);
+
+    // If group-by clause is missing, pretend that it has zero elements.
+    if (groupList == null) {
+      groupList = SqlNodeList.EMPTY;
+    }
 
     // also replace sub-queries inside GROUP BY
     groupList.forEach(e ->
@@ -4793,16 +4799,6 @@ public class SqlToRelConverter {
               0,
               false);
         }
-<<<<<<< HEAD
-=======
-        assert leftKeys == null;
-        setRoot(rel, false);
-        this.scopeOffset = localScopeOffset;
-        return rexBuilder.makeRangeReference(
-            root.getRowType(),
-            localScopeOffset,
-            false);
-=======
       }
 
       final RexNode joinCond;
@@ -5437,6 +5433,7 @@ public class SqlToRelConverter {
      * extracting DESC, NULLS LAST and NULLS FIRST flags first.
      */
     public RexFieldCollation convertSortExpression(SqlNode expr,
+<<<<<<< HEAD
         RelFieldCollation.Direction direction,
         RelFieldCollation.NullDirection nullDirection) {
       switch (expr.getKind()) {
@@ -5450,6 +5447,19 @@ public class SqlToRelConverter {
         return convertSortExpression(((SqlCall) expr).operand(0),
             direction, RelFieldCollation.NullDirection.FIRST);
 
+=======
+                                                   RelFieldCollation.Direction direction,
+                                                   RelFieldCollation.NullDirection nullDirection) {
+      switch (expr.getKind()) {
+      case DESCENDING:
+        return convertSortExpression(((SqlCall) expr).operand(0),
+                RelFieldCollation.Direction.DESCENDING, nullDirection);
+      case NULLS_LAST:
+        return convertSortExpression(((SqlCall) expr).operand(0),
+                direction, RelFieldCollation.NullDirection.LAST);
+      case NULLS_FIRST:
+        return convertSortExpression(((SqlCall) expr).operand(0),
+                direction, RelFieldCollation.NullDirection.FIRST);
       default:
         final Set<SqlKind> flags = EnumSet.noneOf(SqlKind.class);
         switch (direction) {
@@ -5459,14 +5469,14 @@ public class SqlToRelConverter {
         switch (nullDirection) {
         case UNSPECIFIED:
           final RelFieldCollation.NullDirection nullDefaultDirection =
-              validator.getDefaultNullCollation().last(desc(direction))
-                  ? RelFieldCollation.NullDirection.LAST
-                  : RelFieldCollation.NullDirection.FIRST;
+                  validator.getDefaultNullCollation().last(desc(direction))
+                          ? RelFieldCollation.NullDirection.LAST
+                          : RelFieldCollation.NullDirection.FIRST;
           if (nullDefaultDirection != direction.defaultNullDirection()) {
             SqlKind nullDirectionSqlKind =
-                validator.getDefaultNullCollation().last(desc(direction))
-                    ? SqlKind.NULLS_LAST
-                    : SqlKind.NULLS_FIRST;
+                    validator.getDefaultNullCollation().last(desc(direction))
+                            ? SqlKind.NULLS_LAST
+                            : SqlKind.NULLS_FIRST;
             flags.add(nullDirectionSqlKind);
           }
           break;
@@ -5870,30 +5880,21 @@ public class SqlToRelConverter {
     }
 
     private void translateAgg(SqlCall call) {
-      translateAgg(call, null, null, false, call);
+      translateAgg(call, null, null, call);
     }
 
     private void translateAgg(SqlCall call, SqlNode filter,
-        SqlNodeList orderList, boolean ignoreNulls, SqlCall outerCall) {
+        SqlNodeList orderList, SqlCall outerCall) {
       assert bb.agg == this;
       assert outerCall != null;
       switch (call.getKind()) {
       case FILTER:
         assert filter == null;
-        translateAgg(call.operand(0), call.operand(1), orderList, ignoreNulls,
-            outerCall);
+        translateAgg(call.operand(0), call.operand(1), orderList, outerCall);
         return;
       case WITHIN_GROUP:
         assert orderList == null;
-        translateAgg(call.operand(0), filter, call.operand(1), ignoreNulls,
-            outerCall);
-        return;
-      case IGNORE_NULLS:
-        ignoreNulls = true;
-        // fall through
-      case RESPECT_NULLS:
-        translateAgg(call.operand(0), filter, orderList, ignoreNulls,
-            outerCall);
+        translateAgg(call.operand(0), filter, call.operand(1), outerCall);
         return;
       }
       final List<Integer> args = new ArrayList<>();
@@ -5957,26 +5958,19 @@ public class SqlToRelConverter {
       if (orderList == null || orderList.size() == 0) {
         collation = RelCollations.EMPTY;
       } else {
-        try {
-          // switch out of agg mode
-          bb.agg = null;
-          collation = RelCollations.of(
-              orderList.getList()
-                  .stream()
-                  .map(order ->
-                      bb.convertSortExpression(order,
-                          RelFieldCollation.Direction.ASCENDING,
-                          RelFieldCollation.NullDirection.UNSPECIFIED))
-                  .map(fieldCollation ->
-                      new RelFieldCollation(
-                          lookupOrCreateGroupExpr(fieldCollation.left),
-                          fieldCollation.getDirection(),
-                          fieldCollation.getNullDirection()))
-                  .collect(Collectors.toList()));
-        } finally {
-          // switch back into agg mode
-          bb.agg = this;
-        }
+        collation = RelCollations.of(
+            orderList.getList()
+                .stream()
+                .map(order ->
+                    bb.convertSortExpression(order,
+                        RelFieldCollation.Direction.ASCENDING,
+                        RelFieldCollation.NullDirection.UNSPECIFIED))
+                .map(fieldCollation ->
+                    new RelFieldCollation(
+                        lookupOrCreateGroupExpr(fieldCollation.left),
+                        fieldCollation.getDirection(),
+                        fieldCollation.getNullDirection()))
+                .collect(Collectors.toList()));
       }
       final AggregateCall aggCall =
           AggregateCall.create(
@@ -6317,9 +6311,9 @@ public class SqlToRelConverter {
    * Visitor that collects all aggregate functions in a {@link SqlNode} tree.
    */
   private static class AggregateFinder extends SqlBasicVisitor<Void> {
-    final List<SqlNode> list = new ArrayList<>();
-    final List<SqlNode> filterList = new ArrayList<>();
-    final List<SqlNode> orderList = new ArrayList<>();
+    final SqlNodeList list = new SqlNodeList(SqlParserPos.ZERO);
+    final SqlNodeList filterList = new SqlNodeList(SqlParserPos.ZERO);
+    final SqlNodeList orderList = new SqlNodeList(SqlParserPos.ZERO);
 
     @Override public Void visit(SqlCall call) {
       // ignore window aggregates and ranking functions (associated with OVER operator)

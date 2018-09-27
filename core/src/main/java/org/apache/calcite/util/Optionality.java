@@ -37,3 +37,8 @@ public enum Optionality {
    * it is an error if the instance has the property. */
   FORBIDDEN
 }
+<<<<<<< HEAD
+=======
+
+// End Optionality.java
+>>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))

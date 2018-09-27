@@ -7463,7 +7463,7 @@ class SqlValidatorTest extends SqlValidatorTestCase {
         .fails("FILTER must not contain aggregate expression");
   }
 
-  @Test void testWithinGroup() {
+  @Test public void testWithinGroup() {
     sql("select deptno,\n"
         + " collect(empno) within group(order by 1)\n"
         + "from emp\n"
@@ -7495,6 +7495,19 @@ class SqlValidatorTest extends SqlValidatorTestCase {
         + "from emp\n"
         + "group by deptno")
         .fails("WITHIN GROUP must not contain aggregate expression");
+<<<<<<< HEAD
+=======
+  }
+
+  @Test public void testCorrelatingVariables() {
+    // reference to unqualified correlating column
+    check("select * from emp where exists (\n"
+        + "select * from dept where deptno = sal)");
+
+    // reference to qualified correlating column
+    check("select * from emp where exists (\n"
+        + "select * from dept where deptno = emp.sal)");
+>>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
   }
 
   @Test void testCorrelatingVariables() {

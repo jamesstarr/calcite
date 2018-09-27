@@ -8612,550 +8612,65 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testWithinGroupClause1() {
+  @Test public void testWithinGroupClause1() {
     final String sql = "select col1,\n"
         + " collect(col2) within group (order by col3)\n"
         + "from t\n"
         + "order by col1 limit 10";
     final String expected = "SELECT `COL1`,"
-        + " COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`)\n"
+        + " (COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`))\n"
         + "FROM `T`\n"
         + "ORDER BY `COL1`\n"
         + "FETCH NEXT 10 ROWS ONLY";
     sql(sql).ok(expected);
   }
 
-  @Test void testWithinGroupClause2() {
+  @Test public void testWithinGroupClause2() {
     final String sql = "select collect(col2) within group (order by col3)\n"
         + "from t\n"
         + "order by col1 limit 10";
     final String expected = "SELECT"
-        + " COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`)\n"
+        + " (COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`))\n"
         + "FROM `T`\n"
         + "ORDER BY `COL1`\n"
         + "FETCH NEXT 10 ROWS ONLY";
     sql(sql).ok(expected);
   }
 
-  @Test void testWithinGroupClause3() {
+  @Test public void testWithinGroupClause3() {
     final String sql = "select collect(col2) within group (^)^ "
         + "from t order by col1 limit 10";
     sql(sql).fails("(?s).*Encountered \"\\)\" at line 1, column 36\\..*");
   }
 
-  @Test void testWithinGroupClause4() {
+  @Test public void testWithinGroupClause4() {
     final String sql = "select col1,\n"
         + " collect(col2) within group (order by col3, col4)\n"
         + "from t\n"
         + "order by col1 limit 10";
     final String expected = "SELECT `COL1`,"
-        + " COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`, `COL4`)\n"
+        + " (COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`, `COL4`))\n"
         + "FROM `T`\n"
         + "ORDER BY `COL1`\n"
         + "FETCH NEXT 10 ROWS ONLY";
     sql(sql).ok(expected);
   }
 
-  @Test void testWithinGroupClause5() {
+  @Test public void testWithinGroupClause5() {
     final String sql = "select col1,\n"
         + " collect(col2) within group (\n"
         + "  order by col3 desc nulls first, col4 asc nulls last)\n"
         + "from t\n"
         + "order by col1 limit 10";
-    final String expected = "SELECT `COL1`, COLLECT(`COL2`) "
-        + "WITHIN GROUP (ORDER BY `COL3` DESC NULLS FIRST, `COL4` NULLS LAST)\n"
+    final String expected = "SELECT `COL1`, (COLLECT(`COL2`) "
+        + "WITHIN GROUP (ORDER BY `COL3` DESC NULLS FIRST, `COL4` NULLS LAST))\n"
         + "FROM `T`\n"
         + "ORDER BY `COL1`\n"
         + "FETCH NEXT 10 ROWS ONLY";
     sql(sql).ok(expected);
   }
 
-  @Test void testJsonValueExpressionOperator() {
-    expr("foo format json")
-        .ok("`FOO` FORMAT JSON");
-    // Currently, encoding js not valid
-    expr("foo format json encoding utf8")
-        .ok("`FOO` FORMAT JSON");
-    expr("foo format json encoding utf16")
-        .ok("`FOO` FORMAT JSON");
-    expr("foo format json encoding utf32")
-        .ok("`FOO` FORMAT JSON");
-    expr("null format json")
-        .ok("NULL FORMAT JSON");
-    // Test case to eliminate choice conflict on token <FORMAT>
-    sql("select foo format from tab")
-        .ok("SELECT `FOO` AS `FORMAT`\n"
-            + "FROM `TAB`");
-    // Test case to eliminate choice conflict on token <ENCODING>
-    sql("select foo format json encoding from tab")
-        .ok("SELECT `FOO` FORMAT JSON AS `ENCODING`\n"
-            + "FROM `TAB`");
-  }
-
-  @Test void testJsonExists() {
-    expr("json_exists('{\"foo\": \"bar\"}', 'lax $.foo')")
-        .ok("JSON_EXISTS('{\"foo\": \"bar\"}', 'lax $.foo')");
-    expr("json_exists('{\"foo\": \"bar\"}', 'lax $.foo' error on error)")
-        .ok("JSON_EXISTS('{\"foo\": \"bar\"}', 'lax $.foo' ERROR ON ERROR)");
-  }
-
-  @Test void testJsonValue() {
-    expr("json_value('{\"foo\": \"100\"}', 'lax $.foo' "
-        + "returning integer)")
-        .ok("JSON_VALUE('{\"foo\": \"100\"}', 'lax $.foo' "
-            + "RETURNING INTEGER)");
-    expr("json_value('{\"foo\": \"100\"}', 'lax $.foo' "
-        + "returning integer default 10 on empty error on error)")
-        .ok("JSON_VALUE('{\"foo\": \"100\"}', 'lax $.foo' "
-            + "RETURNING INTEGER DEFAULT 10 ON EMPTY ERROR ON ERROR)");
-  }
-
-  @Test void testJsonQuery() {
-    expr("json_query('{\"foo\": \"bar\"}', 'lax $' WITHOUT ARRAY WRAPPER)")
-        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
-            + "'lax $' WITHOUT ARRAY WRAPPER NULL ON EMPTY NULL ON ERROR)");
-    expr("json_query('{\"foo\": \"bar\"}', 'lax $' WITH WRAPPER)")
-        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
-            + "'lax $' WITH UNCONDITIONAL ARRAY WRAPPER NULL ON EMPTY NULL ON ERROR)");
-    expr("json_query('{\"foo\": \"bar\"}', 'lax $' WITH UNCONDITIONAL WRAPPER)")
-        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
-            + "'lax $' WITH UNCONDITIONAL ARRAY WRAPPER NULL ON EMPTY NULL ON ERROR)");
-    expr("json_query('{\"foo\": \"bar\"}', 'lax $' WITH CONDITIONAL WRAPPER)")
-        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
-            + "'lax $' WITH CONDITIONAL ARRAY WRAPPER NULL ON EMPTY NULL ON ERROR)");
-    expr("json_query('{\"foo\": \"bar\"}', 'lax $' NULL ON EMPTY)")
-        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
-            + "'lax $' WITHOUT ARRAY WRAPPER NULL ON EMPTY NULL ON ERROR)");
-    expr("json_query('{\"foo\": \"bar\"}', 'lax $' ERROR ON EMPTY)")
-        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
-            + "'lax $' WITHOUT ARRAY WRAPPER ERROR ON EMPTY NULL ON ERROR)");
-    expr("json_query('{\"foo\": \"bar\"}', 'lax $' EMPTY ARRAY ON EMPTY)")
-        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
-            + "'lax $' WITHOUT ARRAY WRAPPER EMPTY ARRAY ON EMPTY NULL ON ERROR)");
-    expr("json_query('{\"foo\": \"bar\"}', 'lax $' EMPTY OBJECT ON EMPTY)")
-        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
-            + "'lax $' WITHOUT ARRAY WRAPPER EMPTY OBJECT ON EMPTY NULL ON ERROR)");
-    expr("json_query('{\"foo\": \"bar\"}', 'lax $' NULL ON ERROR)")
-        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
-            + "'lax $' WITHOUT ARRAY WRAPPER NULL ON EMPTY NULL ON ERROR)");
-    expr("json_query('{\"foo\": \"bar\"}', 'lax $' ERROR ON ERROR)")
-        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
-            + "'lax $' WITHOUT ARRAY WRAPPER NULL ON EMPTY ERROR ON ERROR)");
-    expr("json_query('{\"foo\": \"bar\"}', 'lax $' EMPTY ARRAY ON ERROR)")
-        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
-            + "'lax $' WITHOUT ARRAY WRAPPER NULL ON EMPTY EMPTY ARRAY ON ERROR)");
-    expr("json_query('{\"foo\": \"bar\"}', 'lax $' EMPTY OBJECT ON ERROR)")
-        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
-            + "'lax $' WITHOUT ARRAY WRAPPER NULL ON EMPTY EMPTY OBJECT ON ERROR)");
-    expr("json_query('{\"foo\": \"bar\"}', 'lax $' EMPTY ARRAY ON EMPTY "
-        + "EMPTY OBJECT ON ERROR)")
-        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
-            + "'lax $' WITHOUT ARRAY WRAPPER EMPTY ARRAY ON EMPTY EMPTY OBJECT ON ERROR)");
-  }
-
-  @Test void testJsonObject() {
-    expr("json_object('foo': 'bar')")
-        .ok("JSON_OBJECT(KEY 'foo' VALUE 'bar' NULL ON NULL)");
-    expr("json_object('foo': 'bar', 'foo2': 'bar2')")
-        .ok("JSON_OBJECT(KEY 'foo' VALUE 'bar', KEY 'foo2' VALUE 'bar2' NULL ON NULL)");
-    expr("json_object('foo' value 'bar')")
-        .ok("JSON_OBJECT(KEY 'foo' VALUE 'bar' NULL ON NULL)");
-    expr("json_object(key 'foo' value 'bar')")
-        .ok("JSON_OBJECT(KEY 'foo' VALUE 'bar' NULL ON NULL)");
-    expr("json_object('foo': null)")
-        .ok("JSON_OBJECT(KEY 'foo' VALUE NULL NULL ON NULL)");
-    expr("json_object('foo': null absent on null)")
-        .ok("JSON_OBJECT(KEY 'foo' VALUE NULL ABSENT ON NULL)");
-    expr("json_object('foo': json_object('foo': 'bar') format json)")
-        .ok("JSON_OBJECT(KEY 'foo' VALUE "
-            + "JSON_OBJECT(KEY 'foo' VALUE 'bar' NULL ON NULL) "
-            + "FORMAT JSON NULL ON NULL)");
-
-    if (!Bug.TODO_FIXED) {
-      return;
-    }
-    // "LOOKAHEAD(2) list = JsonNameAndValue()" does not generate
-    // valid LOOKAHEAD codes for the case "key: value".
-    //
-    // You can see the generated codes that are located at method
-    // SqlParserImpl#JsonObjectFunctionCall. Looking ahead fails
-    // immediately after seeking the tokens <KEY> and <COLON>.
-    expr("json_object(key: value)")
-        .ok("JSON_OBJECT(KEY `KEY` VALUE `VALUE` NULL ON NULL)");
-  }
-
-  @Test void testJsonType() {
-    expr("json_type('11.56')")
-        .ok("JSON_TYPE('11.56')");
-    expr("json_type('{}')")
-        .ok("JSON_TYPE('{}')");
-    expr("json_type(null)")
-        .ok("JSON_TYPE(NULL)");
-    expr("json_type('[\"foo\",null]')")
-        .ok("JSON_TYPE('[\"foo\",null]')");
-    expr("json_type('{\"foo\": \"100\"}')")
-        .ok("JSON_TYPE('{\"foo\": \"100\"}')");
-  }
-
-  @Test void testJsonDepth() {
-    expr("json_depth('11.56')")
-        .ok("JSON_DEPTH('11.56')");
-    expr("json_depth('{}')")
-        .ok("JSON_DEPTH('{}')");
-    expr("json_depth(null)")
-        .ok("JSON_DEPTH(NULL)");
-    expr("json_depth('[\"foo\",null]')")
-        .ok("JSON_DEPTH('[\"foo\",null]')");
-    expr("json_depth('{\"foo\": \"100\"}')")
-        .ok("JSON_DEPTH('{\"foo\": \"100\"}')");
-  }
-
-  @Test void testJsonLength() {
-    expr("json_length('{\"foo\": \"bar\"}')")
-        .ok("JSON_LENGTH('{\"foo\": \"bar\"}')");
-    expr("json_length('{\"foo\": \"bar\"}', 'lax $')")
-        .ok("JSON_LENGTH('{\"foo\": \"bar\"}', 'lax $')");
-    expr("json_length('{\"foo\": \"bar\"}', 'strict $')")
-        .ok("JSON_LENGTH('{\"foo\": \"bar\"}', 'strict $')");
-    expr("json_length('{\"foo\": \"bar\"}', 'invalid $')")
-        .ok("JSON_LENGTH('{\"foo\": \"bar\"}', 'invalid $')");
-  }
-
-  @Test void testJsonKeys() {
-    expr("json_keys('{\"foo\": \"bar\"}', 'lax $')")
-        .ok("JSON_KEYS('{\"foo\": \"bar\"}', 'lax $')");
-    expr("json_keys('{\"foo\": \"bar\"}', 'strict $')")
-        .ok("JSON_KEYS('{\"foo\": \"bar\"}', 'strict $')");
-    expr("json_keys('{\"foo\": \"bar\"}', 'invalid $')")
-        .ok("JSON_KEYS('{\"foo\": \"bar\"}', 'invalid $')");
-  }
-
-  @Test void testJsonRemove() {
-    expr("json_remove('[\"a\", [\"b\", \"c\"], \"d\"]', '$')")
-        .ok("JSON_REMOVE('[\"a\", [\"b\", \"c\"], \"d\"]', '$')");
-    expr("json_remove('[\"a\", [\"b\", \"c\"], \"d\"]', '$[1]', '$[0]')")
-        .ok("JSON_REMOVE('[\"a\", [\"b\", \"c\"], \"d\"]', '$[1]', '$[0]')");
-  }
-
-  @Test void testJsonObjectAgg() {
-    expr("json_objectagg(k_column: v_column)")
-        .ok("JSON_OBJECTAGG(KEY `K_COLUMN` VALUE `V_COLUMN` NULL ON NULL)");
-    expr("json_objectagg(k_column value v_column)")
-        .ok("JSON_OBJECTAGG(KEY `K_COLUMN` VALUE `V_COLUMN` NULL ON NULL)");
-    expr("json_objectagg(key k_column value v_column)")
-        .ok("JSON_OBJECTAGG(KEY `K_COLUMN` VALUE `V_COLUMN` NULL ON NULL)");
-    expr("json_objectagg(k_column: null)")
-        .ok("JSON_OBJECTAGG(KEY `K_COLUMN` VALUE NULL NULL ON NULL)");
-    expr("json_objectagg(k_column: null absent on null)")
-        .ok("JSON_OBJECTAGG(KEY `K_COLUMN` VALUE NULL ABSENT ON NULL)");
-    expr("json_objectagg(k_column: json_object(k_column: v_column) format json)")
-        .ok("JSON_OBJECTAGG(KEY `K_COLUMN` VALUE "
-            + "JSON_OBJECT(KEY `K_COLUMN` VALUE `V_COLUMN` NULL ON NULL) "
-            + "FORMAT JSON NULL ON NULL)");
-  }
-
-  @Test void testJsonArray() {
-    expr("json_array('foo')")
-        .ok("JSON_ARRAY('foo' ABSENT ON NULL)");
-    expr("json_array(null)")
-        .ok("JSON_ARRAY(NULL ABSENT ON NULL)");
-    expr("json_array(null null on null)")
-        .ok("JSON_ARRAY(NULL NULL ON NULL)");
-    expr("json_array(json_array('foo', 'bar') format json)")
-        .ok("JSON_ARRAY(JSON_ARRAY('foo', 'bar' ABSENT ON NULL) FORMAT JSON ABSENT ON NULL)");
-  }
-
-  @Test void testJsonPretty() {
-    expr("json_pretty('foo')")
-        .ok("JSON_PRETTY('foo')");
-    expr("json_pretty(null)")
-        .ok("JSON_PRETTY(NULL)");
-  }
-
-  @Test void testJsonStorageSize() {
-    expr("json_storage_size('foo')")
-        .ok("JSON_STORAGE_SIZE('foo')");
-    expr("json_storage_size(null)")
-        .ok("JSON_STORAGE_SIZE(NULL)");
-  }
-
-  @Test void testJsonArrayAgg1() {
-    expr("json_arrayagg(\"column\")")
-        .ok("JSON_ARRAYAGG(`column` ABSENT ON NULL)");
-    expr("json_arrayagg(\"column\" null on null)")
-        .ok("JSON_ARRAYAGG(`column` NULL ON NULL)");
-    expr("json_arrayagg(json_array(\"column\") format json)")
-        .ok("JSON_ARRAYAGG(JSON_ARRAY(`column` ABSENT ON NULL) FORMAT JSON ABSENT ON NULL)");
-  }
-
-  @Test void testJsonArrayAgg2() {
-    expr("json_arrayagg(\"column\" order by \"column\")")
-        .ok("JSON_ARRAYAGG(`column` ABSENT ON NULL) WITHIN GROUP (ORDER BY `column`)");
-    expr("json_arrayagg(\"column\") within group (order by \"column\")")
-        .ok("JSON_ARRAYAGG(`column` ABSENT ON NULL) WITHIN GROUP (ORDER BY `column`)");
-    sql("^json_arrayagg(\"column\" order by \"column\") within group (order by \"column\")^")
-        .fails("(?s).*Including both WITHIN GROUP\\(\\.\\.\\.\\) and inside ORDER BY "
-            + "in a single JSON_ARRAYAGG call is not allowed.*");
-  }
-
-  @Test void testJsonPredicate() {
-    expr("'{}' is json")
-        .ok("('{}' IS JSON VALUE)");
-    expr("'{}' is json value")
-        .ok("('{}' IS JSON VALUE)");
-    expr("'{}' is json object")
-        .ok("('{}' IS JSON OBJECT)");
-    expr("'[]' is json array")
-        .ok("('[]' IS JSON ARRAY)");
-    expr("'100' is json scalar")
-        .ok("('100' IS JSON SCALAR)");
-    expr("'{}' is not json")
-        .ok("('{}' IS NOT JSON VALUE)");
-    expr("'{}' is not json value")
-        .ok("('{}' IS NOT JSON VALUE)");
-    expr("'{}' is not json object")
-        .ok("('{}' IS NOT JSON OBJECT)");
-    expr("'[]' is not json array")
-        .ok("('[]' IS NOT JSON ARRAY)");
-    expr("'100' is not json scalar")
-        .ok("('100' IS NOT JSON SCALAR)");
-  }
-
-  @Test void testParenthesizedSubQueries2() {
-    final String expected = "SELECT `O_CUSTKEY`\n"
-        + "FROM (SELECT `O1`.`O_CUSTKEY`\n"
-        + "FROM `T1` AS `O1`\n"
-        + "INNER JOIN `T2` AS `O2` ON (`O1`.`O_ORDERKEY` = `O2`.`O_CUSTKEY`)\n"
-        + "UNION ALL\n"
-        + "(SELECT `O_CUSTKEY`\n"
-        + "FROM `T1`\n"
-        + "ORDER BY `DIR0`\n"
-        + "FETCH NEXT 1 ROWS ONLY))";
-
-    final String sql = "SELECT O_CUSTKEY\n"
-        + "FROM (SELECT O1.O_CUSTKEY\n"
-        + "FROM T1 AS O1\n"
-        + "INNER JOIN T2 AS O2 ON (O1.O_ORDERKEY = O2.O_CUSTKEY)\n"
-        + "UNION ALL\n"
-        + "(SELECT O_CUSTKEY\n"
-        + "FROM T1\n"
-        + "ORDER BY DIR0\n"
-        + "FETCH NEXT 1 ROWS ONLY))";
-    sql(sql).ok(expected);
-  }
-
-  @Test void testParenthesizedSubQueries3() {
-    final String expected = "SELECT `O_CUSTKEY`\n"
-            + "FROM ((SELECT `O_CUSTKEY`\n"
-            + "FROM `T1`\n"
-            + "ORDER BY `DIR0`\n"
-            + "FETCH NEXT 1 ROWS ONLY)\n"
-            + "UNION ALL\n"
-            + "SELECT `O1`.`O_CUSTKEY`\n"
-            + "FROM `T2` AS `O1`\n"
-            + "INNER JOIN `T1` AS `O2` ON (`O1`.`O_ORDERKEY` = `O2`.`O_CUSTKEY`))";
-
-    final String sql = "SELECT o_custkey FROM \n"
-            + " ((SELECT o_custkey FROM T1 order by dir0 limit 1)"
-            + " union all"
-            + " (select o1.o_custkey from T2 o1 inner join T1 o2 on o1.o_orderkey = o2.o_custkey))";
-    sql(sql).ok(expected);
-  }
-
-  @Test void testQueryHint() {
-    final String sql1 = "select "
-        + "/*+ properties(k1='v1', k2='v2', 'a.b.c'='v3'), "
-        + "no_hash_join, Index(idx1, idx2), "
-        + "repartition(3) */ "
-        + "empno, ename, deptno from emps";
-    final String expected1 = "SELECT\n"
-        + "/*+ `PROPERTIES`(`K1` = 'v1', `K2` = 'v2', 'a.b.c' = 'v3'), "
-        + "`NO_HASH_JOIN`, "
-        + "`INDEX`(`IDX1`, `IDX2`), "
-        + "`REPARTITION`(3) */\n"
-        + "`EMPNO`, `ENAME`, `DEPTNO`\n"
-        + "FROM `EMPS`";
-    sql(sql1).ok(expected1);
-    // Hint item right after the token "/*+"
-    final String sql2 = "select /*+properties(k1='v1', k2='v2')*/ empno from emps";
-    final String expected2 = "SELECT\n"
-        + "/*+ `PROPERTIES`(`K1` = 'v1', `K2` = 'v2') */\n"
-        + "`EMPNO`\n"
-        + "FROM `EMPS`";
-    sql(sql2).ok(expected2);
-    // Hint item without parentheses
-    final String sql3 = "select /*+ simple_hint */ empno, ename, deptno from emps limit 2";
-    final String expected3 = "SELECT\n"
-        + "/*+ `SIMPLE_HINT` */\n"
-        + "`EMPNO`, `ENAME`, `DEPTNO`\n"
-        + "FROM `EMPS`\n"
-        + "FETCH NEXT 2 ROWS ONLY";
-    sql(sql3).ok(expected3);
-  }
-
-  @Test void testTableHintsInQuery() {
-    final String hint = "/*+ PROPERTIES(K1 ='v1', K2 ='v2'), INDEX(IDX0, IDX1) */";
-    final String sql1 = String.format(Locale.ROOT, "select * from t %s", hint);
-    final String expected1 = "SELECT *\n"
-        + "FROM `T`\n"
-        + "/*+ `PROPERTIES`(`K1` = 'v1', `K2` = 'v2'), `INDEX`(`IDX0`, `IDX1`) */";
-    sql(sql1).ok(expected1);
-    final String sql2 = String.format(Locale.ROOT, "select * from\n"
-        + "(select * from t %s union all select * from t %s )", hint, hint);
-    final String expected2 = "SELECT *\n"
-        + "FROM (SELECT *\n"
-        + "FROM `T`\n"
-        + "/*+ `PROPERTIES`(`K1` = 'v1', `K2` = 'v2'), `INDEX`(`IDX0`, `IDX1`) */\n"
-        + "UNION ALL\n"
-        + "SELECT *\n"
-        + "FROM `T`\n"
-        + "/*+ `PROPERTIES`(`K1` = 'v1', `K2` = 'v2'), `INDEX`(`IDX0`, `IDX1`) */)";
-    sql(sql2).ok(expected2);
-    final String sql3 = String.format(Locale.ROOT, "select * from t %s join t %s", hint, hint);
-    final String expected3 = "SELECT *\n"
-        + "FROM `T`\n"
-        + "/*+ `PROPERTIES`(`K1` = 'v1', `K2` = 'v2'), `INDEX`(`IDX0`, `IDX1`) */\n"
-        + "INNER JOIN `T`\n"
-        + "/*+ `PROPERTIES`(`K1` = 'v1', `K2` = 'v2'), `INDEX`(`IDX0`, `IDX1`) */";
-    sql(sql3).ok(expected3);
-  }
-
-  @Test void testTableHintsInInsert() {
-    final String sql = "insert into emps\n"
-        + "/*+ PROPERTIES(k1='v1', k2='v2'), INDEX(idx0, idx1) */\n"
-        + "select * from emps";
-    final String expected = "INSERT INTO `EMPS`\n"
-        + "/*+ `PROPERTIES`(`K1` = 'v1', `K2` = 'v2'), `INDEX`(`IDX0`, `IDX1`) */\n"
-        + "(SELECT *\n"
-        + "FROM `EMPS`)";
-    sql(sql).ok(expected);
-  }
-
-  @Test void testTableHintsInDelete() {
-    final String sql = "delete from emps\n"
-        + "/*+ properties(k1='v1', k2='v2'), index(idx1, idx2), no_hash_join */\n"
-        + "where empno=12";
-    final String expected = "DELETE FROM `EMPS`\n"
-        + "/*+ `PROPERTIES`(`K1` = 'v1', `K2` = 'v2'), `INDEX`(`IDX1`, `IDX2`), `NO_HASH_JOIN` */\n"
-        + "WHERE (`EMPNO` = 12)";
-    sql(sql).ok(expected);
-  }
-
-  @Test void testTableHintsInUpdate() {
-    final String sql = "update emps\n"
-        + "/*+ properties(k1='v1', k2='v2'), index(idx1, idx2), no_hash_join */\n"
-        + "set empno = empno + 1, sal = sal - 1\n"
-        + "where empno=12";
-    final String expected = "UPDATE `EMPS`\n"
-        + "/*+ `PROPERTIES`(`K1` = 'v1', `K2` = 'v2'), "
-        + "`INDEX`(`IDX1`, `IDX2`), `NO_HASH_JOIN` */ "
-        + "SET `EMPNO` = (`EMPNO` + 1)"
-        + ", `SAL` = (`SAL` - 1)\n"
-        + "WHERE (`EMPNO` = 12)";
-    sql(sql).ok(expected);
-  }
-
-  @Test void testTableHintsInMerge() {
-    final String sql = "merge into emps\n"
-        + "/*+ properties(k1='v1', k2='v2'), index(idx1, idx2), no_hash_join */ e\n"
-        + "using tempemps as t\n"
-        + "on e.empno = t.empno\n"
-        + "when matched then update\n"
-        + "set name = t.name, deptno = t.deptno, salary = t.salary * .1\n"
-        + "when not matched then insert (name, dept, salary)\n"
-        + "values(t.name, 10, t.salary * .15)";
-    final String expected = "MERGE INTO `EMPS`\n"
-        + "/*+ `PROPERTIES`(`K1` = 'v1', `K2` = 'v2'), "
-        + "`INDEX`(`IDX1`, `IDX2`), `NO_HASH_JOIN` */ "
-        + "AS `E`\n"
-        + "USING `TEMPEMPS` AS `T`\n"
-        + "ON (`E`.`EMPNO` = `T`.`EMPNO`)\n"
-        + "WHEN MATCHED THEN UPDATE SET `NAME` = `T`.`NAME`"
-        + ", `DEPTNO` = `T`.`DEPTNO`"
-        + ", `SALARY` = (`T`.`SALARY` * 0.1)\n"
-        + "WHEN NOT MATCHED THEN INSERT (`NAME`, `DEPT`, `SALARY`) "
-        + "(VALUES (ROW(`T`.`NAME`, 10, (`T`.`SALARY` * 0.15))))";
-    sql(sql).ok(expected);
-  }
-
-  @Test void testParseWithReader() throws Exception {
-    String query = "select * from dual";
-    SqlParser sqlParserReader = getSqlParser(new StringReader(query), b -> b);
-    SqlNode node1 = sqlParserReader.parseQuery();
-    SqlParser sqlParserString = getSqlParser(query);
-    SqlNode node2 = sqlParserString.parseQuery();
-    assertEquals(node2.toString(), node1.toString());
-  }
-
-  @Test void testConfigureFromDialect() throws SqlParseException {
-    // Calcite's default converts unquoted identifiers to upper case
-    sql("select unquotedColumn from \"doubleQuotedTable\"")
-        .withDialect(SqlDialect.DatabaseProduct.CALCITE.getDialect())
-        .ok("SELECT \"UNQUOTEDCOLUMN\"\n"
-            + "FROM \"doubleQuotedTable\"");
-    // MySQL leaves unquoted identifiers unchanged
-    sql("select unquotedColumn from `doubleQuotedTable`")
-        .withDialect(SqlDialect.DatabaseProduct.MYSQL.getDialect())
-        .ok("SELECT `unquotedColumn`\n"
-            + "FROM `doubleQuotedTable`");
-    // Oracle converts unquoted identifiers to upper case
-    sql("select unquotedColumn from \"doubleQuotedTable\"")
-        .withDialect(SqlDialect.DatabaseProduct.ORACLE.getDialect())
-        .ok("SELECT \"UNQUOTEDCOLUMN\"\n"
-            + "FROM \"doubleQuotedTable\"");
-    // PostgreSQL converts unquoted identifiers to lower case
-    sql("select unquotedColumn from \"doubleQuotedTable\"")
-        .withDialect(SqlDialect.DatabaseProduct.POSTGRESQL.getDialect())
-        .ok("SELECT \"unquotedcolumn\"\n"
-            + "FROM \"doubleQuotedTable\"");
-    // Redshift converts all identifiers to lower case
-    sql("select unquotedColumn from \"doubleQuotedTable\"")
-        .withDialect(SqlDialect.DatabaseProduct.REDSHIFT.getDialect())
-        .ok("SELECT \"unquotedcolumn\"\n"
-            + "FROM \"doublequotedtable\"");
-    // BigQuery leaves quoted and unquoted identifers unchanged
-    sql("select unquotedColumn from `doubleQuotedTable`")
-        .withDialect(SqlDialect.DatabaseProduct.BIG_QUERY.getDialect())
-        .ok("SELECT unquotedColumn\n"
-            + "FROM doubleQuotedTable");
-  }
-
-  @Test void testParenthesizedSubQueries() {
-    final String expected = "SELECT *\n"
-        + "FROM (SELECT *\n"
-        + "FROM `TAB`) AS `X`";
-
-    final String sql1 = "SELECT * FROM (((SELECT * FROM tab))) X";
-    sql(sql1).ok(expected);
-
-    final String sql2 = "SELECT * FROM ((((((((((((SELECT * FROM tab)))))))))))) X";
-    sql(sql2).ok(expected);
-  }
-
-  @Test void testInvalidHintFormat() {
-    final String sql1 = "select "
-        + "/*+ properties(^k1^=123, k2='v2'), no_hash_join() */ "
-        + "empno, ename, deptno from emps";
-    sql(sql1).fails("(?s).*Encountered \"k1 = 123\" at .*");
-    final String sql2 = "select "
-        + "/*+ properties(k1, k2^=^'v2'), no_hash_join */ "
-        + "empno, ename, deptno from emps";
-    sql(sql2).fails("(?s).*Encountered \"=\" at line 1, column 29.\n.*");
-    final String sql3 = "select "
-        + "/*+ no_hash_join() */ "
-        + "empno, ename, deptno from emps";
-    // Allow empty options.
-    final String expected3 = "SELECT\n"
-        + "/*+ `NO_HASH_JOIN` */\n"
-        + "`EMPNO`, `ENAME`, `DEPTNO`\n"
-        + "FROM `EMPS`";
-    sql(sql3).ok(expected3);
-    final String sql4 = "select "
-        + "/*+ properties(^a^.b.c=123, k2='v2') */"
-        + "empno, ename, deptno from emps";
-    sql(sql4).fails("(?s).*Encountered \"a .\" at .*");
-  }
-
+>>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
   //~ Inner Interfaces -------------------------------------------------------
 
   /**
@@ -9163,7 +8678,6 @@ public class SqlParserTest {
    */
   protected interface Tester {
     void checkList(String sql, List<String> expected);
->>>>>>> 6b74b695a ([CALCITE-2453] Parse list of SQL statements separated with a semicolon (Chunwei Lei, charbel yazbeck))
     void checkFails(String sql, boolean list, String expectedMsgPattern);
 
     void checkExpFails(String sql, String expectedMsgPattern);

@@ -17,8 +17,7 @@
 package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.RelOptRuleCall;
-import org.apache.calcite.plan.RelOptUtil;
-import org.apache.calcite.plan.RelRule;
+import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.Aggregate.Group;
@@ -39,53 +38,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-/**
- * Planner rule that recognizes a {@link org.apache.calcite.rel.core.Aggregate}
- * on top of a {@link org.apache.calcite.rel.core.Project} and if possible
- * aggregate through the project or removes the project.
- *
- * <p>This is only possible when the grouping expressions and arguments to
- * the aggregate functions are field references (i.e. not expressions).
- *
- * <p>In some cases, this rule has the effect of trimming: the aggregate will
- * use fewer columns than the project did.
- *
- * @see CoreRules#AGGREGATE_PROJECT_MERGE
- */
-public class AggregateProjectMergeRule
-    extends RelRule<AggregateProjectMergeRule.Config>
-    implements TransformationRule {
-
-  /** Creates an AggregateProjectMergeRule. */
-  protected AggregateProjectMergeRule(Config config) {
-    super(config);
-  }
-
-  @Deprecated // to be removed before 2.0
-  public AggregateProjectMergeRule(
-      Class<? extends Aggregate> aggregateClass,
-      Class<? extends Project> projectClass,
-      RelBuilderFactory relBuilderFactory) {
-    this(CoreRules.AGGREGATE_PROJECT_MERGE.config
-        .withRelBuilderFactory(relBuilderFactory)
-        .as(Config.class)
-        .withOperandFor(aggregateClass, projectClass));
-  }
-
-  @Override public void onMatch(RelOptRuleCall call) {
-    final Aggregate aggregate = call.rel(0);
-    final Project project = call.rel(1);
-    RelNode x = apply(call, aggregate, project);
-    if (x != null) {
-      call.transformTo(x);
+    final Set<Integer> interestingFields = new TreeSet<>();
+    interestingFields.addAll(aggregate.getGroupSet().asList());
+    for (AggregateCall aggregateCall : aggregate.getAggCallList()) {
+      interestingFields.addAll(aggregateCall.getArgList());
+      if (aggregateCall.filterArg >= 0) {
+        interestingFields.add(aggregateCall.filterArg);
+      }
+      interestingFields.addAll(RelCollations.ordinals(aggregateCall.collation));
     }
-  }
-
-  public static RelNode apply(RelOptRuleCall call, Aggregate aggregate,
-      Project project) {
-    // Find all fields which we need to be straightforward field projections.
-    final Set<Integer> interestingFields = RelOptUtil.getAllFields(aggregate);
 
     // Build the map from old to new; abort if any entry is not a
     // straightforward field projection.

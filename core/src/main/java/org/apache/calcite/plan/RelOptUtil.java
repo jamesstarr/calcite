@@ -23,7 +23,7 @@ import org.apache.calcite.avatica.AvaticaConnection;
 import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.interpreter.Bindables;
 import org.apache.calcite.linq4j.Ord;
-import org.apache.calcite.linq4j.function.Experimental;
+>>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
 import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelHomogeneousShuttle;
 import org.apache.calcite.rel.RelNode;
@@ -608,6 +608,7 @@ public abstract class RelOptUtil {
               false,
               ImmutableList.of(0),
               -1,
+              RelCollations.EMPTY,
               0,
               ret,
               null,
@@ -701,6 +702,7 @@ public abstract class RelOptUtil {
             false,
             ImmutableList.of(projectedKeyCount),
             -1,
+            RelCollations.EMPTY,
             projectedKeyCount,
             ret,
             null,
@@ -951,7 +953,10 @@ public abstract class RelOptUtil {
     for (int i = 0; i < aggCallCnt; i++) {
       aggCalls.add(
           AggregateCall.create(SqlStdOperatorTable.SINGLE_VALUE, false, false,
+<<<<<<< HEAD
               false, ImmutableList.of(i), -1, RelCollations.EMPTY, 0, rel, null,
+=======
+              ImmutableList.of(i), -1, RelCollations.EMPTY, 0, rel, null,
               null));
     }
 

@@ -38,11 +38,6 @@ import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
-<<<<<<< HEAD
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-=======
 >>>>>>> 1750bd07a ([] Use shaded avatica)
 import com.google.common.collect.ImmutableList;
 
@@ -287,11 +282,17 @@ public class RelJsonReader {
     final Integer filterOperand = (Integer) jsonAggCall.get("filter");
     final RelDataType type =
         relJson.toType(cluster.getTypeFactory(), jsonAggCall.get("type"));
+<<<<<<< HEAD
     final String name = (String) jsonAggCall.get("name");
     return AggregateCall.create(aggregation, distinct, false, false, operands,
         filterOperand == null ? -1 : filterOperand,
         RelCollations.EMPTY,
         type, name);
+=======
+    return AggregateCall.create(aggregation, distinct, false, operands,
+        filterOperand == null ? -1 : filterOperand,
+        RelCollations.EMPTY,
+        type, null);
   }
 
   private RelNode lookupInput(String jsonInput) {

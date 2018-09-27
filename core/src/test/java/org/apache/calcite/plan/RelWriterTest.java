@@ -17,10 +17,7 @@
 package org.apache.calcite.plan;
 
 import org.apache.calcite.adapter.java.ReflectiveSchema;
-import org.apache.calcite.avatica.util.TimeUnit;
 import org.apache.calcite.rel.RelCollations;
-import org.apache.calcite.rel.RelDistribution;
-import org.apache.calcite.rel.RelDistributions;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelShuttleImpl;
 import org.apache.calcite.rel.core.AggregateCall;
@@ -436,84 +433,42 @@ class RelWriterTest {
    */
   @Test void testWriter2() {
     String s =
-        Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
-          rootSchema.add("hr",
-              new ReflectiveSchema(new JdbcTest.HrSchema()));
-          LogicalTableScan scan =
-              LogicalTableScan.create(cluster,
-                  relOptSchema.getTableForMember(
-                      Arrays.asList("hr", "emps")),
-                  ImmutableList.of());
-          final RexBuilder rexBuilder = cluster.getRexBuilder();
-          final RelDataType bigIntType =
-              cluster.getTypeFactory().createSqlType(SqlTypeName.BIGINT);
-          LogicalProject project =
-              LogicalProject.create(scan,
-                  ImmutableList.of(),
-                  ImmutableList.of(
-                      rexBuilder.makeInputRef(scan, 0),
-                      rexBuilder.makeOver(bigIntType,
-                          SqlStdOperatorTable.COUNT,
-                          ImmutableList.of(rexBuilder.makeInputRef(scan, 0)),
-                          ImmutableList.of(rexBuilder.makeInputRef(scan, 2)),
-                          ImmutableList.of(
-                              new RexFieldCollation(
-                                  rexBuilder.makeInputRef(scan, 1), ImmutableSet.of())),
-                          RexWindowBound.create(
-                              SqlWindow.createUnboundedPreceding(SqlParserPos.ZERO), null),
-                          RexWindowBound.create(
-                              SqlWindow.createCurrentRow(SqlParserPos.ZERO), null),
-                          true, true, false, false, false),
-                      rexBuilder.makeOver(bigIntType,
-                          SqlStdOperatorTable.SUM,
-                          ImmutableList.of(rexBuilder.makeInputRef(scan, 0)),
-                          ImmutableList.of(rexBuilder.makeInputRef(scan, 2)),
-                          ImmutableList.of(
-                              new RexFieldCollation(
-                                  rexBuilder.makeInputRef(scan, 1), ImmutableSet.of())),
-                          RexWindowBound.create(
-                              SqlWindow.createCurrentRow(SqlParserPos.ZERO), null),
-                          RexWindowBound.create(null,
-                              rexBuilder.makeCall(
-                                  SqlWindow.FOLLOWING_OPERATOR,
-                                  rexBuilder.makeExactLiteral(BigDecimal.ONE))),
-                          false, true, false, false, false)),
-                  ImmutableList.of("field0", "field1", "field2"));
-          final RelJsonWriter writer = new RelJsonWriter();
-          project.explain(writer);
-          return writer.asString();
-        });
-    assertThat(s, is(XX2));
-  }
-
-
-  /**
-   * Unit test for {@link org.apache.calcite.rel.externalize.RelJsonReader}.
-   */
-  @Test void testReader() {
-    String s =
-        Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
-
-          SchemaPlus schema =
-              rootSchema.add("hr",
-                  new ReflectiveSchema(new JdbcTest.HrSchema()));
-          final RelJsonReader reader =
-              new RelJsonReader(cluster, relOptSchema, schema);
-          RelNode node;
-          try {
-            node = reader.read(XX);
-          } catch (IOException e) {
-            throw TestUtil.rethrow(e);
-          }
-          return RelOptUtil.dumpPlan("", node, SqlExplainFormat.TEXT,
-              SqlExplainLevel.EXPPLAN_ATTRIBUTES);
-
-        });
-
-    assertThat(s,
-        isLinux("LogicalAggregate(group=[{0}], c=[COUNT(DISTINCT $1)], d=[COUNT()])\n"
-            + "  LogicalFilter(condition=[=($1, 10)])\n"
-            + "    LogicalTableScan(table=[[hr, emps]])\n"));
+        Frameworks.withPlanner(
+            new Frameworks.PlannerAction<String>() {
+              public String apply(RelOptCluster cluster,
+                  RelOptSchema relOptSchema, SchemaPlus rootSchema) {
+                rootSchema.add("hr",
+                    new ReflectiveSchema(new JdbcTest.HrSchema()));
+                LogicalTableScan scan =
+                    LogicalTableScan.create(cluster,
+                        relOptSchema.getTableForMember(
+                            Arrays.asList("hr", "emps")));
+                final RexBuilder rexBuilder = cluster.getRexBuilder();
+                LogicalFilter filter =
+                    LogicalFilter.create(scan,
+                        rexBuilder.makeCall(
+                            SqlStdOperatorTable.EQUALS,
+                            rexBuilder.makeFieldAccess(
+                                rexBuilder.makeRangeReference(scan),
+                                "deptno", true),
+                            rexBuilder.makeExactLiteral(BigDecimal.TEN)));
+                final RelJsonWriter writer = new RelJsonWriter();
+                final RelDataType bigIntType =
+                    cluster.getTypeFactory().createSqlType(SqlTypeName.BIGINT);
+                LogicalAggregate aggregate =
+                    LogicalAggregate.create(filter, ImmutableBitSet.of(0), null,
+                        ImmutableList.of(
+                            AggregateCall.create(SqlStdOperatorTable.COUNT,
+                                true, false, ImmutableList.of(1), -1,
+                                RelCollations.EMPTY, bigIntType, "c"),
+                            AggregateCall.create(SqlStdOperatorTable.COUNT,
+                                false, false, ImmutableList.<Integer>of(), -1,
+                                RelCollations.EMPTY, bigIntType, "d")));
+                aggregate.explain(writer);
+                return writer.asString();
+              }
+            });
+    assertThat(s, is(XX));
   }
 
   /**

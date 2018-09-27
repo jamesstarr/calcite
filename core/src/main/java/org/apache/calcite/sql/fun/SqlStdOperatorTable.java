@@ -188,6 +188,9 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
    *  aggregate function. */
   public static final SqlFilterOperator FILTER = new SqlFilterOperator();
 
+  /** <code>WITHIN_GROUP</code> operator performs aggregations on ordered data input. */
+  public static final SqlWithinGroupOperator WITHIN_GROUP = new SqlWithinGroupOperator();
+
   /** {@code CUBE} operator, occurs within {@code GROUP BY} clause
    * or nested within a {@code GROUPING SETS}. */
   public static final SqlInternalOperator CUBE =
@@ -2236,7 +2239,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           SqlKind.LISTAGG,
           ReturnTypes.ARG0_NULLABLE,
           null,
-          OperandTypes.or(OperandTypes.STRING, OperandTypes.STRING_STRING),
+          OperandTypes.ANY,
           SqlFunctionCategory.SYSTEM, false, false,
           Optionality.OPTIONAL) {
       };

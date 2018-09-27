@@ -6685,6 +6685,16 @@ SqlNode NamedFunctionCall() :
         call = withinGroup(call)
     ]
     [
+        <WITHIN> { withinGroupSpan = span(); }
+        <GROUP>
+        <LPAREN>
+        orderList = OrderBy(true)
+        <RPAREN> {
+            call = SqlStdOperatorTable.WITHIN_GROUP.createCall(
+                withinGroupSpan.end(this), call, orderList);
+        }
+    ]
+    [
         <FILTER> { filterSpan = span(); }
         <LPAREN>
         <WHERE>

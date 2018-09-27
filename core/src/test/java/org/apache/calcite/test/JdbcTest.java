@@ -6476,36 +6476,6 @@ public class JdbcTest {
         .with(CalciteConnectionProperty.UNQUOTED_CASING, Casing.UNCHANGED)
         .with(CalciteConnectionProperty.QUOTED_CASING, Casing.UNCHANGED)
         .with(CalciteConnectionProperty.CASE_SENSITIVE, true)
-<<<<<<< HEAD
-        .doWithConnection(connection -> {
-
-          try {
-            DatabaseMetaData metaData = connection.getMetaData();
-            assertThat(metaData.getIdentifierQuoteString(),
-                equalTo("`"));
-            assertThat(metaData.supportsMixedCaseIdentifiers(),
-                equalTo(true));
-            assertThat(metaData.storesMixedCaseIdentifiers(),
-                equalTo(false));
-            assertThat(metaData.storesUpperCaseIdentifiers(),
-                equalTo(false));
-            assertThat(metaData.storesLowerCaseIdentifiers(),
-                equalTo(false));
-            assertThat(metaData.supportsMixedCaseQuotedIdentifiers(),
-                equalTo(true));
-            assertThat(metaData.storesMixedCaseQuotedIdentifiers(),
-                equalTo(false));
-            assertThat(metaData.storesUpperCaseQuotedIdentifiers(),
-                equalTo(false));
-            assertThat(metaData.storesLowerCaseQuotedIdentifiers(),
-                equalTo(false));
-
-          } catch (SQLException e) {
-            throw TestUtil.rethrow(e);
-          }
-
-        });
-=======
         .doWithConnection(
             new Function<CalciteConnection, Void>() {
               public Void apply(CalciteConnection connection) {
@@ -7174,6 +7144,7 @@ public class JdbcTest {
     connection.close();
   }
 
+<<<<<<< HEAD
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3039">[CALCITE-3039]
    * In Interpreter, min() incorrectly returns maximum double value</a>. */
@@ -7225,11 +7196,12 @@ public class JdbcTest {
           .returns("");
     }
   }
+=======
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2224">[CALCITE-2224]
    * WITHIN GROUP clause for aggregate functions</a>. */
-  @Test void testWithinGroupClause1() {
+  @Test public void testWithinGroupClause1() {
     final String sql = "select X,\n"
         + " collect(Y) within group (order by Y desc) as \"SET\"\n"
         + "from (values (1, 'a'), (1, 'b'),\n"
@@ -7241,7 +7213,7 @@ public class JdbcTest {
             "X=3; SET=[d, c]");
   }
 
-  @Test void testWithinGroupClause2() {
+  @Test public void testWithinGroupClause2() {
     final String sql = "select X,\n"
         + " collect(Y) within group (order by Y desc) as SET_1,\n"
         + " collect(Y) within group (order by Y asc) as SET_2\n"
@@ -7255,7 +7227,7 @@ public class JdbcTest {
             "X=3; SET_1=[d, c]; SET_2=[c, d]");
   }
 
-  @Test void testWithinGroupClause3() {
+  @Test public void testWithinGroupClause3() {
     final String sql = "select"
         + " collect(Y) within group (order by Y desc) as SET_1,\n"
         + " collect(Y) within group (order by Y asc) as SET_2\n"
@@ -7265,7 +7237,7 @@ public class JdbcTest {
         .returns("SET_1=[d, c, b, a]; SET_2=[a, b, c, d]\n");
   }
 
-  @Test void testWithinGroupClause4() {
+  @Test public void testWithinGroupClause4() {
     final String sql = "select"
         + " collect(Y) within group (order by Y desc) as SET_1,\n"
         + " collect(Y) within group (order by Y asc) as SET_2\n"
@@ -7277,7 +7249,7 @@ public class JdbcTest {
             "SET_1=[d, c]; SET_2=[c, d]");
   }
 
-  @Test void testWithinGroupClause5() {
+  @Test public void testWithinGroupClause5() {
     CalciteAssert
         .that()
         .query("select collect(array[X, Y])\n"
@@ -7288,7 +7260,7 @@ public class JdbcTest {
         .returns("SET=[[a, d], [a, c], [a, b], [b, a]]\n");
   }
 
-  @Test void testWithinGroupClause6() {
+  @Test public void testWithinGroupClause6() {
     final String sql = "select collect(\"commission\")"
         + " within group (order by \"commission\")\n"
         + "from \"hr\".\"emps\"";
@@ -7300,6 +7272,7 @@ public class JdbcTest {
         .returns("EXPR$0=[250, 500, 1000]\n");
   }
 
+<<<<<<< HEAD
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3565">[CALCITE-3565]
    * Explicitly cast assignable operand types to decimal for udf</a>. */
@@ -7540,6 +7513,8 @@ public class JdbcTest {
     assertThat.query(query).returns("id=2008-03-31 12:23:34\nid=2018-02-03 00:00:00\n");
   }
 
+=======
+>>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
   private static String sums(int n, boolean c) {
     final StringBuilder b = new StringBuilder();
     for (int i = 0; i < n; i++) {
