@@ -608,14 +608,15 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
     final RexExecutor executor =
         Util.first(cluster.getPlanner().getExecutor(), RexUtil.EXECUTOR);
     final RexSimplify simplify =
-        new RexSimplify(rexBuilder, predicates, unknownAsFalse, executor);
+        new RexSimplify(rexBuilder, predicates, executor);
 
     // Simplify predicates in place
-    final boolean reduced = reduceExpressionsInternal(rel, simplify,
+    final RexUnknownAs unknownAs = RexUnknownAs.falseIf(unknownAsFalse);
+    boolean reduced = reduceExpressionsInternal(rel, simplify, unknownAs,
         expList, predicates, treatDynamicCallsAsConstant);
 
     final ExprSimplifier simplifier =
-        new ExprSimplifier(simplify, matchNullability);
+        new ExprSimplifier(simplify, unknownAs, matchNullability);
     boolean simplified = false;
     for (int i = 0; i < expList.size(); i++) {
       RexNode expr2 = simplifier.apply(expList.get(i));
@@ -629,7 +630,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
   }
 
   protected static boolean reduceExpressionsInternal(RelNode rel,
-      RexSimplify simplify, List<RexNode> expList,
+      RexSimplify simplify, RexUnknownAs unknownAs, List<RexNode> expList,
       RelOptPredicateList predicates, boolean treatDynamicCallsAsConstant) {
     boolean changed = false;
     // Replace predicates on CASE to CASE on predicates.
@@ -712,7 +713,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
 
     RexReplacer replacer =
         new RexReplacer(simplify, constExps, reducedValues, addCasts,
-            rel instanceof Project);
+                rel instanceof Project);
     replacer.mutate(expList);
     return true;
   }
@@ -835,8 +836,8 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
    */
   protected static class RexReplacer extends RexShuttle {
     private final ExprSimplifier simplifier;
-    private final RexBuilder rexBuilder;
     private final List<RexNode> reducibleExps;
+    private final RexBuilder rexBuilder;
     private final List<RexNode> reducedValues;
     private final List<Boolean> addCasts;
 
@@ -846,11 +847,11 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
         List<RexNode> reducedValues,
         List<Boolean> addCasts,
         boolean matchNullability) {
-      this.simplifier = new ExprSimplifier(simplify.withUnknownAsFalse(false), matchNullability);
-      this.rexBuilder = simplify.rexBuilder;
+      this.simplifier = new ExprSimplifier(simplify, RexUnknownAs.UNKNOWN, matchNullability);
       this.reducibleExps = reducibleExps;
       this.reducedValues = reducedValues;
       this.addCasts = addCasts;
+      this.rexBuilder = simplify.rexBuilder;
     }
 
     @Override public RexNode visitInputRef(RexInputRef inputRef) {
@@ -867,6 +868,9 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
         return node;
       }
       node = super.visitCall(call);
+      if (node != call) {
+        node = simplifier.apply(node);
+      }
       return node;
     }
 
@@ -887,7 +891,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
         // the same expression in a Project's digest where it has
         // type VARCHAR(3), and that's wrong.
         replacement =
-            rexBuilder.makeAbstractCast(call.getType(), replacement);
+                rexBuilder.makeAbstractCast(call.getType(), replacement);
       }
       return replacement;
     }

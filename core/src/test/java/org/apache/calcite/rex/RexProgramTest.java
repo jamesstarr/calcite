@@ -40,6 +40,7 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexProgram;
 import org.apache.calcite.rex.RexProgramBuilder;
 import org.apache.calcite.rex.RexSimplify;
+import org.apache.calcite.rex.RexUnknownAs;
 import org.apache.calcite.rex.RexUtil;
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 import org.apache.calcite.schema.SchemaPlus;
@@ -199,24 +200,39 @@ public class RexProgramTest extends RexProgramBuilderBase {
    */
   private void checkSimplify2(RexNode node, String expected,
       String expectedFalse) {
-    assertThat(simplify.simplify(node).toString(),
-        equalTo(expected));
+    checkSimplify3(node, expected, expectedFalse, expected);
+  }
+
+  private void checkSimplify3(RexNode node, String expected,
+      String expectedFalse, String expectedTrue) {
+    final RexNode simplified =
+        simplify.simplifyUnknownAs(node, RexUnknownAs.UNKNOWN);
+    assertThat(simplified.toString(), equalTo(expected));
     if (node.getType().getSqlTypeName() == SqlTypeName.BOOLEAN) {
-      assertThat(simplify.withUnknownAsFalse(true).simplify(node).toString(),
-          equalTo(expectedFalse));
+      final RexNode simplified2 =
+          simplify.simplifyUnknownAs(node, RexUnknownAs.FALSE);
+      assertThat(simplified2.toString(), equalTo(expectedFalse));
+      final RexNode simplified3 =
+          simplify.simplifyUnknownAs(node, RexUnknownAs.TRUE);
+      assertThat(simplified3.toString(), equalTo(expectedTrue));
+    } else {
+      assertThat(expectedFalse, is(expected));
+      assertThat(expectedTrue, is(expected));
     }
   }
 
   private void checkSimplifyFilter(RexNode node, String expected) {
-    assertThat(simplify.withUnknownAsFalse(true).simplify(node).toString(),
-        equalTo(expected));
+    final RexNode simplified =
+        this.simplify.simplifyUnknownAs(node, RexUnknownAs.FALSE);
+    assertThat(simplified.toString(), equalTo(expected));
   }
 
   private void checkSimplifyFilter(RexNode node, RelOptPredicateList predicates,
       String expected) {
-    assertThat(simplify.withUnknownAsFalse(true).withPredicates(predicates)
-            .simplify(node).toString(),
-        equalTo(expected));
+    final RexNode simplified =
+        simplify.withPredicates(predicates)
+            .simplifyUnknownAs(node, RexUnknownAs.FALSE);
+    assertThat(simplified.toString(), equalTo(expected));
   }
 
   /** Returns the number of nodes (including leaves) in a Rex tree. */
@@ -1376,6 +1392,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
     // case: trailing false and null, no simplification
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkSimplify3(
         case_(aRef, trueLiteral, bRef, trueLiteral, cRef, falseLiteral, nullBool),
         "OR(?0.a, ?0.b, AND(null, NOT(?0.a), NOT(?0.b), NOT(?0.c)))",
@@ -1383,8 +1400,12 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "OR(?0.a, ?0.b, NOT(?0.c))");
 =======
     checkSimplify2(
+=======
+    checkSimplify3(
+>>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
         case_(aRef, trueLiteral, bRef, trueLiteral, cRef, falseLiteral, nullBool),
         "CASE(?0.a, true, ?0.b, true, ?0.c, false, null:BOOLEAN)",
+        "CAST(OR(?0.a, ?0.b)):BOOLEAN",
         "CAST(OR(?0.a, ?0.b)):BOOLEAN");
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
@@ -1609,21 +1630,21 @@ public class RexProgramTest extends RexProgramBuilderBase {
   @Test void testSimplifyFilter() {
 =======
   @Test public void simplifyStrong() {
-    checkSimplify2(ge(trueLiteral, falseLiteral), "true", "true");
-    checkSimplify2(ge(trueLiteral, nullBool), "null:BOOLEAN", "false");
-    checkSimplify2(ge(nullBool, nullBool), "null:BOOLEAN", "false");
-    checkSimplify2(gt(trueLiteral, nullBool), "null:BOOLEAN", "false");
-    checkSimplify2(le(trueLiteral, nullBool), "null:BOOLEAN", "false");
-    checkSimplify2(lt(trueLiteral, nullBool), "null:BOOLEAN", "false");
+    checkSimplify(ge(trueLiteral, falseLiteral), "true");
+    checkSimplify3(ge(trueLiteral, nullBool), "null:BOOLEAN", "false", "true");
+    checkSimplify3(ge(nullBool, nullBool), "null:BOOLEAN", "false", "true");
+    checkSimplify3(gt(trueLiteral, nullBool), "null:BOOLEAN", "false", "true");
+    checkSimplify3(le(trueLiteral, nullBool), "null:BOOLEAN", "false", "true");
+    checkSimplify3(lt(trueLiteral, nullBool), "null:BOOLEAN", "false", "true");
 
-    checkSimplify2(not(nullBool), "null:BOOLEAN", "false");
-    checkSimplify2(ne(vInt(), nullBool), "null:BOOLEAN", "false");
-    checkSimplify2(eq(vInt(), nullBool), "null:BOOLEAN", "false");
+    checkSimplify3(not(nullBool), "null:BOOLEAN", "false", "true");
+    checkSimplify3(ne(vInt(), nullBool), "null:BOOLEAN", "false", "true");
+    checkSimplify3(eq(vInt(), nullBool), "null:BOOLEAN", "false", "true");
 
-    checkSimplify2(plus(vInt(), nullInt), "null:INTEGER", "false");
-    checkSimplify2(sub(vInt(), nullInt), "null:INTEGER", "false");
-    checkSimplify2(mul(vInt(), nullInt), "null:INTEGER", "false");
-    checkSimplify2(div(vInt(), nullInt), "null:INTEGER", "false");
+    checkSimplify(plus(vInt(), nullInt), "null:INTEGER");
+    checkSimplify(sub(vInt(), nullInt), "null:INTEGER");
+    checkSimplify(mul(vInt(), nullInt), "null:INTEGER");
+    checkSimplify(div(vInt(), nullInt), "null:INTEGER");
   }
 
   @Test public void testSimplifyFilter() {
@@ -1681,11 +1702,15 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
     // as previous, using simplifyFilterPredicates
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     assertThat(simplify
             .simplifyFilterPredicates(args)
             .toStringRaw(),
 =======
     assertThat(simplify.withUnknownAsFalse(true)
+=======
+    assertThat(simplify
+>>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
             .simplifyFilterPredicates(args)
             .toString(),
 >>>>>>> 5926c2361 ([CALCITE-2205] JoinPushTransitivePredicatesRule should not create Filter on top of equivalent Filter (Vitalii Diravka)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
@@ -1697,10 +1722,14 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplifyFilter(and(args2), "false");
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     assertThat(simplify
 =======
     assertThat(simplify.withUnknownAsFalse(true)
 >>>>>>> 5926c2361 ([CALCITE-2205] JoinPushTransitivePredicatesRule should not create Filter on top of equivalent Filter (Vitalii Diravka)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+    assertThat(simplify
+>>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
             .simplifyFilterPredicates(args2),
         nullValue());
 
@@ -2171,9 +2200,15 @@ public class RexProgramTest extends RexProgramBuilderBase {
     RexNode condition = eq(vVarchar(), literal("S"));
     RexCall caseNode = (RexCall) case_(condition, trueLiteral, falseLiteral);
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     final RexCall result = (RexCall) simplify.simplifyUnknownAs(caseNode, RexUnknownAs.UNKNOWN);
     assertThat("The case should be nonNullable", caseNode.getType().isNullable(), is(false));
     assertThat("Expected a nonNullable type", result.getType().isNullable(), is(false));
+=======
+    final RexCall result =
+        (RexCall) simplify.simplifyUnknownAs(caseNode, RexUnknownAs.UNKNOWN);
+    assertThat(result.getType().isNullable(), is(false));
+>>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     assertThat(result.getType().getSqlTypeName(), is(SqlTypeName.BOOLEAN));
     assertThat(result.getOperator(), is((SqlOperator) SqlStdOperatorTable.IS_TRUE));
     assertThat(result.getOperands().get(0), is(condition));
@@ -2283,6 +2318,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
     RexNode caseNode = case_(condition, literal("A"), literal("B"));
 >>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCaseBranchesCollapse2() {
     // case when x is true then 1 when true then 1 else 2 end
     // => 1
@@ -2298,6 +2334,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
     RexNode condition = eq(input(tVarchar(), 0), literal("S"));
     RexNode caseNode = case_(condition, literal("A"), literal("B"));
 
+=======
+>>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     RexCall result =
         (RexCall) simplify.simplifyUnknownAs(caseNode, RexUnknownAs.UNKNOWN);
     assertThat(result.getType().isNullable(), is(false));
@@ -3114,14 +3152,23 @@ public class RexProgramTest extends RexProgramBuilderBase {
             "IS DISTINCT FROM(?0.bool0, ?0.bool1)");
   }
 
+  /** Unit test for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2505">[CALCITE-2505]
+   * RexSimplify wrongly simplifies "COALESCE(+(NULL), x)" to "NULL"</a>. */
   @Test public void testSimplifyCoalesce() {
-    checkSimplify(coalesce(vIntNotNull(), vInt()), "?0.notNullInt0"); // first arg not null
-    checkSimplify(coalesce(vInt(), vIntNotNull()), "COALESCE(?0.int0, ?0.notNullInt0)");
-    checkSimplify(coalesce(vInt(), vInt()), "?0.int0"); // repeated arg
-    checkSimplify(coalesce(vIntNotNull(), vIntNotNull()), "?0.notNullInt0"); // repeated arg
+    checkSimplify(coalesce(vIntNotNull(), vInt()), // first arg not null
+        "?0.notNullInt0");
+    checkSimplify(coalesce(vInt(), vIntNotNull()),
+        "COALESCE(?0.int0, ?0.notNullInt0)");
+    checkSimplify(coalesce(vInt(), vInt()), // repeated arg
+        "?0.int0");
+    checkSimplify(coalesce(vIntNotNull(), vIntNotNull()), // repeated arg
+        "?0.notNullInt0");
     checkSimplify(coalesce(vIntNotNull(), literal(1)), "?0.notNullInt0");
     checkSimplify(coalesce(vInt(), literal(1)), "COALESCE(?0.int0, 1)");
-    checkSimplify(coalesce(vInt(), plus(vInt(), vIntNotNull()), literal(1), vIntNotNull()),
+    checkSimplify(
+        coalesce(vInt(), plus(vInt(), vIntNotNull()), literal(1),
+            vIntNotNull()),
         "COALESCE(?0.int0, +(?0.int0, ?0.notNullInt0), 1)");
     checkSimplify2(coalesce(gt(nullInt, nullInt), trueLiteral),
         "true", "true");
@@ -3131,11 +3178,10 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "COALESCE(?0.int0, ?0.int1)");
   }
 
-  @Test
-  public void simplifyNull() {
-    checkSimplify2(nullBool, "null:BOOLEAN", "false");
+  @Test public void simplifyNull() {
+    checkSimplify3(nullBool, "null:BOOLEAN", "false", "true");
     // null int must not be simplified to false
-    checkSimplify2(nullInt, "null:INTEGER", "null");
+    checkSimplify(nullInt, "null:INTEGER");
   }
 
   /** Converts a map to a string, sorting on the string representation of its
@@ -3214,7 +3260,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyAndNot() {
+=======
+  @Test public void testSimplifyAndNot() {
+>>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "x > 1 AND NOT (y > 2)" -> "x > 1 AND y <= 2"
     checkSimplify(and(gt(vInt(1), literal(1)), not(gt(vInt(2), literal(2)))),
         "AND(>(?0.int1, 1), <=(?0.int2, 2))");
@@ -3233,7 +3283,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "IS NOT NULL(?0.int2)");
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyOrNot() {
+=======
+  @Test public void testSimplifyOrNot() {
+>>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "x > 1 OR NOT (y > 2)" -> "x > 1 OR y <= 2"
     checkSimplify(or(gt(vInt(1), literal(1)), not(gt(vInt(2), literal(2)))),
         "OR(>(?0.int1, 1), <=(?0.int2, 2))");
@@ -3253,6 +3307,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "false");
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testInterpreter() {
     assertThat(eval(trueLiteral), is(true));
     assertThat(eval(nullInt), is(NullSentinel.INSTANCE));
@@ -3262,11 +3317,13 @@ public class RexProgramTest extends RexProgramBuilderBase {
 =======
 =======
 >>>>>>> 40dbae0b2 ([CALCITE-2556] Simplify not(true/false) to false/true (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+>>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   private RexNode simplify(RexNode e) {
     final RexSimplify simplify =
-        new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false,
-            RexUtil.EXECUTOR).withParanoid(true);
-    return simplify.simplify(e);
+        new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, RexUtil.EXECUTOR)
+            .withParanoid(true);
+    return simplify.simplifyUnknownAs(e, RexUnknownAs.UNKNOWN);
   }
 
   @Test public void testInterpreter() {

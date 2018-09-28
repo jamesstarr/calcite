@@ -1038,6 +1038,7 @@ public class RexUtil {
    * Converts a collection of expressions into an AND.
    * If there are zero expressions, returns TRUE.
    * If there is one expression, returns just that expression.
+   * If any of the expressions are FALSE, returns FALSE.
    * Removes expressions that always evaluate to TRUE.
    * Returns null only if {@code nullOnEmpty} and expression is TRUE.
    */
@@ -1052,6 +1053,9 @@ public class RexUtil {
     case 1:
       return list.get(0);
     default:
+      if (containsFalse(list)) {
+        return rexBuilder.makeLiteral(false);
+      }
       return rexBuilder.makeCall(SqlStdOperatorTable.AND, list);
     }
   }
@@ -1094,6 +1098,7 @@ public class RexUtil {
    * Converts a collection of expressions into an OR.
    * If there are zero expressions, returns FALSE.
    * If there is one expression, returns just that expression.
+   * If any of the expressions are TRUE, returns TRUE.
    * Removes expressions that always evaluate to FALSE.
    * Flattens expressions that are ORs.
    */
@@ -1118,6 +1123,9 @@ public class RexUtil {
     case 1:
       return list.get(0);
     default:
+      if (containsTrue(list)) {
+        return rexBuilder.makeLiteral(true);
+      }
       return rexBuilder.makeCall(SqlStdOperatorTable.OR, list);
     }
   }
@@ -1691,21 +1699,21 @@ public class RexUtil {
   @Deprecated // to be removed before 2.0
   public static RexNode simplifyPreservingType(RexBuilder rexBuilder,
       RexNode e) {
-    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false,
-        EXECUTOR).simplifyPreservingType(e);
+    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, EXECUTOR)
+        .simplifyPreservingType(e);
   }
 
   /**
    * Simplifies a boolean expression, leaving UNKNOWN values as UNKNOWN, and
    * using the default executor.
    *
-   * @deprecated Use {@link RexSimplify#simplify(RexNode)},
-   * which allows you to specify an {@link RexExecutor}.
+   * @deprecated Create a {@link RexSimplify}, then call its
+   * {@link RexSimplify#simplify(RexNode, RexUnknownAs)} method.
    */
   @Deprecated // to be removed before 2.0
   public static RexNode simplify(RexBuilder rexBuilder, RexNode e) {
-    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false,
-        EXECUTOR).simplify(e);
+    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, EXECUTOR)
+        .simplify(e);
   }
 
   /**
@@ -1729,34 +1737,34 @@ public class RexUtil {
    * @param e Expression to simplify
    * @param unknownAsFalse Whether to convert UNKNOWN values to FALSE
    *
-   * @deprecated Use {@link RexSimplify#simplify(RexNode)},
-   * which allows you to specify an {@link RexExecutor}.
+   * @deprecated Create a {@link RexSimplify}, then call its
+   * {@link RexSimplify#simplify(RexNode, RexUnknownAs)} method.
    */
   @Deprecated // to be removed before 2.0
   public static RexNode simplify(RexBuilder rexBuilder, RexNode e,
       boolean unknownAsFalse) {
-    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY,
-        unknownAsFalse, EXECUTOR).simplify(e);
+    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, EXECUTOR)
+        .simplifyUnknownAs(e, RexUnknownAs.falseIf(unknownAsFalse));
   }
 
   /**
    * Simplifies a conjunction of boolean expressions.
    *
-   * @deprecated Use {@link RexSimplify#simplifyAnds(Iterable)},
-   * which allows you to specify an {@link RexExecutor}.
+   * @deprecated Use
+   * {@link RexSimplify#simplifyAnds(Iterable, RexUnknownAs)}.
    */
   @Deprecated // to be removed before 2.0
   public static RexNode simplifyAnds(RexBuilder rexBuilder,
       Iterable<? extends RexNode> nodes) {
-    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false,
-        EXECUTOR).simplifyAnds(nodes);
+    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, EXECUTOR)
+        .simplifyAnds(nodes, RexUnknownAs.UNKNOWN);
   }
 
   @Deprecated // to be removed before 2.0
   public static RexNode simplifyAnds(RexBuilder rexBuilder,
       Iterable<? extends RexNode> nodes, boolean unknownAsFalse) {
-    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY,
-        unknownAsFalse, EXECUTOR).simplifyAnds(nodes);
+    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, EXECUTOR)
+        .simplifyAnds(nodes, RexUnknownAs.falseIf(unknownAsFalse));
   }
 
   /** Negates a logical expression by adding or removing a NOT. */
@@ -1820,23 +1828,22 @@ public class RexUtil {
   @Deprecated // to be removed before 2.0
   public static RexNode simplifyAnd(RexBuilder rexBuilder, RexCall e,
       boolean unknownAsFalse) {
-    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY,
-        unknownAsFalse, EXECUTOR).simplifyAnd(e);
+    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, EXECUTOR)
+        .simplifyAnd(e, RexUnknownAs.falseIf(unknownAsFalse));
   }
 
   @Deprecated // to be removed before 2.0
   public static RexNode simplifyAnd2(RexBuilder rexBuilder,
       List<RexNode> terms, List<RexNode> notTerms) {
-    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false,
-        EXECUTOR).simplifyAnd2(terms, notTerms);
+    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, EXECUTOR)
+        .simplifyAnd2(terms, notTerms);
   }
 
   @Deprecated // to be removed before 2.0
   public static RexNode simplifyAnd2ForUnknownAsFalse(RexBuilder rexBuilder,
       List<RexNode> terms, List<RexNode> notTerms) {
-    final Class<Comparable> clazz = Comparable.class;
-    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, true,
-        EXECUTOR).simplifyAnd2ForUnknownAsFalse(terms, notTerms);
+    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, EXECUTOR)
+        .simplifyAnd2ForUnknownAsFalse(terms, notTerms);
   }
 
   public static RexNode negate(RexBuilder rexBuilder, RexCall call) {
@@ -1869,15 +1876,15 @@ public class RexUtil {
 
   @Deprecated // to be removed before 2.0
   public static RexNode simplifyOr(RexBuilder rexBuilder, RexCall call) {
-    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false,
-        EXECUTOR).simplifyOr(call);
+    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, EXECUTOR)
+        .simplifyOr(call);
   }
 
   @Deprecated // to be removed before 2.0
   public static RexNode simplifyOrs(RexBuilder rexBuilder,
       List<RexNode> terms) {
-    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false,
-        EXECUTOR).simplifyOrs(terms);
+    return new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, EXECUTOR)
+        .simplifyOrs(terms);
   }
 
   /**
@@ -1899,7 +1906,7 @@ public class RexUtil {
    *       returns "x = 10 AND NOT (y = 30)"
    * </ul>
    */
-  public static RexNode andNot(final RexBuilder rexBuilder, RexNode e,
+  public static @Nonnull RexNode andNot(final RexBuilder rexBuilder, RexNode e,
       Iterable<? extends RexNode> notTerms) {
     // If "e" is of the form "x = literal", remove all "x = otherLiteral"
     // terms from notTerms.
@@ -1926,8 +1933,7 @@ public class RexUtil {
     }
     return composeConjunction(rexBuilder,
         Iterables.concat(ImmutableList.of(e),
-            Iterables.transform(notTerms, e2 -> not(rexBuilder, e2))),
-        false);
+            Iterables.transform(notTerms, e2 -> not(rexBuilder, e2))));
   }
 
   /** Returns whether a given operand of a CASE expression is a predicate.
@@ -1942,6 +1948,24 @@ public class RexUtil {
     assert call.getKind() == SqlKind.CASE;
     return i < call.operands.size() - 1
         && (call.operands.size() - i) % 2 == 1;
+  }
+
+  private static boolean containsFalse(Iterable<RexNode> nodes) {
+    for (RexNode node : nodes) {
+      if (node.isAlwaysFalse()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean containsTrue(Iterable<RexNode> nodes) {
+    for (RexNode node : nodes) {
+      if (node.isAlwaysTrue()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /** Returns a function that applies NOT to its argument.
@@ -2749,6 +2773,7 @@ public class RexUtil {
       this(simplify, RexUnknownAs.UNKNOWN, true);
     }
 
+    @Deprecated // to be removed before 2.0
     public ExprSimplifier(RexSimplify simplify, boolean matchNullability) {
       this(simplify, RexUnknownAs.UNKNOWN, matchNullability);
     }
