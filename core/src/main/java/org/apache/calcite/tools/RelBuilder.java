@@ -144,7 +144,6 @@ public class RelBuilder {
   private final Deque<Frame> stack = new ArrayDeque<>();
   private final boolean simplify;
   private final RexSimplify simplifier;
-  private final RexSimplify simplifierUnknownAsFalse;
   private final Config config;
   private final RelFactories.Struct struct;
 
@@ -170,9 +169,7 @@ public class RelBuilder {
             Util.first(cluster.getPlanner().getExecutor(), RexUtil.EXECUTOR));
     final RelOptPredicateList predicates = RelOptPredicateList.EMPTY;
     this.simplifier =
-        new RexSimplify(cluster.getRexBuilder(), predicates, false, executor);
-    this.simplifierUnknownAsFalse =
-        new RexSimplify(cluster.getRexBuilder(), predicates, true, executor);
+        new RexSimplify(cluster.getRexBuilder(), predicates, executor);
   }
 
   /** Derives the Config to be used for this RelBuilder.
@@ -1132,20 +1129,15 @@ public class RelBuilder {
    * If the result is TRUE no filter is created. */
   public RelBuilder filter(Iterable<CorrelationId> correlVariables,
       Iterable<? extends RexNode> predicates) {
-    final RexNode x = simplifierUnknownAsFalse.simplifyAnds(predicates);
-    if (x.isAlwaysFalse()) {
+    final RexNode x = simplifier.simplifyFilterPredicates(predicates);
+    if (x == null) {
       return empty();
     }
 
-    // Remove cast of BOOLEAN NOT NULL to BOOLEAN or vice versa. Filter accepts
-    // nullable and not-nullable conditions, but a CAST might get in the way of
-    // other rewrites.
-    final RexNode x2 = simplifierUnknownAsFalse.removeNullabilityCast(x);
-
-    if (!x2.isAlwaysTrue()) {
+    if (!x.isAlwaysTrue()) {
       final Frame frame = stack.pop();
       final RelNode filter = struct.filterFactory.createFilter(frame.rel,
-          x2, ImmutableSet.copyOf(correlVariables));
+          x, ImmutableSet.copyOf(correlVariables));
       stack.push(new Frame(filter, frame.fields));
     }
     return this;

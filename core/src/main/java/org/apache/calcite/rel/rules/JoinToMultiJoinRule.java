@@ -175,7 +175,7 @@ public class JoinToMultiJoinRule
         new MultiJoin(
             origJoin.getCluster(),
             newInputs,
-            RexUtil.composeConjunction(rexBuilder, newJoinFilters, false),
+            RexUtil.composeConjunction(rexBuilder, newJoinFilters),
             origJoin.getRowType(),
             origJoin.getJoinType() == JoinRelType.FULL,
             Pair.right(joinSpecs),

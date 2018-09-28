@@ -324,8 +324,7 @@ public class MultiJoinOptimizeBushyRule
         final RexVisitor<RexNode> shuttle =
             new RexPermuteInputsShuttle(mapping, left, right);
         final RexNode condition =
-            RexUtil.composeConjunction(rexBuilder, joinVertex.conditions,
-                false);
+            RexUtil.composeConjunction(rexBuilder, joinVertex.conditions);
 
         final RelNode join = relBuilder.push(left)
             .push(right)

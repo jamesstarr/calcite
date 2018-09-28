@@ -1511,16 +1511,12 @@ public class SqlToRelConverter {
         assert (call.getOperator() instanceof SqlRowOperator)
             && call.operandCount() == leftKeys.size();
         rexComparison =
-            RexUtil.composeConjunction(
-                rexBuilder,
+            RexUtil.composeConjunction(rexBuilder,
                 Iterables.transform(
                     Pair.zip(leftKeys, call.getOperandList()),
                     pair -> rexBuilder.makeCall(comparisonOp, pair.left,
-
-                        ensureSqlType(pair.left.getType(),
-                            bb.convertExpression(pair.right)))),
-
-                false);
+                            ensureSqlType(pair.left.getType(),
+                            bb.convertExpression(pair.right)))));
       }
       comparisons.add(rexComparison);
     }
@@ -3010,7 +3006,7 @@ public class SqlToRelConverter {
       }
       list.add(rexBuilder.makeCall(SqlStdOperatorTable.EQUALS, operands));
     }
-    return RexUtil.composeConjunction(rexBuilder, list, false);
+    return RexUtil.composeConjunction(rexBuilder, list);
   }
 
   private static JoinRelType convertJoinType(JoinType joinType) {

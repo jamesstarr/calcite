@@ -426,14 +426,11 @@ public class RelMdPredicates
     final RelOptPredicateList leftInfo = mq.getPulledUpPredicates(left);
     final RelOptPredicateList rightInfo = mq.getPulledUpPredicates(right);
 
-    final RexSimplify simplifier =
-        new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, true, executor);
-
     JoinConditionBasedPredicateInference joinInference =
         new JoinConditionBasedPredicateInference(join,
-            RexUtil.composeConjunction(rexBuilder, leftInfo.pulledUpPredicates, false),
-            RexUtil.composeConjunction(rexBuilder, rightInfo.pulledUpPredicates, false),
-            simplifier);
+            RexUtil.composeConjunction(rexBuilder, leftInfo.pulledUpPredicates),
+            RexUtil.composeConjunction(rexBuilder, rightInfo.pulledUpPredicates),
+            new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, executor));
 
     return joinInference.inferPredicates(false);
   }
@@ -510,7 +507,7 @@ public class RelMdPredicates
       }
       // Add new residual predicates
       finalResidualPredicates.add(
-          RexUtil.composeConjunction(rexBuilder, residualPredicates, false));
+          RexUtil.composeConjunction(rexBuilder, residualPredicates));
       // Add those that are not part of the final set to residual
       for (RexNode e : finalPredicates) {
         if (!predicates.contains(e)) {
@@ -518,7 +515,7 @@ public class RelMdPredicates
           for (int j = 0; j < input.i; j++) {
             finalResidualPredicates.set(j,
                 RexUtil.composeConjunction(rexBuilder,
-                    Arrays.asList(finalResidualPredicates.get(j), e), false));
+                    Arrays.asList(finalResidualPredicates.get(j), e)));
           }
         }
       }
@@ -531,7 +528,7 @@ public class RelMdPredicates
     final RexExecutor executor =
         Util.first(cluster.getPlanner().getExecutor(), RexUtil.EXECUTOR);
     RexNode disjunctivePredicate =
-        new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, true, executor)
+        new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, executor)
             .simplifyOrs(finalResidualPredicates);
     if (!disjunctivePredicate.isAlwaysTrue()) {
       predicates.add(disjunctivePredicate);
@@ -831,8 +828,7 @@ public class RelMdPredicates
 
     RexNode compose(RexBuilder rexBuilder, Iterable<RexNode> exprs) {
       exprs = Linq4j.asEnumerable(exprs).where(Objects::nonNull);
-
-      return RexUtil.composeConjunction(rexBuilder, exprs, false);
+      return RexUtil.composeConjunction(rexBuilder, exprs);
     }
 
     /**

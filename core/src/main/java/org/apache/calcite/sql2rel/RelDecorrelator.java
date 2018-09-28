@@ -1189,8 +1189,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
     }
 
     final RexNode condition =
-        RexUtil.composeConjunction(relBuilder.getRexBuilder(), conditions,
-            false);
+        RexUtil.composeConjunction(relBuilder.getRexBuilder(), conditions);
     RelNode newJoin = relBuilder.push(leftFrame.r).push(rightFrame.r)
         .join(rel.getJoinType(), condition).build();
 

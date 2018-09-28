@@ -133,7 +133,7 @@ public class JoinAssociateRule
     new RexPermuteInputsShuttle(bottomMapping, relB, relC)
         .visitList(bottom, newBottomList);
     RexNode newBottomCondition =
-        RexUtil.composeConjunction(rexBuilder, newBottomList, false);
+        RexUtil.composeConjunction(rexBuilder, newBottomList);
 
     final Join newBottomJoin =
         bottomJoin.copy(bottomJoin.getTraitSet(), newBottomCondition, relB,
@@ -141,8 +141,8 @@ public class JoinAssociateRule
 
     // Condition for newTopJoin consists of pieces from bottomJoin and topJoin.
     // Field ordinals do not need to be changed.
-    RexNode newTopCondition =
-        RexUtil.composeConjunction(rexBuilder, top, false);
+    RexNode newTopCondition = RexUtil.composeConjunction(rexBuilder, top);
+    @SuppressWarnings("SuspiciousNameCombination")
     final Join newTopJoin =
         topJoin.copy(topJoin.getTraitSet(), newTopCondition, relA,
             newBottomJoin, JoinRelType.INNER, false);
