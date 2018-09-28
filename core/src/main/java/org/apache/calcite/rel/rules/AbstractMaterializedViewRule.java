@@ -1212,7 +1212,7 @@ public abstract class AbstractMaterializedViewRule extends RelOptRule {
       }
       RelNode prevNode = relBuilder.peek();
       RelNode result = relBuilder
-          .aggregate(relBuilder.groupKey(groupSet, null), aggregateCalls)
+          .aggregate(relBuilder.groupKey(groupSet), aggregateCalls)
           .build();
       if (prevNode == result && groupSet.cardinality() != result.getRowType().getFieldCount()) {
         // Aggregate was not inserted but we need to prune columns
@@ -1494,7 +1494,7 @@ public abstract class AbstractMaterializedViewRule extends RelOptRule {
           relBuilder.project(inputViewExprs);
         }
         result = relBuilder
-            .aggregate(relBuilder.groupKey(groupSet, null), aggregateCalls)
+            .aggregate(relBuilder.groupKey(groupSet), aggregateCalls)
             .build();
         if (prevNode == result && groupSet.cardinality() != result.getRowType().getFieldCount()) {
           // Aggregate was not inserted but we need to prune columns

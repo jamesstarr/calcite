@@ -112,7 +112,7 @@ public class AggregateUnionAggregateRule
     }
 
     relBuilder.union(true);
-    relBuilder.aggregate(relBuilder.groupKey(topAggRel.getGroupSet(), null),
+    relBuilder.aggregate(relBuilder.groupKey(topAggRel.getGroupSet()),
         topAggRel.getAggCallList());
     call.transformTo(relBuilder.build());
   }
