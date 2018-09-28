@@ -113,7 +113,10 @@ public class AggregateUnionAggregateRule
     }
 
     relBuilder.union(true);
+<<<<<<< HEAD
     relBuilder.rename(union.getRowType().getFieldNames());
+=======
+>>>>>>> 0179410f6 ([CALCITE-2647] In RelBuilder, add a groupKey method that assumes only one grouping set)
     relBuilder.aggregate(relBuilder.groupKey(topAggRel.getGroupSet()),
         topAggRel.getAggCallList());
     call.transformTo(relBuilder.build());

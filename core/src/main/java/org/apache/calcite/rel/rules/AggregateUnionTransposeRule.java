@@ -134,8 +134,9 @@ public class AggregateUnionTransposeRule
               aggRel.getGroupSet());
 
       if (!alreadyUnique) {
-        hasUniqueKeyInAllInputs = false;
-        break;
+        ++transformCount;
+        relBuilder.aggregate(relBuilder.groupKey(aggRel.getGroupSet()),
+            aggRel.getAggCallList());
       }
     }
 
