@@ -94,11 +94,15 @@ Choose a source distribution in either *tar* or *zip* format.
 For fast downloads, current source distributions are hosted on mirror servers;
 older source distributions are in the
 <<<<<<< HEAD
+<<<<<<< HEAD
 [archive](http://archive.apache.org/dist/calcite/) 
 or [incubator archive](http://archive.apache.org/dist/incubator/calcite/).
 >>>>>>> cb15bf503 ([CALCITE-2574] Update download page to include instructions for verifying)
 =======
 [archive](https://archive.apache.org/dist/calcite/) 
+=======
+[archive](https://archive.apache.org/dist/calcite/)
+>>>>>>> 319c0bed2 (Cosmetic)
 or [incubator archive](https://archive.apache.org/dist/incubator/calcite/).
 >>>>>>> d35cac654 ([CALCITE-2577] Update links on download page to HTTPS)
 If a download from a mirror fails, retry, and the second download will likely

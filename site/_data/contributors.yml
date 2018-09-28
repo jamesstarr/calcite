@@ -34,10 +34,14 @@
   apacheId: sereda
   githubId: asereda-gs
 <<<<<<< HEAD
+<<<<<<< HEAD
   org:
 =======
   org: 
 >>>>>>> 0aae1eb4f (Site: Add Andrei Sereda as committer)
+=======
+  org:
+>>>>>>> 319c0bed2 (Cosmetic)
   role: Committer
 - name: Ashutosh Chauhan
   apacheId: hashutosh
