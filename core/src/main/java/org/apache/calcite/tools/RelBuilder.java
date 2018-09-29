@@ -204,6 +204,14 @@ public class RelBuilder {
     return new RelBuilder(config.getContext(), clusters[0], relOptSchemas[0]);
   }
 
+  /** Converts this RelBuilder to a string.
+   * The string is the string representation of all of the RelNodes on the stack. */
+  @Override public String toString() {
+    return stack.stream()
+        .map(frame -> RelOptUtil.toString(frame.rel))
+        .collect(Collectors.joining(""));
+  }
+
   /** Creates a copy of this RelBuilder, with the same state as this, applying
    * a transform to the config. */
   public RelBuilder transform(UnaryOperator<Config> transform) {
