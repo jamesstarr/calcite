@@ -56,7 +56,6 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -1222,8 +1221,6 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplify(gt(hRef, hRef), "false");
     checkSimplify2(gt(iRef, iRef), ">(?0.i, ?0.i)", "false");
     checkSimplify(gt(iRef, hRef), ">(?0.i, ?0.h)");
-    checkSimplify2(coalesce(gt(nullInt, nullInt), trueLiteral),
-        "COALESCE(null:BOOLEAN, true)", "COALESCE(null:BOOLEAN, true)");
   }
 
   @Test public void testSimplifyFilter() {
@@ -1951,14 +1948,17 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "IS DISTINCT FROM(?0.bool0, ?0.bool1)");
   }
 
-  @Ignore("[CALCITE-2505] java.lang.AssertionError: result mismatch")
-  @Test public void coalescePlusNull() {
-    // when applied to {?0.int0=-1},
-    // COALESCE(+(null), +(?0.int0)) yielded -1,
-    // and +(null) yielded NULL
-    checkSimplify2(
-        coalesce(unaryPlus(nullInt), unaryPlus(vInt())),
-        "...", "...");
+  @Test public void testSimplifyCoalesce() {
+    checkSimplify(coalesce(vIntNotNull(), vInt()), "?0.notNullInt0"); // first arg not null
+    checkSimplify(coalesce(vInt(), vIntNotNull()), "COALESCE(?0.int0, ?0.notNullInt0)");
+    checkSimplify(coalesce(vInt(), vInt()), "?0.int0"); // repeated arg
+    checkSimplify(coalesce(vIntNotNull(), vIntNotNull()), "?0.notNullInt0"); // repeated arg
+    checkSimplify(coalesce(vIntNotNull(), literal(1)), "?0.notNullInt0");
+    checkSimplify(coalesce(vInt(), literal(1)), "COALESCE(?0.int0, 1)");
+    checkSimplify(coalesce(vInt(), plus(vInt(), vIntNotNull()), literal(1), vIntNotNull()),
+        "COALESCE(?0.int0, +(?0.int0, ?0.notNullInt0), 1)");
+    checkSimplify2(coalesce(gt(nullInt, nullInt), trueLiteral),
+        "COALESCE(null:BOOLEAN, true)", "COALESCE(null:BOOLEAN, true)");
   }
 
   /** Converts a map to a string, sorting on the string representation of its
