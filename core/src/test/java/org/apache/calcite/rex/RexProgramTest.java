@@ -74,7 +74,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 =======
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 >>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
@@ -1523,6 +1522,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 =======
 >>>>>>> 9ea1621a9 (Reapply "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING""):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
@@ -1546,6 +1546,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplify2(coalesce(gt(nullInt, nullInt), trueLiteral),
         "COALESCE(null:BOOLEAN, true)", "COALESCE(null:BOOLEAN, true)");
 >>>>>>> f2f5c9ef9 ([CALCITE-2580] RexSimplify: coalesce(null > null, true) produces wrong result filter expressions (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+>>>>>>> 080ac220f ([CALCITE-2506] RexSimplify: coalesce(unaryPlus(nullInt), unaryPlus(vInt())) results in AssertionError: result mismatch (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   @Test void simplifyStrong() {
@@ -3039,14 +3041,17 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "IS DISTINCT FROM(?0.bool0, ?0.bool1)");
   }
 
-  @Ignore("[CALCITE-2505] java.lang.AssertionError: result mismatch")
-  @Test public void coalescePlusNull() {
-    // when applied to {?0.int0=-1},
-    // COALESCE(+(null), +(?0.int0)) yielded -1,
-    // and +(null) yielded NULL
-    checkSimplify2(
-        coalesce(unaryPlus(nullInt), unaryPlus(vInt())),
-        "...", "...");
+  @Test public void testSimplifyCoalesce() {
+    checkSimplify(coalesce(vIntNotNull(), vInt()), "?0.notNullInt0"); // first arg not null
+    checkSimplify(coalesce(vInt(), vIntNotNull()), "COALESCE(?0.int0, ?0.notNullInt0)");
+    checkSimplify(coalesce(vInt(), vInt()), "?0.int0"); // repeated arg
+    checkSimplify(coalesce(vIntNotNull(), vIntNotNull()), "?0.notNullInt0"); // repeated arg
+    checkSimplify(coalesce(vIntNotNull(), literal(1)), "?0.notNullInt0");
+    checkSimplify(coalesce(vInt(), literal(1)), "COALESCE(?0.int0, 1)");
+    checkSimplify(coalesce(vInt(), plus(vInt(), vIntNotNull()), literal(1), vIntNotNull()),
+        "COALESCE(?0.int0, +(?0.int0, ?0.notNullInt0), 1)");
+    checkSimplify2(coalesce(gt(nullInt, nullInt), trueLiteral),
+        "COALESCE(null:BOOLEAN, true)", "COALESCE(null:BOOLEAN, true)");
   }
 
   /** Converts a map to a string, sorting on the string representation of its
