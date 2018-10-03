@@ -132,35 +132,6 @@ class RelToSqlConverterTest {
         .withNullCollation(nullCollation));
   }
 
-<<<<<<< HEAD
-  /** Returns a collection of common dialects, and the database products they
-   * represent. */
-  private static Map<SqlDialect, DatabaseProduct> dialects() {
-    return ImmutableMap.<SqlDialect, DatabaseProduct>builder()
-        .put(SqlDialect.DatabaseProduct.BIG_QUERY.getDialect(),
-            SqlDialect.DatabaseProduct.BIG_QUERY)
-        .put(SqlDialect.DatabaseProduct.CALCITE.getDialect(),
-            SqlDialect.DatabaseProduct.CALCITE)
-        .put(SqlDialect.DatabaseProduct.DB2.getDialect(),
-            SqlDialect.DatabaseProduct.DB2)
-        .put(SqlDialect.DatabaseProduct.HIVE.getDialect(),
-            SqlDialect.DatabaseProduct.HIVE)
-        .put(jethroDataSqlDialect(),
-            SqlDialect.DatabaseProduct.JETHRO)
-        .put(SqlDialect.DatabaseProduct.MSSQL.getDialect(),
-            SqlDialect.DatabaseProduct.MSSQL)
-        .put(SqlDialect.DatabaseProduct.MYSQL.getDialect(),
-            SqlDialect.DatabaseProduct.MYSQL)
-        .put(mySqlDialect(NullCollation.HIGH),
-            SqlDialect.DatabaseProduct.MYSQL)
-        .put(SqlDialect.DatabaseProduct.ORACLE.getDialect(),
-            SqlDialect.DatabaseProduct.ORACLE)
-        .put(SqlDialect.DatabaseProduct.POSTGRESQL.getDialect(),
-            SqlDialect.DatabaseProduct.POSTGRESQL)
-        .build();
-  }
-
-=======
   /** Creates a RelBuilder. */
   private static RelBuilder relBuilder() {
     return RelBuilder.create(RelBuilderTest.config().build());
@@ -219,6 +190,7 @@ class RelToSqlConverterTest {
     sql(query).ok(expected);
   }
 
+<<<<<<< HEAD
   @Test void testSelectQueryWithHiveCube() {
     String query = "select \"product_class_id\", \"product_id\", count(*) "
             + "from \"product\" group by cube(\"product_class_id\", \"product_id\")";
@@ -242,6 +214,8 @@ class RelToSqlConverterTest {
   }
 
   @Test void testSelectQueryWithGroupByEmpty() {
+=======
+  @Test public void testSelectQueryWithGroupByEmpty() {
     final String sql0 = "select count(*) from \"product\" group by ()";
     final String sql1 = "select count(*) from \"product\"";
     final String expected = "SELECT COUNT(*)\n"
@@ -258,7 +232,7 @@ class RelToSqlConverterTest {
         .ok(expectedMySql);
   }
 
-  @Test void testSelectQueryWithGroupByEmpty2() {
+  @Test public void testSelectQueryWithGroupByEmpty2() {
     final String query = "select 42 as c from \"product\" group by ()";
     final String expected = "SELECT 42 AS \"C\"\n"
         + "FROM \"foodmart\".\"product\"\n"
@@ -272,208 +246,7 @@ class RelToSqlConverterTest {
         .ok(expectedMySql);
   }
 
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3097">[CALCITE-3097]
-   * GROUPING SETS breaks on sets of size &gt; 1 due to precedence issues</a>,
-   * in particular, that we maintain proper precedence around nested lists. */
-  @Test void testGroupByGroupingSets() {
-    final String query = "select \"product_class_id\", \"brand_name\"\n"
-        + "from \"product\"\n"
-        + "group by GROUPING SETS ((\"product_class_id\", \"brand_name\"),"
-        + " (\"product_class_id\"))\n"
-        + "order by 2, 1";
-    final String expected = "SELECT \"product_class_id\", \"brand_name\"\n"
-        + "FROM \"foodmart\".\"product\"\n"
-        + "GROUP BY GROUPING SETS((\"product_class_id\", \"brand_name\"),"
-        + " \"product_class_id\")\n"
-        + "ORDER BY \"brand_name\", \"product_class_id\"";
-    sql(query)
-        .withPostgresql()
-        .ok(expected);
-  }
-
-  /** Tests GROUP BY ROLLUP of two columns. The SQL for MySQL has
-   * "GROUP BY ... ROLLUP" but no "ORDER BY". */
-  @Test void testSelectQueryWithGroupByRollup() {
-    final String query = "select \"product_class_id\", \"brand_name\"\n"
-        + "from \"product\"\n"
-        + "group by rollup(\"product_class_id\", \"brand_name\")\n"
-        + "order by 1, 2";
-    final String expected = "SELECT \"product_class_id\", \"brand_name\"\n"
-        + "FROM \"foodmart\".\"product\"\n"
-        + "GROUP BY ROLLUP(\"product_class_id\", \"brand_name\")\n"
-        + "ORDER BY \"product_class_id\", \"brand_name\"";
-    final String expectedMySql = "SELECT `product_class_id`, `brand_name`\n"
-        + "FROM `foodmart`.`product`\n"
-        + "GROUP BY `product_class_id`, `brand_name` WITH ROLLUP";
-    final String expectedMySql8 = "SELECT `product_class_id`, `brand_name`\n"
-        + "FROM `foodmart`.`product`\n"
-        + "GROUP BY ROLLUP(`product_class_id`, `brand_name`)\n"
-        + "ORDER BY `product_class_id` NULLS LAST, `brand_name` NULLS LAST";
-    sql(query)
-        .ok(expected)
-        .withMysql()
-        .ok(expectedMySql)
-        .withMysql8()
-        .ok(expectedMySql8);
-  }
-
-  /** As {@link #testSelectQueryWithGroupByRollup()},
-   * but ORDER BY columns reversed. */
-  @Test void testSelectQueryWithGroupByRollup2() {
-    final String query = "select \"product_class_id\", \"brand_name\"\n"
-        + "from \"product\"\n"
-        + "group by rollup(\"product_class_id\", \"brand_name\")\n"
-        + "order by 2, 1";
-    final String expected = "SELECT \"product_class_id\", \"brand_name\"\n"
-        + "FROM \"foodmart\".\"product\"\n"
-        + "GROUP BY ROLLUP(\"product_class_id\", \"brand_name\")\n"
-        + "ORDER BY \"brand_name\", \"product_class_id\"";
-    final String expectedMySql = "SELECT `product_class_id`, `brand_name`\n"
-        + "FROM `foodmart`.`product`\n"
-        + "GROUP BY `brand_name`, `product_class_id` WITH ROLLUP";
-    sql(query)
-        .ok(expected)
-        .withMysql()
-        .ok(expectedMySql);
-  }
-
-  /** Tests a query with GROUP BY and a sub-query which is also with GROUP BY.
-   * If we flatten sub-queries, the number of rows going into AVG becomes
-   * incorrect. */
-  @Test void testSelectQueryWithGroupBySubQuery1() {
-    final String query = "select \"product_class_id\", avg(\"product_id\")\n"
-        + "from (select \"product_class_id\", \"product_id\", avg(\"product_class_id\")\n"
-        + "from \"product\"\n"
-        + "group by \"product_class_id\", \"product_id\") as t\n"
-        + "group by \"product_class_id\"";
-    final String expected = "SELECT \"product_class_id\", AVG(\"product_id\")\n"
-        + "FROM (SELECT \"product_class_id\", \"product_id\"\n"
-        + "FROM \"foodmart\".\"product\"\n"
-        + "GROUP BY \"product_class_id\", \"product_id\") AS \"t1\"\n"
-        + "GROUP BY \"product_class_id\"";
-    sql(query).ok(expected);
-  }
-
-  /** Tests query without GROUP BY but an aggregate function
-   * and a sub-query which is with GROUP BY. */
-  @Test void testSelectQueryWithGroupBySubQuery2() {
-    final String query = "select sum(\"product_id\")\n"
-        + "from (select \"product_class_id\", \"product_id\"\n"
-        + "from \"product\"\n"
-        + "group by \"product_class_id\", \"product_id\") as t";
-    final String expected = "SELECT SUM(\"product_id\")\n"
-        + "FROM (SELECT \"product_id\"\n"
-        + "FROM \"foodmart\".\"product\"\n"
-        + "GROUP BY \"product_class_id\", \"product_id\") AS \"t1\"";
-    final String expectedMysql = "SELECT SUM(`product_id`)\n"
-        + "FROM (SELECT `product_id`\n"
-        + "FROM `foodmart`.`product`\n"
-        + "GROUP BY `product_class_id`, `product_id`) AS `t1`";
-    sql(query)
-        .ok(expected)
-        .withMysql()
-        .ok(expectedMysql);
-
-    // Equivalent sub-query that uses SELECT DISTINCT
-    final String query2 = "select sum(\"product_id\")\n"
-        + "from (select distinct \"product_class_id\", \"product_id\"\n"
-        + "    from \"product\") as t";
-    sql(query2)
-        .ok(expected)
-        .withMysql()
-        .ok(expectedMysql);
-  }
-
-  /** CUBE of one column is equivalent to ROLLUP, and Calcite recognizes
-   * this. */
-  @Test void testSelectQueryWithSingletonCube() {
-    final String query = "select \"product_class_id\", count(*) as c\n"
-        + "from \"product\"\n"
-        + "group by cube(\"product_class_id\")\n"
-        + "order by 1, 2";
-    final String expected = "SELECT \"product_class_id\", COUNT(*) AS \"C\"\n"
-        + "FROM \"foodmart\".\"product\"\n"
-        + "GROUP BY ROLLUP(\"product_class_id\")\n"
-        + "ORDER BY \"product_class_id\", COUNT(*)";
-    final String expectedMySql = "SELECT `product_class_id`, COUNT(*) AS `C`\n"
-        + "FROM `foodmart`.`product`\n"
-        + "GROUP BY `product_class_id` WITH ROLLUP\n"
-        + "ORDER BY `product_class_id` IS NULL, `product_class_id`,"
-        + " COUNT(*) IS NULL, COUNT(*)";
-    sql(query)
-        .ok(expected)
-        .withMysql()
-        .ok(expectedMySql);
-  }
-
-  /** As {@link #testSelectQueryWithSingletonCube()}, but no ORDER BY
-   * clause. */
-  @Test void testSelectQueryWithSingletonCubeNoOrderBy() {
-    final String query = "select \"product_class_id\", count(*) as c\n"
-        + "from \"product\"\n"
-        + "group by cube(\"product_class_id\")";
-    final String expected = "SELECT \"product_class_id\", COUNT(*) AS \"C\"\n"
-        + "FROM \"foodmart\".\"product\"\n"
-        + "GROUP BY ROLLUP(\"product_class_id\")";
-    final String expectedMySql = "SELECT `product_class_id`, COUNT(*) AS `C`\n"
-        + "FROM `foodmart`.`product`\n"
-        + "GROUP BY `product_class_id` WITH ROLLUP";
-    sql(query)
-        .ok(expected)
-        .withMysql()
-        .ok(expectedMySql);
-  }
-
-  /** Cannot rewrite if ORDER BY contains a column not in GROUP BY (in this
-   * case COUNT(*)). */
-  @Test void testSelectQueryWithRollupOrderByCount() {
-    final String query = "select \"product_class_id\", \"brand_name\",\n"
-        + " count(*) as c\n"
-        + "from \"product\"\n"
-        + "group by rollup(\"product_class_id\", \"brand_name\")\n"
-        + "order by 1, 2, 3";
-    final String expected = "SELECT \"product_class_id\", \"brand_name\","
-        + " COUNT(*) AS \"C\"\n"
-        + "FROM \"foodmart\".\"product\"\n"
-        + "GROUP BY ROLLUP(\"product_class_id\", \"brand_name\")\n"
-        + "ORDER BY \"product_class_id\", \"brand_name\", COUNT(*)";
-    final String expectedMySql = "SELECT `product_class_id`, `brand_name`,"
-        + " COUNT(*) AS `C`\n"
-        + "FROM `foodmart`.`product`\n"
-        + "GROUP BY `product_class_id`, `brand_name` WITH ROLLUP\n"
-        + "ORDER BY `product_class_id` IS NULL, `product_class_id`,"
-        + " `brand_name` IS NULL, `brand_name`,"
-        + " COUNT(*) IS NULL, COUNT(*)";
-    sql(query)
-        .ok(expected)
-        .withMysql()
-        .ok(expectedMySql);
-  }
-
-  /** As {@link #testSelectQueryWithSingletonCube()}, but with LIMIT. */
-  @Test void testSelectQueryWithCubeLimit() {
-    final String query = "select \"product_class_id\", count(*) as c\n"
-        + "from \"product\"\n"
-        + "group by cube(\"product_class_id\")\n"
-        + "limit 5";
-    final String expected = "SELECT \"product_class_id\", COUNT(*) AS \"C\"\n"
-        + "FROM \"foodmart\".\"product\"\n"
-        + "GROUP BY ROLLUP(\"product_class_id\")\n"
-        + "FETCH NEXT 5 ROWS ONLY";
-    // If a MySQL 5 query has GROUP BY ... ROLLUP, you cannot add ORDER BY,
-    // but you can add LIMIT.
-    final String expectedMySql = "SELECT `product_class_id`, COUNT(*) AS `C`\n"
-        + "FROM `foodmart`.`product`\n"
-        + "GROUP BY `product_class_id` WITH ROLLUP\n"
-        + "LIMIT 5";
-    sql(query)
-        .ok(expected)
-        .withMysql()
-        .ok(expectedMySql);
-  }
-
-  @Test void testSelectQueryWithMinAggregateFunction() {
+  @Test public void testSelectQueryWithMinAggregateFunction() {
     String query = "select min(\"net_weight\") from \"product\" group by \"product_class_id\" ";
     final String expected = "SELECT MIN(\"net_weight\")\n"
         + "FROM \"foodmart\".\"product\"\n"
@@ -770,6 +543,45 @@ class RelToSqlConverterTest {
         + "WHERE (\"EMPNO\" = 0 OR \"EMPNO\" = 1 OR (\"EMPNO\" = 2 OR \"EMPNO\" = 3))"
         + " AND (\"DEPTNO\" = 5 OR (\"DEPTNO\" = 6 OR \"DEPTNO\" = 7))";
     relFn(relFn).ok(expected);
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-1174">[CALCITE-1174]
+   * When generating SQL, translate SUM0(x) to COALESCE(SUM(x), 0)</a>. */
+  @Test public void testSum0BecomesCoalesce() {
+    final RelBuilder builder = relBuilder();
+    final RelNode root = builder
+        .scan("EMP")
+        .aggregate(builder.groupKey(),
+            builder.aggregateCall(SqlStdOperatorTable.SUM0, false, false, null,
+                "s", builder.field(3)))
+        .build();
+    final String expectedMysql = "SELECT COALESCE(SUM(`MGR`), 0) AS `s`\n"
+        + "FROM `scott`.`EMP`";
+    assertThat(toSql(root, SqlDialect.DatabaseProduct.MYSQL.getDialect()),
+        isLinux(expectedMysql));
+    final String expectedPostgresql = "SELECT COALESCE(SUM(\"MGR\"), 0) AS \"s\"\n"
+        + "FROM \"scott\".\"EMP\"";
+    assertThat(toSql(root, SqlDialect.DatabaseProduct.POSTGRESQL.getDialect()),
+        isLinux(expectedPostgresql));
+  }
+
+  /** As {@link #testSum0BecomesCoalesce()} but for windowed aggregates. */
+  @Test public void testWindowedSum0BecomesCoalesce() {
+    final String query = "select\n"
+        + "  AVG(\"net_weight\") OVER (order by \"product_id\" rows 3 preceding)\n"
+        + "from \"foodmart\".\"product\"";
+    final String expectedPostgresql = "SELECT CASE WHEN (COUNT(\"net_weight\")"
+        + " OVER (ORDER BY \"product_id\" ROWS BETWEEN 3 PRECEDING AND CURRENT ROW)) > 0 "
+        + "THEN CAST(COALESCE(SUM(\"net_weight\")"
+        + " OVER (ORDER BY \"product_id\" ROWS BETWEEN 3 PRECEDING AND CURRENT ROW), 0)"
+        + " AS DOUBLE PRECISION) "
+        + "ELSE NULL END / (COUNT(\"net_weight\")"
+        + " OVER (ORDER BY \"product_id\" ROWS BETWEEN 3 PRECEDING AND CURRENT ROW))\n"
+        + "FROM \"foodmart\".\"product\"";
+    sql(query)
+        .withPostgresql()
+        .ok(expectedPostgresql);
   }
 
   /** Test case for
