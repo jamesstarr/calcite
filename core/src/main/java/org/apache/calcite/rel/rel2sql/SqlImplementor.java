@@ -673,11 +673,21 @@ public abstract class SqlImplementor {
           orderList, isRows, lowerBound, upperBound, allowPartial, POS);
 
       final List<SqlNode> nodeList = toSql(program, rexOver.getOperands());
-      final SqlCall aggFunctionCall =
-          rexOver.getAggOperator().createCall(POS, nodeList);
+      return createOverCall(rexOver.getAggOperator(), nodeList, sqlWindow);
+    }
 
+    private SqlCall createOverCall(SqlAggFunction op, List<SqlNode> operands,
+        SqlWindow window) {
+      if (op instanceof SqlSumEmptyIsZeroAggFunction) {
+        // Rewrite "SUM0(x) OVER w" to "COALESCE(SUM(x) OVER w, 0)"
+        final SqlCall node =
+            createOverCall(SqlStdOperatorTable.SUM, operands, window);
+        return SqlStdOperatorTable.COALESCE.createCall(POS, node,
+            SqlLiteral.createExactNumeric("0", POS));
+      }
+      final SqlCall aggFunctionCall = op.createCall(POS, operands);
       return SqlStdOperatorTable.OVER.createCall(POS, aggFunctionCall,
-          sqlWindow);
+          window);
     }
 
     protected SqlNode toSql(RexProgram program, RexFieldCollation rfc) {
