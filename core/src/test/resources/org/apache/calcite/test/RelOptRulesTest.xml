@@ -11515,10 +11515,14 @@ LogicalProject(DEPTNO=[$0])
         <Resource name="planMid">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(SAL=[$5], EXPR$1=[IS NULL($10)])
 =======
 LogicalProject(SAL=[$5], EXPR$1=[NOT(CASE(IS NOT NULL($10), true, false))])
 >>>>>>> 898ca1b1d ([CALCITE-2954] SubQueryJoinRemoveRule and SubQueryProjectRemoveRule passing on empty set instead of set of correlation id (Vineet Garg))
+=======
+LogicalProject(SAL=[$5], EXPR$1=[IS NULL($10)])
+>>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
   LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{0, 2}])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalFilter(condition=[=($cor0.EMPNO, $0)])
@@ -11541,6 +11545,9 @@ LogicalProject(SAL=[$5], EXPR$1=[NOT(CASE(IS NOT NULL($10), true, false))])
         <Resource name="planAfter">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
 LogicalProject(SAL=[$5], EXPR$1=[IS NULL($10)])
   LogicalJoin(condition=[AND(=($0, $9), =($2, $11))], joinType=[left])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])

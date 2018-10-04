@@ -2776,6 +2776,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCaseFirstBranchIsSafe() {
     RexNode caseNode = case_(
         gt(div(vIntNotNull(), literal(1)), literal(1)), falseLiteral,
@@ -2784,23 +2785,36 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
   @Test void testPushNotIntoCase() {
+=======
+  @Test public void testPushNotIntoCase() {
+>>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify(
         not(
             case_(
                 isTrue(vBool()), vBool(1),
                 gt(div(vIntNotNull(), literal(2)), literal(1)), vBool(2),
                 vBool(3))),
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
         "CASE(?0.bool0, NOT(?0.bool1), >(/(?0.notNullInt0, 2), 1), NOT(?0.bool2), NOT(?0.bool3))");
   }
 
   @Test void testNotRecursion() {
+=======
+        "CASE(IS TRUE(?0.bool0), NOT(?0.bool1), >(/(?0.notNullInt0, 2), 1), NOT(?0.bool2), NOT(?0.bool3))");
+  }
+
+  @Test public void testNotRecursion() {
+>>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify(
         not(coalesce(nullBool, trueLiteral)),
         "false");
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyAnd() {
 =======
+=======
+>>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   @Test public void testSimplifyAnd() {
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     RelDataType booleanNotNullableType =

@@ -3586,10 +3586,14 @@ from emp]]>
         <Resource name="plan">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EMPNO=[$0], EXPR$1=[OR(=($9, 0), AND(<($10, $9), null, <>($9, 0), IS NULL($13)), AND(<>($9, 0), IS NULL($13), >=($10, $9)))])
 =======
 LogicalProject(EMPNO=[$0], EXPR$1=[NOT(CASE(=($9, 0), false, IS NOT NULL($13), true, IS NULL($11), null:BOOLEAN, <($10, $9), null:BOOLEAN, false))])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+LogicalProject(EMPNO=[$0], EXPR$1=[OR(=($9, 0), AND(<($10, $9), null, <>($9, 0), IS NULL($13)), AND(<>($9, 0), IS NULL($13), >=($10, $9)))])
+>>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
   LogicalJoin(condition=[=($11, $12)], joinType=[left])
     LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], $f0=[$9], $f1=[$10], DEPTNO0=[$7])
       LogicalJoin(condition=[true], joinType=[inner])
@@ -3861,10 +3865,14 @@ from emp]]>
         <Resource name="plan">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EMPNO=[$0], EXPR$1=[OR(=($9, 0), AND(<($10, $9), null, <>($9, 0), IS NULL($13)), AND(<>($9, 0), IS NULL($13), >=($10, $9)))])
 =======
 LogicalProject(EMPNO=[$0], EXPR$1=[NOT(CASE(=($9, 0), false, IS NOT NULL($13), true, IS NULL($11), null:BOOLEAN, <($10, $9), null:BOOLEAN, false))])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+LogicalProject(EMPNO=[$0], EXPR$1=[OR(=($9, 0), AND(<($10, $9), null, <>($9, 0), IS NULL($13)), AND(<>($9, 0), IS NULL($13), >=($10, $9)))])
+>>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
   LogicalJoin(condition=[=($11, $12)], joinType=[left])
     LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], $f0=[$9], $f1=[$10], DEPTNO0=[$7])
       LogicalJoin(condition=[true], joinType=[inner])

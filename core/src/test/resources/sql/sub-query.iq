@@ -1352,6 +1352,7 @@ from "scott".emp;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
@@ -1432,6 +1433,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:BOOLEAN], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[NOT($t12)], SAL=[$t1], EXPR$1=[$t13])
 >>>>>>> a487e40cf ([CALCITE-2731] RexProgramBuilder makes unsafe simplifications to CASE expressions (Zoltan Haindrich))
+=======
+EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
+>>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
   EnumerableHashJoin(condition=[true], joinType=[left])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
@@ -1481,6 +1485,7 @@ from "scott".emp;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
@@ -1504,6 +1509,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:BOOLEAN], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[NOT($t12)], SAL=[$t1], EXPR$1=[$t13])
 >>>>>>> a487e40cf ([CALCITE-2731] RexProgramBuilder makes unsafe simplifications to CASE expressions (Zoltan Haindrich))
+=======
+EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
+>>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
@@ -1562,6 +1570,7 @@ from "scott".emp;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
@@ -1585,6 +1594,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:BOOLEAN], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[NOT($t12)], SAL=[$t1], EXPR$1=[$t13])
 >>>>>>> a487e40cf ([CALCITE-2731] RexProgramBuilder makes unsafe simplifications to CASE expressions (Zoltan Haindrich))
+=======
+EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
+>>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
@@ -1643,6 +1655,7 @@ from "scott".emp;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
@@ -1666,6 +1679,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:BOOLEAN], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[NOT($t12)], SAL=[$t1], EXPR$1=[$t13])
 >>>>>>> a487e40cf ([CALCITE-2731] RexProgramBuilder makes unsafe simplifications to CASE expressions (Zoltan Haindrich))
+=======
+EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
+>>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
@@ -1721,6 +1737,7 @@ from "scott".emp;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NULL($t2)], SAL=[$t1], EXPR$1=[$t3])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
@@ -1735,6 +1752,9 @@ EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NOT NULL($t2)], expr#4=[true], e
 =======
 EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NOT NULL($t2)], expr#4=[true], expr#5=[false], expr#6=[CASE($t3, $t4, $t5)], expr#7=[NOT($t6)], SAL=[$t1], EXPR$1=[$t7])
 >>>>>>> a487e40cf ([CALCITE-2731] RexProgramBuilder makes unsafe simplifications to CASE expressions (Zoltan Haindrich))
+=======
+EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NULL($t2)], SAL=[$t1], EXPR$1=[$t3])
+>>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
@@ -1775,6 +1795,7 @@ from "scott".emp;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], expr#6=[IS TRUE($t5)], expr#7=[null:BOOLEAN], expr#8=[AND($t6, $t7)], expr#9=[IS NOT FALSE($t2)], expr#10=[IS NULL($t2)], expr#11=[AND($t9, $t10)], expr#12=[OR($t4, $t8, $t11)], SAL=[$t1], EXPR$1=[$t12])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
@@ -1798,6 +1819,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:BOOLEAN], expr#8=[IS NOT NULL($t2)], expr#9=[true], expr#10=[CASE($t4, $t5, $t6, $t7, $t8, $t9, $t5)], expr#11=[NOT($t10)], SAL=[$t1], EXPR$1=[$t11])
 >>>>>>> a487e40cf ([CALCITE-2731] RexProgramBuilder makes unsafe simplifications to CASE expressions (Zoltan Haindrich))
+=======
+EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[IS TRUE($t6)], expr#8=[null:BOOLEAN], expr#9=[AND($t7, $t8)], expr#10=[IS NOT TRUE($t6)], expr#11=[IS NULL($t2)], expr#12=[AND($t10, $t11)], expr#13=[OR($t4, $t9, $t12)], SAL=[$t1], EXPR$1=[$t13])
+>>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])

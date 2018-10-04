@@ -659,9 +659,9 @@ public class RexSimplify {
       List<RexNode> operands = ((RexCall) a).getOperands();
       for (int i = 0; i < operands.size(); i += 2) {
         if (i + 1 == operands.size()) {
-          newOperands.add(rexBuilder.makeCall(SqlStdOperatorTable.NOT, operands.get(i)));
+          newOperands.add(rexBuilder.makeCall(SqlStdOperatorTable.NOT, operands.get(i + 0)));
         } else {
-          newOperands.add(operands.get(i));
+          newOperands.add(operands.get(i + 0));
           newOperands.add(rexBuilder.makeCall(SqlStdOperatorTable.NOT, operands.get(i + 1)));
         }
       }
