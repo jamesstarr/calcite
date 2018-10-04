@@ -1916,6 +1916,22 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplifyUnchanged(caseNode);
   }
 
+  @Test public void testPushNotIntoCase() {
+    checkSimplify(
+        not(
+            case_(
+                isTrue(vBool()), vBool(1),
+                gt(div(vIntNotNull(), literal(2)), literal(1)), vBool(2),
+                vBool(3))),
+        "CASE(IS TRUE(?0.bool0), NOT(?0.bool1), >(/(?0.notNullInt0, 2), 1), NOT(?0.bool2), NOT(?0.bool3))");
+  }
+
+  @Test public void testNotRecursion() {
+    checkSimplify(
+        not(coalesce(nullBool, trueLiteral)),
+        "false");
+  }
+
   @Test public void testSimplifyAnd() {
     RelDataType booleanNotNullableType =
         typeFactory.createTypeWithNullability(
