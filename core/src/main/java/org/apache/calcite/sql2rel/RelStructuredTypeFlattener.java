@@ -870,12 +870,8 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
       // walk down the field access path expression, calculating
       // the desired input number
       int iInput = 0;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
       RelDataType fieldType = removeDistinct(fieldAccess.getType());
 =======
->>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
       Deque<Integer> accessOrdinals = new ArrayDeque<>();
 
       for (;;) {
