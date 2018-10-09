@@ -132,12 +132,18 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
   /** Simplifies an expression and checks that the result is as expected. */
   private void checkSimplify(RexNode node, String expected) {
-    checkSimplify2(node, expected, expected);
+    final String nodeString = node.toString();
+    checkSimplify3_(node, expected, expected, expected);
+    if (expected.equals(nodeString)) {
+      throw new AssertionError("expected == node.toString(); "
+          + "use checkSimplifyUnchanged");
+    }
   }
 
   /** Simplifies an expression and checks that the result is unchanged. */
   private void checkSimplifyUnchanged(RexNode node) {
-    checkSimplify(node, node.toString());
+    final String expected = node.toString();
+    checkSimplify3_(node, expected, expected, expected);
   }
 
   /** Simplifies an expression and checks the result if unknowns remain
@@ -151,10 +157,25 @@ public class RexProgramTest extends RexProgramBuilderBase {
    */
   private void checkSimplify2(RexNode node, String expected,
       String expectedFalse) {
-    checkSimplify3(node, expected, expectedFalse, expected);
+    checkSimplify3_(node, expected, expectedFalse, expected);
+    if (expected.equals(expectedFalse)) {
+      throw new AssertionError("expected == expectedFalse; use checkSimplify");
+    }
   }
 
   private void checkSimplify3(RexNode node, String expected,
+      String expectedFalse, String expectedTrue) {
+    checkSimplify3_(node, expected, expectedFalse, expectedTrue);
+    if (expected.equals(expectedFalse) && expected.equals(expectedTrue)) {
+      throw new AssertionError("expected == expectedFalse == expectedTrue; "
+          + "use checkSimplify");
+    }
+    if (expected.equals(expectedTrue)) {
+      throw new AssertionError("expected == expectedTrue; use checkSimplify2");
+    }
+  }
+
+  private void checkSimplify3_(RexNode node, String expected,
       String expectedFalse, String expectedTrue) {
     final RexNode simplified =
         simplify.simplifyUnknownAs(node, RexUnknownAs.UNKNOWN);
@@ -637,10 +658,9 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "AND(?0.bool0, null, IS NULL(?0.bool1))",
         "false");
 
-    checkSimplify2(
+    checkSimplify(
         and(vBool(), not(vBool()),
             vBoolNotNull(1), not(vBoolNotNull(1))),
-        "false",
         "false");
   }
 
@@ -745,14 +765,14 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
   @Test public void removeRedundantCast() {
     checkSimplify(cast(vInt(), nullable(tInt())), "?0.int0");
-    checkSimplify(cast(vInt(), tInt()), "CAST(?0.int0):INTEGER NOT NULL");
-    checkSimplify(cast(vIntNotNull(), nullable(tInt())), "CAST(?0.notNullInt0):INTEGER");
+    checkSimplifyUnchanged(cast(vInt(), tInt()));
+    checkSimplifyUnchanged(cast(vIntNotNull(), nullable(tInt())));
     checkSimplify(cast(vIntNotNull(), tInt()), "?0.notNullInt0");
 
     // Nested int int cast is removed
-    checkSimplify(cast(cast(vVarchar(), tInt()), tInt()), "CAST(?0.varchar0):INTEGER NOT NULL");
-    checkSimplify(cast(cast(vVarchar(), tInt()), tVarchar()),
-        "CAST(CAST(?0.varchar0):INTEGER NOT NULL):VARCHAR NOT NULL");
+    checkSimplify(cast(cast(vVarchar(), tInt()), tInt()),
+        "CAST(?0.varchar0):INTEGER NOT NULL");
+    checkSimplifyUnchanged(cast(cast(vVarchar(), tInt()), tVarchar()));
   }
 
   @Test public void testNoCommonReturnTypeFails() {
@@ -1219,37 +1239,37 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplify(eq(literal1, literal1), "true");
     checkSimplify(eq(hRef, hRef), "true");
     checkSimplify2(eq(iRef, iRef), "=(?0.i, ?0.i)", "IS NOT NULL(?0.i)");
-    checkSimplify(eq(iRef, hRef), "=(?0.i, ?0.h)");
+    checkSimplifyUnchanged(eq(iRef, hRef));
 
     // "x <= x" simplifies to "x is not null"
     checkSimplify(le(literal1, literal1), "true");
     checkSimplify(le(hRef, hRef), "true");
     checkSimplify2(le(iRef, iRef), "<=(?0.i, ?0.i)", "IS NOT NULL(?0.i)");
-    checkSimplify(le(iRef, hRef), "<=(?0.i, ?0.h)");
+    checkSimplifyUnchanged(le(iRef, hRef));
 
     // "x >= x" simplifies to "x is not null"
     checkSimplify(ge(literal1, literal1), "true");
     checkSimplify(ge(hRef, hRef), "true");
     checkSimplify2(ge(iRef, iRef), ">=(?0.i, ?0.i)", "IS NOT NULL(?0.i)");
-    checkSimplify(ge(iRef, hRef), ">=(?0.i, ?0.h)");
+    checkSimplifyUnchanged(ge(iRef, hRef));
 
     // "x != x" simplifies to "false"
     checkSimplify(ne(literal1, literal1), "false");
     checkSimplify(ne(hRef, hRef), "false");
     checkSimplify2(ne(iRef, iRef), "<>(?0.i, ?0.i)", "false");
-    checkSimplify(ne(iRef, hRef), "<>(?0.i, ?0.h)");
+    checkSimplifyUnchanged(ne(iRef, hRef));
 
     // "x < x" simplifies to "false"
     checkSimplify(lt(literal1, literal1), "false");
     checkSimplify(lt(hRef, hRef), "false");
     checkSimplify2(lt(iRef, iRef), "<(?0.i, ?0.i)", "false");
-    checkSimplify(lt(iRef, hRef), "<(?0.i, ?0.h)");
+    checkSimplifyUnchanged(lt(iRef, hRef));
 
     // "x > x" simplifies to "false"
     checkSimplify(gt(literal1, literal1), "false");
     checkSimplify(gt(hRef, hRef), "false");
     checkSimplify2(gt(iRef, iRef), ">(?0.i, ?0.i)", "false");
-    checkSimplify(gt(iRef, hRef), ">(?0.i, ?0.h)");
+    checkSimplifyUnchanged(gt(iRef, hRef));
 
     // "(not x) is null" to "x is null"
     checkSimplify(isNull(not(vBool())), "IS NULL(?0.bool0)");
@@ -1505,7 +1525,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
   @Test public void testSimplifyDynamicParam() {
-    checkSimplify2(or(vBool(), vBool()), "?0.bool0", "?0.bool0");
+    checkSimplify(or(vBool(), vBool()), "?0.bool0");
   }
 
   /** Unit test for
@@ -1784,8 +1804,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
     final RelDataType timestampType =
         typeFactory.createSqlType(SqlTypeName.TIMESTAMP);
     checkSimplifyUnchanged(cast(literalAbc, intType));
-    checkSimplify(cast(literalOne, intType), "1");
-    checkSimplify(cast(literalAbc, varcharType), "'abc':VARCHAR(10)");
+    checkSimplifyUnchanged(cast(literalOne, intType));
+    checkSimplifyUnchanged(cast(literalAbc, varcharType));
     checkSimplify(cast(literalOne, varcharType), "'1':VARCHAR(10)");
     checkSimplifyUnchanged(cast(literalAbc, booleanType));
     checkSimplify(cast(literalOne, booleanType),
@@ -1836,15 +1856,14 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "12:34:45:TIME_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(timeLTZChar3, timeLTZType),
         "11:34:45:TIME_WITH_LOCAL_TIME_ZONE(0)");
-    checkSimplify(cast(literalTimeLTZ, timeLTZType), "01:23:45:TIME_WITH_LOCAL_TIME_ZONE(0)");
+    checkSimplifyUnchanged(cast(literalTimeLTZ, timeLTZType));
     checkSimplify(cast(timestampLTZChar1, timestampLTZType),
         "2011-07-20 03:34:56:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(timestampLTZChar2, timestampLTZType),
         "2011-07-20 11:34:56:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(timestampLTZChar3, timestampLTZType),
         "2011-07-20 12:34:56:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
-    checkSimplify(cast(literalTimestampLTZ, timestampLTZType),
-        "2011-07-20 08:23:45:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
+    checkSimplifyUnchanged(cast(literalTimestampLTZ, timestampLTZType));
     checkSimplify(cast(literalDate, timestampLTZType),
         "2011-07-20 07:00:00:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(literalTime, timestampLTZType),
@@ -2054,20 +2073,19 @@ public class RexProgramTest extends RexProgramBuilderBase {
   @Test public void testSimplifyCoalesce() {
     checkSimplify(coalesce(vIntNotNull(), vInt()), // first arg not null
         "?0.notNullInt0");
-    checkSimplify(coalesce(vInt(), vIntNotNull()),
-        "COALESCE(?0.int0, ?0.notNullInt0)");
+    checkSimplifyUnchanged(coalesce(vInt(), vIntNotNull()));
     checkSimplify(coalesce(vInt(), vInt()), // repeated arg
         "?0.int0");
     checkSimplify(coalesce(vIntNotNull(), vIntNotNull()), // repeated arg
         "?0.notNullInt0");
     checkSimplify(coalesce(vIntNotNull(), literal(1)), "?0.notNullInt0");
-    checkSimplify(coalesce(vInt(), literal(1)), "COALESCE(?0.int0, 1)");
+    checkSimplifyUnchanged(coalesce(vInt(), literal(1)));
     checkSimplify(
         coalesce(vInt(), plus(vInt(), vIntNotNull()), literal(1),
             vIntNotNull()),
         "COALESCE(?0.int0, +(?0.int0, ?0.notNullInt0), 1)");
-    checkSimplify2(coalesce(gt(nullInt, nullInt), trueLiteral),
-        "true", "true");
+    checkSimplify(coalesce(gt(nullInt, nullInt), trueLiteral),
+        "true");
 
     checkSimplify(coalesce(nullInt, vInt()), "?0.int0");
     checkSimplify(coalesce(vInt(), nullInt, vInt(1)),
@@ -2077,7 +2095,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
   @Test public void simplifyNull() {
     checkSimplify3(nullBool, "null:BOOLEAN", "false", "true");
     // null int must not be simplified to false
-    checkSimplify(nullInt, "null:INTEGER");
+    checkSimplifyUnchanged(nullInt);
   }
 
   /** Converts a map to a string, sorting on the string representation of its
