@@ -3051,7 +3051,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplify(coalesce(vInt(), plus(vInt(), vIntNotNull()), literal(1), vIntNotNull()),
         "COALESCE(?0.int0, +(?0.int0, ?0.notNullInt0), 1)");
     checkSimplify2(coalesce(gt(nullInt, nullInt), trueLiteral),
-        "COALESCE(null:BOOLEAN, true)", "COALESCE(null:BOOLEAN, true)");
+        "true", "true");
+
+    checkSimplify(coalesce(nullInt, vInt()), "?0.int0");
+    checkSimplify(coalesce(vInt(), nullInt, vInt(1)),
+        "COALESCE(?0.int0, ?0.int1)");
   }
 
   /** Converts a map to a string, sorting on the string representation of its
