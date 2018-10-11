@@ -35,6 +35,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBitSet;
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
 
+
 /**
  * Rule that converts a {@link org.apache.calcite.rel.core.Join}
  * into a {@link org.apache.calcite.rel.logical.LogicalCorrelate}, which can
@@ -88,7 +89,7 @@ public class JoinToCorrelateRule
   public boolean matches(RelOptRuleCall call) {
 =======
   @Override public boolean matches(RelOptRuleCall call) {
-    LogicalJoin join = call.rel(0);
+    Join join = call.rel(0);
     return !join.getJoinType().generatesNullsOnLeft();
   }
 
