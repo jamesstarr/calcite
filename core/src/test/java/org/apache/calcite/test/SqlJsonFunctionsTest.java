@@ -24,11 +24,6 @@ import org.apache.calcite.sql.SqlJsonExistsErrorBehavior;
 import org.apache.calcite.sql.SqlJsonQueryEmptyOrErrorBehavior;
 import org.apache.calcite.sql.SqlJsonQueryWrapperBehavior;
 import org.apache.calcite.sql.SqlJsonValueEmptyOrErrorBehavior;
-<<<<<<< HEAD
-import org.apache.calcite.util.BuiltInMethod;
-
-import com.google.common.primitives.Longs;
-=======
 
 import com.google.common.collect.ImmutableMap;
 import com.jayway.jsonpath.InvalidJsonException;
@@ -813,4 +808,3 @@ public class SqlJsonFunctionsTest {
 =======
 
 // End SqlJsonFunctionsTest.java
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))

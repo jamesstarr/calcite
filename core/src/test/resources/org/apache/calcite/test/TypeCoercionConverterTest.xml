@@ -451,10 +451,14 @@ LogicalUnion(all=[false])
         <Resource name="plan">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CAST($3):DECIMAL(19, 0) NOT NULL])
 =======
 LogicalProject(EXPR$0=[CASE(>(1, 0), CAST($3):DECIMAL(19, 0) NOT NULL, $6)])
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+LogicalProject(EXPR$0=[CAST($3):DECIMAL(19, 0) NOT NULL])
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
   LogicalTableScan(table=[[CATALOG, SALES, T2]])
 ]]>
         </Resource>

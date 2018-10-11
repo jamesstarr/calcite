@@ -1094,10 +1094,6 @@ public enum SqlKind {
                   TIMESTAMP_ADD, TIMESTAMP_DIFF, EXTRACT,
                   LITERAL_CHAIN, JDBC_FN, PRECEDING, FOLLOWING, ORDER_BY,
                   NULLS_FIRST, NULLS_LAST, COLLECTION_TABLE, TABLESAMPLE,
-<<<<<<< HEAD
-                  VALUES, WITH, WITH_ITEM, ITEM, SKIP_TO_FIRST, SKIP_TO_LAST,
-                  JSON_VALUE_EXPRESSION, DESCRIPTOR),
-=======
                   VALUES, WITH, WITH_ITEM, SKIP_TO_FIRST, SKIP_TO_LAST,
                   JSON_VALUE_EXPRESSION, JSON_API_COMMON_SYNTAX),
               AGGREGATE, DML, DDL));
@@ -1188,7 +1184,6 @@ public enum SqlKind {
           LESS_THAN, LESS_THAN_OR_EQUAL,
           IS_DISTINCT_FROM, IS_NOT_DISTINCT_FROM);
 
->>>>>>> e93a6fdc9 (DX-58856: Improving RexCall's equals method)
   /**
    * Category of operators that do not depend on the argument order.
    *

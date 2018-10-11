@@ -438,8 +438,14 @@ public class RexProgramTest extends RexProgramBuilderBase {
     assertThat(program.normalize(rexBuilder, simplify).toString(),
         is("(expr#0..1=[{inputs}], expr#2=[+($t0, $t1)], expr#3=[1], "
             + "expr#4=[+($t0, $t3)], expr#5=[+($t2, $t4)], "
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
             + "expr#6=[+($t0, $t4)], expr#7=[5], expr#8=[<=($t4, $t7)], "
             + "a=[$t5], b=[$t6], $condition=[$t8])"));
+=======
+            + "expr#6=[+($t0, $t4)], expr#7=[5], expr#8=[>($t4, $t7)], "
+            + "expr#9=[NOT($t8)], "
+            + "a=[$t5], b=[$t6], $condition=[$t9])"));
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   /**
@@ -459,6 +465,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
     assertThat(program.normalize(rexBuilder, simplify).toString(),
         is("(expr#0..1=[{inputs}], expr#2=[+($t0, $t1)], expr#3=[1], "
             + "expr#4=[+($t0, $t3)], expr#5=[+($t2, $t4)], "
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
             + "expr#6=[+($t0, $t4)], expr#7=[5], expr#8=[<=($t4, $t7)], "
             + "a=[$t5], b=[$t6], $condition=[$t8])"));
   }
@@ -484,6 +491,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
     assertThat(program.toString(),
         is("(expr#0=[{inputs}], expr#1=[RAND()], expr#2=[RAND()], "
             + "expr#3=[=($t1, $t2)], x=[$t3])"));
+=======
+            + "expr#6=[+($t0, $t4)], expr#7=[5], expr#8=[>($t4, $t7)], "
+            + "expr#9=[NOT($t8)], "
+            + "a=[$t5], b=[$t6], $condition=[$t9])"));
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   /**
@@ -1436,6 +1448,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "OR(?0.a, ?0.b, AND(null, NOT(?0.a), NOT(?0.b), NOT(?0.c)))",
         "OR(?0.a, ?0.b)",
         "OR(?0.a, ?0.b, NOT(?0.c))");
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 =======
     checkSimplify2(
 =======
@@ -1446,6 +1459,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "CAST(OR(?0.a, ?0.b)):BOOLEAN",
         "CAST(OR(?0.a, ?0.b)):BOOLEAN");
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
     // case: form an AND of branches that return true
     checkSimplify(
@@ -1796,6 +1811,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
         case_(cRef, trueLiteral, dRef, trueLiteral, eRef, falseLiteral, fRef,
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
             falseLiteral, nullBool),
         "OR(?0.c, ?0.d)");
 =======
@@ -1804,6 +1820,10 @@ public class RexProgramTest extends RexProgramBuilderBase {
 =======
             falseLiteral, nullBool), "CAST(OR(?0.c, ?0.d)):BOOLEAN");
 >>>>>>> 11c579765 ([CALCITE-2462] RexProgramTest: replace nullLiteral->nullInt, unknownLiteral->nullBool for brevity):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+            falseLiteral, nullBool),
+        "OR(?0.c, ?0.d)");
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
     // condition with null value for range
     checkSimplifyFilter(and(gt(aRef, nullBool), ge(bRef, literal1)), "false");
@@ -2237,6 +2257,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
   /** Unit test for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1289">[CALCITE-1289]
    * RexUtil.simplifyCase() should account for nullability</a>. */
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCaseNotNullableBoolean() {
     RexNode condition = eq(vVarchar(), literal("S"));
     RexCall caseNode = (RexCall) case_(condition, trueLiteral, falseLiteral);
@@ -2250,6 +2271,15 @@ public class RexProgramTest extends RexProgramBuilderBase {
         (RexCall) simplify.simplifyUnknownAs(caseNode, RexUnknownAs.UNKNOWN);
     assertThat(result.getType().isNullable(), is(false));
 >>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test public void testSimplifyCaseNotNullableBoolean() {
+    RexNode condition = eq(vVarchar(), literal("S"));
+    RexCall caseNode = (RexCall) case_(condition, trueLiteral, falseLiteral);
+
+    final RexCall result = (RexCall) simplify.simplifyUnknownAs(caseNode, RexUnknownAs.UNKNOWN);
+    assertThat("The case should be nonNullable", caseNode.getType().isNullable(), is(false));
+    assertThat("Expected a nonNullable type", result.getType().isNullable(), is(false));
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     assertThat(result.getType().getSqlTypeName(), is(SqlTypeName.BOOLEAN));
     assertThat(result.getOperator(), is((SqlOperator) SqlStdOperatorTable.IS_TRUE));
     assertThat(result.getOperands().get(0), is(condition));
@@ -2384,7 +2414,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
     assertThat(result, is(caseNode));
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCaseCasting() {
+=======
+  @Test public void testSimplifyCaseCasting() {
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     RexNode caseNode = case_(eq(vIntNotNull(), literal(3)), nullBool, falseLiteral);
 
     checkSimplify3(caseNode, "AND(=(?0.notNullInt0, 3), null)",
@@ -2392,7 +2426,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "=(?0.notNullInt0, 3)");
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCaseAndNotSimplicationIsInAction() {
+=======
+  @Test public void testSimplifyCaseAndNotSimplicationIsInAction() {
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     RexNode caseNode = case_(
         eq(vIntNotNull(), literal(0)), falseLiteral,
         eq(vIntNotNull(), literal(1)), trueLiteral,
@@ -2400,7 +2438,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplify(caseNode, "=(?0.notNullInt0, 1)");
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCaseBranchRemovalStrengthensType() {
+=======
+  @Test public void testSimplifyCaseBranchRemovalStrengthensType() {
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     RexNode caseNode =
         case_(falseLiteral, nullBool, eq(div(vInt(), literal(2)), literal(3)), trueLiteral,
             falseLiteral);
@@ -2411,17 +2453,29 @@ public class RexProgramTest extends RexProgramBuilderBase {
         res.getType().isNullable(), is(false));
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCaseCompaction() {
+=======
+  @Test public void testSimplifyCaseCompaction() {
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     RexNode caseNode = case_(vBool(0), vInt(0), vBool(1), vInt(0), vInt(1));
     checkSimplify(caseNode, "CASE(OR(?0.bool0, ?0.bool1), ?0.int0, ?0.int1)");
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCaseCompaction2() {
+=======
+  @Test public void testSimplifyCaseCompaction2() {
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     RexNode caseNode = case_(vBool(0), vInt(0), vBool(1), vInt(1), vInt(1));
     checkSimplify(caseNode, "CASE(?0.bool0, ?0.int0, ?0.int1)");
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCaseCompactionDiv() {
+=======
+  @Test public void testSimplifyCaseCompactionDiv() {
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // FIXME: RexInterpreter currently evaluates childs beforehand.
     simplify = simplify.withParanoid(false);
     RexNode caseNode = case_(vBool(0), vInt(0),
@@ -2432,7 +2486,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
   /* case value branch contains division */
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCaseDiv1() {
+=======
+  @Test public void testSimplifyCaseDiv1() {
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // FIXME: RexInterpreter currently evaluates childs beforehand.
     simplify = simplify.withParanoid(false);
     RexNode caseNode = case_(
@@ -2443,7 +2501,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
   /* case condition contains division */
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCaseDiv2() {
+=======
+  @Test public void testSimplifyCaseDiv2() {
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // FIXME: RexInterpreter currently evaluates childs beforehand.
     simplify = simplify.withParanoid(false);
     RexNode caseNode = case_(
@@ -2453,6 +2515,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplifyUnchanged(caseNode);
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCaseFirstBranchIsSafe() {
     RexNode caseNode = case_(
         gt(div(vIntNotNull(), literal(1)), literal(1)), falseLiteral,
@@ -2477,6 +2540,9 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
   @Test void testSimplifyAnd() {
+=======
+  @Test public void testSimplifyAnd() {
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     RelDataType booleanNotNullableType =
         typeFactory.createTypeWithNullability(
             typeFactory.createSqlType(SqlTypeName.BOOLEAN), false);

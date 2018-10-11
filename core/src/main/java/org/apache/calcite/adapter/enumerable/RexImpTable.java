@@ -2013,9 +2013,6 @@ public class RexImpTable {
     }
 
     @Override public void implementReset(AggContext info,
-<<<<<<< HEAD
-        AggResetContext reset) {
-=======
                                          AggResetContext reset) {
       reset.currentBlock().add(
           Expressions.statement(
@@ -2099,7 +2096,6 @@ public class RexImpTable {
       return Expressions.call(builtInMethod.method.getDeclaringClass(),
           builtInMethod.method.getName(), operand, locale);
 =======
->>>>>>> 39c3e45da ([CALCITE-2571] TRIM function now trims more than one character (Andrew Pilloud))
     }
   }
 

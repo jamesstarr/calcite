@@ -2249,32 +2249,8 @@ class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
 
-  @Test void testOrAlwaysTrue2() {
-    final String sql = "select * from EMPNULLABLES_20\n"
-        + "where sal is not null or sal is null";
-    sql(sql).withRule(CoreRules.PROJECT_REDUCE_EXPRESSIONS,
-            CoreRules.FILTER_REDUCE_EXPRESSIONS,
-            CoreRules.JOIN_REDUCE_EXPRESSIONS)
-        .check();
-  }
-
-  @Test void testReduceConstants2() throws Exception {
-    final String sql = "select p1 is not distinct from p0\n"
-        + "from (values (2, cast(null as integer))) as t(p0, p1)";
-    sql(sql)
-        .withRule(CoreRules.PROJECT_REDUCE_EXPRESSIONS,
-            CoreRules.FILTER_REDUCE_EXPRESSIONS,
-            CoreRules.JOIN_REDUCE_EXPRESSIONS)
-        .checkUnchanged();
-  }
-
-  @Test void testReduceConstants3() throws Exception {
-    final String sql = "select e.mgr is not distinct from f.mgr "
-        + "from emp e join emp f on (e.mgr=f.mgr) where e.mgr is null";
-    sql(sql).withRule(CoreRules.PROJECT_REDUCE_EXPRESSIONS,
-            CoreRules.FILTER_REDUCE_EXPRESSIONS,
-            CoreRules.JOIN_REDUCE_EXPRESSIONS)
-        .check();
+    checkPlanning(new HepPlanner(program),
+        "select p1 is not distinct from p0 from (values (2, cast(null as integer))) as t(p0, p1)");
   }
 
   @Test public void testReduceConstants3() throws Exception {

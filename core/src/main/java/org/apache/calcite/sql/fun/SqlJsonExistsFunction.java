@@ -30,29 +30,6 @@ import org.apache.calcite.sql.type.ReturnTypes;
  */
 public class SqlJsonExistsFunction extends SqlFunction {
   public SqlJsonExistsFunction() {
-<<<<<<< HEAD
-    super("JSON_EXISTS", SqlKind.OTHER_FUNCTION,
-        ReturnTypes.cascade(ReturnTypes.BOOLEAN, SqlTypeTransforms.FORCE_NULLABLE), null,
-        OperandTypes.or(
-            OperandTypes.family(SqlTypeFamily.ANY, SqlTypeFamily.CHARACTER),
-            OperandTypes.family(SqlTypeFamily.ANY, SqlTypeFamily.CHARACTER, SqlTypeFamily.ANY)),
-        SqlFunctionCategory.SYSTEM);
-  }
-
-  @Override public String getAllowedSignatures(String opNameToUse) {
-    return "JSON_EXISTS(json_doc, path [{TRUE | FALSE| UNKNOWN | ERROR} ON ERROR])";
-  }
-
-  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec,
-      int rightPrec) {
-    final SqlWriter.Frame frame = writer.startFunCall(getName());
-    call.operand(0).unparse(writer, 0, 0);
-    writer.sep(",", true);
-    for (int i = 1; i < call.operandCount(); i++) {
-      call.operand(i).unparse(writer, leftPrec, rightPrec);
-    }
-    if (call.operandCount() == 3) {
-=======
     super(
         "JSON_EXISTS",
         SqlKind.OTHER_FUNCTION,
@@ -85,4 +62,3 @@ public class SqlJsonExistsFunction extends SqlFunction {
 =======
 
 // End SqlJsonExistsFunction.java
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))

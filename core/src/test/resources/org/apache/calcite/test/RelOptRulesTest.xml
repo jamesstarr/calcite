@@ -141,10 +141,14 @@ LogicalProject(CASECOL=[$0])
 LogicalProject(CASECOL=[$0])
   LogicalFilter(condition=[NOT($0)])
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalProject(CASECOL=[AND(>($5, 1000), null)])
 =======
     LogicalProject(CASECOL=[CASE(>($5, 1000), null:BOOLEAN, false)])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+    LogicalProject(CASECOL=[AND(>($5, 1000), null)])
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -160,7 +164,11 @@ where case when (sal = 1000) then
         <Resource name="planAfter">
             <![CDATA[
 LogicalProject(SAL=[$5])
+<<<<<<< HEAD
   LogicalFilter(condition=[OR(=($5, 1000), =($5, 2000))])
+=======
+  LogicalFilter(condition=[OR(=($5, 1000), AND(=($5, 2000), <>($5, 1000)))])
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -731,10 +739,14 @@ LogicalProject(EMPNO=[$0])
             <![CDATA[
 LogicalProject(EMPNO=[$0])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalFilter(condition=[OR(AND(>($5, 1000), =($0, 1)), =($5, 1))])
 =======
   LogicalFilter(condition=[CASE(>($5, 1000), =($0, 1), =($5, 1))])
 >>>>>>> 804308e89 ([CALCITE-2240] Extend rule to push predicates into CASE statement (Zoltan Haindrich))
+=======
+  LogicalFilter(condition=[OR(AND(>($5, 1000), =($0, 1)), =($5, 1))])
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
          </Resource>
@@ -842,6 +854,7 @@ LogicalProject(MGR=[$3])
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(DEPTNO=[$0], EXPR$1=[OR(AND(IS NOT NULL($5), <>($2, 0)), AND(<($3, $2), null, <>($2, 0), IS NULL($5)))])
 =======
 LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true, <($3, $2), null, false)])
@@ -852,6 +865,9 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true,
 =======
 LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true, <($3, $2), null:BOOLEAN, false)])
 >>>>>>> 881f1f154 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
+=======
+LogicalProject(DEPTNO=[$0], EXPR$1=[OR(AND(IS NOT NULL($5), <>($2, 0)), AND(<($3, $2), null, <>($2, 0), IS NULL($5)))])
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
   LogicalJoin(condition=[=($1, $4)], joinType=[left])
     LogicalJoin(condition=[true], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -887,6 +903,7 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($3, 0), false, IS TRUE(=($1, $2)), tr
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(DEPTNO=[$0], EXPR$1=[OR(AND(IS NOT NULL($5), <>($2, 0)), AND(<($3, $2), null, <>($2, 0), IS NULL($5)))])
 =======
 LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true, <($3, $2), null, false)])
@@ -897,6 +914,9 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true,
 =======
 LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true, <($3, $2), null:BOOLEAN, false)])
 >>>>>>> 881f1f154 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
+=======
+LogicalProject(DEPTNO=[$0], EXPR$1=[OR(AND(IS NOT NULL($5), <>($2, 0)), AND(<($3, $2), null, <>($2, 0), IS NULL($5)))])
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
   LogicalJoin(condition=[=($1, $4)], joinType=[left])
     LogicalJoin(condition=[true], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -6529,7 +6549,7 @@ LogicalAggregate(group=[{}], EXPR$0=[COUNT()])
             <![CDATA[
 LogicalAggregate(group=[{}], EXPR$0=[COUNT()])
   LogicalProject($f0=[0])
-    LogicalFilter(condition=[<($0, 10)])
+    LogicalFilter(condition=[IS TRUE(<($0, 10))])
       LogicalProject(MGR=[$3])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
@@ -9289,10 +9309,14 @@ LogicalProject(QX=[CASE(=($0, 1), 1, IS NOT NULL(1), 2, null:INTEGER)])
         <Resource name="planAfter">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(QX=[CAST(CASE(=($0, 1), 1, 2)):INTEGER])
 =======
 LogicalProject(QX=[CASE(=($0, 1), 1, 2)])
 >>>>>>> 2e8d6c73c ([CALCITE-2675] Type validation error as ReduceExpressionRule fails to preserve type nullability (Zoltan Haindrich))
+=======
+LogicalProject(QX=[CAST(CASE(=($0, 1), 1, 2)):INTEGER])
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -10926,6 +10950,7 @@ LogicalAggregate(group=[{0, 1, 2}])
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalProject(DEPTNO=[$7], ENAME=[$1], EXPR$2=[null:VARCHAR(20)])
 =======
   LogicalProject(DEPTNO=[$7], ENAME=[$1], EXPR$2=[CASE(=(1, 2), CAST(SUBSTRING($1, 1, 2)):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary", null)])
@@ -10939,6 +10964,9 @@ LogicalAggregate(group=[{0, 1, 2}])
   </TestCase>
 =======
   LogicalProject(DEPTNO=[$7], ENAME=[$1], EXPR$2=[CASE(=(1, 2), CAST(SUBSTRING($1, 1, 2)):VARCHAR(20), null:VARCHAR(20))])
+=======
+  LogicalProject(DEPTNO=[$7], ENAME=[$1], EXPR$2=[null:VARCHAR(20)])
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -12983,6 +13011,7 @@ LogicalProject(EMPNO=[$0])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalFilter(condition=[<($0, CASE(OR(AND(IS NOT NULL($12), <>($9, 0)), AND(<($10, $9), null, <>($9, 0), IS NULL($12))), 10, AND(OR(IS NULL($12), =($9, 0)), OR(>=($10, $9), =($9, 0), IS NOT NULL($12))), 20, 30))])
 =======
     LogicalFilter(condition=[<($0, CASE(=(CASE(=($9, 0), false, IS NOT NULL($12), true, <($10, $9), null:NULL, false), true), 10, =(CASE(=($9, 0), false, IS NOT NULL($12), true, <($10, $9), null:NULL, false), false), 20, 30))])
@@ -12990,6 +13019,9 @@ LogicalProject(EMPNO=[$0])
 =======
     LogicalFilter(condition=[<($0, CASE(=(CASE(=($9, 0), false, IS NOT NULL($12), true, <($10, $9), null:BOOLEAN, false), true), 10, =(CASE(=($9, 0), false, IS NOT NULL($12), true, <($10, $9), null:BOOLEAN, false), false), 20, 30))])
 >>>>>>> 881f1f154 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
+=======
+    LogicalFilter(condition=[<($0, CASE(=(OR(AND(IS NOT NULL($12), <>($9, 0)), AND(<($10, $9), null, <>($9, 0), IS NULL($12))), true), 10, =(OR(AND(IS NOT NULL($12), <>($9, 0)), AND(<($10, $9), null, <>($9, 0), IS NULL($12))), false), 20, 30))])
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
       LogicalJoin(condition=[=($7, $11)], joinType=[left])
         LogicalJoin(condition=[true], joinType=[inner])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -13443,10 +13475,14 @@ LogicalProject(DEPTNO=[$0])
             <![CDATA[
 LogicalProject(SAL=[$5])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalFilter(condition=[OR(=($10, 0), IS NOT TRUE(OR(IS NOT NULL($13), <($11, $10))))])
 =======
   LogicalFilter(condition=[NOT(CASE(=($10, 0), false, IS NOT NULL($13), true, <($11, $10), true, false))])
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
+=======
+  LogicalFilter(condition=[OR(IS NOT TRUE(OR(IS NOT NULL($13), <($11, $10))), IS TRUE(=($10, 0)))])
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
     LogicalJoin(condition=[AND(=($0, $12), =($2, $14))], joinType=[left])
       LogicalJoin(condition=[=($2, $9)], joinType=[left])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -13462,10 +13498,14 @@ LogicalProject(SAL=[$5])
 LogicalProject(SAL=[$5])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalFilter(condition=[OR(=($9, 0), IS NOT TRUE(OR(IS NOT NULL($12), <($10, $9))))])
 =======
     LogicalFilter(condition=[NOT(CASE(=($9, 0), false, IS NOT NULL($12), true, <($10, $9), true, false))])
 >>>>>>> 4fd878297 ([CALCITE-4574] Wrong/Invalid plans when using RelBuilder#join with correlations)
+=======
+    LogicalFilter(condition=[OR(IS NOT TRUE(OR(IS NOT NULL($12), <($10, $9))), IS TRUE(=($9, 0)))])
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
       LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{0, 2}])
         LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{2}])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -13628,10 +13668,14 @@ LogicalProject(EMPNO=[$1])
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalFilter(condition=[OR(=($9, 0), IS NOT TRUE(OR(IS NOT NULL($12), <($10, $9))))])
 =======
     LogicalFilter(condition=[NOT(CASE(=($9, 0), false, IS NOT NULL($12), true, <($10, $9), true, false))])
 >>>>>>> 4fd878297 ([CALCITE-4574] Wrong/Invalid plans when using RelBuilder#join with correlations)
+=======
+    LogicalFilter(condition=[OR(IS NOT TRUE(OR(IS NOT NULL($12), <($10, $9))), IS TRUE(=($9, 0)))])
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
       LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{0, 1}])
         LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{1}])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -13651,10 +13695,14 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalFilter(condition=[OR(=($10, 0), IS NOT TRUE(OR(IS NOT NULL($13), <($11, $10))))])
 =======
   LogicalFilter(condition=[NOT(CASE(=($10, 0), false, IS NOT NULL($13), true, <($11, $10), true, false))])
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
+=======
+  LogicalFilter(condition=[OR(IS NOT TRUE(OR(IS NOT NULL($13), <($11, $10))), IS TRUE(=($10, 0)))])
+>>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
     LogicalJoin(condition=[AND(=($0, $12), =($1, $14))], joinType=[left])
       LogicalJoin(condition=[=($1, $9)], joinType=[left])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -15336,7 +15384,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
         <Resource name="planAfter">
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
-  LogicalFilter(condition=[CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null:BOOLEAN, >($0, $9))])
+  LogicalFilter(condition=[OR(AND(IS TRUE(>($0, $9)), IS NOT TRUE(OR(IS NULL($12), =($10, 0)))), AND(>($0, $9), IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9)), IS NOT TRUE(>($10, $11))))])
     LogicalJoin(condition=[=($2, $13)], joinType=[left])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalProject(m=[$1], c=[$2], d=[$3], trueLiteral=[true], NAME=[$0])

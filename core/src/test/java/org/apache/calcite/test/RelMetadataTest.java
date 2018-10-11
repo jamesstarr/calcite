@@ -1778,7 +1778,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     RelOptPredicateList list = mq.getPulledUpPredicates(rel);
     // Uses "IS NOT DISTINCT FROM" rather than "=" because cannot guarantee not null.
     assertThat(list.pulledUpPredicates,
-        sortsAs("[IS NOT DISTINCT FROM($0, CASE(=(1, 1), null:INTEGER, 1))]"));
+        sortsAs("[IS NULL($0)]"));
   }
 
   @Test void testPullUpPredicatesFromUnion0() {
