@@ -256,7 +256,7 @@ LogicalUnion(all=[false])
         </Resource>
         <Resource name="plan">
             <![CDATA[
-LogicalProject(EXPR$0=[CASE(>(1, 0), CAST($3):DECIMAL(19, 0) NOT NULL, $6)])
+LogicalProject(EXPR$0=[CAST($3):DECIMAL(19, 0) NOT NULL])
   LogicalTableScan(table=[[CATALOG, SALES, T2]])
 ]]>
         </Resource>

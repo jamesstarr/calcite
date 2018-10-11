@@ -19,7 +19,7 @@ limitations under the License.
     <TestCase name="testCase">
         <Resource name="plan">
             <![CDATA[
-LogicalProject(EXPR$0=[CASE(=('a', 'a'), 1, null:INTEGER)])
+LogicalProject(EXPR$0=[CAST(1):INTEGER])
   LogicalValues(tuples=[[{ 0 }]])
 ]]>
         </Resource>
@@ -678,7 +678,7 @@ GROUP BY GROUPING SETS ((empno, derived_col),(empno))]]>
     <Resource name="plan">
       <![CDATA[
 LogicalAggregate(group=[{0, 1}], groups=[[{0, 1}, {0}]])
-  LogicalProject(EMPNO=[$0], DERIVED_COL=[CASE(OR(=($1, 'Fred'), =($1, 'Eric')), CAST('CEO'):CHAR(5) NOT NULL, 'Other')])
+  LogicalProject(EMPNO=[$0], DERIVED_COL=[CASE(OR(=($1, 'Fred'), =($1, 'Eric')), 'CEO  ', 'Other')])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
     </Resource>
@@ -696,7 +696,7 @@ GROUP BY GROUPING SETS (
     <Resource name="plan">
       <![CDATA[
 LogicalAggregate(group=[{0, 1}], groups=[[{0, 1}, {0}]])
-  LogicalProject(EMPNO=[$0], EXPR$1=[CASE(OR(=($1, 'Fred'), =($1, 'Eric')), 'Manager', CAST('Other'):CHAR(7) NOT NULL)])
+  LogicalProject(EMPNO=[$0], EXPR$1=[CASE(OR(=($1, 'Fred'), =($1, 'Eric')), 'Manager', 'Other  ')])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
     </Resource>
@@ -2531,7 +2531,7 @@ from dept]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
-LogicalProject(NAME=[$1], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($6), true, <($3, $2), null:BOOLEAN, false)])
+LogicalProject(NAME=[$1], EXPR$1=[OR(AND(IS NOT NULL($6), <>($2, 0)), AND(<($3, $2), null, <>($2, 0), IS NULL($6)))])
   LogicalJoin(condition=[=($4, $5)], joinType=[left])
     LogicalProject(DEPTNO=[$0], NAME=[$1], $f0=[$2], $f1=[$3], DEPTNO0=[$0])
       LogicalJoin(condition=[true], joinType=[inner])
@@ -5025,8 +5025,7 @@ LogicalProject(DEPTNO=[$0])
     </TestCase>
     <TestCase name="testNotCaseInThreeClause">
         <Resource name="sql">
-            <![CDATA[select empno from emp where not case when
-            true then deptno in (10,20) else false end]]>
+            <![CDATA[select empno from emp where not case when true then deptno in (10,20) else true end]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -5038,8 +5037,7 @@ LogicalProject(EMPNO=[$0])
     </TestCase>
     <TestCase name="testNotCaseInMoreClause">
         <Resource name="sql">
-            <![CDATA[select empno from emp where not case when
-             true then deptno in (10,20) when false then false else deptno in (30,40) end]]>
+            <![CDATA[select empno from emp where not case when true then deptno in (10,20) when false then false else deptno in (30,40) end]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -5051,8 +5049,7 @@ LogicalProject(EMPNO=[$0])
     </TestCase>
     <TestCase name="testNotCaseInWithoutElse">
         <Resource name="sql">
-            <![CDATA[select empno from emp where not case when
-            true then deptno in (10,20) end]]>
+            <![CDATA[select empno from emp where not case when true then deptno in (10,20)  end]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
