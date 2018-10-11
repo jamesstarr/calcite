@@ -66,6 +66,7 @@ import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.DateRangeRules;
 import org.apache.calcite.rel.rules.FilterJoinRule;
 import org.apache.calcite.rel.rules.FilterMultiJoinMergeRule;
+import org.apache.calcite.rel.rules.FilterProjectTransposeRule;
 import org.apache.calcite.rel.rules.FilterSetOpTransposeRule;
 import org.apache.calcite.rel.rules.LoptOptimizeJoinRule;
 import org.apache.calcite.rel.rules.ProjectCorrelateTransposeRule;
@@ -1181,6 +1182,55 @@ public class RelOptRulesTest extends RelOptTestBase {
         "select t1.name, t2.ename "
             + "from DEPT_NESTED as t1, "
             + "unnest(t1.employees) as t2");
+  }
+
+  /** Tests that the default instance of {@link FilterProjectTransposeRule}
+   * does not push a Filter that contains a correlating variable.
+   *
+   * @see #testFilterProjectTranspose() */
+  @Test public void testFilterProjectTransposePreventedByCorrelation() {
+    final String sql = "SELECT e.empno\n"
+        + "FROM emp as e\n"
+        + "WHERE exists (\n"
+        + "  SELECT *\n"
+        + "  FROM (\n"
+        + "    SELECT deptno * 2 AS twiceDeptno\n"
+        + "    FROM dept) AS d\n"
+        + "  WHERE e.deptno = d.twiceDeptno)";
+    sql(sql)
+        .withDecorrelation(false)
+        .expand(true)
+        .withRule(CoreRules.FILTER_PROJECT_TRANSPOSE)
+        .checkUnchanged();
+  }
+
+  /** Tests a variant of {@link FilterProjectTransposeRule}
+   * that pushes a Filter that contains a correlating variable. */
+  @Test public void testFilterProjectTranspose() {
+    final String sql = "SELECT e.empno\n"
+        + "FROM emp as e\n"
+        + "WHERE exists (\n"
+        + "  SELECT *\n"
+        + "  FROM (\n"
+        + "    SELECT deptno * 2 AS twiceDeptno\n"
+        + "    FROM dept) AS d\n"
+        + "  WHERE e.deptno = d.twiceDeptno)";
+    final FilterProjectTransposeRule filterProjectTransposeRule =
+            CoreRules.FILTER_PROJECT_TRANSPOSE.config
+                    .withOperandSupplier(b0 ->
+                            b0.operand(Filter.class).predicate(filter -> true)
+                                    .oneInput(b1 ->
+                                            b1.operand(Project.class).predicate(project -> true)
+                                                    .anyInputs()))
+                    .as(FilterProjectTransposeRule.Config.class)
+                    .withCopyFilter(true)
+                    .withCopyProject(true)
+                    .toRule();
+    sql(sql)
+        .withDecorrelation(false)
+        .expand(true)
+        .withRule(filterProjectTransposeRule)
+        .check();
   }
 
   @Test public void testPushProjectWithOverPastJoin() {

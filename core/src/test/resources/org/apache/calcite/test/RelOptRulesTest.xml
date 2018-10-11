@@ -2837,7 +2837,72 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 ]]>
         </Resource>
     </TestCase>
-
+    <TestCase name="testFilterProjectTranspose">
+        <Resource name="sql">
+            <![CDATA[SELECT e.empno
+FROM emp as e
+WHERE exists (
+  SELECT *
+  FROM (
+    SELECT deptno * 2 AS twiceDeptno
+    FROM dept) AS d
+  WHERE e.deptno = d.twiceDeptno)]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(EMPNO=[$0])
+  LogicalFilter(condition=[IS NOT NULL($9)])
+    LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{7}])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalAggregate(group=[{}], agg#0=[MIN($0)])
+        LogicalProject($f0=[1:BIGINT])
+          LogicalProject(TWICEDEPTNO=[$0])
+            LogicalFilter(condition=[=($cor0.DEPTNO, $0)])
+              LogicalProject(TWICEDEPTNO=[*($0, 2)])
+                LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(EMPNO=[$0])
+  LogicalFilter(condition=[IS NOT NULL($9)])
+    LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{7}])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalAggregate(group=[{}], agg#0=[MIN($0)])
+        LogicalProject($f0=[1:BIGINT])
+          LogicalProject(TWICEDEPTNO=[$0])
+            LogicalProject(TWICEDEPTNO=[*($0, 2)])
+              LogicalFilter(condition=[=($cor0.DEPTNO, *($0, 2))])
+                LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testFilterProjectTransposePreventedByCorrelation">
+        <Resource name="sql">
+            <![CDATA[SELECT e.empno
+FROM emp as e
+WHERE exists (
+  SELECT *
+  FROM (
+    SELECT deptno * 2 AS twiceDeptno
+    FROM dept) AS d
+  WHERE e.deptno = d.twiceDeptno)]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(EMPNO=[$0])
+  LogicalFilter(condition=[IS NOT NULL($9)])
+    LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{7}])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalAggregate(group=[{}], agg#0=[MIN($0)])
+        LogicalProject($f0=[1:BIGINT])
+          LogicalProject(TWICEDEPTNO=[$0])
+            LogicalFilter(condition=[=($cor0.DEPTNO, $0)])
+              LogicalProject(TWICEDEPTNO=[*($0, 2)])
+                LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
     <TestCase name="testIntersectToDistinct">
         <Resource name="sql">
             <![CDATA[select * from emp where deptno = 10
@@ -9937,5 +10002,7 @@ LogicalCorrelate(correlation=[$cor0], joinType=[anti], requiredColumns=[{0}])
 ]]>
         </Resource>
     </TestCase>
-
+        <Resource name="sql">
+            <![CDATA[select * from emp where MGR > 0 and case when MGR > 0 then deptno / MGR else null end > 1]]>
+        </Resource>
 </Root>

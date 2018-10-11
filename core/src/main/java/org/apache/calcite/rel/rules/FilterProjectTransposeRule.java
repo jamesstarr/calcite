@@ -35,8 +35,8 @@ import java.util.function.Predicate;
 
 /**
  * Planner rule that pushes
- * a {@link org.apache.calcite.rel.logical.LogicalFilter}
- * past a {@link org.apache.calcite.rel.logical.LogicalProject}.
+ * a {@link org.apache.calcite.rel.core.Filter}
+ * past a {@link org.apache.calcite.rel.core.Project}.
  *
  * @see CoreRules#FILTER_PROJECT_TRANSPOSE
  */
@@ -157,14 +157,6 @@ public class FilterProjectTransposeRule
       // it can be pushed down. For now we don't support this.
       return;
     }
-
-    if (RexUtil.containsCorrelation(filter.getCondition())) {
-      // If there is a correlation condition anywhere in the filter, don't
-      // push this filter past project since in some cases it can prevent a
-      // Correlate from being de-correlated.
-      return;
-    }
-
     // convert the filter to one that references the child of the project
     RexNode newCondition =
         RelOptUtil.pushPastProject(filter.getCondition(), project);
