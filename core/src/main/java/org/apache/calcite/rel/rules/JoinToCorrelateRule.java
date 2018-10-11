@@ -34,8 +34,9 @@ import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBitSet;
 
+
 /**
- * Rule that converts a {@link org.apache.calcite.rel.logical.LogicalJoin}
+ * Rule that converts a {@link org.apache.calcite.rel.core.Join}
  * into a {@link org.apache.calcite.rel.logical.LogicalCorrelate}, which can
  * then be implemented using nested loops.
  *
@@ -85,7 +86,7 @@ public class JoinToCorrelateRule
   //~ Methods ----------------------------------------------------------------
 
   @Override public boolean matches(RelOptRuleCall call) {
-    LogicalJoin join = call.rel(0);
+    Join join = call.rel(0);
     return !join.getJoinType().generatesNullsOnLeft();
   }
 
