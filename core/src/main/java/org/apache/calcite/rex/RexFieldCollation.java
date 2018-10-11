@@ -44,7 +44,7 @@ public class RexFieldCollation extends Pair<RexNode, ImmutableSet<SqlKind>> {
           .build();
 
   public RexFieldCollation(RexNode left, Set<SqlKind> right) {
-    super(left, KINDS.get(right));
+    super(left, Sets.immutableEnumSet(right));
   }
 
   @Override public String toString() {
