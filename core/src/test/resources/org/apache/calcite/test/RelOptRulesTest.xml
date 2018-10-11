@@ -4089,6 +4089,9 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 74f458af4 ([CALCITE-2617] Add a variant of FilterProjectTransposeRule that can push down a Filter that contains correlated variables (Stamatis Zampetakis))
     <TestCase name="testFilterProjectTranspose">
         <Resource name="sql">
             <![CDATA[SELECT e.empno
@@ -4108,6 +4111,7 @@ LogicalProject(EMPNO=[$0])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{}], agg#0=[MIN($0)])
         LogicalProject($f0=[1:BIGINT])
+<<<<<<< HEAD
           LogicalFilter(condition=[=($cor0.DEPTNO, $0)])
             LogicalProject(TWICEDEPTNO=[*($0, 2)])
               LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -4118,20 +4122,36 @@ LogicalProject(EMPNO=[$0])
 LogicalFilter(condition=[IS NOT DISTINCT FROM($7, 20)])
   LogicalTableScan(table=[[scott, EMP]])
 >>>>>>> fb39c867e ([CALCITE-2275] Do not push down NOT condition in JOIN (Vitalii Diravka))
+=======
+          LogicalProject(TWICEDEPTNO=[$0])
+            LogicalFilter(condition=[=($cor0.DEPTNO, $0)])
+              LogicalProject(TWICEDEPTNO=[*($0, 2)])
+                LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+>>>>>>> 74f458af4 ([CALCITE-2617] Add a variant of FilterProjectTransposeRule that can push down a Filter that contains correlated variables (Stamatis Zampetakis))
 ]]>
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 74f458af4 ([CALCITE-2617] Add a variant of FilterProjectTransposeRule that can push down a Filter that contains correlated variables (Stamatis Zampetakis))
 LogicalProject(EMPNO=[$0])
   LogicalFilter(condition=[IS NOT NULL($9)])
     LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{7}])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{}], agg#0=[MIN($0)])
         LogicalProject($f0=[1:BIGINT])
+<<<<<<< HEAD
           LogicalProject(TWICEDEPTNO=[*($0, 2)])
             LogicalFilter(condition=[=($cor0.DEPTNO, *($0, 2))])
               LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+=======
+          LogicalProject(TWICEDEPTNO=[$0])
+            LogicalProject(TWICEDEPTNO=[*($0, 2)])
+              LogicalFilter(condition=[=($cor0.DEPTNO, *($0, 2))])
+                LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+>>>>>>> 74f458af4 ([CALCITE-2617] Add a variant of FilterProjectTransposeRule that can push down a Filter that contains correlated variables (Stamatis Zampetakis))
 ]]>
         </Resource>
     </TestCase>
@@ -4154,6 +4174,7 @@ LogicalProject(EMPNO=[$0])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{}], agg#0=[MIN($0)])
         LogicalProject($f0=[1:BIGINT])
+<<<<<<< HEAD
           LogicalFilter(condition=[=($cor0.DEPTNO, $0)])
             LogicalProject(TWICEDEPTNO=[*($0, 2)])
               LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -4197,6 +4218,15 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 =======
 
 >>>>>>> 5afba4c56 (Revert "[CALCITE-2275] Do not push down NOT condition in JOIN (Vitalii Diravka)")
+=======
+          LogicalProject(TWICEDEPTNO=[$0])
+            LogicalFilter(condition=[=($cor0.DEPTNO, $0)])
+              LogicalProject(TWICEDEPTNO=[*($0, 2)])
+                LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+>>>>>>> 74f458af4 ([CALCITE-2617] Add a variant of FilterProjectTransposeRule that can push down a Filter that contains correlated variables (Stamatis Zampetakis))
     <TestCase name="testIntersectToDistinct">
         <Resource name="sql">
             <![CDATA[select * from emp where deptno = 10
@@ -15407,5 +15437,7 @@ LogicalCorrelate(correlation=[$cor0], joinType=[anti], requiredColumns=[{0}])
 ]]>
         </Resource>
     </TestCase>
-
+        <Resource name="sql">
+            <![CDATA[select * from emp where MGR > 0 and case when MGR > 0 then deptno / MGR else null end > 1]]>
+        </Resource>
 </Root>
