@@ -898,14 +898,6 @@ public abstract class SqlImplementor {
       for (int arg : aggCall.getArgList()) {
         operandList.add(field(arg));
       }
-<<<<<<< HEAD
-
-      if ((op instanceof SqlCountAggFunction) && operandList.isEmpty()) {
-        // If there is no parameter in "count" function, add a star identifier to it
-        operandList.add(SqlIdentifier.STAR);
-      }
-
-=======
       final SqlLiteral qualifier =
           aggCall.isDistinct() ? SqlSelectKeyword.DISTINCT.symbol(POS) : null;
       final SqlNode[] operands = operandList.toArray(new SqlNode[0]);
@@ -1233,6 +1225,7 @@ public abstract class SqlImplementor {
     }
 
     protected boolean hasNestedAggregations(LogicalAggregate rel) {
+<<<<<<< HEAD
       List<AggregateCall> aggCallList = rel.getAggCallList();
       HashSet<Integer> aggregatesArgs = new HashSet<>();
       for (AggregateCall aggregateCall: aggCallList) {
@@ -1269,6 +1262,7 @@ public abstract class SqlImplementor {
     }
 
     private boolean hasNestedAggregations(Aggregate rel) {
+=======
       if (node instanceof SqlSelect) {
         final SqlNodeList selectList = ((SqlSelect) node).getSelectList();
         if (selectList != null) {

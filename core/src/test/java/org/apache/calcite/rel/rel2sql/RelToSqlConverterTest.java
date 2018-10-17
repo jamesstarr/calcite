@@ -50,9 +50,6 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.util.SqlShuttle;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.test.CalciteAssert;
-<<<<<<< HEAD
-import org.apache.calcite.test.MockSqlOperatorTable;
-=======
 import org.apache.calcite.test.RelBuilderTest;
 import org.apache.calcite.tools.FrameworkConfig;
 import org.apache.calcite.tools.Frameworks;
@@ -93,9 +90,6 @@ class RelToSqlConverterTest {
           .withTrimUnusedFields(false)
           .withExpand(false)
           .build();
-
-  final RelBuilder builder = RelBuilder.create(RelBuilderTest.config().build());
-  final RelBuilder empScan = builder.scan("EMP");
 
   /** Initiates a test case with a given SQL query. */
   private Sql sql(String sql) {
@@ -138,6 +132,7 @@ class RelToSqlConverterTest {
         .withNullCollation(nullCollation));
   }
 
+<<<<<<< HEAD
   /** Returns a collection of common dialects, and the database products they
    * represent. */
   private static Map<SqlDialect, DatabaseProduct> dialects() {
@@ -165,6 +160,7 @@ class RelToSqlConverterTest {
         .build();
   }
 
+=======
   /** Creates a RelBuilder. */
   private static RelBuilder relBuilder() {
     return RelBuilder.create(RelBuilderTest.config().build());
@@ -182,7 +178,7 @@ class RelToSqlConverterTest {
     return sqlNode.toSqlString(dialect).getSql();
   }
 
-  @Test void testSimpleSelectStarFromProductTable() {
+  @Test public void testSimpleSelectStarFromProductTable() {
     String query = "select * from \"product\"";
     sql(query).ok("SELECT *\nFROM \"foodmart\".\"product\"");
   }
@@ -838,60 +834,39 @@ class RelToSqlConverterTest {
    * performs some extra checks, looking for aggregates in the input
    * sub-query, and these would fail with {@code NullPointerException}
    * and {@code ClassCastException} in some cases. */
-  @Test void testNestedAggregatesMySqlTable() {
-    final Function<RelBuilder, RelNode> relFn = b -> b
+  @Test public void testNestedAggregatesMySqlTable() {
+    final RelBuilder builder = relBuilder();
+    final RelNode root = builder
         .scan("EMP")
-        .aggregate(b.groupKey(),
-            b.count(false, "c", b.field(3)))
+        .aggregate(builder.groupKey(),
+            builder.count(false, "c", builder.field(3)))
         .build();
+    final SqlDialect dialect = SqlDialect.DatabaseProduct.MYSQL.getDialect();
     final String expectedSql = "SELECT COUNT(`MGR`) AS `c`\n"
         + "FROM `scott`.`EMP`";
-    relFn(relFn).withMysql().ok(expectedSql);
+    assertThat(toSql(root, dialect), isLinux(expectedSql));
   }
 
   /** As {@link #testNestedAggregatesMySqlTable()}, but input is a sub-query,
    * not a table. */
-  @Test void testNestedAggregatesMySqlStar() {
-    final Function<RelBuilder, RelNode> relFn = b -> b
+  @Test public void testNestedAggregatesMySqlStar() {
+    final RelBuilder builder = relBuilder();
+    final RelNode root = builder
         .scan("EMP")
-        .filter(b.equals(b.field("DEPTNO"), b.literal(10)))
-        .aggregate(b.groupKey(),
-            b.count(false, "c", b.field(3)))
+        .filter(builder.equals(builder.field("DEPTNO"), builder.literal(10)))
+        .aggregate(builder.groupKey(),
+            builder.count(false, "c", builder.field(3)))
         .build();
+    final SqlDialect dialect = SqlDialect.DatabaseProduct.MYSQL.getDialect();
     final String expectedSql = "SELECT COUNT(`MGR`) AS `c`\n"
         + "FROM `scott`.`EMP`\n"
         + "WHERE `DEPTNO` = 10";
-    relFn(relFn).withMysql().ok(expectedSql);
+    assertThat(toSql(root, dialect), isLinux(expectedSql));
   }
 
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3207">[CALCITE-3207]
-   * Fail to convert Join RelNode with like condition to sql statement </a>.
-   */
-  @Test void testJoinWithLikeConditionRel2Sql() {
-    final Function<RelBuilder, RelNode> relFn = b -> b
-        .scan("EMP")
-        .scan("DEPT")
-        .join(JoinRelType.LEFT,
-            b.and(
-                b.call(SqlStdOperatorTable.EQUALS,
-                    b.field(2, 0, "DEPTNO"),
-                    b.field(2, 1, "DEPTNO")),
-                b.call(SqlStdOperatorTable.LIKE,
-                    b.field(2, 1, "DNAME"),
-                    b.literal("ACCOUNTING"))))
-        .build();
-    final String expectedSql = "SELECT *\n"
-        + "FROM \"scott\".\"EMP\"\n"
-        + "LEFT JOIN \"scott\".\"DEPT\" "
-        + "ON \"EMP\".\"DEPTNO\" = \"DEPT\".\"DEPTNO\" "
-        + "AND \"DEPT\".\"DNAME\" LIKE 'ACCOUNTING'";
-    relFn(relFn).ok(expectedSql);
-  }
-
-  @Test void testSelectQueryWithGroupByAndProjectList1() {
-    String query = "select count(*) from \"product\"\n"
-        + "group by \"product_class_id\", \"product_id\"";
+  @Test public void testSelectQueryWithGroupByAndProjectList1() {
+    String query =
+        "select count(*)  from \"product\" group by \"product_class_id\", \"product_id\"";
 
     final String expected = "SELECT COUNT(*)\n"
         + "FROM \"foodmart\".\"product\"\n"
@@ -1102,14 +1077,6 @@ class RelToSqlConverterTest {
     sql(query).withHive().ok(expected);
   }
 
-
-  private String unparseRelTree(RelNode root) {
-    SqlDialect dialect = SqlDialect.DatabaseProduct.CALCITE.getDialect();
-    final RelToSqlConverter converter = new RelToSqlConverter(dialect);
-    final SqlNode sqlNode = converter.visitChild(0, root).asStatement();
-    return sqlNode.toSqlString(dialect).getSql();
-  }
-
   /**
    * Tests that IN can be un-parsed.
    *
@@ -1117,10 +1084,12 @@ class RelToSqlConverterTest {
    * replaces INs with ORs or sub-queries.
    */
   @Test public void testUnparseIn1() {
+    final RelBuilder builder = relBuilder().scan("EMP");
     final RexNode condition =
         builder.call(SqlStdOperatorTable.IN, builder.field("DEPTNO"),
             builder.literal(21));
-    final String sql = unparseRelTree(empScan.filter(condition).build());
+    final RelNode root = relBuilder().scan("EMP").filter(condition).build();
+    final String sql = toSql(root);
     final String expectedSql = "SELECT *\n"
         + "FROM \"scott\".\"EMP\"\n"
         + "WHERE \"DEPTNO\" IN (21)";
@@ -1128,10 +1097,14 @@ class RelToSqlConverterTest {
   }
 
   @Test public void testUnparseIn2() {
-    final RexNode filter =
-        builder.call(SqlStdOperatorTable.IN, builder.field("DEPTNO"),
-            builder.literal(20), builder.literal(21));
-    final String sql = unparseRelTree(empScan.filter(filter).build());
+    final RelBuilder builder = relBuilder();
+    final RelNode rel = builder
+        .scan("EMP")
+        .filter(
+            builder.call(SqlStdOperatorTable.IN, builder.field("DEPTNO"),
+                builder.literal(20), builder.literal(21)))
+        .build();
+    final String sql = toSql(rel);
     final String expectedSql = "SELECT *\n"
         + "FROM \"scott\".\"EMP\"\n"
         + "WHERE \"DEPTNO\" IN (20, 21)";
@@ -1139,13 +1112,15 @@ class RelToSqlConverterTest {
   }
 
   @Test public void testUnparseInStruct1() {
+    final RelBuilder builder = relBuilder().scan("EMP");
     final RexNode condition =
         builder.call(SqlStdOperatorTable.IN,
             builder.call(SqlStdOperatorTable.ROW, builder.field("DEPTNO"),
                 builder.field("JOB")),
             builder.call(SqlStdOperatorTable.ROW, builder.literal(1),
                 builder.literal("PRESIDENT")));
-    final String sql = unparseRelTree(empScan.filter(condition).build());
+    final RelNode root = relBuilder().scan("EMP").filter(condition).build();
+    final String sql = toSql(root);
     final String expectedSql = "SELECT *\n"
         + "FROM \"scott\".\"EMP\"\n"
         + "WHERE ROW(\"DEPTNO\", \"JOB\") IN (ROW(1, 'PRESIDENT'))";
@@ -1153,6 +1128,7 @@ class RelToSqlConverterTest {
   }
 
   @Test public void testUnparseInStruct2() {
+    final RelBuilder builder = relBuilder().scan("EMP");
     final RexNode condition =
         builder.call(SqlStdOperatorTable.IN,
             builder.call(SqlStdOperatorTable.ROW, builder.field("DEPTNO"),
@@ -1161,7 +1137,8 @@ class RelToSqlConverterTest {
                 builder.literal("PRESIDENT")),
             builder.call(SqlStdOperatorTable.ROW, builder.literal(2),
                 builder.literal("PRESIDENT")));
-    final String sql = unparseRelTree(empScan.filter(condition).build());
+    final RelNode root = relBuilder().scan("EMP").filter(condition).build();
+    final String sql = toSql(root);
     final String expectedSql = "SELECT *\n"
         + "FROM \"scott\".\"EMP\"\n"
         + "WHERE ROW(\"DEPTNO\", \"JOB\") IN (ROW(1, 'PRESIDENT'), ROW(2, 'PRESIDENT'))";
@@ -4741,25 +4718,8 @@ class RelToSqlConverterTest {
     }
 
     String exec() {
-<<<<<<< HEAD
-=======
-      final Planner planner =
-          getPlanner(null, SqlParser.Config.DEFAULT, schema, config);
-      try {
-        RelNode rel;
-        if (relFn != null) {
-          rel = relFn.apply(relBuilder());
-        } else {
-          final Planner planner =
-              getPlanner(null, parserConfig, schema, config);
-          SqlNode parse = planner.parse(sql);
-          SqlNode validate = planner.validate(parse);
-          rel = planner.rel(validate).rel;
-        }
-        for (Function<RelNode, RelNode> transform : transforms) {
-          rel = transform.apply(rel);
-        }
-        return toSql(rel, dialect);
+      } catch (RuntimeException e) {
+        throw e;
       } catch (Exception e) {
         throw TestUtil.rethrow(e);
       }
