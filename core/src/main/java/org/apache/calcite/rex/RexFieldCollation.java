@@ -44,7 +44,7 @@ public class RexFieldCollation extends Pair<RexNode, ImmutableSet<SqlKind>> {
           .build();
 
   public RexFieldCollation(RexNode left, Set<SqlKind> right) {
-    super(left, Sets.immutableEnumSet(right));
+    super(left, KINDS.get(right));
   }
 
   @Override public String toString() {
@@ -84,6 +84,34 @@ public class RexFieldCollation extends Pair<RexNode, ImmutableSet<SqlKind>> {
             ? RelFieldCollation.NullDirection.FIRST
             : getDirection().defaultNullDirection();
   }
+<<<<<<< HEAD
+=======
+
+  /** Helper, used during initialization, that builds a canonizing map from
+   * sets of {@code SqlKind} to immutable sets of {@code SqlKind}. */
+  private static class Initializer {
+    final ImmutableMap.Builder<Set<SqlKind>, ImmutableSet<SqlKind>> builder =
+        ImmutableMap.builder();
+
+    public Initializer add() {
+      return add(ImmutableSet.of());
+    }
+
+    public Initializer add(SqlKind kind, SqlKind... kinds) {
+      return add(Sets.immutableEnumSet(kind, kinds));
+    }
+
+    private Initializer add(ImmutableSet<SqlKind> set) {
+      builder.put(set, set);
+      return this;
+    }
+
+    public ImmutableMap<Set<SqlKind>, ImmutableSet<SqlKind>> build() {
+      return builder.build();
+    }
+  }
+}
+>>>>>>> 7990c0eab (Following [CALCITE-2622] intern sets of SqlKind)
 
   /** Helper, used during initialization, that builds a canonizing map from
    * sets of {@code SqlKind} to immutable sets of {@code SqlKind}. */
