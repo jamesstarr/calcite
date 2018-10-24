@@ -9130,6 +9130,7 @@ LogicalProject(EXPR$0=[CASE(=($1, 0), null:INTEGER, $0)])
     </TestCase>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testReduceCaseNullabilityChange">
         <Resource name="sql">
             <![CDATA[select case when empno = 1 then 1
@@ -9206,6 +9207,8 @@ LogicalProject(EXPR$0=[IS NULL($12)])
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> d10aea21b ([CALCITE-2638] Constant reducer should not treat as constant an RexInputRef that points to a call to a dynamic or non-deterministic function (Danny Chan))
     <TestCase name="testReduceConstantsDynamicFunction">
         <Resource name="sql">
             <![CDATA[select sal, t
@@ -9229,11 +9232,14 @@ LogicalProject(SAL=[$0], T=[$1])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 =======
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+>>>>>>> d10aea21b ([CALCITE-2638] Constant reducer should not treat as constant an RexInputRef that points to a call to a dynamic or non-deterministic function (Danny Chan))
     <TestCase name="testReduceConstantsIsNotNull">
         <Resource name="sql">
             <![CDATA[select empno from emp
@@ -9577,6 +9583,9 @@ LogicalProject(DEPTNO=[$0], DEPTNO0=[$9])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> d10aea21b ([CALCITE-2638] Constant reducer should not treat as constant an RexInputRef that points to a call to a dynamic or non-deterministic function (Danny Chan))
     <TestCase name="testReduceConstantsNonDeterministicFunction">
         <Resource name="sql">
             <![CDATA[select sal, r
@@ -9598,8 +9607,11 @@ LogicalFilter(condition=[>($1, 10)])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+>>>>>>> d10aea21b ([CALCITE-2638] Constant reducer should not treat as constant an RexInputRef that points to a call to a dynamic or non-deterministic function (Danny Chan))
 
     <TestCase name="testReduceConstantsNullEqualsOne">
         <Resource name="sql">
