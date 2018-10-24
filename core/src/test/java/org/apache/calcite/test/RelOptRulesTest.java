@@ -4916,6 +4916,16 @@ public class RelOptRulesTest extends RelOptTestBase {
                     rexB.getTypeFactory().createSqlType(SqlTypeName.DATE), nullable), input);
   }
 
+  @Test public void testOversimplifiedCaseStatement() {
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .build();
+
+    String sql = "select * from emp "
+        + "where MGR > 0 and "
+        + "case when MGR > 0 then deptno / MGR else null end > 1";
+    checkPlanning(program, sql);
+  }
 }
 
 // End RelOptRulesTest.java
