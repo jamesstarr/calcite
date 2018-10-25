@@ -81,10 +81,8 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 
 import org.hamcrest.Matcher;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +93,7 @@ import static org.apache.calcite.test.RelMetadataTest.sortsAs;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -841,9 +840,6 @@ public class PlannerTest {
     Program program0 =
         Programs.ofRules(
             CoreRules.FILTER_MERGE,
-<<<<<<< HEAD
-            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
-=======
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
 
@@ -1333,6 +1329,49 @@ public class PlannerTest {
     Planner planner = getPlanner(null, Programs.of(ruleSet));
     planner.close();
   }
+<<<<<<< HEAD
+=======
+
+  @Test public void testView() throws Exception {
+    final String sql = "select * FROM dept";
+    final String expected = "LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
+        + "  LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
+        + "    LogicalValues(type=[RecordType(INTEGER DEPTNO, CHAR(11) DNAME)], "
+        + "tuples=[[{ 10, 'Sales      ' },"
+        + " { 20, 'Marketing  ' },"
+        + " { 30, 'Engineering' },"
+        + " { 40, 'Empty      ' }]])\n";
+    checkView(sql, is(expected));
+  }
+
+  @Test public void testViewOnView() throws Exception {
+    final String sql = "select * FROM dept30";
+    final String expected = "LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
+        + "  LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
+        + "    LogicalFilter(condition=[=($0, 30)])\n"
+        + "      LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
+        + "        LogicalValues(type=[RecordType(INTEGER DEPTNO, CHAR(11) DNAME)], "
+        + "tuples=[[{ 10, 'Sales      ' },"
+        + " { 20, 'Marketing  ' },"
+        + " { 30, 'Engineering' },"
+        + " { 40, 'Empty      ' }]])\n";
+    checkView(sql, is(expected));
+  }
+
+  private void checkView(String sql, Matcher<String> matcher)
+      throws SqlParseException, ValidationException, RelConversionException {
+    final SchemaPlus rootSchema = Frameworks.createRootSchema(true);
+    final FrameworkConfig config = Frameworks.newConfigBuilder()
+        .defaultSchema(
+            CalciteAssert.addSchema(rootSchema, CalciteAssert.SchemaSpec.POST))
+        .build();
+    final Planner planner = Frameworks.getPlanner(config);
+    SqlNode parse = planner.parse(sql);
+    final SqlNode validate = planner.validate(parse);
+    final RelRoot root = planner.rel(validate);
+    assertThat(toString(root.rel), matcher);
+  }
+}
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3376">[CALCITE-3376]

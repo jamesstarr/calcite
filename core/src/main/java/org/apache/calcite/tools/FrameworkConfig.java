@@ -142,6 +142,11 @@ public interface FrameworkConfig {
    * direction of relationships.
    */
   SqlStatisticProvider getStatisticProvider();
+
+  /**
+   * Returns a view expander.
+   */
+  RelOptTable.ViewExpander getViewExpander();
 }
 >>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
 

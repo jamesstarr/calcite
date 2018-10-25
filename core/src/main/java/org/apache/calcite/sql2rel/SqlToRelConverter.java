@@ -3813,24 +3813,7 @@ public class SqlToRelConverter {
   }
 
   private RelOptTable.ToRelContext createToRelContext(List<RelHint> hints) {
-    return new RelOptTable.ToRelContext() {
-      public RelOptCluster getCluster() {
-        return cluster;
-      }
-
-      @Override public List<RelHint> getTableHints() {
-        return hints;
-      }
-
-      @Override public RelRoot expandView(
-          RelDataType rowType,
-          String queryString,
-          List<String> schemaPath,
-          List<String> viewPath) {
-        return viewExpander.expandView(rowType, queryString, schemaPath, viewPath);
-      }
-
-    };
+    return ViewExpanders.toRelContext(viewExpander, cluster, hints);
   }
 
   public RelNode toRel(final RelOptTable table, @Nonnull final List<RelHint> hints) {

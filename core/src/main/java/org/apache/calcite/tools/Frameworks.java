@@ -18,153 +18,8 @@ package org.apache.calcite.tools;
 
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteSchema;
-      statisticProvider = MapSqlStatisticProvider.INSTANCE;
-    }
-
-    /** Creates a ConfigBuilder, initializing from an existing config. */
-    private ConfigBuilder(FrameworkConfig config) {
-      convertletTable = config.getConvertletTable();
-      operatorTable = config.getOperatorTable();
-      programs = config.getPrograms();
-      context = config.getContext();
-      traitDefs = config.getTraitDefs();
-      parserConfig = config.getParserConfig();
-      sqlValidatorConfig = config.getSqlValidatorConfig();
-      sqlToRelConverterConfig = config.getSqlToRelConverterConfig();
-      defaultSchema = config.getDefaultSchema();
-      executor = config.getExecutor();
-      costFactory = config.getCostFactory();
-      typeSystem = config.getTypeSystem();
-      evolveLattice = config.isEvolveLattice();
-      statisticProvider = config.getStatisticProvider();
-    }
-
-    public FrameworkConfig build() {
-      return new StdFrameworkConfig(context, convertletTable, operatorTable,
-          programs, traitDefs, parserConfig, sqlValidatorConfig, sqlToRelConverterConfig,
-          defaultSchema, costFactory, typeSystem, executor, evolveLattice,
-          statisticProvider);
-    }
-
-    public ConfigBuilder context(Context c) {
-      this.context = Objects.requireNonNull(c);
-      return this;
-    }
-
-    public ConfigBuilder executor(RexExecutor executor) {
-      this.executor = Objects.requireNonNull(executor);
-      return this;
-    }
-
-    public ConfigBuilder convertletTable(
-        SqlRexConvertletTable convertletTable) {
-      this.convertletTable = Objects.requireNonNull(convertletTable);
-      return this;
-    }
-
-    public ConfigBuilder operatorTable(SqlOperatorTable operatorTable) {
-      this.operatorTable = Objects.requireNonNull(operatorTable);
-      return this;
-    }
-
-    public ConfigBuilder traitDefs(List<RelTraitDef> traitDefs) {
-      if (traitDefs == null) {
-        this.traitDefs = null;
-      } else {
-        this.traitDefs = ImmutableList.copyOf(traitDefs);
-      }
-      return this;
-    }
-
-    public ConfigBuilder traitDefs(RelTraitDef... traitDefs) {
-      this.traitDefs = ImmutableList.copyOf(traitDefs);
-      return this;
-    }
-
-    public ConfigBuilder parserConfig(SqlParser.Config parserConfig) {
-      this.parserConfig = Objects.requireNonNull(parserConfig);
-      return this;
-    }
-
-    public ConfigBuilder sqlValidatorConfig(SqlValidator.Config sqlValidatorConfig) {
-      this.sqlValidatorConfig = Objects.requireNonNull(sqlValidatorConfig, "sqlValidatorConfig");
-      return this;
-    }
-
-    public ConfigBuilder sqlToRelConverterConfig(
-        SqlToRelConverter.Config sqlToRelConverterConfig) {
-      this.sqlToRelConverterConfig =
-          Objects.requireNonNull(sqlToRelConverterConfig);
-      return this;
-    }
-
-    public ConfigBuilder defaultSchema(SchemaPlus defaultSchema) {
-      this.defaultSchema = defaultSchema;
-      return this;
-    }
-
-    public ConfigBuilder costFactory(RelOptCostFactory costFactory) {
-      this.costFactory = costFactory;
-      return this;
-    }
-
-    public ConfigBuilder ruleSets(RuleSet... ruleSets) {
-      return programs(Programs.listOf(ruleSets));
-    }
-
-    public ConfigBuilder ruleSets(List<RuleSet> ruleSets) {
-      return programs(Programs.listOf(Objects.requireNonNull(ruleSets)));
-    }
-
-    public ConfigBuilder programs(List<Program> programs) {
-      this.programs = ImmutableList.copyOf(programs);
-      return this;
-    }
-
-    public ConfigBuilder programs(Program... programs) {
-      this.programs = ImmutableList.copyOf(programs);
-      return this;
-    }
-
-    public ConfigBuilder typeSystem(RelDataTypeSystem typeSystem) {
-      this.typeSystem = Objects.requireNonNull(typeSystem);
-      return this;
-    }
-
-    public ConfigBuilder evolveLattice(boolean evolveLattice) {
-      this.evolveLattice = evolveLattice;
-      return this;
-    }
-
-    public ConfigBuilder statisticProvider(
-        SqlStatisticProvider statisticProvider) {
-      this.statisticProvider = Objects.requireNonNull(statisticProvider);
-      return this;
-    }
-  }
-
-  /**
-   * An implementation of {@link FrameworkConfig} that uses standard Calcite
-   * classes to provide basic planner functionality.
-   */
-  static class StdFrameworkConfig implements FrameworkConfig {
-    private final Context context;
-    private final SqlRexConvertletTable convertletTable;
-    private final SqlOperatorTable operatorTable;
-    private final ImmutableList<Program> programs;
-    private final ImmutableList<RelTraitDef> traitDefs;
-    private final SqlParser.Config parserConfig;
-    private final SqlValidator.Config sqlValidatorConfig;
-    private final SqlToRelConverter.Config sqlToRelConverterConfig;
-    private final SchemaPlus defaultSchema;
-    private final RelOptCostFactory costFactory;
-    private final RelDataTypeSystem typeSystem;
-    private final RexExecutor executor;
-    private final boolean evolveLattice;
-    private final SqlStatisticProvider statisticProvider;
-<<<<<<< HEAD
-    private final RelOptTable.ViewExpander viewExpander;
 =======
+    private final RelOptTable.ViewExpander viewExpander;
 
     StdFrameworkConfig(Context context,
         SqlRexConvertletTable convertletTable,
@@ -179,7 +34,8 @@ import org.apache.calcite.jdbc.CalciteSchema;
         RelDataTypeSystem typeSystem,
         RexExecutor executor,
         boolean evolveLattice,
-        SqlStatisticProvider statisticProvider) {
+        SqlStatisticProvider statisticProvider,
+        RelOptTable.ViewExpander viewExpander) {
       this.context = context;
       this.convertletTable = convertletTable;
       this.operatorTable = operatorTable;
@@ -194,7 +50,7 @@ import org.apache.calcite.jdbc.CalciteSchema;
       this.executor = executor;
       this.evolveLattice = evolveLattice;
       this.statisticProvider = statisticProvider;
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
+      this.viewExpander = viewExpander;
     }
 
     public SqlParser.Config getParserConfig() {
@@ -252,11 +108,13 @@ import org.apache.calcite.jdbc.CalciteSchema;
     public SqlStatisticProvider getStatisticProvider() {
       return statisticProvider;
     }
-<<<<<<< HEAD
+>>>>>>> ca65868f2 ([CALCITE-2441] RelBuilder.scan should expand TranslatableTable and views)
 
     public RelOptTable.ViewExpander getViewExpander() {
       return viewExpander;
     }
+<<<<<<< HEAD
+=======
 =======
   }
 }

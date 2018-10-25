@@ -3081,24 +3081,9 @@ public abstract class RelOptUtil {
     return query;
   }
 
-  /** Returns a simple
-   * {@link org.apache.calcite.plan.RelOptTable.ToRelContext}. */
-  public static RelOptTable.ToRelContext getContext(
-      final RelOptCluster cluster) {
-    return new RelOptTable.ToRelContext() {
-      public RelOptCluster getCluster() {
-        return cluster;
-      }
-
-      public RelRoot expandView(RelDataType rowType, String queryString,
-          List<String> schemaPath, List<String> viewPath) {
-        throw new UnsupportedOperationException();
-      }
-
-      @Override public List<RelHint> getTableHints() {
-        return ImmutableList.of();
-      }
-    };
+  @Deprecated // to be removed before 2.0
+  public static RelOptTable.ToRelContext getContext(RelOptCluster cluster) {
+    return ViewExpanders.simpleContext(cluster);
   }
 
   /** Returns the number of {@link org.apache.calcite.rel.core.Join} nodes in a

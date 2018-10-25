@@ -25,9 +25,6 @@ import org.apache.calcite.util.mapping.IntPair;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-<<<<<<< HEAD
-import java.util.ArrayList;
-=======
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -47,7 +44,6 @@ class LatticeSpace {
   /** Root nodes, indexed by digest. */
   final Map<String, LatticeRootNode> nodeMap = new HashMap<>();
   final Map<ImmutableList<Step>, Path> pathMap = new HashMap<>();
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
 
   LatticeSpace(SqlStatisticProvider statisticProvider) {
     this.statisticProvider = Objects.requireNonNull(statisticProvider);

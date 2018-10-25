@@ -30,6 +30,7 @@ import org.apache.calcite.plan.RelOptSchema;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelTraitSet;
+import org.apache.calcite.plan.ViewExpanders;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
@@ -162,6 +163,29 @@ public abstract class Prepare {
 
     final RelTraitSet desiredTraits = getDesiredRootTraitSet(root);
 
+<<<<<<< HEAD
+=======
+    // Work around
+    //   [CALCITE-1774] Allow rules to be registered during planning process
+    // by briefly creating each kind of physical table to let it register its
+    // rules. The problem occurs when plans are created via RelBuilder, not
+    // the usual process (SQL and SqlToRelConverter.Config.isConvertTableAccess
+    // = true).
+    final RelVisitor visitor = new RelVisitor() {
+      @Override public void visit(RelNode node, int ordinal, RelNode parent) {
+        if (node instanceof TableScan) {
+          final RelOptCluster cluster = node.getCluster();
+          final RelOptTable.ToRelContext context =
+              ViewExpanders.simpleContext(cluster);
+          final RelNode r = node.getTable().toRel(context);
+          planner.registerClass(r);
+        }
+        super.visit(node, ordinal, parent);
+      }
+    };
+    visitor.go(root.rel);
+
+>>>>>>> ca65868f2 ([CALCITE-2441] RelBuilder.scan should expand TranslatableTable and views)
     final Program program = getProgram();
     final RelNode rootRel4 = program.run(
         planner, root.rel, desiredTraits, materializationList, latticeList);

@@ -99,9 +99,6 @@ public class Lattice {
   public final double rowCountEstimate;
   public final ImmutableList<Measure> defaultMeasures;
   public final ImmutableList<Tile> tiles;
-<<<<<<< HEAD
-  public final ImmutableListMultimap<Integer, Boolean> columnUses;
-=======
   public final LatticeStatisticProvider statisticProvider;
 
   private Lattice(CalciteSchema rootSchema, LatticeRootNode rootNode,
@@ -483,7 +480,6 @@ public class Lattice {
       }
     }
     return -1;
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
   }
 
   /** Edge in the temporary graph. */
@@ -629,10 +625,6 @@ public class Lattice {
 
     private Column(int ordinal, String alias) {
       this.ordinal = ordinal;
-<<<<<<< HEAD
-    private final List<Node> nodes = new ArrayList<>();
-    private final ImmutableList<Column> columns;
-=======
       this.alias = Objects.requireNonNull(alias);
     }
 
@@ -1074,7 +1066,6 @@ public class Lattice {
     }
 
 =======
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
     /** Work space for fixing up a tree of mutable nodes. */
     private static class Fixer {
       final Set<String> aliases = new HashSet<>();

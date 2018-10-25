@@ -22,9 +22,6 @@ import org.apache.calcite.util.graph.DefaultEdge;
 import org.apache.calcite.util.mapping.IntPair;
 
 import com.google.common.collect.ImmutableList;
-<<<<<<< HEAD
-import com.google.common.collect.Ordering;
-=======
 
 import java.util.List;
 import java.util.Objects;
@@ -101,7 +98,6 @@ class Step extends DefaultEdge {
   /** Creates {@link Step} instances. */
   static class Factory implements AttributedDirectedGraph.AttributedEdgeFactory<
       LatticeTable, Step> {
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
     public Step createEdge(LatticeTable source, LatticeTable target) {
       throw new UnsupportedOperationException();
     }

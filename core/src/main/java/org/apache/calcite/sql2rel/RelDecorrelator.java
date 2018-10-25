@@ -105,11 +105,9 @@ import com.google.common.collect.SortedSetMultimap;
 import org.slf4j.Logger;
 
 import java.math.BigDecimal;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -2857,7 +2855,6 @@ public class RelDecorrelator implements ReflectiveVisitor {
             .build();
 <<<<<<< HEAD
 =======
-
 
     final Map<RexFieldAccess, CorRef> mapFieldAccessToCorVar = new HashMap<>();
 

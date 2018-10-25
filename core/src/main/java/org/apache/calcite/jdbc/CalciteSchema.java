@@ -350,29 +350,6 @@ public abstract class CalciteSchema {
     // Add implicit tables, case-sensitive.
     addImplicitTableToBuilder(builder);
     return builder.build();
-<<<<<<< HEAD
-  }
-
-  /** Returns the set of all types names. */
-  public final NavigableSet<String> getTypeNames() {
-    final ImmutableSortedSet.Builder<String> builder =
-        new ImmutableSortedSet.Builder<>(NameSet.COMPARATOR);
-    // Add explicit types.
-    builder.addAll(typeMap.map().keySet());
-    // Add implicit types.
-    addImplicitTypeNamesToBuilder(builder);
-    return builder.build();
-  }
-
-  /** Returns a type, explicit and implicit, with a given
-   * name. Never null. */
-  public final TypeEntry getType(String name, boolean caseSensitive) {
-    for (Map.Entry<String, TypeEntry> entry
-        : typeMap.range(name, caseSensitive).entrySet()) {
-      return entry.getValue();
-    }
-    return getImplicitType(name, caseSensitive);
-=======
 >>>>>>> 2d7bf015a (Remove dead code: Compatible, CompatibleGuava11)
   }
 
@@ -773,8 +750,10 @@ public abstract class CalciteSchema {
         ImmutableList<String> sqls) {
       super(schema, name, sqls);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       assert table != null;
+=======
       this.table = Objects.requireNonNull(table);
     }
 

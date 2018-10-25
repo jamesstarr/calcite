@@ -27,10 +27,13 @@ import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptRuleOperand;
 import org.apache.calcite.plan.RelOptTable;
-import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.plan.SubstitutionVisitor;
 import org.apache.calcite.plan.ViewExpanders;
+<<<<<<< HEAD
+=======
+import org.apache.calcite.prepare.CalcitePrepareImpl;
+>>>>>>> ca65868f2 ([CALCITE-2441] RelBuilder.scan should expand TranslatableTable and views)
 import org.apache.calcite.prepare.RelOptTableImpl;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.AggregateCall;

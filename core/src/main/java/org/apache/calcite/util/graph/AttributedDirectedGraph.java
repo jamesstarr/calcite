@@ -87,11 +87,6 @@ public class AttributedDirectedGraph<V, E extends DefaultEdge>
   /** Removes all edges from a given vertex to another.
    * Returns whether any were removed. */
   public boolean removeEdge(V source, V target) {
-<<<<<<< HEAD
-    // remove out edges
-    final List<E> outEdges = vertexMap.get(source).outEdges;
-    int removeOutCount = 0;
-=======
     final VertexInfo<V, E> info = vertexMap.get(source);
     List<E> outEdges = info.outEdges;
     int removeCount = 0;
@@ -119,4 +114,3 @@ public class AttributedDirectedGraph<V, E extends DefaultEdge>
 =======
 
 // End AttributedDirectedGraph.java
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)

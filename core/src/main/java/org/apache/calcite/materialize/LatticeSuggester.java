@@ -103,19 +103,6 @@ public class LatticeSuggester {
     return ImmutableSet.copyOf(set);
   }
 
-<<<<<<< HEAD
-  /** Converts a column reference to an expression. */
-  public RexNode toRex(LatticeTable table, int column) {
-    final List<RelDataTypeField> fieldList =
-        table.t.getRowType().getFieldList();
-    if (column < fieldList.size()) {
-      return new RexInputRef(column, fieldList.get(column).getType());
-    } else {
-      return space.tableExpressions.get(table).get(column - fieldList.size());
-    }
-  }
-
-=======
   /** Adds a query.
    *
    * <p>It may fit within an existing lattice (or lattices). Or it may need a
@@ -213,14 +200,10 @@ public class LatticeSuggester {
             new Lattice.Measure(measure.aggregate, measure.distinct,
                 measure.name,
                 Lists.transform(measure.arguments, colRef -> {
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
                   if (colRef instanceof BaseColRef) {
                     final BaseColRef baseColRef = (BaseColRef) colRef;
                     final MutableNode node = nodes.get(baseColRef.t);
                     final int table = flatNodes.indexOf(node);
-<<<<<<< HEAD
-                    column = latticeBuilder.column(table, baseColRef.c);
-=======
                     return latticeBuilder.column(table, baseColRef.c);
                   } else if (colRef instanceof DerivedColRef) {
                     final DerivedColRef derivedColRef =
@@ -231,7 +214,6 @@ public class LatticeSuggester {
                   } else {
                     throw new AssertionError("expression in measure");
                   }
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
                 })));
       }
 
@@ -242,9 +224,6 @@ public class LatticeSuggester {
           final Lattice.Column expression =
               latticeBuilder.expression(derivedColRef.e,
                   derivedColRef.alias, derivedColRef.tableAliases());
-<<<<<<< HEAD
-          latticeBuilder.use(expression, false);
-=======
         }
       }
 
@@ -305,7 +284,6 @@ public class LatticeSuggester {
     return c3;
   }
 
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
   private Frame frame(final Query q, RelNode r) {
     if (r instanceof Sort) {
       final Sort sort = (Sort) r;
@@ -376,15 +354,6 @@ public class LatticeSuggester {
               tableRefs.add(tableRef);
             }
           }
-<<<<<<< HEAD
-          final List<TableRef> tableRefList = tableRefs.build();
-          switch (tableRefList.size()) {
-          case 1:
-            return new SingleTableDerivedColRef(tableRefList.get(0), e, alias);
-          default:
-            return new DerivedColRef(tableRefList, e, alias);
-          }
-=======
           return new DerivedColRef(tableRefs.build(), e, alias);
         }
       };
@@ -653,7 +622,6 @@ public class LatticeSuggester {
       this.t = t;
       this.c = c;
     }
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
   }
 
   /** Reference to a derived column (that is, an expression). */
@@ -662,9 +630,6 @@ public class LatticeSuggester {
     @Nonnull final RexNode e;
     final String alias;
 
-<<<<<<< HEAD
-    DerivedColRef(Iterable<TableRef> tableRefs, RexNode e, String alias) {
-=======
     private DerivedColRef(Iterable<TableRef> tableRefs, RexNode e,
         String alias) {
       this.tableRefs = ImmutableList.copyOf(tableRefs);
@@ -677,7 +642,6 @@ public class LatticeSuggester {
     }
   }
 
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
   /** An aggregate call. Becomes a measure in the final lattice. */
   private static class MutableMeasure {
     final SqlAggFunction aggregate;
