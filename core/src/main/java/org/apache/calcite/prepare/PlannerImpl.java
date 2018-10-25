@@ -59,7 +59,7 @@ import java.util.List;
 import java.util.Properties;
 
 /** Implementation of {@link org.apache.calcite.tools.Planner}. */
-public class PlannerImpl implements Planner {
+public class PlannerImpl implements Planner, ViewExpander {
   private final SqlOperatorTable operatorTable;
   private final ImmutableList<Program> programs;
   private final Context context;
@@ -237,7 +237,7 @@ public class PlannerImpl implements Planner {
         .withConvertTableAccess(false)
         .build();
     final SqlToRelConverter sqlToRelConverter =
-        new SqlToRelConverter(new ViewExpanderImpl(), validator,
+        new SqlToRelConverter(this, validator,
             createCatalogReader(), cluster, convertletTable, config);
     root =
         sqlToRelConverter.convertQuery(validatedSqlNode, false, true);
@@ -250,45 +250,58 @@ public class PlannerImpl implements Planner {
     return root;
   }
 
-  /** Implements {@link org.apache.calcite.plan.RelOptTable.ViewExpander}
-   * interface for {@link org.apache.calcite.tools.Planner}. */
+  /** @deprecated Now {@link PlannerImpl} implements {@link ViewExpander}
+   * directly. */
+  @Deprecated
   public class ViewExpanderImpl implements ViewExpander {
-    @Override public RelRoot expandView(RelDataType rowType, String queryString,
-      List<String> schemaPath, List<String> viewPath) {
-      SqlParser parser = SqlParser.create(queryString, parserConfig);
-      SqlNode sqlNode;
-      try {
-        sqlNode = parser.parseQuery();
-      } catch (SqlParseException e) {
-        throw new RuntimeException("parse failed", e);
-      }
-
-      final CalciteCatalogReader catalogReader =
-          createCatalogReader().withSchemaPath(schemaPath);
-      final SqlValidator validator = createSqlValidator(catalogReader);
-      validator.setIdentifierExpansion(true);
-
-      final RexBuilder rexBuilder = createRexBuilder();
-      final RelOptCluster cluster = RelOptCluster.create(planner, rexBuilder);
-      final SqlToRelConverter.Config config = SqlToRelConverter
-          .configBuilder()
-          .withConfig(sqlToRelConverterConfig)
-          .withTrimUnusedFields(false)
-          .withConvertTableAccess(false)
-          .build();
-      final SqlToRelConverter sqlToRelConverter =
-          new SqlToRelConverter(new ViewExpanderImpl(), validator,
-              catalogReader, cluster, convertletTable, config);
-
-      root = sqlToRelConverter.convertQuery(sqlNode, true, false);
-      root = root.withRel(sqlToRelConverter.flattenTypes(root.rel, true));
-      final RelBuilder relBuilder =
-          config.getRelBuilderFactory().create(cluster, null);
-      root = root.withRel(
-          RelDecorrelator.decorrelateQuery(root.rel, relBuilder, false));
-
-      return PlannerImpl.this.root;
+    ViewExpanderImpl() {
     }
+
+    public RelRoot expandView(RelDataType rowType, String queryString,
+        List<String> schemaPath, List<String> viewPath) {
+      return PlannerImpl.this.expandView(rowType, queryString, schemaPath,
+          viewPath);
+    }
+  }
+
+  @Override public RelRoot expandView(RelDataType rowType, String queryString,
+      List<String> schemaPath, List<String> viewPath) {
+    if (planner == null) {
+      ready();
+    }
+    SqlParser parser = SqlParser.create(queryString, parserConfig);
+    SqlNode sqlNode;
+    try {
+      sqlNode = parser.parseQuery();
+    } catch (SqlParseException e) {
+      throw new RuntimeException("parse failed", e);
+    }
+
+    final CalciteCatalogReader catalogReader =
+        createCatalogReader().withSchemaPath(schemaPath);
+    final SqlValidator validator = createSqlValidator(catalogReader);
+    validator.setIdentifierExpansion(true);
+
+    final RexBuilder rexBuilder = createRexBuilder();
+    final RelOptCluster cluster = RelOptCluster.create(planner, rexBuilder);
+    final SqlToRelConverter.Config config = SqlToRelConverter
+        .configBuilder()
+        .withConfig(sqlToRelConverterConfig)
+        .withTrimUnusedFields(false)
+        .withConvertTableAccess(false)
+        .build();
+    final SqlToRelConverter sqlToRelConverter =
+        new SqlToRelConverter(this, validator,
+            catalogReader, cluster, convertletTable, config);
+
+    final RelRoot root =
+        sqlToRelConverter.convertQuery(sqlNode, true, false);
+    final RelRoot root2 =
+        root.withRel(sqlToRelConverter.flattenTypes(root.rel, true));
+    final RelBuilder relBuilder =
+        config.getRelBuilderFactory().create(cluster, null);
+    return root2.withRel(
+          RelDecorrelator.decorrelateQuery(root.rel, relBuilder, false));
   }
 
   // CalciteCatalogReader is stateless; no need to store one

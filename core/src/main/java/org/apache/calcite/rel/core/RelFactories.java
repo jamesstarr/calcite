@@ -20,6 +20,7 @@ import org.apache.calcite.plan.Context;
 import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable;
+import org.apache.calcite.plan.ViewExpanders;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelDistribution;
 import org.apache.calcite.rel.RelNode;
@@ -41,6 +42,7 @@ import org.apache.calcite.rel.logical.LogicalValues;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.schema.TranslatableTable;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
@@ -438,6 +440,47 @@ public class RelFactories {
     public RelNode createScan(RelOptCluster cluster, RelOptTable table, List<RelHint> hints) {
       return LogicalTableScan.create(cluster, table, hints);
     }
+  }
+
+  /**
+   * Creates a {@link TableScanFactory} that can expand
+   * {@link TranslatableTable} instances, but explodes on views.
+   *
+   * @param tableScanFactory Factory for non-translatable tables
+   * @return Table scan factory
+   */
+  @Nonnull public static TableScanFactory expandingScanFactory(
+      @Nonnull TableScanFactory tableScanFactory) {
+    return expandingScanFactory(
+        (rowType, queryString, schemaPath, viewPath) -> {
+          throw new UnsupportedOperationException("cannot expand view");
+        },
+        tableScanFactory);
+  }
+
+  /**
+   * Creates a {@link TableScanFactory} that uses a
+   * {@link org.apache.calcite.plan.RelOptTable.ViewExpander} to handle
+   * {@link TranslatableTable} instances, and falls back to a default
+   * factory for other tables.
+   *
+   * @param viewExpander View expander
+   * @param tableScanFactory Factory for non-translatable tables
+   * @return Table scan factory
+   */
+  @Nonnull public static TableScanFactory expandingScanFactory(
+      @Nonnull RelOptTable.ViewExpander viewExpander,
+      @Nonnull TableScanFactory tableScanFactory) {
+    return (cluster, table, hints) -> {
+      final TranslatableTable translatableTable =
+          table.unwrap(TranslatableTable.class);
+      if (translatableTable != null) {
+        final RelOptTable.ToRelContext toRelContext =
+            ViewExpanders.toRelContext(viewExpander, cluster);
+        return translatableTable.toRel(toRelContext, table);
+      }
+      return tableScanFactory.createScan(cluster, table, hints);
+    };
   }
 
   /**

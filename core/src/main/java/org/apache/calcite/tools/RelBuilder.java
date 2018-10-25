@@ -1084,6 +1084,7 @@ public class RelBuilder {
     }
     final RelNode scan = struct.scanFactory.createScan(cluster, relOptTable, ImmutableList.of());
     push(scan);
+    rename(relOptTable.getRowType().getFieldNames());
     return this;
   }
 
