@@ -170,7 +170,17 @@ public class SqlCreateTable extends SqlCreate
     for (Ord<SqlNode> c : Ord.zip(columnList)) {
       if (c.e instanceof SqlColumnDeclaration) {
         final SqlColumnDeclaration d = (SqlColumnDeclaration) c.e;
+<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlCreateTable.java
         final RelDataType type = d.dataType.deriveType(validator, true);
+=======
+        RelDataType type = d.dataType.deriveType(typeFactory, true);
+        if (type == null) {
+          if (d.dataType.getNullable() != null
+              && d.dataType.getNullable() != type.isNullable()) {
+            type = typeFactory.createTypeWithNullability(type, d.dataType.getNullable());
+          }
+        }
+>>>>>>> a76afe52d ([CALCITE-2464] Allow to set nullability for columns of structured types (Ruben Quesada Lopez)):server/src/main/java/org/apache/calcite/sql/ddl/SqlCreateTable.java
         builder.add(d.name.getSimple(), type);
         if (d.strategy != ColumnStrategy.VIRTUAL) {
           storedBuilder.add(d.name.getSimple(), type);

@@ -157,6 +157,7 @@ class ServerTest {
 //      assertThat(b, is(false));
 //      x = s.executeUpdate("insert into w values (1, NULL)");
 //      assertThat(x, is(1));
+<<<<<<< HEAD
 
       // Test user defined type name as component identifier.
       b = s.execute("create schema a");
@@ -169,6 +170,8 @@ class ServerTest {
       assertThat(b, is(false));
       x = s.executeUpdate("insert into t2 values (1, NULL)");
       assertThat(x, is(1));
+=======
+>>>>>>> a76afe52d ([CALCITE-2464] Allow to set nullability for columns of structured types (Ruben Quesada Lopez))
     }
   }
 

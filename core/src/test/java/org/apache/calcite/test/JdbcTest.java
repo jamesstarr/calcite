@@ -4978,7 +4978,7 @@ public class JdbcTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2464">[CALCITE-2464]
    * Allow to set nullability for columns of structured types</a>. */
-  @Test void testLeftJoinWhereStructIsNotNull() {
+  @Test public void testLeftJoinWhereStructIsNotNull() {
     CalciteAssert.hr()
         .query("select e.\"deptno\", d.\"deptno\"\n"
             + "from \"hr\".\"emps\" as e\n"
