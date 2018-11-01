@@ -73,6 +73,7 @@ import java.util.function.Function;
 import static org.apache.calcite.test.Matchers.isLinux;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -190,31 +191,6 @@ class RelToSqlConverterTest {
     sql(query).ok(expected);
   }
 
-<<<<<<< HEAD
-  @Test void testSelectQueryWithHiveCube() {
-    String query = "select \"product_class_id\", \"product_id\", count(*) "
-            + "from \"product\" group by cube(\"product_class_id\", \"product_id\")";
-    String expected = "SELECT product_class_id, product_id, COUNT(*)\n"
-            + "FROM foodmart.product\n"
-            + "GROUP BY product_class_id, product_id WITH CUBE";
-    sql(query).withHive().ok(expected);
-    SqlDialect sqlDialect = sql(query).withHive().dialect;
-    assertTrue(sqlDialect.supportsGroupByWithCube());
-  }
-
-  @Test void testSelectQueryWithHiveRollup() {
-    String query = "select \"product_class_id\", \"product_id\", count(*) "
-            + "from \"product\" group by rollup(\"product_class_id\", \"product_id\")";
-    String expected = "SELECT product_class_id, product_id, COUNT(*)\n"
-            + "FROM foodmart.product\n"
-            + "GROUP BY product_class_id, product_id WITH ROLLUP";
-    sql(query).withHive().ok(expected);
-    SqlDialect sqlDialect = sql(query).withHive().dialect;
-    assertTrue(sqlDialect.supportsGroupByWithRollup());
-  }
-
-  @Test void testSelectQueryWithGroupByEmpty() {
-=======
   @Test public void testSelectQueryWithGroupByEmpty() {
     final String sql0 = "select count(*) from \"product\" group by ()";
     final String sql1 = "select count(*) from \"product\"";
@@ -1794,7 +1770,10 @@ class RelToSqlConverterTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2652">[CALCITE-2652]
    * SqlNode to SQL conversion fails if the join condition references a BOOLEAN
    * column</a>. */
+<<<<<<< HEAD
   @Test void testJoinOnBoolean() {
+=======
+  @Test public void testJoinOnBoolean() {
     final String sql = "SELECT 1\n"
         + "from emps\n"
         + "join emp on (emp.deptno = emps.empno and manager)";
@@ -1802,7 +1781,7 @@ class RelToSqlConverterTest {
     assertThat(s, notNullValue()); // sufficient that conversion did not throw
   }
 
-  @Test void testCartesianProductWithInnerJoinSyntax() {
+  @Test public void testCartesianProductWithInnerJoinSyntax() {
     String query = "select * from \"department\"\n"
         + "INNER JOIN \"employee\" ON TRUE";
     String expected = "SELECT *\n"
