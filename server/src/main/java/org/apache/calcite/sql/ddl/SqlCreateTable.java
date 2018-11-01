@@ -166,7 +166,13 @@ public class SqlCreateTable extends SqlCreate
     for (Ord<SqlNode> c : Ord.zip(columnList)) {
       if (c.e instanceof SqlColumnDeclaration) {
         final SqlColumnDeclaration d = (SqlColumnDeclaration) c.e;
-        final RelDataType type = d.dataType.deriveType(typeFactory, true);
+        RelDataType type = d.dataType.deriveType(typeFactory, true);
+        if (type == null) {
+          if (d.dataType.getNullable() != null
+              && d.dataType.getNullable() != type.isNullable()) {
+            type = typeFactory.createTypeWithNullability(type, d.dataType.getNullable());
+          }
+        }
         builder.add(d.name.getSimple(), type);
         if (d.strategy != ColumnStrategy.VIRTUAL) {
           storedBuilder.add(d.name.getSimple(), type);

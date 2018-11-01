@@ -55,24 +55,23 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
   private static final LoadingCache<Object, RelDataType> CACHE =
       CacheBuilder.newBuilder()
           .softValues()
-          .build(
-              new CacheLoader<Object, RelDataType>() {
-                @Override public RelDataType load(@Nonnull Object k) {
-                  if (k instanceof RelDataType) {
-                    return (RelDataType) k;
-                  }
-                  @SuppressWarnings("unchecked")
-                  final Key key = (Key) k;
-                  final ImmutableList.Builder<RelDataTypeField> list =
-                      ImmutableList.builder();
-                  for (int i = 0; i < key.names.size(); i++) {
-                    list.add(
-                        new RelDataTypeFieldImpl(
-                            key.names.get(i), i, key.types.get(i)));
-                  }
-                  return new RelRecordType(key.kind, list.build());
-                }
-              });
+          .build(CacheLoader.from(RelDataTypeFactoryImpl::keyToType));
+
+  private static RelDataType keyToType(@Nonnull Object k) {
+    if (k instanceof RelDataType) {
+      return (RelDataType) k;
+    }
+    @SuppressWarnings("unchecked")
+    final Key key = (Key) k;
+    final ImmutableList.Builder<RelDataTypeField> list =
+        ImmutableList.builder();
+    for (int i = 0; i < key.names.size(); i++) {
+      list.add(
+          new RelDataTypeFieldImpl(
+              key.names.get(i), i, key.types.get(i)));
+    }
+    return new RelRecordType(key.kind, list.build(), key.nullable);
+  }
 
   private static final Map<Class, RelDataTypeFamily> CLASS_FAMILIES =
       ImmutableMap.<Class, RelDataTypeFamily>builder()
@@ -142,8 +141,16 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
   public RelDataType createStructType(StructKind kind,
       final List<RelDataType> typeList,
       final List<String> fieldNameList) {
+    return createStructType(kind, typeList,
+        fieldNameList, false);
+  }
+
+  private RelDataType createStructType(StructKind kind,
+      final List<RelDataType> typeList,
+      final List<String> fieldNameList,
+      final boolean nullable) {
     assert typeList.size() == fieldNameList.size();
-    return canonize(kind, fieldNameList, typeList);
+    return canonize(kind, fieldNameList, typeList, nullable);
   }
 
   @SuppressWarnings("deprecation")
@@ -172,6 +179,11 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
 
   public final RelDataType createStructType(
       final List<? extends Map.Entry<String, RelDataType>> fieldList) {
+    return createStructType(fieldList, false);
+  }
+
+  private RelDataType createStructType(
+      final List<? extends Map.Entry<String, RelDataType>> fieldList, boolean nullable) {
     return canonize(StructKind.FULLY_QUALIFIED,
         new AbstractList<String>() {
           @Override public String get(int index) {
@@ -190,7 +202,7 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
           @Override public int size() {
             return fieldList.size();
           }
-        });
+        }, nullable);
   }
 
   // implement RelDataTypeFactory
@@ -272,12 +284,8 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
       final RelRecordType type,
       final boolean ignoreNullable,
       final boolean nullable) {
-    // REVIEW: angel 18-Aug-2005 dtbug336
-    // Shouldn't null refer to the nullability of the record type
-    // not the individual field types?
     // For flattening and outer joins, it is desirable to change
     // the nullability of the individual fields.
-
     return createStructType(type.getStructKind(),
         new AbstractList<RelDataType>() {
           @Override public RelDataType get(int index) {
@@ -294,18 +302,12 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
             return type.getFieldCount();
           }
         },
-        type.getFieldNames());
+        type.getFieldNames(), nullable);
   }
 
   // implement RelDataTypeFactory
   public RelDataType copyType(RelDataType type) {
-    if (type instanceof RelRecordType) {
-      return copyRecordType((RelRecordType) type, true, false);
-    } else {
-      return createTypeWithNullability(
-          type,
-          type.isNullable());
-    }
+    return createTypeWithNullability(type, type.isNullable());
   }
 
   // implement RelDataTypeFactory
@@ -320,15 +322,16 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
       // REVIEW: angel 18-Aug-2005 dtbug 336 workaround
       // Changed to ignore nullable parameter if nullable is false since
       // copyRecordType implementation is doubtful
-      if (nullable) {
-        // Do a deep copy, setting all fields of the record type
-        // to be nullable regardless of initial nullability
-        newType = copyRecordType((RelRecordType) type, false, true);
-      } else {
-        // Keep same type as before, ignore nullable parameter
-        // RelRecordType currently always returns a nullability of false
-        newType = copyRecordType((RelRecordType) type, true, false);
-      }
+      // - If nullable -> Do a deep copy, setting all fields of the record type
+      // to be nullable regardless of initial nullability.
+      // - If not nullable -> Do a deep copy, setting not nullable at top RelRecordType
+      // level only, keeping its fields' nullability as before.
+      // According to the SQL standard, nullability for struct types can be defined only for
+      // columns, which translates to top level structs. Nested struct attributes are always
+      // nullable, so in principle we could always set the nested attributes to be nullable.
+      // However, this might create regressions so we will not do it and we will keep previous
+      // behavior.
+      newType = copyRecordType((RelRecordType) type, !nullable,  nullable);
     } else {
       newType = copySimpleType(type, nullable);
     }
@@ -355,14 +358,21 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
    */
   protected RelDataType canonize(final StructKind kind,
       final List<String> names,
-      final List<RelDataType> types) {
-    final RelDataType type = CACHE.getIfPresent(new Key(kind, names, types));
+      final List<RelDataType> types,
+      final boolean nullable) {
+    final RelDataType type = CACHE.getIfPresent(new Key(kind, names, types, nullable));
     if (type != null) {
       return type;
     }
     final ImmutableList<String> names2 = ImmutableList.copyOf(names);
     final ImmutableList<RelDataType> types2 = ImmutableList.copyOf(types);
-    return CACHE.getUnchecked(new Key(kind, names2, types2));
+    return CACHE.getUnchecked(new Key(kind, names2, types2, nullable));
+  }
+
+  protected RelDataType canonize(final StructKind kind,
+      final List<String> names,
+      final List<RelDataType> types) {
+    return canonize(kind, names, types, false);
   }
 
   /**
@@ -566,15 +576,17 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
     private final StructKind kind;
     private final List<String> names;
     private final List<RelDataType> types;
+    private final boolean nullable;
 
-    Key(StructKind kind, List<String> names, List<RelDataType> types) {
+    Key(StructKind kind, List<String> names, List<RelDataType> types, boolean nullable) {
       this.kind = kind;
       this.names = names;
       this.types = types;
+      this.nullable = nullable;
     }
 
     @Override public int hashCode() {
-      return Objects.hash(kind, names, types);
+      return Objects.hash(kind, names, types, nullable);
     }
 
     @Override public boolean equals(Object obj) {
@@ -582,7 +594,8 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
           || obj instanceof Key
           && kind == ((Key) obj).kind
           && names.equals(((Key) obj).names)
-          && types.equals(((Key) obj).types);
+          && types.equals(((Key) obj).types)
+          && nullable == ((Key) obj).nullable;
     }
   }
 }
