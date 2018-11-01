@@ -14,21 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.calcite.adapter.elasticsearch;
-
-import org.apache.calcite.jdbc.CalciteConnection;
-import org.apache.calcite.schema.SchemaPlus;
-import org.apache.calcite.test.CalciteAssert;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,15 +35,15 @@ import java.util.stream.IntStream;
  * Tests usage of scrolling API like correct results and resource cleanup
  * (delete scroll after scan).
  */
-@ResourceLock("elasticsearch-scrolls")
-class ScrollingTest {
+public class ScrollingTest {
 
+  @ClassRule
   public static final EmbeddedElasticsearchPolicy NODE = EmbeddedElasticsearchPolicy.create();
 
   private static final String NAME = "scroll";
   private static final int SIZE = 10;
 
-  @BeforeAll
+  @BeforeClass
   public static void setupInstance() throws Exception {
     NODE.createIndex(NAME, Collections.singletonMap("value", "long"));
     final List<ObjectNode> docs = new ArrayList<>();
@@ -71,16 +60,15 @@ class ScrollingTest {
         final Connection connection = DriverManager.getConnection("jdbc:calcite:");
         final SchemaPlus root = connection.unwrap(CalciteConnection.class).getRootSchema();
         ElasticsearchSchema schema = new ElasticsearchSchema(NODE.restClient(), NODE.mapper(),
-            NAME, fetchSize);
+            NAME, null, fetchSize);
         root.add("elastic", schema);
         return connection;
       }
     };
   }
 
-  @Disabled("It seems like other tests leave scrolls behind, so this test fails if executed after"
-      + " one of the other elasticsearch test")
-  @Test void scrolling() throws Exception {
+  @Test
+  public void scrolling() throws Exception {
     final String[] expected = IntStream.range(0, SIZE).mapToObj(i -> "V=" + i)
         .toArray(String[]::new);
     final String query = String.format(Locale.ROOT, "select _MAP['value'] as v from "
@@ -103,7 +91,7 @@ class ScrollingTest {
   private void assertNoActiveScrolls() throws IOException  {
     // get node stats
     final Response response = NODE.restClient()
-        .performRequest(new Request("GET", "/_nodes/stats/indices/search"));
+        .performRequest("GET", "/_nodes/stats/indices/search");
 
     try (InputStream is = response.getEntity().getContent()) {
       final ObjectNode node = NODE.mapper().readValue(is, ObjectNode.class);
@@ -123,3 +111,8 @@ class ScrollingTest {
 
 
 }
+<<<<<<< HEAD
+=======
+
+// End ScrollingTest.java
+>>>>>>> 1e9b7360a ([CALCITE-2651] Enable scrolling in ElasticSearch adapter for basic search queries)

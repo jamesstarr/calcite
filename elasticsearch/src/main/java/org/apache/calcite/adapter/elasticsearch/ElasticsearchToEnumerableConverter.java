@@ -101,9 +101,6 @@ public class ElasticsearchToEnumerableConverter extends ConverterImpl implements
 
     Expression enumerable = block.append("enumerable",
         Expressions.call(table, ElasticsearchMethod.ELASTICSEARCH_QUERYABLE_FIND.method, ops,
-<<<<<<< HEAD
-            fields, sort, groupBy, aggregations, mappings, offset, fetch));
-=======
             fields, sort, groupBy, aggregations, offset, fetch));
     block.add(Expressions.return_(null, enumerable));
     return relImplementor.result(physType, block.toBlock());
@@ -131,6 +128,5 @@ public class ElasticsearchToEnumerableConverter extends ConverterImpl implements
     return Lists.transform(values, Expressions::constant);
 =======
     return values.stream().map(Expressions::constant).collect(Collectors.toList());
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
   }
 }

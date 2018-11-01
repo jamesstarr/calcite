@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -55,7 +56,7 @@ import static java.util.Collections.unmodifiableMap;
  * <p>Since we're using basic row-level rest client http response has to be
  * processed manually using JSON (jackson) library.
  */
-class ElasticsearchJson {
+final class ElasticsearchJson {
 
   /**
    * Used as special aggregation key for missing values (documents which are missing a field).
@@ -126,9 +127,6 @@ class ElasticsearchJson {
       BiConsumer<RowKey, MultiValue> consumer) {
 
     if (aggregation instanceof MultiValue) {
-<<<<<<< HEAD
-      // this is a leaf. publish value of the row.
-=======
       // publish one value of the row
       RowKey key = new RowKey(parents);
       consumer.accept(key, (MultiValue) aggregation);
@@ -137,7 +135,6 @@ class ElasticsearchJson {
 
     if (aggregation instanceof Bucket) {
       Bucket bucket = (Bucket) aggregation;
->>>>>>> ca1b4e02e ([CALCITE-2528] Support Aggregates in ElasticSearch adapter (Andrei Sereda))
       parents.add(bucket);
       bucket.getAggregations().forEach(a -> visitValueNodes(a, parents, consumer));
       parents.remove(parents.size() - 1);
@@ -146,9 +143,6 @@ class ElasticsearchJson {
       children.getAggregations().forEach(a -> visitValueNodes(a, parents, consumer));
     } else if (aggregation instanceof MultiBucketsAggregation) {
       MultiBucketsAggregation multi = (MultiBucketsAggregation) aggregation;
-<<<<<<< HEAD
-      multi.buckets().forEach(b -> visitValueNodes(b, parents, consumer));
-=======
       multi.buckets().forEach(b -> {
         parents.add(b);
         b.getAggregations().forEach(a -> visitValueNodes(a, parents, consumer));
@@ -165,7 +159,10 @@ class ElasticsearchJson {
   static class Result {
     private final SearchHits hits;
     private final Aggregations aggregations;
->>>>>>> ca1b4e02e ([CALCITE-2528] Support Aggregates in ElasticSearch adapter (Andrei Sereda))
+<<<<<<< HEAD
+=======
+    private final String scrollId;
+>>>>>>> 1e9b7360a ([CALCITE-2651] Enable scrolling in ElasticSearch adapter for basic search queries)
     private final long took;
 
     /**
@@ -176,16 +173,12 @@ class ElasticsearchJson {
     @JsonCreator
     Result(@JsonProperty("hits") SearchHits hits,
         @JsonProperty("aggregations") Aggregations aggregations,
-<<<<<<< HEAD
+=======
         @JsonProperty("_scroll_id") String scrollId,
         @JsonProperty("took") long took) {
       this.hits = Objects.requireNonNull(hits, "hits");
       this.aggregations = aggregations;
       this.scrollId = scrollId;
-=======
-        @JsonProperty("took") long took) {
-      this.hits = Objects.requireNonNull(hits, "hits");
-      this.aggregations = aggregations;
       this.took = took;
     }
 
@@ -197,8 +190,12 @@ class ElasticsearchJson {
       return aggregations;
     }
 
-    public Duration took() {
+    Duration took() {
       return Duration.ofMillis(took);
+    }
+
+    Optional<String> scrollId() {
+      return Optional.ofNullable(scrollId);
     }
 
   }
@@ -235,12 +232,6 @@ class ElasticsearchJson {
    */
   @JsonIgnoreProperties(ignoreUnknown = true)
   static class SearchHit {
-<<<<<<< HEAD
-
-    /**
-     * ID of the document (not available in aggregations)
-     */
-=======
     private final String id;
     private final Map<String, Object> source;
     private final Map<String, Object> fields;
@@ -479,7 +470,6 @@ class ElasticsearchJson {
     }
 
     /**
->>>>>>> ca1b4e02e ([CALCITE-2528] Support Aggregates in ElasticSearch adapter (Andrei Sereda))
      * @return  The sub-aggregations of this bucket
      */
     @Override public Aggregations getAggregations() {
@@ -518,12 +508,6 @@ class ElasticsearchJson {
      */
     Object value() {
       if (!values().containsKey("value")) {
-<<<<<<< HEAD
-        String message = String.format(Locale.ROOT, "'value' field not present in "
-            + "%s aggregation", getName());
-
-        throw new IllegalStateException(message);
-=======
         throw new IllegalStateException("'value' field not present in this aggregation");
       }
 
@@ -533,16 +517,10 @@ class ElasticsearchJson {
   }
 
   /**
->>>>>>> ca1b4e02e ([CALCITE-2528] Support Aggregates in ElasticSearch adapter (Andrei Sereda))
    * Allows to de-serialize nested aggregation structures.
    */
   static class AggregationsDeserializer extends StdDeserializer<Aggregations> {
 
-<<<<<<< HEAD
-    private static final Set<String> IGNORE_TOKENS =
-        ImmutableSet.of("meta", "buckets", "value", "values", "value_as_string",
-            "doc_count", "key", "key_as_string");
-=======
     private static final Set<String> IGNORE_TOKENS = new HashSet<>(Arrays.asList("meta",
         "buckets", "value", "values", "value_as_string", "doc_count", "key", "key_as_string"));
 
@@ -620,7 +598,6 @@ class ElasticsearchJson {
     private static Bucket parseBucket(JsonParser parser, String name, ObjectNode node)
         throws JsonProcessingException  {
 
->>>>>>> ca1b4e02e ([CALCITE-2528] Support Aggregates in ElasticSearch adapter (Andrei Sereda))
       final JsonNode keyNode = node.get("key");
       final Object key;
       if (isMissingBucket(keyNode) || keyNode.isNull()) {
@@ -640,10 +617,8 @@ class ElasticsearchJson {
     }
 
   }
-<<<<<<< HEAD
-
-}
 =======
+
 }
 
 // End ElasticsearchJson.java

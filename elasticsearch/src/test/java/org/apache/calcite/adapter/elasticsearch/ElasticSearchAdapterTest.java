@@ -37,12 +37,15 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Set of tests for ES adapter. Uses real instance via {@link EmbeddedElasticsearchPolicy}. Document
@@ -55,6 +58,7 @@ public class ElasticSearchAdapterTest {
 
   /** Default index/type name */
   private static final String ZIPS = "zips";
+  private static final int ZIPS_SIZE = 149;
 
   /**
    * Used to create {@code zips} index and insert zip data in bulk.
@@ -180,11 +184,6 @@ public class ElasticSearchAdapterTest {
         .query("select * from elastic.zips where _MAP['CITY'] = 'BROOKLYN'")
         .returnsCount(0);
 
-    // limit works
-    CalciteAssert.that()
-        .with(newConnectionFactory())
-        .query("select * from elastic.zips limit 42")
-        .returnsCount(42);
 
     // limit 0
     CalciteAssert.that()
@@ -199,9 +198,31 @@ public class ElasticSearchAdapterTest {
         + "    ElasticsearchProject(city=[CAST(ITEM($0, 'city')):VARCHAR(20)], longitude=[CAST(ITEM(ITEM($0, 'loc'), 0)):FLOAT], latitude=[CAST(ITEM(ITEM($0, 'loc'), 1)):FLOAT], pop=[CAST(ITEM($0, 'pop')):INTEGER], state=[CAST(ITEM($0, 'state')):VARCHAR(2)], id=[CAST(ITEM($0, 'id')):VARCHAR(5)])\n"
         + "      ElasticsearchTableScan(table=[[elastic, zips]])";
 
+    Consumer<ResultSet> checker = rset -> {
+      try {
+        final List<String> states = new ArrayList<>();
+        while (rset.next()) {
+          states.add(rset.getString("state"));
+        }
+        for (int i = 0; i < states.size() - 1; i++) {
+          String current = states.get(i);
+          String next = states.get(i + 1);
+          if (current.compareTo(next) > 0) {
+            final String message = String.format(Locale.ROOT,
+                "Not sorted: %s (index:%d) > %s (index:%d) count: %d",
+                current, i, next, i + 1, states.size());
+            throw new AssertionError(message);
+          }
+        }
+      } catch (SQLException e) {
+        throw new RuntimeException(e);
+      }
+    };
+
     calciteAssert()
         .query("select * from zips order by state")
-        .returnsCount(10)
+        .returnsCount(ZIPS_SIZE)
+        .returns(checker)
         .explainContains(explain);
   }
 
@@ -308,7 +329,8 @@ public class ElasticSearchAdapterTest {
                     + "pop:{script: 'params._source.pop'}, "
                     + "state:{script: 'params._source.state'}, "
                     + "id:{script: 'params._source.id'}}",
-                "sort: [ {state: 'asc'}, {pop: 'asc'}]"))
+                "sort: [ {state: 'asc'}, {pop: 'asc'}]",
+                String.format(Locale.ROOT, "size:%s", ElasticsearchTransport.DEFAULT_FETCH_SIZE)))
         .explainContains(explain);
   }
 
@@ -326,14 +348,15 @@ public class ElasticSearchAdapterTest {
 
   @Test public void testInPlan() {
     final String[] searches = {
-        "'query' : {'constant_score':{filter:{bool:{should:"
+        "query: {'constant_score':{filter:{bool:{should:"
             + "[{term:{pop:96074}},{term:{pop:99568}}]}}}}",
-        "'script_fields': {longitude:{script:'params._source.loc[0]'}, "
+        "script_fields: {longitude:{script:'params._source.loc[0]'}, "
             +  "latitude:{script:'params._source.loc[1]'}, "
             +  "city:{script: 'params._source.city'}, "
             +  "pop:{script: 'params._source.pop'}, "
             +  "state:{script: 'params._source.state'}, "
-            +  "id:{script: 'params._source.id'}}"
+            +  "id:{script: 'params._source.id'}}",
+        String.format(Locale.ROOT, "size:%d", ElasticsearchTransport.DEFAULT_FETCH_SIZE)
     };
 
     calciteAssert()
@@ -348,7 +371,7 @@ public class ElasticSearchAdapterTest {
   @Test public void testZips() {
     calciteAssert()
         .query("select state, city from zips")
-        .returnsCount(10);
+        .returnsCount(ZIPS_SIZE);
   }
 
   @Test public void testProject() {
@@ -366,7 +389,8 @@ public class ElasticSearchAdapterTest {
                     + "{zero:{script:'0'},"
                     + "state:{script:'params._source.state'},"
                     + "city:{script:'params._source.city'}}",
-                "sort:[{state:'asc'},{city:'asc'}]"));
+                "sort:[{state:'asc'},{city:'asc'}]",
+                String.format(Locale.ROOT, "size:%d", ElasticsearchTransport.DEFAULT_FETCH_SIZE)));
   }
 
   @Test public void testFilter() {
