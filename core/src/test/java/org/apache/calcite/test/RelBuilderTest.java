@@ -562,7 +562,6 @@ public class RelBuilderTest {
                     builder.literal(20)))
             .aggregate(builder.groupKey(0, 1, 2),
                 builder.aggregateCall(SqlStdOperatorTable.SUM,
-                    false, false, null, null,
                     builder.field(0)))
             .project(builder.field("c"),
                 builder.field("a"))
@@ -746,8 +745,7 @@ public class RelBuilderTest {
     RelNode root =
         builder.scan("EMP")
             .aggregate(builder.groupKey(),
-                builder.aggregateCall(SqlStdOperatorTable.COUNT, true, false,
-                    null, "C", builder.field("DEPTNO")))
+                builder.count(true, "C", builder.field("DEPTNO")))
             .build();
     final String expected = ""
         + "LogicalAggregate(group=[{}], C=[COUNT(DISTINCT $7)])\n"
@@ -769,12 +767,10 @@ public class RelBuilderTest {
                         builder.field(4),
                         builder.field(3)),
                     builder.field(1)),
-                builder.aggregateCall(SqlStdOperatorTable.COUNT, false, false,
-                    null, "C"),
-                builder.aggregateCall(SqlStdOperatorTable.SUM, false, false,
-                    null, "S",
+                builder.countStar("C"),
+                builder.sum(
                     builder.call(SqlStdOperatorTable.PLUS, builder.field(3),
-                        builder.literal(1))))
+                        builder.literal(1))).as("S"))
             .build();
     final String expected = ""
         + "LogicalAggregate(group=[{1, 8}], C=[COUNT()], S=[SUM($9)])\n"
@@ -796,12 +792,9 @@ public class RelBuilderTest {
     final RelBuilder builder = RelBuilder.create(config().build());
     RelNode root =
         builder.scan("EMP")
-            .aggregate(
-                builder.groupKey(builder.field(1)),
-                builder.aggregateCall(SqlStdOperatorTable.COUNT, false, false,
-                    null, "C"))
-            .aggregate(
-                builder.groupKey(builder.field(0)))
+            .aggregate(builder.groupKey(builder.field(1)),
+                builder.count().as("C"))
+            .aggregate(builder.groupKey(builder.field(0)))
             .build();
     final String expected = ""
         + "LogicalProject(ENAME=[$0])\n"
@@ -823,8 +816,7 @@ public class RelBuilderTest {
         builder.scan("EMP")
             .aggregate(
                 builder.groupKey(builder.field(1)),
-                builder.aggregateCall(SqlStdOperatorTable.COUNT, false, false,
-                    null, "C"))
+                builder.count().as("C"))
             .filter(
                 builder.call(SqlStdOperatorTable.GREATER_THAN, builder.field(1),
                     builder.literal(3)))
@@ -871,9 +863,11 @@ public class RelBuilderTest {
                 builder.groupKey(ImmutableBitSet.of(7),
                     ImmutableList.of(ImmutableBitSet.of(7),
                         ImmutableBitSet.of())),
-                builder.aggregateCall(SqlStdOperatorTable.COUNT, false, false,
-                    builder.call(SqlStdOperatorTable.GREATER_THAN,
-                        builder.field("EMPNO"), builder.literal(100)), "C"))
+                builder.count()
+                    .filter(
+                        builder.call(SqlStdOperatorTable.GREATER_THAN,
+                            builder.field("EMPNO"), builder.literal(100)))
+                    .as("C"))
             .build();
     final String expected = ""
         + "LogicalAggregate(group=[{7}], groups=[[{7}, {}]], C=[COUNT() FILTER $8])\n"
@@ -893,8 +887,9 @@ public class RelBuilderTest {
           builder.scan("EMP")
               .aggregate(
                   builder.groupKey(builder.field("DEPTNO")),
-                  builder.aggregateCall(SqlStdOperatorTable.SUM, false, false,
-                      builder.field("COMM"), "C", builder.field("SAL")))
+                  builder.sum(builder.field("SAL"))
+                      .filter(builder.field("COMM"))
+                      .as("C"))
               .build();
       fail("expected error, got " + root);
     } catch (CalciteException e) {
@@ -913,10 +908,11 @@ public class RelBuilderTest {
         builder.scan("EMP")
             .aggregate(
                 builder.groupKey(builder.field("DEPTNO")),
-                builder.aggregateCall(SqlStdOperatorTable.SUM, false, false,
-                    builder.call(SqlStdOperatorTable.LESS_THAN,
-                        builder.field("COMM"), builder.literal(100)), "C",
-                    builder.field("SAL")))
+                builder.sum(builder.field("SAL"))
+                    .filter(
+                        builder.call(SqlStdOperatorTable.LESS_THAN,
+                            builder.field("COMM"), builder.literal(100)))
+                    .as("C"))
             .build();
     final String expected = ""
         + "LogicalAggregate(group=[{7}], C=[SUM($5) FILTER $8])\n"
@@ -1020,8 +1016,8 @@ public class RelBuilderTest {
     RelNode root =
         builder.scan("EMP")
             .aggregate(builder.groupKey(6, 7),
-                builder.aggregateCall(SqlStdOperatorTable.GROUPING, false,
-                    false, null, "g", builder.field("DEPTNO")))
+                builder.aggregateCall(SqlStdOperatorTable.GROUPING,
+                    builder.field("DEPTNO")).as("g"))
             .build();
     final String expected = ""
         + "LogicalAggregate(group=[{6, 7}], g=[GROUPING($7)])\n"
@@ -1035,8 +1031,10 @@ public class RelBuilderTest {
       RelNode root =
           builder.scan("EMP")
               .aggregate(builder.groupKey(6, 7),
-                  builder.aggregateCall(SqlStdOperatorTable.GROUPING, true,
-                      false, null, "g", builder.field("DEPTNO")))
+                  builder.aggregateCall(SqlStdOperatorTable.GROUPING,
+                      builder.field("DEPTNO"))
+                      .distinct(true)
+                      .as("g"))
               .build();
       fail("expected error, got " + root);
     } catch (IllegalArgumentException e) {
@@ -1050,9 +1048,10 @@ public class RelBuilderTest {
       RelNode root =
           builder.scan("EMP")
               .aggregate(builder.groupKey(6, 7),
-                  builder.aggregateCall(SqlStdOperatorTable.GROUPING, false,
-                      false, builder.literal(true), "g",
-                      builder.field("DEPTNO")))
+                  builder.aggregateCall(SqlStdOperatorTable.GROUPING,
+                      builder.field("DEPTNO"))
+                      .filter(builder.literal(true))
+                      .as("g"))
               .build();
       fail("expected error, got " + root);
     } catch (IllegalArgumentException e) {
@@ -1545,8 +1544,7 @@ public class RelBuilderTest {
             .project(builder.field("DEPTNO"),
                 builder.literal(20))
             .aggregate(builder.groupKey(builder.field("EMP_alias", "DEPTNO")),
-                builder.aggregateCall(SqlStdOperatorTable.SUM, false, false,
-                    null, null, builder.field(1)))
+                builder.sum(builder.field(1)))
             .project(builder.alias(builder.field(1), "sum"),
                 builder.field("EMP_alias", "DEPTNO"))
             .build();

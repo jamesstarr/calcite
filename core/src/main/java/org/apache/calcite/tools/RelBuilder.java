@@ -872,7 +872,7 @@ public class RelBuilder {
       boolean approximate, RexNode filter, String alias,
       Iterable<? extends RexNode> operands) {
     return aggregateCall(aggFunction, distinct, filter, alias, operands)
-            .approximate(approximate);
+        .approximate(approximate);
   }
 
   /** Creates a call to an aggregate function.
@@ -883,7 +883,7 @@ public class RelBuilder {
    * {@link AggCall#as},
    * {@link AggCall#sort} to the result. */
   public AggCall aggregateCall(SqlAggFunction aggFunction,
-                               Iterable<? extends RexNode> operands) {
+      Iterable<? extends RexNode> operands) {
     return aggregateCall(aggFunction, false, false, null, ImmutableList.of(),
         null, ImmutableList.copyOf(operands));
   }
