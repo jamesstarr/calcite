@@ -319,16 +319,15 @@ public final class AggregateExpandDistinctAggregatesRule
         final AggregateCall newCall =
             AggregateCall.create(aggCall.getAggregation(), false,
                 aggCall.isApproximate(), aggCall.getArgList(), -1,
-                aggCall.collation, ImmutableBitSet.of(bottomGroupSet).cardinality(),
+                aggCall.collation, bottomGroupSet.cardinality(),
                 relBuilder.peek(), null, aggCall.name);
         bottomAggregateCalls.add(newCall);
       }
     }
     // Generate the aggregate B (see the reference example above)
     relBuilder.push(
-        aggregate.copy(
-            aggregate.getTraitSet(), relBuilder.build(),
-            ImmutableBitSet.of(bottomGroupSet), null, bottomAggregateCalls));
+        aggregate.copy(aggregate.getTraitSet(), relBuilder.build(),
+            false, bottomGroupSet, null, bottomAggregateCalls));
 
     // Add aggregate A (see the reference example above), the top aggregate
     // to handle the rest of the aggregation that the bottom aggregate hasn't handled
@@ -357,7 +356,7 @@ public final class AggregateExpandDistinctAggregatesRule
       } else {
         // If aggregate B had a COUNT aggregate call the corresponding aggregate at
         // aggregate A must be SUM. For other aggregates, it remains the same.
-        final int arg = bottomGroupSet.size() + nonDistinctAggCallProcessedSoFar;
+        final int arg = bottomGroups.size() + nonDistinctAggCallProcessedSoFar;
         final List<Integer> newArgs = ImmutableList.of(arg);
         if (aggCall.getAggregation().getKind() == SqlKind.COUNT) {
           newCall =
