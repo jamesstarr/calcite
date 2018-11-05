@@ -641,12 +641,92 @@ public class CalciteAssert {
     }
   }
 
+  private static void assertPrepare(
+      Connection connection,
+      String sql,
+      int limit,
+      boolean materializationsEnabled,
+      List<Pair<Hook, Consumer>> hooks,
+      Consumer<ResultSet> resultChecker,
+      Consumer<Integer> updateChecker,
+      Consumer<Throwable> exceptionChecker,
+      PreparedStatementConsumer consumer) {
+    final String message = "With materializationsEnabled="
+        + materializationsEnabled + ", limit=" + limit;
+    try (Closer closer = new Closer()) {
+      if (connection.isWrapperFor(CalciteConnection.class)) {
+        final CalciteConnection calciteConnection =
+            connection.unwrap(CalciteConnection.class);
+        final Properties properties = calciteConnection.getProperties();
+        properties.setProperty(
+            CalciteConnectionProperty.MATERIALIZATIONS_ENABLED.camelName(),
+            Boolean.toString(materializationsEnabled));
+        properties.setProperty(
+            CalciteConnectionProperty.CREATE_MATERIALIZATIONS.camelName(),
+            Boolean.toString(materializationsEnabled));
+        if (!properties
+            .containsKey(CalciteConnectionProperty.TIME_ZONE.camelName())) {
+          // Do not override id some test has already set this property.
+          properties.setProperty(
+              CalciteConnectionProperty.TIME_ZONE.camelName(),
+              DateTimeUtils.UTC_ZONE.getID());
+        }
+      }
+      for (Pair<Hook, Consumer> hook : hooks) {
+        //noinspection unchecked
+        closer.add(hook.left.addThread(hook.right));
+      }
+      PreparedStatement statement = connection.prepareStatement(sql);
+      statement.setMaxRows(limit <= 0 ? limit : Math.max(limit, 1));
+      ResultSet resultSet = null;
+      Integer updateCount = null;
+      try {
+        consumer.accept(statement);
+        if (updateChecker == null) {
+          resultSet = statement.executeQuery();
+        } else {
+          updateCount = statement.executeUpdate(sql);
+        }
+        if (exceptionChecker != null) {
+          exceptionChecker.accept(null);
+          return;
+        }
+      } catch (Exception | Error e) {
+        if (exceptionChecker != null) {
+          exceptionChecker.accept(e);
+          return;
+        }
+        throw e;
+      }
+      if (resultChecker != null) {
+        resultChecker.accept(resultSet);
+      }
+      if (updateChecker != null) {
+        updateChecker.accept(updateCount);
+      }
+      if (resultSet != null) {
+        resultSet.close();
+      }
+      statement.close();
+      connection.close();
+    } catch (Error | RuntimeException e) {
+      // We ignore extended message for non-runtime exception, however
+      // it does not matter much since it is better to have AssertionError
+      // at the very top level of the exception stack.
+      throw e;
+    } catch (Throwable e) {
+      throw new RuntimeException(message, e);
+    }
+  }
+
   static void assertPrepare(
       Connection connection,
       String sql,
       boolean materializationsEnabled,
       final Function<RelNode, Void> convertChecker,
-      final Function<RelNode, Void> substitutionChecker) {
+      final Function<RelNode, Void> substitutionChecker) throws Exception {
+    final String message = "With materializationsEnabled="
+        + materializationsEnabled;
     try (Closer closer = new Closer()) {
       if (convertChecker != null) {
         closer.add(
@@ -1390,6 +1470,7 @@ public class CalciteAssert {
     private int limit;
     private boolean materializationsEnabled = false;
     private final List<Pair<Hook, Consumer>> hooks = new ArrayList<>();
+    private PreparedStatementConsumer consumer;
 
     private AssertQuery(ConnectionFactory connectionFactory, String sql) {
       this.sql = sql;
@@ -1480,8 +1561,13 @@ public class CalciteAssert {
 
     protected AssertQuery returns(String sql, Consumer<ResultSet> checker) {
       try (Connection connection = createConnection()) {
-        assertQuery(connection, sql, limit, materializationsEnabled,
-            hooks, checker, null, null);
+        if (consumer == null) {
+          assertQuery(connection, sql, limit, materializationsEnabled,
+              hooks, checker, null, null);
+        } else {
+          assertPrepare(connection, sql, limit, materializationsEnabled,
+              hooks, checker, null, null, consumer);
+        }
         return this;
       } catch (Exception e) {
         throw new RuntimeException(
@@ -1539,8 +1625,13 @@ public class CalciteAssert {
 
     public AssertQuery runs() {
       try (Connection connection = createConnection()) {
-        assertQuery(connection, sql, limit, materializationsEnabled,
-            hooks, null, null, null);
+        if (consumer == null) {
+          assertQuery(connection, sql, limit, materializationsEnabled,
+              hooks, null, null, null);
+        } else {
+          assertPrepare(connection, sql, limit, materializationsEnabled,
+              hooks, null, null, null, consumer);
+        }
         return this;
       } catch (Exception e) {
         throw new RuntimeException(
@@ -2030,20 +2121,6 @@ public class CalciteAssert {
 
   /** Specification for common test schemas. */
   public enum SchemaSpec {
-<<<<<<< HEAD
-    REFLECTIVE_FOODMART,
-    JDBC_FOODMART,
-    CLONE_FOODMART,
-    JDBC_FOODMART_WITH_LATTICE,
-    GEO,
-    HR,
-    JDBC_SCOTT,
-    SCOTT,
-    BLANK,
-    LINGUAL,
-    POST,
-    ORINOCO
-=======
 =======
     REFLECTIVE_FOODMART("foodmart"),
     JDBC_FOODMART("foodmart"),
@@ -2138,6 +2215,16 @@ public class CalciteAssert {
       return properties;
     }
   }
+<<<<<<< HEAD
+=======
+
+  /**
+   * We want a consumer which can throw SqlException
+   */
+  public interface PreparedStatementConsumer {
+    void accept(PreparedStatement statement) throws SQLException;
+  }
+}
 
   /**
    * We want a consumer which can throw SqlException

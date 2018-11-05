@@ -104,3 +104,8 @@ public class ChinookAvaticaServer {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End ChinookAvaticaServer.java
+>>>>>>> 643817238 ([CALCITE-563] In JDBC adapter, push bindable parameters down to the underlying JDBC data source (Vladimir Sitnikov, Piotr Bojko))

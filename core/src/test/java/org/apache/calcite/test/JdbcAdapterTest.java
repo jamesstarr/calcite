@@ -924,9 +924,6 @@ class JdbcAdapterTest {
             .explainContains(explain)
             .planUpdateHasSql(jdbcSql, 1);
       } catch (SQLException e) {
-<<<<<<< HEAD
-        throw TestUtil.rethrow(e);
-=======
         throw new RuntimeException(e);
       }
     });
@@ -945,7 +942,10 @@ class JdbcAdapterTest {
         .typeIs("[employee_id INTEGER NOT NULL, position_id INTEGER]");
   }
 
+<<<<<<< HEAD
   @Test void pushBindParameters() throws Exception {
+=======
+  @Test public void pushBindParameters() throws Exception {
     final String sql = "select empno, ename from emp where empno = ?";
     CalciteAssert.model(JdbcTest.SCOTT_MODEL)
         .query(sql)

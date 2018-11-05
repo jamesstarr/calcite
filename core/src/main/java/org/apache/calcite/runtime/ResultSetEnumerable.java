@@ -152,7 +152,7 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
       String sql,
       Function1<ResultSet, Function0<T>> rowBuilderFactory) {
     return new ResultSetEnumerable<>(dataSource, sql, rowBuilderFactory);
-<<<<<<< HEAD
+>>>>>>> 42ca94873 (Apply small refactorings to Calcite codebase (Java 5, Java 7, Java 8))
   }
 
   /** Executes a SQL query and returns the results as an enumerator, using a
@@ -160,25 +160,12 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
    *
    * <p>It uses a {@link PreparedStatement} for computing the query result,
    * and that means that it can bind parameters. */
-  public static <T> ResultSetEnumerable<T> of(
+  public static <T> Enumerable<T> of(
       DataSource dataSource,
       String sql,
       Function1<ResultSet, Function0<T>> rowBuilderFactory,
       PreparedStatementEnricher consumer) {
     return new ResultSetEnumerable<>(dataSource, sql, rowBuilderFactory, consumer);
-  }
-
-  public void setTimeout(DataContext context) {
-    this.queryStart = (Long) context.get(DataContext.Variable.UTC_TIMESTAMP.camelName);
-    Object timeout = context.get(DataContext.Variable.TIMEOUT.camelName);
-    if (timeout instanceof Long) {
-      this.timeout = (Long) timeout;
-    } else {
-      if (timeout != null) {
-        LOGGER.debug("Variable.TIMEOUT should be `long`. Given value was {}", timeout);
-      }
-      this.timeout = 0;
-    }
   }
 
   /** Called from generated code that proposes to create a
@@ -245,8 +232,6 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
     } else {
       preparedStatement.setObject(i, value);
     }
-=======
->>>>>>> 42ca94873 (Apply small refactorings to Calcite codebase (Java 5, Java 7, Java 8))
   }
 
   public Enumerator<T> enumerator() {
@@ -307,6 +292,7 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
   }
 
   private void setTimeoutIfPossible(Statement statement) throws SQLException {
+<<<<<<< HEAD
     if (timeout == 0) {
       return;
     }
@@ -329,6 +315,11 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
         LOGGER.debug("Failed to set query timeout " + secondsLeft + " seconds", e);
         timeoutSetFailed = true;
       }
+=======
+    try {
+      statement.setQueryTimeout(10);
+    } catch (SQLFeatureNotSupportedException e) {
+      LOGGER.debug("Failed to set query timeout.");
     }
   }
 
@@ -440,6 +431,18 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
       };
     };
   }
+<<<<<<< HEAD
+=======
+
+  /**
+   * Consumer for decorating a {@link PreparedStatement}, that is, setting
+   * its parameters.
+   */
+  public interface PreparedStatementEnricher {
+    void enrich(PreparedStatement statement) throws SQLException;
+  }
+}
+>>>>>>> 643817238 ([CALCITE-563] In JDBC adapter, push bindable parameters down to the underlying JDBC data source (Vladimir Sitnikov, Piotr Bojko))
 
   /**
    * Consumer for decorating a {@link PreparedStatement}, that is, setting

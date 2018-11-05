@@ -6823,172 +6823,17 @@ public class JdbcTest {
         .returns("EXPR$0=[250, 500, 1000]\n");
   }
 
-<<<<<<< HEAD
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3565">[CALCITE-3565]
-   * Explicitly cast assignable operand types to decimal for udf</a>. */
-  @Test void testAssignableTypeCast() {
-    final String sql = "SELECT ST_MakePoint(1, 2.1)";
-    CalciteAssert.that()
-        .with(CalciteAssert.Config.GEO)
-        .query(sql)
-        .planContains("static final java.math.BigDecimal $L4J$C$new_java_math_BigDecimal_1_ = "
-            + "new java.math.BigDecimal(\n"
-            + "              1)")
-        .planContains("org.apache.calcite.runtime.GeoFunctions.ST_MakePoint("
-            + "$L4J$C$new_java_math_BigDecimal_1_, v)")
-        .returns("EXPR$0={\"x\":1,\"y\":2.1}\n");
-  }
-
-  @Test void testMatchSimple() {
-    final String sql = "select *\n"
-        + "from \"hr\".\"emps\" match_recognize (\n"
-        + "  order by \"empid\" desc\n"
-        + "  measures up.\"commission\" as c,\n"
-        + "    up.\"empid\" as empid,\n"
-        + "    2 as two\n"
-        + "  pattern (up s)\n"
-        + "  define up as up.\"empid\" = 100)";
-    final String convert = ""
-        + "LogicalProject(C=[$0], EMPID=[$1], TWO=[$2])\n"
-        + "  LogicalMatch(partition=[[]], order=[[0 DESC]], "
-        + "outputFields=[[C, EMPID, TWO]], allRows=[false], "
-        + "after=[FLAG(SKIP TO NEXT ROW)], pattern=[('UP', 'S')], "
-        + "isStrictStarts=[false], isStrictEnds=[false], subsets=[[]], "
-        + "patternDefinitions=[[=(CAST(PREV(UP.$0, 0)):INTEGER NOT NULL, 100)]], "
-        + "inputFields=[[empid, deptno, name, salary, commission]])\n"
-        + "    LogicalTableScan(table=[[hr, emps]])\n";
-    final String plan = "PLAN="
-        + "EnumerableMatch(partition=[[]], order=[[0 DESC]], "
-        + "outputFields=[[C, EMPID, TWO]], allRows=[false], "
-        + "after=[FLAG(SKIP TO NEXT ROW)], pattern=[('UP', 'S')], "
-        + "isStrictStarts=[false], isStrictEnds=[false], subsets=[[]], "
-        + "patternDefinitions=[[=(CAST(PREV(UP.$0, 0)):INTEGER NOT NULL, 100)]], "
-        + "inputFields=[[empid, deptno, name, salary, commission]])\n"
-        + "  EnumerableTableScan(table=[[hr, emps]])";
-    CalciteAssert.that()
-        .with(CalciteAssert.Config.REGULAR)
-        .query(sql)
-        .convertContains(convert)
-        .explainContains(plan)
-        .returns("C=1000; EMPID=100; TWO=2\nC=500; EMPID=200; TWO=2\n");
-  }
-
-  @Test void testMatch() {
-    final String sql = "select *\n"
-        + "from \"hr\".\"emps\" match_recognize (\n"
-        + "  order by \"empid\" desc\n"
-        + "  measures \"commission\" as c,\n"
-        + "    \"empid\" as empid\n"
-        + "  pattern (s up)\n"
-        + "  define up as up.\"commission\" < prev(up.\"commission\"))";
-    final String convert = ""
-        + "LogicalProject(C=[$0], EMPID=[$1])\n"
-        + "  LogicalMatch(partition=[[]], order=[[0 DESC]], "
-        + "outputFields=[[C, EMPID]], allRows=[false], "
-        + "after=[FLAG(SKIP TO NEXT ROW)], pattern=[('S', 'UP')], "
-        + "isStrictStarts=[false], isStrictEnds=[false], subsets=[[]], "
-        + "patternDefinitions=[[<(PREV(UP.$4, 0), PREV(UP.$4, 1))]], "
-        + "inputFields=[[empid, deptno, name, salary, commission]])\n"
-        + "    LogicalTableScan(table=[[hr, emps]])\n";
-    final String plan = "PLAN="
-        + "EnumerableMatch(partition=[[]], order=[[0 DESC]], "
-        + "outputFields=[[C, EMPID]], allRows=[false], "
-        + "after=[FLAG(SKIP TO NEXT ROW)], pattern=[('S', 'UP')], "
-        + "isStrictStarts=[false], isStrictEnds=[false], subsets=[[]], "
-        + "patternDefinitions=[[<(PREV(UP.$4, 0), PREV(UP.$4, 1))]], "
-        + "inputFields=[[empid, deptno, name, salary, commission]])\n"
-        + "  EnumerableTableScan(table=[[hr, emps]])";
-    CalciteAssert.that()
-        .with(CalciteAssert.Config.REGULAR)
-        .query(sql)
-        .convertContains(convert)
-        .explainContains(plan)
-        .returns("C=1000; EMPID=100\nC=500; EMPID=200\n");
-  }
-
-  @Test void testJsonType() {
-    CalciteAssert.that()
-        .query("SELECT JSON_TYPE(v) AS c1\n"
-            + ",JSON_TYPE(JSON_VALUE(v, 'lax $.b' ERROR ON ERROR)) AS c2\n"
-            + ",JSON_TYPE(JSON_VALUE(v, 'strict $.a[0]' ERROR ON ERROR)) AS c3\n"
-            + ",JSON_TYPE(JSON_VALUE(v, 'strict $.a[1]' ERROR ON ERROR)) AS c4\n"
-            + "FROM (VALUES ('{\"a\": [10, true],\"b\": \"[10, true]\"}')) AS t(v)\n"
-            + "limit 10")
-        .returns("C1=OBJECT; C2=ARRAY; C3=INTEGER; C4=BOOLEAN\n");
-  }
-
-  @Test void testJsonDepth() {
-    CalciteAssert.that()
-        .query("SELECT JSON_DEPTH(v) AS c1\n"
-            + ",JSON_DEPTH(JSON_VALUE(v, 'lax $.b' ERROR ON ERROR)) AS c2\n"
-            + ",JSON_DEPTH(JSON_VALUE(v, 'strict $.a[0]' ERROR ON ERROR)) AS c3\n"
-            + ",JSON_DEPTH(JSON_VALUE(v, 'strict $.a[1]' ERROR ON ERROR)) AS c4\n"
-            + "FROM (VALUES ('{\"a\": [10, true],\"b\": \"[10, true]\"}')) AS t(v)\n"
-            + "limit 10")
-        .returns("C1=3; C2=2; C3=1; C4=1\n");
-  }
-
-  @Test void testJsonLength() {
-    CalciteAssert.that()
-        .query("SELECT JSON_LENGTH(v) AS c1\n"
-            + ",JSON_LENGTH(v, 'lax $.a') AS c2\n"
-            + ",JSON_LENGTH(v, 'strict $.a[0]') AS c3\n"
-            + ",JSON_LENGTH(v, 'strict $.a[1]') AS c4\n"
-            + "FROM (VALUES ('{\"a\": [10, true]}')) AS t(v)\n"
-            + "limit 10")
-        .returns("C1=1; C2=2; C3=1; C4=1\n");
-  }
-
-  @Test void testJsonPretty() {
-    CalciteAssert.that()
-        .query("SELECT JSON_PRETTY(v) AS c1\n"
-            + "FROM (VALUES ('{\"a\": [10, true],\"b\": [10, true]}')) as t(v)\n"
-            + "limit 10")
-        .returns("C1={\n"
-            + "  \"a\" : [ 10, true ],\n"
-            + "  \"b\" : [ 10, true ]\n"
-            + "}\n");
-  }
-
-  @Test void testJsonKeys() {
-    CalciteAssert.that()
-        .query("SELECT JSON_KEYS(v) AS c1\n"
-            + ",JSON_KEYS(v, 'lax $.a') AS c2\n"
-            + ",JSON_KEYS(v, 'lax $.b') AS c3\n"
-            + ",JSON_KEYS(v, 'strict $.a[0]') AS c4\n"
-            + ",JSON_KEYS(v, 'strict $.a[1]') AS c5\n"
-            + "FROM (VALUES ('{\"a\": [10, true],\"b\": {\"c\": 30}}')) AS t(v)\n"
-            + "limit 10")
-        .returns("C1=[\"a\",\"b\"]; C2=null; C3=[\"c\"]; C4=null; C5=null\n");
-  }
-
-  @Test void testJsonRemove() {
-    CalciteAssert.that()
-        .query("SELECT JSON_REMOVE(v, '$[1]') AS c1\n"
-            + "FROM (VALUES ('[\"a\", [\"b\", \"c\"], \"d\"]')) AS t(v)\n"
-            + "limit 10")
-        .returns("C1=[\"a\",\"d\"]\n");
-  }
-
-  @Test void testJsonStorageSize() {
-    CalciteAssert.that()
-        .query("SELECT\n"
-            + "JSON_STORAGE_SIZE('[100, \"sakila\", [1, 3, 5], 425.05]') AS A,\n"
-            + "JSON_STORAGE_SIZE('{\"a\": 10, \"b\": \"a\", \"c\": \"[1, 3, 5, 7]\"}') AS B,\n"
-            + "JSON_STORAGE_SIZE('{\"a\": 10, \"b\": \"xyz\", \"c\": \"[1, 3, 5, 7]\"}') AS C,\n"
-            + "JSON_STORAGE_SIZE('[100, \"json\", [[10, 20, 30], 3, 5], 425.05]') AS D\n"
-            + "limit 10")
-        .returns("A=29; B=35; C=37; D=36\n");
-  }
-
+>>>>>>> 643817238 ([CALCITE-563] In JDBC adapter, push bindable parameters down to the underlying JDBC data source (Vladimir Sitnikov, Piotr Bojko))
   /**
    * Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2609">[CALCITE-2609]
    * Dynamic parameters ("?") pushed to underlying JDBC schema, causing
    * error</a>.
    */
+<<<<<<< HEAD
   @Test void testQueryWithParameter() throws Exception {
+=======
+  @Test public void testQueryWithParameter() throws Exception {
     String hsqldbMemUrl = "jdbc:hsqldb:mem:.";
     try (Connection baseConnection = DriverManager.getConnection(hsqldbMemUrl);
          Statement baseStmt = baseConnection.createStatement()) {
@@ -7033,35 +6878,6 @@ public class JdbcTest {
       }
       calciteConnection.close();
     }
-  }
-
-  /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3347">[CALCITE-3347]
-   * IndexOutOfBoundsException in FixNullabilityShuttle when using FilterIntoJoinRule</a>.
-   */
-  @Test void testSemiJoin() {
-    CalciteAssert.that()
-        .with(CalciteAssert.Config.JDBC_FOODMART)
-        .query("select *\n"
-            + " from \"foodmart\".\"employee\""
-            + " where \"employee_id\" = 1 and \"last_name\" in"
-            + " (select \"last_name\" from \"foodmart\".\"employee\" where \"employee_id\" = 2)")
-        .runs();
-  }
-
-  /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3894">[CALCITE-3894]
-   * SET operation between DATE and TIMESTAMP returns a wrong result</a>.
-   */
-  @Test public void testUnionDateTime() {
-    CalciteAssert.AssertThat assertThat = CalciteAssert.that();
-    String query = "select * from (\n"
-        + "select \"id\" from (VALUES(DATE '2018-02-03')) \"foo\"(\"id\")\n"
-        + "union\n"
-        + "select \"id\" from (VALUES(TIMESTAMP '2008-03-31 12:23:34')) \"foo\"(\"id\"))";
-    assertThat.query(query).returns("id=2008-03-31 12:23:34\nid=2018-02-03 00:00:00\n");
   }
 
 =======

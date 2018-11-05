@@ -16,7 +16,7 @@
  */
 package org.apache.calcite.chinook;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -26,9 +26,9 @@ import java.sql.ResultSet;
 /**
  * Tests against parameters in prepared statement when using underlying jdbc subschema
  */
-class RemotePreparedStatementParametersTest {
+public class RemotePreparedStatementParametersTest {
 
-  @Test void testSimpleStringParameterShouldWorkWithCalcite() throws Exception {
+  @Test public void testSimpleStringParameterShouldWorkWithCalcite() throws Exception {
     // given
     ChinookAvaticaServer server = new ChinookAvaticaServer();
     server.startWithCalcite();
@@ -42,7 +42,7 @@ class RemotePreparedStatementParametersTest {
     server.stop();
   }
 
-  @Test void testSeveralParametersShouldWorkWithCalcite() throws Exception {
+  @Test public void testSeveralParametersShouldWorkWithCalcite() throws Exception {
     // given
     ChinookAvaticaServer server = new ChinookAvaticaServer();
     server.startWithCalcite();
@@ -58,7 +58,7 @@ class RemotePreparedStatementParametersTest {
     server.stop();
   }
 
-  @Test void testParametersShouldWorkWithRaw() throws Exception {
+  @Test public void testParametersShouldWorkWithRaw() throws Exception {
     // given
     ChinookAvaticaServer server = new ChinookAvaticaServer();
     server.startWithRaw();
@@ -72,3 +72,8 @@ class RemotePreparedStatementParametersTest {
     server.stop();
   }
 }
+<<<<<<< HEAD
+=======
+
+// End RemotePreparedStatementParametersTest.java
+>>>>>>> 643817238 ([CALCITE-563] In JDBC adapter, push bindable parameters down to the underlying JDBC data source (Vladimir Sitnikov, Piotr Bojko))

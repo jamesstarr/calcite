@@ -747,9 +747,6 @@ public interface CalciteResource {
   @BaseMessage("In UNPIVOT, cannot derive type for axis ''{0}''")
   ExInst<SqlValidatorException> unpivotCannotDeriveAxisType(String axisName);
 
-<<<<<<< HEAD
-=======
-=======
 >>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
   @BaseMessage("Pattern variable ''{0}'' has already been defined")
   ExInst<SqlValidatorException> patternVarAlreadyDefined(String varName);
@@ -845,6 +842,12 @@ public interface CalciteResource {
 
   @BaseMessage("Dialect does not support feature: ''{0}''")
   ExInst<SqlValidatorException> dialectDoesNotSupportFeature(String featureName);
+<<<<<<< HEAD
+=======
+
+  @BaseMessage("While executing SQL [{0}] on JDBC sub-schema")
+  ExInst<RuntimeException> exceptionWhilePerformingQueryOnJdbcSubSchema(String sql);
+}
 
   @BaseMessage("Substring error: negative substring length not allowed")
   ExInst<CalciteException> illegalNegativeSubstringLength();

@@ -14,16 +14,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/SqlJsonEncoding.java
 package org.apache.calcite.sql;
+=======
+package org.apache.calcite.test;
+
+import org.apache.calcite.adapter.os.OsAdapterTest;
+import org.apache.calcite.adapter.tpcds.TpcdsTest;
+import org.apache.calcite.adapter.tpch.TpchTest;
+import org.apache.calcite.chinook.EndToEndTest;
+import org.apache.calcite.chinook.RemotePreparedStatementParametersTest;
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+>>>>>>> 643817238 ([CALCITE-563] In JDBC adapter, push bindable parameters down to the underlying JDBC data source (Vladimir Sitnikov, Piotr Bojko)):plus/src/test/java/org/apache/calcite/test/PlusSuite.java
 
 /**
  * Supported json encodings that could be passed to a
  * {@code JsonValueExpression}.
  */
+<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/SqlJsonEncoding.java
 public enum SqlJsonEncoding {
   UTF8("UTF8"),
   UTF16("UTF16"),
   UTF32("UTF32");
+=======
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+    OsAdapterTest.class,
+    TpcdsTest.class,
+    TpchTest.class,
+    EndToEndTest.class,
+    RemotePreparedStatementParametersTest.class
+    })
+public class PlusSuite {
+}
+>>>>>>> 643817238 ([CALCITE-563] In JDBC adapter, push bindable parameters down to the underlying JDBC data source (Vladimir Sitnikov, Piotr Bojko)):plus/src/test/java/org/apache/calcite/test/PlusSuite.java
 
   private final String standardName;
 

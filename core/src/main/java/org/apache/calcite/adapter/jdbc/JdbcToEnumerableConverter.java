@@ -57,7 +57,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
-import javax.sql.DataSource;
+>>>>>>> 643817238 ([CALCITE-563] In JDBC adapter, push bindable parameters down to the underlying JDBC data source (Vladimir Sitnikov, Piotr Bojko))
 
 /**
  * Relational expression representing a scan of a table in a JDBC data source.
@@ -95,7 +95,10 @@ public class JdbcToEnumerableConverter
         (JdbcConvention) child.getConvention();
     SqlString sqlString = generateSql(jdbcConvention.dialect);
     String sql = sqlString.getSql();
+<<<<<<< HEAD
     if (CalciteSystemProperty.DEBUG.value()) {
+=======
+    if (CalcitePrepareImpl.DEBUG) {
       System.out.println("[" + sql + "]");
     }
     Hook.QUERY_PLAN.run(sql);
@@ -172,23 +175,26 @@ public class JdbcToEnumerableConverter
       enumerable = builder0.append("enumerable",
           Expressions.call(
               BuiltInMethod.RESULT_SET_ENUMERABLE_OF_PREPARED.method,
-              Schemas.unwrap(jdbcConvention.expression, DataSource.class),
+              Expressions.call(
+                  Schemas.unwrap(jdbcConvention.expression,
+                      JdbcSchema.class),
+                  BuiltInMethod.JDBC_SCHEMA_DATA_SOURCE.method),
               sql_,
               rowBuilderFactory_,
               preparedStatementConsumer_));
     } else {
-      enumerable = builder0.append("enumerable",
+      enumerable = builder0.append(
+          "enumerable",
           Expressions.call(
               BuiltInMethod.RESULT_SET_ENUMERABLE_OF.method,
-              Schemas.unwrap(jdbcConvention.expression, DataSource.class),
+              Expressions.call(
+                  Schemas.unwrap(jdbcConvention.expression,
+                      JdbcSchema.class),
+                  BuiltInMethod.JDBC_SCHEMA_DATA_SOURCE.method),
               sql_,
               rowBuilderFactory_));
     }
-    builder0.add(
-        Expressions.statement(
-            Expressions.call(enumerable,
-                BuiltInMethod.RESULT_SET_ENUMERABLE_SET_TIMEOUT.method,
-                DataContext.ROOT)));
+
     builder0.add(
         Expressions.return_(null, enumerable));
     return implementor.result(physType, builder0.toBlock());
