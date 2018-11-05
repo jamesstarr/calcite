@@ -17,16 +17,14 @@
 package org.apache.calcite.test.enumerable;
 
 import org.apache.calcite.adapter.enumerable.EnumerableCorrelate;
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+import org.apache.calcite.adapter.enumerable.EnumerableRules;
 import org.apache.calcite.adapter.java.ReflectiveSchema;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
-<<<<<<< HEAD
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.runtime.Hook;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
-=======
 import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.test.JdbcTest;
 
@@ -34,15 +32,17 @@ import org.junit.jupiter.api.Test;
 
 import java.util.function.Consumer;
 
+import java.util.function.Consumer;
+
 /**
  * Unit test for
  * {@link EnumerableCorrelate}.
  */
-class EnumerableCorrelateTest {
+public class EnumerableCorrelateTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2605">[CALCITE-2605]
    * NullPointerException when left outer join implemented with EnumerableCorrelate</a> */
-  @Test void leftOuterJoinCorrelate() {
+  @Test public void leftOuterJoinCorrelate() {
     tester(false, new JdbcTest.HrSchema())
         .query(
             "select e.empid, e.name, d.name as dept from emps e left outer join depts d on e.deptno=d.deptno")
@@ -65,7 +65,7 @@ class EnumerableCorrelateTest {
             "empid=200; name=Eric; dept=null");
   }
 
-  @Test void simpleCorrelateDecorrelated() {
+  @Test public void simpleCorrelateDecorrelated() {
     tester(true, new JdbcTest.HrSchema())
         .query(
             "select empid, name from emps e where exists (select 1 from depts d where d.deptno=e.deptno)")
