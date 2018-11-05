@@ -25,13 +25,13 @@ import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.SqlWriterConfig;
 import org.apache.calcite.sql.dialect.AnsiSqlDialect;
 import org.apache.calcite.sql.dialect.CalciteSqlDialect;
-import org.apache.calcite.sql.util.SqlBuilder;
 import org.apache.calcite.sql.util.SqlString;
 import org.apache.calcite.util.ImmutableBeans;
 import org.apache.calcite.util.Util;
 import org.apache.calcite.util.trace.CalciteLogger;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 
 import org.slf4j.LoggerFactory;
 
@@ -266,6 +266,7 @@ public class SqlPrettyWriter implements SqlWriter {
   private final SqlDialect dialect;
   private final StringBuilder buf;
   private final Deque<FrameImpl> listStack = new ArrayDeque<>();
+  private ImmutableList.Builder<Integer> dynamicParameters;
   protected FrameImpl frame;
   private boolean needWhitespace;
   protected String nextWhitespace;
@@ -435,6 +436,7 @@ public class SqlPrettyWriter implements SqlWriter {
   public void reset() {
     buf.setLength(0);
     lineStart = 0;
+    dynamicParameters = null;
     setNeedWhitespace(false);
     nextWhitespace = " ";
   }
@@ -906,7 +908,9 @@ public class SqlPrettyWriter implements SqlWriter {
   }
 
   public SqlString toSqlString() {
-    return new SqlBuilder(dialect, toString()).toSqlString();
+    ImmutableList<Integer> dynamicParameters =
+        this.dynamicParameters == null ? null : this.dynamicParameters.build();
+    return new SqlString(dialect, toString(), dynamicParameters);
   }
 
   public SqlDialect getDialect() {
@@ -998,6 +1002,15 @@ public class SqlPrettyWriter implements SqlWriter {
     }
     maybeWhitespace(qName);
     buf.append(qName);
+    setNeedWhitespace(true);
+  }
+
+  @Override public void dynamicParam(int index) {
+    if (dynamicParameters == null) {
+      dynamicParameters = ImmutableList.builder();
+    }
+    dynamicParameters.add(index);
+    print("?");
     setNeedWhitespace(true);
   }
 

@@ -799,6 +799,9 @@ public interface CalciteResource {
 
   @BaseMessage("Dialect does not support feature: ''{0}''")
   ExInst<SqlValidatorException> dialectDoesNotSupportFeature(String featureName);
+
+  @BaseMessage("While executing SQL [{0}] on JDBC sub-schema")
+  ExInst<RuntimeException> exceptionWhilePerformingQueryOnJdbcSubSchema(String sql);
 }
 
 // End CalciteResource.java
