@@ -23,6 +23,7 @@ matrix:
   include:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - jdk: openjdk8
     - jdk: openjdk11
     - jdk: openjdk11
@@ -32,12 +33,20 @@ matrix:
 =======
     - env: IMAGE=maven:3-jdk-11 JDOC=Y
 =======
+=======
+    - env: IMAGE=maven:3-jdk-12
+>>>>>>> c7330ca52 ([CALCITE-2655] Enable Travis to test against JDK 12)
     - env: IMAGE=maven:3-jdk-11 JDOC=Y RAT=Y
 >>>>>>> 8718191eb (Add license to TestKtTest and add apache-rat:check to Travis CI)
     - env: IMAGE=maven:3-jdk-10
     - env: IMAGE=maven:3-jdk-9
     - env: IMAGE=maven:3-jdk-8 JDOC=Y
+<<<<<<< HEAD
 >>>>>>> aeee89c7f (Fix JavaDoc warnings for Java 9+, and check JavaDoc in Travis CI)
+=======
+  allow_failures:
+    - env: IMAGE=maven:3-jdk-12
+>>>>>>> c7330ca52 ([CALCITE-2655] Enable Travis to test against JDK 12)
 branches:
   only:
     - master
