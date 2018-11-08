@@ -30,6 +30,8 @@ data: {
         "org.apache.calcite.sql.SqlCreate"
         "org.apache.calcite.sql.SqlDrop"
         "org.apache.calcite.sql.ddl.SqlDdlNodes"
+        "java.util.Map"
+        "java.util.HashMap"
       ]
 
     # List of new keywords. Example: "DATABASES", "TABLES". If the keyword is
@@ -67,6 +69,7 @@ data: {
       "SqlCreateTable"
       "SqlCreateType"
       "SqlCreateView"
+        "SqlCreateFunction"
     ]
 
     # List of methods for parsing extensions to "DROP" calls.
@@ -78,6 +81,7 @@ data: {
       "SqlDropTable"
       "SqlDropType"
       "SqlDropView"
+        "SqlDropFunction"
     ]
 
     # List of files in @includes directory that have parser method

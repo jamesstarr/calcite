@@ -73,6 +73,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 /**
@@ -1093,14 +1094,18 @@ public class SqlParserTest {
     final String whereRow2 = "select 1 from t2 where ^(x, y)^ < (a, b)";
     conformance = SqlConformanceEnum.DEFAULT;
     sql(whereRow2).sansCarets().ok(whereExpected);
-    if (this instanceof SqlUnParserTest) {
-      // After this point, SqlUnparserTest has problems.
-      // We generate ROW in a dialect that does not allow ROW in all contexts.
-      // So bail out.
-      return;
-    }
+
+    // After this point, SqlUnparserTest has problems.
+    // We generate ROW in a dialect that does not allow ROW in all contexts.
+    // So bail out.
+    assumeFalse(isUnparserTest());
     conformance = SqlConformanceEnum.SQL_SERVER_2008;
     sql(whereRow2).sansCarets().ok(whereExpected);
+  }
+
+  /** Whether this is a sub-class that tests un-parsing as well as parsing. */
+  protected boolean isUnparserTest() {
+    return false;
   }
 
   @Test public void testPeriod() {
