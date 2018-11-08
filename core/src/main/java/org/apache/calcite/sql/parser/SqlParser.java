@@ -28,10 +28,14 @@ import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.sql.validate.SqlDelegatingConformance;
 import org.apache.calcite.util.SourceStringReader;
+<<<<<<< HEAD
 
+=======
+>>>>>>> a74d3bb1d ([CALCITE-2662] In Planner, allow parsing a stream (Reader) instead of a String (Enrico Olivelli))
 
 import com.google.common.collect.ImmutableSet;
 
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.Objects;
 import java.util.Set;
