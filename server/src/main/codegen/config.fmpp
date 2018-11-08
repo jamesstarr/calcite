@@ -24,6 +24,7 @@ data: {
     package: "org.apache.calcite.sql.parser.ddl",
     class: "SqlDdlParserImpl",
 
+<<<<<<< HEAD
     # List of import statements.
     imports: [
       "org.apache.calcite.schema.ColumnStrategy"
@@ -33,6 +34,17 @@ data: {
       "java.util.Map"
       "java.util.HashMap"
     ]
+=======
+      # List of import statements.
+      imports: [
+        "org.apache.calcite.schema.ColumnStrategy"
+        "org.apache.calcite.sql.SqlCreate"
+        "org.apache.calcite.sql.SqlDrop"
+        "org.apache.calcite.sql.ddl.SqlDdlNodes"
+        "java.util.Map"
+        "java.util.HashMap"
+      ]
+>>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
 
     # List of new keywords. Example: "DATABASES", "TABLES". If the keyword is
     # not a reserved keyword, add it to the 'nonReservedKeywords' section.
@@ -472,6 +484,7 @@ data: {
       "SqlCreateTable"
       "SqlCreateType"
       "SqlCreateView"
+        "SqlCreateFunction"
     ]
 
     # List of methods for parsing extensions to "DROP" calls.
@@ -483,6 +496,7 @@ data: {
       "SqlDropTable"
       "SqlDropType"
       "SqlDropView"
+        "SqlDropFunction"
     ]
 
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")

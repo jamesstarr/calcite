@@ -259,6 +259,17 @@ public class SqlDdlNodes {
       throw new RuntimeException(e);
     }
   }
+<<<<<<< HEAD
+=======
+
+  /** File type for CREATE FUNCTION. */
+  public enum FileType {
+    FILE,
+    JAR,
+    ARCHIVE
+  }
+}
+>>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
 
   /** File type for CREATE FUNCTION. */
   public enum FileType {

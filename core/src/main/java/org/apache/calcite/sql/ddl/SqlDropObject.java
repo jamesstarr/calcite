@@ -91,17 +91,9 @@ abstract class SqlDropObject extends SqlDrop
             RESOURCE.typeNotFound(name.getSimple()));
       }
       break;
-<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlDropObject.java
-    case DROP_FUNCTION:
-      existed = schema.removeFunction(name.getSimple());
-      if (!existed && !ifExists) {
-        throw SqlUtil.newContextException(name.getParserPosition(),
-            RESOURCE.functionNotFound(name.getSimple()));
-      }
-      break;
-    case OTHER_DDL:
-=======
 >>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen)):server/src/main/java/org/apache/calcite/sql/ddl/SqlDropObject.java
+=======
+    case OTHER_DDL:
     default:
       throw new AssertionError(getKind());
     }

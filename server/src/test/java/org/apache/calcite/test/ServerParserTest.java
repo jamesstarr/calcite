@@ -218,7 +218,7 @@ class ServerParserTest extends SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testCreateOrReplaceFunction() {
+  @Test public void testCreateOrReplaceFunction() {
     final String sql = "create or replace function if not exists x.udf\n"
         + " as 'org.apache.calcite.udf.TableFun.demoUdf'\n"
         + "using jar 'file:/path/udf/udf-0.0.1-SNAPSHOT.jar',\n"
@@ -233,7 +233,7 @@ class ServerParserTest extends SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testCreateOrReplaceFunction2() {
+  @Test public void testCreateOrReplaceFunction2() {
     final String sql = "create function \"my Udf\"\n"
         + " as 'org.apache.calcite.udf.TableFun.demoUdf'";
     final String expected = "CREATE FUNCTION `my Udf`"
@@ -241,7 +241,7 @@ class ServerParserTest extends SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testDropSchema() {
+  @Test public void testDropSchema() {
     sql("drop schema x")
         .ok("DROP SCHEMA `X`");
   }
@@ -301,11 +301,22 @@ class ServerParserTest extends SqlParserTest {
         .ok("DROP MATERIALIZED VIEW IF EXISTS `X`");
   }
 
-  @Test void testDropFunction() {
+  @Test public void testDropFunction() {
     final String sql = "drop function x.udf";
     final String expected = "DROP FUNCTION `X`.`UDF`";
     sql(sql).ok(expected);
   }
+<<<<<<< HEAD
+=======
+
+  @Test public void testDropFunctionIfExists() {
+    final String sql = "drop function if exists \"my udf\"";
+    final String expected = "DROP FUNCTION IF EXISTS `my udf`";
+    sql(sql).ok(expected);
+  }
+
+}
+>>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
 
   @Test void testDropFunctionIfExists() {
     final String sql = "drop function if exists \"my udf\"";

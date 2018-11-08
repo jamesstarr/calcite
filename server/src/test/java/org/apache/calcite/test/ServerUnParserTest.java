@@ -20,7 +20,12 @@ package org.apache.calcite.test;
  * Extension to {@link ServerParserTest} that ensures that every expression can
  * un-parse successfully.
  */
-class ServerUnParserTest extends ServerParserTest {
+public class ServerUnParserTest extends ServerParserTest {
+  //~ Constructors -----------------------------------------------------------
+
+  public ServerUnParserTest() {
+  }
+
   //~ Methods ----------------------------------------------------------------
 
   @Override protected Tester getTester() {
@@ -31,3 +36,8 @@ class ServerUnParserTest extends ServerParserTest {
     return true;
   }
 }
+<<<<<<< HEAD
+=======
+
+// End ServerUnParserTest.java
+>>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))

@@ -3180,9 +3180,13 @@ ddlStatement:
   |   createMaterializedViewStatement
   |   createTypeStatement
 <<<<<<< HEAD
+<<<<<<< HEAD
   |   createFunctionStatement
 =======
 >>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
+=======
+  |   createFunctionStatement
+>>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
   |   dropSchemaStatement
   |   dropForeignSchemaStatement
   |   dropTableStatement
@@ -3190,9 +3194,13 @@ ddlStatement:
   |   dropMaterializedViewStatement
   |   dropTypeStatement
 <<<<<<< HEAD
+<<<<<<< HEAD
   |   dropFunctionStatement
 =======
 >>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
+=======
+  |   dropFunctionStatement
+>>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
 
 createSchemaStatement:
       CREATE [ OR REPLACE ] SCHEMA [ IF NOT EXISTS ] name
@@ -3284,11 +3292,17 @@ dropMaterializedViewStatement:
 dropTypeStatement:
       DROP TYPE [ IF EXISTS ] name
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 dropFunctionStatement:
       DROP FUNCTION [ IF EXISTS ] name
 =======
 >>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
+=======
+
+dropFunctionStatement:
+      DROP FUNCTION [ IF EXISTS ] name
+>>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
 {% endhighlight %}
 
 In *createTableStatement*, if you specify *AS query*, you may omit the list of
@@ -3300,6 +3314,7 @@ generated column, `VIRTUAL` is the default.
 
 In *createFunctionStatement* and *usingFile*, *classNameLiteral*
 and *filePathLiteral* are character literals.
+<<<<<<< HEAD
 
 
 #### Declaring Objects For Types Defined In Schema
@@ -3336,3 +3351,5 @@ employee_typ(315, 'Francis', 'Logan', 'FLOGAN',
         '555.777.2222', '01-MAY-04', 'SA_MAN', 11000, .15, 101, 110,
          address_typ('376 Mission', 'San Francisco', 'CA', '94222'))
 ```
+=======
+>>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))

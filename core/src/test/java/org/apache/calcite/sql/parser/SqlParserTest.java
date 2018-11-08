@@ -76,6 +76,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 /**
@@ -1142,54 +1143,25 @@ public class SqlParserTest {
     final String whereRow2 = "select 1 from t2 where ^(x, y)^ < (a, b)";
     conformance = SqlConformanceEnum.DEFAULT;
     sql(whereRow2).sansCarets().ok(whereExpected);
-    if (this instanceof SqlUnParserTest) {
-      // After this point, SqlUnparserTest has problems.
-      // We generate ROW in a dialect that does not allow ROW in all contexts.
-      // So bail out.
-      return;
-    }
+
+    // After this point, SqlUnparserTest has problems.
+    // We generate ROW in a dialect that does not allow ROW in all contexts.
+    // So bail out.
+    assumeFalse(isUnparserTest());
     conformance = SqlConformanceEnum.SQL_SERVER_2008;
     sql(whereRow2).sansCarets().ok(whereExpected);
   }
 
-  @Test void testRowValueExpression() {
-    final String expected0 = "INSERT INTO \"EMPS\"\n"
-        + "VALUES (ROW(1, 'Fred')),\n"
-        + "(ROW(2, 'Eric'))";
-    String sql = "insert into emps values (1,'Fred'),(2, 'Eric')";
-    sql(sql)
-      .withDialect(SqlDialect.DatabaseProduct.CALCITE.getDialect())
-      .ok(expected0);
+  /** Whether this is a sub-class that tests un-parsing as well as parsing. */
+  protected boolean isUnparserTest() {
+    return false;
+  }
 
-    final String expected1 = "INSERT INTO `emps`\n"
-        + "VALUES (1, 'Fred'),\n"
-        + "(2, 'Eric')";
-    sql(sql)
-      .withDialect(SqlDialect.DatabaseProduct.MYSQL.getDialect())
-      .ok(expected1);
-
-    final String expected2 = "INSERT INTO \"EMPS\"\n"
-        + "VALUES (1, 'Fred'),\n"
-        + "(2, 'Eric')";
-    sql(sql)
-      .withDialect(SqlDialect.DatabaseProduct.ORACLE.getDialect())
-      .ok(expected2);
-
-    final String expected3 = "INSERT INTO [EMPS]\n"
-        + "VALUES (1, 'Fred'),\n"
-        + "(2, 'Eric')";
-    sql(sql)
-      .withDialect(SqlDialect.DatabaseProduct.MSSQL.getDialect())
-      .ok(expected3);
-
-    conformance = SqlConformanceEnum.DEFAULT;
-    expr("ROW(EMP.EMPNO, EMP.ENAME)").ok("(ROW(`EMP`.`EMPNO`, `EMP`.`ENAME`))");
-    expr("ROW(EMP.EMPNO + 1, EMP.ENAME)").ok("(ROW((`EMP`.`EMPNO` + 1), `EMP`.`ENAME`))");
-    expr("ROW((select deptno from dept where dept.deptno = emp.deptno), EMP.ENAME)")
-        .ok("(ROW((SELECT `DEPTNO`\n"
-            + "FROM `DEPT`\n"
-            + "WHERE (`DEPT`.`DEPTNO` = `EMP`.`DEPTNO`)), `EMP`.`ENAME`))");
-
+  @Test public void testPeriod() {
+    // We don't have a PERIOD constructor currently;
+    // ROW constructor is sufficient for now.
+    checkExp("period (date '1969-01-05', interval '2-3' year to month)",
+        "(ROW(DATE '1969-01-05', INTERVAL '2-3' YEAR TO MONTH))");
   }
 
   /** Whether this is a sub-class that tests un-parsing as well as parsing. */
