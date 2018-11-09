@@ -65,6 +65,7 @@ limitations under the License.
 
     <!-- This list is in alphabetical order. -->
     <airlift-tpch.version>0.1</airlift-tpch.version>
+    <annotations.version>20.1.0</annotations.version>
     <avatica.version>1.22.0</avatica.version>
     <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
     <cassandra-driver-core.version>3.4.0</cassandra-driver-core.version>
@@ -141,6 +142,7 @@ limitations under the License.
     <xerces.version>2.9.1</xerces.version>
     <sketches.version>0.9.0</sketches.version>
     <fmpp.version>0.9.14</fmpp.version>
+    <jsonpath.version>2.4.0</jsonpath.version>
     <!-- Java 1.8 does not support -html5, so override via profile for Java 1.8 -->
     <maven-javadoc-html5>-html5</maven-javadoc-html5>
   </properties>
@@ -242,6 +244,11 @@ limitations under the License.
         <groupId>org.apache.cassandra</groupId>
         <artifactId>cassandra-all</artifactId>
         <version>${cassandra.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jetbrains</groupId>
+        <artifactId>annotations</artifactId>
+        <version>${annotations.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jetbrains.kotlin</groupId>
@@ -570,6 +577,17 @@ limitations under the License.
         <groupId>xalan</groupId>
         <artifactId>xalan</artifactId>
         <version>${xalan.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.jayway.jsonpath</groupId>
+        <artifactId>json-path</artifactId>
+        <version>${jsonpath.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.github.stephenc.jcip</groupId>

@@ -101,6 +101,7 @@ import org.junit.runners.Suite;
     FilteratorTest.class,
     PermutationTestCase.class,
     SqlFunctionsTest.class,
+    SqlJsonFunctionsTest.class,
     SqlTypeNameTest.class,
     ModelTest.class,
     TypeCoercionTest.class,
