@@ -39,7 +39,7 @@ import org.apache.calcite.rel.logical.LogicalRepeatUnion;
 import org.apache.calcite.rel.logical.LogicalSnapshot;
 import org.apache.calcite.rel.logical.LogicalSort;
 import org.apache.calcite.rel.logical.LogicalSortExchange;
-import org.apache.calcite.rel.logical.LogicalTableFunctionScan;
+>>>>>>> 349a43772 ([CALCITE-2661] In RelBuilder, add methods for creating Exchange and SortExchange relational expressions (Chunwei Lei))
 import org.apache.calcite.rel.logical.LogicalTableScan;
 import org.apache.calcite.rel.logical.LogicalTableSpool;
 import org.apache.calcite.rel.logical.LogicalUnion;
@@ -110,6 +110,8 @@ public class RelFactories {
           DEFAULT_PROJECT_FACTORY,
           DEFAULT_AGGREGATE_FACTORY,
           DEFAULT_SORT_FACTORY,
+          DEFAULT_EXCHANGE_FACTORY,
+          DEFAULT_SORT_EXCHANGE_FACTORY,
           DEFAULT_SET_OP_FACTORY,
           DEFAULT_JOIN_FACTORY,
           DEFAULT_CORRELATE_FACTORY,
@@ -173,6 +175,55 @@ public class RelFactories {
     public RelNode createSort(RelNode input, RelCollation collation,
         RexNode offset, RexNode fetch) {
       return LogicalSort.create(input, collation, offset, fetch);
+    }
+  }
+
+  /**
+   * Can create a {@link org.apache.calcite.rel.core.Exchange}
+   * of the appropriate type for a rule's calling convention.
+   */
+  public interface ExchangeFactory {
+    /** Creates a Exchange. */
+    RelNode createExchange(RelNode input, RelDistribution distribution);
+  }
+
+  /**
+   * Implementation of
+   * {@link RelFactories.ExchangeFactory}
+   * that returns a {@link Exchange}.
+   */
+  private static class ExchangeFactoryImpl implements ExchangeFactory {
+    @Override public RelNode createExchange(
+        RelNode input, RelDistribution distribution) {
+      return LogicalExchange.create(input, distribution);
+    }
+  }
+
+  /**
+   * Can create a {@link SortExchange}
+   * of the appropriate type for a rule's calling convention.
+   */
+  public interface SortExchangeFactory {
+    /**
+     * Creates a {@link SortExchange}.
+     */
+    RelNode createSortExchange(
+        RelNode input,
+        RelDistribution distribution,
+        RelCollation collation);
+  }
+
+  /**
+   * Implementation of
+   * {@link RelFactories.SortExchangeFactory}
+   * that returns a {@link SortExchange}.
+   */
+  private static class SortExchangeFactoryImpl implements SortExchangeFactory {
+    @Override public RelNode createSortExchange(
+        RelNode input,
+        RelDistribution distribution,
+        RelCollation collation) {
+      return LogicalSortExchange.create(input, distribution, collation);
     }
   }
 
@@ -386,7 +437,6 @@ public class RelFactories {
     /**
      * Creates a {@link TableScan}.
      */
->>>>>>> c07d23e83 ([CALCITE-3856] Remove code to be removed before 1.23)
     RelNode createScan(RelOptCluster cluster, RelOptTable table, List<RelHint> hints);
   }
 
@@ -439,6 +489,9 @@ public class RelFactories {
     public final ProjectFactory projectFactory;
     public final AggregateFactory aggregateFactory;
     public final SortFactory sortFactory;
+    public final ExchangeFactory exchangeFactory;
+    public final SortExchangeFactory sortExchangeFactory;
+
     public final SetOpFactory setOpFactory;
     public final JoinFactory joinFactory;
     public final CorrelateFactory correlateFactory;
@@ -450,6 +503,8 @@ public class RelFactories {
         ProjectFactory projectFactory,
         AggregateFactory aggregateFactory,
         SortFactory sortFactory,
+        ExchangeFactory exchangeFactory,
+        SortExchangeFactory sortExchangeFactory,
         SetOpFactory setOpFactory,
         JoinFactory joinFactory,
         CorrelateFactory correlateFactory,
@@ -459,6 +514,8 @@ public class RelFactories {
       this.filterFactory = Objects.requireNonNull(filterFactory);
       this.projectFactory = Objects.requireNonNull(projectFactory);
       this.aggregateFactory = Objects.requireNonNull(aggregateFactory);
+      this.exchangeFactory = Objects.requireNonNull(exchangeFactory);
+      this.sortExchangeFactory = Objects.requireNonNull(sortExchangeFactory);
       this.sortFactory = Objects.requireNonNull(sortFactory);
       this.setOpFactory = Objects.requireNonNull(setOpFactory);
       this.joinFactory = Objects.requireNonNull(joinFactory);
@@ -482,6 +539,10 @@ public class RelFactories {
               DEFAULT_AGGREGATE_FACTORY),
           Util.first(context.unwrap(SortFactory.class),
               DEFAULT_SORT_FACTORY),
+          Util.first(context.unwrap(ExchangeFactory.class),
+              DEFAULT_EXCHANGE_FACTORY),
+          Util.first(context.unwrap(SortExchangeFactory.class),
+              DEFAULT_SORT_EXCHANGE_FACTORY),
           Util.first(context.unwrap(SetOpFactory.class),
               DEFAULT_SET_OP_FACTORY),
           Util.first(context.unwrap(JoinFactory.class),

@@ -23,7 +23,7 @@ import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelDistribution;
 import org.apache.calcite.rel.RelDistributionTraitDef;
-import org.apache.calcite.rel.RelInput;
+>>>>>>> 349a43772 ([CALCITE-2661] In RelBuilder, add methods for creating Exchange and SortExchange relational expressions (Chunwei Lei))
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.SortExchange;
 
@@ -38,6 +38,7 @@ public class LogicalSortExchange extends SortExchange {
   }
 
   /**
+<<<<<<< HEAD
    * Creates a LogicalSortExchange by parsing serialized output.
    */
   public LogicalSortExchange(RelInput input) {
@@ -45,6 +46,7 @@ public class LogicalSortExchange extends SortExchange {
   }
 
   /**
+=======
    * Creates a LogicalSortExchange.
    *
    * @param input     Input relational expression
@@ -72,3 +74,8 @@ public class LogicalSortExchange extends SortExchange {
         newDistribution, newCollation);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End LogicalSortExchange.java
+>>>>>>> 349a43772 ([CALCITE-2661] In RelBuilder, add methods for creating Exchange and SortExchange relational expressions (Chunwei Lei))
