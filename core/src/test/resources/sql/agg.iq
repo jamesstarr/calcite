@@ -2578,6 +2578,7 @@ EnumerableCalc(expr#0..1=[{inputs}], ANYEMPNO=[$t1])
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 # BIT_AND, BIT_OR, BIT_XOR aggregate functions
 select bit_and(deptno), bit_or(deptno), bit_xor(deptno) from "scott".emp;
@@ -2637,6 +2638,10 @@ LIMIT 500;
 !ok
 
 # [CALCITE-2266] JSON_OBJECTAGG, JSON_ARRAYAGG
+=======
+# [CALCITE-2266] JSON_OBJECTAGG, JSON_ARRAYAGG
+
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 !use post
 
 select gender, json_objectagg(ename: deptno absent on null) from emp group by gender;
@@ -2676,6 +2681,7 @@ select json_object('deptno': deptno, 'employees': json_arrayagg(json_object('ena
 
 !ok
 
+<<<<<<< HEAD
 # [CALCITE-2786] Add order by clause support for JSON_ARRAYAGG
 select gender,
 json_arrayagg(deptno order by deptno),
@@ -2786,6 +2792,8 @@ EnumerableAggregate(group=[{2}], EXPR$1=[JSON_OBJECTAGG_NULL_ON_NULL($0, $1)], E
 
 =======
 >>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
+=======
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 # End agg.iq
 =======
 # End agg.iq

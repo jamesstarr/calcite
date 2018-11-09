@@ -16,75 +16,67 @@
  */
 package org.apache.calcite.sql.fun;
 
-import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlJsonConstructorNullClause;
 import org.apache.calcite.sql.SqlKind;
+<<<<<<< HEAD
+=======
+import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
 import org.apache.calcite.sql.type.SqlTypeFamily;
-import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql.validate.SqlValidatorImpl;
-import org.apache.calcite.sql.validate.SqlValidatorScope;
-import org.apache.calcite.util.Optionality;
-
-import java.util.Objects;
 
 /**
- * The <code>JSON_OBJECTAGG</code> aggregate function.
+ * The <code>JSON_OBJECTAGG</code> aggregation function.
  */
 public class SqlJsonObjectAggAggFunction extends SqlAggFunction {
+  private final String name;
   private final SqlJsonConstructorNullClause nullClause;
 
-  /** Creates a SqlJsonObjectAggAggFunction. */
-  public SqlJsonObjectAggAggFunction(SqlKind kind,
-      SqlJsonConstructorNullClause nullClause) {
-    super(kind + "_" + nullClause.name(), null, kind, ReturnTypes.VARCHAR_2000,
-        (callBinding, returnType, operandTypes) -> {
-          RelDataTypeFactory typeFactory = callBinding.getTypeFactory();
-          operandTypes[0] = typeFactory.createSqlType(SqlTypeName.VARCHAR);
-          operandTypes[1] = typeFactory.createTypeWithNullability(
-              typeFactory.createSqlType(SqlTypeName.ANY), true);
-        }, OperandTypes.family(SqlTypeFamily.CHARACTER,
-            SqlTypeFamily.ANY),
-        SqlFunctionCategory.SYSTEM, false, false, Optionality.FORBIDDEN);
-    this.nullClause = Objects.requireNonNull(nullClause);
+  public SqlJsonObjectAggAggFunction(String name, SqlJsonConstructorNullClause nullClause) {
+    super(
+        name,
+        null,
+        SqlKind.JSON_OBJECTAGG,
+        ReturnTypes.VARCHAR_2000,
+        null,
+        OperandTypes.family(SqlTypeFamily.CHARACTER, SqlTypeFamily.ANY),
+        SqlFunctionCategory.SYSTEM,
+        false,
+        false
+    );
+    this.name = name;
+    this.nullClause = nullClause;
   }
 
-  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec,
-      int rightPrec) {
+  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
     assert call.operandCount() == 2;
     final SqlWriter.Frame frame = writer.startFunCall("JSON_OBJECTAGG");
     writer.keyword("KEY");
     call.operand(0).unparse(writer, leftPrec, rightPrec);
     writer.keyword("VALUE");
     call.operand(1).unparse(writer, leftPrec, rightPrec);
-    writer.keyword(nullClause.sql);
+    switch (nullClause) {
+    case ABSENT_ON_NULL:
+      writer.keyword("ABSENT ON NULL");
+      break;
+    case NULL_ON_NULL:
+      writer.keyword("NULL ON NULL");
+      break;
+    default:
+      throw new IllegalStateException("unreachable code");
+    }
     writer.endFunCall(frame);
   }
 
-  @Override public RelDataType deriveType(SqlValidator validator,
-      SqlValidatorScope scope, SqlCall call) {
-    // To prevent operator rewriting by SqlFunction#deriveType.
-    for (SqlNode operand : call.getOperandList()) {
-      RelDataType nodeType = validator.deriveType(scope, operand);
-      ((SqlValidatorImpl) validator).setValidatedNodeType(operand, nodeType);
-    }
-    return validateOperands(validator, scope, call);
-  }
-
-  public SqlJsonObjectAggAggFunction with(SqlJsonConstructorNullClause nullClause) {
-    return this.nullClause == nullClause ? this
-        : new SqlJsonObjectAggAggFunction(getKind(), nullClause);
-  }
-
-  public SqlJsonConstructorNullClause getNullClause() {
-    return nullClause;
+  private <E extends Enum<E>> E getEnumValue(SqlNode operand) {
+    return (E) ((SqlLiteral) operand).getValue();
   }
 }
+
+// End SqlJsonObjectAggAggFunction.java

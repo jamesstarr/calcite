@@ -17,7 +17,7 @@
 package org.apache.calcite.sql.fun;
 
 import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlCallBinding;
 import org.apache.calcite.sql.SqlFunction;
@@ -32,7 +32,9 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.ReturnTypes;
 import org.apache.calcite.sql.type.SqlOperandCountRanges;
 import org.apache.calcite.sql.type.SqlOperandTypeChecker;
+<<<<<<< HEAD
 import org.apache.calcite.sql.type.SqlTypeName;
+=======
 import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.sql.validate.SqlValidator;
 
@@ -45,32 +47,27 @@ import static org.apache.calcite.util.Static.RESOURCE;
  */
 public class SqlJsonObjectFunction extends SqlFunction {
   public SqlJsonObjectFunction() {
-    super("JSON_OBJECT", SqlKind.OTHER_FUNCTION, ReturnTypes.VARCHAR_2000,
-        (callBinding, returnType, operandTypes) -> {
-          RelDataTypeFactory typeFactory = callBinding.getTypeFactory();
-          for (int i = 0; i < operandTypes.length; i++) {
-            if (i % 2 == 0) {
-              operandTypes[i] = typeFactory.createSqlType(SqlTypeName.VARCHAR);
-              continue;
-            }
-            operandTypes[i] = typeFactory.createTypeWithNullability(
-                typeFactory.createSqlType(SqlTypeName.ANY), true);
-          }
-        }, null, SqlFunctionCategory.SYSTEM);
+    super(
+        "JSON_OBJECT",
+        SqlKind.OTHER_FUNCTION,
+        ReturnTypes.VARCHAR_2000,
+        null,
+        null,
+        SqlFunctionCategory.SYSTEM
+    );
   }
 
   @Override public SqlOperandCountRange getOperandCountRange() {
     return SqlOperandCountRanges.from(1);
   }
 
-  @Override protected void checkOperandCount(SqlValidator validator,
-      SqlOperandTypeChecker argType, SqlCall call) {
+  @Override protected void checkOperandCount(SqlValidator validator, SqlOperandTypeChecker argType,
+                                             SqlCall call) {
     assert call.operandCount() % 2 == 1;
   }
 
-  @Override public boolean checkOperandTypes(SqlCallBinding callBinding,
-      boolean throwOnFailure) {
-    final int count = callBinding.getOperandCount();
+  @Override public boolean checkOperandTypes(SqlCallBinding callBinding, boolean throwOnFailure) {
+    int count = callBinding.getOperandCount();
     for (int i = 1; i < count; i += 2) {
       RelDataType nameType = callBinding.getOperandType(i);
       if (!SqlTypeUtil.inCharFamily(nameType)) {
@@ -82,8 +79,7 @@ public class SqlJsonObjectFunction extends SqlFunction {
       if (nameType.isNullable()) {
         if (throwOnFailure) {
           throw callBinding.newError(
-              RESOURCE.argumentMustNotBeNull(
-                  callBinding.operand(i).toString()));
+              RESOURCE.argumentMustNotBeNull(callBinding.operand(i).toString()));
         }
         return false;
       }
@@ -91,11 +87,10 @@ public class SqlJsonObjectFunction extends SqlFunction {
     return true;
   }
 
-  @Override public SqlCall createCall(SqlLiteral functionQualifier,
-      SqlParserPos pos, SqlNode... operands) {
+  @Override public SqlCall createCall(SqlLiteral functionQualifier, SqlParserPos pos,
+                                      SqlNode... operands) {
     if (operands[0] == null) {
-      operands[0] = SqlLiteral.createSymbol(
-          SqlJsonConstructorNullClause.NULL_ON_NULL, pos);
+      operands[0] = SqlLiteral.createSymbol(SqlJsonConstructorNullClause.NULL_ON_NULL, pos);
     }
     return super.createCall(functionQualifier, pos, operands);
   }
@@ -105,14 +100,13 @@ public class SqlJsonObjectFunction extends SqlFunction {
     StringBuilder sb = new StringBuilder();
     sb.append("{0}(");
     for (int i = 1; i < operandsCount; i++) {
-      sb.append(String.format(Locale.ROOT, "{%d} ", i + 1));
+      sb.append(String.format(Locale.ENGLISH, "{%d} ", i + 1));
     }
     sb.append("{1})");
     return sb.toString();
   }
 
-  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec,
-      int rightPrec) {
+  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
     assert call.operandCount() % 2 == 1;
     final SqlWriter.Frame frame = writer.startFunCall(getName());
     SqlWriter.Frame listFrame = writer.startList("", "");
@@ -143,3 +137,8 @@ public class SqlJsonObjectFunction extends SqlFunction {
     return (E) ((SqlLiteral) operand).getValue();
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlJsonObjectFunction.java
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))

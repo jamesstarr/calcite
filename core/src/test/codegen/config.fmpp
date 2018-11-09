@@ -43,6 +43,7 @@ data: {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       "DAYS"
       "HOURS"
       "MINUTES"
@@ -354,6 +355,20 @@ data: {
       joinTypes: [
       ]
 =======
+=======
+        "ABSENT"
+        "CONDITIONAL"
+        "ENCODING"
+        "ERROR"
+        "FORMAT"
+        "PASSING"
+        "RETURNING"
+        "SCALAR"
+        "UNCONDITIONAL"
+        "UTF8"
+        "UTF16"
+        "UTF32"
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
     # List of methods for parsing custom SQL statements.
     # Return type of method implementation should be 'SqlNode'.
     # Example: "SqlShowDatabases()", "SqlShowTables()".

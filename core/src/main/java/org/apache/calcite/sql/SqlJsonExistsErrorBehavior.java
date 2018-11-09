@@ -14,12 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-<<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/SqlJsonExistsErrorBehavior.java
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 package org.apache.calcite.sql;
 
 /**
  * Categorizing Json exists error behaviors.
  */
+<<<<<<< HEAD
 public enum SqlJsonExistsErrorBehavior implements Symbolizable {
   TRUE,
   FALSE,
@@ -61,3 +62,9 @@ interface ElasticsearchConstants {
 
 // End ElasticsearchConstants.java
 >>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda)):elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchConstants.java
+=======
+public enum SqlJsonExistsErrorBehavior {
+  TRUE, FALSE, UNKNOWN, ERROR
+}
+
+// End SqlJsonExistsErrorBehavior.java

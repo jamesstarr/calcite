@@ -23,14 +23,14 @@ import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
-import org.apache.calcite.sql.type.SqlTypeFamily;
-import org.apache.calcite.sql.type.SqlTypeTransforms;
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 
 /**
  * The <code>JSON_EXISTS</code> function.
  */
 public class SqlJsonExistsFunction extends SqlFunction {
   public SqlJsonExistsFunction() {
+<<<<<<< HEAD
     super("JSON_EXISTS", SqlKind.OTHER_FUNCTION,
         ReturnTypes.cascade(ReturnTypes.BOOLEAN, SqlTypeTransforms.FORCE_NULLABLE), null,
         OperandTypes.or(
@@ -52,8 +52,37 @@ public class SqlJsonExistsFunction extends SqlFunction {
       call.operand(i).unparse(writer, leftPrec, rightPrec);
     }
     if (call.operandCount() == 3) {
+=======
+    super(
+        "JSON_EXISTS",
+        SqlKind.OTHER_FUNCTION,
+        ReturnTypes.BOOLEAN_FORCE_NULLABLE,
+        null,
+        OperandTypes.or(OperandTypes.ANY, OperandTypes.ANY_ANY),
+        SqlFunctionCategory.SYSTEM
+    );
+  }
+
+  @Override public String getSignatureTemplate(int operandsCount) {
+    assert operandsCount == 1 || operandsCount == 2;
+    if (operandsCount == 1) {
+      return "{0}({1})";
+    }
+    return "{0}({1} {2} ON ERROR)";
+  }
+
+  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
+    final SqlWriter.Frame frame = writer.startFunCall(getName());
+    call.operand(0).unparse(writer, 0, 0);
+    if (call.operandCount() == 2) {
+      call.operand(1).unparse(writer, 0, 0);
       writer.keyword("ON ERROR");
     }
     writer.endFunCall(frame);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlJsonExistsFunction.java
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))

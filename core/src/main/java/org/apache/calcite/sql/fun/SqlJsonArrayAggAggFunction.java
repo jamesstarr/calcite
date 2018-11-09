@@ -16,7 +16,7 @@
  */
 package org.apache.calcite.sql.fun;
 
-import org.apache.calcite.rel.type.RelDataType;
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlFunctionCategory;
@@ -25,6 +25,7 @@ import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlWriter;
+<<<<<<< HEAD
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.InferTypes;
 import org.apache.calcite.sql.type.OperandTypes;
@@ -98,3 +99,53 @@ public class SqlJsonArrayAggAggFunction extends SqlAggFunction {
     return nullClause;
   }
 }
+=======
+import org.apache.calcite.sql.type.OperandTypes;
+import org.apache.calcite.sql.type.ReturnTypes;
+
+/**
+ * The <code>JSON_OBJECTAGG</code> aggregation function.
+ */
+public class SqlJsonArrayAggAggFunction extends SqlAggFunction {
+  private final String name;
+  private final SqlJsonConstructorNullClause nullClause;
+
+  public SqlJsonArrayAggAggFunction(String name, SqlJsonConstructorNullClause nullClause) {
+    super(
+        name,
+        null,
+        SqlKind.JSON_ARRAYAGG,
+        ReturnTypes.VARCHAR_2000,
+        null,
+        OperandTypes.ANY,
+        SqlFunctionCategory.SYSTEM,
+        false,
+        false
+    );
+    this.name = name;
+    this.nullClause = nullClause;
+  }
+
+  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
+    assert call.operandCount() == 1;
+    final SqlWriter.Frame frame = writer.startFunCall("JSON_ARRAYAGG");
+    call.operand(0).unparse(writer, leftPrec, rightPrec);
+    switch (nullClause) {
+    case ABSENT_ON_NULL:
+      writer.keyword("ABSENT ON NULL");
+      break;
+    case NULL_ON_NULL:
+      writer.keyword("NULL ON NULL");
+      break;
+    default:
+      throw new IllegalStateException("unreachable code");
+    }
+    writer.endFunCall(frame);
+  }
+
+  private <E extends Enum<E>> E getEnumValue(SqlNode operand) {
+    return (E) ((SqlLiteral) operand).getValue();
+  }
+}
+
+// End SqlJsonArrayAggAggFunction.java

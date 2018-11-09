@@ -791,178 +791,6 @@ public enum SqlKind {
   JSON_VALUE_EXPRESSION,
 
   /**
-   * The {@code JSON_ARRAYAGG} aggregate function.
-   */
-  JSON_ARRAYAGG,
-
-  /**
-   * The {@code JSON_OBJECTAGG} aggregate function.
-   */
-  JSON_OBJECTAGG,
-
-  /**
-   * The "UNNEST" operator.
-   */
-  UNNEST,
-
-  /**
-   * The "LATERAL" qualifier to relations in the FROM clause.
-   */
-  LATERAL,
-
-  /**
-   * Table operator which converts user-defined transform into a relation, for
-   * example, <code>select * from TABLE(udx(x, y, z))</code>. See also the
-   * {@link #EXPLICIT_TABLE} prefix operator.
-   */
-  COLLECTION_TABLE,
-
-  /**
-   * Array Value Constructor, e.g. {@code Array[1, 2, 3]}.
-   */
-  ARRAY_VALUE_CONSTRUCTOR,
-
-  /**
-   * Array Query Constructor, e.g. {@code Array(select deptno from dept)}.
-   */
-  ARRAY_QUERY_CONSTRUCTOR,
-
-  /**
-   * Map Value Constructor, e.g. {@code Map['washington', 1, 'obama', 44]}.
-   */
-  MAP_VALUE_CONSTRUCTOR,
-
-  /**
-   * Map Query Constructor, e.g. {@code MAP (SELECT empno, deptno FROM emp)}.
-   */
-  MAP_QUERY_CONSTRUCTOR,
-
-  /**
-   * CURSOR constructor, for example, <code>select * from
-   * TABLE(udx(CURSOR(select ...), x, y, z))</code>
-   */
-  CURSOR,
-
-  // internal operators (evaluated in validator) 200-299
-
-  /**
-   * Literal chain operator (for composite string literals).
-   * An internal operator that does not appear in SQL syntax.
-   */
-  LITERAL_CHAIN,
-
-  /**
-   * Escape operator (always part of LIKE or SIMILAR TO expression).
-   * An internal operator that does not appear in SQL syntax.
-   */
-  ESCAPE,
-
-  /**
-   * The internal REINTERPRET operator (meaning a reinterpret cast).
-   * An internal operator that does not appear in SQL syntax.
-   */
-  REINTERPRET,
-
-  /** The internal {@code EXTEND} operator that qualifies a table name in the
-   * {@code FROM} clause. */
-  EXTEND,
-
-  /** The internal {@code CUBE} operator that occurs within a {@code GROUP BY}
-   * clause. */
-  CUBE,
-
-  /** The internal {@code ROLLUP} operator that occurs within a {@code GROUP BY}
-   * clause. */
-  ROLLUP,
-
-  /** The internal {@code GROUPING SETS} operator that occurs within a
-   * {@code GROUP BY} clause. */
-  GROUPING_SETS,
-
-  /** The {@code GROUPING(e, ...)} function. */
-  GROUPING,
-
-  /** @deprecated Use {@link #GROUPING}. */
-  @Deprecated // to be removed before 2.0
-  GROUPING_ID,
-
-  /** The {@code GROUP_ID()} function. */
-  GROUP_ID,
-
-  /**
-   * the internal permute function in match_recognize cluse
-   */
-  PATTERN_PERMUTE,
-
-  /**
-   * the special patterns to exclude enclosing pattern from output in match_recognize clause
-   */
-  PATTERN_EXCLUDED,
-
-  // Aggregate functions
-
-  /** The {@code COUNT} aggregate function. */
-  COUNT,
-
-  /** The {@code SUM} aggregate function. */
-  SUM,
-
-  /** The {@code SUM0} aggregate function. */
-  SUM0,
-
-  /** The {@code MIN} aggregate function. */
-  MIN,
-
-  /** The {@code MAX} aggregate function. */
-  MAX,
-
-  /** The {@code LEAD} aggregate function. */
-  LEAD,
-
-  /** The {@code LAG} aggregate function. */
-  LAG,
-
-  /** The {@code FIRST_VALUE} aggregate function. */
-  FIRST_VALUE,
-
-  /** The {@code LAST_VALUE} aggregate function. */
-  LAST_VALUE,
-
-  /** The {@code ANY_VALUE} aggregate function. */
-  ANY_VALUE,
-
-  /** The {@code COVAR_POP} aggregate function. */
-  COVAR_POP,
-
-  /** The {@code COVAR_SAMP} aggregate function. */
-  COVAR_SAMP,
-
-  /** The {@code REGR_SXX} aggregate function. */
-  REGR_SXX,
-
-  /** The {@code REGR_SYY} aggregate function. */
-  REGR_SYY,
-
-  /** The {@code AVG} aggregate function. */
-  AVG,
-
-  /** The {@code STDDEV_POP} aggregate function. */
-  STDDEV_POP,
-
-  /** The {@code STDDEV_SAMP} aggregate function. */
-  STDDEV_SAMP,
-
-  /** The {@code VAR_POP} aggregate function. */
-  VAR_POP,
-
-  /** The {@code VAR_SAMP} aggregate function. */
-  VAR_SAMP,
-
-  /** The {@code NTILE} aggregate function. */
-  NTILE,
-
->>>>>>> 391a8883e (Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)")
-=======
   /** The {@code NTH_VALUE} aggregate function. */
   NTH_VALUE,
 
@@ -1179,7 +1007,8 @@ public enum SqlKind {
           LAST_VALUE, COVAR_POP, COVAR_SAMP, REGR_SXX, REGR_SYY,
           AVG, STDDEV_POP, STDDEV_SAMP, VAR_POP, VAR_SAMP, NTILE, COLLECT,
           FUSION, SINGLE_VALUE, ROW_NUMBER, RANK, PERCENT_RANK, DENSE_RANK,
-          CUME_DIST, PERCENTILE_CONT, PERCENTILE_DISC, LISTAGG);
+          CUME_DIST, PERCENTILE_CONT, PERCENTILE_DISC, LISTAGG,
+          JSON_ARRAYAGG, JSON_OBJECTAGG);
 
   /**
    * Category consisting of all DML operators.
@@ -1265,8 +1094,12 @@ public enum SqlKind {
                   TIMESTAMP_ADD, TIMESTAMP_DIFF, EXTRACT,
                   LITERAL_CHAIN, JDBC_FN, PRECEDING, FOLLOWING, ORDER_BY,
                   NULLS_FIRST, NULLS_LAST, COLLECTION_TABLE, TABLESAMPLE,
+<<<<<<< HEAD
                   VALUES, WITH, WITH_ITEM, ITEM, SKIP_TO_FIRST, SKIP_TO_LAST,
                   JSON_VALUE_EXPRESSION, DESCRIPTOR),
+=======
+                  VALUES, WITH, WITH_ITEM, SKIP_TO_FIRST, SKIP_TO_LAST,
+                  JSON_VALUE_EXPRESSION, JSON_API_COMMON_SYNTAX),
               AGGREGATE, DML, DDL));
 
   /**

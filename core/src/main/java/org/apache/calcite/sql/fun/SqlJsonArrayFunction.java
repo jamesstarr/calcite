@@ -26,7 +26,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperandCountRange;
 import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.type.InferTypes;
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
 import org.apache.calcite.sql.type.SqlOperandCountRanges;
@@ -40,42 +40,49 @@ import java.util.Locale;
  */
 public class SqlJsonArrayFunction extends SqlFunction {
   public SqlJsonArrayFunction() {
+<<<<<<< HEAD
     super("JSON_ARRAY", SqlKind.OTHER_FUNCTION, ReturnTypes.VARCHAR_2000,
         InferTypes.ANY_NULLABLE, OperandTypes.VARIADIC, SqlFunctionCategory.SYSTEM);
+=======
+    super(
+        "JSON_ARRAY",
+        SqlKind.OTHER_FUNCTION,
+        ReturnTypes.VARCHAR_2000,
+        null,
+        OperandTypes.VARIADIC,
+        SqlFunctionCategory.SYSTEM
+    );
   }
 
   @Override public SqlOperandCountRange getOperandCountRange() {
     return SqlOperandCountRanges.from(1);
   }
 
-  @Override protected void checkOperandCount(SqlValidator validator,
-      SqlOperandTypeChecker argType, SqlCall call) {
+  @Override protected void checkOperandCount(SqlValidator validator, SqlOperandTypeChecker argType,
+                                             SqlCall call) {
     assert call.operandCount() >= 1;
   }
 
-  @Override public SqlCall createCall(SqlLiteral functionQualifier,
-      SqlParserPos pos, SqlNode... operands) {
+  @Override public SqlCall createCall(SqlLiteral functionQualifier, SqlParserPos pos,
+                                      SqlNode... operands) {
     if (operands[0] == null) {
-      operands[0] =
-          SqlLiteral.createSymbol(SqlJsonConstructorNullClause.ABSENT_ON_NULL,
-              pos);
+      operands[0] = SqlLiteral.createSymbol(SqlJsonConstructorNullClause.ABSENT_ON_NULL, pos);
     }
     return super.createCall(functionQualifier, pos, operands);
   }
 
   @Override public String getSignatureTemplate(int operandsCount) {
     assert operandsCount >= 1;
-    final StringBuilder sb = new StringBuilder();
+    StringBuilder sb = new StringBuilder();
     sb.append("{0}(");
     for (int i = 1; i < operandsCount; i++) {
-      sb.append(String.format(Locale.ROOT, "{%d} ", i + 1));
+      sb.append(String.format(Locale.ENGLISH, "{%d} ", i + 1));
     }
     sb.append("{1})");
     return sb.toString();
   }
 
-  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec,
-      int rightPrec) {
+  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
     assert call.operandCount() >= 1;
     final SqlWriter.Frame frame = writer.startFunCall(getName());
     SqlWriter.Frame listFrame = writer.startList("", "");
@@ -103,3 +110,8 @@ public class SqlJsonArrayFunction extends SqlFunction {
     return (E) ((SqlLiteral) operand).getValue();
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlJsonArrayFunction.java
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))

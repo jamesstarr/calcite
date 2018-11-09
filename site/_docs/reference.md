@@ -698,6 +698,7 @@ JAVA,
 JSON,
 **JSON_ARRAY**,
 **JSON_ARRAYAGG**,
+<<<<<<< HEAD
 JSON_DEPTH,
 **JSON_EXISTS**,
 JSON_KEYS,
@@ -707,6 +708,12 @@ JSON_LENGTH,
 JSON_PRETTY,
 **JSON_QUERY**,
 JSON_TYPE,
+=======
+**JSON_EXISTS**,
+**JSON_OBJECT**,
+**JSON_OBJECTAGG**,
+**JSON_QUERY**,
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 **JSON_VALUE**,
 K,
 KEY,
@@ -1096,7 +1103,10 @@ USER_DEFINED_TYPE_SCHEMA,
 UTF16,
 UTF32,
 UTF8,
+<<<<<<< HEAD
 **UUID**,
+=======
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 **VALUE**,
 **VALUES**,
 **VALUE_OF**,
@@ -2583,15 +2593,19 @@ Not implemented:
 
 ### JSON Functions
 
+<<<<<<< HEAD
 In the following:
 
 * *jsonValue* is a character string containing a JSON value;
 * *path* is a character string containing a JSON path expression; mode flag `strict` or `lax` should be specified in the beginning of *path*.
 
+=======
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 #### Query Functions
 
 | Operator syntax        | Description
 |:---------------------- |:-----------
+<<<<<<< HEAD
 | JSON_EXISTS(jsonValue, path [ { TRUE &#124; FALSE &#124; UNKNOWN &#124; ERROR ) ON ERROR } ) | Whether a *jsonValue* satisfies a search criterion described using JSON path expression *path*
 | JSON_VALUE(jsonValue, path [ RETURNING type ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON EMPTY ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON ERROR ] ) | Extract an SQL scalar from a *jsonValue* using JSON path expression *path*
 | JSON_QUERY(jsonValue, path [ { WITHOUT [ ARRAY ] &#124; WITH [ CONDITIONAL &#124; UNCONDITIONAL ] [ ARRAY ] } WRAPPER ] [ { ERROR &#124; NULL &#124; EMPTY ARRAY &#124; EMPTY OBJECT } ON EMPTY ] [ { ERROR &#124; NULL &#124; EMPTY ARRAY &#124; EMPTY OBJECT } ON ERROR ] ) | Extract a JSON object or JSON array from *jsonValue* using the *path* JSON path expression
@@ -2604,10 +2618,22 @@ Note:
 * The `ARRAY WRAPPER` clause defines how to represent a JSON array result
   in `JSON_QUERY` function. The following examples compare the wrapper
   behaviors.
+=======
+| JSON_EXISTS(value, path [ { TRUE &#124; FALSE &#124; UNKNOWN &#124; ERROR ) ON ERROR } ) | Test whether a JSON **value** satisfies a search criterion described using JSON path expression **path**
+| JSON_VALUE(value, path [ RETURNING type ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON EMPTY ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON ERROR ] ) | Extract an SQL scalar from a JSON **value** using JSON path expression **path**
+| JSON_QUERY(value, path [ { WITHOUT [ ARRAY ] &#124; WITH [ CONDITIONAL &#124; UNCONDITIONAL ] [ ARRAY ] } WRAPPER ] [ { ERROR &#124; NULL &#124; EMPTY ARRAY &#124; EMPTY OBJECT } ON EMPTY ] [ { ERROR &#124; NULL &#124; EMPTY ARRAY &#124; EMPTY OBJECT } ON ERROR ] ) | Extract an JSON object or an JSON array from a JSON **value** using JSON path expression **path**
+
+Note:
+
+* The common structure `value, path` is JSON API common syntax. **value** is a character string type json input, and **path** is a JSON path expression (in character string type too), mode flag **strict** or **lax** should be specified in the beginning of **path**.  
+* **ON ERROR** clause, and **ON EMPTY** clause define the fallback behavior of the function when an error is thrown or a null value is about to be returned.   
+* **ARRAY WRAPPER** clause defines how to represent JSON array result in JSON_QUERY function. Following is a comparision to demonstrate the difference among different wrapper behaviors.
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 
 Example Data:
 
 ```JSON
+<<<<<<< HEAD
 {"a": "[1,2]", "b": [1,2], "c": "hi"}
 ```
 
@@ -2616,6 +2642,16 @@ Comparison:
 |Operator                                    |$.a          |$.b          |$.c
 |:-------------------------------------------|:------------|:------------|:------------
 |JSON_VALUE                                  | [1, 2]      | error       | hi
+=======
+{ "a": "[1,2]", "b": [1,2], "c": "hi"}
+```
+
+Comparision:
+
+|Operator                                    |$.a          |$.b          |$.c
+|:-------------------------------------------|:------------|:------------|:------------
+|JSON_VALUE                                  | [1, 2]      | error       | hi             
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 |JSON QUERY WITHOUT ARRAY WRAPPER            | error       | [1, 2]      | error
 |JSON QUERY WITH UNCONDITIONAL ARRAY WRAPPER | [ "[1,2]" ] | [ [1,2] ]   | [ "hi" ]
 |JSON QUERY WITH CONDITIONAL ARRAY WRAPPER   | [ "[1,2]" ] | [1,2]       | [ "hi" ]
@@ -2628,6 +2664,7 @@ Not implemented:
 
 | Operator syntax        | Description
 |:---------------------- |:-----------
+<<<<<<< HEAD
 | JSON_OBJECT( { [ KEY ] name VALUE value [ FORMAT JSON ] &#124; name : value [ FORMAT JSON ] } * [ { NULL &#124; ABSENT } ON NULL ] ) | Construct JSON object using a series of key (*name*) value (*value*) pairs
 | JSON_OBJECTAGG( { [ KEY ] name VALUE value [ FORMAT JSON ] &#124; name : value [ FORMAT JSON ] } [ { NULL &#124; ABSENT } ON NULL ] ) | Aggregate function to construct a JSON object using a key (*name*) value (*value*) pair
 | JSON_ARRAY( { value [ FORMAT JSON ] } * [ { NULL &#124; ABSENT } ON NULL ] ) | Construct a JSON array using a series of values (*value*)
@@ -2912,6 +2949,30 @@ Result
 | ----------- | ----------- | ----------- | ----------- |
 | Aa_Bb_CcD_d | Aa_Bb_CcD_d | Aa_Bb_CcD_d | Aa_Bb_CcD_d |
 
+=======
+| JSON_OBJECT( { [ KEY ] name VALUE value [ FORMAT JSON ] &#124; name : value [ FORMAT JSON ] } * [ { NULL &#124; ABSENT } ON NULL ] ) | Construct json object using a series of key (**name**) value (**value**) pairs
+| JSON_OBJECTAGG( { [ KEY ] name VALUE value [ FORMAT JSON ] &#124; name : value [ FORMAT JSON ] } [ { NULL &#124; ABSENT } ON NULL ] ) | Aggregate function to construct json object using a key (**name**) value (**value**) pair
+| JSON_ARRAY( { value [ FORMAT JSON ] } * [ { NULL &#124; ABSENT } ON NULL ] ) | Construct json array using a series of values (**value**)
+| JSON_ARRAYAGG( value [ FORMAT JSON ] [ { NULL &#124; ABSENT } ON NULL ] ) | Aggregate function to construct json array using a value (**value**)
+
+Note:
+
+* The flag **FORMAT JSON** indicates the value is formatted as JSON character string. When **FORMAT JSON** is used, value should be de-parse from JSON character string to SQL structured value.  
+* **ON NULL** clause defines how the JSON output represents null value. The default null behavior of **JSON_OBJECT** and **JSON_OBJECTAGG** is *NULL ON NULL*, and for **JSON_ARRAY** and **JSON_ARRAYAGG** it is *ABSENT ON NULL*.
+
+#### Comparison Operators
+
+| Operator syntax                                   | Description
+|:------------------------------------------------- |:-----------
+| value IS JSON [ VALUE ]                           | Whether *value* is a json value, *value* is in character string type
+| value IS NOT JSON [ VALUE ]                       | Whether *value* is not a json value, *value* is in character string type
+| value IS JSON SCALAR                              | Whether *value* is a json scalar value, *value* is in character string type
+| value IS NOT JSON SCALAR                          | Whether *value* is not a json scalar value, *value* is in character string type
+| value IS JSON OBJECT                              | Whether *value* is a json object, *value* is in character string type
+| value IS NOT JSON OBJECT                          | Whether *value* is not a json object, *value* is in character string type
+| value IS JSON ARRAY                               | Whether *value* is a json array, *value* is in character string type
+| value IS NOT JSON ARRAY                           | Whether *value* is not a json array, *value* is in character string type
+>>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 
 ## User-defined functions
 
