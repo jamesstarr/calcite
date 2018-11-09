@@ -19,6 +19,8 @@ package org.apache.calcite.test;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.RelTraitDef;
+import org.apache.calcite.rel.RelCollations;
+import org.apache.calcite.rel.RelDistributions;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.core.Correlate;
@@ -2487,6 +2489,29 @@ public class RelBuilderTest {
     assertTrue(count > 1);
   }
 
+  @Test public void testExchange() {
+    final RelBuilder builder = RelBuilder.create(config().build());
+    final RelNode root = builder.scan("EMP")
+        .exchange(RelDistributions.hash(Lists.newArrayList(0)))
+        .build();
+    final String expected =
+        "LogicalExchange(distribution=[hash[0]])\n"
+            + "  LogicalTableScan(table=[[scott, EMP]])\n";
+    assertThat(root, hasTree(expected));
+  }
+
+  @Test public void testSortExchange() {
+    final RelBuilder builder = RelBuilder.create(config().build());
+    final RelNode root =
+        builder.scan("EMP")
+            .sortExchange(RelDistributions.hash(Lists.newArrayList(0)),
+                RelCollations.of(0))
+            .build();
+    final String expected =
+        "LogicalSortExchange(distribution=[hash[0]], collation=[[0]])\n"
+            + "  LogicalTableScan(table=[[scott, EMP]])\n";
+    assertThat(root, hasTree(expected));
+  }
 }
 
 // End RelBuilderTest.java

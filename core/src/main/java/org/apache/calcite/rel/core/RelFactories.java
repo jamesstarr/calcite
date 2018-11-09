@@ -21,10 +21,12 @@ import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.rel.RelCollation;
+import org.apache.calcite.rel.RelDistribution;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.hint.RelHint;
 import org.apache.calcite.rel.logical.LogicalAggregate;
 import org.apache.calcite.rel.logical.LogicalCorrelate;
+import org.apache.calcite.rel.logical.LogicalExchange;
 import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.logical.LogicalIntersect;
 import org.apache.calcite.rel.logical.LogicalJoin;
@@ -32,6 +34,7 @@ import org.apache.calcite.rel.logical.LogicalMatch;
 import org.apache.calcite.rel.logical.LogicalMinus;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.logical.LogicalSort;
+import org.apache.calcite.rel.logical.LogicalSortExchange;
 import org.apache.calcite.rel.logical.LogicalTableScan;
 import org.apache.calcite.rel.logical.LogicalUnion;
 import org.apache.calcite.rel.logical.LogicalValues;
@@ -73,6 +76,12 @@ public class RelFactories {
   public static final SortFactory DEFAULT_SORT_FACTORY =
       new SortFactoryImpl();
 
+  public static final ExchangeFactory DEFAULT_EXCHANGE_FACTORY =
+      new ExchangeFactoryImpl();
+
+  public static final SortExchangeFactory DEFAULT_SORT_EXCHANGE_FACTORY =
+      new SortExchangeFactoryImpl();
+
   public static final AggregateFactory DEFAULT_AGGREGATE_FACTORY =
       new AggregateFactoryImpl();
 
@@ -93,6 +102,8 @@ public class RelFactories {
           DEFAULT_PROJECT_FACTORY,
           DEFAULT_AGGREGATE_FACTORY,
           DEFAULT_SORT_FACTORY,
+          DEFAULT_EXCHANGE_FACTORY,
+          DEFAULT_SORT_EXCHANGE_FACTORY,
           DEFAULT_SET_OP_FACTORY,
           DEFAULT_JOIN_FACTORY,
           DEFAULT_CORRELATE_FACTORY,
@@ -156,6 +167,55 @@ public class RelFactories {
     public RelNode createSort(RelNode input, RelCollation collation,
         RexNode offset, RexNode fetch) {
       return LogicalSort.create(input, collation, offset, fetch);
+    }
+  }
+
+  /**
+   * Can create a {@link org.apache.calcite.rel.core.Exchange}
+   * of the appropriate type for a rule's calling convention.
+   */
+  public interface ExchangeFactory {
+    /** Creates a Exchange. */
+    RelNode createExchange(RelNode input, RelDistribution distribution);
+  }
+
+  /**
+   * Implementation of
+   * {@link RelFactories.ExchangeFactory}
+   * that returns a {@link Exchange}.
+   */
+  private static class ExchangeFactoryImpl implements ExchangeFactory {
+    @Override public RelNode createExchange(
+        RelNode input, RelDistribution distribution) {
+      return LogicalExchange.create(input, distribution);
+    }
+  }
+
+  /**
+   * Can create a {@link SortExchange}
+   * of the appropriate type for a rule's calling convention.
+   */
+  public interface SortExchangeFactory {
+    /**
+     * Creates a {@link SortExchange}.
+     */
+    RelNode createSortExchange(
+        RelNode input,
+        RelDistribution distribution,
+        RelCollation collation);
+  }
+
+  /**
+   * Implementation of
+   * {@link RelFactories.SortExchangeFactory}
+   * that returns a {@link SortExchange}.
+   */
+  private static class SortExchangeFactoryImpl implements SortExchangeFactory {
+    @Override public RelNode createSortExchange(
+        RelNode input,
+        RelDistribution distribution,
+        RelCollation collation) {
+      return LogicalSortExchange.create(input, distribution, collation);
     }
   }
 
@@ -417,6 +477,9 @@ public class RelFactories {
     public final ProjectFactory projectFactory;
     public final AggregateFactory aggregateFactory;
     public final SortFactory sortFactory;
+    public final ExchangeFactory exchangeFactory;
+    public final SortExchangeFactory sortExchangeFactory;
+
     public final SetOpFactory setOpFactory;
     public final JoinFactory joinFactory;
     public final CorrelateFactory correlateFactory;
@@ -428,6 +491,8 @@ public class RelFactories {
         ProjectFactory projectFactory,
         AggregateFactory aggregateFactory,
         SortFactory sortFactory,
+        ExchangeFactory exchangeFactory,
+        SortExchangeFactory sortExchangeFactory,
         SetOpFactory setOpFactory,
         JoinFactory joinFactory,
         CorrelateFactory correlateFactory,
@@ -437,6 +502,8 @@ public class RelFactories {
       this.filterFactory = Objects.requireNonNull(filterFactory);
       this.projectFactory = Objects.requireNonNull(projectFactory);
       this.aggregateFactory = Objects.requireNonNull(aggregateFactory);
+      this.exchangeFactory = Objects.requireNonNull(exchangeFactory);
+      this.sortExchangeFactory = Objects.requireNonNull(sortExchangeFactory);
       this.sortFactory = Objects.requireNonNull(sortFactory);
       this.setOpFactory = Objects.requireNonNull(setOpFactory);
       this.joinFactory = Objects.requireNonNull(joinFactory);
@@ -460,6 +527,10 @@ public class RelFactories {
               DEFAULT_AGGREGATE_FACTORY),
           Util.first(context.unwrap(SortFactory.class),
               DEFAULT_SORT_FACTORY),
+          Util.first(context.unwrap(ExchangeFactory.class),
+              DEFAULT_EXCHANGE_FACTORY),
+          Util.first(context.unwrap(SortExchangeFactory.class),
+              DEFAULT_SORT_EXCHANGE_FACTORY),
           Util.first(context.unwrap(SetOpFactory.class),
               DEFAULT_SET_OP_FACTORY),
           Util.first(context.unwrap(JoinFactory.class),

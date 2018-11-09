@@ -26,6 +26,7 @@ import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelCollations;
+import org.apache.calcite.rel.RelDistribution;
 import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
@@ -138,6 +139,8 @@ public class RelBuilder {
 
   protected final RelOptCluster cluster;
   protected final RelOptSchema relOptSchema;
+  private final RelFactories.ExchangeFactory exchangeFactory;
+  private final RelFactories.SortExchangeFactory sortExchangeFactory;
   private final Deque<Frame> stack = new ArrayDeque<>();
   private final boolean simplify;
   private final RexSimplify simplifier;
@@ -156,6 +159,12 @@ public class RelBuilder {
     this.config = getConfig(context);
     this.struct =
         Objects.requireNonNull(RelFactories.Struct.fromContext(context));
+    this.exchangeFactory =
+        Util.first(context.unwrap(RelFactories.ExchangeFactory.class),
+            RelFactories.DEFAULT_EXCHANGE_FACTORY);
+    this.sortExchangeFactory =
+        Util.first(context.unwrap(RelFactories.SortExchangeFactory.class),
+            RelFactories.DEFAULT_SORT_EXCHANGE_FACTORY);
     final RexExecutor executor =
         Util.first(context.unwrap(RexExecutor.class),
             Util.first(cluster.getPlanner().getExecutor(), RexUtil.EXECUTOR));
@@ -2036,6 +2045,22 @@ public class RelBuilder {
   /** Creates a limit without a sort. */
   public RelBuilder limit(int offset, int fetch) {
     return sortLimit(offset, fetch, ImmutableList.of());
+  }
+
+  /** Creates an Exchange by distribution. */
+  public RelBuilder exchange(RelDistribution distribution) {
+    RelNode exchange = exchangeFactory.createExchange(peek(), distribution);
+    replaceTop(exchange);
+    return this;
+  }
+
+  /** Creates a SortExchange by distribution and collation. */
+  public RelBuilder sortExchange(RelDistribution distribution,
+      RelCollation collation) {
+    RelNode exchange = sortExchangeFactory
+        .createSortExchange(peek(), distribution, collation);
+    replaceTop(exchange);
+    return this;
   }
 
   /** Creates a {@link Sort} by field ordinals.
