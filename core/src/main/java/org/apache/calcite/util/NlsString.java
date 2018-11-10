@@ -171,9 +171,8 @@ public class NlsString implements Comparable<NlsString>, Cloneable {
   }
 
   @Override public int compareTo(NlsString other) {
-    if (collation != null && collation.getCollator() != null) {
-      return collation.getCollator().compare(getValue(), other.getValue());
-    }
+    // TODO jvs 18-Jan-2006:  Actual collation support.  This just uses
+    // the default collation.
     return getValue().compareTo(other.getValue());
   }
 
@@ -300,6 +299,15 @@ public class NlsString implements Comparable<NlsString>, Cloneable {
   public NlsString copy(String value) {
     return new NlsString(value, charsetName, collation);
   }
+<<<<<<< HEAD
+=======
+
+  /** Returns the value as a {@link ByteString}. */
+  public ByteString getValueBytes() {
+    return bytesValue;
+  }
+}
+>>>>>>> bbd2cc09a ([CALCITE-2619] Reduce string literal creation cost by deferring and caching charset conversion (Ted Xu))
 
   /** Returns the value as a {@link ByteString}. */
   public ByteString getValueBytes() {

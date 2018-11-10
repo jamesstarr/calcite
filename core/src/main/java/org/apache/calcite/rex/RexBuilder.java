@@ -1089,6 +1089,22 @@ public class RexBuilder {
   }
 
   /**
+   * Creates a character string literal with type CHAR.
+   *
+   * @param value       String value in bytes
+   * @param charsetName SQL-level charset name
+   * @param collation   Sql collation
+   * @return String     literal
+   */
+  protected RexLiteral makePreciseStringLiteral(ByteString value,
+      String charsetName, SqlCollation collation) {
+    return makeLiteral(
+        new NlsString(value, charsetName, collation),
+        typeFactory.createSqlType(SqlTypeName.CHAR),
+        SqlTypeName.CHAR);
+  }
+
+  /**
    * Ensures expression is interpreted as a specified type. The returned
    * expression may be wrapped with a cast.
    *
