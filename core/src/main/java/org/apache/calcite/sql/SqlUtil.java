@@ -16,6 +16,7 @@
  */
 package org.apache.calcite.sql;
 
+import org.apache.calcite.avatica.util.ByteString;
 import org.apache.calcite.linq4j.Ord;
 import org.apache.calcite.linq4j.function.Function1;
 import org.apache.calcite.linq4j.function.Functions;
@@ -41,12 +42,15 @@ import org.apache.calcite.util.Util;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import com.google.common.base.Utf8;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -876,6 +880,43 @@ public abstract class SqlUtil {
       return name;
     default:
       return null;
+    }
+  }
+
+  /**
+   * Returns the Java-level {@link Charset} based on given SQL-level name.
+   *
+   * @param charsetName Sql charset name, must not be null.
+   * @return charset, or default charset if charsetName is null.
+   * @throws UnsupportedCharsetException If no support for the named charset
+   *     is available in this instance of the Java virtual machine
+   */
+  public static Charset getCharset(String charsetName) {
+    assert charsetName != null;
+    charsetName = charsetName.toUpperCase(Locale.ROOT);
+    String javaCharsetName = translateCharacterSetName(charsetName);
+    if (javaCharsetName == null) {
+      throw new UnsupportedCharsetException(charsetName);
+    }
+    return Charset.forName(javaCharsetName);
+  }
+
+  /**
+   * Validate if value can be decoded by given charset.
+   *
+   * @param value nls string in byte array
+   * @param charset charset
+   * @throws RuntimeException If the given value cannot be represented in the
+   *     given charset
+   */
+  public static void validateCharset(ByteString value, Charset charset) {
+    if (charset == StandardCharsets.UTF_8) {
+      final byte[] bytes = value.getBytes();
+      if (!Utf8.isWellFormed(bytes)) {
+        //CHECKSTYLE: IGNORE 1
+        final String string = new String(bytes, charset);
+        throw RESOURCE.charsetEncoding(string, charset.name()).ex();
+      }
     }
   }
 
