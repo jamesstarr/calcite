@@ -2898,7 +2898,26 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).with(program).check();
   }
 
-  @Test void testReduceConstantsWindow() {
+  @Test public void testReduceConstantsWindow() {
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.PROJECT_TO_LOGICAL_PROJECT_AND_WINDOW)
+        .addRuleInstance(CoreRules.PROJECT_MERGE)
+        .addRuleInstance(CoreRules.PROJECT_WINDOW_TRANSPOSE)
+        .addRuleInstance(CoreRules.WINDOW_REDUCE_EXPRESSIONS)
+        .build();
+
+    final String sql = "select col1, col2, col3\n"
+        + "from (\n"
+        + "  select empno,\n"
+        + "    sum(100) over (partition by deptno, sal order by sal) as col1,\n"
+        + "    sum(100) over (partition by sal order by deptno) as col2,\n"
+        + "    sum(sal) over (partition by deptno order by sal) as col3\n"
+        + "  from emp where sal = 5000)";
+
+    checkPlanning(program, sql);
+  }
+
+  @Test public void testEmptyFilterProjectUnion() throws Exception {
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(CoreRules.FILTER_SET_OP_TRANSPOSE)
         .addRuleInstance(CoreRules.FILTER_PROJECT_TRANSPOSE)
