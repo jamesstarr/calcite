@@ -636,5 +636,13 @@ public class CoreRules {
    * and potentially fewer rows. */
   public static final ValuesReduceRule PROJECT_FILTER_VALUES_MERGE =
       ValuesReduceRule.Config.PROJECT_FILTER.toRule();
+
+  /** Rule that reduces constants inside a {@link LogicalWindow}.
+   *
+   * @see #FILTER_REDUCE_EXPRESSIONS */
+  public static final ReduceExpressionsRule.WindowReduceExpressionsRule
+      WINDOW_REDUCE_EXPRESSIONS =
+      ReduceExpressionsRule.WindowReduceExpressionsRule.Config
+          .DEFAULT.toRule();
 }
 // End CoreRules.java

@@ -21,15 +21,20 @@ import org.apache.calcite.plan.RelOptPredicateList;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
+import org.apache.calcite.rel.RelCollation;
+import org.apache.calcite.rel.RelCollations;
+import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Calc;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinInfo;
 import org.apache.calcite.rel.core.Project;
+import org.apache.calcite.rel.core.Window;
 import org.apache.calcite.rel.logical.LogicalCalc;
 import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.logical.LogicalProject;
+import org.apache.calcite.rel.logical.LogicalWindow;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -53,6 +58,7 @@ import org.apache.calcite.rex.RexSubQuery;
 import org.apache.calcite.rex.RexUnknownAs;
 import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.rex.RexVisitorImpl;
+import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlRowOperator;
@@ -75,6 +81,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Collection of planner rules that apply various simplifying transformations on
@@ -530,6 +537,100 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
 
       @Override default CalcReduceExpressionsRule toRule() {
         return new CalcReduceExpressionsRule(this);
+      }
+    }
+  }
+
+  /** Rule that reduces constants inside a {@link Window}.
+   *
+   * @see CoreRules#WINDOW_REDUCE_EXPRESSIONS */
+  public static class WindowReduceExpressionsRule
+      extends ReduceExpressionsRule<WindowReduceExpressionsRule.Config> {
+    /** Creates a WindowReduceExpressionsRule. */
+    protected WindowReduceExpressionsRule(Config config) {
+      super(config);
+    }
+
+    @Deprecated // to be removed before 2.0
+    public WindowReduceExpressionsRule(Class<? extends Window> windowClass,
+        boolean matchNullability, RelBuilderFactory relBuilderFactory) {
+      this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
+          .as(Config.class)
+          .withOperandFor(windowClass)
+          .withMatchNullability(matchNullability)
+          .as(Config.class));
+    }
+
+    @Override public void onMatch(RelOptRuleCall call) {
+      LogicalWindow window = call.rel(0);
+      RexBuilder rexBuilder = window.getCluster().getRexBuilder();
+      final RelMetadataQuery mq = RelMetadataQuery.instance();
+      final RelOptPredicateList predicates = mq
+          .getPulledUpPredicates(window.getInput());
+
+      boolean reduced = false;
+      final List<Window.Group> groups = new ArrayList<>();
+      for (Window.Group group : window.groups) {
+        List<Window.RexWinAggCall> aggCalls = new ArrayList<>();
+        for (Window.RexWinAggCall rexWinAggCall : group.aggCalls) {
+          final List<RexNode> expList = new ArrayList<>(
+              rexWinAggCall.getOperands());
+          boolean opReduced = reduceExpressions(window, expList, predicates);
+          aggCalls.add(opReduced
+              ?
+              new Window.RexWinAggCall(
+                  (SqlAggFunction) rexWinAggCall.getOperator(),
+                  rexWinAggCall.type, expList, rexWinAggCall.ordinal,
+                  rexWinAggCall.distinct)
+              :
+              rexWinAggCall);
+          reduced |= opReduced;
+        }
+
+        final ImmutableBitSet.Builder keyBuilder = ImmutableBitSet.builder();
+        group.keys.asList().stream().filter(key
+            -> !predicates.constantMap.containsKey(rexBuilder.
+            makeInputRef(window.getInput(), key))).collect(
+            Collectors.toList()).forEach(i -> keyBuilder.set(i));
+        ImmutableBitSet keys = keyBuilder.build();
+        reduced |= keys.cardinality() != group.keys.cardinality();
+
+        final List<RelFieldCollation> collationsList = group.orderKeys
+            .getFieldCollations().stream().filter(fc -> !predicates.constantMap
+                .containsKey(rexBuilder
+                    .makeInputRef(window.getInput(), fc.getFieldIndex())))
+            .collect(Collectors.toList());
+
+        boolean collationReduced =
+            group.orderKeys.getFieldCollations().size() != collationsList.size();
+        reduced |= collationReduced;
+        RelCollation relCollation = collationReduced
+            ?
+            RelCollations.of(collationsList)
+            :
+            group.orderKeys;
+        groups.add(
+            new Window.Group(keys, group.isRows, group.lowerBound,
+                group.upperBound, relCollation, aggCalls));
+      }
+      if (reduced) {
+        call.transformTo(LogicalWindow
+            .create(window.getTraitSet(), window.getInput(),
+                window.getConstants(), window.getRowType(), groups));
+        call.getPlanner().setImportance(window, 0);
+      }
+    }
+
+    /** Rule configuration. */
+    public interface Config extends ReduceExpressionsRule.Config {
+      Config DEFAULT = EMPTY.as(Config.class)
+              .withMatchNullability(true)
+              .withOperandFor(LogicalWindow.class)
+              .withDescription("ReduceExpressionsRule(Window)")
+              .as(Config.class);
+
+      @Override default WindowReduceExpressionsRule toRule() {
+        return new WindowReduceExpressionsRule(this);
       }
     }
   }
