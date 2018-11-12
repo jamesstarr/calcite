@@ -27,11 +27,13 @@ import org.apache.calcite.util.Sources;
 import org.apache.calcite.util.Util;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -73,10 +75,9 @@ class OsAdapterTest {
   /** Returns whether there is a ".git" directory in this directory or in a
    * directory between this directory and root. */
   private static boolean hasGit() {
-<<<<<<< HEAD
-    assumeToolExists("git");
-=======
 >>>>>>> d6c0815c2 ([CALCITE-2495] Support encoded URLs in calcite.util.Source, and use it for URL->File conversion in tests)
+=======
+    assumeToolExists("git");
     final String path = Sources.of(OsAdapterTest.class.getResource("/"))
         .file().getAbsolutePath();
     File f = new File(path);
@@ -93,9 +94,26 @@ class OsAdapterTest {
     }
   }
 
+  private static void assumeToolExists(String command) {
+    Assume.assumeTrue(command + " does not exist", checkProcessExists(command));
+  }
+
+  private static boolean checkProcessExists(String command) {
+    try {
+      Process process = new ProcessBuilder().command(command).start();
+      Assert.assertNotNull(process);
+      int errCode = process.waitFor();
+      Assert.assertEquals(0, errCode);
+      return true;
+    } catch (AssertionError | IOException | InterruptedException e) {
+      return false;
+    }
+  }
+
   @Test public void testDu() {
     Assume.assumeFalse("Skip: the 'du' table does not work on Windows",
         isWindows());
+    assumeToolExists("du");
     sql("select * from du")
         .returns(r -> {
           try {
@@ -109,36 +127,9 @@ class OsAdapterTest {
         });
   }
 
-  private static boolean checkProcessExists(String command) {
-    try {
-      Process process = new ProcessBuilder().command(command).start();
-      assertNotNull(process);
-      int errCode = process.waitFor();
-      assertEquals(0, errCode);
-      return true;
-    } catch (AssertionError | IOException | InterruptedException e) {
-      return false;
-    }
-  }
-
-  @Test void testDu() {
-    assumeFalse(isWindows(), "Skip: the 'du' table does not work on Windows");
-    assumeToolExists("du");
-    sql("select * from du")
-        .returns(r -> {
-          try {
-            assertThat(r.next(), is(true));
-            assertThat(r.getInt(1), notNullValue());
-            assertThat(r.getString(2), startsWith("./"));
-            assertThat(r.wasNull(), is(false));
-          } catch (SQLException e) {
-            throw rethrow(e);
-          }
-        });
-  }
-
-  @Test void testDuFilterSortLimit() {
-    assumeFalse(isWindows(), "Skip: the 'du' table does not work on Windows");
+  @Test public void testDuFilterSortLimit() {
+    Assume.assumeFalse("Skip: the 'du' table does not work on Windows",
+        isWindows());
     assumeToolExists("du");
     sql("select * from du where path like '%/src/test/java/%'\n"
         + "order by 1 limit 2")
@@ -163,8 +154,9 @@ class OsAdapterTest {
             "type=f");
   }
 
-  @Test void testPs() {
-    assumeFalse(isWindows(), "Skip: the 'ps' table does not work on Windows");
+  @Test public void testPs() {
+    Assume.assumeFalse("Skip: the 'ps' table does not work on Windows",
+        isWindows());
     assumeToolExists("ps");
     sql("select * from ps")
         .returns(r -> {
@@ -186,6 +178,7 @@ class OsAdapterTest {
   @Test public void testPsDistinct() {
     Assume.assumeFalse("Skip: the 'ps' table does not work on Windows",
         isWindows());
+    assumeToolExists("ps");
     sql("select distinct `user` from ps")
         .returns(r -> {
           try {
@@ -223,6 +216,7 @@ class OsAdapterTest {
   @Test public void testVmstat() {
     Assume.assumeFalse("Skip: the 'files' table does not work on Windows",
         isWindows());
+    assumeToolExists("vmstat");
     sql("select * from vmstat")
         .returns(r -> {
           try {

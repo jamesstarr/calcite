@@ -42,11 +42,14 @@ matrix:
     - env: IMAGE=maven:3-jdk-9
     - env: IMAGE=maven:3-jdk-8 JDOC=Y
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> aeee89c7f (Fix JavaDoc warnings for Java 9+, and check JavaDoc in Travis CI)
 =======
   allow_failures:
     - env: IMAGE=maven:3-jdk-12
 >>>>>>> c7330ca52 ([CALCITE-2655] Enable Travis to test against JDK 12)
+=======
+>>>>>>> 158022b28 ([CALCITE-2660] OsAdapterTest should check if required commands are available)
 branches:
   only:
     - master

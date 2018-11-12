@@ -38,15 +38,6 @@ public class LogicalSortExchange extends SortExchange {
   }
 
   /**
-<<<<<<< HEAD
-   * Creates a LogicalSortExchange by parsing serialized output.
-   */
-  public LogicalSortExchange(RelInput input) {
-    super(input);
-  }
-
-  /**
-=======
    * Creates a LogicalSortExchange.
    *
    * @param input     Input relational expression
@@ -78,4 +69,3 @@ public class LogicalSortExchange extends SortExchange {
 =======
 
 // End LogicalSortExchange.java
->>>>>>> 349a43772 ([CALCITE-2661] In RelBuilder, add methods for creating Exchange and SortExchange relational expressions (Chunwei Lei))
