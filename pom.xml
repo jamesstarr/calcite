@@ -66,7 +66,6 @@ limitations under the License.
     <!-- This list is in alphabetical order. -->
     <aggdesigner.version>6.0</aggdesigner.version>
     <airlift-tpch.version>0.1</airlift-tpch.version>
-    <annotations.version>20.1.0</annotations.version>
     <avatica.version>1.22.0</avatica.version>
     <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
     <cassandra-driver-core.version>3.6.0</cassandra-driver-core.version>
@@ -254,11 +253,6 @@ limitations under the License.
         <groupId>org.apache.cassandra</groupId>
         <artifactId>cassandra-all</artifactId>
         <version>${cassandra.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jetbrains</groupId>
-        <artifactId>annotations</artifactId>
-        <version>${annotations.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jetbrains.kotlin</groupId>

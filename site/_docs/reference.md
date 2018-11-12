@@ -2196,11 +2196,11 @@ Example Data:
 {"a": "[1,2]", "b": [1,2], "c": "hi"}
 ```
 
-Comparision:
+Comparison:
 
 |Operator                                    |$.a          |$.b          |$.c
 |:-------------------------------------------|:------------|:------------|:------------
-|JSON_VALUE                                  | [1, 2]      | error       | hi             
+|JSON_VALUE                                  | [1, 2]      | error       | hi
 |JSON QUERY WITHOUT ARRAY WRAPPER            | error       | [1, 2]      | error
 |JSON QUERY WITH UNCONDITIONAL ARRAY WRAPPER | [ "[1,2]" ] | [ [1,2] ]   | [ "hi" ]
 |JSON QUERY WITH CONDITIONAL ARRAY WRAPPER   | [ "[1,2]" ] | [1,2]       | [ "hi" ]

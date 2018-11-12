@@ -36,25 +36,27 @@ import org.apache.calcite.sql.type.SqlTypeTransforms;
  */
 public class SqlJsonQueryFunction extends SqlFunction {
   public SqlJsonQueryFunction() {
-    super(
-        "JSON_QUERY",
-        SqlKind.OTHER_FUNCTION,
-        ReturnTypes.cascade(ReturnTypes.VARCHAR_2000, SqlTypeTransforms.FORCE_NULLABLE),
+    super("JSON_QUERY", SqlKind.OTHER_FUNCTION,
+        ReturnTypes.cascade(ReturnTypes.VARCHAR_2000,
+            SqlTypeTransforms.FORCE_NULLABLE),
         null,
         OperandTypes.family(SqlTypeFamily.ANY,
-            SqlTypeFamily.ANY, SqlTypeFamily.ANY, SqlTypeFamily.ANY),
-        SqlFunctionCategory.SYSTEM
-    );
+            SqlTypeFamily.CHARACTER, SqlTypeFamily.ANY, SqlTypeFamily.ANY, SqlTypeFamily.ANY),
+        SqlFunctionCategory.SYSTEM);
   }
 
   @Override public String getSignatureTemplate(int operandsCount) {
-    return "{0}({1} {2} WRAPPER {3} ON EMPTY {4} ON ERROR)";
+    return "{0}({1} {2} {3} WRAPPER {4} ON EMPTY {5} ON ERROR)";
   }
 
-  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
+  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec,
+      int rightPrec) {
     final SqlWriter.Frame frame = writer.startFunCall(getName());
     call.operand(0).unparse(writer, 0, 0);
-    SqlJsonQueryWrapperBehavior wrapperBehavior = getEnumValue(call.operand(1));
+    writer.sep(",", true);
+    call.operand(1).unparse(writer, 0, 0);
+    final SqlJsonQueryWrapperBehavior wrapperBehavior =
+        getEnumValue(call.operand(2));
     switch (wrapperBehavior) {
     case WITHOUT_ARRAY:
       writer.keyword("WITHOUT ARRAY");
@@ -69,30 +71,29 @@ public class SqlJsonQueryFunction extends SqlFunction {
       throw new IllegalStateException("unreachable code");
     }
     writer.keyword("WRAPPER");
-    unparseEmptyOrErrorBehavior(writer, getEnumValue(call.operand(2)));
-    writer.keyword("ON EMPTY");
     unparseEmptyOrErrorBehavior(writer, getEnumValue(call.operand(3)));
+    writer.keyword("ON EMPTY");
+    unparseEmptyOrErrorBehavior(writer, getEnumValue(call.operand(4)));
     writer.keyword("ON ERROR");
     writer.endFunCall(frame);
   }
 
-  @Override public SqlCall createCall(SqlLiteral functionQualifier, SqlParserPos pos,
-                                      SqlNode... operands) {
-    if (operands[1] == null) {
-      operands[1] = SqlLiteral.createSymbol(SqlJsonQueryWrapperBehavior.WITHOUT_ARRAY, pos);
-    }
+  @Override public SqlCall createCall(SqlLiteral functionQualifier,
+      SqlParserPos pos, SqlNode... operands) {
     if (operands[2] == null) {
-      operands[2] = SqlLiteral.createSymbol(SqlJsonQueryEmptyOrErrorBehavior.NULL, pos);
+      operands[2] = SqlLiteral.createSymbol(SqlJsonQueryWrapperBehavior.WITHOUT_ARRAY, pos);
     }
     if (operands[3] == null) {
       operands[3] = SqlLiteral.createSymbol(SqlJsonQueryEmptyOrErrorBehavior.NULL, pos);
     }
+    if (operands[4] == null) {
+      operands[4] = SqlLiteral.createSymbol(SqlJsonQueryEmptyOrErrorBehavior.NULL, pos);
+    }
     return super.createCall(functionQualifier, pos, operands);
   }
 
-
   private void unparseEmptyOrErrorBehavior(SqlWriter writer,
-                                           SqlJsonQueryEmptyOrErrorBehavior emptyBehavior) {
+      SqlJsonQueryEmptyOrErrorBehavior emptyBehavior) {
     switch (emptyBehavior) {
     case NULL:
       writer.keyword("NULL");

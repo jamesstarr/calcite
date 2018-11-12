@@ -174,7 +174,6 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_NOT_TRUE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_NULL;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_TRUE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.ITEM;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_API_COMMON_SYNTAX;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_ARRAY;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_ARRAYAGG;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_EXISTS;
@@ -466,8 +465,6 @@ public class RexImpTable {
     // Json Operators
     defineMethod(JSON_VALUE_EXPRESSION,
         BuiltInMethod.JSON_VALUE_EXPRESSION.method, NullPolicy.STRICT);
-    defineMethod(JSON_API_COMMON_SYNTAX, BuiltInMethod.JSON_API_COMMON_SYNTAX.method,
-            NullPolicy.NONE);
     defineMethod(JSON_EXISTS, BuiltInMethod.JSON_EXISTS.method, NullPolicy.NONE);
     defineMethod(JSON_VALUE_ANY, BuiltInMethod.JSON_VALUE_ANY.method, NullPolicy.NONE);
     defineMethod(JSON_QUERY, BuiltInMethod.JSON_QUERY.method, NullPolicy.NONE);
@@ -1906,7 +1903,6 @@ public class RexImpTable {
 
   /** Implementor for the {@code JSON_OBJECTAGG} aggregate function. */
   static class JsonObjectAggImplementor implements AggImplementor {
-
     private final Method m;
 
     JsonObjectAggImplementor(Method m) {
@@ -1922,7 +1918,7 @@ public class RexImpTable {
     }
 
     @Override public void implementReset(AggContext info,
-                                                   AggResetContext reset) {
+        AggResetContext reset) {
       reset.currentBlock().add(
           Expressions.statement(
               Expressions.assign(reset.accumulator().get(0),
@@ -1934,8 +1930,7 @@ public class RexImpTable {
           (SqlJsonObjectAggAggFunction) info.aggregation();
       add.currentBlock().add(
           Expressions.statement(
-              Expressions.call(
-                  m,
+              Expressions.call(m,
                   Iterables.concat(
                       Collections.singletonList(add.accumulator().get(0)),
                       add.arguments(),
@@ -1944,7 +1939,7 @@ public class RexImpTable {
     }
 
     @Override public Expression implementResult(AggContext info,
-                                                       AggResultContext result) {
+        AggResultContext result) {
       return Expressions.call(BuiltInMethod.JSONIZE.method,
           result.accumulator().get(0));
     }
@@ -1952,7 +1947,6 @@ public class RexImpTable {
 
   /** Implementor for the {@code JSON_ARRAYAGG} aggregate function. */
   static class JsonArrayAggImplementor implements AggImplementor {
-
     private final Method m;
 
     JsonArrayAggImplementor(Method m) {
@@ -1962,12 +1956,13 @@ public class RexImpTable {
     static Supplier<JsonArrayAggImplementor> supplierFor(Method m) {
       return () -> new JsonArrayAggImplementor(m);
     }
+
     @Override public List<Type> getStateType(AggContext info) {
       return Collections.singletonList(List.class);
     }
 
     @Override public void implementReset(AggContext info,
-                                         AggResetContext reset) {
+        AggResetContext reset) {
       reset.currentBlock().add(
           Expressions.statement(
               Expressions.assign(reset.accumulator().get(0),
@@ -1975,13 +1970,12 @@ public class RexImpTable {
     }
 
     @Override public void implementAdd(AggContext info,
-                                       AggAddContext add) {
+        AggAddContext add) {
       final SqlJsonArrayAggAggFunction function =
           (SqlJsonArrayAggAggFunction) info.aggregation();
       add.currentBlock().add(
           Expressions.statement(
-              Expressions.call(
-                  m,
+              Expressions.call(m,
                   Iterables.concat(
                       Collections.singletonList(add.accumulator().get(0)),
                       add.arguments(),
@@ -1990,7 +1984,7 @@ public class RexImpTable {
     }
 
     @Override public Expression implementResult(AggContext info,
-                                                AggResultContext result) {
+        AggResultContext result) {
       return Expressions.call(BuiltInMethod.JSONIZE.method,
           result.accumulator().get(0));
     }

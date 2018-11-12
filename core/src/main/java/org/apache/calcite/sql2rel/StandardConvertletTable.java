@@ -289,42 +289,19 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
                 call.operand(0),
                 SqlLiteral.createExactNumeric("0.5", SqlParserPos.ZERO))));
 
-    registerOp(SqlStdOperatorTable.JSON_API_COMMON_SYNTAX,
-        new JsonOperatorValueExprConvertlet(0));
-    registerOp(SqlLibraryOperators.JSON_PRETTY,
-        new JsonOperatorValueExprConvertlet(0));
-    registerOp(SqlLibraryOperators.JSON_TYPE,
-        new JsonOperatorValueExprConvertlet(0));
-    registerOp(SqlLibraryOperators.JSON_DEPTH,
-        new JsonOperatorValueExprConvertlet(0));
-    registerOp(SqlLibraryOperators.JSON_LENGTH,
-        new JsonOperatorValueExprConvertlet(0));
-    registerOp(SqlLibraryOperators.JSON_KEYS,
-        new JsonOperatorValueExprConvertlet(0));
-
     // Convert json_value('{"foo":"bar"}', 'lax $.foo', returning varchar(2000))
     // to cast(json_value('{"foo":"bar"}', 'lax $.foo') as varchar(2000))
     registerOp(
         SqlStdOperatorTable.JSON_VALUE,
-        new SqlRexConvertlet() {
-          @Override public RexNode convertCall(SqlRexContext cx, SqlCall call) {
-            SqlNode expanded = SqlStdOperatorTable.CAST.createCall(
-                SqlParserPos.ZERO,
-                SqlStdOperatorTable.JSON_VALUE_ANY.createCall(
-                    SqlParserPos.ZERO,
-                    call.operand(0),
-                    call.operand(1),
-                    call.operand(2),
-                    call.operand(3),
-                    call.operand(4),
-                    null
-                ),
-                call.operand(5)
-            );
-            return cx.convertExpression(expanded);
-          }
-        }
-    );
+        (cx, call) -> {
+          SqlNode expanded =
+              SqlStdOperatorTable.CAST.createCall(SqlParserPos.ZERO,
+                  SqlStdOperatorTable.JSON_VALUE_ANY.createCall(
+                      SqlParserPos.ZERO, call.operand(0), call.operand(1),
+                      call.operand(2), call.operand(3), call.operand(4), call.operand(5), null),
+              call.operand(6));
+          return cx.convertExpression(expanded);
+        });
 
     // REVIEW jvs 24-Apr-2006: This only seems to be working from within a
     // windowed agg.  I have added an optimizer rule
