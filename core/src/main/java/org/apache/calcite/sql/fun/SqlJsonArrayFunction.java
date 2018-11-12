@@ -48,22 +48,24 @@ public class SqlJsonArrayFunction extends SqlFunction {
     return SqlOperandCountRanges.from(1);
   }
 
-  @Override protected void checkOperandCount(SqlValidator validator, SqlOperandTypeChecker argType,
-                                             SqlCall call) {
+  @Override protected void checkOperandCount(SqlValidator validator,
+      SqlOperandTypeChecker argType, SqlCall call) {
     assert call.operandCount() >= 1;
   }
 
-  @Override public SqlCall createCall(SqlLiteral functionQualifier, SqlParserPos pos,
-                                      SqlNode... operands) {
+  @Override public SqlCall createCall(SqlLiteral functionQualifier,
+      SqlParserPos pos, SqlNode... operands) {
     if (operands[0] == null) {
-      operands[0] = SqlLiteral.createSymbol(SqlJsonConstructorNullClause.ABSENT_ON_NULL, pos);
+      operands[0] =
+          SqlLiteral.createSymbol(SqlJsonConstructorNullClause.ABSENT_ON_NULL,
+              pos);
     }
     return super.createCall(functionQualifier, pos, operands);
   }
 
   @Override public String getSignatureTemplate(int operandsCount) {
     assert operandsCount >= 1;
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
     sb.append("{0}(");
     for (int i = 1; i < operandsCount; i++) {
       sb.append(String.format(Locale.ROOT, "{%d} ", i + 1));
@@ -72,7 +74,8 @@ public class SqlJsonArrayFunction extends SqlFunction {
     return sb.toString();
   }
 
-  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
+  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec,
+      int rightPrec) {
     assert call.operandCount() >= 1;
     final SqlWriter.Frame frame = writer.startFunCall(getName());
     SqlWriter.Frame listFrame = writer.startList("", "");

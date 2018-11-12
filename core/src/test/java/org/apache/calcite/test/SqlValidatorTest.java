@@ -9489,7 +9489,6 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         + "DEFAULT -\n"
         + "DOT -\n"
         + "ITEM -\n"
-        + "JSON_API_COMMON_SYNTAX -\n"
         + "NEXT_VALUE -\n"
         + "PATTERN_EXCLUDE -\n"
         + "PATTERN_PERMUTE -\n"
@@ -11610,7 +11609,7 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
   @Test public void testJsonType() {
     check("select json_type(ename) from emp");
     checkExp("json_type('{\"foo\":\"bar\"}')");
-    checkExpType("json_type('{\"foo\":\"bar\"}')", "VARCHAR(20) NOT NULL");
+    checkExpType("json_type('{\"foo\":\"bar\"}')", "VARCHAR(20)");
 
     if (!Bug.CALCITE_2869_FIXED) {
       return;

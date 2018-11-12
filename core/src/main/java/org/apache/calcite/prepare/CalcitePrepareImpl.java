@@ -632,6 +632,8 @@ public class CalcitePrepareImpl implements CalcitePrepare {
 
       final SqlValidator validator =
           createSqlValidator(context, catalogReader);
+      validator.setIdentifierExpansion(true);
+      validator.setDefaultNullCollation(config.defaultNullCollation());
 
       preparedResult = preparingStmt.prepareSql(
           sqlNode, Object.class, validator, true);

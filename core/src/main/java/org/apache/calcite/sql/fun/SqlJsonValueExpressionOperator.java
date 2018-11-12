@@ -24,7 +24,7 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeTransforms;
 
 /**
- * The JSON value expression operator which indicate that the value expression
+ * The JSON value expression operator that indicates that the value expression
  * should be parsed as JSON.
  */
 public class SqlJsonValueExpressionOperator extends SqlPostfixOperator {

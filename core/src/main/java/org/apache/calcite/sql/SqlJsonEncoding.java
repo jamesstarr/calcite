@@ -34,7 +34,8 @@ import org.junit.runners.Suite;
 package org.apache.calcite.sql;
 
 /**
- * SqlJsonEncoding lists the supported json encodings that could be passed to JsonValueExpression.
+ * Supported json encodings that could be passed to a
+ * {@code JsonValueExpression}.
  */
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 public enum SqlJsonEncoding {

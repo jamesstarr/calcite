@@ -2718,6 +2718,7 @@ Example Data:
 ```
 
 Comparison:
+<<<<<<< HEAD
 
 |Operator                                    |$.a          |$.b          |$.c
 |:-------------------------------------------|:------------|:------------|:------------
@@ -2735,6 +2736,12 @@ Comparision:
 |:-------------------------------------------|:------------|:------------|:------------
 |JSON_VALUE                                  | [1, 2]      | error       | hi             
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+
+|Operator                                    |$.a          |$.b          |$.c
+|:-------------------------------------------|:------------|:------------|:------------
+|JSON_VALUE                                  | [1, 2]      | error       | hi
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
 |JSON QUERY WITHOUT ARRAY WRAPPER            | error       | [1, 2]      | error
 |JSON QUERY WITH UNCONDITIONAL ARRAY WRAPPER | [ "[1,2]" ] | [ [1,2] ]   | [ "hi" ]
 |JSON QUERY WITH CONDITIONAL ARRAY WRAPPER   | [ "[1,2]" ] | [1,2]       | [ "hi" ]

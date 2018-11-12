@@ -1496,12 +1496,17 @@ public class RexProgramTest extends RexProgramBuilderBase {
         case_(eq(falseLiteral, falseLiteral), falseLiteral,
               eq(falseLiteral, falseLiteral), trueLiteral,
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
               trueLiteral),
         "false");
 =======
               trueLiteral
     ), "false");
 >>>>>>> 8f2387fc2 ([CALCITE-2586] RexSimplify: case with repeated branches results in assertion error (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+              trueLiteral),
+        "false");
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
     // is null, applied to not-null value
     checkSimplify(rexBuilder.makeCall(SqlStdOperatorTable.IS_NULL, aRef),

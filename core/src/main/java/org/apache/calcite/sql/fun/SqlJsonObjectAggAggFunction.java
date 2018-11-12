@@ -59,7 +59,8 @@ public class SqlJsonObjectAggAggFunction extends SqlAggFunction {
     this.nullClause = Objects.requireNonNull(nullClause);
   }
 
-  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
+  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec,
+      int rightPrec) {
     assert call.operandCount() == 2;
     final SqlWriter.Frame frame = writer.startFunCall("JSON_OBJECTAGG");
     writer.keyword("KEY");

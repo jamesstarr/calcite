@@ -23,15 +23,7 @@ import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperandCountRange;
-<<<<<<< HEAD
-=======
-import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.type.OperandTypes;
-import org.apache.calcite.sql.type.ReturnTypes;
-import org.apache.calcite.sql.type.SqlOperandCountRanges;
-import org.apache.calcite.sql.type.SqlOperandTypeChecker;
-import org.apache.calcite.sql.type.SqlTypeName;
->>>>>>> f823ceb45 ([CALCITE-2892] Add the JSON_KEYS function (xuqianjin))
+import org.apache.calcite.sql.type.SqlTypeTransforms;
 import org.apache.calcite.sql.validate.SqlValidator;
 
 /**
@@ -41,7 +33,9 @@ public class SqlJsonTypeFunction extends SqlFunction {
   public SqlJsonTypeFunction() {
     super("JSON_TYPE",
         SqlKind.OTHER_FUNCTION,
-        ReturnTypes.explicit(SqlTypeName.VARCHAR, 20),
+        ReturnTypes.cascade(
+            ReturnTypes.explicit(SqlTypeName.VARCHAR, 20),
+            SqlTypeTransforms.FORCE_NULLABLE),
         null,
         OperandTypes.ANY,
         SqlFunctionCategory.SYSTEM);

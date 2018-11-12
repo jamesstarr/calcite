@@ -8452,10 +8452,14 @@ from emp]]>
         <Resource name="plan">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[JSON_EXISTS($1, 'lax $')])
 =======
 LogicalProject(EXPR$0=[JSON_EXISTS(JSON_API_COMMON_SYNTAX(FORMAT JSON($1), 'lax $'))])
 >>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
+=======
+LogicalProject(EXPR$0=[JSON_EXISTS($1, 'lax $')])
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -8468,10 +8472,14 @@ from emp]]>
         <Resource name="plan">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[JSON_VALUE($1, 'lax $')])
 =======
 LogicalProject(EXPR$0=[CAST(JSON_VALUE_ANY(JSON_API_COMMON_SYNTAX(FORMAT JSON($1), 'lax $'), FLAG(SqlJsonValueEmptyOrErrorBehavior[NULL]), null:ANY, FLAG(SqlJsonValueEmptyOrErrorBehavior[NULL]), null:ANY)):VARCHAR(2000)])
 >>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
+=======
+LogicalProject(EXPR$0=[CAST(JSON_VALUE_ANY($1, 'lax $', FLAG(SqlJsonValueEmptyOrErrorBehavior[NULL]), null:ANY, FLAG(SqlJsonValueEmptyOrErrorBehavior[NULL]), null:ANY)):VARCHAR(2000)])
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -8484,10 +8492,14 @@ from emp]]>
         <Resource name="plan">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[JSON_QUERY($1, 'lax $', FLAG(WITHOUT_ARRAY), FLAG(SqlJsonQueryEmptyOrErrorBehavior[NULL]), FLAG(SqlJsonQueryEmptyOrErrorBehavior[NULL]))])
 =======
 LogicalProject(EXPR$0=[JSON_QUERY(JSON_API_COMMON_SYNTAX(FORMAT JSON($1), 'lax $'), FLAG(WITHOUT_ARRAY), FLAG(SqlJsonQueryEmptyOrErrorBehavior[NULL]), FLAG(SqlJsonQueryEmptyOrErrorBehavior[NULL]))])
 >>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
+=======
+LogicalProject(EXPR$0=[JSON_QUERY($1, 'lax $', FLAG(WITHOUT_ARRAY), FLAG(SqlJsonQueryEmptyOrErrorBehavior[NULL]), FLAG(SqlJsonQueryEmptyOrErrorBehavior[NULL]))])
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -8500,10 +8512,14 @@ from emp]]>
         <Resource name="plan">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[JSON_TYPE($1)])
 =======
 LogicalProject(EXPR$0=[JSON_TYPE(FORMAT JSON($1))])
 >>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
+=======
+LogicalProject(EXPR$0=[JSON_TYPE($1)])
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -8516,10 +8532,14 @@ from emp]]>
         <Resource name="plan">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[JSON_PRETTY($1)])
 =======
 LogicalProject(EXPR$0=[JSON_PRETTY(FORMAT JSON($1))])
 >>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
+=======
+LogicalProject(EXPR$0=[JSON_PRETTY($1)])
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -8532,10 +8552,14 @@ from emp]]>
         <Resource name="plan">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[JSON_DEPTH($1)])
 =======
 LogicalProject(EXPR$0=[JSON_DEPTH(FORMAT JSON($1))])
 >>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
+=======
+LogicalProject(EXPR$0=[JSON_DEPTH($1)])
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -8548,10 +8572,14 @@ from emp]]>
         <Resource name="plan">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[JSON_LENGTH($1, 'strict $')])
 =======
 LogicalProject(EXPR$0=[JSON_LENGTH(FORMAT JSON($1), 'strict $')])
 >>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
+=======
+LogicalProject(EXPR$0=[JSON_LENGTH($1, 'strict $')])
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -8564,10 +8592,14 @@ from emp]]>
         <Resource name="plan">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[JSON_KEYS($1, 'strict $')])
 =======
 LogicalProject(EXPR$0=[JSON_KEYS(FORMAT JSON($1), 'strict $')])
 >>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
+=======
+LogicalProject(EXPR$0=[JSON_KEYS($1, 'strict $')])
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>

@@ -4548,7 +4548,6 @@ public abstract class SqlOperatorBaseTest {
     tester.checkNull("upper(cast(null as varchar(1)))");
   }
 
-
   @Test public void testJsonExists() {
     tester.checkBoolean("json_exists('{\"foo\":\"bar\"}', "
         + "'strict $.foo' false on error)", Boolean.TRUE);
@@ -4778,25 +4777,24 @@ public abstract class SqlOperatorBaseTest {
   @Test public void testJsonType() {
     tester.setFor(SqlLibraryOperators.JSON_TYPE);
     tester.checkString("json_type('\"1\"')",
-            "STRING", "VARCHAR(20) NOT NULL");
+            "STRING", "VARCHAR(20)");
     tester.checkString("json_type('1')",
-            "INTEGER", "VARCHAR(20) NOT NULL");
+            "INTEGER", "VARCHAR(20)");
     tester.checkString("json_type('11.45')",
-            "DOUBLE", "VARCHAR(20) NOT NULL");
+            "DOUBLE", "VARCHAR(20)");
     tester.checkString("json_type('true')",
-            "BOOLEAN", "VARCHAR(20) NOT NULL");
+            "BOOLEAN", "VARCHAR(20)");
     tester.checkString("json_type('null')",
-            "NULL", "VARCHAR(20) NOT NULL");
-    tester.checkString("json_type(cast(null as varchar(1)))",
-            "NULL", "VARCHAR(20) NOT NULL");
+            "NULL", "VARCHAR(20)");
+//    tester.checkNull("json_type(cast(null as varchar(1)))");
     tester.checkString("json_type('{\"a\": [10, true]}')",
-            "OBJECT", "VARCHAR(20) NOT NULL");
+            "OBJECT", "VARCHAR(20)");
     tester.checkString("json_type('{}')",
-            "OBJECT", "VARCHAR(20) NOT NULL");
+            "OBJECT", "VARCHAR(20)");
     tester.checkString("json_type('[10, true]')",
-            "ARRAY", "VARCHAR(20) NOT NULL");
+            "ARRAY", "VARCHAR(20)");
     tester.checkString("json_type('\"2019-01-27 21:24:00\"')",
-            "STRING", "VARCHAR(20) NOT NULL");
+            "STRING", "VARCHAR(20)");
   }
 
   @Test public void testJsonDepth() {
@@ -4825,9 +4823,6 @@ public abstract class SqlOperatorBaseTest {
             "3", "INTEGER");
     tester.checkString("json_depth('[10, {\"a\": [[1,2]]}]')",
             "5", "INTEGER");
-
-    // nulls
-    tester.checkNull("json_depth(cast(null as varchar))");
   }
 
   @Test public void testJsonLength() {

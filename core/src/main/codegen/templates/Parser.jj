@@ -6803,6 +6803,7 @@ SqlNode JsonPathSpec() :
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 List<SqlNode> JsonApiCommonSyntax() :
 {
     SqlNode e;
@@ -6838,43 +6839,43 @@ SqlNode JsonApiCommonSyntax() :
 =======
 SqlNode JsonApiCommonSyntax(boolean acceptNonPath) :
 >>>>>>> 31a1bb0fc ([CALCITE-2808] Add the JSON_LENGTH function (xuqianjin))
+=======
+List<SqlNode> JsonApiCommonSyntax() :
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
 {
     SqlNode e;
     List<SqlNode> args = new ArrayList<SqlNode>();
-    Span span;
 }
 {
     e = Expression(ExprContext.ACCEPT_NON_QUERY) {
         args.add(e);
-        span = Span.of(e);
     }
     (
         <COMMA>
         e = Expression(ExprContext.ACCEPT_NON_QUERY) {
             args.add(e);
         }
-    |
-        {
-            if (!acceptNonPath) {
-              throw new ParseException(RESOURCE.jsonPathMustBeSpecified().str());
-            }
-        }
     )
     [
+        // We currently don't support JSON passing clause, leave the java code blocks no-op
         <PASSING> e = Expression(ExprContext.ACCEPT_NON_QUERY) {
-            args.add(e);
+            // no-op
         }
         <AS> e = SimpleIdentifier() {
-            args.add(e);
+            // no-op
         }
         (
             <COMMA>
             e = Expression(ExprContext.ACCEPT_NON_QUERY) {
-                        args.add(e);
+                // no-op
             }
             <AS> e = SimpleIdentifier() {
+<<<<<<< HEAD
                         args.add(e);
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+                // no-op
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
             }
         )*
     ]
@@ -6882,10 +6883,14 @@ SqlNode JsonApiCommonSyntax(boolean acceptNonPath) :
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         return args;
     }
 =======
         return SqlStdOperatorTable.JSON_API_COMMON_SYNTAX.createCall(span.end(this), args);
+=======
+        return args;
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     }
 
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
@@ -6919,13 +6924,18 @@ SqlCall JsonExistsFunctionCall() :
     List<SqlNode> commonSyntax;
 =======
     List<SqlNode> args;
+<<<<<<< HEAD
     SqlNode e;
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+    List<SqlNode> commonSyntax;
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     final Span span;
     SqlJsonExistsErrorBehavior errorBehavior;
 }
 {
     <JSON_EXISTS> { span = span(); }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     <LPAREN> commonSyntax = JsonApiCommonSyntax() {
@@ -6938,8 +6948,11 @@ SqlCall JsonExistsFunctionCall() :
 =======
     <LPAREN> e = JsonApiCommonSyntax(false) {
 >>>>>>> 31a1bb0fc ([CALCITE-2808] Add the JSON_LENGTH function (xuqianjin))
+=======
+    <LPAREN> commonSyntax = JsonApiCommonSyntax() {
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
         args = new ArrayList<SqlNode>();
-        args.add(e);
+        args.addAll(commonSyntax);
     }
     [
         errorBehavior = JsonExistsErrorBehavior() { args.add(SqlLiteral.createSymbol(errorBehavior, getPos())); }
@@ -6953,6 +6966,7 @@ SqlCall JsonExistsFunctionCall() :
 
 List<SqlNode> JsonValueEmptyOrErrorBehavior() :
 {
+<<<<<<< HEAD
 <<<<<<< HEAD
     final List<SqlNode> list = new ArrayList<SqlNode>();
     final SqlNode e;
@@ -6972,23 +6986,24 @@ List<SqlNode> JsonValueEmptyOrErrorBehavior() :
 =======
     List<SqlNode> list = new ArrayList<SqlNode>();
     SqlNode e;
+=======
+    final List<SqlNode> list = new ArrayList<SqlNode>();
+    final SqlNode e;
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
 }
 {
     (
-        <ERROR>
-        {
+        <ERROR> {
             list.add(SqlLiteral.createSymbol(SqlJsonValueEmptyOrErrorBehavior.ERROR, getPos()));
             list.add(SqlLiteral.createNull(getPos()));
         }
-        |
-        <NULL>
-        {
+    |
+        <NULL> {
             list.add(SqlLiteral.createSymbol(SqlJsonValueEmptyOrErrorBehavior.NULL, getPos()));
             list.add(SqlLiteral.createNull(getPos()));
         }
-        |
-        <DEFAULT_> e = Expression(ExprContext.ACCEPT_NON_QUERY)
-        {
+    |
+        <DEFAULT_> e = Expression(ExprContext.ACCEPT_NON_QUERY) {
             list.add(SqlLiteral.createSymbol(SqlJsonValueEmptyOrErrorBehavior.DEFAULT, getPos()));
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
             list.add(e);
@@ -6996,6 +7011,7 @@ List<SqlNode> JsonValueEmptyOrErrorBehavior() :
     )
     <ON>
     (
+<<<<<<< HEAD
 <<<<<<< HEAD
         <EMPTY> {
             list.add(SqlJsonEmptyOrError.EMPTY.symbol(getPos()));
@@ -7009,21 +7025,28 @@ List<SqlNode> JsonValueEmptyOrErrorBehavior() :
 =======
         <EMPTY>
         {
+=======
+        <EMPTY> {
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
             list.add(SqlLiteral.createSymbol(SqlJsonEmptyOrError.EMPTY, getPos()));
         }
-        |
-        <ERROR>
-        {
+    |
+        <ERROR> {
             list.add(SqlLiteral.createSymbol(SqlJsonEmptyOrError.ERROR, getPos()));
         }
     )
+<<<<<<< HEAD
 
     { return list;}
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+    { return list; }
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
 }
 
 SqlCall JsonValueFunctionCall() :
 {
+<<<<<<< HEAD
 <<<<<<< HEAD
     final List<SqlNode> args = new ArrayList<SqlNode>(7);
     SqlNode e;
@@ -7032,11 +7055,17 @@ SqlCall JsonValueFunctionCall() :
     SqlNode[] args;
     SqlNode e;
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+    final SqlNode[] args = new SqlNode[7];
+    SqlNode e;
+    List<SqlNode> commonSyntax;
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     final Span span;
     List<SqlNode> behavior;
 }
 {
     <JSON_VALUE> { span = span(); }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     <LPAREN> commonSyntax = JsonApiCommonSyntax() {
@@ -7058,22 +7087,29 @@ SqlCall JsonValueFunctionCall() :
 >>>>>>> 31a1bb0fc ([CALCITE-2808] Add the JSON_LENGTH function (xuqianjin))
         args = new SqlNode[6];
         args[0] = e;
+=======
+    <LPAREN> commonSyntax = JsonApiCommonSyntax() {
+        args[0] = commonSyntax.get(0);
+        args[1] = commonSyntax.get(1);
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     }
     [
-        e = JsonReturningClause() { args[5] = e; }
+        e = JsonReturningClause() {
+            args[6] = e;
+        }
     ]
     (
-        behavior = JsonValueEmptyOrErrorBehavior()
-        {
-            SqlJsonEmptyOrError symbol = ((SqlLiteral) behavior.get(2)).getValueAs(SqlJsonEmptyOrError.class);
+        behavior = JsonValueEmptyOrErrorBehavior() {
+            final SqlJsonEmptyOrError symbol =
+                ((SqlLiteral) behavior.get(2)).getValueAs(SqlJsonEmptyOrError.class);
             switch (symbol) {
             case EMPTY:
-                args[1] = behavior.get(0);
-                args[2] = behavior.get(1);
+                args[2] = behavior.get(0);
+                args[3] = behavior.get(1);
                 break;
             case ERROR:
-                args[3] = behavior.get(0);
-                args[4] = behavior.get(1);
+                args[4] = behavior.get(0);
+                args[5] = behavior.get(1);
                 break;
             }
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
@@ -7087,14 +7123,19 @@ SqlCall JsonValueFunctionCall() :
 List<SqlNode> JsonQueryEmptyOrErrorBehavior() :
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     final List<SqlNode> list = new ArrayList<SqlNode>();
 =======
     List<SqlNode> list = new ArrayList<SqlNode>();
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+    final List<SqlNode> list = new ArrayList<SqlNode>();
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     SqlNode e;
 }
 {
     (
+<<<<<<< HEAD
 <<<<<<< HEAD
         <ERROR> {
             list.add(SqlLiteral.createSymbol(SqlJsonQueryEmptyOrErrorBehavior.ERROR, getPos()));
@@ -7113,27 +7154,35 @@ List<SqlNode> JsonQueryEmptyOrErrorBehavior() :
 =======
         <ERROR>
         {
+=======
+        <ERROR> {
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
             list.add(SqlLiteral.createSymbol(SqlJsonQueryEmptyOrErrorBehavior.ERROR, getPos()));
         }
-        |
-        <NULL>
-        {
+    |
+        <NULL> {
             list.add(SqlLiteral.createSymbol(SqlJsonQueryEmptyOrErrorBehavior.NULL, getPos()));
         }
-        |
+    |
         LOOKAHEAD(2)
         <EMPTY> <ARRAY> {
             list.add(SqlLiteral.createSymbol(SqlJsonQueryEmptyOrErrorBehavior.EMPTY_ARRAY, getPos()));
         }
+<<<<<<< HEAD
         |
         <EMPTY> <OBJECT>
         {
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+    |
+        <EMPTY> <OBJECT> {
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
             list.add(SqlLiteral.createSymbol(SqlJsonQueryEmptyOrErrorBehavior.EMPTY_OBJECT, getPos()));
         }
     )
     <ON>
     (
+<<<<<<< HEAD
 <<<<<<< HEAD
         <EMPTY> {
             list.add(SqlLiteral.createSymbol(SqlJsonEmptyOrError.EMPTY, getPos()));
@@ -7147,17 +7196,23 @@ List<SqlNode> JsonQueryEmptyOrErrorBehavior() :
 =======
         <EMPTY>
         {
+=======
+        <EMPTY> {
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
             list.add(SqlLiteral.createSymbol(SqlJsonEmptyOrError.EMPTY, getPos()));
         }
-        |
-        <ERROR>
-        {
+    |
+        <ERROR> {
             list.add(SqlLiteral.createSymbol(SqlJsonEmptyOrError.ERROR, getPos()));
         }
     )
+<<<<<<< HEAD
 
     { return list;}
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+    { return list; }
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
 }
 
 SqlNode JsonQueryWrapperBehavior() :
@@ -7166,15 +7221,20 @@ SqlNode JsonQueryWrapperBehavior() :
 }
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     <WITHOUT> [<ARRAY>] {
 =======
     <WITHOUT> [<ARRAY>]
     {
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+    <WITHOUT> [<ARRAY>] {
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
         return SqlLiteral.createSymbol(SqlJsonQueryWrapperBehavior.WITHOUT_ARRAY, getPos());
     }
     |
     LOOKAHEAD(2)
+<<<<<<< HEAD
 <<<<<<< HEAD
     <WITH> <CONDITIONAL> [<ARRAY>] {
         return SqlLiteral.createSymbol(SqlJsonQueryWrapperBehavior.WITH_CONDITIONAL_ARRAY, getPos());
@@ -7190,12 +7250,20 @@ SqlNode JsonQueryWrapperBehavior() :
     <WITH> [<UNCONDITIONAL>] [<ARRAY>]
     {
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+    <WITH> <CONDITIONAL> [<ARRAY>] {
+        return SqlLiteral.createSymbol(SqlJsonQueryWrapperBehavior.WITH_CONDITIONAL_ARRAY, getPos());
+    }
+    |
+    <WITH> [<UNCONDITIONAL>] [<ARRAY>] {
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
         return SqlLiteral.createSymbol(SqlJsonQueryWrapperBehavior.WITH_UNCONDITIONAL_ARRAY, getPos());
     }
 }
 
 SqlCall JsonQueryFunctionCall() :
 {
+<<<<<<< HEAD
 <<<<<<< HEAD
     final SqlNode[] args = new SqlNode[5];
     SqlNode e;
@@ -7204,11 +7272,17 @@ SqlCall JsonQueryFunctionCall() :
     SqlNode[] args;
     SqlNode e;
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+    final SqlNode[] args = new SqlNode[5];
+    SqlNode e;
+    List<SqlNode> commonSyntax;
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     final Span span;
     List<SqlNode> behavior;
 }
 {
     <JSON_QUERY> { span = span(); }
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     <LPAREN> commonSyntax = JsonApiCommonSyntax() {
@@ -7237,21 +7311,32 @@ SqlCall JsonQueryFunctionCall() :
 >>>>>>> 31a1bb0fc ([CALCITE-2808] Add the JSON_LENGTH function (xuqianjin))
         args = new SqlNode[4];
         args[0] = e;
+=======
+    <LPAREN> commonSyntax = JsonApiCommonSyntax() {
+        args[0] = commonSyntax.get(0);
+        args[1] = commonSyntax.get(1);
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     }
     [
-        e = JsonQueryWrapperBehavior() <WRAPPER> { args[1] = e; }
+        e = JsonQueryWrapperBehavior() <WRAPPER> {
+            args[2] = e;
+        }
     ]
     (
-        behavior = JsonQueryEmptyOrErrorBehavior()
-        {
-            SqlJsonEmptyOrError symbol = ((SqlLiteral) behavior.get(1)).getValueAs(SqlJsonEmptyOrError.class);
+        behavior = JsonQueryEmptyOrErrorBehavior() {
+            final SqlJsonEmptyOrError symbol =
+                ((SqlLiteral) behavior.get(1)).getValueAs(SqlJsonEmptyOrError.class);
             switch (symbol) {
             case EMPTY:
-                args[2] = behavior.get(0);
+                args[3] = behavior.get(0);
                 break;
             case ERROR:
+<<<<<<< HEAD
                 args[3] = behavior.get(0);
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+                args[4] = behavior.get(0);
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
                 break;
             }
         }
@@ -7264,10 +7349,14 @@ SqlCall JsonQueryFunctionCall() :
 SqlNode JsonName() :
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     final SqlNode e;
 =======
     SqlNode e;
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+    final SqlNode e;
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
 }
 {
      e = Expression(ExprContext.ACCEPT_NON_QUERY) {
@@ -7278,10 +7367,14 @@ SqlNode JsonName() :
 List<SqlNode> JsonNameAndValue() :
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     final List<SqlNode> list = new ArrayList<SqlNode>();
 =======
     List<SqlNode> list = new ArrayList<SqlNode>();
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+    final List<SqlNode> list = new ArrayList<SqlNode>();
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     SqlNode e;
     boolean kvMode = false;
 }
@@ -7331,6 +7424,7 @@ List<SqlNode> JsonNameAndValue() :
 SqlNode JsonConstructorNullClause() :
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 {
     <NULL> <ON> <NULL> {
@@ -7340,16 +7434,22 @@ SqlNode JsonConstructorNullClause() :
     <ABSENT> <ON> <NULL> {
 =======
     SqlNode e;
+=======
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
 }
 {
-    <NULL> <ON> <NULL>
-    {
+    <NULL> <ON> <NULL> {
         return SqlLiteral.createSymbol(SqlJsonConstructorNullClause.NULL_ON_NULL, getPos());
     }
+<<<<<<< HEAD
     |
     <ABSENT> <ON> <NULL>
     {
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+|
+    <ABSENT> <ON> <NULL> {
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
         return SqlLiteral.createSymbol(SqlJsonConstructorNullClause.ABSENT_ON_NULL, getPos());
     }
 }
@@ -7357,17 +7457,23 @@ SqlNode JsonConstructorNullClause() :
 SqlCall JsonObjectFunctionCall() :
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     final List<SqlNode> nvArgs = new ArrayList<SqlNode>();
     final SqlNode[] otherArgs = new SqlNode[1];
 =======
     List<SqlNode> nvArgs;
     SqlNode[] otherArgs;
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+    final List<SqlNode> nvArgs = new ArrayList<SqlNode>();
+    final SqlNode[] otherArgs = new SqlNode[1];
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     SqlNode e;
     List<SqlNode> list;
     final Span span;
 }
 {
+<<<<<<< HEAD
 <<<<<<< HEAD
     <JSON_OBJECT> { span = span(); }
     <LPAREN> [
@@ -7378,6 +7484,9 @@ SqlCall JsonObjectFunctionCall() :
         nvArgs = new ArrayList<SqlNode>();
         otherArgs = new SqlNode[1];
     }
+=======
+    <JSON_OBJECT> { span = span(); }
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     <LPAREN> [
 <<<<<<< HEAD
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
@@ -7401,10 +7510,14 @@ SqlCall JsonObjectFunctionCall() :
     ]
     <RPAREN> {
 <<<<<<< HEAD
+<<<<<<< HEAD
         final List<SqlNode> args = new ArrayList();
 =======
         List<SqlNode> args = new ArrayList();
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+        final List<SqlNode> args = new ArrayList();
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
         args.addAll(Arrays.asList(otherArgs));
         args.addAll(nvArgs);
         return SqlStdOperatorTable.JSON_OBJECT.createCall(span.end(this), args);
@@ -7413,6 +7526,7 @@ SqlCall JsonObjectFunctionCall() :
 
 SqlCall JsonObjectAggFunctionCall() :
 {
+<<<<<<< HEAD
 <<<<<<< HEAD
     final SqlNode[] args = new SqlNode[2];
     List<SqlNode> list;
@@ -7428,21 +7542,26 @@ SqlCall JsonObjectAggFunctionCall() :
         args[1] = list.get(1);
 =======
     SqlNode[] args;
+=======
+    final SqlNode[] args = new SqlNode[2];
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     List<SqlNode> list;
     final Span span;
-    SqlJsonConstructorNullClause nullClause;
-    SqlNode e;
+    SqlJsonConstructorNullClause nullClause =
+        SqlJsonConstructorNullClause.NULL_ON_NULL;
+    final SqlNode e;
 }
 {
-    <JSON_OBJECTAGG> {
-        span = span();
-        args = new SqlNode[2];
-        nullClause = SqlJsonConstructorNullClause.NULL_ON_NULL;
-    }
+    <JSON_OBJECTAGG> { span = span(); }
     <LPAREN> list = JsonNameAndValue() {
+<<<<<<< HEAD
             args[0] = list.get(0);
             args[1] = list.get(1);
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+        args[0] = list.get(0);
+        args[1] = list.get(1);
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     }
     [
         e = JsonConstructorNullClause() {
@@ -7474,16 +7593,22 @@ SqlCall JsonObjectAggFunctionCall() :
 SqlCall JsonArrayFunctionCall() :
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     final List<SqlNode> elements = new ArrayList<SqlNode>();
     final SqlNode[] otherArgs = new SqlNode[1];
 =======
     List<SqlNode> elements;
     SqlNode[] otherArgs;
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+    final List<SqlNode> elements = new ArrayList<SqlNode>();
+    final SqlNode[] otherArgs = new SqlNode[1];
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     SqlNode e;
     final Span span;
 }
 {
+<<<<<<< HEAD
 <<<<<<< HEAD
     <JSON_ARRAY> { span = span(); }
     <LPAREN> [
@@ -7495,6 +7620,9 @@ SqlCall JsonArrayFunctionCall() :
         elements = new ArrayList<SqlNode>();
         otherArgs = new SqlNode[1];
     }
+=======
+    <JSON_ARRAY> { span = span(); }
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     <LPAREN> [
 <<<<<<< HEAD
         e = JsonValueExpression(false) {
@@ -7527,10 +7655,14 @@ SqlCall JsonArrayFunctionCall() :
     ]
     <RPAREN> {
 <<<<<<< HEAD
+<<<<<<< HEAD
         final List<SqlNode> args = new ArrayList();
 =======
         List<SqlNode> args = new ArrayList();
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+        final List<SqlNode> args = new ArrayList();
+>>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
         args.addAll(Arrays.asList(otherArgs));
         args.addAll(elements);
         return SqlStdOperatorTable.JSON_ARRAY.createCall(span.end(this), args);
@@ -7962,17 +8094,7 @@ SqlNode NamedFunctionCall() :
         LOOKAHEAD(2) call = nullTreatment(call)
     ]
     [
-        <WITHIN> { withinGroupSpan = span(); }
-        <GROUP>
-        <LPAREN>
-        orderList = OrderBy(true)
-        <RPAREN> {
-            call = SqlStdOperatorTable.WITHIN_GROUP.createCall(
-                withinGroupSpan.end(this), call, orderList);
-        }
-    ]
-    [
-            call = withinGroup(call)
+        call = withinGroup(call)
     ]
     [
             
