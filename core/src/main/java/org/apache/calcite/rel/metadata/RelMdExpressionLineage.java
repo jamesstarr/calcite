@@ -57,7 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
->>>>>>> 2be9037bd ([CALCITE-2668] Support for left/right outer join in RelMdExpressionLineage)
+import javax.annotation.Nullable;
 
 /**
  * Default implementation of
