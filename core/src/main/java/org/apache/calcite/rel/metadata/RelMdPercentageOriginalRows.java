@@ -54,12 +54,8 @@ public class RelMdPercentageOriginalRows
 
   private RelMdPercentageOriginalRows() {}
 
-<<<<<<< HEAD
-  @Deprecated
-=======
 >>>>>>> 8a612190e (DX-35420 Revert previous customization rel metadata)
 =======
->>>>>>> 68bcc7659 (DX-53583: Fix and enhance MultiJoinOptimizeBushyRule)
   public MetadataDef<BuiltInMetadata.PercentageOriginalRows> getDef() {
     return BuiltInMetadata.PercentageOriginalRows.DEF;
   }
