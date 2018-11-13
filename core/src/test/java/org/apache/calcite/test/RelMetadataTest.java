@@ -23,6 +23,7 @@ import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptPredicateList;
 import org.apache.calcite.plan.RelOptTable;
+import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.InvalidRelException;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelCollationTraitDef;
@@ -1016,42 +1017,6 @@ public class RelMetadataTest extends SqlToRelTestBase {
     }
   }
 
-<<<<<<< HEAD
-  @Test void testGroupByEmptyUniqueKeys() {
-    checkGetUniqueKeys("select count(*) from emp",
-        ImmutableSet.of(ImmutableBitSet.of()));
-  }
-
-  @Test void testGroupByEmptyHavingUniqueKeys() {
-    checkGetUniqueKeys("select count(*) from emp where 1 = 1",
-        ImmutableSet.of(ImmutableBitSet.of()));
-  }
-
-  @Test void testFullOuterJoinUniqueness1() {
-    final String sql = "select e.empno, d.deptno\n"
-        + "from (select cast(null as int) empno from sales.emp "
-        + " where empno = 10 group by cast(null as int)) as e\n"
-        + "full outer join (select cast (null as int) deptno from sales.dept "
-        + "group by cast(null as int)) as d on e.empno = d.deptno\n"
-        + "group by e.empno, d.deptno";
-    RelNode rel = convertSql(sql);
-    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-    final ImmutableBitSet allCols =
-        ImmutableBitSet.range(0, rel.getRowType().getFieldCount());
-    Boolean areGroupByKeysUnique = mq.areColumnsUnique(rel.getInput(0), allCols);
-    assertThat(areGroupByKeysUnique, is(false));
-  }
-
-  @Test void testColumnUniquenessForFilterWithConstantColumns() {
-    checkColumnUniquenessForFilterWithConstantColumns(""
-        + "select *\n"
-        + "from (select distinct deptno, sal from emp)\n"
-        + "where sal=1000");
-    checkColumnUniquenessForFilterWithConstantColumns(""
-        + "select *\n"
-        + "from (select distinct deptno, sal from emp)\n"
-        + "where 1000=sal");
-=======
   @Test public void testGroupByEmptyUniqueKeys() {
     RelNode rel = convertSql("select count(*) from emp");
     final RelMetadataQuery mq = RelMetadataQuery.instance();
@@ -2478,7 +2443,10 @@ public class RelMetadataTest extends SqlToRelTestBase {
         sortsAs("[=([CATALOG, SALES, EMP].#1.$0, 5), true, true]"));
   }
 
+<<<<<<< HEAD
   @Test void testTableReferencesJoinUnknownNode() {
+=======
+  @Test public void testTableReferencesJoinUnknownNode() {
     final String sql = "select * from emp limit 10";
     final RelNode node = convertSql(sql);
     final RelNode nodeWithUnknown = new DummyRelNode(
@@ -2489,12 +2457,12 @@ public class RelMetadataTest extends SqlToRelTestBase {
             LogicalJoin.create(nodeWithUnknown, node, ImmutableList.of(),
             rexBuilder.makeLiteral(true),
             ImmutableSet.of(), JoinRelType.INNER);
-    final RelMetadataQuery mq = node.getCluster().getMetadataQuery();
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
     final Set<RelTableRef> tableReferences = mq.getTableReferences(join);
     assertNull(tableReferences);
   }
 
-  @Test void testAllPredicatesUnionMultiTable() {
+  @Test public void testAllPredicatesUnionMultiTable() {
     final String sql = "select x.sal from\n"
         + "(select a.deptno, a.sal from (select * from emp) as a\n"
         + "union all select emp.deptno, emp.sal from emp\n"
@@ -2523,6 +2491,20 @@ public class RelMetadataTest extends SqlToRelTestBase {
         LogicalUnion.create(ImmutableList.of(nodeWithUnknown, node),
             true);
     final RelMetadataQuery mq = node.getCluster().getMetadataQuery();
+    final Set<RelTableRef> tableReferences = mq.getTableReferences(union);
+    assertNull(tableReferences);
+  }
+
+  @Test public void testTableReferencesUnionUnknownNode() {
+    final String sql = "select * from emp limit 10";
+    final RelNode node = convertSql(sql);
+    final RelNode nodeWithUnknown = new DummyRelNode(
+        node.getCluster(), node.getTraitSet(), node);
+    // Union
+    final LogicalUnion union =
+        LogicalUnion.create(ImmutableList.of(nodeWithUnknown, node),
+            true);
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
     final Set<RelTableRef> tableReferences = mq.getTableReferences(union);
     assertNull(tableReferences);
   }
@@ -2828,12 +2810,6 @@ public class RelMetadataTest extends SqlToRelTestBase {
 
   /** Tests calling {@link RelMetadataQuery#getTableOrigin} for
    * an aggregate with no columns. Previously threw. */
-<<<<<<< HEAD
-  @Test void testEmptyAggregateTableOrigin() {
-    final FrameworkConfig config = RelBuilderTest.config().build();
-    final RelBuilder builder = RelBuilder.create(config);
-    RelMetadataQuery mq = builder.getCluster().getMetadataQuery();
-=======
   @Test public void testEmptyAggregateTableOrigin() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
@@ -3003,6 +2979,22 @@ public class RelMetadataTest extends SqlToRelTestBase {
       }
     }
   }
+<<<<<<< HEAD
+=======
+
+  /**
+   * Dummy rel node used for testing.
+   */
+  private class DummyRelNode extends SingleRel {
+
+    /**
+     * Creates a <code>DummyRelNode</code>.
+     */
+    DummyRelNode(RelOptCluster cluster, RelTraitSet traits, RelNode input) {
+      super(cluster, traits, input);
+    }
+  }
+}
 
   /**
    * Dummy rel node used for testing.
