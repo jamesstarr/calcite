@@ -2538,12 +2538,16 @@ true
 !ok
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> bc721fdca ([CALCITE-2670] Combine similar JSON aggregate functions in operator table)
 # JSON
 values json_exists('{"foo":"bar"}', 'strict $.foo' false on error);
 EXPR$0
 true
 !ok
 
+<<<<<<< HEAD
 # [CALCITE-2908] Implement SQL LAST_DAY function
 with data(c_date, c_timestamp) as (select * from (values
     (DATE'1965-01-10', TIMESTAMP '1965-01-10 20:20:20'),
@@ -2571,4 +2575,6 @@ EXPR$0, EXPR$1
 >>>>>>> 8fb9e5d96 ([CALCITE-1167] OVERLAPS should match even if operands are in (high, low) order)
 =======
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
+=======
+>>>>>>> bc721fdca ([CALCITE-2670] Combine similar JSON aggregate functions in operator table)
 # End misc.iq

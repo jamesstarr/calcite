@@ -7382,6 +7382,7 @@ SqlCall JsonObjectAggFunctionCall() :
     ]
     <RPAREN> {
 <<<<<<< HEAD
+<<<<<<< HEAD
         return SqlStdOperatorTable.JSON_OBJECTAGG.with(nullClause)
             .createCall(span.end(this), args);
 =======
@@ -7394,6 +7395,10 @@ SqlCall JsonObjectAggFunctionCall() :
           return SqlStdOperatorTable.JSON_OBJECTAGG_NULL_ON_NULL.createCall(span.end(this), args);
         }
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+        return SqlStdOperatorTable.JSON_OBJECTAGG.with(nullClause)
+            .createCall(span.end(this), args);
+>>>>>>> bc721fdca ([CALCITE-2670] Combine similar JSON aggregate functions in operator table)
     }
 }
 
@@ -7490,19 +7495,17 @@ SqlCall JsonArrayAggFunctionCall() :
 =======
 SqlCall JsonArrayAggFunctionCall() :
 {
-    SqlNode arg;
+    final SqlNode[] args = new SqlNode[1];
     List<SqlNode> list;
     final Span span;
-    SqlJsonConstructorNullClause nullClause;
+    SqlJsonConstructorNullClause nullClause =
+        SqlJsonConstructorNullClause.ABSENT_ON_NULL;
     SqlNode e;
 }
 {
-    <JSON_ARRAYAGG> {
-        span = span();
-        nullClause = SqlJsonConstructorNullClause.ABSENT_ON_NULL;
-    }
+    <JSON_ARRAYAGG> { span = span(); }
     <LPAREN> e = JsonValueExpression(false) {
-            arg = e;
+        args[0] = e;
     }
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
     [
@@ -7534,6 +7537,7 @@ SqlCall JsonArrayAggFunctionCall() :
             .createCall(span.end(this), valueExpr, orderList);
 =======
     <RPAREN> {
+<<<<<<< HEAD
         switch (nullClause) {
         case ABSENT_ON_NULL:
           return SqlStdOperatorTable.JSON_ARRAYAGG_ABSENT_ON_NULL.createCall(span.end(this), arg);
@@ -7543,6 +7547,10 @@ SqlCall JsonArrayAggFunctionCall() :
           return SqlStdOperatorTable.JSON_ARRAYAGG_ABSENT_ON_NULL.createCall(span.end(this), arg);
         }
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+        return SqlStdOperatorTable.JSON_ARRAYAGG.with(nullClause)
+            .createCall(span.end(this), args);
+>>>>>>> bc721fdca ([CALCITE-2670] Combine similar JSON aggregate functions in operator table)
     }
 }
 

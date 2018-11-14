@@ -52,8 +52,7 @@ import org.apache.calcite.sql.SqlJsonEmptyOrError;
 import org.apache.calcite.sql.SqlJsonValueEmptyOrErrorBehavior;
 import org.apache.calcite.sql.SqlMatchFunction;
 import org.apache.calcite.sql.SqlOperator;
-import org.apache.calcite.sql.SqlTypeConstructorFunction;
-import org.apache.calcite.sql.SqlWindowTableFunction;
+>>>>>>> bc721fdca ([CALCITE-2670] Combine similar JSON aggregate functions in operator table)
 import org.apache.calcite.sql.fun.SqlJsonArrayAggAggFunction;
 import org.apache.calcite.sql.fun.SqlJsonObjectAggAggFunction;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
@@ -112,7 +111,6 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.ATAN;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.ATAN2;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.BIT_AND;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.BIT_OR;
->>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CARDINALITY;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CASE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CAST;
@@ -174,13 +172,11 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_TRUE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.ITEM;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_API_COMMON_SYNTAX;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_ARRAY;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_ARRAYAGG_ABSENT_ON_NULL;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_ARRAYAGG_NULL_ON_NULL;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_ARRAYAGG;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_DEPTH;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_EXISTS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_OBJECT;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_OBJECTAGG_ABSENT_ON_NULL;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_OBJECTAGG_NULL_ON_NULL;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_OBJECTAGG;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_QUERY;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_STRUCTURED_VALUE_EXPRESSION;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_TYPE;
@@ -544,19 +540,13 @@ public class RexImpTable {
     defineMethod(JSON_OBJECT, BuiltInMethod.JSON_OBJECT.method, NullPolicy.NONE);
     defineMethod(JSON_TYPE, BuiltInMethod.JSON_TYPE.method, NullPolicy.NONE);
     defineMethod(JSON_DEPTH, BuiltInMethod.JSON_DEPTH.method, NullPolicy.NONE);
-    aggMap.put(JSON_OBJECTAGG_NULL_ON_NULL,
+    aggMap.put(JSON_OBJECTAGG,
         JsonObjectAggImplementor
-            .supplierFor(BuiltInMethod.JSON_OBJECTAGG_ADD_NULL_ON_NULL.method));
-    aggMap.put(JSON_OBJECTAGG_ABSENT_ON_NULL,
-        JsonObjectAggImplementor
-            .supplierFor(BuiltInMethod.JSON_OBJECTAGG_ADD_ABSENT_ON_NULL.method));
+            .supplierFor(BuiltInMethod.JSON_OBJECTAGG_ADD.method));
     defineMethod(JSON_ARRAY, BuiltInMethod.JSON_ARRAY.method, NullPolicy.NONE);
-    aggMap.put(JSON_ARRAYAGG_NULL_ON_NULL,
+    aggMap.put(JSON_ARRAYAGG,
         JsonArrayAggImplementor
-            .supplierFor(BuiltInMethod.JSON_ARRAYAGG_ADD_NULL_ON_NULL.method));
-    aggMap.put(JSON_ARRAYAGG_ABSENT_ON_NULL,
-        JsonArrayAggImplementor
-            .supplierFor(BuiltInMethod.JSON_ARRAYAGG_ADD_ABSENT_ON_NULL.method));
+            .supplierFor(BuiltInMethod.JSON_ARRAYAGG_ADD.method));
     defineImplementor(IS_JSON_VALUE, NullPolicy.NONE,
             new MethodImplementor(BuiltInMethod.IS_JSON_VALUE.method), false);
     defineImplementor(IS_JSON_OBJECT, NullPolicy.NONE,
@@ -2021,16 +2011,18 @@ public class RexImpTable {
                   Expressions.new_(HashMap.class))));
     }
 
-    @Override public void implementAdd(AggContext info,
-                                              AggAddContext add) {
+    @Override public void implementAdd(AggContext info, AggAddContext add) {
+      final SqlJsonObjectAggAggFunction function =
+          (SqlJsonObjectAggAggFunction) info.aggregation();
       add.currentBlock().add(
           Expressions.statement(
               Expressions.call(
                   m,
                   Iterables.concat(
+                      Collections.singletonList(add.accumulator().get(0)),
+                      add.arguments(),
                       Collections.singletonList(
-                          add.accumulator().get(0)),
-                      add.arguments()))));
+                          Expressions.constant(function.getNullClause()))))));
     }
 
     @Override public Expression implementResult(AggContext info,
@@ -2057,14 +2049,17 @@ public class RexImpTable {
 
     @Override public void implementAdd(AggContext info,
                                        AggAddContext add) {
+      final SqlJsonArrayAggAggFunction function =
+          (SqlJsonArrayAggAggFunction) info.aggregation();
       add.currentBlock().add(
           Expressions.statement(
               Expressions.call(
                   m,
                   Iterables.concat(
+                      Collections.singletonList(add.accumulator().get(0)),
+                      add.arguments(),
                       Collections.singletonList(
-                          add.accumulator().get(0)),
-                      add.arguments()))));
+                          Expressions.constant(function.getNullClause()))))));
     }
 
     @Override public Expression implementResult(AggContext info,

@@ -64,7 +64,10 @@ interface ElasticsearchConstants {
 >>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda)):elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchConstants.java
 =======
 public enum SqlJsonExistsErrorBehavior {
-  TRUE, FALSE, UNKNOWN, ERROR
+  TRUE,
+  FALSE,
+  UNKNOWN,
+  ERROR
 }
 
 // End SqlJsonExistsErrorBehavior.java

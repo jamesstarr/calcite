@@ -138,16 +138,6 @@ public class MssqlSqlDialect extends SqlDialect {
     return false;
   }
 
-<<<<<<< HEAD
-  @Override public boolean supportsGroupByWithRollup() {
-    return true;
-  }
-
-  @Override public boolean supportsGroupByWithCube() {
-    return true;
-  }
-
-=======
 >>>>>>> 2ad014140 ([CALCITE-2715] In JDBC adapter, do not generate character set in data types for MS SQL Server (Piotr Bojko))
   /**
    * Unparses datetime floor for Microsoft SQL Server.
@@ -245,11 +235,15 @@ public class MssqlSqlDialect extends SqlDialect {
   private void unparseSqlIntervalLiteralMssql(
       SqlWriter writer, SqlIntervalLiteral literal, int sign) {
 <<<<<<< HEAD
+<<<<<<< HEAD
     final SqlIntervalLiteral.IntervalValue interval =
         (SqlIntervalLiteral.IntervalValue) literal.getValue();
 =======
     SqlIntervalLiteral.IntervalValue interval
         = (SqlIntervalLiteral.IntervalValue) literal.getValue();
+=======
+    final SqlIntervalLiteral.IntervalValue interval =
+        (SqlIntervalLiteral.IntervalValue) literal.getValue();
     unparseSqlIntervalQualifier(writer, interval.getIntervalQualifier(),
         RelDataTypeSystem.DEFAULT);
     writer.sep(",", true);
