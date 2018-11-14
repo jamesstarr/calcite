@@ -3331,6 +3331,64 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
+  @Test public void testJsonExists() {
+    final String sql = "select json_exists(ename, 'lax $')\n"
+        + "from emp";
+    sql(sql).ok();
+  }
+
+  @Test public void testJsonValue() {
+    final String sql = "select json_value(ename, 'lax $')\n"
+        + "from emp";
+    sql(sql).ok();
+  }
+
+  @Test public void testJsonQuery() {
+    final String sql = "select json_query(ename, 'lax $')\n"
+        + "from emp";
+    sql(sql).ok();
+  }
+
+  @Test public void testJsonArray() {
+    final String sql = "select json_array(ename, ename)\n"
+        + "from emp";
+    sql(sql).ok();
+  }
+
+  @Test public void testJsonArrayAgg() {
+    final String sql = "select json_arrayagg(ename)\n"
+        + "from emp";
+    sql(sql).ok();
+  }
+
+  @Test public void testJsonObject() {
+    final String sql = "select json_object(ename: deptno, ename: deptno)\n"
+        + "from emp";
+    sql(sql).ok();
+  }
+
+  @Test public void testJsonObjectAgg() {
+    final String sql = "select json_objectagg(ename: deptno)\n"
+        + "from emp";
+    sql(sql).ok();
+  }
+
+  @Test public void testJsonPredicate() {
+    final String sql = "select\n"
+        + "ename is json,\n"
+        + "ename is json value,\n"
+        + "ename is json object,\n"
+        + "ename is json array,\n"
+        + "ename is json scalar,\n"
+        + "ename is not json,\n"
+        + "ename is not json value,\n"
+        + "ename is not json object,\n"
+        + "ename is not json array,\n"
+        + "ename is not json scalar\n"
+        + "from emp";
+    sql(sql).ok();
+  }
+
   @Test public void testCorrelationIdHasColumnIndex() {
     final String sql = "select * from emp\n"
             + "where exists (\n"
