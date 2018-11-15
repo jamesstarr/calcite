@@ -867,9 +867,6 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
         return node;
       }
       node = super.visitCall(call);
-      if (node != call) {
-        node = simplifier.apply(node);
-      }
       return node;
     }
 

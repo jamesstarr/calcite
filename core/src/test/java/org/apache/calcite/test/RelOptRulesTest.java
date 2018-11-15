@@ -3117,16 +3117,15 @@ class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .build();
 
-    final String sql = "select case when empno = 1 then 1\n"
-        + "when 1 IS NOT NULL then 2\n"
-        + "else null end as qx "
-        + "from emp";
-    sql(sql)
-        .withProperty(Hook.REL_BUILDER_SIMPLIFY, false)
-        .with(program).check();
+    try (Hook.Closeable a = Hook.REL_BUILDER_SIMPLIFY.add(Hook.propertyJ(false))) {
+      checkPlanning(program,
+          "select case when empno = 1 then 1 when 1 IS NOT NULL then 2 else null end as qx "
+              + "from emp");
+    }
   }
 
-  @Test void testReduceCastsNullable() throws Exception {
+  @Ignore // Calcite does not support INSERT yet
+  @Test public void testReduceCastsNullable() throws Exception {
     HepProgram program = new HepProgramBuilder()
 
         // Simulate the way INSERT will insert casts to the target types

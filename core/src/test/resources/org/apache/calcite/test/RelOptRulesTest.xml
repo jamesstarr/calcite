@@ -9131,11 +9131,17 @@ LogicalProject(EXPR$0=[CASE(=($1, 0), null:INTEGER, $0)])
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testReduceCaseNullabilityChange">
         <Resource name="sql">
             <![CDATA[select case when empno = 1 then 1
 when 1 IS NOT NULL then 2
 else null end as qx from emp]]>
+=======
+    <TestCase name="testReduceCaseNullabilityChange">
+        <Resource name="sql">
+            <![CDATA[select case when empno = 1 then 1 when 1 IS NOT NULL then 2 else null end as qx from emp]]>
+>>>>>>> 2e8d6c73c ([CALCITE-2675] Type validation error as ReduceExpressionRule fails to preserve type nullability (Zoltan Haindrich))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -9145,11 +9151,16 @@ LogicalProject(QX=[CASE(=($0, 1), 1, IS NOT NULL(1), 2, null:INTEGER)])
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(QX=[CAST(CASE(=($0, 1), 1, 2)):INTEGER])
+=======
+LogicalProject(QX=[CASE(=($0, 1), 1, 2)])
+>>>>>>> 2e8d6c73c ([CALCITE-2675] Type validation error as ReduceExpressionRule fails to preserve type nullability (Zoltan Haindrich))
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testReduceCastsNullable">
         <Resource name="sql">
             <![CDATA[insert into sales.dept(deptno, name)
@@ -9209,6 +9220,8 @@ LogicalProject(EXPR$0=[IS NULL($12)])
     </TestCase>
 =======
 >>>>>>> d10aea21b ([CALCITE-2638] Constant reducer should not treat as constant an RexInputRef that points to a call to a dynamic or non-deterministic function (Danny Chan))
+=======
+>>>>>>> 2e8d6c73c ([CALCITE-2675] Type validation error as ReduceExpressionRule fails to preserve type nullability (Zoltan Haindrich))
     <TestCase name="testReduceConstantsDynamicFunction">
         <Resource name="sql">
             <![CDATA[select sal, t
