@@ -19,7 +19,7 @@ package org.apache.calcite.rel.rules;
 import org.apache.calcite.plan.RelOptPredicateList;
 import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
-import org.apache.calcite.plan.SubstitutionRule;
+>>>>>>> ca8ba1df4 ([CALCITE-2658] Add ExchangeRemoveConstantKeysRule that removes constant keys from Exchange or SortExchange (Chunwei Lei))
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelDistribution;
@@ -50,8 +50,11 @@ import java.util.stream.Collectors;
  * <code>SELECT 1 AS key, value FROM src</code>.</p>
  *
  */
+<<<<<<< HEAD
 public class ExchangeRemoveConstantKeysRule extends RelOptRule
     implements SubstitutionRule {
+=======
+public class ExchangeRemoveConstantKeysRule extends RelOptRule {
   /**
    * Singleton rule that removes constants inside a
    * {@link LogicalExchange}.
@@ -114,8 +117,10 @@ public class ExchangeRemoveConstantKeysRule extends RelOptRule
       call.transformTo(call.builder()
           .push(exchange.getInput())
           .exchange(distributionKeys.isEmpty()
-              ? RelDistributions.SINGLETON
-              : RelDistributions.hash(distributionKeys))
+              ?
+              RelDistributions.SINGLETON
+              :
+              RelDistributions.hash(distributionKeys))
           .build());
       call.getPlanner().setImportance(exchange, 0.0);
     }
@@ -182,13 +187,19 @@ public class ExchangeRemoveConstantKeysRule extends RelOptRule
       if (distributionSimplified
            || collationSimplified) {
         RelDistribution distribution = distributionSimplified
-            ? (distributionKeys.isEmpty()
-                ? RelDistributions.SINGLETON
-                : RelDistributions.hash(distributionKeys))
-            : sortExchange.getDistribution();
+            ?
+            distributionKeys.isEmpty()
+                ?
+                RelDistributions.SINGLETON
+                :
+                RelDistributions.hash(distributionKeys)
+            :
+            sortExchange.getDistribution();
         RelCollation collation = collationSimplified
-            ? RelCollations.of(fieldCollations)
-            : sortExchange.getCollation();
+            ?
+            RelCollations.of(fieldCollations)
+            :
+            sortExchange.getCollation();
 
         call.transformTo(call.builder()
             .push(sortExchange.getInput())
@@ -199,3 +210,8 @@ public class ExchangeRemoveConstantKeysRule extends RelOptRule
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End ExchangeRemoveConstantKeysRule.java
+>>>>>>> ca8ba1df4 ([CALCITE-2658] Add ExchangeRemoveConstantKeysRule that removes constant keys from Exchange or SortExchange (Chunwei Lei))
