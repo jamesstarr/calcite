@@ -2638,6 +2638,19 @@ public class RelOptRulesTest extends RelOptTestBase {
             + "where cast((empno + (10/2)) as int) = 13");
   }
 
+  @Test public <T> void testReduceCaseNullabilityChange() throws Exception {
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .build();
+
+    try (Hook.Closeable a = Hook.REL_BUILDER_SIMPLIFY.add(Hook.propertyJ(false))) {
+      checkPlanning(program,
+          "select case when empno = 1 then 1 when 1 IS NOT NULL then 2 else null end as qx "
+              + "from emp");
+    }
+  }
+
   @Ignore // Calcite does not support INSERT yet
   @Test public void testReduceCastsNullable() throws Exception {
     HepProgram program = new HepProgramBuilder()
