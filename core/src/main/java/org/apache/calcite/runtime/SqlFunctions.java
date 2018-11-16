@@ -42,6 +42,7 @@ import org.apache.calcite.util.TimestampWithTimeZoneString;
 import org.apache.calcite.util.Unsafe;
 import org.apache.calcite.util.Util;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -2143,7 +2144,42 @@ public class SqlFunctions {
 
   /** Support the SLICE function. */
   public static List slice(List list) {
-    return list;
+    List result = new ArrayList(list.size());
+    for (Object e : list) {
+      result.add(structAccess(e, 0, null));
+    }
+    return result;
+  }
+
+  /**
+   * Implements the {@code .} (field access) operator on an object
+   * whose type is not known until runtime.
+   *
+   * <p>A struct object can be represented in various ways by the
+   * runtime and depends on the
+   * {@link org.apache.calcite.adapter.enumerable.JavaRowFormat}.
+   */
+  @Experimental
+  private static Object structAccess(Object structObject, int index, String fieldName) {
+    if (structObject == null) {
+      return null;
+    }
+
+    if (structObject instanceof Object[]) {
+      return ((Object[]) structObject)[index];
+    } else if (structObject instanceof List) {
+      return ((List) structObject).get(index);
+    } else if (structObject instanceof Row) {
+      return ((Row) structObject).getObject(index);
+    } else {
+      Class<?> beanClass = structObject.getClass();
+      try {
+        Field structField = beanClass.getDeclaredField(fieldName);
+        return structField.get(structObject);
+      } catch (NoSuchFieldException | IllegalAccessException ex) {
+        throw new RuntimeException(ex);
+      }
+    }
   }
 
   /** Support the ELEMENT function. */

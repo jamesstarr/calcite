@@ -48,10 +48,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import static org.apache.calcite.adapter.enumerable.EnumUtils.generateCollatorExpression;
-<<<<<<< HEAD
-=======
 import static org.apache.calcite.adapter.enumerable.EnumUtils.javaRowClass;
->>>>>>> 02d8ed362 ([CALCITE-3951] Support different string comparison based on SqlCollation)
+=======
+>>>>>>> 66594a820 ([CALCITE-2677] Struct types with one field are not mapped correctly to Java Classes)
 import static org.apache.calcite.adapter.enumerable.EnumUtils.overridingMethodDecl;
 
 /** Implementation of {@link PhysType}. */
@@ -255,8 +254,15 @@ public class PhysTypeImpl implements PhysType {
     // by the code that follows. If necessary the target format can be optimized before calling
     // this method.
     PhysType targetPhysType = PhysTypeImpl.of(typeFactory, rowType, targetFormat, false);
-    final Expression selector = Expressions.lambda(Function1.class,
-        targetPhysType.record(fieldReferences(o_, Util.range(fieldCount))), o_);
+    final Expression selector;
+    switch (targetPhysType.getFormat()) {
+    case SCALAR:
+      selector = Expressions.call(BuiltInMethod.IDENTITY_SELECTOR.method);
+      break;
+    default:
+      selector = Expressions.lambda(Function1.class,
+          targetPhysType.record(fieldReferences(o_, Util.range(fieldCount))), o_);
+    }
     return Expressions.call(exp, BuiltInMethod.SELECT.method, selector);
   }
 

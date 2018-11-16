@@ -89,25 +89,6 @@ public class EnumerableTableScan
     return new EnumerableTableScan(cluster, traitSet, relOptTable, elementType);
   }
 
-<<<<<<< HEAD
-  /** Returns whether EnumerableTableScan can generate code to handle a
-   * particular variant of the Table SPI.
-   * @deprecated
-   **/
-  @Deprecated
-  public static boolean canHandle(Table table) {
-    if (table instanceof TransientTable) {
-      // CALCITE-3673: TransientTable can't be implemented with Enumerable
-      return false;
-    }
-    // See org.apache.calcite.prepare.RelOptTableImpl.getClassExpressionFunction
-    return table instanceof QueryableTable
-        || table instanceof FilterableTable
-        || table instanceof ProjectableFilterableTable
-        || table instanceof ScannableTable;
-  }
-
-=======
 >>>>>>> 89d1f11c6 ([CALCITE-3167] Make equals and hashCode methods final in AbstractRelNode, and remove overriding methods in EnumerableTableScan (Jin Xing))
   /** Returns whether EnumerableTableScan can generate code to handle a
    * particular variant of the Table SPI.
@@ -241,6 +222,7 @@ public class EnumerableTableScan
     switch (relFieldType.getSqlTypeName()) {
     case ARRAY:
     case MULTISET:
+<<<<<<< HEAD
       final RelDataType fieldType = relFieldType.getComponentType();
       if (fieldType.isStruct()) {
         // We can't represent a multiset or array as a List<Employee>, because
@@ -258,6 +240,19 @@ public class EnumerableTableScan
       } else {
         return e;
       }
+=======
+      // We can't represent a multiset or array as a List<Employee>, because
+      // the consumer does not know the element type.
+      // The standard element type is List.
+      // We need to convert to a List<List>.
+      final JavaTypeFactory typeFactory =
+          (JavaTypeFactory) getCluster().getTypeFactory();
+      final PhysType elementPhysType = PhysTypeImpl.of(
+          typeFactory, relFieldType.getComponentType(), JavaRowFormat.CUSTOM);
+      final MethodCallExpression e2 =
+          Expressions.call(BuiltInMethod.AS_ENUMERABLE2.method, e);
+      final Expression e3 = elementPhysType.convertTo(e2, JavaRowFormat.LIST);
+      return Expressions.call(e3, BuiltInMethod.ENUMERABLE_TO_LIST.method);
     default:
       return e;
     }
