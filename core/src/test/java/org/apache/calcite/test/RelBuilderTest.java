@@ -57,6 +57,7 @@ import org.apache.calcite.tools.RelRunners;
 import org.apache.calcite.util.Holder;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.Pair;
+import org.apache.calcite.util.Util;
 import org.apache.calcite.util.mapping.Mappings;
 
 import com.google.common.collect.ImmutableList;
@@ -2444,20 +2445,20 @@ public class RelBuilderTest {
 
     // One entry on the stack, a single-node tree
     final String expected1 = "LogicalTableScan(table=[[scott, EMP]])\n";
-    assertThat(builder.toString(), is(expected1));
+    assertThat(Util.toLinux(builder.toString()), is(expected1));
 
     // One entry on the stack, a two-node tree
     builder.filter(builder.equals(builder.field(2), builder.literal(3)));
     final String expected2 = "LogicalFilter(condition=[=($2, 3)])\n"
         + "  LogicalTableScan(table=[[scott, EMP]])\n";
-    assertThat(builder.toString(), is(expected2));
+    assertThat(Util.toLinux(builder.toString()), is(expected2));
 
     // Two entries on the stack
     builder.scan("DEPT");
     final String expected3 = "LogicalTableScan(table=[[scott, DEPT]])\n"
         + "LogicalFilter(condition=[=($2, 3)])\n"
         + "  LogicalTableScan(table=[[scott, EMP]])\n";
-    assertThat(builder.toString(), is(expected3));
+    assertThat(Util.toLinux(builder.toString()), is(expected3));
   }
 
   /**
