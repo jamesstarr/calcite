@@ -158,6 +158,11 @@ public abstract class Bug {
    * Several test case not passed in CalciteSqlOperatorTest.java</a> is fixed. */
   public static final boolean CALCITE_2539_FIXED = false;
 
+  /** Whether
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2776">[CALCITE-2776]
+   * Wrong value when accessing struct types with one attribute</a> is fixed. */
+  public static final boolean CALCITE_2776_FIXED = false;
+
   /**
    * Whether
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2223">[CALCITE-2223]
