@@ -35,11 +35,8 @@ import org.apache.calcite.util.Util;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-<<<<<<< HEAD
-import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
 =======
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -569,6 +566,29 @@ class RexBuilderTest {
     assertEquals("_LATIN1'foobar'", literal.toString());
     literal = builder.makeLiteral(utf8, varchar, false);
     assertEquals("_UTF8'foobar'", literal.toString());
+  }
+
+  /** Tests {@link RexBuilder#makeExactLiteral(java.math.BigDecimal)}. */
+  @Test public void testBigDecimalLiteral() {
+    final RelDataTypeFactory typeFactory =
+        new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
+    final RexBuilder builder = new RexBuilder(typeFactory);
+    checkBigDecimalLiteral(builder, "25");
+    checkBigDecimalLiteral(builder, "9.9");
+    checkBigDecimalLiteral(builder, "0");
+    checkBigDecimalLiteral(builder, "-75.5");
+    checkBigDecimalLiteral(builder, "10000000");
+    checkBigDecimalLiteral(builder, "100000.111111111111111111");
+    checkBigDecimalLiteral(builder, "-100000.111111111111111111");
+    checkBigDecimalLiteral(builder, "73786976294838206464"); // 2^66
+    checkBigDecimalLiteral(builder, "-73786976294838206464");
+  }
+
+  private void checkBigDecimalLiteral(RexBuilder builder, String val) {
+    final RexLiteral literal = builder.makeExactLiteral(new BigDecimal(val));
+    assertThat("builder.makeExactLiteral(new BigDecimal(" + val
+            + ")).getValueAs(BigDecimal.class).toString()",
+        literal.getValueAs(BigDecimal.class).toString(), is(val));
   }
 
   @Test

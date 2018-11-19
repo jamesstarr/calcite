@@ -79,6 +79,14 @@ public class RexBuilder {
   public static final SqlSpecialOperator GET_OPERATOR =
       new SqlSpecialOperator("_get", SqlKind.OTHER_FUNCTION);
 
+  /** The smallest valid {@code int} value, as a {@link BigDecimal}. */
+  private static final BigDecimal INT_MIN =
+      BigDecimal.valueOf(Integer.MIN_VALUE);
+
+  /** The largest valid {@code int} value, as a {@link BigDecimal}. */
+  private static final BigDecimal INT_MAX =
+      BigDecimal.valueOf(Integer.MAX_VALUE);
+
   //~ Instance fields --------------------------------------------------------
 
   protected final RelDataTypeFactory typeFactory;
