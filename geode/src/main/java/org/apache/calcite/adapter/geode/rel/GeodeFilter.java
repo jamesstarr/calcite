@@ -103,25 +103,6 @@ public class GeodeFilter extends Filter implements GeodeRel {
      * @return String representation of the literal
      */
     private static String literalValue(RexLiteral literal) {
-<<<<<<< HEAD
-      final Comparable valueComparable = literal.getValueAs(Comparable.class);
-
-      switch (literal.getTypeName()) {
-      case TIMESTAMP:
-      case TIMESTAMP_WITH_LOCAL_TIME_ZONE:
-        assert valueComparable instanceof TimestampString;
-        return "TIMESTAMP '" + valueComparable.toString() + "'";
-      case DATE:
-        assert valueComparable instanceof DateString;
-        return "DATE '" + valueComparable.toString() + "'";
-      case TIME:
-      case TIME_WITH_LOCAL_TIME_ZONE:
-        assert valueComparable instanceof TimeString;
-        return "TIME '" + valueComparable.toString() + "'";
-      default:
-        return String.valueOf(literal.getValue3());
-      }
-=======
       Object value = literal.getValue3();
       StringBuilder buf = new StringBuilder();
       buf.append(value);
@@ -170,7 +151,6 @@ public class GeodeFilter extends Filter implements GeodeRel {
       case CAST:
         // FIXME This will not work in all cases (for example, we ignore string encoding)
         return getLeftNodeFieldName(((RexCall) left).operands.get(0));
->>>>>>> 79a298dea ([CALCITE-2671] GeodeFilter convert multiple ORs (on same attribute) into single IN SET. (Sandeep Chada))
       case OTHER_FUNCTION:
         return left.accept(new GeodeRules.RexToGeodeTranslator(this.fieldNames));
       default:
@@ -260,16 +240,12 @@ public class GeodeFilter extends Filter implements GeodeRel {
 
     private String translateOr(List<RexNode> disjunctions) {
       List<String> predicates = new ArrayList<>();
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 
       List<String> leftFieldNameList = new ArrayList<>();
       List<String> inSetLeftFieldNameList = new ArrayList<>();
 
 <<<<<<< HEAD
 =======
->>>>>>> 42ca94873 (Apply small refactorings to Calcite codebase (Java 5, Java 7, Java 8))
 =======
 >>>>>>> 79a298dea ([CALCITE-2671] GeodeFilter convert multiple ORs (on same attribute) into single IN SET. (Sandeep Chada))
       for (RexNode node : disjunctions) {

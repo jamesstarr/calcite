@@ -9161,6 +9161,7 @@ LogicalProject(QX=[CASE(=($0, 1), 1, 2)])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testReduceCastsNullable">
         <Resource name="sql">
             <![CDATA[insert into sales.dept(deptno, name)
@@ -9195,6 +9196,8 @@ LogicalProject($f0=[CAST(CASE(=(MOD($0, 2:BIGINT), 1), <($0, 2:BIGINT), =(MOD($0
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> a609b49b6 ([CALCITE-2687] Is distinct from could lead to Exceptions in ReduceExpressionRule (Zoltan Haindrich))
     <TestCase name="testReduceConstants3">
         <Resource name="sql">
             <![CDATA[select e.mgr is not distinct from f.mgr from emp e join emp f on (e.mgr=f.mgr) where e.mgr is null]]>
@@ -9210,7 +9213,11 @@ LogicalProject(EXPR$0=[OR(AND(IS NULL($3), IS NULL($12)), IS TRUE(=($3, $12)))])
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[IS NULL($12)])
+=======
+LogicalProject(EXPR$0=[OR(IS NULL($12), IS TRUE(=(null, $12)))])
+>>>>>>> a609b49b6 ([CALCITE-2687] Is distinct from could lead to Exceptions in ReduceExpressionRule (Zoltan Haindrich))
   LogicalFilter(condition=[IS NULL($3)])
     LogicalJoin(condition=[=($3, $12)], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -9218,10 +9225,13 @@ LogicalProject(EXPR$0=[IS NULL($12)])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 >>>>>>> d10aea21b ([CALCITE-2638] Constant reducer should not treat as constant an RexInputRef that points to a call to a dynamic or non-deterministic function (Danny Chan))
 =======
 >>>>>>> 2e8d6c73c ([CALCITE-2675] Type validation error as ReduceExpressionRule fails to preserve type nullability (Zoltan Haindrich))
+=======
+>>>>>>> a609b49b6 ([CALCITE-2687] Is distinct from could lead to Exceptions in ReduceExpressionRule (Zoltan Haindrich))
     <TestCase name="testReduceConstantsDynamicFunction">
         <Resource name="sql">
             <![CDATA[select sal, t
