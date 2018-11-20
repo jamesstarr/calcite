@@ -832,8 +832,6 @@ LogicalProject(EXPR$0=[CHAR_LENGTH('foo')])
             <![CDATA[values (character_length('foo'))]]>
         </Resource>
     </TestCase>
-
-
     <TestCase name="testDotLiteralAfterNestedRow">
         <Resource name="sql">
             <![CDATA[select ((1,2),(3,4,5))."EXPR$1"."EXPR$2" from emp]]>
