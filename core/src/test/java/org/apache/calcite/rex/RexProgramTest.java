@@ -100,7 +100,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 >>>>>>> 5926c2361 ([CALCITE-2205] JoinPushTransitivePredicatesRule should not create Filter on top of equivalent Filter (Vitalii Diravka)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+import static org.junit.Assert.fail;
+>>>>>>> eb8659c29 ([CALCITE-2688] Improve diagnosability when validator cannot infer a return type (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
 /**
  * Unit tests for {@link RexProgram} and
@@ -956,6 +960,17 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplify(cast(cast(vVarchar(), tInt()), tVarchar()),
         "CAST(CAST(?0.varchar0):INTEGER NOT NULL):VARCHAR NOT NULL");
 >>>>>>> 714ffd845 ([CALCITE-2590] Remove redundant CAST when operand has exactly the same type as it is casted to):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+  }
+
+  @Test public void testNoCommonReturnTypeFails() {
+    try {
+      final RexNode node = coalesce(vVarchar(1), vInt(2));
+      fail("expected exception, got " + node);
+    } catch (IllegalArgumentException e) {
+      final String expected = "Cannot infer return type for COALESCE;"
+          + " operand types: [VARCHAR, INTEGER]";
+      assertThat(e.getMessage(), is(expected));
+    }
   }
 
   /** Unit test for {@link org.apache.calcite.rex.RexUtil#toCnf}. */
