@@ -73,6 +73,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Unit tests for {@link RexProgram} and
@@ -736,6 +737,17 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplify(cast(cast(vVarchar(), tInt()), tInt()), "CAST(?0.varchar0):INTEGER NOT NULL");
     checkSimplify(cast(cast(vVarchar(), tInt()), tVarchar()),
         "CAST(CAST(?0.varchar0):INTEGER NOT NULL):VARCHAR NOT NULL");
+  }
+
+  @Test public void testNoCommonReturnTypeFails() {
+    try {
+      final RexNode node = coalesce(vVarchar(1), vInt(2));
+      fail("expected exception, got " + node);
+    } catch (IllegalArgumentException e) {
+      final String expected = "Cannot infer return type for COALESCE;"
+          + " operand types: [VARCHAR, INTEGER]";
+      assertThat(e.getMessage(), is(expected));
+    }
   }
 
   /** Unit test for {@link org.apache.calcite.rex.RexUtil#toCnf}. */

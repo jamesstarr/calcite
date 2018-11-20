@@ -5591,8 +5591,8 @@ public abstract class SqlOperatorBaseTest {
     tester.setFor(SqlLibraryOperators.NVL);
     final SqlTester tester1 = oracleTester();
     tester1.checkFails("nvl(CAST(1 AS decimal(19, 9)), '3')",
-            "Operand types mismatch for: "
-                    + "NVL\\(CAST\\(1 AS DECIMAL\\(19, 9\\)\\), '3'\\)", false);
+            "Cannot infer return type for NVL; operand types: "
+                    + "\\[DECIMAL\\(19, 9\\), CHAR\\(1\\)\\]",  false);
   }
 
   @Test public void testDecodeFunc() {
