@@ -56,7 +56,7 @@ public class BooleanLogicTest {
   @BeforeClass
   public static void setupInstance() throws Exception {
 
-    final Map<String, String> mapping = ImmutableMap.of("A", "keyword", "b", "keyword",
+    final Map<String, String> mapping = ImmutableMap.of("a", "keyword", "b", "keyword",
         "c", "keyword", "int", "long");
 
     NODE.createIndex(NAME, mapping);
@@ -82,7 +82,8 @@ public class BooleanLogicTest {
                 +  " from \"elastic\".\"%s\"", NAME);
 
         ViewTableMacro macro = ViewTable.viewMacro(root, viewSql,
-                Collections.singletonList("elastic"), Arrays.asList("elastic", "view"), false);
+            Collections.singletonList("elastic"),
+            Arrays.asList("elastic", "view"), false);
         root.add("VIEW", macro);
 
         return connection;
@@ -133,7 +134,7 @@ public class BooleanLogicTest {
     assertSingle("select * from view where c = 'c' and (a in ('a', 'b') or num in (41, 42))");
     assertSingle("select * from view where (a = 'a' or b = 'b') or (num = 42 and c = 'c')");
     assertSingle("select * from view where a = 'a' and (b = '0' or (b = 'b' and "
-            +  "(c = '0' or (c = 'c' and num = 42))))");
+        +  "(c = '0' or (c = 'c' and num = 42))))");
   }
 
   /**
