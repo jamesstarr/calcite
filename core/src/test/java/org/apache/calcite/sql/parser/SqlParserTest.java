@@ -1157,6 +1157,11 @@ public class SqlParserTest {
     return false;
   }
 
+  @Test public void testRowWitDot() {
+    check("select (1,2).a from c.t", "SELECT ((ROW(1, 2)).`A`)\nFROM `C`.`T`");
+    check("select row(1,2).a from c.t", "SELECT ((ROW(1, 2)).`A`)\nFROM `C`.`T`");
+  }
+
   @Test public void testPeriod() {
     // We don't have a PERIOD constructor currently;
     // ROW constructor is sufficient for now.
@@ -1894,9 +1899,12 @@ public class SqlParserTest {
             + "FROM `EMP`");
   }
 
-  @Test void testFunctionCallWithDot() {
-    expr("foo(a,b).c")
-        .ok("(`FOO`(`A`, `B`).`C`)");
+  @Test public void testFunctionCallWithDot() {
+    checkExp("foo(a,b).c", "(`FOO`(`A`, `B`).`C`)");
+  }
+
+  @Test public void testFunctionInFunction() {
+    checkExp("ln(power(2,2))", "LN(POWER(2, 2))");
   }
 
   @Test void testFunctionInFunction() {
@@ -2896,9 +2904,10 @@ public class SqlParserTest {
             + "FROM `EMP`");
   }
 
-  @Test void testNotExists() {
-    sql("select * from dept where not not exists (select * from emp) and true")
-        .ok("SELECT *\n"
+  @Test public void testNotExists() {
+    check(
+        "select * from dept where not not exists (select * from emp) and true",
+        "SELECT *\n"
             + "FROM `DEPT`\n"
             + "WHERE ((NOT (NOT (EXISTS (SELECT *\n"
             + "FROM `EMP`)))) AND TRUE)");
@@ -6700,16 +6709,12 @@ public class SqlParserTest {
         .fails("(?s)Encountered \"to year\" at line 1, column 19.\n"
             + "Was expecting one of:\n"
             + "    <EOF> \n"
-            + "    \"\\(\" \\.\\.\\.\n"
-            + "    \"\\.\" \\.\\.\\..*");
-    expr("interval '1-2' year ^to^ day")
-        .fails(ANY);
-    expr("interval '1-2' year ^to^ hour")
-        .fails(ANY);
-    expr("interval '1-2' year ^to^ minute")
-        .fails(ANY);
-    expr("interval '1-2' year ^to^ second")
-        .fails(ANY);
+            + "    \"\\.\" \\.\\.\\.\n"
+            + "    \"NOT\" \\.\\.\\..*");
+    checkExpFails("interval '1-2' year ^to^ day", ANY);
+    checkExpFails("interval '1-2' year ^to^ hour", ANY);
+    checkExpFails("interval '1-2' year ^to^ minute", ANY);
+    checkExpFails("interval '1-2' year ^to^ second", ANY);
 
     expr("interval '1-2' month ^to^ year")
         .fails(ANY);

@@ -97,10 +97,13 @@ public class SqlDotOperator extends SqlSpecialOperator {
     final RelDataType nodeType =
         validator.deriveType(scope, operand);
     assert nodeType != null;
+<<<<<<< HEAD
     if (nodeType.getSqlTypeName() == SqlTypeName.VARIANT) {
       // Result is always a nullable VARIANT
       return validator.getTypeFactory().createTypeWithNullability(nodeType, true);
     }
+=======
+>>>>>>> a900984da ([CALCITE-2542] In SQL parser, allow '. field' to follow expressions other than tables and columns (Rong Rong))
     if (!nodeType.isStruct()) {
       throw SqlUtil.newContextException(operand.getParserPosition(),
           Static.RESOURCE.incompatibleTypes());

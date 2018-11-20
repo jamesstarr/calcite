@@ -1376,10 +1376,13 @@ LogicalProject(EXPR$0=[CHAR_LENGTH('foo')])
     </TestCase>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
 >>>>>>> af4516c57 ([CALCITE-3138] RelStructuredTypeFlattener doesn't restructure ROW type fields (Igor Guzenko))
+=======
+>>>>>>> a900984da ([CALCITE-2542] In SQL parser, allow '. field' to follow expressions other than tables and columns (Rong Rong))
     <TestCase name="testDotLiteralAfterNestedRow">
         <Resource name="sql">
             <![CDATA[select ((1,2),(3,4,5))."EXPR$1"."EXPR$2" from emp]]>

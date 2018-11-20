@@ -3918,7 +3918,11 @@ void Expression2b(ExprContext exprContext, List<Object> list) :
 {
     SqlNode e;
     SqlOperator op;
+<<<<<<< HEAD
     SqlNode ext;
+=======
+    String p;
+>>>>>>> a900984da ([CALCITE-2542] In SQL parser, allow '. field' to follow expressions other than tables and columns (Rong Rong))
 }
 {
     (
@@ -3932,12 +3936,21 @@ void Expression2b(ExprContext exprContext, List<Object> list) :
         list.add(e);
     }
     (
+<<<<<<< HEAD
         LOOKAHEAD(2) <DOT>
         ext = RowExpressionExtension() {
             list.add(
                 new SqlParserUtil.ToTreeListItem(
                     SqlStdOperatorTable.DOT, getPos()));
             list.add(ext);
+=======
+        <DOT>
+        p = Identifier() {
+            list.add(
+                new SqlParserUtil.ToTreeListItem(
+                    SqlStdOperatorTable.DOT, getPos()));
+            list.add(new SqlIdentifier(p, getPos()));
+>>>>>>> a900984da ([CALCITE-2542] In SQL parser, allow '. field' to follow expressions other than tables and columns (Rong Rong))
         }
     )*
 }
