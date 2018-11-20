@@ -2147,20 +2147,20 @@ public abstract class RelOptUtil {
       // x is not distinct from y
       // x=y IS TRUE or ((x is null) and (y is null)),
       return rexBuilder.makeCall(SqlStdOperatorTable.OR,
-              rexBuilder.makeCall(SqlStdOperatorTable.AND,
-                      rexBuilder.makeCall(SqlStdOperatorTable.IS_NULL, x),
-                      rexBuilder.makeCall(SqlStdOperatorTable.IS_NULL, y)),
-              rexBuilder.makeCall(SqlStdOperatorTable.IS_TRUE,
-                      rexBuilder.makeCall(SqlStdOperatorTable.EQUALS, x, y)));
+          rexBuilder.makeCall(SqlStdOperatorTable.AND,
+              rexBuilder.makeCall(SqlStdOperatorTable.IS_NULL, x),
+              rexBuilder.makeCall(SqlStdOperatorTable.IS_NULL, y)),
+          rexBuilder.makeCall(SqlStdOperatorTable.IS_TRUE,
+              rexBuilder.makeCall(SqlStdOperatorTable.EQUALS, x, y)));
     } else {
       // x is distinct from y
       // x=y IS NOT TRUE and ((x is not null) or (y is not null)),
       return rexBuilder.makeCall(SqlStdOperatorTable.AND,
-              rexBuilder.makeCall(SqlStdOperatorTable.OR,
-                      rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL, x),
-                      rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL, y)),
-              rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_TRUE,
-                      rexBuilder.makeCall(SqlStdOperatorTable.EQUALS, x, y)));
+          rexBuilder.makeCall(SqlStdOperatorTable.OR,
+              rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL, x),
+              rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL, y)),
+          rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_TRUE,
+              rexBuilder.makeCall(SqlStdOperatorTable.EQUALS, x, y)));
     }
   }
 
@@ -2916,7 +2916,7 @@ public abstract class RelOptUtil {
     //noinspection unchecked
     return (T) rel.copy(
         rel.getTraitSet().replace(trait),
-        (List) rel.getInputs());
+        rel.getInputs());
   }
 
   /**

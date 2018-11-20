@@ -1805,6 +1805,18 @@ public class RelOptRulesTest extends RelOptTestBase {
         "select p1 is not distinct from p0 from (values (2, cast(null as integer))) as t(p0, p1)");
   }
 
+  @Test public void testReduceConstants3() throws Exception {
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
+        .build();
+
+    final String sql = "select e.mgr is not distinct from f.mgr "
+        + "from emp e join emp f on (e.mgr=f.mgr) where e.mgr is null";
+    checkPlanning(new HepPlanner(program), sql);
+  }
+
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-902">[CALCITE-902]
    * Match nullability when reducing expressions in a Project</a>. */
