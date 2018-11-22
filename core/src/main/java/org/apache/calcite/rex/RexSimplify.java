@@ -1528,9 +1528,6 @@ public class RexSimplify {
 
   /** Simplifies OR(x, x) into x, and similar.
    * The simplified expression returns UNKNOWN values as is (not as FALSE). */
-<<<<<<< HEAD
-  @Deprecated // to be removed before 2.0
-=======
   public RexNode simplifyOr(RexCall call) {
     return simplifyOr(call, UNKNOWN);
   }
@@ -1660,6 +1657,7 @@ public class RexSimplify {
     if (sameTypeOrNarrowsNullability(e.getType(), operand.getType())) {
       return operand;
     }
+<<<<<<< HEAD
     if (RexUtil.isLosslessCast(operand)) {
       // x :: y below means cast(x as y) (which is PostgreSQL-specifiic cast by the way)
       // A) Remove lossless casts:
@@ -1701,6 +1699,7 @@ public class RexSimplify {
         return rexBuilder.makeCast(e.getType(), intExpr);
       }
     }
+=======
     switch (operand.getKind()) {
     case LITERAL:
       final RexLiteral literal = (RexLiteral) operand;
@@ -1729,17 +1728,18 @@ public class RexSimplify {
       return Objects.requireNonNull(
           Iterables.getOnlyElement(reducedValues));
     default:
-<<<<<<< HEAD
+>>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
       if (operand == e.getOperands().get(0)) {
         return e;
       } else {
         return rexBuilder.makeCast(e.getType(), operand);
+<<<<<<< HEAD
       }
 =======
       if (operand.getType().equals(e.getType())) {
         return simplify(operand, UNKNOWN);
+=======
       }
-      return e;
     }
   }
 

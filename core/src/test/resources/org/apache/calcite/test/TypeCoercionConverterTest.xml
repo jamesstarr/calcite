@@ -54,6 +54,7 @@ from (values (true, true))) from (values true))]]>
             <![CDATA[
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CAST(OR(AND(IS NOT NULL($7), <>($1, 0)), AND(<($2, $1), null, <>($1, 0), IS NULL($7)))):BOOLEAN NOT NULL])
 =======
 LogicalProject(EXPR$0=[CAST(CASE(=($1, 0), false, IS NOT NULL($7), true, IS NULL($3), null, IS NULL($4), null, <($2, $1), null, false)):BOOLEAN NOT NULL])
@@ -61,6 +62,9 @@ LogicalProject(EXPR$0=[CAST(CASE(=($1, 0), false, IS NOT NULL($7), true, IS NULL
 =======
 LogicalProject(EXPR$0=[CAST(CASE(=($1, 0), false, IS NOT NULL($7), true, IS NULL($3), null:BOOLEAN, IS NULL($4), null:BOOLEAN, <($2, $1), null:BOOLEAN, false)):BOOLEAN NOT NULL])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+LogicalProject(EXPR$0=[CAST(OR(AND(IS NOT NULL($7), <>($1, 0)), AND(<($2, $1), null, <>($1, 0), IS NULL($7)))):BOOLEAN NOT NULL])
+>>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
   LogicalJoin(condition=[AND(=($3, $5), =($4, $6))], joinType=[left])
     LogicalProject(EXPR$0=[$0], $f0=[$1], $f1=[$2], $f3=[1], $f4=[2])
       LogicalJoin(condition=[true], joinType=[inner])

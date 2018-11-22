@@ -1018,7 +1018,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
 >>>>>>> 714ffd845 ([CALCITE-2590] Remove redundant CAST when operand has exactly the same type as it is casted to):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 =======
     checkSimplifyUnchanged(cast(vInt(), tInt()));
-    checkSimplifyUnchanged(cast(vIntNotNull(), nullable(tInt())));
+    checkSimplify(cast(vIntNotNull(), nullable(tInt())), "?0.notNullInt0");
     checkSimplify(cast(vIntNotNull(), tInt()), "?0.notNullInt0");
 
     // Nested int int cast is removed
@@ -2966,14 +2966,23 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "2011-07-20 01:23:45:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testRemovalOfNullabilityWideningCast() {
     RexNode expr = cast(isTrue(vBoolNotNull()), tBool(true));
+=======
+  @Test public void testRemovalOfNullabilityWideningCast() {
+    RexNode expr = cast(isTrue(vBoolNotNull()), tBoolean(true));
+>>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     assertThat(expr.getType().isNullable(), is(true));
     RexNode result = simplify.simplifyUnknownAs(expr, RexUnknownAs.UNKNOWN);
     assertThat(result.getType().isNullable(), is(false));
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testCompareTimestampWithTimeZone() {
+=======
+  @Test public void testCompareTimestampWithTimeZone() {
+>>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     final TimestampWithTimeZoneString timestampLTZChar1 =
         new TimestampWithTimeZoneString("2011-07-20 10:34:56 America/Los_Angeles");
     final TimestampWithTimeZoneString timestampLTZChar2 =

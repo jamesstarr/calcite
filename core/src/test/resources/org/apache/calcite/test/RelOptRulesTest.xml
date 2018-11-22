@@ -685,6 +685,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalFilter(condition=[NOT(CAST(OR(AND(IS TRUE(<=($0, $9)), <>($10, 0)), AND(>($10, $11), null, <>($10, 0), IS NOT TRUE(<=($0, $9))), AND(<=($0, $9), <>($10, 0), IS NOT TRUE(<=($0, $9)), <=($10, $11)))):BOOLEAN NOT NULL)])
 =======
     LogicalFilter(condition=[NOT(CAST(CASE(=($10, 0), false, IS TRUE(<=($0, $9)), true, >($10, $11), null, <=($0, $9))):BOOLEAN NOT NULL)])
@@ -692,6 +693,9 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 =======
     LogicalFilter(condition=[NOT(CAST(CASE(=($10, 0), false, IS TRUE(<=($0, $9)), true, >($10, $11), null:BOOLEAN, <=($0, $9))):BOOLEAN NOT NULL)])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+    LogicalFilter(condition=[NOT(CAST(OR(AND(IS TRUE(<=($0, $9)), <>($10, 0)), AND(>($10, $11), null, <>($10, 0), IS NOT TRUE(<=($0, $9))), AND(<=($0, $9), <>($10, 0), IS NOT TRUE(<=($0, $9)), <=($10, $11)))):BOOLEAN NOT NULL)])
+>>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
       LogicalJoin(condition=[true], joinType=[inner])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{}], m=[MAX($0)], c=[COUNT()], d=[COUNT($0)])
@@ -705,6 +709,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalFilter(condition=[NOT(CAST(OR(AND(IS TRUE(<=($0, $9)), <>($10, 0)), AND(>($10, $11), null, <>($10, 0), IS NOT TRUE(<=($0, $9))), AND(<=($0, $9), <>($10, 0), IS NOT TRUE(<=($0, $9)), <=($10, $11)))):BOOLEAN NOT NULL)])
 =======
     LogicalFilter(condition=[NOT(CAST(CASE(=($10, 0), false, IS TRUE(<=($0, $9)), true, >($10, $11), null, <=($0, $9))):BOOLEAN NOT NULL)])
@@ -712,6 +717,9 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 =======
     LogicalFilter(condition=[NOT(CAST(CASE(=($10, 0), false, IS TRUE(<=($0, $9)), true, >($10, $11), null:BOOLEAN, <=($0, $9))):BOOLEAN NOT NULL)])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+    LogicalFilter(condition=[NOT(CAST(OR(AND(IS TRUE(<=($0, $9)), <>($10, 0)), AND(>($10, $11), null, <>($10, 0), IS NOT TRUE(<=($0, $9))), AND(<=($0, $9), <>($10, 0), IS NOT TRUE(<=($0, $9)), <=($10, $11)))):BOOLEAN NOT NULL)])
+>>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
       LogicalJoin(condition=[true], joinType=[inner])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{}], m=[MAX($0)], c=[COUNT()], d=[COUNT($0)])
@@ -781,6 +789,7 @@ LogicalProject(DEPTNO=[$7])
             <![CDATA[
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(NAME=[$1], EXPR$1=[CAST(OR(AND(IS TRUE(>($0, $2)), <>($3, 0)), AND(>($3, $4), null, <>($3, 0), IS NOT TRUE(>($0, $2))), AND(>($0, $2), <>($3, 0), IS NOT TRUE(>($0, $2)), <=($3, $4)))):BOOLEAN NOT NULL])
 =======
 LogicalProject(NAME=[$1], EXPR$1=[CAST(CASE(=($3, 0), false, IS TRUE(>($0, $2)), true, >($3, $4), null, >($0, $2))):BOOLEAN NOT NULL])
@@ -788,6 +797,9 @@ LogicalProject(NAME=[$1], EXPR$1=[CAST(CASE(=($3, 0), false, IS TRUE(>($0, $2)),
 =======
 LogicalProject(NAME=[$1], EXPR$1=[CAST(CASE(=($3, 0), false, IS TRUE(>($0, $2)), true, >($3, $4), null:BOOLEAN, >($0, $2))):BOOLEAN NOT NULL])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+LogicalProject(NAME=[$1], EXPR$1=[CAST(OR(AND(IS TRUE(>($0, $2)), <>($3, 0)), AND(>($3, $4), null, <>($3, 0), IS NOT TRUE(>($0, $2))), AND(>($0, $2), <>($3, 0), IS NOT TRUE(>($0, $2)), <=($3, $4)))):BOOLEAN NOT NULL])
+>>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
   LogicalJoin(condition=[true], joinType=[inner])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
     LogicalAggregate(group=[{}], m=[MIN($0)], c=[COUNT()], d=[COUNT($0)])
@@ -799,6 +811,7 @@ LogicalProject(NAME=[$1], EXPR$1=[CAST(CASE(=($3, 0), false, IS TRUE(>($0, $2)),
             <![CDATA[
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(NAME=[$1], EXPR$1=[CAST(OR(AND(IS TRUE(>($0, $2)), <>($3, 0)), AND(>($3, $4), null, <>($3, 0), IS NOT TRUE(>($0, $2))), AND(>($0, $2), <>($3, 0), IS NOT TRUE(>($0, $2)), <=($3, $4)))):BOOLEAN NOT NULL])
 =======
 LogicalProject(NAME=[$1], EXPR$1=[CAST(CASE(=($3, 0), false, IS TRUE(>($0, $2)), true, >($3, $4), null, >($0, $2))):BOOLEAN NOT NULL])
@@ -806,6 +819,9 @@ LogicalProject(NAME=[$1], EXPR$1=[CAST(CASE(=($3, 0), false, IS TRUE(>($0, $2)),
 =======
 LogicalProject(NAME=[$1], EXPR$1=[CAST(CASE(=($3, 0), false, IS TRUE(>($0, $2)), true, >($3, $4), null:BOOLEAN, >($0, $2))):BOOLEAN NOT NULL])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+LogicalProject(NAME=[$1], EXPR$1=[CAST(OR(AND(IS TRUE(>($0, $2)), <>($3, 0)), AND(>($3, $4), null, <>($3, 0), IS NOT TRUE(>($0, $2))), AND(>($0, $2), <>($3, 0), IS NOT TRUE(>($0, $2)), <=($3, $4)))):BOOLEAN NOT NULL])
+>>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
   LogicalJoin(condition=[true], joinType=[inner])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
     LogicalAggregate(group=[{}], m=[MIN($0)], c=[COUNT()], d=[COUNT($0)])
@@ -11479,10 +11495,14 @@ LogicalProject(DEPTNO=[$0])
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalFilter(condition=[OR(AND(IS TRUE(>($0, $9)), <>($10, 0)), AND(>($10, $11), null, <>($10, 0), IS NOT TRUE(>($0, $9))), AND(>($0, $9), <>($10, 0), IS NOT TRUE(>($0, $9)), <=($10, $11)))])
 =======
     LogicalFilter(condition=[CASE(=($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null:BOOLEAN, >($0, $9))])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+    LogicalFilter(condition=[OR(AND(IS TRUE(>($0, $9)), <>($10, 0)), AND(>($10, $11), null, <>($10, 0), IS NOT TRUE(>($0, $9))), AND(>($0, $9), <>($10, 0), IS NOT TRUE(>($0, $9)), <=($10, $11)))])
+>>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
       LogicalJoin(condition=[true], joinType=[inner])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{}], m=[MIN($0)], c=[COUNT()], d=[COUNT($0)])
@@ -11495,10 +11515,14 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalFilter(condition=[OR(AND(IS TRUE(>($0, $9)), <>($10, 0)), AND(>($10, $11), null, <>($10, 0), IS NOT TRUE(>($0, $9))), AND(>($0, $9), <>($10, 0), IS NOT TRUE(>($0, $9)), <=($10, $11)))])
 =======
     LogicalFilter(condition=[CASE(=($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null:BOOLEAN, >($0, $9))])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+    LogicalFilter(condition=[OR(AND(IS TRUE(>($0, $9)), <>($10, 0)), AND(>($10, $11), null, <>($10, 0), IS NOT TRUE(>($0, $9))), AND(>($0, $9), <>($10, 0), IS NOT TRUE(>($0, $9)), <=($10, $11)))])
+>>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
       LogicalJoin(condition=[true], joinType=[inner])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{}], m=[MIN($0)], c=[COUNT()], d=[COUNT($0)])
@@ -12108,6 +12132,7 @@ LogicalProject(DEPTNO=[$0])
             <![CDATA[
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CAST(OR(AND(IS TRUE(>($0, $9)), IS NOT TRUE(OR(IS NULL($12), =($10, 0)))), AND(IS TRUE(>($10, $11)), null, IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9))), AND(>($0, $9), IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9)), IS NOT TRUE(>($10, $11))))):BOOLEAN NOT NULL])
 =======
 LogicalProject(EXPR$0=[CAST(CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null, >($0, $9))):BOOLEAN NOT NULL])
@@ -12115,6 +12140,9 @@ LogicalProject(EXPR$0=[CAST(CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(
 =======
 LogicalProject(EXPR$0=[CAST(CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null:BOOLEAN, >($0, $9))):BOOLEAN NOT NULL])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+LogicalProject(EXPR$0=[CAST(OR(AND(IS TRUE(>($0, $9)), IS NOT TRUE(OR(IS NULL($12), =($10, 0)))), AND(IS TRUE(>($10, $11)), null, IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9))), AND(>($0, $9), IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9)), IS NOT TRUE(>($10, $11))))):BOOLEAN NOT NULL])
+>>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
   LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{2}])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalProject(m=[$0], c=[$1], d=[$2], trueLiteral=[true])
@@ -12128,6 +12156,7 @@ LogicalProject(EXPR$0=[CAST(CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(
             <![CDATA[
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CAST(OR(AND(IS TRUE(>($0, $9)), IS NOT TRUE(OR(IS NULL($12), =($10, 0)))), AND(IS TRUE(>($10, $11)), null, IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9))), AND(>($0, $9), IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9)), IS NOT TRUE(>($10, $11))))):BOOLEAN NOT NULL])
 =======
 LogicalProject(EXPR$0=[CAST(CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null, >($0, $9))):BOOLEAN NOT NULL])
@@ -12135,6 +12164,9 @@ LogicalProject(EXPR$0=[CAST(CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(
 =======
 LogicalProject(EXPR$0=[CAST(CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null:BOOLEAN, >($0, $9))):BOOLEAN NOT NULL])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+LogicalProject(EXPR$0=[CAST(OR(AND(IS TRUE(>($0, $9)), IS NOT TRUE(OR(IS NULL($12), =($10, 0)))), AND(IS TRUE(>($10, $11)), null, IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9))), AND(>($0, $9), IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9)), IS NOT TRUE(>($10, $11))))):BOOLEAN NOT NULL])
+>>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
   LogicalJoin(condition=[=($2, $13)], joinType=[left])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalProject(m=[$1], c=[$2], d=[$3], trueLiteral=[true], NAME=[$0])
@@ -12947,8 +12979,12 @@ LogicalProject(EMPNO=[$0], D=[CASE(=($2, 0), false, IS NULL($1), null:BOOLEAN, I
   LogicalJoin(condition=[=($1, $4)], joinType=[left])
 =======
 LogicalProject(EMPNO=[$0], D=[CASE(=($9, 0), false, IS NULL(CASE(true, CAST($7):INTEGER, null:INTEGER)), null:BOOLEAN, IS NOT NULL($12), true, <($10, $9), null:BOOLEAN, false)])
+<<<<<<< HEAD
   LogicalJoin(condition=[=(CAST($7):INTEGER, $11)], joinType=[left])
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
+=======
+  LogicalJoin(condition=[=($7, $11)], joinType=[left])
+>>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
     LogicalJoin(condition=[true], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{}], c=[COUNT()], ck=[COUNT($0)])
@@ -15371,7 +15407,7 @@ LogicalProject(DEPTNO=[$0])
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
-    LogicalFilter(condition=[CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null:BOOLEAN, >($0, $9))])
+    LogicalFilter(condition=[OR(AND(IS TRUE(>($0, $9)), IS NOT TRUE(OR(IS NULL($12), =($10, 0)))), AND(IS TRUE(>($10, $11)), null, IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9))), AND(>($0, $9), IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9)), IS NOT TRUE(>($10, $11))))])
       LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{2}])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalProject(m=[$0], c=[$1], d=[$2], trueLiteral=[true])
