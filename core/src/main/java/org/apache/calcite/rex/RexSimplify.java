@@ -1471,7 +1471,11 @@ public class RexSimplify {
   }
 
   private RexNode simplifyCast(RexCall e) {
-    final RexNode operand = e.getOperands().get(0);
+    RexNode operand = e.getOperands().get(0);
+    operand = simplify(operand, UNKNOWN);
+    if (sameTypeOrNarrowsNullability(e.getType(), operand.getType())) {
+      return operand;
+    }
     switch (operand.getKind()) {
     case LITERAL:
       final RexLiteral literal = (RexLiteral) operand;
@@ -1500,10 +1504,11 @@ public class RexSimplify {
       return Objects.requireNonNull(
           Iterables.getOnlyElement(reducedValues));
     default:
-      if (operand.getType().equals(e.getType())) {
-        return simplify(operand, UNKNOWN);
+      if (operand == e.getOperands().get(0)) {
+        return e;
+      } else {
+        return rexBuilder.makeCast(e.getType(), operand);
       }
-      return e;
     }
   }
 
