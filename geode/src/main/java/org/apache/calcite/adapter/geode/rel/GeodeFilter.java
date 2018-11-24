@@ -31,9 +31,7 @@ import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.sql.SqlKind;
-import org.apache.calcite.util.DateString;
-import org.apache.calcite.util.TimeString;
-import org.apache.calcite.util.TimestampString;
+>>>>>>> 79a298dea ([CALCITE-2671] GeodeFilter convert multiple ORs (on same attribute) into single IN SET. (Sandeep Chada))
 import org.apache.calcite.util.Util;
 
 import com.google.common.base.Preconditions;
@@ -46,7 +44,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.apache.calcite.sql.type.SqlTypeName.BOOLEAN_TYPES;
 import static org.apache.calcite.sql.type.SqlTypeName.CHAR;
 
 /**
@@ -106,6 +103,7 @@ public class GeodeFilter extends Filter implements GeodeRel {
      * @return String representation of the literal
      */
     private static String literalValue(RexLiteral literal) {
+<<<<<<< HEAD
       final Comparable valueComparable = literal.getValueAs(Comparable.class);
 
       switch (literal.getTypeName()) {
@@ -123,6 +121,11 @@ public class GeodeFilter extends Filter implements GeodeRel {
       default:
         return String.valueOf(literal.getValue3());
       }
+=======
+      Object value = literal.getValue3();
+      StringBuilder buf = new StringBuilder();
+      buf.append(value);
+      return buf.toString();
     }
 
     /**
@@ -167,7 +170,7 @@ public class GeodeFilter extends Filter implements GeodeRel {
       case CAST:
         // FIXME This will not work in all cases (for example, we ignore string encoding)
         return getLeftNodeFieldName(((RexCall) left).operands.get(0));
-      case ITEM:
+>>>>>>> 79a298dea ([CALCITE-2671] GeodeFilter convert multiple ORs (on same attribute) into single IN SET. (Sandeep Chada))
       case OTHER_FUNCTION:
         return left.accept(new GeodeRules.RexToGeodeTranslator(this.fieldNames));
       default:
@@ -258,12 +261,17 @@ public class GeodeFilter extends Filter implements GeodeRel {
     private String translateOr(List<RexNode> disjunctions) {
       List<String> predicates = new ArrayList<>();
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
 
       List<String> leftFieldNameList = new ArrayList<>();
       List<String> inSetLeftFieldNameList = new ArrayList<>();
 
+<<<<<<< HEAD
 =======
 >>>>>>> 42ca94873 (Apply small refactorings to Calcite codebase (Java 5, Java 7, Java 8))
+=======
+>>>>>>> 79a298dea ([CALCITE-2671] GeodeFilter convert multiple ORs (on same attribute) into single IN SET. (Sandeep Chada))
       for (RexNode node : disjunctions) {
         final String leftNodeFieldName = getLeftNodeFieldNameForNode(node);
         // If any one left node is processed with IN SET predicate
@@ -391,13 +399,7 @@ public class GeodeFilter extends Filter implements GeodeRel {
      * Combines a field name, operator, and literal to produce a predicate string.
      */
     private String translateOp2(String op, String name, RexLiteral right) {
-      String valueString = literalValue(right);
-      SqlTypeName typeName = rowType.getField(name, true, false).getType().getSqlTypeName();
-      if (NUMERIC_TYPES.contains(typeName) || BOOLEAN_TYPES.contains(typeName)) {
-        // leave the value as it is
-      } else if (typeName != SqlTypeName.CHAR) {
-        valueString = "'" + valueString + "'";
-      }
+      String valueString = quoteCharLiteral(right);
       return name + " " + op + " " + valueString;
     }
   }
