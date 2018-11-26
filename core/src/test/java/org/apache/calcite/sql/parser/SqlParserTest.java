@@ -784,7 +784,7 @@ public class SqlParserTest {
   /** Test case that does not reproduce but is related to
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2637">[CALCITE-2637]
    * Prefix '-' operator failed between BETWEEN and AND</a>. */
-  @Test void testBetweenAnd() {
+  @Test public void testBetweenAnd() {
     final String sql = "select * from emp\n"
         + "where deptno between - DEPTNO + 1 and 5";
     final String expected = "SELECT *\n"
@@ -793,7 +793,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testBetweenAnd2() {
+  @Test public void testBetweenAnd2() {
     final String sql = "select * from emp\n"
         + "where deptno between - DEPTNO + 1 and - empno - 3";
     final String expected = "SELECT *\n"
@@ -803,9 +803,9 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Disabled
-  @Test void testDerivedColumnListNoAs() {
-    sql("select * from emp e (empno, gender) where true").ok("foo");
+  @Ignore
+  @Test public void testDerivedColumnListNoAs() {
+    check("select * from emp e (empno, gender) where true", "foo");
   }
 
   // jdbc syntax
