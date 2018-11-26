@@ -194,7 +194,7 @@ public class RexSimplify {
     // Simplify "x <op> x"
     final RexNode o0 = operands.get(0);
     final RexNode o1 = operands.get(1);
-    if (RexUtil.eq(o0, o1)
+    if (o0.equals(o1)
         && RexUtil.isDeterministic(o1)
         && (unknownAsFalse
             || (!o0.getType().isNullable()
@@ -624,13 +624,14 @@ public class RexSimplify {
       return simplify(terms.get(0));
     }
     // Try to simplify the expression
-    final Multimap<String, Pair<String, RexNode>> equalityTerms = ArrayListMultimap.create();
+    final Multimap<RexNode, Pair<RexNode, RexNode>> equalityTerms =
+        ArrayListMultimap.create();
     final RangeTerms rangeTerms = new RangeTerms();
-    final Map<String, RexLiteral> equalityConstantTerms = new HashMap<>();
-    final Set<String> negatedTerms = new HashSet<>();
-    final Set<String> nullOperands = new HashSet<>();
+    final Map<RexNode, RexLiteral> equalityConstantTerms = new HashMap<>();
+    final Set<RexNode> negatedTerms = new HashSet<>();
+    final Set<RexNode> nullOperands = new HashSet<>();
     final Set<RexNode> notNullOperands = new LinkedHashSet<>();
-    final Set<String> comparedOperands = new HashSet<>();
+    final Set<RexNode> comparedOperands = new HashSet<>();
 
     // Add the predicates from the source to the range terms.
     for (RexNode predicate : predicates.pulledUpPredicates) {
@@ -676,19 +677,19 @@ public class RexSimplify {
       case LESS_THAN_OR_EQUAL:
       case GREATER_THAN_OR_EQUAL:
         RexCall call = (RexCall) term;
-        RexNode left = call.getOperands().get(0);
-        comparedOperands.add(left.toString());
+        final RexNode left = call.getOperands().get(0);
+        comparedOperands.add(left);
         // if it is a cast, we include the inner reference
         if (left.getKind() == SqlKind.CAST) {
           RexCall leftCast = (RexCall) left;
-          comparedOperands.add(leftCast.getOperands().get(0).toString());
+          comparedOperands.add(leftCast.getOperands().get(0));
         }
-        RexNode right = call.getOperands().get(1);
-        comparedOperands.add(right.toString());
+        final RexNode right = call.getOperands().get(1);
+        comparedOperands.add(right);
         // if it is a cast, we include the inner reference
         if (right.getKind() == SqlKind.CAST) {
           RexCall rightCast = (RexCall) right;
-          comparedOperands.add(rightCast.getOperands().get(0).toString());
+          comparedOperands.add(rightCast.getOperands().get(0));
         }
         final Comparison comparison = Comparison.of(term);
         // Check for comparison with null values
@@ -703,7 +704,7 @@ public class RexSimplify {
           if (comparison != null) {
             final RexLiteral literal = comparison.literal;
             final RexLiteral prevLiteral =
-                equalityConstantTerms.put(comparison.ref.toString(), literal);
+                equalityConstantTerms.put(comparison.ref, literal);
             if (prevLiteral != null && !literal.toString().equals(prevLiteral.toString())
                 && prevLiteral.getValue().getClass().equals(literal.getValue().getClass())
                 && prevLiteral.getValue().compareTo(literal.getValue()) != 0) {
@@ -711,7 +712,7 @@ public class RexSimplify {
             }
           } else if (RexUtil.isReferenceOrAccess(left, true)
               && RexUtil.isReferenceOrAccess(right, true)) {
-            equalityTerms.put(left.toString(), Pair.of(right.toString(), term));
+            equalityTerms.put(left, Pair.of(right, term));
           }
         }
         // Assume the expression a > 5 is part of a Filter condition.
@@ -721,10 +722,10 @@ public class RexSimplify {
         // Observe that for creating the inverted term we invert the list of operands.
         RexNode negatedTerm = RexUtil.negate(rexBuilder, call);
         if (negatedTerm != null) {
-          negatedTerms.add(negatedTerm.toString());
+          negatedTerms.add(negatedTerm);
           RexNode invertNegatedTerm = RexUtil.invert(rexBuilder, (RexCall) negatedTerm);
           if (invertNegatedTerm != null) {
-            negatedTerms.add(invertNegatedTerm.toString());
+            negatedTerms.add(invertNegatedTerm);
           }
         }
         // Remove terms that are implied by predicates on the input,
@@ -748,10 +749,10 @@ public class RexSimplify {
         }
         break;
       case IN:
-        comparedOperands.add(((RexCall) term).operands.get(0).toString());
+        comparedOperands.add(((RexCall) term).operands.get(0));
         break;
       case BETWEEN:
-        comparedOperands.add(((RexCall) term).operands.get(1).toString());
+        comparedOperands.add(((RexCall) term).operands.get(1));
         break;
       case IS_NOT_NULL:
         notNullOperands.add(((RexCall) term).getOperands().get(0));
@@ -759,7 +760,7 @@ public class RexSimplify {
         --i;
         break;
       case IS_NULL:
-        nullOperands.add(((RexCall) term).getOperands().get(0).toString());
+        nullOperands.add(((RexCall) term).getOperands().get(0));
       }
     }
     // If one column should be null and is in a comparison predicate,
@@ -771,13 +772,13 @@ public class RexSimplify {
     // Check for equality of two refs wrt equality with constants
     // Example #1. x=5 AND y=5 AND x=y : x=5 AND y=5
     // Example #2. x=5 AND y=6 AND x=y - not satisfiable
-    for (String ref1 : equalityTerms.keySet()) {
+    for (RexNode ref1 : equalityTerms.keySet()) {
       final RexLiteral literal1 = equalityConstantTerms.get(ref1);
       if (literal1 == null) {
         continue;
       }
-      Collection<Pair<String, RexNode>> references = equalityTerms.get(ref1);
-      for (Pair<String, RexNode> ref2 : references) {
+      Collection<Pair<RexNode, RexNode>> references = equalityTerms.get(ref1);
+      for (Pair<RexNode, RexNode> ref2 : references) {
         final RexLiteral literal2 = equalityConstantTerms.get(ref2.left);
         if (literal2 == null) {
           continue;
@@ -806,7 +807,7 @@ public class RexSimplify {
     //
     // Example. IS NOT NULL(x) AND x < 5  : x < 5
     for (RexNode operand : notNullOperands) {
-      if (!comparedOperands.contains(operand.toString())) {
+      if (!comparedOperands.contains(operand)) {
         terms.add(
             rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL, operand));
       }
@@ -818,12 +819,12 @@ public class RexSimplify {
     // Example #1. x AND y AND z AND NOT (x AND y)  - not satisfiable
     // Example #2. x AND y AND NOT (x AND y)        - not satisfiable
     // Example #3. x AND y AND NOT (x AND y AND z)  - may be satisfiable
-    final Set<String> termsSet = new HashSet<>(RexUtil.strings(terms));
+    final Set<RexNode> termsSet = new HashSet<>(terms);
     for (RexNode notDisjunction : notTerms) {
       if (!RexUtil.isDeterministic(notDisjunction)) {
         continue;
       }
-      final List<String> terms2Set = RexUtil.strings(RelOptUtil.conjunctions(notDisjunction));
+      final List<RexNode> terms2Set = RelOptUtil.conjunctions(notDisjunction);
       if (termsSet.containsAll(terms2Set)) {
         return rexBuilder.makeLiteral(false);
       }
@@ -835,7 +836,7 @@ public class RexSimplify {
       terms.add(simplify(call));
     }
     // The negated terms: only deterministic expressions
-    for (String negatedTerm : negatedTerms) {
+    for (RexNode negatedTerm : negatedTerms) {
       if (termsSet.contains(negatedTerm)) {
         return rexBuilder.makeLiteral(false);
       }
@@ -1099,11 +1100,11 @@ public class RexSimplify {
       RexBuilder rexBuilder, List<RexNode> terms,
       RangeTerms rangeTerms, RexNode term,
       Comparison comparison, RexSimplify simplify, Class<C> clazz) {
-    Pair<Range<C>, List<RexNode>> p = rangeTerms.get(comparison.ref.toString());
+    Pair<Range<C>, List<RexNode>> p = rangeTerms.get(comparison.ref);
     SqlKind sqlKind = comparison.kind;
     final C v0 = comparison.literal.getValueAs(clazz);
     if (p == null) {
-      rangeTerms.put(comparison.ref.toString(),
+      rangeTerms.put(comparison.ref,
           (List<RexNode>) ImmutableList.of(term),
               comparison.kind, comparison, simplify, clazz);
     } else {
@@ -1117,7 +1118,7 @@ public class RexSimplify {
           // Range is empty, not satisfiable
           return rexBuilder.makeLiteral(false);
         }
-        rangeTerms.put(comparison.ref.toString(),
+        rangeTerms.put(comparison.ref,
             Range.singleton(v0), (List<RexNode>) ImmutableList.of(term));
         // remove
         for (RexNode e : p.right) {
@@ -1287,7 +1288,7 @@ public class RexSimplify {
           }
         }
         newBounds.add(term);
-        rangeTerms.put(comparison.ref.toString(), r, (List<RexNode>) newBounds.build());
+        rangeTerms.put(comparison.ref, r, (List<RexNode>) newBounds.build());
       } else if (removeLowerBound) {
         ImmutableList.Builder<RexNode> newBounds = ImmutableList.builder();
         for (RexNode e : p.right) {
@@ -1298,7 +1299,7 @@ public class RexSimplify {
           }
         }
         newBounds.add(term);
-        rangeTerms.put(comparison.ref.toString(), r, (List<RexNode>) newBounds.build());
+        rangeTerms.put(comparison.ref, r, (List<RexNode>) newBounds.build());
       }
     }
     // Default
@@ -1385,7 +1386,7 @@ public class RexSimplify {
   /** Holds a map between an input and a RangeTerm.
    * @param <C> */
   private static class RangeTerms<C extends Comparable<C>> {
-    Map<String, RangeTerm> rangeTerms;
+    Map<RexNode, RangeTerm> rangeTerms;
 
     /** Gives a range that ensures consistent type,
      * which is done in a lazy manner.
@@ -1425,15 +1426,15 @@ public class RexSimplify {
       rangeTerms = new HashMap<>();
     }
 
-    public void put(String key, List<RexNode> rexNodes, SqlKind sqlKind,
+    public void put(RexNode key, List<RexNode> rexNodes, SqlKind sqlKind,
         Comparison comparison, RexSimplify simplify, Class<C> clazz) {
       rangeTerms.put(key, new RangeTerm(rexNodes, sqlKind, comparison, simplify, clazz));
     }
 
-    public void put(String key, Range<C> range, List<RexNode> rexNodes) {
+    public void put(RexNode key, Range<C> range, List<RexNode> rexNodes) {
       rangeTerms.put(key, new RangeTerm(range, rexNodes));
     }
-    public Pair<Range<C>, List<RexNode>> get(String key) {
+    public Pair<Range<C>, List<RexNode>> get(RexNode key) {
       RangeTerm term = rangeTerms.get(key);
       return term == null ? null : rangeTerms.get(key).getPair();
     }

@@ -25,6 +25,7 @@ import org.apache.calcite.util.Util;
 import com.google.common.base.Preconditions;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /**
  * Call to an aggregate function over a window.
@@ -87,7 +88,7 @@ public class RexOver extends RexCall {
     return distinct;
   }
 
-  @Override protected String computeDigest(boolean withType) {
+  @Override protected @Nonnull String computeDigest(boolean withType) {
     final StringBuilder sb = new StringBuilder(op.getName());
     sb.append("(");
     if (distinct) {
@@ -97,8 +98,7 @@ public class RexOver extends RexCall {
       if (i > 0) {
         sb.append(", ");
       }
-      RexNode operand = operands.get(i);
-      sb.append(operand.toString());
+      sb.append(operands.get(i));
     }
     sb.append(")");
     if (withType) {

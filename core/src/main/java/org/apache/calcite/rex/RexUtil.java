@@ -55,8 +55,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -1020,8 +1018,8 @@ public class RexUtil {
    * representation. For example, "10" integer and "10" bigint result in
    * different keys.
    */
-  public static Pair<String, String> makeKey(RexNode expr) {
-    return Pair.of(expr.toString(), expr.getType().getFullTypeString());
+  public static Pair<RexNode, String> makeKey(RexNode expr) {
+    return Pair.of(expr, expr.getType().getFullTypeString());
   }
 
   /**
@@ -1094,17 +1092,17 @@ public class RexUtil {
       return ImmutableList.of();
     }
     final ImmutableList.Builder<RexNode> builder = ImmutableList.builder();
-    final Set<String> digests = Sets.newHashSet(); // to eliminate duplicates
+    final Set<RexNode> set = new HashSet<>(); // to eliminate duplicates
     for (RexNode node : nodes) {
       if (node != null) {
-        addAnd(builder, digests, node);
+        addAnd(builder, set, node);
       }
     }
     return builder.build();
   }
 
   private static void addAnd(ImmutableList.Builder<RexNode> builder,
-      Set<String> digests, RexNode node) {
+      Set<RexNode> digests, RexNode node) {
     switch (node.getKind()) {
     case AND:
       for (RexNode operand : ((RexCall) node).getOperands()) {
@@ -1112,7 +1110,7 @@ public class RexUtil {
       }
       return;
     default:
-      if (!node.isAlwaysTrue() && digests.add(node.toString())) {
+      if (!node.isAlwaysTrue() && digests.add(node)) {
         builder.add(node);
       }
     }
@@ -1158,23 +1156,23 @@ public class RexUtil {
       return ImmutableList.of();
     }
     final ImmutableList.Builder<RexNode> builder = ImmutableList.builder();
-    final Set<String> digests = Sets.newHashSet(); // to eliminate duplicates
+    final Set<RexNode> set = new HashSet<>(); // to eliminate duplicates
     for (RexNode node : nodes) {
-      addOr(builder, digests, node);
+      addOr(builder, set, node);
     }
     return builder.build();
   }
 
   private static void addOr(ImmutableList.Builder<RexNode> builder,
-      Set<String> digests, RexNode node) {
+      Set<RexNode> set, RexNode node) {
     switch (node.getKind()) {
     case OR:
       for (RexNode operand : ((RexCall) node).getOperands()) {
-        addOr(builder, digests, operand);
+        addOr(builder, set, operand);
       }
       return;
     default:
-      if (!node.isAlwaysFalse() && digests.add(node.toString())) {
+      if (!node.isAlwaysFalse() && set.add(node)) {
         builder.add(node);
       }
     }
@@ -1683,7 +1681,7 @@ public class RexUtil {
     Iterator<RexNode> iterator = targets.iterator();
     while (iterator.hasNext()) {
       RexNode next = iterator.next();
-      if (eq(next, e)) {
+      if (next.equals(e)) {
         ++count;
         iterator.remove();
       }
@@ -1696,6 +1694,7 @@ public class RexUtil {
    * <p>This method considers structure, not semantics. 'x &lt; y' is not
    * equivalent to 'y &gt; x'.
    */
+  @Deprecated // use e1.equals(e2)
   public static boolean eq(RexNode e1, RexNode e2) {
     return e1 == e2 || e1.toString().equals(e2.toString());
   }
@@ -2101,7 +2100,7 @@ public class RexUtil {
    * Walks over expressions and builds a bank of common sub-expressions.
    */
   private static class ExpressionNormalizer extends RexVisitorImpl<RexNode> {
-    final Map<String, RexNode> mapDigestToExpr = new HashMap<>();
+    final Map<RexNode, RexNode> map = new HashMap<>();
     final boolean allowDups;
 
     protected ExpressionNormalizer(boolean allowDups) {
@@ -2110,8 +2109,7 @@ public class RexUtil {
     }
 
     protected RexNode register(RexNode expr) {
-      final String key = expr.toString();
-      final RexNode previous = mapDigestToExpr.put(key, expr);
+      final RexNode previous = map.put(expr, expr);
       if (!allowDups && (previous != null)) {
         throw new SubExprExistsException(expr);
       }
@@ -2119,7 +2117,7 @@ public class RexUtil {
     }
 
     protected RexNode lookup(RexNode expr) {
-      return mapDigestToExpr.get(expr.toString());
+      return map.get(expr);
     }
 
     public RexNode visitInputRef(RexInputRef inputRef) {
@@ -2355,7 +2353,7 @@ public class RexUtil {
         return and(pullList(operands));
       case OR:
         operands = flattenOr(((RexCall) rex).getOperands());
-        final Map<String, RexNode> factors = commonFactors(operands);
+        final Map<RexNode, RexNode> factors = commonFactors(operands);
         if (factors.isEmpty()) {
           return or(operands);
         }
@@ -2384,25 +2382,25 @@ public class RexUtil {
       return list;
     }
 
-    private Map<String, RexNode> commonFactors(List<RexNode> nodes) {
-      final Map<String, RexNode> map = Maps.newHashMap();
+    private Map<RexNode, RexNode> commonFactors(List<RexNode> nodes) {
+      final Map<RexNode, RexNode> map = new HashMap<>();
       int i = 0;
       for (RexNode node : nodes) {
         if (i++ == 0) {
           for (RexNode conjunction : RelOptUtil.conjunctions(node)) {
-            map.put(conjunction.toString(), conjunction);
+            map.put(conjunction, conjunction);
           }
         } else {
-          map.keySet().retainAll(strings(RelOptUtil.conjunctions(node)));
+          map.keySet().retainAll(RelOptUtil.conjunctions(node));
         }
       }
       return map;
     }
 
-    private RexNode removeFactor(Map<String, RexNode> factors, RexNode node) {
-      List<RexNode> list = Lists.newArrayList();
+    private RexNode removeFactor(Map<RexNode, RexNode> factors, RexNode node) {
+      List<RexNode> list = new ArrayList<>();
       for (RexNode operand : RelOptUtil.conjunctions(node)) {
-        if (!factors.containsKey(operand.toString())) {
+        if (!factors.containsKey(operand)) {
           list.add(operand);
         }
       }

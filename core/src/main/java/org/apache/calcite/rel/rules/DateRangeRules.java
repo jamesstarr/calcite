@@ -160,7 +160,7 @@ public abstract class DateRangeRules {
       timeUnits = ImmutableSortedSet.<TimeUnitRange>naturalOrder()
           .addAll(timeUnits).add(TimeUnitRange.YEAR).build();
     }
-    final Map<String, RangeSet<Calendar>> operandRanges = new HashMap<>();
+    final Map<RexNode, RangeSet<Calendar>> operandRanges = new HashMap<>();
     for (TimeUnitRange timeUnit : timeUnits) {
       e = e.accept(
           new ExtractShuttle(rexBuilder, timeUnit, operandRanges, timeUnits,
@@ -185,7 +185,7 @@ public abstract class DateRangeRules {
           .unwrap(CalciteConnectionConfig.class).timeZone();
       final RexNode condition =
           replaceTimeUnits(rexBuilder, filter.getCondition(), timeZone);
-      if (RexUtil.eq(condition, filter.getCondition())) {
+      if (condition.equals(filter.getCondition())) {
         return;
       }
       final RelBuilder relBuilder =
@@ -244,14 +244,14 @@ public abstract class DateRangeRules {
   static class ExtractShuttle extends RexShuttle {
     private final RexBuilder rexBuilder;
     private final TimeUnitRange timeUnit;
-    private final Map<String, RangeSet<Calendar>> operandRanges;
+    private final Map<RexNode, RangeSet<Calendar>> operandRanges;
     private final Deque<RexCall> calls = new ArrayDeque<>();
     private final ImmutableSortedSet<TimeUnitRange> timeUnitRanges;
     private final String timeZone;
 
     @VisibleForTesting
     ExtractShuttle(RexBuilder rexBuilder, TimeUnitRange timeUnit,
-        Map<String, RangeSet<Calendar>> operandRanges,
+        Map<RexNode, RangeSet<Calendar>> operandRanges,
         ImmutableSortedSet<TimeUnitRange> timeUnitRanges, String timeZone) {
       this.rexBuilder = Preconditions.checkNotNull(rexBuilder);
       this.timeUnit = Preconditions.checkNotNull(timeUnit);
@@ -338,8 +338,7 @@ public abstract class DateRangeRules {
       if (timeUnit == TimeUnitRange.YEAR) {
         return true;
       }
-      final RangeSet<Calendar> calendarRangeSet =
-          operandRanges.get(operand.toString());
+      final RangeSet<Calendar> calendarRangeSet = operandRanges.get(operand);
       if (calendarRangeSet == null || calendarRangeSet.isEmpty()) {
         return false;
       }
@@ -367,7 +366,7 @@ public abstract class DateRangeRules {
           //noinspection unchecked
           return (List<RexNode>) exprs;
         }
-        final Map<String, RangeSet<Calendar>> save =
+        final Map<RexNode, RangeSet<Calendar>> save =
             ImmutableMap.copyOf(operandRanges);
         final ImmutableList.Builder<RexNode> clonedOperands =
             ImmutableList.builder();
@@ -406,7 +405,7 @@ public abstract class DateRangeRules {
 
     RexNode compareExtract(SqlKind comparison, RexNode operand,
         RexLiteral literal) {
-      RangeSet<Calendar> rangeSet = operandRanges.get(operand.toString());
+      RangeSet<Calendar> rangeSet = operandRanges.get(operand);
       if (rangeSet == null) {
         rangeSet = ImmutableRangeSet.<Calendar>of().complement();
       }
@@ -445,7 +444,7 @@ public abstract class DateRangeRules {
       }
       // Intersect old range set with new.
       s2.removeAll(rangeSet.complement());
-      operandRanges.put(operand.toString(), ImmutableRangeSet.copyOf(s2));
+      operandRanges.put(operand, ImmutableRangeSet.copyOf(s2));
       final List<RexNode> nodes = new ArrayList<>();
       for (Range<Calendar> r : s2.asRanges()) {
         nodes.add(toRex(operand, r));
@@ -575,7 +574,7 @@ public abstract class DateRangeRules {
 
     private RexNode compareFloorCeil(SqlKind comparison, RexNode operand,
         RexLiteral timeLiteral, TimeUnitRange timeUnit, boolean floor) {
-      RangeSet<Calendar> rangeSet = operandRanges.get(operand.toString());
+      RangeSet<Calendar> rangeSet = operandRanges.get(operand);
       if (rangeSet == null) {
         rangeSet = ImmutableRangeSet.<Calendar>of().complement();
       }
@@ -587,7 +586,7 @@ public abstract class DateRangeRules {
       s2.add(range);
       // Intersect old range set with new.
       s2.removeAll(rangeSet.complement());
-      operandRanges.put(operand.toString(), ImmutableRangeSet.copyOf(s2));
+      operandRanges.put(operand, ImmutableRangeSet.copyOf(s2));
       if (range.isEmpty()) {
         return rexBuilder.makeLiteral(false);
       }

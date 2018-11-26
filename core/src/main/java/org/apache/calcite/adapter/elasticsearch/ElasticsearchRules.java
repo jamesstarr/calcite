@@ -140,7 +140,7 @@ class ElasticsearchRules {
           return stripQuotes(strings.get(0)) + "[" + ((RexLiteral) op1).getValue2() + "]";
         }
       }
-      throw new IllegalArgumentException("Translation of " + call.toString()
+      throw new IllegalArgumentException("Translation of " + call
         + "is not supported by ElasticsearchProject");
     }
 
