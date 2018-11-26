@@ -107,20 +107,6 @@ public class RelFactories {
   public static final TableScanFactory DEFAULT_TABLE_SCAN_FACTORY =
       new TableScanFactoryImpl();
 
-<<<<<<< HEAD
-  public static final TableFunctionScanFactory
-      DEFAULT_TABLE_FUNCTION_SCAN_FACTORY = new TableFunctionScanFactoryImpl();
-
-  public static final SnapshotFactory DEFAULT_SNAPSHOT_FACTORY =
-      new SnapshotFactoryImpl();
-
-  public static final SpoolFactory DEFAULT_SPOOL_FACTORY =
-      new SpoolFactoryImpl();
-
-  public static final RepeatUnionFactory DEFAULT_REPEAT_UNION_FACTORY =
-      new RepeatUnionFactoryImpl();
-
-=======
   public static final Struct DEFAULT_STRUCT =
       new Struct(DEFAULT_FILTER_FACTORY,
           DEFAULT_PROJECT_FACTORY,
@@ -655,7 +641,6 @@ public class RelFactories {
     }
   }
 }
->>>>>>> 273e6a302 (DX-34523:cherry pick 051b6919dfc5b60406e81d5e8b8d)
 
   /**
    * Can create a {@link Spool} of

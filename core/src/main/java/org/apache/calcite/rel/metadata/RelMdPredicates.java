@@ -75,442 +75,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
- * & without any function applied. So:
- * <pre>
- * select a from R1 where a &gt; 7
- *   &rarr; "a &gt; 7" is pulled up from the Projection.
- * select a + 1 from R1 where a + 1 &gt; 7
- *   &rarr; "a + 1 gt; 7" is pulled up
- * </pre>
- *
- * <li> There are several restrictions on Joins:
- *   <ul>
- *   <li> We only pullUp inferred predicates for now. Pulling up existing
- *   predicates causes an explosion of duplicates. The existing predicates
- *   are pushed back down as new predicates. Once we have rules to eliminate
- *   duplicate Filter conditions, we should pullUp all predicates.
- *
- *   <li> For Left Outer: we infer new predicates from the left and set them
- *   as applicable on the Right side. No predicates are pulledUp.
- *
- *   <li> Right Outer Joins are handled in an analogous manner.
- *
- *   <li> For Full Outer Joins no predicates are pulledUp or inferred.
- *   </ul>
- * </ol>
- */
-public class RelMdPredicates
-    implements MetadataHandler<BuiltInMetadata.Predicates> {
-  public static final RelMetadataProvider SOURCE = ReflectiveRelMetadataProvider
-      .reflectiveSource(BuiltInMethod.PREDICATES.method, new RelMdPredicates());
-
-  private static final List<RexNode> EMPTY_LIST = ImmutableList.of();
-
-  @Deprecated
-  public MetadataDef<BuiltInMetadata.Predicates> getDef() {
-    return BuiltInMetadata.Predicates.DEF;
-  }
-
-  /** Catch-all implementation for
-   * {@link BuiltInMetadata.Predicates#getPredicates()},
-   * invoked using reflection.
-   *
-   * @see org.apache.calcite.rel.metadata.RelMetadataQuery#getPulledUpPredicates(RelNode)
-   */
-  public RelOptPredicateList getPredicates(RelNode rel, RelMetadataQuery mq) {
-    return RelOptPredicateList.EMPTY;
-  }
-
-  public RelOptPredicateList getPredicates(HepRelVertex rel,
-      RelMetadataQuery mq) {
-    return mq.getPulledUpPredicates(rel.getCurrentRel());
-  }
-
-  /**
-   * Infers predicates for a table scan.
-   */
-  public RelOptPredicateList getPredicates(TableScan table,
-      RelMetadataQuery mq) {
-    return RelOptPredicateList.EMPTY;
-  }
-
-  /**
-   * Key for rexnodes in a map.
-   */
-  private static class ComparableRexNode {
-    private final RexNode node;
-
-    ComparableRexNode(RexNode node) {
-      this.node = node;
-    }
-
-    public int hashCode() {
-      return Objects.hash(node.toString(), node.getType().getFullTypeString());
-    }
-
-    public boolean equals(Object o) {
-      if (!(o instanceof ComparableRexNode)) {
-        return false;
-      }
-      if (o == this) {
-        return true;
-      }
-      ComparableRexNode other = (ComparableRexNode) o;
-      return other.node.toString().equals(this.node.toString())
-              && other.node.getType().equals(this.node.getType());
-    }
-  }
-
-  /** A shuttle that stores a list of projection columns.
-   * The shuttle can be used to visit child predicates to see
-   * if they can be expressed in terms of projection columns.
-   */
-  private static class ProjectMapper extends RexShuttle {
-    private final Map<ComparableRexNode, Integer> positions;
-    private final RexBuilder rexBuilder;
-    private final Project project;
-
-    // RexCalls can be composed of RexCalls.
-    // When mapping a RexCall, we need to know if we are mapping the parent RexCall
-    // or a child. If we can't fully map the parent,
-    // then we will try pull up weakened partial predicates.
-    private boolean nestedCall = false;
-    private List<RexNode> nestedPartials;
-
-    ProjectMapper(RexBuilder rexBuilder, Project project) {
-      Map<ComparableRexNode, Integer> positions = new HashMap<>();
-
-      for (Ord<RexNode> o : Ord.zip(project.getProjects())) {
-        positions.putIfAbsent(new ComparableRexNode(o.e), o.i);
-      }
-
-      this.positions = positions;
-      this.rexBuilder = rexBuilder;
-      this.project = project;
-    }
-
-    /**
-     *
-     * @param node The node is either a input ref or call.
-     * @return  If the ref or call is projected return the projection column reference.
-     *          Otherwise, null.
-     */
-    protected RexNode getReference(final RexNode node) {
-      final Integer integer = positions.get(new ComparableRexNode(node));
-      if (integer != null) {
-        return new RexInputRef(integer, node.getType());
-      }
-      return null;
-    }
-
-    @Override public RexNode visitLiteral(final RexLiteral literal) {
-      return literal;
-    }
-
-    /** Exception thrown to exit a matcher. Not really an error.
-     *  It means nothing new can be said of the projected columns. */
-    private static class ProjectColumnMiss extends ControlFlowException {
-      @SuppressWarnings("ThrowableInstanceNeverThrown")
-      public static final ProjectColumnMiss INSTANCE = new ProjectColumnMiss();
-    }
-
-    /** Exception thrown within a matcher to communicate
-     *  a subset of the given statement could be put in terms of project columns.
-     *  Not really an error. */
-    private static class ProjectColumnPartialMiss extends ControlFlowException {
-      @SuppressWarnings("ThrowableInstanceNeverThrown")
-      public static final ProjectColumnPartialMiss INSTANCE = new ProjectColumnPartialMiss();
-    }
-
-    /**
-     *
-     * @param ref In terms of input columns.
-     * @return ref in terms of project columns, or null.
-     */
-    @Override public RexNode visitInputRef(final RexInputRef ref) {
-      final RexNode newRef = getReference(ref);
-      if (newRef != null) {
-        return newRef;
-      }
-      throw ProjectColumnMiss.INSTANCE;
-    }
-
-    /**
-     *
-     * @param call a RexCall in terms of the input columns.
-     * @return a RexCall in terms of project columns, a weakened predicate in the case of a partial
-     * match.
-     * @Throws a ProjectColumnMiss if nothing can be mapped to projection columns;
-     *         a ProjectColumnPartialMiss if some columns can be mapped.
-     */
-    @Override public RexNode visitCall(final RexCall call) {
-      // If the entire call is projected, give the reference to project column back.
-      final RexNode newRef = getReference(call);
-      if (newRef != null) {
-        return newRef;
-      }
-
-      List<RexNode> newOperands = new ArrayList<>();
-      final List<RexNode> weakenedPredicates = new ArrayList<>();
-      boolean fullMatch = true;
-
-      for (RexNode op: call.getOperands()) {
-        // We need to remember whether this is the root call or not.
-        final boolean previousNestedState = nestedCall;
-        try {
-          nestedCall = true;
-          final RexNode mappedRex = op.accept(this);
-          newOperands.add(mappedRex);
-
-        } catch (ProjectColumnMiss e) {
-          fullMatch = false;
-
-        } catch (ProjectColumnPartialMiss e) {
-          // Collect all the sub matches to see if we can weaken them later on.
-          fullMatch = false;
-          weakenedPredicates.addAll(nestedPartials);
-          nestedPartials.clear();
-
-        } finally {
-          nestedCall = previousNestedState;
-        }
-      }
-      if (fullMatch) {
-        // Return the original call in terms of the projection columns.
-        return call.clone(call.type, newOperands);
-      }
-
-      for (RexNode r: newOperands) {
-        final int colNum;
-
-        // We can only make weakened conclusions about projected columns.
-        if (!(r instanceof RexInputRef)) {
-          continue;
-        }
-
-        final RexInputRef inp = (RexInputRef) r;
-        colNum = inp.getIndex();
-
-        if (project.getRowType().getFieldList().get(colNum).getType().isNullable()
-                && Strong.isNull(r, ImmutableBitSet.of(colNum))) {
-          weakenedPredicates.add(rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL, r));
-        }
-      }
-
-      // Nothing can be concluded about the subset of columns
-      if (weakenedPredicates.isEmpty()) {
-        throw ProjectColumnMiss.INSTANCE;
-      }
-
-      // Pass the conclusions about our columns up the chain
-      // so they may be combined with siblings.
-      if (nestedCall) {
-        nestedPartials = weakenedPredicates;
-        throw ProjectColumnPartialMiss.INSTANCE;
-
-      }
-
-      // Return the weakened predicates to the user if this is the parent node.
-      return RexUtil.composeDisjunction(rexBuilder, weakenedPredicates);
-    }
-  }
-
-  /**
-   * Infers predicates for a project.
-   *
-   * <ol>
-   * <li>create a mapping from input to projection. Map only positions that
-   * directly reference an input column.
-   * <li>Expressions that only contain above columns are retained in the
-   * Project's pullExpressions list.
-   * <li>For e.g. expression 'a + e = 9' below will not be pulled up because 'e'
-   * is not in the projection list.
-   *
-   * <blockquote><pre>
-   * inputPullUpExprs:      {a &gt; 7, b + c &lt; 10, a + e = 9}
-   * projectionExprs:       {a, b, c, e / 2}
-   * projectionPullupExprs: {a &gt; 7, b + c &lt; 10}
-   * </pre></blockquote>
-   *
-   * </ol>
-   */
-  public RelOptPredicateList getPredicates(Project project,
-      RelMetadataQuery mq) {
-    final RelNode input = project.getInput();
-    final RexBuilder rexBuilder = project.getCluster().getRexBuilder();
-    final RelOptPredicateList inputInfo = mq.getPulledUpPredicates(input);
-    final List<RexNode> projectPullUpPredicates = new ArrayList<>();
-
-    ProjectMapper callMapper = new ProjectMapper(rexBuilder, project);
-
-
-    // Go over child pullUpPredicates. If a predicate is made from projected columns
-    // then pull up the predicate in terms of the projected columns.
-    // If a predicate contains columns outside the projection, see if we can pull up
-    // a weaker predicate on the projection columns it does use.
-    for (RexNode r : inputInfo.pulledUpPredicates) {
-      try {
-        final RexNode newRex = r.accept(callMapper);
-        projectPullUpPredicates.add(newRex);
-      } catch (ProjectMapper.ProjectColumnMiss e) {
-        continue;
-      }
-    }
-
-    // Project can also generate constants. We need to include them.
-    for (Ord<RexNode> expr : Ord.zip(project.getProjects())) {
-      if (RexLiteral.isNullLiteral(expr.e)) {
-        projectPullUpPredicates.add(
-            rexBuilder.makeCall(SqlStdOperatorTable.IS_NULL,
-                rexBuilder.makeInputRef(project, expr.i)));
-      } else if (RexUtil.isConstant(expr.e)) {
-        final List<RexNode> args =
-            ImmutableList.of(rexBuilder.makeInputRef(project, expr.i), expr.e);
-        final SqlOperator op = args.get(0).getType().isNullable()
-            || args.get(1).getType().isNullable()
-            ? SqlStdOperatorTable.IS_NOT_DISTINCT_FROM
-            : SqlStdOperatorTable.EQUALS;
-        projectPullUpPredicates.add(rexBuilder.makeCall(op, args));
-      }
-    }
-    return RelOptPredicateList.of(rexBuilder, projectPullUpPredicates);
-  }
-
-  /**
-   * Add the Filter condition to the pulledPredicates list from the input.
-   */
-  public RelOptPredicateList getPredicates(Filter filter, RelMetadataQuery mq) {
-    final RelNode input = filter.getInput();
-    final RexBuilder rexBuilder = filter.getCluster().getRexBuilder();
-    final RelOptPredicateList inputInfo = mq.getPulledUpPredicates(input);
-
-    return Util.first(inputInfo, RelOptPredicateList.EMPTY)
-        .union(rexBuilder,
-            RelOptPredicateList.of(rexBuilder,
-                RexUtil.retainDeterministic(
-                    RelOptUtil.conjunctions(filter.getCondition()))));
-  }
-
-  /**
-   * Infers predicates for a {@link org.apache.calcite.rel.core.Join} (including
-   * semi-joins).
-   */
-  public RelOptPredicateList getPredicates(Join join, RelMetadataQuery mq) {
-    RelOptCluster cluster = join.getCluster();
-    RexBuilder rexBuilder = cluster.getRexBuilder();
-    final RexExecutor executor =
-        Util.first(cluster.getPlanner().getExecutor(), RexUtil.EXECUTOR);
-    final RelNode left = join.getInput(0);
-    final RelNode right = join.getInput(1);
-
-    final RelOptPredicateList leftInfo = mq.getPulledUpPredicates(left);
-    final RelOptPredicateList rightInfo = mq.getPulledUpPredicates(right);
-
-    JoinConditionBasedPredicateInference joinInference =
-        new JoinConditionBasedPredicateInference(join,
-            RexUtil.composeConjunction(rexBuilder, leftInfo.pulledUpPredicates),
-            RexUtil.composeConjunction(rexBuilder, rightInfo.pulledUpPredicates),
-            new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, executor));
-
-    return joinInference.inferPredicates(false);
-  }
-
-  /** Check whether the fields specified by the predicateColumns appear in all
-   * the groupSets of the aggregate.
-   *
-   * @param predicateColumns  A list of columns used in a pulled predicate.
-   * @param aggregate         An aggregation operation.
-   * @return                  Whether all columns appear in all groupsets.
-   */
-  boolean allGroupSetsOverlap(ImmutableBitSet predicateColumns, Aggregate aggregate) {
-    // Consider this example:
-    // select deptno, sal, count(*)
-    // from emp where deptno = 10
-    // group by rollup(sal, deptno)
-    // Because of the ROLLUP, we cannot assume
-    // that deptno = 10 in the result: deptno may be NULL as well.
-    for (ImmutableBitSet groupSet : aggregate.groupSets) {
-      if (!groupSet.contains(predicateColumns)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /**
-   * Infers predicates for an Aggregate.
-   *
-   * <p>Pulls up predicates that only contains references to columns in the
-   * GroupSet. For e.g.
-   *
-   * <blockquote><pre>
-   * inputPullUpExprs : { a &gt; 7, b + c &lt; 10, a + e = 9}
-   * groupSet         : { a, b}
-   * pulledUpExprs    : { a &gt; 7}
-   * </pre></blockquote>
-   */
-  public RelOptPredicateList getPredicates(Aggregate agg, RelMetadataQuery mq) {
-    final RelNode input = agg.getInput();
-    final RexBuilder rexBuilder = agg.getCluster().getRexBuilder();
-    final RelOptPredicateList inputInfo = mq.getPulledUpPredicates(input);
-    final List<RexNode> aggPullUpPredicates = new ArrayList<>();
-
-    ImmutableBitSet groupKeys = agg.getGroupSet();
-    if (groupKeys.isEmpty()) {
-      // "GROUP BY ()" can convert an empty relation to a non-empty relation, so
-      // it is not valid to pull up predicates. In particular, consider the
-      // predicate "false": it is valid on all input rows (trivially - there are
-      // no rows!) but not on the output (there is one row).
-      return RelOptPredicateList.EMPTY;
-    }
-    Mapping m = Mappings.create(MappingType.PARTIAL_FUNCTION,
-        input.getRowType().getFieldCount(), agg.getRowType().getFieldCount());
-
-    int i = 0;
-    for (int j : groupKeys) {
-      m.set(j, i++);
-    }
-
-    for (RexNode r : inputInfo.pulledUpPredicates) {
-      ImmutableBitSet rCols = RelOptUtil.InputFinder.bits(r);
-
-      if (groupKeys.contains(rCols) && this.allGroupSetsOverlap(rCols, agg)) {
-        r = r.accept(new RexPermuteInputsShuttle(m, input));
-        aggPullUpPredicates.add(r);
-      }
-    }
-    return RelOptPredicateList.of(rexBuilder, aggPullUpPredicates);
-  }
-
-  /**
-   * Infers predicates for a Union.
-   */
-  public RelOptPredicateList getPredicates(Union union, RelMetadataQuery mq) {
-    final RexBuilder rexBuilder = union.getCluster().getRexBuilder();
-
-    Set<RexNode> finalPredicates = new HashSet<>();
-    final List<RexNode> finalResidualPredicates = new ArrayList<>();
-    for (Ord<RelNode> input : Ord.zip(union.getInputs())) {
-      RelOptPredicateList info = mq.getPulledUpPredicates(input.e);
-      if (info.pulledUpPredicates.isEmpty()) {
-        return RelOptPredicateList.EMPTY;
-      }
-      final Set<RexNode> predicates = new HashSet<>();
-      final List<RexNode> residualPredicates = new ArrayList<>();
-      for (RexNode pred : info.pulledUpPredicates) {
-        if (input.i == 0) {
-          predicates.add(pred);
-          continue;
-        }
-        if (finalPredicates.contains(pred)) {
-          predicates.add(pred);
-        } else {
-          residualPredicates.add(pred);
-        }
-      }
-      // Add new residual predicates
-      finalResidualPredicates.add(
-          RexUtil.composeConjunction(rexBuilder, residualPredicates));
+          RexUtil.composeConjunction(rexBuilder, residualPredicates, false));
       // Add those that are not part of the final set to residual
       for (RexNode e : finalPredicates) {
         if (!predicates.contains(e)) {
@@ -518,7 +83,7 @@ public class RelMdPredicates
           for (int j = 0; j < input.i; j++) {
             finalResidualPredicates.set(j,
                 RexUtil.composeConjunction(rexBuilder,
-                    Arrays.asList(finalResidualPredicates.get(j), e)));
+                    Arrays.asList(finalResidualPredicates.get(j), e), false));
           }
         }
       }
@@ -531,9 +96,8 @@ public class RelMdPredicates
     final RexExecutor executor =
         Util.first(cluster.getPlanner().getExecutor(), RexUtil.EXECUTOR);
     RexNode disjunctivePredicate =
-        new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, executor)
-            .simplifyUnknownAs(rexBuilder.makeCall(SqlStdOperatorTable.OR, finalResidualPredicates),
-                RexUnknownAs.FALSE);
+        new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, true, executor)
+            .simplifyOrs(finalResidualPredicates);
     if (!disjunctivePredicate.isAlwaysTrue()) {
       predicates.add(disjunctivePredicate);
     }
@@ -666,8 +230,13 @@ public class RelMdPredicates
     final RexNode rightChildPredicates;
     final RexSimplify simplify;
 
-    JoinConditionBasedPredicateInference(Join joinRel, RexNode leftPredicates,
-        RexNode rightPredicates, RexSimplify simplify) {
+    JoinConditionBasedPredicateInference(Join joinRel,
+        RexNode leftPredicates, RexNode rightPredicates) {
+      this(joinRel, joinRel instanceof SemiJoin, leftPredicates, rightPredicates);
+    }
+
+    private JoinConditionBasedPredicateInference(Join joinRel, boolean isSemiJoin,
+        RexNode leftPredicates, RexNode rightPredicates) {
       super();
       this.joinRel = joinRel;
       this.simplify = simplify;
@@ -714,7 +283,7 @@ public class RelMdPredicates
         }
       }
 
-      equivalence = new TreeMap<>();
+      equivalence = new TreeMap();
       equalityPredicates = new HashSet<>();
       for (int i = 0; i < nSysFields + nFieldsLeft + nFieldsRight; i++) {
         equivalence.put(i, BitSets.of(i));
@@ -846,15 +415,11 @@ public class RelMdPredicates
           RexNode tr = r.accept(
               new RexPermuteInputsShuttle(m, joinRel.getInput(0),
                   joinRel.getInput(1)));
-          // Filter predicates can be already simplified, so we should work with
-          // simplified RexNode versions as well. It also allows prevent of having
-          // some duplicates in in result pulledUpPredicates
-          RexNode simplifiedTarget =
-              simplify.simplifyFilterPredicates(RelOptUtil.conjunctions(tr));
-          if (checkTarget(inferringFields, allExprs, tr)
-              && checkTarget(inferringFields, allExprs, simplifiedTarget)) {
-            inferredPredicates.add(simplifiedTarget);
-            allExprs.add(simplifiedTarget);
+          if (inferringFields.contains(RelOptUtil.InputFinder.bits(tr))
+              && !allExprs.contains(tr)
+              && !isAlwaysTrue(tr)) {
+            inferredPredicates.add(tr);
+            allExprs.add(tr);
           }
         }
       }

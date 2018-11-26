@@ -22,6 +22,8 @@ import org.apache.calcite.sql.SqlKind;
 
 import java.util.Objects;
 
+import java.util.Objects;
+
 /**
  * Reference to the current row of a correlating relational expression.
  *
@@ -54,6 +56,22 @@ public class RexCorrelVariable extends RexVariable {
   @Override public SqlKind getKind() {
     return SqlKind.CORREL_VARIABLE;
   }
+<<<<<<< HEAD
+=======
+
+  @Override public boolean equals(Object obj) {
+    return this == obj
+        || obj instanceof RexCorrelVariable
+        && digest.equals(((RexCorrelVariable) obj).digest)
+        && type.equals(((RexCorrelVariable) obj).type)
+        && id.equals(((RexCorrelVariable) obj).id);
+  }
+
+  @Override public int hashCode() {
+    return Objects.hash(digest, type, id);
+  }
+}
+>>>>>>> 232030fd4 ([CALCITE-2632]: Add hashCode and equals implementations to RexNode)
 
   @Override public boolean equals(Object obj) {
     return this == obj

@@ -389,6 +389,18 @@ public abstract class Window extends SingleRel {
       return Objects.hash(digest, ordinal, distinct);
     }
 
+    /** {@inheritDoc}
+     *
+     * <p>Override {@link RexCall}, defining equality based on identity.
+     */
+    @Override public boolean equals(Object obj) {
+      return this == obj;
+    }
+
+    @Override public int hashCode() {
+      return Objects.hash(digest, ordinal, distinct);
+    }
+
     @Override public RexCall clone(RelDataType type, List<RexNode> operands) {
       return super.clone(type, operands);
     }

@@ -34,9 +34,7 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * An expression formed by a call to an operator with zero or more expressions
@@ -110,152 +108,7 @@ public class RexCall extends RexNode {
 
   //~ Methods ----------------------------------------------------------------
 
-  /**
-   * Appends call operands without parenthesis.
-   * {@link RexLiteral} might omit data type depending on the context.
-   * For instance, {@code null:BOOLEAN} vs {@code =(true, null)}.
-   * The idea here is to omit "obvious" types for readability purposes while
-   * still maintain {@link RelNode#getDigest()} contract.
-   *
-   * @see RexLiteral#computeDigest(RexDigestIncludeType)
-   * @param sb destination
-   * @return original StringBuilder for fluent API
-   */
-  protected final StringBuilder appendOperands(StringBuilder sb) {
-    if (operands.isEmpty()) {
-      return sb;
-    }
-    List<String> operandDigests = new ArrayList<>(operands.size());
-    for (int i = 0; i < operands.size(); i++) {
-      RexNode operand = operands.get(i);
-      if (!(operand instanceof RexLiteral)) {
-        operandDigests.add(operand.toString());
-        continue;
-      }
-      // Type information might be omitted in certain cases to improve readability
-      // For instance, AND/OR arguments should be BOOLEAN, so
-      // AND(true, null) is better than AND(true, null:BOOLEAN), and we keep the same info
-      // +($0, 2) is better than +($0, 2:BIGINT). Note: if $0 has BIGINT, then 2 is expected to be
-      // of BIGINT type as well.
-      RexDigestIncludeType includeType = RexDigestIncludeType.OPTIONAL;
-      if ((isA(SqlKind.AND) || isA(SqlKind.OR))
-          && operand.getType().getSqlTypeName() == SqlTypeName.BOOLEAN) {
-        includeType = RexDigestIncludeType.NO_TYPE;
-      }
-      if (SIMPLE_BINARY_OPS.contains(getKind()) && operands.size() == 2) {
-        RexNode otherArg = operands.get(1 - i);
-        if ((!(otherArg instanceof RexLiteral)
-            || ((RexLiteral) otherArg).digestIncludesType() == RexDigestIncludeType.NO_TYPE)
-            && equalSansNullability(operand.getType(), otherArg.getType())) {
-          includeType = RexDigestIncludeType.NO_TYPE;
-        }
-      }
-      operandDigests.add(((RexLiteral) operand).computeDigest(includeType));
-    }
-    int totalLength = (operandDigests.size() - 1) * 2; // commas
-    for (String s : operandDigests) {
-      totalLength += s.length();
-    }
-    sb.ensureCapacity(sb.length() + totalLength);
-    sortOperandsIfNeeded(sb, operands, operandDigests);
-    for (int i = 0; i < operandDigests.size(); i++) {
-      String op = operandDigests.get(i);
-      if (i != 0) {
-        sb.append(", ");
-      }
-      sb.append(op);
-    }
-    return sb;
-  }
-
-  private void sortOperandsIfNeeded(StringBuilder sb,
-      List<RexNode> operands, List<String> operandDigests) {
-    if (operands.isEmpty() || !needNormalize()) {
-      return;
-    }
-    final SqlKind kind = op.getKind();
-    if (SqlKind.SYMMETRICAL_SAME_ARG_TYPE.contains(kind)) {
-      final RelDataType firstType = operands.get(0).getType();
-      for (int i = 1; i < operands.size(); i++) {
-        if (!equalSansNullability(firstType, operands.get(i).getType())) {
-          // Arguments have different type, thus they must not be sorted
-          return;
-        }
-      }
-      // fall through: order arguments below
-    } else if (!SqlKind.SYMMETRICAL.contains(kind)
-        && (kind == kind.reverse()
-        || !op.getName().equals(kind.sql)
-        || sb.length() < kind.sql.length() + 1
-        || sb.charAt(sb.length() - 1) != '(')) {
-      // The operations have to be either symmetrical or reversible
-      // Nothing matched => we skip argument sorting
-      // Note: RexCall digest uses op.getName() that might be different from kind.sql
-      // for certain calls. So we skip normalizing the calls that have customized op.getName()
-      // We ensure the current string contains enough room for preceding kind.sql otherwise
-      // we won't have an option to replace the operator to reverse it in case the operands are
-      // reordered.
-      return;
-    }
-    // $0=$1 is the same as $1=$0, so we make sure the digest is the same for them
-    String oldFirstArg = operandDigests.get(0);
-    operandDigests.sort(OPERAND_READABILITY_COMPARATOR);
-
-    // When $1 > $0 is normalized, the operation needs to be flipped
-    // So we sort arguments first, then flip the sign
-    if (kind != kind.reverse()) {
-      assert operands.size() == 2
-          : "Compare operation must have 2 arguments: " + this
-          + ". Actual arguments are " + operandDigests;
-      int operatorEnd = sb.length() - 1 /* ( */;
-      int operatorStart = operatorEnd - op.getName().length();
-      assert op.getName().contentEquals(sb.subSequence(operatorStart, operatorEnd))
-          : "Operation name must precede opening brace like in <=(x, y). Actual content is "
-          + sb.subSequence(operatorStart, operatorEnd)
-          + " at position " + operatorStart + " in " + sb;
-
-      SqlKind newKind = kind.reverse();
-
-      // If arguments are the same, then we normalize < vs >
-      // '<' == 60, '>' == 62, so we prefer <
-      if (operandDigests.get(0).equals(operandDigests.get(1))) {
-        if (newKind.compareTo(kind) > 0) {
-          // If reverse kind is greater, then skip reversing
-          return;
-        }
-      } else if (oldFirstArg.equals(operandDigests.get(0))) {
-        // The sorting did not shuffle the operands, so we do not need to update operation name
-        // in the digest
-        return;
-      }
-      // Replace operator name in the digest
-      sb.replace(operatorStart, operatorEnd, newKind.sql);
-    }
-  }
-
-  /**
-   * This is a poorman's
-   * {@link org.apache.calcite.sql.type.SqlTypeUtil#equalSansNullability(RelDataTypeFactory, RelDataType, RelDataType)}
-   * <p>{@code SqlTypeUtil} requires {@link RelDataTypeFactory} which we haven't, so we assume that
-   * "not null" is represented in the type's digest as a trailing "NOT NULL" (case sensitive)
-   * @param a first type
-   * @param b second type
-   * @return true if the types are equal or the only difference is nullability
-   */
-  private static boolean equalSansNullability(RelDataType a, RelDataType b) {
-    String x = a.getFullTypeString();
-    String y = b.getFullTypeString();
-    if (x.length() < y.length()) {
-      String c = x;
-      x = y;
-      y = c;
-    }
-
-    return (x.length() == y.length()
-        || x.length() == y.length() + 9 && x.endsWith(" NOT NULL"))
-        && x.startsWith(y);
-  }
-
+>>>>>>> 232030fd4 ([CALCITE-2632]: Add hashCode and equals implementations to RexNode)
   protected @Nonnull String computeDigest(boolean withType) {
     final StringBuilder sb = new StringBuilder(op.getName());
     if ((operands.size() == 0)
@@ -264,7 +117,15 @@ public class RexCall extends RexNode {
       // "SYSTEM_USER", not "SYSTEM_USER()".
     } else {
       sb.append("(");
+<<<<<<< HEAD
       appendOperands(sb);
+=======
+      for (int i = 0; i < operands.size(); i++) {
+        if (i > 0) {
+          sb.append(", ");
+        }
+        sb.append(operands.get(i));
+      }
       sb.append(")");
     }
     if (withType) {
@@ -278,14 +139,11 @@ public class RexCall extends RexNode {
   }
 
   @Override public final @Nonnull String toString() {
-    if (!needNormalize()) {
-      // Non-normalize describe is requested
-      return computeDigest(digestWithType());
-    }
     // This data race is intentional
     String localDigest = digest;
     if (localDigest == null) {
-      localDigest = computeDigest(digestWithType());
+      localDigest = computeDigest(
+          isA(SqlKind.CAST) || isA(SqlKind.NEW_SPECIFICATION));
       digest = Objects.requireNonNull(localDigest);
     }
     return localDigest;
@@ -365,6 +223,26 @@ public class RexCall extends RexNode {
   public RexCall clone(RelDataType type, List<RexNode> operands) {
     return new RexCall(type, op, operands);
   }
+<<<<<<< HEAD
+=======
+
+  @Override public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+    RexCall rexCall = (RexCall) obj;
+    return toString().equals(((RexCall) obj).toString())
+        && type.equals(rexCall.getType());
+  }
+
+  @Override public int hashCode() {
+    return toString().hashCode();
+  }
+}
+>>>>>>> 232030fd4 ([CALCITE-2632]: Add hashCode and equals implementations to RexNode)
 
   private Pair<SqlOperator, List<RexNode>> getNormalized() {
     if (this.normalized == null) {

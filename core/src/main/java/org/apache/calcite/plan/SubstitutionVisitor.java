@@ -2527,9 +2527,9 @@ public class SubstitutionVisitor {
 
   /** Builds a shuttle that stores a list of expressions, and can map incoming
    * expressions to references to them. */
-  private static RexShuttle getRexShuttle(List<RexNode> rexNodes) {
+  protected static RexShuttle getRexShuttle(MutableProject target) {
     final Map<RexNode, Integer> map = new HashMap<>();
-    for (RexNode e : rexNodes) {
+    for (RexNode e : target.projects) {
       map.put(e, map.size());
     }
     return new RexShuttle() {

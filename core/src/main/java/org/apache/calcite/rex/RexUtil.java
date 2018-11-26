@@ -2210,7 +2210,10 @@ public class RexUtil {
 
     protected RexNode register(RexNode expr) {
       final RexNode previous = map.put(expr, expr);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 232030fd4 ([CALCITE-2632]: Add hashCode and equals implementations to RexNode)
       if (!allowDups && (previous != null)) {
         throw new SubExprExistsException(expr);
       }

@@ -61,6 +61,22 @@ public class RexDynamicParam extends RexVariable {
   public <R, P> R accept(RexBiVisitor<R, P> visitor, P arg) {
     return visitor.visitDynamicParam(this, arg);
   }
+<<<<<<< HEAD
+=======
+
+  @Override public boolean equals(Object obj) {
+    return this == obj
+        || obj instanceof RexDynamicParam
+        && digest.equals(((RexDynamicParam) obj).digest)
+        && type.equals(((RexDynamicParam) obj).type)
+        && index == ((RexDynamicParam) obj).index;
+  }
+
+  @Override public int hashCode() {
+    return Objects.hash(digest, type, index);
+  }
+}
+>>>>>>> 232030fd4 ([CALCITE-2632]: Add hashCode and equals implementations to RexNode)
 
   @Override public boolean equals(Object obj) {
     return this == obj

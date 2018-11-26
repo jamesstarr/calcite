@@ -25,7 +25,7 @@ import org.apache.calcite.util.Util;
 import com.google.common.base.Preconditions;
 
 import java.util.List;
-import java.util.Objects;
+>>>>>>> 232030fd4 ([CALCITE-2632]: Add hashCode and equals implementations to RexNode)
 import javax.annotation.Nonnull;
 
 /**
@@ -92,18 +92,24 @@ public class RexOver extends RexCall {
     return distinct;
   }
 
+<<<<<<< HEAD
   public boolean ignoreNulls() {
     return ignoreNulls;
   }
 
+=======
   @Override protected @Nonnull String computeDigest(boolean withType) {
     final StringBuilder sb = new StringBuilder(op.getName());
     sb.append("(");
     if (distinct) {
       sb.append("DISTINCT ");
     }
-    appendOperands(sb);
-
+    for (int i = 0; i < operands.size(); i++) {
+      if (i > 0) {
+        sb.append(", ");
+      }
+      sb.append(operands.get(i));
+    }
     sb.append(")");
     if (ignoreNulls) {
       sb.append(" IGNORE NULLS");

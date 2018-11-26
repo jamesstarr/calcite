@@ -180,7 +180,15 @@ class ElasticsearchRules {
         }
       }
       throw new IllegalArgumentException("Translation of " + call
+<<<<<<< HEAD:elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchRules.java
         + " is not supported by ElasticsearchProject");
+=======
+        + "is not supported by ElasticsearchProject");
+    }
+
+    private String stripQuotes(String s) {
+      return s.startsWith("'") && s.endsWith("'") ? s.substring(1, s.length() - 1) : s;
+>>>>>>> 232030fd4 ([CALCITE-2632]: Add hashCode and equals implementations to RexNode):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchRules.java
     }
 
     List<String> visitList(List<RexNode> list) {
