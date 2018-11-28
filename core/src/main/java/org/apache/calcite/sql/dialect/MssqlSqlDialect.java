@@ -100,10 +100,6 @@ public class MssqlSqlDialect extends SqlDialect {
     return true;
   }
 
-  @Override public boolean supportsCharSet() {
-    return false;
-  }
-
   @Override public boolean supportsOrderByNullOrdering() {
     return false;
   }
@@ -142,6 +138,7 @@ public class MssqlSqlDialect extends SqlDialect {
     return false;
   }
 
+<<<<<<< HEAD
   @Override public boolean supportsGroupByWithRollup() {
     return true;
   }
@@ -150,6 +147,8 @@ public class MssqlSqlDialect extends SqlDialect {
     return true;
   }
 
+=======
+>>>>>>> 2ad014140 ([CALCITE-2715] In JDBC adapter, do not generate character set in data types for MS SQL Server (Piotr Bojko))
   /**
    * Unparses datetime floor for Microsoft SQL Server.
    * There is no TRUNC function, so simulate this using calls to CONVERT.
