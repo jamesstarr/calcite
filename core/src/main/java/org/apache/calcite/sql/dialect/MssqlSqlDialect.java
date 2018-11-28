@@ -95,10 +95,6 @@ public class MssqlSqlDialect extends SqlDialect {
     return true;
   }
 
-  @Override public boolean supportsCharSet() {
-    return false;
-  }
-
   @Override public boolean supportsOrderByNullOrdering() {
     return false;
   }
@@ -131,6 +127,10 @@ public class MssqlSqlDialect extends SqlDialect {
         super.unparseCall(writer, call, leftPrec, rightPrec);
       }
     }
+  }
+
+  @Override public boolean supportsCharSet() {
+    return false;
   }
 
   /**
