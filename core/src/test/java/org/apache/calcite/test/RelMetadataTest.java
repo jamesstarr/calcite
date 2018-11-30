@@ -2336,6 +2336,20 @@ public class RelMetadataTest extends SqlToRelTestBase {
     }
   };
 
+  /** Tests calling {@link RelMetadataQuery#getTableOrigin} for
+   * an aggregate with no columns. Previously threw. */
+  @Test public void testEmptyAggregateTableOrigin() {
+    final FrameworkConfig config = RelBuilderTest.config().build();
+    final RelBuilder builder = RelBuilder.create(config);
+    RelMetadataQuery mq = RelMetadataQuery.instance();
+    RelNode agg = builder
+        .scan("EMP")
+        .aggregate(builder.groupKey())
+        .build();
+    final RelOptTable tableOrigin = mq.getTableOrigin(agg);
+    assertThat(tableOrigin, nullValue());
+  }
+
   @Test public void testGetPredicatesForJoin() throws Exception {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
