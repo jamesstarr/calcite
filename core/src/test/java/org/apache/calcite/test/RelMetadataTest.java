@@ -874,33 +874,6 @@ public class RelMetadataTest extends SqlToRelTestBase {
         within(DEFAULT_COMP_SELECTIVITY * DEFAULT_EQUAL_SELECTIVITY, EPSILON));
   }
 
-<<<<<<< HEAD
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-1808">[CALCITE-1808]
-   * JaninoRelMetadataProvider loading cache might cause
-   * OutOfMemoryError</a>.
-   *
-   * Too slow to run every day, and it does not reproduce the issue. */
-  @Tag("slow")
-  @Test void testMetadataHandlerCacheLimit() {
-    assumeTrue(CalciteSystemProperty.METADATA_HANDLER_CACHE_MAXIMUM_SIZE.value() < 10_000,
-        "If cache size is too large, this test may fail and the test won't be to blame");
-    final int iterationCount = 2_000;
-    final RelNode rel = convertSql("select * from emp");
-    final RelMetadataProvider metadataProvider =
-        rel.getCluster().getMetadataProvider();
-    for (int i = 0; i < iterationCount; i++) {
-      JaninoRelMetadataQuery.THREAD_PROVIDERS.set(
-          JaninoRelMetadataProvider.of(
-              new CachingRelMetadataProvider(metadataProvider, planner)));
-      final RelMetadataQuery mq = RelMetadataQuery.instance();
-      final Double result = mq.getRowCount(rel);
-      assertThat(result, within(14d, 0.1d));
-    }
-  }
-
-  @Test void testDistinctRowCountTable() {
-=======
   @Test public void testDistinctRowCountTable() {
     // no unique key information is available so return null
     RelNode rel = convertSql("select * from emp where deptno = 10");
@@ -3010,10 +2983,16 @@ public class RelMetadataTest extends SqlToRelTestBase {
 
   /** Tests calling {@link RelMetadataQuery#getTableOrigin} for
    * an aggregate with no columns. Previously threw. */
+<<<<<<< HEAD
   @Test void testEmptyAggregateTableOrigin() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     RelMetadataQuery mq = builder.getCluster().getMetadataQuery();
+=======
+  @Test public void testEmptyAggregateTableOrigin() {
+    final FrameworkConfig config = RelBuilderTest.config().build();
+    final RelBuilder builder = RelBuilder.create(config);
+    RelMetadataQuery mq = RelMetadataQuery.instance();
     RelNode agg = builder
         .scan("EMP")
         .aggregate(builder.groupKey())
@@ -3022,7 +3001,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     assertThat(tableOrigin, nullValue());
   }
 
-  @Test void testGetPredicatesForJoin() throws Exception {
+  @Test public void testGetPredicatesForJoin() throws Exception {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     RelNode join = builder
