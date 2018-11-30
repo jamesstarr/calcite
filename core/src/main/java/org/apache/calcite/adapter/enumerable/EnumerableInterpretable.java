@@ -92,9 +92,8 @@ public class EnumerableInterpretable extends ConverterImpl
   /**
    * The cache storing Bindable objects, instantiated via dynamically generated Java classes.
    *
-   * <p>It allows to re-use Bindable objects for queries appearing relatively
-   * often. It is used to avoid the cost of compiling and generating a new class
-   * and also instantiating the object.
+   * It allows to re-use Bindable objects for queries appearing relatively often. It is used
+   * to avoid the cost of compiling and generating a new class and also instantiating the object.
    */
   private static final Cache<String, Bindable> BINDABLE_CACHE =
       CacheBuilder.newBuilder()

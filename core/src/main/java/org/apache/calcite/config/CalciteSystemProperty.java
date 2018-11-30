@@ -273,12 +273,9 @@ import java.io.InputStream;
   /**
    * Returns the value of the system property with the specified name as int, or
    * the <code>defaultValue</code> if any of the conditions below hold:
-   *
-   * <ol>
-   * <li>the property is not defined;
-   * <li>the property value cannot be transformed to an int;
-   * <li>the property value does not satisfy the checker.
-   * </ol>
+   * (i) the property is not defined;
+   * (ii) the property value cannot be transformed to an int;
+   * (iii) the property value does not satisfy the checker.
    */
   private static CalciteSystemProperty<Integer> intProperty(String key, int defaultValue,
       IntPredicate valueChecker) {
