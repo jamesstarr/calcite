@@ -19,29 +19,30 @@ package org.apache.calcite.sql.dialect;
 import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.avatica.util.TimeUnitRange;
 import org.apache.calcite.rel.type.RelDataType;
->>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
+import org.apache.calcite.rel.type.RelDataTypeSystem;
+import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlDataTypeSpec;
 import org.apache.calcite.sql.SqlDialect;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
-<<<<<<< HEAD
-import org.apache.calcite.sql.SqlWriter;
-import org.apache.calcite.sql.fun.SqlFloorFunction;
-import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.type.SqlTypeName;
-=======
 import org.apache.calcite.sql.SqlUserDefinedTypeNameSpec;
 import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.fun.SqlFloorFunction;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.calcite.sql.type.SqlTypeName;
 
 /**
  * A <code>SqlDialect</code> implementation for the PostgreSQL database.
  */
 public class PostgresqlSqlDialect extends SqlDialect {
+<<<<<<< HEAD
   /** PostgreSQL type system. */
   public static final RelDataTypeSystem POSTGRESQL_TYPE_SYSTEM =
+=======
+
+  /** PostgreSQL type system. */
+  private static final RelDataTypeSystem POSTGRESQL_TYPE_SYSTEM =
       new RelDataTypeSystemImpl() {
         @Override public int getMaxPrecision(SqlTypeName typeName) {
           switch (typeName) {
@@ -59,13 +60,11 @@ public class PostgresqlSqlDialect extends SqlDialect {
         }
       };
 
-  public static final SqlDialect.Context DEFAULT_CONTEXT = SqlDialect.EMPTY_CONTEXT
-      .withDatabaseProduct(SqlDialect.DatabaseProduct.POSTGRESQL)
-      .withIdentifierQuoteString("\"")
-      .withUnquotedCasing(Casing.TO_LOWER)
-      .withDataTypeSystem(POSTGRESQL_TYPE_SYSTEM);
-
-  public static final SqlDialect DEFAULT = new PostgresqlSqlDialect(DEFAULT_CONTEXT);
+  public static final SqlDialect DEFAULT =
+      new PostgresqlSqlDialect(EMPTY_CONTEXT
+          .withDatabaseProduct(DatabaseProduct.POSTGRESQL)
+          .withIdentifierQuoteString("\"")
+          .withDataTypeSystem(POSTGRESQL_TYPE_SYSTEM));
 
   /** Creates a PostgresqlSqlDialect. */
   public PostgresqlSqlDialect(Context context) {

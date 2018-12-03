@@ -27,6 +27,7 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.ProjectJoinTransposeRule;
 import org.apache.calcite.rel.rules.UnionMergeRule;
+import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.runtime.FlatLists;
 import org.apache.calcite.schema.SchemaPlus;
@@ -42,12 +43,10 @@ import org.apache.calcite.sql.dialect.HiveSqlDialect;
 import org.apache.calcite.sql.dialect.JethroDataSqlDialect;
 import org.apache.calcite.sql.dialect.MssqlSqlDialect;
 import org.apache.calcite.sql.dialect.MysqlSqlDialect;
->>>>>>> cc876bda9 ([CALCITE-2444] Handle IN expressions when converting SqlNode to SQL (Zoltan Haindrich))
+import org.apache.calcite.sql.dialect.PostgresqlSqlDialect;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParser;
-import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
 import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.calcite.sql.util.SqlShuttle;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.test.RelBuilderTest;
@@ -519,6 +518,30 @@ class RelToSqlConverterTest {
         + "WHERE (\"EMPNO\" = 0 OR \"EMPNO\" = 1 OR (\"EMPNO\" = 2 OR \"EMPNO\" = 3))"
         + " AND (\"DEPTNO\" = 5 OR (\"DEPTNO\" = 6 OR \"DEPTNO\" = 7))";
     relFn(relFn).ok(expected);
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2713">[CALCITE-2713]
+   * JDBC adapter may generate casts on PostgreSQL for VARCHAR type exceeding
+   * max length</a>. */
+  @Test public void testCastLongVarchar1() {
+    final String query = "select cast(\"store_id\" as VARCHAR(10485761))\n"
+        + " from \"expense_fact\"";
+    final String expected = "SELECT CAST(\"store_id\" AS VARCHAR(256))\n"
+        + "FROM \"foodmart\".\"expense_fact\"";
+    sql(query).withPostgresqlModifiedTypeSystem().ok(expected);
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2713">[CALCITE-2713]
+   * JDBC adapter may generate casts on PostgreSQL for VARCHAR type exceeding
+   * max length</a>. */
+  @Test public void testCastLongVarchar2() {
+    final String query = "select cast(\"store_id\" as VARCHAR(175))\n"
+        + " from \"expense_fact\"";
+    final String expected = "SELECT CAST(\"store_id\" AS VARCHAR(175))\n"
+        + "FROM \"foodmart\".\"expense_fact\"";
+    sql(query).withPostgresqlModifiedTypeSystem().ok(expected);
   }
 
   /** Test case for
@@ -1781,9 +1804,6 @@ class RelToSqlConverterTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2652">[CALCITE-2652]
    * SqlNode to SQL conversion fails if the join condition references a BOOLEAN
    * column</a>. */
-<<<<<<< HEAD
-  @Test void testJoinOnBoolean() {
-=======
   @Test public void testJoinOnBoolean() {
     final String sql = "SELECT 1\n"
         + "from emps\n"
@@ -4443,6 +4463,7 @@ class RelToSqlConverterTest {
       return dialect(SqlDialect.DatabaseProduct.VERTICA.getDialect());
     }
 
+<<<<<<< HEAD
     Sql withBigQuery() {
       return dialect(SqlDialect.DatabaseProduct.BIG_QUERY.getDialect());
     }
@@ -4462,12 +4483,27 @@ class RelToSqlConverterTest {
                     return 256;
                   default:
                     return super.getMaxPrecision(typeName);
+=======
+    Sql withPostgresqlModifiedTypeSystem() {
+      // Postgresql dialect with max length for varchar set to 256
+      final PostgresqlSqlDialect postgresqlSqlDialect =
+          new PostgresqlSqlDialect(SqlDialect.EMPTY_CONTEXT
+              .withDatabaseProduct(DatabaseProduct.POSTGRESQL)
+              .withIdentifierQuoteString("\"")
+              .withDataTypeSystem(new RelDataTypeSystemImpl() {
+                @Override public int getMaxPrecision(SqlTypeName typeName) {
+                  switch (typeName) {
+                    case VARCHAR:
+                      return 256;
+                    default:
+                      return super.getMaxPrecision(typeName);
                   }
                 }
               }));
       return dialect(postgresqlSqlDialect);
     }
 
+<<<<<<< HEAD
     Sql withOracleModifiedTypeSystem() {
       // Oracle dialect with max length for varchar set to 512
       final OracleSqlDialect oracleSqlDialect =
@@ -4490,6 +4526,8 @@ class RelToSqlConverterTest {
           transforms);
     }
 
+=======
+>>>>>>> 0cc58462f ([CALCITE-2713] JDBC adapter may generate casts on PostgreSQL for VARCHAR type exceeding max length)
     Sql config(SqlToRelConverter.Config config) {
       return new Sql(schema, sql, dialect, config, transforms);
     }
