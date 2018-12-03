@@ -801,6 +801,11 @@ limitations under the License.
         <dependencies>
           <dependency>
             <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-api</artifactId>
+            <version>${maven-scm-provider.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.maven.scm</groupId>
             <artifactId>maven-scm-provider-gitexe</artifactId>
             <version>${maven-scm-provider.version}</version>
           </dependency>

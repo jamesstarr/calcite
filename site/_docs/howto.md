@@ -32,6 +32,7 @@ adapters.
 ## Building from a source distribution
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Prerequisite is Java (JDK 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 or 18)
 and Gradle (version 7.4.2) on your path.
 
@@ -45,14 +46,17 @@ $ cd apache-calcite-1.23.0-src
 $ ./gradlew build
 =======
 Prerequisite is Java (JDK 8, 9 or 10) on your path.
+=======
+Prerequisite is Java (JDK 8, 9, 10 or 11) on your path.
+>>>>>>> 4223da054 ([CALCITE-2575] Release Calcite 1.18.0)
 
 Unpack the source distribution `.tar.gz` file,
 `cd` to the root directory of the unpacked source,
 then build using the included maven wrapper:
 
 {% highlight bash %}
-$ tar xvfz calcite-1.16.0-source.tar.gz
-$ cd calcite-1.16.0
+$ tar xvfz calcite-1.18.0-source.tar.gz
+$ cd calcite-1.18.0
 $ ./mvnw install
 >>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
 {% endhighlight %}
@@ -65,10 +69,14 @@ tests  (but you should use the `gradle` command rather than
 
 Prerequisites are git
 <<<<<<< HEAD
+<<<<<<< HEAD
 and Java (JDK 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 or 18) on your path.
 =======
 and Java (JDK 8, 9 or 10) on your path.
 >>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
+=======
+and Java (JDK 8, 9, 10 or 11) on your path.
+>>>>>>> 4223da054 ([CALCITE-2575] Release Calcite 1.18.0)
 
 Create a local copy of the GitHub repository,
 `cd` to its root directory,
@@ -629,10 +637,20 @@ via `signing.gnupg.keyName`.
 
 Before you start:
 
+<<<<<<< HEAD
+=======
+* Set up signing keys as described above.
+>>>>>>> 4223da054 ([CALCITE-2575] Release Calcite 1.18.0)
 * Make sure you are using JDK 8.
 * Make sure build and tests succeed with `-Dcalcite.test.db=hsqldb` (the default)
 
 {% highlight bash %}
+<<<<<<< HEAD
+=======
+# Tell GPG how to read a password from your terminal
+export GPG_TTY=$(tty)
+
+>>>>>>> 4223da054 ([CALCITE-2575] Release Calcite 1.18.0)
 # Make sure that there are no junk files in the sandbox
 git clean -xn
 <<<<<<< HEAD
@@ -641,8 +659,12 @@ git clean -xn
 =======
 ./mvnw clean
 
+<<<<<<< HEAD
 ./mvnw -Papache-release -Dgpg.passphrase=${GPG_PASSPHRASE} install
 >>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
+=======
+./mvnw -Papache-release install
+>>>>>>> 4223da054 ([CALCITE-2575] Release Calcite 1.18.0)
 {% endhighlight %}
 
 ## Making a release candidate (for Calcite committers)
@@ -745,18 +767,23 @@ git clean -xn
 ./mvnw clean
 
 # Do a dry run of the release:prepare step, which sets version numbers
-# (accept the default tag name of calcite-X.Y.Z)
-# Note X.Y.Z is the current version we're trying to release, and X.Y+1.Z is the next development version.
-# For example, if I am currently building a release for 1.16.0, X.Y.Z would be 1.16.0 and X.Y+1.Z would be 1.17.0.
-./mvnw -DdryRun=true -DskipTests -DreleaseVersion=X.Y.Z -DdevelopmentVersion=X.Y+1.Z-SNAPSHOT -Papache-release -Darguments="-Dgpg.passphrase=${GPG_PASSPHRASE}" release:prepare 2>&1 | tee /tmp/prepare-dry.log
+# (accept the default tag name of calcite-X.Y.Z).
+# Note X.Y.Z is the current version we're trying to release (e.g. 1.8.0),
+# and X.(Y+1).Z is the next development version (e.g. 1.9.0).
+./mvnw -DdryRun=true -DskipTests -DreleaseVersion=X.Y.Z -DdevelopmentVersion=X.(Y+1).Z-SNAPSHOT -Papache-release -Darguments=-DskipTests release:prepare 2>&1 | tee /tmp/prepare-dry.log
 
 # If you have multiple GPG keys, you can select the key used to sign the release by adding `-Dgpg.keyname=${GPG_KEY_ID}` to `-Darguments`:
+<<<<<<< HEAD
 ./mvnw -DdryRun=true -DskipTests -DreleaseVersion=X.Y.Z -DdevelopmentVersion=X.Y+1.Z-SNAPSHOT -Papache-release -Darguments="-Dgpg.passphrase=${GPG_PASSPHRASE} -Dgpg.keyname=${GPG_KEY_ID}" release:prepare 2>&1 | tee /tmp/prepare-dry.log
 >>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
+=======
+./mvnw -DdryRun=true -DskipTests -DreleaseVersion=X.Y.Z -DdevelopmentVersion=X.(Y+1).Z-SNAPSHOT -Papache-release -Darguments="-DskipTests -Dgpg.keyname=${GPG_KEY_ID}" release:prepare 2>&1 | tee /tmp/prepare-dry.log
+>>>>>>> 4223da054 ([CALCITE-2575] Release Calcite 1.18.0)
 {% endhighlight %}
 
 #### Checking the artifacts
 
+<<<<<<< HEAD
 * In the `release/build/distributions` directory should be these 3 files, among others:
   * `apache-calcite-X.Y.Z-src.tar.gz`
   * `apache-calcite-X.Y.Z-src.tar.gz.asc`
@@ -769,6 +796,12 @@ git clean -xn
   * apache-calcite-X.Y.Z-src.tar.gz.asc
   * apache-calcite-X.Y.Z-src.tar.gz.md5
   * apache-calcite-X.Y.Z-src.tar.gz.sha256
+=======
+* In the `target` directory should be these 3 files, among others:
+  * `apache-calcite-X.Y.Z-src.tar.gz`
+  * `apache-calcite-X.Y.Z-src.tar.gz.asc`
+  * `apache-calcite-X.Y.Z-src.tar.gz.sha256`
+>>>>>>> 4223da054 ([CALCITE-2575] Release Calcite 1.18.0)
 
 >>>>>>> 6ec775507 ([CALCITE-2333] Stop releasing zips)
   * apache-calcite-X.Y.Z-src.zip.md5
@@ -798,13 +831,13 @@ For this step you'll have to add the [Apache servers](https://maven.apache.org/d
 # Prepare sets the version numbers, creates a tag, and pushes it to git
 # Note X.Y.Z is the current version we're trying to release, and X.Y+1.Z is the next development version.
 # For example, if I am currently building a release for 1.16.0, X.Y.Z would be 1.16.0 and X.Y+1.Z would be 1.17.0.
-./mvnw -DdryRun=false -DskipTests -DreleaseVersion=X.Y.Z -DdevelopmentVersion=X.Y+1.Z-SNAPSHOT -Papache-release -Darguments="-Dgpg.passphrase=${GPG_PASSPHRASE}" release:prepare 2>&1 | tee /tmp/prepare.log
+./mvnw -DdryRun=false -DskipTests -DreleaseVersion=X.Y.Z -DdevelopmentVersion=X.Y+1.Z-SNAPSHOT -Papache-release -Darguments=-DskipTests release:prepare 2>&1 | tee /tmp/prepare.log
 
 # If you have multiple GPG keys, you can select the key used to sign the release by adding `-Dgpg.keyname=${GPG_KEY_ID}` to `-Darguments`:
-./mvnw -DdryRun=false -DskipTests -DreleaseVersion=X.Y.Z -DdevelopmentVersion=X.Y+1.Z-SNAPSHOT -Papache-release -Darguments="-Dgpg.passphrase=${GPG_PASSPHRASE} -Dgpg.keyname=${GPG_KEY_ID}" release:prepare 2>&1 | tee /tmp/prepare-dry.log
+./mvnw -DdryRun=false -DskipTests -DreleaseVersion=X.Y.Z -DdevelopmentVersion=X.Y+1.Z-SNAPSHOT -Papache-release -Darguments="-DskipTests -Dgpg.keyname=${GPG_KEY_ID}" release:prepare 2>&1 | tee /tmp/prepare.log
 
 # Perform checks out the tagged version, builds, and deploys to the staging repository
-./mvnw -DskipTests -Papache-release -Darguments="-Dgpg.passphrase=${GPG_PASSPHRASE}" release:perform 2>&1 | tee /tmp/perform.log
+./mvnw -DskipTests -Papache-release release:perform 2>&1 | tee /tmp/perform.log
 {% endhighlight %}
 
 >>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))

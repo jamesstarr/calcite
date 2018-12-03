@@ -804,10 +804,6 @@ public class RexToLixTranslator {
       nullAs = RexImpTable.NullAs.NOT_POSSIBLE;
     }
     switch (expr.getKind()) {
-<<<<<<< HEAD
-    case INPUT_REF:
-    {
-=======
     case INPUT_REF: {
       final int index = ((RexInputRef) expr).getIndex();
       Expression x = inputGetter.field(list, index, storageType);
@@ -815,7 +811,6 @@ public class RexToLixTranslator {
       Expression input = list.append("inp" + index + "_", x); // safe to share
       return handleNullUnboxingIfNecessary(input, nullAs, storageType);
     }
->>>>>>> 7feb6b7bd ([CALCITE-2596] When translating correlated variables in enumerable convention, convert not-null boxed primitive values to primitive (Stamatis Zampetakis))
     case LOCAL_REF:
       return translate(
           deref(expr),
