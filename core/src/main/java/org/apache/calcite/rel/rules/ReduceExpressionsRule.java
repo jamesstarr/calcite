@@ -52,7 +52,6 @@ import org.apache.calcite.rex.RexSimplify;
 import org.apache.calcite.rex.RexSubQuery;
 import org.apache.calcite.rex.RexUnknownAs;
 import org.apache.calcite.rex.RexUtil;
-import org.apache.calcite.rex.RexUtil.ExprSimplifier;
 import org.apache.calcite.rex.RexVisitorImpl;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
@@ -607,14 +606,14 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
 
     // Simplify predicates in place
     final RexUnknownAs unknownAs = RexUnknownAs.falseIf(unknownAsFalse);
-    boolean reduced = reduceExpressionsInternal(rel, simplify, unknownAs,
+    final boolean reduced = reduceExpressionsInternal(rel, simplify, unknownAs,
         expList, predicates, treatDynamicCallsAsConstant);
 
-    final ExprSimplifier simplifier =
-        new ExprSimplifier(simplify, unknownAs, matchNullability);
     boolean simplified = false;
     for (int i = 0; i < expList.size(); i++) {
-      RexNode expr2 = simplifier.apply(expList.get(i));
+      final RexNode expr2 =
+          simplify.simplifyPreservingType(expList.get(i), unknownAs,
+              matchNullability);
       if (!expr2.equals(expList.get(i))) {
         expList.set(i, expr2);
         simplified = true;
@@ -653,7 +652,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
       }
       RexReplacer replacer =
           new RexReplacer(simplify, removableCasts, reducedExprs,
-              Collections.nCopies(removableCasts.size(), false), false);
+              Collections.nCopies(removableCasts.size(), false));
       replacer.mutate(expList);
     }
 
@@ -669,7 +668,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
           Lists.newArrayList(predicates.constantMap.entrySet());
       RexReplacer replacer =
           new RexReplacer(simplify, Pair.left(pairs), Pair.right(pairs),
-              Collections.nCopies(pairs.size(), false), false);
+              Collections.nCopies(pairs.size(), false));
       replacer.mutate(constExps2);
     }
 
@@ -707,8 +706,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
     }
 
     RexReplacer replacer =
-        new RexReplacer(simplify, constExps, reducedValues, addCasts,
-                rel instanceof Project);
+        new RexReplacer(simplify, constExps, reducedValues, addCasts);
     replacer.mutate(expList);
     return true;
   }
@@ -830,7 +828,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
    * look for RexCall, since nothing else is reducible in the first place.
    */
   protected static class RexReplacer extends RexShuttle {
-    private final ExprSimplifier simplifier;
+    private final RexSimplify simplifier;
     private final List<RexNode> reducibleExps;
     private final RexBuilder rexBuilder;
     private final List<RexNode> reducedValues;
@@ -840,9 +838,8 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
         RexSimplify simplify,
         List<RexNode> reducibleExps,
         List<RexNode> reducedValues,
-        List<Boolean> addCasts,
-        boolean matchNullability) {
-      this.simplifier = new ExprSimplifier(simplify, RexUnknownAs.UNKNOWN, matchNullability);
+        List<Boolean> addCasts) {
+      this.simplifier = simplify;
       this.reducibleExps = reducibleExps;
       this.reducedValues = reducedValues;
       this.addCasts = addCasts;
@@ -863,9 +860,6 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
         return node;
       }
       node = super.visitCall(call);
-      if (node != call) {
-        node = simplifier.apply(node);
-      }
       return node;
     }
 
