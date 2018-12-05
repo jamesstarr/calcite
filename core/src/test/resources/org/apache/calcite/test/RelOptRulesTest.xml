@@ -4940,6 +4940,7 @@ LogicalProject(EXPR$0=[CAST(/($2, $3)):INTEGER NOT NULL])
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
     <TestCase name="testOrAlwaysTrue">
@@ -4989,6 +4990,8 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+=======
+>>>>>>> 72d688293 ([CALCITE-2726] ReduceExpressionRule oversimplifies filter conditions containing nulls)
     <TestCase name="testNoOversimplificationBelowIsNull">
         <Resource name="sql">
             <![CDATA[select * from emp where ( (empno=1 and mgr=1) or (empno=null and mgr=1) ) is null]]>
@@ -5008,8 +5011,11 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+>>>>>>> 72d688293 ([CALCITE-2726] ReduceExpressionRule oversimplifies filter conditions containing nulls)
 
 =======
 >>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
@@ -11028,7 +11034,7 @@ LogicalProject(NEWCOL=[+($0, CASE(=('a', 'a'), 1, null:INTEGER))])
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
-LogicalProject(NEWCOL=[+($0, 1)])
+LogicalProject(NEWCOL=[+($0, CAST(1):INTEGER)])
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>

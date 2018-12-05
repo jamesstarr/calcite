@@ -271,6 +271,7 @@ from ax where ((s,t) in (('a','a'),(null, 'bb'))) is null;
 
 !ok
 
+<<<<<<< HEAD
 with ax(s) as (values (1),(0))
 select case when s=0 then false else 100/s > 0 end from ax;
 
@@ -300,4 +301,6 @@ select s, (s or s is null), (s and s is not null) from ax;
 !ok
 
 
+=======
+>>>>>>> 72d688293 ([CALCITE-2726] ReduceExpressionRule oversimplifies filter conditions containing nulls)
 # End conditions.iq

@@ -2773,7 +2773,6 @@ public class RexUtil {
       this(simplify, RexUnknownAs.UNKNOWN, true);
     }
 
-    @Deprecated // to be removed before 2.0
     public ExprSimplifier(RexSimplify simplify, boolean matchNullability) {
       this(simplify, RexUnknownAs.UNKNOWN, matchNullability);
     }
