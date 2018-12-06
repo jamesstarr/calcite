@@ -3922,10 +3922,14 @@ void Expression2b(ExprContext exprContext, List<Object> list) :
     SqlNode e;
     SqlOperator op;
 <<<<<<< HEAD
+<<<<<<< HEAD
     SqlNode ext;
 =======
     String p;
 >>>>>>> a900984da ([CALCITE-2542] In SQL parser, allow '. field' to follow expressions other than tables and columns (Rong Rong))
+=======
+    SqlIdentifier p;
+>>>>>>> c4fb4526d ([CALCITE-2674] Column name with escape character should not be verified as a function when the column name is same with it (Danny Chan))
 }
 {
     (
@@ -3948,12 +3952,16 @@ void Expression2b(ExprContext exprContext, List<Object> list) :
             list.add(ext);
 =======
         <DOT>
-        p = Identifier() {
+        p = SimpleIdentifier() {
             list.add(
                 new SqlParserUtil.ToTreeListItem(
                     SqlStdOperatorTable.DOT, getPos()));
+<<<<<<< HEAD
             list.add(new SqlIdentifier(p, getPos()));
 >>>>>>> a900984da ([CALCITE-2542] In SQL parser, allow '. field' to follow expressions other than tables and columns (Rong Rong))
+=======
+            list.add(p);
+>>>>>>> c4fb4526d ([CALCITE-2674] Column name with escape character should not be verified as a function when the column name is same with it (Danny Chan))
         }
     )*
 }
