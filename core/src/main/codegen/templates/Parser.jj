@@ -2227,6 +2227,7 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
         tableRef = ExtendedTableRef()
     )
     [
+<<<<<<< HEAD
         LOOKAHEAD(2)
         tableRef = Pivot(tableRef)
     ]
@@ -2235,6 +2236,8 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
         tableRef = Unpivot(tableRef)
     ]
     [
+=======
+>>>>>>> 7bbe08b5b ([CALCITE-2674] Column name with escape character should not be verified as a function when the column name is same with it (Danny Chan))
         [ <AS> ] alias = SimpleIdentifier()
         [ columnAliasList = ParenthesizedSimpleIdentifierList() ]
         {
@@ -3839,7 +3842,11 @@ List<Object> Expression2(ExprContext exprContext) :
                     list.add(e);
                 }
                 (
+<<<<<<< HEAD
                     LOOKAHEAD(2) <DOT>
+=======
+                    <DOT>
+>>>>>>> 7bbe08b5b ([CALCITE-2674] Column name with escape character should not be verified as a function when the column name is same with it (Danny Chan))
                     p = SimpleIdentifier() {
                         list.add(
                             new SqlParserUtil.ToTreeListItem(

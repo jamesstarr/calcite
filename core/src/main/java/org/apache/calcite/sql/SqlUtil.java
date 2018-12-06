@@ -703,6 +703,39 @@ public abstract class SqlUtil {
       throw Util.needToImplement(query);
     }
   }
+<<<<<<< HEAD
+=======
+
+  /**
+   * If an identifier is a legitimate call to a function which has no
+   * arguments and requires no parentheses (for example "CURRENT_USER"),
+   * returns a call to that function, otherwise returns null.
+   */
+  public static SqlCall makeCall(
+      SqlOperatorTable opTab,
+      SqlIdentifier id) {
+    if (id.names.size() == 1 && !id.isComponentQuoted(0)) {
+      final List<SqlOperator> list = new ArrayList<>();
+      opTab.lookupOperatorOverloads(id, null, SqlSyntax.FUNCTION, list);
+      for (SqlOperator operator : list) {
+        if (operator.getSyntax() == SqlSyntax.FUNCTION_ID) {
+          // Even though this looks like an identifier, it is a
+          // actually a call to a function. Construct a fake
+          // call to this function, so we can use the regular
+          // operator validation.
+          return new SqlBasicCall(
+              operator,
+              SqlNode.EMPTY_ARRAY,
+              id.getParserPosition(),
+              true,
+              null);
+        }
+      }
+    }
+    return null;
+  }
+
+>>>>>>> 7bbe08b5b ([CALCITE-2674] Column name with escape character should not be verified as a function when the column name is same with it (Danny Chan))
   public static String deriveAliasFromOrdinal(int ordinal) {
     // Use a '$' so that queries can't easily reference the
     // generated name.

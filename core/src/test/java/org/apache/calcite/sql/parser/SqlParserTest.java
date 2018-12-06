@@ -19,8 +19,7 @@ package org.apache.calcite.sql.parser;
 import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.avatica.util.Quoting;
 import org.apache.calcite.sql.SqlCall;
-import org.apache.calcite.sql.SqlDialect;
-import org.apache.calcite.sql.SqlExplain;
+>>>>>>> 7bbe08b5b ([CALCITE-2674] Column name with escape character should not be verified as a function when the column name is same with it (Danny Chan))
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
@@ -72,9 +71,11 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
+<<<<<<< HEAD
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+=======
 import javax.annotation.Nonnull;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -2176,8 +2177,8 @@ public class SqlParserTest {
     expr("^`^x`y`z`")
         .fails("(?s).*Encountered.*");
 
-    expr("myMap[field] + myArray[1 + 2]")
-        .ok("(`MYMAP`[`FIELD`] + `MYARRAY`[(1 + 2)])");
+    checkExp("myMap[field] + myArray[1 + 2]",
+        "(`MYMAP`[`FIELD`] + `MYARRAY`[(1 + 2)])");
 
     getTester().checkNode("VALUES a", isQuoted(0, false));
     getTester().checkNode("VALUES \"a\"", isQuoted(0, true));
@@ -2196,8 +2197,8 @@ public class SqlParserTest {
         .fails("(?s).*Encountered.*");
     expr("`x``y``z`").ok("`x``y``z`");
 
-    expr("myMap[field] + myArray[1 + 2]")
-        .ok("(`MYMAP`[`FIELD`] + `MYARRAY`[(1 + 2)])");
+    checkExp("myMap[field] + myArray[1 + 2]",
+        "(`MYMAP`[`FIELD`] + `MYARRAY`[(1 + 2)])");
 
     getTester().checkNode("VALUES a", isQuoted(0, false));
     getTester().checkNode("VALUES `a`", isQuoted(0, true));
