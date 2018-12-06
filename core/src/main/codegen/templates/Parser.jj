@@ -3446,7 +3446,7 @@ void Expression2b(ExprContext exprContext, List<Object> list) :
 {
     SqlNode e;
     SqlOperator op;
-    String p;
+    SqlIdentifier p;
 }
 {
     (
@@ -3460,11 +3460,11 @@ void Expression2b(ExprContext exprContext, List<Object> list) :
     }
     (
         <DOT>
-        p = Identifier() {
+        p = SimpleIdentifier() {
             list.add(
                 new SqlParserUtil.ToTreeListItem(
                     SqlStdOperatorTable.DOT, getPos()));
-            list.add(new SqlIdentifier(p, getPos()));
+            list.add(p);
         }
     )*
 }
