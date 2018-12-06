@@ -683,8 +683,8 @@ public abstract class SqlUtil {
   public static SqlCall makeCall(
       SqlOperatorTable opTab,
       SqlIdentifier id) {
-    if (id.names.size() == 1) {
-      final List<SqlOperator> list = Lists.newArrayList();
+    if (id.names.size() == 1 && !id.isComponentQuoted(0)) {
+      final List<SqlOperator> list = new ArrayList<>();
       opTab.lookupOperatorOverloads(id, null, SqlSyntax.FUNCTION, list);
       for (SqlOperator operator : list) {
         if (operator.getSyntax() == SqlSyntax.FUNCTION_ID) {
