@@ -1772,17 +1772,13 @@ public class RexSimplify {
       boolean removeUpperBound = false;
       boolean removeLowerBound = false;
       Range<C> r = p.left;
+      final RexLiteral trueLiteral = rexBuilder.makeLiteral(true);
       switch (sqlKind) {
       case EQUALS:
         if (!r.contains(v0)) {
           // Range is empty, not satisfiable
           return rexBuilder.makeLiteral(false);
         }
-<<<<<<< HEAD
-<<<<<<< HEAD
-        rangeTerms.put(comparison.ref,
-            Range.singleton(v0), ImmutableList.of(term));
-=======
         rangeTerms.put(comparison.ref.toString(),
 =======
         rangeTerms.put(comparison.ref,
@@ -2136,6 +2132,26 @@ public class RexSimplify {
       return false;
     }
   }
+<<<<<<< HEAD
+=======
+
+  /**
+   * Replaces the last occurrence of one specified value in a list with
+   * another.
+   *
+   * <p>Does not change the size of the list.
+   *
+   * <p>Returns whether the value was found.
+   */
+  private static <E> boolean replaceLast(List<E> list, E oldVal, E newVal) {
+    final int index = list.lastIndexOf(oldVal);
+    if (index < 0) {
+      return false;
+    }
+    list.set(index, newVal);
+    return true;
+  }
+}
 
   /**
    * Replaces the last occurrence of one specified value in a list with

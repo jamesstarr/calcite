@@ -470,7 +470,7 @@ public class RelBuilderTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2730">[CALCITE-2730]
    * RelBuilder incorrectly simplifies a filter with duplicate conjunction to
    * empty</a>. */
-  @Test void testScanFilterDuplicateAnd() {
+  @Test public void testScanFilterDuplicateAnd() {
     // Equivalent SQL:
     //   SELECT *
     //   FROM emp
@@ -502,7 +502,7 @@ public class RelBuilderTest {
     assertThat(root2, hasTree(expected2));
   }
 
-  @Test void testBadFieldName() {
+  @Test public void testBadFieldName() {
     final RelBuilder builder = RelBuilder.create(config().build());
     try {
       RexInputRef ref = builder.scan("EMP").field("deptno");
