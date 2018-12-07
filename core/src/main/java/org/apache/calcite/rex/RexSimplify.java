@@ -941,12 +941,13 @@ public class RexSimplify {
   /**
    * Decides whether it is safe to flatten the given case part into AND/ORs
    */
-  static class SafeRexVisitor implements RexVisitor<Boolean> {
+  enum SafeRexVisitor implements RexVisitor<Boolean> {
+    INSTANCE;
 
-    private Set<SqlKind> safeOps;
+    private final Set<SqlKind> safeOps;
 
     SafeRexVisitor() {
-      safeOps = new HashSet<>();
+      Set<SqlKind> safeOps = EnumSet.noneOf(SqlKind.class);
 
       safeOps.addAll(SqlKind.COMPARISON);
       safeOps.add(SqlKind.PLUS);
@@ -965,6 +966,7 @@ public class RexSimplify {
       safeOps.add(SqlKind.NOT);
       safeOps.add(SqlKind.CASE);
       safeOps.add(SqlKind.LIKE);
+      this.safeOps = Sets.immutableEnumSet(safeOps);
     }
 
     @Override public Boolean visitInputRef(RexInputRef inputRef) {
@@ -972,7 +974,7 @@ public class RexSimplify {
     }
 
     @Override public Boolean visitLocalRef(RexLocalRef localRef) {
-      return true;
+      return false;
     }
 
     @Override public Boolean visitLiteral(RexLiteral literal) {
@@ -980,7 +982,6 @@ public class RexSimplify {
     }
 
     @Override public Boolean visitCall(RexCall call) {
-
       if (!safeOps.contains(call.getKind())) {
         return false;
       }
@@ -1034,12 +1035,12 @@ public class RexSimplify {
   * <pre>case when a &gt; 0 then 1/a else null end</pre>
   */
   static boolean isSafeExpression(RexNode r) {
-    return r.accept(new SafeRexVisitor());
+    return r.accept(SafeRexVisitor.INSTANCE);
   }
 
   private static RexNode simplifyBooleanCase(RexBuilder rexBuilder,
       List<CaseBranch> inputBranches, RexUnknownAs unknownAs, RelDataType branchType) {
-    RexNode result = null;
+    RexNode result;
 
     // prepare all condition/branches for boolean interpretation
     // It's done here make these interpretation changes available to case2or simplifications
