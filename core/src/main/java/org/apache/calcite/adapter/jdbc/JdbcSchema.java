@@ -102,173 +102,24 @@ public class JdbcSchema implements Schema {
   private JdbcSchema(DataSource dataSource, SqlDialect dialect,
       JdbcConvention convention, String catalog, String schema,
       ImmutableMap<String, JdbcTable> tableMap) {
-<<<<<<< HEAD
-=======
-    super();
-    this.dataSource = Objects.requireNonNull(dataSource);
-    this.dialect = Objects.requireNonNull(dialect);
-    this.convention = convention;
-    this.catalog = catalog;
-    this.schema = schema;
-    this.tableMap = tableMap;
-    this.snapshot = tableMap != null;
-  }
-
-  public static JdbcSchema create(
-      SchemaPlus parentSchema,
-      String name,
-      DataSource dataSource,
-      String catalog,
-      String schema) {
-    return create(parentSchema, name, dataSource,
-        SqlDialectFactoryImpl.INSTANCE, catalog, schema);
-  }
-
-  public static JdbcSchema create(
-      SchemaPlus parentSchema,
-      String name,
-      DataSource dataSource,
-      SqlDialectFactory dialectFactory,
-      String catalog,
-      String schema) {
-    final Expression expression =
-        Schemas.subSchemaExpression(parentSchema, name, JdbcSchema.class);
-    final SqlDialect dialect = createDialect(dialectFactory, dataSource);
-    final JdbcConvention convention =
-        JdbcConvention.of(dialect, expression, name);
-    return new JdbcSchema(dataSource, dialect, convention, catalog, schema);
-  }
-
-  /**
-   * Creates a JdbcSchema, taking credentials from a map.
-   *
-   * @param parentSchema Parent schema
-   * @param name Name
-   * @param operand Map of property/value pairs
-   * @return A JdbcSchema
-   */
-  public static JdbcSchema create(
-      SchemaPlus parentSchema,
-      String name,
-      Map<String, Object> operand) {
-    DataSource dataSource;
-    try {
-      final String dataSourceName = (String) operand.get("dataSource");
-      if (dataSourceName != null) {
-        dataSource =
-            AvaticaUtils.instantiatePlugin(DataSource.class, dataSourceName);
+      DatabaseMetaData metaData = connection.getMetaData();
+      String catalog;
+      String schema;
+      if (metaData.getJDBCMajorVersion() > 4
+          || (metaData.getJDBCMajorVersion() == 4 && metaData.getJDBCMinorVersion() >= 1)) {
+        // From JDBC 4.1, catalog and schema can be retrieved from the connection object,
+        // hence try to get it from there if it was not specified by user
+        catalog = Util.first(this.catalog, connection.getCatalog());
+        schema = Util.first(this.schema, connection.getSchema());
       } else {
-        final String jdbcUrl = (String) operand.get("jdbcUrl");
-        final String jdbcDriver = (String) operand.get("jdbcDriver");
-        final String jdbcUser = (String) operand.get("jdbcUser");
-        final String jdbcPassword = (String) operand.get("jdbcPassword");
-        dataSource = dataSource(jdbcUrl, jdbcDriver, jdbcUser, jdbcPassword);
+        catalog = this.catalog;
+        schema = this.schema;
       }
-    } catch (Exception e) {
-      throw new RuntimeException("Error while reading dataSource", e);
-    }
-    String jdbcCatalog = (String) operand.get("jdbcCatalog");
-    String jdbcSchema = (String) operand.get("jdbcSchema");
-    String sqlDialectFactory = (String) operand.get("sqlDialectFactory");
-
-    if (sqlDialectFactory == null || sqlDialectFactory.isEmpty()) {
-      return JdbcSchema.create(
-          parentSchema, name, dataSource, jdbcCatalog, jdbcSchema);
-    } else {
-      SqlDialectFactory factory = AvaticaUtils.instantiatePlugin(
-          SqlDialectFactory.class, sqlDialectFactory);
-      return JdbcSchema.create(
-          parentSchema, name, dataSource, factory, jdbcCatalog, jdbcSchema);
-    }
-  }
-
-  /**
-   * Returns a suitable SQL dialect for the given data source.
-   *
-   * @param dataSource The data source
-   *
-   * @deprecated Use {@link #createDialect(SqlDialectFactory, DataSource)} instead
-   */
-  @Deprecated // to be removed before 2.0
-  public static SqlDialect createDialect(DataSource dataSource) {
-    return createDialect(SqlDialectFactoryImpl.INSTANCE, dataSource);
-  }
-
-  /** Returns a suitable SQL dialect for the given data source. */
-  public static SqlDialect createDialect(SqlDialectFactory dialectFactory,
-      DataSource dataSource) {
-    return JdbcUtils.DialectPool.INSTANCE.get(dialectFactory, dataSource);
-  }
-
-  /** Creates a JDBC data source with the given specification. */
-  public static DataSource dataSource(String url, String driverClassName,
-      String username, String password) {
-    if (url.startsWith("jdbc:hsqldb:")) {
-      // Prevent hsqldb from screwing up java.util.logging.
-      System.setProperty("hsqldb.reconfig_logging", "false");
-    }
-    return JdbcUtils.DataSourcePool.INSTANCE.get(url, driverClassName, username,
-        password);
-  }
-
-  public boolean isMutable() {
-    return false;
-  }
-
-  public Schema snapshot(SchemaVersion version) {
-    return new JdbcSchema(dataSource, dialect, convention, catalog, schema,
-        tableMap);
-  }
-
-  // Used by generated code.
-  public DataSource getDataSource() {
-    return dataSource;
-  }
-
-  public Expression getExpression(SchemaPlus parentSchema, String name) {
-    return Schemas.subSchemaExpression(parentSchema, name, JdbcSchema.class);
-  }
-
-  protected Multimap<String, Function> getFunctions() {
-    // TODO: populate map from JDBC metadata
-    return ImmutableMultimap.of();
-  }
-
-  public final Collection<Function> getFunctions(String name) {
-    return getFunctions().get(name); // never null
-  }
-
-  public final Set<String> getFunctionNames() {
-    return getFunctions().keySet();
-  }
-
-  private ImmutableMap<String, JdbcTable> computeTables() {
-    Connection connection = null;
-    ResultSet resultSet = null;
-    try {
-      connection = dataSource.getConnection();
-      final Pair<String, String> catalogSchema = getCatalogSchema(connection);
-      final String catalog = catalogSchema.left;
-      final String schema = catalogSchema.right;
-      final Iterable<MetaImpl.MetaTable> tableDefs;
-      if (THREAD_METADATA.get() != null) {
-        tableDefs = THREAD_METADATA.get().apply(catalog, schema);
-      } else {
-        final List<MetaImpl.MetaTable> tableDefList = new ArrayList<>();
-        final DatabaseMetaData metaData = connection.getMetaData();
-        resultSet = metaData.getTables(catalog, schema, null, null);
-        while (resultSet.next()) {
-          final String catalogName = resultSet.getString(1);
-          final String schemaName = resultSet.getString(2);
-          final String tableName = resultSet.getString(3);
-          final String tableTypeName = resultSet.getString(4);
-          tableDefList.add(
-              new MetaImpl.MetaTable(catalogName, schemaName, tableName,
-                  tableTypeName));
-        }
-        tableDefs = tableDefList;
-      }
-
+      resultSet = metaData.getTables(
+          catalog,
+          schema,
+          null,
+          null);
       final ImmutableMap.Builder<String, JdbcTable> builder =
           ImmutableMap.builder();
       for (MetaImpl.MetaTable tableDef : tableDefs) {
