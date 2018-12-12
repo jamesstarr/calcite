@@ -4395,12 +4395,12 @@ class RelToSqlConverterTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testMatchRecognizeIn() {
+  @Test public void testMatchRecognizeIn() {
     final String sql = "select *\n"
         + "  from \"product\" match_recognize\n"
         + "  (\n"
-        + "    partition by \"product_class_id\", \"brand_name\"\n"
-        + "    order by \"product_class_id\" asc, \"brand_name\" desc\n"
+        + "    partition by \"product_class_id\", \"brand_name\" \n"
+        + "    order by \"product_class_id\" asc, \"brand_name\" desc \n"
         + "    pattern (strt down+ up+)\n"
         + "    define\n"
         + "      down as down.\"net_weight\" in (0, 1),\n"
@@ -4423,7 +4423,7 @@ class RelToSqlConverterTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testValues() {
+  @Test public void testValues() {
     final String sql = "select \"a\"\n"
         + "from (values (1, 'x'), (2, 'yy')) as t(\"a\", \"b\")";
     final String expectedHsqldb = "SELECT a\n"
