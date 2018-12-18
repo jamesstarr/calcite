@@ -21,19 +21,27 @@ limitations under the License.
     <groupId>org.apache.calcite</groupId>
     <artifactId>calcite-example</artifactId>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <version>1.16.0-SNAPSHOT</version>
 =======
     <version>1.18.0-SNAPSHOT</version>
 >>>>>>> a8362b70b ([maven-release-plugin] prepare for next development iteration)
+=======
+    <version>1.19.0-SNAPSHOT</version>
+>>>>>>> c12c4b5fe ([maven-release-plugin] prepare for next development iteration)
   </parent>
 
   <artifactId>calcite-example-csv</artifactId>
   <packaging>jar</packaging>
 <<<<<<< HEAD
+<<<<<<< HEAD
   <version>1.16.0-SNAPSHOT</version>
 =======
   <version>1.18.0-SNAPSHOT</version>
 >>>>>>> a8362b70b ([maven-release-plugin] prepare for next development iteration)
+=======
+  <version>1.19.0-SNAPSHOT</version>
+>>>>>>> c12c4b5fe ([maven-release-plugin] prepare for next development iteration)
   <name>Calcite Example CSV</name>
   <description>An example Calcite provider that reads CSV files</description>
 

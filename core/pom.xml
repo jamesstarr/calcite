@@ -21,19 +21,27 @@ limitations under the License.
     <groupId>org.apache.calcite</groupId>
     <artifactId>calcite</artifactId>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <version>1.16.0-SNAPSHOT</version>
 =======
     <version>1.18.0-SNAPSHOT</version>
 >>>>>>> a8362b70b ([maven-release-plugin] prepare for next development iteration)
+=======
+    <version>1.19.0-SNAPSHOT</version>
+>>>>>>> c12c4b5fe ([maven-release-plugin] prepare for next development iteration)
   </parent>
 
   <artifactId>calcite-core</artifactId>
   <packaging>jar</packaging>
 <<<<<<< HEAD
+<<<<<<< HEAD
   <version>1.16.0-SNAPSHOT</version>
 =======
   <version>1.18.0-SNAPSHOT</version>
 >>>>>>> a8362b70b ([maven-release-plugin] prepare for next development iteration)
+=======
+  <version>1.19.0-SNAPSHOT</version>
+>>>>>>> c12c4b5fe ([maven-release-plugin] prepare for next development iteration)
   <name>Calcite Core</name>
   <description>Core Calcite APIs and engine.</description>
 
