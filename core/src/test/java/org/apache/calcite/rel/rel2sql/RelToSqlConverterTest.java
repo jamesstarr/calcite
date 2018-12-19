@@ -975,120 +975,55 @@ class RelToSqlConverterTest {
     sql(query).withHive().ok(expected);
   }
 
-  @Test void testPositionFunctionForHive() {
+  @Test public void testPositionFunctionForHive() {
     final String query = "select position('A' IN 'ABC') from \"product\"";
     final String expected = "SELECT INSTR('ABC', 'A')\n"
         + "FROM foodmart.product";
     sql(query).withHive().ok(expected);
   }
 
-  @Test void testPositionFunctionForBigQuery() {
+  @Test public void testPositionFunctionForBigQuery() {
     final String query = "select position('A' IN 'ABC') from \"product\"";
     final String expected = "SELECT STRPOS('ABC', 'A')\n"
         + "FROM foodmart.product";
-    sql(query).withBigQuery().ok(expected);
+    sql(query).withBigquery().ok(expected);
   }
 
-  /** Note: This test came with CALCITE-3147. It is commented out
-   * because CALCITE-3147 turns nonascii characters into unicode when query is parsed,
-   * which might not be compatible to other JDBCs in ArpRelToSqlConverter.
-   *
-   * Tests that we escape single-quotes in character literals using back-slash
-   * in BigQuery. The norm is to escape single-quotes with single-quotes. */
-//  @Test public void testCharLiteralForBigQuery() {
-//    final String query = "select 'that''s all folks!' from \"product\"";
-//    final String expectedPostgresql = "SELECT 'that''s all folks!'\n"
-//        + "FROM \"foodmart\".\"product\"";
-//    final String expectedBigQuery = "SELECT 'that\\'s all folks!'\n"
-//        + "FROM foodmart.product";
-//    sql(query)
-//        .withPostgresql().ok(expectedPostgresql)
-//        .withBigQuery().ok(expectedBigQuery);
-//  }
-
-  @Test void testIdentifier() {
-    // Note that IGNORE is reserved in BigQuery but not in standard SQL
-    final String query = "select *\n"
-        + "from (\n"
-        + "  select 1 as \"one\", 2 as \"tWo\", 3 as \"THREE\",\n"
-        + "    4 as \"fo$ur\", 5 as \"ignore\"\n"
-        + "  from \"foodmart\".\"days\") as \"my$table\"\n"
-        + "where \"one\" < \"tWo\" and \"THREE\" < \"fo$ur\"";
-    final String expectedBigQuery = "SELECT *\n"
-        + "FROM (SELECT 1 AS one, 2 AS tWo, 3 AS THREE,"
-        + " 4 AS `fo$ur`, 5 AS `ignore`\n"
-        + "FROM foodmart.days) AS t\n"
-        + "WHERE one < tWo AND THREE < `fo$ur`";
-    final String expectedMysql =  "SELECT *\n"
-        + "FROM (SELECT 1 AS `one`, 2 AS `tWo`, 3 AS `THREE`,"
-        + " 4 AS `fo$ur`, 5 AS `ignore`\n"
-        + "FROM `foodmart`.`days`) AS `t`\n"
-        + "WHERE `one` < `tWo` AND `THREE` < `fo$ur`";
-    final String expectedPostgresql = "SELECT *\n"
-        + "FROM (SELECT 1 AS \"one\", 2 AS \"tWo\", 3 AS \"THREE\","
-        + " 4 AS \"fo$ur\", 5 AS \"ignore\"\n"
-        + "FROM \"foodmart\".\"days\") AS \"t\"\n"
-        + "WHERE \"one\" < \"tWo\" AND \"THREE\" < \"fo$ur\"";
-    final String expectedOracle = expectedPostgresql.replace(" AS ", " ");
-    sql(query)
-        .withBigQuery().ok(expectedBigQuery)
-        .withMysql().ok(expectedMysql)
-        .withOracle().ok(expectedOracle)
-        .withPostgresql().ok(expectedPostgresql);
-  }
-
-  @Test void testModFunctionForHive() {
+  @Test public void testModFunctionForHive() {
     final String query = "select mod(11,3) from \"product\"";
     final String expected = "SELECT 11 % 3\n"
         + "FROM foodmart.product";
     sql(query).withHive().ok(expected);
   }
 
-  @Test void testUnionOperatorForBigQuery() {
+  @Test public void testUnionOperatorForBigQuery() {
     final String query = "select mod(11,3) from \"product\"\n"
         + "UNION select 1 from \"product\"";
     final String expected = "SELECT MOD(11, 3)\n"
         + "FROM foodmart.product\n"
-        + "UNION DISTINCT\n"
-        + "SELECT 1\n"
-        + "FROM foodmart.product";
-    sql(query).withBigQuery().ok(expected);
+        + "UNION DISTINCT\nSELECT 1\nFROM foodmart.product";
+    sql(query).withBigquery().ok(expected);
   }
 
-  @Test void testUnionAllOperatorForBigQuery() {
-    final String query = "select mod(11,3) from \"product\"\n"
-        + "UNION ALL select 1 from \"product\"";
-    final String expected = "SELECT MOD(11, 3)\n"
-        + "FROM foodmart.product\n"
-        + "UNION ALL\n"
-        + "SELECT 1\n"
-        + "FROM foodmart.product";
-    sql(query).withBigQuery().ok(expected);
-  }
-
-  @Test void testIntersectOperatorForBigQuery() {
+  @Test public void testIntersectOperatorForBigQuery() {
     final String query = "select mod(11,3) from \"product\"\n"
         + "INTERSECT select 1 from \"product\"";
     final String expected = "SELECT MOD(11, 3)\n"
         + "FROM foodmart.product\n"
-        + "INTERSECT DISTINCT\n"
-        + "SELECT 1\n"
-        + "FROM foodmart.product";
-    sql(query).withBigQuery().ok(expected);
+        + "INTERSECT DISTINCT\nSELECT 1\nFROM foodmart.product";
+    sql(query).withBigquery().ok(expected);
   }
 
-  @Test void testExceptOperatorForBigQuery() {
+  @Test public void testExceptOperatorForBigQuery() {
     final String query = "select mod(11,3) from \"product\"\n"
         + "EXCEPT select 1 from \"product\"";
     final String expected = "SELECT MOD(11, 3)\n"
         + "FROM foodmart.product\n"
-        + "EXCEPT DISTINCT\n"
-        + "SELECT 1\n"
-        + "FROM foodmart.product";
-    sql(query).withBigQuery().ok(expected);
+        + "EXCEPT DISTINCT\nSELECT 1\nFROM foodmart.product";
+    sql(query).withBigquery().ok(expected);
   }
 
-  @Test void testSelectOrderByDescNullsFirst() {
+  @Test public void testHiveSelectQueryWithOrderByDescAndNullsFirstShouldBeEmulated() {
     final String query = "select \"product_id\" from \"product\"\n"
         + "order by \"product_id\" desc nulls first";
     // Hive and MSSQL do not support NULLS FIRST, so need to emulate
@@ -4664,6 +4599,10 @@ class RelToSqlConverterTest {
 
     Sql withVertica() {
       return dialect(SqlDialect.DatabaseProduct.VERTICA.getDialect());
+    }
+
+    Sql withBigquery() {
+      return dialect(SqlDialect.DatabaseProduct.BIG_QUERY.getDialect());
     }
 
     Sql withPostgresqlModifiedTypeSystem() {

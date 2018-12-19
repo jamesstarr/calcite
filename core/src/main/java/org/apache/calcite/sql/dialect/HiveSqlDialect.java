@@ -17,20 +17,14 @@
 package org.apache.calcite.sql.dialect;
 
 import org.apache.calcite.config.NullCollation;
-import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.sql.SqlAlienSystemTypeNameSpec;
 import org.apache.calcite.sql.SqlCall;
-import org.apache.calcite.sql.SqlDataTypeSpec;
 import org.apache.calcite.sql.SqlDialect;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSyntax;
 import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
-import org.apache.calcite.sql.fun.SqlSubstringFunction;
-import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.type.BasicSqlType;
-import org.apache.calcite.util.RelToSqlConverterUtil;
+>>>>>>> d270fc28f ([CALCITE-2623] Add specific translation for POSITION, MOD and set operators in BigQuery and Hive SQL dialects)
 
 /**
  * A <code>SqlDialect</code> implementation for the Apache Hive database.
@@ -72,8 +66,12 @@ public class HiveSqlDialect extends SqlDialect {
     return null;
   }
 
+<<<<<<< HEAD
   @Override public void unparseCall(final SqlWriter writer, final SqlCall call,
       final int leftPrec, final int rightPrec) {
+=======
+  @Override public void unparseCall(final SqlWriter writer, final SqlCall call, final int leftPrec,
+      final int rightPrec) {
     switch (call.getKind()) {
     case POSITION:
       final SqlWriter.Frame frame = writer.startFunCall("INSTR");
@@ -90,6 +88,7 @@ public class HiveSqlDialect extends SqlDialect {
       SqlOperator op = SqlStdOperatorTable.PERCENT_REMAINDER;
       SqlSyntax.BINARY.unparse(writer, op, call, leftPrec, rightPrec);
       break;
+<<<<<<< HEAD
     case TRIM:
       RelToSqlConverterUtil.unparseHiveTrim(writer, call, leftPrec, rightPrec);
       break;
@@ -108,6 +107,8 @@ public class HiveSqlDialect extends SqlDialect {
         super.unparseCall(writer, call, leftPrec, rightPrec);
       }
       break;
+=======
+>>>>>>> d270fc28f ([CALCITE-2623] Add specific translation for POSITION, MOD and set operators in BigQuery and Hive SQL dialects)
     default:
       super.unparseCall(writer, call, leftPrec, rightPrec);
     }

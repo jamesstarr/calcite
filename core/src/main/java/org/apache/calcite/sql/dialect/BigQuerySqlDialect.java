@@ -19,35 +19,14 @@ package org.apache.calcite.sql.dialect;
 import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.avatica.util.TimeUnit;
 import org.apache.calcite.config.NullCollation;
-import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeSystem;
-import org.apache.calcite.rex.RexCall;
-import org.apache.calcite.rex.RexUtil;
-import org.apache.calcite.sql.SqlAlienSystemTypeNameSpec;
 import org.apache.calcite.sql.SqlCall;
-import org.apache.calcite.sql.SqlDataTypeSpec;
 import org.apache.calcite.sql.SqlDialect;
-import org.apache.calcite.sql.SqlIntervalLiteral;
-import org.apache.calcite.sql.SqlIntervalQualifier;
 import org.apache.calcite.sql.SqlKind;
-import org.apache.calcite.sql.SqlLiteral;
-import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSetOperator;
 import org.apache.calcite.sql.SqlSyntax;
 import org.apache.calcite.sql.SqlWriter;
-import org.apache.calcite.sql.fun.SqlTrimFunction;
-import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.type.BasicSqlType;
-import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.calcite.sql.type.SqlTypeUtil;
-
-import com.google.common.collect.ImmutableList;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.regex.Pattern;
+>>>>>>> d270fc28f ([CALCITE-2623] Add specific translation for POSITION, MOD and set operators in BigQuery and Hive SQL dialects)
 
 /**
  * A <code>SqlDialect</code> implementation for Google BigQuery's "Standard SQL"
@@ -93,6 +72,56 @@ public class BigQuerySqlDialect extends SqlDialect {
   public BigQuerySqlDialect(SqlDialect.Context context) {
     super(context);
   }
+<<<<<<< HEAD
+=======
+
+  @Override public void unparseCall(final SqlWriter writer, final SqlCall call, final int leftPrec,
+      final int rightPrec) {
+    switch (call.getKind()) {
+    case POSITION:
+      final SqlWriter.Frame frame = writer.startFunCall("STRPOS");
+      writer.sep(",");
+      call.operand(1).unparse(writer, leftPrec, rightPrec);
+      writer.sep(",");
+      call.operand(0).unparse(writer, leftPrec, rightPrec);
+      if (3 == call.operandCount()) {
+        throw new RuntimeException("3rd operand Not Supported for Function STRPOS in Big Query");
+      }
+      writer.endFunCall(frame);
+      break;
+    case UNION:
+      if (!((SqlSetOperator) call.getOperator()).isAll()) {
+        SqlSyntax.BINARY.unparse(writer, UNION_DISTINCT, call, leftPrec, rightPrec);
+      }
+      break;
+    case EXCEPT:
+      if (!((SqlSetOperator) call.getOperator()).isAll()) {
+        SqlSyntax.BINARY.unparse(writer, EXCEPT_DISTINCT, call, leftPrec, rightPrec);
+      }
+      break;
+    case INTERSECT:
+      if (!((SqlSetOperator) call.getOperator()).isAll()) {
+        SqlSyntax.BINARY.unparse(writer, INTERSECT_DISTINCT, call, leftPrec, rightPrec);
+      }
+      break;
+    default:
+      super.unparseCall(writer, call, leftPrec, rightPrec);
+    }
+  }
+
+  /**
+   * List of BigQuery Specific Operators needed to form Syntactically Correct SQL.
+   */
+  private static final SqlOperator UNION_DISTINCT = new SqlSetOperator(
+      "UNION DISTINCT", SqlKind.UNION, 14, false);
+
+  private static final SqlSetOperator EXCEPT_DISTINCT =
+      new SqlSetOperator("EXCEPT DISTINCT", SqlKind.EXCEPT, 14, false);
+
+  private static final SqlSetOperator INTERSECT_DISTINCT =
+      new SqlSetOperator("INTERSECT DISTINCT", SqlKind.INTERSECT, 18, false);
+
+}
 
   @Override protected boolean identifierNeedsQuote(String val) {
     return !IDENTIFIER_REGEX.matcher(val).matches()
