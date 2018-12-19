@@ -845,7 +845,7 @@ public abstract class SqlImplementor {
           orderList, isRows, lowerBound, upperBound, allowPartial, POS);
 
       final List<SqlNode> nodeList = toSql(program, rexOver.getOperands());
-      return createOverCall(rexOver.getAggOperator(), nodeList, sqlWindow);
+      return createOverCall(sqlAggregateFunction, nodeList, sqlWindow);
     }
 
     private SqlCall createOverCall(SqlAggFunction op, List<SqlNode> operands,
