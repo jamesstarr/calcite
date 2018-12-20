@@ -89,14 +89,6 @@ import org.apache.calcite.rel.rules.UnionMergeRule;
 import org.apache.calcite.rel.rules.ValuesReduceRule;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-<<<<<<< HEAD
-import org.apache.calcite.rex.RexBuilder;
-import org.apache.calcite.rex.RexCall;
-import org.apache.calcite.rex.RexExecutor;
-import org.apache.calcite.rex.RexExecutorImpl;
-import org.apache.calcite.rex.RexExecutorTest;
-import org.apache.calcite.rex.RexInputRef;
-=======
 import org.apache.calcite.rex.RexExecutor;
 import org.apache.calcite.rex.RexExecutorImpl;
 import org.apache.calcite.rex.RexExecutorTest;
@@ -4818,7 +4810,6 @@ class RelOptRulesTest extends RelOptTestBase {
   }
 
 =======
->>>>>>> e5770204d (DX-11490: Fix wrong constant reduction over windows function)
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-750">[CALCITE-750]
    * Allow windowed aggregate on top of regular aggregate</a>. */

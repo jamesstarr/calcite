@@ -499,7 +499,10 @@ public enum BuiltInMethod {
   TIME_ZONE(SqlFunctions.class, "timeZone", DataContext.class),
   USER(SqlFunctions.class, "user", DataContext.class),
   SYSTEM_USER(SqlFunctions.class, "systemUser", DataContext.class),
+<<<<<<< HEAD
   LOCALE(SqlFunctions.class, "locale", DataContext.class),
+=======
+>>>>>>> 7fa80a6fb (CALCITE-2742: Move SYSTEM_USER, USER to DataContext.)
   BOOLEAN_TO_STRING(SqlFunctions.class, "toString", boolean.class),
   JDBC_ARRAY_TO_LIST(SqlFunctions.class, "arrayToList", java.sql.Array.class),
   OBJECT_TO_STRING(Object.class, "toString"),

@@ -113,15 +113,14 @@ public interface DataContext {
      * time zone. */
     TIME_ZONE("timeZone", TimeZone.class),
 
-    /** The query user.
-     *
-     * <p>Default value is "sa". */
+    /**
+     * The query user.
+     */
     USER("user", String.class),
 
-    /** The system user.
-     *
-     * <p>Default value is "user.name" from
-     * {@link System#getProperty(String)}. */
+    /**
+     * The system user.
+     */
     SYSTEM_USER("systemUser", String.class);
 
     public final String camelName;

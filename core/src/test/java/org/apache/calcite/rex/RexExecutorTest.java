@@ -230,8 +230,88 @@ public class RexExecutorTest {
               ImmutableList.of(rexBuilder.makeCall(operator)), output);
           return output.get(0);
         });
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+  }
+
+  @Test public void testUserFromContext() throws Exception {
+    testContextLiteral(SqlStdOperatorTable.USER,
+        DataContext.Variable.USER, "happyCalciteUser");
+  }
+
+  @Test public void testSystemUserFromContext() throws Exception {
+    testContextLiteral(SqlStdOperatorTable.SYSTEM_USER,
+        DataContext.Variable.SYSTEM_USER, "");
+  }
+
+  @Test public void testTimestampFromContext() throws Exception {
+    // current timestamp currently rounds to the nearest second (?)
+    long val = System.currentTimeMillis() / 1000 * 1000;
+    testContextLiteral(SqlStdOperatorTable.CURRENT_TIMESTAMP,
+        DataContext.Variable.CURRENT_TIMESTAMP, val);
+  }
+
+
+  /**
+   * Ensure that for a given context operator, the correct value is retrieved from the DataContext.
+   * @param operator The Operator to check
+   * @param variable The DataContext variable this operator should be bound to.
+   * @param value The expected value to retrieve.
+   */
+  private void testContextLiteral(
+      final SqlOperator operator,
+      final DataContext.Variable variable,
+      final Object value) {
+    Frameworks.withPrepare(
+        new Frameworks.PrepareAction<Void>() {
+          public Void apply(
+              final RelOptCluster cluster,
+              final RelOptSchema relOptSchema,
+              final SchemaPlus rootSchema,
+              final CalciteServerStatement statement) {
+            final RexBuilder rexBuilder = cluster.getRexBuilder();
+
+            final RexExecutorImpl executor = new RexExecutorImpl(
+                new SingleValueDataContext(variable.camelName, value));
+            try {
+              checkConstant(value, new Function<RexBuilder, RexNode>() {
+                public RexNode apply(RexBuilder builder) {
+                  List<RexNode> output = new ArrayList<>();
+                  executor.reduce(rexBuilder,
+                      ImmutableList.of(rexBuilder.makeCall(operator)), output);
+                  return output.get(0);
+                }
+              });
+            } catch (Exception e) {
+              throw new RuntimeException(e);
+            }
+            return null;
+          }
+        });
+  }
+
+  @Test public void testSubstring() throws Exception {
+    check(new Action() {
+      public void check(RexBuilder rexBuilder, RexExecutorImpl executor) {
+        final List<RexNode> reducedValues = new ArrayList<>();
+        final RexLiteral hello =
+            rexBuilder.makeCharLiteral(
+                new NlsString("Hello world!", null, null));
+        final RexNode plus =
+            rexBuilder.makeCall(SqlStdOperatorTable.PLUS,
+                rexBuilder.makeExactLiteral(BigDecimal.ONE),
+                rexBuilder.makeExactLiteral(BigDecimal.ONE));
+        RexLiteral four = rexBuilder.makeExactLiteral(BigDecimal.valueOf(4));
+        final RexNode substring =
+            rexBuilder.makeCall(SqlStdOperatorTable.SUBSTRING,
+                hello, plus, four);
+        executor.reduce(rexBuilder, ImmutableList.of(substring, plus),
+            reducedValues);
+        assertThat(reducedValues.size(), equalTo(2));
+        assertThat(reducedValues.get(0), instanceOf(RexLiteral.class));
+        assertThat(((RexLiteral) reducedValues.get(0)).getValue2(),
+            equalTo((Object) "ello")); // substring('Hello world!, 2, 4)
+        assertThat(reducedValues.get(1), instanceOf(RexLiteral.class));
+        assertThat(((RexLiteral) reducedValues.get(1)).getValue2(),
+            equalTo((Object) 2L));
       }
       return null;
     });
@@ -402,9 +482,11 @@ public class RexExecutorTest {
    * ArrayList-based DataContext to check Rex execution.
    */
   public static class TestDataContext extends SingleValueDataContext {
+
     private TestDataContext(Object[] values) {
       super("inputRecord", values);
     }
+
   }
 
   /**
