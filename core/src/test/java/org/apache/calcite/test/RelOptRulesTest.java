@@ -17,8 +17,7 @@
 package org.apache.calcite.test;
 
 import org.apache.calcite.DataContext;
-import org.apache.calcite.adapter.enumerable.EnumerableConvention;
-import org.apache.calcite.adapter.enumerable.EnumerableRules;
+>>>>>>> 74ec9dc46 (CALCITE-2736: Make reduce expressions rule configurable)
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.plan.Context;
 import org.apache.calcite.plan.Contexts;
@@ -90,12 +89,17 @@ import org.apache.calcite.rel.rules.UnionMergeRule;
 import org.apache.calcite.rel.rules.ValuesReduceRule;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
+<<<<<<< HEAD
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexExecutor;
 import org.apache.calcite.rex.RexExecutorImpl;
 import org.apache.calcite.rex.RexExecutorTest;
 import org.apache.calcite.rex.RexInputRef;
+=======
+import org.apache.calcite.rex.RexExecutor;
+import org.apache.calcite.rex.RexExecutorImpl;
+import org.apache.calcite.rex.RexExecutorTest;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexOver;
 import org.apache.calcite.runtime.Hook;
@@ -144,6 +148,7 @@ import java.util.Properties;
 import java.util.function.Predicate;
 
 import com.google.common.base.Function;
+import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -396,7 +401,49 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).with(hepPlanner).checkUnchanged();
   }
 
-  @Test void testProjectToWindowRuleForMultipleWindows() {
+  @Test public void testReduceDynamic() {
+    testDynamic(true).get();
+  }
+
+  @Test public void testNoReduceDynamic() {
+    testDynamic(false).get();
+  }
+
+  /**
+   * Test reduction or not of a dynamic function.
+   *
+   * @param allowReduce Whether to allow dynamic functions to be reduced.
+   * @return The supplier to be executed in the context of the original test to ensure correct
+   *         test name mapping.
+   */
+  private Supplier<Void> testDynamic(final boolean allowReduce) {
+    HepProgramBuilder builder = new HepProgramBuilder();
+
+    RelOptRule rule = new ReduceExpressionsRule.ProjectReduceExpressionsRule(
+        LogicalProject.class,
+        ReduceExpressionsRule.DEFAULT_OPTIONS.treatDynamicCallsAsNonConstant(!allowReduce),
+        RelFactories.LOGICAL_BUILDER);
+    builder.addRuleInstance(rule);
+    final HepPlanner hepPlanner = new HepPlanner(builder.build());
+    final DataContext context = new RexExecutorTest.SingleValueDataContext(
+        DataContext.Variable.USER.camelName, "happyCalciteUser");
+    final RexExecutor executor = new RexExecutorImpl(context);
+    hepPlanner.setExecutor(executor);
+
+    final String sql = "select USER from emp";
+
+    // return a supplier to be executed in the context of the original test method.
+    return new Supplier<Void>() {
+
+      @Override public Void get() {
+        checkPlanning(tester.withExecutor(executor), null, hepPlanner, sql, !allowReduce);
+        return null;
+      }
+
+    };
+  }
+
+  @Test public void testProjectToWindowRuleForMultipleWindows() {
     HepProgram preProgram = new HepProgramBuilder()
         .build();
 
