@@ -6876,6 +6876,28 @@ SemiJoin(condition=[=($0, $2)], joinType=[inner])
 ]]>
         </Resource>
     </TestCase>
+    <TestCase name="testReduceDynamic">
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(USER=['happyCalciteUser'])
+  LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(USER=[USER])
+  LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testNoReduceDynamic">
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(USER=[USER])
+  LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
     <TestCase name="testSemiJoinRuleFull">
         <Resource name="sql">
             <![CDATA[select dept.* from dept full join (
