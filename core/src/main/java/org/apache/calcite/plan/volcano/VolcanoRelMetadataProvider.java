@@ -17,6 +17,7 @@
 package org.apache.calcite.plan.volcano;
 
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.metadata.ChainedRelMetadataProvider;
 import org.apache.calcite.rel.metadata.Metadata;
 import org.apache.calcite.rel.metadata.MetadataDef;
 import org.apache.calcite.rel.metadata.MetadataHandler;
@@ -28,6 +29,9 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * VolcanoRelMetadataProvider implements the {@link RelMetadataProvider}
@@ -94,6 +98,7 @@ public class VolcanoRelMetadataProvider implements RelMetadataProvider {
         }
 
         subset.set.inMetadataQuery = true;
+        List<Metadata> metaDataList = new ArrayList<>();
         try {
           for (RelNode relCandidate : subset.set.rels) {
             final UnboundMetadata<M> function =
@@ -101,12 +106,19 @@ public class VolcanoRelMetadataProvider implements RelMetadataProvider {
             if (function != null) {
               final M result = function.bind(relCandidate, mq);
               if (result != null) {
-                return result;
+                metaDataList.add(result);
               }
             }
           }
         } finally {
           subset.set.inMetadataQuery = false;
+        }
+
+        if (metaDataList.size() > 0) {
+          return metadataClass.cast(
+                  Proxy.newProxyInstance(metadataClass.getClassLoader(),
+                          new Class[]{metadataClass},
+                          ChainedRelMetadataProvider.chainedInvocationHandlerOf(metaDataList)));
         }
 
         // Give up.
