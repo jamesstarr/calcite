@@ -36,6 +36,8 @@ import org.apache.calcite.util.NumberUtil;
 import org.apache.calcite.util.TimeWithTimeZoneString;
 import org.apache.calcite.util.TimestampWithTimeZoneString;
 
+import com.google.common.base.Optional;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -111,7 +113,7 @@ public class SqlFunctions {
   private static final ThreadLocal<Map<String, AtomicLong>> THREAD_SEQUENCES =
       new ThreadLocal<Map<String, AtomicLong>>() {
         @Override protected Map<String, AtomicLong> initialValue() {
-          return new HashMap<String, AtomicLong>();
+          return new HashMap<>();
         }
       };
 
@@ -1967,6 +1969,20 @@ public class SqlFunctions {
   @NonDeterministic
   public static TimeZone timeZone(DataContext root) {
     return (TimeZone) DataContext.Variable.TIME_ZONE.get(root);
+  }
+
+  /** SQL {@code USER} function. */
+  @NonDeterministic
+  public static String user(DataContext root) {
+    return Optional.fromNullable((String) DataContext.Variable.USER.get(root))
+        .or("sa");
+  }
+
+  /** SQL {@code SYSTEM_USER} function. */
+  @NonDeterministic
+  public static String systemUser(DataContext root) {
+    return Optional.fromNullable((String) DataContext.Variable.SYSTEM_USER.get(root))
+        .or(System.getProperty("user.name"));
   }
 
   /** SQL {@code TRANSLATE(string, search_chars, replacement_chars)}

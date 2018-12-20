@@ -31,6 +31,7 @@ import org.apache.calcite.rel.logical.LogicalCorrelate;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
+import org.apache.calcite.rex.RexExecutor;
 import org.apache.calcite.sql.SqlExplainLevel;
 import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
 import org.apache.calcite.sql.type.SqlTypeName;
@@ -2854,19 +2855,19 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
         boolean enableLateDecorrelate,
         Function<RelDataTypeFactory, CatalogReader> catalogReaderFactory,
         Function<RelOptCluster, RelOptCluster> clusterFactory, Config config,
-        SqlConformance conformance, Context context) {
+        SqlConformance conformance, Context context, RexExecutor executor) {
       super(diffRepos, enableDecorrelate, enableTrim, enableExpand, enableLateDecorrelate,
-          catalogReaderFactory, clusterFactory, config, conformance, context);
+          catalogReaderFactory, clusterFactory, config, conformance, context, executor);
     }
 
     @Override protected TesterImpl copy(DiffRepository diffRepos, boolean enableDecorrelate,
         boolean enableTrim, boolean enableExpand, boolean enableLateDecorrelate,
         Function<RelDataTypeFactory, CatalogReader> catalogReaderFactory,
         Function<RelOptCluster, RelOptCluster> clusterFactory, Config config,
-        SqlConformance conformance, Context context) {
+        SqlConformance conformance, Context context, RexExecutor executor) {
       return new TesterImplWithNonStandardTypeFactory(diffRepos, enableDecorrelate, enableTrim,
           enableExpand, enableLateDecorrelate,
-          catalogReaderFactory, clusterFactory, config, conformance, context);
+          catalogReaderFactory, clusterFactory, config, conformance, context, executor);
     }
 
     @Override protected RelDataTypeFactory createTypeFactory() {
