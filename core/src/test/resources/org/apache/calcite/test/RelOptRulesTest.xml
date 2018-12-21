@@ -5545,11 +5545,17 @@ LogicalProject(ENAME=[$1])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testManyFiltersOnTopOfMultiJoinShouldCollapse">
         <Resource name="sql">
             <![CDATA[select * from (select * from emp e1 left outer join dept d
 on e1.deptno = d.deptno
 where d.deptno > 3) where ename LIKE 'bar']]>
+=======
+    <TestCase name="testManyFiltersOnTopOfMultiJoinShouldCollapse">
+        <Resource name="sql">
+            <![CDATA[select * from (select * from emp e1 left outer join dept d on e1.deptno = d.deptno where d.deptno > 3) where ename LIKE 'bar']]>
+>>>>>>> 9712e4907 ([CALCITE-2437] FilterMultiJoinMerge doesn't combine filters)
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -5571,8 +5577,11 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 >>>>>>> 54ced6cf2 (DX-4115:  Allow MultiJoin to chain multiple FULL joins)
+=======
+>>>>>>> 9712e4907 ([CALCITE-2437] FilterMultiJoinMerge doesn't combine filters)
     <TestCase name="testRemoveSemiJoinWithFilter">
         <Resource name="sql">
             <![CDATA[select e.ename from emp e, dept d

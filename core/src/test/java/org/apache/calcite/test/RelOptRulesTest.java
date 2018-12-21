@@ -74,25 +74,11 @@ import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.DateRangeRules;
 import org.apache.calcite.rel.rules.ExchangeRemoveConstantKeysRule;
 import org.apache.calcite.rel.rules.FilterJoinRule;
-import org.apache.calcite.rel.rules.FilterMultiJoinMergeRule;
-import org.apache.calcite.rel.rules.FilterProjectTransposeRule;
-import org.apache.calcite.rel.rules.FilterSetOpTransposeRule;
-import org.apache.calcite.rel.rules.FilterToCalcRule;
-import org.apache.calcite.rel.rules.IntersectToDistinctRule;
-import org.apache.calcite.rel.rules.JoinAddRedundantSemiJoinRule;
-import org.apache.calcite.rel.rules.JoinCommuteRule;
-import org.apache.calcite.rel.rules.JoinExtractFilterRule;
-import org.apache.calcite.rel.rules.JoinProjectTransposeRule;
-import org.apache.calcite.rel.rules.JoinPushExpressionsRule;
-import org.apache.calcite.rel.rules.JoinPushTransitivePredicatesRule;
-import org.apache.calcite.rel.rules.JoinToMultiJoinRule;
-import org.apache.calcite.rel.rules.JoinUnionTransposeRule;
-import org.apache.calcite.rel.rules.LoptOptimizeJoinRule;
-import org.apache.calcite.rel.rules.ProjectFilterTransposeRule;
-import org.apache.calcite.rel.rules.ProjectJoinJoinRemoveRule;
-import org.apache.calcite.rel.rules.ProjectJoinRemoveRule;
-import org.apache.calcite.rel.rules.ProjectJoinTransposeRule;
+import org.apache.calcite.rel.rules.ProjectMergeRule;
 import org.apache.calcite.rel.rules.ProjectMultiJoinMergeRule;
+import org.apache.calcite.rel.rules.ProjectRemoveRule;
+import org.apache.calcite.rel.rules.ProjectSetOpTransposeRule;
+import org.apache.calcite.rel.rules.ProjectToCalcRule;
 import org.apache.calcite.rel.rules.ProjectToWindowRule;
 import org.apache.calcite.rel.rules.PruneEmptyRules;
 import org.apache.calcite.rel.rules.PushProjector;
@@ -2532,6 +2518,17 @@ class RelOptRulesTest extends RelOptTestBase {
     checkPlanning(tester, preProgram, new HepPlanner(program),
         "select e1.ename from emp e1 full outer join dept d on e1.deptno = d.deptno "
             + "inner join emp e2 on d.deptno = e2.deptno");
+  }
+
+  @Test public void testManyFiltersOnTopOfMultiJoinShouldCollapse() throws Exception {
+    HepProgram program = new HepProgramBuilder().addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(JoinToMultiJoinRule.INSTANCE)
+        .addRuleCollection(
+            Arrays.asList(FilterMultiJoinMergeRule.INSTANCE, ProjectMultiJoinMergeRule.INSTANCE))
+        .build();
+    checkPlanning(program,
+        "select * from (select * from emp e1 left outer join dept d on e1.deptno = d.deptno "
+            + "where d.deptno > 3) where ename LIKE 'bar'");
   }
 
   @Test public void testReduceConstants() throws Exception {
