@@ -78,6 +78,9 @@ Release          | Date       | Commit   | Download
 {% endfor %}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3a1b69782 (Site: News item for release 1.18)
 To download a source distribution for a particular release, click on
 the *tar* link (for older releases, *zip* format is also available).
 
@@ -114,14 +117,20 @@ For security, hash and signature files are always hosted at
 # Verify the integrity of the files
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3a1b69782 (Site: News item for release 1.18)
 You must verify the integrity of the downloaded file using the PGP
 signature (.asc file) or a hash (.sha256; .md5 for older releases).
 For more information why this must be done, please read
 [Verifying Apache Software Foundation Releases](https://www.apache.org/info/verification.html).
+<<<<<<< HEAD
 =======
 You must verify the integrity of the downloaded file using the PGP signature (.asc file) or a hash (.sha256, .md5 for older
 releases). For more information why this must be done, please read [Verifying Apache Software Foundation Releases](https://www.apache.org/info/verification.html).
 >>>>>>> cb15bf503 ([CALCITE-2574] Update download page to include instructions for verifying)
+=======
+>>>>>>> 3a1b69782 (Site: News item for release 1.18)
 
 To verify the signature using GPG or PGP, please do the following:
 
