@@ -241,14 +241,6 @@ public class RelJson {
             Util.enumVal(SqlTypeName.class, (String) map.get("type"));
         final Integer precision = (Integer) map.get("precision");
         final Integer scale = (Integer) map.get("scale");
-<<<<<<< HEAD
-        if (SqlTypeName.INTERVAL_TYPES.contains(sqlTypeName)) {
-          TimeUnit startUnit = sqlTypeName.getStartUnit();
-          TimeUnit endUnit = sqlTypeName.getEndUnit();
-          return typeFactory.createSqlIntervalType(
-              new SqlIntervalQualifier(startUnit, endUnit, SqlParserPos.ZERO));
-        }
-=======
         final RelDataType type;
         if (precision == null) {
           type = typeFactory.createSqlType(sqlTypeName);
@@ -572,7 +564,6 @@ public class RelJson {
           // we just interpret the literal
           return toRex(relInput, literal);
         }
->>>>>>> 6102b7372 ([CALCITE-2858] Improvements in JSON writer and reader for plans)
         return rexBuilder.makeLiteral(literal, type, false);
       }
       throw new UnsupportedOperationException("cannot convert to rex " + o);

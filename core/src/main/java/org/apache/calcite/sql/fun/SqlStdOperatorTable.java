@@ -49,7 +49,7 @@ import org.apache.calcite.sql.SqlSessionTableFunction;
 import org.apache.calcite.sql.SqlSetOperator;
 import org.apache.calcite.sql.SqlSpecialOperator;
 import org.apache.calcite.sql.SqlSyntax;
-import org.apache.calcite.sql.SqlTumbleTableFunction;
+>>>>>>> 28b8ea1f9 ([CALCITE-2750] PI operator incorrectly identified as dynamic function)
 import org.apache.calcite.sql.SqlUnnestOperator;
 import org.apache.calcite.sql.SqlUtil;
 import org.apache.calcite.sql.SqlValuesOperator;
@@ -1069,7 +1069,6 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
   public static final SqlAggFunction BIT_OR =
       new SqlBitOpAggFunction(SqlKind.BIT_OR);
 
->>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
   //-------------------------------------------------------------
   // WINDOW Aggregate Functions
   //-------------------------------------------------------------
@@ -1744,16 +1743,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           return SqlSyntax.FUNCTION_ID;
         }
       };
-
-  /** The {@code TYPEOF} function. */
-  public static final SqlFunction TYPEOF =
-      new SqlFunction("TYPEOF", SqlKind.OTHER_FUNCTION, ReturnTypes.VARCHAR_2000,
-          null, OperandTypes.VARIANT, SqlFunctionCategory.STRING);
-
-  /** The {@code VARIANTNULL} function. */
-  public static final SqlFunction VARIANTNULL =
-      new SqlFunction("VARIANTNULL", SqlKind.OTHER_FUNCTION, ReturnTypes.VARIANT,
-          null, OperandTypes.NILADIC, SqlFunctionCategory.SYSTEM);
+>>>>>>> 28b8ea1f9 ([CALCITE-2750] PI operator incorrectly identified as dynamic function)
 
   /** {@code FIRST} function to be used within {@code MATCH_RECOGNIZE}. */
   public static final SqlFunction FIRST =
@@ -2505,7 +2495,6 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
 <<<<<<< HEAD
 =======
 =======
->>>>>>> 3564ebb7c (Revert "Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)"")
   //~ Methods ----------------------------------------------------------------
 
   /**
