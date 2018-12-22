@@ -87,7 +87,11 @@
   apacheId: francischuang
   githubId: F21
   org: Boostport
+<<<<<<< HEAD
   role: PMC
+=======
+  role: PMC Chair
+>>>>>>> 79c4f0e43 (Site: Update PMC chair)
 - name: Gian Merlino
   apacheId: gian
   githubId: gianm
@@ -183,10 +187,14 @@
   githubId: michaelmior
   org: Rochester Institute of Technology
 <<<<<<< HEAD
+<<<<<<< HEAD
   role: PMC
 =======
   role: PMC Chair
 >>>>>>> b8bb0b3b8 (Update Michael Mior's affiliation)
+=======
+  role: PMC
+>>>>>>> 79c4f0e43 (Site: Update PMC chair)
   homepage: https://michael.mior.ca/
 - name: Milinda Pathirage
   apacheId: milinda
