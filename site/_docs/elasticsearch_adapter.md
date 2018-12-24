@@ -60,10 +60,13 @@ A basic example of a model file is given below:
 {% endhighlight %}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 This adapter is targeted for Elasticsearch versions 2 or older. 
 
 >>>>>>> 9fbe97bb2 (Site: Improve documentation for ElasticSearch Adapter)
+=======
+>>>>>>> ec2d09650 (Site: ElasticAdapter mention supported versions (and support schedule))
 Assuming this file is stored as `model.json`, you can connect to
 Elasticsearch via [`sqlline`](https://github.com/julianhyde/sqlline) as
 follows:
@@ -175,4 +178,11 @@ uses [scroll API](https://www.elastic.co/guide/en/elasticsearch/reference/curren
 This ensures that consistent and full data-set is returned to end user (lazily and in batches). Please note that
 scroll is automatically cleared (removed) when all query resuts are consumed.
 
+<<<<<<< HEAD
 >>>>>>> 9fbe97bb2 (Site: Improve documentation for ElasticSearch Adapter)
+=======
+### Supported versions
+Currently this adapter supports ElasticSearch versions 2.x (or newer). Generally
+we try to follow official [support schedule](https://www.elastic.co/support/eol).
+
+>>>>>>> ec2d09650 (Site: ElasticAdapter mention supported versions (and support schedule))
