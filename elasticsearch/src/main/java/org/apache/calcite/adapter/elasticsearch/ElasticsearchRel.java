@@ -20,11 +20,10 @@ import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.RelNode;
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.util.Pair;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -73,7 +72,7 @@ public interface ElasticsearchRel extends RelNode {
      *
      * @see SqlStdOperatorTable#ITEM
      */
-    final Map<String, String> expressionItemMap = new LinkedHashMap<>();
+    final List<Map.Entry<String, String>> expressionItemMap = new ArrayList<>();
 
     /**
      * Starting index (default {@code 0}). Equivalent to {@code start} in ES query.
@@ -110,7 +109,12 @@ public interface ElasticsearchRel extends RelNode {
       aggregations.add(new Pair<>(field, expression));
     }
 
->>>>>>> ca1b4e02e ([CALCITE-2528] Support Aggregates in ElasticSearch adapter (Andrei Sereda))
+    void addExpressionItemMapping(String expressionId, String item) {
+      Objects.requireNonNull(expressionId, "expressionId");
+      Objects.requireNonNull(item, "item");
+      expressionItemMap.add(new Pair<>(expressionId, item));
+    }
+
     void offset(long offset) {
       this.offset = offset;
     }

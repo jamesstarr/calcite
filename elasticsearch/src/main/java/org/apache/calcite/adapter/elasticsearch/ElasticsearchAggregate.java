@@ -31,8 +31,6 @@ import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.util.ImmutableBitSet;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
@@ -125,11 +123,8 @@ public class ElasticsearchAggregate extends Aggregate implements ElasticsearchRe
     implementor.visitChild(0, getInput());
     final List<String> inputFields = fieldNames(getInput().getRowType());
     for (int group : groupSet) {
-      final String name = inputFields.get(group);
-      implementor.addGroupBy(implementor.expressionItemMap.getOrDefault(name, name));
+      implementor.addGroupBy(inputFields.get(group));
     }
-
-    final ObjectMapper mapper = implementor.elasticsearchTable.mapper;
 
     for (AggregateCall aggCall : aggCalls) {
       final List<String> names = new ArrayList<>();
@@ -137,16 +132,16 @@ public class ElasticsearchAggregate extends Aggregate implements ElasticsearchRe
         names.add(inputFields.get(i));
       }
 
-      final ObjectNode aggregation = mapper.createObjectNode();
-      final ObjectNode field = aggregation.with(toElasticAggregate(aggCall));
-
       final String name = names.isEmpty() ? ElasticsearchConstants.ID : names.get(0);
-      field.put("field", implementor.expressionItemMap.getOrDefault(name, name));
-      if (aggCall.getAggregation().getKind() == SqlKind.ANY_VALUE) {
-        field.put("size", 1);
-      }
+      // for ANY_VALUE return just a single result
+      final String size = aggCall.getAggregation().getKind() == SqlKind.ANY_VALUE ? ", \"size\": 1"
+           : "";
 
-      implementor.addAggregation(aggCall.getName(), aggregation.toString());
+      final String op = String.format(Locale.ROOT, "{\"%s\":{\"field\": \"%s\" %s}}",
+          toElasticAggregate(aggCall),
+          name, size);
+
+      implementor.addAggregation(aggCall.getName(), op);
     }
   }
 

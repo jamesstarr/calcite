@@ -27,15 +27,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableSet;
 
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -266,12 +265,16 @@ final class ElasticsearchJson {
    */
   @JsonIgnoreProperties(ignoreUnknown = true)
   static class SearchHit {
+
+    /**
+     * ID of the document (not available in aggregations)
+     */
     private final String id;
     private final Map<String, Object> source;
     private final Map<String, Object> fields;
 
     @JsonCreator
-    SearchHit(@JsonProperty("_id") final String id,
+    SearchHit(@JsonProperty(ElasticsearchConstants.ID) final String id,
                       @JsonProperty("_source") final Map<String, Object> source,
                       @JsonProperty("fields") final Map<String, Object> fields) {
       this.id = Objects.requireNonNull(id, "id");
@@ -582,8 +585,9 @@ final class ElasticsearchJson {
    */
   static class AggregationsDeserializer extends StdDeserializer<Aggregations> {
 
-    private static final Set<String> IGNORE_TOKENS = new HashSet<>(Arrays.asList("meta",
-        "buckets", "value", "values", "value_as_string", "doc_count", "key", "key_as_string"));
+    private static final Set<String> IGNORE_TOKENS =
+        ImmutableSet.of("meta", "buckets", "value", "values", "value_as_string",
+            "doc_count", "key", "key_as_string");
 
     AggregationsDeserializer() {
       super(Aggregations.class);

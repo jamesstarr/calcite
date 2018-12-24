@@ -38,6 +38,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +54,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -72,7 +74,7 @@ public class ElasticsearchTable extends AbstractQueryableTable implements Transl
   private final String indexName;
   private final String typeName;
   final ObjectMapper mapper;
-  final ElasticsearchTransport transport;
+  private final ElasticsearchTransport transport;
 
   /**
    * Creates an ElasticsearchTable.
@@ -120,11 +122,12 @@ public class ElasticsearchTable extends AbstractQueryableTable implements Transl
       List<Map.Entry<String, RelFieldCollation.Direction>> sort,
       List<String> groupBy,
       List<Map.Entry<String, String>> aggregations,
+      List<Map.Entry<String, String>> mappings,
       Long offset, Long fetch) throws IOException {
 
-    if (!aggregations.isEmpty()) {
+    if (!aggregations.isEmpty() || !groupBy.isEmpty()) {
       // process aggregations separately
-      return aggregate(ops, fields, sort, groupBy, aggregations, offset, fetch);
+      return aggregate(ops, fields, sort, groupBy, aggregations, mappings, offset, fetch);
     }
 
     final ObjectNode query = mapper.createObjectNode();
@@ -137,8 +140,8 @@ public class ElasticsearchTable extends AbstractQueryableTable implements Transl
       ArrayNode sortNode = query.withArray("sort");
       sort.forEach(e ->
           sortNode.add(
-            mapper.createObjectNode().put(e.getKey(), e.getValue().isDescending() ? "desc" : "asc"))
-      );
+              mapper.createObjectNode().put(e.getKey(),
+                  e.getValue().isDescending() ? "desc" : "asc")));
     }
 
     if (offset != null) {
@@ -150,7 +153,7 @@ public class ElasticsearchTable extends AbstractQueryableTable implements Transl
     }
 
     final Function1<ElasticsearchJson.SearchHit, Object> getter =
-        ElasticsearchEnumerators.getter(fields);
+        ElasticsearchEnumerators.getter(fields, ImmutableMap.copyOf(mappings));
 
     Iterable<ElasticsearchJson.SearchHit> iter;
     if (offset == null) {
@@ -169,6 +172,7 @@ public class ElasticsearchTable extends AbstractQueryableTable implements Transl
       List<Map.Entry<String, RelFieldCollation.Direction>> sort,
       List<String> groupBy,
       List<Map.Entry<String, String>> aggregations,
+      List<Map.Entry<String, String>> mapping,
       Long offset, Long fetch) throws IOException {
 
     if (aggregations.isEmpty()) {
@@ -245,12 +249,23 @@ public class ElasticsearchTable extends AbstractQueryableTable implements Transl
       }
     }
 
+    final Consumer<JsonNode> emptyAggRemover = new Consumer<JsonNode>() {
+      @Override public void accept(JsonNode node) {
+        if (!node.has(AGGREGATIONS)) {
+          node.elements().forEachRemaining(this);
+          return;
+        }
+        JsonNode agg = node.get(AGGREGATIONS);
+        if (agg.size() == 0) {
+          ((ObjectNode) node).remove(AGGREGATIONS);
+        } else {
+          this.accept(agg);
+        }
+      }
+    };
+
     // cleanup query. remove empty AGGREGATIONS element (if empty)
-    JsonNode agg = query;
-    while (agg.has(AGGREGATIONS) && agg.get(AGGREGATIONS).elements().hasNext()) {
-      agg = agg.get(AGGREGATIONS);
-    }
-    ((ObjectNode) agg).remove(AGGREGATIONS);
+    emptyAggRemover.accept(query);
 
     ElasticsearchJson.Result res = transport.search(Collections.emptyMap()).apply(query);
 
@@ -258,6 +273,7 @@ public class ElasticsearchTable extends AbstractQueryableTable implements Transl
     if (res.aggregations() != null) {
       // collect values
       ElasticsearchJson.visitValueNodes(res.aggregations(), m -> {
+        // using 'Collectors.toMap' will trigger Java 8 bug here
         Map<String, Object> newMap = new LinkedHashMap<>();
         for (String key: m.keySet()) {
           newMap.put(fieldMap.getOrDefault(key, key), m.get(key));
@@ -281,7 +297,7 @@ public class ElasticsearchTable extends AbstractQueryableTable implements Transl
     }
 
     final Function1<ElasticsearchJson.SearchHit, Object> getter =
-        ElasticsearchEnumerators.getter(fields);
+        ElasticsearchEnumerators.getter(fields, ImmutableMap.copyOf(mapping));
 
     ElasticsearchJson.SearchHits hits =
         new ElasticsearchJson.SearchHits(total, result.stream()
@@ -347,9 +363,10 @@ public class ElasticsearchTable extends AbstractQueryableTable implements Transl
          List<Map.Entry<String, RelFieldCollation.Direction>> sort,
          List<String> groupBy,
          List<Map.Entry<String, String>> aggregations,
+         List<Map.Entry<String, String>> mappings,
          Long offset, Long fetch) {
       try {
-        return getTable().find(ops, fields, sort, groupBy, aggregations, offset, fetch);
+        return getTable().find(ops, fields, sort, groupBy, aggregations, mappings, offset, fetch);
       } catch (IOException e) {
         throw new UncheckedIOException("Failed to query " + getTable().indexName, e);
       }

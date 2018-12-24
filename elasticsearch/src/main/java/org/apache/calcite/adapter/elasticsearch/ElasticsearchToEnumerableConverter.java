@@ -95,13 +95,15 @@ public class ElasticsearchToEnumerableConverter extends ConverterImpl implements
     final Expression aggregations = block.append("aggregations",
         constantArrayList(implementor.aggregations, Pair.class));
 
->>>>>>> ca1b4e02e ([CALCITE-2528] Support Aggregates in ElasticSearch adapter (Andrei Sereda))
+    final Expression mappings = block.append("mappings",
+        constantArrayList(implementor.expressionItemMap, Pair.class));
+
     final Expression offset = block.append("offset", Expressions.constant(implementor.offset));
     final Expression fetch = block.append("fetch", Expressions.constant(implementor.fetch));
 
     Expression enumerable = block.append("enumerable",
         Expressions.call(table, ElasticsearchMethod.ELASTICSEARCH_QUERYABLE_FIND.method, ops,
-            fields, sort, groupBy, aggregations, offset, fetch));
+            fields, sort, groupBy, aggregations, mappings, offset, fetch));
     block.add(Expressions.return_(null, enumerable));
     return relImplementor.result(physType, block.toBlock());
   }
