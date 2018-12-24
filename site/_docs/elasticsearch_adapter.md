@@ -47,13 +47,23 @@ A basic example of a model file is given below:
       "name": "elasticsearch",
       "factory": "org.apache.calcite.adapter.elasticsearch.ElasticsearchSchemaFactory",
       "operand": {
+<<<<<<< HEAD
         "coordinates": "{'127.0.0.1': 9200}"
+=======
+        "coordinates": "{'127.0.0.1': 9300}",
+        "index": "usa"
+>>>>>>> 9fbe97bb2 (Site: Improve documentation for ElasticSearch Adapter)
       }
     }
   ]
 }
 {% endhighlight %}
 
+<<<<<<< HEAD
+=======
+This adapter is targeted for Elasticsearch versions 2 or older. 
+
+>>>>>>> 9fbe97bb2 (Site: Improve documentation for ElasticSearch Adapter)
 Assuming this file is stored as `model.json`, you can connect to
 Elasticsearch via [`sqlline`](https://github.com/julianhyde/sqlline) as
 follows:
@@ -139,6 +149,7 @@ The final source json given to Elasticsearch is below:
 }
 {% endhighlight %}
 
+<<<<<<< HEAD
 You can also query elastic search index without prior view definition:
 
 {% highlight sql %}
@@ -157,3 +168,11 @@ scroll is automatically cleared (removed) when all query resuts are consumed.
 Currently this adapter supports ElasticSearch versions 6.x (or newer). Generally
 we try to follow official [support schedule](https://www.elastic.co/support/eol).
 Also, types are not supported (this adapter only supports indices).
+=======
+### Use of Scrolling API
+For queries without aggregate functions (like `COUNT`, `MAX` etc.) elastic adapter 
+uses [scroll API](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html), by default. 
+This ensures that consistent and full data-set is returned to end user (lazily and in batches). Please note that
+scroll is automatically cleared (removed) when all query resuts are consumed.
+
+>>>>>>> 9fbe97bb2 (Site: Improve documentation for ElasticSearch Adapter)
