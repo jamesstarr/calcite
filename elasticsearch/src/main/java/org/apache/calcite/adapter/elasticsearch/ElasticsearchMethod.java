@@ -35,9 +35,9 @@ enum ElasticsearchMethod {
       List.class, // sort
       List.class, // groupBy
       List.class, // aggregations
+      List.class, // expression mapping
       Long.class, // offset
-      Long.class // fetch
-      );
+      Long.class); // fetch
 
   public final Method method;
 

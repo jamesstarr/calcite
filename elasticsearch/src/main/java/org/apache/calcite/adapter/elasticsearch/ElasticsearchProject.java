@@ -73,8 +73,11 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
       final String expr = pair.left.accept(translator);
 
       hasSelectStar |= "_MAP".equals(name);
+      if (ElasticsearchRules.isItem(pair.left)) {
+        implementor.addExpressionItemMapping(name, ElasticsearchRules.stripQuotes(expr));
+      }
 
-      if (expr.equals(name)) {
+      if (expr.equals("\"" + name + "\"")) {
         fields.add(name);
       } else if (expr.matches("\"literal\":.+")) {
         scriptFields.add(ElasticsearchRules.quote(name)
@@ -87,12 +90,6 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
                 + "\"" + implementor.elasticsearchTable.scriptedFieldPrefix() + "."
                 + expr.replaceAll("\"", "") + "\"}");
       }
-    }
-
-    if (hasSelectStar) {
-      // means select * from elastic
-      // this does not yet cover select *, _MAP['foo'], _MAP['bar'][0] from elastic
-      return;
     }
 
     StringBuilder query = new StringBuilder();
