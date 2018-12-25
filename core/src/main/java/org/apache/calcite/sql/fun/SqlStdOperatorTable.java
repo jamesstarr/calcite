@@ -2139,6 +2139,20 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
 >>>>>>> 1677deb9e ([CALCITE-4644] Added validation for PERCENTILE functions)
 
   /**
+   * The LISTAGG operator. Multiset aggregator function.
+   */
+  public static final SqlAggFunction LISTAGG =
+      new SqlAggFunction("LISTAGG",
+          null,
+          SqlKind.LISTAGG,
+          ReturnTypes.ARG0_NULLABLE,
+          null,
+          OperandTypes.or(OperandTypes.STRING, OperandTypes.STRING_STRING),
+          SqlFunctionCategory.SYSTEM, false, false,
+          Optionality.OPTIONAL) {
+      };
+
+  /**
    * The FUSION operator. Multiset aggregator function.
    */
   public static final SqlAggFunction FUSION =

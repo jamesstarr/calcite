@@ -619,6 +619,7 @@ public class RexImpTable {
 =======
     aggMap.put(PERCENTILE_CONT, constructorSupplier(PercentileContImplementor.class));
     aggMap.put(PERCENTILE_DISC, constructorSupplier(PercentileDiscImplementor.class));
+    aggMap.put(LISTAGG, constructorSupplier(ListaggImplementor.class));
     aggMap.put(FUSION, constructorSupplier(FusionImplementor.class));
     final Supplier<GroupingImplementor> grouping =
         constructorSupplier(GroupingImplementor.class);
@@ -1541,6 +1542,31 @@ public class RexImpTable {
               Expressions.call(add.accumulator().get(0),
                   BuiltInMethod.COLLECTION_ADDALL.method,
                   add.arguments().get(0))));
+    }
+  }
+
+  /** Implementor for the {@code LISTAGG} aggregate function. */
+  static class ListaggImplementor extends StrictAggImplementor {
+    @Override protected void implementNotNullReset(AggContext info,
+                                                   AggResetContext reset) {
+      reset.currentBlock().add(
+              Expressions.statement(
+                      Expressions.assign(reset.accumulator().get(0), NULL_EXPR)));
+    }
+
+    @Override public void implementNotNullAdd(AggContext info,
+                                              AggAddContext add) {
+      final Expression accValue = add.accumulator().get(0);
+      final Expression arg0 = add.arguments().get(0);
+      final Expression arg1 = add.arguments().size() == 2
+              ? add.arguments().get(1) : COMMA_EXPR;
+      final Expression result = Expressions.condition(
+              Expressions.equal(NULL_EXPR, accValue),
+              arg0,
+              Expressions.call(BuiltInMethod.STRING_CONCAT.method, accValue,
+                      Expressions.call(BuiltInMethod.STRING_CONCAT.method, arg1, arg0)));
+
+      add.currentBlock().add(Expressions.statement(Expressions.assign(accValue, result)));
     }
   }
 
