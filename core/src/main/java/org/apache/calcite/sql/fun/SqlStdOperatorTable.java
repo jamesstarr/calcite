@@ -1069,12 +1069,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
   public static final SqlAggFunction BIT_OR =
       new SqlBitOpAggFunction(SqlKind.BIT_OR);
 
-  /**
-   * <code>BIT_XOR</code> aggregate function.
-   */
-  public static final SqlAggFunction BIT_XOR =
-      new SqlBitOpAggFunction(SqlKind.BIT_XOR);
-
+>>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
   //-------------------------------------------------------------
   // WINDOW Aggregate Functions
   //-------------------------------------------------------------
@@ -1385,7 +1380,6 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
 
   public static final SqlSpecialOperator SIMILAR_TO =
       SqlLikeOperator.createSimilarTo(false);
->>>>>>> d192c11b0 (Implement [NOT] LIKE ANY/ALL/SOME as logical rewrites)
 
   /**
    * Internal operator used to represent the ESCAPE clause of a LIKE or

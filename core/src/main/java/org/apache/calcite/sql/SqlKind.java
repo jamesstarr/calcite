@@ -821,9 +821,12 @@ public enum SqlKind {
   /** The {@code BIT_OR} aggregate function. */
   BIT_OR,
 
+<<<<<<< HEAD
   /** The {@code BIT_XOR} aggregate function. */
   BIT_XOR,
 
+=======
+>>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
   /** The {@code ROW_NUMBER} window function. */
   ROW_NUMBER,
 
@@ -1008,7 +1011,7 @@ public enum SqlKind {
           AVG, STDDEV_POP, STDDEV_SAMP, VAR_POP, VAR_SAMP, NTILE, COLLECT,
           FUSION, SINGLE_VALUE, ROW_NUMBER, RANK, PERCENT_RANK, DENSE_RANK,
           CUME_DIST, PERCENTILE_CONT, PERCENTILE_DISC, LISTAGG,
-          JSON_ARRAYAGG, JSON_OBJECTAGG);
+          CUME_DIST, JSON_ARRAYAGG, JSON_OBJECTAGG, BIT_AND, BIT_OR);
 
   /**
    * Category consisting of all DML operators.

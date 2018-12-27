@@ -2583,6 +2583,7 @@ EnumerableCalc(expr#0..1=[{inputs}], ANYEMPNO=[$t1])
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 # BIT_AND, BIT_OR, BIT_XOR aggregate functions
 select bit_and(deptno), bit_or(deptno), bit_xor(deptno) from "scott".emp;
@@ -2592,10 +2593,20 @@ select bit_and(deptno), bit_or(deptno), bit_xor(deptno) from "scott".emp;
 +--------+--------+--------+
 |      0 |     30 |     30 |
 +--------+--------+--------+
+=======
+# BIT_AND, BIT_OR aggregate functions
+select bit_and(deptno), bit_or(deptno) from "scott".emp;
++--------+--------+
+| EXPR$0 | EXPR$1 |
++--------+--------+
+|      0 |     30 |
++--------+--------+
+>>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
 (1 row)
 
 !ok
 
+<<<<<<< HEAD
 select deptno, bit_and(empno), bit_or(empno), bit_xor(empno) from "scott".emp group by deptno;
 
 +--------+--------+--------+--------+
@@ -2605,10 +2616,21 @@ select deptno, bit_and(empno), bit_or(empno), bit_xor(empno) from "scott".emp gr
 |     20 |   7168 |   8191 |   7985 |
 |     30 |   7168 |   8191 |    934 |
 +--------+--------+--------+--------+
+=======
+select deptno, bit_and(empno), bit_or(empno) from "scott".emp group by deptno;
++--------+--------+--------+
+| DEPTNO | EXPR$1 | EXPR$2 |
++--------+--------+--------+
+|     10 |   7686 |   7935 |
+|     20 |   7168 |   8191 |
+|     30 |   7168 |   8191 |
++--------+--------+--------+
+>>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
 (3 rows)
 
 !ok
 
+<<<<<<< HEAD
 # Based on [DRUID-7593] Exact distinct-COUNT with complex expression (CASE, IN) throws
 # NullPointerException
 WITH wikipedia AS (
@@ -2643,6 +2665,8 @@ LIMIT 500;
 
 # [CALCITE-2266] JSON_OBJECTAGG, JSON_ARRAYAGG
 =======
+=======
+>>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
 # [CALCITE-2266] JSON_OBJECTAGG, JSON_ARRAYAGG
 
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))

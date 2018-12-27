@@ -50,8 +50,7 @@ public class SqlBitOpAggFunction extends SqlAggFunction {
         false,
         Optionality.FORBIDDEN);
     Preconditions.checkArgument(kind == SqlKind.BIT_AND
-        || kind == SqlKind.BIT_OR
-        || kind == SqlKind.BIT_XOR);
+        || kind == SqlKind.BIT_OR);
   }
 
   @Override public <T> T unwrap(Class<T> clazz) {
@@ -60,8 +59,6 @@ public class SqlBitOpAggFunction extends SqlAggFunction {
     }
     return super.unwrap(clazz);
   }
-
-  @Override public Optionality getDistinctOptionality() {
-    return Optionality.IGNORED;
-  }
 }
+
+// End SqlBitOpAggFunction.java

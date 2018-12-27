@@ -379,7 +379,10 @@ public enum BuiltInMethod {
   GREATER(SqlFunctions.class, "greater", Comparable.class, Comparable.class),
   BIT_AND(SqlFunctions.class, "bitAnd", long.class, long.class),
   BIT_OR(SqlFunctions.class, "bitOr", long.class, long.class),
+<<<<<<< HEAD
   BIT_XOR(SqlFunctions.class, "bitXor", long.class, long.class),
+=======
+>>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
   MODIFIABLE_TABLE_GET_MODIFIABLE_COLLECTION(ModifiableTable.class,
       "getModifiableCollection"),
   SCANNABLE_TABLE_SCAN(ScannableTable.class, "scan", DataContext.class),

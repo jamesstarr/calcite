@@ -112,7 +112,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.ATAN;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.ATAN2;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.BIT_AND;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.BIT_OR;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.BIT_XOR;
+>>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CARDINALITY;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CASE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CAST;
@@ -284,7 +284,6 @@ public class RexImpTable {
       new HashMap<>();
   private final Map<SqlAggFunction, Supplier<? extends WinAggImplementor>> winAggMap =
       new HashMap<>();
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
   RexImpTable() {
     defineMethod(ROW, BuiltInMethod.ARRAY.method, NullPolicy.ANY);
@@ -607,6 +606,9 @@ public class RexImpTable {
     aggMap.put(MIN, minMax);
     aggMap.put(MAX, minMax);
     aggMap.put(ANY_VALUE, minMax);
+    final Supplier<BitOpImplementor> bitop = constructorSupplier(BitOpImplementor.class);
+    aggMap.put(BIT_AND, bitop);
+    aggMap.put(BIT_OR, bitop);
     aggMap.put(SINGLE_VALUE, constructorSupplier(SingleValueImplementor.class));
     aggMap.put(COLLECT, constructorSupplier(CollectImplementor.class));
 =======
@@ -1535,6 +1537,35 @@ public class RexImpTable {
               Expressions.call(add.accumulator().get(0),
                   BuiltInMethod.COLLECTION_ADDALL.method,
                   add.arguments().get(0))));
+    }
+  }
+
+  /** Implementor for the {@code BIT_AND} and {@code BIT_OR} aggregate function. */
+  static class BitOpImplementor extends StrictAggImplementor {
+    @Override protected void implementNotNullReset(AggContext info,
+        AggResetContext reset) {
+      Object initValue = info.aggregation() == BIT_AND ? -1 : 0;
+      Expression start = Expressions.constant(initValue, info.returnType());
+
+      reset.currentBlock().add(
+          Expressions.statement(
+              Expressions.assign(reset.accumulator().get(0), start)));
+    }
+
+    @Override public void implementNotNullAdd(AggContext info,
+        AggAddContext add) {
+      Expression acc = add.accumulator().get(0);
+      Expression arg = add.arguments().get(0);
+      SqlAggFunction aggregation = info.aggregation();
+      final Method method = (aggregation == BIT_AND
+          ? BuiltInMethod.BIT_AND
+          : BuiltInMethod.BIT_OR).method;
+      Expression next = Expressions.call(
+          method.getDeclaringClass(),
+          method.getName(),
+          acc,
+          Expressions.unbox(arg));
+      accAdvance(add, acc, next);
     }
   }
 
