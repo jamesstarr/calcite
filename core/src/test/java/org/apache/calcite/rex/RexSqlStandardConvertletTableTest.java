@@ -30,18 +30,18 @@ import org.apache.calcite.tools.Planner;
 import org.apache.calcite.tools.RelConversionException;
 import org.apache.calcite.tools.ValidationException;
 import org.apache.calcite.util.Closer;
-import org.apache.calcite.util.TestUtil;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit test for {@link org.apache.calcite.rex.RexSqlStandardConvertletTable}.
  */
-class RexSqlStandardConvertletTableTest extends SqlToRelTestBase {
+public class RexSqlStandardConvertletTableTest extends SqlToRelTestBase {
 
-  @Test void testCoalesce() {
+  @Test
+  public void testCoalesce() {
     final Project project = (Project) convertSqlToRel(
             "SELECT COALESCE(NULL, 'a')", false);
     final RexNode rex = project.getChildExps().get(0);
@@ -52,7 +52,8 @@ class RexSqlStandardConvertletTableTest extends SqlToRelTestBase {
             convertedSql.toString());
   }
 
-  @Test void testCaseWithValue() {
+  @Test
+  public void testCaseWithValue() {
     final Project project =
             (Project) convertSqlToRel(
                     "SELECT CASE NULL WHEN NULL THEN NULL ELSE 'a' END", false);
@@ -64,7 +65,8 @@ class RexSqlStandardConvertletTableTest extends SqlToRelTestBase {
             convertedSql.toString());
   }
 
-  @Test void testCaseNoValue() {
+  @Test
+  public void testCaseNoValue() {
     final Project project = (Project) convertSqlToRel(
             "SELECT CASE WHEN NULL IS NULL THEN NULL ELSE 'a' END", false);
     final RexNode rex = project.getChildExps().get(0);
@@ -87,7 +89,7 @@ class RexSqlStandardConvertletTableTest extends SqlToRelTestBase {
       final SqlNode validated = planner.validate(parsed);
       return planner.rel(validated).rel;
     } catch (SqlParseException | RelConversionException | ValidationException e) {
-      throw TestUtil.rethrow(e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -97,3 +99,8 @@ class RexSqlStandardConvertletTableTest extends SqlToRelTestBase {
   }
 
 }
+<<<<<<< HEAD
+=======
+
+// End RexSqlStandardConvertletTableTest.java
+>>>>>>> 04c1c2e2c ([CALCITE-2767] Fix conversion of Case in RexSqlStandardConvertletTable (Benoit Hanotte))
