@@ -359,7 +359,7 @@ public class PlannerTest {
     SqlNode parse = planner.parse("select * from \"emps\"");
     SqlNode validate = planner.validate(parse);
     RelNode convert = planner.rel(validate).project();
-    RelTraitSet traitSet = planner.getEmptyTraitSet()
+    RelTraitSet traitSet = convert.getTraitSet()
         .replace(EnumerableConvention.INSTANCE);
     RelNode transform = planner.transform(0, traitSet, convert);
     assertThat(toString(transform),
@@ -422,14 +422,26 @@ public class PlannerTest {
         + "      EnumerableTableScan(table=[[hr, emps]])\n");
   }
 
+  @Test public void testTwoSortDontRemove() throws Exception {
+    runDuplicateSortCheck("select empid+deptno from ( "
+        + "select empid, deptno "
+        + "from emps "
+        + "order by empid) "
+        + "order by deptno",
+        "EnumerableSort(sort0=[$1], dir0=[ASC])\n"
+        + "  EnumerableProject(EXPR$0=[+($0, $1)], deptno=[$1])\n"
+        + "    EnumerableSort(sort0=[$0], dir0=[ASC])\n"
+        + "      EnumerableProject(empid=[$0], deptno=[$1])\n"
+        + "        EnumerableTableScan(table=[[hr, emps]])\n");
+  }
+
   /** Tests that outer order by is not removed since window function
    * might reorder the rows in-between */
-  @Ignore("RelOptPlanner$CannotPlanException: Node [rel#27:Subset#6"
-      + ".ENUMERABLE.[]] could not be implemented; planner state:\n"
+  @Ignore("Node [rel#22:Subset#3.ENUMERABLE.[2]] could not be implemented; planner state:\n"
       + "\n"
-      + "Root: rel#27:Subset#6.ENUMERABLE.[]")
+      + "Root: rel#22:Subset#3.ENUMERABLE.[2]")
   @Test public void testDuplicateSortPlanWithOver() throws Exception {
-    runDuplicateSortCheck("select empid+deptno from ( "
+    runDuplicateSortCheck("select emp_cnt, empid+deptno from ( "
         + "select empid, deptno, count(*) over (partition by deptno) emp_cnt from ( "
         + "  select empid, deptno "
         + "    from emps "
@@ -444,6 +456,21 @@ public class PlannerTest {
         + "          EnumerableSort(sort0=[$1], dir0=[ASC])\n"
         + "            EnumerableProject(empid=[$0], deptno=[$1])\n"
         + "              EnumerableTableScan(table=[[hr, emps]])\n");
+  }
+
+  @Test public void testDuplicateSortPlanWithRemovedOver() throws Exception {
+    runDuplicateSortCheck("select empid+deptno from ( "
+        + "select empid, deptno, count(*) over (partition by deptno) emp_cnt from ( "
+        + "  select empid, deptno "
+        + "    from emps "
+        + "   order by emps.deptno) "
+        + ")"
+        + "order by deptno",
+        "EnumerableProject(EXPR$0=[+($0, $1)], deptno=[$1])\n"
+        + "  EnumerableWindow(window#0=[window(partition {1} order by [] range between UNBOUNDED PRECEDING and UNBOUNDED FOLLOWING aggs [COUNT()])])\n"
+        + "    EnumerableSort(sort0=[$1], dir0=[ASC])\n"
+        + "      EnumerableProject(empid=[$0], deptno=[$1])\n"
+        + "        EnumerableTableScan(table=[[hr, emps]])\n");
   }
 
   // If proper "SqlParseException, ValidationException, RelConversionException"
@@ -464,7 +491,7 @@ public class PlannerTest {
     SqlNode parse = planner.parse(sql);
     SqlNode validate = planner.validate(parse);
     RelNode convert = planner.rel(validate).rel;
-    RelTraitSet traitSet = planner.getEmptyTraitSet()
+    RelTraitSet traitSet = convert.getTraitSet()
         .replace(EnumerableConvention.INSTANCE);
     if (traitSet.getTrait(RelCollationTraitDef.INSTANCE) == null) {
       // SortRemoveRule can only work if collation trait is enabled.
@@ -490,7 +517,7 @@ public class PlannerTest {
             + "order by \"deptno\"");
     SqlNode validate = planner.validate(parse);
     RelNode convert = planner.rel(validate).rel;
-    RelTraitSet traitSet = planner.getEmptyTraitSet()
+    RelTraitSet traitSet = convert.getTraitSet()
         .replace(EnumerableConvention.INSTANCE);
     RelNode transform = planner.transform(0, traitSet, convert);
     assertThat(toString(transform),
@@ -518,7 +545,7 @@ public class PlannerTest {
     SqlNode parse = planner.parse("select * from \"emps\"");
     SqlNode validate = planner.validate(parse);
     RelNode convert = planner.rel(validate).project();
-    RelTraitSet traitSet = planner.getEmptyTraitSet()
+    RelTraitSet traitSet = convert.getTraitSet()
         .replace(EnumerableConvention.INSTANCE);
     RelNode transform = planner.transform(0, traitSet, convert);
     assertThat(toString(transform),
@@ -538,7 +565,7 @@ public class PlannerTest {
     SqlNode parse = planner.parse("select * from \"emps\"");
     SqlNode validate = planner.validate(parse);
     RelNode convert = planner.rel(validate).project();
-    RelTraitSet traitSet = planner.getEmptyTraitSet()
+    RelTraitSet traitSet = convert.getTraitSet()
         .replace(EnumerableConvention.INSTANCE);
     RelNode transform = planner.transform(0, traitSet, convert);
     RelNode transform2 = planner.transform(0, traitSet, transform);
@@ -592,7 +619,7 @@ public class PlannerTest {
     SqlNode parse = planner.parse("select * from \"emps\"");
     SqlNode validate = planner.validate(parse);
     RelNode convert = planner.rel(validate).rel;
-    RelTraitSet traitSet = planner.getEmptyTraitSet()
+    RelTraitSet traitSet = convert.getTraitSet()
         .replace(EnumerableConvention.INSTANCE);
     RelNode transform = planner.transform(0, traitSet, convert);
     RelNode transform2 = planner.transform(1, traitSet, transform);
@@ -642,10 +669,10 @@ public class PlannerTest {
     SqlNode validate = planner.validate(parse);
     RelNode convert = planner.rel(validate).project();
 
-    RelTraitSet traitSet0 = planner.getEmptyTraitSet()
+    RelTraitSet traitSet0 = convert.getTraitSet()
         .replace(EnumerableConvention.INSTANCE);
 
-    RelTraitSet traitSet1 = planner.getEmptyTraitSet()
+    RelTraitSet traitSet1 = convert.getTraitSet()
         .replace(out);
 
     RelNode transform = planner.transform(0, traitSet0, convert);
@@ -702,7 +729,7 @@ public class PlannerTest {
 
     SqlNode validate = planner.validate(parse);
     RelNode convert = planner.rel(validate).project();
-    RelTraitSet traitSet = planner.getEmptyTraitSet()
+    RelTraitSet traitSet = convert.getTraitSet()
         .replace(EnumerableConvention.INSTANCE);
     RelNode transform = planner.transform(0, traitSet, convert);
     assertThat(toString(transform),
@@ -781,7 +808,7 @@ public class PlannerTest {
     SqlNode parse = planner.parse(sql);
     SqlNode validate = planner.validate(parse);
     RelNode convert = planner.rel(validate).rel;
-    RelTraitSet traitSet = planner.getEmptyTraitSet()
+    RelTraitSet traitSet = convert.getTraitSet()
         .replace(EnumerableConvention.INSTANCE);
     RelNode transform = planner.transform(0, traitSet, convert);
     assertThat(toString(transform), containsString(expected));
@@ -914,7 +941,7 @@ public class PlannerTest {
 
     SqlNode validate = planner.validate(parse);
     RelNode convert = planner.rel(validate).project();
-    RelTraitSet traitSet = planner.getEmptyTraitSet()
+    RelTraitSet traitSet = convert.getTraitSet()
         .replace(EnumerableConvention.INSTANCE);
     RelNode transform = planner.transform(0, traitSet, convert);
     assertThat(toString(transform), containsString(expected));
