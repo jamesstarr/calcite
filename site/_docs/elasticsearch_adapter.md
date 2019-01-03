@@ -97,7 +97,11 @@ Elasticsearch SEARCH JSON possible by exploiting filtering and sorting directly
 in Elasticsearch where possible.
 
 We can issue a simple query to fetch the names of all the states
+<<<<<<< HEAD
 stored in the index `usa`.
+=======
+stored in the type `zips`. 
+>>>>>>> 8ada3c16f (Site: Elastic query example on _MAP)
 
 {% highlight sql %}
 sqlline> SELECT * from "usa";
@@ -153,6 +157,7 @@ The final source json given to Elasticsearch is below:
 {% endhighlight %}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 You can also query elastic search index without prior view definition:
 
 {% highlight sql %}
@@ -172,6 +177,14 @@ Currently this adapter supports ElasticSearch versions 6.x (or newer). Generally
 we try to follow official [support schedule](https://www.elastic.co/support/eol).
 Also, types are not supported (this adapter only supports indices).
 =======
+=======
+You can also query elastic search index without prior view definition:
+
+{% highlight sql %}
+sqlline> SELECT _MAP['city'], _MAP['state'] from "elasticsearch"."zips" order by _MAP['state'];
+{% endhighlight %}
+
+>>>>>>> 8ada3c16f (Site: Elastic query example on _MAP)
 ### Use of Scrolling API
 For queries without aggregate functions (like `COUNT`, `MAX` etc.) elastic adapter 
 uses [scroll API](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html), by default. 
