@@ -81,11 +81,9 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
       final String name = pair.right;
       final String expr = pair.left.accept(translator);
 
-<<<<<<< HEAD:elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
-      // "select *" present?
-      hasSelectStar |= "_MAP".equals(name);
-=======
       if (expr.equals("\"" + name + "\"")) {
+=======
+      if (expr.equals(name)) {
         fields.add(name);
       } else if (expr.matches("\"literal\":.+")) {
         scriptFields.add(ElasticsearchRules.quote(name)
