@@ -66,10 +66,6 @@ public class HiveSqlDialect extends SqlDialect {
     return null;
   }
 
-<<<<<<< HEAD
-  @Override public void unparseCall(final SqlWriter writer, final SqlCall call,
-      final int leftPrec, final int rightPrec) {
-=======
   @Override public void unparseCall(final SqlWriter writer, final SqlCall call, final int leftPrec,
       final int rightPrec) {
     switch (call.getKind()) {
@@ -108,7 +104,6 @@ public class HiveSqlDialect extends SqlDialect {
       }
       break;
 =======
->>>>>>> d270fc28f ([CALCITE-2623] Add specific translation for POSITION, MOD and set operators in BigQuery and Hive SQL dialects)
     default:
       super.unparseCall(writer, call, leftPrec, rightPrec);
     }

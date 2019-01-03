@@ -54,7 +54,7 @@ import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
->>>>>>> d6c0815c2 ([CALCITE-2495] Support encoded URLs in calcite.util.Source, and use it for URL->File conversion in tests)
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -92,8 +92,8 @@ public abstract class QuidemTest {
     case "jdk18":
       return System.getProperty("java.version").startsWith("1.8");
     case "fixed":
-      // Quidem requires a Guava function
-      return (com.google.common.base.Function<String, Object>) v -> {
+      // Quidem requires a Java 8 function
+      return (Function<String, Object>) v -> {
         switch (v) {
         case "calcite1045":
           return Bug.CALCITE_1045_FIXED;
