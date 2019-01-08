@@ -160,12 +160,25 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
    *
    * <p>It uses a {@link PreparedStatement} for computing the query result,
    * and that means that it can bind parameters. */
-  public static <T> Enumerable<T> of(
+  public static <T> ResultSetEnumerable<T> of(
       DataSource dataSource,
       String sql,
       Function1<ResultSet, Function0<T>> rowBuilderFactory,
       PreparedStatementEnricher consumer) {
     return new ResultSetEnumerable<>(dataSource, sql, rowBuilderFactory, consumer);
+  }
+
+  public void setTimeout(DataContext context) {
+    this.queryStart = (Long) context.get(DataContext.Variable.UTC_TIMESTAMP.camelName);
+    Object timeout = context.get(DataContext.Variable.TIMEOUT.camelName);
+    if (timeout instanceof Long) {
+      this.timeout = (Long) timeout;
+    } else {
+      if (timeout != null) {
+        LOGGER.debug("Variable.TIMEOUT should be `long`. Given value was {}", timeout);
+      }
+      this.timeout = 0;
+    }
   }
 
   /** Called from generated code that proposes to create a
@@ -292,10 +305,28 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
   }
 
   private void setTimeoutIfPossible(Statement statement) throws SQLException {
+    if (timeout == 0) {
+      return;
+    }
+    long now = System.currentTimeMillis();
+    long secondsLeft = (queryStart + timeout - now) / 1000;
+    if (secondsLeft <= 0) {
+      throw Static.RESOURCE.queryExecutionTimeoutReached(
+          String.valueOf(timeout),
+          String.valueOf(Instant.ofEpochMilli(queryStart))).ex();
+    }
+    if (secondsLeft > Integer.MAX_VALUE) {
+      // Just ignore the timeout if it happens to be too big, we can't squeeze it into int
+      return;
+    }
     try {
-      statement.setQueryTimeout(10);
+      statement.setQueryTimeout((int) secondsLeft);
     } catch (SQLFeatureNotSupportedException e) {
-      LOGGER.debug("Failed to set query timeout.");
+      if (!timeoutSetFailed && LOGGER.isDebugEnabled()) {
+        // We don't really want to print this again and again if enumerable is used multiple times
+        LOGGER.debug("Failed to set query timeout " + secondsLeft + " seconds", e);
+        timeoutSetFailed = true;
+      }
     }
   }
 
