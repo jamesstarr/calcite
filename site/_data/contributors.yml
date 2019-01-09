@@ -310,11 +310,14 @@
   role: Committer
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 - name: Zhiwei Peng
   apacheId: zhiwei
   githubId: pengzhiwei2018
   org: Ant Financial Group
   role: Committer
+=======
+>>>>>>> 44fc5fd5f (Site: Add Zoltan Haindrich as committer)
 - name: Zoltan Haindrich
   apacheId: kgyrtkirk
   githubId: kgyrtkirk
