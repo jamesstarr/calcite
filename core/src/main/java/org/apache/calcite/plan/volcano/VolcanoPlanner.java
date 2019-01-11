@@ -46,431 +46,7 @@ import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelMdUtil;
 import org.apache.calcite.rel.metadata.RelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
-    addRule(CoreRules.FILTER_INTO_JOIN);
-    addRule(CoreRules.JOIN_CONDITION_PUSH);
-    addRule(AbstractConverter.ExpandConversionRule.INSTANCE);
-    addRule(CoreRules.JOIN_COMMUTE);
-    addRule(CoreRules.PROJECT_TO_SEMI_JOIN);
-    addRule(CoreRules.JOIN_TO_SEMI_JOIN);
-    if (CalcitePrepareImpl.COMMUTE) {
-      addRule(CoreRules.JOIN_ASSOCIATE);
-    }
-    addRule(CoreRules.AGGREGATE_REMOVE);
-    addRule(CoreRules.UNION_TO_DISTINCT);
-    addRule(CoreRules.PROJECT_REMOVE);
-    addRule(CoreRules.AGGREGATE_JOIN_TRANSPOSE);
-    addRule(CoreRules.AGGREGATE_PROJECT_MERGE);
-    addRule(CoreRules.CALC_REMOVE);
-    addRule(CoreRules.SORT_REMOVE);
-
-    // todo: rule which makes Project({OrdinalRef}) disappear
-  }
-
-  public void registerSchema(RelOptSchema schema) {
-    if (registeredSchemas.add(schema)) {
-      try {
-        schema.registerRules(this);
-      } catch (Exception e) {
-        throw new AssertionError("While registering schema " + schema, e);
-      }
-    }
-  }
-
-  /**
-   * Sets whether this planner should consider rel nodes with Convention.NONE
-   * to have infinite cost or not.
-   * @param infinite Whether to make none convention rel nodes infinite cost
-   */
-  public void setNoneConventionHasInfiniteCost(boolean infinite) {
-    this.noneConventionHasInfiniteCost = infinite;
-  }
-
-  public RelOptCost getCost(RelNode rel, RelMetadataQuery mq) {
-    assert rel != null : "pre-condition: rel != null";
-    if (rel instanceof RelSubset) {
-      return ((RelSubset) rel).bestCost;
-    }
-    if (noneConventionHasInfiniteCost
-        && rel.getTraitSet().getTrait(ConventionTraitDef.INSTANCE) == Convention.NONE) {
-      return costFactory.makeInfiniteCost();
-    }
-    RelOptCost cost = mq.getNonCumulativeCost(rel);
-    if (!zeroCost.isLt(cost)) {
-      // cost must be positive, so nudge it
-      cost = costFactory.makeTinyCost();
-    }
-    for (RelNode input : rel.getInputs()) {
-      cost = cost.plus(getCost(input, mq));
-    }
-    return cost;
-  }
-
-  /**
-   * Returns the subset that a relational expression belongs to.
-   *
-   * @param rel Relational expression
-   * @return Subset it belongs to, or null if it is not registered
-   */
-  public RelSubset getSubset(RelNode rel) {
-    assert rel != null : "pre: rel != null";
-    if (rel instanceof RelSubset) {
-      return (RelSubset) rel;
-    } else {
-      return mapRel2Subset.get(rel);
-    }
-  }
-
-  public RelSubset getSubset(
-      RelNode rel,
-      RelTraitSet traits) {
-    return getSubset(rel, traits, false);
-  }
-
-  public RelSubset getSubset(
-      RelNode rel,
-      RelTraitSet traits,
-      boolean createIfMissing) {
-    if ((rel instanceof RelSubset) && (rel.getTraitSet().equals(traits))) {
-      return (RelSubset) rel;
-    }
-    RelSet set = getSet(rel);
-    if (set == null) {
-      return null;
-    }
-    if (createIfMissing) {
-      return set.getOrCreateSubset(rel.getCluster(), traits);
-    }
-    return set.getSubset(traits);
-  }
-
-  RelNode changeTraitsUsingConverters(
-      RelNode rel,
-      RelTraitSet toTraits) {
-    final RelTraitSet fromTraits = rel.getTraitSet();
-
-    assert fromTraits.size() >= toTraits.size();
-
-    final boolean allowInfiniteCostConverters =
-        CalciteSystemProperty.ALLOW_INFINITE_COST_CONVERTERS.value();
-
-    // Traits may build on top of another...for example a collation trait
-    // would typically come after a distribution trait since distribution
-    // destroys collation; so when doing the conversion below we use
-    // fromTraits as the trait of the just previously converted RelNode.
-    // Also, toTraits may have fewer traits than fromTraits, excess traits
-    // will be left as is.  Finally, any null entries in toTraits are
-    // ignored.
-    RelNode converted = rel;
-    for (int i = 0; (converted != null) && (i < toTraits.size()); i++) {
-      RelTrait fromTrait = converted.getTraitSet().getTrait(i);
-      final RelTraitDef traitDef = fromTrait.getTraitDef();
-      RelTrait toTrait = toTraits.getTrait(i);
-
-      if (toTrait == null) {
-        continue;
-      }
-
-      assert traitDef == toTrait.getTraitDef();
-      if (fromTrait.equals(toTrait)) {
-        // No need to convert; it's already correct.
-        continue;
-      }
-
-      rel =
-          traitDef.convert(
-              this,
-              converted,
-              toTrait,
-              allowInfiniteCostConverters);
-      if (rel != null) {
-        assert rel.getTraitSet().getTrait(traitDef).satisfies(toTrait);
-        register(rel, converted);
-      }
-
-      converted = rel;
-    }
-
-    // make sure final converted traitset subsumes what was required
-    if (converted != null) {
-      assert converted.getTraitSet().satisfies(toTraits);
-    }
-
-    return converted;
-  }
-
-  public void setImportance(RelNode rel, double importance) {
-    assert rel != null;
-    if (importance == 0d) {
-      relImportances.put(rel, importance);
-    }
-  }
-
-  /**
-   * Dumps the internal state of this VolcanoPlanner to a writer.
-   *
-   * @param pw Print writer
-   * @see #normalizePlan(String)
-   */
-  public void dump(PrintWriter pw) {
-    pw.println("Root: " + root);
-    pw.println("Original rel:");
-
-    if (originalRoot != null) {
-      originalRoot.explain(
-          new RelWriterImpl(pw, SqlExplainLevel.ALL_ATTRIBUTES, false));
-    }
-
-    try {
-      if (CalciteSystemProperty.DUMP_SETS.value()) {
-        pw.println();
-        pw.println("Sets:");
-        dumpSets(pw);
-      }
-      if (CalciteSystemProperty.DUMP_GRAPHVIZ.value()) {
-        pw.println();
-        pw.println("Graphviz:");
-        dumpGraphviz(pw);
-      }
-    } catch (Exception | AssertionError e) {
-      pw.println("Error when dumping plan state: \n"
-          + e);
-    }
-  }
-
-  /** Computes the key for {@link #mapDigestToRel}. */
-  private static Pair<String, RelDataType> key(RelNode rel) {
-    return Pair.of(rel.getDigest(), rel.getRowType());
-  }
-
-  public String toDot() {
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw);
-    dumpGraphviz(pw);
-    pw.flush();
-    return sw.toString();
-  }
-
-  private void dumpSets(PrintWriter pw) {
-    Ordering<RelSet> ordering = Ordering.from(Comparator.comparingInt(o -> o.id));
-    for (RelSet set : ordering.immutableSortedCopy(allSets)) {
-      pw.println("Set#" + set.id
-          + ", type: " + set.subsets.get(0).getRowType());
-      int j = -1;
-      for (RelSubset subset : set.subsets) {
-        ++j;
-        pw.println(
-            "\t" + subset + ", best="
-            + ((subset.best == null) ? "null"
-                : ("rel#" + subset.best.getId())));
-        assert subset.set == set;
-        for (int k = 0; k < j; k++) {
-          assert !set.subsets.get(k).getTraitSet().equals(
-              subset.getTraitSet());
-        }
-        for (RelNode rel : subset.getRels()) {
-          // "\t\trel#34:JavaProject(rel#32:JavaFilter(...), ...)"
-          pw.print("\t\t" + rel);
-          for (RelNode input : rel.getInputs()) {
-            RelSubset inputSubset =
-                getSubset(
-                    input,
-                    input.getTraitSet());
-            RelSet inputSet = inputSubset.set;
-            if (input instanceof RelSubset) {
-              final Iterator<RelNode> rels =
-                  inputSubset.getRels().iterator();
-              if (rels.hasNext()) {
-                input = rels.next();
-                assert input.getTraitSet().satisfies(inputSubset.getTraitSet());
-                assert inputSet.rels.contains(input);
-                assert inputSet.subsets.contains(inputSubset);
-              }
-            }
-          }
-          Double importance = relImportances.get(rel);
-          if (importance != null) {
-            pw.print(", importance=" + importance);
-          }
-          RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-          pw.print(", rowcount=" + mq.getRowCount(rel));
-          pw.println(", cumulative cost=" + getCost(rel, mq));
-        }
-      }
-    }
-  }
-
-  private void dumpGraphviz(PrintWriter pw) {
-    Ordering<RelSet> ordering = Ordering.from(Comparator.comparingInt(o -> o.id));
-    Set<RelNode> activeRels = new HashSet<>();
-    for (VolcanoRuleCall volcanoRuleCall : ruleCallStack) {
-      activeRels.addAll(Arrays.asList(volcanoRuleCall.rels));
-    }
-    pw.println("digraph G {");
-    pw.println("\troot [style=filled,label=\"Root\"];");
-    PartiallyOrderedSet<RelSubset> subsetPoset = new PartiallyOrderedSet<>(
-        (e1, e2) -> e1.getTraitSet().satisfies(e2.getTraitSet()));
-    Set<RelSubset> nonEmptySubsets = new HashSet<>();
-    for (RelSet set : ordering.immutableSortedCopy(allSets)) {
-      pw.print("\tsubgraph cluster");
-      pw.print(set.id);
-      pw.println("{");
-      pw.print("\t\tlabel=");
-      Util.printJavaString(pw, "Set " + set.id + " " + set.subsets.get(0).getRowType(), false);
-      pw.print(";\n");
-      for (RelNode rel : set.rels) {
-        pw.print("\t\trel");
-        pw.print(rel.getId());
-        pw.print(" [label=");
-        RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-
-        // Note: rel traitset could be different from its subset.traitset
-        // It can happen due to RelTraitset#simplify
-        // If the traits are different, we want to keep them on a graph
-        String traits = "." + getSubset(rel).getTraitSet().toString();
-        String title = rel.toString().replace(traits, "");
-        if (title.endsWith(")")) {
-          int openParen = title.indexOf('(');
-          if (openParen != -1) {
-            // Title is like rel#12:LogicalJoin(left=RelSubset#4,right=RelSubset#3,
-            // condition==($2, $0),joinType=inner)
-            // so we remove the parenthesis, and wrap parameters to the second line
-            // This avoids "too wide" Graphiz boxes, and makes the graph easier to follow
-            title = title.substring(0, openParen) + '\n'
-                + title.substring(openParen + 1, title.length() - 1);
-          }
-        }
-        Util.printJavaString(pw,
-            title
-                + "\nrows=" + mq.getRowCount(rel) + ", cost=" + getCost(rel, mq), false);
-        RelSubset relSubset = getSubset(rel);
-        if (!(rel instanceof AbstractConverter)) {
-          nonEmptySubsets.add(relSubset);
-        }
-        if (relSubset.best == rel) {
-          pw.print(",color=blue");
-        }
-        if (activeRels.contains(rel)) {
-          pw.print(",style=dashed");
-        }
-        pw.print(",shape=box");
-        pw.println("]");
-      }
-
-      subsetPoset.clear();
-      for (RelSubset subset : set.subsets) {
-        subsetPoset.add(subset);
-        pw.print("\t\tsubset");
-        pw.print(subset.getId());
-        pw.print(" [label=");
-        Util.printJavaString(pw, subset.toString(), false);
-        boolean empty = !nonEmptySubsets.contains(subset);
-        if (empty) {
-          // We don't want to iterate over rels when we know the set is not empty
-          for (RelNode rel : subset.getRels()) {
-            if (!(rel instanceof AbstractConverter)) {
-              empty = false;
-              break;
-            }
-          }
-          if (empty) {
-            pw.print(",color=red");
-          }
-        }
-        if (activeRels.contains(subset)) {
-          pw.print(",style=dashed");
-        }
-        pw.print("]\n");
-      }
-
-      for (RelSubset subset : subsetPoset) {
-        for (RelSubset parent : subsetPoset.getChildren(subset)) {
-          pw.print("\t\tsubset");
-          pw.print(subset.getId());
-          pw.print(" -> subset");
-          pw.print(parent.getId());
-          pw.print(";");
-        }
-      }
-
-      pw.print("\t}\n");
-    }
-    // Note: it is important that all the links are declared AFTER declaration of the nodes
-    // Otherwise Graphviz creates nodes implicitly, and puts them into a wrong cluster
-    pw.print("\troot -> subset");
-    pw.print(root.getId());
-    pw.println(";");
-    for (RelSet set : ordering.immutableSortedCopy(allSets)) {
-      for (RelNode rel : set.rels) {
-        RelSubset relSubset = getSubset(rel);
-        pw.print("\tsubset");
-        pw.print(relSubset.getId());
-        pw.print(" -> rel");
-        pw.print(rel.getId());
-        if (relSubset.best == rel) {
-          pw.print("[color=blue]");
-        }
-        pw.print(";");
-        List<RelNode> inputs = rel.getInputs();
-        for (int i = 0; i < inputs.size(); i++) {
-          RelNode input = inputs.get(i);
-          pw.print(" rel");
-          pw.print(rel.getId());
-          pw.print(" -> ");
-          pw.print(input instanceof RelSubset ? "subset" : "rel");
-          pw.print(input.getId());
-          if (relSubset.best == rel || inputs.size() > 1) {
-            char sep = '[';
-            if (relSubset.best == rel) {
-              pw.print(sep);
-              pw.print("color=blue");
-              sep = ',';
-            }
-            if (inputs.size() > 1) {
-              pw.print(sep);
-              pw.print("label=\"");
-              pw.print(i);
-              pw.print("\"");
-              // sep = ',';
-            }
-            pw.print(']');
-          }
-          pw.print(";");
-        }
-        pw.println();
-      }
-    }
-
-    // Draw lines for current rules
-    for (VolcanoRuleCall ruleCall : ruleCallStack) {
-      pw.print("rule");
-      pw.print(ruleCall.id);
-      pw.print(" [style=dashed,label=");
-      Util.printJavaString(pw, ruleCall.rule.toString(), false);
-      pw.print("]");
-
-      RelNode[] rels = ruleCall.rels;
-      for (int i = 0; i < rels.length; i++) {
-        RelNode rel = rels[i];
-        pw.print(" rule");
-        pw.print(ruleCall.id);
-        pw.print(" -> ");
-        pw.print(rel instanceof RelSubset ? "subset" : "rel");
-        pw.print(rel.getId());
-        pw.print(" [style=dashed");
-        if (rels.length > 1) {
-          pw.print(",label=\"");
-          pw.print(i);
-          pw.print("\"");
-        }
-        pw.print("]");
-        pw.print(";");
-      }
-      pw.println();
-    }
-
-    pw.print("}");
-  }
-
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   /**
    * Re-computes the digest of a {@link RelNode}.
    *
@@ -483,15 +59,12 @@ import org.apache.calcite.rel.metadata.RelMetadataQuery;
   void rename(RelNode rel) {
     final String oldDigest = rel.getDigest();
     if (fixUpInputs(rel)) {
-      final Pair<String, RelDataType> oldKey =
-          Pair.of(oldDigest, rel.getRowType());
-      final RelNode removed = mapDigestToRel.remove(oldKey);
+      final RelNode removed = mapDigestToRel.remove(oldDigest);
       assert removed == rel;
       rel.recomputeDigest();
       final String newDigest = rel.getDigest();
       LOGGER.trace("Rename #{} from '{}' to '{}'", rel.getId(), oldDigest, newDigest);
-      final Pair<String, RelDataType> key = key(rel);
-      final RelNode equivRel = mapDigestToRel.put(key, rel);
+      final RelNode equivRel = mapDigestToRel.put(newDigest, rel);
       if (equivRel != null) {
         assert equivRel != rel;
 
@@ -500,7 +73,17 @@ import org.apache.calcite.rel.metadata.RelMetadataQuery;
         LOGGER.trace("After renaming rel#{} it is now equivalent to rel#{}",
             rel.getId(), equivRel.getId());
 
+<<<<<<< HEAD
         mapDigestToRel.put(key, equivRel);
+=======
+        assert RelOptUtil.equal(
+            "rel rowtype",
+            rel.getRowType(),
+            "equivRel rowtype",
+            equivRel.getRowType(),
+            Litmus.THROW);
+
+        mapDigestToRel.put(newDigest, equivRel);
 
         RelSubset equivRelSubset = getSubset(equivRel);
 
@@ -553,11 +136,16 @@ import org.apache.calcite.rel.metadata.RelMetadataQuery;
     // Is there an equivalent relational expression? (This might have
     // just occurred because the relational expression's child was just
     // found to be equivalent to another set.)
-    final Pair<String, RelDataType> key = key(rel);
-    RelNode equivRel = mapDigestToRel.get(key);
+    RelNode equivRel = mapDigestToRel.get(rel.getDigest());
     if (equivRel != null && equivRel != rel) {
       assert equivRel.getClass() == rel.getClass();
       assert equivRel.getTraitSet().equals(rel.getTraitSet());
+      assert RelOptUtil.equal(
+          "rel rowtype",
+          rel.getRowType(),
+          "equivRel rowtype",
+          equivRel.getRowType(),
+          Litmus.THROW);
 
       return;
     }
@@ -751,7 +339,7 @@ import org.apache.calcite.rel.metadata.RelMetadataQuery;
 
     // If it is equivalent to an existing expression, return the set that
     // the equivalent expression belongs to.
-    Pair<String, RelDataType> key = key(rel);
+    String key = rel.getDigest();
     RelNode equivExp = mapDigestToRel.get(key);
     if (equivExp == null) {
       // do nothing
@@ -788,9 +376,18 @@ import org.apache.calcite.rel.metadata.RelMetadataQuery;
         // expression.
         if (fixUpInputs(rel)) {
           rel.recomputeDigest();
-          key = key(rel);
+          key = rel.getDigest();
           RelNode equivRel = mapDigestToRel.get(key);
           if ((equivRel != rel) && (equivRel != null)) {
+<<<<<<< HEAD
+=======
+            assert RelOptUtil.equal(
+                "rel rowtype",
+                rel.getRowType(),
+                "equivRel rowtype",
+                equivRel.getRowType(),
+                Litmus.THROW);
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 
             // make sure this bad rel didn't get into the
             // set in any way (fixupInputs will do this but it

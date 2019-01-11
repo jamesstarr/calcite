@@ -29,11 +29,11 @@ import org.apache.calcite.util.Pair;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
-import java.util.ArrayList;
-import java.util.Comparator;
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
@@ -66,6 +66,7 @@ public class RexCall extends RexNode {
   public final ImmutableList<RexNode> operands;
   public final RelDataType type;
 
+<<<<<<< HEAD
   /**
    * Simple binary operators are those operators which expects operands from the same Domain.
    *
@@ -90,6 +91,12 @@ public class RexCall extends RexNode {
     EnumSet<SqlKind> kinds = EnumSet.of(SqlKind.PLUS, SqlKind.MINUS, SqlKind.TIMES, SqlKind.DIVIDE);
     kinds.addAll(SqlKind.COMPARISON);
     kinds.remove(SqlKind.IN);
+=======
+  private static final Set<SqlKind> SIMPLE_BINARY_OPS;
+
+  static {
+    EnumSet<SqlKind> kinds = EnumSet.of(SqlKind.PLUS, SqlKind.MINUS, SqlKind.TIMES, SqlKind.DIVIDE);
+    kinds.addAll(SqlKind.COMPARISON);
     SIMPLE_BINARY_OPS = Sets.immutableEnumSet(kinds);
   }
 
@@ -108,7 +115,73 @@ public class RexCall extends RexNode {
 
   //~ Methods ----------------------------------------------------------------
 
->>>>>>> 232030fd4 ([CALCITE-2632]: Add hashCode and equals implementations to RexNode)
+  /**
+   * Appends call operands without parenthesis.
+   * {@link RexLiteral} might omit data type depending on the context.
+   * For instance, {@code null:BOOLEAN} vs {@code =(true, null)}.
+   * The idea here is to omit "obvious" types for readability purposes while
+   * still maintain {@link RelNode#getDigest()} contract.
+   *
+   * @see RexLiteral#computeDigest(RexDigestIncludeType)
+   * @param sb destination
+   * @return original StringBuilder for fluent API
+   */
+  protected final StringBuilder appendOperands(StringBuilder sb) {
+    for (int i = 0; i < operands.size(); i++) {
+      if (i > 0) {
+        sb.append(", ");
+      }
+      RexNode operand = operands.get(i);
+      if (!(operand instanceof RexLiteral)) {
+        sb.append(operand);
+        continue;
+      }
+      // Type information might be omitted in certain cases to improve readability
+      // For instance, AND/OR arguments should be BOOLEAN, so
+      // AND(true, null) is better than AND(true, null:BOOLEAN), and we keep the same info
+      // +($0, 2) is better than +($0, 2:BIGINT). Note: if $0 has BIGINT, then 2 is expected to be
+      // of BIGINT type as well.
+      RexDigestIncludeType includeType = RexDigestIncludeType.OPTIONAL;
+      if ((isA(SqlKind.AND) || isA(SqlKind.OR))
+          && operand.getType().getSqlTypeName() == SqlTypeName.BOOLEAN) {
+        includeType = RexDigestIncludeType.NO_TYPE;
+      }
+      if (SIMPLE_BINARY_OPS.contains(getKind())) {
+        RexNode otherArg = operands.get(1 - i);
+        if ((!(otherArg instanceof RexLiteral)
+            || ((RexLiteral) otherArg).digestIncludesType() == RexDigestIncludeType.NO_TYPE)
+            && equalSansNullability(operand.getType(), otherArg.getType())) {
+          includeType = RexDigestIncludeType.NO_TYPE;
+        }
+      }
+      sb.append(((RexLiteral) operand).computeDigest(includeType));
+    }
+    return sb;
+  }
+
+  /**
+   * This is a poorman's
+   * {@link org.apache.calcite.sql.type.SqlTypeUtil#equalSansNullability(RelDataTypeFactory, RelDataType, RelDataType)}
+   * <p>{@code SqlTypeUtil} requires {@link RelDataTypeFactory} which we haven't, so we assume that
+   * "not null" is represented in the type's digest as a trailing "NOT NULL" (case sensitive)
+   * @param a first type
+   * @param b second type
+   * @return true if the types are equal or the only difference is nullability
+   */
+  private static boolean equalSansNullability(RelDataType a, RelDataType b) {
+    String x = a.getFullTypeString();
+    String y = b.getFullTypeString();
+    if (x.length() < y.length()) {
+      String c = x;
+      x = y;
+      y = c;
+    }
+
+    return (x.length() == y.length()
+        || x.length() == y.length() + 9 && x.endsWith(" NOT NULL"))
+        && x.startsWith(y);
+  }
+
   protected @Nonnull String computeDigest(boolean withType) {
     final StringBuilder sb = new StringBuilder(op.getName());
     if ((operands.size() == 0)
@@ -117,12 +190,7 @@ public class RexCall extends RexNode {
       // "SYSTEM_USER", not "SYSTEM_USER()".
     } else {
       sb.append("(");
-      for (int i = 0; i < operands.size(); i++) {
-        if (i > 0) {
-          sb.append(", ");
-        }
-        sb.append(operands.get(i));
-      }
+      appendOperands(sb);
       sb.append(")");
     }
     if (withType) {

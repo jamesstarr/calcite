@@ -2079,8 +2079,8 @@ class MaterializationTest {
         CalciteAssert.checkResultContains(
             "EnumerableAggregate(group=[{4}])\n"
                 + "  EnumerableCalc(expr#0..4=[{inputs}], expr#5=[=($t2, $t3)], "
-                + "expr#6=[CAST($t1):VARCHAR CHARACTER SET \"ISO-8859-1\" COLLATE \"ISO-8859-1$en_US$primary\"], "
-                + "expr#7=[CAST($t0):VARCHAR CHARACTER SET \"ISO-8859-1\" COLLATE \"ISO-8859-1$en_US$primary\"], "
+                + "expr#6=[CAST($t1):VARCHAR], "
+                + "expr#7=[CAST($t0):VARCHAR], "
                 + "expr#8=[=($t6, $t7)], expr#9=[AND($t5, $t8)], proj#0..4=[{exprs}], $condition=[$t9])\n"
                 + "    EnumerableTableScan(table=[[hr, m0]])"));
   }
@@ -2375,11 +2375,9 @@ class MaterializationTest {
         CalciteAssert.checkResultContains(
             "EnumerableCalc(expr#0..2=[{inputs}], empid0=[$t1])\n"
                 + "  EnumerableHashJoin(condition=[=($0, $2)], joinType=[inner])\n"
-                + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR CHARACTER SET \"ISO-8859-1\" "
-                + "COLLATE \"ISO-8859-1$en_US$primary\"], name=[$t1])\n"
+                + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR], name=[$t1])\n"
                 + "      EnumerableTableScan(table=[[hr, m0]])\n"
-                + "    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t1):VARCHAR CHARACTER SET \"ISO-8859-1\" "
-                + "COLLATE \"ISO-8859-1$en_US$primary\"], empid=[$t0], name0=[$t2])\n"
+                + "    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t1):VARCHAR], empid=[$t0], name0=[$t2])\n"
                 + "      EnumerableTableScan(table=[[hr, dependents]])"));
   }
 
@@ -2394,11 +2392,9 @@ class MaterializationTest {
         .withResultContains(
             "EnumerableCalc(expr#0..4=[{inputs}], empid=[$t2])\n"
                 + "  EnumerableHashJoin(condition=[=($1, $4)], joinType=[inner])\n"
-                + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR CHARACTER SET \"ISO-8859-1\" "
-                + "COLLATE \"ISO-8859-1$en_US$primary\"], proj#0..1=[{exprs}])\n"
+                + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR], proj#0..1=[{exprs}])\n"
                 + "      EnumerableTableScan(table=[[hr, m0]])\n"
-                + "    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t1):VARCHAR CHARACTER SET \"ISO-8859-1\" "
-                + "COLLATE \"ISO-8859-1$en_US$primary\"], proj#0..2=[{exprs}])\n"
+                + "    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t1):VARCHAR], proj#0..2=[{exprs}])\n"
                 + "      EnumerableTableScan(table=[[hr, dependents]])"));
   }
 

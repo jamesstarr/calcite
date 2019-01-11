@@ -129,13 +129,10 @@ import org.junit.runners.Suite;
     SqlAdvisorTest.class,
     RelMetadataTest.class,
     DateRangeRulesTest.class,
-    RelOptRulesTest.class,
     ScannableTableTest.class,
     RexExecutorTest.class,
     SqlLimitsTest.class,
     JdbcFrontLinqBackTest.class,
-    JdbcFrontJdbcBackTest.class,
-    SqlToRelConverterTest.class,
     RelToSqlConverterTest.class,
     SqlOperatorTest.class,
     ChunkListTest.class,
@@ -157,18 +154,23 @@ import org.junit.runners.Suite;
     RelBuilderTest.class,
     PigRelBuilderTest.class,
     RexImplicationCheckerTest.class,
-    MaterializationTest.class,
     JdbcAdapterTest.class,
     LinqFrontJdbcBackTest.class,
     JdbcFrontJdbcBackLinqMiddleTest.class,
-    CalciteSqlOperatorTest.class,
+    SqlToRelConverterTest.class,
     ProfilerTest.class,
-    LatticeTest.class,
-    ReflectiveSchemaTest.class,
-    JdbcTest.class,
     CoreQuidemTest.class,
     CalciteRemoteDriverTest.class,
     StreamTest.class,
+
+    // above 10sec
+    JdbcFrontJdbcBackTest.class,
+
+    // above 20sec
+    JdbcTest.class,
+    CalciteSqlOperatorTest.class,
+    ReflectiveSchemaTest.class,
+    RelOptRulesTest.class,
 
     // test cases
     TableInRootSchemaTest.class,
@@ -180,6 +182,12 @@ import org.junit.runners.Suite;
     // slow tests that don't break often
     SqlToRelConverterExtendedTest.class,
     PartiallyOrderedSetTest.class,
+
+    // above 30sec
+    MaterializationTest.class,
+
+    // above 120sec
+    LatticeTest.class,
 
     // system tests and benchmarks (very slow, but usually only run if
     // '-Dcalcite.test.slow' is specified)

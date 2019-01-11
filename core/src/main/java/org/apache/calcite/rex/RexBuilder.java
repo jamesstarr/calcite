@@ -1074,19 +1074,7 @@ public class RexBuilder {
       return charEmpty;
     }
     return makeCharLiteral(new NlsString(s, null, null));
-  }
-
-  /**
-   * Creates a character string literal with type CHAR.
-   *
-   * @param value       String value in bytes
-   * @param charsetName SQL-level charset name
-   * @param collation   Sql collation
-   * @return String     literal
-   */
-  protected RexLiteral makePreciseStringLiteral(ByteString value,
-      String charsetName, SqlCollation collation) {
-    return makeCharLiteral(new NlsString(value, charsetName, collation));
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   }
 
   /**
@@ -1473,7 +1461,6 @@ public class RexBuilder {
             "Cannot create UUID literal, value must be of String type, got: " + value.getClass());
       }
 =======
->>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
     default:
       throw new IllegalArgumentException(
               "Cannot create literal for type '" + sqlTypeName + "'");

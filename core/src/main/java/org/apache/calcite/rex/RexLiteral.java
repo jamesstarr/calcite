@@ -19,7 +19,7 @@ package org.apache.calcite.rex;
 import org.apache.calcite.avatica.util.ByteString;
 import org.apache.calcite.avatica.util.DateTimeUtils;
 import org.apache.calcite.avatica.util.TimeUnit;
-import org.apache.calcite.config.CalciteSystemProperty;
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.runtime.variant.VariantValue;
@@ -36,6 +36,7 @@ import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.NlsString;
 import org.apache.calcite.util.TimeString;
 import org.apache.calcite.util.TimestampString;
+import org.apache.calcite.util.Unsafe;
 import org.apache.calcite.util.Util;
 
 import com.google.common.base.Preconditions;
@@ -387,6 +388,7 @@ public class RexLiteral extends RexNode {
     if (value == null) {
       return includeType == RexDigestIncludeType.NO_TYPE ? "null" : "null:" + fullTypeString;
     }
+<<<<<<< HEAD
     StringBuilder sb = new StringBuilder();
     appendAsJava(value, sb, typeName, false, includeType);
 
@@ -437,6 +439,78 @@ public class RexLiteral extends RexNode {
       // Ignore type information for 'Bar':CHAR(3)
       if ((
           (nlsString.getCharset() != null
+          && type.getCharset().equals(nlsString.getCharset()))
+          || (nlsString.getCharset() == null
+          && SqlCollation.IMPLICIT.getCharset().equals(type.getCharset())))
+          && nlsString.getCollation().equals(type.getCollation())
+          && ((NlsString) value).getValue().length() == type.getPrecision()) {
+        includeType = RexDigestIncludeType.NO_TYPE;
+      } else {
+        includeType = RexDigestIncludeType.ALWAYS;
+      }
+    } else if (type.getPrecision() == 0 && (
+               type.getSqlTypeName() == SqlTypeName.TIME
+            || type.getSqlTypeName() == SqlTypeName.TIMESTAMP
+            || type.getSqlTypeName() == SqlTypeName.DATE)) {
+      // Ignore type information for '12:23:20':TIME(0)
+      // Note that '12:23:20':TIME WITH LOCAL TIME ZONE
+      includeType = RexDigestIncludeType.NO_TYPE;
+    } else {
+      includeType = RexDigestIncludeType.ALWAYS;
+    }
+    return includeType;
+=======
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    printAsJava(value, pw, typeName, false, includeType);
+    pw.flush();
+
+    if (includeType != RexDigestIncludeType.NO_TYPE) {
+      sw.append(':');
+      if (!fullTypeString.endsWith("NOT NULL")) {
+        sw.append(fullTypeString);
+      } else {
+        // Trim " NOT NULL". Apparently, the literal is not null, so we just print the data type.
+        Unsafe.append(sw, fullTypeString, 0, fullTypeString.length() - 9);
+      }
+    }
+    return sw.toString();
+  }
+
+  /**
+   * Computes if data type can be omitted from the digset.
+   * <p>For instance, {@code 1:BIGINT} has to keep data type while {@code 1:INT}
+   * should be represented as just {@code 1}.
+   *
+   * <p>Implementation assumption: this method should be fast. In fact might call
+   * {@link NlsString#getValue()} which could decode the string, however we rely on the cache there.
+   *
+   * @see RexLiteral#computeDigest(RexDigestIncludeType)
+   * @param value value of the literal
+   * @param type type of the literal
+   * @return NO_TYPE when type can be omitted, ALWAYS otherwise
+   */
+  private static RexDigestIncludeType shouldIncludeType(Comparable value, RelDataType type) {
+    if (type.isNullable()) {
+      // This means "null literal", so we require a type for it
+      // There might be exceptions like AND(null, true) which are handled by RexCall#computeDigest
+      return RexDigestIncludeType.ALWAYS;
+    }
+    // The variable here simplifies debugging (one can set a breakpoint at return)
+    // final ensures we set the value in all the branches, and it ensures the value is set just once
+    final RexDigestIncludeType includeType;
+    if (type.getSqlTypeName() == SqlTypeName.BOOLEAN
+        || type.getSqlTypeName() == SqlTypeName.INTEGER
+        || type.getSqlTypeName() == SqlTypeName.SYMBOL) {
+      // We don't want false:BOOLEAN NOT NULL, so we don't print type information for
+      // non-nullable BOOLEAN and INTEGER
+      includeType = RexDigestIncludeType.NO_TYPE;
+    } else if (type.getSqlTypeName() == SqlTypeName.CHAR
+            && value instanceof NlsString) {
+      NlsString nlsString = (NlsString) value;
+
+      // Ignore type information for 'Bar':CHAR(3)
+      if (((nlsString.getCharset() != null
           && type.getCharset().equals(nlsString.getCharset()))
           || (nlsString.getCharset() == null
           && SqlCollation.IMPLICIT.getCharset().equals(type.getCharset())))
@@ -556,7 +630,7 @@ public class RexLiteral extends RexNode {
    * Prints the value this literal as a Java string constant.
    */
   public void printAsJava(PrintWriter pw) {
-    appendAsJava(value, pw, typeName, true, RexDigestIncludeType.NO_TYPE);
+    printAsJava(value, pw, typeName, true, RexDigestIncludeType.NO_TYPE);
   }
 
   /**
@@ -572,22 +646,16 @@ public class RexLiteral extends RexNode {
    * <li>1.25</li>
    * <li>1234ABCD</li>
    * </ul>
-   *
-   * <p>The destination where the value is appended must not incur I/O operations. This method is
-   * not meant to be used for writing the values to permanent storage.</p>
-   *
-   * @param value a value to be appended to the provided destination as a Java string
-   * @param destination a destination where to append the specified value
-   * @param typeName a type name to be used for the transformation of the value to a Java string
-   * @param includeType an indicator whether to include the data type in the Java representation
-   * @throws IllegalStateException if the appending to the destination <code>Appendable</code> fails
-   *         due to I/O
+   *  @param value    Value
+   * @param pw       Writer to write to
+   * @param typeName Type family
+   * @param includeType if representation should include data type
    */
   private static void appendAsJava(
       Comparable value,
       Appendable destination,
       SqlTypeName typeName,
-      boolean java) {
+      boolean java, RexDigestIncludeType includeType) {
     switch (typeName) {
     case CHAR:
       NlsString nlsString = (NlsString) value;
@@ -674,63 +742,17 @@ public class RexLiteral extends RexNode {
         pw.print(value.toString());
       } else {
         assert value == null;
-        destination.append("null");
-        break;
-      case UUID:
-        assert value instanceof String;
-        destination.append(value.toString());
-        break;
-      case SYMBOL:
-        assert value instanceof Enum;
-        destination.append("FLAG(");
-        destination.append(value.toString());
-        destination.append(")");
-        break;
-      case DATE:
-        assert value instanceof DateString;
-        destination.append(value.toString());
-        break;
-      case TIME:
-        assert value instanceof TimeString;
-        destination.append(value.toString());
-        break;
-      case TIME_WITH_LOCAL_TIME_ZONE:
-        assert value instanceof TimeString;
-        destination.append(value.toString());
-        break;
-      case TIMESTAMP:
-        assert value instanceof TimestampString;
-        destination.append(value.toString());
-        break;
-      case TIMESTAMP_WITH_LOCAL_TIME_ZONE:
-        assert value instanceof TimestampString;
-        destination.append(value.toString());
-        break;
-      case INTERVAL_YEAR:
-      case INTERVAL_YEAR_MONTH:
-      case INTERVAL_MONTH:
-      case INTERVAL_DAY:
-      case INTERVAL_DAY_HOUR:
-      case INTERVAL_DAY_MINUTE:
-      case INTERVAL_DAY_SECOND:
-      case INTERVAL_HOUR:
-      case INTERVAL_HOUR_MINUTE:
-      case INTERVAL_HOUR_SECOND:
-      case INTERVAL_MINUTE:
-      case INTERVAL_MINUTE_SECOND:
-      case INTERVAL_SECOND:
-        assert value instanceof BigDecimal;
-        destination.append(value.toString());
-        break;
-      case MULTISET:
-      case ROW:
-        @SuppressWarnings("unchecked")
-        final List<RexLiteral> list = (List) value;
-        destination.append(
-            (new AbstractList<String>() {
-              public String get(int index) {
-                return list.get(index).computeDigest(includeType);
-              }
+        pw.print("null");
+      }
+      break;
+    case MULTISET:
+    case ROW:
+      @SuppressWarnings("unchecked") final List<RexLiteral> list = (List) value;
+      pw.print(
+          new AbstractList<String>() {
+            public String get(int index) {
+              return list.get(index).computeDigest(includeType);
+            }
 
               public int size() {
                 return list.size();

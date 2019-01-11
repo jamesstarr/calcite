@@ -70,7 +70,213 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Unit tests for {@link RexProgram} and
  * {@link org.apache.calcite.rex.RexProgramBuilder}.
  */
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 class RexProgramTest extends RexProgramTestBase {
+=======
+public class RexProgramTest {
+  //~ Instance fields --------------------------------------------------------
+  private JavaTypeFactory typeFactory;
+  private RexBuilder rexBuilder;
+  private RexLiteral trueLiteral;
+  private RexLiteral falseLiteral;
+  private RexNode nullLiteral;
+  private RexNode unknownLiteral;
+  private RexSimplify simplify;
+
+  //~ Methods ----------------------------------------------------------------
+
+  /**
+   * Creates a RexProgramTest.
+   */
+  public RexProgramTest() {
+    super();
+  }
+
+  @Before
+  public void setUp() {
+    typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
+    rexBuilder = new RexBuilder(typeFactory);
+    RexExecutor executor =
+        new RexExecutorImpl(new DummyTestDataContext());
+    simplify =
+        new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false, executor);
+    trueLiteral = rexBuilder.makeLiteral(true);
+    falseLiteral = rexBuilder.makeLiteral(false);
+    final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
+    nullLiteral = rexBuilder.makeNullLiteral(intType);
+    unknownLiteral = rexBuilder.makeNullLiteral(trueLiteral.getType());
+  }
+
+  /** Dummy data context for test. */
+  private static class DummyTestDataContext implements DataContext {
+    private final ImmutableMap<String, Object> map;
+
+    DummyTestDataContext() {
+      this.map =
+          ImmutableMap.<String, Object>of(
+              Variable.TIME_ZONE.camelName, TimeZone.getTimeZone("America/Los_Angeles"),
+              Variable.CURRENT_TIMESTAMP.camelName, 1311120000000L);
+    }
+
+    public SchemaPlus getRootSchema() {
+      return null;
+    }
+
+    public JavaTypeFactory getTypeFactory() {
+      return null;
+    }
+
+    public QueryProvider getQueryProvider() {
+      return null;
+    }
+
+    public Object get(String name) {
+      return map.get(name);
+    }
+  }
+
+  private void checkCnf(RexNode node, String expected) {
+    assertThat("RexUtil.toCnf(rexBuilder, " + node + ")",
+        RexUtil.toCnf(rexBuilder, node).toString(), equalTo(expected));
+  }
+
+  private void checkThresholdCnf(RexNode node, int threshold, String expected) {
+    assertThat("RexUtil.toCnf(rexBuilder, threshold=" + threshold + " , " + node + ")",
+        RexUtil.toCnf(rexBuilder, threshold, node).toString(),
+        equalTo(expected));
+  }
+
+  private void checkPullFactorsUnchanged(RexNode node) {
+    checkPullFactors(node, node.toString());
+  }
+
+  private void checkPullFactors(RexNode node, String expected) {
+    assertThat("RexUtil.pullFactors(rexBuilder, " + node + ")",
+        RexUtil.pullFactors(rexBuilder, node).toString(),
+        equalTo(expected));
+  }
+
+  /** Simplifies an expression and checks that the result is as expected. */
+  private void checkSimplify(RexNode node, String expected) {
+    checkSimplify2(node, expected, expected);
+  }
+
+  /** Simplifies an expression and checks that the result is unchanged. */
+  private void checkSimplifyUnchanged(RexNode node) {
+    checkSimplify(node, node.toString());
+  }
+
+  /** Simplifies an expression and checks the result if unknowns remain
+   * unknown, or if unknown becomes false. If the result is the same, use
+   * {@link #checkSimplify(RexNode, String)}.
+   *
+   * @param node Expression to simplify
+   * @param expected Expected simplification
+   * @param expectedFalse Expected simplification, if unknown is to be treated
+   *     as false
+   */
+  private void checkSimplify2(RexNode node, String expected,
+      String expectedFalse) {
+    assertThat(simplify.simplify(node).toString(),
+        equalTo(expected));
+    if (node.getType().getSqlTypeName() == SqlTypeName.BOOLEAN) {
+      assertThat(simplify.withUnknownAsFalse(true).simplify(node).toString(),
+          equalTo(expectedFalse));
+    }
+  }
+
+  private void checkSimplifyFilter(RexNode node, String expected) {
+    assertThat(simplify.withUnknownAsFalse(true).simplify(node).toString(),
+        equalTo(expected));
+  }
+
+  private void checkSimplifyFilter(RexNode node, RelOptPredicateList predicates,
+      String expected) {
+    assertThat(simplify.withUnknownAsFalse(true).withPredicates(predicates)
+            .simplify(node).toString(),
+        equalTo(expected));
+  }
+
+  /** Returns the number of nodes (including leaves) in a Rex tree. */
+  private static int nodeCount(RexNode node) {
+    int n = 1;
+    if (node instanceof RexCall) {
+      for (RexNode operand : ((RexCall) node).getOperands()) {
+        n += nodeCount(operand);
+      }
+    }
+    return n;
+  }
+
+  private RexNode isNull(RexNode node) {
+    return rexBuilder.makeCall(SqlStdOperatorTable.IS_NULL, node);
+  }
+
+  private RexNode isNotNull(RexNode node) {
+    return rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL, node);
+  }
+
+  private RexNode nullIf(RexNode node1, RexNode node2) {
+    return rexBuilder.makeCall(SqlStdOperatorTable.NULLIF, node1, node2);
+  }
+
+  private RexNode not(RexNode node) {
+    return rexBuilder.makeCall(SqlStdOperatorTable.NOT, node);
+  }
+
+  private RexNode and(RexNode... nodes) {
+    return and(ImmutableList.copyOf(nodes));
+  }
+
+  private RexNode and(Iterable<? extends RexNode> nodes) {
+    // Does not flatten nested ANDs. We want test input to contain nested ANDs.
+    return rexBuilder.makeCall(SqlStdOperatorTable.AND,
+        ImmutableList.copyOf(nodes));
+  }
+
+  private RexNode or(RexNode... nodes) {
+    return or(ImmutableList.copyOf(nodes));
+  }
+
+  private RexNode or(Iterable<? extends RexNode> nodes) {
+    // Does not flatten nested ORs. We want test input to contain nested ORs.
+    return rexBuilder.makeCall(SqlStdOperatorTable.OR,
+        ImmutableList.copyOf(nodes));
+  }
+
+  private RexNode case_(RexNode... nodes) {
+    return rexBuilder.makeCall(SqlStdOperatorTable.CASE, nodes);
+  }
+
+  private RexNode cast(RexNode e, RelDataType type) {
+    return rexBuilder.makeCast(type, e);
+  }
+
+  private RexNode eq(RexNode n1, RexNode n2) {
+    return rexBuilder.makeCall(SqlStdOperatorTable.EQUALS, n1, n2);
+  }
+
+  private RexNode ne(RexNode n1, RexNode n2) {
+    return rexBuilder.makeCall(SqlStdOperatorTable.NOT_EQUALS, n1, n2);
+  }
+
+  private RexNode le(RexNode n1, RexNode n2) {
+    return rexBuilder.makeCall(SqlStdOperatorTable.LESS_THAN_OR_EQUAL, n1, n2);
+  }
+
+  private RexNode lt(RexNode n1, RexNode n2) {
+    return rexBuilder.makeCall(SqlStdOperatorTable.LESS_THAN, n1, n2);
+  }
+
+  private RexNode ge(RexNode n1, RexNode n2) {
+    return rexBuilder.makeCall(SqlStdOperatorTable.GREATER_THAN_OR_EQUAL, n1, n2);
+  }
+
+  private RexNode gt(RexNode n1, RexNode n2) {
+    return rexBuilder.makeCall(SqlStdOperatorTable.GREATER_THAN, n1, n2);
+  }
+
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   /**
    * Tests construction of a RexProgram.
    */
@@ -719,7 +925,11 @@ class RexProgramTest extends RexProgramTestBase {
     checkCnf(aRef, "?0.a");
     checkCnf(trueLiteral, "true");
     checkCnf(falseLiteral, "false");
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkCnf(nullBool, "null:BOOLEAN");
+=======
+    checkCnf(unknownLiteral, "null:BOOLEAN");
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkCnf(and(aRef, bRef), "AND(?0.a, ?0.b)");
     checkCnf(and(aRef, bRef, cRef), "AND(?0.a, ?0.b, ?0.c)");
 
@@ -950,7 +1160,11 @@ class RexProgramTest extends RexProgramTestBase {
     checkPullFactors(aRef, "?0.a");
     checkPullFactors(trueLiteral, "true");
     checkPullFactors(falseLiteral, "false");
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkPullFactors(nullBool, "null:BOOLEAN");
+=======
+    checkPullFactors(unknownLiteral, "null:BOOLEAN");
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkPullFactors(and(aRef, bRef), "AND(?0.a, ?0.b)");
     checkPullFactors(and(aRef, bRef, cRef), "AND(?0.a, ?0.b, ?0.c)");
 
@@ -1072,11 +1286,18 @@ class RexProgramTest extends RexProgramTestBase {
         case_(aRef, literal1, bRef, literal1, cRef, literal1, dRef, literal1, literal1), "1");
 
     // case: trailing false and null, no simplification
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkSimplify3(
         case_(aRef, trueLiteral, bRef, trueLiteral, cRef, falseLiteral, nullBool),
         "OR(?0.a, ?0.b, AND(null, NOT(?0.a), NOT(?0.b), NOT(?0.c)))",
         "OR(?0.a, ?0.b)",
         "OR(?0.a, ?0.b, NOT(?0.c))");
+=======
+    checkSimplify2(
+        case_(aRef, trueLiteral, bRef, trueLiteral, cRef, falseLiteral, unknownLiteral),
+        "CASE(?0.a, true, ?0.b, true, ?0.c, false, null:BOOLEAN)",
+        "CAST(OR(?0.a, ?0.b)):BOOLEAN");
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
     // case: form an AND of branches that return true
     checkSimplify(
@@ -2202,8 +2423,13 @@ class RexProgramTest extends RexProgramTestBase {
     final RelDataType timestampType =
         typeFactory.createSqlType(SqlTypeName.TIMESTAMP);
     checkSimplifyUnchanged(cast(literalAbc, intType));
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkSimplifyUnchanged(cast(literalOne, intType));
     checkSimplifyUnchanged(cast(literalAbc, varcharType));
+=======
+    checkSimplify(cast(literalOne, intType), "1");
+    checkSimplify(cast(literalAbc, varcharType), "'abc':VARCHAR(10)");
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify(cast(literalOne, varcharType), "'1':VARCHAR(10)");
     checkSimplifyUnchanged(cast(literalAbc, booleanType));
     checkSimplify(cast(literalOne, booleanType),
@@ -2254,14 +2480,23 @@ class RexProgramTest extends RexProgramTestBase {
         "12:34:45:TIME_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(timeLTZChar3, timeLTZType),
         "11:34:45:TIME_WITH_LOCAL_TIME_ZONE(0)");
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkSimplifyUnchanged(cast(literalTimeLTZ, timeLTZType));
+=======
+    checkSimplify(cast(literalTimeLTZ, timeLTZType), "01:23:45:TIME_WITH_LOCAL_TIME_ZONE(0)");
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify(cast(timestampLTZChar1, timestampLTZType),
         "2011-07-20 03:34:56:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(timestampLTZChar2, timestampLTZType),
         "2011-07-20 11:34:56:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(timestampLTZChar3, timestampLTZType),
         "2011-07-20 12:34:56:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkSimplifyUnchanged(cast(literalTimestampLTZ, timestampLTZType));
+=======
+    checkSimplify(cast(literalTimestampLTZ, timestampLTZType),
+        "2011-07-20 08:23:45:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify(cast(literalDate, timestampLTZType),
         "2011-07-20 07:00:00:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(literalTime, timestampLTZType),

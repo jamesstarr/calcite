@@ -104,12 +104,7 @@ public class RexOver extends RexCall {
     if (distinct) {
       sb.append("DISTINCT ");
     }
-    for (int i = 0; i < operands.size(); i++) {
-      if (i > 0) {
-        sb.append(", ");
-      }
-      sb.append(operands.get(i));
-    }
+    appendOperands(sb);
     sb.append(")");
     if (ignoreNulls) {
       sb.append(" IGNORE NULLS");

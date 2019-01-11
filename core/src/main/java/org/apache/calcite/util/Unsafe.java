@@ -51,6 +51,16 @@ public class Unsafe {
     // Included in this class because StringBuffer is banned.
     sw.getBuffer().setLength(0);
   }
+<<<<<<< HEAD
+=======
+
+  /** Appends to {@link StringWriter}. */
+  public static void append(StringWriter sw, CharSequence charSequence, int start, int end) {
+    // Included in this class because StringBuffer is banned.
+    sw.getBuffer().append(charSequence, start, end);
+  }
+}
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 
   /** Helper for the SQL {@code REGEXP_REPLACE} function.
    *

@@ -140,7 +140,11 @@ LogicalProject(CASECOL=[$0])
             <![CDATA[
 LogicalProject(CASECOL=[$0])
   LogicalFilter(condition=[NOT($0)])
+<<<<<<< HEAD
     LogicalProject(CASECOL=[AND(>($5, 1000), null)])
+=======
+    LogicalProject(CASECOL=[CASE(>($5, 1000), null:BOOLEAN, false)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -264,11 +268,11 @@ LogicalProject(EXPR$0=[COUNT() OVER (PARTITION BY $0 ORDER BY $0 RANGE BETWEEN U
     </TestCase>
     <TestCase name="testIsNullPushDown">
         <Resource name="sql">
-            <![CDATA[select w_count from (
-  select count(*) over (w) w_count
+            <![CDATA[select empno, deptno, w_count from (
+  select empno, deptno, count(empno) over (w) w_count
   from emp
-  window w as (partition by empno order by empno)
-) sub_query where w_count is null)]]>
+  window w as (partition by deptno order by empno)
+) sub_query where w_count is null]]>
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
@@ -286,6 +290,7 @@ LogicalProject(EMPNO=[$0], DEPTNO=[$1], W_COUNT=[$2])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     <TestCase name="testIsNullPushDown2">
@@ -317,6 +322,8 @@ LogicalProject(EMPNO=[$0], DEPTNO=[$1], W_COUNT=[$2])
 =======
 
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     <TestCase name="testProjectToWindowRuleForMultipleWindows">
         <Resource name="sql">
             <![CDATA[select
@@ -669,10 +676,14 @@ LogicalProject(DEPTNO=[$0])
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalFilter(condition=[NOT(CAST(OR(AND(IS TRUE(<=($0, $9)), <>($10, 0)), AND(>($10, $11), null, <>($10, 0), IS NOT TRUE(<=($0, $9))), AND(<=($0, $9), <>($10, 0), IS NOT TRUE(<=($0, $9)), <=($10, $11)))):BOOLEAN NOT NULL)])
 =======
     LogicalFilter(condition=[NOT(CAST(CASE(=($10, 0), false, IS TRUE(<=($0, $9)), true, >($10, $11), null, <=($0, $9))):BOOLEAN NOT NULL)])
 >>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
+=======
+    LogicalFilter(condition=[NOT(CAST(CASE(=($10, 0), false, IS TRUE(<=($0, $9)), true, >($10, $11), null:BOOLEAN, <=($0, $9))):BOOLEAN NOT NULL)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
       LogicalJoin(condition=[true], joinType=[inner])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{}], m=[MAX($0)], c=[COUNT()], d=[COUNT($0)])
@@ -685,10 +696,14 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalFilter(condition=[NOT(CAST(OR(AND(IS TRUE(<=($0, $9)), <>($10, 0)), AND(>($10, $11), null, <>($10, 0), IS NOT TRUE(<=($0, $9))), AND(<=($0, $9), <>($10, 0), IS NOT TRUE(<=($0, $9)), <=($10, $11)))):BOOLEAN NOT NULL)])
 =======
     LogicalFilter(condition=[NOT(CAST(CASE(=($10, 0), false, IS TRUE(<=($0, $9)), true, >($10, $11), null, <=($0, $9))):BOOLEAN NOT NULL)])
 >>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
+=======
+    LogicalFilter(condition=[NOT(CAST(CASE(=($10, 0), false, IS TRUE(<=($0, $9)), true, >($10, $11), null:BOOLEAN, <=($0, $9))):BOOLEAN NOT NULL)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
       LogicalJoin(condition=[true], joinType=[inner])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{}], m=[MAX($0)], c=[COUNT()], d=[COUNT($0)])
@@ -743,10 +758,14 @@ LogicalProject(DEPTNO=[$7])
         <Resource name="planMid">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(NAME=[$1], EXPR$1=[CAST(OR(AND(IS TRUE(>($0, $2)), <>($3, 0)), AND(>($3, $4), null, <>($3, 0), IS NOT TRUE(>($0, $2))), AND(>($0, $2), <>($3, 0), IS NOT TRUE(>($0, $2)), <=($3, $4)))):BOOLEAN NOT NULL])
 =======
 LogicalProject(NAME=[$1], EXPR$1=[CAST(CASE(=($3, 0), false, IS TRUE(>($0, $2)), true, >($3, $4), null, >($0, $2))):BOOLEAN NOT NULL])
 >>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
+=======
+LogicalProject(NAME=[$1], EXPR$1=[CAST(CASE(=($3, 0), false, IS TRUE(>($0, $2)), true, >($3, $4), null:BOOLEAN, >($0, $2))):BOOLEAN NOT NULL])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalJoin(condition=[true], joinType=[inner])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
     LogicalAggregate(group=[{}], m=[MIN($0)], c=[COUNT()], d=[COUNT($0)])
@@ -757,10 +776,14 @@ LogicalProject(NAME=[$1], EXPR$1=[CAST(CASE(=($3, 0), false, IS TRUE(>($0, $2)),
         <Resource name="planAfter">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(NAME=[$1], EXPR$1=[CAST(OR(AND(IS TRUE(>($0, $2)), <>($3, 0)), AND(>($3, $4), null, <>($3, 0), IS NOT TRUE(>($0, $2))), AND(>($0, $2), <>($3, 0), IS NOT TRUE(>($0, $2)), <=($3, $4)))):BOOLEAN NOT NULL])
 =======
 LogicalProject(NAME=[$1], EXPR$1=[CAST(CASE(=($3, 0), false, IS TRUE(>($0, $2)), true, >($3, $4), null, >($0, $2))):BOOLEAN NOT NULL])
 >>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
+=======
+LogicalProject(NAME=[$1], EXPR$1=[CAST(CASE(=($3, 0), false, IS TRUE(>($0, $2)), true, >($3, $4), null:BOOLEAN, >($0, $2))):BOOLEAN NOT NULL])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalJoin(condition=[true], joinType=[inner])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
     LogicalAggregate(group=[{}], m=[MIN($0)], c=[COUNT()], d=[COUNT($0)])
@@ -803,10 +826,14 @@ LogicalProject(MGR=[$3])
             <![CDATA[
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(DEPTNO=[$0], EXPR$1=[OR(AND(IS NOT NULL($5), <>($2, 0)), AND(<($3, $2), null, <>($2, 0), IS NULL($5)))])
 =======
 LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true, <($3, $2), null, false)])
 >>>>>>> df6d25e82 ([CALCITE-2986] Wrong results with =ANY subquery (Vineet Garg))
+=======
+LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true, <($3, $2), null:NULL, false)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalJoin(condition=[=($1, $4)], joinType=[left])
     LogicalJoin(condition=[true], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -835,10 +862,14 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($3, 0), false, IS TRUE(=($1, $2)), tr
             <![CDATA[
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(DEPTNO=[$0], EXPR$1=[OR(AND(IS NOT NULL($5), <>($2, 0)), AND(<($3, $2), null, <>($2, 0), IS NULL($5)))])
 =======
 LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true, <($3, $2), null, false)])
 >>>>>>> df6d25e82 ([CALCITE-2986] Wrong results with =ANY subquery (Vineet Garg))
+=======
+LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true, <($3, $2), null:NULL, false)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalJoin(condition=[=($1, $4)], joinType=[left])
     LogicalJoin(condition=[true], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -1697,6 +1728,7 @@ LogicalProject(EXPR$0=[1])
 LogicalProject(EXPR$0=[1])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10)], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5], HIREDATE=[$6], SAL=[$7], COMM=[$8], DEPTNO0=[$9], SLACKER=[$10])
 =======
   LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5], HIREDATE=[$6], SAL=[$7], COMM=[$8], DEPTNO0=[$9], SLACKER=[$10])
@@ -1704,6 +1736,9 @@ LogicalProject(EXPR$0=[1])
 =======
   LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5], HIREDATE=[$6], SAL=[$7], COMM=[$8], DEPTNO0=[$9], SLACKER=[$10])
 >>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
+=======
+  LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10)], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5], HIREDATE=[$6], SAL=[$7], COMM=[$8], DEPTNO0=[$9], SLACKER=[$10])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     LogicalJoin(condition=[=($0, $9)], joinType=[left])
       LogicalFilter(condition=[=($1, 'Charlie')])
         LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -1731,6 +1766,7 @@ LogicalProject(EXPR$0=[1])
 LogicalProject(EXPR$0=[1])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20)], JOB=[CAST($4):VARCHAR(10)], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
 =======
   LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], JOB=[CAST($4):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
@@ -1738,6 +1774,9 @@ LogicalProject(EXPR$0=[1])
 =======
   LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], JOB=[CAST($4):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
 >>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
+=======
+  LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20)], JOB=[CAST($4):VARCHAR(10)], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     LogicalJoin(condition=[=($0, $9)], joinType=[right])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
       LogicalFilter(condition=[>($5, 100)])
@@ -1765,6 +1804,7 @@ LogicalProject(EXPR$0=[1])
 LogicalProject(EXPR$0=[1])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10)], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20)], JOB=[CAST($4):VARCHAR(10)], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
 =======
   LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], JOB=[CAST($4):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
@@ -1772,6 +1812,9 @@ LogicalProject(EXPR$0=[1])
 =======
   LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], JOB=[CAST($4):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
 >>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
+=======
+  LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10)], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20)], JOB=[CAST($4):VARCHAR(10)], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     LogicalJoin(condition=[=($0, $9)], joinType=[inner])
       LogicalFilter(condition=[=($1, 'Charlie')])
         LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -1800,6 +1843,7 @@ LogicalProject(EXPR$0=[1])
 LogicalProject(EXPR$0=[1])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20)], JOB=[CAST($4):VARCHAR(10)], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
 =======
   LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], JOB=[CAST($4):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
@@ -1807,6 +1851,9 @@ LogicalProject(EXPR$0=[1])
 =======
   LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], JOB=[CAST($4):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
 >>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
+=======
+  LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20)], JOB=[CAST($4):VARCHAR(10)], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     LogicalJoin(condition=[=($0, $9)], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
       LogicalFilter(condition=[>($5, 100)])
@@ -1834,6 +1881,7 @@ LogicalProject(EXPR$0=[1])
 LogicalProject(EXPR$0=[1])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10)], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5], HIREDATE=[$6], SAL=[$7], COMM=[$8], DEPTNO0=[$9], SLACKER=[$10])
 =======
   LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5], HIREDATE=[$6], SAL=[$7], COMM=[$8], DEPTNO0=[$9], SLACKER=[$10])
@@ -1841,6 +1889,9 @@ LogicalProject(EXPR$0=[1])
 =======
   LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5], HIREDATE=[$6], SAL=[$7], COMM=[$8], DEPTNO0=[$9], SLACKER=[$10])
 >>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
+=======
+  LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10)], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5], HIREDATE=[$6], SAL=[$7], COMM=[$8], DEPTNO0=[$9], SLACKER=[$10])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     LogicalJoin(condition=[=($0, $9)], joinType=[inner])
       LogicalFilter(condition=[=($1, 'Charlie')])
         LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -3108,6 +3159,7 @@ where cast(e.job as varchar(1)) = 'Manager']]>
             <![CDATA[
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) NOT NULL], EXPR$1=[$2])
   LogicalFilter(condition=[=(CAST(CAST($4):VARCHAR(1) NOT NULL):VARCHAR(7) NOT NULL, 'Manager')])
 =======
@@ -3118,6 +3170,10 @@ LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) CHARACTER SET "UTF-8" COLLATE "UTF-
 LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL], EXPR$1=[CAST($2):INTEGER NOT NULL])
   LogicalFilter(condition=[=(CAST(CAST($4):VARCHAR(1) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL):VARCHAR(7) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL, 'Manager')])
 >>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
+=======
+LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) NOT NULL], EXPR$1=[CAST($2):INTEGER NOT NULL])
+  LogicalFilter(condition=[=(CAST(CAST($4):VARCHAR(1) NOT NULL):VARCHAR(7) NOT NULL, 'Manager')])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$3], ENAME=[$4], JOB=[$5], MGR=[$6], HIREDATE=[$7], SAL=[$8], COMM=[$9], DEPTNO1=[$10], SLACKER=[$11])
       LogicalJoin(condition=[=($2, $12)], joinType=[inner])
         LogicalProject(DEPTNO=[$0], NAME=[$1], DEPTNO0=[$0])
@@ -3130,6 +3186,7 @@ LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) CHARACTER SET "ISO-8859-1" COLLATE 
             <![CDATA[
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) NOT NULL], EXPR$1=[$2])
   LogicalFilter(condition=[=(CAST(CAST($4):VARCHAR(1) NOT NULL):VARCHAR(7) NOT NULL, 'Manager')])
 =======
@@ -3140,6 +3197,10 @@ LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) CHARACTER SET "UTF-8" COLLATE "UTF-
 LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL], EXPR$1=[$2])
   LogicalFilter(condition=[=(CAST(CAST($4):VARCHAR(1) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL):VARCHAR(7) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL, 'Manager')])
 >>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
+=======
+LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) NOT NULL], EXPR$1=[$2])
+  LogicalFilter(condition=[=(CAST(CAST($4):VARCHAR(1) NOT NULL):VARCHAR(7) NOT NULL, 'Manager')])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$3], ENAME=[$4], JOB=[$5], MGR=[$6], HIREDATE=[$7], SAL=[$8], COMM=[$9], DEPTNO1=[$10], SLACKER=[$11])
       LogicalJoin(condition=[=($2, $12)], joinType=[inner])
         LogicalProject(DEPTNO=[$0], NAME=[$1], DEPTNO0=[$0])
@@ -3250,7 +3311,7 @@ LogicalProject(EXPR$0=[false])
   LogicalValues(tuples=[[{ 0 }]])
 =======
 LogicalProject(EXPR$0=[IS TRUE(=($1, $0))])
-  LogicalProject(EXPR$0=[2], EXPR$1=[null])
+  LogicalProject(EXPR$0=[2], EXPR$1=[null:INTEGER])
     LogicalValues(tuples=[[{ 0 }]])
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 ]]>
@@ -3258,7 +3319,12 @@ LogicalProject(EXPR$0=[IS TRUE(=($1, $0))])
         <Resource name="planAfter">
             <![CDATA[
 LogicalProject(EXPR$0=[false])
+<<<<<<< HEAD
   LogicalValues(tuples=[[{ 0 }]])
+=======
+  LogicalProject(EXPR$0=[2], EXPR$1=[null:INTEGER])
+    LogicalValues(tuples=[[{ 0 }]])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 ]]>
         </Resource>
     </TestCase>
@@ -7385,6 +7451,7 @@ LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5
 LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5], HIREDATE=[$6], SAL=[$7], COMM=[$8], DEPTNO0=[$9], SLACKER=[$10])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20)], JOB=[CAST($4):VARCHAR(10)], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
 =======
   LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], JOB=[CAST($4):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
@@ -7392,6 +7459,9 @@ LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5
 =======
   LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], JOB=[CAST($4):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
 >>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
+=======
+  LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20)], JOB=[CAST($4):VARCHAR(10)], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     LogicalJoin(condition=[=($0, $9)], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
       LogicalFilter(condition=[>($5, 100)])
@@ -7474,10 +7544,14 @@ LogicalProject(DEPTNO=[$0], NAME=[$1])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
     LogicalAggregate(group=[{0}])
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject(DEPTNO=[$7])
 =======
       LogicalProject(DEPTNO9=[$7], $f0=[1])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
+=======
+      LogicalProject(DEPTNO9=[$7], $f0=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         LogicalFilter(condition=[>($5, 100)])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
@@ -7487,10 +7561,14 @@ LogicalProject(DEPTNO=[$0], NAME=[$1])
 LogicalJoin(condition=[=($0, $2)], joinType=[semi])
   LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalProject(DEPTNO=[$7])
 =======
   LogicalProject(DEPTNO9=[$7], $f0=[1])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
+=======
+  LogicalProject(DEPTNO9=[$7], $f0=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     LogicalFilter(condition=[>($5, 100)])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
@@ -7510,10 +7588,14 @@ LogicalProject(DEPTNO=[$0])
     LogicalJoin(condition=[=($0, $2)], joinType=[semi])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject(DEPTNO=[$7], $f0=[1:BIGINT])
 =======
       LogicalProject(DEPTNO9=[$7], $f0=[1])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
+=======
+      LogicalProject(DEPTNO9=[$7], $f0=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         LogicalFilter(condition=[>($5, 100)])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalTableScan(table=[[CATALOG, CUSTOMER, ACCOUNT]])
@@ -7551,10 +7633,14 @@ LogicalAggregate(group=[{0}], EXPR$1=[STDDEV_POP($1)], EXPR$2=[AVG($1)], EXPR$3=
         <Resource name="planAfter">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(NAME=[$0], EXPR$1=[CAST(POWER(/(-($1, /(*($2, $2), $3)), $3), 0.5:DECIMAL(2, 1))):INTEGER NOT NULL], EXPR$2=[CAST(/($2, $3)):INTEGER NOT NULL], EXPR$3=[CAST(POWER(/(-($1, /(*($2, $2), $3)), CASE(=($3, 1), null:BIGINT, -($3, 1))), 0.5:DECIMAL(2, 1))):INTEGER NOT NULL], EXPR$4=[CAST(/(-($1, /(*($2, $2), $3)), $3)):INTEGER NOT NULL], EXPR$5=[CAST(/(-($1, /(*($2, $2), $3)), CASE(=($3, 1), null:BIGINT, -($3, 1)))):INTEGER NOT NULL])
 =======
 LogicalProject(NAME=[$0], EXPR$1=[CAST(POWER(/(-($1, /(*($2, $2), $3)), $3), 0.5)):INTEGER NOT NULL], EXPR$2=[CAST(/($2, $3)):INTEGER NOT NULL], EXPR$3=[CAST(POWER(/(-($1, /(*($2, $2), $3)), CASE(=($3, 1), null, -($3, 1))), 0.5)):INTEGER NOT NULL], EXPR$4=[CAST(/(-($1, /(*($2, $2), $3)), $3)):INTEGER NOT NULL], EXPR$5=[CAST(/(-($1, /(*($2, $2), $3)), CASE(=($3, 1), null, -($3, 1)))):INTEGER NOT NULL])
 >>>>>>> 232030fd4 ([CALCITE-2632]: Add hashCode and equals implementations to RexNode)
+=======
+LogicalProject(NAME=[$0], EXPR$1=[CAST(POWER(/(-($1, /(*($2, $2), $3)), $3), 0.5:DECIMAL(2, 1))):INTEGER NOT NULL], EXPR$2=[CAST(/($2, $3)):INTEGER NOT NULL], EXPR$3=[CAST(POWER(/(-($1, /(*($2, $2), $3)), CASE(=($3, 1), null:BIGINT, -($3, 1))), 0.5:DECIMAL(2, 1))):INTEGER NOT NULL], EXPR$4=[CAST(/(-($1, /(*($2, $2), $3)), $3)):INTEGER NOT NULL], EXPR$5=[CAST(/(-($1, /(*($2, $2), $3)), CASE(=($3, 1), null:BIGINT, -($3, 1)))):INTEGER NOT NULL])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalAggregate(group=[{0}], agg#0=[$SUM0($2)], agg#1=[$SUM0($1)], agg#2=[COUNT()])
     LogicalProject(NAME=[$0], DEPTNO=[$1], $f2=[*($1, $1)])
       LogicalProject(NAME=[$1], DEPTNO=[$0])
@@ -8053,6 +8139,7 @@ LogicalProject(NAME=[$1])
     LogicalProject(DEPTNO=[$0], NAME=[$1], DEPTNO0=[$2], NAME0=[$3], $f4=[>($2, 10)])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject(DEPTNO=[$0], NAME=[$1], DEPTNO0=[CAST($2):INTEGER], NAME0=[CAST($3):VARCHAR(10)], $f2=[CAST($4):BOOLEAN])
 =======
       LogicalProject(DEPTNO=[$0], NAME=[$1], DEPTNO0=[CAST($2):INTEGER], NAME0=[CAST($3):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], $f2=[CAST($4):BOOLEAN])
@@ -8060,6 +8147,9 @@ LogicalProject(NAME=[$1])
 =======
       LogicalProject(DEPTNO=[$0], NAME=[$1], DEPTNO0=[CAST($2):INTEGER], NAME0=[CAST($3):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], $f2=[CAST($4):BOOLEAN])
 >>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
+=======
+      LogicalProject(DEPTNO=[$0], NAME=[$1], DEPTNO0=[CAST($2):INTEGER], NAME0=[CAST($3):VARCHAR(10)], $f2=[CAST($4):BOOLEAN])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         LogicalJoin(condition=[true], joinType=[inner])
           LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
           LogicalProject(DEPTNO=[$0], NAME=[$1], $f2=[>($0, 10)])
@@ -8754,8 +8844,13 @@ LogicalAggregate(group=[{}], EXPR$0=[SUM($5)])
         <Resource name="planAfter">
             <![CDATA[
 LogicalProject(EXPR$0=[CASE(=($1, 0), null:INTEGER, $0)])
+<<<<<<< HEAD
   LogicalAggregate(group=[{}], EXPR$0=[$SUM0($0)], agg#1=[$SUM0($1)])
     LogicalProject($f5=[CAST(*($1, $4)):INTEGER NOT NULL], $f6=[*($2, $4)])
+=======
+  LogicalAggregate(group=[{}], EXPR$0=[$SUM0($5)], agg#1=[$SUM0($6)])
+    LogicalProject(JOB=[$0], EXPR$0=[$1], $f2=[$2], NAME=[$3], $f1=[$4], $f5=[CAST(*($1, $4)):INTEGER NOT NULL], $f6=[*($2, $4)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
       LogicalJoin(condition=[=($0, $3)], joinType=[inner])
         LogicalAggregate(group=[{2}], EXPR$0=[$SUM0($5)], agg#1=[COUNT()])
           LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
@@ -8766,6 +8861,7 @@ LogicalProject(EXPR$0=[CASE(=($1, 0), null:INTEGER, $0)])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 <<<<<<< HEAD
     <TestCase name="testReduceCaseNullabilityChange">
         <Resource name="sql">
@@ -8869,6 +8965,8 @@ LogicalProject(SAL=[$0], T=[$1])
 =======
 
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     <TestCase name="testReduceConstantsIsNotNull">
         <Resource name="sql">
             <![CDATA[select empno from emp
@@ -9069,10 +9167,14 @@ LogicalProject(USER=[USER])
     <Resource name="planAfter">
       <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(USER=['happyCalciteUser':VARCHAR(2000)])
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 =======
 LogicalProject(USER=['happyCalciteUser'])
+=======
+LogicalProject(USER=['happyCalciteUser':VARCHAR(2000)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalProject(DUMMY=[0])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 >>>>>>> 789ac66d1 ([CALCITE-2736] ReduceExpressionsRule never reduces dynamic expressions but this should be configurable (Yingyu Wang))
@@ -10373,6 +10475,7 @@ LogicalProject(DEPTNO=[$9], NAME=[$1])
 LogicalAggregate(group=[{0, 1, 2}])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalProject(DEPTNO=[$7], ENAME=[$1], EXPR$2=[null:VARCHAR(20)])
 =======
   LogicalProject(DEPTNO=[$7], ENAME=[$1], EXPR$2=[CASE(=(1, 2), CAST(SUBSTRING($1, 1, 2)):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary", null)])
@@ -10384,6 +10487,20 @@ LogicalAggregate(group=[{0, 1, 2}])
 ]]>
     </Resource>
   </TestCase>
+=======
+  LogicalProject(DEPTNO=[$7], ENAME=[$1], EXPR$2=[CASE(=(1, 2), CAST(SUBSTRING($1, 1, 2)):VARCHAR(20), null:VARCHAR(20))])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalAggregate(group=[{0, 1, 2}])
+  LogicalProject(DEPTNO=[$7], ENAME=[$1], EXPR$2=[null:VARCHAR(20)])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     <TestCase name="testReduceNullableToNotNull">
         <Resource name="sql">
             <![CDATA[select
@@ -10758,7 +10875,11 @@ LogicalProject(DEPTNO=[$0])
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+<<<<<<< HEAD
     LogicalFilter(condition=[OR(AND(IS TRUE(>($0, $9)), <>($10, 0)), AND(>($10, $11), null, <>($10, 0), IS NOT TRUE(>($0, $9))), AND(>($0, $9), <>($10, 0), IS NOT TRUE(>($0, $9)), <=($10, $11)))])
+=======
+    LogicalFilter(condition=[CASE(=($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null:BOOLEAN, >($0, $9))])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
       LogicalJoin(condition=[true], joinType=[inner])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{}], m=[MIN($0)], c=[COUNT()], d=[COUNT($0)])
@@ -10770,7 +10891,11 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+<<<<<<< HEAD
     LogicalFilter(condition=[OR(AND(IS TRUE(>($0, $9)), <>($10, 0)), AND(>($10, $11), null, <>($10, 0), IS NOT TRUE(>($0, $9))), AND(>($0, $9), <>($10, 0), IS NOT TRUE(>($0, $9)), <=($10, $11)))])
+=======
+    LogicalFilter(condition=[CASE(=($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null:BOOLEAN, >($0, $9))])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
       LogicalJoin(condition=[true], joinType=[inner])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{}], m=[MIN($0)], c=[COUNT()], d=[COUNT($0)])
@@ -10990,6 +11115,7 @@ order by cast(d.deptno as varchar(10)) offset 1]]>
 LogicalSort(sort0=[$1], dir0=[ASC], offset=[1])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalProject(DEPTNO=[$0], EXPR$1=[CAST($0):VARCHAR(10) NOT NULL])
 =======
   LogicalProject(DEPTNO=[$0], EXPR$1=[CAST($0):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL])
@@ -10997,6 +11123,9 @@ LogicalSort(sort0=[$1], dir0=[ASC], offset=[1])
 =======
   LogicalProject(DEPTNO=[$0], EXPR$1=[CAST($0):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL])
 >>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
+=======
+  LogicalProject(DEPTNO=[$0], EXPR$1=[CAST($0):VARCHAR(10) NOT NULL])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 ]]>
         </Resource>
@@ -11005,6 +11134,7 @@ LogicalSort(sort0=[$1], dir0=[ASC], offset=[1])
 LogicalSort(sort0=[$1], dir0=[ASC], offset=[1])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalProject(DEPTNO=[$0], EXPR$1=[CAST($0):VARCHAR(10) NOT NULL])
 =======
   LogicalProject(DEPTNO=[$0], EXPR$1=[CAST($0):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL])
@@ -11012,6 +11142,9 @@ LogicalSort(sort0=[$1], dir0=[ASC], offset=[1])
 =======
   LogicalProject(DEPTNO=[$0], EXPR$1=[CAST($0):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL])
 >>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
+=======
+  LogicalProject(DEPTNO=[$0], EXPR$1=[CAST($0):VARCHAR(10) NOT NULL])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 ]]>
         </Resource>
@@ -11337,10 +11470,14 @@ LogicalProject(DEPTNO=[$0])
         <Resource name="planMid">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CAST(OR(AND(IS TRUE(>($0, $9)), IS NOT TRUE(OR(IS NULL($12), =($10, 0)))), AND(IS TRUE(>($10, $11)), null, IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9))), AND(>($0, $9), IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9)), IS NOT TRUE(>($10, $11))))):BOOLEAN NOT NULL])
 =======
 LogicalProject(EXPR$0=[CAST(CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null, >($0, $9))):BOOLEAN NOT NULL])
 >>>>>>> 2146c3b8f ([CALCITE-3031] Support for correlated ANY/SOME/ALL sub-query (Vineet Garg))
+=======
+LogicalProject(EXPR$0=[CAST(CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null:BOOLEAN, >($0, $9))):BOOLEAN NOT NULL])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{2}])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalProject(m=[$0], c=[$1], d=[$2], trueLiteral=[true])
@@ -11353,10 +11490,14 @@ LogicalProject(EXPR$0=[CAST(CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(
         <Resource name="planAfter">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CAST(OR(AND(IS TRUE(>($0, $9)), IS NOT TRUE(OR(IS NULL($12), =($10, 0)))), AND(IS TRUE(>($10, $11)), null, IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9))), AND(>($0, $9), IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9)), IS NOT TRUE(>($10, $11))))):BOOLEAN NOT NULL])
 =======
 LogicalProject(EXPR$0=[CAST(CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null, >($0, $9))):BOOLEAN NOT NULL])
 >>>>>>> 2146c3b8f ([CALCITE-3031] Support for correlated ANY/SOME/ALL sub-query (Vineet Garg))
+=======
+LogicalProject(EXPR$0=[CAST(CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null:BOOLEAN, >($0, $9))):BOOLEAN NOT NULL])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalJoin(condition=[=($2, $13)], joinType=[left])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalProject(m=[$1], c=[$2], d=[$3], trueLiteral=[true], NAME=[$0])
@@ -11551,10 +11692,14 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
         <Resource name="planAfter">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EMPNO=[10], ENAME=[$1], JOB=[$2], MGR=[null:INTEGER], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[7], SLACKER=[$8])
 =======
 LogicalProject(EMPNO=[10], ENAME=[$1], JOB=[$2], MGR=[null], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[7], SLACKER=[$8])
 >>>>>>> 779444f32 ([CALCITE-2730] RelBuilder incorrectly simplifies a filter with duplicate conjunction to empty)
+=======
+LogicalProject(EMPNO=[10], ENAME=[$1], JOB=[$2], MGR=[null:INTEGER], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[7], SLACKER=[$8])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalFilter(condition=[AND(=($7, 7), =($0, 10), IS NULL($3))])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
@@ -12140,10 +12285,14 @@ LogicalProject(DEPTNO=[$1])
         <Resource name="planAfter">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EMPNO=[$0], D=[CASE(=($2, 0), false, IS NULL($1), null:BOOLEAN, IS NOT NULL($5), true, <($3, $2), null:BOOLEAN, false)])
 =======
 LogicalProject(EMPNO=[$0], D=[CASE(=($2, 0), false, IS NULL($1), null, IS NOT NULL($5), true, <($3, $2), null, false)])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
+=======
+LogicalProject(EMPNO=[$0], D=[CASE(=($2, 0), false, IS NULL($1), null:NULL, IS NOT NULL($5), true, <($3, $2), null:NULL, false)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalJoin(condition=[=($1, $4)], joinType=[left])
     LogicalJoin(condition=[true], joinType=[inner])
       LogicalProject(EMPNO=[$0], DEPTNO=[CASE(true, CAST($7):INTEGER, null:INTEGER)])
@@ -12154,10 +12303,18 @@ LogicalProject(EMPNO=[$0], D=[CASE(=($2, 0), false, IS NULL($1), null, IS NOT NU
             LogicalProject(EMPNO=[$0], DEPTNO=[CASE(true, CAST($7):INTEGER, null:INTEGER)])
               LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalAggregate(group=[{0, 1}])
+<<<<<<< HEAD
       LogicalProject(DEPTNO=[$1], i=[true])
         LogicalFilter(condition=[<($0, 20)])
           LogicalProject(EMPNO=[$0], DEPTNO=[CASE(true, CAST($7):INTEGER, null:INTEGER)])
             LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+=======
+      LogicalProject(DEPTNO=[$0], i=[true])
+        LogicalProject(DEPTNO=[$1])
+          LogicalFilter(condition=[<($0, 20)])
+            LogicalProject(EMPNO=[$0], DEPTNO=[CASE(true, CAST($7):INTEGER, null:INTEGER)])
+              LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 ]]>
         </Resource>
     </TestCase>
@@ -12192,7 +12349,11 @@ LogicalProject(EXPR$0=[CASE(true, CAST($7):INTEGER, null:INTEGER)])
             <![CDATA[
 LogicalProject(EMPNO=[$0])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+<<<<<<< HEAD
     LogicalFilter(condition=[<($0, CASE(OR(AND(IS NOT NULL($12), <>($9, 0)), AND(<($10, $9), null, <>($9, 0), IS NULL($12))), 10, AND(OR(IS NULL($12), =($9, 0)), OR(>=($10, $9), =($9, 0), IS NOT NULL($12))), 20, 30))])
+=======
+    LogicalFilter(condition=[<($0, CASE(=(CASE(=($9, 0), false, IS NOT NULL($12), true, <($10, $9), null:NULL, false), true), 10, =(CASE(=($9, 0), false, IS NOT NULL($12), true, <($10, $9), null:NULL, false), false), 20, 30))])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
       LogicalJoin(condition=[=($7, $11)], joinType=[left])
         LogicalJoin(condition=[true], joinType=[inner])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -12201,9 +12362,16 @@ LogicalProject(EMPNO=[$0])
               LogicalFilter(condition=[<($0, 20)])
                 LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{0, 1}])
+<<<<<<< HEAD
           LogicalProject(EXPR$0=[CASE(true, CAST($7):INTEGER, null:INTEGER)], i=[true])
             LogicalFilter(condition=[<($0, 20)])
               LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+=======
+          LogicalProject(EXPR$0=[$0], i=[true])
+            LogicalProject(EXPR$0=[CASE(true, CAST($7):INTEGER, null:INTEGER)])
+              LogicalFilter(condition=[<($0, 20)])
+                LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 ]]>
         </Resource>
     </TestCase>
@@ -12483,6 +12651,7 @@ LogicalProject(JOB=[$0], EMPNO=[10], SAL=[$1], S=[$2])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testAggregateProjectPullUpConstants2">
         <Resource name="sql">
             <![CDATA[select ename, sal
@@ -12508,6 +12677,8 @@ LogicalProject(ENAME=['John':VARCHAR(20)], SAL=[$0])
 =======
 
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     <TestCase name="testWhereExpressionInCorrelated">
         <Resource name="sql">
             <![CDATA[select ename from (
@@ -12746,7 +12917,7 @@ LogicalProject(D=[$0])
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
-LogicalProject(EXPR$0=[=(EXTRACT(FLAG(SECOND), CAST(CASE(true, 2018-01-01 01:23:45, null)):TIMESTAMP(0)), EXTRACT(FLAG(SECOND), $0))])
+LogicalProject(EXPR$0=[=(EXTRACT(FLAG(SECOND), CAST(CASE(true, 2018-01-01 01:23:45, null:TIMESTAMP(0))):TIMESTAMP(0)), EXTRACT(FLAG(SECOND), $0))])
   LogicalValues(tuples=[[{ 2018-01-01 01:23:45 }]])
 ]]>
         </Resource>
@@ -14241,7 +14412,7 @@ LogicalProject(DEPTNO=[$0])
     LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{0}])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
       LogicalAggregate(group=[{}], agg#0=[MIN($0)])
-        LogicalProject($f0=[1])
+        LogicalProject($f0=[1:BIGINT])
           LogicalUnion(all=[true])
             LogicalProject(EXPR$0=[1])
               LogicalFilter(condition=[AND(<($5, 100), =($7, $cor0.DEPTNO))])
@@ -14258,7 +14429,7 @@ LogicalProject(DEPTNO=[$0])
     LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{0}])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
       LogicalAggregate(group=[{}], agg#0=[MIN($0)])
-        LogicalProject($f0=[1])
+        LogicalProject($f0=[1:BIGINT])
           LogicalUnion(all=[true])
             LogicalProject(EXPR$0=[1])
               LogicalFilter(condition=[AND(<($5, 100), =($7, $cor0.DEPTNO))])
@@ -14277,7 +14448,7 @@ LogicalProject(DEPTNO=[$0])
         LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
         LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
           LogicalProject(DEPTNO=[$1], $f0=[$0])
-            LogicalProject($f0=[1], DEPTNO=[$1])
+            LogicalProject($f0=[1:BIGINT], DEPTNO=[$1])
               LogicalUnion(all=[true])
                 LogicalProject(EXPR$0=[1], DEPTNO=[$7])
                   LogicalFilter(condition=[<($5, 100)])
@@ -14301,7 +14472,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
     LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{7}])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{}], agg#0=[MIN($0)])
-        LogicalProject($f0=[1])
+        LogicalProject($f0=[1:BIGINT])
           LogicalUnion(all=[true])
             LogicalProject(EXPR$0=[1])
               LogicalFilter(condition=[=($0, $cor0.DEPTNO)])
@@ -14318,7 +14489,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
     LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{7}])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{}], agg#0=[MIN($0)])
-        LogicalProject($f0=[1])
+        LogicalProject($f0=[1:BIGINT])
           LogicalUnion(all=[true])
             LogicalProject(EXPR$0=[1])
               LogicalFilter(condition=[=($0, $cor0.DEPTNO)])
@@ -14337,7 +14508,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
           LogicalProject(DEPTNO=[$1], $f0=[$0])
-            LogicalProject($f0=[1], DEPTNO=[$1])
+            LogicalProject($f0=[1:BIGINT], DEPTNO=[$1])
               LogicalUnion(all=[true])
                 LogicalProject(EXPR$0=[1], DEPTNO=[$0])
                   LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -14362,13 +14533,13 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
     LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{1, 7}])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{}], agg#0=[MIN($0)])
-        LogicalProject($f0=[1])
+        LogicalProject($f0=[1:BIGINT])
           LogicalUnion(all=[true])
             LogicalProject(EXPR$0=[1])
               LogicalFilter(condition=[=($0, $cor0.DEPTNO)])
                 LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
             LogicalProject(EXPR$0=[1])
-              LogicalFilter(condition=[=(CAST($1):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL, $cor0.ENAME)])
+              LogicalFilter(condition=[=(CAST($1):VARCHAR(20) NOT NULL, $cor0.ENAME)])
                 LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 ]]>
         </Resource>
@@ -14379,13 +14550,13 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
     LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{1, 7}])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{}], agg#0=[MIN($0)])
-        LogicalProject($f0=[1])
+        LogicalProject($f0=[1:BIGINT])
           LogicalUnion(all=[true])
             LogicalProject(EXPR$0=[1])
               LogicalFilter(condition=[=($0, $cor0.DEPTNO)])
                 LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
             LogicalProject(EXPR$0=[1])
-              LogicalFilter(condition=[=(CAST($1):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL, $cor0.ENAME)])
+              LogicalFilter(condition=[=(CAST($1):VARCHAR(20) NOT NULL, $cor0.ENAME)])
                 LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 ]]>
         </Resource>
@@ -14393,12 +14564,12 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], $f0=[$11])
-    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], ENAME0=[CAST($9):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], DEPTNO0=[CAST($10):INTEGER], $f2=[CAST($11):BIGINT])
+    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], ENAME0=[CAST($9):VARCHAR(20)], DEPTNO0=[CAST($10):INTEGER], $f2=[CAST($11):BIGINT])
       LogicalJoin(condition=[AND(=($1, $9), =($7, $10))], joinType=[inner])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{0, 1}], agg#0=[MIN($2)])
           LogicalProject(ENAME=[$1], DEPTNO=[$2], $f0=[$0])
-            LogicalProject($f0=[1], ENAME=[$1], DEPTNO=[$2])
+            LogicalProject($f0=[1:BIGINT], ENAME=[$1], DEPTNO=[$2])
               LogicalUnion(all=[true])
                 LogicalProject(EXPR$0=[$0], ENAME=[$2], DEPTNO=[$1])
                   LogicalJoin(condition=[true], joinType=[inner])
@@ -14409,8 +14580,8 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
                         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
                 LogicalJoin(condition=[true], joinType=[inner])
                   LogicalProject(EXPR$0=[1], NAME0=[$2])
-                    LogicalFilter(condition=[=(CAST($1):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL, $2)])
-                      LogicalProject(DEPTNO=[$0], NAME=[$1], NAME0=[CAST($1):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL])
+                    LogicalFilter(condition=[=(CAST($1):VARCHAR(20) NOT NULL, $2)])
+                      LogicalProject(DEPTNO=[$0], NAME=[$1], NAME0=[CAST($1):VARCHAR(20) NOT NULL])
                         LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
                   LogicalAggregate(group=[{0}])
                     LogicalProject(DEPTNO=[$7])
@@ -14499,7 +14670,7 @@ LogicalProject(DEPTNO=[$0])
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
-    LogicalFilter(condition=[CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null, >($0, $9))])
+    LogicalFilter(condition=[CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null:BOOLEAN, >($0, $9))])
       LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{2}])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalProject(m=[$0], c=[$1], d=[$2], trueLiteral=[true])
@@ -14513,7 +14684,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
-    LogicalFilter(condition=[CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null, >($0, $9))])
+    LogicalFilter(condition=[CASE(IS NULL($12), false, =($10, 0), false, IS TRUE(>($0, $9)), true, >($10, $11), null:BOOLEAN, >($0, $9))])
       LogicalJoin(condition=[=($2, $13)], joinType=[left])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalProject(m=[$1], c=[$2], d=[$3], trueLiteral=[true], NAME=[$0])

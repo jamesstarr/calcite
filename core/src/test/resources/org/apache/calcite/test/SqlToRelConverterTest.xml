@@ -55,7 +55,11 @@ LogicalProject(COLLECT_SKILL=[$1], COUNT_SKILL=[$2], COUNT_STAR=[$2], APPROX_COU
     <TestCase name="testCase">
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CAST(1):INTEGER])
+=======
+LogicalProject(EXPR$0=[CASE(=('a', 'a'), 1, null:INTEGER)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalValues(tuples=[[{ 0 }]])
 ]]>
         </Resource>
@@ -180,7 +184,7 @@ GROUP BY GROUPING SETS (
         <Resource name="plan">
             <![CDATA[
 LogicalAggregate(group=[{0, 1}], groups=[[{0, 1}, {0}]])
-  LogicalProject(EMPNO=[$0], X=[CASE(OR(=($1, 'Fred'), =($1, 'Eric')), 'Manager', CAST('Other'):CHAR(7) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL)])
+  LogicalProject(EMPNO=[$0], X=[CASE(OR(=($1, 'Fred'), =($1, 'Eric')), 'Manager', CAST('Other'):CHAR(7) NOT NULL)])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -356,7 +360,7 @@ GROUP BY GROUPING SETS (
         <Resource name="plan">
             <![CDATA[
 LogicalAggregate(group=[{0, 1}], groups=[[{0, 1}, {0}]])
-  LogicalProject(EMPNO=[$0], EXPR$1=[CASE(OR(=($1, 'Fred'), =($1, 'Eric')), 'Manager', CAST('Other'):CHAR(7) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL)])
+  LogicalProject(EMPNO=[$0], EXPR$1=[CASE(OR(=($1, 'Fred'), =($1, 'Eric')), 'Manager', CAST('Other'):CHAR(7) NOT NULL)])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 >>>>>>> a4e819594 (Temp fix for CALCITE-5045/CALCITE-5145)
 ]]>
@@ -807,7 +811,11 @@ FROM
     <TestCase name="testSelectOverDistinct">
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CASE(>(COUNT(DISTINCT $7) OVER (ROWS BETWEEN 10 PRECEDING AND CURRENT ROW), 0), $SUM0(DISTINCT $7) OVER (ROWS BETWEEN 10 PRECEDING AND CURRENT ROW), null:INTEGER)])
+=======
+LogicalProject(EXPR$0=[CASE(>(COUNT(DISTINCT $7) OVER (ROWS BETWEEN 10 PRECEDING AND CURRENT ROW), 0), CAST($SUM0(DISTINCT $7) OVER (ROWS BETWEEN 10 PRECEDING AND CURRENT ROW)):INTEGER, null:INTEGER)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -1013,11 +1021,15 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{}], agg#0=[MIN($0)])
 <<<<<<< HEAD
+<<<<<<< HEAD
         LogicalProject($f0=[1:BIGINT])
           LogicalFilter(condition=[=($0, 55)])
             LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 =======
         LogicalProject($f0=[1])
+=======
+        LogicalProject($f0=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
           LogicalProject(EXPR$0=[1])
             LogicalFilter(condition=[=($0, 55)])
               LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -1038,11 +1050,15 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{}], agg#0=[MIN($0)])
 <<<<<<< HEAD
+<<<<<<< HEAD
         LogicalProject($f0=[1:BIGINT])
           LogicalFilter(condition=[=($cor0.DEPTNO, $0)])
             LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 =======
         LogicalProject($f0=[1])
+=======
+        LogicalProject($f0=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
           LogicalProject(EXPR$0=[1])
             LogicalFilter(condition=[=($cor0.DEPTNO, $0)])
               LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -1285,7 +1301,11 @@ LogicalProject(EXPR$0=[NOT(LIKE('a', 'b', 'c'))])
     <TestCase name="testOverMultiple">
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CASE(>(COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), $SUM0($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), null:INTEGER)], EXPR$1=[CASE(>(COUNT($7) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), $SUM0($7) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), null:INTEGER)], EXPR$2=[CASE(>=(COUNT() OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 3 PRECEDING AND CURRENT ROW), 2), CASE(>(COUNT($7) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 3 PRECEDING AND CURRENT ROW), 0), $SUM0($7) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 3 PRECEDING AND CURRENT ROW), null:INTEGER), null:NULL)])
+=======
+LogicalProject(EXPR$0=[CASE(>(COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):INTEGER, null:INTEGER)], EXPR$1=[CASE(>(COUNT($7) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0($7) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):INTEGER, null:INTEGER)], EXPR$2=[CASE(>=(COUNT() OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 3 PRECEDING AND CURRENT ROW), 2), CASE(>(COUNT($7) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 3 PRECEDING AND CURRENT ROW), 0), CAST($SUM0($7) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 3 PRECEDING AND CURRENT ROW)):INTEGER, null:INTEGER), null:NULL)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalFilter(condition=[>(-($7, $5), 999)])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
@@ -1504,7 +1524,11 @@ LogicalProject(C_NATIONKEY=[$1], FAKE_COL3=[$2])
     <TestCase name="testOverAvg">
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CASE(>(COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), $SUM0($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), null:INTEGER)], EXPR$1=[CAST(/(CASE(>(COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), $SUM0($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), null:INTEGER), COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW))):INTEGER])
+=======
+LogicalProject(EXPR$0=[CASE(>(COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):INTEGER, null:INTEGER)], EXPR$1=[CAST(/(CASE(>(COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):INTEGER, null:INTEGER), COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW))):INTEGER])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -1548,7 +1572,11 @@ from emp]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[*($0, 13:INTERVAL YEAR TO MONTH)])
+=======
+LogicalProject(EXPR$0=[*(CAST($0):INTEGER NOT NULL, 13:INTERVAL YEAR TO MONTH)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -1561,7 +1589,11 @@ from emp]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[*($0, 3660000:INTERVAL HOUR TO MINUTE)])
+=======
+LogicalProject(EXPR$0=[*(CAST($0):INTEGER NOT NULL, 3660000:INTERVAL HOUR TO MINUTE)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -2050,7 +2082,11 @@ window w1 as (partition by job order by hiredate rows 2 preceding)]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CASE(>(COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), $SUM0($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), null:INTEGER)], EXPR$1=[/(CASE(>(COUNT(CAST($5):REAL NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), $SUM0(CAST($5):REAL NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), null:REAL), COUNT(CAST($5):REAL NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW))])
+=======
+LogicalProject(EXPR$0=[CASE(>(COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):INTEGER, null:INTEGER)], EXPR$1=[/(CASE(>(COUNT(CAST($5):REAL NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0(CAST($5):REAL NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):REAL, null:REAL), COUNT(CAST($5):REAL NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW))])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -2060,6 +2096,7 @@ LogicalProject(EXPR$0=[CASE(>(COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS B
             <![CDATA[
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[CAST(/(-(CASE(>(COUNT(*(CAST($5):INTEGER NOT NULL, CAST($5):INTEGER NOT NULL)) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), $SUM0(*(CAST($5):INTEGER NOT NULL, CAST($5):INTEGER NOT NULL)) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), null:INTEGER), /(*(CASE(>(COUNT(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), $SUM0(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), null:INTEGER), CASE(>(COUNT(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), $SUM0(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), null:INTEGER)), COUNT(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW))), COUNT(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW))):INTEGER], EXPR$1=[CAST(/(CASE(>(COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), $SUM0($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), null:INTEGER), COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW))):INTEGER])
 =======
 LogicalProject(EXPR$0=[/(-(CASE(>(COUNT(*(CAST($5):DOUBLE NOT NULL, CAST($5):DOUBLE NOT NULL)) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0(*(CAST($5):DOUBLE NOT NULL, CAST($5):DOUBLE NOT NULL)) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):DOUBLE, null), /(*(CASE(>(COUNT(CAST($5):DOUBLE NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0(CAST($5):DOUBLE NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):DOUBLE, null), CASE(>(COUNT(CAST($5):DOUBLE NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0(CAST($5):DOUBLE NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):DOUBLE, null)), COUNT(CAST($5):DOUBLE NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW))), COUNT(CAST($5):DOUBLE NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW))], EXPR$1=[/(CAST(CASE(>(COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):INTEGER, null)):DOUBLE, COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW))])
@@ -2067,6 +2104,9 @@ LogicalProject(EXPR$0=[/(-(CASE(>(COUNT(*(CAST($5):DOUBLE NOT NULL, CAST($5):DOU
 =======
 LogicalProject(EXPR$0=[CAST(/(-(CASE(>(COUNT(*(CAST($5):INTEGER NOT NULL, CAST($5):INTEGER NOT NULL)) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0(*(CAST($5):INTEGER NOT NULL, CAST($5):INTEGER NOT NULL)) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):INTEGER, null), /(*(CASE(>(COUNT(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):INTEGER, null), CASE(>(COUNT(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):INTEGER, null)), COUNT(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW))), COUNT(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW))):INTEGER], EXPR$1=[CAST(/(CASE(>(COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):INTEGER, null), COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW))):INTEGER])
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+LogicalProject(EXPR$0=[CAST(/(-(CASE(>(COUNT(*(CAST($5):INTEGER NOT NULL, CAST($5):INTEGER NOT NULL)) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0(*(CAST($5):INTEGER NOT NULL, CAST($5):INTEGER NOT NULL)) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):INTEGER, null:INTEGER), /(*(CASE(>(COUNT(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):INTEGER, null:INTEGER), CASE(>(COUNT(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):INTEGER, null:INTEGER)), COUNT(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW))), COUNT(CAST($5):INTEGER NOT NULL) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW))):INTEGER], EXPR$1=[CAST(/(CASE(>(COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), CAST($SUM0($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)):INTEGER, null:INTEGER), COUNT($5) OVER (PARTITION BY $2 ORDER BY $4 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW))):INTEGER])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -2360,7 +2400,7 @@ LogicalProject(A=[$0], B=[$1], C=[$2], DEPTNO=[$3], NAME=[$4])
     </TestCase>
     <TestCase name="testStructTypeAlias">
         <Resource name="sql">
-            <![CDATA[select t.r AS myRow
+            <![CDATA[select t.r AS myRow 
 from (select row(row(1)) r from dept) t]]>
         </Resource>
         <Resource name="plan">
@@ -2750,6 +2790,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{}], agg#0=[MIN($0)])
 <<<<<<< HEAD
+<<<<<<< HEAD
         LogicalProject($f0=[1:BIGINT])
           LogicalFilter(condition=[<=($0, $cor1.DEPTNO)])
             LogicalProject(DEPTNO=[$0], NAME=[$1])
@@ -2757,6 +2798,9 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
                 LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 =======
         LogicalProject($f0=[1])
+=======
+        LogicalProject($f0=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
           LogicalProject(EXPR$0=[1])
             LogicalFilter(condition=[<=($0, $cor1.DEPTNO)])
               LogicalProject(DEPTNO=[$0], NAME=[$1])
@@ -2859,6 +2903,7 @@ LogicalProject(D2=[$0], D3=[$1])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{}], agg#0=[MIN($0)])
 <<<<<<< HEAD
+<<<<<<< HEAD
         LogicalProject($f0=[1:BIGINT])
           LogicalFilter(condition=[AND(=($0, $cor3.D2), IS NOT NULL($1))])
             LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{0}])
@@ -2871,13 +2916,16 @@ LogicalProject(D2=[$0], D3=[$1])
                       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 =======
         LogicalProject($f0=[1])
+=======
+        LogicalProject($f0=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
           LogicalProject(EXPR$0=[1])
             LogicalFilter(condition=[AND(=($0, $cor3.D2), IS NOT NULL($1))])
               LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{0}])
                 LogicalProject(D1=[+($0, 1)])
                   LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
                 LogicalAggregate(group=[{}], agg#0=[MIN($0)])
-                  LogicalProject($f0=[1])
+                  LogicalProject($f0=[1:BIGINT])
                     LogicalProject(EXPR$0=[2])
                       LogicalFilter(condition=[AND(=($0, $cor0.D1), =($1, $cor0.D1), =($2, $cor3.D3))])
                         LogicalProject(D4=[+($0, 4)], D5=[+($0, 5)], D6=[+($0, 6)])
@@ -2922,7 +2970,7 @@ LogicalProject(D2=[$0], D3=[$1])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{0, 1}], agg#0=[MIN($2)])
           LogicalProject(D1=[$1], D6=[$2], $f0=[$0])
-            LogicalProject($f0=[1], D1=[$1], D6=[$2])
+            LogicalProject($f0=[1:BIGINT], D1=[$1], D6=[$2])
               LogicalProject(EXPR$0=[1], D1=[$0], D6=[$2])
                 LogicalFilter(condition=[IS NOT NULL($1)])
                   LogicalProject(D1=[$0], $f0=[$3], D6=[$2])
@@ -2931,7 +2979,7 @@ LogicalProject(D2=[$0], D3=[$1])
                         LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
                       LogicalAggregate(group=[{0, 1}], agg#0=[MIN($2)])
                         LogicalProject(D4=[$1], D6=[$2], $f0=[$0])
-                          LogicalProject($f0=[1], D4=[$1], D6=[$2])
+                          LogicalProject($f0=[1:BIGINT], D4=[$1], D6=[$2])
                             LogicalProject(EXPR$0=[2], D4=[$0], D6=[$2])
                               LogicalFilter(condition=[=($1, $0)])
                                 LogicalProject(D4=[+($0, 4)], D5=[+($0, 5)], D6=[+($0, 6)])
@@ -2981,7 +3029,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
           LogicalProject(DEPTNO0=[$1], $f0=[$0])
-            LogicalProject($f0=[1], DEPTNO0=[$1])
+            LogicalProject($f0=[1:BIGINT], DEPTNO0=[$1])
               LogicalProject(EXPR$0=[1], DEPTNO0=[$2])
                 LogicalFilter(condition=[<=($0, $2)])
                   LogicalProject(DEPTNO=[$0], NAME=[$1], DEPTNO0=[$2])
@@ -3016,7 +3064,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
           LogicalProject(DEPTNO=[$1], $f0=[$0])
-            LogicalProject($f0=[1], DEPTNO=[$1])
+            LogicalProject($f0=[1:BIGINT], DEPTNO=[$1])
               LogicalProject(EXPR$0=[1], DEPTNO=[$0])
                 LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
@@ -3036,10 +3084,14 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{}], agg#0=[MIN($0)])
 <<<<<<< HEAD
+<<<<<<< HEAD
         LogicalProject($f0=[1:BIGINT])
 =======
         LogicalProject($f0=[1])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
+=======
+        LogicalProject($f0=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
           LogicalSort(fetch=[1])
             LogicalProject(EXPR$0=[1])
               LogicalFilter(condition=[=($cor0.DEPTNO, $0)])
@@ -3083,7 +3135,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
       LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{7}])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{}], agg#0=[MIN($0)])
-          LogicalProject($f0=[1])
+          LogicalProject($f0=[1:BIGINT])
             LogicalSort(fetch=[1])
               LogicalProject(EXPR$0=[1])
                 LogicalFilter(condition=[=($cor0.DEPTNO, $0)])
@@ -3188,12 +3240,17 @@ from dept]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(NAME=[$1], EXPR$1=[OR(AND(IS NOT NULL($6), <>($2, 0)), AND(<($3, $2), null, <>($2, 0), IS NULL($6)))])
+=======
+LogicalProject(NAME=[$1], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($6), true, <($3, $2), null:BOOLEAN, false)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalJoin(condition=[=($4, $5)], joinType=[left])
     LogicalProject(DEPTNO=[$0], NAME=[$1], $f0=[$2], $f1=[$3], DEPTNO0=[$0])
       LogicalJoin(condition=[true], joinType=[inner])
         LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
         LogicalAggregate(group=[{}], agg#0=[COUNT()], agg#1=[COUNT($0)])
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
           LogicalProject(EXPR$0=[$0], $f1=[1:BIGINT])
@@ -3215,6 +3272,13 @@ LogicalProject(NAME=[$1], EXPR$1=[OR(AND(IS NOT NULL($6), <>($2, 0)), AND(<($3, 
     LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
       LogicalProject(EXPR$0=[$0], $f1=[1])
 >>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
+=======
+          LogicalProject(EXPR$0=[$0], $f1=[1:BIGINT])
+            LogicalProject(EXPR$0=[CAST($7):INTEGER])
+              LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
+      LogicalProject(EXPR$0=[$0], $f1=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         LogicalProject(EXPR$0=[CAST($7):INTEGER])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
@@ -3228,12 +3292,17 @@ from emp]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EMPNO=[$0], EXPR$1=[OR(=($9, 0), AND(<($10, $9), null, <>($9, 0), IS NULL($13)), AND(<>($9, 0), IS NULL($13), >=($10, $9)))])
+=======
+LogicalProject(EMPNO=[$0], EXPR$1=[NOT(CASE(=($9, 0), false, IS NOT NULL($13), true, IS NULL($11), null:BOOLEAN, <($10, $9), null:BOOLEAN, false))])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalJoin(condition=[=($11, $12)], joinType=[left])
     LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], $f0=[$9], $f1=[$10], DEPTNO0=[$7])
       LogicalJoin(condition=[true], joinType=[inner])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{}], agg#0=[COUNT()], agg#1=[COUNT($0)])
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
           LogicalProject(EXPR$0=[$0], $f1=[1:BIGINT])
@@ -3255,6 +3324,13 @@ LogicalProject(EMPNO=[$0], EXPR$1=[OR(=($9, 0), AND(<($10, $9), null, <>($9, 0),
     LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
       LogicalProject(EXPR$0=[$0], $f1=[1])
 >>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
+=======
+          LogicalProject(EXPR$0=[$0], $f1=[1:BIGINT])
+            LogicalProject(EXPR$0=[CAST($0):INTEGER])
+              LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
+      LogicalProject(EXPR$0=[$0], $f1=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         LogicalProject(EXPR$0=[CAST($0):INTEGER])
           LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 ]]>
@@ -3274,6 +3350,7 @@ LogicalProject(EMPNO=[$0])
       LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         LogicalProject(DEPTNO=[$0], $f1=[1:BIGINT])
           LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 =======
@@ -3281,6 +3358,9 @@ LogicalProject(EMPNO=[$0])
 =======
         LogicalProject(DEPTNO=[$0], $f1=[1])
 >>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
+=======
+        LogicalProject(DEPTNO=[$0], $f1=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
           LogicalProject(DEPTNO=[$0])
             LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
@@ -3302,6 +3382,7 @@ LogicalProject(EMPNO=[$0], EXPR$1=[IS NOT TRUE($11)])
     LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject(DEPTNO=[$0], $f1=[1:BIGINT])
         LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 =======
@@ -3309,6 +3390,9 @@ LogicalProject(EMPNO=[$0], EXPR$1=[IS NOT TRUE($11)])
 =======
       LogicalProject(DEPTNO=[$0], $f1=[1])
 >>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
+=======
+      LogicalProject(DEPTNO=[$0], $f1=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         LogicalProject(DEPTNO=[$0])
           LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
@@ -3355,6 +3439,7 @@ LogicalProject(EMPNO=[$0], EXPR$1=[CAST(IS NOT TRUE($11)):BOOLEAN])
     LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject(MGR=[$3], $f1=[1:BIGINT])
         LogicalFilter(condition=[>($3, 5)])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -3363,6 +3448,9 @@ LogicalProject(EMPNO=[$0], EXPR$1=[CAST(IS NOT TRUE($11)):BOOLEAN])
 =======
       LogicalProject(MGR=[$0], $f1=[1])
 >>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
+=======
+      LogicalProject(MGR=[$0], $f1=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         LogicalProject(MGR=[$3])
           LogicalFilter(condition=[>($3, 5)])
             LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -3385,6 +3473,7 @@ LogicalProject(EMPNO=[$0], EXPR$1=[CAST(IS NOT TRUE($11)):BOOLEAN])
     LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject(MGR=[$3], $f1=[1:BIGINT])
         LogicalFilter(condition=[IS NOT NULL($3)])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -3393,6 +3482,9 @@ LogicalProject(EMPNO=[$0], EXPR$1=[CAST(IS NOT TRUE($11)):BOOLEAN])
 =======
       LogicalProject(MGR=[$0], $f1=[1])
 >>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
+=======
+      LogicalProject(MGR=[$0], $f1=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         LogicalProject(MGR=[$3])
           LogicalFilter(condition=[IS NOT NULL($3)])
             LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -3416,6 +3508,7 @@ LogicalProject(EMPNO=[$0], EXPR$1=[CAST(IS NOT TRUE($11)):BOOLEAN])
     LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject(MGR=[$3], $f1=[1:BIGINT])
         LogicalJoin(condition=[=($3, $9)], joinType=[inner])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -3428,6 +3521,9 @@ LogicalProject(EMPNO=[$0], EXPR$1=[CAST(IS NOT TRUE($11)):BOOLEAN])
 =======
       LogicalProject(MGR=[$0], $f1=[1])
 >>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
+=======
+      LogicalProject(MGR=[$0], $f1=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         LogicalProject(MGR=[$3])
           LogicalJoin(condition=[=($3, $9)], joinType=[inner])
             LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -3447,12 +3543,17 @@ from emp]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EMPNO=[$0], EXPR$1=[OR(=($9, 0), AND(<($10, $9), null, <>($9, 0), IS NULL($13)), AND(<>($9, 0), IS NULL($13), >=($10, $9)))])
+=======
+LogicalProject(EMPNO=[$0], EXPR$1=[NOT(CASE(=($9, 0), false, IS NOT NULL($13), true, IS NULL($11), null:BOOLEAN, <($10, $9), null:BOOLEAN, false))])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   LogicalJoin(condition=[=($11, $12)], joinType=[left])
     LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], $f0=[$9], $f1=[$10], DEPTNO0=[$7])
       LogicalJoin(condition=[true], joinType=[inner])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{}], agg#0=[COUNT()], agg#1=[COUNT($0)])
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
           LogicalProject(MGR=[$3], $f1=[1:BIGINT])
@@ -3465,10 +3566,13 @@ LogicalProject(EMPNO=[$0], EXPR$1=[OR(=($9, 0), AND(<($10, $9), null, <>($9, 0),
 =======
           LogicalProject(MGR=[$0], $f1=[1])
 >>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
+=======
+          LogicalProject(MGR=[$0], $f1=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
             LogicalProject(MGR=[$3])
               LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
-      LogicalProject(MGR=[$0], $f1=[1])
+      LogicalProject(MGR=[$0], $f1=[1:BIGINT])
         LogicalProject(MGR=[$3])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
@@ -4428,7 +4532,11 @@ group by tumble(rowtime, interval '2' hour), productId]]>
 LogicalDelta
   LogicalProject(ROWTIME=[+($0, 7200000:INTERVAL HOUR)], PRODUCTID=[$1])
     LogicalAggregate(group=[{0, 1}])
+<<<<<<< HEAD
       LogicalProject($f0=[$TUMBLE($0, 7200000:INTERVAL HOUR)], PRODUCTID=[$1])
+=======
+      LogicalProject($f0=[TUMBLE($0, 7200000:INTERVAL HOUR)], PRODUCTID=[$1])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         LogicalTableScan(table=[[CATALOG, SALES, ORDERS]])
 ]]>
         </Resource>
@@ -4445,7 +4553,11 @@ group by hop(rowtime, interval '1' hour, interval '3' hour)]]>
 LogicalDelta
   LogicalProject(ROWTIME=[$0], C=[$1])
     LogicalAggregate(group=[{0}], C=[COUNT()])
+<<<<<<< HEAD
       LogicalProject($f0=[$HOP($0, 3600000:INTERVAL HOUR, 10800000:INTERVAL HOUR)])
+=======
+      LogicalProject($f0=[HOP($0, 3600000:INTERVAL HOUR, 10800000:INTERVAL HOUR)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         LogicalTableScan(table=[[CATALOG, SALES, ORDERS]])
 ]]>
         </Resource>
@@ -4468,6 +4580,7 @@ LogicalProject(**=[$1])
       LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         LogicalProject(EXPR$0=[''], $f1=[1:BIGINT])
           LogicalTableScan(table=[[CATALOG, SALES, NATION]])
 =======
@@ -4475,6 +4588,9 @@ LogicalProject(**=[$1])
 =======
         LogicalProject(EXPR$0=[$0], $f1=[1])
 >>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
+=======
+        LogicalProject(EXPR$0=[$0], $f1=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
           LogicalProject(EXPR$0=[''])
             LogicalTableScan(table=[[CATALOG, SALES, NATION]])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
@@ -4494,7 +4610,11 @@ group by session(rowtime, interval '1' hour)]]>
 LogicalDelta
   LogicalProject(ROWTIME=[$0], EXPR$1=[$0], C=[$1])
     LogicalAggregate(group=[{0}], C=[COUNT()])
+<<<<<<< HEAD
       LogicalProject($f0=[$SESSION($0, 3600000:INTERVAL HOUR)])
+=======
+      LogicalProject($f0=[SESSION($0, 3600000:INTERVAL HOUR)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         LogicalTableScan(table=[[CATALOG, SALES, ORDERS]])
 ]]>
         </Resource>
@@ -4850,6 +4970,7 @@ values (?, ?, ?)]]>
         <Resource name="plan">
             <![CDATA[
 LogicalTableModify(table=[[CATALOG, SALES, EMPNULLABLES]], operation=[INSERT], flattened=[true])
+<<<<<<< HEAD
   LogicalProject(EMPNO=[?1], ENAME=[?2], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[null:INTEGER], COMM=[null:INTEGER], DEPTNO=[?0], SLACKER=[null:BOOLEAN])
     LogicalValues(tuples=[[{ 0 }]])
 ]]>
@@ -4882,6 +5003,11 @@ LogicalTableModify(table=[[CATALOG, SALES, EMPNULLABLES]], operation=[INSERT], f
     LogicalSort(sort0=[$1], dir0=[ASC], fetch=[10])
       LogicalProject(DEPTNO=[$7], ENAME=[$1])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+=======
+  LogicalProject(EMPNO=[$1], ENAME=[$2], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[null:INTEGER], COMM=[null:INTEGER], DEPTNO=[$0], SLACKER=[null:BOOLEAN])
+    LogicalProject(EXPR$0=[?0], EXPR$1=[?1], EXPR$2=[?2])
+      LogicalValues(tuples=[[{ 0 }]])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 ]]>
         </Resource>
     </TestCase>
@@ -4893,8 +5019,14 @@ values (?, ?)]]>
         <Resource name="plan">
             <![CDATA[
 LogicalTableModify(table=[[CATALOG, SALES, EMPNULLABLES]], operation=[INSERT], flattened=[true])
+<<<<<<< HEAD
   LogicalProject(EMPNO=[?0], ENAME=[?1], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[null:INTEGER], COMM=[null:INTEGER], DEPTNO=[null:INTEGER], SLACKER=[null:BOOLEAN])
     LogicalValues(tuples=[[{ 0 }]])
+=======
+  LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[null:INTEGER], COMM=[null:INTEGER], DEPTNO=[null:INTEGER], SLACKER=[null:BOOLEAN])
+    LogicalProject(EXPR$0=[?0], EXPR$1=[?1])
+      LogicalValues(tuples=[[{ 0 }]])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 ]]>
         </Resource>
     </TestCase>
@@ -4905,8 +5037,14 @@ LogicalTableModify(table=[[CATALOG, SALES, EMPNULLABLES]], operation=[INSERT], f
         <Resource name="plan">
             <![CDATA[
 LogicalTableModify(table=[[CATALOG, SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[true])
+<<<<<<< HEAD
   LogicalProject(EMPNO=[44], ENAME=['Fred'], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[999999], COMM=[null:INTEGER], DEPTNO=[456], SLACKER=[null:BOOLEAN], UPDATED=[?0])
     LogicalValues(tuples=[[{ 0 }]])
+=======
+  LogicalProject(EMPNO=[$2], ENAME=[$0], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[$4], COMM=[null:INTEGER], DEPTNO=[$1], SLACKER=[null:BOOLEAN], UPDATED=[$3])
+    LogicalProject(EXPR$0=['Fred'], EXPR$1=[456], EXPR$2=[44], EXPR$3=[?0], EXPR$4=[999999])
+      LogicalValues(tuples=[[{ 0 }]])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 ]]>
         </Resource>
     </TestCase>
@@ -4918,8 +5056,14 @@ LogicalTableModify(table=[[CATALOG, SALES, EMPDEFAULTS]], operation=[INSERT], fl
             <![CDATA[
 LogicalTableModify(table=[[SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[true])
   LogicalFilter(condition=[=($7, 20)])
+<<<<<<< HEAD
     LogicalProject(EMPNO=[$2], ENAME=[$0], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[$4], COMM=[null:INTEGER], DEPTNO=[$1], SLACKER=[null:BOOLEAN], EXTRA=[null:BOOLEAN], UPDATED=[$3])
       LogicalValues(tuples=[[{ 'Fred', 20, 44, 2017-03-12 13:03:05, 999999 }]])
+=======
+    LogicalProject(EMPNO=[$1], ENAME=[$0], JOB=[$2], MGR=[$8], HIREDATE=[$7], SAL=[$5], COMM=[$9], DEPTNO=[$3], SLACKER=[$4], EXTRA=[$6], UPDATED=[$10])
+      LogicalProject(ENAME=[$0], EMPNO=[$2], JOB=[null:VARCHAR(10)], DEPTNO=[$1], SLACKER=[null:BOOLEAN], SAL=[$4], EXTRA=[null:BOOLEAN], HIREDATE=[null:TIMESTAMP(0)], MGR=[null:INTEGER], COMM=[null:INTEGER], UPDATED=[$3])
+        LogicalValues(tuples=[[{ 'Fred', 20, 44, 2017-03-12 13:03:05, 999999 }]])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 ]]>
         </Resource>
     </TestCase>
@@ -4933,6 +5077,7 @@ LogicalTableModify(table=[[SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[
   LogicalFilter(condition=[=($7, 20)])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalProject(EMPNO=[44], ENAME=['Fred':VARCHAR(20)], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[CAST(999999):INTEGER], COMM=[null:INTEGER], DEPTNO=[CAST(20):INTEGER], SLACKER=[null:BOOLEAN], EXTRA=[null:BOOLEAN], UPDATED=[?0])
       LogicalValues(tuples=[[{ 0 }]])
 =======
@@ -4941,6 +5086,10 @@ LogicalTableModify(table=[[SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[
     LogicalProject(EMPNO=[$1], ENAME=[CAST($0):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL], JOB=[$2], MGR=[$8], HIREDATE=[$7], SAL=[CAST($5):INTEGER], COMM=[$9], DEPTNO=[CAST($3):INTEGER], SLACKER=[$4], EXTRA=[$6], UPDATED=[$10])
 >>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
       LogicalProject(ENAME=[$0], EMPNO=[$2], JOB=[null], DEPTNO=[$1], SLACKER=[null], SAL=[$4], EXTRA=[null], HIREDATE=[null], MGR=[null], COMM=[null], UPDATED=[$3])
+=======
+    LogicalProject(EMPNO=[$1], ENAME=[CAST($0):VARCHAR(20) NOT NULL], JOB=[$2], MGR=[$8], HIREDATE=[$7], SAL=[CAST($5):INTEGER], COMM=[$9], DEPTNO=[CAST($3):INTEGER], SLACKER=[$4], EXTRA=[$6], UPDATED=[$10])
+      LogicalProject(ENAME=[$0], EMPNO=[$2], JOB=[null:VARCHAR(10)], DEPTNO=[$1], SLACKER=[null:BOOLEAN], SAL=[$4], EXTRA=[null:BOOLEAN], HIREDATE=[null:TIMESTAMP(0)], MGR=[null:INTEGER], COMM=[null:INTEGER], UPDATED=[$3])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         LogicalProject(EXPR$0=['Fred'], EXPR$1=[20], EXPR$2=[44], EXPR$3=[?0], EXPR$4=[999999])
           LogicalValues(tuples=[[{ 0 }]])
 >>>>>>> f495333f2 ([DX-12070] Support for non-ISO-8859-1 literals)
@@ -5054,8 +5203,14 @@ values (150, 'Fred')]]>
             <![CDATA[
 LogicalTableModify(table=[[CATALOG, SALES, EMPNULLABLES]], operation=[INSERT], flattened=[true])
   LogicalFilter(condition=[>($5, 1000)])
+<<<<<<< HEAD
     LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[null:INTEGER], COMM=[null:INTEGER], DEPTNO=[20], SLACKER=[null:BOOLEAN])
       LogicalValues(tuples=[[{ 150, 'Fred' }]])
+=======
+    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[20], SLACKER=[$7])
+      LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[null:INTEGER], COMM=[null:INTEGER], SLACKER=[null:BOOLEAN])
+        LogicalValues(tuples=[[{ 150, 'Fred' }]])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 ]]>
         </Resource>
     </TestCase>
@@ -5068,8 +5223,14 @@ values (10, 'Fred')]]>
             <![CDATA[
 LogicalTableModify(table=[[CATALOG, SALES, EMPNULLABLES]], operation=[INSERT], flattened=[true])
   LogicalFilter(condition=[>($5, 1000)])
+<<<<<<< HEAD
     LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[null:INTEGER], COMM=[null:INTEGER], DEPTNO=[20], SLACKER=[null:BOOLEAN])
       LogicalValues(tuples=[[{ 10, 'Fred' }]])
+=======
+    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[20], SLACKER=[$7])
+      LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[null:INTEGER], COMM=[null:INTEGER], SLACKER=[null:BOOLEAN])
+        LogicalValues(tuples=[[{ 10, 'Fred' }]])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 ]]>
         </Resource>
     </TestCase>
@@ -5080,8 +5241,14 @@ LogicalTableModify(table=[[CATALOG, SALES, EMPNULLABLES]], operation=[INSERT], f
         <Resource name="plan">
             <![CDATA[
 LogicalTableModify(table=[[SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[true])
+<<<<<<< HEAD
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[CAST(555):INTEGER], COMM=[null:INTEGER], DEPTNO=[20], SLACKER=[null:BOOLEAN])
     LogicalValues(tuples=[[{ 34625, 'nom', 'accountant' }]])
+=======
+  LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[CAST($5):INTEGER], COMM=[$6], DEPTNO=[20], SLACKER=[$7])
+    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[555], COMM=[null:INTEGER], SLACKER=[null:BOOLEAN])
+      LogicalValues(tuples=[[{ 34625, 'nom', 'accountant' }]])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 ]]>
         </Resource>
     </TestCase>
@@ -5092,8 +5259,14 @@ LogicalTableModify(table=[[SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[
         <Resource name="plan">
             <![CDATA[
 LogicalTableModify(table=[[SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[true])
+<<<<<<< HEAD
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[CAST(555):INTEGER], COMM=[null:INTEGER], DEPTNO=[20], SLACKER=[null:BOOLEAN])
     LogicalValues(tuples=[[{ 10, 'Fred' }]])
+=======
+  LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[CAST($5):INTEGER], COMM=[$6], DEPTNO=[20], SLACKER=[$7])
+    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[555], COMM=[null:INTEGER], SLACKER=[null:BOOLEAN])
+      LogicalValues(tuples=[[{ 10, 'Fred' }]])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 ]]>
         </Resource>
     </TestCase>
@@ -5104,8 +5277,15 @@ LogicalTableModify(table=[[SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[
         <Resource name="plan">
             <![CDATA[
 LogicalTableModify(table=[[SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[true])
+<<<<<<< HEAD
   LogicalProject(EMPNO=[CAST(?0):INTEGER NOT NULL], ENAME=['Bob':VARCHAR(20)], JOB=[?1], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[CAST(555):INTEGER], COMM=[null:INTEGER], DEPTNO=[20], SLACKER=[null:BOOLEAN])
     LogicalValues(tuples=[[{ 0 }]])
+=======
+  LogicalProject(EMPNO=[CAST($0):INTEGER NOT NULL], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[CAST($5):INTEGER], COMM=[$6], DEPTNO=[20], SLACKER=[$7])
+    LogicalProject(EMPNO=[$0], ENAME=['Bob':VARCHAR(20)], JOB=[$1], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[555], COMM=[null:INTEGER], SLACKER=[null:BOOLEAN])
+      LogicalProject(EXPR$0=[?0], EXPR$1=[?1])
+        LogicalValues(tuples=[[{ 0 }]])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 ]]>
         </Resource>
     </TestCase>
@@ -5118,6 +5298,7 @@ LogicalTableModify(table=[[SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[
 LogicalTableModify(table=[[SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[true])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalProject(EMPNO=[CAST(?0):INTEGER NOT NULL], ENAME=[CAST(?1):VARCHAR(20) NOT NULL], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[CAST(555):INTEGER], COMM=[null:INTEGER], DEPTNO=[20], SLACKER=[null:BOOLEAN])
     LogicalValues(tuples=[[{ 0 }]])
 =======
@@ -5126,6 +5307,10 @@ LogicalTableModify(table=[[SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[
   LogicalProject(EMPNO=[CAST($0):INTEGER NOT NULL], ENAME=[CAST($1):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[CAST($5):INTEGER], COMM=[$6], DEPTNO=[20], SLACKER=[$7])
 >>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
     LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[null], MGR=[null], HIREDATE=[null], SAL=[555], COMM=[null], SLACKER=[null])
+=======
+  LogicalProject(EMPNO=[CAST($0):INTEGER NOT NULL], ENAME=[CAST($1):VARCHAR(20) NOT NULL], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[CAST($5):INTEGER], COMM=[$6], DEPTNO=[20], SLACKER=[$7])
+    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[555], COMM=[null:INTEGER], SLACKER=[null:BOOLEAN])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
       LogicalProject(EXPR$0=[?0], EXPR$1=[?1])
         LogicalValues(tuples=[[{ 0 }]])
 >>>>>>> f495333f2 ([DX-12070] Support for non-ISO-8859-1 literals)
@@ -5163,8 +5348,14 @@ LogicalTableModify(table=[[CATALOG, SALES, EMPDEFAULTS]], operation=[INSERT], fl
         <Resource name="plan">
             <![CDATA[
 LogicalTableModify(table=[[CATALOG, SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[true])
+<<<<<<< HEAD
   LogicalProject(EMPNO=[123], ENAME=['Bob'], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[555], COMM=[null:INTEGER], DEPTNO=[?0], SLACKER=[null:BOOLEAN])
     LogicalValues(tuples=[[{ 0 }]])
+=======
+  LogicalProject(EMPNO=[123], ENAME=['Bob'], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[555], COMM=[null:INTEGER], DEPTNO=[$0], SLACKER=[null:BOOLEAN])
+    LogicalProject(EXPR$0=[?0])
+      LogicalValues(tuples=[[{ 0 }]])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 ]]>
         </Resource>
     </TestCase>
@@ -5175,8 +5366,14 @@ LogicalTableModify(table=[[CATALOG, SALES, EMPDEFAULTS]], operation=[INSERT], fl
         <Resource name="plan">
             <![CDATA[
 LogicalTableModify(table=[[CATALOG, SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[true])
+<<<<<<< HEAD
   LogicalProject(EMPNO=[?0], ENAME=['Bob'], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[555], COMM=[null:INTEGER], DEPTNO=[null:INTEGER], SLACKER=[null:BOOLEAN])
     LogicalValues(tuples=[[{ 0 }]])
+=======
+  LogicalProject(EMPNO=[$0], ENAME=['Bob'], JOB=[null:VARCHAR(10)], MGR=[null:INTEGER], HIREDATE=[null:TIMESTAMP(0)], SAL=[555], COMM=[null:INTEGER], DEPTNO=[null:INTEGER], SLACKER=[null:BOOLEAN])
+    LogicalProject(EXPR$0=[?0])
+      LogicalValues(tuples=[[{ 0 }]])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 ]]>
         </Resource>
     </TestCase>
@@ -5200,8 +5397,14 @@ values (?, ?, ?)]]>
         <Resource name="plan">
             <![CDATA[
 LogicalTableModify(table=[[CATALOG, STRUCT, T_NULLABLES]], operation=[INSERT], flattened=[true])
+<<<<<<< HEAD
   LogicalProject("K0"=[null:VARCHAR(20)], "C1"=[?2], "F1"."A0"=[null:INTEGER], "F2"."A0"=[null:BOOLEAN], "F0"."C0"=[?0], "F1"."C0"=[null:INTEGER], "F0"."C1"=[null:INTEGER], "F1"."C2"=[?1], "F2"."C3"=[null:INTEGER])
     LogicalValues(tuples=[[{ 0 }]])
+=======
+  LogicalProject("K0"=[null:VARCHAR(20)], "C1"=[$2], "F1"."A0"=[null:INTEGER], "F2"."A0"=[null:BOOLEAN], "F0"."C0"=[$0], "F1"."C0"=[null:INTEGER], "F0"."C1"=[null:INTEGER], "F1"."C2"=[$1], "F2"."C3"=[null:INTEGER])
+    LogicalProject(EXPR$0=[?0], EXPR$1=[?1], EXPR$2=[?2])
+      LogicalValues(tuples=[[{ 0 }]])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 ]]>
         </Resource>
     </TestCase>
@@ -5217,6 +5420,7 @@ LogicalTableModify(table=[[CATALOG, STRUCT, T]], operation=[INSERT], flattened=[
   LogicalFilter(condition=[=($4, 10)])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalProject("K0"=[CAST(?3):VARCHAR(20) NOT NULL], "C1"=[CAST(?2):VARCHAR(20) NOT NULL], "F1"."A0"=[CAST(?4):INTEGER NOT NULL], "F2"."A0"=[CAST(?5):BOOLEAN NOT NULL], "F0"."C0"=[CAST(?0):INTEGER NOT NULL], "F1"."C0"=[null:INTEGER], "F0"."C1"=[CAST(?6):INTEGER NOT NULL], "F1"."C2"=[CAST(?1):INTEGER NOT NULL], "F2"."C3"=[CAST(?7):INTEGER NOT NULL])
       LogicalValues(tuples=[[{ 0 }]])
 =======
@@ -5225,6 +5429,10 @@ LogicalTableModify(table=[[CATALOG, STRUCT, T]], operation=[INSERT], flattened=[
     LogicalProject("K0"=[CAST($0):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL], "C1"=[CAST($1):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL], "F1"."A0"=[CAST($2):INTEGER NOT NULL], "F2"."A0"=[CAST($3):BOOLEAN NOT NULL], "F0"."C0"=[CAST($4):INTEGER NOT NULL], "F1"."C0"=[$5], "F0"."C1"=[CAST($6):INTEGER NOT NULL], "F1"."C2"=[CAST($7):INTEGER NOT NULL], "F2"."C3"=[CAST($8):INTEGER NOT NULL])
 >>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
       LogicalProject("K0"=[$3], "C1"=[$2], "F1"."A0"=[$4], "F2"."A0"=[$5], "F0"."C0"=[$0], "F1"."C0"=[null], "F0"."C1"=[$6], "F1"."C2"=[$1], "F2"."C3"=[$7])
+=======
+    LogicalProject("K0"=[CAST($0):VARCHAR(20) NOT NULL], "C1"=[CAST($1):VARCHAR(20) NOT NULL], "F1"."A0"=[CAST($2):INTEGER NOT NULL], "F2"."A0"=[CAST($3):BOOLEAN NOT NULL], "F0"."C0"=[CAST($4):INTEGER NOT NULL], "F1"."C0"=[$5], "F0"."C1"=[CAST($6):INTEGER NOT NULL], "F1"."C2"=[CAST($7):INTEGER NOT NULL], "F2"."C3"=[CAST($8):INTEGER NOT NULL])
+      LogicalProject("K0"=[$3], "C1"=[$2], "F1"."A0"=[$4], "F2"."A0"=[$5], "F0"."C0"=[$0], "F1"."C0"=[null:INTEGER], "F0"."C1"=[$6], "F1"."C2"=[$1], "F2"."C3"=[$7])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         LogicalProject(EXPR$0=[?0], EXPR$1=[?1], EXPR$2=[?2], EXPR$3=[?3], EXPR$4=[?4], EXPR$5=[?5], EXPR$6=[?6], EXPR$7=[?7])
           LogicalValues(tuples=[[{ 0 }]])
 >>>>>>> f495333f2 ([DX-12070] Support for non-ISO-8859-1 literals)
@@ -5551,7 +5759,7 @@ LogicalProject(EMPNO=[$0])
             LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
         LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
           LogicalProject(EMPNO9=[$1], $f0=[$0])
-            LogicalProject($f0=[1], EMPNO9=[$9])
+            LogicalProject($f0=[1:BIGINT], EMPNO9=[$9])
               LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], EMPNO9=[$0])
                 LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
@@ -5610,7 +5818,7 @@ LogicalAggregate(group=[{}], EXPR$0=[SUM($0)])
             LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
         LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
           LogicalProject(EMPNO9=[$1], $f0=[$0])
-            LogicalProject($f0=[1], EMPNO9=[$9])
+            LogicalProject($f0=[1:BIGINT], EMPNO9=[$9])
               LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], EMPNO9=[$0])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
                 LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -6028,7 +6236,11 @@ GROUP BY TUMBLE(rowtime, INTERVAL '1' MINUTE)]]>
 LogicalDelta
   LogicalProject(S=[$0], E=[+($0, 60000:INTERVAL MINUTE)])
     LogicalAggregate(group=[{0}])
+<<<<<<< HEAD
       LogicalProject($f0=[$TUMBLE($1, 60000:INTERVAL MINUTE)])
+=======
+      LogicalProject($f0=[TUMBLE($1, 60000:INTERVAL MINUTE)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         LogicalTableScan(table=[[CATALOG, SALES, SHIPMENTS]])
 ]]>
         </Resource>
@@ -6143,7 +6355,11 @@ group by tumble(rowtime, interval '2' hour), orderId]]>
 LogicalDelta
   LogicalProject(ROWTIME=[+($0, 7200000:INTERVAL HOUR)], ORDERID=[$1])
     LogicalAggregate(group=[{0, 1}])
+<<<<<<< HEAD
       LogicalProject($f0=[$TUMBLE($1, 7200000:INTERVAL HOUR)], ORDERID=[$0])
+=======
+      LogicalProject($f0=[TUMBLE($1, 7200000:INTERVAL HOUR)], ORDERID=[$0])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         LogicalTableScan(table=[[CATALOG, SALES, SHIPMENTS]])
 ]]>
         </Resource>
@@ -6461,10 +6677,14 @@ LogicalProject(EMPNO=[$0])
             <![CDATA[
 LogicalProject(EMPNO=[$0])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalFilter(condition=[CASE(true, CAST(NOT(OR(=($7, 10), =($7, 20)))):BOOLEAN, null:BOOLEAN)])
 =======
   LogicalFilter(condition=[CASE(true, CAST(NOT(OR(=($7, 10), =($7, 20)))):BOOLEAN, null)])
 >>>>>>> f4a500e3d ([CALCITE-2551] SqlToRelConverter gives ClassCastException while handling 'IN' inside 'WHERE NOT CASE' (pengzhiwei))
+=======
+  LogicalFilter(condition=[CASE(true, CAST(NOT(OR(=($7, 10), =($7, 20)))):BOOLEAN, null:BOOLEAN)])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -6862,7 +7082,7 @@ LogicalProject(D2=[$0], D3=[$1])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{0, 1}], agg#0=[MIN($2)])
           LogicalProject(D1=[$1], D6=[$2], $f0=[$0])
-            LogicalProject($f0=[1], D1=[$1], D6=[$2])
+            LogicalProject($f0=[1:BIGINT], D1=[$1], D6=[$2])
               LogicalProject(EXPR$0=[1], D1=[$0], D6=[$2])
                 LogicalFilter(condition=[IS NOT NULL($1)])
                   LogicalProject(D1=[$0], $f0=[$3], D6=[$2])
@@ -6871,7 +7091,7 @@ LogicalProject(D2=[$0], D3=[$1])
                         LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
                       LogicalAggregate(group=[{0, 1}], agg#0=[MIN($2)])
                         LogicalProject(D4=[$1], D6=[$2], $f0=[$0])
-                          LogicalProject($f0=[1], D4=[$1], D6=[$2])
+                          LogicalProject($f0=[1:BIGINT], D4=[$1], D6=[$2])
                             LogicalProject(EXPR$0=[2], D4=[$0], D6=[$2])
                               LogicalFilter(condition=[=($1, $0)])
                                 LogicalProject(D4=[+($0, 4)], D5=[+($0, 5)], D6=[+($0, 6)])
@@ -7015,7 +7235,7 @@ LogicalProject(EMPNO=[$0])
             LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
         LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
           LogicalProject(EMPNO9=[$1], $f0=[$0])
-            LogicalProject($f0=[1], EMPNO9=[$9])
+            LogicalProject($f0=[1:BIGINT], EMPNO9=[$9])
               LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], EMPNO9=[$0])
                 LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
@@ -7062,7 +7282,7 @@ LogicalProject(EMPNO=[$0])
             LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
         LogicalAggregate(group=[{0}], agg#0=[MIN($1)])
           LogicalProject(EMPNO0=[$1], $f0=[$0])
-            LogicalProject($f0=[1], EMPNO0=[$9])
+            LogicalProject($f0=[1:BIGINT], EMPNO0=[$9])
               LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], EMPNO0=[$9])
                 LogicalJoin(condition=[<($9, $0)], joinType=[inner])
                   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -7125,11 +7345,15 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{}], agg#0=[MIN($0)])
 <<<<<<< HEAD
+<<<<<<< HEAD
         LogicalProject($f0=[1:BIGINT])
           LogicalFilter(condition=[=($cor0.DEPTNO, $0)])
             LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 =======
         LogicalProject($f0=[1])
+=======
+        LogicalProject($f0=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
           LogicalProject(EXPR$0=[1])
             LogicalFilter(condition=[=($cor0.DEPTNO, $0)])
               LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -7305,10 +7529,14 @@ LogicalProject(R_REGIONKEY=[$0], R_NAME=[$1], R_COMMENT=[$2])
       LogicalTableScan(table=[[CATALOG, SALES, REGION]])
       LogicalAggregate(group=[{}], agg#0=[MIN($0)])
 <<<<<<< HEAD
+<<<<<<< HEAD
         LogicalProject($f0=[1:BIGINT])
           LogicalTableScan(table=[[CATALOG, SALES, NATION]])
 =======
         LogicalProject($f0=[1])
+=======
+        LogicalProject($f0=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
           LogicalProject(**=[$0])
             LogicalTableScan(table=[[CATALOG, SALES, NATION]])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
@@ -7412,6 +7640,7 @@ LogicalProject(A=[$0], B=[$1])
         LogicalProject(EXPR$0=[$0], EXPR$1=[$1])
           LogicalValues(tuples=[[{ 1, 2 }]])
         LogicalAggregate(group=[{}], agg#0=[MIN($0)])
+<<<<<<< HEAD
 <<<<<<< HEAD
           LogicalProject($f0=[1:BIGINT])
             LogicalFilter(condition=[=($7, $cor0.A)])
@@ -8069,6 +8298,9 @@ LogicalSort(sort0=[$2], dir0=[ASC], fetch=[5])
               LogicalProject($f0=[0])
 =======
           LogicalProject($f0=[1])
+=======
+          LogicalProject($f0=[1:BIGINT])
+>>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
             LogicalProject(EXPR$0=[1])
               LogicalFilter(condition=[=($7, $cor0.A)])
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
@@ -8449,7 +8681,7 @@ FROM (
         <Resource name="plan">
             <![CDATA[
 LogicalProject(RES2=[=($0, 'qwe')])
-  LogicalProject(RES1=[CAST('qwe'):CHAR(3) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"])
+  LogicalProject(RES1=[CAST('qwe'):CHAR(3)])
     LogicalValues(tuples=[[{ 1 }]])
 ]]>
 
@@ -8611,7 +8843,7 @@ UNPIVOT INCLUDE NULLS (remuneration
         <Resource name="plan">
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], DEPTNO=[$5], SLACKER=[$6], REMUNERATION_TYPE=[$7], REMUNERATION=[$8])
-  LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], DEPTNO=[$7], SLACKER=[$8], REMUNERATION_TYPE=[$9], REMUNERATION=[CASE(=($9, 'commission'), $6, =($9, 'salary    '), $5, null)])
+  LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], DEPTNO=[$7], SLACKER=[$8], REMUNERATION_TYPE=[$9], REMUNERATION=[CASE(=($9, 'commission'), $6, =($9, 'salary    '), $5, null:NULL)])
     LogicalJoin(condition=[true], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalValues(tuples=[[{ 'commission' }, { 'salary    ' }]])
@@ -8669,7 +8901,7 @@ from emp]]>
         <Resource name="plan">
             <![CDATA[
 LogicalAggregate(group=[{}], EXPR$0=[PERCENTILE_CONT($0) WITHIN GROUP ([1])])
-  LogicalProject($f0=[0.25], DEPTNO=[$7])
+  LogicalProject($f0=[0.25:DECIMAL(3, 2)], DEPTNO=[$7])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -8684,7 +8916,7 @@ group by deptno]]>
         <Resource name="plan">
             <![CDATA[
 LogicalAggregate(group=[{0}], EXPR$1=[PERCENTILE_CONT($1) WITHIN GROUP ([2])])
-  LogicalProject(DEPTNO=[$7], $f1=[0.25], EMPNO=[$0])
+  LogicalProject(DEPTNO=[$7], $f1=[0.25:DECIMAL(3, 2)], EMPNO=[$0])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -8698,7 +8930,7 @@ from emp]]>
         <Resource name="plan">
             <![CDATA[
 LogicalAggregate(group=[{}], EXPR$0=[PERCENTILE_DISC($0) WITHIN GROUP ([1])])
-  LogicalProject($f0=[0.25], DEPTNO=[$7])
+  LogicalProject($f0=[0.25:DECIMAL(3, 2)], DEPTNO=[$7])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -8713,7 +8945,7 @@ group by deptno]]>
         <Resource name="plan">
             <![CDATA[
 LogicalAggregate(group=[{0}], EXPR$1=[PERCENTILE_DISC($1) WITHIN GROUP ([2])])
-  LogicalProject(DEPTNO=[$7], $f1=[0.25], EMPNO=[$0])
+  LogicalProject(DEPTNO=[$7], $f1=[0.25:DECIMAL(3, 2)], EMPNO=[$0])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
