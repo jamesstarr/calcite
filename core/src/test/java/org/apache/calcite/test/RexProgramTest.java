@@ -147,11 +147,13 @@ public class RexProgramTest {
   }
 
   private void checkCnf(RexNode node, String expected) {
-    assertThat(RexUtil.toCnf(rexBuilder, node).toString(), equalTo(expected));
+    assertThat("RexUtil.toCnf(rexBuilder, " + node + ")",
+        RexUtil.toCnf(rexBuilder, node).toString(), equalTo(expected));
   }
 
   private void checkThresholdCnf(RexNode node, int threshold, String expected) {
-    assertThat(RexUtil.toCnf(rexBuilder, threshold, node).toString(),
+    assertThat("RexUtil.toCnf(rexBuilder, threshold=" + threshold + " , " + node + ")",
+        RexUtil.toCnf(rexBuilder, threshold, node).toString(),
         equalTo(expected));
   }
 
@@ -160,7 +162,8 @@ public class RexProgramTest {
   }
 
   private void checkPullFactors(RexNode node, String expected) {
-    assertThat(RexUtil.pullFactors(rexBuilder, node).toString(),
+    assertThat("RexUtil.pullFactors(rexBuilder, " + node + ")",
+        RexUtil.pullFactors(rexBuilder, node).toString(),
         equalTo(expected));
   }
 
@@ -354,7 +357,7 @@ public class RexProgramTest {
             + "expr#4=[+($0, $1)], expr#5=[+($0, 1)], expr#6=[+($0, $t5)], "
             + "expr#7=[+($t4, $t2)], expr#8=[5], expr#9=[>($t2, $t8)], "
             + "expr#10=[true], expr#11=[IS NOT NULL($t5)], expr#12=[false], "
-            + "expr#13=[null], expr#14=[CASE($t9, $t10, $t11, $t12, $t13)], "
+            + "expr#13=[null:BOOLEAN], expr#14=[CASE($t9, $t10, $t11, $t12, $t13)], "
             + "expr#15=[NOT($t14)], a=[$t7], b=[$t6], $condition=[$t15])"));
 
     assertThat(program.normalize(rexBuilder, simplify).toString(),
@@ -375,7 +378,7 @@ public class RexProgramTest {
             + "expr#4=[+($0, $1)], expr#5=[+($0, 1)], expr#6=[+($0, $t5)], "
             + "expr#7=[+($t4, $t2)], expr#8=[5], expr#9=[>($t2, $t8)], "
             + "expr#10=[true], expr#11=[IS NOT NULL($t5)], expr#12=[false], "
-            + "expr#13=[null], expr#14=[CASE($t9, $t10, $t11, $t12, $t13)], "
+            + "expr#13=[null:BOOLEAN], expr#14=[CASE($t9, $t10, $t11, $t12, $t13)], "
             + "expr#15=[NOT($t14)], expr#16=[IS TRUE($t15)], a=[$t7], b=[$t6], "
             + "$condition=[$t16])"));
 
@@ -843,7 +846,7 @@ public class RexProgramTest {
     checkCnf(aRef, "?0.a");
     checkCnf(trueLiteral, "true");
     checkCnf(falseLiteral, "false");
-    checkCnf(unknownLiteral, "null");
+    checkCnf(unknownLiteral, "null:BOOLEAN");
     checkCnf(and(aRef, bRef), "AND(?0.a, ?0.b)");
     checkCnf(and(aRef, bRef, cRef), "AND(?0.a, ?0.b, ?0.c)");
 
@@ -1074,7 +1077,7 @@ public class RexProgramTest {
     checkPullFactors(aRef, "?0.a");
     checkPullFactors(trueLiteral, "true");
     checkPullFactors(falseLiteral, "false");
-    checkPullFactors(unknownLiteral, "null");
+    checkPullFactors(unknownLiteral, "null:BOOLEAN");
     checkPullFactors(and(aRef, bRef), "AND(?0.a, ?0.b)");
     checkPullFactors(and(aRef, bRef, cRef), "AND(?0.a, ?0.b, ?0.c)");
 
@@ -1194,7 +1197,7 @@ public class RexProgramTest {
     // case: trailing false and null, no simplification
     checkSimplify2(
         case_(aRef, trueLiteral, bRef, trueLiteral, cRef, falseLiteral, unknownLiteral),
-        "CASE(?0.a, true, ?0.b, true, ?0.c, false, null)",
+        "CASE(?0.a, true, ?0.b, true, ?0.c, false, null:BOOLEAN)",
         "CAST(OR(?0.a, ?0.b)):BOOLEAN");
 
     // case: form an AND of branches that return true
@@ -1708,8 +1711,8 @@ public class RexProgramTest {
         typeFactory.createSqlType(SqlTypeName.TIMESTAMP);
     checkSimplifyUnchanged(cast(literalAbc, intType));
     checkSimplify(cast(literalOne, intType), "1");
-    checkSimplify(cast(literalAbc, varcharType), "'abc'");
-    checkSimplify(cast(literalOne, varcharType), "'1'");
+    checkSimplify(cast(literalAbc, varcharType), "'abc':VARCHAR(10)");
+    checkSimplify(cast(literalOne, varcharType), "'1':VARCHAR(10)");
     checkSimplifyUnchanged(cast(literalAbc, booleanType));
     checkSimplify(cast(literalOne, booleanType),
         "false"); // different from Hive
@@ -1753,24 +1756,27 @@ public class RexProgramTest {
     final RelDataType varCharType =
         typeFactory.createSqlType(SqlTypeName.VARCHAR, 40);
 
-    checkSimplify(cast(timeLTZChar1, timeLTZType), "20:34:45");
-    checkSimplify(cast(timeLTZChar2, timeLTZType), "12:34:45");
-    checkSimplify(cast(timeLTZChar3, timeLTZType), "11:34:45");
-    checkSimplify(cast(literalTimeLTZ, timeLTZType), "01:23:45");
+    checkSimplify(cast(timeLTZChar1, timeLTZType),
+        "20:34:45:TIME_WITH_LOCAL_TIME_ZONE(0)");
+    checkSimplify(cast(timeLTZChar2, timeLTZType),
+        "12:34:45:TIME_WITH_LOCAL_TIME_ZONE(0)");
+    checkSimplify(cast(timeLTZChar3, timeLTZType),
+        "11:34:45:TIME_WITH_LOCAL_TIME_ZONE(0)");
+    checkSimplify(cast(literalTimeLTZ, timeLTZType), "01:23:45:TIME_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(timestampLTZChar1, timestampLTZType),
-        "2011-07-20 03:34:56");
+        "2011-07-20 03:34:56:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(timestampLTZChar2, timestampLTZType),
-        "2011-07-20 11:34:56");
+        "2011-07-20 11:34:56:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(timestampLTZChar3, timestampLTZType),
-        "2011-07-20 12:34:56");
+        "2011-07-20 12:34:56:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(literalTimestampLTZ, timestampLTZType),
-        "2011-07-20 08:23:45");
+        "2011-07-20 08:23:45:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(literalDate, timestampLTZType),
-        "2011-07-20 07:00:00");
+        "2011-07-20 07:00:00:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(literalTime, timestampLTZType),
-        "2011-07-20 19:34:56");
+        "2011-07-20 19:34:56:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(literalTimestamp, timestampLTZType),
-        "2011-07-20 19:34:56");
+        "2011-07-20 19:34:56:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(literalTimestamp, dateType),
         "2011-07-20");
     checkSimplify(cast(literalTimestampLTZ, dateType),
@@ -1782,17 +1788,17 @@ public class RexProgramTest {
     checkSimplify(cast(literalTimeLTZ, timeType),
         "17:23:45");
     checkSimplify(cast(literalTime, timeLTZType),
-        "20:34:56");
+        "20:34:56:TIME_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(literalTimestampLTZ, timeLTZType),
-        "08:23:45");
+        "08:23:45:TIME_WITH_LOCAL_TIME_ZONE(0)");
     checkSimplify(cast(literalTimeLTZ, varCharType),
-        "'17:23:45 America/Los_Angeles'");
+        "'17:23:45 America/Los_Angeles':VARCHAR(40)");
     checkSimplify(cast(literalTimestampLTZ, varCharType),
-        "'2011-07-20 01:23:45 America/Los_Angeles'");
+        "'2011-07-20 01:23:45 America/Los_Angeles':VARCHAR(40)");
     checkSimplify(cast(literalTimeLTZ, timestampType),
         "2011-07-19 18:23:45");
     checkSimplify(cast(literalTimeLTZ, timestampLTZType),
-        "2011-07-20 01:23:45");
+        "2011-07-20 01:23:45:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
   }
 
   @Test public void testCompareTimestampWithTimeZone() {

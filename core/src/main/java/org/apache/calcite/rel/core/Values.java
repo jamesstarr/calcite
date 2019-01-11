@@ -27,6 +27,7 @@ import org.apache.calcite.rel.RelWriter;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeField;
+import org.apache.calcite.rex.RexDigestIncludeType;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.runtime.PredicateImpl;
 import org.apache.calcite.sql.SqlExplainLevel;
@@ -36,9 +37,9 @@ import org.apache.calcite.util.Pair;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Relational expression whose value is a sequence of zero or more literal row
@@ -205,14 +206,23 @@ public abstract class Values extends AbstractRelNode {
     // A little adapter just to get the tuples to come out
     // with curly brackets instead of square brackets.  Plus
     // more whitespace for readability.
-    return super.explainTerms(pw)
+    RelWriter relWriter = super.explainTerms(pw)
         // For rel digest, include the row type since a rendered
         // literal may leave the type ambiguous (e.g. "null").
         .itemIf("type", rowType,
             pw.getDetailLevel() == SqlExplainLevel.DIGEST_ATTRIBUTES)
-        .itemIf("type", rowType.getFieldList(), pw.nest())
-        .itemIf("tuples", Lists.transform(tuples, F), !pw.nest())
-        .itemIf("tuples", tuples, pw.nest());
+        .itemIf("type", rowType.getFieldList(), pw.nest());
+    if (pw.nest()) {
+      pw.item("tuples", tuples);
+    } else {
+      pw.item("tuples",
+          tuples.stream()
+              .map(row -> row.stream()
+                  .map(lit -> lit.computeDigest(RexDigestIncludeType.NO_TYPE))
+                  .collect(Collectors.joining(", ", "{ ", " }")))
+              .collect(Collectors.joining(", ", "[", "]")));
+    }
+    return relWriter;
   }
 }
 

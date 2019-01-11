@@ -1047,14 +1047,8 @@ public class RexBuilder {
     assert s != null;
     if (s.equals("")) {
       return charEmpty;
-    } else {
-      return makeLiteral(
-          new NlsString(s, null, null),
-          typeFactory.createSqlType(
-              SqlTypeName.CHAR,
-              s.length()),
-          SqlTypeName.CHAR);
     }
+    return makeCharLiteral(new NlsString(s, null, null));
   }
 
   /**
