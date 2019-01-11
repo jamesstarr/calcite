@@ -610,7 +610,10 @@ public class RexImpTable {
             + String.valueOf(call.getOperator());
         final RexCall call2 = call2(false, translator, call);
         switch (nullAs) {
-        case NOT_POSSIBLE: // Just foldAnd
+        case NOT_POSSIBLE:
+          // This doesn't mean that none of the arguments might be null, ex: (s and s is not null)
+          nullAs = NullAs.TRUE;
+          // fallthru
         case TRUE:
           // AND call should return false iff has FALSEs,
           // thus if we convert nulls to true then no harm is made
@@ -652,7 +655,10 @@ public class RexImpTable {
             + String.valueOf(call.getOperator());
         final RexCall call2 = call2(harmonize, translator, call);
         switch (nullAs) {
-        case NOT_POSSIBLE: // Just foldOr
+        case NOT_POSSIBLE:
+          // This doesn't mean that none of the arguments might be null, ex: (s or s is null)
+          nullAs = NullAs.FALSE;
+          // fallthru
         case TRUE:
           // This should return false iff all arguments are FALSE,
           // thus we convert nulls to TRUE and foldOr
@@ -2588,6 +2594,12 @@ public class RexImpTable {
         RexToLixTranslator translator, RexCall call, NullAs nullAs) {
       List<RexNode> operands = call.getOperands();
       assert operands.size() == 1;
+      switch (nullAs) {
+      case IS_NOT_NULL:
+        return BOXED_TRUE_EXPR;
+      case IS_NULL:
+        return BOXED_FALSE_EXPR;
+      }
       if (seek == null) {
         return translator.translate(operands.get(0),
             negate ? NullAs.IS_NOT_NULL : NullAs.IS_NULL);
