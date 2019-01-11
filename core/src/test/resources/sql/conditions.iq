@@ -288,6 +288,9 @@ select case when s=0 then false else 100/s > 0 end from ax;
 
 !ok
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> de506df68 ([CALCITE-2783] Expressions like ( s or s is unknown ) = true causes Exceptions)
 
 # Test case for CALCITE-2783
 with ax(s) as (values (true),(false),(cast(null as boolean)))
@@ -305,8 +308,11 @@ select s, (s or s is null), (s and s is not null) from ax;
 !ok
 
 
+<<<<<<< HEAD
 =======
 >>>>>>> 72d688293 ([CALCITE-2726] ReduceExpressionRule oversimplifies filter conditions containing nulls)
 =======
 >>>>>>> a487e40cf ([CALCITE-2731] RexProgramBuilder makes unsafe simplifications to CASE expressions (Zoltan Haindrich))
+=======
+>>>>>>> de506df68 ([CALCITE-2783] Expressions like ( s or s is unknown ) = true causes Exceptions)
 # End conditions.iq
