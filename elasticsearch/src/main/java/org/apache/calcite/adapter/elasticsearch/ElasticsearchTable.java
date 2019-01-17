@@ -72,7 +72,7 @@ public class ElasticsearchTable extends AbstractQueryableTable implements Transl
   private final String indexName;
   private final String typeName;
   final ObjectMapper mapper;
-  private final ElasticsearchTransport transport;
+  final ElasticsearchTransport transport;
 
   /**
    * Creates an ElasticsearchTable.
