@@ -36,6 +36,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collector;
+import javax.annotation.Nonnull;
 
 /**
  * A <code>SqlNode</code> is a SQL parse tree.

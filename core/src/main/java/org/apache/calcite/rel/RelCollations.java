@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Utilities concerning {@link org.apache.calcite.rel.RelCollation}
@@ -199,9 +198,9 @@ public class RelCollations {
    * fields. */
   public static RelCollation permute(RelCollation collation,
       Map<Integer, Integer> mapping) {
-    return of(collation.getFieldCollations().stream()
-      .map(fc -> fc.copy(mapping.get(fc.getFieldIndex())))
-      .collect(Collectors.toList()));
+    return of(
+        Util.transform(collation.getFieldCollations(),
+            fc -> fc.withFieldIndex(mapping.get(fc.getFieldIndex()))));
   }
 
   /** Creates a copy of this collation that changes the ordinals of input
@@ -209,9 +208,8 @@ public class RelCollations {
   public static RelCollation permute(RelCollation collation,
       Mappings.TargetMapping mapping) {
     return of(
-      collation.getFieldCollations().stream()
-        .map(fc -> fc.copy(mapping.getTarget(fc.getFieldIndex())))
-        .collect(Collectors.toList()));
+        Util.transform(collation.getFieldCollations(),
+            fc -> fc.withFieldIndex(mapping.getTarget(fc.getFieldIndex()))));
   }
 }
 >>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
