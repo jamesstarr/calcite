@@ -43,6 +43,8 @@ import org.apache.calcite.rel.core.Uncollect;
 import org.apache.calcite.rel.core.Union;
 import org.apache.calcite.rel.core.Values;
 import org.apache.calcite.rel.core.Window;
+import org.apache.calcite.rel.logical.LogicalProject;
+import org.apache.calcite.rel.logical.LogicalSort;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexBuilder;
@@ -97,11 +99,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Utility to convert relational expressions to SQL abstract syntax tree.
@@ -219,32 +219,6 @@ public class RelToSqlConverter extends SqlImplementor
     return e.getJoinType() == JoinRelType.INNER && e.getCondition().isAlwaysTrue();
   }
 
-<<<<<<< HEAD
-  /** @see #dispatch */
-  public Result visit(Correlate e) {
-    final Result leftResult =
-        visitChild(0, e.getLeft())
-            .resetAlias(e.getCorrelVariable(), e.getRowType());
-    parseCorrelTable(e, leftResult);
-    final Result rightResult = visitChild(1, e.getRight());
-    final SqlNode rightLateral =
-        SqlStdOperatorTable.LATERAL.createCall(POS, rightResult.node);
-    final SqlNode rightLateralAs =
-        SqlStdOperatorTable.AS.createCall(POS, rightLateral,
-            new SqlIdentifier(rightResult.neededAlias, POS));
-
-    final SqlNode join =
-        new SqlJoin(POS,
-            leftResult.asFrom(),
-            SqlLiteral.createBoolean(false, POS),
-            JoinType.COMMA.symbol(POS),
-            rightLateralAs,
-            JoinConditionType.NONE.symbol(POS),
-            null);
-    return result(join, leftResult, rightResult);
-  }
-
-=======
   /** @see #dispatch */
   public Result visit(Filter e) {
     final RelNode input = e.getInput();
@@ -371,6 +345,7 @@ public class RelToSqlConverter extends SqlImplementor
     final List<SqlNode> selectList = new ArrayList<>();
     final List<SqlNode> groupByList =
         generateGroupList(builder, selectList, e, groupKeyList);
+<<<<<<< HEAD
     return buildAggregate(e, builder, selectList, groupByList);
   }
 
@@ -422,6 +397,7 @@ public class RelToSqlConverter extends SqlImplementor
    */
   protected Result buildAggregate(Aggregate e, Builder builder,
       List<SqlNode> selectList, List<SqlNode> groupByList) {
+=======
     for (AggregateCall aggCall : e.getAggCallList()) {
       SqlNode aggCallSqlNode = builder.context.toSql(aggCall);
       if (aggCall.getAggregation() instanceof SqlSingleValueAggFunction) {
@@ -481,24 +457,18 @@ public class RelToSqlConverter extends SqlImplementor
           SqlStdOperatorTable.GROUPING_SETS.createCall(SqlParserPos.ZERO,
               aggregate.getGroupSets().stream()
                   .map(groupSet ->
-                      groupItem(groupKeys, groupSet, aggregate.getGroupSet()))
+                      new SqlNodeList(
+                          groupSet.asList().stream()
+                              .map(key ->
+                                  groupKeys.get(aggregate.getGroupSet()
+                                      .indexOf(key)))
+                          .collect(Collectors.toList()),
+                          SqlParserPos.ZERO))
                   .collect(Collectors.toList())));
     }
   }
 
-  private SqlNode groupItem(List<SqlNode> groupKeys,
-      ImmutableBitSet groupSet, ImmutableBitSet wholeGroupSet) {
-    final List<SqlNode> nodes = groupSet.asList().stream()
-        .map(key -> groupKeys.get(wholeGroupSet.indexOf(key)))
-        .collect(Collectors.toList());
-    switch (nodes.size()) {
-    case 1:
-      return nodes.get(0);
-    default:
-      return SqlStdOperatorTable.ROW.createCall(SqlParserPos.ZERO, nodes);
-    }
-  }
-
+>>>>>>> b19c437bf ([CALCITE-2796] JDBC adapter should convert 'GROUP BY ROLLUP(x, y)' to 'GROUP BY x, y WITH ROLLUP' for MySQL 5)
   /** @see #dispatch */
   public Result visit(TableScan e) {
     final SqlIdentifier identifier = getSqlTargetTable(e);
@@ -757,6 +727,7 @@ public class RelToSqlConverter extends SqlImplementor
             fc.getFieldIndex() < aggregate.getGroupSet().cardinality());
   }
 
+<<<<<<< HEAD
   private SqlIdentifier getSqlTargetTable(RelNode e) {
     final SqlIdentifier sqlTargetTable;
     final JdbcTable jdbcTable = e.getTable().unwrap(JdbcTable.class);
@@ -772,6 +743,7 @@ public class RelToSqlConverter extends SqlImplementor
     return sqlTargetTable;
   }
 
+=======
   /** @see #dispatch */
   public Result visit(TableModify modify) {
     final Map<String, RelDataType> pairs = ImmutableMap.of();

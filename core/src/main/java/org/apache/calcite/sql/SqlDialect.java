@@ -200,14 +200,6 @@ public class SqlDialect {
     this.dataTypeSystem = Objects.requireNonNull(context.dataTypeSystem());
     this.databaseProduct =
         Objects.requireNonNull(context.databaseProduct());
-<<<<<<< HEAD
-    this.literalQuoteString =
-        Objects.requireNonNull(context.literalQuoteString());
-    this.literalEndQuoteString =
-        Objects.requireNonNull(context.literalQuoteString());
-    this.literalEscapedQuote =
-        Objects.requireNonNull(context.literalEscapedQuoteString());
-=======
     String identifierQuoteString = context.identifierQuoteString();
     if (identifierQuoteString != null) {
       identifierQuoteString = identifierQuoteString.trim();
@@ -1008,6 +1000,7 @@ public class SqlDialect {
     return false;
   }
 
+<<<<<<< HEAD
   /**
    * Returns whether this dialect supports "WITH CUBE" in "GROUP BY" clause.
    */
@@ -1015,6 +1008,7 @@ public class SqlDialect {
     return false;
   }
 
+=======
   /** Returns how NULL values are sorted if an ORDER BY item does not contain
    * NULLS ASCENDING or NULLS DESCENDING. */
   public NullCollation getNullCollation() {
@@ -1378,7 +1372,7 @@ public class SqlDialect {
     @Nonnull SqlConformance conformance();
     @Nonnull Context withConformance(SqlConformance conformance);
     @Nonnull NullCollation nullCollation();
-    Context withNullCollation(@Nonnull NullCollation nullCollation);
+    @Nonnull Context withNullCollation(@Nonnull NullCollation nullCollation);
     @Nonnull RelDataTypeSystem dataTypeSystem();
     Context withDataTypeSystem(@Nonnull RelDataTypeSystem dataTypeSystem);
     JethroDataSqlDialect.JethroInfo jethroInfo();
