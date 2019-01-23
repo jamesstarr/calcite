@@ -3965,6 +3965,12 @@ public class RelOptRulesTest extends RelOptTestBase {
 
     checkPlanning(ReduceExpressionsRule.FILTER_INSTANCE, sql);
   }
+
+  @Test public void testPushProjectWithIsNotDistinctFromPastJoin() {
+    checkPlanning(ProjectJoinTransposeRule.INSTANCE,
+        "select e.sal + b.comm from emp e inner join bonus b "
+            + "on e.ename IS NOT DISTINCT FROM b.ename and e.deptno = 10");
+  }
 }
 
 // End RelOptRulesTest.java
