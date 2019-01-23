@@ -1697,11 +1697,10 @@ public abstract class RelOptUtil {
   }
 
   /**
-   * Collapses an expanded version of {@code IS NOT DISTINCT FROM} expression.
+   * Collapse an expanded version of IS NOT DISTINCT FROM expression
    *
-   * <p>Helper method for
-   * {@link #splitJoinCondition(RexBuilder, int, RexNode, List, List, List, List)}
-   * and
+   * Helper method for
+   * {@link #splitJoinCondition(RexBuilder, int, RexNode, List, List, List, List)} and
    * {@link #splitJoinCondition(List, List, RexNode, List, List, List, List)}.
    *
    * <p>If the given expr <code>call</code> is an expanded version of
@@ -1814,8 +1813,8 @@ public abstract class RelOptUtil {
       return call;
     }
 
-    if (!ifCall.equals(elseIfThenCall)
-        || !thenCall.equals(elseIfCall)) {
+    if (!RexUtil.eq(ifCall, elseIfThenCall)
+        || !RexUtil.eq(thenCall, elseIfCall)) {
       return call;
     }
 

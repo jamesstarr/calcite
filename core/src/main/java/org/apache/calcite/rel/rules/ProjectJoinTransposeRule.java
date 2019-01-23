@@ -18,12 +18,7 @@ package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
-import org.apache.calcite.plan.RelRule;
-import org.apache.calcite.plan.RelTraitSet;
-import org.apache.calcite.rel.RelCollation;
-import org.apache.calcite.rel.RelCollationTraitDef;
-import org.apache.calcite.rel.RelCollations;
-import org.apache.calcite.rel.RelFieldCollation;
+>>>>>>> 9ac32d14a ([CALCITE-2803] ProjectTransposeJoinRule messes INDF expressions)
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.Project;
@@ -33,7 +28,9 @@ import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexShuttle;
+<<<<<<< HEAD
 import org.apache.calcite.rex.RexUtil;
+=======
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBeans;
 import org.apache.calcite.util.mapping.Mappings;
@@ -89,7 +86,7 @@ public class ProjectJoinTransposeRule
   //~ Methods ----------------------------------------------------------------
 
   // implement RelOptRule
-  @Override public void onMatch(final RelOptRuleCall call) {
+  public void onMatch(final RelOptRuleCall call) {
     Project origProj = call.rel(0);
     final Join join = call.rel(1);
 
