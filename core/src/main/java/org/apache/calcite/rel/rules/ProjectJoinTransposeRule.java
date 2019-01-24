@@ -60,15 +60,30 @@ public class ProjectJoinTransposeRule
 
   @Deprecated // to be removed before 2.0
   public ProjectJoinTransposeRule(
-          Class<? extends Project> projectClass,
-          Class<? extends Join> joinClass,
-          PushProjector.ExprCondition preserveExprCondition,
-          RelBuilderFactory relBuilderFactory) {
-    this(Config.DEFAULT
-            .withRelBuilderFactory(relBuilderFactory)
-            .as(Config.class)
-            .withOperandFor(projectClass, joinClass)
-            .withPreserveExprCondition(preserveExprCondition));
+      PushProjector.ExprCondition preserveExprCondition,
+      RelBuilderFactory relFactory) {
+    this(Project.class, Join.class, preserveExprCondition, relFactory);
+  }
+
+  /**
+   * Creates a ProjectJoinTransposeRule with an explicit condition.
+   *
+   * @param projectClass          Project class to match on
+   * @param joinClass             Join class to match on
+   * @param preserveExprCondition Condition for expressions that should be
+   *                              preserved in the projection
+   * @param relFactory            RelBuilder factory to use
+   */
+  public ProjectJoinTransposeRule(
+      Class<? extends Project> projectClass,
+      Class<? extends Join> joinClass,
+      PushProjector.ExprCondition preserveExprCondition,
+      RelBuilderFactory relFactory) {
+    super(
+        operand(projectClass,
+            operand(joinClass, any())),
+        relFactory, null);
+    this.preserveExprCondition = preserveExprCondition;
   }
 
   //~ Methods ----------------------------------------------------------------
