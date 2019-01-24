@@ -49,7 +49,7 @@ class DruidDateRangeRulesTest {
         is("[2014-06-01T00:00:00.000Z/2014-07-01T00:00:00.000Z]"));
   }
 
-  @Test void testRangeCalc() {
+  @Test public void testRangeCalc() {
     final Fixture2 f = new Fixture2();
     checkDateRange(f,
         f.and(
@@ -58,7 +58,7 @@ class DruidDateRangeRulesTest {
         is("[2011-01-01T00:00:00.000Z/2012-02-02T00:00:00.001Z]"));
   }
 
-  @Test void testExtractYearAndDayFromDateColumn() {
+  @Test public void testExtractYearAndDayFromDateColumn() {
     final Fixture2 f = new Fixture2();
     // AND(AND(>=($8, 2010-01-01), <($8, 2011-01-01)),
     //     OR(AND(>=($8, 2010-01-31), <($8, 2010-02-01)),
