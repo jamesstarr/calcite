@@ -3676,24 +3676,13 @@ public abstract class RelOptUtil {
     switch (node.getKind()) {
     case EQUALS:
     case IS_NOT_DISTINCT_FROM:
-      final RexCall call0 = (RexCall) node;
-      final RexNode leftRex = call0.getOperands().get(0);
-      final RexNode rightRex = call0.getOperands().get(1);
-      final ImmutableBitSet leftBits = RelOptUtil.InputFinder.bits(leftRex);
-      final ImmutableBitSet rightBits = RelOptUtil.InputFinder.bits(rightRex);
-      final int pivot = leftCount + extraLeftExprs.size();
-      Side lside = Side.of(leftBits, pivot);
-      Side rside = Side.of(rightBits, pivot);
-      if (!lside.opposite(rside)) {
-        return call0;
-      }
-      // fall through
-    case AND:
+>>>>>>> ca4a48d63 ([CALCITE-2807] RelOptUtil#pushDownJoinConditions and INDF)
       final RexCall call = (RexCall) node;
       final List<RexNode> list = new ArrayList<>();
       List<RexNode> operands = Lists.newArrayList(call.getOperands());
       for (int i = 0; i < operands.size(); i++) {
         RexNode operand = operands.get(i);
+<<<<<<< HEAD
         if (operand instanceof RexCall) {
           operand = collapseExpandedIsNotDistinctFromExpr(
               (RexCall) operand, builder);
@@ -3721,6 +3710,22 @@ public abstract class RelOptUtil {
           }
           list.add(e);
         }
+=======
+        final int left2 = leftCount + extraLeftExprs.size();
+        final int right2 = rightCount + extraRightExprs.size();
+        final RexNode e =
+            pushDownEqualJoinConditions(
+                operand,
+                leftCount,
+                rightCount,
+                extraLeftExprs,
+                extraRightExprs,
+                builder);
+        final List<RexNode> remainingOperands = Util.skip(operands, i + 1);
+        final int left3 = leftCount + extraLeftExprs.size();
+        fix(remainingOperands, left2, left3);
+        fix(list, left2, left3);
+        list.add(e);
       }
       if (!list.equals(call.getOperands())) {
         return call.clone(call.getType(), list);
