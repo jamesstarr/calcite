@@ -148,9 +148,9 @@ public class CassandraSchema extends AbstractSchema {
   RelProtoDataType getRelDataType(String columnFamily, boolean view) {
     List<ColumnMetadata> columns;
     if (view) {
-      columns = getKeyspace().getMaterializedView(columnFamily).getColumns();
+      columns = getKeyspace().getMaterializedView("\"" + columnFamily + "\"").getColumns();
     } else {
-      columns = getKeyspace().getTable(columnFamily).getColumns();
+      columns = getKeyspace().getTable("\"" + columnFamily + "\"").getColumns();
     }
 
     // Temporary type factory, just for the duration of this method. Allowable
@@ -195,9 +195,9 @@ public class CassandraSchema extends AbstractSchema {
   Pair<List<String>, List<String>> getKeyFields(String columnFamily, boolean view) {
     AbstractTableMetadata table;
     if (view) {
-      table = getKeyspace().getMaterializedView(columnFamily);
+      table = getKeyspace().getMaterializedView("\"" + columnFamily + "\"");
     } else {
-      table = getKeyspace().getTable(columnFamily);
+      table = getKeyspace().getTable("\"" + columnFamily + "\"");
     }
 
     List<ColumnMetadata> partitionKey = table.getPartitionKey();
@@ -223,9 +223,9 @@ public class CassandraSchema extends AbstractSchema {
   public List<RelFieldCollation> getClusteringOrder(String columnFamily, boolean view) {
     AbstractTableMetadata table;
     if (view) {
-      table = getKeyspace().getMaterializedView(columnFamily);
+      table = getKeyspace().getMaterializedView("\"" + columnFamily + "\"");
     } else {
-      table = getKeyspace().getTable(columnFamily);
+      table = getKeyspace().getTable("\"" + columnFamily + "\"");
     }
 
     List<ClusteringOrder> clusteringOrder = table.getClusteringOrder();
