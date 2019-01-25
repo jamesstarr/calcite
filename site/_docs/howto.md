@@ -417,8 +417,13 @@ Calcite model:
 
 {% highlight bash %}
 $ ./sqlline
+<<<<<<< HEAD
 sqlline> !connect jdbc:calcite:model=mongodb/src/test/resources/mongo-model.json admin admin
 Connecting to jdbc:calcite:model=mongodb/src/test/resources/mongo-model.json
+=======
+sqlline> !connect jdbc:calcite:model=mongodb/target/test-classes/mongo-model.json admin admin
+Connecting to jdbc:calcite:model=mongodb/target/test-classes/mongo-model.json
+>>>>>>> 25e273752 (Site: [CALCITE-2734] Update mongo documentation to reflect filename changes)
 Connected to: Calcite (version 1.x.x)
 Driver: Calcite JDBC Driver (version 1.x.x)
 Autocommit status: true
