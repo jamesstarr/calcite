@@ -1162,9 +1162,11 @@ public class SqlParserTest {
     return false;
   }
 
-  @Test public void testRowWitDot() {
+  @Test public void testRowWithDot() {
     check("select (1,2).a from c.t", "SELECT ((ROW(1, 2)).`A`)\nFROM `C`.`T`");
     check("select row(1,2).a from c.t", "SELECT ((ROW(1, 2)).`A`)\nFROM `C`.`T`");
+    check("select tbl.foo(0).col.bar from tbl",
+        "SELECT ((`TBL`.`FOO`(0).`COL`).`BAR`)\nFROM `TBL`");
   }
 
   @Test public void testPeriod() {
@@ -7574,22 +7576,22 @@ public class SqlParserTest {
   /**
    * Tests that applying member function of a specific type as a suffix function
    */
-  @Test void testMemberFunction() {
-    sql("SELECT myColumn.func(a, b) FROM tbl")
-        .ok("SELECT `MYCOLUMN`.`FUNC`(`A`, `B`)\n"
+  @Test public void testMemberFunction() {
+    check("SELECT myColumn.func(a, b) FROM tbl",
+        "SELECT `MYCOLUMN`.`FUNC`(`A`, `B`)\n"
             + "FROM `TBL`");
-    sql("SELECT myColumn.mySubField.func() FROM tbl")
-        .ok("SELECT `MYCOLUMN`.`MYSUBFIELD`.`FUNC`()\n"
+    check("SELECT myColumn.mySubField.func() FROM tbl",
+        "SELECT `MYCOLUMN`.`MYSUBFIELD`.`FUNC`()\n"
             + "FROM `TBL`");
-    sql("SELECT tbl.myColumn.mySubField.func() FROM tbl")
-        .ok("SELECT `TBL`.`MYCOLUMN`.`MYSUBFIELD`.`FUNC`()\n"
+    check("SELECT tbl.myColumn.mySubField.func() FROM tbl",
+        "SELECT `TBL`.`MYCOLUMN`.`MYSUBFIELD`.`FUNC`()\n"
             + "FROM `TBL`");
-    sql("SELECT tbl.foo(0).col.bar(2, 3) FROM tbl")
-        .ok("SELECT ((`TBL`.`FOO`(0).`COL`).`BAR`(2, 3))\n"
+    check("SELECT tbl.foo(0).col.bar(2, 3) FROM tbl",
+        "SELECT ((`TBL`.`FOO`(0).`COL`).`BAR`(2, 3))\n"
             + "FROM `TBL`");
   }
 
-  @Test void testUnicodeLiteral() {
+  @Test public void testUnicodeLiteral() {
     // Note that here we are constructing a SQL statement which directly
     // contains Unicode characters (not SQL Unicode escape sequences).  The
     // escaping here is Java-only, so by the time it gets to the SQL
