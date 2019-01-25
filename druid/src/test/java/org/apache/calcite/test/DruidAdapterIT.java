@@ -459,22 +459,28 @@ import java.sql.SQLException;
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2804">[CALCITE-2804]</a>
    * Cast does not work in Druid when casting to timestamp
    */
-  @Test void testCastToTimestamp() {
+  @Test public void testCastToTimestamp() {
     final String sql = "select cast(\"timestamp\" as timestamp) from \"foodmart\"";
-    final String druidQuery = "timestamp_format(\\\"__time\\\","
-        + "'yyyy-MM-dd\\\\u0027T\\\\u0027HH:mm:ss.SSS\\\\u0027Z\\\\u0027',"
-        + "'America/New_York'),'yyyy-MM-dd\\\\u0027T\\\\u0027HH:mm:ss.SSS\\\\u0027Z\\\\u0027','UTC')\"";
+    final String druidQuery = "{'queryType':'scan','dataSource':'foodmart',"
+        + "'intervals':['1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z']',"
+        + "'virtualColumns:[{'type':'expression','name':'vc',"
+        + "'expression':'timestamp_parse("
+        + "timestamp_format(\"__time\",'yyyy-MM-dd\\u0027T\\u0027HH:mm:ss.SSS\\u0027Z\\u0027',"
+        + "'America/New_York'),'yyyy-MM-dd\\u0027T\\u0027HH:mm:ss.SSS\\u0027Z\\u0027','UTC')',"
+        + "'outputType':'LONG'}],"
+        + "'columns':['vc'],"
+        + "'resultFormat':'compactedList'}";
 
     CalciteAssert.that()
-        .enable(enabled())
-        .withModel(FOODMART)
-        .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "America/New_York")
-        .query(sql)
-        .runs()
-        .queryContains(new DruidChecker(false, druidQuery));
+         .enable(enabled())
+         .withModel(FOODMART)
+         .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "America/New_York")
+         .query(sql)
+         .runs()
+         .queryContains(druidChecker(druidQuery));
   }
 
-  @Test void testDistinctLimit() {
+  @Test public void testDistinctLimit() {
     final String sql = "select distinct \"gender\", \"state_province\"\n"
         + "from \"foodmart\" fetch next 3 rows only";
     final String druidQuery = "{'queryType':'groupBy','dataSource':'foodmart',"

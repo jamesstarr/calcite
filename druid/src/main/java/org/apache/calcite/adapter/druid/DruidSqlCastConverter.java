@@ -64,10 +64,11 @@ public class DruidSqlCastConverter implements DruidSqlOperatorConverter {
     if (SqlTypeName.CHAR_TYPES.contains(fromType)
         && SqlTypeName.DATETIME_TYPES.contains(toType)) {
       //case chars to dates
-      return castCharToDateTime(timeZone, operandExpression, toType,
-          nullEqualToEmpty ? "" : null);
-    } else if (SqlTypeName.DATETIME_TYPES.contains(fromType) && SqlTypeName.CHAR_TYPES.contains
-        (toType)) {
+      return castCharToDateTime(toType == SqlTypeName.TIMESTAMP_WITH_LOCAL_TIME_ZONE
+              ? timeZone : DateTimeUtils.UTC_ZONE,
+          operandExpression, toType, fromTypeString);
+    } else if (SqlTypeName.DATETIME_TYPES.contains(fromType)
+        && SqlTypeName.CHAR_TYPES.contains(toType)) {
       //case dates to chars
       return castDateTimeToChar(timeZone, operandExpression, fromType);
     } else if (toType == SqlTypeName.TIMESTAMP_WITH_LOCAL_TIME_ZONE
@@ -82,7 +83,7 @@ public class DruidSqlCastConverter implements DruidSqlOperatorConverter {
           timeZone,
           castDateTimeToChar(DateTimeUtils.UTC_ZONE, operandExpression, fromType),
           toType,
-          nullEqualToEmpty ? "" : null);
+          fromTypeString);
     } else if (fromType == SqlTypeName.TIMESTAMP_WITH_LOCAL_TIME_ZONE
         && SqlTypeName.DATETIME_TYPES.contains(toType)) {
       if (toType != SqlTypeName.DATE && timeZone.equals(DateTimeUtils.UTC_ZONE)) {
@@ -95,7 +96,7 @@ public class DruidSqlCastConverter implements DruidSqlOperatorConverter {
           DateTimeUtils.UTC_ZONE,
           castDateTimeToChar(timeZone, operandExpression, fromType),
           toType,
-          nullEqualToEmpty ? "" : null);
+          fromTypeString);
     } else {
       // Handle other casts.
       final DruidType fromExprType = DruidExpressions.EXPRESSION_TYPES.get(fromType);
