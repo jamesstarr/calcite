@@ -1,5 +1,9 @@
 Apache Calcite
+<<<<<<< HEAD
 Copyright 2012-2020 The Apache Software Foundation
+=======
+Copyright 2012-2019 The Apache Software Foundation
+>>>>>>> 6669d2f18 (Update year in NOTICE)
 
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
