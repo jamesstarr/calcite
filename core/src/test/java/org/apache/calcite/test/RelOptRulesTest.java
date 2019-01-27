@@ -3800,11 +3800,48 @@ class RelOptRulesTest extends RelOptTestBase {
    * Once the bottom aggregate pulled through union, we need to add a Project
    * if the new input contains a different type from the union.
    */
-  @Test void testPullAggregateThroughUnionAndAddProjects() {
+  @Test public void testPullAggregateThroughUnionAndAddProjects() {
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(CoreRules.AGGREGATE_PROJECT_MERGE)
         .addRuleInstance(CoreRules.AGGREGATE_UNION_AGGREGATE)
         .build();
+<<<<<<< HEAD
+=======
+
+    final String sql = "select job, deptno from"
+        + " (select job, deptno from emp as e1"
+        + " group by job, deptno"
+        + "  union all"
+        + " select job, deptno from emp as e2"
+        + " group by job, deptno)"
+        + " group by job, deptno";
+    sql(sql).with(program).check();
+  }
+
+  /**
+   * Make sure the union alias is preserved when the bottom aggregate is
+   * pulled up through union.
+   */
+  @Test public void testPullAggregateThroughUnionWithAlias() {
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.AGGREGATE_PROJECT_MERGE)
+        .addRuleInstance(CoreRules.AGGREGATE_UNION_AGGREGATE)
+        .build();
+
+    final String sql = "select job, c from"
+        + " (select job, deptno c from emp as e1"
+        + " group by job, deptno"
+        + "  union all"
+        + " select job, deptno from emp as e2"
+        + " group by job, deptno)"
+        + " group by job, c";
+    sql(sql).with(program).check();
+  }
+
+  private void transitiveInference(RelOptRule... extraRules) throws Exception {
+    final DiffRepository diffRepos = getDiffRepos();
+    final String sql = diffRepos.expand(null, "${sql}");
+>>>>>>> 682d0a77d ([CALCITE-2801] Check input type in AggregateUnionAggregateRule when remove the bottom Aggregate (Hequn Cheng))
 
     final String sql = "select job, deptno from"
         + " (select job, deptno from emp as e1"

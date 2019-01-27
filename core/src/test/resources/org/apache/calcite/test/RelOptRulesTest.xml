@@ -8658,9 +8658,18 @@ LogicalAggregate(group=[{0, 1}])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPullAggregateThroughUnionAndAddProjects">
         <Resource name="sql">
             <![CDATA[select job, deptno from (select job, deptno from emp as e1 group by job, deptno  union all select job, deptno from emp as e2 group by job, deptno) group by job, deptno]]>
+=======
+    <TestCase name="testPullAggregateThroughUnionAndAddProjects">
+        <Resource name="sql">
+            <![CDATA[select job, deptno from
+            (select job, deptno from emp as e1 group by job, deptno
+            union all select job, deptno from emp as e2 group by job, deptno)
+            group by job, deptno]]>
+>>>>>>> 682d0a77d ([CALCITE-2801] Check input type in AggregateUnionAggregateRule when remove the bottom Aggregate (Hequn Cheng))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -8687,7 +8696,14 @@ LogicalAggregate(group=[{0, 1}])
     </TestCase>
     <TestCase name="testPullAggregateThroughUnionWithAlias">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[select job, c from (select job, deptno c from emp as e1 group by job, deptno  union all select job, deptno from emp as e2 group by job, deptno) group by job, c]]>
+=======
+            <![CDATA[select job, c from
+            (select job, deptno c from emp as e1 group by job, deptno
+             union all select job, deptno from emp as e2 group by job, deptno)
+             group by job, c]]>
+>>>>>>> 682d0a77d ([CALCITE-2801] Check input type in AggregateUnionAggregateRule when remove the bottom Aggregate (Hequn Cheng))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -8713,9 +8729,12 @@ LogicalAggregate(group=[{0, 1}])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+>>>>>>> 682d0a77d ([CALCITE-2801] Check input type in AggregateUnionAggregateRule when remove the bottom Aggregate (Hequn Cheng))
     <TestCase name="testProjectWindowTransposeRule">
         <Resource name="sql">
             <![CDATA[select count(empno) over(), deptno from emp]]>

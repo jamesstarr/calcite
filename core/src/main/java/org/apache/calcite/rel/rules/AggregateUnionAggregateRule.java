@@ -17,7 +17,7 @@
 package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.RelOptRuleCall;
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
+import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
@@ -81,7 +81,24 @@ public class AggregateUnionAggregateRule
 
   //~ Methods ----------------------------------------------------------------
 
-  @Override public void onMatch(RelOptRuleCall call) {
+  /**
+   * Returns an input with the same row type with the input Aggregate,
+   * create a Project node if needed.
+   */
+  private RelNode getInputWithSameRowType(Aggregate bottomAggRel) {
+    if (RelOptUtil.areRowTypesEqual(
+            bottomAggRel.getRowType(),
+            bottomAggRel.getInput(0).getRowType(),
+            false)) {
+      return bottomAggRel.getInput(0);
+    } else {
+      return RelOptUtil.createProject(
+          bottomAggRel.getInput(),
+          bottomAggRel.getGroupSet().asList());
+    }
+  }
+
+  public void onMatch(RelOptRuleCall call) {
     final Aggregate topAggRel = call.rel(0);
     final Union union = call.rel(1);
 
@@ -113,10 +130,9 @@ public class AggregateUnionAggregateRule
     }
 
     relBuilder.union(true);
-<<<<<<< HEAD
-    relBuilder.rename(union.getRowType().getFieldNames());
-=======
 >>>>>>> 0179410f6 ([CALCITE-2647] In RelBuilder, add a groupKey method that assumes only one grouping set)
+=======
+    relBuilder.rename(union.getRowType().getFieldNames());
     relBuilder.aggregate(relBuilder.groupKey(topAggRel.getGroupSet()),
         topAggRel.getAggCallList());
     call.transformTo(relBuilder.build());
