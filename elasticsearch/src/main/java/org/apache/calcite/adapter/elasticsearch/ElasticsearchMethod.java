@@ -36,7 +36,7 @@ enum ElasticsearchMethod {
       List.class, // sort
       List.class, // groupBy
       List.class, // aggregations
-      List.class, // expression mapping
+      Map.class, // item to expression mapping. Eg. _MAP['a.b.c'] and EXPR$1
       Long.class, // offset
       Long.class); // fetch
 
