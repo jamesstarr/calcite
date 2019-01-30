@@ -868,6 +868,8 @@ limitations under the License.
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
+          <!-- Fix for SUREFIRE-1264 -->
+          <version>2.22.0</version>
           <configuration>
             <threadCount>1</threadCount>
             <perCoreThreadCount>true</perCoreThreadCount>
