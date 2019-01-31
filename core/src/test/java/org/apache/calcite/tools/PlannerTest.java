@@ -511,104 +511,7 @@ public class PlannerTest {
         .build();
 
     RelOptPlanner planner = relNode.getCluster().getPlanner();
-<<<<<<< HEAD
-=======
-    RuleSet ruleSet =
-        RuleSets.ofList(
-            PruneEmptyRules.UNION_INSTANCE,
-            CoreRules.FILTER_VALUES_MERGE,
-            EnumerableRules.ENUMERABLE_PROJECT_RULE,
-            EnumerableRules.ENUMERABLE_FILTER_RULE,
-            EnumerableRules.ENUMERABLE_VALUES_RULE,
-            EnumerableRules.ENUMERABLE_UNION_RULE);
-    Program program = Programs.of(ruleSet);
-
-    RelTraitSet toTraits = relNode.getTraitSet()
-        .replace(EnumerableConvention.INSTANCE);
-
-    RelNode output = program.run(planner, relNode, toTraits,
-        ImmutableList.of(), ImmutableList.of());
-
-    // Expected outcomes are:
-    // 1) relation is optimized to simple VALUES
-    // 2) the number of rule invocations is reasonable
-    // 3) planner does not throw OutOfMemoryError
-    assertThat("empty union should be pruned out of " + toString(relNode),
-        Util.toLinux(toString(output)),
-        equalTo("EnumerableUnion(all=[true])\n"
-            + "  EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n"
-            + "  EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 2 }]])\n"));
-  }
-
-  /** Unit test that parses, validates, converts and
-   * plans for query using order by */
-  @Test public void testSortPlan() throws Exception {
->>>>>>> 8873490bb ([CALCITE-2456] VolcanoRuleCall doesn't match unordered child operand when the operand is not the first operand. PruneEmptyRules UNION and MINUS with empty inputs cause infinite cycle. (Zuozhi Wang))
-    RuleSet ruleSet =
-        RuleSets.ofList(
-            CoreRules.SORT_REMOVE,
-            EnumerableRules.ENUMERABLE_PROJECT_RULE,
-            EnumerableRules.ENUMERABLE_SORT_RULE);
-    Planner planner = getPlanner(null, Programs.of(ruleSet));
-    SqlNode parse = planner.parse(
-        "select * from \"emps\" "
-            + "order by \"emps\".\"deptno\"");
-    SqlNode validate = planner.validate(parse);
-    RelNode convert = planner.rel(validate).project();
-    RelTraitSet traitSet = convert.getTraitSet()
-        .replace(EnumerableConvention.INSTANCE);
-    RelNode transform = planner.transform(0, traitSet, convert);
-    assertThat(toString(transform),
-        equalTo("EnumerableSort(sort0=[$1], dir0=[ASC])\n"
-            + "  EnumerableProject(empid=[$0], deptno=[$1], name=[$2], salary=[$3], commission=[$4])\n"
-            + "    EnumerableTableScan(table=[[hr, emps]])\n"));
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2554">[CALCITE-2554]
-   * Enrich EnumerableJoin operator with order preserving information</a>.
-   *
-   * Since left input to the join is sorted, and this join preserves order, there shouldn't be
-   * any sort operator above the join.
-   */
-  @Test public void testRedundantSortOnJoinPlan() throws Exception {
-    RuleSet ruleSet =
-        RuleSets.ofList(
-            CoreRules.SORT_REMOVE,
-            CoreRules.SORT_JOIN_TRANSPOSE,
-            CoreRules.SORT_PROJECT_TRANSPOSE,
->>>>>>> 8bead079a ([CALCITE-2554] Enrich enumerable join operators with order preserving information (Stamatis Zampetakis))
-            EnumerableRules.ENUMERABLE_LIMIT_RULE,
-            EnumerableRules.ENUMERABLE_JOIN_RULE,
-            EnumerableRules.ENUMERABLE_PROJECT_RULE,
-            EnumerableRules.ENUMERABLE_SORT_RULE);
-    Planner planner = getPlanner(null, Programs.of(ruleSet));
-    SqlNode parse = planner.parse(
-        "select e.\"deptno\" from \"emps\" e "
-            + "left outer join \"depts\" d "
-            + " on e.\"deptno\" = d.\"deptno\" "
-            + "order by e.\"deptno\" "
-            + "limit 10");
-    SqlNode validate = planner.validate(parse);
-    RelNode convert = planner.rel(validate).rel;
-    RelTraitSet traitSet = convert.getTraitSet()
-        .replace(EnumerableConvention.INSTANCE).simplify();
-    RelNode transform = planner.transform(0, traitSet, convert);
-    assertThat(toString(transform),
-        equalTo("EnumerableProject(deptno=[$1])\n"
-        + "  EnumerableLimit(fetch=[10])\n"
-        + "    EnumerableHashJoin(condition=[=($1, $5)], joinType=[left])\n"
-        + "      EnumerableLimit(fetch=[10])\n"
-        + "        EnumerableSort(sort0=[$1], dir0=[ASC])\n"
-        + "          EnumerableTableScan(table=[[hr, emps]])\n"
-        + "      EnumerableProject(deptno=[$0], name=[$1], employees=[$2], x=[$3.x], y=[$3.y])\n"
-        + "        EnumerableTableScan(table=[[hr, depts]])\n"));
-  }
-
-  /** Unit test that parses, validates, converts and
-   * plans for query using two duplicate order by.
-   * The duplicate order by should be removed by SqlToRelConverter. */
-  @Test void testDuplicateSortPlan() throws Exception {
+  @Test public void testDuplicateSortPlan() throws Exception {
     runDuplicateSortCheck(
         "select empid from ( "
         + "select * "
@@ -623,7 +526,7 @@ public class PlannerTest {
   /** Unit test that parses, validates, converts and
    * plans for query using two duplicate order by.
    * The duplicate order by should be removed by SqlToRelConverter. */
-  @Test void testDuplicateSortPlanWithExpr() throws Exception {
+  @Test public void testDuplicateSortPlanWithExpr() throws Exception {
     runDuplicateSortCheck("select empid+deptno from ( "
         + "select empid, deptno "
         + "from emps "
@@ -632,9 +535,10 @@ public class PlannerTest {
         "EnumerableSort(sort0=[$1], dir0=[ASC])\n"
         + "  EnumerableProject(EXPR$0=[+($0, $1)], deptno=[$1])\n"
         + "    EnumerableTableScan(table=[[hr, emps]])\n");
+>>>>>>> eaf3bd424 ([CALCITE-2798] Remove ORDER BY in sub-query, provided it has no LIMIT or OFFSET, during SQL-to-RelNode conversion (Haisheng Yuan))
   }
 
-  @Test void testTwoSortRemoveInnerSort() throws Exception {
+  @Test public void testTwoSortRemoveInnerSort() throws Exception {
     runDuplicateSortCheck("select empid+deptno from ( "
         + "select empid, deptno "
         + "from emps "
@@ -645,24 +549,8 @@ public class PlannerTest {
         + "    EnumerableTableScan(table=[[hr, emps]])\n");
   }
 
-  @Test public void testTwoSortDontRemove() throws Exception {
-    runDuplicateSortCheck("select empid+deptno from ( "
-        + "select empid, deptno "
-        + "from emps "
-        + "order by empid) "
-        + "order by deptno",
-        "EnumerableSort(sort0=[$1], dir0=[ASC])\n"
-        + "  EnumerableProject(EXPR$0=[+($0, $1)], deptno=[$1])\n"
-        + "    EnumerableSort(sort0=[$0], dir0=[ASC])\n"
-        + "      EnumerableProject(empid=[$0], deptno=[$1])\n"
-        + "        EnumerableTableScan(table=[[hr, emps]])\n");
-  }
-
   /** Tests that outer order by is not removed since window function
    * might reorder the rows in-between */
-  @Ignore("Node [rel#22:Subset#3.ENUMERABLE.[2]] could not be implemented; planner state:\n"
-      + "\n"
-      + "Root: rel#22:Subset#3.ENUMERABLE.[2]")
   @Test public void testDuplicateSortPlanWithOver() throws Exception {
     runDuplicateSortCheck("select emp_cnt, empid+deptno from ( "
         + "select empid, deptno, count(*) over (partition by deptno) emp_cnt from ( "
@@ -671,8 +559,12 @@ public class PlannerTest {
         + "   order by emps.deptno) "
         + ")"
         + "order by deptno",
+<<<<<<< HEAD
         "EnumerableSort(sort0=[$1], dir0=[ASC])\n"
         + "  EnumerableProject(EXPR$0=[+($0, $1)], deptno=[$1])\n"
+=======
+        "EnumerableSort(sort0=[$2], dir0=[ASC])\n"
+        + "  EnumerableProject(emp_cnt=[$2], EXPR$1=[+($0, $1)], deptno=[$1])\n"
         + "    EnumerableWindow(window#0=[window(partition {1} order by [] range between UNBOUNDED PRECEDING and UNBOUNDED FOLLOWING aggs [COUNT()])])\n"
         + "      EnumerableProject(empid=[$0], deptno=[$1])\n"
         + "        EnumerableTableScan(table=[[hr, emps]])\n");
@@ -686,9 +578,9 @@ public class PlannerTest {
         + "   order by emps.deptno) "
         + ")"
         + "order by deptno",
-        "EnumerableProject(EXPR$0=[+($0, $1)], deptno=[$1])\n"
-        + "  EnumerableWindow(window#0=[window(partition {1} order by [] range between UNBOUNDED PRECEDING and UNBOUNDED FOLLOWING aggs [COUNT()])])\n"
-        + "    EnumerableSort(sort0=[$1], dir0=[ASC])\n"
+        "EnumerableSort(sort0=[$1], dir0=[ASC])\n"
+        + "  EnumerableProject(EXPR$0=[+($0, $1)], deptno=[$1])\n"
+        + "    EnumerableWindow(window#0=[window(partition {1} order by [] range between UNBOUNDED PRECEDING and UNBOUNDED FOLLOWING aggs [COUNT()])])\n"
         + "      EnumerableProject(empid=[$0], deptno=[$1])\n"
         + "        EnumerableTableScan(table=[[hr, emps]])\n");
   }
@@ -745,6 +637,7 @@ public class PlannerTest {
         equalTo("EnumerableSort(sort0=[$1], dir0=[ASC])\n"
             + "  EnumerableProject(empid=[$0], deptno=[$1])\n"
             + "    EnumerableTableScan(table=[[hr, emps]])\n"));
+<<<<<<< HEAD
   }
 
   /** Test case for
@@ -762,6 +655,8 @@ public class PlannerTest {
     assertEquals("RecordType(INTEGER NOT NULL empid, INTEGER NOT NULL deptno, "
         + "JavaType(class java.lang.String) name, REAL NOT NULL salary, "
         + "INTEGER NOT NULL commission) NOT NULL", typeString);
+=======
+>>>>>>> eaf3bd424 ([CALCITE-2798] Remove ORDER BY in sub-query, provided it has no LIMIT or OFFSET, during SQL-to-RelNode conversion (Haisheng Yuan))
   }
 
   /** Test case for
@@ -1418,9 +1313,7 @@ public class PlannerTest {
     assertThat(plan,
         equalTo("LogicalSort(sort0=[$0], dir0=[ASC])\n"
         + "  LogicalProject(psPartkey=[$0])\n"
-        + "    LogicalSort(sort0=[$0], sort1=[$1], dir0=[ASC], dir1=[ASC])\n"
-        + "      LogicalProject(psPartkey=[$0], psSupplyCost=[$1])\n"
-        + "        EnumerableTableScan(table=[[tpch, partsupp]])\n"));
+        + "    EnumerableTableScan(table=[[tpch, partsupp]])\n"));
   }
 
   /** Test case for
