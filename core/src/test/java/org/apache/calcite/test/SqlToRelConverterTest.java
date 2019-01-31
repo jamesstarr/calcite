@@ -3766,6 +3766,27 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
+  @Test public void testOrderByRemoval1() {
+    final String sql = "select * from (\n"
+        + "  select empno from emp order by deptno offset 0) t\n"
+        + "order by empno desc";
+    sql(sql).ok();
+  }
+
+  @Test public void testOrderByRemoval2() {
+    final String sql = "select * from (\n"
+        + "  select empno from emp order by deptno offset 1) t\n"
+        + "order by empno desc";
+    sql(sql).ok();
+  }
+
+  @Test public void testOrderByRemoval3() {
+    final String sql = "select * from (\n"
+        + "  select empno from emp order by deptno limit 10) t\n"
+        + "order by empno";
+    sql(sql).ok();
+  }
+
     /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-4644">[CALCITE-4644]
    * Add PERCENTILE_CONT and PERCENTILE_DISC aggregate functions</a>. */

@@ -2792,10 +2792,8 @@ LogicalProject(EMPNO=[$0], EXPR$1=[IS NOT TRUE($11)])
         </Resource>
         <Resource name="plan">
             <![CDATA[
-LogicalProject(ENAME=[$0])
-  LogicalSort(sort0=[$1], dir0=[ASC])
-    LogicalProject(ENAME=[$1], SAL=[$5])
-      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+LogicalProject(ENAME=[$1])
+  LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
     </TestCase>
