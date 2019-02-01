@@ -37,8 +37,12 @@ matrix:
     - env: IMAGE=maven:3-jdk-12
 >>>>>>> c7330ca52 ([CALCITE-2655] Enable Travis to test against JDK 12)
     - env: IMAGE=maven:3-jdk-11 JDOC=Y RAT=Y
+<<<<<<< HEAD
 >>>>>>> 8718191eb (Add license to TestKtTest and add apache-rat:check to Travis CI)
     - env: IMAGE=maven:3-jdk-10
+=======
+    - env: IMAGE=maven:3-jdk-10 SLOW_TESTS=Y
+>>>>>>> b7479898c (Add JUnit category for extremely slow tests, launch them in a separate Travis job)
     - env: IMAGE=maven:3-jdk-9
     - env: IMAGE=maven:3-jdk-8 JDOC=Y
 <<<<<<< HEAD
@@ -79,8 +83,13 @@ script:
 >>>>>>> aeee89c7f (Fix JavaDoc warnings for Java 9+, and check JavaDoc in Travis CI)
 =======
   - if [ $RAT = "Y" ]; then export RAT="apache-rat:check -Drat.consoleOutput"; fi
+<<<<<<< HEAD
   - $DOCKERRUN $IMAGE mvn -Dcheckstyle.skip -Dsurefire.useFile=false -Dsurefire.threadCount=1 -Dsurefire.perCoreThreadCount=false -Djavax.net.ssl.trustStorePassword=changeit test $JDOC $RAT
 >>>>>>> 8718191eb (Add license to TestKtTest and add apache-rat:check to Travis CI)
+=======
+  - if [ $SLOW_TESTS = "Y" ]; then export TESTS="-Dgroups=org.apache.calcite.test.SlowTests --projects :calcite-core"; else export TESTS=-DskipSlowTests; fi
+  - $DOCKERRUN $IMAGE mvn -Dcheckstyle.skip -Dsurefire.useFile=false -Dsurefire.threadCount=1 -Dsurefire.perCoreThreadCount=false -Djavax.net.ssl.trustStorePassword=changeit test $TESTS $JDOC $RAT
+>>>>>>> b7479898c (Add JUnit category for extremely slow tests, launch them in a separate Travis job)
 git:
   depth: 100
 cache:

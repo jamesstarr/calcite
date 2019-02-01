@@ -17,9 +17,11 @@
 package org.apache.calcite.util;
 
 import org.apache.calcite.test.CalciteAssert;
+import org.apache.calcite.test.SlowTests;
 
 import org.junit.Assume;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -41,7 +43,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Unit test for {@link PartiallyOrderedSet}.
  */
-class PartiallyOrderedSetTest {
+@Category(SlowTests.class)
+public class PartiallyOrderedSetTest {
   private static final boolean DEBUG = false;
 
   // 100, 250, 1000, 3000 are reasonable

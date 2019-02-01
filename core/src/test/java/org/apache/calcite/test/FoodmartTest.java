@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -33,11 +34,9 @@ import java.util.List;
 /**
  * Test case that runs the FoodMart reference queries.
  */
-@Tag("slow")
-class FoodmartTest {
-
-  private static CalciteAssert.AssertThat assertFoodmart;
-  private static CalciteAssert.AssertThat assertFoodmartLattice;
+@Category(SlowTests.class)
+@RunWith(Parameterized.class)
+public class FoodmartTest {
 
   private static final int[] DISABLED_IDS = {
       58, 83, 202, 204, 205, 206, 207, 209, 211, 231, 247, 275, 309, 383, 384,

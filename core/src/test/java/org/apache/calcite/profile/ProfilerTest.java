@@ -22,6 +22,7 @@ import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.metadata.NullSentinel;
 import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.test.Matchers;
+import org.apache.calcite.test.SlowTests;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.JsonBuilder;
 >>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
@@ -33,9 +34,9 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 
 import org.hamcrest.Matcher;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -59,9 +60,9 @@ import static org.hamcrest.core.Is.is;
 /**
  * Unit tests for {@link Profiler}.
  */
-@Tag("slow")
-class ProfilerTest {
-  @Test void testProfileZeroRows() throws Exception {
+@Category(SlowTests.class)
+public class ProfilerTest {
+  @Test public void testProfileZeroRows() throws Exception {
     final String sql = "select * from \"scott\".dept where false";
     sql(sql).unordered(
         "{type:distribution,columns:[DEPTNO,DNAME,LOC],cardinality:0}",

@@ -32,9 +32,10 @@ import org.apache.calcite.util.TestUtil;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.Assume;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -62,8 +63,8 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 /**
  * Unit test for lattices.
  */
-@Tag("slow")
-class LatticeTest {
+@Category(SlowTests.class)
+public class LatticeTest {
   private static final String SALES_LATTICE = "{\n"
       + "  name: 'star',\n"
       + "  sql: [\n"
