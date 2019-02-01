@@ -211,7 +211,12 @@ public class VolcanoRuleCall extends RelOptRuleCall {
         this.generatedRelList = new ArrayList<>();
       }
 
-      getRule().onMatch(this);
+      volcanoPlanner.ruleCallStack.push(this);
+      try {
+        getRule().onMatch(this);
+      } finally {
+        volcanoPlanner.ruleCallStack.pop();
+      }
 
       if (LOGGER.isDebugEnabled()) {
         if (generatedRelList.isEmpty()) {
