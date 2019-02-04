@@ -76,7 +76,6 @@ import org.apache.calcite.util.DateString;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.TimeString;
 import org.apache.calcite.util.TimestampString;
-import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -909,8 +908,9 @@ public abstract class SqlImplementor {
     }
 
     protected SqlNode createLeftCall(SqlOperator op, List<SqlNode> nodeList) {
-      if (nodeList.size() == 2) {
-        return op.createCall(new SqlNodeList(nodeList, POS));
+      SqlNode node = op.createCall(new SqlNodeList(nodeList.subList(0, 2), POS));
+      for (int i = 2; i < nodeList.size(); i++) {
+        node = op.createCall(new SqlNodeList(ImmutableList.of(node, nodeList.get(i)), POS));
       }
       return node;
     }
