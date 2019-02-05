@@ -29,8 +29,7 @@ import java.util.List;
 
 /**
  * Planner rule that merges a
- * {@link org.apache.calcite.rel.logical.LogicalFilter}
- * into a {@link MultiJoin},
+ * {@link Filter} into a {@link MultiJoin},
  * creating a richer {@code MultiJoin}.
  *
  * @see org.apache.calcite.rel.rules.ProjectMultiJoinMergeRule
