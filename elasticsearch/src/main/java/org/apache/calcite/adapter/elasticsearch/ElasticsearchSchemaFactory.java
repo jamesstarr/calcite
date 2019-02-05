@@ -16,94 +16,22 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-<<<<<<< HEAD
-=======
-import org.apache.calcite.schema.Schema;
-import org.apache.calcite.schema.SchemaFactory;
-import org.apache.calcite.schema.SchemaPlus;
-
-import org.apache.http.HttpHost;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
->>>>>>> 26b8eb9c0 (Revert "[] Use shaded avatica")
-import com.google.common.base.Preconditions;
-
-import org.elasticsearch.client.RestClient;
-
-import java.io.IOException;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
-/**
- * Factory that creates an {@link ElasticsearchSchema}.
- *
- * <p>Allows a custom schema to be included in a model.json file.
- */
-@SuppressWarnings("UnusedDeclaration")
-public class ElasticsearchSchemaFactory implements SchemaFactory {
-
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
-  public ElasticsearchSchemaFactory() {
-  }
-
-  @Override public Schema create(SchemaPlus parentSchema, String name,
-      Map<String, Object> operand) {
-
-    final Map map = (Map) operand;
-
-    final ObjectMapper mapper = new ObjectMapper();
-    mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-
-    try {
-<<<<<<< HEAD
-
-      List<HttpHost> hosts;
-
-      if (map.containsKey("hosts")) {
-        final List<String> configHosts = mapper.readValue((String) map.get("hosts"),
-                new TypeReference<List<String>>() { });
-
-        hosts = configHosts
-                .stream()
-                .map(host -> HttpHost.create(host))
-                .collect(Collectors.toList());
-      } else if (map.containsKey("coordinates")) {
-        final Map<String, Integer> coordinates = mapper.readValue((String) map.get("coordinates"),
-                new TypeReference<Map<String, Integer>>() { });
-
-        hosts =  coordinates
-                .entrySet()
-                .stream()
-                .map(entry -> new HttpHost(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
-
-        LOGGER.warn("Prefer using hosts, coordinates is deprecated.");
-      } else {
-        throw new IllegalArgumentException
-        ("Both 'coordinates' and 'hosts' is missing in configuration. Provide one of them.");
-      }
-      final String pathPrefix = (String) map.get("pathPrefix");
-      // create client
-      final RestClient client = connect(hosts, pathPrefix);
-      final String index = (String) map.get("index");
-
-=======
       final Map<String, Integer> coordinates =
           mapper.readValue((String) map.get("coordinates"),
               new TypeReference<Map<String, Integer>>() { });
+=======
+      final String coordinatesString = (String) map.get("coordinates");
+      Preconditions.checkState(coordinatesString != null,
+          "'coordinates' is missing in configuration");
 
+      final Map<String, Integer> coordinates = mapper.readValue(coordinatesString,
+          new TypeReference<Map<String, Integer>>() { });
+
+      // create client
       final RestClient client = connect(coordinates);
 
-      final Map<String, String> userConfig =
-          mapper.readValue((String) map.get("userConfig"),
-              new TypeReference<Map<String, String>>() { });
-
       final String index = (String) map.get("index");
-      Preconditions.checkArgument(index != null, "index is missing in configuration");
+      Preconditions.checkState(index != null, "'index' is missing in configuration");
       return new ElasticsearchSchema(client, new ObjectMapper(), index);
     } catch (IOException e) {
       throw new RuntimeException("Cannot parse values from json", e);
