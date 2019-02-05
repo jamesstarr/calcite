@@ -415,9 +415,7 @@ abstract class CalciteConnectionImpl
       final long currentOffset = localOffset;
       final String user = "sa";
       final String systemUser = System.getProperty("user.name");
-      final String localeName = connection.config().locale();
-      final Locale locale = localeName != null
-          ? Util.parseLocale(localeName) : Locale.ROOT;
+>>>>>>> 2ae7b774d ([CALCITE-2742] Read values of USER and SYSTEM_USER variables from DataContext (Siddharth Teotia, Jacques Nadeau))
 
       // Give a hook chance to alter standard input, output, error streams.
       final Holder<Object[]> streamHolder =
@@ -431,7 +429,9 @@ abstract class CalciteConnectionImpl
           .put(Variable.TIME_ZONE.camelName, timeZone)
           .put(Variable.USER.camelName, user)
           .put(Variable.SYSTEM_USER.camelName, systemUser)
+<<<<<<< HEAD
           .put(Variable.LOCALE.camelName, locale)
+=======
           .put(Variable.STDIN.camelName, streamHolder.get()[0])
           .put(Variable.STDOUT.camelName, streamHolder.get()[1])
           .put(Variable.STDERR.camelName, streamHolder.get()[2]);

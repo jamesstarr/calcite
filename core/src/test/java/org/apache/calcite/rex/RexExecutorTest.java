@@ -26,6 +26,7 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Schemas;
 import org.apache.calcite.sql.SqlBinaryOperator;
 import org.apache.calcite.sql.SqlKind;
+import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlMonotonicBinaryOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.InferTypes;
@@ -41,7 +42,8 @@ import org.apache.calcite.util.Util;
 import com.google.common.collect.ImmutableList;
 
 import org.hamcrest.Matcher;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -166,7 +168,7 @@ public class RexExecutorTest {
   private void checkConstant(final Object operand,
       final Function<RexBuilder, RexNode> function) throws Exception {
     check((rexBuilder, executor) -> {
-
+>>>>>>> 2ae7b774d ([CALCITE-2742] Read values of USER and SYSTEM_USER variables from DataContext (Siddharth Teotia, Jacques Nadeau))
       final List<RexNode> reducedValues = new ArrayList<>();
       final RexNode expression = function.apply(rexBuilder);
       assert expression != null;
@@ -187,17 +189,20 @@ public class RexExecutorTest {
     });
   }
 
+<<<<<<< HEAD
   @Test void testUserFromContext() throws Exception {
+=======
+  @Test public void testUserFromContext() throws Exception {
     testContextLiteral(SqlStdOperatorTable.USER,
         DataContext.Variable.USER, "happyCalciteUser");
   }
 
-  @Test void testSystemUserFromContext() throws Exception {
+  @Test public void testSystemUserFromContext() throws Exception {
     testContextLiteral(SqlStdOperatorTable.SYSTEM_USER,
         DataContext.Variable.SYSTEM_USER, "");
   }
 
-  @Test void testTimestampFromContext() throws Exception {
+  @Test public void testTimestampFromContext() throws Exception {
     // CURRENT_TIMESTAMP actually rounds the value to nearest second
     // and that's why we do currentTimeInMillis / 1000 * 1000
     long val = System.currentTimeMillis() / 1000 * 1000;
@@ -217,18 +222,28 @@ public class RexExecutorTest {
       final SqlOperator operator,
       final DataContext.Variable variable,
       final Object value) {
-    Frameworks.withPrepare((cluster, relOptSchema, rootSchema, statement) -> {
-      final RexBuilder rexBuilder = cluster.getRexBuilder();
-      final RexExecutorImpl executor =
-          new RexExecutorImpl(
-              new SingleValueDataContext(variable.camelName, value));
-      try {
-        checkConstant(value, builder -> {
-          final List<RexNode> output = new ArrayList<>();
-          executor.reduce(rexBuilder,
-              ImmutableList.of(rexBuilder.makeCall(operator)), output);
-          return output.get(0);
-        });
+    Frameworks.withPrepare(new Frameworks.PrepareAction<Void>() {
+      public Void apply(final RelOptCluster cluster,
+          final RelOptSchema relOptSchema,
+          final SchemaPlus rootSchema,
+          final CalciteServerStatement statement) {
+        final RexBuilder rexBuilder = cluster.getRexBuilder();
+        final RexExecutorImpl executor =
+            new RexExecutorImpl(
+                new SingleValueDataContext(variable.camelName, value));
+        try {
+          checkConstant(value, builder -> {
+            final List<RexNode> output = new ArrayList<>();
+            executor.reduce(rexBuilder,
+                ImmutableList.of(rexBuilder.makeCall(operator)), output);
+            return output.get(0);
+          });
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+        return null;
+      }
+    });
   }
 
   @Test public void testSubstring() throws Exception {
@@ -424,11 +439,22 @@ public class RexExecutorTest {
   /**
    * ArrayList-based DataContext to check Rex execution.
    */
-  public static class TestDataContext implements DataContext {
-    private final Object[] values;
+  public static class TestDataContext extends SingleValueDataContext {
+    private TestDataContext(Object[] values) {
+      super("inputRecord", values);
+    }
+  }
 
-    public TestDataContext(Object[] values) {
-      this.values = values;
+  /**
+   * Context that holds a value for a particular context name.
+   */
+  public static class SingleValueDataContext implements DataContext {
+    private final String name;
+    private final Object value;
+
+    public SingleValueDataContext(String name, Object value) {
+      this.name = name;
+      this.value = value;
     }
 
     public SchemaPlus getRootSchema() {
@@ -444,8 +470,8 @@ public class RexExecutorTest {
     }
 
     public Object get(String name) {
-      if (name.equals("inputRecord")) {
-        return values;
+      if (this.name.equals(name)) {
+        return value;
       } else {
         fail("Wrong DataContext access");
         return null;
