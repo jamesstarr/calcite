@@ -53,7 +53,7 @@ public class SparkHandlerImpl implements CalcitePrepare.SparkHandler {
     private static final SparkHandlerImpl INSTANCE = new SparkHandlerImpl();
   }
 
-  private static final File CLASS_DIR = new File("build/sparkServer/classes");
+  private static final File CLASS_DIR = new File("target/classes");
 
   /** Creates a SparkHandlerImpl. */
   private SparkHandlerImpl() {
