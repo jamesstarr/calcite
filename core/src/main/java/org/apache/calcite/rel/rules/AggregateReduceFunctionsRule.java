@@ -162,8 +162,9 @@ public class AggregateReduceFunctionsRule
   }
 
   /**
-   * Reduces all calls to AVG, STDDEV_POP, STDDEV_SAMP, VAR_POP, VAR_SAMP in
-   * the aggregates list to.
+   * Reduces calls to functions AVG, SUM, STDDEV_POP, STDDEV_SAMP, VAR_POP,
+   * VAR_SAMP, COVAR_POP, COVAR_SAMP, REGR_SXX, REGR_SYY if the function is
+   * present in {@link AggregateReduceFunctionsRule#functionsToReduce}
    *
    * <p>It handles newly generated common subexpressions since this was done
    * at the sql2rel stage.
