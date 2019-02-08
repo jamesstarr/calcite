@@ -110,10 +110,12 @@ import org.apache.calcite.sql2rel.SqlToRelConverter;
   }
 
   public static Program subQuery(RelMetadataProvider metadataProvider) {
-    return hep(
-        ImmutableList.of((RelOptRule) CoreRules.FILTER_SUB_QUERY_TO_CORRELATE,
+    final HepProgramBuilder builder = HepProgram.builder();
+    builder.addRuleCollection(
+        ImmutableList.of(CoreRules.FILTER_SUB_QUERY_TO_CORRELATE,
             CoreRules.PROJECT_SUB_QUERY_TO_CORRELATE,
-            CoreRules.JOIN_SUB_QUERY_TO_CORRELATE), true, metadataProvider);
+            CoreRules.JOIN_SUB_QUERY_TO_CORRELATE));
+    return of(builder.build(), true, metadataProvider);
   }
 
   public static Program getProgram() {

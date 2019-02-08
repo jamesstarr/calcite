@@ -3225,7 +3225,11 @@ from "scott".emp;
 !ok
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Test nested sub-query in PROJECT within FILTER
+=======
+# Test nested subquery in PROJECT within FILTER
+>>>>>>> c52133959 ([CALCITE-1726] Subquery in FILTER is left untransformed (Vineet Garg))
 select * from emp where deptno IN (select (select max(deptno) from "scott".emp t1) from "scott".emp t2);
  EMPNO | ENAME  | JOB      | MGR  | HIREDATE   | SAL     | COMM    | DEPTNO
 -------+--------+----------+------+------------+---------+---------+--------
@@ -3240,14 +3244,22 @@ select * from emp where deptno IN (select (select max(deptno) from "scott".emp t
 !ok
 EnumerableHashJoin(condition=[=($7, $9)], joinType=[semi])
   EnumerableTableScan(table=[[scott, EMP]])
+<<<<<<< HEAD
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+=======
+  EnumerableHashJoin(condition=[true], joinType=[left])
+>>>>>>> c52133959 ([CALCITE-1726] Subquery in FILTER is left untransformed (Vineet Garg))
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableAggregate(group=[{}], EXPR$0=[MAX($7)])
       EnumerableTableScan(table=[[scott, EMP]])
 !plan
 
+<<<<<<< HEAD
 # Test nested sub-query in FILTER within PROJECT
+=======
+# Test nested subquery in FILTER within PROJECT
+>>>>>>> c52133959 ([CALCITE-1726] Subquery in FILTER is left untransformed (Vineet Garg))
 select (select max(deptno) from "scott".emp where deptno IN (select deptno from "scott".emp)) from emp ;
  EXPR$0
 --------
@@ -3269,7 +3281,11 @@ select (select max(deptno) from "scott".emp where deptno IN (select deptno from 
 
 !ok
 EnumerableCalc(expr#0..1=[{inputs}], EXPR$0=[$t1])
+<<<<<<< HEAD
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+=======
+  EnumerableHashJoin(condition=[true], joinType=[left])
+>>>>>>> c52133959 ([CALCITE-1726] Subquery in FILTER is left untransformed (Vineet Garg))
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableAggregate(group=[{}], EXPR$0=[MAX($1)])
@@ -3279,6 +3295,7 @@ EnumerableCalc(expr#0..1=[{inputs}], EXPR$0=[$t1])
         EnumerableTableScan(table=[[scott, EMP]])
 !plan
 
+<<<<<<< HEAD
 !use scott
 
 # [CALCITE-1513] Correlated NOT IN query throws AssertionError
@@ -3379,4 +3396,8 @@ EnumerableCalc(expr#0..6=[{inputs}], expr#7=[>($t1, $t2)], expr#8=[IS TRUE($t7)]
 
 =======
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
+=======
+
+
+>>>>>>> c52133959 ([CALCITE-1726] Subquery in FILTER is left untransformed (Vineet Garg))
 # End sub-query.iq
