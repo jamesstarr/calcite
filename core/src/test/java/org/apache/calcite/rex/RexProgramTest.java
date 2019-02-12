@@ -3832,6 +3832,14 @@ public class RexProgramTest extends RexProgramBuilderBase {
 >>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
+  /** Unit test for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2842">[CALCITE-2842]
+   * Computing digest of IN expressions leads to Exceptions</a>. */
+  @Test public void testInDigest() {
+    RexNode e = in(vInt(), literal(1), literal(2));
+    assertThat(e.toString(), is("IN(?0.int0, 1, 2)"));
+  }
+
   // Empty string "" cannot be simplified to a number/bigint.  Instead of
   // throwing an exception, just return the original expression.
   @Test public void testSimplifyEmptyStringCast() {
