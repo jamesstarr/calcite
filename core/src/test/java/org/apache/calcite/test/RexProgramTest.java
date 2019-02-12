@@ -2397,6 +2397,14 @@ public class RexProgramTest extends RexProgramBuilderBase {
     return RexInterpreter.evaluate(e, ImmutableMap.of());
   }
 
+  /** Unit test for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2842">[CALCITE-2842]
+   * Computing digest of IN expressions leads to Exceptions</a>. */
+  @Test public void testInDigest() {
+    RexNode e = in(vInt(), literal(1), literal(2));
+    assertThat(e.toString(), is("IN(?0.int0, 1, 2)"));
+  }
+
   // Empty string "" cannot be simplified to a number/bigint.  Instead of
   // throwing an exception, just return the original expression.
   @Test public void testSimplifyEmptyStringCast() {
