@@ -37,6 +37,7 @@ import org.apache.calcite.tools.FrameworkConfig;
 import org.apache.calcite.tools.Frameworks;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
+import org.apache.calcite.util.TestUtil;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.pig.pigunit.Cluster;
@@ -282,7 +283,7 @@ public class PigRelBuilderStyleTest extends AbstractPigTest {
       PigTest pigTest = new PigTest(script.split("[\\r\\n]+"));
       pigTest.assertOutputAnyOrder(expectedResults);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw TestUtil.rethrow(e);
     }
   }
 

@@ -17,6 +17,7 @@
 package org.apache.calcite.test;
 
 import org.apache.calcite.config.CalciteSystemProperty;
+import org.apache.calcite.util.TestUtil;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -195,7 +196,7 @@ public class SplunkAdapterTest {
         }
         return null;
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     });
   }
@@ -218,7 +219,7 @@ public class SplunkAdapterTest {
         assertThat(actual, equalTo(expected));
         return null;
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     };
   }
@@ -237,7 +238,7 @@ public class SplunkAdapterTest {
             assertThat(actual.contains("404"), is(true));
             return null;
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
         });
   }

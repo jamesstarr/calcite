@@ -54,6 +54,7 @@ import org.apache.calcite.util.JsonBuilder;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Smalls;
 import org.apache.calcite.util.Sources;
+import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
 
 import org.apache.commons.dbcp2.PoolableConnectionFactory;
@@ -72,8 +73,6 @@ import net.hydromatic.scott.data.hsqldb.ScottHsqldb;
 
 import org.hamcrest.Matcher;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -101,7 +100,6 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
@@ -253,11 +251,7 @@ public class CalciteAssert {
 
       assertNotNull(
           "expected exception but none was thrown", p0);
-      StringWriter stringWriter = new StringWriter();
-      PrintWriter printWriter = new PrintWriter(stringWriter);
-      p0.printStackTrace(printWriter);
-      printWriter.flush();
-      String stack = stringWriter.toString();
+      String stack = TestUtil.printStackTrace(p0);
       assertTrue(stack, stack.contains(expected));
 
     };
@@ -272,11 +266,7 @@ public class CalciteAssert {
 
         assertTrue("Expected to fail at validation, but did not", exception != null);
         if (expected != null) {
-          StringWriter stringWriter = new StringWriter();
-          PrintWriter printWriter = new PrintWriter(stringWriter);
-          exception.printStackTrace(printWriter);
-          printWriter.flush();
-          String stack = stringWriter.toString();
+          String stack = TestUtil.printStackTrace(exception);
           assertTrue(stack, stack.contains(expected));
         }
 
@@ -313,7 +303,7 @@ public class CalciteAssert {
         assertThat(resultSetFormatter.string(), isLinux(expected));
 
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        TestUtil.rethrow(e);
       }
 
     };
@@ -334,7 +324,7 @@ public class CalciteAssert {
             expected == null ? nullValue(String.class) : isLinux(expected));
 
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
 
     };
@@ -349,7 +339,7 @@ public class CalciteAssert {
         assertThat(count, expected);
 
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
 
     };
@@ -390,7 +380,7 @@ public class CalciteAssert {
           }
 
         } catch (SQLException e) {
-          throw new RuntimeException(e);
+          throw TestUtil.rethrow(e);
         }
       }
     };
@@ -436,7 +426,7 @@ public class CalciteAssert {
         }
 
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
 
     };
@@ -453,7 +443,7 @@ public class CalciteAssert {
         }
 
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
 
     };
@@ -470,7 +460,7 @@ public class CalciteAssert {
             StringUtils.countMatches(actual, expected) == count);
 
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
 
     };
@@ -487,7 +477,7 @@ public class CalciteAssert {
         assertThat(maskedActual, containsString(expected));
 
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
 
     };
@@ -501,7 +491,7 @@ public class CalciteAssert {
         assertEquals(expected, actual);
 
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
 
     };
@@ -531,9 +521,6 @@ public class CalciteAssert {
       Consumer<ResultSet> resultChecker,
       Consumer<Integer> updateChecker,
       Consumer<Throwable> exceptionChecker) {
-    final Supplier<String> message = () ->
-        "With materializationsEnabled=" + materializationsEnabled
-            + ", limit=" + limit + ", sql=" + sql;
     try (Closer closer = new Closer()) {
       if (connection.isWrapperFor(CalciteConnection.class)) {
         final CalciteConnection calciteConnection =
@@ -589,13 +576,13 @@ public class CalciteAssert {
       }
       statement.close();
       connection.close();
-    } catch (Error | RuntimeException e) {
-      // It is better to have AssertionError
-      // at the very top level of the exception stack.
-      e.addSuppressed(new RuntimeException(message.get()));
-      throw e;
     } catch (Throwable e) {
-      throw new RuntimeException(message.get(), e);
+      String message = "With materializationsEnabled=" + materializationsEnabled
+          + ", limit=" + limit;
+      if (!TestUtil.hasMessage(e, sql)) {
+        message += ", sql=" + sql;
+      }
+      throw TestUtil.rethrow(e, message);
     }
   }
 
@@ -609,8 +596,6 @@ public class CalciteAssert {
       Consumer<Integer> updateChecker,
       Consumer<Throwable> exceptionChecker,
       PreparedStatementConsumer consumer) {
-    final Supplier<String> message = () -> "With materializationsEnabled="
-        + materializationsEnabled + ", limit=" + limit + ", sql = " + sql;
     try (Closer closer = new Closer()) {
       if (connection.isWrapperFor(CalciteConnection.class)) {
         final CalciteConnection calciteConnection =
@@ -667,13 +652,13 @@ public class CalciteAssert {
       }
       statement.close();
       connection.close();
-    } catch (Error | RuntimeException e) {
-      // It is better to have AssertionError
-      // at the very top level of the exception stack.
-      e.addSuppressed(new RuntimeException(message.get()));
-      throw e;
     } catch (Throwable e) {
-      throw new RuntimeException(message.get(), e);
+      String message = "With materializationsEnabled=" + materializationsEnabled
+          + ", limit=" + limit;
+      if (!TestUtil.hasMessage(e, sql)) {
+        message += ", sql=" + sql;
+      }
+      throw TestUtil.rethrow(e, message);
     }
   }
 
@@ -683,8 +668,6 @@ public class CalciteAssert {
       boolean materializationsEnabled,
       final Function<RelNode, Void> convertChecker,
       final Function<RelNode, Void> substitutionChecker) {
-    final Supplier<String> message = () -> "With materializationsEnabled="
-        + materializationsEnabled + ", sql = " + sql;
     try (Closer closer = new Closer()) {
       if (convertChecker != null) {
         closer.add(
@@ -706,13 +689,12 @@ public class CalciteAssert {
       PreparedStatement statement = connection.prepareStatement(sql);
       statement.close();
       connection.close();
-    } catch (Error | RuntimeException e) {
-      // It is better to have AssertionError
-      // at the very top level of the exception stack.
-      e.addSuppressed(new RuntimeException(message.get()));
-      throw e;
     } catch (Throwable e) {
-      throw new RuntimeException(message.get(), e);
+      String message = "With materializationsEnabled=" + materializationsEnabled;
+      if (!TestUtil.hasMessage(e, sql)) {
+        message += ", sql=" + sql;
+      }
+      throw TestUtil.rethrow(e, message);
     }
   }
 
@@ -1423,7 +1405,7 @@ public class CalciteAssert {
       try (Connection c = createConnection()) {
         f.accept(c);
       } catch (SQLException e) {
-        throw new IllegalStateException("connection#close() failed", e);
+        TestUtil.rethrow(e);
       }
       return this;
     }
@@ -1736,12 +1718,8 @@ public class CalciteAssert {
         resultSet.close();
         c.close();
         return this;
-      } catch (Error | RuntimeException e) {
-        // It is better to have AssertionError
-        // at the very top level of the exception stack.
-        throw e;
       } catch (Throwable e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     }
 

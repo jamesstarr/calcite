@@ -572,7 +572,7 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
     try {
       x = parseQuery(sql);
     } catch (SqlParseException e) {
-      throw new RuntimeException(e);
+      throw TestUtil.rethrow(e);
     }
     final Collection<SqlNode> literalSet = new LinkedHashSet<>();
     x.accept(

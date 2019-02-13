@@ -70,6 +70,7 @@ import org.apache.calcite.test.catalog.MockCatalogReaderDynamic;
 import org.apache.calcite.test.catalog.MockCatalogReaderSimple;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.util.ImmutableBitSet;
+import org.apache.calcite.util.TestUtil;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -618,7 +619,7 @@ public abstract class SqlToRelTestBase {
       } catch (RuntimeException | Error e) {
         throw e;
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
       final RelDataTypeFactory typeFactory = getTypeFactory();
       final Prepare.CatalogReader catalogReader =

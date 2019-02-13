@@ -58,6 +58,7 @@ import org.apache.calcite.test.SqlLimitsTest;
 import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.Holder;
 import org.apache.calcite.util.Pair;
+import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.TimestampString;
 import org.apache.calcite.util.Util;
 
@@ -1515,7 +1516,7 @@ public abstract class SqlOperatorBaseTest {
           throw new AssertionError("unexpected time unit: " + timeUnit);
         }
       } catch (InterruptedException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     }
   }
@@ -8505,10 +8506,8 @@ public abstract class SqlOperatorBaseTest {
         final ResultSet resultSet =
             statement.executeQuery(query);
         resultChecker.checkResult(resultSet);
-      } catch (RuntimeException e) {
-        throw e;
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     }
 

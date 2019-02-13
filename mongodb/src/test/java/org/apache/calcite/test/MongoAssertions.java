@@ -17,6 +17,7 @@
 package org.apache.calcite.test;
 
 import org.apache.calcite.config.CalciteSystemProperty;
+import org.apache.calcite.util.TestUtil;
 
 import com.google.common.collect.Ordering;
 
@@ -66,7 +67,7 @@ public class MongoAssertions {
         assertThat(Ordering.natural().immutableSortedCopy(actualList),
             equalTo(expectedList));
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     };
   }

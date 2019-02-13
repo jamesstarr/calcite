@@ -58,6 +58,7 @@ import org.apache.calcite.tools.Programs;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RuleSet;
 import org.apache.calcite.tools.RuleSets;
+import org.apache.calcite.util.TestUtil;
 
 import com.google.common.collect.ImmutableList;
 
@@ -3870,10 +3871,8 @@ public class RelToSqlConverterTest {
           rel = transform.apply(rel);
         }
         return toSql(rel, dialect);
-      } catch (RuntimeException e) {
-        throw e;
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     }
 
