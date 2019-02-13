@@ -23,7 +23,7 @@ import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.util.Holder;
 import org.apache.calcite.util.Sources;
->>>>>>> d6c0815c2 ([CALCITE-2495] Support encoded URLs in calcite.util.Source, and use it for URL->File conversion in tests)
+import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
 
 import org.hamcrest.CoreMatchers;
@@ -122,7 +122,7 @@ class OsAdapterTest {
             assertThat(r.getString(2), CoreMatchers.startsWith("./"));
             assertThat(r.wasNull(), is(false));
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
         });
   }
@@ -142,7 +142,7 @@ class OsAdapterTest {
             assertThat(r.next(), is(true));
             assertThat(r.next(), is(false)); // because of "limit 2"
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
         });
   }
@@ -170,7 +170,7 @@ class OsAdapterTest {
             }
             assertThat(b.toString(), notNullValue());
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
         });
   }
@@ -186,7 +186,7 @@ class OsAdapterTest {
             assertThat(r.getString(1), notNullValue());
             assertThat(r.wasNull(), is(false));
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
         });
   }
@@ -200,7 +200,7 @@ class OsAdapterTest {
             assertThat(r.getString(1), notNullValue());
             assertThat(r.wasNull(), is(false));
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
         });
   }
@@ -227,7 +227,7 @@ class OsAdapterTest {
               assertThat(r.wasNull(), is(false));
             }
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
         });
   }

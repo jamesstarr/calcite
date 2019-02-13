@@ -394,7 +394,7 @@ class TableFunctionTest {
             assertThat(numbers.toString(),
                 is("[1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233]"));
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
         });
   }

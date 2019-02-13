@@ -1537,7 +1537,7 @@ public abstract class SqlOperatorBaseTest {
           throw new AssertionError("unexpected time unit: " + timeUnit);
         }
       } catch (InterruptedException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     }
   }

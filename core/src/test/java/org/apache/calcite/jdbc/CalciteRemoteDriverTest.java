@@ -108,7 +108,7 @@ public class CalciteRemoteDriverTest {
         try {
           return connection.getMetaData().getSchemas();
         } catch (SQLException e) {
-          throw new RuntimeException(e);
+          throw TestUtil.rethrow(e);
         }
       };
 
@@ -117,7 +117,7 @@ public class CalciteRemoteDriverTest {
         try {
           return connection.getMetaData().getCatalogs();
         } catch (SQLException e) {
-          throw new RuntimeException(e);
+          throw TestUtil.rethrow(e);
         }
       };
 
@@ -126,7 +126,7 @@ public class CalciteRemoteDriverTest {
         try {
           return connection.getMetaData().getColumns(null, null, null, null);
         } catch (SQLException e) {
-          throw new RuntimeException(e);
+          throw TestUtil.rethrow(e);
         }
       };
 
@@ -135,7 +135,7 @@ public class CalciteRemoteDriverTest {
         try {
           return connection.getMetaData().getTypeInfo();
         } catch (SQLException e) {
-          throw new RuntimeException(e);
+          throw TestUtil.rethrow(e);
         }
       };
 
@@ -144,7 +144,7 @@ public class CalciteRemoteDriverTest {
         try {
           return connection.getMetaData().getTableTypes();
         } catch (SQLException e) {
-          throw new RuntimeException(e);
+          throw TestUtil.rethrow(e);
         }
       };
 

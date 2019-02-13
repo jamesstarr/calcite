@@ -72,7 +72,7 @@ class SqlToRelConverterExtendedTest extends SqlToRelConverterTest {
       try {
         RelNode x = reader.read(json);
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
       return null;
     });

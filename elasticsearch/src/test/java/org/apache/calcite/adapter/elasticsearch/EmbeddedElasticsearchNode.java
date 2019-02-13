@@ -16,7 +16,8 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
+import org.apache.calcite.util.TestUtil;
+
 import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
 
@@ -101,7 +102,7 @@ class EmbeddedElasticsearchNode implements AutoCloseable {
       node.start();
       this.isStarted = true;
     } catch (NodeValidationException e) {
-      throw new RuntimeException(e);
+      throw TestUtil.rethrow(e);
     }
   }
 

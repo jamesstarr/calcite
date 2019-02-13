@@ -60,7 +60,7 @@ import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RuleSet;
 import org.apache.calcite.tools.RuleSets;
 import org.apache.calcite.util.TestUtil;
-import org.apache.calcite.util.Util;
+>>>>>>> ab8849d1f ([CALCITE-2878] Avoid use of new RuntimeException(e) in tests)
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -4724,8 +4724,20 @@ class RelToSqlConverterTest {
     }
 
     String exec() {
+<<<<<<< HEAD
       } catch (RuntimeException e) {
         throw e;
+=======
+      final Planner planner =
+          getPlanner(null, SqlParser.Config.DEFAULT, schema, config);
+      try {
+        SqlNode parse = planner.parse(sql);
+        SqlNode validate = planner.validate(parse);
+        RelNode rel = planner.rel(validate).rel;
+        for (Function<RelNode, RelNode> transform : transforms) {
+          rel = transform.apply(rel);
+        }
+        return toSql(rel, dialect);
       } catch (Exception e) {
         throw TestUtil.rethrow(e);
       }

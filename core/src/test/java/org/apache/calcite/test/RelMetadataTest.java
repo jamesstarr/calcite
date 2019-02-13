@@ -103,6 +103,7 @@ import org.apache.calcite.util.BuiltInMethod;
 import org.apache.calcite.util.Holder;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.ImmutableIntList;
+import org.apache.calcite.util.TestUtil;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -1325,8 +1326,12 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final ImmutableIntList leftKeys = ImmutableIntList.of(2);
     final ImmutableIntList rightKeys = ImmutableIntList.of(0);
     final EnumerableMergeJoin join;
-    join = EnumerableMergeJoin.create(project, deptSort,
-        rexBuilder.makeLiteral(true), leftKeys, rightKeys, JoinRelType.INNER);
+    try {
+      join = EnumerableMergeJoin.create(project, deptSort,
+          rexBuilder.makeLiteral(true), leftKeys, rightKeys, JoinRelType.INNER);
+    } catch (InvalidRelException e) {
+      throw TestUtil.rethrow(e);
+    }
     collations =
         RelMdCollation.mergeJoin(mq, project, deptSort, leftKeys,
             rightKeys);

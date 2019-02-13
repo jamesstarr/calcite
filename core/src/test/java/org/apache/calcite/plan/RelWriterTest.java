@@ -510,7 +510,7 @@ class RelWriterTest {
         Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
             node = reader.read(XX);
           } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
           return RelOptUtil.dumpPlan("", node, SqlExplainFormat.TEXT,
               SqlExplainLevel.EXPPLAN_ATTRIBUTES);
@@ -540,7 +540,7 @@ class RelWriterTest {
           try {
             node = reader.read(XX2);
           } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
           return RelOptUtil.dumpPlan("", node, SqlExplainFormat.TEXT,
               SqlExplainLevel.EXPPLAN_ATTRIBUTES);
@@ -568,7 +568,7 @@ class RelWriterTest {
           try {
             node = reader.read(XXNULL);
           } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
           return RelOptUtil.dumpPlan("", node, SqlExplainFormat.TEXT,
               SqlExplainLevel.EXPPLAN_ATTRIBUTES);

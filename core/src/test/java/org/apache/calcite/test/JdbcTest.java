@@ -91,6 +91,7 @@ import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.JsonBuilder;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Smalls;
+import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.TryThreadLocal;
 import org.apache.calcite.util.Util;
 
@@ -326,7 +327,7 @@ public class JdbcTest {
           statement.close();
 
         } catch (SQLException e) {
-          throw new RuntimeException(e);
+          throw TestUtil.rethrow(e);
         }
 
       });
@@ -971,7 +972,7 @@ public class JdbcTest {
             }
 
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -1480,7 +1481,7 @@ public class JdbcTest {
             final BigDecimal bigDecimal = resultSet.getBigDecimal(1);
             assertThat(bigDecimal, equalTo(BigDecimal.valueOf(2008)));
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -1966,7 +1967,7 @@ public class JdbcTest {
             statement.close();
 
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -3015,7 +3016,7 @@ public class JdbcTest {
           numbers.add((Number) resultSet.getObject(2));
         }
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
       assertThat(msg, numbers.size(), is(3));
       assertThat(msg, numbers.get(nullCollation.last(desc) ? 2 : 0),
@@ -4873,7 +4874,7 @@ public class JdbcTest {
             statement.close();
 
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -4943,7 +4944,7 @@ public class JdbcTest {
             preparedStatement.close();
 
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -4980,7 +4981,7 @@ public class JdbcTest {
 
             }
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -5131,7 +5132,7 @@ public class JdbcTest {
         assertEquals("adhoc", connection.getSchema());
 
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
 
     });
@@ -5437,7 +5438,7 @@ public class JdbcTest {
         }
 
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
 
     });
@@ -5565,7 +5566,7 @@ public class JdbcTest {
             assertThat(objects.size(), is(1));
 
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -5704,7 +5705,7 @@ public class JdbcTest {
             try {
               Thread.sleep(1000);
             } catch (InterruptedException e) {
-              throw new RuntimeException(e);
+              throw TestUtil.rethrow(e);
             }
 
             resultSet = statement.executeQuery();
@@ -5718,7 +5719,7 @@ public class JdbcTest {
                 s0.compareTo(s1) < 0);
 
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -5734,7 +5735,7 @@ public class JdbcTest {
             checkGetTimestamp(connection);
 
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -5887,7 +5888,7 @@ public class JdbcTest {
             assertFalse(rs.next());
 
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -5917,7 +5918,7 @@ public class JdbcTest {
             assertFalse(rs.next());
 
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -5996,7 +5997,7 @@ public class JdbcTest {
                 equalTo(false));
 
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -6029,7 +6030,7 @@ public class JdbcTest {
                 equalTo(false));
 
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -6062,7 +6063,7 @@ public class JdbcTest {
                 equalTo(false));
 
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -6099,7 +6100,7 @@ public class JdbcTest {
                 equalTo(false));
 
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -6133,7 +6134,7 @@ public class JdbcTest {
                 equalTo(false));
 
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -6171,7 +6172,7 @@ public class JdbcTest {
                 equalTo(false));
 
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });
@@ -6771,7 +6772,7 @@ public class JdbcTest {
             }
 
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
 
         });

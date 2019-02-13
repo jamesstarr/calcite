@@ -256,7 +256,7 @@ public class JdbcFrontLinqBackTest {
           assertThat(count, is(1));
         }
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     });
     with.query("select count(*) as c from \"foo\".\"bar\"")

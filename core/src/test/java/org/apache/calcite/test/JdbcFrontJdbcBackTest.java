@@ -16,7 +16,8 @@
  */
 package org.apache.calcite.test;
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import org.apache.calcite.util.TestUtil;
+
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -66,10 +67,9 @@ class JdbcFrontJdbcBackTest {
                 "account;agg_c_10_sales_fact_1997;agg_c_14_sales_fact_1997;agg_c_special_sales_fact_1997;agg_g_ms_pcat_sales_fact_1997;agg_l_03_sales_fact_1997;agg_l_04_sales_fact_1997;agg_l_05_sales_fact_1997;agg_lc_06_sales_fact_1997;agg_lc_100_sales_fact_1997;agg_ll_01_sales_fact_1997;agg_pl_01_sales_fact_1997;category;currency;customer;days;department;employee;employee_closure;expense_fact;inventory_fact_1997;inventory_fact_1998;position;product;product_class;products;promotion;region;reserve_employee;salary;sales_fact_1997;sales_fact_1998;sales_fact_dec_1998;store;store_ragged;time_by_day;warehouse;warehouse_class;COLUMNS;TABLES;",
                 buf.toString());
           } catch (SQLException e) {
-<<<<<<< HEAD
-            throw TestUtil.rethrow(e);
-=======
             throw new RuntimeException(e);
+=======
+            throw TestUtil.rethrow(e);
           }
         });
   }
@@ -94,7 +94,7 @@ class JdbcFrontJdbcBackTest {
             }
             assertThat(buf.toString(), matcher);
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
         });
   }
@@ -115,7 +115,7 @@ class JdbcFrontJdbcBackTest {
                 "product_id;time_id;customer_id;promotion_id;store_id;store_sales;store_cost;unit_sales;",
                 buf.toString());
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
         });
   }
@@ -133,7 +133,7 @@ class JdbcFrontJdbcBackTest {
                     null, null, "sales_fact_1997");
             assertFalse(rset.next());
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
         });
   }

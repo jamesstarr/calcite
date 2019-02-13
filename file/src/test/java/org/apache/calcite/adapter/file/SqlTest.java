@@ -16,7 +16,10 @@
  */
 package org.apache.calcite.adapter.file;
 
+<<<<<<< HEAD
 import org.apache.calcite.util.Sources;
+=======
+>>>>>>> ab8849d1f ([CALCITE-2878] Avoid use of new RuntimeException(e) in tests)
 import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
 
@@ -73,7 +76,7 @@ class SqlTest {
         }
         assertEquals(expected, actual);
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
       return null;
     };
@@ -91,7 +94,7 @@ class SqlTest {
         Collections.sort(lines);
         Assert.assertEquals(expectedLines, lines);
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
       return null;
     };
@@ -263,7 +266,7 @@ class SqlTest {
         String actual = toString(resultSet);
         assertThat(actual, is(""));
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
       return null;
     });

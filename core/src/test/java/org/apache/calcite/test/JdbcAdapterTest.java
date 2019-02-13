@@ -19,7 +19,7 @@ package org.apache.calcite.test;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.test.CalciteAssert.AssertThat;
 import org.apache.calcite.test.CalciteAssert.DatabaseInstance;
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import org.apache.calcite.util.TestUtil;
 
 import org.hsqldb.jdbcDriver;
 import org.junit.Test;
@@ -728,7 +728,7 @@ class JdbcAdapterTest {
                 connection.getMetaData().getTables(null, null, "%", null);
             assertFalse(CalciteAssert.toString(resultSet).isEmpty());
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
         });
   }
@@ -827,7 +827,7 @@ class JdbcAdapterTest {
             .explainContains(explain)
             .planUpdateHasSql(jdbcSql, 1);
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     });
   }
@@ -863,7 +863,7 @@ class JdbcAdapterTest {
             .explainContains(explain)
             .planUpdateHasSql(jdbcSql, 2);
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     });
   }
@@ -900,7 +900,7 @@ class JdbcAdapterTest {
             .explainContains(explain)
             .planUpdateHasSql(jdbcSql, 1);
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     });
   }
@@ -928,7 +928,7 @@ class JdbcAdapterTest {
             .planUpdateHasSql(jdbcSql, 1);
         return null;
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     });
   }
@@ -952,7 +952,7 @@ class JdbcAdapterTest {
             .explainContains(explain)
             .planUpdateHasSql(jdbcSql, 1);
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     });
   }

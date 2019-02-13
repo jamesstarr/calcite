@@ -25,7 +25,7 @@ import org.apache.calcite.test.Matchers;
 import org.apache.calcite.test.SlowTests;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.JsonBuilder;
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.HashMultimap;
@@ -608,7 +608,7 @@ public class ProfilerTest {
                       .collect(Collectors.toList());
               assertThat(strings, matcher);
             } catch (SQLException e) {
-              throw new RuntimeException(e);
+              throw TestUtil.rethrow(e);
             }
           });
       return this;

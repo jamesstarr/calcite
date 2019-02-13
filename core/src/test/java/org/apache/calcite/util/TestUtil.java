@@ -268,6 +268,18 @@ public abstract class TestUtil {
 >>>>>>> 66076440e ([CALCITE-2428] Cassandra unit test fails to parse JDK version string (Andrei Sereda))
   }
 
+  /** Checks if exceptions have give substring. That is handy to prevent logging SQL text twice */
+  public static boolean hasMessage(Throwable t, String substring) {
+    while (t != null) {
+      String message = t.getMessage();
+      if (message != null && message.contains(substring)) {
+        return true;
+      }
+      t = t.getCause();
+    }
+    return false;
+  }
+
   /** Rethrows given exception keeping stacktraces clean and compact. */
   public static <E extends Throwable> RuntimeException rethrow(Throwable e) throws E {
     if (e instanceof InvocationTargetException) {

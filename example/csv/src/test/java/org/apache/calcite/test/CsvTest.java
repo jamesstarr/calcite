@@ -22,10 +22,9 @@ import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.util.Sources;
-<<<<<<< HEAD
-import org.apache.calcite.util.TestUtil;
-=======
 >>>>>>> d6c0815c2 ([CALCITE-2495] Support encoded URLs in calcite.util.Source, and use it for URL->File conversion in tests)
+=======
+import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableMap;
@@ -206,7 +205,7 @@ class CsvTest {
         assertThat(o, is(300L));
         assertThat(resultSet.next(), is(false));
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     }).ok();
   }
@@ -364,7 +363,7 @@ class CsvTest {
         CsvTest.collect(lines, resultSet);
         Assert.assertEquals(Arrays.asList(expected), lines);
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     };
   }
@@ -381,7 +380,7 @@ class CsvTest {
         Collections.sort(lines);
         Assert.assertEquals(expectedLines, lines);
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     };
   }
@@ -992,7 +991,7 @@ class CsvTest {
     try {
       output(resultSet, System.out);
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw TestUtil.rethrow(e);
     }
     return null;
   }

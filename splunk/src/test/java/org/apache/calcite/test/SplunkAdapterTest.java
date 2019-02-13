@@ -17,10 +17,9 @@
 package org.apache.calcite.test;
 
 import org.apache.calcite.config.CalciteSystemProperty;
-<<<<<<< HEAD
-import org.apache.calcite.util.TestUtil;
-=======
 >>>>>>> a84b64381 ([CALCITE-2859] Centralize Calcite system properties)
+=======
+import org.apache.calcite.util.TestUtil;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -199,7 +198,7 @@ class SplunkAdapterTest {
         }
         return null;
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     });
   }
@@ -222,7 +221,7 @@ class SplunkAdapterTest {
         assertThat(actual, equalTo(expected));
         return null;
       } catch (SQLException e) {
-        throw new RuntimeException(e);
+        throw TestUtil.rethrow(e);
       }
     };
   }
@@ -241,7 +240,7 @@ class SplunkAdapterTest {
             assertThat(actual.contains("404"), is(true));
             return null;
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
         });
   }

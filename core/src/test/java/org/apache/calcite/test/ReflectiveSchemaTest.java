@@ -434,7 +434,7 @@ public class ReflectiveSchemaTest {
                     ++n;
                   }
                 } catch (SQLException e) {
-                  throw new RuntimeException(e);
+                  throw TestUtil.rethrow(e);
                 }
                 assertThat(n, equalTo(1));
               });
@@ -502,7 +502,7 @@ public class ReflectiveSchemaTest {
                 check(metaData, "utilDate", Timestamp.class);
                 check(metaData, "string", String.class);
               } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw TestUtil.rethrow(e);
               }
             });
   }
@@ -673,7 +673,7 @@ public class ReflectiveSchemaTest {
               buf.append(input.getInt(2)).append("\n");
             }
           } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw TestUtil.rethrow(e);
           }
           assertThat(buf.toString(), equalTo("0\n2147483647\n"));
         });
