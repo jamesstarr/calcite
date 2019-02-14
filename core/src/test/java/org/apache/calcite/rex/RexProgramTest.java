@@ -440,6 +440,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
         is("(expr#0..1=[{inputs}], expr#2=[+($t0, $t1)], expr#3=[1], "
             + "expr#4=[+($t0, $t3)], expr#5=[+($t2, $t4)], "
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
             + "expr#6=[+($t0, $t4)], expr#7=[5], expr#8=[<=($t4, $t7)], "
             + "a=[$t5], b=[$t6], $condition=[$t8])"));
 =======
@@ -447,6 +448,10 @@ public class RexProgramTest extends RexProgramBuilderBase {
             + "expr#9=[NOT($t8)], "
             + "a=[$t5], b=[$t6], $condition=[$t9])"));
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+            + "expr#6=[+($t0, $t4)], expr#7=[5], expr#8=[<=($t4, $t7)], "
+            + "a=[$t5], b=[$t6], $condition=[$t8])"));
+>>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   /**
@@ -466,6 +471,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
     assertThat(program.normalize(rexBuilder, simplify).toString(),
         is("(expr#0..1=[{inputs}], expr#2=[+($t0, $t1)], expr#3=[1], "
             + "expr#4=[+($t0, $t3)], expr#5=[+($t2, $t4)], "
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
             + "expr#6=[+($t0, $t4)], expr#7=[5], expr#8=[<=($t4, $t7)], "
             + "a=[$t5], b=[$t6], $condition=[$t8])"));
@@ -497,6 +503,10 @@ public class RexProgramTest extends RexProgramBuilderBase {
             + "expr#9=[NOT($t8)], "
             + "a=[$t5], b=[$t6], $condition=[$t9])"));
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+            + "expr#6=[+($t0, $t4)], expr#7=[5], expr#8=[<=($t4, $t7)], "
+            + "a=[$t5], b=[$t6], $condition=[$t8])"));
+>>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   /**
@@ -2625,11 +2635,15 @@ public class RexProgramTest extends RexProgramBuilderBase {
             isNotTrue(vBool()), literal(1),
             literal(2)),
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
         "CASE(OR(?0.bool0, IS NOT TRUE(?0.bool0)), 1, 2)");
   }
 =======
 =======
         "CASE(OR(IS TRUE(?0.bool0), IS NOT TRUE(?0.bool0)), 1, 2)");
+=======
+        "CASE(OR(?0.bool0, IS NOT TRUE(?0.bool0)), 1, 2)");
+>>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   @Test public void testSimplifyCaseBranchesCollapse2() {
@@ -2802,12 +2816,16 @@ public class RexProgramTest extends RexProgramBuilderBase {
                 gt(div(vIntNotNull(), literal(2)), literal(1)), vBool(2),
                 vBool(3))),
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
         "CASE(?0.bool0, NOT(?0.bool1), >(/(?0.notNullInt0, 2), 1), NOT(?0.bool2), NOT(?0.bool3))");
   }
 
   @Test void testNotRecursion() {
 =======
         "CASE(IS TRUE(?0.bool0), NOT(?0.bool1), >(/(?0.notNullInt0, 2), 1), NOT(?0.bool2), NOT(?0.bool3))");
+=======
+        "CASE(?0.bool0, NOT(?0.bool1), >(/(?0.notNullInt0, 2), 1), NOT(?0.bool2), NOT(?0.bool3))");
+>>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   @Test public void testNotRecursion() {
@@ -3644,6 +3662,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplify(not(falseLiteral), "true");
     // "NOT(IS FALSE(x))" => "IS NOT FALSE(x)"
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     checkSimplify3(not(isFalse(vBool())),
         "IS NOT FALSE(?0.bool0)", "IS NOT FALSE(?0.bool0)", "?0.bool0");
     // "NOT(IS TRUE(x))" => "IS NOT TRUE(x)"
@@ -3656,6 +3675,15 @@ public class RexProgramTest extends RexProgramBuilderBase {
     // "NOT(IS TRUE(x))" => "IS NOT TRUE(x)"
     checkSimplify(not(isTrue(vBool())), "IS NOT TRUE(?0.bool0)");
 >>>>>>> 40dbae0b2 ([CALCITE-2556] Simplify not(true/false) to false/true (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+    checkSimplify3(not(isFalse(vBool())),
+        "IS NOT FALSE(?0.bool0)", "IS NOT FALSE(?0.bool0)", "?0.bool0");
+    // "NOT(IS TRUE(x))" => "IS NOT TRUE(x)"
+    checkSimplify3(not(isTrue(vBool())),
+        "IS NOT TRUE(?0.bool0)",
+        "IS NOT TRUE(?0.bool0)",
+        "NOT(?0.bool0)");
+>>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // "NOT(IS NULL(x))" => "IS NOT NULL(x)"
     checkSimplify(not(isNull(vBool())), "IS NOT NULL(?0.bool0)");
     // "NOT(IS NOT NULL(x)) => "IS NULL(x)"
@@ -3767,14 +3795,22 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testIsNullRecursion() {
+=======
+  @Test public void testIsNullRecursion() {
+>>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // make sure that simplifcation is visiting below isX expressions
     checkSimplify(
         isNull(or(coalesce(nullBool, trueLiteral), falseLiteral)),
         "false");
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testRedundantIsTrue() {
+=======
+  @Test public void testRedundantIsTrue() {
+>>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify2(
         isTrue(isTrue(vBool())),
         "IS TRUE(?0.bool0)",
@@ -3782,7 +3818,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
     );
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testRedundantIsFalse() {
+=======
+  @Test public void testRedundantIsFalse() {
+>>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify2(
         isTrue(isFalse(vBool())),
         "IS FALSE(?0.bool0)",
@@ -3790,7 +3830,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
     );
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testRedundantIsNotTrue() {
+=======
+  @Test public void testRedundantIsNotTrue() {
+>>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify3(
         isNotFalse(isNotTrue(vBool())),
         "IS NOT TRUE(?0.bool0)",
@@ -3799,7 +3843,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
     );
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testRedundantIsNotFalse() {
+=======
+  @Test public void testRedundantIsNotFalse() {
+>>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify3(
         isNotFalse(isNotFalse(vBool())),
         "IS NOT FALSE(?0.bool0)",
@@ -3808,11 +3856,14 @@ public class RexProgramTest extends RexProgramBuilderBase {
     );
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   /** Unit tests for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2438">[CALCITE-2438]
    * RexCall#isAlwaysTrue returns incorrect result</a>. */
   @Test void testIsAlwaysTrueAndFalseXisNullisNotNullisFalse() {
 =======
+=======
+>>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   /** Unit tests for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2438">[CALCITE-2438]
    * RexCall#isAlwaysTrue returns incorrect result</a>. */

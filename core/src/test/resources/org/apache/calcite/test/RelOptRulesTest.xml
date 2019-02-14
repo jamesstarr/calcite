@@ -3493,6 +3493,7 @@ from (values (2, cast(null as integer))) as t(p0, p1)]]>
             <![CDATA[
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[false])
   LogicalValues(tuples=[[{ 0 }]])
 =======
@@ -3502,6 +3503,9 @@ LogicalProject(EXPR$0=[IS TRUE(=($1, $0))])
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 =======
 LogicalProject(EXPR$0=[IS TRUE(null:BOOLEAN)])
+=======
+LogicalProject(EXPR$0=[false])
+>>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks)
   LogicalValues(tuples=[[{ 0 }]])
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
 ]]>
@@ -6604,7 +6608,7 @@ LogicalAggregate(group=[{}], EXPR$0=[COUNT()])
             <![CDATA[
 LogicalAggregate(group=[{}], EXPR$0=[COUNT()])
   LogicalProject($f0=[0])
-    LogicalFilter(condition=[IS TRUE(<($0, 10))])
+    LogicalFilter(condition=[<($0, 10)])
       LogicalProject(MGR=[$3])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
@@ -13829,6 +13833,7 @@ LogicalProject(DEPTNO=[$0])
 LogicalProject(SAL=[$5])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalFilter(condition=[OR(=($10, 0), IS NOT TRUE(OR(IS NOT NULL($13), <($11, $10))))])
 =======
   LogicalFilter(condition=[NOT(CASE(=($10, 0), false, IS NOT NULL($13), true, <($11, $10), true, false))])
@@ -13836,6 +13841,9 @@ LogicalProject(SAL=[$5])
 =======
   LogicalFilter(condition=[OR(IS NOT TRUE(OR(IS NOT NULL($13), <($11, $10))), IS TRUE(=($10, 0)))])
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
+=======
+  LogicalFilter(condition=[OR(IS NOT TRUE(OR(IS NOT NULL($13), <($11, $10))), =($10, 0))])
+>>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks)
     LogicalJoin(condition=[AND(=($0, $12), =($2, $14))], joinType=[left])
       LogicalJoin(condition=[=($2, $9)], joinType=[left])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -13852,6 +13860,7 @@ LogicalProject(SAL=[$5])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalFilter(condition=[OR(=($9, 0), IS NOT TRUE(OR(IS NOT NULL($12), <($10, $9))))])
 =======
     LogicalFilter(condition=[NOT(CASE(=($9, 0), false, IS NOT NULL($12), true, <($10, $9), true, false))])
@@ -13859,6 +13868,9 @@ LogicalProject(SAL=[$5])
 =======
     LogicalFilter(condition=[OR(IS NOT TRUE(OR(IS NOT NULL($12), <($10, $9))), IS TRUE(=($9, 0)))])
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
+=======
+    LogicalFilter(condition=[OR(IS NOT TRUE(OR(IS NOT NULL($12), <($10, $9))), =($9, 0))])
+>>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks)
       LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{0, 2}])
         LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{2}])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -14022,6 +14034,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalFilter(condition=[OR(=($9, 0), IS NOT TRUE(OR(IS NOT NULL($12), <($10, $9))))])
 =======
     LogicalFilter(condition=[NOT(CASE(=($9, 0), false, IS NOT NULL($12), true, <($10, $9), true, false))])
@@ -14029,6 +14042,9 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 =======
     LogicalFilter(condition=[OR(IS NOT TRUE(OR(IS NOT NULL($12), <($10, $9))), IS TRUE(=($9, 0)))])
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
+=======
+    LogicalFilter(condition=[OR(IS NOT TRUE(OR(IS NOT NULL($12), <($10, $9))), =($9, 0))])
+>>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks)
       LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{0, 1}])
         LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{1}])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -14049,6 +14065,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalFilter(condition=[OR(=($10, 0), IS NOT TRUE(OR(IS NOT NULL($13), <($11, $10))))])
 =======
   LogicalFilter(condition=[NOT(CASE(=($10, 0), false, IS NOT NULL($13), true, <($11, $10), true, false))])
@@ -14056,6 +14073,9 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 =======
   LogicalFilter(condition=[OR(IS NOT TRUE(OR(IS NOT NULL($13), <($11, $10))), IS TRUE(=($10, 0)))])
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
+=======
+  LogicalFilter(condition=[OR(IS NOT TRUE(OR(IS NOT NULL($13), <($11, $10))), =($10, 0))])
+>>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks)
     LogicalJoin(condition=[AND(=($0, $12), =($1, $14))], joinType=[left])
       LogicalJoin(condition=[=($1, $9)], joinType=[left])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -15737,7 +15757,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
         <Resource name="planAfter">
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
-  LogicalFilter(condition=[OR(AND(IS TRUE(>($0, $9)), IS NOT TRUE(OR(IS NULL($12), =($10, 0)))), AND(>($0, $9), IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9)), IS NOT TRUE(>($10, $11))))])
+  LogicalFilter(condition=[OR(AND(>($0, $9), IS NOT TRUE(OR(IS NULL($12), =($10, 0)))), AND(>($0, $9), IS NOT TRUE(OR(IS NULL($12), =($10, 0))), IS NOT TRUE(>($0, $9)), IS NOT TRUE(>($10, $11))))])
     LogicalJoin(condition=[=($2, $13)], joinType=[left])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalProject(m=[$1], c=[$2], d=[$3], trueLiteral=[true], NAME=[$0])
@@ -15790,7 +15810,7 @@ LogicalFilter(condition=[IS NOT DISTINCT FROM($7, 20)])
         </Resource>
         <Resource name="planAfter">
           <![CDATA[
-LogicalFilter(condition=[IS TRUE(=($7, 20))])
+LogicalFilter(condition=[=($7, 20)])
   LogicalTableScan(table=[[scott, EMP]])
 ]]>
         </Resource>
