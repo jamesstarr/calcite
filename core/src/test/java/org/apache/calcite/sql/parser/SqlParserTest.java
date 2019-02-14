@@ -744,9 +744,8 @@ public class SqlParserTest {
         "(?s).*Encountered \".1\" at line 1, column 13.\n"
             + "Was expecting one of:\n"
             + "    <EOF> \n"
-            + "    \"ORDER\" ...\n"
-            + "    \"LIMIT\" ...\n"
-            + "    \"OFFSET\" \\.\\.\\.\n"
+            + "    \"AS\" \\.\\.\\.\n"
+            + "    \"EXCEPT\" \\.\\.\\.\n"
             + ".*");
   }
 
@@ -1491,14 +1490,14 @@ public class SqlParserTest {
   }
 
   @Test public void testCastFails() {
-    checkExpFails("cast(x as time ^with^ time zone",
-        "(?s).*Encountered \"with time\" at .*");
-    checkExpFails("cast(x as time(0) ^with^ time zone)",
-        "(?s).*Encountered \"with time\" at .*");
-    checkExpFails("cast(x as timestamp ^with^ time zone)",
-        "(?s).*Encountered \"with time\" at .*");
-    checkExpFails("cast(x as timestamp(0) ^with^ time zone)",
-        "(?s).*Encountered \"with time\" at .*");
+    checkExpFails("cast(x as time with ^time^ zone",
+        "(?s).*Encountered \"time\" at .*");
+    checkExpFails("cast(x as time(0) with ^time^ zone)",
+        "(?s).*Encountered \"time\" at .*");
+    checkExpFails("cast(x as timestamp with ^time^ zone)",
+        "(?s).*Encountered \"time\" at .*");
+    checkExpFails("cast(x as timestamp(0) with ^time^ zone)",
+        "(?s).*Encountered \"time\" at .*");
     checkExpFails("cast(x as varchar(10) ^with^ local time zone)",
         "(?s).*Encountered \"with\" at line 1, column 23.\n.*");
     checkExpFails("cast(x as varchar(10) ^without^ time zone)",
@@ -1636,10 +1635,9 @@ public class SqlParserTest {
             "VALUES (ROW(((`A` LIKE `B`) AND ((`C` NOT LIKE ALL (`D`, `E`)) OR (`E` NOT LIKE ANY (`F`, `G`))))))");
 
     if (isReserved("ESCAPE")) {
-      // FIXME should fail at "escape"
       checkFails(
-          "select * from t ^where^ escape 'e'",
-          "(?s).*Encountered \"where escape\" at .*");
+          "select * from t where ^escape^ 'e'",
+          "(?s).*Encountered \"escape\" at .*");
     }
 
     // LIKE with +
@@ -1654,7 +1652,6 @@ public class SqlParserTest {
 
     // ESCAPE with no expression
     if (isReserved("ESCAPE")) {
-      // FIXME should fail at "escape"
       checkFails(
           "values a ^like^ escape d",
           "(?s).*Encountered \"like escape\" at .*");
@@ -1845,15 +1842,15 @@ public class SqlParserTest {
   @Test public void testDefault() {
     // FIXME
     sql("select ^DEFAULT^ from emp")
-        .fails("(?s)Encountered \"DEFAULT from\" at .*");
+        .fails("(?s)Encountered \"DEFAULT\" at .*");
     sql("select cast(empno ^+^ DEFAULT as double) from emp")
         .fails("(?s)Encountered \"\\+ DEFAULT\" at .*");
     sql("select empno ^+^ DEFAULT + deptno from emp")
         .fails("(?s)Encountered \"\\+ DEFAULT\" at .*");
     sql("select power(0, DEFAULT ^+^ empno) from emp")
         .fails("(?s)Encountered \"\\+\" at .*");
-    sql("select * from emp join dept ^on^ DEFAULT")
-        .fails("(?s)Encountered \"on DEFAULT\" at .*");
+    sql("select * from emp join dept on ^DEFAULT^")
+        .fails("(?s)Encountered \"DEFAULT\" at .*");
     sql("select * from emp where empno ^>^ DEFAULT or deptno < 10")
         .fails("(?s)Encountered \"> DEFAULT\" at .*");
     sql("select * from emp order by ^DEFAULT^ desc")
@@ -1864,8 +1861,8 @@ public class SqlParserTest {
         .ok(expected);
     sql("insert into dept (name, deptno) values ('a', 1 ^+^ DEFAULT)")
         .fails("(?s)Encountered \"\\+ DEFAULT\" at .*");
-    sql("insert into dept (name, deptno) select 'a'^,^ DEFAULT from (values 0)")
-        .fails("(?s)Encountered \", DEFAULT\" at .*");
+    sql("insert into dept (name, deptno) select 'a', ^DEFAULT^ from (values 0)")
+        .fails("(?s)Encountered \"DEFAULT\" at .*");
   }
 
   @Test public void testAggregateFilter() {
@@ -2239,6 +2236,14 @@ public class SqlParserTest {
         + "where name like (select ^some^ name from emp)";
     sql(sql3).fails("(?s).*Encountered \"some\" at .*");
 
+    final String sql4 = "select * from emp\n"
+        + "where name like some (select name from emp)";
+    final String expected4 = "SELECT *\n"
+        + "FROM `EMP`\n"
+        + "WHERE (`NAME` LIKE SOME ((SELECT `NAME`\n"
+        +  "FROM `EMP`)))";
+    sql(sql4).ok(expected4);
+
     final String sql5 = "select * from emp where empno = any (10,20)";
     final String expected5 = "SELECT *\n"
         + "FROM `EMP`\n"
@@ -2404,11 +2409,11 @@ public class SqlParserTest {
    * standard.) */
   @Test public void testMinusIsReserved() {
     sql("select ^minus^ from t")
-        .fails("(?s).*Encountered \"minus from\" at .*");
+        .fails("(?s).*Encountered \"minus\" at .*");
     sql("select ^minus^ select")
-        .fails("(?s).*Encountered \"minus select\" at .*");
-    sql("select * from t ^as^ minus where x < y")
-        .fails("(?s).*Encountered \"as minus\" at .*");
+        .fails("(?s).*Encountered \"minus\" at .*");
+    sql("select * from t as ^minus^ where x < y")
+        .fails("(?s).*Encountered \"minus\" at .*");
   }
 
   @Test public void testIntersect() {
@@ -3350,7 +3355,7 @@ public class SqlParserTest {
     // FIXME
     checkFails(
         "select ^from^ emp",
-        "(?s).*Encountered \"from emp\" at line .*");
+        "(?s).*Encountered \"from\" at line .*");
   }
 
   @Test public void testStar() {
@@ -3433,22 +3438,24 @@ public class SqlParserTest {
 
   @Test public void testFromValuesWithoutParens() {
     checkFails(
-        "select 1 ^from^ values('x')",
-        "(?s)Encountered \"from values\" at line 1, column 10\\.\n"
+        "select 1 from ^values^('x')",
+        "(?s)Encountered \"values\" at line 1, column 15\\.\n"
             + "Was expecting one of:\n"
-            + "    <EOF> \n"
-            + "    \"ORDER\" \\.\\.\\.\n"
-            + "    \"LIMIT\" \\.\\.\\.\n"
-            + ".*"
-            + "    \"FROM\" <IDENTIFIER> \\.\\.\\.\n"
-            + "    \"FROM\" <QUOTED_IDENTIFIER> \\.\\.\\.\n"
-            + ".*");
+            + "    \"LATERAL\" \\.\\.\\.\n"
+            + "    \"TABLE\" \\.\\.\\.\n"
+            + "    \"UNNEST\" \\.\\.\\.\n"
+            + "    <IDENTIFIER> \\.\\.\\.\n"
+            + "    <QUOTED_IDENTIFIER> \\.\\.\\.\n"
+            + "    <BACK_QUOTED_IDENTIFIER> \\.\\.\\.\n"
+            + "    <BRACKET_QUOTED_IDENTIFIER> \\.\\.\\.\n"
+            + "    <UNICODE_QUOTED_IDENTIFIER> \\.\\.\\.\n"
+            + "    \"\\(\" \\.\\.\\.\n.*");
   }
 
   @Test public void testEmptyValues() {
     checkFails(
-        "select * from (values^(^))",
-        "(?s).*Encountered \"\\( \\)\" at .*");
+        "select * from (values(^)^)",
+        "(?s).*Encountered \"\\)\" at .*");
   }
 
   /** Test case for
@@ -3492,10 +3499,9 @@ public class SqlParserTest {
   @Test public void testExplicitTable() {
     check("table emp", "(TABLE `EMP`)");
 
-    // FIXME should fail at "123"
     checkFails(
-        "^table^ 123",
-        "(?s)Encountered \"table 123\" at line 1, column 1\\.\n.*");
+        "table ^123^",
+        "(?s)Encountered \"123\" at line 1, column 7\\.\n.*");
   }
 
   @Test public void testExplicitTableOrdered() {
@@ -3513,10 +3519,9 @@ public class SqlParserTest {
   }
 
   @Test public void testSelectFromBareExplicitTableFails() {
-    // FIXME should fail at "emp"
     checkFails(
-        "select * from ^table^ emp",
-        "(?s).*Encountered \"table emp\" at .*");
+        "select * from table ^emp^",
+        "(?s).*Encountered \"emp\" at .*");
 
     checkFails(
         "select * from (table (^select^ empno from emp))",
@@ -3549,8 +3554,8 @@ public class SqlParserTest {
 
   @Test public void testLateral() {
     // Bad: LATERAL table
-    sql("select * from ^lateral^ emp")
-        .fails("(?s)Encountered \"lateral emp\" at .*");
+    sql("select * from lateral ^emp^")
+        .fails("(?s)Encountered \"emp\" at .*");
     sql("select * from lateral table ^emp^ as e")
         .fails("(?s)Encountered \"emp\" at .*");
 
@@ -3736,10 +3741,10 @@ public class SqlParserTest {
         + "VALUES (ROW(1, 'a'))";
     check("describe insert into emps values (1, 'a')", expected3);
     // only allow query or DML, not explain, inside describe
-    checkFails("^describe^ explain plan for select * from emps",
-        "(?s).*Encountered \"describe explain\" at .*");
-    checkFails("describe ^statement^ explain plan for select * from emps",
-        "(?s).*Encountered \"statement explain\" at .*");
+    checkFails("describe ^explain^ plan for select * from emps",
+        "(?s).*Encountered \"explain\" at .*");
+    checkFails("describe statement ^explain^ plan for select * from emps",
+        "(?s).*Encountered \"explain\" at .*");
   }
 
   @Test public void testSelectIsNotDdl() {
@@ -3786,8 +3791,8 @@ public class SqlParserTest {
   @Test public void testInsertValuesRawDefault() {
     final String expected = "INSERT INTO `EMPS`\n"
         + "VALUES (ROW(DEFAULT))";
-    sql("insert into emps ^values^ default")
-        .fails("(?s).*Encountered \"values default\" at .*");
+    sql("insert into emps values ^default^")
+        .fails("(?s).*Encountered \"default\" at .*");
     sql("insert into emps values (default)")
         .ok(expected)
         .node(not(isDdl()));
@@ -4172,8 +4177,8 @@ public class SqlParserTest {
         "(CASE WHEN (`X` IN (2, 4)) THEN 3 ELSE 4 END)");
     // comma-list must not be empty
     checkFails(
-        "case x when 2, 4 then 3 ^when^ then 5 else 4 end",
-        "(?s)Encountered \"when then\" at .*");
+        "case x when 2, 4 then 3 when ^then^ 5 else 4 end",
+        "(?s)Encountered \"then\" at .*");
     // commas not allowed in boolean case
     checkFails(
         "case when b1, b2 ^when^ 2, 4 then 3 else 4 end",
@@ -4531,10 +4536,9 @@ public class SqlParserTest {
         "(?s).*Encountered \"unbounded\".*");
 
     // WINDOW keyword is not permissible.
-    // FIXME should fail at "window"
     checkFails(
-        "select sum(x) ^over^ window (order by x) from bids",
-        "(?s).*Encountered \"over window\".*");
+        "select sum(x) over ^window^ (order by x) from bids",
+        "(?s).*Encountered \"window\".*");
 
     // ORDER BY must be before Frame spec
     checkFails(
@@ -4662,8 +4666,8 @@ public class SqlParserTest {
 
     // must have at least one column
     checkFails(
-        "select x from (values (1, 2), (3, 4)) as t1 ^(^)",
-        "(?s).*Encountered \"\\( \\)\" at .*");
+        "select x from (values (1, 2), (3, 4)) as t1 (^)^",
+        "(?s).*Encountered \"\\)\" at .*");
 
     // cannot have expressions
     checkFails(
@@ -7022,12 +7026,12 @@ public class SqlParserTest {
         "interval '1^'^",
         "Encountered \"<EOF>\" at line 1, column 12\\.\n"
             + "Was expecting one of:\n"
-            + "    \"YEAR\" \\.\\.\\.\n"
-            + "    \"MONTH\" \\.\\.\\.\n"
             + "    \"DAY\" \\.\\.\\.\n"
             + "    \"HOUR\" \\.\\.\\.\n"
             + "    \"MINUTE\" \\.\\.\\.\n"
+            + "    \"MONTH\" \\.\\.\\.\n"
             + "    \"SECOND\" \\.\\.\\.\n"
+            + "    \"YEAR\" \\.\\.\\.\n"
             + "    ");
 
     // illegal qualifiers, no precision in either field
@@ -7036,8 +7040,8 @@ public class SqlParserTest {
         "(?s)Encountered \"to year\" at line 1, column 19.\n"
             + "Was expecting one of:\n"
             + "    <EOF> \n"
-            + "    \"\\.\" \\.\\.\\.\n"
-            + "    \"NOT\" \\.\\.\\..*");
+            + "    \"\\(\" \\.\\.\\.\n"
+            + "    \"\\.\" \\.\\.\\..*");
     checkExpFails("interval '1-2' year ^to^ day", ANY);
     checkExpFails("interval '1-2' year ^to^ hour", ANY);
     checkExpFails("interval '1-2' year ^to^ minute", ANY);
@@ -7197,24 +7201,23 @@ public class SqlParserTest {
     checkExpFails("interval '1-2' second(3) ^to^ second(2,6)", ANY);
 
     // precision of -1 (< minimum allowed)
-    // FIXME should fail at "-" or "-1"
-    checkExpFails("INTERVAL '0' YEAR^(^-1)", ANY);
-    checkExpFails("INTERVAL '0-0' YEAR^(^-1) TO MONTH", ANY);
-    checkExpFails("INTERVAL '0' MONTH^(^-1)", ANY);
-    checkExpFails("INTERVAL '0' DAY^(^-1)", ANY);
-    checkExpFails("INTERVAL '0 0' DAY^(^-1) TO HOUR", ANY);
-    checkExpFails("INTERVAL '0 0' DAY^(^-1) TO MINUTE", ANY);
-    checkExpFails("INTERVAL '0 0:0:0' DAY^(^-1) TO SECOND", ANY);
-    checkExpFails("INTERVAL '0 0:0:0' DAY TO SECOND^(^-1)", ANY);
-    checkExpFails("INTERVAL '0' HOUR^(^-1)", ANY);
-    checkExpFails("INTERVAL '0:0' HOUR^(^-1) TO MINUTE", ANY);
-    checkExpFails("INTERVAL '0:0:0' HOUR^(^-1) TO SECOND", ANY);
-    checkExpFails("INTERVAL '0:0:0' HOUR TO SECOND^(^-1)", ANY);
-    checkExpFails("INTERVAL '0' MINUTE^(^-1)", ANY);
-    checkExpFails("INTERVAL '0:0' MINUTE^(^-1) TO SECOND", ANY);
-    checkExpFails("INTERVAL '0:0' MINUTE TO SECOND^(^-1)", ANY);
-    checkExpFails("INTERVAL '0' SECOND^(^-1)", ANY);
-    checkExpFails("INTERVAL '0' SECOND(1^,^ -1)", ANY);
+    checkExpFails("INTERVAL '0' YEAR(^-^1)", ANY);
+    checkExpFails("INTERVAL '0-0' YEAR(^-^1) TO MONTH", ANY);
+    checkExpFails("INTERVAL '0' MONTH(^-^1)", ANY);
+    checkExpFails("INTERVAL '0' DAY(^-^1)", ANY);
+    checkExpFails("INTERVAL '0 0' DAY(^-^1) TO HOUR", ANY);
+    checkExpFails("INTERVAL '0 0' DAY(^-^1) TO MINUTE", ANY);
+    checkExpFails("INTERVAL '0 0:0:0' DAY(^-^1) TO SECOND", ANY);
+    checkExpFails("INTERVAL '0 0:0:0' DAY TO SECOND(^-^1)", ANY);
+    checkExpFails("INTERVAL '0' HOUR(^-^1)", ANY);
+    checkExpFails("INTERVAL '0:0' HOUR(^-^1) TO MINUTE", ANY);
+    checkExpFails("INTERVAL '0:0:0' HOUR(^-^1) TO SECOND", ANY);
+    checkExpFails("INTERVAL '0:0:0' HOUR TO SECOND(^-^1)", ANY);
+    checkExpFails("INTERVAL '0' MINUTE(^-^1)", ANY);
+    checkExpFails("INTERVAL '0:0' MINUTE(^-^1) TO SECOND", ANY);
+    checkExpFails("INTERVAL '0:0' MINUTE TO SECOND(^-^1)", ANY);
+    checkExpFails("INTERVAL '0' SECOND(^-^1)", ANY);
+    checkExpFails("INTERVAL '0' SECOND(1, ^-^1)", ANY);
 
     // These may actually be legal per SQL2003, as the first field is
     // "more significant" than the last, but we do not support them
@@ -7483,8 +7486,8 @@ public class SqlParserTest {
     sql(sql).ok(expected);
 
     // LATERAL UNNEST is not valid
-    sql("select * from dept, ^lateral^ unnest(dept.employees)")
-        .fails("(?s)Encountered \"lateral unnest\" at .*");
+    sql("select * from dept, lateral ^unnest^(dept.employees)")
+        .fails("(?s)Encountered \"unnest\" at .*");
   }
 
   @Test public void testUnnestWithOrdinality() {
@@ -9364,7 +9367,7 @@ public class SqlParserTest {
         thrown = ex;
       }
 
-      SqlValidatorTestCase.checkEx(thrown, expectedMsgPattern, sap);
+      checkEx(expectedMsgPattern, sap, thrown);
     }
 
     public void checkNode(String sql, Matcher<SqlNode> matcher) {
@@ -9393,6 +9396,11 @@ public class SqlParserTest {
         thrown = ex;
       }
 
+      checkEx(expectedMsgPattern, sap, thrown);
+    }
+
+    protected void checkEx(String expectedMsgPattern, StringAndPos sap,
+        Throwable thrown) {
       SqlValidatorTestCase.checkEx(thrown, expectedMsgPattern, sap);
     }
   }

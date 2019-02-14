@@ -644,6 +644,7 @@ SqlNode OrderByLimitOpt(SqlNode e) :
         <LIMIT>
         (
             // MySQL-style syntax. "LIMIT start, count"
+            LOOKAHEAD(2)
             start = UnsignedNumericLiteralOrParam()
             <COMMA> count = UnsignedNumericLiteralOrParam() {
                 if (!this.conformance.isLimitStartCountAllowed()) {
@@ -913,7 +914,7 @@ void Arg0(List list, ExprContext exprContext) :
 }
 {
     [
-        name = SimpleIdentifier() <NAMED_ARGUMENT_ASSIGNMENT>
+        LOOKAHEAD(2) name = SimpleIdentifier() <NAMED_ARGUMENT_ASSIGNMENT>
     ]
     (
         e = Default()
@@ -938,7 +939,7 @@ void Arg(List list, ExprContext exprContext) :
 }
 {
     [
-        name = SimpleIdentifier() <NAMED_ARGUMENT_ASSIGNMENT>
+        LOOKAHEAD(2) name = SimpleIdentifier() <NAMED_ARGUMENT_ASSIGNMENT>
     ]
     (
         e = Default()
@@ -1273,6 +1274,7 @@ SqlNode SqlExplain() :
     [ detailLevel = ExplainDetailLevel() ]
     depth = ExplainDepth()
     (
+        LOOKAHEAD(2)
         <AS> <XML> { format = SqlExplainFormat.XML; }
     |
         <AS> <JSON> { format = SqlExplainFormat.JSON; }
@@ -1380,7 +1382,7 @@ SqlNode SqlDescribe() :
 {
     <DESCRIBE> { s = span(); }
     (
-        (<DATABASE> | <CATALOG> | <SCHEMA>)
+        LOOKAHEAD(2) (<DATABASE> | <CATALOG> | <SCHEMA>)
         id = CompoundIdentifier() {
             // DESCRIBE DATABASE and DESCRIBE CATALOG currently do the same as
             // DESCRIBE SCHEMA but should be different. See
@@ -1403,7 +1405,7 @@ SqlNode SqlDescribe() :
                 table, column);
         }
     |
-        (<STATEMENT>)?
+        (LOOKAHEAD(1) <STATEMENT>)?
         stmt = SqlQueryOrDml() {
             // DESCRIBE STATEMENT currently does the same as EXPLAIN. See
             //   [CALCITE-1221] Implement DESCRIBE DATABASE, CATALOG, STATEMENT
@@ -2028,6 +2030,7 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
             tableRef = MatchRecognize(tableRef)
         ]
     |
+        LOOKAHEAD(2)
         [ <LATERAL> { lateral = true; } ]
         tableRef = ParenthesizedExpression(exprContext)
         over = TableOverOpt()
@@ -2056,7 +2059,7 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
             tableRef = unnestOp.createCall(s.end(this), args.toArray());
         }
     |
-        [ <LATERAL> { lateral = true; } ]
+        [ LOOKAHEAD(1) <LATERAL> { lateral = true; } ]
         tableRef = TableFunctionCall()
 <#if (parser.tableVersionContextParserMethod!default.parser.tableVersionContextParserMethod)?has_content >
         [
@@ -2428,6 +2431,7 @@ List<SqlNode> GroupingElementList() :
 {
     e = GroupingElement() { list.add(e); }
     (
+        LOOKAHEAD(2)
         <COMMA>
         e = GroupingElement() { list.add(e); }
     )*
@@ -2442,6 +2446,7 @@ SqlNode GroupingElement() :
     final Span s;
 }
 {
+    LOOKAHEAD(2)
     <GROUPING> { s = span(); }
     <SETS> <LPAREN> list = GroupingElementList() <RPAREN> {
         return SqlStdOperatorTable.GROUPING_SETS.createCall(s.end(this), list);
@@ -2632,10 +2637,12 @@ SqlNode WindowRange() :
     final Span s;
 }
 {
+    LOOKAHEAD(2)
     <CURRENT> { s = span(); } <ROW> {
         return SqlWindow.createCurrentRow(s.end(this));
     }
 |
+    LOOKAHEAD(2)
     <UNBOUNDED> { s = span(); }
     (
         <PRECEDING> {
@@ -2707,6 +2714,7 @@ SqlNode OrderItem() :
         }
     )?
     (
+        LOOKAHEAD(2)
         <NULLS> <FIRST> {
             e = SqlStdOperatorTable.NULLS_FIRST.createCall(getPos(), e);
         }
@@ -2908,6 +2916,7 @@ SqlMatchRecognize MatchRecognize(SqlNode tableRef) :
                         .symbol(s1.end(this));
                 }
             |
+                LOOKAHEAD(2)
                 <FIRST> var = SimpleIdentifier() {
                     after = SqlMatchRecognize.SKIP_TO_FIRST.createCall(
                         s1.end(var), var);
@@ -3050,6 +3059,7 @@ SqlNode PatternFactor() :
 {
     e = PatternPrimary()
     [
+        LOOKAHEAD(1)
         (
             <STAR> {
                 startNum = SqlLiteral.createExactNumeric("0", SqlParserPos.ZERO);
@@ -3463,6 +3473,7 @@ void Expression2b(ExprContext exprContext, List<Object> list) :
 }
 {
     (
+        LOOKAHEAD(2)
         op = PrefixRowOperator() {
             checkNonQueryExpression(exprContext);
             list.add(new SqlParserUtil.ToTreeListItem(op, getPos()));
@@ -3472,7 +3483,7 @@ void Expression2b(ExprContext exprContext, List<Object> list) :
         list.add(e);
     }
     (
-        <DOT>
+        LOOKAHEAD(2) <DOT>
         ext = RowExpressionExtension() {
             list.add(
                 new SqlParserUtil.ToTreeListItem(
@@ -3584,6 +3595,7 @@ List<Object> Expression2(ExprContext exprContext) :
                     list3.clear();
                 }
             |
+                LOOKAHEAD(2)
                 {
                     checkNonQueryExpression(exprContext);
                     s.clear().add(this);
@@ -3591,6 +3603,7 @@ List<Object> Expression2(ExprContext exprContext) :
                 [<NOT> { isNot = true; }]
                 (
                     // str [ NOT ] like { ANY | SOME | ALL } ( [ pattern [, ...] ] )
+                    LOOKAHEAD(2)
                     (
                         LOOKAHEAD(2)
                         <LIKE> <ALL> { op = isNot ? SqlStdOperatorTable.NOT_LIKE_ALL : SqlStdOperatorTable.LIKE_ALL; }
@@ -3611,8 +3624,10 @@ List<Object> Expression2(ExprContext exprContext) :
                 |
                     // string1 [NOT] (LIKE | SIMILAR TO) string2 [ ESCAPE string3 ]
                     (
+                        LOOKAHEAD(2)
                         <LIKE> { op = isNot ? SqlStdOperatorTable.NOT_LIKE : SqlStdOperatorTable.LIKE; }
                     |
+                        LOOKAHEAD(2)
                         <SIMILAR> <TO> { op = isNot ? SqlStdOperatorTable.NOT_SIMILAR_TO : SqlStdOperatorTable.SIMILAR_TO; }
                     )
                     list2 = Expression2(ExprContext.ACCEPT_SUB_QUERY) {
@@ -3646,7 +3661,7 @@ List<Object> Expression2(ExprContext exprContext) :
                     list.add(e);
                 }
                 (
-                    <DOT>
+                    LOOKAHEAD(2) <DOT>
                     p = SimpleIdentifier() {
                         list.add(
                             new SqlParserUtil.ToTreeListItem(
@@ -3809,6 +3824,7 @@ SqlOperator periodOperator() :
 {
      <OVERLAPS> { return SqlStdOperatorTable.OVERLAPS; }
 |
+     LOOKAHEAD(2)
      <IMMEDIATELY> <PRECEDES> { return SqlStdOperatorTable.IMMEDIATELY_PRECEDES; }
 |
      <PRECEDES> { return SqlStdOperatorTable.PRECEDES; }
@@ -3911,6 +3927,7 @@ SqlNode AtomicRowExpression() :
     |
         e = DynamicParam()
     |
+        LOOKAHEAD(2)
         e = BuiltinFunctionCall()
     |
         e = JdbcFunctionCall()
@@ -3919,6 +3936,7 @@ SqlNode AtomicRowExpression() :
     |
         e = ArrayConstructor()
     |
+        LOOKAHEAD(3)
         e = MapConstructor()
     |
         e = PeriodConstructor()
@@ -4405,7 +4423,7 @@ SqlNode MultisetConstructor() :
 {
     <MULTISET> { s = span(); }
     (
-        LOOKAHEAD(1)
+        LOOKAHEAD(2)
         <LPAREN>
         // by sub query "MULTISET(SELECT * FROM T)"
         e = LeafQueryOrExpr(ExprContext.ACCEPT_QUERY)
@@ -4840,10 +4858,12 @@ SqlIdentifier CompoundIdentifier() :
 {
     IdentifierSegment(nameList, posList)
     (
+        LOOKAHEAD(2)
         <DOT>
         IdentifierSegment(nameList, posList)
     )*
     (
+        LOOKAHEAD(2)
         <DOT>
         <STAR> {
             star = true;
@@ -5868,8 +5888,8 @@ List<SqlNode> JsonQueryEmptyOrErrorBehavior() :
             list.add(SqlLiteral.createSymbol(SqlJsonQueryEmptyOrErrorBehavior.NULL, getPos()));
         }
         |
-        <EMPTY> <ARRAY>
-        {
+        LOOKAHEAD(2)
+        <EMPTY> <ARRAY> {
             list.add(SqlLiteral.createSymbol(SqlJsonQueryEmptyOrErrorBehavior.EMPTY_ARRAY, getPos()));
         }
         |
@@ -6023,6 +6043,7 @@ SqlCall JsonObjectFunctionCall() :
         otherArgs = new SqlNode[1];
     }
     <LPAREN> [
+        LOOKAHEAD(2)
         list = JsonNameAndValue() {
             nvArgs.addAll(list);
         }
@@ -6243,8 +6264,10 @@ SqlCall MatchRecognizeFunctionCall() :
             func = SqlStdOperatorTable.MATCH_NUMBER.createCall(s.end(this));
         }
     |
+        LOOKAHEAD(3)
         func = MatchRecognizeNavigationLogical()
     |
+        LOOKAHEAD(2)
         func = MatchRecognizeNavigationPhysical()
     |
         func = MatchRecognizeCallWithModifier()
@@ -6666,6 +6689,7 @@ SqlNode JdbcFunctionCall() :
             args = new SqlNodeList(call.getOperandList(), getPos());
         }
     |
+        LOOKAHEAD(3)
         call = TimestampDiffFunctionCall() {
             name = call.getOperator().getName();
             args = new SqlNodeList(call.getOperandList(), getPos());
@@ -6830,7 +6854,7 @@ SqlBinaryOperator BinaryRowOperator() :
 |   <EQUALS> { return SqlStdOperatorTable.PERIOD_EQUALS; }
 |   <PRECEDES> { return SqlStdOperatorTable.PRECEDES; }
 |   <SUCCEEDS> { return SqlStdOperatorTable.SUCCEEDS; }
-|   <IMMEDIATELY> <PRECEDES> { return SqlStdOperatorTable.IMMEDIATELY_PRECEDES; }
+|   LOOKAHEAD(2) <IMMEDIATELY> <PRECEDES> { return SqlStdOperatorTable.IMMEDIATELY_PRECEDES; }
 |   <IMMEDIATELY> <SUCCEEDS> { return SqlStdOperatorTable.IMMEDIATELY_SUCCEEDS; }
 |   op = BinaryMultisetOperator() { return op; }
 }
