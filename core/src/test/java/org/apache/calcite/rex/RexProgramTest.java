@@ -2777,15 +2777,22 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCaseFirstBranchIsSafe() {
+=======
+  @Test public void testSimplifyCaseFirstBranchIsSafe() {
+>>>>>>> e76d5a7ad ([CALCITE-2848] Simplifying a case statement's first branch should ignore its safety):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     RexNode caseNode = case_(
         gt(div(vIntNotNull(), literal(1)), literal(1)), falseLiteral,
         trueLiteral);
     checkSimplify(caseNode, "<=(/(?0.notNullInt0, 1), 1)");
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testPushNotIntoCase() {
 =======
+=======
+>>>>>>> e76d5a7ad ([CALCITE-2848] Simplifying a case statement's first branch should ignore its safety):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   @Test public void testPushNotIntoCase() {
 >>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify(
