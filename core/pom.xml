@@ -326,7 +326,7 @@ limitations under the License.
               <includes>
                 <include>**/Parser.jj</include>
               </includes>
-              <lookAhead>2</lookAhead>
+              <lookAhead>1</lookAhead>
               <isStatic>false</isStatic>
             </configuration>
           </execution>
@@ -342,7 +342,7 @@ limitations under the License.
               <includes>
                 <include>**/Parser.jj</include>
               </includes>
-              <lookAhead>2</lookAhead>
+              <lookAhead>1</lookAhead>
               <isStatic>false</isStatic>
             </configuration>
           </execution>

@@ -727,6 +727,7 @@ SqlNode OrderByLimitOpt(SqlNode e) :
         orderBy = OrderBy(e.isA(SqlKind.QUERY))
     ]
     [
+<<<<<<< HEAD
         LimitClause(s, offsetFetch)
         [ OffsetClause(s, offsetFetch) ]
         [ FetchClause(offsetFetch) ]
@@ -737,6 +738,17 @@ SqlNode OrderByLimitOpt(SqlNode e) :
                 if (!this.conformance.isOffsetLimitAllowed()) {
                     throw SqlUtil.newContextException(s.end(this),
                         RESOURCE.offsetLimitNotAllowed());
+=======
+        // Postgres-style syntax. "LIMIT ... OFFSET ..."
+        <LIMIT>
+        (
+            // MySQL-style syntax. "LIMIT start, count"
+            LOOKAHEAD(2)
+            start = UnsignedNumericLiteralOrParam()
+            <COMMA> count = UnsignedNumericLiteralOrParam() {
+                if (!this.conformance.isLimitStartCountAllowed()) {
+                    throw new ParseException(RESOURCE.limitStartCountNotAllowed().str());
+>>>>>>> 96a990b05 ([CALCITE-2847] Optimize global LOOKAHEAD for SQL parsers)
                 }
             }
         |
@@ -2372,6 +2384,9 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
         }
     |
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 96a990b05 ([CALCITE-2847] Optimize global LOOKAHEAD for SQL parsers)
         [ LOOKAHEAD(1) <LATERAL> { lateral = true; } ]
         tableRef = TableFunctionCall()
 =======
@@ -3977,6 +3992,9 @@ void Expression2b(ExprContext exprContext, List<Object> list) :
     }
     (
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 96a990b05 ([CALCITE-2847] Optimize global LOOKAHEAD for SQL parsers)
         LOOKAHEAD(2) <DOT>
         ext = RowExpressionExtension() {
             list.add(
@@ -4114,9 +4132,13 @@ List<Object> Expression2(ExprContext exprContext) :
                 (
                     // str [ NOT ] like { ANY | SOME | ALL } ( [ pattern [, ...] ] )
 <<<<<<< HEAD
+<<<<<<< HEAD
                     LOOKAHEAD(2)
 =======
 >>>>>>> d192c11b0 (Implement [NOT] LIKE ANY/ALL/SOME as logical rewrites)
+=======
+                    LOOKAHEAD(2)
+>>>>>>> 96a990b05 ([CALCITE-2847] Optimize global LOOKAHEAD for SQL parsers)
                     (
                         LOOKAHEAD(2)
                         <LIKE> <ALL> { op = isNot ? SqlStdOperatorTable.NOT_LIKE_ALL : SqlStdOperatorTable.LIKE_ALL; }
@@ -4138,6 +4160,7 @@ List<Object> Expression2(ExprContext exprContext) :
                     // string1 [NOT] (LIKE | SIMILAR TO) string2 [ ESCAPE string3 ]
                     (
 <<<<<<< HEAD
+<<<<<<< HEAD
                         LOOKAHEAD(2)
                         <LIKE> { op = isNot ? SqlStdOperatorTable.NOT_LIKE : SqlStdOperatorTable.LIKE; }
                     |
@@ -4152,8 +4175,12 @@ List<Object> Expression2(ExprContext exprContext) :
                     [ <STAR> { op = SqlStdOperatorTable.POSIX_REGEX_CASE_INSENSITIVE; } ]
                 </#if>
 =======
+=======
+                        LOOKAHEAD(2)
+>>>>>>> 96a990b05 ([CALCITE-2847] Optimize global LOOKAHEAD for SQL parsers)
                         <LIKE> { op = isNot ? SqlStdOperatorTable.NOT_LIKE : SqlStdOperatorTable.LIKE; }
                     |
+                        LOOKAHEAD(2)
                         <SIMILAR> <TO> { op = isNot ? SqlStdOperatorTable.NOT_SIMILAR_TO : SqlStdOperatorTable.SIMILAR_TO; }
 >>>>>>> d192c11b0 (Implement [NOT] LIKE ANY/ALL/SOME as logical rewrites)
                     )
@@ -4193,10 +4220,14 @@ List<Object> Expression2(ExprContext exprContext) :
                 }
                 (
 <<<<<<< HEAD
+<<<<<<< HEAD
                     LOOKAHEAD(2) <DOT>
 =======
                     <DOT>
 >>>>>>> 7bbe08b5b ([CALCITE-2674] Column name with escape character should not be verified as a function when the column name is same with it (Danny Chan))
+=======
+                    LOOKAHEAD(2) <DOT>
+>>>>>>> 96a990b05 ([CALCITE-2847] Optimize global LOOKAHEAD for SQL parsers)
                     p = SimpleIdentifier() {
                         list.add(
                             new SqlParserUtil.ToTreeListItem(
@@ -7078,8 +7109,8 @@ List<SqlNode> JsonQueryEmptyOrErrorBehavior() :
             list.add(SqlLiteral.createSymbol(SqlJsonQueryEmptyOrErrorBehavior.NULL, getPos()));
         }
         |
-        <EMPTY> <ARRAY>
-        {
+        LOOKAHEAD(2)
+        <EMPTY> <ARRAY> {
             list.add(SqlLiteral.createSymbol(SqlJsonQueryEmptyOrErrorBehavior.EMPTY_ARRAY, getPos()));
         }
         |
@@ -7336,7 +7367,11 @@ SqlCall JsonObjectFunctionCall() :
         otherArgs = new SqlNode[1];
     }
     <LPAREN> [
+<<<<<<< HEAD
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+        LOOKAHEAD(2)
+>>>>>>> 96a990b05 ([CALCITE-2847] Optimize global LOOKAHEAD for SQL parsers)
         list = JsonNameAndValue() {
             nvArgs.addAll(list);
         }
