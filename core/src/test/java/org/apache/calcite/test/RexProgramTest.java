@@ -1916,6 +1916,13 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplifyUnchanged(caseNode);
   }
 
+  @Test public void testSimplifyCaseFirstBranchIsSafe() {
+    RexNode caseNode = case_(
+        gt(div(vIntNotNull(), literal(1)), literal(1)), falseLiteral,
+        trueLiteral);
+    checkSimplify(caseNode, "<=(/(?0.notNullInt0, 1), 1)");
+  }
+
   @Test public void testPushNotIntoCase() {
     checkSimplify(
         not(
