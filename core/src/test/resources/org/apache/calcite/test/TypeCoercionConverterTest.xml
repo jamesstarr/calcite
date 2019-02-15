@@ -208,7 +208,7 @@ LogicalProject(EXPR$0=[true])
         </Resource>
         <Resource name="plan">
             <![CDATA[
-LogicalProject(EXPR$0=[||(CAST(1):VARCHAR NOT NULL, 'a')])
+LogicalProject(EXPR$0=[||('1':VARCHAR, 'a')])
   LogicalValues(tuples=[[{ true }]])
 ]]>
         </Resource>
