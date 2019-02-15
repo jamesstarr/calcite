@@ -2364,7 +2364,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyRecurseIntoArithmetics() {
+=======
+  @Test public void testSimplifyRecurseIntoArithmetics() {
+>>>>>>> 820228110 ([CALCITE-2852] RexNode simplification does not traverse unknown functions):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify(
         plus(literal(1),
             case_(
@@ -2374,8 +2378,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "+(1, 2)");
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCaseBranchesCollapse() {
 =======
+=======
+>>>>>>> 820228110 ([CALCITE-2852] RexNode simplification does not traverse unknown functions):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   @Test public void testSimplifyCaseBranchesCollapse() {
 >>>>>>> f14ece75c ([CALCITE-2631] General improvements in case simplification):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // case when x is true then 1 when x is not true then 1 else 2 end

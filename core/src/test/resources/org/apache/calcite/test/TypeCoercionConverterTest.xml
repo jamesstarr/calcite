@@ -274,6 +274,7 @@ LogicalProject(EXPR$0=[true])
             <![CDATA[
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[||('1':VARCHAR, 'a')])
 =======
 LogicalProject(EXPR$0=[||(CAST(1):VARCHAR CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL, 'a')])
@@ -281,6 +282,9 @@ LogicalProject(EXPR$0=[||(CAST(1):VARCHAR CHARACTER SET "ISO-8859-1" COLLATE "IS
 =======
 LogicalProject(EXPR$0=[||(CAST(1):VARCHAR NOT NULL, 'a')])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+LogicalProject(EXPR$0=[||('1':VARCHAR, 'a')])
+>>>>>>> 820228110 ([CALCITE-2852] RexNode simplification does not traverse unknown functions)
   LogicalValues(tuples=[[{ true }]])
 ]]>
         </Resource>
