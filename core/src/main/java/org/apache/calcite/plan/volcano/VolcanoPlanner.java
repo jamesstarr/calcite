@@ -695,9 +695,6 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
       for (RelSubset subset : set.subsets) {
         if (subset.set != set) {
           return litmus.fail("subset [{}] is in wrong set [{}]",
-<<<<<<< HEAD
-              subset, set);
-=======
               subset.getDescription(), set);
         }
 
@@ -1540,11 +1537,14 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     // not established. So, give the subset another chance to figure out
     // its cost.
     final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
+<<<<<<< HEAD
     try {
       subset.propagateCostImprovements(this, mq, rel);
     } catch (CyclicMetadataException e) {
       // ignore
     }
+=======
+    subset.propagateCostImprovements(this, mq, rel);
 
     return subset;
   }
