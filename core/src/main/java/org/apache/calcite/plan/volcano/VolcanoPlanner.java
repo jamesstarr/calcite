@@ -1657,7 +1657,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     // not established. So, give the subset another change to figure out
     // its cost.
     final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-    subset.propagateCostImprovements(this, mq, rel, new HashSet<RelSubset>());
+    subset.propagateCostImprovements(this, mq, rel);
 
     return subset;
   }

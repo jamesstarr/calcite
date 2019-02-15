@@ -41,9 +41,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 /**
@@ -120,7 +122,7 @@ public class RelSubset extends AbstractRelNode {
    * <ol>
    * <li>If the are no subsuming subsets, the subset is initially empty.</li>
    * <li>After creation, {@code best} and {@code bestCost} are maintained
-   *    incrementally by {@link #propagateCostImprovements0} and
+   *    incrementally by {@link #propagateCostImprovements} and
    *    {@link RelSet#mergeWith(VolcanoPlanner, RelSet)}.</li>
    * </ol>
    */
@@ -315,49 +317,64 @@ public class RelSubset extends AbstractRelNode {
    * @param planner   Planner
    * @param mq        Metadata query
    * @param rel       Relational expression whose cost has improved
-   * @param activeSet Set of active subsets, for cycle detection
    */
   void propagateCostImprovements(VolcanoPlanner planner, RelMetadataQuery mq,
-      RelNode rel, Set<RelSubset> activeSet) {
-    for (RelSubset subset : set.subsets) {
-      if (rel.getTraitSet().satisfies(subset.traitSet)) {
-        subset.propagateCostImprovements0(planner, mq, rel, activeSet);
+      RelNode rel) {
+    PriorityQueue<RelSubset> q = new PriorityQueue<>(10, COST_COMPARATOR);
+
+    for (RelSubset s : set.subsets) {
+      if (rel.getTraitSet().satisfies(s.traitSet)) {
+        checkAndEnqueue(planner, mq, rel, s, q);
+      }
+    }
+    planner.checkForSatisfiedConverters(set, rel);
+
+    while (!q.isEmpty()) {
+      RelSubset currentSubset = q.poll();
+      for (RelNode parent : currentSubset.getParents()) {
+        final RelSubset parentSubset = planner.getSubset(parent);
+        for (RelSubset s : parentSubset.set.subsets) {
+          if (parent.getTraitSet().satisfies(s.traitSet)) {
+            checkAndEnqueue(planner, mq, parent, s, q);
+          }
+        }
+        planner.checkForSatisfiedConverters(parentSubset.set, parent);
       }
     }
   }
 
-  void propagateCostImprovements0(VolcanoPlanner planner, RelMetadataQuery mq,
-      RelNode rel, Set<RelSubset> activeSet) {
-
-    if (!activeSet.add(this)) {
-      // This subset is already in the chain being propagated to. This
-      // means that the graph is cyclic, and therefore the cost of this
-      // relational expression - not this subset - must be infinite.
-      LOGGER.trace("cyclic: {}", this);
-      return;
-    }
-    try {
-      ++timestamp;
-      final RelOptCost cost = planner.getCost(rel, mq);
-      if (cost.isLt(bestCost)) {
-        LOGGER.trace("Subset cost improved: subset [{}] cost was {} now {}", this, bestCost, cost);
-
-        bestCost = cost;
-        best = rel;
-
-        // Lower cost means lower importance. Other nodes will change
-        // too, but we'll get to them later.
-        planner.ruleQueue.recompute(this);
-        for (RelNode parent : getParents()) {
-          final RelSubset parentSubset = planner.getSubset(parent);
-          parentSubset.propagateCostImprovements(planner, mq, parent,
-              activeSet);
-        }
-        planner.checkForSatisfiedConverters(set, rel);
+  private static final Comparator<RelSubset> COST_COMPARATOR = new Comparator<RelSubset>() {
+    @Override public int compare(RelSubset o1, RelSubset o2) {
+      if (o1.bestCost.equals(o2.bestCost)) {
+        return 0;
       }
-    } finally {
-      activeSet.remove(this);
+      if (o1.bestCost.isLt(o2.bestCost)) {
+        return -1;
+      }
+      return 1;
     }
+  };
+
+  /**
+   * Check if the new cost of rel results in a new best cost for subset, end if so
+   * update subset's best and bestCost, and enqueue for further propagation of
+   * cost improvement
+   */
+  private static void checkAndEnqueue(final VolcanoPlanner planner, final RelMetadataQuery mq,
+      final RelNode rel, final RelSubset subset, PriorityQueue<RelSubset> q) {
+    final RelOptCost cost = planner.getCost(rel, mq);
+    if (cost.isLt(subset.bestCost)) {
+      LOGGER.trace("Subset cost improved: subset [{}] cost was {} now {}",
+              subset, subset.bestCost, cost);
+      q.remove(subset);
+      subset.bestCost = cost;
+      subset.best = rel;
+      // Lower cost means lower importance. Other nodes will change
+      // too, but we'll get to them later.
+      planner.ruleQueue.recompute(subset);
+      q.add(subset);
+    }
+    subset.timestamp++;
   }
 
   public void propagateBoostRemoval(VolcanoPlanner planner) {

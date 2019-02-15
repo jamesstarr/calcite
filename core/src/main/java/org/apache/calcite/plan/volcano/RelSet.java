@@ -32,7 +32,6 @@ import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -353,15 +352,12 @@ class RelSet {
     }
 
     // Make sure the cost changes as a result of merging are propagated.
-    final Set<RelSubset> activeSet = new HashSet<>();
     final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
     for (RelNode parentRel : getParentRels()) {
       final RelSubset parentSubset = planner.getSubset(parentRel);
       parentSubset.propagateCostImprovements(
-          planner, mq, parentRel,
-          activeSet);
+          planner, mq, parentRel);
     }
-    assert activeSet.isEmpty();
     assert equivalentSet == null;
 
     // Each of the relations in the old set now has new parents, so
