@@ -151,10 +151,14 @@ LogicalProject(EXPR$0=[false])
         <Resource name="plan">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[NOT($10)])
 =======
 LogicalProject(EXPR$0=[=(false, $10)])
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+LogicalProject(EXPR$0=[NOT($10)])
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
   LogicalTableScan(table=[[CATALOG, SALES, T1]])
 ]]>
         </Resource>

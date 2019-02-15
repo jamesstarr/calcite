@@ -428,7 +428,7 @@ public class RexSimplify {
     }
 
     if (o0.getType().getSqlTypeName() == SqlTypeName.BOOLEAN) {
-      Comparison cmp = Comparison.of(rexBuilder.makeCall(e.getOperator(), o0, o1), node -> true);
+      Comparison cmp = Comparison.of(e, node -> true);
       if (cmp != null) {
         if (cmp.literal.isAlwaysTrue()) {
           switch (cmp.kind) {
@@ -437,7 +437,7 @@ public class RexSimplify {
             return cmp.ref;
           case LESS_THAN:
           case NOT_EQUALS: // x!=true
-            return simplify(rexBuilder.makeCall(SqlStdOperatorTable.NOT, cmp.ref), unknownAs);
+            return rexBuilder.makeCall(SqlStdOperatorTable.NOT, cmp.ref);
           case GREATER_THAN:
             /* this is false, but could be null if x is null */
             if (!cmp.ref.getType().isNullable()) {
@@ -456,7 +456,7 @@ public class RexSimplify {
           switch (cmp.kind) {
           case EQUALS:
           case LESS_THAN_OR_EQUAL:
-            return simplify(rexBuilder.makeCall(SqlStdOperatorTable.NOT, cmp.ref), unknownAs);
+            return rexBuilder.makeCall(SqlStdOperatorTable.NOT, cmp.ref);
           case NOT_EQUALS:
           case GREATER_THAN:
             return cmp.ref;
@@ -2176,8 +2176,10 @@ public class RexSimplify {
     }
   }
 
-  /** Comparison between a {@link RexInputRef} or {@link RexFieldAccess} and a
-   * literal. Literal may be on left or right side, and may be null. */
+  /** Represents a simple Comparision.
+   *
+   * Left hand side is a {@link RexNode}, right hand side is a literal.
+   */
   public static class Comparison implements Predicate {
     final RexNode ref;
     final SqlKind kind;
@@ -2189,8 +2191,14 @@ public class RexSimplify {
       this.literal = Objects.requireNonNull(literal);
     }
 
-    /** Creates a comparison, or returns null. */
+    /** Creates a comparison, between a {@link RexInputRef} or {@link RexFieldAccess}
+     * and a literal. */
     public static Comparison of(RexNode e) {
+      return of(e, node -> RexUtil.isReferenceOrAccess(node, true));
+    }
+
+    /** Creates a comparison, or returns null. */
+    static Comparison of(RexNode e, java.util.function.Predicate<RexNode> nodePredicate) {
       switch (e.getKind()) {
       case EQUALS:
       case NOT_EQUALS:

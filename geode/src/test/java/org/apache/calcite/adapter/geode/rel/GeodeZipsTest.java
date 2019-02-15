@@ -287,7 +287,8 @@ public class GeodeZipsTest extends AbstractGeodeTest {
   @Test
   public void testWhereWithOrWithEmptyResult() {
     String expectedQuery = "SELECT state AS state FROM /zips "
-        + "WHERE state IN SET('', true, false, 123, 13.892)";
+        + "WHERE state = '' OR state = true OR state = false "
+        + "OR state = 123 OR state = 13.892";
     calciteAssert()
         .query("SELECT state as state "
             + "FROM view WHERE state = '' OR state = null OR "

@@ -2423,7 +2423,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
         eq(
             literal(false),
             eq(literal(false), vBool(1))));
-    checkSimplifyUnchanged(e);
+    checkSimplify(e, "OR(<=(?0.bool1, true), ?0.bool1)");
   }
 
   @Test public void testSimplifyUnknown() {
@@ -3341,7 +3341,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testBooleanComparisions() {
+=======
+  @Test public void testBooleanComparisions() {
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify(eq(vBool(), trueLiteral), "?0.bool0");
     checkSimplify(ge(vBool(), trueLiteral), "?0.bool0");
     checkSimplify(ne(vBool(), trueLiteral), "NOT(?0.bool0)");
@@ -3364,8 +3368,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplify(lt(vBoolNotNull(), falseLiteral), "false");
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimpleDynamicVars() {
 =======
+=======
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   @Test public void testSimpleDynamicVars() {
 >>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     assertTypeAndToString(

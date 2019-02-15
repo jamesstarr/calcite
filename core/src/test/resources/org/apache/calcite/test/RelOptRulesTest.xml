@@ -13369,6 +13369,7 @@ LogicalProject(EMPNO=[$0])
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalFilter(condition=[<($0, CASE(OR(AND(IS NOT NULL($12), <>($9, 0)), AND(<($10, $9), null, <>($9, 0), IS NULL($12))), 10, AND(OR(IS NULL($12), =($9, 0)), OR(>=($10, $9), =($9, 0), IS NOT NULL($12))), 20, 30))])
 =======
     LogicalFilter(condition=[<($0, CASE(=(CASE(=($9, 0), false, IS NOT NULL($12), true, <($10, $9), null:NULL, false), true), 10, =(CASE(=($9, 0), false, IS NOT NULL($12), true, <($10, $9), null:NULL, false), false), 20, 30))])
@@ -13379,6 +13380,9 @@ LogicalProject(EMPNO=[$0])
 =======
     LogicalFilter(condition=[<($0, CASE(=(OR(AND(IS NOT NULL($12), <>($9, 0)), AND(<($10, $9), null, <>($9, 0), IS NULL($12))), true), 10, =(OR(AND(IS NOT NULL($12), <>($9, 0)), AND(<($10, $9), null, <>($9, 0), IS NULL($12))), false), 20, 30))])
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
+=======
+    LogicalFilter(condition=[<($0, CASE(AND(IS NOT NULL($12), <>($9, 0)), 10, OR(=($9, 0), AND(IS NULL($12), >=($10, $9))), 20, 30))])
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
       LogicalJoin(condition=[=($7, $11)], joinType=[left])
         LogicalJoin(condition=[true], joinType=[inner])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])

@@ -1273,6 +1273,7 @@ from "scott".emp;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[NOT($t2)], expr#5=[IS TRUE($t4)], expr#6=[null:BOOLEAN], expr#7=[IS NOT NULL($t3)], expr#8=[AND($t5, $t6, $t7)], expr#9=[IS NOT NULL($t2)], expr#10=[IS NOT FALSE($t2)], expr#11=[AND($t9, $t7, $t10)], expr#12=[OR($t8, $t11)], SAL=[$t1], EXPR$1=[$t12])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
@@ -1290,6 +1291,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#6=[IS TRUE($t5)], expr#7=[null:BOOLEAN], expr#8=[IS NOT NULL($t3)], expr#9=[AND($t6, $t7, $t8)], expr#10=[IS NOT NULL($t2)], expr#11=[IS NOT TRUE($t5)], expr#12=[AND($t10, $t8, $t11)], expr#13=[OR($t9, $t12)], SAL=[$t1], EXPR$1=[$t13])
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
+=======
+EnumerableCalc(expr#0..3=[{inputs}], expr#4=[NOT($t2)], expr#5=[IS TRUE($t4)], expr#6=[null:BOOLEAN], expr#7=[IS NOT NULL($t3)], expr#8=[AND($t5, $t6, $t7)], expr#9=[IS NOT NULL($t2)], expr#10=[IS NOT FALSE($t2)], expr#11=[AND($t9, $t7, $t10)], expr#12=[OR($t8, $t11)], SAL=[$t1], EXPR$1=[$t12])
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
@@ -1796,6 +1800,7 @@ from "scott".emp;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], expr#6=[IS TRUE($t5)], expr#7=[null:BOOLEAN], expr#8=[AND($t6, $t7)], expr#9=[IS NOT FALSE($t2)], expr#10=[IS NULL($t2)], expr#11=[AND($t9, $t10)], expr#12=[OR($t4, $t8, $t11)], SAL=[$t1], EXPR$1=[$t12])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
@@ -1822,6 +1827,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[IS TRUE($t6)], expr#8=[null:BOOLEAN], expr#9=[AND($t7, $t8)], expr#10=[IS NOT TRUE($t6)], expr#11=[IS NULL($t2)], expr#12=[AND($t10, $t11)], expr#13=[OR($t4, $t9, $t12)], SAL=[$t1], EXPR$1=[$t13])
 >>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
+=======
+EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], expr#6=[IS TRUE($t5)], expr#7=[null:BOOLEAN], expr#8=[AND($t6, $t7)], expr#9=[IS NOT FALSE($t2)], expr#10=[IS NULL($t2)], expr#11=[AND($t9, $t10)], expr#12=[OR($t4, $t8, $t11)], SAL=[$t1], EXPR$1=[$t12])
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
@@ -2172,6 +2180,7 @@ select sal from "scott".emp
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $condition=[$t4])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
@@ -2192,6 +2201,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#6=[IS NOT TRUE($t5)], expr#7=[IS NULL($t3)], expr#8=[OR($t6, $t7)], expr#9=[OR($t7, $t5)], expr#10=[AND($t8, $t9)], SAL=[$t1], $condition=[$t10])
 >>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks)
+=======
+EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NOT FALSE($t2)], expr#5=[IS NULL($t3)], expr#6=[OR($t4, $t5)], expr#7=[NOT($t2)], expr#8=[OR($t5, $t7)], expr#9=[AND($t6, $t8)], SAL=[$t1], $condition=[$t9])
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
@@ -2231,6 +2243,7 @@ select sal from "scott".emp
 !ok
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], expr#6=[IS NOT NULL($t2)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], expr#9=[OR($t4, $t8)], SAL=[$t1], $condition=[$t9])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
@@ -2242,6 +2255,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#6=[IS NOT NULL($t2)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], expr#9=[IS NULL($t3)], expr#10=[OR($t8, $t9)], SAL=[$t1], $condition=[$t10])
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
+=======
+EnumerableCalc(expr#0..3=[{inputs}], expr#4=[NOT($t2)], expr#5=[IS NOT NULL($t2)], expr#6=[OR($t4, $t5)], expr#7=[IS NOT TRUE($t6)], expr#8=[IS NULL($t3)], expr#9=[OR($t7, $t8)], SAL=[$t1], $condition=[$t9])
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
@@ -2280,6 +2296,7 @@ select sal from "scott".emp
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $condition=[$t4])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
@@ -2300,6 +2317,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#6=[IS NOT TRUE($t5)], expr#7=[IS NULL($t3)], expr#8=[OR($t6, $t7)], expr#9=[OR($t7, $t5)], expr#10=[AND($t8, $t9)], SAL=[$t1], $condition=[$t10])
 >>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks)
+=======
+EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NOT FALSE($t2)], expr#5=[IS NULL($t3)], expr#6=[OR($t4, $t5)], expr#7=[NOT($t2)], expr#8=[OR($t5, $t7)], expr#9=[AND($t6, $t8)], SAL=[$t1], $condition=[$t9])
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
@@ -2342,6 +2362,7 @@ select sal from "scott".emp
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $condition=[$t4])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
@@ -2362,6 +2383,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#6=[IS NOT TRUE($t5)], expr#7=[IS NULL($t3)], expr#8=[OR($t6, $t7)], expr#9=[OR($t7, $t5)], expr#10=[AND($t8, $t9)], SAL=[$t1], $condition=[$t10])
 >>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks)
+=======
+EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NOT FALSE($t2)], expr#5=[IS NULL($t3)], expr#6=[OR($t4, $t5)], expr#7=[NOT($t2)], expr#8=[OR($t5, $t7)], expr#9=[AND($t6, $t8)], SAL=[$t1], $condition=[$t9])
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
@@ -2404,6 +2428,7 @@ select sal from "scott".emp
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $condition=[$t4])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
@@ -2424,6 +2449,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#6=[IS NOT TRUE($t5)], expr#7=[IS NULL($t3)], expr#8=[OR($t6, $t7)], expr#9=[OR($t7, $t5)], expr#10=[AND($t8, $t9)], SAL=[$t1], $condition=[$t10])
 >>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks)
+=======
+EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NOT FALSE($t2)], expr#5=[IS NULL($t3)], expr#6=[OR($t4, $t5)], expr#7=[NOT($t2)], expr#8=[OR($t5, $t7)], expr#9=[AND($t6, $t8)], SAL=[$t1], $condition=[$t9])
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
@@ -2467,6 +2495,7 @@ select sal from "scott".emp
 !ok
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], expr#6=[IS NOT NULL($t2)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], expr#9=[OR($t4, $t8)], SAL=[$t1], $condition=[$t9])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
@@ -2478,6 +2507,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#6=[IS NOT NULL($t2)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], expr#9=[IS NULL($t3)], expr#10=[OR($t8, $t9)], SAL=[$t1], $condition=[$t10])
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
+=======
+EnumerableCalc(expr#0..3=[{inputs}], expr#4=[NOT($t2)], expr#5=[IS NOT NULL($t2)], expr#6=[OR($t4, $t5)], expr#7=[IS NOT TRUE($t6)], expr#8=[IS NULL($t3)], expr#9=[OR($t7, $t8)], SAL=[$t1], $condition=[$t9])
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
@@ -2501,6 +2533,7 @@ select sal from "scott".emp
 !ok
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], expr#6=[IS NOT NULL($t2)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], expr#9=[OR($t4, $t8)], SAL=[$t1], $condition=[$t9])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
@@ -2512,6 +2545,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#6=[IS NOT NULL($t2)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], expr#9=[IS NULL($t3)], expr#10=[OR($t8, $t9)], SAL=[$t1], $condition=[$t10])
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
+=======
+EnumerableCalc(expr#0..3=[{inputs}], expr#4=[NOT($t2)], expr#5=[IS NOT NULL($t2)], expr#6=[OR($t4, $t5)], expr#7=[IS NOT TRUE($t6)], expr#8=[IS NULL($t3)], expr#9=[OR($t7, $t8)], SAL=[$t1], $condition=[$t9])
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
@@ -2863,6 +2899,7 @@ select sal from "scott".emp e
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableValues(tuples=[[]])
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t3, $t5)], expr#7=[true], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[null], expr#11=[IS NOT NULL($t3)], expr#12=[CASE($t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
@@ -2892,6 +2929,9 @@ EnumerableCalc(expr#0..4=[{inputs}], SAL=[$t3])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks)
+=======
+EnumerableValues(tuples=[[]])
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
 !plan
 
 # Test filter literal NOT IN null correlated
@@ -2907,6 +2947,9 @@ select sal from "scott".emp e
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[NOT($t4)], expr#6=[IS NOT NULL($t4)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], SAL=[$t1], $condition=[$t8])
   EnumerableHashJoin(condition=[=($2, $3)], joinType=[left])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
@@ -2959,6 +3002,7 @@ select sal from "scott".emp e
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableValues(tuples=[[]])
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#7=[true], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[null], expr#11=[IS NOT NULL($t4)], expr#12=[CASE($t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
@@ -2984,6 +3028,9 @@ EnumerableCalc(expr#0..4=[{inputs}], SAL=[$t3])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks)
+=======
+EnumerableValues(tuples=[[]])
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
 !plan
 
 # Test filter null NOT IN required correlated
@@ -3001,6 +3048,7 @@ select sal from "scott".emp e
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableValues(tuples=[[]])
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#7=[true], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[null], expr#11=[IS NOT NULL($t4)], expr#12=[CASE($t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
@@ -3026,6 +3074,9 @@ EnumerableCalc(expr#0..4=[{inputs}], SAL=[$t3])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks)
+=======
+EnumerableValues(tuples=[[]])
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
 !plan
 
 # Test filter null NOT IN nullable correlated
@@ -3038,6 +3089,7 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3068,6 +3120,9 @@ EnumerableCalc(expr#0..4=[{inputs}], SAL=[$t3])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks)
+=======
+EnumerableValues(tuples=[[]])
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
 !plan
 
 # Test filter literal NOT IN required correlated
@@ -3093,10 +3148,14 @@ select sal from "scott".emp e
 !ok
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[NOT($t4)], expr#6=[IS NOT NULL($t4)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], SAL=[$t1], $condition=[$t8])
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#7=[IS NOT NULL($t4)], expr#8=[OR($t6, $t7)], expr#9=[IS NOT TRUE($t8)], SAL=[$t1], $condition=[$t9])
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
+=======
+EnumerableCalc(expr#0..4=[{inputs}], expr#5=[NOT($t4)], expr#6=[IS NOT NULL($t4)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], SAL=[$t1], $condition=[$t8])
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
   EnumerableHashJoin(condition=[=($2, $3)], joinType=[left])
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#7=[true], expr#8=[IS NOT NULL($t4)], expr#9=[CASE($t6, $t7, $t8, $t7, $t5)], expr#10=[NOT($t9)], SAL=[$t1], $condition=[$t10])
@@ -3135,6 +3194,9 @@ select sal from "scott".emp e
 !ok
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[NOT($t3)], expr#6=[IS NOT NULL($t3)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], SAL=[$t1], $condition=[$t8])
   EnumerableHashJoin(condition=[=($2, $4)], joinType=[left])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])

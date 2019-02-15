@@ -314,10 +314,9 @@ public class GeodeFilter extends Filter implements GeodeRel {
         return translateBinary2("=", node, rexBuilder.makeLiteral(true));
       case NOT:
         child = ((RexCall) node).getOperands().get(0);
-<<<<<<< HEAD
-        while (child.getKind() == SqlKind.CAST) {
-=======
         if (child.getKind() == SqlKind.CAST) {
+=======
+        while (child.getKind() == SqlKind.CAST) {
           child = ((RexCall) child).getOperands().get(0);
         }
         if (child.getKind() == SqlKind.INPUT_REF) {
