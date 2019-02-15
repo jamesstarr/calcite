@@ -98,7 +98,7 @@ LogicalProject(EXPR$0=[false])
         </Resource>
         <Resource name="plan">
             <![CDATA[
-LogicalProject(EXPR$0=[=(false, $10)])
+LogicalProject(EXPR$0=[NOT($10)])
   LogicalTableScan(table=[[CATALOG, SALES, T1]])
 ]]>
         </Resource>
