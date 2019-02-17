@@ -101,6 +101,7 @@ As you make changes to the site, the site will automatically rebuild.
 4. `git reset origin/master --soft`
 
 If you have not regenerated the javadoc and they are missing, restore them:
+<<<<<<< HEAD
 
 6. `git reset -- javadocAggregate/`
 7. `git checkout -- javadocAggregate/`
@@ -109,6 +110,16 @@ Restore the avatica site
 
 8. `git reset -- avatica/`
 9. `git checkout -- avatica/`
+=======
+6. `git reset -- apidocs/`
+7. `git reset -- testapidocs/`
+8. `git checkout -- apidocs/`
+9. `git checkout -- testapidocs/`
+
+Restore the avatica site
+10. `git reset -- avatica/`
+11. `git checkout -- avatica/`
+>>>>>>> ebd43d0fa (Update instructions for pushing to the git site repository)
 
 10. `git add .`
 11. Commit: `git commit -m "Your commit message goes here"`
