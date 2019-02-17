@@ -66,3 +66,8 @@ class SqlCastOperator extends SqlBinaryOperator {
     return SqlStdOperatorTable.CAST.getMonotonicity(call);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlCastOperator.java
+>>>>>>> d01e418b9 ([CALCITE-2843] Support PostgreSQL cast operator '::' (Muhammad Gelbana))

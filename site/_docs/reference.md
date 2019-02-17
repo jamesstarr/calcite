@@ -3119,6 +3119,7 @@ semantics.
 
 | C | Operator syntax                                | Description
 |:- |:-----------------------------------------------|:-----------
+| p | expr :: type                                   | Casts *expr* to *type*
 | o | CHR(integer) | Returns the character having the binary equivalent to *integer* as a CHAR value
 | m | JSON_TYPE(jsonValue)                           | Returns a string value indicating the type of a *jsonValue*
 | m | JSON_DEPTH(jsonValue)                          | Returns an integer value indicating the depth of a *jsonValue*

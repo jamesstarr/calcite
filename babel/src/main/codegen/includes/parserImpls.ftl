@@ -112,6 +112,7 @@ void InfixCast(List<Object> list, ExprContext exprContext, Span s) :
     }
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 493df6ca3 ([CALCITE-3022] Babel: Various SQL parsing issues)
 =======
@@ -122,4 +123,6 @@ void InfixCast(List<Object> list, ExprContext exprContext, Span s) :
 }
 
 >>>>>>> 2e167f8ed ([CALCITE-3063] Parse and process PostgreSQL posix regular expressions)
+=======
+>>>>>>> d01e418b9 ([CALCITE-2843] Support PostgreSQL cast operator '::' (Muhammad Gelbana))
 // End parserImpls.ftl

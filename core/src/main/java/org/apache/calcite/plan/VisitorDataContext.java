@@ -131,14 +131,14 @@ public class VisitorDataContext implements DataContext {
   @Deprecated
   public static Pair<Integer, ?> getValue(RexNode inputRef, RexNode literal,
                                           RexBuilder builder, RexExecutor executor) {
-    inputRef = removeCast(inputRef);
+    inputRef = inputRef == null ? null : RexUtil.removeCast(inputRef);
     final RelDataType type = inputRef.getType();
-    literal = convertAndRemoveCast(builder, executor, literal, type);
+    literal = literal == null ? null : convertAndRemoveCast(builder, executor, literal, type);
 
     if (inputRef instanceof RexInputRef
         && literal instanceof RexLiteral)  {
       final int index = ((RexInputRef) inputRef).getIndex();
-      RexLiteral rexLiteral = (RexLiteral) literal;
+      final RexLiteral rexLiteral = (RexLiteral) literal;
 
       if (type.getSqlTypeName() == null) {
         LOGGER.warn("{} returned null SqlTypeName", inputRef.toString());
@@ -185,6 +185,7 @@ public class VisitorDataContext implements DataContext {
     return null;
   }
 
+<<<<<<< HEAD
 
   private static RexNode convertAndRemoveCast(RexBuilder builder, RexExecutor executor,
                                      RexNode literal, RelDataType toType) {
@@ -200,6 +201,8 @@ public class VisitorDataContext implements DataContext {
 
     return RexUtil.removeCast(literal);
   }
+=======
+>>>>>>> d01e418b9 ([CALCITE-2843] Support PostgreSQL cast operator '::' (Muhammad Gelbana))
 
   private static RexNode convertAndRemoveCast(RexBuilder builder, RexExecutor executor,
                                      RexNode literal, RelDataType toType) {
@@ -213,7 +216,7 @@ public class VisitorDataContext implements DataContext {
       }
     }
 
-    return removeCast(literal);
+    return RexUtil.removeCast(literal);
   }
 }
 // End VisitorDataContext.java
