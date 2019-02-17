@@ -28,9 +28,8 @@ import org.apache.calcite.rex.RexExecutor;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.schema.SchemaPlus;
-import org.apache.calcite.sql.SqlOperator;
-import org.apache.calcite.sql.fun.SqlCastFunction;
 import org.apache.calcite.util.NlsString;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
@@ -132,14 +131,14 @@ public class VisitorDataContext implements DataContext {
   @Deprecated
   public static Pair<Integer, ?> getValue(RexNode inputRef, RexNode literal,
                                           RexBuilder builder, RexExecutor executor) {
-    inputRef = removeCast(inputRef);
+    inputRef = inputRef == null ? null : RexUtil.removeCast(inputRef);
     final RelDataType type = inputRef.getType();
-    literal = convertAndRemoveCast(builder, executor, literal, type);
+    literal = literal == null ? null : convertAndRemoveCast(builder, executor, literal, type);
 
     if (inputRef instanceof RexInputRef
         && literal instanceof RexLiteral)  {
       final int index = ((RexInputRef) inputRef).getIndex();
-      RexLiteral rexLiteral = (RexLiteral) literal;
+      final RexLiteral rexLiteral = (RexLiteral) literal;
 
       if (type.getSqlTypeName() == null) {
         LOGGER.warn("{} returned null SqlTypeName", inputRef.toString());
@@ -186,16 +185,6 @@ public class VisitorDataContext implements DataContext {
     return null;
   }
 
-  private static RexNode removeCast(RexNode inputRef) {
-    if (inputRef instanceof RexCall) {
-      final RexCall castedRef = (RexCall) inputRef;
-      final SqlOperator operator = castedRef.getOperator();
-      if (operator instanceof SqlCastFunction) {
-        inputRef = castedRef.getOperands().get(0);
-      }
-    }
-    return inputRef;
-  }
 
   private static RexNode convertAndRemoveCast(RexBuilder builder, RexExecutor executor,
                                      RexNode literal, RelDataType toType) {
@@ -209,7 +198,7 @@ public class VisitorDataContext implements DataContext {
       }
     }
 
-    return removeCast(literal);
+    return RexUtil.removeCast(literal);
   }
 }
 // End VisitorDataContext.java
