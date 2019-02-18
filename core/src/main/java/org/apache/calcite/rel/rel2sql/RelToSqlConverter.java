@@ -130,8 +130,8 @@ public class RelToSqlConverter extends SqlImplementor
     SqlNode sqlCondition = null;
     SqlLiteral condType = JoinConditionType.ON.symbol(POS);
     JoinType joinType = joinType(e.getJoinType());
-    if (e.getJoinType() == JoinRelType.INNER && e.getCondition().isAlwaysTrue()) {
-      joinType = JoinType.COMMA;
+    if (isCrossJoin(e)) {
+      joinType = dialect.emulateJoinTypeForCrossJoin();
       condType = JoinConditionType.NONE.symbol(POS);
     } else {
       final RexNode condition = e.getCondition() != null
@@ -152,6 +152,10 @@ public class RelToSqlConverter extends SqlImplementor
             condType,
             sqlCondition);
     return result(join, leftResult, rightResult);
+  }
+
+  private boolean isCrossJoin(final Join e) {
+    return e.getJoinType() == JoinRelType.INNER && e.getCondition().isAlwaysTrue();
   }
 
   /** @see #dispatch */
