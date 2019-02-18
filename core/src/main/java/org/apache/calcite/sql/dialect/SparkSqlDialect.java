@@ -16,38 +16,20 @@
  */
 package org.apache.calcite.sql.dialect;
 
-import org.apache.calcite.avatica.util.TimeUnitRange;
 import org.apache.calcite.config.NullCollation;
 import org.apache.calcite.sql.JoinType;
-import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlDialect;
-import org.apache.calcite.sql.SqlFunction;
-import org.apache.calcite.sql.SqlFunctionCategory;
-import org.apache.calcite.sql.SqlKind;
-import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlUtil;
 import org.apache.calcite.sql.SqlWriter;
-import org.apache.calcite.sql.fun.SqlFloorFunction;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
-import org.apache.calcite.sql.type.ReturnTypes;
-
-import static org.apache.calcite.util.RelToSqlConverterUtil.unparseHiveTrim;
 
 /**
  * A <code>SqlDialect</code> implementation for the APACHE SPARK database.
  */
 public class SparkSqlDialect extends SqlDialect {
-  public static final SqlDialect.Context DEFAULT_CONTEXT = SqlDialect.EMPTY_CONTEXT
-      .withDatabaseProduct(SqlDialect.DatabaseProduct.SPARK)
-      .withNullCollation(NullCollation.LOW);
-
-  public static final SqlDialect DEFAULT = new SparkSqlDialect(DEFAULT_CONTEXT);
-
-  private static final SqlFunction SPARKSQL_SUBSTRING =
-      new SqlFunction("SUBSTRING", SqlKind.OTHER_FUNCTION,
-          ReturnTypes.ARG0_NULLABLE_VARYING, null, null,
-          SqlFunctionCategory.STRING);
+  public static final SqlDialect DEFAULT =
+      new SparkSqlDialect(EMPTY_CONTEXT
+          .withDatabaseProduct(DatabaseProduct.SPARK)
+          .withNullCollation(NullCollation.LOW));
 
   /**
    * Creates a SparkSqlDialect.
@@ -68,22 +50,13 @@ public class SparkSqlDialect extends SqlDialect {
     return JoinType.CROSS;
   }
 
-  @Override public boolean supportsGroupByWithRollup() {
-    return true;
-  }
-
-  @Override public boolean supportsNestedAggregations() {
-    return false;
-  }
-
-  @Override public boolean supportsGroupByWithCube() {
-    return true;
-  }
+>>>>>>> 8743a4811 (CALCITE-2856-Emulating Cross Join For SparkSqlDialect)
 
   @Override public void unparseOffsetFetch(SqlWriter writer, SqlNode offset,
       SqlNode fetch) {
     unparseFetchUsingLimit(writer, offset, fetch);
   }
+<<<<<<< HEAD
 
   @Override public void unparseCall(SqlWriter writer, SqlCall call,
       int leftPrec, int rightPrec) {
@@ -113,3 +86,7 @@ public class SparkSqlDialect extends SqlDialect {
     }
   }
 }
+=======
+}
+
+// End SparkSqlDialect.java

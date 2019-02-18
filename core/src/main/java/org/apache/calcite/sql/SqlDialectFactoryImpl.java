@@ -44,7 +44,7 @@ import org.apache.calcite.sql.dialect.ParaccelSqlDialect;
 import org.apache.calcite.sql.dialect.PhoenixSqlDialect;
 import org.apache.calcite.sql.dialect.PostgresqlSqlDialect;
 import org.apache.calcite.sql.dialect.RedshiftSqlDialect;
-import org.apache.calcite.sql.dialect.SnowflakeSqlDialect;
+>>>>>>> 8743a4811 (CALCITE-2856-Emulating Cross Join For SparkSqlDialect)
 import org.apache.calcite.sql.dialect.SparkSqlDialect;
 import org.apache.calcite.sql.dialect.SybaseSqlDialect;
 import org.apache.calcite.sql.dialect.TeradataSqlDialect;
@@ -129,8 +129,10 @@ public class SqlDialectFactoryImpl implements SqlDialectFactory {
           c.withDataTypeSystem(MysqlSqlDialect.MYSQL_TYPE_SYSTEM));
     case "REDSHIFT":
       return new RedshiftSqlDialect(c);
+<<<<<<< HEAD
     case "SNOWFLAKE":
       return new SnowflakeSqlDialect(c);
+=======
     case "SPARK":
       return new SparkSqlDialect(c);
     }
@@ -162,8 +164,11 @@ public class SqlDialectFactoryImpl implements SqlDialectFactory {
       return new H2SqlDialect(c);
     } else if (upperProductName.contains("VERTICA")) {
       return new VerticaSqlDialect(c);
+<<<<<<< HEAD
     } else if (upperProductName.contains("SNOWFLAKE")) {
       return new SnowflakeSqlDialect(c);
+=======
+>>>>>>> 8743a4811 (CALCITE-2856-Emulating Cross Join For SparkSqlDialect)
     } else if (upperProductName.contains("SPARK")) {
       return new SparkSqlDialect(c);
     } else {
