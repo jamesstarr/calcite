@@ -47,11 +47,8 @@ import org.apache.calcite.rex.RexWindow;
 import org.apache.calcite.rex.RexWindowBound;
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlFunction;
-import org.apache.calcite.sql.SqlIdentifier;
-import org.apache.calcite.sql.SqlIntervalQualifier;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
-import org.apache.calcite.sql.SqlSyntax;
 import org.apache.calcite.sql.SqlWindow;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
@@ -73,8 +70,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static org.apache.calcite.rel.RelDistributions.EMPTY;
+>>>>>>> 6102b7372 ([CALCITE-2858] Improvements in JSON writer and reader for plans)
 
 /**
  * Utilities for converting {@link org.apache.calcite.rel.RelNode}
@@ -245,12 +241,14 @@ public class RelJson {
             Util.enumVal(SqlTypeName.class, (String) map.get("type"));
         final Integer precision = (Integer) map.get("precision");
         final Integer scale = (Integer) map.get("scale");
+<<<<<<< HEAD
         if (SqlTypeName.INTERVAL_TYPES.contains(sqlTypeName)) {
           TimeUnit startUnit = sqlTypeName.getStartUnit();
           TimeUnit endUnit = sqlTypeName.getEndUnit();
           return typeFactory.createSqlIntervalType(
               new SqlIntervalQualifier(startUnit, endUnit, SqlParserPos.ZERO));
         }
+=======
         final RelDataType type;
         if (precision == null) {
           type = typeFactory.createSqlType(sqlTypeName);
@@ -375,7 +373,7 @@ public class RelJson {
       final RexLiteral literal = (RexLiteral) node;
       final Object value = literal.getValue3();
       map = jsonBuilder.map();
-      map.put("literal", RelEnumTypes.fromEnum(value));
+      map.put("literal", value);
       map.put("type", toJson(node.getType()));
       return map;
     case INPUT_REF:
@@ -487,25 +485,17 @@ public class RelJson {
       Map map = (Map) o;
       final Map<String, Object> opMap = (Map) map.get("op");
       final RelDataTypeFactory typeFactory = cluster.getTypeFactory();
-      if (opMap != null) {
-        if (map.containsKey("class")) {
-          opMap.put("class", map.get("class"));
-        }
+      if (op != null) {
         final List operands = (List) map.get("operands");
         final List<RexNode> rexOperands = toRexList(relInput, operands);
         final Object jsonType = map.get("type");
         final Map window = (Map) map.get("window");
         if (window != null) {
-          final SqlAggFunction operator = toAggregation(opMap);
+          final SqlAggFunction operator = toAggregation(relInput, op, map);
           final RelDataType type = toType(typeFactory, jsonType);
-          List<RexNode> partitionKeys = new ArrayList<>();
-          if (window.containsKey("partition")) {
-            partitionKeys = toRexList(relInput, (List) window.get("partition"));
-          }
-          List<RexFieldCollation> orderKeys = new ArrayList<>();
-          if (window.containsKey("order")) {
-            orderKeys = toRexFieldCollationList(relInput, (List) window.get("order"));
-          }
+          final List<RexNode> partitionKeys = toRexList(relInput, (List) window.get("partition"));
+          final List<RexFieldCollation> orderKeys =
+              toRexFieldCollationList(relInput, (List) window.get("order"));
           final RexWindowBound lowerBound;
           final RexWindowBound upperBound;
           final boolean physical;
@@ -525,10 +515,10 @@ public class RelJson {
           }
           final boolean distinct = (Boolean) map.get("distinct");
           return rexBuilder.makeOver(type, operator, rexOperands, partitionKeys,
-              ImmutableList.copyOf(orderKeys), lowerBound, upperBound, physical,
-              true, false, distinct, false);
+              ImmutableList.copyOf(orderKeys), lowerBound, upperBound, physical, true, false,
+              distinct);
         } else {
-          final SqlOperator operator = toOp(opMap);
+          final SqlOperator operator = toOp(relInput, op, map);
           final RelDataType type;
           if (jsonType != null) {
             type = toType(typeFactory, jsonType);
@@ -571,7 +561,7 @@ public class RelJson {
         return rexBuilder.makeCorrel(type, new CorrelationId(correl));
       }
       if (map.containsKey("literal")) {
-        Object literal = map.get("literal");
+        final Object literal = map.get("literal");
         final RelDataType type = toType(typeFactory, map.get("type"));
         if (literal == null) {
           return rexBuilder.makeNullLiteral(type);
@@ -582,9 +572,7 @@ public class RelJson {
           // we just interpret the literal
           return toRex(relInput, literal);
         }
-        if (type.getSqlTypeName() == SqlTypeName.SYMBOL) {
-          literal = RelEnumTypes.toEnum((String) literal);
-        }
+>>>>>>> 6102b7372 ([CALCITE-2858] Improvements in JSON writer and reader for plans)
         return rexBuilder.makeLiteral(literal, type, false);
       }
       throw new UnsupportedOperationException("cannot convert to rex " + o);
@@ -668,6 +656,7 @@ public class RelJson {
     return list;
   }
 
+<<<<<<< HEAD
   SqlOperator toOp(Map<String, Object> map) {
     // in case different operator has the same kind, check with both name and kind.
     String name = map.get("name").toString();
@@ -684,6 +673,14 @@ public class RelJson {
         SqlNameMatchers.liberal());
     for (SqlOperator operator: operators) {
       if (operator.kind == sqlKind) {
+=======
+  SqlOperator toOp(RelInput relInput, String op, Map<String, Object> map) {
+    // TODO: build a map, for more efficient lookup
+    // TODO: look up based on SqlKind
+    final List<SqlOperator> operatorList =
+        SqlStdOperatorTable.instance().getOperatorList();
+    for (SqlOperator operator : operatorList) {
+      if (operator.getName().equals(op)) {
         return operator;
       }
     }
@@ -694,8 +691,8 @@ public class RelJson {
     return null;
   }
 
-  SqlAggFunction toAggregation(Map<String, Object> map) {
-    return (SqlAggFunction) toOp(map);
+  SqlAggFunction toAggregation(RelInput relInput, String agg, Map<String, Object> map) {
+    return (SqlAggFunction) toOp(relInput, agg, map);
   }
 
   private Map toJson(SqlOperator operator) {

@@ -37,6 +37,7 @@ import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 
@@ -272,9 +273,9 @@ public class RelJsonReader {
   }
 
   private AggregateCall toAggCall(RelInput relInput, Map<String, Object> jsonAggCall) {
-    final Map<String, Object> aggMap = (Map) jsonAggCall.get("agg");
+    final String aggName = (String) jsonAggCall.get("agg");
     final SqlAggFunction aggregation =
-        relJson.toAggregation(aggMap);
+        relJson.toAggregation(relInput, aggName, jsonAggCall);
     final Boolean distinct = (Boolean) jsonAggCall.get("distinct");
     @SuppressWarnings("unchecked")
     final List<Integer> operands = (List<Integer>) jsonAggCall.get("operands");
