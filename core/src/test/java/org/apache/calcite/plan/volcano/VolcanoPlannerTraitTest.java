@@ -249,18 +249,18 @@ class VolcanoPlannerTraitTest {
     assertTrue(child instanceof PhysLeafRel);
   }
 
-  @Test void testPlanWithNoneConvention() {
+  @Test public void testPlanWithNoneConvention() {
     VolcanoPlanner planner = new VolcanoPlanner();
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
     RelOptCluster cluster = newCluster(planner);
     NoneTinyLeafRel leaf = new NoneTinyLeafRel(cluster, "noneLeafRel");
     planner.setRoot(leaf);
-    RelOptCost cost = planner.getCost(leaf, cluster.getMetadataQuery());
+    RelOptCost cost = planner.getCost(leaf, RelMetadataQuery.instance());
 
     assertTrue(cost.isInfinite());
 
     planner.setNoneConventionHasInfiniteCost(false);
-    cost = planner.getCost(leaf, cluster.getMetadataQuery());
+    cost = planner.getCost(leaf, RelMetadataQuery.instance());
     assertTrue(!cost.isInfinite());
   }
 
