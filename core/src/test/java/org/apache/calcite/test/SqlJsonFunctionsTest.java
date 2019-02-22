@@ -66,6 +66,7 @@ public class SqlJsonFunctionsTest {
   public static final String INVOC_DESC_DEJSONIZE = "dejsonize";
   public static final String INVOC_DESC_JSON_OBJECT = "jsonObject";
   public static final String INVOC_DESC_JSON_OBJECT_AGG_ADD = "jsonObjectAggAdd";
+  public static final String INVOC_DESC_JSON_TYPE = "jsonType";
   public static final String INVOC_DESC_JSON_ARRAY = "jsonArray";
   public static final String INVOC_DESC_JSON_ARRAY_AGG_ADD = "jsonArrayAggAdd";
   public static final String INVOC_DESC_IS_JSON_VALUE = "isJsonValue";
@@ -504,6 +505,17 @@ public class SqlJsonFunctionsTest {
   }
 
   @Test
+  public void testJsonType() {
+    assertJsonType(is("OBJECT"), "{}");
+    assertJsonType(is("ARRAY"),
+            "[\"foo\",null]");
+    assertJsonType(is("NULL"), "null");
+    assertJsonType(is("BOOLEAN"), "false");
+    assertJsonType(is("INTEGER"), "12");
+    assertJsonType(is("DOUBLE"), "11.22");
+  }
+
+  @Test
   public void testJsonObjectAggAdd() {
     Map<String, Object> map = new HashMap<>();
     Map<String, Object> expected = new HashMap<>();
@@ -664,7 +676,7 @@ public class SqlJsonFunctionsTest {
                                Matcher<Object> matcher) {
     assertThat(
         invocationDesc(INVOC_DESC_DEJSONIZE, input),
-        SqlFunctions.dejsonize(input),
+            SqlFunctions.dejsonize(input),
         matcher);
   }
 
@@ -682,6 +694,15 @@ public class SqlJsonFunctionsTest {
     assertThat(
         invocationDesc(INVOC_DESC_JSON_OBJECT, nullClause, kvs),
         SqlFunctions.jsonObject(nullClause, kvs),
+        matcher);
+  }
+
+  private void assertJsonType(Matcher<? super String> matcher,
+                                String input) {
+    assertThat(
+        invocationDesc(INVOC_DESC_JSON_TYPE, input),
+        SqlFunctions.jsonType(
+                SqlFunctions.dejsonize(input)),
         matcher);
   }
 

@@ -11323,6 +11323,12 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         "(?s).*Expected a character type*");
   }
 
+  @Test public void testJsonType() {
+    check("select json_type(ename) from emp");
+    checkExp("json_type('{\"foo\":\"bar\"}')");
+    checkExpType("json_type('{\"foo\":\"bar\"}')", "VARCHAR(20) NOT NULL");
+  }
+
   @Test public void testJsonObjectAgg() {
     check("select json_objectagg(ename: empno) from emp");
     check("select ^json_objectagg(empno: ename)^ from emp");
