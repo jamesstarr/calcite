@@ -2732,6 +2732,42 @@ public class SqlFunctions {
     jsonArrayAggAdd(list, element, SqlJsonConstructorNullClause.ABSENT_ON_NULL);
   }
 
+  public static String jsonType(Object o) {
+    final String result;
+    try {
+      if (o instanceof Integer) {
+        result = "INTEGER";
+      } else if (o instanceof String) {
+        result = "STRING";
+      } else if (o instanceof Float) {
+        result = "FLOAT";
+      } else if (o instanceof Double) {
+        result = "DOUBLE";
+      } else if (o instanceof Long) {
+        result = "LONG";
+      } else if (o instanceof Boolean) {
+        result = "BOOLEAN";
+      } else if (o instanceof Date) {
+        result = "DATE";
+      } else if (o instanceof Map) {
+        result = "OBJECT";
+      } else if (o instanceof Collection) {
+        result = "ARRAY";
+      } else if (o == null) {
+        result = "NULL";
+      } else {
+        result = "unknown";
+      }
+      if (result.equals("unknown")) {
+        throw RESOURCE.unknownObjectOfJsonType(o.toString()).ex();
+      } else {
+        return result;
+      }
+    } catch (Exception ex) {
+      throw RESOURCE.unknownObjectOfJsonType(o.toString()).ex();
+    }
+  }
+
   public static boolean isJsonValue(String input) {
     try {
       dejsonize(input);

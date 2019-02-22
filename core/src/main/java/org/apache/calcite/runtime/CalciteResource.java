@@ -921,6 +921,9 @@ public interface CalciteResource {
   @BaseMessage("Timeout of ''{0}'' ms for query execution is reached. Query execution started at ''{1}''")
   ExInst<CalciteException> queryExecutionTimeoutReached(String timeout, String queryStart);
 
+
+  @BaseMessage("Unknown JSON type in JSON_TYPE function, and the object is: ''{0}''")
+  ExInst<CalciteException> unknownObjectOfJsonType(String value);
 }
 
   @BaseMessage("Substring error: negative substring length not allowed")

@@ -713,7 +713,11 @@ JSON_TYPE,
 **JSON_OBJECT**,
 **JSON_OBJECTAGG**,
 **JSON_QUERY**,
+<<<<<<< HEAD
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+JSON_TYPE,
+>>>>>>> 5b7700f68 ([CALCITE-2791] Add the JSON_TYPE function (xuqianjin))
 **JSON_VALUE**,
 K,
 KEY,
@@ -2982,6 +2986,29 @@ Note:
 | value IS JSON ARRAY                               | Whether *value* is a json array, *value* is in character string type
 | value IS NOT JSON ARRAY                           | Whether *value* is not a json array, *value* is in character string type
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+
+#### MySQL Specific Operators
+
+| Operator syntax                                   | Description
+|:------------------------------------------------- |:-----------
+| JSON_TYPE(value) | Returns a string indicating the type of a JSON **value**. This can be an object, an array, or a scalar type
+
+Example SQL:
+
+```SQL
+SELECT JSON_TYPE(v) AS c1
+,JSON_TYPE(JSON_VALUE(v, 'lax $.b' ERROR ON ERROR)) AS c2
+,JSON_TYPE(JSON_VALUE(v, 'strict $.a[0]' ERROR ON ERROR)) AS c3
+,JSON_TYPE(JSON_VALUE(v, 'strict $.a[1]' ERROR ON ERROR)) AS c4
+FROM (VALUES ('{"a": [10, true],"b": "[10, true]"}')) AS t(v)
+LIMIT 10;
+```
+
+Result:
+
+| c1     | c2    | c3      | c4      |
+| ------ | ----- | ------- | ------- |
+| OBJECT | ARRAY | INTEGER | BOOLEAN |
 
 ## User-defined functions
 

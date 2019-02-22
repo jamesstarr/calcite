@@ -361,6 +361,7 @@ data: {
         "ENCODING"
         "ERROR"
         "FORMAT"
+        "JSON_TYPE"
         "PASSING"
         "RETURNING"
         "SCALAR"

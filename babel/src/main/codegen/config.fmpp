@@ -1031,6 +1031,7 @@ freemarkerLinks: {
         "ISOLATION"
         "JAVA"
         "JSON"
+        "JSON_TYPE"
         "K"
         "KEY"
         "KEY_MEMBER"
