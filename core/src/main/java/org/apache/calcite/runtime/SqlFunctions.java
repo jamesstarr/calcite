@@ -2543,7 +2543,7 @@ public class SqlFunctions {
         throw RESOURCE.illegalErrorBehaviorInJsonExistsFunc(errorBehavior.toString()).ex();
       }
     } else {
-      return !Objects.isNull(context.pathReturned);
+      return context.pathReturned != null;
     }
   }
 
