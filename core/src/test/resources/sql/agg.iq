@@ -2716,6 +2716,9 @@ select json_object('deptno': deptno, 'employees': json_arrayagg(json_object('ena
 !ok
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9120ec0fa ([CALCITE-2786] Add order by clause support for JSON_ARRAYAGG)
 # [CALCITE-2786] Add order by clause support for JSON_ARRAYAGG
 select gender,
 json_arrayagg(deptno order by deptno),
@@ -2730,6 +2733,7 @@ from emp group by gender;
 (2 rows)
 
 !ok
+<<<<<<< HEAD
 EnumerableAggregate(group=[{1}], EXPR$1=[JSON_ARRAYAGG_ABSENT_ON_NULL($0) WITHIN GROUP ([0])], EXPR$2=[JSON_ARRAYAGG_ABSENT_ON_NULL($0) WITHIN GROUP ([0 DESC])])
   EnumerableUnion(all=[true])
     EnumerableCalc(expr#0=[{inputs}], expr#1=[10], expr#2=['F'], EXPR$1=[$t1], EXPR$2=[$t2])
@@ -2828,6 +2832,31 @@ EnumerableAggregate(group=[{2}], EXPR$1=[JSON_OBJECTAGG_NULL_ON_NULL($0, $1)], E
 >>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
 =======
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+EnumerableAggregate(group=[{0}], EXPR$1=[JSON_ARRAYAGG<ABSENT_ON_NULL>($1) WITHIN GROUP ([2])], EXPR$2=[JSON_ARRAYAGG<ABSENT_ON_NULL>($1) WITHIN GROUP ([2 DESC])])
+  EnumerableCalc(expr#0..1=[{inputs}], expr#2=[JSON_STRUCTURED_VALUE_EXPRESSION($t0)], GENDER=[$t1], $f1=[$t2], DEPTNO=[$t0])
+    EnumerableUnion(all=[true])
+      EnumerableCalc(expr#0=[{inputs}], expr#1=[10], expr#2=['F'], EXPR$1=[$t1], EXPR$2=[$t2])
+        EnumerableValues(tuples=[[{ 0 }]])
+      EnumerableCalc(expr#0=[{inputs}], expr#1=[10], expr#2=['M'], EXPR$1=[$t1], EXPR$2=[$t2])
+        EnumerableValues(tuples=[[{ 0 }]])
+      EnumerableCalc(expr#0=[{inputs}], expr#1=[20], expr#2=['M'], EXPR$1=[$t1], EXPR$2=[$t2])
+        EnumerableValues(tuples=[[{ 0 }]])
+      EnumerableCalc(expr#0=[{inputs}], expr#1=[30], expr#2=['F'], EXPR$1=[$t1], EXPR$2=[$t2])
+        EnumerableValues(tuples=[[{ 0 }]])
+      EnumerableCalc(expr#0=[{inputs}], expr#1=[30], expr#2=['F'], EXPR$1=[$t1], EXPR$2=[$t2])
+        EnumerableValues(tuples=[[{ 0 }]])
+      EnumerableCalc(expr#0=[{inputs}], expr#1=[50], expr#2=['M'], EXPR$1=[$t1], EXPR$2=[$t2])
+        EnumerableValues(tuples=[[{ 0 }]])
+      EnumerableCalc(expr#0=[{inputs}], expr#1=[50], expr#2=['F'], EXPR$1=[$t1], EXPR$2=[$t2])
+        EnumerableValues(tuples=[[{ 0 }]])
+      EnumerableCalc(expr#0=[{inputs}], expr#1=[60], expr#2=['F'], EXPR$1=[$t1], EXPR$2=[$t2])
+        EnumerableValues(tuples=[[{ 0 }]])
+      EnumerableCalc(expr#0=[{inputs}], expr#1=[null:INTEGER], expr#2=['F'], EXPR$1=[$t1], EXPR$2=[$t2])
+        EnumerableValues(tuples=[[{ 0 }]])
+!plan
+
+>>>>>>> 9120ec0fa ([CALCITE-2786] Add order by clause support for JSON_ARRAYAGG)
 # End agg.iq
 =======
 # End agg.iq

@@ -8814,7 +8814,7 @@ public class SqlParserTest {
         "JSON_ARRAY(JSON_ARRAY('foo', 'bar' ABSENT ON NULL) FORMAT JSON ABSENT ON NULL)");
   }
 
-  @Test public void testJsonArrayAgg() {
+  @Test public void testJsonArrayAgg1() {
     checkExp("json_arrayagg(\"column\")",
         "JSON_ARRAYAGG(`column` ABSENT ON NULL)");
     checkExp("json_arrayagg(\"column\" null on null)",
@@ -8823,7 +8823,6 @@ public class SqlParserTest {
         "JSON_ARRAYAGG(JSON_ARRAY(`column` ABSENT ON NULL) FORMAT JSON ABSENT ON NULL)");
   }
 
-  @Ignore
   @Test public void testJsonArrayAgg2() {
     checkExp("json_arrayagg(\"column\" order by \"column\")",
         "JSON_ARRAYAGG(`column` ABSENT ON NULL) WITHIN GROUP (ORDER BY `column`)");

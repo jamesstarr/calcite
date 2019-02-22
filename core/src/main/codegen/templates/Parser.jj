@@ -7460,6 +7460,9 @@ SqlCall JsonArrayFunctionCall() :
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9120ec0fa ([CALCITE-2786] Add order by clause support for JSON_ARRAYAGG)
 SqlNodeList JsonArrayAggOrderByClause() :
 {
     final SqlNodeList orderList;
@@ -7475,6 +7478,7 @@ SqlNodeList JsonArrayAggOrderByClause() :
     }
 }
 
+<<<<<<< HEAD
 SqlCall JsonArrayAggFunctionCall() :
 {
     final SqlNode valueExpr;
@@ -7493,27 +7497,38 @@ SqlCall JsonArrayAggFunctionCall() :
     }
     orderList = JsonArrayAggOrderByClause()
 =======
+=======
+>>>>>>> 9120ec0fa ([CALCITE-2786] Add order by clause support for JSON_ARRAYAGG)
 SqlCall JsonArrayAggFunctionCall() :
 {
-    final SqlNode[] args = new SqlNode[1];
+    final SqlNode valueExpr;
+    SqlNodeList orderList = null;
     List<SqlNode> list;
     final Span span;
     SqlJsonConstructorNullClause nullClause =
         SqlJsonConstructorNullClause.ABSENT_ON_NULL;
-    SqlNode e;
+    SqlNode e = null;
+    final SqlNode aggCall;
 }
 {
     <JSON_ARRAYAGG> { span = span(); }
     <LPAREN> e = JsonValueExpression(false) {
-        args[0] = e;
+        valueExpr = e;
     }
+<<<<<<< HEAD
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+    orderList = JsonArrayAggOrderByClause()
+>>>>>>> 9120ec0fa ([CALCITE-2786] Add order by clause support for JSON_ARRAYAGG)
     [
         e = JsonConstructorNullClause() {
             nullClause = (SqlJsonConstructorNullClause) ((SqlLiteral) e).getValue();
         }
     ]
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9120ec0fa ([CALCITE-2786] Add order by clause support for JSON_ARRAYAGG)
     <RPAREN>
     {
         aggCall = SqlStdOperatorTable.JSON_ARRAYAGG.with(nullClause)
@@ -7533,6 +7548,7 @@ SqlCall JsonArrayAggFunctionCall() :
             return SqlStdOperatorTable.JSON_ARRAYAGG.with(nullClause)
                 .createCall(span.end(this), valueExpr);
         }
+<<<<<<< HEAD
         return SqlStdOperatorTable.JSON_ARRAYAGG.with(nullClause)
             .createCall(span.end(this), valueExpr, orderList);
 =======
@@ -7551,6 +7567,10 @@ SqlCall JsonArrayAggFunctionCall() :
         return SqlStdOperatorTable.JSON_ARRAYAGG.with(nullClause)
             .createCall(span.end(this), args);
 >>>>>>> bc721fdca ([CALCITE-2670] Combine similar JSON aggregate functions in operator table)
+=======
+        return SqlStdOperatorTable.JSON_ARRAYAGG.with(nullClause)
+            .createCall(span.end(this), valueExpr, orderList);
+>>>>>>> 9120ec0fa ([CALCITE-2786] Add order by clause support for JSON_ARRAYAGG)
     }
 }
 
@@ -7765,6 +7785,9 @@ SqlCall nullTreatment(SqlCall arg) :
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9120ec0fa ([CALCITE-2786] Add order by clause support for JSON_ARRAYAGG)
 SqlCall withinGroup(SqlNode arg) :
 {
     final Span withinGroupSpan;
@@ -7783,8 +7806,11 @@ SqlCall withinGroup(SqlNode arg) :
 }
 
 
+<<<<<<< HEAD
 =======
 >>>>>>> cf7bf148e ([CALCITE-883] Support RESPECT NULLS, IGNORE NULLS option for LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE functions (Chunwei Lei))
+=======
+>>>>>>> 9120ec0fa ([CALCITE-2786] Add order by clause support for JSON_ARRAYAGG)
 /**
  * Parses a call to a named function (could be a builtin with regular
  * syntax, or else a UDF).
@@ -7868,6 +7894,10 @@ SqlNode NamedFunctionCall() :
         }
     ]
     [
+            call = withinGroup(call)
+    ]
+    [
+            
         <FILTER> { filterSpan = span(); }
         <LPAREN>
         <WHERE>
