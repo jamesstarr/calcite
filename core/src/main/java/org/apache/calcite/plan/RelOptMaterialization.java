@@ -16,7 +16,7 @@
  */
 package org.apache.calcite.plan;
 
-import org.apache.calcite.prepare.CalcitePrepareImpl;
+import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelShuttleImpl;
 import org.apache.calcite.rel.core.Filter;
@@ -273,7 +273,7 @@ public class RelOptMaterialization {
             CoreRules.PROJECT_MERGE),
         false,
         DefaultRelMetadataProvider.INSTANCE);
-    if (CalcitePrepareImpl.DEBUG) {
+    if (CalciteSystemProperty.DEBUG.value()) {
       System.out.println(
           RelOptUtil.dumpPlan("before", rel, SqlExplainFormat.TEXT,
               SqlExplainLevel.DIGEST_ATTRIBUTES));
@@ -281,7 +281,7 @@ public class RelOptMaterialization {
     final RelNode rel2 = program.run(null, rel, null,
         ImmutableList.of(),
         ImmutableList.of());
-    if (CalcitePrepareImpl.DEBUG) {
+    if (CalciteSystemProperty.DEBUG.value()) {
       System.out.println(
           RelOptUtil.dumpPlan("after", rel2, SqlExplainFormat.TEXT,
               SqlExplainLevel.DIGEST_ATTRIBUTES));

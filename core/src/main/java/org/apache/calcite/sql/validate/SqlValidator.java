@@ -45,7 +45,6 @@ import org.apache.calcite.sql.SqlWith;
 import org.apache.calcite.sql.SqlWithItem;
 import org.apache.calcite.sql.validate.implicit.TypeCoercion;
 import org.apache.calcite.util.ImmutableBeans;
-import org.apache.calcite.util.Util;
 
 import java.util.List;
 import java.util.Map;
@@ -108,9 +107,6 @@ import javax.annotation.Nullable;
  * names in a particular clause of a SQL statement.</p>
  */
 public interface SqlValidator {
-  /** Whether to follow the SQL standard strictly. */
-  boolean STRICT = Util.getBooleanProperty("calcite.strict.sql");
-
   //~ Methods ----------------------------------------------------------------
 
   /**
