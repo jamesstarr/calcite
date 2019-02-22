@@ -105,7 +105,7 @@ public class TraitPropagationTest {
 
   @Test public void testOne() throws Exception {
     RelNode planned = run(new PropAction(), RULES);
-    if (CalcitePrepareImpl.DEBUG) {
+    if (CalciteSystemProperty.DEBUG.value()) {
       System.out.println(
           RelOptUtil.dumpPlan("LOGICAL PLAN", planned, SqlExplainFormat.TEXT,
               SqlExplainLevel.ALL_ATTRIBUTES));

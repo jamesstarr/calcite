@@ -109,7 +109,11 @@ import java.io.InputStream;
         }
         return ".";
       });
-
+  /**
+   * Whether to run slow tests.
+   */
+  public static final CalciteSystemProperty<Boolean> TEST_SLOW =
+      booleanProperty("calcite.test.slow", false);
   /**
 >>>>>>> 02d8ed362 ([CALCITE-3951] Support different string comparison based on SqlCollation)
    * Whether to run MongoDB tests.
@@ -130,8 +134,7 @@ import java.io.InputStream;
    * Whether to run Druid tests.
    */
   public static final CalciteSystemProperty<Boolean> TEST_DRUID =
-      booleanProperty("calcite.test.druid", false);
-
+      booleanProperty("calcite.test.druid", true);
   /**
    * Whether to run Cassandra tests.
    */

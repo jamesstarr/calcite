@@ -103,7 +103,6 @@ import org.apache.calcite.util.BuiltInMethod;
 import org.apache.calcite.util.Holder;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.ImmutableIntList;
-import org.apache.calcite.util.SaffronProperties;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -878,10 +877,10 @@ public class RelMetadataTest extends SqlToRelTestBase {
    * OutOfMemoryError</a>. */
   @Test public void testMetadataHandlerCacheLimit() {
     Assume.assumeTrue("too slow to run every day, and it does not reproduce the issue",
-        CalciteAssert.ENABLE_SLOW);
+        CalciteSystemProperty.TEST_SLOW.value());
     Assume.assumeTrue("If cache size is too large, this test may fail and the "
             + "test won't be to blame",
-        SaffronProperties.INSTANCE.metadataHandlerCacheMaximumSize().get()
+        CalciteSystemProperty.METADATA_HANDLER_CACHE_MAXIMUM_SIZE.value()
             < 10_000);
     final int iterationCount = 2_000;
     final RelNode rel = convertSql("select * from emp");

@@ -95,10 +95,9 @@ public class JdbcToEnumerableConverter
         (JdbcConvention) child.getConvention();
     SqlString sqlString = generateSql(jdbcConvention.dialect);
     String sql = sqlString.getSql();
-<<<<<<< HEAD
-    if (CalciteSystemProperty.DEBUG.value()) {
-=======
     if (CalcitePrepareImpl.DEBUG) {
+=======
+    if (CalciteSystemProperty.DEBUG.value()) {
       System.out.println("[" + sql + "]");
     }
     Hook.QUERY_PLAN.run(sql);

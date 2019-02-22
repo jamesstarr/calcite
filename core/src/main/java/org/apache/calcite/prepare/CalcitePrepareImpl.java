@@ -16,6 +16,65 @@
  */
 package org.apache.calcite.prepare;
 
+<<<<<<< HEAD
+=======
+import org.apache.calcite.adapter.enumerable.EnumerableBindable;
+import org.apache.calcite.adapter.enumerable.EnumerableCalc;
+import org.apache.calcite.adapter.enumerable.EnumerableConvention;
+import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
+import org.apache.calcite.adapter.enumerable.EnumerableInterpreterRule;
+import org.apache.calcite.adapter.enumerable.EnumerableRel;
+import org.apache.calcite.adapter.enumerable.EnumerableRules;
+import org.apache.calcite.adapter.enumerable.RexToLixTranslator;
+import org.apache.calcite.adapter.java.JavaTypeFactory;
+import org.apache.calcite.avatica.AvaticaParameter;
+import org.apache.calcite.avatica.ColumnMetaData;
+import org.apache.calcite.avatica.Meta;
+import org.apache.calcite.config.CalciteConnectionConfig;
+import org.apache.calcite.config.CalciteSystemProperty;
+import org.apache.calcite.interpreter.BindableConvention;
+import org.apache.calcite.interpreter.Bindables;
+import org.apache.calcite.interpreter.Interpreters;
+import org.apache.calcite.jdbc.CalcitePrepare;
+import org.apache.calcite.jdbc.CalciteSchema;
+import org.apache.calcite.jdbc.CalciteSchema.LatticeEntry;
+import org.apache.calcite.linq4j.Linq4j;
+import org.apache.calcite.linq4j.Ord;
+import org.apache.calcite.linq4j.Queryable;
+import org.apache.calcite.linq4j.function.Function1;
+import org.apache.calcite.linq4j.tree.BinaryExpression;
+import org.apache.calcite.linq4j.tree.BlockStatement;
+import org.apache.calcite.linq4j.tree.Blocks;
+import org.apache.calcite.linq4j.tree.ConstantExpression;
+import org.apache.calcite.linq4j.tree.Expression;
+import org.apache.calcite.linq4j.tree.Expressions;
+import org.apache.calcite.linq4j.tree.MemberExpression;
+import org.apache.calcite.linq4j.tree.MethodCallExpression;
+import org.apache.calcite.linq4j.tree.NewExpression;
+import org.apache.calcite.linq4j.tree.ParameterExpression;
+import org.apache.calcite.materialize.MaterializationService;
+import org.apache.calcite.plan.Contexts;
+import org.apache.calcite.plan.Convention;
+import org.apache.calcite.plan.ConventionTraitDef;
+import org.apache.calcite.plan.RelOptCluster;
+import org.apache.calcite.plan.RelOptCostFactory;
+import org.apache.calcite.plan.RelOptPlanner;
+import org.apache.calcite.plan.RelOptRule;
+import org.apache.calcite.plan.RelOptTable;
+import org.apache.calcite.plan.RelOptUtil;
+import org.apache.calcite.plan.hep.HepPlanner;
+import org.apache.calcite.plan.hep.HepProgramBuilder;
+import org.apache.calcite.plan.volcano.VolcanoPlanner;
+import org.apache.calcite.rel.RelCollation;
+import org.apache.calcite.rel.RelCollationTraitDef;
+import org.apache.calcite.rel.RelCollations;
+import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.RelRoot;
+import org.apache.calcite.rel.core.Filter;
+import org.apache.calcite.rel.core.Project;
+import org.apache.calcite.rel.core.Sort;
+import org.apache.calcite.rel.core.TableScan;
+>>>>>>> a84b64381 ([CALCITE-2859] Centralize Calcite system properties)
 import org.apache.calcite.rel.rules.AbstractMaterializedViewRule;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.JoinPushThroughJoinRule;
@@ -89,12 +148,6 @@ import static org.apache.calcite.util.Static.RESOURCE;
  * subject to change without notice.</p>
  */
 public class CalcitePrepareImpl implements CalcitePrepare {
-
-  public static final boolean DEBUG = Util.getBooleanProperty("calcite.debug");
-
-  public static final boolean COMMUTE =
-      Util.getBooleanProperty("calcite.enable.join.commute");
-
   /** Whether to enable the collation trait. Some extra optimizations are
    * possible if enabled, but queries should work either way. At some point
    * this will become a preference, or we will run multiple phases: first
@@ -146,7 +199,7 @@ public class CalcitePrepareImpl implements CalcitePrepare {
           CoreRules.AGGREGATE_STAR_TABLE,
           CoreRules.AGGREGATE_PROJECT_STAR_TABLE,
           TableScanRule.INSTANCE,
-          COMMUTE
+          CalciteSystemProperty.COMMUTE.value()
               ? CoreRules.JOIN_ASSOCIATE
               : CoreRules.PROJECT_MERGE,
           CoreRules.FILTER_SCAN,

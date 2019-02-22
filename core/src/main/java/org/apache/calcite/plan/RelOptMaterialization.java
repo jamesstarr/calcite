@@ -280,7 +280,7 @@ public class RelOptMaterialization {
     final RelNode rel2 = program.run(null, rel, null,
         ImmutableList.of(),
         ImmutableList.of());
-    if (CalcitePrepareImpl.DEBUG) {
+    if (CalciteSystemProperty.DEBUG.value()) {
       System.out.println(
           RelOptUtil.dumpPlan("after", rel2, SqlExplainFormat.TEXT,
               SqlExplainLevel.DIGEST_ATTRIBUTES));

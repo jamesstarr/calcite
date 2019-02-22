@@ -129,10 +129,6 @@ public class SqlDialectFactoryImpl implements SqlDialectFactory {
           c.withDataTypeSystem(MysqlSqlDialect.MYSQL_TYPE_SYSTEM));
     case "REDSHIFT":
       return new RedshiftSqlDialect(c);
-<<<<<<< HEAD
-    case "SNOWFLAKE":
-      return new SnowflakeSqlDialect(c);
-=======
     case "SPARK":
       return new SparkSqlDialect(c);
     }
@@ -168,7 +164,6 @@ public class SqlDialectFactoryImpl implements SqlDialectFactory {
     } else if (upperProductName.contains("SNOWFLAKE")) {
       return new SnowflakeSqlDialect(c);
 =======
->>>>>>> 8743a4811 (CALCITE-2856-Emulating Cross Join For SparkSqlDialect)
     } else if (upperProductName.contains("SPARK")) {
       return new SparkSqlDialect(c);
     } else {

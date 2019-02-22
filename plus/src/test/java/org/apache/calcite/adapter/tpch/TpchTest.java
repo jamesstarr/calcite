@@ -16,6 +16,7 @@
  */
 package org.apache.calcite.adapter.tpch;
 
+import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.util.Bug;
@@ -39,11 +40,12 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 /** Unit test for {@link org.apache.calcite.adapter.tpch.TpchSchema}.
  *
  * <p>Because the TPC-H data generator takes time and memory to instantiate,
- * tests only run as part of slow tests.</p>
+ * tests that read data (that is, most tests) only run
+ * if {@link org.apache.calcite.config.CalciteSystemProperty#TEST_SLOW} is set.</p>
  */
-@Tag("slow")
-class TpchTest {
-  public static final boolean ENABLE = TestUtil.getJavaMajorVersion() >= 7;
+public class TpchTest {
+  public static final boolean ENABLE =
+      CalciteSystemProperty.TEST_SLOW.value() && TestUtil.getJavaMajorVersion() >= 7;
 
   private static String schema(String name, String scaleFactor) {
     return "     {\n"

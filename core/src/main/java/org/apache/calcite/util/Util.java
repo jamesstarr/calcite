@@ -145,7 +145,7 @@ public class Util {
       Pattern.compile("[a-zA-Z_$][a-zA-Z0-9$]*");
 
   private static final Charset DEFAULT_CHARSET =
-      Charset.forName(SaffronProperties.INSTANCE.defaultCharset().get());
+      Charset.forName(CalciteSystemProperty.DEFAULT_CHARSET.value());
 
   /**
    * Maps classes to the map of their enum values. Uses a weak map so that
@@ -796,7 +796,7 @@ public class Util {
 
   /**
    * Returns the {@link Charset} object representing the value of
-   * {@link SaffronProperties#defaultCharset}
+   * {@link CalciteSystemProperty#DEFAULT_CHARSET}
    *
    * @throws java.nio.charset.IllegalCharsetNameException If the given charset
    *                                                      name is illegal
@@ -2345,30 +2345,6 @@ public class Util {
     } catch (IOException e) {
       // not possible
     }
-  }
-
-  /** Returns the value of a system property as a boolean.
-   *
-   * <p>For example, the property "foo" is considered true if you supply
-   * {@code -Dfoo} or {@code -Dfoo=true} or {@code -Dfoo=TRUE},
-   * false if you omit the flag or supply {@code -Dfoo=false}.
-   *
-   * @param property Property name
-   * @return Whether property is true
-   */
-  public static boolean getBooleanProperty(String property) {
-    return getBooleanProperty(property, false);
-  }
-
-  /** Returns the value of a system property as a boolean, returning a given
-   * default value if the property is not specified. */
-  public static boolean getBooleanProperty(String property,
-      boolean defaultValue) {
-    final String v = System.getProperties().getProperty(property);
-    if (v == null) {
-      return defaultValue;
-    }
-    return "".equals(v) || "true".equalsIgnoreCase(v);
   }
 
   /** Returns a copy of a list of lists, making the component lists immutable if

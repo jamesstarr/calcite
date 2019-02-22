@@ -19,7 +19,7 @@ package org.apache.calcite.tools;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.adapter.enumerable.EnumerableTableScan;
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.QueryProvider;
 import org.apache.calcite.linq4j.Queryable;

@@ -21,9 +21,7 @@ import org.apache.calcite.adapter.jdbc.JdbcCatalogSchema;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
 import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.jdbc.CalciteConnection;
-import org.apache.calcite.jdbc.CalciteJdbc41Factory;
-import org.apache.calcite.jdbc.CalciteSchema;
-import org.apache.calcite.jdbc.Driver;
+>>>>>>> a84b64381 ([CALCITE-2859] Centralize Calcite system properties)
 import org.apache.calcite.schema.SchemaPlus;
 
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -42,7 +40,6 @@ import java.util.HashSet;
 <<<<<<< HEAD
 import java.util.Properties;
 =======
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.sql.DataSource;

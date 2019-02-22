@@ -19,7 +19,7 @@ package org.apache.calcite.rex;
 import org.apache.calcite.avatica.util.ByteString;
 import org.apache.calcite.avatica.util.DateTimeUtils;
 import org.apache.calcite.avatica.util.TimeUnit;
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.runtime.variant.VariantValue;
@@ -668,7 +668,7 @@ public class RexLiteral extends RexNode {
         boolean includeCharset =
             (nlsString.getCharsetName() != null)
                 && !nlsString.getCharsetName().equals(
-                    SaffronProperties.INSTANCE.defaultCharset().get());
+                CalciteSystemProperty.DEFAULT_CHARSET.value());
         pw.print(nlsString.asSql(includeCharset, false));
       }
       break;

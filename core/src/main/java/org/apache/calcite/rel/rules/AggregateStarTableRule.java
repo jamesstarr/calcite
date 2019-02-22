@@ -17,7 +17,7 @@
 package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.config.CalciteConnectionConfig;
->>>>>>> 7503fbb94 ([CALCITE-2365] Upgrade avatica to 1.12)
+import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.materialize.Lattice;
 import org.apache.calcite.materialize.TileKey;
@@ -30,10 +30,9 @@ import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.plan.SubstitutionVisitor;
 import org.apache.calcite.plan.ViewExpanders;
-<<<<<<< HEAD
-=======
 import org.apache.calcite.prepare.CalcitePrepareImpl;
->>>>>>> ca65868f2 ([CALCITE-2441] RelBuilder.scan should expand TranslatableTable and views)
+=======
+>>>>>>> a84b64381 ([CALCITE-2859] Centralize Calcite system properties)
 import org.apache.calcite.prepare.RelOptTableImpl;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.AggregateCall;

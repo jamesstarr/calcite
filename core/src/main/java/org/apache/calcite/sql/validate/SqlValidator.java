@@ -45,7 +45,6 @@ import org.apache.calcite.sql.SqlWith;
 import org.apache.calcite.sql.SqlWithItem;
 import org.apache.calcite.sql.validate.implicit.TypeCoercion;
 import org.apache.calcite.util.ImmutableBeans;
-import org.apache.calcite.util.Util;
 
 import java.util.List;
 import java.util.Map;

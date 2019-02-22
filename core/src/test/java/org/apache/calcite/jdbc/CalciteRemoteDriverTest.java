@@ -25,7 +25,7 @@ import org.apache.calcite.avatica.remote.Service;
 import org.apache.calcite.avatica.server.AvaticaJsonHandler;
 import org.apache.calcite.avatica.server.HttpServer;
 import org.apache.calcite.avatica.server.Main;
-import org.apache.calcite.prepare.CalcitePrepareImpl;
+import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.test.JdbcFrontLinqBackTest;
 import org.apache.calcite.test.JdbcTest;

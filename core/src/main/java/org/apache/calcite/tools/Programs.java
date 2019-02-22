@@ -19,33 +19,138 @@ package org.apache.calcite.tools;
 import org.apache.calcite.adapter.enumerable.EnumerableRules;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteSystemProperty;
-import org.apache.calcite.plan.RelOptCostImpl;
-import org.apache.calcite.plan.RelOptLattice;
-import org.apache.calcite.plan.RelOptMaterialization;
-import org.apache.calcite.plan.RelOptPlanner;
-import org.apache.calcite.plan.RelOptRule;
-import org.apache.calcite.plan.RelOptRules;
-import org.apache.calcite.plan.RelOptUtil;
-import org.apache.calcite.plan.RelTraitSet;
-import org.apache.calcite.plan.hep.HepMatchOrder;
-import org.apache.calcite.plan.hep.HepPlanner;
-import org.apache.calcite.plan.hep.HepProgram;
-import org.apache.calcite.plan.hep.HepProgramBuilder;
-import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.rel.core.Calc;
-import org.apache.calcite.rel.core.RelFactories;
-import org.apache.calcite.rel.metadata.ChainedRelMetadataProvider;
-import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
-import org.apache.calcite.rel.metadata.RelMetadataProvider;
-import org.apache.calcite.rel.rules.CoreRules;
-import org.apache.calcite.rel.rules.JoinPushThroughJoinRule;
-import org.apache.calcite.rel.rules.LoptOptimizeJoinRule;
-import org.apache.calcite.rel.rules.TableScanRule;
-import org.apache.calcite.sql2rel.RelDecorrelator;
-import org.apache.calcite.sql2rel.RelFieldTrimmer;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * Utilities for creating {@link Program}s.
+ */
+public class Programs {
+
+  public static final ImmutableList<RelOptRule> CALC_RULES =
+      ImmutableList.of(
+          NoneToBindableConverterRule.INSTANCE,
+          EnumerableRules.ENUMERABLE_CALC_RULE,
+          EnumerableRules.ENUMERABLE_FILTER_TO_CALC_RULE,
+          EnumerableRules.ENUMERABLE_PROJECT_TO_CALC_RULE,
+          CoreRules.CALC_MERGE,
+          CoreRules.FILTER_CALC_MERGE,
+          CoreRules.PROJECT_CALC_MERGE,
+          CoreRules.FILTER_TO_CALC,
+          CoreRules.PROJECT_TO_CALC,
+          CoreRules.CALC_MERGE,
+
+          // REVIEW jvs 9-Apr-2006: Do we still need these two?  Doesn't the
+          // combination of CalcMergeRule, FilterToCalcRule, and
+          // ProjectToCalcRule have the same effect?
+          CoreRules.FILTER_CALC_MERGE,
+          CoreRules.PROJECT_CALC_MERGE);
+
+  /** Program that converts filters and projects to {@link Calc}s. */
+  public static final Program CALC_PROGRAM =
+      calc(DefaultRelMetadataProvider.INSTANCE);
+
+  /** Program that expands sub-queries. */
+  public static final Program SUB_QUERY_PROGRAM =
+      subQuery(DefaultRelMetadataProvider.INSTANCE);
+
+  public static final ImmutableSet<RelOptRule> RULE_SET =
+      ImmutableSet.of(
+          EnumerableRules.ENUMERABLE_JOIN_RULE,
+          EnumerableRules.ENUMERABLE_MERGE_JOIN_RULE,
+          EnumerableRules.ENUMERABLE_CORRELATE_RULE,
+          EnumerableRules.ENUMERABLE_PROJECT_RULE,
+          EnumerableRules.ENUMERABLE_FILTER_RULE,
+          EnumerableRules.ENUMERABLE_AGGREGATE_RULE,
+          EnumerableRules.ENUMERABLE_SORT_RULE,
+          EnumerableRules.ENUMERABLE_LIMIT_RULE,
+          EnumerableRules.ENUMERABLE_UNION_RULE,
+          EnumerableRules.ENUMERABLE_INTERSECT_RULE,
+          EnumerableRules.ENUMERABLE_MINUS_RULE,
+          EnumerableRules.ENUMERABLE_TABLE_MODIFICATION_RULE,
+          EnumerableRules.ENUMERABLE_VALUES_RULE,
+          EnumerableRules.ENUMERABLE_WINDOW_RULE,
+          CoreRules.PROJECT_TO_SEMI_JOIN,
+          CoreRules.JOIN_TO_SEMI_JOIN,
+          TableScanRule.INSTANCE,
+          CalciteSystemProperty.COMMUTE.value()
+              ? CoreRules.JOIN_ASSOCIATE
+              : CoreRules.PROJECT_MERGE,
+          CoreRules.AGGREGATE_STAR_TABLE,
+          CoreRules.AGGREGATE_PROJECT_STAR_TABLE,
+          CoreRules.FILTER_SCAN,
+          CoreRules.FILTER_PROJECT_TRANSPOSE,
+          CoreRules.FILTER_INTO_JOIN,
+          CoreRules.AGGREGATE_EXPAND_DISTINCT_AGGREGATES,
+          CoreRules.AGGREGATE_REDUCE_FUNCTIONS,
+          CoreRules.FILTER_AGGREGATE_TRANSPOSE,
+          CoreRules.JOIN_COMMUTE,
+          JoinPushThroughJoinRule.RIGHT,
+          JoinPushThroughJoinRule.LEFT,
+          CoreRules.SORT_PROJECT_TRANSPOSE);
+
+  // private constructor for utility class
+  private Programs() {}
+
+  /** Creates a program that executes a rule set. */
+  public static Program of(RuleSet ruleSet) {
+    return new RuleSetProgram(ruleSet);
+  }
+
+  /** Creates a list of programs based on an array of rule sets. */
+  public static List<Program> listOf(RuleSet... ruleSets) {
+    return Lists.transform(Arrays.asList(ruleSets), Programs::of);
+  }
+
+  /** Creates a list of programs based on a list of rule sets. */
+  public static List<Program> listOf(List<RuleSet> ruleSets) {
+    return Lists.transform(ruleSets, Programs::of);
+  }
+
+  /** Creates a program from a list of rules. */
+  public static Program ofRules(RelOptRule... rules) {
+    return of(RuleSets.ofList(rules));
+  }
+
+  /** Creates a program from a list of rules. */
+  public static Program ofRules(Iterable<? extends RelOptRule> rules) {
+    return of(RuleSets.ofList(rules));
+  }
+
+  /** Creates a program that executes a sequence of programs. */
+  public static Program sequence(Program... programs) {
+    return new SequenceProgram(ImmutableList.copyOf(programs));
+  }
+
+  /** Creates a program that executes a list of rules in a HEP planner. */
+  public static Program hep(Iterable<? extends RelOptRule> rules,
+      boolean noDag, RelMetadataProvider metadataProvider) {
+    final HepProgramBuilder builder = HepProgram.builder();
+    for (RelOptRule rule : rules) {
+      builder.addRuleInstance(rule);
+    }
+    return of(builder.build(), noDag, metadataProvider);
+  }
+
+  /** Creates a program that executes a {@link HepProgram}. */
+  @SuppressWarnings("deprecation")
+  public static Program of(final HepProgram hepProgram, final boolean noDag,
+      final RelMetadataProvider metadataProvider) {
+    return (planner, rel, requiredOutputTraits, materializations, lattices) -> {
+      final HepPlanner hepPlanner = new HepPlanner(hepProgram,
+          null, noDag, null, RelOptCostImpl.FACTORY);
+
+      List<RelMetadataProvider> list = new ArrayList<>();
+      if (metadataProvider != null) {
+        list.add(metadataProvider);
+      }
+      hepPlanner.registerMetadataProviders(list);
       RelMetadataProvider plannerChain =
           ChainedRelMetadataProvider.of(list);
       rel.getCluster().setMetadataProvider(plannerChain);

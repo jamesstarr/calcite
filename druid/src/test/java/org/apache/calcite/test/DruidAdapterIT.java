@@ -19,12 +19,11 @@ package org.apache.calcite.test;
 import org.apache.calcite.adapter.druid.DruidSchema;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionProperty;
-import org.apache.calcite.prepare.CalcitePrepareImpl;
+import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
@@ -37,70 +36,7 @@ import java.net.URL;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-<<<<<<< HEAD
-=======
-import java.util.List;
-import java.util.function.Consumer;
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
-/**
- * Tests for the {@code org.apache.calcite.adapter.druid} package.
- *
- * <p>Before calling this test, you need to populate Druid, as follows:
- *
- * <blockquote><code>
- * git clone https://github.com/vlsi/calcite-test-dataset<br>
- * cd calcite-test-dataset<br>
- * mvn install
- * </code></blockquote>
- *
- * <p>This will create a virtual machine with Druid and test data set.
- *
- * <p>Features not yet implemented:
- * <ul>
- *   <li>push LIMIT into "select" query</li>
- *   <li>push SORT and/or LIMIT into "groupBy" query</li>
- *   <li>push HAVING into "groupBy" query</li>
- * </ul>
- *
- * <p>These tests use TIMESTAMP WITH LOCAL TIME ZONE type for the
- * Druid timestamp column, instead of TIMESTAMP type as
- * {@link DruidAdapterIT2}.
- */
-public class DruidAdapterIT {
-  /** URL of the "druid-foodmart" model. */
-  public static final URL FOODMART =
-      DruidAdapterIT.class.getResource("/druid-foodmart-model.json");
-
-  /** URL of the "druid-wiki" model
-   * and the "wikipedia" data set. */
-  public static final URL WIKI =
-      DruidAdapterIT.class.getResource("/druid-wiki-model.json");
-
-  /** URL of the "druid-wiki-no-columns" model
-   * and the "wikipedia" data set. */
-  public static final URL WIKI_AUTO =
-      DruidAdapterIT.class.getResource("/druid-wiki-no-columns-model.json");
-
-  /** URL of the "druid-wiki-no-tables" model
-   * and the "wikipedia" data set. */
-  public static final URL WIKI_AUTO2 =
-      DruidAdapterIT.class.getResource("/druid-wiki-no-tables-model.json");
-
-  private static final String VARCHAR_TYPE =
-      "VARCHAR";
-
-  private static final String FOODMART_TABLE = "\"foodmart\"";
-
-  /** Whether to run this test. */
-  private static boolean enabled() {
+  protected boolean enabled() {
     return CalciteSystemProperty.TEST_DRUID.value();
   }
 
@@ -383,7 +319,7 @@ public class DruidAdapterIT {
             while (r.next()) {
               map.put(r.getString("TYPE_NAME"), true);
             }
-            if (CalcitePrepareImpl.DEBUG) {
+            if (CalciteSystemProperty.DEBUG.value()) {
               System.out.println(map);
             }
             // 1 timestamp, 2 float measure, 1 int measure, 88 dimensions
