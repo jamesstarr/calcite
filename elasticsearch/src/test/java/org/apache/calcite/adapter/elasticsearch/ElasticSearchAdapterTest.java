@@ -242,6 +242,30 @@ public class ElasticSearchAdapterTest {
   }
 
   /**
+        .query("select * from elastic.zips where _MAP['state'] = 'NY' order by _MAP['city']")
+        .queryContains(
+            ElasticsearchChecker.elasticsearchChecker(
+            "query:{'constant_score':{filter:{term:{state:'NY'}}}}",
+            "sort:[{city:'asc'}]",
+            String.format(Locale.ROOT, "size:%s", ElasticsearchTransport.DEFAULT_FETCH_SIZE)))
+        .returnsCount(3);
+
+    CalciteAssert.that()
+        .with(newConnectionFactory())
+        .query("select _MAP['city'] from elastic.zips where _MAP['state'] = 'NY' "
+            + "order by _MAP['city']")
+        .returnsOrdered("EXPR$0=BROOKLYN",
+            "EXPR$0=JACKSON HEIGHTS",
+            "EXPR$0=NEW YORK");
+
+    CalciteAssert.that()
+        .with(newConnectionFactory())
+
+    CalciteAssert.that()
+        .with(newConnectionFactory())
+        .query("select max(_MAP['pop']), min(_MAP['pop']), _MAP['state'] from elastic.zips "
+            + "where _MAP['state'] = 'NY' group by _MAP['state'] order by _MAP['state'] limit 3")
+        .returnsCount(1);
    * Sort by multiple fields (in different direction: asc/desc)
    */
   @Test public void sortAscDesc() {

@@ -72,17 +72,16 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
 
     final List<String> fields = new ArrayList<>();
     final List<String> scriptFields = new ArrayList<>();
-<<<<<<< HEAD:elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
-    // registers wherever "select *" is present
-    boolean hasSelectStar = false;
-=======
 >>>>>>> 130909e66 ([CALCITE-2347] running ElasticSearch in embedded mode for unit tests of ES adapter (Andrei Sereda)):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
+=======
+    boolean hasSelectStar = false;
     for (Pair<RexNode, String> pair: getNamedProjects()) {
       final String name = pair.right;
       final String expr = pair.left.accept(translator);
 
-      if (expr.equals("\"" + name + "\"")) {
 =======
+      hasSelectStar |= "_MAP".equals(name);
+
       if (expr.equals(name)) {
         fields.add(name);
       } else if (expr.matches("\"literal\":.+")) {
@@ -96,6 +95,12 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
                 + "\"" + implementor.elasticsearchTable.scriptedFieldPrefix() + "."
                 + expr.replaceAll("\"", "") + "\"}");
       }
+    }
+
+    if (hasSelectStar) {
+      // means select * from elastic
+      // this does not yet cover select *, _MAP['foo'], _MAP['bar'][0] from elastic
+      return;
     }
 
     StringBuilder query = new StringBuilder();
