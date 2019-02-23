@@ -147,7 +147,7 @@ class ElasticsearchRules {
     @Override public String visitCall(RexCall call) {
       final String name = isItemCall(call);
       if (name != null) {
-        return "\"" + name + "\"";
+        return name;
       }
 
       final List<String> strings = visitList(call.operands);

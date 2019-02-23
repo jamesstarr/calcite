@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 /**
  * Implementation of {@link org.apache.calcite.rel.core.Project}
  * relational expression in Elasticsearch.
@@ -79,13 +78,14 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
       final String name = pair.right;
       final String expr = pair.left.accept(translator);
 
-=======
-      hasSelectStar |= "_MAP".equals(name);
+>>>>>>> c569852a9 ([CALCITE-2863] ElasticSearch Adapter. select * and predicates on _MAP fail)
       if (ElasticsearchRules.isItem(pair.left)) {
         implementor.addExpressionItemMapping(name, ElasticsearchRules.stripQuotes(expr));
       }
 
-      if (expr.equals("\"" + name + "\"")) {
+      hasSelectStar |= "_MAP".equals(name);
+
+      if (expr.equals(name)) {
         fields.add(name);
       } else if (expr.matches("\"literal\":.+")) {
         scriptFields.add(ElasticsearchRules.quote(name)
@@ -98,6 +98,12 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
                 + "\"" + implementor.elasticsearchTable.scriptedFieldPrefix() + "."
                 + expr.replaceAll("\"", "") + "\"}");
       }
+    }
+
+    if (hasSelectStar) {
+      // means select * from elastic
+      // this does not yet cover select *, _MAP['foo'], _MAP['bar'][0] from elastic
+      return;
     }
 
     StringBuilder query = new StringBuilder();
@@ -117,7 +123,6 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
       }
       query.append("\"script_fields\": {" + String.join(", ", scriptFields) + "}");
     }
->>>>>>> 130909e66 ([CALCITE-2347] running ElasticSearch in embedded mode for unit tests of ES adapter (Andrei Sereda)):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
 
 =======
     implementor.list.removeIf(l -> l.startsWith("\"_source\""));
