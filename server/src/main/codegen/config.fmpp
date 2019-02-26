@@ -55,6 +55,7 @@ data: {
         "ERROR"
         "FORMAT"
         "JSON_TYPE"
+        "JSON_DEPTH"
         "PASSING"
         "RETURNING"
         "SCALAR"

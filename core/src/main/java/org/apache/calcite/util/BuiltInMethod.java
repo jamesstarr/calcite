@@ -287,6 +287,7 @@ public enum BuiltInMethod {
   JSON_OBJECTAGG_ADD_NULL_ON_NULL(SqlFunctions.class, "jsonObjectAggAddNullOnNull",
       Map.class, String.class, Object.class),
   JSON_TYPE(SqlFunctions.class, "jsonType", Object.class),
+  JSON_DEPTH(SqlFunctions.class, "jsonDepth", Object.class),
   JSON_OBJECTAGG_ADD_ABSENT_ON_NULL(SqlFunctions.class, "jsonObjectAggAddAbsentOnNull",
       Map.class, String.class, Object.class),
   JSON_ARRAY(SqlFunctions.class, "jsonArray", SqlJsonConstructorNullClause.class),
