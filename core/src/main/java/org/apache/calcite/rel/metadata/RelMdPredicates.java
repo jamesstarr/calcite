@@ -534,7 +534,8 @@ public class RelMdPredicates
         Util.first(cluster.getPlanner().getExecutor(), RexUtil.EXECUTOR);
     RexNode disjunctivePredicate =
         new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, executor)
-            .simplifyOrs(finalResidualPredicates);
+            .simplifyUnknownAs(rexBuilder.makeCall(SqlStdOperatorTable.OR, finalResidualPredicates),
+                RexUnknownAs.FALSE);
     if (!disjunctivePredicate.isAlwaysTrue()) {
       predicates.add(disjunctivePredicate);
     }

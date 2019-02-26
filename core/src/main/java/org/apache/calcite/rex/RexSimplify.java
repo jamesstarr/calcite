@@ -54,7 +54,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 
 import static org.apache.calcite.rex.RexUnknownAs.FALSE;
 >>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE)
@@ -233,15 +232,18 @@ public class RexSimplify {
    * yield UNKNOWN. (If the simplified expression has type BOOLEAN NOT NULL,
    * then of course it can only return FALSE.) */
   public RexNode simplifyUnknownAs(RexNode e, RexUnknownAs unknownAs) {
-    return verify(e, unknownAs,
-        simplifier -> simplifier.simplify(e, unknownAs));
+    final RexNode simplified = withParanoid(false).simplify(e, unknownAs);
+    if (paranoid) {
+      verify(e, simplified, unknownAs);
+    }
+    return simplified;
   }
 
   /** Internal method to simplify an expression.
    *
    * <p>Unlike the public {@link #simplify(RexNode)}
    * and {@link #simplifyUnknownAsFalse(RexNode)} methods,
-   * never calls {@link #verify(RexNode, RexUnknownAs, Function)}.
+   * never calls {@link #verify(RexNode, RexNode, RexUnknownAs)}.
    * Verify adds an overhead that is only acceptable for a top-level call.
    */
   RexNode simplify(RexNode e, RexUnknownAs unknownAs) {
@@ -403,7 +405,7 @@ public class RexSimplify {
   private <C extends Comparable<C>> RexNode simplifyComparison(RexCall e,
       RexUnknownAs unknownAs, Class<C> clazz) {
     final List<RexNode> operands = new ArrayList<>(e.operands);
->>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE)
+    // UNKNOWN mode is warranted: false = null
     simplifyList(operands, UNKNOWN);
 
     // Simplify "x <op> x"
@@ -528,6 +530,7 @@ public class RexSimplify {
    */
   @Deprecated // to be removed before 2.0
   public RexNode simplifyAnds(Iterable<? extends RexNode> nodes) {
+    ensureParanoidOff();
     return simplifyAnds(nodes, defaultUnknownAs);
   }
 
@@ -1251,6 +1254,7 @@ public class RexSimplify {
 
   @Deprecated // to be removed before 2.0
   public RexNode simplifyAnd(RexCall e) {
+    ensureParanoidOff();
     return simplifyAnd(e, defaultUnknownAs);
   }
 
@@ -1676,7 +1680,9 @@ public class RexSimplify {
 
   /** Simplifies OR(x, x) into x, and similar.
    * The simplified expression returns UNKNOWN values as is (not as FALSE). */
+  @Deprecated // to be removed before 2.0
   public RexNode simplifyOr(RexCall call) {
+    ensureParanoidOff();
     return simplifyOr(call, UNKNOWN);
   }
 
@@ -1696,8 +1702,16 @@ public class RexSimplify {
   /** Simplifies a list of terms and combines them into an OR.
    * Modifies the list in place.
    * The simplified expression returns UNKNOWN values as is (not as FALSE). */
+  @Deprecated // to be removed before 2.0
   public RexNode simplifyOrs(List<RexNode> terms) {
+    ensureParanoidOff();
     return simplifyOrs(terms, UNKNOWN);
+  }
+
+  private void ensureParanoidOff() {
+    if (paranoid) {
+      throw new UnsupportedOperationException("Paranoid is not supported for this method");
+    }
   }
 
   /** Simplifies a list of terms and combines them into an OR.
@@ -1705,11 +1719,6 @@ public class RexSimplify {
   public RexNode simplifyOrs(List<RexNode> terms, RexUnknownAs unknownAs) {
     final List<RexNode> originalTerms = new ArrayList<>(terms);
     try {
-      if (paranoid) {
-        final RexNode before = RexUtil.composeDisjunction(rexBuilder, terms);
-        return verify(before, unknownAs,
-          simplifier -> simplifier.simplifyOrs(terms, unknownAs));
-      }
       for (int i = 0; i < terms.size(); i++) {
         final RexNode term = simplify(terms.get(i), unknownAs);
         switch (term.getKind()) {
@@ -1738,12 +1747,7 @@ public class RexSimplify {
     }
   }
 
-  private RexNode verify(RexNode before, RexUnknownAs unknownAs,
-      Function<RexSimplify, RexNode> simplifier) {
-    final RexNode simplified = simplifier.apply(withParanoid(false));
-    if (!paranoid) {
-      return simplified;
-    }
+  private void verify(RexNode before, RexNode simplified, RexUnknownAs unknownAs) {
     if (simplified.isAlwaysFalse()
         && before.isAlwaysTrue()) {
       throw new AssertionError("always true [" + before
@@ -1758,7 +1762,7 @@ public class RexSimplify {
     final RexAnalyzer foo1 = new RexAnalyzer(simplified, predicates);
     if (foo0.unsupportedCount > 0 || foo1.unsupportedCount > 0) {
       // Analyzer cannot handle this expression currently
-      return simplified;
+      return;
     }
     if (!foo0.variables.containsAll(foo1.variables)) {
       throw new AssertionError("variable mismatch: "
@@ -1799,7 +1803,6 @@ public class RexSimplify {
             + ", and " + simplified + " yielded " + v1);
       }
     }
-    return simplified;
   }
 
   private RexNode simplifyCast(RexCall e) {

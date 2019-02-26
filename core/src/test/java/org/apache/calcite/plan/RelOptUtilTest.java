@@ -543,7 +543,7 @@ class RelOptUtilTest {
     assertThat(newJoin.getCondition().toString(),
         is(
             relBuilder.call(
-                SqlStdOperatorTable.IS_NOT_DISTINCT_FROM,
+                SqlStdOperatorTable.EQUALS,
                 // Computed field is added at the end (and index start at 0)
                 RexInputRef.of(EMP_ROW.getFieldCount(), join.getRowType()),
                 // Right side is shifted by 1
@@ -595,9 +595,12 @@ class RelOptUtilTest {
     assertThat(newJoin.getCondition().toString(),
         is(
             relBuilder.call(
-                SqlStdOperatorTable.IS_NOT_DISTINCT_FROM,
+                SqlStdOperatorTable.AND,
+                relBuilder.call(
+                SqlStdOperatorTable.EQUALS,
                 // Computed field is added at the end (and index start at 0)
                 RexInputRef.of(EMP_ROW.getFieldCount(), join.getRowType()),
+                RexInputRef.of(EMP_ROW.getFieldCount() + 2 + rightJoinIndex, join.getRowType())),
                 // Right side is shifted by 1
                 RexInputRef.of(EMP_ROW.getFieldCount() + 1 + rightJoinIndex, join.getRowType()))
               .toString()));

@@ -1403,12 +1403,6 @@ public class RelBuilder {
   }
 
   /** Creates a {@link Project} of the given list
-<<<<<<< HEAD
-  /** Creates a {@link Project} of the given
-   * expressions. */
-  public RelBuilder project(RexNode... nodes) {
-    return project(ImmutableList.copyOf(nodes));
-=======
    * of expressions, using the given names.
    *
    * <p>Names are deduced as follows:
@@ -2075,7 +2069,10 @@ public class RelBuilder {
     final RelNode join;
     final boolean correlate = variablesSet.size() == 1;
     RexNode postCondition = literal(true);
+<<<<<<< HEAD
     if (config.simplify()) {
+=======
+    if (simplify) {
       condition = simplifier.simplifyUnknownAsFalse(condition);
     }
     if (correlate) {

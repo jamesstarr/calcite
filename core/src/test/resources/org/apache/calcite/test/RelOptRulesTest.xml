@@ -6760,6 +6760,7 @@ LogicalProject(EXPR$0=[1])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> 34395e939 ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
@@ -6783,6 +6784,9 @@ LogicalProject(EXPR$0=[1])
 =======
     LogicalFilter(condition=[OR(>($7, 7), >($7, 10))])
 >>>>>>> 1cbd28fef ([CALCITE-2384] Performance issue in getPulledUpPredicates (Zoltan Haindrich))
+=======
+    LogicalFilter(condition=[>($7, 7)])
+>>>>>>> 09d7d66cf ([CALCITE-2338] Make Simplification API more conservative)
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -13301,11 +13305,15 @@ LogicalProject(EMPNO=[$0], D=[CASE(=($2, 0), false, IS NULL($1), null:BOOLEAN, I
 =======
 LogicalProject(EMPNO=[$0], D=[CASE(=($9, 0), false, IS NULL(CASE(true, CAST($7):INTEGER, null:INTEGER)), null:BOOLEAN, IS NOT NULL($12), true, <($10, $9), null:BOOLEAN, false)])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalJoin(condition=[=(CAST($7):INTEGER, $11)], joinType=[left])
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
 =======
   LogicalJoin(condition=[=($7, $11)], joinType=[left])
 >>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
+=======
+  LogicalJoin(condition=[=(CASE(true, CAST($7):INTEGER, null:INTEGER), $11)], joinType=[left])
+>>>>>>> 09d7d66cf ([CALCITE-2338] Make Simplification API more conservative)
     LogicalJoin(condition=[true], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{}], c=[COUNT()], ck=[COUNT($0)])
