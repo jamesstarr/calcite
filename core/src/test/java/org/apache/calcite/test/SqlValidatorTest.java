@@ -11353,6 +11353,12 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkExpType("json_type('{\"foo\":\"bar\"}')", "VARCHAR(20) NOT NULL");
   }
 
+  @Test public void testJsonDepth() {
+    check("select json_depth(ename) from emp");
+    checkExp("json_depth('{\"foo\":\"bar\"}')");
+    checkExpType("json_depth('{\"foo\":\"bar\"}')", "INTEGER");
+  }
+
   @Test public void testJsonObjectAgg() {
     check("select json_objectagg(ename: empno) from emp");
     check("select ^json_objectagg(empno: ename)^ from emp");

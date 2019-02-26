@@ -1032,6 +1032,7 @@ freemarkerLinks: {
         "JAVA"
         "JSON"
         "JSON_TYPE"
+        "JSON_DEPTH"
         "K"
         "KEY"
         "KEY_MEMBER"

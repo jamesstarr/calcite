@@ -6602,6 +6602,8 @@ SqlNode BuiltinFunctionCall() :
     |
         node = JsonTypeFunctionCall() { return node; }
     |
+        node = JsonDepthFunctionCall() { return node; }
+    |
         node = JsonObjectAggFunctionCall() { return node; }
     |
         node = JsonArrayFunctionCall() { return node; }
@@ -7284,6 +7286,22 @@ SqlCall JsonTypeFunctionCall() :
     }
     <RPAREN> {
         return SqlStdOperatorTable.JSON_TYPE.createCall(span.end(this), args);
+    }
+}
+
+SqlCall JsonDepthFunctionCall() :
+{
+    final SqlNode[] args = new SqlNode[1];
+    SqlNode e;
+    final Span span;
+}
+{
+    <JSON_DEPTH> { span = span(); }
+    <LPAREN> e = JsonValueExpression(true) {
+        args[0] = e;
+    }
+    <RPAREN> {
+        return SqlStdOperatorTable.JSON_DEPTH.createCall(span.end(this), args);
     }
 }
 
@@ -8603,6 +8621,7 @@ SqlPostfixOperator PostfixRowOperator() :
 |   < JSON_VALUE: "JSON_VALUE" >
 |   < JSON_OBJECT: "JSON_OBJECT">
 |   < JSON_TYPE: "JSON_TYPE">
+|   < JSON_DEPTH: "JSON_DEPTH">
 |   < JSON_OBJECTAGG: "JSON_OBJECTAGG">
 |   < JSON_QUERY: "JSON_QUERY" >
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
