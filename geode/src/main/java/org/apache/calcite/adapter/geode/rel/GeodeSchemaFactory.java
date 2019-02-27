@@ -64,7 +64,8 @@ public class GeodeSchemaFactory implements SchemaFactory {
           GeoFunctions.class.getName(), "*", true);
     }
 
-    return new GeodeSchema(locatorHost, locatorPort, Arrays.asList(regionNames),
-        pbxSerializablePackagePath);
+    return new GeodeSchema(
+        createClientCache(locatorHost, locatorPort, pbxSerializablePackagePath, true),
+        Arrays.asList(regionNames));
   }
 }

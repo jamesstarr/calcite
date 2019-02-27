@@ -29,13 +29,17 @@ import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-  GeodeSchema(String locatorHost, int locatorPort,
-      Iterable<String> regionNames, String pdxAutoSerializerPackageExp) {
-    this(createClientCache(locatorHost, locatorPort, pdxAutoSerializerPackageExp, true),
-        regionNames);
-  }
 
-  GeodeSchema(final GemFireCache cache, final Iterable<String> regionNames) {
+/**
+ * Schema mapped onto a Geode Region.
+ */
+public class GeodeSchema extends AbstractSchema {
+
+  final GemFireCache cache;
+  private final List<String> regionNames;
+  private ImmutableMap<String, Table> tableMap;
+
+  public GeodeSchema(final GemFireCache cache, final Iterable<String> regionNames) {
     super();
     this.cache = Objects.requireNonNull(cache, "clientCache");
     this.regionNames = ImmutableList.copyOf(Objects.requireNonNull(regionNames, "regionNames"));
