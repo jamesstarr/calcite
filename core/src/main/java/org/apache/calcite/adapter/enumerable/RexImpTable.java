@@ -2277,8 +2277,8 @@ public class RexImpTable {
               Expressions.call(BuiltInMethod.TIME_ZONE.method, translator.getRoot()));
           // fall through
         case TIMESTAMP:
-          operand = Expressions.divide(operand,
-              Expressions.constant(TimeUnit.DAY.multiplier.longValue()));
+          operand = Expressions.call(BuiltInMethod.FLOOR_DIV.method,
+              operand, Expressions.constant(TimeUnit.DAY.multiplier.longValue()));
           // fall through
         case DATE:
           return Expressions.call(BuiltInMethod.UNIX_DATE_EXTRACT.method,
@@ -2296,8 +2296,8 @@ public class RexImpTable {
               Expressions.call(BuiltInMethod.TIME_ZONE.method, translator.getRoot()));
           // fall through
         case TIMESTAMP:
-          operand = Expressions.divide(operand,
-              Expressions.constant(TimeUnit.DAY.multiplier.longValue()));
+          operand = Expressions.call(BuiltInMethod.FLOOR_DIV.method,
+              operand, Expressions.constant(TimeUnit.DAY.multiplier.longValue()));
           // fall through
         case DATE:
           operand = Expressions.call(
@@ -2309,6 +2309,10 @@ public class RexImpTable {
                       .longValue()));
         }
         break;
+      case MICROSECOND:
+        operand = mod(operand, TimeUnit.MINUTE.multiplier.longValue());
+        return Expressions.multiply(
+              operand, Expressions.constant(TimeUnit.SECOND.multiplier.longValue()));
       case EPOCH:
         switch (sqlTypeName) {
         case DATE:
@@ -2348,7 +2352,6 @@ public class RexImpTable {
       case MINUTE:
       case SECOND:
       case MILLISECOND:
-      case MICROSECOND:
         switch (sqlTypeName) {
         case DATE:
           // convert to milliseconds
@@ -2383,7 +2386,8 @@ public class RexImpTable {
     if (factor == 1L) {
       return operand;
     } else {
-      return Expressions.modulo(operand, Expressions.constant(factor));
+      return Expressions.call(BuiltInMethod.FLOOR_MOD.method,
+          operand, Expressions.constant(factor));
     }
   }
 
