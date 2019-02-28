@@ -129,7 +129,7 @@ public class RexExecutorImpl implements RexExecutor {
     executable.reduce(rexBuilder, constExps, reducedValues);
   }
 
-  @Override public boolean implies(RexBuilder rexBuilder, RelDataType rowType, RexNode first,
+  public boolean implies(RexBuilder rexBuilder, RelDataType rowType, RexNode first,
       RexNode second) {
     RexImplicationChecker checker = new RexImplicationChecker(rexBuilder, this, rowType);
     return checker.implies(first, second);
@@ -167,6 +167,13 @@ public class RexExecutorImpl implements RexExecutor {
       }
       return RexToLixTranslator.convert(recordAccess, storageType);
     }
+  }
+
+  public Object[] execute(RexBuilder rexBuilder, List<RexNode> exps,
+                                     RelDataType rowType,  DataContext dataValues) {
+    final RexExecutable exec = getExecutable(rexBuilder, exps, rowType);
+    exec.setDataContext(dataValues);
+    return exec.execute();
   }
 }
 

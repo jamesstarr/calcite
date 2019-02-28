@@ -16,6 +16,7 @@
  */
 package org.apache.calcite.rex;
 
+import org.apache.calcite.DataContext;
 import org.apache.calcite.rel.type.RelDataType;
 
 import java.util.List;
@@ -36,20 +37,16 @@ public interface RexExecutor {
   void reduce(RexBuilder rexBuilder, List<RexNode> constExps, List<RexNode> reducedValues);
 
   /**
-   * Checks if condition first implies (&rArr;) condition second.
-   *
-   * <p>This reduces to SAT problem which is NP-Complete.
-   * When this method says first implies second then it is definitely true.
-   * But it cannot prove that first does not imply second.
+   * Executes an {@link RexExecutable} with {@link DataContext}
    *
    * @param rexBuilder Rex builder
-   * @param rowType row type
-   * @param first first condition
-   * @param second second condition
-   * @return true if it can prove first &rArr; second; otherwise false i.e.,
-   * it doesn't know if implication holds
+   * @param exps Expressions
+   * @param rowType describes the structure of the input row
+   * @param dataValues {@link DataContext} to execute with
+   * @return Objects returned after applying generated code with dataValues.
    */
-  boolean implies(RexBuilder rexBuilder, RelDataType rowType, RexNode first, RexNode second);
+  Object[] execute(RexBuilder rexBuilder, List<RexNode> exps,
+                   RelDataType rowType,  DataContext dataValues);
 }
 
 // End RexExecutor.java

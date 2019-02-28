@@ -1419,10 +1419,13 @@ public class SubstitutionVisitor {
       return false;
     }
 
-    RexExecutor rex = rel.cluster.getPlanner().getExecutor();
+    RexExecutor executor = rel.cluster.getPlanner().getExecutor();
+    RexImplicationChecker rexImplicationChecker =
+        new RexImplicationChecker(
+            rel.cluster.getRexBuilder(), executor, rel.rowType);
 
-    return rex.implies(rel.cluster.getRexBuilder(), rel.rowType,
-        ((MutableFilter) rel0).condition, ((MutableFilter) rel).condition);
+    return rexImplicationChecker.implies(((MutableFilter) rel0).condition,
+        ((MutableFilter) rel).condition);
   }
 
   /** Returns whether two relational expressions have the same row-type. */
