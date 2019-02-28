@@ -131,14 +131,14 @@ public class VisitorDataContext implements DataContext {
   @Deprecated
   public static Pair<Integer, ?> getValue(RexNode inputRef, RexNode literal,
                                           RexBuilder builder, RexExecutor executor) {
-    inputRef = inputRef == null ? null : RexUtil.removeCast(inputRef);
+    inputRef = removeCast(inputRef);
     final RelDataType type = inputRef.getType();
-    literal = literal == null ? null : convertAndRemoveCast(builder, executor, literal, type);
+    literal = convertAndRemoveCast(builder, executor, literal, type);
 
     if (inputRef instanceof RexInputRef
         && literal instanceof RexLiteral)  {
       final int index = ((RexInputRef) inputRef).getIndex();
-      final RexLiteral rexLiteral = (RexLiteral) literal;
+      RexLiteral rexLiteral = (RexLiteral) literal;
 
       if (type.getSqlTypeName() == null) {
         LOGGER.warn("{} returned null SqlTypeName", inputRef.toString());
@@ -200,4 +200,20 @@ public class VisitorDataContext implements DataContext {
 
     return RexUtil.removeCast(literal);
   }
+
+  private static RexNode convertAndRemoveCast(RexBuilder builder, RexExecutor executor,
+                                     RexNode literal, RelDataType toType) {
+    if (literal instanceof RexLiteral) {
+      if (((builder != null) && (executor != null))
+          && (toType.getSqlTypeName() != literal.getType().getSqlTypeName())) {
+        RexNode cast = builder.makeCast(toType, literal);
+        final List<RexNode> reducedValues = new ArrayList<>();
+        executor.reduce(builder, ImmutableList.of(cast), reducedValues);
+        literal = Util.first(reducedValues.get(0), literal);
+      }
+    }
+
+    return removeCast(literal);
+  }
 }
+// End VisitorDataContext.java

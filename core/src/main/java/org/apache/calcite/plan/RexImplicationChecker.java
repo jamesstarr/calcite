@@ -20,9 +20,7 @@ import org.apache.calcite.DataContext;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexCall;
-import org.apache.calcite.rex.RexExecutable;
 import org.apache.calcite.rex.RexExecutor;
-import org.apache.calcite.rex.RexExecutorImpl;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexUtil;
@@ -266,13 +264,15 @@ public class RexImplicationChecker {
       return false;
     }
 
+<<<<<<< HEAD
     ImmutableList<RexNode> constExps = ImmutableList.of(second);
     final RexExecutable exec = RexExecutorImpl.getExecutable(builder, constExps, rowType);
 
+=======
+>>>>>>> 5395983cf (DX-14980: Enhance RexImplicationChecker to better handle cast)
     Object[] result;
-    exec.setDataContext(dataValues);
     try {
-      result = exec.execute();
+      result = executor.execute(builder, ImmutableList.of(second), rowType, dataValues);
     } catch (Exception e) {
       // TODO: CheckSupport should not allow this exception to be thrown
       // Need to monitor it and handle all the cases raising them.
