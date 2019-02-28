@@ -4513,6 +4513,92 @@ public class RelOptRulesTest extends RelOptTestBase {
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
   }
 
+  /**
+   * Test case for AggregateRemoveRule, should remove aggregates since
+   * empno is unique and all aggregate functions are splittable.
+   */
+  @Test public void testAggregateRemove1() {
+    final HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.AGGREGATE_REMOVE)
+        .addRuleInstance(CoreRules.PROJECT_MERGE)
+        .build();
+    final String sql = "select empno, sum(sal), min(sal), max(sal), "
+        + "bit_and(distinct sal), bit_or(sal), count(distinct sal) "
+        + "from sales.emp group by empno, deptno\n";
+    checkPlanning(program, sql);
+  }
+
+  /**
+   * Test case for AggregateRemoveRule, should remove aggregates since
+   * empno is unique and there are no aggregate functions.
+   */
+  @Test public void testAggregateRemove2() {
+    final HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.AGGREGATE_REMOVE)
+        .addRuleInstance(CoreRules.PROJECT_MERGE)
+        .build();
+    final String sql = "select distinct empno, deptno from sales.emp\n";
+    checkPlanning(program, sql);
+  }
+
+  /**
+   * Test case for AggregateRemoveRule, should remove aggregates since
+   * empno is unique and all aggregate functions are splittable. Count
+   * aggregate function should be transformed to CASE function call
+   * because mgr is nullable.
+   */
+  @Test public void testAggregateRemove3() {
+    final HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.AGGREGATE_REMOVE)
+        .addRuleInstance(CoreRules.PROJECT_MERGE)
+        .build();
+    final String sql = "select empno, count(mgr) "
+        + "from sales.emp group by empno, deptno\n";
+    checkPlanning(program, sql);
+  }
+
+  /**
+   * Negative test case for AggregateRemoveRule, should not
+   * remove aggregate because avg is not splittable.
+   */
+  @Test public void testAggregateRemove4() {
+    final HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.AGGREGATE_REMOVE)
+        .addRuleInstance(CoreRules.PROJECT_MERGE)
+        .build();
+    final String sql = "select empno, max(sal), avg(sal) "
+        + "from sales.emp group by empno, deptno\n";
+    checkPlanUnchanged(new HepPlanner(program), sql);
+  }
+
+  /**
+   * Negative test case for AggregateRemoveRule, should not
+   * remove non-simple aggregates.
+   */
+  @Test public void testAggregateRemove5() {
+    final HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.AGGREGATE_REMOVE)
+        .addRuleInstance(CoreRules.PROJECT_MERGE)
+        .build();
+    final String sql = "select empno, deptno, sum(sal) "
+        + "from sales.emp group by cube(empno, deptno)\n";
+    checkPlanUnchanged(new HepPlanner(program), sql);
+  }
+
+  /**
+   * Negative test case for AggregateRemoveRule, should not
+   * remove aggregate because deptno is not unique.
+   */
+  @Test public void testAggregateRemove6() {
+    final HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.AGGREGATE_REMOVE)
+        .addRuleInstance(CoreRules.PROJECT_MERGE)
+        .build();
+    final String sql = "select deptno, max(sal) "
+        + "from sales.emp group by deptno\n";
+    checkPlanUnchanged(new HepPlanner(program), sql);
+  }
+
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2712">[CALCITE-2712]
    * Should remove the left join since the aggregate has no call and
