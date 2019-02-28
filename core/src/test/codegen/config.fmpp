@@ -46,6 +46,7 @@ data: {
         "FORMAT"
         "JSON_TYPE"
         "JSON_DEPTH"
+        "JSON_PRETTY"
         "PASSING"
         "RETURNING"
         "SCALAR"
