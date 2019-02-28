@@ -84,3 +84,8 @@ public class BasicAggregateLambdaFactory<TSource, TAccumulate, TResult, TKey>
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End BasicAggregateLambdaFactory.java
+>>>>>>> 4a20ea9ee ([CALCITE-2785] In EnumerableAggregate, wrong result produced if there are sorted aggregates and non-sorted aggregates at the same time)
