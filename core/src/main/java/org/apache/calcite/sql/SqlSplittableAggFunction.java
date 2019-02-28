@@ -193,18 +193,7 @@ public interface SqlSplittableAggFunction {
       } else {
         return rexBuilder.makeCall(SqlStdOperatorTable.CASE, predicate, rexOne,
             rexBuilder.makeExactLiteral(BigDecimal.ZERO, aggregateCall.getType()));
-      }
-    }
-
-    public AggregateCall merge(AggregateCall top, AggregateCall bottom) {
-      if (bottom.getAggregation().getKind() == SqlKind.COUNT
-          && top.getAggregation().getKind() == SqlKind.SUM) {
-        return AggregateCall.create(bottom.getAggregation(),
-            bottom.isDistinct(), bottom.isApproximate(), false,
-            bottom.getArgList(), bottom.filterArg, bottom.getCollation(),
-            bottom.getType(), top.getName());
-      } else {
-        return null;
+>>>>>>> fdae2e50f ([CALCITE-896] Remove Aggregate if grouping columns are unique and all functions are splittable)
       }
     }
 
@@ -251,7 +240,6 @@ public interface SqlSplittableAggFunction {
       final int arg = leftSubTotal >= 0 ? leftSubTotal : rightSubTotal;
       return aggregateCall.copy(ImmutableIntList.of(arg), -1,
           RelCollations.EMPTY);
->>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
     }
 
     public AggregateCall merge(AggregateCall top, AggregateCall bottom) {
