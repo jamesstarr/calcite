@@ -299,6 +299,7 @@ public enum BuiltInMethod {
   LOWER(SqlFunctions.class, "lower", String.class),
   ASCII(SqlFunctions.class, "ascii", String.class),
   JSONIZE(SqlFunctions.class, "jsonize", Object.class),
+  DEJSONIZE(SqlFunctions.class, "dejsonize", String.class),
   JSON_VALUE_EXPRESSION(SqlFunctions.class, "jsonValueExpression", String.class),
   JSON_STRUCTURED_VALUE_EXPRESSION(SqlFunctions.class, "jsonStructuredValueExpression",
       Object.class),
@@ -315,6 +316,7 @@ public enum BuiltInMethod {
       SqlJsonConstructorNullClause.class),
   JSON_TYPE(SqlFunctions.class, "jsonType", Object.class),
   JSON_DEPTH(SqlFunctions.class, "jsonDepth", Object.class),
+  JSON_PRETTY(SqlFunctions.class, "jsonPretty", Object.class),
   JSON_OBJECTAGG_ADD(SqlFunctions.class, "jsonObjectAggAdd", Map.class,
       String.class, Object.class, SqlJsonConstructorNullClause.class),
   JSON_ARRAY(SqlFunctions.class, "jsonArray",
@@ -378,9 +380,6 @@ public enum BuiltInMethod {
   GREATER(SqlFunctions.class, "greater", Comparable.class, Comparable.class),
   BIT_AND(SqlFunctions.class, "bitAnd", long.class, long.class),
   BIT_OR(SqlFunctions.class, "bitOr", long.class, long.class),
-<<<<<<< HEAD
-  BIT_XOR(SqlFunctions.class, "bitXor", long.class, long.class),
-=======
 >>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
   MODIFIABLE_TABLE_GET_MODIFIABLE_COLLECTION(ModifiableTable.class,
       "getModifiableCollection"),
@@ -598,6 +597,13 @@ public enum BuiltInMethod {
     this(null, null, Types.lookupField(clazz, fieldName));
     assert dummy : "dummy value for method overloading must be true";
   }
+<<<<<<< HEAD
+=======
+
+  public String getMethodName() {
+    return method.getName();
+  }
+}
 
   public String getMethodName() {
     return method.getName();

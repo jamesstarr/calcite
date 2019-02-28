@@ -23,12 +23,7 @@ import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperandCountRange;
-import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.type.OperandTypes;
-import org.apache.calcite.sql.type.ReturnTypes;
-import org.apache.calcite.sql.type.SqlOperandCountRanges;
-import org.apache.calcite.sql.type.SqlOperandTypeChecker;
-import org.apache.calcite.sql.type.SqlTypeTransforms;
+>>>>>>> f1bc28e4d ([CALCITE-2881] Add the JSON_PRETTY function (Ritesh Kapoor))
 import org.apache.calcite.sql.validate.SqlValidator;
 
 /**
@@ -39,7 +34,10 @@ public class SqlJsonPrettyFunction extends SqlFunction {
   public SqlJsonPrettyFunction() {
     super("JSON_PRETTY",
         SqlKind.OTHER_FUNCTION,
+<<<<<<< HEAD
         ReturnTypes.cascade(ReturnTypes.VARCHAR_2000, SqlTypeTransforms.FORCE_NULLABLE),
+=======
+        ReturnTypes.VARCHAR_2000,
         null,
         OperandTypes.ANY,
         SqlFunctionCategory.SYSTEM);
@@ -58,4 +56,11 @@ public class SqlJsonPrettyFunction extends SqlFunction {
       SqlParserPos pos, SqlNode... operands) {
     return super.createCall(functionQualifier, pos, operands);
   }
+
+  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec,
+      int rightPrec) {
+    super.unparse(writer, call, 0, 0);
+  }
 }
+
+// End SqlJsonPrettyFunction.java

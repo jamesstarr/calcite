@@ -930,6 +930,9 @@ public interface CalciteResource {
 
   @BaseMessage("Unknown JSON depth in JSON_DEPTH function, and the object is: ''{0}''")
   ExInst<CalciteException> unknownObjectOfJsonDepth(String value);
+
+  @BaseMessage("Cannot serialize object to JSON, and the object is: ''{0}''")
+  ExInst<CalciteException> exceptionWhileSerializingToJson(String value);
 }
 
   @BaseMessage("Substring error: negative substring length not allowed")
