@@ -21,6 +21,9 @@ import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptRuleOperand;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
+import org.apache.calcite.plan.RelTraitSet;
+import org.apache.calcite.rel.RelCollationTraitDef;
+import org.apache.calcite.rel.RelDistributionTraitDef;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Project;
@@ -36,6 +39,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBeans;
 import org.apache.calcite.util.Util;
 
+import java.util.Collections;
 import java.util.function.Predicate;
 
 /**
@@ -169,8 +173,15 @@ public class FilterProjectTransposeRule
     final RelBuilder relBuilder = call.builder();
     RelNode newFilterRel;
     if (config.isCopyFilter()) {
-      newFilterRel = filter.copy(filter.getTraitSet(), project.getInput(),
-          simplifyFilterCondition(newCondition, call));
+      final RelNode input = project.getInput();
+      final RelTraitSet traitSet = filter.getTraitSet()
+          .replaceIfs(RelCollationTraitDef.INSTANCE,
+              () -> Collections.singletonList(
+                      input.getTraitSet().getTrait(RelCollationTraitDef.INSTANCE)))
+          .replaceIfs(RelDistributionTraitDef.INSTANCE,
+              () -> Collections.singletonList(
+                      input.getTraitSet().getTrait(RelDistributionTraitDef.INSTANCE)));
+      newFilterRel = filter.copy(traitSet, input, simplifyFilterCondition(newCondition, call));
     } else {
       newFilterRel =
           relBuilder.push(project.getInput()).filter(newCondition).build();

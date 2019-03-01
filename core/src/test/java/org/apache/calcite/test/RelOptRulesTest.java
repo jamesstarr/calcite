@@ -117,6 +117,7 @@ import org.apache.calcite.util.ImmutableBitSet;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -297,7 +298,7 @@ class RelOptRulesTest extends RelOptTestBase {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2865">[CALCITE-2865]
    * FilterProjectTransposeRule generates wrong traitSet when copyFilter/Project is true</a>. */
-  @Test void testFilterProjectTransposeRule() {
+  @Test public void testFilterProjectTransposeRule() {
     List<RelOptRule> rules = Arrays.asList(
             CoreRules.FILTER_PROJECT_TRANSPOSE, // default: copyFilter=true, copyProject=true
             new FilterProjectTransposeRule(Filter.class, Project.class,
@@ -321,16 +322,16 @@ class RelOptRulesTest extends RelOptTestBase {
       // Verify LogicalFilter traitSet (must be [3 DESC])
       RelNode filter = result.getInput(0);
       RelCollation collation = filter.getTraitSet().getTrait(RelCollationTraitDef.INSTANCE);
-      assertNotNull(collation);
+      Assert.assertNotNull(collation);
       List<RelFieldCollation> fieldCollations = collation.getFieldCollations();
-      assertEquals(1, fieldCollations.size());
+      Assert.assertEquals(1, fieldCollations.size());
       RelFieldCollation fieldCollation = fieldCollations.get(0);
-      assertEquals(3, fieldCollation.getFieldIndex());
-      assertEquals(RelFieldCollation.Direction.DESCENDING, fieldCollation.getDirection());
+      Assert.assertEquals(3, fieldCollation.getFieldIndex());
+      Assert.assertEquals(RelFieldCollation.Direction.DESCENDING, fieldCollation.getDirection());
     }
   }
 
-  @Test void testReduceOrCaseWhen() {
+  @Test public void testReduceOrCaseWhen() {
     HepProgram preProgram = new HepProgramBuilder()
         .build();
 
