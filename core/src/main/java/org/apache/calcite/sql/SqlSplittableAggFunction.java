@@ -207,6 +207,17 @@ public interface SqlSplittableAggFunction {
         return null;
       }
     }
+
+    public AggregateCall merge(AggregateCall top, AggregateCall bottom) {
+      if (bottom.getAggregation().getKind() == SqlKind.COUNT
+          && top.getAggregation().getKind() == SqlKind.SUM) {
+        return AggregateCall.create(bottom.getAggregation(), bottom.isDistinct(),
+            bottom.isApproximate(), bottom.getArgList(), bottom.filterArg,
+            bottom.getCollation(), bottom.getType(), top.getName());
+      } else {
+        return null;
+      }
+    }
   }
 
   /** Aggregate function that splits into two applications of itself.
@@ -240,6 +251,16 @@ public interface SqlSplittableAggFunction {
       return aggregateCall.copy(ImmutableIntList.of(arg), -1,
           RelCollations.EMPTY);
 >>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
+    }
+
+    public AggregateCall merge(AggregateCall top, AggregateCall bottom) {
+      if (top.getAggregation().getKind() == bottom.getAggregation().getKind()) {
+        return AggregateCall.create(bottom.getAggregation(), bottom.isDistinct(),
+            bottom.isApproximate(), bottom.getArgList(), bottom.filterArg,
+            bottom.getCollation(), bottom.getType(), top.getName());
+      } else {
+        return null;
+      }
     }
   }
 
@@ -297,6 +318,19 @@ public interface SqlSplittableAggFunction {
 =======
           false, ImmutableList.of(ordinal), -1, aggregateCall.collation,
           aggregateCall.type, aggregateCall.name);
+    }
+
+    public AggregateCall merge(AggregateCall top, AggregateCall bottom) {
+      SqlKind topKind = top.getAggregation().getKind();
+      if (topKind == bottom.getAggregation().getKind()
+          && (topKind == SqlKind.SUM
+              || topKind == SqlKind.SUM0)) {
+        return AggregateCall.create(bottom.getAggregation(), bottom.isDistinct(),
+            bottom.isApproximate(), bottom.getArgList(), bottom.filterArg,
+            bottom.getCollation(), bottom.getType(), top.getName());
+      } else {
+        return null;
+      }
     }
 
     protected abstract SqlAggFunction getMergeAggFunctionOfTopSplit();

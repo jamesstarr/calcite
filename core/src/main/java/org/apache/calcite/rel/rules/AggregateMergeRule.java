@@ -163,3 +163,8 @@ public class AggregateMergeRule
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End AggregateMergeRule.java
+>>>>>>> 7af257b44 ([CALCITE-1172] Add rule to flatten two Aggregate operators into one)
