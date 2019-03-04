@@ -57,6 +57,12 @@ public class CoreRules {
   public static final AggregateReduceFunctionsRule AGGREGATE_REDUCE_FUNCTIONS =
       AggregateReduceFunctionsRule.Config.DEFAULT.toRule();
 
+  /** Rule that matches an {@link Aggregate} on an {@link Aggregate},
+   * and merges into a single Aggregate if the top aggregate's group key is a
+   * subset of the lower aggregate's group key, and the aggregates are
+   * expansions of rollups. */
+  public static final AggregateMergeRule AGGREGATE_MERGE =
+      AggregateMergeRule.Config.DEFAULT.toRule();
 
   /** Rule that removes an {@link Aggregate}
    * if it computes no aggregate functions

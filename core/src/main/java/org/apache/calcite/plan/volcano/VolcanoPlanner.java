@@ -910,6 +910,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     }
     addRule(CoreRules.AGGREGATE_REMOVE);
     addRule(CoreRules.UNION_TO_DISTINCT);
+    addRule(CoreRules.AGGREGATE_MERGE);
     addRule(CoreRules.PROJECT_REMOVE);
     addRule(CoreRules.AGGREGATE_JOIN_TRANSPOSE);
     addRule(CoreRules.AGGREGATE_PROJECT_MERGE);
