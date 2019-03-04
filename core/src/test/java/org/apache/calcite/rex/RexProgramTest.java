@@ -2442,21 +2442,23 @@ public class RexProgramTest extends RexProgramBuilderBase {
                     nullInt),
             "AND(=(?0.a, 1), null:INTEGER)",
             "false");
-    checkSimplify2(
+    checkSimplify3(
             and(trueLiteral,
                     nullBool),
             "null:BOOLEAN",
-            "false");
+            "false",
+            "true");
     checkSimplify(
             and(falseLiteral,
                     nullBool),
             "false");
 
-    checkSimplify2(
+    checkSimplify3(
             and(nullBool,
                     eq(aRef, literal1)),
             "AND(null, =(?0.a, 1))",
-            "false");
+            "false",
+            "=(?0.a, 1)");
 
     checkSimplify3(
             or(eq(aRef, literal1),
@@ -2884,12 +2886,18 @@ public class RexProgramTest extends RexProgramBuilderBase {
             "NOT(?0.bool0)");
 =======
 
-    checkSimplify2(
+    // "null AND NOT(null OR x)" => "null AND NOT(x)"
+    checkSimplify3(
             and(nullBool,
                     not(or(nullBool, vBool()))),
             "AND(null, NOT(?0.bool0))",
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
             "false");
 >>>>>>> af29791d2 ([CALCITE-2581] Avoid errors in simplifying "null and not (null or ...)" (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+            "false",
+            "NOT(?0.bool0)");
+>>>>>>> b7f1c317c ([CALCITE-2886] Simplification of AND expressions should push negations earlier):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
     // "x1 AND x2 AND x3 AND NOT(x1) AND NOT(x2) AND NOT(x0)" =>
     // "x3 AND null AND x1 IS NULL AND x2 IS NULL AND NOT(x0)"
