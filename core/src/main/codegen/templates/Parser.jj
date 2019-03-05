@@ -6643,6 +6643,8 @@ SqlNode BuiltinFunctionCall() :
     |
         node = JsonDepthFunctionCall() { return node; }
     |
+        node = JsonLengthFunctionCall() { return node; }
+    |
         node = JsonObjectAggFunctionCall() { return node; }
     |
         node = JsonArrayFunctionCall() { return node; }
@@ -6750,6 +6752,7 @@ SqlNode JsonPathSpec() :
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 List<SqlNode> JsonApiCommonSyntax() :
 {
     SqlNode e;
@@ -6782,20 +6785,34 @@ List<SqlNode> JsonApiCommonSyntax() :
                 // no-op
 =======
 SqlNode JsonApiCommonSyntax() :
+=======
+SqlNode JsonApiCommonSyntax(boolean acceptNonPath) :
+>>>>>>> 31a1bb0fc ([CALCITE-2808] Add the JSON_LENGTH function (xuqianjin))
 {
     SqlNode e;
     List<SqlNode> args = new ArrayList<SqlNode>();
     Span span;
+    SqlOperator op;
 }
 {
     e = JsonValueExpression(true) {
         args.add(e);
         span = Span.of(e);
     }
-    <COMMA>
-    e = Expression(ExprContext.ACCEPT_NON_QUERY) {
-        args.add(e);
-    }
+    (
+        <COMMA>
+        e = Expression(ExprContext.ACCEPT_NON_QUERY) {
+            op = SqlStdOperatorTable.JSON_API_COMMON_SYNTAX;
+            args.add(e);
+        }
+    |
+        {
+            if (!acceptNonPath) {
+              throw new ParseException(RESOURCE.jsonPathMustBeSpecified().str());
+            }
+            op = SqlStdOperatorTable.JSON_API_COMMON_SYNTAX_WITHOUT_PATH;
+        }
+    )
     [
         <PASSING> e = JsonValueExpression(false) {
             args.add(e);
@@ -6816,6 +6833,7 @@ SqlNode JsonApiCommonSyntax() :
     ]
     {
 <<<<<<< HEAD
+<<<<<<< HEAD
         return args;
     }
 =======
@@ -6823,6 +6841,10 @@ SqlNode JsonApiCommonSyntax() :
     }
 
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+        return op.createCall(span.end(this), args);
+    }
+>>>>>>> 31a1bb0fc ([CALCITE-2808] Add the JSON_LENGTH function (xuqianjin))
 }
 
 SqlJsonExistsErrorBehavior JsonExistsErrorBehavior() :
@@ -6854,6 +6876,7 @@ SqlCall JsonExistsFunctionCall() :
 {
     <JSON_EXISTS> { span = span(); }
 <<<<<<< HEAD
+<<<<<<< HEAD
     <LPAREN> commonSyntax = JsonApiCommonSyntax() {
         args.addAll(commonSyntax);
     }
@@ -6861,6 +6884,9 @@ SqlCall JsonExistsFunctionCall() :
         errorBehavior = JsonExistsErrorBehavior() { args.add(errorBehavior.symbol(getPos())); }
 =======
     <LPAREN> e = JsonApiCommonSyntax() {
+=======
+    <LPAREN> e = JsonApiCommonSyntax(false) {
+>>>>>>> 31a1bb0fc ([CALCITE-2808] Add the JSON_LENGTH function (xuqianjin))
         args = new ArrayList<SqlNode>();
         args.add(e);
     }
@@ -6961,6 +6987,7 @@ SqlCall JsonValueFunctionCall() :
 {
     <JSON_VALUE> { span = span(); }
 <<<<<<< HEAD
+<<<<<<< HEAD
     <LPAREN> commonSyntax = JsonApiCommonSyntax() {
         args.addAll(commonSyntax);
     }
@@ -6975,6 +7002,9 @@ SqlCall JsonValueFunctionCall() :
             args.addAll(behavior);
 =======
     <LPAREN> e = JsonApiCommonSyntax() {
+=======
+    <LPAREN> e = JsonApiCommonSyntax(false) {
+>>>>>>> 31a1bb0fc ([CALCITE-2808] Add the JSON_LENGTH function (xuqianjin))
         args = new SqlNode[6];
         args[0] = e;
     }
@@ -7145,6 +7175,7 @@ SqlCall JsonQueryFunctionCall() :
 {
     <JSON_QUERY> { span = span(); }
 <<<<<<< HEAD
+<<<<<<< HEAD
     <LPAREN> commonSyntax = JsonApiCommonSyntax() {
         args[0] = commonSyntax.get(0);
         args[1] = commonSyntax.get(1);
@@ -7166,6 +7197,9 @@ SqlCall JsonQueryFunctionCall() :
                 args[4] = behavior.get(0);
 =======
     <LPAREN> e = JsonApiCommonSyntax() {
+=======
+    <LPAREN> e = JsonApiCommonSyntax(false) {
+>>>>>>> 31a1bb0fc ([CALCITE-2808] Add the JSON_LENGTH function (xuqianjin))
         args = new SqlNode[4];
         args[0] = e;
     }
@@ -7357,6 +7391,23 @@ SqlCall JsonDepthFunctionCall() :
     }
     <RPAREN> {
         return SqlStdOperatorTable.JSON_DEPTH.createCall(span.end(this), args);
+    }
+}
+
+SqlCall JsonLengthFunctionCall() :
+{
+    final SqlNode[] args = new SqlNode[1];
+    SqlNode e;
+    final Span span;
+    List<SqlNode> behavior;
+}
+{
+    <JSON_LENGTH> { span = span(); }
+    <LPAREN> e = JsonApiCommonSyntax(true) {
+       args[0] = e;
+    }
+    <RPAREN> {
+        return SqlStdOperatorTable.JSON_LENGTH.createCall(span.end(this), args);
     }
 }
 
@@ -8722,6 +8773,7 @@ SqlPostfixOperator PostfixRowOperator() :
 |   < JSON_OBJECT: "JSON_OBJECT">
 |   < JSON_TYPE: "JSON_TYPE">
 |   < JSON_DEPTH: "JSON_DEPTH">
+|   < JSON_LENGTH: "JSON_LENGTH">
 |   < JSON_OBJECTAGG: "JSON_OBJECTAGG">
 |   < JSON_QUERY: "JSON_QUERY" >
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))

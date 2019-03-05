@@ -1300,7 +1300,10 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
       new SqlJsonValueExpressionOperator("JSON_STRUCTURED_VALUE_EXPRESSION", true);
 
   public static final SqlJsonApiCommonSyntaxOperator JSON_API_COMMON_SYNTAX =
-      new SqlJsonApiCommonSyntaxOperator();
+      new SqlJsonApiCommonSyntaxOperator("JSON_API_COMMON_SYNTAX", true);
+
+  public static final SqlJsonApiCommonSyntaxOperator JSON_API_COMMON_SYNTAX_WITHOUT_PATH =
+      new SqlJsonApiCommonSyntaxOperator("JSON_API_COMMON_SYNTAX_WITHOUT_PATH", false);
 
   public static final SqlFunction JSON_EXISTS = new SqlJsonExistsFunction();
 
@@ -1316,6 +1319,8 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
 
   public static final SqlFunction JSON_OBJECT = new SqlJsonObjectFunction();
 
+
+  public static final SqlFunction JSON_LENGTH = new SqlJsonLengthFunction();
   public static final SqlJsonObjectAggAggFunction JSON_OBJECTAGG =
       new SqlJsonObjectAggAggFunction(SqlKind.JSON_OBJECTAGG,
           SqlJsonConstructorNullClause.NULL_ON_NULL);

@@ -925,14 +925,17 @@ public interface CalciteResource {
   ExInst<CalciteException> ambiguousSortOrderInJsonArrayAggFunc();
 
 
-  @BaseMessage("Unknown JSON type in JSON_TYPE function, and the object is: ''{0}''")
-  ExInst<CalciteException> unknownObjectOfJsonType(String value);
+  @BaseMessage("Not a valid input for JSON_TYPE: ''{0}''")
+  ExInst<CalciteException> invalidInputForJsonType(String value);
 
-  @BaseMessage("Unknown JSON depth in JSON_DEPTH function, and the object is: ''{0}''")
-  ExInst<CalciteException> unknownObjectOfJsonDepth(String value);
+  @BaseMessage("Not a valid input for JSON_DEPTH: ''{0}''")
+  ExInst<CalciteException> invalidInputForJsonDepth(String value);
 
   @BaseMessage("Cannot serialize object to JSON, and the object is: ''{0}''")
   ExInst<CalciteException> exceptionWhileSerializingToJson(String value);
+
+  @BaseMessage("Not a valid input for JSON_LENGTH: ''{0}''")
+  ExInst<CalciteException> invalidInputForJsonLength(String value);
 }
 
   @BaseMessage("Substring error: negative substring length not allowed")
