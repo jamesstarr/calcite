@@ -620,6 +620,7 @@ JSON,
 **JSON_ARRAYAGG**,
 JSON_DEPTH,
 **JSON_EXISTS**,
+JSON_LENGTH,
 **JSON_OBJECT**,
 **JSON_OBJECTAGG**,
 JSON_PRETTY,
@@ -2177,12 +2178,12 @@ Note:
 
 #### MySQL Specific Operators
 
-| Operator syntax                   | Description
-|:--------------------------------- |:-----------
-| JSON_TYPE(jsonValue)              | Returns a string value indicating the type of a *jsonValue*
-| JSON_DEPTH(jsonValue)             | Returns an integer value indicating the depth of a *jsonValue*
-| JSON_PRETTY(jsonValue)            | Returns a pretty-printing of *jsonValue*
-| JSON_LENGTH(jsonValue [, path ])  | Returns a integer indicating the length of *jsonValue*
+| Operator syntax                                   | Description
+|:------------------------------------------------- |:-----------
+| JSON_TYPE(value)                                  | Returns a string indicating the type of a JSON **value**. This can be an object, an array, or a scalar type
+| JSON_DEPTH(value)                                 | Returns a integer indicating the depth of a JSON **value**. This can be an object, an array, or a scalar type
+| JSON_PRETTY(value)                                | Returns a pretty-printing of JSON **value**.
+| JSON_LENGTH(value)                                | Returns a integer indicating the length of a JSON **value**. This can be an object, an array, or a scalar type
 
 Note:
 
@@ -2247,13 +2248,24 @@ Result
 | ------ | ----- | ------- | ------- |
 | 3      | 2     | 1       | 1       |
 
-Not implemented:
+* JSON_LENGTH
 
-* JSON_INSERT
-* JSON_SET
-* JSON_REPLACE
-* JSON_REMOVE
-* JSON_KEYS
+Example SQL:
+
+```SQL
+SELECT JSON_LENGTH(v) AS c1
+,JSON_LENGTH(v, 'lax $.a') AS c2
+,JSON_LENGTH(v, 'strict $.a[0]') AS c3
+,JSON_LENGTH(v, 'strict $.a[1]') AS c4
+FROM (VALUES ('{"a": [10, true]}')) AS t(v)
+LIMIT 10;
+```
+
+Result:
+
+| c1     | c2    | c3      | c4      |
+| ------ | ----- | ------- | ------- |
+| 1      | 2     | 1       | 1       |
 
 ## User-defined functions
 
