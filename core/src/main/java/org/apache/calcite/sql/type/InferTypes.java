@@ -78,6 +78,9 @@ public abstract class InferTypes {
             SqlCallBinding callBinding,
             RelDataType returnType,
             RelDataType[] operandTypes) {
+          if (returnType == null) {
+            return;
+          }
           for (int i = 0; i < operandTypes.length; ++i) {
             operandTypes[i] =
                 returnType.isStruct()
