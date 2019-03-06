@@ -6633,6 +6633,8 @@ SqlNode BuiltinFunctionCall() :
     |
         node = JsonValueFunctionCall() { return node; }
     |
+        node = JsonKeysFunctionCall() { return node; }
+    |
         node = JsonPrettyFunctionCall() { return node; }
     |
         node = JsonQueryFunctionCall() { return node; }
@@ -7030,6 +7032,23 @@ SqlCall JsonValueFunctionCall() :
     )*
     <RPAREN> {
         return SqlStdOperatorTable.JSON_VALUE.createCall(span.end(this), args);
+    }
+}
+
+SqlCall JsonKeysFunctionCall() :
+{
+    final SqlNode[] args = new SqlNode[1];
+    SqlNode e;
+    final Span span;
+    List<SqlNode> behavior;
+}
+{
+    <JSON_KEYS> { span = span(); }
+    <LPAREN> e = JsonApiCommonSyntax(true) {
+       args[0] = e;
+    }
+    <RPAREN> {
+        return SqlStdOperatorTable.JSON_KEYS.createCall(span.end(this), args);
     }
 }
 
@@ -8756,6 +8775,7 @@ SqlPostfixOperator PostfixRowOperator() :
 |   < JSON_ARRAY: "JSON_ARRAY">
 |   < JSON_ARRAYAGG: "JSON_ARRAYAGG">
 <<<<<<< HEAD
+<<<<<<< HEAD
 |   < JSON_DEPTH: "JSON_DEPTH">
 |   < JSON_EXISTS: "JSON_EXISTS" >
 |   < JSON_KEYS: "JSON_KEYS" >
@@ -8772,11 +8792,22 @@ SqlPostfixOperator PostfixRowOperator() :
 |   < JSON_PRETTY: "JSON_PRETTY" >
 |   < JSON_OBJECT: "JSON_OBJECT">
 |   < JSON_TYPE: "JSON_TYPE">
+=======
+>>>>>>> f823ceb45 ([CALCITE-2892] Add the JSON_KEYS function (xuqianjin))
 |   < JSON_DEPTH: "JSON_DEPTH">
+|   < JSON_EXISTS: "JSON_EXISTS" >
+|   < JSON_KEYS: "JSON_KEYS" >
 |   < JSON_LENGTH: "JSON_LENGTH">
+|   < JSON_OBJECT: "JSON_OBJECT">
 |   < JSON_OBJECTAGG: "JSON_OBJECTAGG">
+|   < JSON_PRETTY: "JSON_PRETTY" >
 |   < JSON_QUERY: "JSON_QUERY" >
+<<<<<<< HEAD
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+|   < JSON_TYPE: "JSON_TYPE">
+|   < JSON_VALUE: "JSON_VALUE" >
+>>>>>>> f823ceb45 ([CALCITE-2892] Add the JSON_KEYS function (xuqianjin))
 |   < K: "K" >
 |   < KEY: "KEY" >
 |   < KEY_MEMBER: "KEY_MEMBER" >
