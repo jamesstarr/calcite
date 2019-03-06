@@ -68,12 +68,20 @@ public abstract class InferTypes {
    * the same number of fields as the number of operands.
    */
   public static final SqlOperandTypeInference RETURN_TYPE =
-      (callBinding, returnType, operandTypes) -> {
-        for (int i = 0; i < operandTypes.length; ++i) {
-          operandTypes[i] =
-              returnType.isStruct()
-                  ? returnType.getFieldList().get(i).getType()
-                  : returnType;
+      new SqlOperandTypeInference() {
+        public void inferOperandTypes(
+            SqlCallBinding callBinding,
+            RelDataType returnType,
+            RelDataType[] operandTypes) {
+          if (returnType == null) {
+            return;
+          }
+          for (int i = 0; i < operandTypes.length; ++i) {
+            operandTypes[i] =
+                returnType.isStruct()
+                    ? returnType.getFieldList().get(i).getType()
+                    : returnType;
+          }
         }
       };
 
