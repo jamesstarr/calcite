@@ -20,8 +20,11 @@ import org.apache.calcite.plan.RelHintsPropagator;
 import org.apache.calcite.plan.RelOptListener;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptRuleOperand;
+<<<<<<< HEAD
 import org.apache.calcite.plan.RelOptRuleOperandChildPolicy;
 import org.apache.calcite.plan.SubstitutionRule;
+=======
+>>>>>>> a509374ba ([CALCITE-2899] Deprecate RelTraitPropagationVisitor and remove its usages)
 import org.apache.calcite.rel.RelNode;
 
 import com.google.common.collect.ImmutableList;
