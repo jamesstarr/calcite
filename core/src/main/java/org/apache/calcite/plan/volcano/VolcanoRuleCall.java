@@ -20,8 +20,6 @@ import org.apache.calcite.plan.RelHintsPropagator;
 import org.apache.calcite.plan.RelOptListener;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptRuleOperand;
-import org.apache.calcite.plan.RelTraitPropagationVisitor;
-import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
 
 import com.google.common.collect.ImmutableList;
@@ -100,13 +98,6 @@ public class VolcanoRuleCall extends RelOptRuleCall {
       // It's possible that rel is a subset or is already registered.
       // Is there still a point in continuing? Yes, because we might
       // discover that two sets of expressions are actually equivalent.
-
-      // Make sure traits that the new rel doesn't know about are
-      // propagated.
-      RelTraitSet rels0Traits = rels[0].getTraitSet();
-      new RelTraitPropagationVisitor(
-          getPlanner(),
-          rels0Traits).go(rel);
 
       if (LOGGER.isTraceEnabled()) {
         // Cannot call RelNode.toString() yet, because rel has not

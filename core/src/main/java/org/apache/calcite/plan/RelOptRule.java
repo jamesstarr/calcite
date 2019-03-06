@@ -581,10 +581,6 @@ public abstract class RelOptRule {
   public static RelNode convert(RelNode rel, RelTraitSet toTraits) {
     RelOptPlanner planner = rel.getCluster().getPlanner();
 
-    if (rel.getTraitSet().size() < toTraits.size()) {
-      new RelTraitPropagationVisitor(planner, toTraits).go(rel);
-    }
-
     RelTraitSet outTraits = rel.getTraitSet();
     for (int i = 0; i < toTraits.size(); i++) {
       RelTrait toTrait = toTraits.getTrait(i);
