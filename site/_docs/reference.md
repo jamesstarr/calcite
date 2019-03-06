@@ -620,6 +620,7 @@ JSON,
 **JSON_ARRAYAGG**,
 JSON_DEPTH,
 **JSON_EXISTS**,
+JSON_KEYS,
 JSON_LENGTH,
 **JSON_OBJECT**,
 **JSON_OBJECTAGG**,
@@ -2184,6 +2185,7 @@ Note:
 | JSON_DEPTH(value)                                 | Returns a integer indicating the depth of a JSON **value**. This can be an object, an array, or a scalar type
 | JSON_PRETTY(value)                                | Returns a pretty-printing of JSON **value**.
 | JSON_LENGTH(value)                                | Returns a integer indicating the length of a JSON **value**. This can be an object, an array, or a scalar type
+| JSON_KEYS(jsonValue [, path ])    | Returns a string indicating the keys of a JSON *jsonValue*
 
 Note:
 
@@ -2266,6 +2268,26 @@ Result:
 | c1     | c2    | c3      | c4      |
 | ------ | ----- | ------- | ------- |
 | 1      | 2     | 1       | 1       |
+##### JSON_KEYS example
+
+SQL
+
+ ```SQL
+SELECT JSON_KEYS(v) AS c1
+,JSON_KEYS(v, 'lax $.a') AS c2
+,JSON_KEYS(v, 'lax $.b') AS c2
+,JSON_KEYS(v, 'strict $.a[0]') AS c3
+,JSON_KEYS(v, 'strict $.a[1]') AS c4
+FROM (VALUES ('{"a": [10, true],"b": {"c": 30}}')) AS t(v)
+LIMIT 10;
+```
+
+ Result
+
+| c1         | c2   | c3    | c4   | c5   |
+| ---------- | ---- | ----- | ---- | ---- |
+| ["a", "b"] | NULL | ["c"] | NULL | NULL |
+
 
 ## User-defined functions
 
