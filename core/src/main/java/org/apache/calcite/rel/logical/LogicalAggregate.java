@@ -53,8 +53,10 @@ public final class LogicalAggregate extends Aggregate {
    *
    * @param cluster    Cluster that this relational expression belongs to
    * @param traitSet   Traits
+   * @param input      input relational expression
+   * @param cluster    Cluster that this relational expression belongs to
+   * @param traitSet   Traits
    * @param hints      Hints for this relational expression
-   * @param input      Input relational expression
    * @param groupSet Bit set of grouping fields
    * @param groupSets Grouping sets, or null to use just {@code groupSet}
    * @param aggCalls Array of aggregates to compute, not null
