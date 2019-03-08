@@ -199,11 +199,13 @@ public final class CalciteSystemProperty<T> {
         }
         return ".";
       });
+
   /**
    * Whether to run slow tests.
    */
   public static final CalciteSystemProperty<Boolean> TEST_SLOW =
       booleanProperty("calcite.test.slow", false);
+
   /**
    * Whether to run MongoDB tests.
    */
@@ -224,6 +226,7 @@ public final class CalciteSystemProperty<T> {
    */
   public static final CalciteSystemProperty<Boolean> TEST_DRUID =
       booleanProperty("calcite.test.druid", true);
+
   /**
    * Whether to run Cassandra tests.
    */
@@ -362,9 +365,12 @@ public final class CalciteSystemProperty<T> {
   /**
    * Returns the value of the system property with the specified name as int, or
    * the <code>defaultValue</code> if any of the conditions below hold:
-   * (i) the property is not defined;
-   * (ii) the property value cannot be transformed to an int;
-   * (iii) the property value does not satisfy the checker.
+   *
+   * <ol>
+   * <li>the property is not defined;
+   * <li>the property value cannot be transformed to an int;
+   * <li>the property value does not satisfy the checker.
+   * </ol>
    */
   private static CalciteSystemProperty<Integer> intProperty(String key, int defaultValue,
       IntPredicate valueChecker) {

@@ -1926,7 +1926,7 @@ from "scott".emp;
 
 !ok
 
-# Test nested subquery in PROJECT within FILTER
+# Test nested sub-query in PROJECT within FILTER
 select * from emp where deptno IN (select (select max(deptno) from "scott".emp t1) from "scott".emp t2);
  EMPNO | ENAME  | JOB      | MGR  | HIREDATE   | SAL     | COMM    | DEPTNO
 -------+--------+----------+------+------------+---------+---------+--------
@@ -1948,7 +1948,7 @@ EnumerableHashJoin(condition=[=($7, $9)], joinType=[semi])
       EnumerableTableScan(table=[[scott, EMP]])
 !plan
 
-# Test nested subquery in FILTER within PROJECT
+# Test nested sub-query in FILTER within PROJECT
 select (select max(deptno) from "scott".emp where deptno IN (select deptno from "scott".emp)) from emp ;
  EXPR$0
 --------

@@ -155,6 +155,7 @@ public class RelWriterTest {
     assertThat(s, is(XX));
   }
 
+
   /**
    * Unit test for {@link org.apache.calcite.rel.externalize.RelJsonReader}.
    */
