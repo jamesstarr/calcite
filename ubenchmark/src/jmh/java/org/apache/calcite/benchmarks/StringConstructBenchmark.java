@@ -17,9 +17,12 @@
 package org.apache.calcite.benchmarks;
 
 <<<<<<< HEAD:ubenchmark/src/jmh/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
+<<<<<<< HEAD:ubenchmark/src/jmh/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
 =======
 
 >>>>>>> 279918c82 ([CALCITE-2887] Improve performance of RexLiteral#toJavaString):ubenchmark/src/main/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
+=======
+>>>>>>> b06e7746c (Cosmetic changes):ubenchmark/src/main/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -40,9 +43,12 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 <<<<<<< HEAD:ubenchmark/src/jmh/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
+<<<<<<< HEAD:ubenchmark/src/jmh/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
 =======
 
 >>>>>>> 279918c82 ([CALCITE-2887] Improve performance of RexLiteral#toJavaString):ubenchmark/src/main/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
+=======
+>>>>>>> b06e7746c (Cosmetic changes):ubenchmark/src/main/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -50,6 +56,7 @@ import java.io.Writer;
 import java.util.concurrent.TimeUnit;
 
 /**
+<<<<<<< HEAD:ubenchmark/src/jmh/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
 <<<<<<< HEAD:ubenchmark/src/jmh/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
  * A benchmark of the most common patterns that are used to construct gradually
  * String objects.
@@ -61,6 +68,13 @@ import java.util.concurrent.TimeUnit;
  *
  * The benchmark emphasizes on the build patterns that appear in the Calcite project.
 >>>>>>> 279918c82 ([CALCITE-2887] Improve performance of RexLiteral#toJavaString):ubenchmark/src/main/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
+=======
+ * A benchmark of the most common patterns that are used to construct gradually
+ * String objects.
+ *
+ * <p>The benchmark emphasizes on the build patterns that appear in the Calcite
+ * project.
+>>>>>>> b06e7746c (Cosmetic changes):ubenchmark/src/main/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
  */
 @Fork(value = 1, jvmArgsPrepend = "-Xmx2048m")
 @Measurement(iterations = 10, time = 100, timeUnit = TimeUnit.MILLISECONDS)
@@ -100,6 +114,7 @@ public class StringConstructBenchmark {
      * The maximum number of appends before resetting the appender.
      *
 <<<<<<< HEAD:ubenchmark/src/jmh/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
+<<<<<<< HEAD:ubenchmark/src/jmh/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
      * <p>If the value is small then the appender is reinitialized very often,
      * making the instantiation of the appender the dominant operation of the
      * benchmark.
@@ -107,6 +122,11 @@ public class StringConstructBenchmark {
      * If the value is small then the appender is reinitialized very often, making the instantiation
      * of the appender the dominant operation of the benchmark.
 >>>>>>> 279918c82 ([CALCITE-2887] Improve performance of RexLiteral#toJavaString):ubenchmark/src/main/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
+=======
+     * <p>If the value is small then the appender is reinitialized very often,
+     * making the instantiation of the appender the dominant operation of the
+     * benchmark.
+>>>>>>> b06e7746c (Cosmetic changes):ubenchmark/src/main/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
      */
     @Param({"1", "256", "512", "1024"})
     public int maxAppends;

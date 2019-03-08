@@ -98,10 +98,14 @@ in Elasticsearch where possible.
 
 We can issue a simple query to fetch the names of all the states
 <<<<<<< HEAD
+<<<<<<< HEAD
 stored in the index `usa`.
 =======
 stored in the type `zips`. 
 >>>>>>> 8ada3c16f (Site: Elastic query example on _MAP)
+=======
+stored in the type `zips`.
+>>>>>>> b06e7746c (Cosmetic changes)
 
 {% highlight sql %}
 sqlline> SELECT * from "usa";
@@ -186,8 +190,9 @@ sqlline> SELECT _MAP['city'], _MAP['state'] from "elasticsearch"."zips" order by
 
 >>>>>>> 8ada3c16f (Site: Elastic query example on _MAP)
 ### Use of Scrolling API
-For queries without aggregate functions (like `COUNT`, `MAX` etc.) elastic adapter 
-uses [scroll API](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html), by default. 
+
+For queries without aggregate functions (like `COUNT`, `MAX` etc.) elastic adapter
+uses [scroll API](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html), by default.
 This ensures that consistent and full data-set is returned to end user (lazily and in batches). Please note that
 scroll is automatically cleared (removed) when all query resuts are consumed.
 
@@ -195,6 +200,7 @@ scroll is automatically cleared (removed) when all query resuts are consumed.
 >>>>>>> 9fbe97bb2 (Site: Improve documentation for ElasticSearch Adapter)
 =======
 ### Supported versions
+
 Currently this adapter supports ElasticSearch versions 2.x (or newer). Generally
 we try to follow official [support schedule](https://www.elastic.co/support/eol).
 

@@ -148,10 +148,14 @@ with the latest on the main line.
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 In order to keep the commit history clean and uniform, you should
 =======
 In order to keep the commit history clean and uniform, you should 
 >>>>>>> 3c573efaf (Site: Add commit message guidelines for contributors (Stamatis Zampetakis))
+=======
+In order to keep the commit history clean and uniform, you should
+>>>>>>> b06e7746c (Cosmetic changes)
 respect the following guidelines.
  * Read the messages of previous commits, and follow their style.
  * The first line of the commit message must be a concise and useful

@@ -3242,10 +3242,14 @@ from "scott".emp;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Test nested sub-query in PROJECT within FILTER
 =======
 # Test nested subquery in PROJECT within FILTER
 >>>>>>> c52133959 ([CALCITE-1726] Subquery in FILTER is left untransformed (Vineet Garg))
+=======
+# Test nested sub-query in PROJECT within FILTER
+>>>>>>> b06e7746c (Cosmetic changes)
 select * from emp where deptno IN (select (select max(deptno) from "scott".emp t1) from "scott".emp t2);
  EMPNO | ENAME  | JOB      | MGR  | HIREDATE   | SAL     | COMM    | DEPTNO
 -------+--------+----------+------+------------+---------+---------+--------
@@ -3272,10 +3276,14 @@ EnumerableHashJoin(condition=[=($7, $9)], joinType=[semi])
 !plan
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Test nested sub-query in FILTER within PROJECT
 =======
 # Test nested subquery in FILTER within PROJECT
 >>>>>>> c52133959 ([CALCITE-1726] Subquery in FILTER is left untransformed (Vineet Garg))
+=======
+# Test nested sub-query in FILTER within PROJECT
+>>>>>>> b06e7746c (Cosmetic changes)
 select (select max(deptno) from "scott".emp where deptno IN (select deptno from "scott".emp)) from emp ;
  EXPR$0
 --------

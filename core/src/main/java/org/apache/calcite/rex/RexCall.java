@@ -65,8 +65,9 @@ public class RexCall extends RexNode {
   /**
    * Simple binary operators are those operators which expects operands from the same Domain.
    *
-   * Example: simple comparisions (=,&lt;)
-   * Note: it doesn't contain IN because that is defined on D x D^n
+   * <p>Example: simple comparisions ({@code =}, {@code <}).
+   *
+   * <p>Note: it does not contain {@code IN} because that is defined on D x D^n.
    */
 >>>>>>> 213e62494 ([CALCITE-2842] Computing RexCall digest containing IN expressions leads to Exceptions)
   private static final Set<SqlKind> SIMPLE_BINARY_OPS;

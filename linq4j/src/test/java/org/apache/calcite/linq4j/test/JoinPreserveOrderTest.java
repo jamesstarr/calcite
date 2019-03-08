@@ -38,8 +38,6 @@ import java.util.List;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-
-
 /**
  * Test validating the order preserving properties of join algorithms in
  * {@link org.apache.calcite.linq4j.ExtendedEnumerable}. The correctness of the
@@ -137,8 +135,7 @@ import static org.junit.Assert.assertTrue;
                     deptOrderColNames.get(j),
                     deptOrderColSelectors.get(j),
                     ascendingR,
-                    nullsFirstR
-                );
+                    nullsFirstR);
                 data.add(params);
               }
             }
@@ -233,8 +230,9 @@ import static org.junit.Assert.assertTrue;
         left.correlateJoin(
             joinType,
             emp -> right.where(dept ->
-                emp.deptno != null && dept.deptno != null && emp.deptno.equals(dept.deptno)
-            ),
+                emp.deptno != null
+                    && dept.deptno != null
+                    && emp.deptno.equals(dept.deptno)),
             RESULT_SELECTOR);
   }
 
@@ -271,8 +269,7 @@ import static org.junit.Assert.assertTrue;
             left,
             right,
             emp -> emp.deptno,
-            dept -> dept.deptno).select(emp -> Arrays.asList(emp.eid, null)
-        );
+            dept -> dept.deptno).select(emp -> Arrays.asList(emp.eid, null));
   }
 
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
