@@ -2277,6 +2277,9 @@ public class SqlToRelConverter {
             .union(p.requiredColumns);
       }
 
+      LogicalCorrelate corr = LogicalCorrelate.create(leftRel, innerRel,
+          p.id, requiredCols, joinType);
+
       return LogicalCorrelate.create(leftRel, innerRel, p.id, requiredCols, joinType);
     } else if (null != lateralCorrelationId) {
       ImmutableBitSet requiredFields =
