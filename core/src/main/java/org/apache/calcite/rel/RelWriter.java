@@ -88,6 +88,10 @@ public interface RelWriter {
   default boolean nest() {
     return false;
   }
+<<<<<<< HEAD
+=======
+}
+>>>>>>> 0994ded7e ([CALCITE-2902] Improve performance of AbstractRelNode#computeDigest)
 
   /**
    * Activates {@link RexNode} normalization if {@link SqlExplainLevel#DIGEST_ATTRIBUTES} is used.
