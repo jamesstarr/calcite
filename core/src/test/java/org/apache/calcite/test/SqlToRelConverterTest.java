@@ -1108,12 +1108,55 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
-  @Ignore
   @Test public void testJoinTemporalTableOnColumnReference() {
     final String sql = "select stream *\n"
         + "from orders\n"
         + "join products_temporal for system_time as of orders.rowtime\n"
         + "on orders.productid = products_temporal.productid";
+    sql(sql).ok();
+  }
+
+  /**
+   * Lateral join with temporal table, both snapshot's input scan
+   * and snapshot's period reference outer columns. Should not
+   * decorrelate join.
+   */
+  @Test public void testCrossJoinTemporalTable1() {
+    final String sql = "select stream *\n"
+        + "from orders\n"
+        + "cross join lateral (\n"
+        + "  select * from products_temporal for system_time\n"
+        + "  as of orders.rowtime\n"
+        + "  where orders.productid = products_temporal.productid)\n";
+    sql(sql).ok();
+  }
+
+  /**
+   * Lateral join with temporal table, snapshot's input scan
+   * reference outer columns, but snapshot's period is static.
+   * Should be able to decorrelate join.
+   */
+  @Test public void testCrossJoinTemporalTable2() {
+    final String sql = "select stream *\n"
+        + "from orders\n"
+        + "cross join lateral (\n"
+        + "  select * from products_temporal for system_time\n"
+        + "  as of TIMESTAMP '2011-01-02 00:00:00'\n"
+        + "  where orders.productid = products_temporal.productid)\n";
+    sql(sql).ok();
+  }
+
+  /**
+   * Lateral join with temporal table, snapshot's period reference
+   * outer columns. Should not decorrelate join.
+   */
+  @Test public void testCrossJoinTemporalTable3() {
+    final String sql = "select stream *\n"
+        + "from orders\n"
+        + "cross join lateral (\n"
+        + "  select * from products_temporal for system_time\n"
+        + "  as of orders.rowtime\n"
+        + "  where products_temporal.productid > 1)\n";
     sql(sql).ok();
   }
 
