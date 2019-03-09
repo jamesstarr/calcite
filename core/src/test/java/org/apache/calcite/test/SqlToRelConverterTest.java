@@ -1176,7 +1176,6 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
-  @Ignore
   @Test public void testJoinTemporalTableOnColumnReference() {
     final String sql = "select stream *\n"
         + "from orders\n"
@@ -1185,7 +1184,50 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
->>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
+  /**
+   * Lateral join with temporal table, both snapshot's input scan
+   * and snapshot's period reference outer columns. Should not
+   * decorrelate join.
+   */
+  @Test public void testCrossJoinTemporalTable1() {
+    final String sql = "select stream *\n"
+        + "from orders\n"
+        + "cross join lateral (\n"
+        + "  select * from products_temporal for system_time\n"
+        + "  as of orders.rowtime\n"
+        + "  where orders.productid = products_temporal.productid)\n";
+    sql(sql).ok();
+  }
+
+  /**
+   * Lateral join with temporal table, snapshot's input scan
+   * reference outer columns, but snapshot's period is static.
+   * Should be able to decorrelate join.
+   */
+  @Test public void testCrossJoinTemporalTable2() {
+    final String sql = "select stream *\n"
+        + "from orders\n"
+        + "cross join lateral (\n"
+        + "  select * from products_temporal for system_time\n"
+        + "  as of TIMESTAMP '2011-01-02 00:00:00'\n"
+        + "  where orders.productid = products_temporal.productid)\n";
+    sql(sql).ok();
+  }
+
+  /**
+   * Lateral join with temporal table, snapshot's period reference
+   * outer columns. Should not decorrelate join.
+   */
+  @Test public void testCrossJoinTemporalTable3() {
+    final String sql = "select stream *\n"
+        + "from orders\n"
+        + "cross join lateral (\n"
+        + "  select * from products_temporal for system_time\n"
+        + "  as of orders.rowtime\n"
+        + "  where products_temporal.productid > 1)\n";
+    sql(sql).ok();
+  }
+
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1732">[CALCITE-1732]
    * IndexOutOfBoundsException when using LATERAL TABLE with more than one

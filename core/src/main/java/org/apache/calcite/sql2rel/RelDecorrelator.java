@@ -1041,9 +1041,19 @@ public class RelDecorrelator implements ReflectiveVisitor {
         && type.getPrecision() >= type1.getPrecision();
   }
 
-  public Frame decorrelateRel(LogicalFilter rel) {
-    return decorrelateRel((Filter) rel);
 =======
+  /**
+   * Rewrite LogicalSnapshot.
+   *
+   * @param rel the snapshot rel to rewrite
+   */
+  public Frame decorrelateRel(LogicalSnapshot rel, boolean isCorVarDefined) {
+    if (RexUtil.containsCorrelation(rel.getPeriod())) {
+      return null;
+    }
+    return decorrelateRel((RelNode) rel, isCorVarDefined);
+  }
+
   public Frame decorrelateRel(LogicalFilter rel, boolean isCorVarDefined) {
     return decorrelateRel((Filter) rel, isCorVarDefined);
   }
