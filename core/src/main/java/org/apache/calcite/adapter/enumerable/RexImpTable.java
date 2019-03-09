@@ -311,12 +311,7 @@ public class RexImpTable {
     defineMethod(OVERLAY, BuiltInMethod.OVERLAY.method, NullPolicy.STRICT);
     defineMethod(POSITION, BuiltInMethod.POSITION.method, NullPolicy.STRICT);
     defineMethod(ASCII, BuiltInMethod.ASCII.method, NullPolicy.STRICT);
-    defineMethod(REPEAT, BuiltInMethod.REPEAT.method, NullPolicy.STRICT);
-    defineMethod(SPACE, BuiltInMethod.SPACE.method, NullPolicy.STRICT);
-    defineMethod(STRCMP, BuiltInMethod.STRCMP.method, NullPolicy.STRICT);
-    defineMethod(SOUNDEX, BuiltInMethod.SOUNDEX.method, NullPolicy.STRICT);
-    defineMethod(DIFFERENCE, BuiltInMethod.DIFFERENCE.method, NullPolicy.STRICT);
-    defineMethod(REVERSE, BuiltInMethod.REVERSE.method, NullPolicy.STRICT);
+>>>>>>> bd30002c0 ([CALCITE-2599] Implement SQL ASCII function (Chunwei Lei))
 
     final TrimImplementor trimImplementor = new TrimImplementor();
     defineImplementor(TRIM, NullPolicy.STRICT, trimImplementor, false);
@@ -535,7 +530,6 @@ public class RexImpTable {
     // Sequences
     defineMethod(CURRENT_VALUE, BuiltInMethod.SEQUENCE_CURRENT_VALUE.method, NullPolicy.STRICT);
     defineMethod(NEXT_VALUE, BuiltInMethod.SEQUENCE_NEXT_VALUE.method, NullPolicy.STRICT);
->>>>>>> 9c97f231c (Remove "Now, do something with table " from standard output when implementing sequences)
 
     // Json Operators
     defineMethod(JSON_VALUE_EXPRESSION,
