@@ -232,6 +232,12 @@ public class SqlFunctions {
     return newS.toString();
   }
 
+  /** SQL ASCII(string) function. */
+  public static int ascii(String s) {
+    return s.isEmpty()
+        ? 0 : s.codePointAt(0);
+  }
+
   /** SQL CHARACTER_LENGTH(string) function. */
   public static int charLength(String s) {
     return s.length();
