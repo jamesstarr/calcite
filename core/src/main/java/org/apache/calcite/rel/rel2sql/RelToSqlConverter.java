@@ -345,59 +345,6 @@ public class RelToSqlConverter extends SqlImplementor
     final List<SqlNode> selectList = new ArrayList<>();
     final List<SqlNode> groupByList =
         generateGroupList(builder, selectList, e, groupKeyList);
-<<<<<<< HEAD
-    return buildAggregate(e, builder, selectList, groupByList);
-  }
-
-  /**
-   * Gets the {@link org.apache.calcite.rel.rel2sql.SqlImplementor.Builder} for
-   * the given {@link Aggregate} node.
-   *
-   * @param e Aggregate node
-   * @param inputResult Result from the input
-   * @param inputIsProject Whether the input is a Project
-   * @return A SQL builder
-   */
-  protected Builder getAggregateBuilder(Aggregate e, Result inputResult,
-      boolean inputIsProject) {
-    if (inputIsProject) {
-      final Builder builder = inputResult.builder(e);
-      builder.clauses.add(Clause.GROUP_BY);
-      return builder;
-    } else {
-      return inputResult.builder(e, Clause.GROUP_BY);
-    }
-  }
-
-  /**
-   * Builds the group list for an Aggregate node.
-   *
-   * @param e The Aggregate node
-   * @param builder The SQL builder
-   * @param groupByList output group list
-   * @param selectList output select list
-   */
-  protected void buildAggGroupList(Aggregate e, Builder builder,
-      List<SqlNode> groupByList, List<SqlNode> selectList) {
-    for (int group : e.getGroupSet()) {
-      final SqlNode field = builder.context.field(group);
-      addSelect(selectList, field, e.getRowType());
-      groupByList.add(field);
-    }
-  }
-
-  /**
-   * Builds an aggregate query.
-   *
-   * @param e The Aggregate node
-   * @param builder The SQL builder
-   * @param selectList The precomputed group list
-   * @param groupByList The precomputed select list
-   * @return The aggregate query result
-   */
-  protected Result buildAggregate(Aggregate e, Builder builder,
-      List<SqlNode> selectList, List<SqlNode> groupByList) {
-=======
     for (AggregateCall aggCall : e.getAggCallList()) {
       SqlNode aggCallSqlNode = builder.context.toSql(aggCall);
       if (aggCall.getAggregation() instanceof SqlSingleValueAggFunction) {
@@ -468,7 +415,6 @@ public class RelToSqlConverter extends SqlImplementor
     }
   }
 
->>>>>>> b19c437bf ([CALCITE-2796] JDBC adapter should convert 'GROUP BY ROLLUP(x, y)' to 'GROUP BY x, y WITH ROLLUP' for MySQL 5)
   /** @see #dispatch */
   public Result visit(TableScan e) {
     final SqlIdentifier identifier = getSqlTargetTable(e);
