@@ -36,7 +36,7 @@ import org.apache.calcite.linq4j.function.Predicate2;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
-import com.google.common.collect.HashMultiset;
+>>>>>>> 8337355b6 ([CALCITE-2909] Optimize Enumerable SemiJoin with lazy computation of innerLookup (Ruben Quesada Lopez))
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
@@ -1735,6 +1735,7 @@ public abstract class EnumerableDefaults {
 
     return new AbstractEnumerable<TSource>() {
       public Enumerator<TSource> enumerator() {
+<<<<<<< HEAD
         // CALCITE-2909 Delay the computation of the innerLookup until the
         // moment when we are sure
         // that it will be really needed, i.e. when the first outer
@@ -1779,6 +1780,7 @@ public abstract class EnumerableDefaults {
       final boolean anti) {
     return new AbstractEnumerable<TSource>() {
       public Enumerator<TSource> enumerator() {
+=======
         // CALCITE-2909 Delay the computation of the innerLookup until the moment when we are sure
         // that it will be really needed, i.e. when the first outer enumerator item is processed
         final Supplier<Enumerable<TKey>> innerLookup = Suppliers.memoize(() ->
@@ -1788,7 +1790,7 @@ public abstract class EnumerableDefaults {
 
         return EnumerableDefaults.where(outer.enumerator(), v0 -> {
           final TKey key = outerKeySelector.apply(v0);
-          return innerLookup.contains(key);
+          return innerLookup.get().contains(key);
         });
       }
     };
