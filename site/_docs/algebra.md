@@ -307,7 +307,10 @@ return the `RelBuilder`.
 |:------------------- |:-----------
 | `scan(tableName)` | Creates a [TableScan]({{ site.apiRoot }}/org/apache/calcite/rel/core/TableScan.html).
 | `functionScan(operator, n, expr...)`<br/>`functionScan(operator, n, exprList)` | Creates a [TableFunctionScan]({{ site.apiRoot }}/org/apache/calcite/rel/core/TableFunctionScan.html) of the `n` most recent relational expressions.
+<<<<<<< HEAD
 | `transientScan(tableName [, rowType])` | Creates a [TableScan]({{ site.apiRoot }}/org/apache/calcite/rel/core/TableScan.html) on a [TransientTable]({{ site.apiRoot }}/org/apache/calcite/schema/TransientTable.html) with the given type (if not specified, the most recent relational expression's type will be used).
+=======
+>>>>>>> 71bc84579 ([CALCITE-1515] In RelBuilder, add functionScan method to create TableFunctionScan (Chunwei Lei))
 | `values(fieldNames, value...)`<br/>`values(rowType, tupleList)` | Creates a [Values]({{ site.apiRoot }}/org/apache/calcite/rel/core/Values.html).
 | `filter(correlVariables, exprList)`<br/>`filter(expr...)`<br/>`filter(exprList)` | Creates a [Filter]({{ site.apiRoot }}/org/apache/calcite/rel/core/Filter.html) over the AND of the given predicates.<br/><br/>The first form additionally allows to set correlation variables.
 | `project(expr...)`<br/>`project(exprList [, fieldNames])` | Creates a [Project]({{ site.apiRoot }}/org/apache/calcite/rel/core/Project.html). To override the default name, wrap expressions using `alias`, or specify the `fieldNames` argument.
@@ -380,6 +383,7 @@ Argument types:
 * `distribution` [RelDistribution]({{ site.apiRoot }}/org/apache/calcite/rel/RelDistribution.html)
 * `collation` [RelCollation]({{ site.apiRoot }}/org/apache/calcite/rel/RelCollation.html)
 * `operator` [SqlOperator]({{ site.apiRoot }}/org/apache/calcite/sql/SqlOperator.html)
+<<<<<<< HEAD
 * `correlationId` [CorrelationId]({{ site.apiRoot }}/org/apache/calcite/rel/core/CorrelationId.html)
 * `variablesSet` Iterable of
 =======
@@ -387,6 +391,8 @@ Argument types:
 * `distribution` [RelDistribution]({{ site.apiRoot }}/org/apache/calcite/rel/RelDistribution.html)
 * `collation` [RelCollation]({{ site.apiRoot }}/org/apache/calcite/rel/RelCollation.html)
 >>>>>>> 349a43772 ([CALCITE-2661] In RelBuilder, add methods for creating Exchange and SortExchange relational expressions (Chunwei Lei))
+=======
+>>>>>>> 71bc84579 ([CALCITE-1515] In RelBuilder, add functionScan method to create TableFunctionScan (Chunwei Lei))
 * `correlationId` [CorrelationId]({{ site.apiRoot }}/org/apache/calcite/rel/core/CorrelationId.html)
 * `variablesSet` Iterable of 
 >>>>>>> 1eca0c5dd ([CALCITE-3111] Allow custom implementations of Correlate in RelDecorrelator)

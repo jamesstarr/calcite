@@ -47,7 +47,7 @@ import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.core.SemiJoin;
 import org.apache.calcite.rel.core.Snapshot;
 import org.apache.calcite.rel.core.Sort;
-import org.apache.calcite.rel.core.Spool;
+>>>>>>> 71bc84579 ([CALCITE-1515] In RelBuilder, add functionScan method to create TableFunctionScan (Chunwei Lei))
 import org.apache.calcite.rel.core.TableFunctionScan;
 import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.core.Uncollect;
@@ -57,6 +57,7 @@ import org.apache.calcite.rel.hint.Hintable;
 import org.apache.calcite.rel.hint.RelHint;
 import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.logical.LogicalProject;
+import org.apache.calcite.rel.metadata.RelColumnMapping;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -82,8 +83,10 @@ import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.type.SqlReturnTypeInference;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
+import org.apache.calcite.sql.type.TableFunctionReturnTypeInference;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.util.Holder;
 import org.apache.calcite.util.ImmutableBeans;
@@ -151,6 +154,7 @@ public class RelBuilder {
   protected final RelOptSchema relOptSchema;
   private final RelFactories.ExchangeFactory exchangeFactory;
   private final RelFactories.SortExchangeFactory sortExchangeFactory;
+  private final RelFactories.TableFunctionScanFactory tableFunctionScanFactory;
   private final RelFactories.SnapshotFactory snapshotFactory;
   private final Deque<Frame> stack = new ArrayDeque<>();
   private final boolean simplify;
@@ -175,6 +179,9 @@ public class RelBuilder {
     this.sortExchangeFactory =
         Util.first(context.unwrap(RelFactories.SortExchangeFactory.class),
             RelFactories.DEFAULT_SORT_EXCHANGE_FACTORY);
+    this.tableFunctionScanFactory =
+        Util.first(context.unwrap(RelFactories.TableFunctionScanFactory.class),
+            RelFactories.DEFAULT_TABLE_FUNCTION_SCAN_FACTORY);
     this.snapshotFactory =
         Util.first(context.unwrap(RelFactories.SnapshotFactory.class),
             RelFactories.DEFAULT_SNAPSHOT_FACTORY);
@@ -1225,7 +1232,6 @@ public class RelBuilder {
     final RelNode scan = struct.scanFactory.createScan(cluster, relOptTable, ImmutableList.of());
     push(scan);
     rename(relOptTable.getRowType().getFieldNames());
->>>>>>> ca65868f2 ([CALCITE-2441] RelBuilder.scan should expand TranslatableTable and views)
     return this;
   }
 
@@ -1252,6 +1258,67 @@ public class RelBuilder {
     final Frame frame = stack.pop();
     final RelNode snapshot = snapshotFactory.createSnapshot(frame.rel, period);
     stack.push(new Frame(snapshot, frame.fields));
+    return this;
+  }
+
+
+  /**
+   * Gets column mappings of the operator.
+   *
+   * @param op operator instance
+   * @return column mappings associated with this function
+   */
+  private Set<RelColumnMapping> getColumnMappings(SqlOperator op) {
+    SqlReturnTypeInference inference = op.getReturnTypeInference();
+    if (inference instanceof TableFunctionReturnTypeInference) {
+      return ((TableFunctionReturnTypeInference) inference).getColumnMappings();
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Creates a RexCall to the {@code CURSOR} function by ordinal.
+   *
+   * @param inputCount Number of inputs
+   * @param ordinal The reference to the relational input
+   * @return RexCall to CURSOR function
+   */
+  public RexNode cursor(int inputCount, int ordinal) {
+    if (inputCount <= ordinal || ordinal < 0) {
+      throw new IllegalArgumentException("bad input count or ordinal");
+    }
+    // Refer to the "ordinal"th input as if it were a field
+    // (because that's how things are laid out inside a TableFunctionScan)
+    final RelNode input = peek(inputCount, ordinal);
+    return call(SqlStdOperatorTable.CURSOR,
+        getRexBuilder().makeInputRef(input.getRowType(), ordinal));
+  }
+
+  /** Creates a {@link TableFunctionScan}. */
+  public RelBuilder functionScan(SqlOperator operator,
+      int inputCount, RexNode... operands) {
+    return functionScan(operator, inputCount, ImmutableList.copyOf(operands));
+  }
+
+  /** Creates a {@link TableFunctionScan}. */
+  public RelBuilder functionScan(SqlOperator operator,
+      int inputCount, Iterable<? extends RexNode> operands) {
+    if (inputCount < 0 || inputCount > stack.size()) {
+      throw new IllegalArgumentException("bad input count");
+    }
+
+    // Gets inputs.
+    final List<RelNode> inputs = new LinkedList<>();
+    for (int i = 0; i < inputCount; i++) {
+      inputs.add(0, build());
+    }
+
+    final RexNode call = call(operator, ImmutableList.copyOf(operands));
+    final RelNode functionScan =
+        tableFunctionScanFactory.createTableFunctionScan(cluster, inputs,
+            call, null, getColumnMappings(operator));
+    push(functionScan);
     return this;
   }
 
