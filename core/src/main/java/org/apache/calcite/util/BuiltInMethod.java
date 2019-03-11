@@ -443,6 +443,7 @@ public enum BuiltInMethod {
   UNIX_TIMESTAMP_CEIL(DateTimeUtils.class, "unixTimestampCeil",
       TimeUnitRange.class, long.class),
   LAST_DAY(SqlFunctions.class, "lastDay", int.class),
+<<<<<<< HEAD
   DAYNAME_WITH_TIMESTAMP(SqlFunctions.class,
       "dayNameWithTimestamp", long.class, Locale.class),
   DAYNAME_WITH_DATE(SqlFunctions.class,
@@ -451,6 +452,8 @@ public enum BuiltInMethod {
       "monthNameWithTimestamp", long.class, Locale.class),
   MONTHNAME_WITH_DATE(SqlFunctions.class,
       "monthNameWithDate", int.class, Locale.class),
+=======
+>>>>>>> 133dfb6da ([CALCITE-2908] Implement SQL LAST_DAY function (Chunwei Lei))
   CURRENT_TIMESTAMP(SqlFunctions.class, "currentTimestamp", DataContext.class),
   CURRENT_TIME(SqlFunctions.class, "currentTime", DataContext.class),
   CURRENT_DATE(SqlFunctions.class, "currentDate", DataContext.class),

@@ -225,6 +225,16 @@ public abstract class ReturnTypes {
   public static final SqlReturnTypeInference DATE =
       explicit(SqlTypeName.DATE);
 
+<<<<<<< HEAD
+=======
+  /**
+   * Type-inference strategy whereby the result type of a call is nullable
+   * Date.
+   */
+  public static final SqlReturnTypeInference DATE_NULLABLE =
+      cascade(DATE, SqlTypeTransforms.TO_NULLABLE);
+
+>>>>>>> 133dfb6da ([CALCITE-2908] Implement SQL LAST_DAY function (Chunwei Lei))
   /**
    * Type-inference strategy whereby the result type of a call is nullable
    * DATE.

@@ -2548,6 +2548,9 @@ true
 !ok
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 133dfb6da ([CALCITE-2908] Implement SQL LAST_DAY function (Chunwei Lei))
 # [CALCITE-2908] Implement SQL LAST_DAY function
 with data(c_date, c_timestamp) as (select * from (values
     (DATE'1965-01-10', TIMESTAMP '1965-01-10 20:20:20'),
@@ -2569,6 +2572,7 @@ EXPR$0, EXPR$1
 2019-12-31, 2019-12-31
 !ok
 
+<<<<<<< HEAD
 =======
 >>>>>>> ffd60db46 (DX-11444: Prevent optimization of non-deterministic functions)
 =======
@@ -2577,4 +2581,6 @@ EXPR$0, EXPR$1
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
 =======
 >>>>>>> bc721fdca ([CALCITE-2670] Combine similar JSON aggregate functions in operator table)
+=======
+>>>>>>> 133dfb6da ([CALCITE-2908] Implement SQL LAST_DAY function (Chunwei Lei))
 # End misc.iq
