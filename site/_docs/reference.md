@@ -2619,17 +2619,24 @@ Not implemented:
 ### JSON Functions
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 In the following:
 
 * *jsonValue* is a character string containing a JSON value;
 * *path* is a character string containing a JSON path expression; mode flag `strict` or `lax` should be specified in the beginning of *path*.
 
+<<<<<<< HEAD
 =======
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+>>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 #### Query Functions
 
 | Operator syntax        | Description
 |:---------------------- |:-----------
+<<<<<<< HEAD
 <<<<<<< HEAD
 | JSON_EXISTS(jsonValue, path [ { TRUE &#124; FALSE &#124; UNKNOWN &#124; ERROR ) ON ERROR } ) | Whether a *jsonValue* satisfies a search criterion described using JSON path expression *path*
 | JSON_VALUE(jsonValue, path [ RETURNING type ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON EMPTY ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON ERROR ] ) | Extract an SQL scalar from a *jsonValue* using JSON path expression *path*
@@ -2654,10 +2661,25 @@ Note:
 * **ON ERROR** clause, and **ON EMPTY** clause define the fallback behavior of the function when an error is thrown or a null value is about to be returned.   
 * **ARRAY WRAPPER** clause defines how to represent JSON array result in JSON_QUERY function. Following is a comparision to demonstrate the difference among different wrapper behaviors.
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+| JSON_EXISTS(jsonValue, path [ { TRUE &#124; FALSE &#124; UNKNOWN &#124; ERROR ) ON ERROR } ) | Whether a *jsonValue* satisfies a search criterion described using JSON path expression *path*
+| JSON_VALUE(jsonValue, path [ RETURNING type ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON EMPTY ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON ERROR ] ) | Extract an SQL scalar from a *jsonValue* using JSON path expression *path*
+| JSON_QUERY(jsonValue, path [ { WITHOUT [ ARRAY ] &#124; WITH [ CONDITIONAL &#124; UNCONDITIONAL ] [ ARRAY ] } WRAPPER ] [ { ERROR &#124; NULL &#124; EMPTY ARRAY &#124; EMPTY OBJECT } ON EMPTY ] [ { ERROR &#124; NULL &#124; EMPTY ARRAY &#124; EMPTY OBJECT } ON ERROR ] ) | Extract a JSON object or JSON array from *jsonValue* using the *path* JSON path expression
+
+Note:
+
+* The `ON ERROR` and `ON EMPTY` clauses define the fallback
+  behavior of the function when an error is thrown or a null value
+  is about to be returned.
+* The `ARRAY WRAPPER` clause defines how to represent a JSON array result
+  in `JSON_QUERY` function. The following examples compare the wrapper
+  behaviors.
+>>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 
 Example Data:
 
 ```JSON
+<<<<<<< HEAD
 <<<<<<< HEAD
 {"a": "[1,2]", "b": [1,2], "c": "hi"}
 ```
@@ -2669,6 +2691,9 @@ Comparison:
 |JSON_VALUE                                  | [1, 2]      | error       | hi
 =======
 { "a": "[1,2]", "b": [1,2], "c": "hi"}
+=======
+{"a": "[1,2]", "b": [1,2], "c": "hi"}
+>>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 ```
 
 Comparision:
@@ -2690,10 +2715,14 @@ Not implemented:
 | Operator syntax        | Description
 |:---------------------- |:-----------
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 | JSON_OBJECT( { [ KEY ] name VALUE value [ FORMAT JSON ] &#124; name : value [ FORMAT JSON ] } * [ { NULL &#124; ABSENT } ON NULL ] ) | Construct JSON object using a series of key (*name*) value (*value*) pairs
 | JSON_OBJECTAGG( { [ KEY ] name VALUE value [ FORMAT JSON ] &#124; name : value [ FORMAT JSON ] } [ { NULL &#124; ABSENT } ON NULL ] ) | Aggregate function to construct a JSON object using a key (*name*) value (*value*) pair
 | JSON_ARRAY( { value [ FORMAT JSON ] } * [ { NULL &#124; ABSENT } ON NULL ] ) | Construct a JSON array using a series of values (*value*)
 | JSON_ARRAYAGG( value [ FORMAT JSON ] [ ORDER BY orderItem [, orderItem ]* ] [ { NULL &#124; ABSENT } ON NULL ] ) | Aggregate function to construct a JSON array using a value (*value*)
+<<<<<<< HEAD
 
 Note:
 
@@ -2979,14 +3008,24 @@ Result
 | JSON_OBJECTAGG( { [ KEY ] name VALUE value [ FORMAT JSON ] &#124; name : value [ FORMAT JSON ] } [ { NULL &#124; ABSENT } ON NULL ] ) | Aggregate function to construct json object using a key (**name**) value (**value**) pair
 | JSON_ARRAY( { value [ FORMAT JSON ] } * [ { NULL &#124; ABSENT } ON NULL ] ) | Construct json array using a series of values (**value**)
 | JSON_ARRAYAGG( value [ FORMAT JSON ] [ { NULL &#124; ABSENT } ON NULL ] ) | Aggregate function to construct json array using a value (**value**)
+=======
+>>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 
 Note:
 
-* The flag **FORMAT JSON** indicates the value is formatted as JSON character string. When **FORMAT JSON** is used, value should be de-parse from JSON character string to SQL structured value.  
-* **ON NULL** clause defines how the JSON output represents null value. The default null behavior of **JSON_OBJECT** and **JSON_OBJECTAGG** is *NULL ON NULL*, and for **JSON_ARRAY** and **JSON_ARRAYAGG** it is *ABSENT ON NULL*.
+* The flag `FORMAT JSON` indicates the value is formatted as JSON
+  character string. When `FORMAT JSON` is used, the value should be
+  de-parse from JSON character string to a SQL structured value.
+* `ON NULL` clause defines how the JSON output represents null
+  values. The default null behavior of `JSON_OBJECT` and
+  `JSON_OBJECTAGG` is `NULL ON NULL`, and for `JSON_ARRAY` and
+  `JSON_ARRAYAGG` it is `ABSENT ON NULL`.
+* If `ORDER BY` clause is provided, `JSON_ARRAYAGG` sorts the
+  input rows into the specified order before performing aggregation.
 
 #### Comparison Operators
 
+<<<<<<< HEAD
 | Operator syntax                                   | Description
 |:------------------------------------------------- |:-----------
 | value IS JSON [ VALUE ]                           | Whether *value* is a json value, *value* is in character string type
@@ -2998,17 +3037,56 @@ Note:
 | value IS JSON ARRAY                               | Whether *value* is a json array, *value* is in character string type
 | value IS NOT JSON ARRAY                           | Whether *value* is not a json array, *value* is in character string type
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+| Operator syntax                   | Description
+|:--------------------------------- |:-----------
+| jsonValue IS JSON [ VALUE ]       | Whether *jsonValue* is a JSON value
+| jsonValue IS NOT JSON [ VALUE ]   | Whether *jsonValue* is not a JSON value
+| jsonValue IS JSON SCALAR          | Whether *jsonValue* is a JSON scalar value
+| jsonValue IS NOT JSON SCALAR      | Whether *jsonValue* is not a JSON scalar value
+| jsonValue IS JSON OBJECT          | Whether *jsonValue* is a JSON object
+| jsonValue IS NOT JSON OBJECT      | Whether *jsonValue* is not a JSON object
+| jsonValue IS JSON ARRAY           | Whether *jsonValue* is a JSON array
+| jsonValue IS NOT JSON ARRAY       | Whether *jsonValue* is not a JSON array
+>>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 
 #### MySQL Specific Operators
 
-| Operator syntax                                   | Description
-|:------------------------------------------------- |:-----------
-| JSON_TYPE(value)                                  | Returns a string indicating the type of a JSON **value**. This can be an object, an array, or a scalar type
-| JSON_DEPTH(value)                                 | Returns a integer indicating the depth of a JSON **value**. This can be an object, an array, or a scalar type
+| Operator syntax                   | Description
+|:--------------------------------- |:-----------
+| JSON_TYPE(jsonValue)              | Returns a string value indicating the type of a *jsonValue*
+| JSON_DEPTH(jsonValue)             | Returns an integer value indicating the depth of a *jsonValue*
+| JSON_PRETTY(jsonValue)            | Returns a pretty-printing of *jsonValue*
+| JSON_LENGTH(jsonValue [, path ])  | Returns a integer indicating the length of *jsonValue*
 
-* JSON_TYPE
+Note:
 
-Example SQL:
+* `JSON_TYPE` / `JSON_DEPTH` return null if the argument is null
+* `JSON_TYPE` / `JSON_DEPTH` / `JSON_PRETTY` throw error if the argument is not a valid JSON value
+* `JSON_TYPE` generally returns an upper-case string flag indicating the type of the JSON input. Currently supported supported type flags are:
+  * INTEGER
+  * STRING
+  * FLOAT
+  * DOUBLE
+  * LONG
+  * BOOLEAN
+  * DATE
+  * OBJECT
+  * ARRAY
+  * NULL
+* `JSON_DEPTH` defines a JSON value's depth as follows:
+  * An empty array, empty object, or scalar value has depth 1;
+  * A non-empty array containing only elements of depth 1 or non-empty object containing only member values of depth 1 has depth 2;
+  * Otherwise, a JSON document has depth greater than 2.
+* `JSON_LENGTH` defines a JSON value's length as follows:
+  * A scalar value has length 1;
+  * The length of array or object is the number of elements is contains.
+
+Usage Examples:
+
+##### JSON_TYPE example
+
+SQL
 
 ```SQL
 SELECT JSON_TYPE(v) AS c1
@@ -3019,15 +3097,15 @@ FROM (VALUES ('{"a": [10, true],"b": "[10, true]"}')) AS t(v)
 LIMIT 10;
 ```
 
-Result:
+Result
 
 | c1     | c2    | c3      | c4      |
 | ------ | ----- | ------- | ------- |
 | OBJECT | ARRAY | INTEGER | BOOLEAN |
 
-* JSON_DEPTH
+##### JSON_DEPTH example
 
-Example SQL:
+SQL
 
 ```SQL
 SELECT JSON_DEPTH(v) AS c1
@@ -3038,11 +3116,20 @@ FROM (VALUES ('{"a": [10, true],"b": "[10, true]"}')) AS t(v)
 LIMIT 10;
 ```
 
-Result:
+Result
 
 | c1     | c2    | c3      | c4      |
 | ------ | ----- | ------- | ------- |
 | 3      | 2     | 1       | 1       |
+
+Not implemented:
+
+* JSON_LENGTH
+* JSON_INSERT
+* JSON_SET
+* JSON_REPLACE
+* JSON_REMOVE
+* JSON_KEYS
 
 ## User-defined functions
 
