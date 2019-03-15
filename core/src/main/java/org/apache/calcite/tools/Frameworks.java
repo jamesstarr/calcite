@@ -18,7 +18,6 @@ package org.apache.calcite.tools;
 
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteSchema;
-import org.apache.calcite.materialize.MapSqlStatisticProvider;
 import org.apache.calcite.materialize.SqlStatisticProvider;
 import org.apache.calcite.plan.Context;
 import org.apache.calcite.plan.Contexts;
@@ -40,6 +39,7 @@ import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlRexConvertletTable;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
+import org.apache.calcite.statistic.QuerySqlStatisticProvider;
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
@@ -219,7 +219,7 @@ public class Frameworks {
       sqlToRelConverterConfig = SqlToRelConverter.Config.DEFAULT;
       typeSystem = RelDataTypeSystem.DEFAULT;
       evolveLattice = false;
-      statisticProvider = MapSqlStatisticProvider.INSTANCE;
+      statisticProvider = QuerySqlStatisticProvider.SILENT_CACHING_INSTANCE;
     }
 
     /** Creates a ConfigBuilder, initializing from an existing config. */
