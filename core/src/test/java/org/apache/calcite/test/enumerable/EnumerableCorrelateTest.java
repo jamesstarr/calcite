@@ -138,11 +138,10 @@ public class EnumerableCorrelateTest {
             "empid=200");
   }
 
-<<<<<<< HEAD
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2920">[CALCITE-2920]
    * RelBuilder: new method to create an anti-join</a>. */
-  @Test void antiJoinCorrelate() {
+  @Test public void antiJoinCorrelate() {
     tester(false, new JdbcTest.HrSchema())
           .query("?")
           .withHook(Hook.PLANNER, (Consumer<RelOptPlanner>) planner -> {
@@ -162,55 +161,19 @@ public class EnumerableCorrelateTest {
                     builder.equals(
                         builder.field(2, "d", "deptno"),
                         builder.field(2, "e", "deptno")))
-                .project(
-                    builder.field("deptno"),
-                    builder.field("name"))
-                .build())
+                    .project(
+                        builder.field("deptno"),
+                        builder.field("name"))
+                    .build())
         .returnsUnordered(
             "deptno=30; name=Marketing",
             "deptno=40; name=HR");
   }
 
-  @Test void nonEquiAntiJoinCorrelate() {
-    tester(false, new JdbcTest.HrSchema())
-        .query("?")
-        .withHook(Hook.PLANNER, (Consumer<RelOptPlanner>) planner -> {
-          // force the antijoin to run via EnumerableCorrelate
-          // instead of EnumerableNestedLoopJoin
-          planner.addRule(CoreRules.JOIN_TO_CORRELATE);
-          planner.removeRule(EnumerableRules.ENUMERABLE_JOIN_RULE);
-        })
-        .withRel(
-            // Retrieve employees with the top salary in their department. Equivalent SQL:
-            //   SELECT e.name, e.salary FROM emps e
-            //   WHERE NOT EXISTS (
-            //     SELECT 1 FROM emps e2
-            //     WHERE e.deptno = e2.deptno AND e2.salary > e.salary)
-            builder -> builder
-                .scan("s", "emps").as("e")
-                .scan("s", "emps").as("e2")
-                .antiJoin(
-                    builder.and(
-                        builder.equals(
-                            builder.field(2, "e", "deptno"),
-                            builder.field(2, "e2", "deptno")),
-                        builder.call(
-                            SqlStdOperatorTable.GREATER_THAN,
-                            builder.field(2, "e2", "salary"),
-                            builder.field(2, "e", "salary"))))
-                .project(
-                    builder.field("name"),
-                    builder.field("salary"))
-                .build())
-        .returnsUnordered(
-            "name=Theodore; salary=11500.0",
-            "name=Eric; salary=8000.0");
-  }
-
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2920">[CALCITE-2920]
    * RelBuilder: new method to create an antijoin</a> */
-  @Test void antiJoinCorrelateWithNullValues() {
+  @Test public void antiJoinCorrelateWithNullValues() {
     final Integer salesDeptNo = 10;
     tester(false, new JdbcTest.HrSchema())
         .query("?")
@@ -252,8 +215,11 @@ public class EnumerableCorrelateTest {
         .returnsUnordered("empid=200; name=Eric");
   }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 7feb6b7bd ([CALCITE-2596] When translating correlated variables in enumerable convention, convert not-null boxed primitive values to primitive (Stamatis Zampetakis))
+=======
+>>>>>>> c8ecee92a ([CALCITE-2920] In RelBuilder, add antiJoin method (Ruben Quesada Lopez))
   private CalciteAssert.AssertThat tester(boolean forceDecorrelate,
       Object schema) {
     return CalciteAssert.that()

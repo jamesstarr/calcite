@@ -2160,7 +2160,23 @@ public class RelBuilder {
     return join(joinType, conditions);
   }
 
-  /** Creates a {@link SemiJoin}. */
+  /** Creates a {@link SemiJoin}.
+   *
+   * <p>A semi-join is a form of join that combines two relational expressions
+   * according to some condition, and outputs only rows from the left input for
+   * which at least one row from the right input matches. It only outputs
+   * columns from the left input, and ignores duplicates on the right.
+   *
+   * <p>For example, {@code EMP semi-join DEPT} finds all {@code EMP} records
+   * that do not have a corresponding {@code DEPT} record, similar to the
+   * following SQL:
+   *
+   * <blockquote><pre>
+   * SELECT * FROM EMP
+   * WHERE EXISTS (SELECT 1 FROM DEPT
+   *     WHERE DEPT.DEPTNO = EMP.DEPTNO)</pre>
+   * </blockquote>
+   */
   public RelBuilder semiJoin(Iterable<? extends RexNode> conditions) {
     final Frame right = stack.pop();
     final RelNode semiJoin =

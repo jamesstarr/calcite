@@ -935,7 +935,7 @@ import org.hamcrest.Matcher;
       try (Connection c = createConnection()) {
         f.accept(c);
       } catch (SQLException e) {
-        TestUtil.rethrow(e);
+        throw TestUtil.rethrow(e);
       }
       return this;
     }
@@ -1137,12 +1137,16 @@ import org.hamcrest.Matcher;
       if (plan != null) {
         return;
       }
-      addHook(Hook.JAVA_PLAN, (Consumer<String>) a0 -> plan = a0);
+      addHook(Hook.JAVA_PLAN, this::setPlan);
       withConnection(connection -> {
         assertQuery(connection, sql, limit, materializationsEnabled,
             hooks, null, checkUpdate, null);
         assertNotNull(plan);
       });
+    }
+
+    private void setPlan(String plan) {
+      this.plan = plan;
     }
 
     /** Runs the query and applies a checker to the generated third-party
@@ -1222,11 +1226,21 @@ import org.hamcrest.Matcher;
       return withHook(Hook.STRING_TO_QUERY,
           (Consumer<Pair<FrameworkConfig, Holder<CalcitePrepare.Query>>>)
           pair -> {
-
-            final RelBuilder b = RelBuilder.create(pair.left);
+            final FrameworkConfig config = forceDecorrelate(pair.left);
+            final RelBuilder b = RelBuilder.create(config);
             pair.right.set(CalcitePrepare.Query.of(relFn.apply(b)));
 
           });
+    }
+
+    /** Creates a {@link FrameworkConfig} that does not decorrelate. */
+    private FrameworkConfig forceDecorrelate(FrameworkConfig config) {
+      return Frameworks.newConfigBuilder(config)
+          .context(
+              Contexts.of(new CalciteConnectionConfigImpl(new Properties())
+                  .set(CalciteConnectionProperty.FORCE_DECORRELATE,
+                      Boolean.toString(false))))
+          .build();
     }
   }
 
