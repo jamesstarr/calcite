@@ -1533,6 +1533,26 @@ public class RelBuilderTest {
     assertThat(root, hasTree(expected));
   }
 
+  @Test public void testAntiJoin() {
+    // Equivalent SQL:
+    //   SELECT * FROM dept d
+    //   WHERE NOT EXISTS (SELECT 1 FROM emp e WHERE e.deptno = d.deptno)
+    final RelBuilder builder = RelBuilder.create(config().build());
+    RelNode root = builder
+        .scan("DEPT")
+        .scan("EMP")
+        .antiJoin(
+            builder.equals(
+                builder.field(2, 0, "DEPTNO"),
+                builder.field(2, 1, "DEPTNO")))
+        .build();
+    final String expected = ""
+        + "LogicalJoin(condition=[=($0, $10)], joinType=[anti])\n"
+        + "  LogicalTableScan(table=[[scott, DEPT]])\n"
+        + "  LogicalTableScan(table=[[scott, EMP]])\n";
+    assertThat(root, hasTree(expected));
+  }
+
   @Test public void testInQuery() {
     // Equivalent SQL:
     //   SELECT *

@@ -2132,7 +2132,23 @@ public class RelBuilder {
     return join(joinType, conditions);
   }
 
-  /** Creates a {@link SemiJoin}. */
+  /** Creates a {@link SemiJoin}.
+   *
+   * <p>A semi-join is a form of join that combines two relational expressions
+   * according to some condition, and outputs only rows from the left input for
+   * which at least one row from the right input matches. It only outputs
+   * columns from the left input, and ignores duplicates on the right.
+   *
+   * <p>For example, {@code EMP semi-join DEPT} finds all {@code EMP} records
+   * that do not have a corresponding {@code DEPT} record, similar to the
+   * following SQL:
+   *
+   * <blockquote><pre>
+   * SELECT * FROM EMP
+   * WHERE EXISTS (SELECT 1 FROM DEPT
+   *     WHERE DEPT.DEPTNO = EMP.DEPTNO)</pre>
+   * </blockquote>
+   */
   public RelBuilder semiJoin(Iterable<? extends RexNode> conditions) {
     final Frame right = stack.pop();
     final RelNode semiJoin =
@@ -2152,6 +2168,43 @@ public class RelBuilder {
    * @see #semiJoin(Iterable) */
   public RelBuilder semiJoin(RexNode... conditions) {
     return semiJoin(ImmutableList.copyOf(conditions));
+  }
+
+  /** Creates an anti-join.
+   *
+   * <p>An anti-join is a form of join that combines two relational expressions
+   * according to some condition, but outputs only rows from the left input
+   * for which no rows from the right input match.
+   *
+   * <p>For example, {@code EMP anti-join DEPT} finds all {@code EMP} records
+   * that do not have a corresponding {@code DEPT} record, similar to the
+   * following SQL:
+   *
+   * <blockquote><pre>
+   * SELECT * FROM EMP
+   * WHERE NOT EXISTS (SELECT 1 FROM DEPT
+   *     WHERE DEPT.DEPTNO = EMP.DEPTNO)</pre>
+   * </blockquote>
+   */
+  public RelBuilder antiJoin(Iterable<? extends RexNode> conditions) {
+    final Frame right = stack.pop();
+    final RelNode antiJoin =
+        struct.joinFactory.createJoin(peek(),
+            right.rel,
+            ImmutableList.of(),
+            and(conditions),
+            ImmutableSet.of(),
+            JoinRelType.ANTI,
+            false);
+    replaceTop(antiJoin);
+    return this;
+  }
+
+  /** Creates an anti-join.
+   *
+   * @see #antiJoin(Iterable) */
+  public RelBuilder antiJoin(RexNode... conditions) {
+    return antiJoin(ImmutableList.copyOf(conditions));
   }
 
   /** Assigns a table alias to the top entry on the stack. */
