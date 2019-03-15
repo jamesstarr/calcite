@@ -21,6 +21,7 @@ import org.apache.calcite.plan.Context;
 import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable;
+import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.plan.ViewExpanders;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelDistribution;
@@ -173,6 +174,12 @@ public class RelFactories {
     /** Creates a sort. */
     RelNode createSort(RelNode input, RelCollation collation, RexNode offset,
         RexNode fetch);
+
+    @Deprecated // to be removed before 2.0
+    default RelNode createSort(RelTraitSet traitSet, RelNode input,
+        RelCollation collation, RexNode offset, RexNode fetch) {
+      return createSort(input, collation, offset, fetch);
+    }
   }
 
   /**

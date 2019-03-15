@@ -211,9 +211,10 @@ public interface SqlSplittableAggFunction {
     public AggregateCall merge(AggregateCall top, AggregateCall bottom) {
       if (bottom.getAggregation().getKind() == SqlKind.COUNT
           && top.getAggregation().getKind() == SqlKind.SUM) {
-        return AggregateCall.create(bottom.getAggregation(), bottom.isDistinct(),
-            bottom.isApproximate(), bottom.getArgList(), bottom.filterArg,
-            bottom.getCollation(), bottom.getType(), top.getName());
+        return AggregateCall.create(bottom.getAggregation(),
+            bottom.isDistinct(), bottom.isApproximate(), false,
+            bottom.getArgList(), bottom.filterArg, bottom.getCollation(),
+            bottom.getType(), top.getName());
       } else {
         return null;
       }
@@ -255,9 +256,10 @@ public interface SqlSplittableAggFunction {
 
     public AggregateCall merge(AggregateCall top, AggregateCall bottom) {
       if (top.getAggregation().getKind() == bottom.getAggregation().getKind()) {
-        return AggregateCall.create(bottom.getAggregation(), bottom.isDistinct(),
-            bottom.isApproximate(), bottom.getArgList(), bottom.filterArg,
-            bottom.getCollation(), bottom.getType(), top.getName());
+        return AggregateCall.create(bottom.getAggregation(),
+            bottom.isDistinct(), bottom.isApproximate(), false,
+            bottom.getArgList(), bottom.filterArg, bottom.getCollation(),
+            bottom.getType(), top.getName());
       } else {
         return null;
       }
@@ -325,9 +327,10 @@ public interface SqlSplittableAggFunction {
       if (topKind == bottom.getAggregation().getKind()
           && (topKind == SqlKind.SUM
               || topKind == SqlKind.SUM0)) {
-        return AggregateCall.create(bottom.getAggregation(), bottom.isDistinct(),
-            bottom.isApproximate(), bottom.getArgList(), bottom.filterArg,
-            bottom.getCollation(), bottom.getType(), top.getName());
+        return AggregateCall.create(bottom.getAggregation(),
+            bottom.isDistinct(), bottom.isApproximate(), false,
+            bottom.getArgList(), bottom.filterArg, bottom.getCollation(),
+            bottom.getType(), top.getName());
       } else {
         return null;
       }

@@ -21,6 +21,7 @@ import org.apache.calcite.rel.RelRoot;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParseException;
+import org.apache.calcite.statistic.MapSqlStatisticProvider;
 import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.test.FoodMartQuerySet;
 import org.apache.calcite.test.SlowTests;
@@ -334,10 +335,7 @@ public class LatticeSuggesterTest {
         + "[foodmart, warehouse_class]], "
         + "edges: ["
         + "Step([foodmart, agg_c_14_sales_fact_1997], [foodmart, store], store_id:store_id), "
-        + "Step([foodmart, agg_c_14_sales_fact_1997], [foodmart, time_by_day],"
-        + " month_of_year:month_of_year), "
         + "Step([foodmart, customer], [foodmart, region], customer_region_id:region_id), "
-        + "Step([foodmart, customer], [foodmart, store], state_province:store_state), "
         + "Step([foodmart, employee], [foodmart, employee], supervisor_id:employee_id), "
         + "Step([foodmart, employee], [foodmart, position], position_id:position_id), "
         + "Step([foodmart, employee], [foodmart, store], store_id:store_id), "
@@ -352,212 +350,7 @@ public class LatticeSuggesterTest {
         + "Step([foodmart, product], [foodmart, product_class],"
         + " product_class_id:product_class_id), "
         + "Step([foodmart, product], [foodmart, store], product_class_id:store_id), "
-        + "Step([foodmart, store], [foodmart, region], region_id:region_id), "
-        + "Step([foodmart, store], [foodmart, warehouse], store_id:stores_id), "
-        + "Step([foodmart, warehouse], [foodmart, warehouse_class],"
-        + " warehouse_class_id:warehouse_class_id)])";
-    assertThat(t.s.space.g.toString(), is(expected));
-    if (evolve) {
-      // compared to evolve=false, there are a few more nodes (133 vs 117),
-      // the same number of paths, and a lot fewer lattices (27 vs 376)
-      assertThat(t.s.space.nodeMap.size(), is(133));
-      assertThat(t.s.latticeMap.size(), is(27));
-      assertThat(t.s.space.pathMap.size(), is(42));
-    } else {
-      assertThat(t.s.space.nodeMap.size(), is(117));
-      assertThat(t.s.latticeMap.size(), is(386));
-      assertThat(t.s.space.pathMap.size(), is(42));
-    }
-  }
-
-  @Test public void testFoodMartAll() throws Exception {
-    checkFoodMartAll(false);
-  }
-
-  @Test public void testFoodMartAllEvolve() throws Exception {
-    checkFoodMartAll(true);
-  }
-
-  @Test public void testContains() throws Exception {
-    final Tester t = new Tester().foodmart();
-    final LatticeRootNode fNode = t.node("select *\n"
-        + "from \"sales_fact_1997\"");
-    final LatticeRootNode fcNode = t.node("select *\n"
-        + "from \"sales_fact_1997\"\n"
-        + "join \"customer\" using (\"customer_id\")");
-    final LatticeRootNode fcpNode = t.node("select *\n"
-        + "from \"sales_fact_1997\"\n"
-        + "join \"customer\" using (\"customer_id\")\n"
-        + "join \"product\" using (\"product_id\")");
-    assertThat(fNode.contains(fNode), is(true));
-    assertThat(fNode.contains(fcNode), is(false));
-    assertThat(fNode.contains(fcpNode), is(false));
-    assertThat(fcNode.contains(fNode), is(true));
-    assertThat(fcNode.contains(fcNode), is(true));
-    assertThat(fcNode.contains(fcpNode), is(false));
-    assertThat(fcpNode.contains(fNode), is(true));
-    assertThat(fcpNode.contains(fcNode), is(true));
-    assertThat(fcpNode.contains(fcpNode), is(true));
-  }
-
-  @Test public void testEvolve() throws Exception {
-    final Tester t = new Tester().foodmart().withEvolve(true);
-
-    final String q0 = "select count(*)\n"
-        + "from \"sales_fact_1997\"";
-    final String l0 = "sales_fact_1997:[COUNT()]";
-    t.addQuery(q0);
-    assertThat(t.s.latticeMap.size(), is(1));
-    assertThat(Iterables.getOnlyElement(t.s.latticeMap.keySet()),
-        is(l0));
-
-    final String q1 = "select sum(\"unit_sales\")\n"
-        + "from \"sales_fact_1997\"\n"
-        + "join \"customer\" using (\"customer_id\")\n"
-        + "group by \"customer\".\"city\"";
-    final String l1 = "sales_fact_1997 (customer:customer_id)"
-        + ":[COUNT(), SUM(sales_fact_1997.unit_sales)]";
-    t.addQuery(q1);
-    assertThat(t.s.latticeMap.size(), is(1));
-    assertThat(Iterables.getOnlyElement(t.s.latticeMap.keySet()),
-        is(l1));
-
-    final String q2 = "select count(distinct \"the_day\")\n"
-        + "from \"sales_fact_1997\"\n"
-        + "join \"time_by_day\" using (\"time_id\")\n"
-        + "join \"product\" using (\"product_id\")";
-    final String l2 = "sales_fact_1997"
-        + " (customer:customer_id product:product_id time_by_day:time_id)"
-        + ":[COUNT(), SUM(sales_fact_1997.unit_sales),"
-        + " COUNT(DISTINCT time_by_day.the_day)]";
-    t.addQuery(q2);
-    assertThat(t.s.latticeMap.size(), is(1));
-    assertThat(Iterables.getOnlyElement(t.s.latticeMap.keySet()),
-        is(l2));
-
-    final Lattice lattice = Iterables.getOnlyElement(t.s.latticeMap.values());
-    final List<List<String>> tableNames =
-        lattice.tables().stream().map(table ->
-            table.t.getQualifiedName())
-            .sorted(Comparator.comparing(Object::toString))
-            .collect(Util.toImmutableList());
-    assertThat(tableNames.toString(),
-        is("[[foodmart, customer],"
-            + " [foodmart, product],"
-            + " [foodmart, sales_fact_1997],"
-            + " [foodmart, time_by_day]]"));
-
-    final String q3 = "select min(\"product\".\"product_id\")\n"
-        + "from \"sales_fact_1997\"\n"
-        + "join \"product\" using (\"product_id\")\n"
-        + "join \"product_class\" as pc using (\"product_class_id\")\n"
-        + "group by pc.\"product_department\"";
-    final String l3 = "sales_fact_1997"
-        + " (customer:customer_id product:product_id"
-        + " (product_class:product_class_id) time_by_day:time_id)"
-        + ":[COUNT(), SUM(sales_fact_1997.unit_sales),"
-        + " MIN(product.product_id), COUNT(DISTINCT time_by_day.the_day)]";
-    t.addQuery(q3);
-    assertThat(t.s.latticeMap.size(), is(1));
-    assertThat(Iterables.getOnlyElement(t.s.latticeMap.keySet()),
-        is(l3));
-  }
-
-  @Test public void testExpression() throws Exception {
-    final Tester t = new Tester().foodmart().withEvolve(true);
-
-    final String q0 = "select\n"
-        + "  \"fname\" || ' ' || \"lname\" as \"full_name\",\n"
-        + "  count(*) as c,\n"
-        + "  avg(\"total_children\" - \"num_children_at_home\")\n"
-        + "from \"customer\"\n"
-        + "group by \"fname\", \"lname\"";
-    final String l0 = "customer:[COUNT(), AVG($f2)]";
-    t.addQuery(q0);
-    assertThat(t.s.latticeMap.size(), is(1));
-    assertThat(Iterables.getOnlyElement(t.s.latticeMap.keySet()),
-        is(l0));
-    final Lattice lattice = Iterables.getOnlyElement(t.s.latticeMap.values());
-    final List<Lattice.DerivedColumn> derivedColumns = lattice.columns.stream()
-        .filter(c -> c instanceof Lattice.DerivedColumn)
-        .map(c -> (Lattice.DerivedColumn) c)
-        .collect(Collectors.toList());
-    assertThat(derivedColumns.size(), is(2));
-    final List<String> tables = ImmutableList.of("customer");
-    assertThat(derivedColumns.get(0).tables, is(tables));
-    assertThat(derivedColumns.get(1).tables, is(tables));
-  }
-
-  @Test public void testExpressionInJoin() throws Exception {
-    final Tester t = new Tester().foodmart().withEvolve(true);
-
-    final String q0 = "select\n"
-        + "  \"fname\" || ' ' || \"lname\" as \"full_name\",\n"
-        + "  count(*) as c,\n"
-        + "  avg(\"total_children\" - \"num_children_at_home\")\n"
-        + "from \"customer\" join \"sales_fact_1997\" using (\"customer_id\")\n"
-        + "group by \"fname\", \"lname\"";
-    final String l0 = "sales_fact_1997 (customer:customer_id)"
-        + ":[COUNT(), AVG($f2)]";
-    t.addQuery(q0);
-    assertThat(t.s.latticeMap.size(), is(1));
-    assertThat(Iterables.getOnlyElement(t.s.latticeMap.keySet()),
-        is(l0));
-    final Lattice lattice = Iterables.getOnlyElement(t.s.latticeMap.values());
-    final List<Lattice.DerivedColumn> derivedColumns = lattice.columns.stream()
-        .filter(c -> c instanceof Lattice.DerivedColumn)
-        .map(c -> (Lattice.DerivedColumn) c)
-        .collect(Collectors.toList());
-    assertThat(derivedColumns.size(), is(2));
-    final List<String> tables = ImmutableList.of("customer");
-    assertThat(derivedColumns.get(0).tables, is(tables));
-    assertThat(derivedColumns.get(1).tables, is(tables));
-  }
-
-  /** Creates a matcher that matches query graphs to strings. */
-  private BaseMatcher<List<Lattice>> isGraphs(
-      String... strings) {
-    final List<String> expectedList = Arrays.asList(strings);
-    return new BaseMatcher<List<Lattice>>() {
-      public boolean matches(Object item) {
-        //noinspection unchecked
-        return item instanceof List
-            && ((List) item).size() * 2 == expectedList.size()
-            && allEqual((List) item, expectedList);
-      }
-
-      private boolean allEqual(List<Lattice> items,
-          List<String> expects) {
-        for (int i = 0; i < items.size(); i++) {
-          final Lattice lattice = items.get(i);
-          final String expectedNode = expects.get(2 * i);
-          if (!lattice.rootNode.digest.equals(expectedNode)) {
-            return false;
-          }
-          final String expectedMeasures = expects.get(2 * i + 1);
-          if (!lattice.defaultMeasures.toString().equals(expectedMeasures)) {
-            return false;
-          }
-        }
-        return true;
-      }
-
-      public void describeTo(Description description) {
-        description.appendValue(expectedList);
-      }
-    };
-  }
-
-  /** Test helper. */
-  private static class Tester {
-    final LatticeSuggester s;
-    private final FrameworkConfig config;
-
-    Tester() {
-      this(
-          Frameworks.newConfigBuilder()
-              .defaultSchema(schemaFrom(CalciteAssert.SchemaSpec.SCOTT))
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
+              .statisticProvider(MapSqlStatisticProvider.INSTANCE)
               .build());
     }
 

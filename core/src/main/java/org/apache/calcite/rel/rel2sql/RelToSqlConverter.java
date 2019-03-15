@@ -17,7 +17,7 @@
 package org.apache.calcite.rel.rel2sql;
 
 import org.apache.calcite.adapter.jdbc.JdbcTable;
-import org.apache.calcite.linq4j.Ord;
+>>>>>>> 0a6ba20d6 ([CALCITE-2914] Add a new statistic provider, to improve how LatticeSuggester deduces foreign keys)
 import org.apache.calcite.linq4j.tree.Expressions;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelCollations;
@@ -214,7 +214,6 @@ public class RelToSqlConverter extends SqlImplementor
     return result(join, leftResult, rightResult);
   }
 
->>>>>>> 8743a4811 (CALCITE-2856-Emulating Cross Join For SparkSqlDialect)
   private boolean isCrossJoin(final Join e) {
     return e.getJoinType() == JoinRelType.INNER && e.getCondition().isAlwaysTrue();
   }
@@ -417,7 +416,16 @@ public class RelToSqlConverter extends SqlImplementor
 
   /** @see #dispatch */
   public Result visit(TableScan e) {
-    final SqlIdentifier identifier = getSqlTargetTable(e);
+    final SqlIdentifier identifier;
+    final JdbcTable jdbcTable = e.getTable().unwrap(JdbcTable.class);
+    if (jdbcTable != null) {
+      // Use the foreign catalog, schema and table names, if they exist,
+      // rather than the qualified name of the shadow table in Calcite.
+      identifier = jdbcTable.tableName();
+    } else {
+      final List<String> qualifiedName = e.getTable().getQualifiedName();
+      identifier = new SqlIdentifier(qualifiedName, SqlParserPos.ZERO);
+    }
     return result(identifier, ImmutableList.of(Clause.FROM), e, null);
   }
 

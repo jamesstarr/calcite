@@ -88,7 +88,7 @@ public class JdbcTable extends AbstractQueryableTable
     this.jdbcSchema = Objects.requireNonNull(jdbcSchema);
     this.jdbcCatalogName = jdbcCatalogName;
     this.jdbcSchemaName = jdbcSchemaName;
-    this.jdbcTableName = tableName;
+    this.jdbcTableName = Objects.requireNonNull(jdbcTableName);
     this.jdbcTableType = Objects.requireNonNull(jdbcTableType);
   }
 
