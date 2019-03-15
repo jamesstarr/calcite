@@ -332,12 +332,15 @@ public abstract class ReturnTypes {
   public static final SqlReturnTypeInference VARCHAR_2000_NULLABLE =
       cascade(VARCHAR_2000, SqlTypeTransforms.TO_NULLABLE);
 
+<<<<<<< HEAD
   /**
    * Type-inference strategy that always returns "VARIANT".
    */
   public static final SqlReturnTypeInference VARIANT =
       ReturnTypes.explicit(SqlTypeName.VARIANT);
 
+=======
+>>>>>>> b8a27ac14 ([CALCITE-2965] Implement string functions: REPEAT, SPACE, SOUNDEX, DIFFERENCE)
   /**
    * Type-inference strategy for Histogram agg support
    */
