@@ -1275,88 +1275,12 @@ public class SubstitutionVisitor {
     }
   }
 
-<<<<<<< HEAD
-=======
-  /** Implementation of {@link UnifyRule} that matches a
-   * {@link org.apache.calcite.rel.logical.LogicalAggregate} to a
-   * {@link org.apache.calcite.rel.logical.LogicalAggregate}, provided
-   * that they have the same child. */
-  private static class AggregateToAggregateUnifyRule extends AbstractUnifyRule {
-    public static final AggregateToAggregateUnifyRule INSTANCE =
-        new AggregateToAggregateUnifyRule();
-
-    private AggregateToAggregateUnifyRule() {
-      super(operand(MutableAggregate.class, query(0)),
-          operand(MutableAggregate.class, target(0)), 1);
-    }
-
-    public UnifyResult apply(UnifyRuleCall call) {
-      final MutableAggregate query = (MutableAggregate) call.query;
-      final MutableAggregate target = (MutableAggregate) call.target;
-      assert query != target;
-      // in.query can be rewritten in terms of in.target if its groupSet is
-      // a subset, and its aggCalls are a superset. For example:
-      //   query: SELECT x, COUNT(b) FROM t GROUP BY x
-      //   target: SELECT x, y, SUM(a) AS s, COUNT(b) AS cb FROM t GROUP BY x, y
-      // transforms to
-      //   result: SELECT x, SUM(cb) FROM (target) GROUP BY x
-      if (query.getInput() != target.getInput()) {
-        return null;
       }
-      if (!target.groupSet.contains(query.groupSet)) {
-        return null;
-      }
-      MutableRel result = unifyAggregates(query, target);
-      if (result == null) {
-        return null;
-      }
-      return call.result(result);
-    }
-  }
-
-  public static MutableAggregate permute(MutableAggregate aggregate,
-      MutableRel input, Mapping mapping) {
-    ImmutableBitSet groupSet = Mappings.apply(mapping, aggregate.groupSet);
-    ImmutableList<ImmutableBitSet> groupSets =
-        Mappings.apply2(mapping, aggregate.groupSets);
-    List<AggregateCall> aggregateCalls =
-        apply(mapping, aggregate.aggCalls);
-    return MutableAggregate.of(input, groupSet, groupSets, aggregateCalls);
-  }
-
-  private static List<AggregateCall> apply(final Mapping mapping,
-      List<AggregateCall> aggCallList) {
-    return Lists.transform(aggCallList,
-        call -> call.copy(Mappings.apply2(mapping, call.getArgList()),
-            Mappings.apply(mapping, call.filterArg)));
-  }
-
-  public static MutableRel unifyAggregates(MutableAggregate query,
-      MutableAggregate target) {
-    MutableRel result;
-    if (query.groupSets.equals(target.groupSets)) {
-      // Same level of aggregation. Generate a project.
-      final List<Integer> projects = new ArrayList<>();
-      final int groupCount = query.groupSet.cardinality();
-      for (int i = 0; i < groupCount; i++) {
-        projects.add(i);
-      }
-      for (AggregateCall aggregateCall : query.aggCalls) {
-        int i = target.aggCalls.indexOf(aggregateCall);
-        if (i < 0) {
-          return null;
-        }
-        projects.add(groupCount + i);
-      }
-      result = MutableRels.createProject(target, projects);
-    } else if (target.getGroupType() == Aggregate.Group.SIMPLE) {
-      // Query is coarser level of aggregation. Generate an aggregate.
-      final Map<Integer, Integer> map = new HashMap<>();
-      target.groupSet.forEach(k -> map.put(k, map.size()));
-      for (int c : query.groupSet) {
-        if (!map.containsKey(c)) {
-          return null;
-        }
+      final ImmutableBitSet groupSet = query.groupSet.permute(map);
+      ImmutableList<ImmutableBitSet> groupSets = null;
+      if (query.getGroupType() != Aggregate.Group.SIMPLE) {
+        groupSets = ImmutableBitSet.ORDERING.immutableSortedCopy(
+            ImmutableBitSet.permute(query.groupSets, map));
       }
 >>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
       final List<AggregateCall> aggregateCalls = new ArrayList<>();

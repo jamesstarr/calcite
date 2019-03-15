@@ -93,6 +93,710 @@ public class MaterializationTest {
       CalciteAssert.checkResultContains(
           "EnumerableTableScan(table=[[hr, m0]])");
 
+<<<<<<< HEAD
+=======
+  private static final Consumer<ResultSet> CONTAINS_LOCATIONS =
+      CalciteAssert.checkResultContains(
+          "EnumerableTableScan(table=[[hr, locations]])");
+
+  private static final Ordering<Iterable<String>> CASE_INSENSITIVE_LIST_COMPARATOR =
+      Ordering.from(String.CASE_INSENSITIVE_ORDER).lexicographical();
+
+  private static final Ordering<Iterable<List<String>>> CASE_INSENSITIVE_LIST_LIST_COMPARATOR =
+      CASE_INSENSITIVE_LIST_COMPARATOR.lexicographical();
+
+  private static final String HR_FKUK_SCHEMA = "{\n"
+      + "       type: 'custom',\n"
+      + "       name: 'hr',\n"
+      + "       factory: '"
+      + ReflectiveSchema.Factory.class.getName()
+      + "',\n"
+      + "       operand: {\n"
+      + "         class: '" + HrFKUKSchema.class.getName() + "'\n"
+      + "       }\n"
+      + "     }\n";
+
+  private static final String HR_FKUK_MODEL = "{\n"
+      + "  version: '1.0',\n"
+      + "  defaultSchema: 'hr',\n"
+      + "   schemas: [\n"
+      + HR_FKUK_SCHEMA
+      + "   ]\n"
+      + "}";
+
+  final JavaTypeFactoryImpl typeFactory =
+      new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
+  private final RexBuilder rexBuilder = new RexBuilder(typeFactory);
+  private final RexSimplify simplify =
+      new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, RexUtil.EXECUTOR)
+          .withParanoid(true);
+
+  @Test public void testScan() {
+    CalciteAssert.that()
+        .withMaterializations(
+            "{\n"
+                + "  version: '1.0',\n"
+                + "  defaultSchema: 'SCOTT_CLONE',\n"
+                + "  schemas: [ {\n"
+                + "    name: 'SCOTT_CLONE',\n"
+                + "    type: 'custom',\n"
+                + "    factory: 'org.apache.calcite.adapter.clone.CloneSchema$Factory',\n"
+                + "    operand: {\n"
+                + "      jdbcDriver: '" + JdbcTest.SCOTT.driver + "',\n"
+                + "      jdbcUser: '" + JdbcTest.SCOTT.username + "',\n"
+                + "      jdbcPassword: '" + JdbcTest.SCOTT.password + "',\n"
+                + "      jdbcUrl: '" + JdbcTest.SCOTT.url + "',\n"
+                + "      jdbcSchema: 'SCOTT'\n"
+                + "   } } ]\n"
+                + "}",
+            "m0",
+            "select empno, deptno from emp order by deptno")
+        .query(
+            "select empno, deptno from emp")
+        .enableMaterializations(true)
+        .explainContains("EnumerableTableScan(table=[[SCOTT_CLONE, m0]])")
+        .sameResultWithMaterializationsDisabled();
+  }
+
+  @Test public void testFilter() {
+    CalciteAssert.that()
+        .withMaterializations(
+            HR_FKUK_MODEL,
+            "m0",
+            "select * from \"emps\" where \"deptno\" = 10")
+        .query(
+            "select \"empid\" + 1 from \"emps\" where \"deptno\" = 10")
+        .enableMaterializations(true)
+        .explainContains("EnumerableTableScan(table=[[hr, m0]])")
+        .sameResultWithMaterializationsDisabled();
+  }
+
+  @Test public void testFilterQueryOnProjectView() {
+    try (TryThreadLocal.Memo ignored = Prepare.THREAD_TRIM.push(true)) {
+      MaterializationService.setThreadLocal();
+      CalciteAssert.that()
+          .withMaterializations(
+              HR_FKUK_MODEL,
+              "m0",
+              "select \"deptno\", \"empid\" from \"emps\"")
+          .query(
+              "select \"empid\" + 1 as x from \"emps\" where \"deptno\" = 10")
+          .enableMaterializations(true)
+          .explainContains("EnumerableTableScan(table=[[hr, m0]])")
+          .sameResultWithMaterializationsDisabled();
+    }
+  }
+
+  /** Checks that a given query can use a materialized view with a given
+   * definition. */
+  private void checkMaterialize(String materialize, String query) {
+    checkMaterialize(materialize, query, HR_FKUK_MODEL, CONTAINS_M0,
+        RuleSets.ofList(ImmutableList.of()));
+  }
+
+  /** Checks that a given query can use a materialized view with a given
+   * definition. */
+  private void checkMaterializeWithRules(String materialize, String query, RuleSet rules) {
+    checkMaterialize(materialize, query, HR_FKUK_MODEL, CONTAINS_M0, rules);
+  }
+
+  /** Checks that a given query can use a materialized view with a given
+   * definition. */
+  private void checkMaterialize(String materialize, String query, String model,
+      Consumer<ResultSet> explainChecker) {
+    checkMaterialize(materialize, query, model, explainChecker,
+        RuleSets.ofList(ImmutableList.of()));
+  }
+
+
+  private void checkMaterialize(String materialize, String query, String model,
+      Consumer<ResultSet> explainChecker, final RuleSet rules) {
+    checkThatMaterialize(materialize, query, "m0", false, model, explainChecker,
+        rules).sameResultWithMaterializationsDisabled();
+  }
+
+  /** Checks that a given query can use a materialized view with a given
+   * definition. */
+  private CalciteAssert.AssertQuery checkThatMaterialize(String materialize,
+      String query, String name, boolean existing, String model,
+      Consumer<ResultSet> explainChecker, final RuleSet rules) {
+    try (TryThreadLocal.Memo ignored = Prepare.THREAD_TRIM.push(true)) {
+      MaterializationService.setThreadLocal();
+      CalciteAssert.AssertQuery that = CalciteAssert.that()
+          .withMaterializations(model, existing, name, materialize)
+          .query(query)
+          .enableMaterializations(true);
+
+      // Add any additional rules required for the test
+      if (rules.iterator().hasNext()) {
+        that.withHook(Hook.PLANNER, (Consumer<RelOptPlanner>) planner -> {
+          for (RelOptRule rule : rules) {
+            planner.addRule(rule);
+          }
+        });
+      }
+
+      return that.explainMatches("", explainChecker);
+    }
+  }
+
+  /** Checks that a given query CAN NOT use a materialized view with a given
+   * definition. */
+  private void checkNoMaterialize(String materialize, String query,
+      String model) {
+    try (TryThreadLocal.Memo ignored = Prepare.THREAD_TRIM.push(true)) {
+      MaterializationService.setThreadLocal();
+      CalciteAssert.that()
+          .withMaterializations(model, "m0", materialize)
+          .query(query)
+          .enableMaterializations(true)
+          .explainContains("EnumerableTableScan(table=[[hr, emps]])");
+    }
+  }
+
+  /** Runs the same test as {@link #testFilterQueryOnProjectView()} but more
+   * concisely. */
+  @Test public void testFilterQueryOnProjectView0() {
+    checkMaterialize(
+        "select \"deptno\", \"empid\" from \"emps\"",
+        "select \"empid\" + 1 as x from \"emps\" where \"deptno\" = 10");
+  }
+
+  /** As {@link #testFilterQueryOnProjectView()} but with extra column in
+   * materialized view. */
+  @Test public void testFilterQueryOnProjectView1() {
+    checkMaterialize(
+        "select \"deptno\", \"empid\", \"name\" from \"emps\"",
+        "select \"empid\" + 1 as x from \"emps\" where \"deptno\" = 10");
+  }
+
+  /** As {@link #testFilterQueryOnProjectView()} but with extra column in both
+   * materialized view and query. */
+  @Test public void testFilterQueryOnProjectView2() {
+    checkMaterialize(
+        "select \"deptno\", \"empid\", \"name\" from \"emps\"",
+        "select \"empid\" + 1 as x, \"name\" from \"emps\" where \"deptno\" = 10");
+  }
+
+  @Test public void testFilterQueryOnProjectView3() {
+    checkMaterialize(
+        "select \"deptno\" - 10 as \"x\", \"empid\" + 1, \"name\" from \"emps\"",
+        "select \"name\" from \"emps\" where \"deptno\" - 10 = 0");
+  }
+
+  /** As {@link #testFilterQueryOnProjectView3()} but materialized view cannot
+   * be used because it does not contain required expression. */
+  @Test public void testFilterQueryOnProjectView4() {
+    checkNoMaterialize(
+        "select \"deptno\" - 10 as \"x\", \"empid\" + 1, \"name\" from \"emps\"",
+        "select \"name\" from \"emps\" where \"deptno\" + 10 = 20",
+        HR_FKUK_MODEL);
+  }
+
+  /** As {@link #testFilterQueryOnProjectView3()} but also contains an
+   * expression column. */
+  @Test public void testFilterQueryOnProjectView5() {
+    checkMaterialize(
+        "select \"deptno\" - 10 as \"x\", \"empid\" + 1 as ee, \"name\"\n"
+            + "from \"emps\"",
+        "select \"name\", \"empid\" + 1 as e\n"
+            + "from \"emps\" where \"deptno\" - 10 = 2",
+        HR_FKUK_MODEL,
+        CalciteAssert.checkResultContains(
+            "EnumerableCalc(expr#0..2=[{inputs}], expr#3=[2], "
+                + "expr#4=[=($t0, $t3)], name=[$t2], EE=[$t1], $condition=[$t4])\n"
+                + "  EnumerableTableScan(table=[[hr, m0]]"));
+  }
+
+  /** Cannot materialize because "name" is not projected in the MV. */
+  @Test public void testFilterQueryOnProjectView6() {
+    checkNoMaterialize(
+        "select \"deptno\" - 10 as \"x\", \"empid\"  from \"emps\"",
+        "select \"name\" from \"emps\" where \"deptno\" - 10 = 0",
+        HR_FKUK_MODEL);
+  }
+
+  /** As {@link #testFilterQueryOnProjectView3()} but also contains an
+   * expression column. */
+  @Test public void testFilterQueryOnProjectView7() {
+    checkNoMaterialize(
+        "select \"deptno\" - 10 as \"x\", \"empid\" + 1, \"name\" from \"emps\"",
+        "select \"name\", \"empid\" + 2 from \"emps\" where \"deptno\" - 10 = 0",
+        HR_FKUK_MODEL);
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-988">[CALCITE-988]
+   * FilterToProjectUnifyRule.invert(MutableRel, MutableRel, MutableProject)
+   * works incorrectly</a>. */
+  @Test public void testFilterQueryOnProjectView8() {
+    try (TryThreadLocal.Memo ignored = Prepare.THREAD_TRIM.push(true)) {
+      MaterializationService.setThreadLocal();
+      final String m = "select \"salary\", \"commission\",\n"
+          + "\"deptno\", \"empid\", \"name\" from \"emps\"";
+      final String v = "select * from \"emps\" where \"name\" is null";
+      final String q = "select * from V where \"commission\" is null";
+      final JsonBuilder builder = new JsonBuilder();
+      final String model = "{\n"
+          + "  version: '1.0',\n"
+          + "  defaultSchema: 'hr',\n"
+          + "  schemas: [\n"
+          + "    {\n"
+          + "      materializations: [\n"
+          + "        {\n"
+          + "          table: 'm0',\n"
+          + "          view: 'm0v',\n"
+          + "          sql: " + builder.toJsonString(m)
+          + "        }\n"
+          + "      ],\n"
+          + "      tables: [\n"
+          + "        {\n"
+          + "          name: 'V',\n"
+          + "          type: 'view',\n"
+          + "          sql: " + builder.toJsonString(v) + "\n"
+          + "        }\n"
+          + "      ],\n"
+          + "      type: 'custom',\n"
+          + "      name: 'hr',\n"
+          + "      factory: 'org.apache.calcite.adapter.java.ReflectiveSchema$Factory',\n"
+          + "      operand: {\n"
+          + "        class: 'org.apache.calcite.test.JdbcTest$HrSchema'\n"
+          + "      }\n"
+          + "    }\n"
+          + "  ]\n"
+          + "}\n";
+      CalciteAssert.that()
+          .withModel(model)
+          .query(q)
+          .enableMaterializations(true)
+          .explainMatches("", CONTAINS_M0)
+          .sameResultWithMaterializationsDisabled();
+    }
+  }
+
+  @Test public void testFilterQueryOnFilterView() {
+    checkMaterialize(
+        "select \"deptno\", \"empid\", \"name\" from \"emps\" where \"deptno\" = 10",
+        "select \"empid\" + 1 as x, \"name\" from \"emps\" where \"deptno\" = 10");
+  }
+
+  /** As {@link #testFilterQueryOnFilterView()} but condition is stronger in
+   * query. */
+  @Ignore
+  @Test public void testFilterQueryOnFilterView2() {
+    checkMaterialize(
+        "select \"deptno\", \"empid\", \"name\" from \"emps\" where \"deptno\" = 10",
+        "select \"empid\" + 1 as x, \"name\" from \"emps\" "
+            + "where \"deptno\" = 10 and \"empid\" < 150");
+  }
+
+  /** As {@link #testFilterQueryOnFilterView()} but condition is weaker in
+   * view. */
+  @Ignore("not implemented")
+  @Test public void testFilterQueryOnFilterView3() {
+    checkMaterialize(
+        "select \"deptno\", \"empid\", \"name\" from \"emps\" "
+            + "where \"deptno\" = 10 or \"deptno\" = 20 or \"empid\" < 160",
+        "select \"empid\" + 1 as x, \"name\" from \"emps\" where \"deptno\" = 10",
+        HR_FKUK_MODEL,
+        CalciteAssert.checkResultContains(
+            "EnumerableCalcRel(expr#0..2=[{inputs}], expr#3=[1], "
+                + "expr#4=[+($t1, $t3)], X=[$t4], name=[$t2], condition=?)\n"
+                + "  EnumerableTableScan(table=[[hr, m0]])"));
+  }
+
+  /** As {@link #testFilterQueryOnFilterView()} but condition is stronger in
+   * query. */
+  @Test public void testFilterQueryOnFilterView4() {
+    checkMaterialize(
+        "select * from \"emps\" where \"deptno\" > 10",
+        "select \"name\" from \"emps\" where \"deptno\" > 30");
+  }
+
+  /** As {@link #testFilterQueryOnFilterView()} but condition is stronger in
+   * query and columns selected are subset of columns in materialized view. */
+  @Test public void testFilterQueryOnFilterView5() {
+    checkMaterialize(
+        "select \"name\", \"deptno\" from \"emps\" where \"deptno\" > 10",
+        "select \"name\" from \"emps\" where \"deptno\" > 30");
+  }
+
+  /** As {@link #testFilterQueryOnFilterView()} but condition is stronger in
+   * query and columns selected are subset of columns in materialized view. */
+  @Test public void testFilterQueryOnFilterView6() {
+    checkMaterialize(
+        "select \"name\", \"deptno\", \"salary\" from \"emps\" "
+            + "where \"salary\" > 2000.5",
+        "select \"name\" from \"emps\" where \"deptno\" > 30 and \"salary\" > 3000");
+  }
+
+  /** As {@link #testFilterQueryOnFilterView()} but condition is stronger in
+   * query and columns selected are subset of columns in materialized view.
+   * Condition here is complex. */
+  @Test public void testFilterQueryOnFilterView7() {
+    checkMaterialize(
+        "select * from \"emps\" where "
+            + "((\"salary\" < 1111.9 and \"deptno\" > 10)"
+            + "or (\"empid\" > 400 and \"salary\" > 5000) "
+            + "or \"salary\" > 500)",
+        "select \"name\" from \"emps\" where (\"salary\" > 1000 "
+            + "or (\"deptno\" >= 30 and \"salary\" <= 500))");
+  }
+
+  /** As {@link #testFilterQueryOnFilterView()} but condition is stronger in
+   * query. However, columns selected are not present in columns of materialized
+   * view, Hence should not use materialized view. */
+  @Test public void testFilterQueryOnFilterView8() {
+    checkNoMaterialize(
+        "select \"name\", \"deptno\" from \"emps\" where \"deptno\" > 10",
+        "select \"name\", \"empid\" from \"emps\" where \"deptno\" > 30",
+        HR_FKUK_MODEL);
+  }
+
+  /** As {@link #testFilterQueryOnFilterView()} but condition is weaker in
+   * query. */
+  @Test public void testFilterQueryOnFilterView9() {
+    checkNoMaterialize(
+        "select \"name\", \"deptno\" from \"emps\" where \"deptno\" > 10",
+        "select \"name\", \"empid\" from \"emps\" "
+            + "where \"deptno\" > 30 or \"empid\" > 10",
+        HR_FKUK_MODEL);
+  }
+
+  /** As {@link #testFilterQueryOnFilterView()} but condition currently
+   * has unsupported type being checked on query. */
+  @Test public void testFilterQueryOnFilterView10() {
+    checkNoMaterialize(
+        "select \"name\", \"deptno\" from \"emps\" where \"deptno\" > 10 "
+            + "and \"name\" = \'calcite\'",
+        "select \"name\", \"empid\" from \"emps\" where \"deptno\" > 30 "
+            + "or \"empid\" > 10",
+        HR_FKUK_MODEL);
+  }
+
+  /** As {@link #testFilterQueryOnFilterView()} but condition is weaker in
+   * query and columns selected are subset of columns in materialized view.
+   * Condition here is complex. */
+  @Test public void testFilterQueryOnFilterView11() {
+    checkNoMaterialize(
+        "select \"name\", \"deptno\" from \"emps\" where "
+            + "(\"salary\" < 1111.9 and \"deptno\" > 10)"
+            + "or (\"empid\" > 400 and \"salary\" > 5000)",
+        "select \"name\" from \"emps\" where \"deptno\" > 30 and \"salary\" > 3000",
+        HR_FKUK_MODEL);
+  }
+
+  /** As {@link #testFilterQueryOnFilterView()} but condition of
+   * query is stronger but is on the column not present in MV (salary).
+   */
+  @Test public void testFilterQueryOnFilterView12() {
+    checkNoMaterialize(
+        "select \"name\", \"deptno\" from \"emps\" where \"salary\" > 2000.5",
+        "select \"name\" from \"emps\" where \"deptno\" > 30 and \"salary\" > 3000",
+        HR_FKUK_MODEL);
+  }
+
+  /** As {@link #testFilterQueryOnFilterView()} but condition is weaker in
+   * query and columns selected are subset of columns in materialized view.
+   * Condition here is complex. */
+  @Test public void testFilterQueryOnFilterView13() {
+    checkNoMaterialize(
+        "select * from \"emps\" where "
+            + "(\"salary\" < 1111.9 and \"deptno\" > 10)"
+            + "or (\"empid\" > 400 and \"salary\" > 5000)",
+        "select \"name\" from \"emps\" where \"salary\" > 1000 "
+            + "or (\"deptno\" > 30 and \"salary\" > 3000)",
+        HR_FKUK_MODEL);
+  }
+
+  /** As {@link #testFilterQueryOnFilterView7()} but columns in materialized
+   * view are a permutation of columns in the query. */
+  @Test public void testFilterQueryOnFilterView14() {
+    String q = "select * from \"emps\" where (\"salary\" > 1000 "
+        + "or (\"deptno\" >= 30 and \"salary\" <= 500))";
+    String m = "select \"deptno\", \"empid\", \"name\", \"salary\", \"commission\" "
+        + "from \"emps\" as em where "
+        + "((\"salary\" < 1111.9 and \"deptno\" > 10)"
+        + "or (\"empid\" > 400 and \"salary\" > 5000) "
+        + "or \"salary\" > 500)";
+    checkMaterialize(m, q);
+  }
+
+  /** As {@link #testFilterQueryOnFilterView13()} but using alias
+   * and condition of query is stronger. */
+  @Test public void testAlias() {
+    checkMaterialize(
+        "select * from \"emps\" as em where "
+            + "(em.\"salary\" < 1111.9 and em.\"deptno\" > 10)"
+            + "or (em.\"empid\" > 400 and em.\"salary\" > 5000)",
+        "select \"name\" as n from \"emps\" as e where "
+            + "(e.\"empid\" > 500 and e.\"salary\" > 6000)");
+  }
+
+  /** Aggregation query at same level of aggregation as aggregation
+   * materialization. */
+  @Test public void testAggregate() {
+    checkMaterialize(
+        "select \"deptno\", count(*) as c, sum(\"empid\") as s from \"emps\" group by \"deptno\"",
+        "select count(*) + 1 as c, \"deptno\" from \"emps\" group by \"deptno\"");
+  }
+
+  /** Aggregation query at same level of aggregation as aggregation
+   * materialization with grouping sets. */
+  @Test public void testAggregateGroupSets1() {
+    checkMaterialize(
+        "select \"empid\", \"deptno\", count(*) as c, sum(\"salary\") as s from \"emps\" group by cube(\"empid\",\"deptno\")",
+        "select count(*) + 1 as c, \"deptno\" from \"emps\" group by cube(\"empid\",\"deptno\")");
+  }
+
+  /** Aggregation query with different grouping sets, should not
+   * do materialization. */
+  @Test public void testAggregateGroupSets2() {
+    checkNoMaterialize(
+        "select \"empid\", \"deptno\", count(*) as c, sum(\"salary\") as s from \"emps\" group by cube(\"empid\",\"deptno\")",
+        "select count(*) + 1 as c, \"deptno\" from \"emps\" group by rollup(\"empid\",\"deptno\")",
+        HR_FKUK_MODEL);
+  }
+
+  /** Aggregation query at coarser level of aggregation than aggregation
+   * materialization. Requires an additional aggregate to roll up. Note that
+   * COUNT is rolled up using SUM0. */
+  @Test public void testAggregateRollUp() {
+    checkMaterialize(
+        "select \"empid\", \"deptno\", count(*) as c, sum(\"empid\") as s from \"emps\" "
+            + "group by \"empid\", \"deptno\"",
+        "select count(*) + 1 as c, \"deptno\" from \"emps\" group by \"deptno\"",
+        HR_FKUK_MODEL,
+        CalciteAssert.checkResultContains(
+            "EnumerableCalc(expr#0..1=[{inputs}], expr#2=[1], "
+                + "expr#3=[+($t1, $t2)], C=[$t3], deptno=[$t0])\n"
+                + "  EnumerableAggregate(group=[{1}], agg#0=[$SUM0($2)])\n"
+                + "    EnumerableTableScan(table=[[hr, m0]])"));
+  }
+
+  /** Aggregation query with groupSets at coarser level of aggregation than
+   * aggregation materialization. Requires an additional aggregate to roll up.
+   * Note that COUNT is rolled up using SUM0. */
+  @Test public void testAggregateGroupSetsRollUp() {
+    checkMaterialize(
+        "select \"empid\", \"deptno\", count(*) as c, sum(\"salary\") as s from \"emps\" "
+            + "group by \"empid\", \"deptno\"",
+        "select count(*) + 1 as c,  \"deptno\" from \"emps\" group by cube(\"empid\",\"deptno\")",
+        HR_FKUK_MODEL,
+        CalciteAssert.checkResultContains(
+            "EnumerableCalc(expr#0..2=[{inputs}], expr#3=[1], "
+                + "expr#4=[+($t2, $t3)], C=[$t4], deptno=[$t1])\n"
+                + "  EnumerableAggregate(group=[{0, 1}], groups=[[{0, 1}, {0}, {1}, {}]], agg#0=[$SUM0($2)])\n"
+                + "    EnumerableTableScan(table=[[hr, m0]])"));
+  }
+
+  /** Aggregation materialization with a project. */
+  @Ignore("work in progress")
+  @Test public void testAggregateProject() {
+    // Note that materialization does not start with the GROUP BY columns.
+    // Not a smart way to design a materialization, but people may do it.
+    checkMaterialize(
+        "select \"deptno\", count(*) as c, \"empid\" + 2, sum(\"empid\") as s from \"emps\" group by \"empid\", \"deptno\"",
+        "select count(*) + 1 as c, \"deptno\" from \"emps\" group by \"deptno\"",
+        HR_FKUK_MODEL,
+        CalciteAssert.checkResultContains(
+            "xxx"));
+  }
+
+  @Ignore
+  @Test public void testSwapJoin() {
+    String q1 =
+        "select count(*) as c from \"foodmart\".\"sales_fact_1997\" as s join \"foodmart\".\"time_by_day\" as t on s.\"time_id\" = t.\"time_id\"";
+    String q2 =
+        "select count(*) as c from \"foodmart\".\"time_by_day\" as t join \"foodmart\".\"sales_fact_1997\" as s on t.\"time_id\" = s.\"time_id\"";
+  }
+
+  @Ignore
+  @Test public void testOrderByQueryOnProjectView() {
+    checkMaterialize(
+        "select \"deptno\", \"empid\" from \"emps\"",
+        "select \"empid\" from \"emps\" order by \"deptno\"");
+  }
+
+  @Ignore
+  @Test public void testOrderByQueryOnOrderByView() {
+    checkMaterialize(
+        "select \"deptno\", \"empid\" from \"emps\" order by \"deptno\"",
+        "select \"empid\" from \"emps\" order by \"deptno\"");
+  }
+
+  @Ignore
+  @Test public void testDifferentColumnNames() {}
+
+  @Ignore
+  @Test public void testDifferentType() {}
+
+  @Ignore
+  @Test public void testPartialUnion() {}
+
+  @Ignore
+  @Test public void testNonDisjointUnion() {}
+
+  @Ignore
+  @Test public void testMaterializationReferencesTableInOtherSchema() {}
+
+  /** Unit test for logic functions
+   * {@link org.apache.calcite.plan.SubstitutionVisitor#mayBeSatisfiable} and
+   * {@link RexUtil#simplify}. */
+  @Test public void testSatisfiable() {
+    // TRUE may be satisfiable
+    checkSatisfiable(rexBuilder.makeLiteral(true), "true");
+
+    // FALSE is not satisfiable
+    checkNotSatisfiable(rexBuilder.makeLiteral(false));
+
+    // The expression "$0 = 1".
+    final RexNode i0_eq_0 =
+        rexBuilder.makeCall(
+            SqlStdOperatorTable.EQUALS,
+            rexBuilder.makeInputRef(
+                typeFactory.createType(int.class), 0),
+            rexBuilder.makeExactLiteral(BigDecimal.ZERO));
+
+    // "$0 = 1" may be satisfiable
+    checkSatisfiable(i0_eq_0, "=($0, 0)");
+
+    // "$0 = 1 AND TRUE" may be satisfiable
+    final RexNode e0 =
+        rexBuilder.makeCall(
+            SqlStdOperatorTable.AND,
+            i0_eq_0,
+            rexBuilder.makeLiteral(true));
+    checkSatisfiable(e0, "=($0, 0)");
+
+    // "$0 = 1 AND FALSE" is not satisfiable
+    final RexNode e1 =
+        rexBuilder.makeCall(
+            SqlStdOperatorTable.AND,
+            i0_eq_0,
+            rexBuilder.makeLiteral(false));
+    checkNotSatisfiable(e1);
+
+    // "$0 = 0 AND NOT $0 = 0" is not satisfiable
+    final RexNode e2 =
+        rexBuilder.makeCall(
+            SqlStdOperatorTable.AND,
+            i0_eq_0,
+            rexBuilder.makeCall(
+                SqlStdOperatorTable.NOT,
+                i0_eq_0));
+    checkNotSatisfiable(e2);
+
+    // "TRUE AND NOT $0 = 0" may be satisfiable. Can simplify.
+    final RexNode e3 =
+        rexBuilder.makeCall(
+            SqlStdOperatorTable.AND,
+            rexBuilder.makeLiteral(true),
+            rexBuilder.makeCall(
+                SqlStdOperatorTable.NOT,
+                i0_eq_0));
+    checkSatisfiable(e3, "<>($0, 0)");
+
+    // The expression "$1 = 1".
+    final RexNode i1_eq_1 =
+        rexBuilder.makeCall(
+            SqlStdOperatorTable.EQUALS,
+            rexBuilder.makeInputRef(
+                typeFactory.createType(int.class), 1),
+            rexBuilder.makeExactLiteral(BigDecimal.ONE));
+
+    // "$0 = 0 AND $1 = 1 AND NOT $0 = 0" is not satisfiable
+    final RexNode e4 =
+        rexBuilder.makeCall(
+            SqlStdOperatorTable.AND,
+            i0_eq_0,
+            rexBuilder.makeCall(
+                SqlStdOperatorTable.AND,
+                i1_eq_1,
+                rexBuilder.makeCall(
+                    SqlStdOperatorTable.NOT, i0_eq_0)));
+    checkNotSatisfiable(e4);
+
+    // "$0 = 0 AND NOT $1 = 1" may be satisfiable. Can't simplify.
+    final RexNode e5 =
+        rexBuilder.makeCall(
+            SqlStdOperatorTable.AND,
+            i0_eq_0,
+            rexBuilder.makeCall(
+                SqlStdOperatorTable.NOT,
+                i1_eq_1));
+    checkSatisfiable(e5, "AND(=($0, 0), <>($1, 1))");
+
+    // "$0 = 0 AND NOT ($0 = 0 AND $1 = 1)" may be satisfiable. Can simplify.
+    final RexNode e6 =
+        rexBuilder.makeCall(
+            SqlStdOperatorTable.AND,
+            i0_eq_0,
+            rexBuilder.makeCall(
+                SqlStdOperatorTable.NOT,
+                rexBuilder.makeCall(
+                    SqlStdOperatorTable.AND,
+                    i0_eq_0,
+                    i1_eq_1)));
+    checkSatisfiable(e6, "AND(=($0, 0), OR(<>($0, 0), <>($1, 1)))");
+
+    // "$0 = 0 AND ($1 = 1 AND NOT ($0 = 0))" is not satisfiable.
+    final RexNode e7 =
+        rexBuilder.makeCall(
+            SqlStdOperatorTable.AND,
+            i0_eq_0,
+            rexBuilder.makeCall(
+                SqlStdOperatorTable.AND,
+                i1_eq_1,
+                rexBuilder.makeCall(
+                    SqlStdOperatorTable.NOT,
+                    i0_eq_0)));
+    checkNotSatisfiable(e7);
+
+    // The expression "$2".
+    final RexInputRef i2 =
+        rexBuilder.makeInputRef(
+            typeFactory.createType(boolean.class), 2);
+
+    // The expression "$3".
+    final RexInputRef i3 =
+        rexBuilder.makeInputRef(
+            typeFactory.createType(boolean.class), 3);
+
+    // The expression "$4".
+    final RexInputRef i4 =
+        rexBuilder.makeInputRef(
+            typeFactory.createType(boolean.class), 4);
+
+    // "$0 = 0 AND $2 AND $3 AND NOT ($2 AND $3 AND $4) AND NOT ($2 AND $4)" may
+    // be satisfiable. Can't simplify.
+    final RexNode e8 =
+        rexBuilder.makeCall(
+            SqlStdOperatorTable.AND,
+            i0_eq_0,
+            rexBuilder.makeCall(
+                SqlStdOperatorTable.AND,
+                i2,
+                rexBuilder.makeCall(
+                    SqlStdOperatorTable.AND,
+                    i3,
+                    rexBuilder.makeCall(
+                        SqlStdOperatorTable.NOT,
+                        rexBuilder.makeCall(
+                            SqlStdOperatorTable.AND,
+                            i2,
+                            i3,
+                            i4)),
+                    rexBuilder.makeCall(
+                        SqlStdOperatorTable.NOT,
+                        i4))));
+    checkSatisfiable(e8,
+        "AND(=($0, 0), $2, $3, OR(NOT($2), NOT($3), NOT($4)), NOT($4))");
+  }
+
+  private void checkNotSatisfiable(RexNode e) {
+    assertFalse(SubstitutionVisitor.mayBeSatisfiable(e));
+>>>>>>> 7fb6b1622 ([CALCITE-589] Extend unifyAggregates method to work with Grouping Sets)
     final RexNode simple = simplify.simplifyUnknownAs(e, RexUnknownAs.UNKNOWN);
     assertFalse(RexLiteral.booleanValue(simple));
   }
