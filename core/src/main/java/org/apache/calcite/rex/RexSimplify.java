@@ -683,21 +683,6 @@ public class RexSimplify {
     return rexBuilder.makeCall(SqlStdOperatorTable.NOT, a2);
   }
 
-<<<<<<< HEAD
-  private RexNode simplifyUnaryMinus(RexCall call, RexUnknownAs unknownAs) {
-    final RexNode a = call.getOperands().get(0);
-    if (a.getKind() == SqlKind.MINUS_PREFIX) {
-      // -(-(x)) ==> x
-      return simplify(((RexCall) a).getOperands().get(0), unknownAs);
-    }
-    return simplifyGenericNode(call);
-  }
-
-  private RexNode simplifyUnaryPlus(RexCall call, RexUnknownAs unknownAs) {
-    return simplify(call.getOperands().get(0), unknownAs);
-  }
-
-=======
 >>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks)
   private RexNode simplifyIs(RexCall call, RexUnknownAs unknownAs) {
     final SqlKind kind = call.getKind();
@@ -811,17 +796,22 @@ public class RexSimplify {
   }
 
   private RexNode simplifyIsNotNull(RexNode a) {
+<<<<<<< HEAD
     // Simplify the argument first,
     // call ourselves recursively to see whether we can make more progress.
     // For example, given
     // "(CASE WHEN FALSE THEN 1 ELSE 2) IS NOT NULL" we first simplify the
     // argument to "2", and only then we can simplify "2 IS NOT NULL" to "TRUE".
     a = simplify(a, UNKNOWN);
+=======
     if (!a.getType().isNullable() && isSafeExpression(a)) {
       return rexBuilder.makeLiteral(true);
     }
     if (predicates.pulledUpPredicates.contains(a)) {
       return rexBuilder.makeLiteral(true);
+    }
+    if (a.getKind() == SqlKind.CAST) {
+      return null;
     }
     switch (Strong.policy(a.getKind())) {
     case NOT_NULL:
@@ -857,11 +847,14 @@ public class RexSimplify {
   }
 
   private RexNode simplifyIsNull(RexNode a) {
-    if (!a.getType().isNullable()) {
+    if (!a.getType().isNullable() && isSafeExpression(a)) {
       return rexBuilder.makeLiteral(false);
     }
     if (RexUtil.isNull(a)) {
       return rexBuilder.makeLiteral(true);
+    }
+    if (a.getKind() == SqlKind.CAST) {
+      return null;
     }
     switch (Strong.policy(a.getKind())) {
     case NOT_NULL:
@@ -1105,6 +1098,7 @@ public class RexSimplify {
       safeOps.add(SqlKind.NOT);
       safeOps.add(SqlKind.CASE);
       safeOps.add(SqlKind.LIKE);
+      safeOps.add(SqlKind.COALESCE);
       this.safeOps = Sets.immutableEnumSet(safeOps);
     }
 

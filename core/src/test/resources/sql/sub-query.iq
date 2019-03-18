@@ -1194,6 +1194,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL(
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[IS NULL($t4)], expr#9=[OR($t6, $t7, $t8)], cs=[$t3], $condition=[$t9])
@@ -1207,6 +1208,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL(
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 >>>>>>> 58f40d369 ([CALCITE-2567] Simplify IS NULL(null) to true (pengzhiwei))
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NOT NULL($t0)], cs=[$t3])
+>>>>>>> bb2c52aab ([CALCITE-2929] Simplification of IS NULL checks are incorrectly assuming that CAST-s are possible)
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -1705,6 +1709,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[IS NULL($t4)], expr#9=[OR($t6, $t7, $t8)], cs=[$t3], $condition=[$t9])
@@ -1718,6 +1723,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 >>>>>>> 58f40d369 ([CALCITE-2567] Simplify IS NULL(null) to true (pengzhiwei))
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NOT NULL($t0)], cs=[$t3])
+>>>>>>> bb2c52aab ([CALCITE-2929] Simplification of IS NULL checks are incorrectly assuming that CAST-s are possible)
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -2492,6 +2500,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $conditio
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[IS NULL($t4)], expr#9=[OR($t6, $t7, $t8)], cs=[$t3], $condition=[$t9])
@@ -2508,6 +2517,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $conditio
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
 >>>>>>> 58f40d369 ([CALCITE-2567] Simplify IS NULL(null) to true (pengzhiwei))
+=======
+          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NOT NULL($t0)], cs=[$t3])
+>>>>>>> bb2c52aab ([CALCITE-2929] Simplification of IS NULL checks are incorrectly assuming that CAST-s are possible)
             EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 
@@ -3237,6 +3249,7 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[NOT($t3)], expr#6=[IS NOT NULL($t3)
   EnumerableHashJoin(condition=[=($2, $4)], joinType=[left])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
+<<<<<<< HEAD
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[=($t4, $t0)], cs=[$t3], DEPTNO=[$t0], $condition=[$t5])
 <<<<<<< HEAD
 =======
@@ -3255,6 +3268,9 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t3, $t5)], expr#
 >>>>>>> 82b258588 ([CALCITE-2469] RexSimplify should optimize '(NOT x) IS NULL' to 'x IS NULL' (pengzhiwei))
 =======
 >>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
+=======
+    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NOT NULL($t0)], expr#4=[10], expr#5=[=($t4, $t0)], cs=[$t3], DEPTNO=[$t0], $condition=[$t5])
+>>>>>>> bb2c52aab ([CALCITE-2929] Simplification of IS NULL checks are incorrectly assuming that CAST-s are possible)
       EnumerableTableScan(table=[[scott, DEPT]])
 !plan
 

@@ -2973,22 +2973,36 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   /** Unit test for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2929">[CALCITE-2929]
    * Simplification of IS NULL checks are incorrectly assuming that CAST-s are possible</a>. */
   @Test void testSimplifyCastIsNull() {
+=======
+  /** Unit test for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2929">[CALCITE-2929]
+   * Simplification of IS NULL checks are incorrectly assuming that CAST-s are possible</a>. */
+  @Test public void testSimplifyCastIsNull() {
+>>>>>>> bb2c52aab ([CALCITE-2929] Simplification of IS NULL checks are incorrectly assuming that CAST-s are possible):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplifyUnchanged(isNull(cast(vVarchar(), tInt(true))));
   }
 
   /** Unit test for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2929">[CALCITE-2929]
    * Simplification of IS NULL checks are incorrectly assuming that CAST-s are possible</a>. */
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testSimplifyCastIsNull2() {
     checkSimplifyUnchanged(isNull(cast(vVarcharNotNull(), tInt(false))));
   }
 
   @Test void checkSimplifyDynamicParam() {
 =======
+=======
+  @Test public void testSimplifyCastIsNull2() {
+    checkSimplifyUnchanged(isNull(cast(vVarcharNotNull(), tInt(false))));
+  }
+
+>>>>>>> bb2c52aab ([CALCITE-2929] Simplification of IS NULL checks are incorrectly assuming that CAST-s are possible):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   @Test public void checkSimplifyDynamicParam() {
 >>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify(isNotNull(lt(vInt(0), vInt(1))),
