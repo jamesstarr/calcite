@@ -105,6 +105,34 @@ public class EnumerableCorrelateTest {
             "empid=150; name=Sebastian");
   }
 
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2930">[CALCITE-2930]
+   * FilterCorrelateRule on a Correlate with SemiJoinType SEMI (or ANTI)
+   * throws IllegalStateException</a> */
+  @Test public void semiJoinCorrelateWithFilterCorrelateRule() {
+    tester(false, new JdbcTest.HrSchema())
+        .query(
+            "select empid, name from emps e where e.deptno in (select d.deptno from depts d) and e.empid > 100")
+        .withHook(Hook.PLANNER, (Consumer<RelOptPlanner>) planner -> {
+          // force the semi-join to run via EnumerableCorrelate instead of EnumerableJoin/SemiJoin,
+          // and push the 'empid > 100' filter into the Correlate
+          planner.addRule(CoreRules.JOIN_TO_CORRELATE);
+          planner.addRule(CoreRules.FILTER_CORRELATE);
+          planner.removeRule(EnumerableRules.ENUMERABLE_JOIN_RULE);
+          planner.removeRule(EnumerableRules.ENUMERABLE_MERGE_JOIN_RULE);
+        })
+        .explainContains(""
+            + "EnumerableCalc(expr#0..3=[{inputs}], empid=[$t1], name=[$t3])\n"
+            + "  EnumerableCorrelate(correlation=[$cor4], joinType=[inner], requiredColumns=[{0}])\n"
+            + "    EnumerableAggregate(group=[{0}])\n"
+            + "      EnumerableTableScan(table=[[s, depts]])\n"
+            + "    EnumerableCalc(expr#0..4=[{inputs}], expr#5=[$cor4], expr#6=[$t5.deptno], expr#7=[=($t1, $t6)], expr#8=[100], expr#9=[>($t0, $t8)], expr#10=[AND($t7, $t9)], proj#0..2=[{exprs}], $condition=[$t10])\n"
+            + "      EnumerableTableScan(table=[[s, emps]])")
+        .returnsUnordered(
+            "empid=110; name=Theodore",
+            "empid=150; name=Sebastian");
+  }
+
   @Test public void simpleCorrelate() {
     tester(false, new JdbcTest.HrSchema())
         .query(
