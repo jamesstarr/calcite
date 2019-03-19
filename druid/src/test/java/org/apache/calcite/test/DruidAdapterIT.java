@@ -1894,8 +1894,14 @@ import java.sql.SQLException;
         + "from \"foodmart\"\n"
         + "where \"product_id\" = cast(NULL as varchar)\n"
         + "group by \"product_id\" order by \"product_id\" limit 5";
-    final String plan = "EnumerableValues(tuples=[[]])";
-    sql(sql).explainContains(plan);
+    final String plan = "PLAN=EnumerableInterpreter\n"
+        + "  DruidQuery(table=[[foodmart, foodmart]], "
+        + "intervals=[[1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z]], "
+        + "filter=[false], groups=[{1}], aggs=[[]], sort0=[0], dir0=[ASC], fetch=[5])";
+    final String query = "{\"queryType\":\"groupBy\"";
+    sql(sql)
+        .explainContains(plan)
+        .queryContains(druidChecker(query));
   }
 
   @Test void testFalseFilter() {
@@ -3414,7 +3420,7 @@ import java.sql.SQLException;
             + "intervals=[[1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z]], "
             + "projects=[[0]], groups=[{}], aggs=[[COUNT()]])")
         .queryContains(
-            new DruidChecker(
+            druidChecker(
                 "{\"queryType\":\"timeseries\",\"dataSource\":\"foodmart\","
                     + "\"descending\":false,\"granularity\":\"all\","
                     + "\"aggregations\":[{\"type\":\"count\",\"name\":\"EXPR$0\"}],"
@@ -3762,7 +3768,7 @@ import java.sql.SQLException;
             + "  DruidQuery(table=[[foodmart, foodmart]], "
             + "intervals=[[1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z]], "
             + "filter=[<>($1, '1')], groups=[{}], aggs=[[COUNT()]])")
-        .queryContains(new DruidChecker("\"queryType\":\"timeseries\""))
+        .queryContains(druidChecker("\"queryType\":\"timeseries\""))
         .returnsOrdered("EXPR$0=86803");
   }
 
@@ -3973,7 +3979,7 @@ import java.sql.SQLException;
         .explainContains("PLAN=EnumerableInterpreter\n"
             + "  DruidQuery(table=[[foodmart, foodmart]], "
             + "intervals=[[1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z]], "
-            + "filter=[AND(IS NOT TRUE(=(CAST($1):INTEGER, 1020)), <>(CAST($1):INTEGER, 1020))],"
+            + "filter=[AND(IS NOT TRUE(=($1, 1020)), <>($1, 1020))],"
             + " groups=[{}], aggs=[[COUNT()]])");
     final String sql2 = "SELECT COUNT(*) FROM " + FOODMART_TABLE + "WHERE "
         + "\"product_id\" <> 1020";
@@ -4198,8 +4204,7 @@ import java.sql.SQLException;
     sql(sql, FOODMART)
         .returnsOrdered(
             "QR_TIMESTAMP_OK=1; SUM_STORE_SALES=139628.34999999971; YR_TIMESTAMP_OK=1997")
-        .queryContains(
-            new DruidChecker("\"queryType\":\"groupBy\"", extract_year, extract_expression))
+        .queryContains(druidChecker("\"queryType\":\"groupBy\"", extract_year, extract_expression))
         .explainContains("PLAN=EnumerableInterpreter\n"
             + "  BindableProject(QR_TIMESTAMP_OK=[$0], SUM_STORE_SALES=[$2], YR_TIMESTAMP_OK=[$1])\n"
             + "    DruidQuery(table=[[foodmart, foodmart]], intervals=[[1900-01-09T00:00:00.000Z/"
@@ -4275,12 +4280,12 @@ import java.sql.SQLException;
         .explainContains("PLAN=EnumerableInterpreter\n"
             + "  BindableProject(QUARTER=[$4], WEEK=[$0], DAYOFWEEK=[$1], "
             + "DAYOFMONTH=[$2], DAYOFYEAR=[$3], SUM_ADDED=[$5])\n"
-            + "    DruidQuery(table=[[wiki, wikipedia]], "
+            + "    DruidQuery(table=[[wiki, wikiticker]], "
             + "intervals=[[1900-01-01T00:00:00.000Z/3000-01-01T00:00:00.000Z]], "
             + "projects=[[EXTRACT(FLAG(WEEK), $0), EXTRACT(FLAG(DOW), $0), "
             + "EXTRACT(FLAG(DAY), $0), EXTRACT(FLAG(DOY), $0), EXTRACT(FLAG(QUARTER), $0), $1]], "
             + "groups=[{0, 1, 2, 3, 4}], aggs=[[SUM($5)]], fetch=[1])")
-        .queryContains(new DruidChecker("\"queryType\":\"groupBy\""));
+        .queryContains(druidChecker("\"queryType\":\"groupBy\""));
   }
 
   @Test void testCastConcatOverPostAggregates() {
@@ -4292,9 +4297,8 @@ import java.sql.SQLException;
         .explainContains("PLAN=EnumerableInterpreter\n"
             + "  DruidQuery(table=[[foodmart, foodmart]], intervals=[[1900-01-09T00:00:00.000Z/"
             + "2992-01-10T00:00:00.000Z]], projects=[[$90, $91]], groups=[{}], aggs=[[COUNT(), "
-            + "SUM($0), SUM($1)]], post_projects=[[||(||(CAST(+($0, $1)):VARCHAR CHARACTER SET "
-            + "\"ISO-8859-1\" COLLATE \"ISO-8859-1$en_US$primary\", '_'), CAST($2):"
-            + "VARCHAR)]])");
+            + "SUM($0), SUM($1)]], post_projects=[[||(||(CAST(+($0, $1)):VARCHAR, '_'), "
+            + "CAST($2):VARCHAR)]])");
   }
 
   @Test void testHavingSpecs() {
