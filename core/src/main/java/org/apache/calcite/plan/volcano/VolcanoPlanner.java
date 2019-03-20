@@ -240,6 +240,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
   private final Map<List<String>, RelOptLattice> latticeByName =
       Maps.newLinkedHashMap();
 
+  /** Only populated when debug logging is enabled */
   final Map<RelNode, Provenance> provenanceMap = new HashMap<>();
 
   private final Deque<VolcanoRuleCall> ruleCallStack = new ArrayDeque<>();
@@ -1501,16 +1502,18 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     rel = rel.onRegister(this);
 
     // Record its provenance. (Rule call may be null.)
-    if (ruleCallStack.isEmpty()) {
-      provenanceMap.put(rel, Provenance.EMPTY);
-    } else {
-      final VolcanoRuleCall ruleCall = ruleCallStack.peek();
-      provenanceMap.put(
-          rel,
-          new RuleProvenance(
-              ruleCall.rule,
-              ImmutableList.copyOf(ruleCall.rels),
-              ruleCall.id));
+    if (LOGGER.isDebugEnabled()) {
+      if (ruleCallStack.isEmpty()) {
+        provenanceMap.put(rel, Provenance.EMPTY);
+      } else {
+        final VolcanoRuleCall ruleCall = ruleCallStack.peek();
+        provenanceMap.put(
+            rel,
+            new RuleProvenance(
+                ruleCall.rule,
+                ImmutableList.copyOf(ruleCall.rels),
+                ruleCall.id));
+      }
     }
 
     // If it is equivalent to an existing expression, return the set that

@@ -490,8 +490,10 @@ public class RelSubset extends AbstractRelNode {
       if (!inputs.equals(oldInputs)) {
         final RelNode pOld = p;
         p = p.copy(p.getTraitSet(), inputs);
-        planner.provenanceMap.put(
-            p, new VolcanoPlanner.DirectProvenance(pOld));
+        if (LOGGER.isDebugEnabled()) {
+          planner.provenanceMap.put(
+              p, new VolcanoPlanner.DirectProvenance(pOld));
+        }
       }
       return p;
     }
