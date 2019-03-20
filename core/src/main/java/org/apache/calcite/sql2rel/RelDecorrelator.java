@@ -360,9 +360,6 @@ import org.apache.calcite.tools.RelBuilderFactory;
   }
 
   public Frame decorrelateRel(Aggregate rel) {
-    if (rel.getGroupType() != Aggregate.Group.SIMPLE) {
-      throw new AssertionError(Bug.CALCITE_461_FIXED);
-    }
     //
     // Rewrite logic:
     //
@@ -479,16 +476,14 @@ import org.apache.calcite.tools.RelBuilderFactory;
     List<AggregateCall> newAggCalls = new ArrayList<>();
     List<AggregateCall> oldAggCalls = rel.getAggCallList();
 
-    final Iterable<ImmutableBitSet> newGroupSets;
-    if (rel.getGroupType() == Aggregate.Group.SIMPLE) {
-      newGroupSets = null;
-    } else {
+    ImmutableList<ImmutableBitSet> newGroupSets = null;
+    if (rel.getGroupType() != Aggregate.Group.SIMPLE) {
       final ImmutableBitSet addedGroupSet =
           ImmutableBitSet.range(oldGroupKeyCount, newGroupKeyCount);
-      newGroupSets =
-          ImmutableBitSet.ORDERING.immutableSortedCopy(
-              Iterables.transform(rel.getGroupSets(),
-                  bitSet -> bitSet.union(addedGroupSet)));
+      final Iterable<ImmutableBitSet> tmpGroupSets =
+          Iterables.transform(rel.getGroupSets(),
+              bitSet -> bitSet.union(addedGroupSet));
+      newGroupSets = ImmutableBitSet.ORDERING.immutableSortedCopy(tmpGroupSets);
     }
 
     int oldInputOutputFieldCount = rel.getGroupSet().cardinality();
@@ -522,7 +517,8 @@ import org.apache.calcite.tools.RelBuilderFactory;
           newInputOutputFieldCount + i);
     }
 
-    relBuilder.push(newProject).aggregate(relBuilder.groupKey(newGroupSet, null), newAggCalls);
+    relBuilder.push(newProject).aggregate(
+        relBuilder.groupKey(newGroupSet, newGroupSets), newAggCalls);
 
     if (!omittedConstants.isEmpty()) {
       final List<RexNode> postProjects = new ArrayList<>(relBuilder.fields());

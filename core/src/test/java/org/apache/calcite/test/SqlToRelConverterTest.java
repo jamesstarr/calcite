@@ -3118,7 +3118,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
    * Test case for decorrelating sub-query that has aggregate with
    * grouping sets.
    */
-  @Test void testCorrelationAggregateGroupSets() {
+  @Test public void testCorrelationAggregateGroupSets() {
     final String sql = "select sum(e1.empno)\n"
         + "from emp e1, dept d1\n"
         + "where e1.deptno = d1.deptno\n"
@@ -3127,7 +3127,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).decorrelate(true).ok();
   }
 
-  @Test void testCustomColumnResolving() {
+  @Test public void testCustomColumnResolving() {
     final String sql = "select k0 from struct.t";
     sql(sql).ok();
   }

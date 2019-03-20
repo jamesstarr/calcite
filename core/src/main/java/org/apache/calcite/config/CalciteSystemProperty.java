@@ -142,9 +142,6 @@ import java.io.InputStream;
    * Whether to run Redis tests.
    */
   public static final CalciteSystemProperty<Boolean> TEST_REDIS =
-<<<<<<< HEAD
-      booleanProperty("calcite.test.redis", false);
-=======
       booleanProperty("calcite.test.redis", true);
 
   /**
@@ -366,4 +363,3 @@ import java.io.InputStream;
 =======
 
 // End CalciteSystemProperty.java
->>>>>>> 02d8ed362 ([CALCITE-3951] Support different string comparison based on SqlCollation)
