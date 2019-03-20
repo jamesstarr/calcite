@@ -468,9 +468,6 @@ public class RelDecorrelator implements ReflectiveVisitor {
   }
 
   public Frame decorrelateRel(Aggregate rel) {
-    if (rel.getGroupType() != Aggregate.Group.SIMPLE) {
-      throw new AssertionError(Bug.CALCITE_461_FIXED);
-    }
     //
     // Rewrite logic:
     //
@@ -587,6 +584,16 @@ public class RelDecorrelator implements ReflectiveVisitor {
     List<AggregateCall> newAggCalls = Lists.newArrayList();
     List<AggregateCall> oldAggCalls = rel.getAggCallList();
 
+    ImmutableList<ImmutableBitSet> newGroupSets = null;
+    if (rel.getGroupType() != Aggregate.Group.SIMPLE) {
+      final ImmutableBitSet addedGroupSet =
+          ImmutableBitSet.range(oldGroupKeyCount, newGroupKeyCount);
+      final Iterable<ImmutableBitSet> tmpGroupSets =
+          Iterables.transform(rel.getGroupSets(),
+              bitSet -> bitSet.union(addedGroupSet));
+      newGroupSets = ImmutableBitSet.ORDERING.immutableSortedCopy(tmpGroupSets);
+    }
+
     int oldInputOutputFieldCount = rel.getGroupSet().cardinality();
     int newInputOutputFieldCount = newGroupSet.cardinality();
 
@@ -618,7 +625,8 @@ public class RelDecorrelator implements ReflectiveVisitor {
           newInputOutputFieldCount + i);
     }
 
-    relBuilder.push(newProject).aggregate(relBuilder.groupKey(newGroupSet, null), newAggCalls);
+    relBuilder.push(newProject).aggregate(
+        relBuilder.groupKey(newGroupSet, newGroupSets), newAggCalls);
 
     if (!omittedConstants.isEmpty()) {
       final List<RexNode> postProjects = new ArrayList<>(relBuilder.fields());
