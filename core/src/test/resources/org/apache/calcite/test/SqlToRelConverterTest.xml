@@ -5006,6 +5006,7 @@ LogicalAggregate(group=[{0}], EXPR$1=[SUM($1) FILTER $2], EXPR$2=[COUNT()])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testNestedPrimitiveFieldAccess">
         <Resource name="sql">
             <![CDATA[select dn.skill['desc']
@@ -5047,6 +5048,13 @@ LogicalProject(EXPR$0=[$2.OTHERS.A])
             <![CDATA[SELECT e1.empno
 FROM emp e1 where exists
 (select avg(sal) from emp e2 where e1.empno = e2.empno)]]>
+=======
+    <TestCase name="testSimplifyExistsAggregateSubQuery">
+        <Resource name="sql">
+            <![CDATA[SELECT e1.empno
+        FROM emp e1 where exists
+        (select avg(sal) from emp e2 where e1.empno = e2.empno)]]>
+>>>>>>> 8df9c9187 ([CALCITE-2936] Simplify EXISTS or NOT EXISTS sub-query that has "GROUP BY ()")
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -5058,8 +5066,13 @@ LogicalProject(EMPNO=[$0])
     <TestCase name="testSimplifyNotExistsAggregateSubQuery">
         <Resource name="sql">
             <![CDATA[SELECT e1.empno
+<<<<<<< HEAD
 FROM emp e1 where not exists
 (select avg(sal) from emp e2 where e1.empno = e2.empno)]]>
+=======
+        FROM emp e1 where not exists
+        (select avg(sal) from emp e2 where e1.empno = e2.empno)]]>
+>>>>>>> 8df9c9187 ([CALCITE-2936] Simplify EXISTS or NOT EXISTS sub-query that has "GROUP BY ()")
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -5072,8 +5085,13 @@ LogicalProject(EMPNO=[$0])
     <TestCase name="testSimplifyExistsValuesSubQuery">
         <Resource name="sql">
             <![CDATA[select deptno
+<<<<<<< HEAD
 from EMP
 where exists (values 10)]]>
+=======
+        from EMP
+        where exists (values 10)]]>
+>>>>>>> 8df9c9187 ([CALCITE-2936] Simplify EXISTS or NOT EXISTS sub-query that has "GROUP BY ()")
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -5085,8 +5103,13 @@ LogicalProject(DEPTNO=[$7])
     <TestCase name="testSimplifyNotExistsValuesSubQuery">
         <Resource name="sql">
             <![CDATA[select deptno
+<<<<<<< HEAD
 from EMP
 where not exists (values 10)]]>
+=======
+        from EMP
+        where not exists (values 10)]]>
+>>>>>>> 8df9c9187 ([CALCITE-2936] Simplify EXISTS or NOT EXISTS sub-query that has "GROUP BY ()")
         </Resource>
         <Resource name="plan">
             <![CDATA[

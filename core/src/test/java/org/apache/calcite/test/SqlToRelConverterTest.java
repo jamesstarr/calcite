@@ -2758,14 +2758,14 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
    * Existential sub-query that has aggregate without grouping key
    * should be simplified to constant boolean expression</a>.
    */
-  @Test void testSimplifyExistsAggregateSubQuery() {
+  @Test public void testSimplifyExistsAggregateSubQuery() {
     final String sql = "SELECT e1.empno\n"
         + "FROM emp e1 where exists\n"
         + "(select avg(sal) from emp e2 where e1.empno = e2.empno)";
     sql(sql).decorrelate(true).ok();
   }
 
-  @Test void testSimplifyNotExistsAggregateSubQuery() {
+  @Test public void testSimplifyNotExistsAggregateSubQuery() {
     final String sql = "SELECT e1.empno\n"
         + "FROM emp e1 where not exists\n"
         + "(select avg(sal) from emp e2 where e1.empno = e2.empno)";
@@ -2778,14 +2778,14 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
    * Existential sub-query that has Values with at least 1 tuple
    * should be simplified to constant boolean expression</a>.
    */
-  @Test void testSimplifyExistsValuesSubQuery() {
+  @Test public void testSimplifyExistsValuesSubQuery() {
     final String sql = "select deptno\n"
         + "from EMP\n"
         + "where exists (values 10)";
     sql(sql).decorrelate(true).ok();
   }
 
-  @Test void testSimplifyNotExistsValuesSubQuery() {
+  @Test public void testSimplifyNotExistsValuesSubQuery() {
     final String sql = "select deptno\n"
         + "from EMP\n"
         + "where not exists (values 10)";
