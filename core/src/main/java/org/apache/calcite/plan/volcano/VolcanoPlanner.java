@@ -177,7 +177,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
       new LinkedHashMap<>();
 
   /** Only populated when debug logging is enabled */
-  final Map<RelNode, Provenance> provenanceMap;
+  final Map<RelNode, Provenance> provenanceMap = new HashMap<>();
 
   final Deque<VolcanoRuleCall> ruleCallStack = new ArrayDeque<>();
 
