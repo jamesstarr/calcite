@@ -37,25 +37,24 @@ import org.apache.calcite.tools.RuleSets;
 
 import com.google.common.collect.ImmutableList;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
- * Tests the application of the {@code EnumerableLimitRule}.
+ * Tests the application of the {@link org.apache.calcite.adapter.enumerable.EnumerableLimitRule}.
  */
-class EnumerableLimitRuleTest {
+public final class EnumerableLimitRuleTest {
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2941">[CALCITE-2941]
    * EnumerableLimitRule on Sort with no collation creates EnumerableLimit with
    * wrong traitSet and cluster</a>.
    */
-  @Test void enumerableLimitOnEmptySort() throws Exception {
+  @Test public void enumerableLimitOnEmptySort() throws Exception {
     RuleSet prepareRules =
         RuleSets.ofList(
             EnumerableRules.ENUMERABLE_FILTER_RULE,
@@ -89,13 +88,13 @@ class EnumerableLimitRuleTest {
         desiredTraits, ImmutableList.of(), ImmutableList.of());
 
     // verify that the collation [0] is not lost in the final plan
-    final RelCollation collation =
-        planAfter.getTraitSet().getTrait(RelCollationTraitDef.INSTANCE);
-    assertThat(collation, notNullValue());
-    final List<RelFieldCollation> fieldCollationList =
-        collation.getFieldCollations();
-    assertThat(fieldCollationList, notNullValue());
-    assertThat(fieldCollationList.size(), is(1));
-    assertThat(fieldCollationList.get(0).getFieldIndex(), is(0));
+    RelCollation collation = planAfter.getTraitSet().getTrait(RelCollationTraitDef.INSTANCE);
+    assertNotNull(collation);
+    List<RelFieldCollation> fieldCollationList = collation.getFieldCollations();
+    assertNotNull(fieldCollationList);
+    assertEquals(1, fieldCollationList.size());
+    assertEquals(0, fieldCollationList.get(0).getFieldIndex());
   }
 }
+
+// End EnumerableLimitRuleTest.java
