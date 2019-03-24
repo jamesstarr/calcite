@@ -68,6 +68,7 @@ helps to agree on the general approach. Log a
 proposed feature or start a discussion on the dev list.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Before opening up a new JIRA case, have a look in the existing issues.
 The feature or bug that you plan to work on may already be there.
 
@@ -114,10 +115,26 @@ the fix version accordingly (e.g., 1.20.0), otherwise leave it as blank.
 
 If you pick up an existing issue, mark it 'in progress', and when it's
 finished flag it with 'pull-request-available'.
+=======
+Before opening up a new JIRA case, have a look in the existing issues.
+The feature or bug that you plan to work on may already be there.  
+
+If you are going to take on the issue right away assign it to yourself.
+To assign issues to yourself you have to be registered in JIRA as a contributor. 
+In order to do that, send an email to the developers list
+and provide your JIRA username.   
+
+If you are committed to fixing the issue before the upcoming release set 
+the fix version accordingly (e.g., 1.20.0), otherwise leave it as blank.
+
+If you pick up an existing issue, mark it 'in progress', and when it's 
+finished flag it with 'pull-request-available'. 
+>>>>>>> 766f53d49 (Site: Add guidelines for JIRA's fix version field)
 
 If for any reason you decide that an issue cannot go into the ongoing
 release, reset the fix version to blank.
 
+<<<<<<< HEAD
 During a release, the release manager will update the issues that were
 not completed for the current release to the next release.
 
@@ -130,6 +147,11 @@ the contributor(s) involved in the discussion should:
 
 =======
 >>>>>>> 92e7e6af6 (Site: Add instructions for updating PRs based on the discussion in the dev list (Stamatis Zampetakis))
+=======
+During a release, the release manager will update the issues that were 
+not completed for the current release to the next release
+
+>>>>>>> 766f53d49 (Site: Add guidelines for JIRA's fix version field)
 Fork the GitHub repository, and create a branch for your feature.
 
 Develop your feature and test cases, and make sure that
