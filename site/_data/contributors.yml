@@ -101,7 +101,11 @@
   apacheId: hyuan
   githubId: hsyuan
   org: Alibaba
+<<<<<<< HEAD
   role: PMC
+=======
+  role: Committer
+>>>>>>> 5d2e4f09c (Site: Add new committers (Haisheng Yuan, Hongze Zhang and Stamatis Zampetakis))
 - name: Hongze Zhang
   apacheId: hongze
   githubId: zhztheplayer
@@ -255,9 +259,14 @@
 - name: Stamatis Zampetakis
   apacheId: zabetak
   githubId: zabetak
+<<<<<<< HEAD
   org: Cloudera
   role: PMC Chair
   homepage: https://people.apache.org/~zabetak/
+=======
+  org: TIBCO EBX
+  role: Committer
+>>>>>>> 5d2e4f09c (Site: Add new committers (Haisheng Yuan, Hongze Zhang and Stamatis Zampetakis))
 - name: Steven Noels
   apacheId: stevenn
   githubId: stevenn
