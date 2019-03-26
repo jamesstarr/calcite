@@ -1270,10 +1270,14 @@ query support.
 Compatibility: This release is tested
 on Linux, macOS, Microsoft Windows;
 <<<<<<< HEAD
+<<<<<<< HEAD
 using Oracle JDK 8, 9, 10, 11, 12 and OpenJDK 8, 9, 10, 11, 12;
 =======
 using Oracle JDK 8, 9, 10, 11 and OpenJDK 10, 11;
 >>>>>>> 0b60fc5e8 ([CALCITE-2911] Release Calcite 1.19.0)
+=======
+using Oracle JDK 8, 9, 10, 11, 12 and OpenJDK 8, 9, 10, 11, 12;
+>>>>>>> 731683aad ([CALCITE-2952] Add JDK 12 as tested to 1.19.0 history)
 Guava versions 19.0 to 27.1-jre;
 Druid version 0.11.0;
 other software versions as specified in `pom.xml`.
