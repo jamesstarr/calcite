@@ -74,9 +74,6 @@ import java.util.Set;
  */
 public abstract class Aggregate extends SingleRel implements Hintable {
 
-  /**
-   * @see org.apache.calcite.util.Bug#CALCITE_461_FIXED
-   */
   public static boolean isSimple(Aggregate aggregate) {
     return aggregate.getGroupType() == Group.SIMPLE;
   }
