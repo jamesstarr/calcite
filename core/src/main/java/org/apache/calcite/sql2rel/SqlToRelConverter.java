@@ -1226,10 +1226,10 @@ public class SqlToRelConverter {
                 null,
                 ImmutableList.of(
                     AggregateCall.create(SqlStdOperatorTable.COUNT, false,
-                        false, ImmutableList.of(), -1, RelCollations.EMPTY,
+                        false, false, ImmutableList.of(), -1, RelCollations.EMPTY,
                         longType, null),
                     AggregateCall.create(SqlStdOperatorTable.COUNT, false,
-                        false, args, -1, RelCollations.EMPTY, longType, null)));
+                        false, false, args, -1, RelCollations.EMPTY, longType, null)));
         LogicalJoin join =
             LogicalJoin.create(bb.root, aggregate, ImmutableList.of(),
                 rexBuilder.makeLiteral(true), ImmutableSet.<CorrelationId>of(),
@@ -4322,10 +4322,6 @@ public class SqlToRelConverter {
           LogicalUnion.create(unionRels, true),
           true);
     }
-
-    // REVIEW jvs 22-Jan-2004:  should I add
-    // mapScopeToLux.put(validator.getScope(values),bb.root);
-    // ?
   }
 
   //~ Inner Classes ----------------------------------------------------------
@@ -5500,21 +5496,30 @@ public class SqlToRelConverter {
     }
 
     private void translateAgg(SqlCall call) {
-      translateAgg(call, null, null, call);
+      translateAgg(call, null, null, false, call);
     }
 
     private void translateAgg(SqlCall call, SqlNode filter,
-        SqlNodeList orderList, SqlCall outerCall) {
+        SqlNodeList orderList, boolean ignoreNulls, SqlCall outerCall) {
       assert bb.agg == this;
       assert outerCall != null;
       switch (call.getKind()) {
       case FILTER:
         assert filter == null;
-        translateAgg(call.operand(0), call.operand(1), orderList, outerCall);
+        translateAgg(call.operand(0), call.operand(1), orderList, ignoreNulls,
+            outerCall);
         return;
       case WITHIN_GROUP:
         assert orderList == null;
-        translateAgg(call.operand(0), filter, call.operand(1), outerCall);
+        translateAgg(call.operand(0), filter, call.operand(1), ignoreNulls,
+            outerCall);
+        return;
+      case IGNORE_NULLS:
+        ignoreNulls = true;
+        // fall through
+      case RESPECT_NULLS:
+        translateAgg(call.operand(0), filter, orderList, ignoreNulls,
+            outerCall);
         return;
       }
       final List<Integer> args = new ArrayList<>();

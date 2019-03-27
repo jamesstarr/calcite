@@ -2177,7 +2177,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
   /**
    * Tests that a window with specifying null treatment.
    */
-  @Test void testOverNullTreatmentWindow() {
+  @Test public void testOverNullTreatmentWindow() {
     final String sql = "select\n"
         + "lead(deptno, 1) over w,\n "
         + "lead(deptno, 2) ignore nulls over w,\n"

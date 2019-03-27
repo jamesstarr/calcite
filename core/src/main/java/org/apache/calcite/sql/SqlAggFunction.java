@@ -214,6 +214,12 @@ public abstract class SqlAggFunction extends SqlFunction implements Context {
   public boolean isPercentile() {
     return false;
   }
+
+  /** Returns whether this aggregate function allows specifying null treatment
+   * ({@code RESPECT NULLS} or {@code IGNORE NULLS}). */
+  public boolean allowsNullTreatment() {
+    return false;
+  }
 }
 >>>>>>> 1677deb9e ([CALCITE-4644] Added validation for PERCENTILE functions)
 

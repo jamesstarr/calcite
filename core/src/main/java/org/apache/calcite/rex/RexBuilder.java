@@ -683,6 +683,15 @@ public class RexBuilder {
     final BigDecimal divider = endUnit.multiplier;
     RexNode value = multiplyDivide(decodeIntervalOrDecimal(exp),
         multiplier, divider);
+<<<<<<< HEAD
+=======
+    if (scale > 0) {
+      RelDataType decimalType =
+          typeFactory.createSqlType(SqlTypeName.DECIMAL,
+              scale + exp.getType().getPrecision(), scale);
+      value = encodeIntervalOrDecimal(value, decimalType, false);
+    }
+>>>>>>> cf7bf148e ([CALCITE-883] Support RESPECT NULLS, IGNORE NULLS option for LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE functions (Chunwei Lei))
     return ensureType(toType, value, false);
   }
 

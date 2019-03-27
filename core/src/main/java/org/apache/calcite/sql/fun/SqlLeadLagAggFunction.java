@@ -97,5 +97,10 @@ public class SqlLeadLagAggFunction extends SqlAggFunction {
   @Override public boolean allowsNullTreatment() {
     return true;
   }
+<<<<<<< HEAD
+=======
+
+}
+>>>>>>> cf7bf148e ([CALCITE-883] Support RESPECT NULLS, IGNORE NULLS option for LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE functions (Chunwei Lei))
 
 }

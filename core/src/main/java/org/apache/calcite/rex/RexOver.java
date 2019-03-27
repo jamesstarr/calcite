@@ -92,6 +92,10 @@ public class RexOver extends RexCall {
     return distinct;
   }
 
+  public boolean ignoreNulls() {
+    return ignoreNulls;
+  }
+
   @Override protected @Nonnull String computeDigest(boolean withType) {
     final StringBuilder sb = new StringBuilder(op.getName());
     sb.append("(");

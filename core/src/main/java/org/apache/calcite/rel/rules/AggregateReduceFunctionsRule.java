@@ -384,7 +384,8 @@ public class AggregateReduceFunctionsRule
             arg);
     final AggregateCall sumZeroCall =
         AggregateCall.create(SqlStdOperatorTable.SUM0, oldCall.isDistinct(),
-            oldCall.isApproximate(), oldCall.getArgList(), oldCall.filterArg,
+            oldCall.isApproximate(), oldCall.ignoreNulls(),
+            oldCall.getArgList(), oldCall.filterArg,
             oldCall.collation, oldAggRel.getGroupCount(), oldAggRel.getInput(),
             null, oldCall.name);
     final AggregateCall countCall =

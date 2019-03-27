@@ -2263,7 +2263,12 @@ last_value(deptno) over w,
 last_value(deptno) ignore nulls over w,
 last_value(deptno) respect nulls over w
  from emp
+<<<<<<< HEAD
 window w as (order by empno)]]>
+=======
+window w as (order by empno)
+]]>
+>>>>>>> cf7bf148e ([CALCITE-883] Support RESPECT NULLS, IGNORE NULLS option for LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE functions (Chunwei Lei))
         </Resource>
         <Resource name="plan">
             <![CDATA[

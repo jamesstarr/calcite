@@ -7756,6 +7756,7 @@ SqlCall nullTreatment(SqlCall arg) :
     )
 }
 
+<<<<<<< HEAD
 SqlCall withinGroup(SqlNode arg) :
 {
     final Span withinGroupSpan;
@@ -7774,6 +7775,8 @@ SqlCall withinGroup(SqlNode arg) :
 }
 
 
+=======
+>>>>>>> cf7bf148e ([CALCITE-883] Support RESPECT NULLS, IGNORE NULLS option for LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE functions (Chunwei Lei))
 /**
  * Parses a call to a named function (could be a builtin with regular
  * syntax, or else a UDF).
@@ -7842,6 +7845,9 @@ SqlNode NamedFunctionCall() :
     ]
     [
         call = withinGroup(call)
+    ]
+    [
+        call = nullTreatment(call)
     ]
     [
         <WITHIN> { withinGroupSpan = span(); }

@@ -315,9 +315,9 @@ public abstract class Window extends SingleRel {
         public AggregateCall get(int index) {
           final RexWinAggCall aggCall = aggCalls.get(index);
           final SqlAggFunction op = (SqlAggFunction) aggCall.getOperator();
-          return AggregateCall.create(op, aggCall.distinct,
-              false, getProjectOrdinals(aggCall.getOperands()), -1,
-              RelCollations.EMPTY,
+          return AggregateCall.create(op, aggCall.distinct, false,
+              aggCall.ignoreNulls, getProjectOrdinals(aggCall.getOperands()),
+              -1, RelCollations.EMPTY,
               aggCall.getType(), fieldNames.get(aggCall.ordinal));
         }
       };
@@ -375,6 +375,7 @@ public abstract class Window extends SingleRel {
       this.ordinal = ordinal;
       this.distinct = distinct;
       this.ignoreNulls = ignoreNulls;
+<<<<<<< HEAD
     }
 
     /** {@inheritDoc}
@@ -387,6 +388,8 @@ public abstract class Window extends SingleRel {
 
     @Override public int hashCode() {
       return Objects.hash(digest, ordinal, distinct);
+=======
+>>>>>>> cf7bf148e ([CALCITE-883] Support RESPECT NULLS, IGNORE NULLS option for LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE functions (Chunwei Lei))
     }
 
     /** {@inheritDoc}

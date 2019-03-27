@@ -1979,7 +1979,7 @@ public class SqlParserTest {
         .fails("(?s)Encountered \"DEFAULT\" at .*");
   }
 
-  @Test void testAggregateFilter() {
+  @Test public void testAggregateFilter() {
     final String sql = "select\n"
         + " sum(sal) filter (where gender = 'F') as femaleSal,\n"
         + " sum(sal) filter (where true) allSal,\n"
@@ -4751,7 +4751,7 @@ public class SqlParserTest {
             + "FROM `BIDS`");
   }
 
-  @Test void testNullTreatment() {
+  @Test public void testNullTreatment() {
     sql("select lead(x) respect nulls over (w) from t")
         .ok("SELECT (LEAD(`X`) RESPECT NULLS OVER (`W`))\n"
             + "FROM `T`");
@@ -4778,18 +4778,9 @@ public class SqlParserTest {
         + "ORDER BY `COL1`\n"
         + "FETCH NEXT 10 ROWS ONLY";
     sql(sql).ok(expected);
-
-    // See [CALCITE-2993] ParseException may be thrown for legal
-    // SQL queries due to incorrect "LOOKAHEAD(1)" hints
-    sql("select lead(x) ignore from t")
-        .ok("SELECT LEAD(`X`) AS `IGNORE`\n"
-            + "FROM `T`");
-    sql("select lead(x) respect from t")
-        .ok("SELECT LEAD(`X`) AS `RESPECT`\n"
-            + "FROM `T`");
   }
 
-  @Test void testAs() {
+  @Test public void testAs() {
     // AS is optional for column aliases
     sql("select x y from t")
         .ok("SELECT `X` AS `Y`\n"
@@ -8643,7 +8634,7 @@ public class SqlParserTest {
         + "from t\n"
         + "order by col1 limit 10";
     final String expected = "SELECT `COL1`,"
-        + " (COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`))\n"
+        + " COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`)\n"
         + "FROM `T`\n"
         + "ORDER BY `COL1`\n"
         + "FETCH NEXT 10 ROWS ONLY";
@@ -8655,7 +8646,7 @@ public class SqlParserTest {
         + "from t\n"
         + "order by col1 limit 10";
     final String expected = "SELECT"
-        + " (COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`))\n"
+        + " COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`)\n"
         + "FROM `T`\n"
         + "ORDER BY `COL1`\n"
         + "FETCH NEXT 10 ROWS ONLY";
@@ -8674,7 +8665,7 @@ public class SqlParserTest {
         + "from t\n"
         + "order by col1 limit 10";
     final String expected = "SELECT `COL1`,"
-        + " (COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`, `COL4`))\n"
+        + " COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`, `COL4`)\n"
         + "FROM `T`\n"
         + "ORDER BY `COL1`\n"
         + "FETCH NEXT 10 ROWS ONLY";
@@ -8687,8 +8678,8 @@ public class SqlParserTest {
         + "  order by col3 desc nulls first, col4 asc nulls last)\n"
         + "from t\n"
         + "order by col1 limit 10";
-    final String expected = "SELECT `COL1`, (COLLECT(`COL2`) "
-        + "WITHIN GROUP (ORDER BY `COL3` DESC NULLS FIRST, `COL4` NULLS LAST))\n"
+    final String expected = "SELECT `COL1`, COLLECT(`COL2`) "
+        + "WITHIN GROUP (ORDER BY `COL3` DESC NULLS FIRST, `COL4` NULLS LAST)\n"
         + "FROM `T`\n"
         + "ORDER BY `COL1`\n"
         + "FETCH NEXT 10 ROWS ONLY";
@@ -8830,6 +8821,17 @@ public class SqlParserTest {
         "JSON_ARRAYAGG(`column` NULL ON NULL)");
     checkExp("json_arrayagg(json_array(\"column\") format json)",
         "JSON_ARRAYAGG(JSON_ARRAY(`column` ABSENT ON NULL) FORMAT JSON ABSENT ON NULL)");
+  }
+
+  @Ignore
+  @Test public void testJsonArrayAgg2() {
+    checkExp("json_arrayagg(\"column\" order by \"column\")",
+        "JSON_ARRAYAGG(`column` ABSENT ON NULL) WITHIN GROUP (ORDER BY `column`)");
+    checkExp("json_arrayagg(\"column\") within group (order by \"column\")",
+        "JSON_ARRAYAGG(`column` ABSENT ON NULL) WITHIN GROUP (ORDER BY `column`)");
+    checkFails("^json_arrayagg(\"column\" order by \"column\") within group (order by \"column\")^",
+        "(?s).*Including both WITHIN GROUP\\(\\.\\.\\.\\) and inside ORDER BY "
+            + "in a single JSON_ARRAYAGG call is not allowed.*");
   }
 
   @Test public void testJsonPredicate() {

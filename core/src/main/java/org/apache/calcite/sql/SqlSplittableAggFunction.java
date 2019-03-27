@@ -133,7 +133,7 @@ public interface SqlSplittableAggFunction {
 
     public AggregateCall other(RelDataTypeFactory typeFactory, AggregateCall e) {
       return AggregateCall.create(SqlStdOperatorTable.COUNT, false, false,
-          ImmutableIntList.of(), -1, RelCollations.EMPTY,
+          false, ImmutableIntList.of(), -1, RelCollations.EMPTY,
           typeFactory.createSqlType(SqlTypeName.BIGINT), null);
     }
 
@@ -162,7 +162,7 @@ public interface SqlSplittableAggFunction {
       }
       int ordinal = extra.register(node);
       return AggregateCall.create(SqlStdOperatorTable.SUM0, false, false,
-          ImmutableList.of(ordinal), -1, aggregateCall.collation,
+          false, ImmutableList.of(ordinal), -1, aggregateCall.collation,
           aggregateCall.type, aggregateCall.name);
     }
 
@@ -293,25 +293,9 @@ public interface SqlSplittableAggFunction {
       }
       int ordinal = extra.register(node);
       return AggregateCall.create(getMergeAggFunctionOfTopSplit(), false, false,
-<<<<<<< HEAD
-          false, ImmutableList.of(ordinal), -1, aggregateCall.collation,
-          aggregateCall.type, aggregateCall.name);
-    }
-
-    public AggregateCall merge(AggregateCall top, AggregateCall bottom) {
-      SqlKind topKind = top.getAggregation().getKind();
-      if (topKind == bottom.getAggregation().getKind()
-          && (topKind == SqlKind.SUM
-              || topKind == SqlKind.SUM0)) {
-        return AggregateCall.create(bottom.getAggregation(),
-            bottom.isDistinct(), bottom.isApproximate(), false,
-            bottom.getArgList(), bottom.filterArg, bottom.getCollation(),
-            top.getType(), top.getName());
-      } else {
-        return null;
-      }
-=======
           ImmutableList.of(ordinal), -1, aggregateCall.collation,
+=======
+          false, ImmutableList.of(ordinal), -1, aggregateCall.collation,
           aggregateCall.type, aggregateCall.name);
     }
 
