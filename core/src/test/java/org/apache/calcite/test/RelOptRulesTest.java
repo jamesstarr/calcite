@@ -112,27 +112,6 @@ import org.apache.calcite.tools.Program;
 import org.apache.calcite.tools.Programs;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
-<<<<<<< HEAD
-import org.apache.calcite.tools.RuleSet;
-import org.apache.calcite.tools.RuleSets;
-import org.apache.calcite.util.DateString;
-import org.apache.calcite.util.ImmutableBitSet;
-
-import com.google.common.base.Supplier;
-import com.google.common.collect.ImmutableList;
-
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.function.Predicate;
-=======
 
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
@@ -6184,11 +6163,18 @@ class RelOptRulesTest extends RelOptTestBase {
     checkSubQuery(sql).check();
   }
 
+<<<<<<< HEAD
   @Test void testSelectNotInCorrelated() {
     final String sql = "select sal,\n"
         + " empno NOT IN (\n"
         + " select deptno from dept\n"
         + "   where emp.job=dept.name)\n"
+=======
+  @Test public void testSelectNotInCorrelated() {
+    final String sql = "select sal, \n"
+        + " empno NOT IN (\n"
+        + " select deptno from dept \n"
+        + "   where emp.job=dept.name) \n"
         + " from emp";
     checkSubQuery(sql).withLateDecorrelation(true).check();
   }

@@ -48,7 +48,6 @@ import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -522,7 +521,9 @@ public abstract class SubQueryRemoveRule extends RelOptRule {
               project.getProjects(), e);
       builder.push(project.getInput());
       final int fieldCount = builder.peek().getRowType().getFieldCount();
-      final RexNode target = apply(e, ImmutableSet.of(),
+      final Set<CorrelationId>  variablesSet =
+          RelOptUtil.getVariablesUsed(e.rel);
+      final RexNode target = apply(e, variablesSet,
           logic, builder, 1, fieldCount);
       final RexShuttle shuttle = new ReplaceSubQueryShuttle(e, target);
       builder.project(shuttle.apply(project.getProjects()),
@@ -589,7 +590,9 @@ public abstract class SubQueryRemoveRule extends RelOptRule {
       builder.push(join.getLeft());
       builder.push(join.getRight());
       final int fieldCount = join.getRowType().getFieldCount();
-      final RexNode target = apply(e, ImmutableSet.of(),
+      final Set<CorrelationId>  variablesSet =
+          RelOptUtil.getVariablesUsed(e.rel);
+      final RexNode target = apply(e, variablesSet,
           logic, builder, 2, fieldCount);
       final RexShuttle shuttle = new ReplaceSubQueryShuttle(e, target);
       builder.join(join.getJoinType(), shuttle.apply(join.getCondition()));

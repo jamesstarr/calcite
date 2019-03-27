@@ -10465,7 +10465,11 @@ LogicalProject(EMPNO=[$0], D=[$9])
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(SAL=[$5], EXPR$1=[NOT(IN($cor0, $0, {
+=======
+LogicalProject(SAL=[$5], EXPR$1=[NOT(IN($0, {
+>>>>>>> 898ca1b1d ([CALCITE-2954] SubQueryJoinRemoveRule and SubQueryProjectRemoveRule passing on empty set instead of set of correlation id (Vineet Garg))
 LogicalProject(DEPTNO=[$0])
   LogicalFilter(condition=[=($cor0.JOB, $1)])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -10475,17 +10479,28 @@ LogicalProject(DEPTNO=[$0])
         </Resource>
         <Resource name="planMid">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(SAL=[$5], EXPR$1=[IS NULL($10)])
+=======
+LogicalProject(SAL=[$5], EXPR$1=[NOT(CASE(IS NOT NULL($10), true, false))])
+>>>>>>> 898ca1b1d ([CALCITE-2954] SubQueryJoinRemoveRule and SubQueryProjectRemoveRule passing on empty set instead of set of correlation id (Vineet Garg))
   LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{0, 2}])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalFilter(condition=[=($cor0.EMPNO, $0)])
       LogicalProject(DEPTNO=[$0], i=[true])
+<<<<<<< HEAD
         LogicalFilter(condition=[=($cor0.JOB, $1)])
           LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+=======
+        LogicalProject(DEPTNO=[$0])
+          LogicalFilter(condition=[=($cor0.JOB, $1)])
+            LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+>>>>>>> 898ca1b1d ([CALCITE-2954] SubQueryJoinRemoveRule and SubQueryProjectRemoveRule passing on empty set instead of set of correlation id (Vineet Garg))
 ]]>
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(SAL=[$5], EXPR$1=[IS NULL($10)])
   LogicalJoin(condition=[AND(=($0, $9), =($2, $11))], joinType=[left])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -10603,6 +10618,14 @@ LogicalProject(DEPTNO=[$7])
           LogicalAggregate(group=[{0}])
             LogicalProject(ENAME=[$0])
               LogicalTableScan(table=[[CATALOG, SALES, BONUS]])
+=======
+LogicalProject(SAL=[$5], EXPR$1=[NOT(CASE(IS NOT NULL($10), true, false))])
+  LogicalJoin(condition=[AND(=($0, $9), =($2, $11))], joinType=[left])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalProject(DEPTNO=[$0], i=[true], NAME=[$1])
+      LogicalProject(DEPTNO=[$0], NAME=[$1])
+        LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+>>>>>>> 898ca1b1d ([CALCITE-2954] SubQueryJoinRemoveRule and SubQueryProjectRemoveRule passing on empty set instead of set of correlation id (Vineet Garg))
 ]]>
         </Resource>
     </TestCase>
