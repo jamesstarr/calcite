@@ -1123,7 +1123,7 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkWholeExpFails(
         "LOCALTIME()",
         "No match found for function signature LOCALTIME..");
-    checkExpType("LOCALTIME", "TIME(0) NOT NULL"); //  with TZ ?
+    checkExpType("LOCALTIME", "TIME(0) NOT NULL"); //  with TZ?
     checkWholeExpFails(
         "LOCALTIME(-1)",
         "Argument to function 'LOCALTIME' must be a positive integer literal");
@@ -1150,7 +1150,7 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkWholeExpFails(
         "LOCALTIMESTAMP()",
         "No match found for function signature LOCALTIMESTAMP..");
-    checkExpType("LOCALTIMESTAMP", "TIMESTAMP(0) NOT NULL"); //  with TZ ?
+    checkExpType("LOCALTIMESTAMP", "TIMESTAMP(0) NOT NULL"); // with TZ?
     checkWholeExpFails(
         "LOCALTIMESTAMP(-1)",
         "Argument to function 'LOCALTIMESTAMP' must be a positive integer literal");
@@ -1195,7 +1195,7 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkWholeExpFails(
         "current_time()",
         "No match found for function signature CURRENT_TIME..");
-    checkExpType("current_time", "TIME(0) NOT NULL"); //  with TZ ?
+    checkExpType("current_time", "TIME(0) NOT NULL"); // with TZ?
     checkWholeExpFails(
         "current_time(-1)",
         "Argument to function 'CURRENT_TIME' must be a positive integer literal");
@@ -4601,6 +4601,88 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
 
     sql("SELECT ename FROM emp\n"
             + "QUALIFY true").ok();
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-883">[CALCITE-883]
+   * Give error if the aggregate function don't support null treatment</a>. */
+  @Test public void testWindowFunctionsIgnoreNulls() {
+    winSql("select lead(sal, 4) over (w)\n"
+        + " from emp window w as (order by empno)").ok();
+
+    winSql("select lead(sal, 4) IGNORE NULLS over (w)\n"
+        + " from emp window w as (order by empno)").ok();
+
+    winSql("select lag(sal, 4) over (w)\n"
+        + " from emp window w as (order by empno)").ok();
+
+    winSql("select lag(sal, 4) IGNORE NULLS over (w)\n"
+        + " from emp window w as (order by empno)").ok();
+
+    winSql("select first_value(sal) over (w)\n"
+        + " from emp window w as (order by empno)").ok();
+
+    winSql("select first_value(sal) IGNORE NULLS over (w)\n"
+        + " from emp window w as (order by empno)").ok();
+
+    winSql("select last_value(sal) over (w)\n"
+        + " from emp window w as (order by empno)").ok();
+
+    winSql("select last_value(sal) IGNORE NULLS over (w)\n"
+        + " from emp window w as (order by empno)").ok();
+
+    winSql("select ^sum(sal)^ IGNORE NULLS over (w)\n"
+        + " from emp window w as (order by empno)").fails("Cannot specify IGNORE NULLS or RESPECT NULLS following 'SUM'");
+
+    winSql("select ^count(sal)^ IGNORE NULLS over (w)\n"
+        + " from emp window w as (order by empno)").fails("Cannot specify IGNORE NULLS or RESPECT NULLS following 'COUNT'");
+
+    winSql("select ^avg(sal)^ IGNORE NULLS \n"
+        + " from emp").fails("Cannot specify IGNORE NULLS or RESPECT NULLS following 'AVG'");
+
+    winSql("select ^abs(sal)^ IGNORE NULLS \n"
+        + " from emp").fails("Cannot specify IGNORE NULLS or RESPECT NULLS following 'ABS'");
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-883">[CALCITE-883]
+   * Give error if the aggregate function don't support null treatment</a>. */
+  @Test public void testWindowFunctionsRespectNulls() {
+    winSql("select lead(sal, 4) over (w)\n"
+        + " from emp window w as (order by empno)").ok();
+
+    winSql("select lead(sal, 4) RESPECT NULLS over (w)\n"
+        + " from emp window w as (order by empno)").ok();
+
+    winSql("select lag(sal, 4) over (w)\n"
+        + " from emp window w as (order by empno)").ok();
+
+    winSql("select lag(sal, 4) RESPECT NULLS over (w)\n"
+        + " from emp window w as (order by empno)").ok();
+
+    winSql("select first_value(sal) over (w)\n"
+        + " from emp window w as (order by empno)").ok();
+
+    winSql("select first_value(sal) RESPECT NULLS over (w)\n"
+        + " from emp window w as (order by empno)").ok();
+
+    winSql("select last_value(sal) over (w)\n"
+        + " from emp window w as (order by empno)").ok();
+
+    winSql("select last_value(sal) RESPECT NULLS over (w)\n"
+        + " from emp window w as (order by empno)").ok();
+
+    winSql("select ^sum(sal)^ RESPECT NULLS over (w)\n"
+        + " from emp window w as (order by empno)").fails("Cannot specify IGNORE NULLS or RESPECT NULLS following 'SUM'");
+
+    winSql("select ^count(sal)^ RESPECT NULLS over (w)\n"
+        + " from emp window w as (order by empno)").fails("Cannot specify IGNORE NULLS or RESPECT NULLS following 'COUNT'");
+
+    winSql("select ^avg(sal)^ RESPECT NULLS \n"
+        + " from emp").fails("Cannot specify IGNORE NULLS or RESPECT NULLS following 'AVG'");
+
+    winSql("select ^abs(sal)^ RESPECT NULLS \n"
+        + " from emp").fails("Cannot specify IGNORE NULLS or RESPECT NULLS following 'ABS'");
   }
 
   /** Test case for
@@ -9375,7 +9457,10 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         + "=> -\n"
         + "AS -\n"
         + "DESC post\n"
+        + "FILTER left\n"
+        + "IGNORE NULLS -\n"
         + "OVER left\n"
+        + "RESPECT NULLS -\n"
         + "TABLESAMPLE -\n"
         + "\n"
         + "INTERSECT left\n"
@@ -9395,7 +9480,6 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         + "UNION ALL left\n"
         + "\n"
         + "$throw -\n"
-        + "FILTER left\n"
         + "Reinterpret -\n"
         + "TABLE pre\n"
         + "VALUES -\n"

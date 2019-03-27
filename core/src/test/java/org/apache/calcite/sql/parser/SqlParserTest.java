@@ -1867,14 +1867,17 @@ public class SqlParserTest {
   }
 
   @Test public void testAggregateFilter() {
-    sql("select sum(sal) filter (where gender = 'F') as femaleSal,\n"
+    final String sql = "select\n"
+        + " sum(sal) filter (where gender = 'F') as femaleSal,\n"
         + " sum(sal) filter (where true) allSal,\n"
         + " count(distinct deptno) filter (where (deptno < 40))\n"
-        + "from emp")
-        .ok("SELECT (SUM(`SAL`) FILTER (WHERE (`GENDER` = 'F'))) AS `FEMALESAL`,"
-                + " (SUM(`SAL`) FILTER (WHERE TRUE)) AS `ALLSAL`,"
-                + " (COUNT(DISTINCT `DEPTNO`) FILTER (WHERE (`DEPTNO` < 40)))\n"
-                + "FROM `EMP`");
+        + "from emp";
+    final String expected = "SELECT"
+        + " SUM(`SAL`) FILTER (WHERE (`GENDER` = 'F')) AS `FEMALESAL`,"
+        + " SUM(`SAL`) FILTER (WHERE TRUE) AS `ALLSAL`,"
+        + " COUNT(DISTINCT `DEPTNO`) FILTER (WHERE (`DEPTNO` < 40))\n"
+        + "FROM `EMP`";
+    sql(sql).ok(expected);
   }
 
   @Test public void testGroup() {
@@ -4509,6 +4512,35 @@ public class SqlParserTest {
         "select sum(x) over (order by x) from bids",
         "SELECT (SUM(`X`) OVER (ORDER BY `X`))\n"
             + "FROM `BIDS`");
+  }
+
+  @Test public void testNullTreatment() {
+    sql("select lead(x) respect nulls over (w) from t")
+        .ok("SELECT (LEAD(`X`) RESPECT NULLS OVER (`W`))\n"
+            + "FROM `T`");
+    sql("select deptno, sum(sal) respect nulls from emp group by deptno")
+        .ok("SELECT `DEPTNO`, SUM(`SAL`) RESPECT NULLS\n"
+            + "FROM `EMP`\n"
+            + "GROUP BY `DEPTNO`");
+    sql("select deptno, sum(sal) ignore nulls from emp group by deptno")
+        .ok("SELECT `DEPTNO`, SUM(`SAL`) IGNORE NULLS\n"
+            + "FROM `EMP`\n"
+            + "GROUP BY `DEPTNO`");
+    final String sql = "select col1,\n"
+        + " collect(col2) ignore nulls\n"
+        + "   within group (order by col3)\n"
+        + "   filter (where 1 = 0)\n"
+        + "   over (rows 10 preceding)\n"
+        + " as c\n"
+        + "from t\n"
+        + "order by col1 limit 10";
+    final String expected = "SELECT `COL1`, (COLLECT(`COL2`) IGNORE NULLS"
+        + " WITHIN GROUP (ORDER BY `COL3`)"
+        + " FILTER (WHERE (1 = 0)) OVER (ROWS 10 PRECEDING)) AS `C`\n"
+        + "FROM `T`\n"
+        + "ORDER BY `COL1`\n"
+        + "FETCH NEXT 10 ROWS ONLY";
+    sql(sql).ok(expected);
   }
 
   @Test public void testAs() {
@@ -8670,7 +8702,7 @@ public class SqlParserTest {
         + "from t\n"
         + "order by col1 limit 10";
     final String expected = "SELECT `COL1`,"
-        + " (COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`))\n"
+        + " COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`)\n"
         + "FROM `T`\n"
         + "ORDER BY `COL1`\n"
         + "FETCH NEXT 10 ROWS ONLY";
@@ -8682,7 +8714,7 @@ public class SqlParserTest {
         + "from t\n"
         + "order by col1 limit 10";
     final String expected = "SELECT"
-        + " (COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`))\n"
+        + " COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`)\n"
         + "FROM `T`\n"
         + "ORDER BY `COL1`\n"
         + "FETCH NEXT 10 ROWS ONLY";
@@ -8701,7 +8733,7 @@ public class SqlParserTest {
         + "from t\n"
         + "order by col1 limit 10";
     final String expected = "SELECT `COL1`,"
-        + " (COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`, `COL4`))\n"
+        + " COLLECT(`COL2`) WITHIN GROUP (ORDER BY `COL3`, `COL4`)\n"
         + "FROM `T`\n"
         + "ORDER BY `COL1`\n"
         + "FETCH NEXT 10 ROWS ONLY";
@@ -8714,8 +8746,8 @@ public class SqlParserTest {
         + "  order by col3 desc nulls first, col4 asc nulls last)\n"
         + "from t\n"
         + "order by col1 limit 10";
-    final String expected = "SELECT `COL1`, (COLLECT(`COL2`) "
-        + "WITHIN GROUP (ORDER BY `COL3` DESC NULLS FIRST, `COL4` NULLS LAST))\n"
+    final String expected = "SELECT `COL1`, COLLECT(`COL2`) "
+        + "WITHIN GROUP (ORDER BY `COL3` DESC NULLS FIRST, `COL4` NULLS LAST)\n"
         + "FROM `T`\n"
         + "ORDER BY `COL1`\n"
         + "FETCH NEXT 10 ROWS ONLY";
@@ -8857,6 +8889,17 @@ public class SqlParserTest {
         "JSON_ARRAYAGG(`column` NULL ON NULL)");
     checkExp("json_arrayagg(json_array(\"column\") format json)",
         "JSON_ARRAYAGG(JSON_ARRAY(`column` ABSENT ON NULL) FORMAT JSON ABSENT ON NULL)");
+  }
+
+  @Ignore
+  @Test public void testJsonArrayAgg2() {
+    checkExp("json_arrayagg(\"column\" order by \"column\")",
+        "JSON_ARRAYAGG(`column` ABSENT ON NULL) WITHIN GROUP (ORDER BY `column`)");
+    checkExp("json_arrayagg(\"column\") within group (order by \"column\")",
+        "JSON_ARRAYAGG(`column` ABSENT ON NULL) WITHIN GROUP (ORDER BY `column`)");
+    checkFails("^json_arrayagg(\"column\" order by \"column\") within group (order by \"column\")^",
+        "(?s).*Including both WITHIN GROUP\\(\\.\\.\\.\\) and inside ORDER BY "
+            + "in a single JSON_ARRAYAGG call is not allowed.*");
   }
 
   @Test public void testJsonPredicate() {
