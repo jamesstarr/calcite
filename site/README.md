@@ -102,6 +102,7 @@ As you make changes to the site, the site will automatically rebuild.
 
 If you have not regenerated the javadoc and they are missing, restore them:
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 6. `git reset -- javadocAggregate/`
 7. `git checkout -- javadocAggregate/`
@@ -111,12 +112,16 @@ Restore the avatica site
 8. `git reset -- avatica/`
 9. `git checkout -- avatica/`
 =======
+=======
+
+>>>>>>> 17879714c (Update instructions for publishing site; we previously used subversion, now we use git)
 6. `git reset -- apidocs/`
 7. `git reset -- testapidocs/`
 8. `git checkout -- apidocs/`
 9. `git checkout -- testapidocs/`
 
 Restore the avatica site
+
 10. `git reset -- avatica/`
 11. `git checkout -- avatica/`
 >>>>>>> ebd43d0fa (Update instructions for pushing to the git site repository)
@@ -150,6 +155,7 @@ will publish the site, including all of the features that have just
 been released. When making an edit to the site, a Calcite committer
 must commit the change to the git "master" branch (as well as
 <<<<<<< HEAD
+<<<<<<< HEAD
 git, to publish the site, of course). If the edit is to appear
 on the site immediately, the committer should then cherry-pick the
 change into the "site" branch.  If there have been no feature-related
@@ -157,6 +163,9 @@ changes on the site since the release, then "site" should be a
 fast-forward merge of "master".
 =======
 subversion, to publish the site, of course). If the edit is to appear
+=======
+git, to publish the site, of course). If the edit is to appear
+>>>>>>> 17879714c (Update instructions for publishing site; we previously used subversion, now we use git)
 on the site immediately, the committer should then cherry-pick the
 change into the "site" branch.  If there have been no feature-related
 changes on the site since the release, then "site" should be a
