@@ -714,7 +714,10 @@ public abstract class SqlUtil {
       throw Util.needToImplement(query);
     }
   }
+<<<<<<< HEAD
 >>>>>>> 8782d9063 ([CALCITE-2928] When resolving user-defined functions (UDFs), use the case-sensitivity of the current connection (Danny Chan))
+=======
+>>>>>>> 86af16450 ([CALCITE-2928] When resolving user-defined functions (UDFs), use the case-sensitivity of the current connection (Danny Chan))
   public static String deriveAliasFromOrdinal(int ordinal) {
     // Use a '$' so that queries can't easily reference the
     // generated name.

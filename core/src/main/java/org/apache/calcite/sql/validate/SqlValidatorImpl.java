@@ -3771,8 +3771,8 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
   }
 
   private Pair<String, String> findTableColumnPair(SqlIdentifier identifier,
-                                                   SqlValidatorScope scope) {
-    SqlCall call = scope.getValidator().makeNullaryCall(identifier);
+      SqlValidatorScope scope) {
+    final SqlCall call = makeNullaryCall(identifier);
     if (call != null) {
       return null;
     }
