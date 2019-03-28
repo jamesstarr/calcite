@@ -167,7 +167,8 @@ public class CalciteCatalogReader implements Prepare.CatalogReader {
               Iterables.concat(schemaNames, Util.skipLast(names)), nameMatcher);
       if (schema != null) {
         final String name = Util.last(names);
-        functions2.addAll(schema.getFunctions(name, true));
+        boolean caseSensitive = nameMatcher.isCaseSensitive();
+        functions2.addAll(schema.getFunctions(name, caseSensitive));
       }
     }
     return functions2;
@@ -245,7 +246,8 @@ public class CalciteCatalogReader implements Prepare.CatalogReader {
   public void lookupOperatorOverloads(final SqlIdentifier opName,
       SqlFunctionCategory category,
       SqlSyntax syntax,
-      List<SqlOperator> operatorList) {
+      List<SqlOperator> operatorList,
+      SqlNameMatcher nameMatcher) {
     if (syntax != SqlSyntax.FUNCTION) {
       return;
     }

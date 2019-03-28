@@ -68,6 +68,7 @@ public class MockSqlOperatorTable extends ChainedSqlOperatorTable {
     opTab.addOperator(new DedupFunction());
     opTab.addOperator(new MyAvgAggFunction());
     opTab.addOperator(new StructuredFunction());
+    opTab.addOperator(new MyFunction());
   }
 
   /** "RAMP" user-defined function. */
@@ -147,6 +148,26 @@ public class MockSqlOperatorTable extends ChainedSqlOperatorTable {
           .add("F0", bigintType)
           .add("F1", varcharType)
           .build();
+    }
+  }
+
+  /** "MYFUN" user-defined scalar function. */
+  public static class MyFunction extends SqlFunction {
+    public MyFunction() {
+      super("MYFUN",
+          new SqlIdentifier("MYFUN", SqlParserPos.ZERO),
+          SqlKind.OTHER_FUNCTION,
+          null,
+          null,
+          OperandTypes.NUMERIC,
+          null,
+          SqlFunctionCategory.USER_DEFINED_FUNCTION);
+    }
+
+    public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
+      final RelDataTypeFactory typeFactory =
+          opBinding.getTypeFactory();
+      return typeFactory.createSqlType(SqlTypeName.BIGINT);
     }
   }
 }
