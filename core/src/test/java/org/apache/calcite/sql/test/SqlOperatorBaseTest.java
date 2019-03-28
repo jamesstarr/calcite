@@ -83,7 +83,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.HashSet;
+>>>>>>> 8782d9063 ([CALCITE-2928] When resolving user-defined functions (UDFs), use the case-sensitivity of the current connection (Danny Chan))
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -5864,7 +5864,6 @@ public abstract class SqlOperatorBaseTest {
 <<<<<<< HEAD
 =======
     tester.checkAgg("collect(x)", values, Arrays.asList("[0, 2, 2]"), (double) 0);
->>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
     tester.checkAgg("collect(x) within group(order by x desc)", values,
         Collections.singletonList("[2, 2, 0]"), (double) 0);
     Object result1 = -3;

@@ -51,7 +51,10 @@ import org.apache.calcite.util.ImmutableBeans;
 
 import java.util.List;
 import java.util.Map;
+<<<<<<< HEAD
 import java.util.function.UnaryOperator;
+=======
+>>>>>>> 8782d9063 ([CALCITE-2928] When resolving user-defined functions (UDFs), use the case-sensitivity of the current connection (Danny Chan))
 import javax.annotation.Nullable;
 
 /**

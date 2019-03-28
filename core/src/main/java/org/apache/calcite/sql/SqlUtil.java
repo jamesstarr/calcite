@@ -368,8 +368,7 @@ public abstract class SqlUtil {
    * @param category      whether a function or a procedure. (If a procedure is
    *                      being invoked, the overload rules are simpler.)
    * @param nameMatcher   Whether to look up the function case-sensitively
-   * @param coerce        Whether to allow type coercion when do filter routines
-   *                      by parameter types
+>>>>>>> 8782d9063 ([CALCITE-2928] When resolving user-defined functions (UDFs), use the case-sensitivity of the current connection (Danny Chan))
    * @return matching routine, or null if none found
    *
    * @see Glossary#SQL99 SQL:1999 Part 2 Section 10.4
@@ -377,8 +376,11 @@ public abstract class SqlUtil {
   public static SqlOperator lookupRoutine(SqlOperatorTable opTab,
       SqlIdentifier funcName, List<RelDataType> argTypes,
       List<String> argNames, SqlFunctionCategory category,
+<<<<<<< HEAD
       SqlSyntax syntax, SqlKind sqlKind, SqlNameMatcher nameMatcher,
       boolean coerce) {
+=======
+      SqlSyntax syntax, SqlKind sqlKind, SqlNameMatcher nameMatcher) {
     Iterator<SqlOperator> list =
         lookupSubjectRoutines(
             opTab,
@@ -388,8 +390,7 @@ public abstract class SqlUtil {
             syntax,
             sqlKind,
             category,
-            nameMatcher,
-            coerce);
+            nameMatcher);
     if (list.hasNext()) {
       // return first on schema path
       return list.next();
@@ -407,16 +408,14 @@ public abstract class SqlUtil {
   /**
    * Looks up all subject routines matching the given name and argument types.
    *
-   * @param opTab       operator table to search
-   * @param funcName    name of function being invoked
-   * @param argTypes    argument types
-   * @param argNames    argument names, or null if call by position
-   * @param sqlSyntax   the SqlSyntax of the SqlOperator being looked up
-   * @param sqlKind     the SqlKind of the SqlOperator being looked up
-   * @param category    Category of routine to look up
+   * @param opTab     operator table to search
+   * @param funcName  name of function being invoked
+   * @param argTypes  argument types
+   * @param argNames  argument names, or null if call by position
+   * @param sqlSyntax the SqlSyntax of the SqlOperator being looked up
+   * @param sqlKind   the SqlKind of the SqlOperator being looked up
+   * @param category  Category of routine to look up
    * @param nameMatcher Whether to look up the function case-sensitively
-   * @param coerce      Whether to allow type coercion when do filter routine
-   *                    by parameter types
    * @return list of matching routines
    * @see Glossary#SQL99 SQL:1999 Part 2 Section 10.4
    */
@@ -428,8 +427,7 @@ public abstract class SqlUtil {
       SqlSyntax sqlSyntax,
       SqlKind sqlKind,
       SqlFunctionCategory category,
-      SqlNameMatcher nameMatcher,
-      boolean coerce) {
+      SqlNameMatcher nameMatcher) {
     // start with all routines matching by name
     Iterator<SqlOperator> routines =
         lookupSubjectRoutinesByName(opTab, funcName, sqlSyntax, category,
@@ -706,6 +704,7 @@ public abstract class SqlUtil {
 <<<<<<< HEAD
 =======
 
+<<<<<<< HEAD
   /**
    * If an identifier is a legitimate call to a function which has no
    * arguments and requires no parentheses (for example "CURRENT_USER"),
@@ -736,6 +735,8 @@ public abstract class SqlUtil {
   }
 
 >>>>>>> 7bbe08b5b ([CALCITE-2674] Column name with escape character should not be verified as a function when the column name is same with it (Danny Chan))
+=======
+>>>>>>> 8782d9063 ([CALCITE-2928] When resolving user-defined functions (UDFs), use the case-sensitivity of the current connection (Danny Chan))
   public static String deriveAliasFromOrdinal(int ordinal) {
     // Use a '$' so that queries can't easily reference the
     // generated name.

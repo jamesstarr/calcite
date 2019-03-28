@@ -240,8 +240,7 @@ public class SqlFunction extends SqlOperator {
         (SqlFunction) SqlUtil.lookupRoutine(validator.getOperatorTable(),
             getNameAsId(), argTypes, argNames, getFunctionType(),
             SqlSyntax.FUNCTION, getKind(),
-            validator.getCatalogReader().nameMatcher(),
-            false);
+            validator.getCatalogReader().nameMatcher());
     try {
       // if we have a match on function name and parameter count, but
       // couldn't find a function with  a COLUMN_LIST type, retry, but

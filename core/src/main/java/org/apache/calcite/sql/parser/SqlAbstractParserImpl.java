@@ -452,7 +452,8 @@ public abstract class SqlAbstractParserImpl {
     /// name when regenerating SQL).
     if (funName.isSimple()) {
       final List<SqlOperator> list = Lists.newArrayList();
-      getOperatorTable().lookupOperatorOverloads(funName, funcType, SqlSyntax.FUNCTION, list);
+      getOperatorTable().lookupOperatorOverloads(funName, funcType, SqlSyntax.FUNCTION, list,
+          SqlNameMatchers.withCaseSensitive(funName.isComponentQuoted(0)));
       if (list.size() == 1) {
         fun = list.get(0);
       }

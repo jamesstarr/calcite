@@ -136,9 +136,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
+import java.util.TreeSet;
 import javax.annotation.Nullable;
 
 import static org.apache.calcite.sql.SqlUtil.stripAs;
@@ -347,7 +345,25 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       SqlValidatorCatalogReader catalogReader,
       RelDataTypeFactory typeFactory,
       SqlConformance conformance) {
-    this(opTab, catalogReader, typeFactory, Config.DEFAULT.withSqlConformance(conformance));
+    this.opTab = Preconditions.checkNotNull(opTab);
+    this.catalogReader = Preconditions.checkNotNull(catalogReader);
+    this.typeFactory = Preconditions.checkNotNull(typeFactory);
+    this.conformance = Preconditions.checkNotNull(conformance);
+
+    unknownType = typeFactory.createUnknownType();
+    booleanType = typeFactory.createSqlType(SqlTypeName.BOOLEAN);
+
+    rewriteCalls = true;
+    expandColumnReferences = true;
+    final SqlNameMatcher nameMatcher = catalogReader.nameMatcher();
+    aggFinder = new AggFinder(opTab, false, true, false, null, nameMatcher);
+    aggOrOverFinder =
+        new AggFinder(opTab, true, true, false, null, nameMatcher);
+    overFinder = new AggFinder(opTab, true, false, false, aggOrOverFinder,
+        nameMatcher);
+    groupFinder = new AggFinder(opTab, false, false, true, null, nameMatcher);
+    aggOrOverOrGroupFinder = new AggFinder(opTab, true, true, true, null,
+        nameMatcher);
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -3818,7 +3834,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
 
   private Pair<String, String> findTableColumnPair(SqlIdentifier identifier,
                                                    SqlValidatorScope scope) {
-    SqlCall call = SqlUtil.makeCall(getOperatorTable(), identifier);
+    SqlCall call = scope.getValidator().makeNullaryCall(identifier);
     if (call != null) {
       return null;
     }

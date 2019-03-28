@@ -122,11 +122,11 @@ class LookupOperatorOverloadsTest {
     check(cats, USER_DEFINED_FUNCTION, USER_DEFINED_TABLE_FUNCTION);
   }
 
-  @Test void testLookupCaseSensitively() throws SQLException {
+  @Test public void testLookupCaseSensitively() throws SQLException {
     checkInternal(true);
   }
 
-  @Test void testLookupCaseInSensitively() throws SQLException {
+  @Test public void testLookupCaseInSensitively() throws SQLException {
     checkInternal(false);
   }
 
