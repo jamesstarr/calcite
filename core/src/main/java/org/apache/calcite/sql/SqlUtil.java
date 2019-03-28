@@ -687,7 +687,6 @@ public abstract class SqlUtil {
       throw Util.needToImplement(query);
     }
   }
-
   public static String deriveAliasFromOrdinal(int ordinal) {
     // Use a '$' so that queries can't easily reference the
     // generated name.
