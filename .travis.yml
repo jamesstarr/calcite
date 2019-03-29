@@ -24,6 +24,7 @@ matrix:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - jdk: openjdk8
     - jdk: openjdk11
     - jdk: openjdk11
@@ -34,6 +35,9 @@ matrix:
     - env: IMAGE=maven:3-jdk-11 JDOC=Y
 =======
 =======
+=======
+    - env: IMAGE=maven:3-jdk-13
+>>>>>>> 9afbc34a4 ([CALCITE-2961] Enable Travis to test against JDK 13)
     - env: IMAGE=maven:3-jdk-12
 >>>>>>> c7330ca52 ([CALCITE-2655] Enable Travis to test against JDK 12)
     - env: IMAGE=maven:3-jdk-11 JDOC=Y RAT=Y

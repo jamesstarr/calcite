@@ -50,10 +50,6 @@ import java.util.stream.Collectors;
  * <code>SELECT 1 AS key, value FROM src</code>.</p>
  *
  */
-<<<<<<< HEAD
-public class ExchangeRemoveConstantKeysRule extends RelOptRule
-    implements SubstitutionRule {
-=======
 public class ExchangeRemoveConstantKeysRule extends RelOptRule {
   /**
    * Singleton rule that removes constants inside a
@@ -214,4 +210,3 @@ public class ExchangeRemoveConstantKeysRule extends RelOptRule {
 =======
 
 // End ExchangeRemoveConstantKeysRule.java
->>>>>>> ca8ba1df4 ([CALCITE-2658] Add ExchangeRemoveConstantKeysRule that removes constant keys from Exchange or SortExchange (Chunwei Lei))
