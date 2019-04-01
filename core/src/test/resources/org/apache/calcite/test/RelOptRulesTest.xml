@@ -10393,6 +10393,9 @@ LogicalAggregate(group=[{}], EXPR$0=[COUNT(DISTINCT $5)])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 79d8735c6 ([CALCITE-2712] Add rule to remove null-generating side of a Join)
     <TestCase name="testAggregateJoinRemoveRule1">
         <Resource name="sql">
             <![CDATA[select count(distinct sal) from sales.emp e
@@ -10449,11 +10452,14 @@ LogicalAggregate(group=[{2, 10}])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 =======
 >>>>>>> e87ead03c ([CALCITE-2249] AggregateJoinTransposeRule generates inequivalent nodes if Aggregate relNode contains distinct aggregate function (jingzhang))
+=======
+>>>>>>> 79d8735c6 ([CALCITE-2712] Add rule to remove null-generating side of a Join)
     <TestCase name="testPushAggregateThroughJoinDistinct">
         <Resource name="sql">
             <![CDATA[select d.name,
@@ -10701,13 +10707,36 @@ LogicalAggregate(group=[{}], X=[SUM($0)], Z=[MIN($1)])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
+    <Resource name="planAfter">
+      <![CDATA[
+LogicalAggregate(group=[{}], X=[SUM($5)], Z=[MIN($5)])
+  LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+    </TestCase>
+    <TestCase name="testAggregateJoinRemove1">
+        <Resource name="sql">
+            <![CDATA[select distinct e.deptno from sales.emp e
+left outer join sales.dept d on e.deptno = d.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalAggregate(group=[{0}])
+  LogicalProject(DEPTNO=[$7])
+    LogicalJoin(condition=[=($7, $9)], joinType=[left])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
         <Resource name="planAfter">
             <![CDATA[
-LogicalAggregate(group=[{}], X=[SUM($5)], Z=[MIN($5)])
+LogicalAggregate(group=[{7}])
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 <<<<<<< HEAD
     <TestCase name="testAggregateRemove1">
         <Resource name="sql">
@@ -11327,11 +11356,18 @@ LogicalProject(DEPTNO=[$9], NAME=[$1])
 =======
 >>>>>>> 7af257b44 ([CALCITE-1172] Add rule to flatten two Aggregate operators into one)
     <TestCase name="testReduceNullableCase2">
+=======
+    <TestCase name="testAggregateJoinRemove2">
+>>>>>>> 79d8735c6 ([CALCITE-2712] Add rule to remove null-generating side of a Join)
         <Resource name="sql">
-            <![CDATA[SELECT deptno, ename, CASE WHEN 1=2 THEN substring(ename, 1, cast(2 as int)) ELSE NULL end from emp group by deptno, ename, case when 1=2 then substring(ename,1, cast(2 as int))  else null end]]>
+            <![CDATA[select e.deptno, count(distinct e.job) from sales.emp e
+left outer join sales.dept d on e.deptno = d.deptno
+group by e.deptno
+]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
+<<<<<<< HEAD
 LogicalAggregate(group=[{0, 1, 2}])
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -11353,18 +11389,474 @@ LogicalAggregate(group=[{0, 1, 2}])
 =======
   LogicalProject(DEPTNO=[$7], ENAME=[$1], EXPR$2=[null:VARCHAR(20)])
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
+=======
+LogicalAggregate(group=[{0}], EXPR$1=[COUNT(DISTINCT $1)])
+  LogicalProject(DEPTNO=[$7], JOB=[$2])
+    LogicalJoin(condition=[=($7, $9)], joinType=[left])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalAggregate(group=[{7}], EXPR$1=[COUNT(DISTINCT $2)])
+  LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testAggregateJoinRemove3">
+        <Resource name="sql">
+            <![CDATA[select e.deptno, count(distinct d.name) from sales.emp e
+left outer join sales.dept d on e.deptno = d.deptno
+group by e.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalAggregate(group=[{0}], EXPR$1=[COUNT(DISTINCT $1)])
+  LogicalProject(DEPTNO=[$7], NAME=[$10])
+    LogicalJoin(condition=[=($7, $9)], joinType=[left])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalAggregate(group=[{7}], EXPR$1=[COUNT(DISTINCT $10)])
+  LogicalJoin(condition=[=($7, $9)], joinType=[left])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testAggregateJoinRemove4">
+        <Resource name="sql">
+            <![CDATA[select distinct d.deptno from sales.emp e
+right outer join sales.dept d on e.deptno = d.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalAggregate(group=[{0}])
+  LogicalProject(DEPTNO=[$9])
+    LogicalJoin(condition=[=($7, $9)], joinType=[right])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(DEPTNO=[$0])
+  LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testAggregateJoinRemove5">
+        <Resource name="sql">
+            <![CDATA[select d.deptno, count(distinct d.name) from sales.emp e
+right outer join sales.dept d on e.deptno = d.deptno
+group by d.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalAggregate(group=[{0}], EXPR$1=[COUNT(DISTINCT $1)])
+  LogicalProject(DEPTNO=[$9], NAME=[$10])
+    LogicalJoin(condition=[=($7, $9)], joinType=[right])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalAggregate(group=[{0}], EXPR$1=[COUNT(DISTINCT $1)])
+  LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testAggregateJoinRemove6">
+        <Resource name="sql">
+            <![CDATA[select d.deptno, count(distinct e.job) from sales.emp e
+right outer join sales.dept d on e.deptno = d.deptno
+group by d.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalAggregate(group=[{0}], EXPR$1=[COUNT(DISTINCT $1)])
+  LogicalProject(DEPTNO=[$9], JOB=[$2])
+    LogicalJoin(condition=[=($7, $9)], joinType=[right])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalAggregate(group=[{9}], EXPR$1=[COUNT(DISTINCT $2)])
+  LogicalJoin(condition=[=($7, $9)], joinType=[right])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testAggregateJoinRemove7">
+        <Resource name="sql">
+            <![CDATA[SELECT distinct e.deptno
+FROM sales.emp e
+LEFT JOIN sales.dept d1 ON e.deptno = d1.deptno
+LEFT JOIN sales.dept d2 ON e.deptno = d2.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalAggregate(group=[{0}])
+  LogicalProject(DEPTNO=[$7])
+    LogicalJoin(condition=[=($7, $11)], joinType=[left])
+      LogicalJoin(condition=[=($7, $9)], joinType=[left])
+        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+        LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalAggregate(group=[{7}])
+  LogicalJoin(condition=[=($7, $9)], joinType=[left])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testAggregateJoinRemove8">
+        <Resource name="sql">
+            <![CDATA[SELECT e.deptno, COUNT(DISTINCT d2.name)
+FROM sales.emp e
+LEFT JOIN sales.dept d1 ON e.deptno = d1.deptno
+LEFT JOIN sales.dept d2 ON e.deptno = d2.deptno
+GROUP BY e.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalAggregate(group=[{0}], EXPR$1=[COUNT(DISTINCT $1)])
+  LogicalProject(DEPTNO=[$7], NAME0=[$12])
+    LogicalJoin(condition=[=($7, $11)], joinType=[left])
+      LogicalJoin(condition=[=($7, $9)], joinType=[left])
+        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+        LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalAggregate(group=[{7}], EXPR$1=[COUNT(DISTINCT $10)])
+  LogicalJoin(condition=[=($7, $9)], joinType=[left])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testAggregateJoinRemove9">
+        <Resource name="sql">
+            <![CDATA[SELECT e.deptno, d2.name
+FROM sales.emp e
+LEFT JOIN sales.dept d1 ON e.deptno = d1.deptno
+LEFT JOIN sales.dept d2 ON e.deptno = d2.deptno
+GROUP BY e.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalAggregate(group=[{0, 1}])
+  LogicalProject(DEPTNO=[$7], NAME=[$12])
+    LogicalJoin(condition=[=($7, $11)], joinType=[left])
+      LogicalJoin(condition=[=($7, $9)], joinType=[left])
+        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+        LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalAggregate(group=[{7, 10}])
+  LogicalJoin(condition=[=($7, $9)], joinType=[left])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testAggregateJoinRemove10">
+        <Resource name="sql">
+            <![CDATA[SELECT e.deptno, COUNT(DISTINCT d1.name, d2.name)
+FROM sales.emp e
+LEFT JOIN sales.dept d1 ON e.deptno = d1.deptno
+LEFT JOIN sales.dept d2 ON e.deptno = d2.deptno
+GROUP BY e.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalAggregate(group=[{0}], EXPR$1=[COUNT(DISTINCT $1, $2)])
+  LogicalProject(DEPTNO=[$7], NAME=[$10], NAME0=[$12])
+    LogicalJoin(condition=[=($7, $11)], joinType=[left])
+      LogicalJoin(condition=[=($7, $9)], joinType=[left])
+        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+        LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalAggregate(group=[{7}], EXPR$1=[COUNT(DISTINCT $10, $12)])
+  LogicalJoin(condition=[=($7, $11)], joinType=[left])
+    LogicalJoin(condition=[=($7, $9)], joinType=[left])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testProjectJoinRemove1">
+        <Resource name="sql">
+            <![CDATA[SELECT e.deptno, d2.deptno
+FROM sales.emp e
+LEFT JOIN sales.dept d1 ON e.deptno = d1.deptno
+LEFT JOIN sales.dept d2 ON e.deptno = d2.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(DEPTNO=[$7], DEPTNO0=[$11])
+  LogicalJoin(condition=[=($7, $11)], joinType=[left])
+    LogicalJoin(condition=[=($7, $9)], joinType=[left])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(DEPTNO=[$7], DEPTNO0=[$9])
+  LogicalJoin(condition=[=($7, $9)], joinType=[left])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testProjectJoinRemove2">
+        <Resource name="sql">
+            <![CDATA[SELECT e.deptno, d1.deptno
+FROM sales.emp e
+LEFT JOIN sales.dept d1 ON e.deptno = d1.deptno
+LEFT JOIN sales.dept d2 ON e.deptno = d2.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(DEPTNO=[$7], DEPTNO0=[$9])
+  LogicalJoin(condition=[=($7, $11)], joinType=[left])
+    LogicalJoin(condition=[=($7, $9)], joinType=[left])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(DEPTNO=[$7], DEPTNO0=[$9])
+  LogicalJoin(condition=[=($7, $11)], joinType=[left])
+    LogicalJoin(condition=[=($7, $9)], joinType=[left])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testProjectJoinRemove3">
+        <Resource name="sql">
+            <![CDATA[SELECT e1.deptno, d.deptno
+FROM sales.emp e1
+LEFT JOIN sales.emp e2 ON e1.deptno = e2.deptno
+LEFT JOIN sales.dept d ON e1.deptno = d.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(DEPTNO=[$7], DEPTNO0=[$18])
+  LogicalJoin(condition=[=($7, $18)], joinType=[left])
+    LogicalJoin(condition=[=($7, $16)], joinType=[left])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(DEPTNO=[$7], DEPTNO0=[$18])
+  LogicalJoin(condition=[=($7, $18)], joinType=[left])
+    LogicalJoin(condition=[=($7, $16)], joinType=[left])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testProjectJoinRemove4">
+        <Resource name="sql">
+            <![CDATA[SELECT e.deptno
+FROM sales.emp e
+LEFT JOIN sales.dept d ON e.deptno = d.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(DEPTNO=[$7])
+  LogicalJoin(condition=[=($7, $9)], joinType=[left])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(DEPTNO=[$7])
+  LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testProjectJoinRemove5">
+        <Resource name="sql">
+            <![CDATA[SELECT e1.deptno
+FROM sales.emp e1
+LEFT JOIN sales.emp e2 ON e1.deptno = e2.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(DEPTNO=[$7])
+  LogicalJoin(condition=[=($7, $16)], joinType=[left])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+>>>>>>> 79d8735c6 ([CALCITE-2712] Add rule to remove null-generating side of a Join)
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
-LogicalAggregate(group=[{0, 1, 2}])
-  LogicalProject(DEPTNO=[$7], ENAME=[$1], EXPR$2=[null:VARCHAR(20)])
+LogicalProject(DEPTNO=[$7])
+  LogicalJoin(condition=[=($7, $16)], joinType=[left])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+    <TestCase name="testProjectJoinRemove6">
+        <Resource name="sql">
+            <![CDATA[SELECT e.deptno, d.name
+FROM sales.emp e
+LEFT JOIN sales.dept d ON e.deptno = d.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(DEPTNO=[$7], NAME=[$10])
+  LogicalJoin(condition=[=($7, $9)], joinType=[left])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(DEPTNO=[$7], NAME=[$10])
+  LogicalJoin(condition=[=($7, $9)], joinType=[left])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testProjectJoinRemove7">
+        <Resource name="sql">
+            <![CDATA[SELECT e.deptno
+FROM sales.dept
+LEFT JOIN sales.emp e ON e.deptno = d.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(DEPTNO=[$9])
+  LogicalJoin(condition=[=($9, $0)], joinType=[right])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(DEPTNO=[$7])
+  LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testProjectJoinRemove8">
+        <Resource name="sql">
+            <![CDATA[SELECT e2.deptno
+FROM sales.emp e1
+LEFT JOIN sales.emp e2 ON e1.deptno = e2.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(DEPTNO=[$16])
+  LogicalJoin(condition=[=($7, $16)], joinType=[right])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(DEPTNO=[$16])
+  LogicalJoin(condition=[=($7, $16)], joinType=[right])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testProjectJoinRemove9">
+        <Resource name="sql">
+            <![CDATA[SELECT e.deptno, d.name
+FROM sales.dept d
+RIGHT JOIN sales.emp e ON e.deptno = d.deptno
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(DEPTNO=[$9], NAME=[$1])
+  LogicalJoin(condition=[=($9, $0)], joinType=[right])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(DEPTNO=[$9], NAME=[$1])
+  LogicalJoin(condition=[=($9, $0)], joinType=[right])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testReduceNullableCase2">
+    <Resource name="sql">
+      <![CDATA[SELECT deptno, ename, CASE WHEN 1=2 THEN substring(ename, 1, cast(2 as int)) ELSE NULL end from emp group by deptno, ename, case when 1=2 then substring(ename,1, cast(2 as int))  else null end]]>
+    </Resource>
+    <Resource name="planBefore">
+      <![CDATA[
+LogicalAggregate(group=[{0, 1, 2}])
+  LogicalProject(DEPTNO=[$7], ENAME=[$1], EXPR$2=[null:VARCHAR(20)])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
+>>>>>>> 79d8735c6 ([CALCITE-2712] Add rule to remove null-generating side of a Join)
     <TestCase name="testReduceNullableToNotNull">
         <Resource name="sql">
             <![CDATA[select

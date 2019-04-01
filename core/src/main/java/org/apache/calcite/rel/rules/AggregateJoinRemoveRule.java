@@ -59,9 +59,9 @@ import java.util.Set;
  *
  */
 public class AggregateJoinRemoveRule extends RelOptRule {
-  public static final AggregateJoinRemoveRule INSTANCE =
-      new AggregateJoinRemoveRule(LogicalAggregate.class, LogicalJoin.class,
-          RelFactories.LOGICAL_BUILDER);
+  public static final AggregateJoinRemoveRule INSTANCE
+      = new AggregateJoinRemoveRule(LogicalAggregate.class, LogicalJoin.class,
+      RelFactories.LOGICAL_BUILDER);
 
   /** Creates an AggregateJoinRemoveRule. */
   public AggregateJoinRemoveRule(
@@ -123,3 +123,8 @@ public class AggregateJoinRemoveRule extends RelOptRule {
     call.transformTo(node);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End AggregateJoinRemoveRule.java
+>>>>>>> 79d8735c6 ([CALCITE-2712] Add rule to remove null-generating side of a Join)

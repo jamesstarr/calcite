@@ -19,7 +19,7 @@ package org.apache.calcite.rel.rules;
 import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
-import org.apache.calcite.plan.SubstitutionRule;
+>>>>>>> 79d8735c6 ([CALCITE-2712] Add rule to remove null-generating side of a Join)
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
@@ -62,11 +62,17 @@ import java.util.stream.Collectors;
  * on s.product_id = pc.product_id</pre></blockquote>
  *
  */
+<<<<<<< HEAD
 public class ProjectJoinJoinRemoveRule extends RelOptRule
     implements SubstitutionRule {
   public static final ProjectJoinJoinRemoveRule INSTANCE =
       new ProjectJoinJoinRemoveRule(LogicalProject.class,
           LogicalJoin.class, RelFactories.LOGICAL_BUILDER);
+=======
+public class ProjectJoinJoinRemoveRule extends RelOptRule {
+  public static final ProjectJoinJoinRemoveRule INSTANCE
+      = new ProjectJoinJoinRemoveRule(LogicalProject.class,
+      LogicalJoin.class, RelFactories.LOGICAL_BUILDER);
 
   /** Creates a ProjectJoinJoinRemoveRule. */
   public ProjectJoinJoinRemoveRule(
@@ -140,3 +146,8 @@ public class ProjectJoinJoinRemoveRule extends RelOptRule
     call.transformTo(relBuilder.build());
   }
 }
+<<<<<<< HEAD
+=======
+
+// End ProjectJoinJoinRemoveRule.java
+>>>>>>> 79d8735c6 ([CALCITE-2712] Add rule to remove null-generating side of a Join)
