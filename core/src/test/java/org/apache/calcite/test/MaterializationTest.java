@@ -378,7 +378,6 @@ public class MaterializationTest {
 
   /** As {@link #testFilterQueryOnFilterView()} but condition is stronger in
    * query. */
-  @Ignore
   @Test public void testFilterQueryOnFilterView2() {
     checkMaterialize(
         "select \"deptno\", \"empid\", \"name\" from \"emps\" where \"deptno\" = 10",
@@ -388,7 +387,6 @@ public class MaterializationTest {
 
   /** As {@link #testFilterQueryOnFilterView()} but condition is weaker in
    * view. */
-  @Ignore("not implemented")
   @Test public void testFilterQueryOnFilterView3() {
     checkMaterialize(
         "select \"deptno\", \"empid\", \"name\" from \"emps\" "
@@ -396,8 +394,9 @@ public class MaterializationTest {
         "select \"empid\" + 1 as x, \"name\" from \"emps\" where \"deptno\" = 10",
         HR_FKUK_MODEL,
         CalciteAssert.checkResultContains(
-            "EnumerableCalcRel(expr#0..2=[{inputs}], expr#3=[1], "
-                + "expr#4=[+($t1, $t3)], X=[$t4], name=[$t2], condition=?)\n"
+            "EnumerableCalc(expr#0..2=[{inputs}], expr#3=[1], expr#4=[+($t1, $t3)], expr#5=[10], "
+                + "expr#6=[CAST($t0):INTEGER NOT NULL], expr#7=[=($t5, $t6)], $f0=[$t4], "
+                + "name=[$t2], $condition=[$t7])\n"
                 + "  EnumerableTableScan(table=[[hr, m0]])"));
   }
 
@@ -587,7 +586,6 @@ public class MaterializationTest {
   }
 
   /** Aggregation materialization with a project. */
-  @Ignore("work in progress")
   @Test public void testAggregateProject() {
     // Note that materialization does not start with the GROUP BY columns.
     // Not a smart way to design a materialization, but people may do it.
@@ -596,15 +594,17 @@ public class MaterializationTest {
         "select count(*) + 1 as c, \"deptno\" from \"emps\" group by \"deptno\"",
         HR_FKUK_MODEL,
         CalciteAssert.checkResultContains(
-            "xxx"));
+            "EnumerableCalc(expr#0..1=[{inputs}], expr#2=[1], expr#3=[+($t1, $t2)], $f0=[$t3], deptno=[$t0])\n"
+                + "  EnumerableAggregate(group=[{0}], agg#0=[$SUM0($1)])\n"
+                + "    EnumerableTableScan(table=[[hr, m0]])"));
   }
 
-  @Ignore
   @Test public void testSwapJoin() {
-    String q1 =
-        "select count(*) as c from \"foodmart\".\"sales_fact_1997\" as s join \"foodmart\".\"time_by_day\" as t on s.\"time_id\" = t.\"time_id\"";
-    String q2 =
-        "select count(*) as c from \"foodmart\".\"time_by_day\" as t join \"foodmart\".\"sales_fact_1997\" as s on t.\"time_id\" = s.\"time_id\"";
+    checkMaterialize(
+        "select count(*) as c from \"foodmart\".\"sales_fact_1997\" as s join \"foodmart\".\"time_by_day\" as t on s.\"time_id\" = t.\"time_id\"",
+        "select count(*) as c from \"foodmart\".\"time_by_day\" as t join \"foodmart\".\"sales_fact_1997\" as s on t.\"time_id\" = s.\"time_id\"",
+        JdbcTest.FOODMART_MODEL,
+        CalciteAssert.checkResultContains("EnumerableTableScan(table=[[mat, m0]])"));
   }
 
   @Ignore
@@ -1728,6 +1728,22 @@ public class MaterializationTest {
         HR_FKUK_MODEL);
   }
 
+  @Test public void testJoinAggregateMaterializationAggregateFuncs14() {
+    checkMaterialize(
+        "select \"empid\", \"emps\".\"name\", \"emps\".\"deptno\", \"depts\".\"name\", "
+            + "count(*) as c, sum(\"empid\") as s\n"
+            + "from \"emps\" join \"depts\" using (\"deptno\")\n"
+            + "where (\"depts\".\"name\" is not null and \"emps\".\"name\" = 'a') or "
+            + "(\"depts\".\"name\" is not null and \"emps\".\"name\" = 'b')\n"
+            + "group by \"empid\", \"emps\".\"name\", \"depts\".\"name\", \"emps\".\"deptno\"",
+        "select \"depts\".\"deptno\", sum(\"empid\") as s\n"
+            + "from \"emps\" join \"depts\" using (\"deptno\")\n"
+            + "where \"depts\".\"name\" is not null and \"emps\".\"name\" = 'a'\n"
+            + "group by \"depts\".\"deptno\"",
+        HR_FKUK_MODEL,
+        CONTAINS_M0);
+  }
+
   @Test public void testJoinMaterialization4() {
     checkMaterialize(
         "select \"empid\" \"deptno\" from \"emps\"\n"
@@ -1837,6 +1853,21 @@ public class MaterializationTest {
             "EnumerableUnion(all=[true])",
             "EnumerableTableScan(table=[[hr, m0]])",
             "expr#5=[10], expr#6=[>($t0, $t5)], expr#7=[30], expr#8=[>=($t7, $t0)]"));
+  }
+
+  @Test public void testJoinMaterialization12() {
+    checkMaterialize(
+        "select \"empid\", \"emps\".\"name\", \"emps\".\"deptno\", \"depts\".\"name\"\n"
+            + "from \"emps\" join \"depts\" using (\"deptno\")\n"
+            + "where (\"depts\".\"name\" is not null and \"emps\".\"name\" = 'a') or "
+            + "(\"depts\".\"name\" is not null and \"emps\".\"name\" = 'b') or "
+            + "(\"depts\".\"name\" is not null and \"emps\".\"name\" = 'c')",
+        "select \"depts\".\"deptno\", \"depts\".\"name\"\n"
+            + "from \"emps\" join \"depts\" using (\"deptno\")\n"
+            + "where (\"depts\".\"name\" is not null and \"emps\".\"name\" = 'a') or "
+            + "(\"depts\".\"name\" is not null and \"emps\".\"name\" = 'b')",
+        HR_FKUK_MODEL,
+        CONTAINS_M0);
   }
 
   @Test public void testJoinMaterializationUKFK1() {
