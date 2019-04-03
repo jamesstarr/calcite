@@ -4688,8 +4688,8 @@ public abstract class SqlOperatorBaseTest {
             "1", "INTEGER");
     tester.checkString("json_depth('null')",
             null, "INTEGER");
-    tester.checkString("json_depth(cast(null as varchar(1)))",
-            null, "INTEGER");
+//    tester.checkString("json_depth(cast(null as varchar(1)))",
+//            null, "INTEGER");
     tester.checkString("json_depth('[10, true]')",
             "2", "INTEGER");
     tester.checkString("json_depth('[[], {}]')",
@@ -4698,6 +4698,9 @@ public abstract class SqlOperatorBaseTest {
             "3", "INTEGER");
     tester.checkString("json_depth('[10, {\"a\": [[1,2]]}]')",
             "5", "INTEGER");
+
+    // nulls
+    tester.checkNull("json_depth(cast(null as varchar))");
   }
 
   @Test public void testJsonLength() {
@@ -4798,6 +4801,22 @@ public abstract class SqlOperatorBaseTest {
             "(?s).*Illegal jsonpath spec.*", true);
     tester.checkFails("json_keys('{\"foo\":100}', 'strict $.foo1')",
             "(?s).*No results for path.*", true);
+  }
+
+  @Test public void testJsonRemove() {
+    tester.checkString("json_remove('{\"foo\":100}', '$.foo')",
+        "{}", "VARCHAR(2000)");
+    tester.checkString("json_remove('{\"foo\":100, \"foo1\":100}', '$.foo')",
+        "{\"foo1\":100}", "VARCHAR(2000)");
+    tester.checkString("json_remove('[\"a\", [\"b\", \"c\"], \"d\"]', '$[1][0]')",
+        "[\"a\",[\"c\"],\"d\"]", "VARCHAR(2000)");
+    tester.checkString("json_remove('[\"a\", [\"b\", \"c\"], \"d\"]', '$[1]')",
+        "[\"a\",\"d\"]", "VARCHAR(2000)");
+    tester.checkString("json_remove('[\"a\", [\"b\", \"c\"], \"d\"]', '$[0]', '$[0]')",
+        "[\"d\"]", "VARCHAR(2000)");
+    tester.checkFails("json_remove('[\"a\", [\"b\", \"c\"], \"d\"]', '$')",
+        "(?s).*Invalid input for.*", true);
+
   }
 
   @Test public void testJsonObject() {

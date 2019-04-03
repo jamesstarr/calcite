@@ -78,6 +78,7 @@ import org.apache.calcite.runtime.BinarySearch;
 import org.apache.calcite.runtime.Bindable;
 import org.apache.calcite.runtime.Enumerables;
 import org.apache.calcite.runtime.FlatLists;
+import org.apache.calcite.runtime.JsonFunctions;
 import org.apache.calcite.runtime.RandomFunction;
 import org.apache.calcite.runtime.ResultSetEnumerable;
 import org.apache.calcite.runtime.SortedMultiMap;
@@ -288,6 +289,7 @@ public enum BuiltInMethod {
   JSON_KEYS(SqlFunctions.class, "jsonKeys", Object.class),
   JSON_PRETTY(SqlFunctions.class, "jsonPretty", Object.class),
   JSON_LENGTH(SqlFunctions.class, "jsonLength", Object.class),
+  JSON_REMOVE(JsonFunctions.class, "jsonRemove", String.class),
   JSON_OBJECTAGG_ADD(SqlFunctions.class, "jsonObjectAggAdd", Map.class,
       String.class, Object.class, SqlJsonConstructorNullClause.class),
   JSON_ARRAY(SqlFunctions.class, "jsonArray",
