@@ -200,13 +200,13 @@ public class JsonFunctions {
     }
   }
 
-  public static Object jsonValue(String input,
+  public static Object jsonValueAny(String input,
       String pathSpec,
       SqlJsonValueEmptyOrErrorBehavior emptyBehavior,
       Object defaultValueOnEmpty,
       SqlJsonValueEmptyOrErrorBehavior errorBehavior,
       Object defaultValueOnError) {
-    return jsonValue(
+    return jsonValueAny(
         jsonApiCommonSyntax(input, pathSpec),
         emptyBehavior,
         defaultValueOnEmpty,
@@ -214,13 +214,13 @@ public class JsonFunctions {
         defaultValueOnError);
   }
 
-  public static Object jsonValue(JsonValueContext input,
+  public static Object jsonValueAny(JsonValueContext input,
       String pathSpec,
       SqlJsonValueEmptyOrErrorBehavior emptyBehavior,
       Object defaultValueOnEmpty,
       SqlJsonValueEmptyOrErrorBehavior errorBehavior,
       Object defaultValueOnError) {
-    return jsonValue(
+    return jsonValueAny(
         jsonApiCommonSyntax(input, pathSpec),
         emptyBehavior,
         defaultValueOnEmpty,
@@ -228,7 +228,7 @@ public class JsonFunctions {
         defaultValueOnError);
   }
 
-  public static Object jsonValue(JsonPathContext context,
+  public static Object jsonValueAny(JsonPathContext context,
       SqlJsonValueEmptyOrErrorBehavior emptyBehavior,
       Object defaultValueOnEmpty,
       SqlJsonValueEmptyOrErrorBehavior errorBehavior,
@@ -631,19 +631,7 @@ public class JsonFunctions {
     }
   }
 
-  public static Integer jsonStorageSize(String input) {
-    return jsonStorageSize(jsonValueExpression(input));
-  }
-
-  public static Integer jsonStorageSize(JsonValueContext input) {
-    try {
-      return JSON_PATH_JSON_PROVIDER.getObjectMapper()
-          .writeValueAsBytes(input.obj).length;
-    } catch (Exception e) {
-      throw RESOURCE.invalidInputForJsonStorageSize(Objects.toString(input.obj)).ex();
-    }
-  }
-
+>>>>>>> 355e516ff ([CALCITE-2975] Implement JSON_REMOVE function (xuqianjin))
   public static boolean isJsonValue(String input) {
     try {
       dejsonize(input);
@@ -792,3 +780,7 @@ public class JsonFunctions {
     NONE
   }
 }
+<<<<<<< HEAD
+=======
+
+// End JsonFunctions.java

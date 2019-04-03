@@ -83,8 +83,7 @@ import org.apache.calcite.runtime.CompressionFunctions;
 import org.apache.calcite.runtime.Enumerables;
 import org.apache.calcite.runtime.FlatLists;
 import org.apache.calcite.runtime.JsonFunctions;
-import org.apache.calcite.runtime.Matcher;
-import org.apache.calcite.runtime.Pattern;
+>>>>>>> 355e516ff ([CALCITE-2975] Implement JSON_REMOVE function (xuqianjin))
 import org.apache.calcite.runtime.RandomFunction;
 import org.apache.calcite.runtime.ResultSetEnumerable;
 import org.apache.calcite.runtime.SortedMultiMap;
@@ -130,7 +129,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
->>>>>>> c1d7f8f6f ([CALCITE-2559] Update Checkstyle to 7.8.2)
 import javax.sql.DataSource;
 
 /**
@@ -317,6 +315,7 @@ public enum BuiltInMethod {
   JSON_KEYS(SqlFunctions.class, "jsonKeys", Object.class),
   JSON_PRETTY(SqlFunctions.class, "jsonPretty", Object.class),
   JSON_LENGTH(SqlFunctions.class, "jsonLength", Object.class),
+  JSON_REMOVE(JsonFunctions.class, "jsonRemove", String.class),
   JSON_OBJECTAGG_ADD(SqlFunctions.class, "jsonObjectAggAdd", Map.class,
       String.class, Object.class, SqlJsonConstructorNullClause.class),
   JSON_ARRAY(SqlFunctions.class, "jsonArray",

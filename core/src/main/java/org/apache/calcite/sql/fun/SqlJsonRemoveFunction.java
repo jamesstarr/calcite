@@ -55,12 +55,13 @@ public class SqlJsonRemoveFunction extends SqlFunction {
         callBinding, callBinding.operand(0), 0, throwOnFailure)) {
       return false;
     }
-    final SqlTypeFamily[] families = new SqlTypeFamily[operandCount];
-    families[0] = SqlTypeFamily.ANY;
     for (int i = 1; i < operandCount; i++) {
-      families[i] = SqlTypeFamily.CHARACTER;
+      if (!OperandTypes.CHARACTER.checkSingleOperandType(
+          callBinding, callBinding.operand(i), 0, throwOnFailure)) {
+        return false;
+      }
     }
-    return OperandTypes.family(families).checkOperandTypes(callBinding, throwOnFailure);
+    return true;
   }
 
   @Override public String getAllowedSignatures(String opNameToUse) {
@@ -68,3 +69,8 @@ public class SqlJsonRemoveFunction extends SqlFunction {
         SqlTypeFamily.CHARACTER, SqlTypeFamily.CHARACTER);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlJsonRemoveFunction.java
+>>>>>>> 355e516ff ([CALCITE-2975] Implement JSON_REMOVE function (xuqianjin))
