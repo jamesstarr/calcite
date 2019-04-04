@@ -682,18 +682,8 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
    * and rename the second column to "e0". */
   @Test void testDuplicateColumnsInSubQuery() {
     String sql = "select \"e\" from (\n"
-        + "select empno as \"e\", deptno as d, 1 as \"e\" from EMP)";
-    Properties properties = new Properties();
-    properties.setProperty(
-            CalciteConnectionProperty.ALLOW_AMBIGUOUS_COLUMN.camelName(),
-            "true");
-    CalciteConnectionConfigImpl connectionConfig =
-            new CalciteConnectionConfigImpl(properties);
-    TesterImpl tester = new TesterImpl(getDiffRepos(), false, false, true, false, true,
-            null, null, MockRelOptPlanner::new, SqlToRelConverter.Config.DEFAULT,
-            SqlConformanceEnum.DEFAULT, Contexts.of(connectionConfig));
-
-    sql(sql).with(tester).ok();
+        + "select empno as \"e\", deptno as d, 1 as \"e0\" from EMP)";
+    sql(sql).ok();
   }
 
   @Test void testOrder() {

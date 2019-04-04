@@ -45,6 +45,7 @@ PIVOT  (SUM(sal) AS sum_sal, COUNT(*) AS sal
         FOR (job) IN ('CL' || 'ERK', 'MANAGER' mgr, 'ANALYST' AS "MGR_SUM",null))
 ORDER BY deptno;
 <<<<<<< HEAD
+<<<<<<< HEAD
 At line 1, column 8: Column 'MGR_SUM_SAL' is ambiguous
 =======
 +--------+-----------------------+-------------------+-------------+---------+-----------------+--------------+--------------+----------+
@@ -58,6 +59,9 @@ At line 1, column 8: Column 'MGR_SUM_SAL' is ambiguous
 
 Expected error, but SQL command did not give one
 >>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+=======
+At line 1, column 8: Column 'MGR_SUM_SAL' is ambiguous
+>>>>>>> ba05fdac3 ([CALCITE-2977] Exception is not thrown when there are ambiguous field in select list)
 !error
 
 !if (false) {
@@ -281,6 +285,7 @@ SELECT *
 FROM (SELECT sal, deptno FROM emp)
 PIVOT (SUM(sal) AS b_c, COUNT(*) AS c FOR deptno IN (10 as a, 20 as a_b));
 <<<<<<< HEAD
+<<<<<<< HEAD
 At line 1, column 8: Column 'A_B_C' is ambiguous
 =======
 +---------+-----+----------+---------+
@@ -292,6 +297,9 @@ At line 1, column 8: Column 'A_B_C' is ambiguous
 
 Expected error, but SQL command did not give one
 >>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+=======
+At line 1, column 8: Column 'A_B_C' is ambiguous
+>>>>>>> ba05fdac3 ([CALCITE-2977] Exception is not thrown when there are ambiguous field in select list)
 !error
 
 # As previous, but choosing the unambiguous columns
@@ -326,6 +334,7 @@ SELECT *
 FROM (SELECT sal, empno, deptno FROM emp)
 PIVOT (SUM(sal), COUNT(*), SUM(empno) AS sum_empno FOR deptno IN (10, 20));
 <<<<<<< HEAD
+<<<<<<< HEAD
 At line 1, column 8: Column '10' is ambiguous
 =======
 +---------+---------+--------------+----------+----------+--------------+
@@ -337,6 +346,9 @@ At line 1, column 8: Column '10' is ambiguous
 
 Expected error, but SQL command did not give one
 >>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+=======
+At line 1, column 8: Column '10' is ambiguous
+>>>>>>> ba05fdac3 ([CALCITE-2977] Exception is not thrown when there are ambiguous field in select list)
 !error
 
 # As above, choosing the unambiguous columns
