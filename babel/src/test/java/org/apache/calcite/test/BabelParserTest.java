@@ -24,26 +24,30 @@ import org.apache.calcite.sql.parser.babel.SqlBabelParserImpl;
 
 import com.google.common.base.Throwables;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests the "Babel" SQL parser, that understands all dialects of SQL.
  */
-class BabelParserTest extends SqlParserTest {
+public class BabelParserTest extends SqlParserTest {
 
   @Override protected SqlParserImplFactory parserImplFactory() {
     return SqlBabelParserImpl.FACTORY;
   }
 
-  @Test void testReservedWords() {
+  @Override public void testGenerateKeyWords() {
+    // by design, method only works in base class; no-ops in this sub-class
+  }
+
+  @Test public void testReservedWords() {
     assertThat(isReserved("escape"), is(false));
   }
 
@@ -51,7 +55,7 @@ class BabelParserTest extends SqlParserTest {
    *
    * <p>Copy-pasted from base method, but with some key differences.
    */
-  @Override @Test protected void testMetadata() {
+  @Override @Test public void testMetadata() {
     SqlAbstractParserImpl.Metadata metadata = getSqlParser("").getMetadata();
     assertThat(metadata.isReservedFunctionName("ABS"), is(true));
     assertThat(metadata.isReservedFunctionName("FOO"), is(false));
@@ -88,14 +92,14 @@ class BabelParserTest extends SqlParserTest {
     assertThat(!jdbcKeywords.contains(",SELECT,"), is(true));
   }
 
-  @Test void testSelect() {
+  @Test public void testSelect() {
     final String sql = "select 1 from t";
     final String expected = "SELECT 1\n"
         + "FROM `T`";
     sql(sql).ok(expected);
   }
 
-  @Test void testYearIsNotReserved() {
+  @Test public void testYearIsNotReserved() {
     final String sql = "select 1 as year from t";
     final String expected = "SELECT 1 AS `YEAR`\n"
         + "FROM `T`";
@@ -103,8 +107,8 @@ class BabelParserTest extends SqlParserTest {
   }
 
   /** Tests that there are no reserved keywords. */
-  @Disabled
-  @Test void testKeywords() {
+  @Ignore
+  @Test public void testKeywords() {
     final String[] reserved = {"AND", "ANY", "END-EXEC"};
     final StringBuilder sql = new StringBuilder("select ");
     final StringBuilder expected = new StringBuilder("SELECT ");
@@ -124,14 +128,14 @@ class BabelParserTest extends SqlParserTest {
   }
 
   /** In Babel, AS is not reserved. */
-  @Test void testAs() {
+  @Test public void testAs() {
     final String expected = "SELECT `AS`\n"
         + "FROM `T`";
     sql("select as from t").ok(expected);
   }
 
   /** In Babel, DESC is not reserved. */
-  @Test void testDesc() {
+  @Test public void testDesc() {
     final String sql = "select desc\n"
         + "from t\n"
         + "order by desc asc, desc desc";
@@ -149,50 +153,14 @@ class BabelParserTest extends SqlParserTest {
    * @see <a href="https://issues.apache.org/jira/browse/CALCITE-2847">[CALCITE-2847]
    * Optimize global LOOKAHEAD for SQL parsers</a>
    */
-  @Test void testCaseExpressionBabel() {
-    sql("case x when 2, 4 then 3 ^when^ then 5 else 4 end")
-        .fails("(?s)Encountered \"when then\" at .*");
-  }
-
-  /** In Redshift, DATE is a function. It requires special treatment in the
-   * parser because it is a reserved keyword.
-   * (Curiously, TIMESTAMP and TIME are not functions.) */
-  @Test void testDateFunction() {
-    final String expected = "SELECT `DATE`(`X`)\n"
-        + "FROM `T`";
-    sql("select date(x) from t").ok(expected);
-  }
-
-  /** In Redshift, PostgreSQL the DATEADD, DATEDIFF and DATE_PART functions have
-   * ordinary function syntax except that its first argument is a time unit
-   * (e.g. DAY). We must not parse that first argument as an identifier. */
-  @Test void testRedshiftFunctionsWithDateParts() {
-    final String sql = "SELECT DATEADD(day, 1, t),\n"
-        + " DATEDIFF(week, 2, t),\n"
-        + " DATE_PART(year, t) FROM mytable";
-    final String expected = "SELECT `DATEADD`(DAY, 1, `T`),"
-        + " `DATEDIFF`(WEEK, 2, `T`), `DATE_PART`(YEAR, `T`)\n"
-        + "FROM `MYTABLE`";
-
-    sql(sql).ok(expected);
-  }
-
-  /** PostgreSQL and Redshift allow TIMESTAMP literals that contain only a
-   * date part. */
-  @Test void testShortTimestampLiteral() {
-    sql("select timestamp '1969-07-20'")
-        .ok("SELECT TIMESTAMP '1969-07-20 00:00:00'");
-    // PostgreSQL allows the following. We should too.
-    sql("select ^timestamp '1969-07-20 1:2'^")
-        .fails("Illegal TIMESTAMP literal '1969-07-20 1:2': not in format "
-            + "'yyyy-MM-dd HH:mm:ss'"); // PostgreSQL gives 1969-07-20 01:02:00
-    sql("select ^timestamp '1969-07-20:23:'^")
-        .fails("Illegal TIMESTAMP literal '1969-07-20:23:': not in format "
-            + "'yyyy-MM-dd HH:mm:ss'"); // PostgreSQL gives 1969-07-20 23:00:00
+  @Test public void testCaseExpressionBabel() {
+    checkFails(
+        "case x when 2, 4 then 3 ^when^ then 5 else 4 end",
+        "(?s)Encountered \"when then\" at .*");
   }
 
   /**
-   * Babel parser's global {@code LOOKAHEAD} is larger than the core
+   * Babel parser's global {@code OOKAHEAD} is larger than the core
    * parser's. This causes different parse error message between these two
    * parsers. Here we define a looser error checker for Babel, so that we can
    * reuse failure testing codes from {@link SqlParserTest}.
@@ -232,6 +200,7 @@ class BabelParserTest extends SqlParserTest {
       }
     };
   }
+<<<<<<< HEAD
 
   /** Tests parsing PostgreSQL-style "::" cast operator. */
   @Test void testParseInfixCast()  {
@@ -262,6 +231,8 @@ class BabelParserTest extends SqlParserTest {
         + "(`BAR` VARIANT NOT NULL)";
     sql(sql).ok(expected);
   }
+=======
+>>>>>>> d7012eef1 (Remove calls to deprecated Guava API)
 }
 
 // End BabelParserTest.java
