@@ -67,12 +67,12 @@ public class RexSubQuery extends RexCall {
    * then {@code negated-comparison} is {@code <=}, and so forth.
    *
    * <p>Also =SOME is rewritten into IN</p> */
-  public static RexSubQuery some(RelNode rel, List<RexNode> nodes,
-      SqlQuantifyOperator op, @Nullable CorrelationId correlationId) {
+  public static RexSubQuery some(RelNode rel, ImmutableList<RexNode> nodes,
+      SqlQuantifyOperator op) {
     assert op.kind == SqlKind.SOME;
 
     if (op == SqlStdOperatorTable.SOME_EQ) {
-      return RexSubQuery.in(rel, nodes, correlationId);
+      return RexSubQuery.in(rel, nodes);
     }
     final RelDataType type = type(rel, nodes);
     return new RexSubQuery(type, op, nodes, rel, correlationId);

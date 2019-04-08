@@ -775,8 +775,12 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[IN($1, {
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(DEPTNO=[$0], EXPR$1=[= SOME($1, {
 >>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
+=======
+LogicalProject(DEPTNO=[$0], EXPR$1=[IN($1, {
+>>>>>>> df6d25e82 ([CALCITE-2986] Wrong results with =ANY subquery (Vineet Garg))
 LogicalProject(MGR=[$3])
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 })])
@@ -786,7 +790,11 @@ LogicalProject(MGR=[$3])
         <Resource name="planMid">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(DEPTNO=[$0], EXPR$1=[OR(AND(IS NOT NULL($5), <>($2, 0)), AND(<($3, $2), null, <>($2, 0), IS NULL($5)))])
+=======
+LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true, <($3, $2), null, false)])
+>>>>>>> df6d25e82 ([CALCITE-2986] Wrong results with =ANY subquery (Vineet Garg))
   LogicalJoin(condition=[=($1, $4)], joinType=[left])
     LogicalJoin(condition=[true], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -794,6 +802,7 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[OR(AND(IS NOT NULL($5), <>($2, 0)), AND(<($3
         LogicalProject(MGR=[$3])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalAggregate(group=[{0, 1}])
+<<<<<<< HEAD
       LogicalProject(MGR=[$3], i=[true])
 =======
 LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($3, 0), false, IS TRUE(=($1, $2)), true, >($3, $4), null, =($1, $2))])
@@ -803,12 +812,21 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($3, 0), false, IS TRUE(=($1, $2)), tr
       LogicalProject(MGR=[$3])
 >>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+=======
+      LogicalProject(MGR=[$0], i=[true])
+        LogicalProject(MGR=[$3])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+>>>>>>> df6d25e82 ([CALCITE-2986] Wrong results with =ANY subquery (Vineet Garg))
 ]]>
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(DEPTNO=[$0], EXPR$1=[OR(AND(IS NOT NULL($5), <>($2, 0)), AND(<($3, $2), null, <>($2, 0), IS NULL($5)))])
+=======
+LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true, <($3, $2), null, false)])
+>>>>>>> df6d25e82 ([CALCITE-2986] Wrong results with =ANY subquery (Vineet Garg))
   LogicalJoin(condition=[=($1, $4)], joinType=[left])
     LogicalJoin(condition=[true], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -816,6 +834,7 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[OR(AND(IS NOT NULL($5), <>($2, 0)), AND(<($3
         LogicalProject(MGR=[$3])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalAggregate(group=[{0, 1}])
+<<<<<<< HEAD
       LogicalProject(MGR=[$3], i=[true])
 =======
 LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($3, 0), false, IS TRUE(=($1, $2)), true, >($3, $4), null, =($1, $2))])
@@ -825,6 +844,11 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($3, 0), false, IS TRUE(=($1, $2)), tr
       LogicalProject(MGR=[$3])
 >>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+=======
+      LogicalProject(MGR=[$0], i=[true])
+        LogicalProject(MGR=[$3])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+>>>>>>> df6d25e82 ([CALCITE-2986] Wrong results with =ANY subquery (Vineet Garg))
 ]]>
         </Resource>
     </TestCase>
@@ -11506,6 +11530,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testSortJoinCopyInnerJoinOrderBy">
         <Resource name="sql">
             <![CDATA[select * from sales.emp join sales.dept on
@@ -11716,6 +11741,8 @@ LogicalSort(sort0=[$2], dir0=[DESC])
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> df6d25e82 ([CALCITE-2986] Wrong results with =ANY subquery (Vineet Garg))
     <TestCase name="testSomeWithEquality2">
         <Resource name="sql">
             <![CDATA[select * from emp e1
@@ -11754,7 +11781,10 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 
+=======
+>>>>>>> df6d25e82 ([CALCITE-2986] Wrong results with =ANY subquery (Vineet Garg))
     <TestCase name="testSortUnionTranspose2">
         <Resource name="sql">
             <![CDATA[select a.name from dept a
