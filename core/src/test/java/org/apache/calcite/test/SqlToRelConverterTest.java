@@ -2123,7 +2123,6 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
-  @Ignore("CALCITE-1527")
   @Test public void testUpdateSubQuery() {
     final String sql = "update emp\n"
         + "set empno = (\n"
