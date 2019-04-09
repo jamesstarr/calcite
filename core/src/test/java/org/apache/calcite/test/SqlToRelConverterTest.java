@@ -2618,7 +2618,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
-  @Test void testUpdateSubQuery() {
+  @Test public void testUpdateSubQuery() {
     final String sql = "update emp\n"
         + "set empno = (\n"
         + "  select min(empno) from emp as e where e.deptno = emp.deptno)";

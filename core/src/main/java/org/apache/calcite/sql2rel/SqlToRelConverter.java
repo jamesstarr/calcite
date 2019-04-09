@@ -4063,6 +4063,15 @@ public class SqlToRelConverter {
     Blackboard bb = createBlackboard(scope, null, false);
 
     replaceSubQueries(bb, call, RelOptUtil.Logic.TRUE_FALSE_UNKNOWN);
+<<<<<<< HEAD
+=======
+
+    Builder<RexNode> rexNodeSourceExpressionListBuilder = ImmutableList.builder();
+    for (SqlNode n : call.getSourceExpressionList()) {
+      RexNode rn = bb.convertExpression(n);
+      rexNodeSourceExpressionListBuilder.add(rn);
+    }
+>>>>>>> b9318224f ([CALCITE-2427] enabling subquery replacement for updates)
 
     RelOptTable targetTable = getTargetTable(call);
 
