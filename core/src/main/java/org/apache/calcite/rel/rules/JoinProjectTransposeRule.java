@@ -21,6 +21,7 @@ import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptRuleOperand;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
+import org.apache.calcite.plan.Strong;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
@@ -136,6 +137,18 @@ public class JoinProjectTransposeRule
     }
     if ((leftProj == null) && (rightProj == null)) {
       return;
+    }
+
+    if (includeOuter) {
+      if (leftProj != null && joinType.generatesNullsOnLeft()
+          && !Strong.allStrong(leftProj.getProjects())) {
+        return;
+      }
+
+      if (rightProj != null && joinType.generatesNullsOnRight()
+          && !Strong.allStrong(rightProj.getProjects())) {
+        return;
+      }
     }
 
     // Construct two RexPrograms and combine them.  The bottom program
