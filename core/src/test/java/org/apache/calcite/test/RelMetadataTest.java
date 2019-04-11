@@ -755,18 +755,18 @@ public class RelMetadataTest extends SqlToRelTestBase {
     checkRowCount(sql, 1D, 1D, 1D);
   }
 
-  @Test void testRowCountAggregateConstantKey() {
+  @Test public void testRowCountAggregateConstantKey() {
     final String sql = "select count(*) from emp where deptno=2 and ename='emp1' "
         + "group by deptno, ename";
     checkRowCount(sql, 1D, 0D, 1D);
   }
 
-  @Test void testRowCountAggregateConstantKeys() {
+  @Test public void testRowCountAggregateConstantKeys() {
     final String sql = "select distinct deptno from emp where deptno=4";
     checkRowCount(sql, 1D, 0D, 1D);
   }
 
-  @Test void testRowCountFilterAggregateEmptyKey() {
+  @Test public void testRowCountFilterAggregateEmptyKey() {
     final String sql = "select count(*) from emp where 1 = 0";
     checkRowCount(sql, 1D, 1D, 1D);
   }
