@@ -159,7 +159,10 @@ parser: {
     "HIERARCHY"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "HOURS"
+=======
+>>>>>>> 82a7f9ddf ([CALCITE-2993] ParseException may be thrown for legal SQL queries due to incorrect "LOOKAHEAD(1)" hints)
     "IGNORE"
     "IMMEDIATE"
     "IMMEDIATELY"
@@ -201,12 +204,20 @@ parser: {
     "ISOLATION"
     "JAVA"
     "JSON"
+<<<<<<< HEAD
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
     "ISOLATION"
     "JAVA"
     "JSON"
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
+=======
+    "JSON_DEPTH"
+    "JSON_KEYS"
+    "JSON_LENGTH"
+    "JSON_PRETTY"
+    "JSON_TYPE"
+>>>>>>> 82a7f9ddf ([CALCITE-2993] ParseException may be thrown for legal SQL queries due to incorrect "LOOKAHEAD(1)" hints)
     "K"
     "KEY"
     "KEY_MEMBER"
@@ -311,11 +322,15 @@ parser: {
     "REPLACE"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "RESPECT"
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
+=======
+    "RESPECT"
+>>>>>>> 82a7f9ddf ([CALCITE-2993] ParseException may be thrown for legal SQL queries due to incorrect "LOOKAHEAD(1)" hints)
     "RESTART"
     "RESTRICT"
     "RETURNED_CARDINALITY"

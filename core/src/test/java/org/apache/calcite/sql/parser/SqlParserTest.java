@@ -4778,6 +4778,15 @@ public class SqlParserTest {
         + "ORDER BY `COL1`\n"
         + "FETCH NEXT 10 ROWS ONLY";
     sql(sql).ok(expected);
+
+    // See [CALCITE-2993] ParseException may be thrown for legal
+    // SQL queries due to incorrect "LOOKAHEAD(1)" hints
+    sql("select lead(x) ignore from t")
+        .ok("SELECT LEAD(`X`) AS `IGNORE`\n"
+            + "FROM `T`");
+    sql("select lead(x) respect from t")
+        .ok("SELECT LEAD(`X`) AS `RESPECT`\n"
+            + "FROM `T`");
   }
 
   @Test public void testAs() {
@@ -7459,11 +7468,6 @@ public class SqlParserTest {
     assertThat(reason, reservedKeywords, is(getReservedKeywords()));
   }
 
-<<<<<<< HEAD
-  @Test void testTabStop() {
-    sql("SELECT *\n\tFROM mytable")
-        .ok("SELECT *\n"
-=======
   /** Generates a copy of {@code reference.md} with the current set of key
    * words. Fails if the copy is different from the original. */
   @Test public void testGenerateKeyWords() throws IOException {
@@ -8450,7 +8454,10 @@ public class SqlParserTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2993">[CALCITE-2993]
    * ParseException may be thrown for legal SQL queries due to incorrect
    * "LOOKAHEAD(1)" hints</a>. */
+<<<<<<< HEAD
   @Test void testMatchRecognizePatternSkip6() {
+=======
+  @Test public void testMatchRecognizePatternSkip6() {
     final String sql = "select *\n"
         + "  from t match_recognize\n"
         + "  (\n"
@@ -8471,7 +8478,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testMatchRecognizeSubset1() {
+  @Test public void testMatchRecognizeSubset1() {
     final String sql = "select *\n"
         + "  from t match_recognize\n"
         + "  (\n"
@@ -8764,6 +8771,18 @@ public class SqlParserTest {
         "JSON_OBJECT(KEY 'foo' VALUE "
             + "JSON_OBJECT(KEY 'foo' VALUE 'bar' NULL ON NULL) "
             + "FORMAT JSON NULL ON NULL)");
+
+    if (!Bug.TODO_FIXED) {
+      return;
+    }
+    // "LOOKAHEAD(2) list = JsonNameAndValue()" does not generate
+    // valid LOOKAHEAD codes for the case "key: value".
+    //
+    // You can see the generated codes that are located at method
+    // SqlParserImpl#JsonObjectFunctionCall. Looking ahead fails
+    // immediately after seeking the tokens <KEY> and <COLON>.
+    checkExp("json_object(key: value)",
+        "JSON_OBJECT(KEY `KEY` VALUE `VALUE` NULL ON NULL)");
   }
 
   @Test public void testJsonType() {

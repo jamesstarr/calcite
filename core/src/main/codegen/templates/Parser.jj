@@ -7271,13 +7271,19 @@ List<SqlNode> JsonNameAndValue() :
 }
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 82a7f9ddf ([CALCITE-2993] ParseException may be thrown for legal SQL queries due to incorrect "LOOKAHEAD(1)" hints)
     [
         LOOKAHEAD(2, <KEY> JsonName())
         <KEY> { kvMode = true; }
     ]
+<<<<<<< HEAD
 =======
     [ <KEY> { kvMode = true; } ]
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+>>>>>>> 82a7f9ddf ([CALCITE-2993] ParseException may be thrown for legal SQL queries due to incorrect "LOOKAHEAD(1)" hints)
     e = JsonName() {
         list.add(e);
     }
@@ -7969,7 +7975,7 @@ SqlNode NamedFunctionCall() :
         call = withinGroup(call)
     ]
     [
-        call = nullTreatment(call)
+        LOOKAHEAD(2) call = nullTreatment(call)
     ]
     [
         <WITHIN> { withinGroupSpan = span(); }
