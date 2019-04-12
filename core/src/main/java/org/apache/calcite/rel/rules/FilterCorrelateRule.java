@@ -86,8 +86,8 @@ public class FilterCorrelateRule extends RelOptRule {
         aboveFilters,
         JoinRelType.INNER,
         false,
-        !corr.getJoinType().toJoinType().generatesNullsOnLeft(),
-        !corr.getJoinType().toJoinType().generatesNullsOnRight(),
+        !corr.getJoinType().generatesNullsOnLeft(),
+        !corr.getJoinType().generatesNullsOnRight(),
         aboveFilters,
         leftFilters,
         rightFilters);

@@ -29,11 +29,9 @@ import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexShuttle;
-import org.apache.calcite.sql.SemiJoinType;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBitSet;
-import org.apache.calcite.util.Util;
 
 /**
  * Rule that converts a {@link org.apache.calcite.rel.logical.LogicalJoin}
@@ -81,16 +79,7 @@ public class JoinToCorrelateRule extends RelOptRule {
 
   public boolean matches(RelOptRuleCall call) {
     LogicalJoin join = call.rel(0);
-    switch (join.getJoinType()) {
-    case INNER:
-    case LEFT:
-      return true;
-    case FULL:
-    case RIGHT:
-      return false;
-    default:
-      throw Util.unexpected(join.getJoinType());
-    }
+    return !join.getJoinType().generatesNullsOnLeft();
   }
 
   public void onMatch(RelOptRuleCall call) {
@@ -127,7 +116,7 @@ public class JoinToCorrelateRule extends RelOptRule {
             relBuilder.build(),
             correlationId,
             requiredColumns.build(),
-            SemiJoinType.of(join.getJoinType()));
+            join.getJoinType());
     call.transformTo(newRel);
   }
 }

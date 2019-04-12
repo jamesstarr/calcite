@@ -1147,7 +1147,7 @@ public class Linq4jTest {
     String s =
         Linq4j.asEnumerable(emps)
             .concat(Linq4j.asEnumerable(badEmps))
-            .join(
+            .hashJoin(
                 Linq4j.asEnumerable(depts),
                 EMP_DEPTNO_SELECTOR,
                 DEPT_DEPTNO_SELECTOR,
@@ -1175,7 +1175,7 @@ public class Linq4jTest {
     String s =
         Linq4j.asEnumerable(emps)
             .concat(Linq4j.asEnumerable(badEmps))
-            .join(
+            .hashJoin(
                 Linq4j.asEnumerable(depts),
                 EMP_DEPTNO_SELECTOR,
                 DEPT_DEPTNO_SELECTOR,
@@ -1205,7 +1205,7 @@ public class Linq4jTest {
     String s =
         Linq4j.asEnumerable(emps)
             .concat(Linq4j.asEnumerable(badEmps))
-            .join(
+            .hashJoin(
                 Linq4j.asEnumerable(depts),
                 EMP_DEPTNO_SELECTOR,
                 DEPT_DEPTNO_SELECTOR,
@@ -1235,7 +1235,7 @@ public class Linq4jTest {
     String s =
         Linq4j.asEnumerable(emps)
             .concat(Linq4j.asEnumerable(badEmps))
-            .join(
+            .hashJoin(
                 Linq4j.asEnumerable(depts),
                 EMP_DEPTNO_SELECTOR,
                 DEPT_DEPTNO_SELECTOR,
@@ -1261,7 +1261,7 @@ public class Linq4jTest {
   @Test public void testJoinCartesianProduct() {
     int n =
         Linq4j.asEnumerable(emps)
-            .<Department, Integer, Integer>join(
+            .<Department, Integer, Integer>hashJoin(
                 Linq4j.asEnumerable(depts),
                 (Function1) ONE_SELECTOR,
                 (Function1) ONE_SELECTOR,

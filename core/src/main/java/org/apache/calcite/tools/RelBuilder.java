@@ -55,7 +55,6 @@ import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.runtime.Hook;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.server.CalciteServerStatement;
-import org.apache.calcite.sql.SemiJoinType;
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
@@ -1553,7 +1552,7 @@ public class RelBuilder {
       }
       final ImmutableBitSet requiredColumns = RelOptUtil.correlationColumns(id, right.rel);
       join = struct.correlateFactory.createCorrelate(left.rel, right.rel, id,
-          requiredColumns, SemiJoinType.of(joinType));
+          requiredColumns, joinType);
     } else {
       join = struct.joinFactory.createJoin(left.rel, right.rel, condition,
           variablesSet, joinType, false);
@@ -1568,14 +1567,14 @@ public class RelBuilder {
 
   /** Creates a {@link org.apache.calcite.rel.core.Correlate}
    * with a {@link CorrelationId} and an array of fields that are used by correlation. */
-  public RelBuilder correlate(SemiJoinType joinType,
+  public RelBuilder correlate(JoinRelType joinType,
       CorrelationId correlationId, RexNode... requiredFields) {
     return correlate(joinType, correlationId, ImmutableList.copyOf(requiredFields));
   }
 
   /** Creates a {@link org.apache.calcite.rel.core.Correlate}
    * with a {@link CorrelationId} and a list of fields that are used by correlation. */
-  public RelBuilder correlate(SemiJoinType joinType,
+  public RelBuilder correlate(JoinRelType joinType,
       CorrelationId correlationId, Iterable<? extends RexNode> requiredFields) {
     Frame right = stack.pop();
     final Registrar registrar = new Registrar();
@@ -1626,12 +1625,15 @@ public class RelBuilder {
   public RelBuilder semiJoin(Iterable<? extends RexNode> conditions) {
     final Frame right = stack.pop();
     final RelNode semiJoin =
-        struct.semiJoinFactory.createSemiJoin(peek(), right.rel, and(conditions));
+        struct.joinFactory.createJoin(peek(), right.rel,
+            and(conditions), ImmutableSet.of(), JoinRelType.SEMI, false);
     replaceTop(semiJoin);
     return this;
   }
 
-  /** Creates a {@link org.apache.calcite.rel.core.SemiJoin}. */
+  /** Creates a {@link Join} with {@link JoinRelType#SEMI}.
+   *
+   * @see #semiJoin(Iterable) */
   public RelBuilder semiJoin(RexNode... conditions) {
     return semiJoin(ImmutableList.copyOf(conditions));
   }

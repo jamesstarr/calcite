@@ -1582,7 +1582,7 @@ public class MaterializationTest {
         HR_FKUK_MODEL,
         CalciteAssert.checkResultContains(
             "EnumerableAggregate(group=[{0}], S=[$SUM0($2)])\n"
-                + "  EnumerableJoin(condition=[=($1, $3)], joinType=[inner])\n"
+                + "  EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])\n"
                 + "    EnumerableTableScan(table=[[hr, m0]])\n"
                 + "    EnumerableTableScan(table=[[hr, depts]])"));
   }
@@ -1601,7 +1601,7 @@ public class MaterializationTest {
         HR_FKUK_MODEL,
         CalciteAssert.checkResultContains(
             "EnumerableAggregate(group=[{4}], S=[$SUM0($2)])\n"
-                + "  EnumerableJoin(condition=[=($1, $3)], joinType=[inner])\n"
+                + "  EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])\n"
                 + "    EnumerableTableScan(table=[[hr, m0]])\n"
                 + "    EnumerableTableScan(table=[[hr, depts]])"));
   }
@@ -1747,7 +1747,7 @@ public class MaterializationTest {
         HR_FKUK_MODEL,
         CalciteAssert.checkResultContains(
             "EnumerableCalc(expr#0..2=[{inputs}], empid0=[$t1])\n"
-                + "  EnumerableJoin(condition=[=($0, $2)], joinType=[inner])\n"
+                + "  EnumerableHashJoin(condition=[=($0, $2)], joinType=[inner])\n"
                 + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR CHARACTER SET \"ISO-8859-1\" "
                 + "COLLATE \"ISO-8859-1$en_US$primary\"], name=[$t1])\n"
                 + "      EnumerableTableScan(table=[[hr, m0]])\n"
@@ -1768,7 +1768,7 @@ public class MaterializationTest {
         HR_FKUK_MODEL,
         CalciteAssert.checkResultContains(
             "EnumerableCalc(expr#0..4=[{inputs}], empid=[$t2])\n"
-                + "  EnumerableJoin(condition=[=($1, $4)], joinType=[inner])\n"
+                + "  EnumerableHashJoin(condition=[=($1, $4)], joinType=[inner])\n"
                 + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR CHARACTER SET \"ISO-8859-1\" "
                 + "COLLATE \"ISO-8859-1$en_US$primary\"], proj#0..1=[{exprs}])\n"
                 + "      EnumerableTableScan(table=[[hr, m0]])\n"

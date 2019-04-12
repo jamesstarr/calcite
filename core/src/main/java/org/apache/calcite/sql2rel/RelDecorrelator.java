@@ -1199,7 +1199,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
         RexUtil.composeConjunction(relBuilder.getRexBuilder(), conditions,
             false);
     RelNode newJoin = relBuilder.push(leftFrame.r).push(rightFrame.r)
-        .join(rel.getJoinType().toJoinType(), condition, ImmutableSet.<CorrelationId>of()).build();
+        .join(rel.getJoinType(), condition, ImmutableSet.<CorrelationId>of()).build();
 
     return register(rel, newJoin, mapOldToNewOutputs, corDefOutputs);
   }
@@ -1209,6 +1209,13 @@ public class RelDecorrelator implements ReflectiveVisitor {
   }
 
   public Frame decorrelateRel(Join rel, boolean isCorVarDefined) {
+    // For SEMI/ANTI join decorrelate it's input directly,
+    // because the correlate variables can only be propagated from
+    // the left side, which is not supported yet.
+    if (!rel.getJoinType().projectsRight()) {
+      decorrelateRel((RelNode) rel, isCorVarDefined);
+    }
+
     //
     // Rewrite logic:
     //
@@ -1508,7 +1515,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
       Project project,
       Set<Integer> isCount) {
     final RelNode left = correlate.getLeft();
-    final JoinRelType joinType = correlate.getJoinType().toJoinType();
+    final JoinRelType joinType = correlate.getJoinType();
 
     // now create the new project
     final List<Pair<RexNode, String>> newProjects = Lists.newArrayList();
@@ -2010,7 +2017,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
       //   Aggregate (groupby (0) single_value())
       //     Project-A (may reference corVar)
       //       rightInput
-      final JoinRelType joinType = correlate.getJoinType().toJoinType();
+      final JoinRelType joinType = correlate.getJoinType();
 
       // corRel.getCondition was here, however Correlate was updated so it
       // never includes a join condition. The code was not modified for brevity.
@@ -2220,7 +2227,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
         return;
       }
 
-      final JoinRelType joinType = correlate.getJoinType().toJoinType();
+      final JoinRelType joinType = correlate.getJoinType();
       // corRel.getCondition was here, however Correlate was updated so it
       // never includes a join condition. The code was not modified for brevity.
       RexNode joinCond = rexBuilder.makeLiteral(true);
@@ -2621,7 +2628,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
         return;
       }
 
-      JoinRelType joinType = correlate.getJoinType().toJoinType();
+      JoinRelType joinType = correlate.getJoinType();
       // corRel.getCondition was here, however Correlate was updated so it
       // never includes a join condition. The code was not modified for brevity.
       RexNode joinCond = relBuilder.literal(true);

@@ -34,7 +34,6 @@ import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.runtime.CalciteException;
 import org.apache.calcite.schema.SchemaPlus;
-import org.apache.calcite.sql.SemiJoinType;
 import org.apache.calcite.sql.SqlMatchRecognize;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParser;
@@ -2160,7 +2159,7 @@ public class RelBuilderTest {
         .filter(
             builder.equals(builder.field(0),
                 builder.field(v.get(), "DEPTNO")))
-        .correlate(SemiJoinType.LEFT, v.get().id, builder.field(2, 0, "DEPTNO"))
+        .correlate(JoinRelType.LEFT, v.get().id, builder.field(2, 0, "DEPTNO"))
         .build();
 
     final String expected = ""
@@ -2230,7 +2229,7 @@ public class RelBuilderTest {
         .filter(
             builder.equals(builder.field(0),
                 builder.field(v.get(), "DEPTNO")))
-        .correlate(SemiJoinType.LEFT, v.get().id,
+        .correlate(JoinRelType.LEFT, v.get().id,
             builder.field(2, 0, "DEPTNO"),
             builder.getRexBuilder().makeCall(SqlStdOperatorTable.AS,
                 builder.field(2, 0, "EMPNO"),

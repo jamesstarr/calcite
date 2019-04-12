@@ -71,7 +71,7 @@ public abstract class Correlate extends BiRel {
 
   protected final CorrelationId correlationId;
   protected final ImmutableBitSet requiredColumns;
-  protected final SemiJoinType joinType;
+  protected final JoinRelType joinType;
 
   //~ Constructors -----------------------------------------------------------
 
@@ -91,9 +91,21 @@ public abstract class Correlate extends BiRel {
       RelNode left,
       RelNode right,
       CorrelationId correlationId,
-      ImmutableBitSet requiredColumns, SemiJoinType joinType) {
+      ImmutableBitSet requiredColumns,
+      JoinRelType joinType) {
     super(cluster, traits, left, right);
+    assert !joinType.generatesNullsOnLeft() : "Correlate has invalid join type " + joinType;
     this.joinType = joinType;
+    this.correlationId = correlationId;
+    this.requiredColumns = requiredColumns;
+  }
+
+  @Deprecated // To be removed before 2.0
+  protected Correlate(RelOptCluster cluster, RelTraitSet traits, RelNode left,
+      RelNode right, CorrelationId correlationId, ImmutableBitSet
+      requiredColumns, SemiJoinType joinType) {
+    super(cluster, traits, left, right);
+    this.joinType = joinType.toJoinType();
     this.correlationId = correlationId;
     this.requiredColumns = requiredColumns;
   }
@@ -109,7 +121,7 @@ public abstract class Correlate extends BiRel {
         input.getInputs().get(1),
         new CorrelationId((Integer) input.get("correlationId")),
         input.getBitSet("requiredColumns"),
-        input.getEnum("joinType", SemiJoinType.class));
+        input.getEnum("joinType", JoinRelType.class));
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -131,9 +143,9 @@ public abstract class Correlate extends BiRel {
 
   public abstract Correlate copy(RelTraitSet traitSet,
       RelNode left, RelNode right, CorrelationId correlationId,
-      ImmutableBitSet requiredColumns, SemiJoinType joinType);
+      ImmutableBitSet requiredColumns, JoinRelType joinType);
 
-  public SemiJoinType getJoinType() {
+  public JoinRelType getJoinType() {
     return joinType;
   }
 
@@ -142,7 +154,7 @@ public abstract class Correlate extends BiRel {
     case LEFT:
     case INNER:
       return SqlValidatorUtil.deriveJoinRowType(left.getRowType(),
-          right.getRowType(), joinType.toJoinType(),
+          right.getRowType(), joinType,
           getCluster().getTypeFactory(), null,
           ImmutableList.<RelDataTypeField>of());
     case ANTI:

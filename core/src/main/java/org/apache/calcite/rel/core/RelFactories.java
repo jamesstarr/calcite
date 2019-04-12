@@ -39,7 +39,6 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
-import org.apache.calcite.sql.SemiJoinType;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
@@ -72,9 +71,6 @@ public class RelFactories {
   public static final CorrelateFactory DEFAULT_CORRELATE_FACTORY =
       new CorrelateFactoryImpl();
 
-  public static final SemiJoinFactory DEFAULT_SEMI_JOIN_FACTORY =
-      new SemiJoinFactoryImpl();
-
   public static final SortFactory DEFAULT_SORT_FACTORY =
       new SortFactoryImpl();
 
@@ -100,7 +96,6 @@ public class RelFactories {
           DEFAULT_SORT_FACTORY,
           DEFAULT_SET_OP_FACTORY,
           DEFAULT_JOIN_FACTORY,
-          DEFAULT_SEMI_JOIN_FACTORY,
           DEFAULT_CORRELATE_FACTORY,
           DEFAULT_VALUES_FACTORY,
           DEFAULT_TABLE_SCAN_FACTORY,
@@ -316,7 +311,7 @@ public class RelFactories {
      */
     RelNode createCorrelate(RelNode left, RelNode right,
         CorrelationId correlationId, ImmutableBitSet requiredColumns,
-        SemiJoinType joinType);
+        JoinRelType joinType);
   }
 
   /**
@@ -326,7 +321,7 @@ public class RelFactories {
   private static class CorrelateFactoryImpl implements CorrelateFactory {
     public RelNode createCorrelate(RelNode left, RelNode right,
         CorrelationId correlationId, ImmutableBitSet requiredColumns,
-        SemiJoinType joinType) {
+        JoinRelType joinType) {
       return LogicalCorrelate.create(left, right, correlationId,
           requiredColumns, joinType);
     }
@@ -335,7 +330,10 @@ public class RelFactories {
   /**
    * Can create a semi-join of the appropriate type for a rule's calling
    * convention.
+   *
+   * @deprecated Use {@link JoinFactory} instead.
    */
+  @Deprecated // to be removed before 2.0
   public interface SemiJoinFactory {
     /**
      * Creates a semi-join.
@@ -350,7 +348,10 @@ public class RelFactories {
   /**
    * Implementation of {@link SemiJoinFactory} that returns a vanilla
    * {@link SemiJoin}.
+   *
+   * @deprecated Use {@link JoinFactoryImpl} instead.
    */
+  @Deprecated  // to be removed before 2.0
   private static class SemiJoinFactoryImpl implements SemiJoinFactory {
     public RelNode createSemiJoin(RelNode left, RelNode right,
         RexNode condition) {
@@ -444,7 +445,6 @@ public class RelFactories {
     public final SortFactory sortFactory;
     public final SetOpFactory setOpFactory;
     public final JoinFactory joinFactory;
-    public final SemiJoinFactory semiJoinFactory;
     public final CorrelateFactory correlateFactory;
     public final ValuesFactory valuesFactory;
     public final TableScanFactory scanFactory;
@@ -456,7 +456,6 @@ public class RelFactories {
         SortFactory sortFactory,
         SetOpFactory setOpFactory,
         JoinFactory joinFactory,
-        SemiJoinFactory semiJoinFactory,
         CorrelateFactory correlateFactory,
         ValuesFactory valuesFactory,
         TableScanFactory scanFactory,
@@ -467,7 +466,6 @@ public class RelFactories {
       this.sortFactory = Objects.requireNonNull(sortFactory);
       this.setOpFactory = Objects.requireNonNull(setOpFactory);
       this.joinFactory = Objects.requireNonNull(joinFactory);
-      this.semiJoinFactory = Objects.requireNonNull(semiJoinFactory);
       this.correlateFactory = Objects.requireNonNull(correlateFactory);
       this.valuesFactory = Objects.requireNonNull(valuesFactory);
       this.scanFactory = Objects.requireNonNull(scanFactory);
@@ -492,8 +490,6 @@ public class RelFactories {
               DEFAULT_SET_OP_FACTORY),
           Util.first(context.unwrap(JoinFactory.class),
               DEFAULT_JOIN_FACTORY),
-          Util.first(context.unwrap(SemiJoinFactory.class),
-              DEFAULT_SEMI_JOIN_FACTORY),
           Util.first(context.unwrap(CorrelateFactory.class),
               DEFAULT_CORRELATE_FACTORY),
           Util.first(context.unwrap(ValuesFactory.class),

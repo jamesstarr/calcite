@@ -129,7 +129,7 @@ public class RelMdCollation
     // order of the left and right sides.
     return ImmutableList.copyOf(
         RelMdCollation.mergeJoin(mq, join.getLeft(), join.getRight(),
-            join.getLeftKeys(), join.getRightKeys()));
+            join.analyzeCondition().leftKeys, join.analyzeCondition().rightKeys));
   }
 
   public ImmutableList<RelCollation> collations(Sort sort,

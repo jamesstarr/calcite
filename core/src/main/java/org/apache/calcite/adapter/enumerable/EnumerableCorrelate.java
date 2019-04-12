@@ -27,7 +27,6 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Correlate;
 import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.core.JoinRelType;
-import org.apache.calcite.sql.SemiJoinType;
 import org.apache.calcite.util.BuiltInMethod;
 import org.apache.calcite.util.ImmutableBitSet;
 
@@ -44,14 +43,14 @@ public class EnumerableCorrelate extends Correlate
   public EnumerableCorrelate(RelOptCluster cluster, RelTraitSet traits,
       RelNode left, RelNode right,
       CorrelationId correlationId,
-      ImmutableBitSet requiredColumns, SemiJoinType joinType) {
+      ImmutableBitSet requiredColumns, JoinRelType joinType) {
     super(cluster, traits, left, right, correlationId, requiredColumns,
         joinType);
   }
 
   @Override public EnumerableCorrelate copy(RelTraitSet traitSet,
       RelNode left, RelNode right, CorrelationId correlationId,
-      ImmutableBitSet requiredColumns, SemiJoinType joinType) {
+      ImmutableBitSet requiredColumns, JoinRelType joinType) {
     return new EnumerableCorrelate(getCluster(),
         traitSet, left, right, correlationId, requiredColumns, joinType);
   }
@@ -100,15 +99,14 @@ public class EnumerableCorrelate extends Correlate
 
     Expression selector =
         EnumUtils.joinSelector(
-            joinType.returnsJustFirstInput() ? joinType.toJoinType()
-                : JoinRelType.INNER, physType,
+            joinType, physType,
             ImmutableList.of(leftResult.physType, rightResult.physType));
 
     builder.append(
         Expressions.call(leftExpression, BuiltInMethod.CORRELATE_JOIN.method,
             Expressions.constant(joinType.toLinq4j()),
-        Expressions.lambda(corrBlock.toBlock(), corrArg),
-        selector));
+            Expressions.lambda(corrBlock.toBlock(), corrArg),
+            selector));
 
     return implementor.result(physType, builder.toBlock());
   }
