@@ -282,15 +282,17 @@ public class JdbcRules {
 
     @Override public RelNode convert(RelNode rel) {
       final Join join = (Join) rel;
-      switch (join.getJoinType()) {
-      case SEMI:
-      case ANTI:
-        // It's not possible to convert semi-joins or anti-joins. They have fewer columns
+      if (join.isSemiJoin()) {
+        // It's not possible to convert semi-joins. They have fewer columns
         // than regular joins.
         return null;
       default:
         return convert(join, true);
       }
+<<<<<<< HEAD
+=======
+      return convert(join, true);
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     }
 
     /**

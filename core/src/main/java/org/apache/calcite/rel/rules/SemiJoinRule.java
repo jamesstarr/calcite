@@ -42,23 +42,49 @@ import java.util.function.Predicate;
  * {@link org.apache.calcite.rel.core.Join} on top of a
  * {@link org.apache.calcite.rel.logical.LogicalAggregate}.
  */
-public abstract class SemiJoinRule
-    extends RelRule<SemiJoinRule.Config>
-    implements TransformationRule {
-  private static boolean isJoinTypeSupported(Join join) {
-    final JoinRelType type = join.getJoinType();
-    return type == JoinRelType.INNER || type == JoinRelType.LEFT;
-  }
+public abstract class SemiJoinRule extends RelOptRule {
   private static final Predicate<Join> NOT_GENERATE_NULLS_ON_LEFT =
       join -> !join.getJoinType().generatesNullsOnLeft();
+
+  /* Tests if an Aggregate always produces 1 row and 0 columns. */
+  private static final Predicate<Aggregate> IS_EMPTY_AGGREGATE =
+      new PredicateImpl<Aggregate>() {
+        public boolean test(Aggregate input) {
+          return input.getRowType().getFieldCount() == 0;
+        }
+      };
 
   private static boolean isEmptyAggregate(Aggregate aggregate) {
     return aggregate.getRowType().getFieldCount() == 0;
   }
 
-  /** Creates a SemiJoinRule. */
-  protected SemiJoinRule(Config config) {
-    super(config);
+  public static final SemiJoinRule PROJECT =
+      new ProjectToSemiJoinRule(Project.class, Join.class, Aggregate.class,
+          RelFactories.LOGICAL_BUILDER, "SemiJoinRule:project");
+
+  public static final SemiJoinRule JOIN =
+      new JoinToSemiJoinRule(Join.class, Aggregate.class,
+          RelFactories.LOGICAL_BUILDER, "SemiJoinRule:join");
+
+  protected SemiJoinRule(Class<Project> projectClass, Class<Join> joinClass,
+      Class<Aggregate> aggregateClass, RelBuilderFactory relBuilderFactory,
+      String description) {
+    super(
+        operand(projectClass,
+            some(
+                operand(joinClass, null, NOT_GENERATE_NULLS_ON_LEFT,
+                    some(operand(RelNode.class, any()),
+                        operand(aggregateClass, any()))))),
+        relBuilderFactory, description);
+  }
+
+  protected SemiJoinRule(Class<Join> joinClass, Class<Aggregate> aggregateClass,
+      RelBuilderFactory relBuilderFactory, String description) {
+    super(
+        operand(joinClass, null, NOT_GENERATE_NULLS_ON_LEFT,
+            some(operand(RelNode.class, any()),
+                operand(aggregateClass, null, IS_EMPTY_AGGREGATE, any()))),
+        relBuilderFactory, description);
   }
 
   protected void perform(RelOptRuleCall call, Project project,

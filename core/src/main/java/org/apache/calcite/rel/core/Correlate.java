@@ -97,6 +97,20 @@ public abstract class Correlate extends BiRel {
     this.correlationId = correlationId;
     this.requiredColumns = requiredColumns;
   }
+<<<<<<< HEAD
+=======
+
+  @Deprecated // To be removed before 2.0
+  protected Correlate(RelOptCluster cluster, RelTraitSet traits, RelNode left,
+      RelNode right, CorrelationId correlationId, ImmutableBitSet
+      requiredColumns, SemiJoinType joinType) {
+    super(cluster, traits, left, right);
+    this.joinType = joinType.toJoinType();
+    this.correlationId = correlationId;
+    this.requiredColumns = requiredColumns;
+  }
+
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
   /**
    * Creates a Correlate by parsing serialized output.
    *

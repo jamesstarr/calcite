@@ -68,47 +68,8 @@ public abstract class Join extends BiRel implements Hintable {
   protected final JoinRelType joinType;
 
   protected final JoinInfo joinInfo;
-
-  //~ Constructors -----------------------------------------------------------
-
-  /**
-   * Creates a Join.
-   *
-   * @param cluster          Cluster
-   * @param traitSet         Trait set
-   * @param hints            Hints
-   * @param left             Left input
-   * @param right            Right input
-   * @param condition        Join condition
-   * @param joinType         Join type
-   * @param variablesSet     variables that are set by the
-   *                         LHS and used by the RHS and are not available to
-   *                         nodes above this Join in the tree
-   */
-  protected Join(
-      RelOptCluster cluster,
-      RelTraitSet traitSet,
-      List<RelHint> hints,
-      RelNode left,
-      RelNode right,
-      RexNode condition,
-      Set<CorrelationId> variablesSet,
-      JoinRelType joinType) {
-    super(cluster, traitSet, left, right);
-    this.condition = Objects.requireNonNull(condition);
-    this.variablesSet = ImmutableSet.copyOf(variablesSet);
-    this.joinType = Objects.requireNonNull(joinType);
-    this.hints = ImmutableList.copyOf(hints);
+    this.joinType = Preconditions.checkNotNull(joinType);
     this.joinInfo = JoinInfo.of(left, right, condition);
-  }
-
-  @Deprecated // to be removed before 2.0
-  protected Join(
-      RelOptCluster cluster, RelTraitSet traitSet, RelNode left,
-      RelNode right, RexNode condition, Set<CorrelationId> variablesSet,
-      JoinRelType joinType) {
-    this(cluster, traitSet, ImmutableList.of(), left, right,
-        condition, variablesSet, joinType);
   }
 
   @Deprecated // to be removed before 2.0
@@ -180,7 +141,7 @@ public abstract class Join extends BiRel implements Hintable {
 
   @Override public RelOptCost computeSelfCost(RelOptPlanner planner,
       RelMetadataQuery mq) {
-    // Maybe we should remove this for semi-join?
+    // Maybe we should remove this for semi-join ?
     if (isSemiJoin()) {
       // REVIEW jvs 9-Apr-2006:  Just for now...
       return planner.getCostFactory().makeTinyCost();
@@ -308,9 +269,12 @@ public abstract class Join extends BiRel implements Hintable {
    */
   public JoinInfo analyzeCondition() {
     return joinInfo;
+<<<<<<< HEAD
   }
 
   @Override public ImmutableList<RelHint> getHints() {
     return hints;
+=======
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
   }
 }

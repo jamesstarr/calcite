@@ -145,7 +145,7 @@ class MultiJdbcSchemaJoinTest {
     return connection;
   }
 
-  @Test void testJdbcWithEnumerableHashJoin() throws SQLException {
+  @Test public void testJdbcWithEnumerableHashJoin() throws SQLException {
     // This query works correctly
     String query = "select t.id, t.field1 "
         + "from db.table1 t join \"hr\".\"emps\" e on e.\"empid\" = t.id";
@@ -153,7 +153,7 @@ class MultiJdbcSchemaJoinTest {
     assertThat(runQuery(setup(), query), equalTo(expected));
   }
 
-  @Test void testEnumerableWithJdbcJoin() throws SQLException {
+  @Test public void testEnumerableWithJdbcJoin() throws SQLException {
     //  * compared to testJdbcWithEnumerableHashJoin, the join order is reversed
     //  * the query fails with a CannotPlanException
     String query = "select t.id, t.field1 "

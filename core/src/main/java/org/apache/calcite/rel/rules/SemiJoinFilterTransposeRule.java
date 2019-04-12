@@ -20,7 +20,7 @@ package org.apache.calcite.rel.rules;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.rel.core.Filter;
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.core.RelFactories;
@@ -28,12 +28,14 @@ import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.tools.RelBuilderFactory;
 
+<<<<<<< HEAD
 import com.google.common.collect.ImmutableList;
+=======
 import com.google.common.collect.ImmutableSet;
 
 /**
  * Planner rule that pushes {@code SemiJoin}s down in a tree past
-
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
  * a {@link org.apache.calcite.rel.core.Filter}.
  *
  * <p>The intention is to trigger other rules that will convert
@@ -56,15 +58,21 @@ public class SemiJoinFilterTransposeRule
   @Deprecated // to be removed before 2.0
 
   public SemiJoinFilterTransposeRule(RelBuilderFactory relBuilderFactory) {
+<<<<<<< HEAD
     this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
             .as(Config.class));
 
+=======
+    super(
+        operandJ(LogicalJoin.class, null, Join::isSemiJoin,
+            some(operand(LogicalFilter.class, any()))),
+        relBuilderFactory, null);
   }
 
   //~ Methods ----------------------------------------------------------------
 
   // implement RelOptRule
-  @Override public void onMatch(RelOptRuleCall call) {
+  public void onMatch(RelOptRuleCall call) {
     LogicalJoin semiJoin = call.rel(0);
     LogicalFilter filter = call.rel(1);
 

@@ -22,15 +22,11 @@ import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.Project;
-import org.apache.calcite.rel.logical.LogicalJoin;
-import org.apache.calcite.rel.logical.LogicalProject;
+import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexShuttle;
-<<<<<<< HEAD
-import org.apache.calcite.rex.RexUtil;
-=======
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBeans;
 import org.apache.calcite.util.mapping.Mappings;
@@ -90,8 +86,12 @@ public class ProjectJoinTransposeRule
     Project origProj = call.rel(0);
     final Join join = call.rel(1);
 
+<<<<<<< HEAD
     if (!join.getJoinType().projectsRight()) {
       return; // TODO: support SemiJoin / AntiJoin
+=======
+    if (join.isSemiJoin()) {
+      return; // TODO: support SemiJoin
     }
 
     // Normalize the join condition so we don't end up misidentified expanded

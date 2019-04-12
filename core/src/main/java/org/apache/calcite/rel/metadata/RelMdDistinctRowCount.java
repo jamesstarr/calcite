@@ -148,6 +148,15 @@ public class RelMdDistinctRowCount
         groupKey, predicate, false);
   }
 
+<<<<<<< HEAD
+=======
+  @Deprecated // to be removed before 2.0
+  public Double getDistinctRowCount(SemiJoin rel, RelMetadataQuery mq,
+      ImmutableBitSet groupKey, RexNode predicate) {
+    return RelMdUtil.getSemiJoinDistinctRowCount(rel, mq, groupKey, predicate);
+  }
+
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
   public Double getDistinctRowCount(Aggregate rel, RelMetadataQuery mq,
       ImmutableBitSet groupKey, RexNode predicate) {
     if (predicate == null || predicate.isAlwaysTrue()) {

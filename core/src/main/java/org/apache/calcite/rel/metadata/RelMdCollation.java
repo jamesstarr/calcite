@@ -151,6 +151,7 @@ public class RelMdCollation
     return ImmutableList.copyOf(
         RelMdCollation.mergeJoin(mq, join.getLeft(), join.getRight(),
             join.analyzeCondition().leftKeys, join.analyzeCondition().rightKeys));
+<<<<<<< HEAD
   }
 
   public ImmutableList<RelCollation> collations(EnumerableHashJoin join,
@@ -171,6 +172,8 @@ public class RelMdCollation
     return ImmutableList.copyOf(
         RelMdCollation.enumerableCorrelate(mq, join.getLeft(), join.getRight(),
             join.getJoinType()));
+=======
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
   }
 
   public ImmutableList<RelCollation> collations(Sort sort,

@@ -28,8 +28,7 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Correlate;
 import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.core.JoinRelType;
-import org.apache.calcite.rel.metadata.RelMdCollation;
-import org.apache.calcite.rel.metadata.RelMetadataQuery;
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
 import org.apache.calcite.util.BuiltInMethod;
 import org.apache.calcite.util.ImmutableBitSet;
 
@@ -130,7 +129,10 @@ public class EnumerableCorrelate extends Correlate
 
     builder.append(
         Expressions.call(leftExpression, BuiltInMethod.CORRELATE_JOIN.method,
+<<<<<<< HEAD
             Expressions.constant(EnumUtils.toLinq4jJoinType(joinType)),
+=======
+            Expressions.constant(joinType.toLinq4j()),
             Expressions.lambda(corrBlock.toBlock(), corrArg),
             selector));
 

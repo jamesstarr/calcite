@@ -18,14 +18,14 @@ package org.apache.calcite.rel.rules;
 
 
 import org.apache.calcite.plan.RelOptRuleCall;
-import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.core.Join;
+import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.tools.RelBuilderFactory;
 
 /**
  * Planner rule that removes a {@code SemiJoin}s from a join tree.
-
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
  *
  * <p>It is invoked after attempts have been made to convert a SemiJoin to an
  * indexed scan on a join factor have failed. Namely, if the join factor does
@@ -48,8 +48,12 @@ public class SemiJoinRemoveRule
 
   @Deprecated // to be removed before 2.0
   public SemiJoinRemoveRule(RelBuilderFactory relBuilderFactory) {
+<<<<<<< HEAD
     this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
         .as(Config.class));
+=======
+    super(operandJ(LogicalJoin.class, null, Join::isSemiJoin, any()),
+        relBuilderFactory, null);
   }
 
   //~ Methods ----------------------------------------------------------------

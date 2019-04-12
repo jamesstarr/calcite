@@ -81,7 +81,7 @@ public class FilterCorrelateRule
         aboveFilters,
         corr.getJoinType(),
         false,
-        true,
+        !corr.getJoinType().generatesNullsOnLeft(),
         !corr.getJoinType().generatesNullsOnRight(),
         aboveFilters,
         leftFilters,

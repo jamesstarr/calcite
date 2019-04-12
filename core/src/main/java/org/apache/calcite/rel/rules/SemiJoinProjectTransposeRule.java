@@ -21,7 +21,7 @@ import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
-import org.apache.calcite.rel.core.Project;
+import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.type.RelDataType;
@@ -33,9 +33,9 @@ import org.apache.calcite.rex.RexProgram;
 import org.apache.calcite.rex.RexProgramBuilder;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.tools.RelBuilder;
+import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.Pair;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.List;
@@ -63,29 +63,28 @@ public class SemiJoinProjectTransposeRule
 
 
 
-  }
-
-  //~ Methods ----------------------------------------------------------------
-
-  @Override public void onMatch(RelOptRuleCall call) {
+  public void onMatch(RelOptRuleCall call) {
     LogicalJoin semiJoin = call.rel(0);
     LogicalProject project = call.rel(1);
 
     // Convert the LHS semi-join keys to reference the child projection
     // expression; all projection expressions must be RexInputRefs,
     // otherwise, we wouldn't have created this semi-join.
-
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
 
     // convert the semijoin condition to reflect the LHS with the project
     // pulled up
     RexNode newCondition = adjustCondition(project, semiJoin);
 
     LogicalJoin newSemiJoin =
+<<<<<<< HEAD
         LogicalJoin.create(project.getInput(),
             semiJoin.getRight(),
             // No need to copy the hints, the framework would try to do that.
             ImmutableList.of(),
             newCondition,
+=======
+        LogicalJoin.create(project.getInput(), semiJoin.getRight(), newCondition,
             ImmutableSet.of(), JoinRelType.SEMI);
 
     // Create the new projection.  Note that the projection expressions

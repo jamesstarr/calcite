@@ -418,24 +418,6 @@ public class RelMdPredicates
                     RelOptUtil.conjunctions(filter.getCondition()))));
   }
 
-  /** Infers predicates for a {@link org.apache.calcite.rel.core.SemiJoin}. */
-  public RelOptPredicateList getPredicates(SemiJoin semiJoin,
-      RelMetadataQuery mq) {
-    RexBuilder rB = semiJoin.getCluster().getRexBuilder();
-    final RelNode left = semiJoin.getInput(0);
-    final RelNode right = semiJoin.getInput(1);
-
-    final RelOptPredicateList leftInfo = mq.getPulledUpPredicates(left);
-    final RelOptPredicateList rightInfo = mq.getPulledUpPredicates(right);
-
-    JoinConditionBasedPredicateInference jI =
-        new JoinConditionBasedPredicateInference(semiJoin,
-            RexUtil.composeConjunction(rB, leftInfo.pulledUpPredicates, false),
-            RexUtil.composeConjunction(rB, rightInfo.pulledUpPredicates, false));
-
-    return jI.inferPredicates(false);
-  }
-
   /** Infers predicates for a {@link org.apache.calcite.rel.core.Join}. */
   public RelOptPredicateList getPredicates(Join join, RelMetadataQuery mq) {
     RexBuilder rB = join.getCluster().getRexBuilder();
@@ -682,16 +664,14 @@ public class RelMdPredicates
     final RexNode rightChildPredicates;
     final RexSimplify simplify;
 
-    JoinConditionBasedPredicateInference(Join joinRel,
-        RexNode leftPredicates, RexNode rightPredicates) {
-      this(joinRel, joinRel instanceof SemiJoin, leftPredicates, rightPredicates);
-    }
-
-    private JoinConditionBasedPredicateInference(Join joinRel, boolean isSemiJoin,
-        RexNode leftPredicates, RexNode rightPredicates) {
+    JoinConditionBasedPredicateInference(Join joinRel, RexNode leftPredicates,
+        RexNode rightPredicates) {
       super();
       this.joinRel = joinRel;
+<<<<<<< HEAD
       this.simplify = simplify;
+=======
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
       nFieldsLeft = joinRel.getLeft().getRowType().getFieldList().size();
       nFieldsRight = joinRel.getRight().getRowType().getFieldList().size();
       nSysFields = joinRel.getSystemFieldList().size();

@@ -2491,10 +2491,14 @@ group by dept.deptno;
 EnumerableAggregate(group=[{0}], S=[COLLECT($1) WITHIN GROUP ([1 DESC])], S1=[COLLECT($1) WITHIN GROUP ([2])], S2=[COLLECT($1) WITHIN GROUP ([1]) FILTER $3])
   EnumerableCalc(expr#0..3=[{inputs}], expr#4=[1], expr#5=[2000], expr#6=[>($t2, $t5)], expr#7=[IS TRUE($t6)], DEPTNO=[$t0], SAL=[$t2], $f2=[$t4], $f3=[$t7])
 <<<<<<< HEAD
+<<<<<<< HEAD
     EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])
 =======
     EnumerableJoin(condition=[=($0, $3)], joinType=[inner])
 >>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
+=======
+    EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
       EnumerableCalc(expr#0..2=[{inputs}], DEPTNO=[$t0])
         EnumerableTableScan(table=[[scott, DEPT]])
       EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])

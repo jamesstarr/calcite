@@ -1091,7 +1091,7 @@ public abstract class EnumerableDefaults {
       Function2<TSource, TInner, TResult> resultSelector,
       EqualityComparer<TKey> comparer, boolean generateNullsOnLeft,
       boolean generateNullsOnRight) {
-    return hashEquiJoin_(
+    return hashJoin_(
         outer,
         inner,
         outerKeySelector,
@@ -1140,7 +1140,7 @@ public abstract class EnumerableDefaults {
 
   /** Implementation of join that builds the right input and probes with the
    * left. */
-  private static <TSource, TInner, TKey, TResult> Enumerable<TResult> hashEquiJoin_(
+  private static <TSource, TInner, TKey, TResult> Enumerable<TResult> hashJoin_(
       final Enumerable<TSource> outer, final Enumerable<TInner> inner,
       final Function1<TSource, TKey> outerKeySelector,
       final Function1<TInner, TKey> innerKeySelector,

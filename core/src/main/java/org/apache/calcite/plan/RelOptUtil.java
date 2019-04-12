@@ -33,7 +33,9 @@ import org.apache.calcite.rel.RelWriter;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.core.Calc;
+import org.apache.calcite.rel.core.Correlate;
 import org.apache.calcite.rel.core.CorrelationId;
+import org.apache.calcite.rel.core.EquiJoin;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
@@ -2761,11 +2763,9 @@ public abstract class RelOptUtil {
     final List<RelDataTypeField> rightFields =
         joinRel.getInputs().get(1).getRowType().getFieldList();
     final int nFieldsRight = rightFields.size();
-
-    // SemiJoin, CorrelateSemiJoin, CorrelateAntiJoin: right fields are not returned
-    assert nTotalFields == (!joinType.projectsRight()
-            ? nSysFields + nFieldsLeft
-            : nSysFields + nFieldsLeft + nFieldsRight);
+    assert nTotalFields == (returnsJustFirstInput(joinRel)
+        ? nSysFields + nFieldsLeft
+        : nSysFields + nFieldsLeft + nFieldsRight);
 
     // set the reference bitmaps for the left and right children
     ImmutableBitSet leftBitmap =
@@ -2850,6 +2850,14 @@ public abstract class RelOptUtil {
 
     // Did anything change?
     return !filtersToRemove.isEmpty();
+  }
+
+  private static boolean returnsJustFirstInput(RelNode joinRel) {
+    // SemiJoin, CorrelateSemiJoin, CorrelateAntiJoin: right fields are not returned
+    return (joinRel instanceof Join
+            && !((Join) joinRel).getJoinType().projectsRight())
+            || (joinRel instanceof Correlate
+            && !((Correlate) joinRel).getJoinType().projectsRight());
   }
 
   private static RexNode shiftFilter(
@@ -4123,22 +4131,6 @@ public abstract class RelOptUtil {
    * Visitor which builds a bitmap of the inputs used by an expression.
    */
   public static class InputFinder extends RexVisitorImpl<Void> {
-<<<<<<< HEAD
-=======
-    /** @deprecated Being replaced by private field {@link #bitBuilder}.
-     * Use {@link #build}. */
-    @Deprecated // to be removed before 1.25
-    public final ImmutableBitSet.Builder inputBitSet;
-
-    private final ImmutableBitSet.Builder bitBuilder;
-    private final Set<RelDataTypeField> extraFields;
-
-    private InputFinder(Set<RelDataTypeField> extraFields,
-        ImmutableBitSet.Builder bitBuilder) {
-      super(true);
-      this.bitBuilder = bitBuilder;
-<<<<<<< HEAD
-=======
       this.inputBitSet = bitBuilder; // deprecated field mirrors private field
       this.extraFields = extraFields;
     }
@@ -4377,6 +4369,15 @@ public abstract class RelOptUtil {
       this.outerJoin = outerJoin;
     }
   }
+<<<<<<< HEAD
+=======
+
+  /** Check if it is the join whose condition is based on column equality,
+   * this mostly depends on the physical implementation of the join. */
+  public static boolean forceEquiJoin(Join join) {
+    return join.isSemiJoin() || join instanceof EquiJoin;
+  }
+}
 
   /**
    * A {@code RelShuttle} which propagates the given hints to the sub-tree from the root node.

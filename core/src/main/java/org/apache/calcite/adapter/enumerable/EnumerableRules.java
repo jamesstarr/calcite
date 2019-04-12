@@ -44,6 +44,13 @@ public class EnumerableRules {
   public static final RelOptRule ENUMERABLE_MERGE_JOIN_RULE =
       new EnumerableMergeJoinRule();
 
+<<<<<<< HEAD
+=======
+  @Deprecated // To be removed before 2.0, use ENUMERABLE_JOIN_RULE instead.
+  public static final RelOptRule ENUMERABLE_SEMI_JOIN_RULE =
+      new EnumerableSemiJoinRule();
+
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
   public static final RelOptRule ENUMERABLE_CORRELATE_RULE =
       new EnumerableCorrelateRule(RelFactories.LOGICAL_BUILDER);
 

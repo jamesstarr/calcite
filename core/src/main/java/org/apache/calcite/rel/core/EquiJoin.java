@@ -39,11 +39,7 @@ import java.util.Set;
  * eliminate some optimize logic for {@code EquiJoin} in some planning rules.
  * e.g. {@link org.apache.calcite.rel.rules.FilterJoinRule} would not push non-equi
  * join conditions of the above filter into the join underneath if it is an {@code EquiJoin}.
- *
- * @deprecated This class is no longer needed; if you are writing a sub-class of
- * Join that only accepts equi conditions, it is sufficient that it extends
- * {@link Join}. It will be evident that it is an equi-join when its
- * {@link JoinInfo#nonEquiConditions} is an empty list.
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
  */
 @Deprecated // to be removed before 2.0
 public abstract class EquiJoin extends Join {
@@ -55,8 +51,11 @@ public abstract class EquiJoin extends Join {
   public EquiJoin(RelOptCluster cluster, RelTraitSet traits, RelNode left,
       RelNode right, RexNode condition, Set<CorrelationId> variablesSet,
       JoinRelType joinType) {
+<<<<<<< HEAD
     super(cluster, traits, ImmutableList.of(), left, right, condition, variablesSet, joinType);
     this.joinInfo = JoinInfo.of(left, right, condition);
+=======
+    super(cluster, traits, left, right, condition, variablesSet, joinType);
     this.leftKeys = Objects.requireNonNull(joinInfo.leftKeys);
     this.rightKeys = Objects.requireNonNull(joinInfo.rightKeys);
     assert joinInfo.isEqui() : "Create EquiJoin with non-equi join condition.";

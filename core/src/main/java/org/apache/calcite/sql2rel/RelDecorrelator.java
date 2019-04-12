@@ -625,7 +625,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
         RexUtil.composeConjunction(relBuilder.getRexBuilder(), conditions,
             false);
     RelNode newJoin = relBuilder.push(leftFrame.r).push(rightFrame.r)
-        .join(rel.getJoinType().toJoinType(), condition, ImmutableSet.<CorrelationId>of()).build();
+        .join(rel.getJoinType(), condition, ImmutableSet.<CorrelationId>of()).build();
 
     return register(rel, newJoin, mapOldToNewOutputs, corDefOutputs);
   }
@@ -635,6 +635,13 @@ import org.apache.calcite.tools.RelBuilderFactory;
   }
 
   public Frame decorrelateRel(Join rel, boolean isCorVarDefined) {
+    // For SEMI/ANTI join decorrelate it's input directly,
+    // because the correlate variables can only be propagated from
+    // the left side, which is not supported yet.
+    if (!rel.getJoinType().projectsRight()) {
+      decorrelateRel((RelNode) rel, isCorVarDefined);
+    }
+
     //
     // Rewrite logic:
     //

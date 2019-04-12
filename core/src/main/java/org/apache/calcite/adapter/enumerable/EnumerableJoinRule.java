@@ -57,39 +57,35 @@ class EnumerableJoinRule extends ConverterRule {
     final RexBuilder rexBuilder = join.getCluster().getRexBuilder();
     final RelNode left = newInputs.get(0);
     final RelNode right = newInputs.get(1);
-    final JoinInfo info = join.analyzeCondition();
-
-    // If the join has equiKeys (i.e. complete or partial equi-join),
-    // create an EnumerableHashJoin, which supports all types of joins,
-    // even if the join condition contains partial non-equi sub-conditions;
-    // otherwise (complete non-equi-join), create an EnumerableNestedLoopJoin,
-    // since a hash join strategy in this case would not be beneficial.
-    final boolean hasEquiKeys = !info.leftKeys.isEmpty()
-        && !info.rightKeys.isEmpty();
-    if (hasEquiKeys) {
-      // Re-arrange condition: first the equi-join elements, then the non-equi-join ones (if any);
-      // this is not strictly necessary but it will be useful to avoid spurious errors in the
-      // unit tests when verifying the plan.
-      final RexNode equi = info.getEquiCondition(left, right, rexBuilder);
-      final RexNode condition;
-      if (info.isEqui()) {
-        condition = equi;
-      } else {
-        final RexNode nonEqui = RexUtil.composeConjunction(rexBuilder, info.nonEquiConditions);
-        condition = RexUtil.composeConjunction(rexBuilder, Arrays.asList(equi, nonEqui));
+    final JoinInfo info = JoinInfo.of(left, right, join.getCondition());
+    if (!info.isEqui() && join.getJoinType() != JoinRelType.INNER) {
+      // EnumerableJoinRel only supports equi-join. We can put a filter on top
+      // if it is an inner join.
+      try {
+        return new EnumerableNestedLoopJoin(cluster, traitSet, left, right,
+            join.getCondition(), join.getVariablesSet(), join.getJoinType());
+      } catch (InvalidRelException e) {
+        EnumerableRules.LOGGER.debug(e.toString());
+        return null;
       }
-      return EnumerableHashJoin.create(
-          left,
-          right,
-          condition,
-          join.getVariablesSet(),
-          join.getJoinType());
+    } else {
+      RelNode newRel;
+      try {
+        newRel = EnumerableHashJoin.create(
+            left,
+            right,
+            info.getEquiCondition(left, right, cluster.getRexBuilder()),
+            join.getVariablesSet(),
+            join.getJoinType());
+      } catch (InvalidRelException e) {
+        EnumerableRules.LOGGER.debug(e.toString());
+        return null;
+      }
+      if (!info.isEqui()) {
+        newRel = new EnumerableFilter(cluster, newRel.getTraitSet(),
+            newRel, info.getRemaining(cluster.getRexBuilder()));
+      }
+      return newRel;
     }
-    return EnumerableNestedLoopJoin.create(
-        left,
-        right,
-        join.getCondition(),
-        join.getVariablesSet(),
-        join.getJoinType());
   }
 }

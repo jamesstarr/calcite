@@ -16,26 +16,27 @@
  */
 package org.apache.calcite.linq4j.test;
 
+import org.apache.calcite.linq4j.CorrelateJoinType;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.EnumerableDefaults;
-import org.apache.calcite.linq4j.JoinType;
 import org.apache.calcite.linq4j.Linq4j;
 import org.apache.calcite.linq4j.function.Function1;
 import org.apache.calcite.linq4j.function.Function2;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import static org.apache.calcite.linq4j.function.Functions.nullsComparator;
+
+import org.junit.Assume;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Stream;
 
-import static org.apache.calcite.linq4j.function.Functions.nullsComparator;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test validating the order preserving properties of join algorithms in
@@ -57,22 +58,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * <p>Last but not least, the type of the join (left/right/full/inner/semi/anti)
  * has a major impact on the preservation of order for the various joins.
  */
-public final class JoinPreserveOrderTest {
-
-  /**
-   * A description holding which column must be sorted and how.
-   * @param <T> the type of the input relation
-   */
-  private static class Field<T> {
+  private static class FieldCollationDescription<T> {
     private final String colName;
     private final Function1<T, Comparable> colSelector;
     private final boolean isAscending;
     private final boolean isNullsFirst;
 
-    Field(String colName,
-          Function1<T, Comparable> colSelector,
-          boolean isAscending,
-          boolean isNullsFirst) {
+    FieldCollationDescription(final String colName,
+        final Function1<T, Comparable> colSelector,
+        final boolean isAscending,
+        final boolean isNullsFirst) {
       this.colName = colName;
       this.colSelector = colSelector;
       this.isAscending = isAscending;
@@ -96,15 +91,23 @@ public final class JoinPreserveOrderTest {
     Enumerable<Result> join(Enumerable<L> left, Enumerable<R> right);
   }
 
-  private Field<Employee> leftColumn;
-  private Field<Department> rightColumn;
+  private final FieldCollationDescription<Employee> leftColumn;
+  private final FieldCollationDescription<Department> rightColumn;
   private static final Function2<Employee, Department, List<Integer>> RESULT_SELECTOR =
       (emp, dept) -> Arrays.asList(
           (emp != null) ? emp.eid : null,
           (dept != null) ? dept.did : null);
 
-  public static Stream<Arguments> data() {
-    List<Arguments> data = new ArrayList<>();
+  public JoinPreserveOrderTest(
+      final FieldCollationDescription<Employee> leftColumn,
+      final FieldCollationDescription<Department> rightColumn) {
+    this.leftColumn = leftColumn;
+    this.rightColumn = rightColumn;
+  }
+
+  @Parameterized.Parameters(name = "{index}: columnLeft({0}), columnRight({1})")
+  public static Collection<Object[]> data() {
+    List<Object[]> data = new ArrayList<>();
     List<String> empOrderColNames = Arrays.asList("name", "deptno", "eid");
     List<Function1<Employee, Comparable>> empOrderColSelectors = Arrays.asList(
         Employee::getName,
@@ -123,142 +126,81 @@ public final class JoinPreserveOrderTest {
             for (Boolean nullsFirstR : trueFalse) {
               for (Boolean ascendingR : trueFalse) {
                 Object[] params = new Object[2];
-                params[0] = new Field<>(
+                params[0] = new FieldCollationDescription<>(
                     empOrderColNames.get(i),
                     empOrderColSelectors.get(i),
                     ascendingL,
                     nullsFirstL);
-                params[1] = new Field<>(
+                params[1] = new FieldCollationDescription<>(
                     deptOrderColNames.get(j),
                     deptOrderColSelectors.get(j),
                     ascendingR,
                     nullsFirstR);
-                data.add(Arguments.of(params[0], params[1]));
+                data.add(params);
               }
             }
           }
         }
       }
     }
-    return data.stream();
+    return data;
   }
 
-  public static Stream<Arguments> noNullsFirstOnLeft() {
-    //noinspection unchecked
-    return data().filter(x -> !((Field<Employee>) x.get()[0]).isNullsFirst);
-  }
-
-  private void initColumns(Field<Employee> left, Field<Department> right) {
-    this.leftColumn = left;
-    this.rightColumn = right;
-  }
-
-  @ParameterizedTest
-  @MethodSource("data")
-  void leftJoinPreservesOrderOfLeftInput(Field<Employee> left, Field<Department> right) {
-    initColumns(left, right);
+  @Test public void testLeftJoinPreservesOrderOfLeftInput() {
     testJoin(hashJoin(false, true), AssertOrder.PRESERVED, AssertOrder.IGNORED);
   }
 
-  @ParameterizedTest
-  @MethodSource("noNullsFirstOnLeft")
-  void rightJoinPreservesOrderOfLeftInput(Field<Employee> left, Field<Department> right) {
-    initColumns(left, right);
+  @Test public void testRightJoinPreservesOrderOfLeftInput() {
+    Assume.assumeFalse(leftColumn.isNullsFirst);
     testJoin(hashJoin(true, false), AssertOrder.PRESERVED, AssertOrder.IGNORED);
   }
 
-  @ParameterizedTest
-  @MethodSource("noNullsFirstOnLeft")
-  void fullJoinPreservesOrderOfLeftInput(Field<Employee> left, Field<Department> right) {
-    initColumns(left, right);
+  @Test public void testFullJoinPreservesOrderOfLeftInput() {
+    Assume.assumeFalse(leftColumn.isNullsFirst);
     testJoin(hashJoin(true, true), AssertOrder.PRESERVED, AssertOrder.IGNORED);
   }
 
-  @ParameterizedTest
-  @MethodSource("data")
-  void innerJoinPreservesOrderOfLeftInput(Field<Employee> left, Field<Department> right) {
-    initColumns(left, right);
+  @Test public void testInnerJoinPreservesOrderOfLeftInput() {
     testJoin(hashJoin(false, false), AssertOrder.PRESERVED, AssertOrder.IGNORED);
   }
 
-  @ParameterizedTest
-  @MethodSource("data")
-  void leftNestedLoopJoinPreservesOrderOfLeftInput(Field<Employee> left, Field<Department> right) {
-    initColumns(left, right);
-    testJoin(nestedLoopJoin(JoinType.LEFT), AssertOrder.PRESERVED, AssertOrder.IGNORED);
+  @Test public void testLeftNestedLoopJoinPreservesOrderOfLeftInput() {
+    testJoin(nestedLoopJoin(false, true), AssertOrder.PRESERVED, AssertOrder.IGNORED);
   }
 
-  @ParameterizedTest
-  @MethodSource("noNullsFirstOnLeft")
-  void rightNestedLoopJoinPreservesOrderOfLeftInput(Field<Employee> left, Field<Department> right) {
-    initColumns(left, right);
-    testJoin(nestedLoopJoin(JoinType.RIGHT), AssertOrder.PRESERVED, AssertOrder.IGNORED);
+  @Test public void testRightNestedLoopJoinPreservesOrderOfLeftInput() {
+    Assume.assumeFalse(leftColumn.isNullsFirst);
+    testJoin(nestedLoopJoin(true, false), AssertOrder.PRESERVED, AssertOrder.IGNORED);
   }
 
-  @ParameterizedTest
-  @MethodSource("noNullsFirstOnLeft")
-  void fullNestedLoopJoinPreservesOrderOfLeftInput(Field<Employee> left, Field<Department> right) {
-    initColumns(left, right);
-    testJoin(nestedLoopJoin(JoinType.FULL), AssertOrder.PRESERVED, AssertOrder.IGNORED);
+  @Test public void testFullNestedLoopJoinPreservesOrderOfLeftInput() {
+    Assume.assumeFalse(leftColumn.isNullsFirst);
+    testJoin(nestedLoopJoin(true, true), AssertOrder.PRESERVED, AssertOrder.IGNORED);
   }
 
-  @ParameterizedTest
-  @MethodSource("data")
-  void innerNestedLoopJoinPreservesOrderOfLeftInput(Field<Employee> left, Field<Department> right) {
-    initColumns(left, right);
-    testJoin(nestedLoopJoin(JoinType.INNER), AssertOrder.PRESERVED, AssertOrder.IGNORED);
+  @Test public void testInnerNestedLoopJoinPreservesOrderOfLeftInput() {
+    testJoin(nestedLoopJoin(false, false), AssertOrder.PRESERVED, AssertOrder.IGNORED);
   }
 
-  @ParameterizedTest
-  @MethodSource("data")
-  void leftCorrelateJoinPreservesOrderOfLeftInput(Field<Employee> left, Field<Department> right) {
-    initColumns(left, right);
-    testJoin(correlateJoin(JoinType.LEFT), AssertOrder.PRESERVED, AssertOrder.IGNORED);
+
+  @Test public void testLeftCorrelateJoinPreservesOrderOfLeftInput() {
+    testJoin(correlateJoin(CorrelateJoinType.LEFT), AssertOrder.PRESERVED, AssertOrder.IGNORED);
   }
 
-  @ParameterizedTest
-  @MethodSource("data")
-  void innerCorrelateJoinPreservesOrderOfLeftInput(Field<Employee> left, Field<Department> right) {
-    initColumns(left, right);
-    testJoin(correlateJoin(JoinType.INNER), AssertOrder.PRESERVED, AssertOrder.IGNORED);
+  @Test public void testInnerCorrelateJoinPreservesOrderOfLeftInput() {
+    testJoin(correlateJoin(CorrelateJoinType.INNER), AssertOrder.PRESERVED, AssertOrder.IGNORED);
   }
 
-  @ParameterizedTest
-  @MethodSource("data")
-  void antiCorrelateJoinPreservesOrderOfLeftInput(Field<Employee> left, Field<Department> right) {
-    initColumns(left, right);
-    testJoin(correlateJoin(JoinType.ANTI), AssertOrder.PRESERVED, AssertOrder.IGNORED);
+  @Test public void testAntiCorrelateJoinPreservesOrderOfLeftInput() {
+    testJoin(correlateJoin(CorrelateJoinType.ANTI), AssertOrder.PRESERVED, AssertOrder.IGNORED);
   }
 
-  @ParameterizedTest
-  @MethodSource("data")
-  void semiCorrelateJoinPreservesOrderOfLeftInput(Field<Employee> left, Field<Department> right) {
-    initColumns(left, right);
-    testJoin(correlateJoin(JoinType.SEMI), AssertOrder.PRESERVED, AssertOrder.IGNORED);
+  @Test public void testSemiCorrelateJoinPreservesOrderOfLeftInput() {
+    testJoin(correlateJoin(CorrelateJoinType.SEMI), AssertOrder.PRESERVED, AssertOrder.IGNORED);
   }
 
-  @ParameterizedTest
-  @MethodSource("data")
-  void semiDefaultJoinPreservesOrderOfLeftInput(Field<Employee> left, Field<Department> right) {
-    initColumns(left, right);
+  @Test public void testSemiDefaultJoinPreservesOrderOfLeftInput() {
     testJoin(semiJoin(), AssertOrder.PRESERVED, AssertOrder.IGNORED);
-  }
-
-  @ParameterizedTest
-  @MethodSource("data")
-  void correlateBatchJoin(Field<Employee> left, Field<Department> right) {
-    initColumns(left, right);
-    testJoin(
-        correlateBatchJoin(JoinType.INNER),
-        AssertOrder.PRESERVED,
-        AssertOrder.IGNORED);
-  }
-
-  @ParameterizedTest
-  @MethodSource("data")
-  void antiDefaultJoinPreservesOrderOfLeftInput(Field<Employee> left, Field<Department> right) {
-    initColumns(left, right);
-    testJoin(antiJoin(), AssertOrder.PRESERVED, AssertOrder.IGNORED);
   }
 
   private void testJoin(
@@ -283,7 +225,7 @@ public final class JoinPreserveOrderTest {
   }
 
   private JoinAlgorithm<Employee, Department, List<Integer>> correlateJoin(
-      JoinType joinType) {
+      CorrelateJoinType joinType) {
     return (left, right) ->
         left.correlateJoin(
             joinType,
@@ -307,7 +249,9 @@ public final class JoinPreserveOrderTest {
             generateNullsOnRight);
   }
 
-  private JoinAlgorithm<Employee, Department, List<Integer>> nestedLoopJoin(JoinType joinType) {
+  private JoinAlgorithm<Employee, Department, List<Integer>> nestedLoopJoin(
+      boolean generateNullsOnLeft,
+      boolean generateNullsOnRight) {
     return (left, right) ->
         EnumerableDefaults.nestedLoopJoin(
             left,
@@ -315,7 +259,8 @@ public final class JoinPreserveOrderTest {
             (emp, dept) ->
                 emp.deptno != null && dept.deptno != null && emp.deptno.equals(dept.deptno),
             RESULT_SELECTOR,
-            joinType);
+            generateNullsOnLeft,
+            generateNullsOnRight);
   }
 
   private JoinAlgorithm<Employee, Department, List<Integer>> semiJoin() {
@@ -327,31 +272,7 @@ public final class JoinPreserveOrderTest {
             dept -> dept.deptno).select(emp -> Arrays.asList(emp.eid, null));
   }
 
-  private JoinAlgorithm<Employee, Department, List<Integer>> antiJoin() {
-    return (left, right) ->
-        EnumerableDefaults.antiJoin(
-            left,
-            right,
-            emp -> emp.deptno,
-            dept -> dept.deptno).select(emp -> Arrays.asList(emp.eid, null));
-  }
-
-  private JoinAlgorithm<Employee, Department, List<Integer>> correlateBatchJoin(
-      JoinType joinType) {
-    return (left, right) ->
-        EnumerableDefaults.correlateBatchJoin(
-            joinType,
-            left,
-            emp -> right.where(dept ->
-                    dept.deptno != null
-                        && (dept.deptno.equals(emp.get(0).deptno)
-                        || dept.deptno.equals(emp.get(1).deptno)
-                        || dept.deptno.equals(emp.get(2).deptno))),
-            RESULT_SELECTOR,
-            (emp, dept) -> dept.deptno.equals(emp.deptno),
-             3);
-  }
-
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
   /**
    * Different assertions for the result of the join.
    */
@@ -359,15 +280,19 @@ public final class JoinPreserveOrderTest {
     PRESERVED {
       @Override <E> void check(final List<E> expected, final List<E> actual,
           final boolean nullsFirst) {
+<<<<<<< HEAD
         assertTrue(isOrderPreserved(expected, actual, nullsFirst),
             () -> "Order is not preserved. Expected:<" + expected + "> but was:<" + actual + ">");
+=======
+        assertTrue("Order is not preserved. Expected:<" + expected + "> but was:<" + actual + ">",
+            isOrderPreserved(expected, actual, nullsFirst));
       }
     },
     DESTROYED {
       @Override <E> void check(final List<E> expected, final List<E> actual,
           final boolean nullsFirst) {
-        assertFalse(isOrderPreserved(expected, actual, nullsFirst),
-            () -> "Order is not destroyed. Expected:<" + expected + "> but was:<" + actual + ">");
+        assertFalse("Order is not destroyed. Expected:<" + expected + "> but was:<" + actual + ">",
+            isOrderPreserved(expected, actual, nullsFirst));
       }
     },
     IGNORED {
@@ -449,13 +374,13 @@ public final class JoinPreserveOrderTest {
     }
   }
 
-  private static final Employee[] EMPS = {
+  private static final Employee[] EMPS = new Employee[]{
       new Employee(100, "Stam", 10),
       new Employee(110, "Greg", 20),
       new Employee(120, "Ilias", 30),
       new Employee(130, "Ruben", 40),
       new Employee(140, "Tanguy", 50),
-      new Employee(145, "Khawla", 40),
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
       new Employee(150, "Andrew", -10),
       // Nulls on name
       new Employee(160, null, 60),
@@ -471,7 +396,10 @@ public final class JoinPreserveOrderTest {
       new Employee(230, "Loukia", -40)
   };
 
+<<<<<<< HEAD
   private static final Department[] DEPTS = {
+=======
+  private static final Department[] DEPTS = new Department[]{
       new Department(1, 10, "Sales"),
       new Department(2, 20, "Pre-sales"),
       new Department(4, 40, "Support"),
@@ -494,3 +422,8 @@ public final class JoinPreserveOrderTest {
   };
 
 }
+<<<<<<< HEAD
+=======
+
+// End JoinPreserveOrderTest.java
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)

@@ -20,15 +20,15 @@ import org.apache.calcite.adapter.java.ReflectiveSchema;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 /** Test case for CALCITE-2894 */
-class RelMdPercentageOriginalRowsTest {
+public class RelMdPercentageOriginalRowsTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2894">[CALCITE-2894]
    * NullPointerException thrown by RelMdPercentageOriginalRows when explaining
    * plan with all attributes</a>. */
-  @Test void testExplainAllAttributesSemiJoinUnionCorrelate() {
+  @Test public void testExplainAllAttributesSemiJoinUnionCorrelate() {
     CalciteAssert.that()
             .with(CalciteConnectionProperty.LEX, Lex.JAVA)
             .with(CalciteConnectionProperty.FORCE_DECORRELATE, false)
@@ -38,6 +38,8 @@ class RelMdPercentageOriginalRowsTest {
                             + " select e.deptno from emps e where exists (select 1 from depts d where d.deptno=e.deptno)\n"
                             + " union select e.deptno from emps e where e.salary > 10000) ")
             .explainMatches("including all attributes ",
-                    CalciteAssert.checkResultContains("EnumerableHashJoin"));
+                    CalciteAssert.checkResultContains("EnumerableCorrelate"));
   }
 }
+
+// End RelMdPercentageOriginalRowsTest.java

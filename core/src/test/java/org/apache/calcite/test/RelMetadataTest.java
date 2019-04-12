@@ -42,7 +42,7 @@ import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.core.Minus;
 import org.apache.calcite.rel.core.Project;
-import org.apache.calcite.rel.core.Sample;
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableModify;
 import org.apache.calcite.rel.core.TableScan;
@@ -340,7 +340,6 @@ public class RelMetadataTest extends SqlToRelTestBase {
     Set<RelColumnOrigin> result = checkColumnOrigin(sql);
     assertNotNull(result);
     assertThat(result.size(), is(1));
->>>>>>> a320d6088 ([CALCITE-3446] Make RelMetadataQuery extensible)
     RelColumnOrigin rco = result.iterator().next();
     checkColumnOrigin(
         rco, expectedTableName, expectedColumnName, expectedDerived);

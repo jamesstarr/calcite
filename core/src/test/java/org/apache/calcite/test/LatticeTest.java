@@ -318,6 +318,7 @@ class LatticeTest {
         + "join \"foodmart\".\"product\" as p using (\"product_id\")\n"
         + "left join \"foodmart\".\"time_by_day\" as t on s.\"product_id\" = p.\"product_id\"")
         .connectThrows("only non nulls-generating join allowed, but got LEFT");
+<<<<<<< HEAD
   }
 
   /** Each lattice table must have a parent. */
@@ -327,6 +328,8 @@ class LatticeTest {
         + "join \"foodmart\".\"product\" as p using (\"product_id\")\n"
         + "join \"foodmart\".\"time_by_day\" as t on s.\"product_id\" = p.\"product_id\"")
         .connectThrows("child node must have precisely one parent");
+=======
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
   }
 
   /** When a lattice is registered, there is a table with the same name.

@@ -63,6 +63,15 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
 
   //~ Methods ----------------------------------------------------------------
 
+  /** Returns if it is needed to push the filter condition above join
+   * into the join condition.
+   */
+  private boolean needsPushInto(Join join) {
+    // If the join force the join info to be based on column equality,
+    // Or it is a non-correlated semijoin, returns false.
+    return !RelOptUtil.forceEquiJoin(join);
+  }
+
   protected void perform(RelOptRuleCall call, Filter filter,
       Join join) {
     final List<RexNode> joinFilters =
@@ -109,7 +118,7 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
         join,
         aboveFilters,
         joinType,
-        true,
+        needsPushInto(join),
         !joinType.generatesNullsOnLeft(),
         !joinType.generatesNullsOnRight(),
         joinFilters,

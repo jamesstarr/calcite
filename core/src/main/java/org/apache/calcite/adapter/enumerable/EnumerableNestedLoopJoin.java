@@ -29,7 +29,7 @@ import org.apache.calcite.rel.RelNodes;
 import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
-import org.apache.calcite.rel.metadata.RelMdCollation;
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
 import org.apache.calcite.rel.metadata.RelMdUtil;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rex.RexNode;
@@ -61,6 +61,7 @@ public class EnumerableNestedLoopJoin extends Join implements EnumerableRel {
   @Override public EnumerableNestedLoopJoin copy(RelTraitSet traitSet,
       RexNode condition, RelNode left, RelNode right, JoinRelType joinType,
       boolean semiJoinDone) {
+<<<<<<< HEAD
     return new EnumerableNestedLoopJoin(getCluster(), traitSet, left, right,
         condition, variablesSet, joinType);
   }
@@ -80,6 +81,15 @@ public class EnumerableNestedLoopJoin extends Join implements EnumerableRel {
                 () -> RelMdCollation.enumerableNestedLoopJoin(mq, left, right, joinType));
     return new EnumerableNestedLoopJoin(cluster, traitSet, left, right, condition,
         variablesSet, joinType);
+=======
+    try {
+      return new EnumerableNestedLoopJoin(getCluster(), traitSet, left, right,
+          condition, variablesSet, joinType);
+    } catch (InvalidRelException e) {
+      // Semantic error not possible. Must be a bug. Convert to
+      // internal error.
+      throw new AssertionError(e);
+    }
   }
 
   @Override public RelOptCost computeSelfCost(RelOptPlanner planner,
@@ -98,7 +108,7 @@ public class EnumerableNestedLoopJoin extends Join implements EnumerableRel {
       rowCount = RelMdUtil.addEpsilon(rowCount);
       break;
     default:
-      if (RelNodes.COMPARATOR.compare(left, right) > 0) {
+      if (left.getId() > right.getId()) {
         rowCount = RelMdUtil.addEpsilon(rowCount);
       }
     }
@@ -112,12 +122,7 @@ public class EnumerableNestedLoopJoin extends Join implements EnumerableRel {
       rowCount = rightRowCount;
     }
 
-    RelOptCost cost = planner.getCostFactory().makeCost(rowCount, 0, 0);
-    // Give it some penalty
-    cost = cost.multiplyBy(10);
-    return cost;
-  }
-
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
   public Result implement(EnumerableRelImplementor implementor, Prefer pref) {
     final BlockBuilder builder = new BlockBuilder();
     final Result leftResult =
@@ -150,3 +155,7 @@ public class EnumerableNestedLoopJoin extends Join implements EnumerableRel {
             .toBlock());
   }
 }
+<<<<<<< HEAD
+=======
+
+// End EnumerableNestedLoopJoin.java

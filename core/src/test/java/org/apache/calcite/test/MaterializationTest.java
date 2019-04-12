@@ -2178,40 +2178,42 @@ class MaterializationTest {
     sql(m, q).ok();
   }
 
-  @Test void testJoinAggregateMaterializationAggregateFuncs7() {
-    final String materialize = "select \"dependents\".\"empid\",\n"
-        + "  \"emps\".\"deptno\", sum(\"salary\") as s\n"
-        + "from \"emps\"\n"
-        + "join \"dependents\" on (\"emps\".\"empid\" = \"dependents\".\"empid\")\n"
-        + "group by \"dependents\".\"empid\", \"emps\".\"deptno\"";
-    final String query = "select \"dependents\".\"empid\", sum(\"salary\") as s\n"
-        + "from \"emps\"\n"
-        + "join \"depts\" on (\"emps\".\"deptno\" = \"depts\".\"deptno\")\n"
-        + "join \"dependents\" on (\"emps\".\"empid\" = \"dependents\".\"empid\")\n"
-        + "group by \"dependents\".\"empid\"";
-    final String expected = "EnumerableAggregate(group=[{0}], S=[$SUM0($2)])\n"
-        + "  EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])\n"
-        + "    EnumerableTableScan(table=[[hr, m0]])\n"
-        + "    EnumerableTableScan(table=[[hr, depts]])";
-    sql(materialize, query).withResultContains(expected).ok();
+  @Test public void testJoinAggregateMaterializationAggregateFuncs7() {
+    checkMaterialize(
+        "select \"dependents\".\"empid\", \"emps\".\"deptno\", sum(\"salary\") as s\n"
+            + "from \"emps\"\n"
+            + "join \"dependents\" on (\"emps\".\"empid\" = \"dependents\".\"empid\")\n"
+            + "group by \"dependents\".\"empid\", \"emps\".\"deptno\"",
+        "select \"dependents\".\"empid\", sum(\"salary\") as s\n"
+            + "from \"emps\"\n"
+            + "join \"depts\" on (\"emps\".\"deptno\" = \"depts\".\"deptno\")\n"
+            + "join \"dependents\" on (\"emps\".\"empid\" = \"dependents\".\"empid\")\n"
+            + "group by \"dependents\".\"empid\"",
+        HR_FKUK_MODEL,
+        CalciteAssert.checkResultContains(
+            "EnumerableAggregate(group=[{0}], S=[$SUM0($2)])\n"
+                + "  EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])\n"
+                + "    EnumerableTableScan(table=[[hr, m0]])\n"
+                + "    EnumerableTableScan(table=[[hr, depts]])"));
   }
 
-  @Test void testJoinAggregateMaterializationAggregateFuncs8() {
-    final String materialize = "select \"dependents\".\"empid\",\n"
-        + "  \"emps\".\"deptno\", sum(\"salary\") as s\n"
-        + "from \"emps\"\n"
-        + "join \"dependents\" on (\"emps\".\"empid\" = \"dependents\".\"empid\")\n"
-        + "group by \"dependents\".\"empid\", \"emps\".\"deptno\"";
-    final String query = "select \"depts\".\"name\", sum(\"salary\") as s\n"
-        + "from \"emps\"\n"
-        + "join \"depts\" on (\"emps\".\"deptno\" = \"depts\".\"deptno\")\n"
-        + "join \"dependents\" on (\"emps\".\"empid\" = \"dependents\".\"empid\")\n"
-        + "group by \"depts\".\"name\"";
-    final String expected = "EnumerableAggregate(group=[{4}], S=[$SUM0($2)])\n"
-        + "  EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])\n"
-        + "    EnumerableTableScan(table=[[hr, m0]])\n"
-        + "    EnumerableTableScan(table=[[hr, depts]])";
-    sql(materialize, query).withResultContains(expected).ok();
+  @Test public void testJoinAggregateMaterializationAggregateFuncs8() {
+    checkMaterialize(
+        "select \"dependents\".\"empid\", \"emps\".\"deptno\", sum(\"salary\") as s\n"
+            + "from \"emps\"\n"
+            + "join \"dependents\" on (\"emps\".\"empid\" = \"dependents\".\"empid\")\n"
+            + "group by \"dependents\".\"empid\", \"emps\".\"deptno\"",
+        "select \"depts\".\"name\", sum(\"salary\") as s\n"
+            + "from \"emps\"\n"
+            + "join \"depts\" on (\"emps\".\"deptno\" = \"depts\".\"deptno\")\n"
+            + "join \"dependents\" on (\"emps\".\"empid\" = \"dependents\".\"empid\")\n"
+            + "group by \"depts\".\"name\"",
+        HR_FKUK_MODEL,
+        CalciteAssert.checkResultContains(
+            "EnumerableAggregate(group=[{4}], S=[$SUM0($2)])\n"
+                + "  EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])\n"
+                + "    EnumerableTableScan(table=[[hr, m0]])\n"
+                + "    EnumerableTableScan(table=[[hr, depts]])"));
   }
 
   @Test void testJoinAggregateMaterializationAggregateFuncs9() {
@@ -2372,7 +2374,7 @@ class MaterializationTest {
         HR_FKUK_MODEL,
         CalciteAssert.checkResultContains(
             "EnumerableCalc(expr#0..2=[{inputs}], empid0=[$t1])\n"
-                + "  EnumerableJoin(condition=[=($0, $2)], joinType=[inner])\n"
+                + "  EnumerableHashJoin(condition=[=($0, $2)], joinType=[inner])\n"
                 + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR CHARACTER SET \"ISO-8859-1\" "
                 + "COLLATE \"ISO-8859-1$en_US$primary\"], name=[$t1])\n"
                 + "      EnumerableTableScan(table=[[hr, m0]])\n"
@@ -2391,7 +2393,7 @@ class MaterializationTest {
             + "join \"emps\" on (\"emps\".\"deptno\" = \"depts\".\"deptno\")")
         .withResultContains(
             "EnumerableCalc(expr#0..4=[{inputs}], empid=[$t2])\n"
-                + "  EnumerableJoin(condition=[=($1, $4)], joinType=[inner])\n"
+                + "  EnumerableHashJoin(condition=[=($1, $4)], joinType=[inner])\n"
                 + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR CHARACTER SET \"ISO-8859-1\" "
                 + "COLLATE \"ISO-8859-1$en_US$primary\"], proj#0..1=[{exprs}])\n"
                 + "      EnumerableTableScan(table=[[hr, m0]])\n"

@@ -49,7 +49,7 @@ import org.apache.calcite.rel.metadata.RelColumnMapping;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
-import org.apache.calcite.schema.TranslatableTable;
+>>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
@@ -114,7 +114,6 @@ public class RelFactories {
           DEFAULT_SORT_FACTORY,
           DEFAULT_SET_OP_FACTORY,
           DEFAULT_JOIN_FACTORY,
-          DEFAULT_SEMI_JOIN_FACTORY,
           DEFAULT_CORRELATE_FACTORY,
           DEFAULT_VALUES_FACTORY,
           DEFAULT_TABLE_SCAN_FACTORY,
@@ -411,6 +410,24 @@ public class RelFactories {
   }
 
   /**
+<<<<<<< HEAD
+=======
+   * Implementation of {@link SemiJoinFactory} that returns a vanilla
+   * {@link SemiJoin}.
+   *
+   * @deprecated Use {@link JoinFactoryImpl} instead.
+   */
+  @Deprecated  // to be removed before 2.0
+  private static class SemiJoinFactoryImpl implements SemiJoinFactory {
+    public RelNode createSemiJoin(RelNode left, RelNode right,
+        RexNode condition) {
+      final JoinInfo joinInfo = JoinInfo.of(left, right, condition);
+      return SemiJoin.create(left, right,
+        condition, joinInfo.leftKeys, joinInfo.rightKeys);
+    }
+  }
+
+  /**
    * Can create a {@link Values} of the appropriate type for a rule's calling
    * convention.
    */
@@ -580,7 +597,6 @@ public class RelFactories {
     public final SortFactory sortFactory;
     public final SetOpFactory setOpFactory;
     public final JoinFactory joinFactory;
-    public final SemiJoinFactory semiJoinFactory;
     public final CorrelateFactory correlateFactory;
     public final ValuesFactory valuesFactory;
     public final TableScanFactory scanFactory;
@@ -592,7 +608,6 @@ public class RelFactories {
         SortFactory sortFactory,
         SetOpFactory setOpFactory,
         JoinFactory joinFactory,
-        SemiJoinFactory semiJoinFactory,
         CorrelateFactory correlateFactory,
         ValuesFactory valuesFactory,
         TableScanFactory scanFactory,
@@ -603,7 +618,6 @@ public class RelFactories {
       this.sortFactory = Objects.requireNonNull(sortFactory);
       this.setOpFactory = Objects.requireNonNull(setOpFactory);
       this.joinFactory = Objects.requireNonNull(joinFactory);
-      this.semiJoinFactory = Objects.requireNonNull(semiJoinFactory);
       this.correlateFactory = Objects.requireNonNull(correlateFactory);
       this.valuesFactory = Objects.requireNonNull(valuesFactory);
       this.scanFactory = Objects.requireNonNull(scanFactory);
@@ -628,8 +642,6 @@ public class RelFactories {
               DEFAULT_SET_OP_FACTORY),
           Util.first(context.unwrap(JoinFactory.class),
               DEFAULT_JOIN_FACTORY),
-          Util.first(context.unwrap(SemiJoinFactory.class),
-              DEFAULT_SEMI_JOIN_FACTORY),
           Util.first(context.unwrap(CorrelateFactory.class),
               DEFAULT_CORRELATE_FACTORY),
           Util.first(context.unwrap(ValuesFactory.class),

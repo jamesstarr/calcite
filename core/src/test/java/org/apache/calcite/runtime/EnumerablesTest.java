@@ -231,31 +231,31 @@ class EnumerablesTest {
 
   @Test void testNestedLoopJoin() {
     assertThat(
-        EnumerableDefaults.nestedLoopJoin(EMPS, DEPTS, EMP_DEPT_EQUAL_DEPTNO,
-            EMP_DEPT_TO_STRING, JoinType.INNER).toList().toString(),
+        EnumerableDefaults.nestedLoopJoin(EMPS, DEPTS, EQUAL_DEPTNO,
+            EMP_DEPT_TO_STRING, false, false).toList().toString(),
         equalTo("[{Theodore, 20, 20, Sales}, {Sebastian, 20, 20, Sales}]"));
   }
 
   @Test void testNestedLoopLeftJoin() {
     assertThat(
-        EnumerableDefaults.nestedLoopJoin(EMPS, DEPTS, EMP_DEPT_EQUAL_DEPTNO,
-            EMP_DEPT_TO_STRING, JoinType.LEFT).toList().toString(),
+        EnumerableDefaults.nestedLoopJoin(EMPS, DEPTS, EQUAL_DEPTNO,
+            EMP_DEPT_TO_STRING, false, true).toList().toString(),
         equalTo("[{Fred, 10, null, null}, {Theodore, 20, 20, Sales}, "
             + "{Sebastian, 20, 20, Sales}, {Joe, 30, null, null}]"));
   }
 
   @Test void testNestedLoopRightJoin() {
     assertThat(
-        EnumerableDefaults.nestedLoopJoin(EMPS, DEPTS, EMP_DEPT_EQUAL_DEPTNO,
-            EMP_DEPT_TO_STRING, JoinType.RIGHT).toList().toString(),
+        EnumerableDefaults.nestedLoopJoin(EMPS, DEPTS, EQUAL_DEPTNO,
+            EMP_DEPT_TO_STRING, true, false).toList().toString(),
         equalTo("[{Theodore, 20, 20, Sales}, {Sebastian, 20, 20, Sales}, "
             + "{null, null, 15, Marketing}]"));
   }
 
   @Test void testNestedLoopFullJoin() {
     assertThat(
-        EnumerableDefaults.nestedLoopJoin(EMPS, DEPTS, EMP_DEPT_EQUAL_DEPTNO,
-            EMP_DEPT_TO_STRING, JoinType.FULL).toList().toString(),
+        EnumerableDefaults.nestedLoopJoin(EMPS, DEPTS, EQUAL_DEPTNO,
+            EMP_DEPT_TO_STRING, true, true).toList().toString(),
         equalTo("[{Fred, 10, null, null}, {Theodore, 20, 20, Sales}, "
             + "{Sebastian, 20, 20, Sales}, {Joe, 30, null, null}, "
             + "{null, null, 15, Marketing}]"));
@@ -263,24 +263,24 @@ class EnumerablesTest {
 
   @Test void testNestedLoopFullJoinLeftEmpty() {
     assertThat(
-        EnumerableDefaults.nestedLoopJoin(EMPS.take(0), DEPTS, EMP_DEPT_EQUAL_DEPTNO,
-            EMP_DEPT_TO_STRING, JoinType.FULL)
-            .orderBy(Functions.identitySelector()).toList().toString(),
+        EnumerableDefaults.nestedLoopJoin(EMPS.take(0), DEPTS, EQUAL_DEPTNO,
+            EMP_DEPT_TO_STRING, true, true)
+            .orderBy(Functions.<String>identitySelector()).toList().toString(),
         equalTo("[{null, null, 15, Marketing}, {null, null, 20, Sales}]"));
   }
 
   @Test void testNestedLoopFullJoinRightEmpty() {
     assertThat(
-        EnumerableDefaults.nestedLoopJoin(EMPS, DEPTS.take(0), EMP_DEPT_EQUAL_DEPTNO,
-            EMP_DEPT_TO_STRING, JoinType.FULL).toList().toString(),
+        EnumerableDefaults.nestedLoopJoin(EMPS, DEPTS.take(0), EQUAL_DEPTNO,
+            EMP_DEPT_TO_STRING, true, true).toList().toString(),
         equalTo("[{Fred, 10, null, null}, {Theodore, 20, null, null}, "
             + "{Sebastian, 20, null, null}, {Joe, 30, null, null}]"));
   }
 
   @Test void testNestedLoopFullJoinBothEmpty() {
     assertThat(
-        EnumerableDefaults.nestedLoopJoin(EMPS.take(0), DEPTS.take(0), EMP_DEPT_EQUAL_DEPTNO,
-            EMP_DEPT_TO_STRING, JoinType.FULL).toList().toString(),
+        EnumerableDefaults.nestedLoopJoin(EMPS.take(0), DEPTS.take(0), EQUAL_DEPTNO,
+            EMP_DEPT_TO_STRING, true, true).toList().toString(),
         equalTo("[]"));
   }
 
