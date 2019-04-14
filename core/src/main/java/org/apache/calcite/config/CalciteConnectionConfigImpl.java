@@ -201,6 +201,11 @@ public class CalciteConnectionConfigImpl extends ConnectionConfigImpl
     return CalciteConnectionProperty.TIME_ZONE.wrap(properties)
             .getString();
   }
+
+  public String locale() {
+    return CalciteConnectionProperty.LOCALE.wrap(properties)
+        .getString();
+  }
 }
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 

@@ -1152,7 +1152,7 @@ public class JdbcTest {
       "EXPR$0=86805\n",
       "select \"time_by_day\".\"the_year\" as \"c0\" from \"time_by_day\" as \"time_by_day\" group by \"time_by_day\".\"the_year\" order by \"time_by_day\".\"the_year\" ASC",
       "c0=1997\n"
-        + "c0=1998\n",
+          + "c0=1998\n",
       "select \"store\".\"store_country\" as \"c0\" from \"store\" as \"store\" where UPPER(\"store\".\"store_country\") = UPPER('USA') group by \"store\".\"store_country\" order by \"store\".\"store_country\" ASC",
       "c0=USA\n",
       "select \"store\".\"store_state\" as \"c0\" from \"store\" as \"store\" where (\"store\".\"store_country\" = 'USA') and UPPER(\"store\".\"store_state\") = UPPER('CA') group by \"store\".\"store_state\" order by \"store\".\"store_state\" ASC",
@@ -2736,17 +2736,17 @@ public class JdbcTest {
         .with(CalciteAssert.Config.FOODMART_CLONE)
         .query(s)
         .returns("the_month=April; c=30; c2=10\n"
-                + "the_month=August; c=31; c2=11\n"
-                + "the_month=December; c=31; c2=11\n"
-                + "the_month=February; c=28; c2=8\n"
-                + "the_month=January; c=31; c2=11\n"
-                + "the_month=July; c=31; c2=11\n"
-                + "the_month=June; c=30; c2=10\n"
-                + "the_month=March; c=31; c2=11\n"
-                + "the_month=May; c=31; c2=11\n"
-                + "the_month=November; c=30; c2=10\n"
-                + "the_month=October; c=31; c2=11\n"
-                + "the_month=September; c=30; c2=10\n");
+            + "the_month=August; c=31; c2=11\n"
+            + "the_month=December; c=31; c2=11\n"
+            + "the_month=February; c=28; c2=8\n"
+            + "the_month=January; c=31; c2=11\n"
+            + "the_month=July; c=31; c2=11\n"
+            + "the_month=June; c=30; c2=10\n"
+            + "the_month=March; c=31; c2=11\n"
+            + "the_month=May; c=31; c2=11\n"
+            + "the_month=November; c=30; c2=10\n"
+            + "the_month=October; c=31; c2=11\n"
+            + "the_month=September; c=30; c2=10\n");
   }
 
   /** Tests a simple IN query implemented as a semi-join. */
@@ -3533,14 +3533,14 @@ public class JdbcTest {
             + "        MINa2w0,\n"
             + "        COUNTa3w0});"
             : "_list.add(new Object[] {\n"
-                + "        row[0],\n" // box-unbox is optimized
-                + "        row[1],\n"
-                + "        row[2],\n"
-                + "        row[3],\n"
-                + "        a0w0,\n"
-                + "        a1w0,\n"
-                + "        a2w0,\n"
-                + "        a3w0});")
+            + "        row[0],\n" // box-unbox is optimized
+            + "        row[1],\n"
+            + "        row[2],\n"
+            + "        row[3],\n"
+            + "        a0w0,\n"
+            + "        a1w0,\n"
+            + "        a2w0,\n"
+            + "        a3w0});")
         .planContains("return new Object[] {\n"
             + "                  current[1],\n"
             + "                  current[0],\n"
@@ -5393,7 +5393,7 @@ public class JdbcTest {
 
         // all table types
         try (ResultSet r =
-             metaData.getTables(null, "adhoc", null, null)) {
+                 metaData.getTables(null, "adhoc", null, null)) {
           assertEquals(
               "TABLE_CAT=null; TABLE_SCHEM=adhoc; TABLE_NAME=EMPLOYEES; TABLE_TYPE=TABLE; REMARKS=null; TYPE_CAT=null; TYPE_SCHEM=null; TYPE_NAME=null; SELF_REFERENCING_COL_NAME=null; REF_GENERATION=null\n"
                   + "TABLE_CAT=null; TABLE_SCHEM=adhoc; TABLE_NAME=MUTABLE_EMPLOYEES; TABLE_TYPE=TABLE; REMARKS=null; TYPE_CAT=null; TYPE_SCHEM=null; TYPE_NAME=null; SELF_REFERENCING_COL_NAME=null; REF_GENERATION=null\n"
@@ -5861,19 +5861,19 @@ public class JdbcTest {
       // timetz: 15:00:00+03
       ts = rs.getTimestamp(c);
       assertEquals(43200000L, ts.getTime());    // 1970-01-01 15:00:00 +0300 ->
-                                                // 1970-01-01 13:00:00 +0100
+      // 1970-01-01 13:00:00 +0100
       ts = rs.getTimestamp(c, cUtc);
       assertEquals(43200000L, ts.getTime());    // 1970-01-01 15:00:00 +0300 ->
-                                                // 1970-01-01 12:00:00 +0000
+      // 1970-01-01 12:00:00 +0000
       ts = rs.getTimestamp(c, cGmt03);
       assertEquals(43200000L, ts.getTime());    // 1970-01-01 15:00:00 +0300 ->
-                                                // 1970-01-01 15:00:00 +0300
+      // 1970-01-01 15:00:00 +0300
       ts = rs.getTimestamp(c, cGmt05);
       assertEquals(43200000L, ts.getTime());    // 1970-01-01 15:00:00 +0300 ->
-                                                // 1970-01-01 07:00:00 -0500
+      // 1970-01-01 07:00:00 -0500
       ts = rs.getTimestamp(c, cGmt13);
       assertEquals(43200000L, ts.getTime());    // 1970-01-01 15:00:00 +0300 ->
-                                                // 1970-01-02 01:00:00 +1300
+      // 1970-01-02 01:00:00 +1300
       ++c;
     }
 
@@ -5893,6 +5893,48 @@ public class JdbcTest {
     ++c;
 
     assertTrue(!rs.next());
+  }
+
+  /** Test for MONTHNAME and DAYNAME functions in two locales. */
+  @Test public void testMonthName() {
+    final String sql = "SELECT * FROM (VALUES(\n"
+        + " monthname(TIMESTAMP '1969-01-01 00:00:00'),\n"
+        + " monthname(DATE '1969-01-01'),\n"
+        + " monthname(DATE '2019-02-10'),\n"
+        + " monthname(TIMESTAMP '2019-02-10 02:10:12'),\n"
+        + " dayname(TIMESTAMP '1969-01-01 00:00:00'),\n"
+        + " dayname(DATE '1969-01-01'),\n"
+        + " dayname(DATE '2019-02-10'),\n"
+        + " dayname(TIMESTAMP '2019-02-10 02:10:12')\n"
+        + ")) AS t(t0, t1, t2, t3, t4, t5, t6, t7)";
+    Stream.of(TestLocale.values()).forEach(t -> {
+      try {
+        CalciteAssert.that()
+            .with(CalciteConnectionProperty.LOCALE, t.localeName)
+            .with(CalciteConnectionProperty.FUN, "mysql")
+            .doWithConnection(connection -> {
+              try (Statement statement = connection.createStatement()) {
+                try (ResultSet rs = statement.executeQuery(sql)) {
+                  assertThat(rs.next(), is(true));
+                  assertThat(rs.getString(1), is(t.january));
+                  assertThat(rs.getString(2), is(t.january));
+                  assertThat(rs.getString(3), is(t.february));
+                  assertThat(rs.getString(4), is(t.february));
+                  assertThat(rs.getString(5), is(t.wednesday));
+                  assertThat(rs.getString(6), is(t.wednesday));
+                  assertThat(rs.getString(7), is(t.sunday));
+                  assertThat(rs.getString(8), is(t.sunday));
+                  assertThat(rs.next(), is(false));
+                }
+              } catch (SQLException e) {
+                throw TestUtil.rethrow(e);
+              }
+            });
+      } catch (Exception e) {
+        System.out.println(t.localeName + ":" + Locale.getDefault().toString());
+        throw TestUtil.rethrow(e);
+      }
+    });
   }
 
   /** Tests accessing a column in a JDBC source whose type is DATE. */
@@ -6943,13 +6985,13 @@ public class JdbcTest {
 
   @Test public void testJsonDepth() {
     CalciteAssert.that()
-            .query("SELECT JSON_DEPTH(v) AS c1\n"
-                    + ",JSON_DEPTH(JSON_VALUE(v, 'lax $.b' ERROR ON ERROR)) AS c2\n"
-                    + ",JSON_DEPTH(JSON_VALUE(v, 'strict $.a[0]' ERROR ON ERROR)) AS c3\n"
-                    + ",JSON_DEPTH(JSON_VALUE(v, 'strict $.a[1]' ERROR ON ERROR)) AS c4\n"
-                    + "FROM (VALUES ('{\"a\": [10, true],\"b\": \"[10, true]\"}')) AS t(v)\n"
-                    + "limit 10")
-            .returns("C1=3; C2=2; C3=1; C4=1\n");
+        .query("SELECT JSON_DEPTH(v) AS c1\n"
+            + ",JSON_DEPTH(JSON_VALUE(v, 'lax $.b' ERROR ON ERROR)) AS c2\n"
+            + ",JSON_DEPTH(JSON_VALUE(v, 'strict $.a[0]' ERROR ON ERROR)) AS c3\n"
+            + ",JSON_DEPTH(JSON_VALUE(v, 'strict $.a[1]' ERROR ON ERROR)) AS c4\n"
+            + "FROM (VALUES ('{\"a\": [10, true],\"b\": \"[10, true]\"}')) AS t(v)\n"
+            + "limit 10")
+        .returns("C1=3; C2=2; C3=1; C4=1\n");
   }
 
   @Test public void testJsonLength() {
@@ -7012,9 +7054,6 @@ public class JdbcTest {
    * Dynamic parameters ("?") pushed to underlying JDBC schema, causing
    * error</a>.
    */
-<<<<<<< HEAD
-  @Test void testQueryWithParameter() throws Exception {
-=======
   @Test public void testQueryWithParameter() throws Exception {
     String hsqldbMemUrl = "jdbc:hsqldb:mem:.";
     try (Connection baseConnection = DriverManager.getConnection(hsqldbMemUrl);
@@ -7606,6 +7645,7 @@ public class JdbcTest {
    * and expected results of those functions. */
   enum TestLocale {
     ROOT(Locale.ROOT.toString(), shorten("Wednesday"), shorten("Sunday"),
+<<<<<<< HEAD
         shorten("January"), shorten("February"), 0),
     EN("en", "Wednesday", "Sunday", "January", "February", 0),
     FR("fr", "mercredi", "dimanche", "janvier", "f\u00e9vrier", 6),
@@ -7615,6 +7655,40 @@ public class JdbcTest {
         "\u4e8c\u6708", 6),
     ZH("zh", "\u661f\u671f\u4e09", "\u661f\u671f\u65e5", "\u4e00\u6708",
         "\u4e8c\u6708", 6);
+=======
+        shorten("January"), shorten("February")),
+    EN("en", "Wednesday", "Sunday", "January", "February"),
+    FR("fr", "mercredi", "dimanche", "janvier", "f\u00e9vrier"),
+    FR_FR("fr_FR", "mercredi", "dimanche", "janvier", "f\u00e9vrier"),
+    FR_CA("fr_CA", "mercredi", "dimanche", "janvier", "f\u00e9vrier"),
+    ZH_CN("zh_CN", "\u661f\u671f\u4e09", "\u661f\u671f\u65e5", "\u4e00\u6708",
+        "\u4e8c\u6708"),
+    ZH("zh", "\u661f\u671f\u4e09", "\u661f\u671f\u65e5", "\u4e00\u6708",
+        "\u4e8c\u6708");
+
+    private static String shorten(String name) {
+      // In root locale, for Java versions 9 and higher, day and month names
+      // are shortened to 3 letters. This means root locale behaves differently
+      // to English.
+      return TestUtil.getJavaMajorVersion() > 8 ? name.substring(0, 3) : name;
+    }
+
+    public final String localeName;
+    public final String wednesday;
+    public final String sunday;
+    public final String january;
+    public final String february;
+
+    TestLocale(String localeName, String wednesday, String sunday,
+        String january, String february) {
+      this.localeName = localeName;
+      this.wednesday = wednesday;
+      this.sunday = sunday;
+      this.january = january;
+      this.february = february;
+    }
+  }
+}
 
     private static String shorten(String name) {
       // In root locale, for Java versions 9 and higher, day and month names

@@ -96,6 +96,7 @@ import static org.apache.calcite.linq4j.tree.ExpressionType.NotEqual;
 import static org.apache.calcite.linq4j.tree.ExpressionType.OrElse;
 import static org.apache.calcite.linq4j.tree.ExpressionType.Subtract;
 import static org.apache.calcite.linq4j.tree.ExpressionType.UnaryPlus;
+import static org.apache.calcite.sql.fun.SqlLibraryOperators.DAYNAME;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.DIFFERENCE;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.FROM_BASE64;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.JSON_DEPTH;
@@ -105,6 +106,7 @@ import static org.apache.calcite.sql.fun.SqlLibraryOperators.JSON_PRETTY;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.JSON_REMOVE;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.JSON_STORAGE_SIZE;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.JSON_TYPE;
+import static org.apache.calcite.sql.fun.SqlLibraryOperators.MONTHNAME;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.REPEAT;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.REVERSE;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.SOUNDEX;
@@ -424,6 +426,14 @@ public class RexImpTable {
             BuiltInMethod.UNIX_DATE_CEIL.method), false);
 
     defineMethod(LAST_DAY, "lastDay", NullPolicy.STRICT);
+    defineImplementor(DAYNAME, NullPolicy.STRICT,
+        new PeriodNameImplementor("dayName",
+            BuiltInMethod.DAYNAME_WITH_TIMESTAMP,
+            BuiltInMethod.DAYNAME_WITH_DATE), false);
+    defineImplementor(MONTHNAME, NullPolicy.STRICT,
+        new PeriodNameImplementor("monthName",
+            BuiltInMethod.MONTHNAME_WITH_TIMESTAMP,
+            BuiltInMethod.MONTHNAME_WITH_DATE), false);
 
     map.put(IS_NULL, new IsXxxImplementor(null, false));
     map.put(IS_NOT_NULL, new IsXxxImplementor(null, true));
@@ -556,13 +566,13 @@ public class RexImpTable {
         JsonArrayAggImplementor
             .supplierFor(BuiltInMethod.JSON_ARRAYAGG_ADD.method));
     defineImplementor(IS_JSON_VALUE, NullPolicy.NONE,
-            new MethodImplementor(BuiltInMethod.IS_JSON_VALUE.method), false);
+        new MethodImplementor(BuiltInMethod.IS_JSON_VALUE.method), false);
     defineImplementor(IS_JSON_OBJECT, NullPolicy.NONE,
-            new MethodImplementor(BuiltInMethod.IS_JSON_OBJECT.method), false);
+        new MethodImplementor(BuiltInMethod.IS_JSON_OBJECT.method), false);
     defineImplementor(IS_JSON_ARRAY, NullPolicy.NONE,
-            new MethodImplementor(BuiltInMethod.IS_JSON_ARRAY.method), false);
+        new MethodImplementor(BuiltInMethod.IS_JSON_ARRAY.method), false);
     defineImplementor(IS_JSON_SCALAR, NullPolicy.NONE,
-            new MethodImplementor(BuiltInMethod.IS_JSON_SCALAR.method), false);
+        new MethodImplementor(BuiltInMethod.IS_JSON_SCALAR.method), false);
     defineImplementor(IS_NOT_JSON_VALUE, NullPolicy.NONE,
         NotImplementor.of(
             new MethodImplementor(BuiltInMethod.IS_JSON_VALUE.method)), false);
@@ -2122,6 +2132,42 @@ public class RexImpTable {
     }
   }
 
+  /** Implementor for the {@code MONTHNAME} and {@code DAYNAME} functions.
+   * Each takes a {@link java.util.Locale} argument. */
+  private static class PeriodNameImplementor extends MethodNameImplementor {
+    private final BuiltInMethod timestampMethod;
+    private final BuiltInMethod dateMethod;
+
+    PeriodNameImplementor(String methodName, BuiltInMethod timestampMethod,
+        BuiltInMethod dateMethod) {
+      super(methodName);
+      this.timestampMethod = timestampMethod;
+      this.dateMethod = dateMethod;
+    }
+
+    @Override public Expression implement(RexToLixTranslator translator,
+        RexCall call, List<Expression> translatedOperands) {
+      Expression operand = translatedOperands.get(0);
+      final RelDataType type = call.operands.get(0).getType();
+      switch (type.getSqlTypeName()) {
+      case TIMESTAMP:
+        return getExpression(translator, operand, timestampMethod);
+      case DATE:
+        return getExpression(translator, operand, dateMethod);
+      default:
+        throw new AssertionError("unknown type " + type);
+      }
+    }
+
+    protected Expression getExpression(RexToLixTranslator translator,
+        Expression operand, BuiltInMethod builtInMethod) {
+      final MethodCallExpression locale =
+          Expressions.call(BuiltInMethod.LOCALE.method, translator.getRoot());
+      return Expressions.call(builtInMethod.method.getDeclaringClass(),
+          builtInMethod.method.getName(), operand, locale);
+    }
+  }
+
   /** Implementor for the {@code FLOOR} and {@code CEIL} functions. */
   private static class FloorImplementor extends MethodNameImplementor {
     final Method timestampMethod;
@@ -2540,7 +2586,7 @@ public class RexImpTable {
       case MICROSECOND:
         operand = mod(operand, TimeUnit.MINUTE.multiplier.longValue());
         return Expressions.multiply(
-              operand, Expressions.constant(TimeUnit.SECOND.multiplier.longValue()));
+            operand, Expressions.constant(TimeUnit.SECOND.multiplier.longValue()));
       case EPOCH:
         switch (sqlTypeName) {
         case DATE:

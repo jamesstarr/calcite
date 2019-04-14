@@ -438,7 +438,7 @@ public enum BuiltInMethod {
   UNIX_TIMESTAMP_CEIL(DateTimeUtils.class, "unixTimestampCeil",
       TimeUnitRange.class, long.class),
   LAST_DAY(SqlFunctions.class, "lastDay", int.class),
-<<<<<<< HEAD
+>>>>>>> af76dcede ([CALCITE-2995] Implement DAYNAME，MONTHNAME functions; add "locale" connection property (xuqianjin))
   DAYNAME_WITH_TIMESTAMP(SqlFunctions.class,
       "dayNameWithTimestamp", long.class, Locale.class),
   DAYNAME_WITH_DATE(SqlFunctions.class,
@@ -447,6 +447,8 @@ public enum BuiltInMethod {
       "monthNameWithTimestamp", long.class, Locale.class),
   MONTHNAME_WITH_DATE(SqlFunctions.class,
       "monthNameWithDate", int.class, Locale.class),
+<<<<<<< HEAD
+=======
 =======
   CURRENT_TIMESTAMP(SqlFunctions.class, "currentTimestamp", DataContext.class),
   CURRENT_TIME(SqlFunctions.class, "currentTime", DataContext.class),
@@ -456,6 +458,7 @@ public enum BuiltInMethod {
   TIME_ZONE(SqlFunctions.class, "timeZone", DataContext.class),
   USER(SqlFunctions.class, "user", DataContext.class),
   SYSTEM_USER(SqlFunctions.class, "systemUser", DataContext.class),
+  LOCALE(SqlFunctions.class, "locale", DataContext.class),
   BOOLEAN_TO_STRING(SqlFunctions.class, "toString", boolean.class),
   JDBC_ARRAY_TO_LIST(SqlFunctions.class, "arrayToList", java.sql.Array.class),
   OBJECT_TO_STRING(Object.class, "toString"),
