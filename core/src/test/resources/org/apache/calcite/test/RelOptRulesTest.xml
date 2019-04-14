@@ -2650,12 +2650,20 @@ LogicalProject(EXPR$0=[$1], EXPR$1=[$0])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 305257505 ([CALCITE-2343] PushProjector with OVER expression causes infinite loop (Chunwei Lei))
     <TestCase name="testPushProjectWithOverPastJoin1">
         <Resource name="sql">
             <![CDATA[select e.sal + b.comm,
 count(e.empno) over (partition by e.deptno)
 from emp e join bonus b
+<<<<<<< HEAD
 on e.ename = b.ename and e.deptno = 10]]>
+=======
+on e.ename = b.ename and e.deptno = 10
+]]>
+>>>>>>> 305257505 ([CALCITE-2343] PushProjector with OVER expression causes infinite loop (Chunwei Lei))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -2683,7 +2691,12 @@ LogicalProject(EXPR$0=[+($1, $5)], EXPR$1=[$2])
             <![CDATA[select e.sal + b.comm,
 count(b.sal) over (partition by b.job)
 from emp e join bonus b
+<<<<<<< HEAD
 on e.ename = b.ename and e.deptno = 10]]>
+=======
+on e.ename = b.ename and e.deptno = 10
+]]>
+>>>>>>> 305257505 ([CALCITE-2343] PushProjector with OVER expression causes infinite loop (Chunwei Lei))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -2711,7 +2724,12 @@ LogicalProject(EXPR$0=[+($1, $4)], EXPR$1=[$5])
             <![CDATA[select e.sal + b.comm,
 sum(b.sal + b.sal + 100) over (partition by b.job)
 from emp e join bonus b
+<<<<<<< HEAD
 on e.ename = b.ename and e.deptno = 10]]>
+=======
+on e.ename = b.ename and e.deptno = 10
+]]>
+>>>>>>> 305257505 ([CALCITE-2343] PushProjector with OVER expression causes infinite loop (Chunwei Lei))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -2734,9 +2752,12 @@ LogicalProject(EXPR$0=[+($1, $4)], EXPR$1=[$5])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+>>>>>>> 305257505 ([CALCITE-2343] PushProjector with OVER expression causes infinite loop (Chunwei Lei))
     <TestCase name="testPushProjectPastSetOp">
         <Resource name="sql">
             <![CDATA[select sal from
