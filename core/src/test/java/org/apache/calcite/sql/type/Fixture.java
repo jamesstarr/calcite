@@ -19,7 +19,8 @@ package org.apache.calcite.sql.type;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
 
->>>>>>> 06c1d66b8 (DX-17294: Make calcite rules pluggable.)
+import com.google.common.collect.ImmutableList;
+
 /** Sets up data needed by a test. */
 public class Fixture {
   SqlTypeFactoryImpl typeFactory = new SqlTypeFactoryImpl(new RelDataTypeSystemImpl() {
@@ -66,7 +67,7 @@ public class Fixture {
           typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 9), false);
   final RelDataType sqlDate = typeFactory.createTypeWithNullability(
           typeFactory.createSqlType(SqlTypeName.DATE), false);
-<<<<<<< HEAD
+>>>>>>> 1afb6a502 ([CALCITE-2994] Least restrictive type among structs does not consider nullability)
   final RelDataType structOfInt = typeFactory.createTypeWithNullability(
       typeFactory.createStructType(
           ImmutableList.of(sqlInt, sqlInt),
@@ -77,7 +78,9 @@ public class Fixture {
           ImmutableList.of(sqlInt, sqlInt),
           ImmutableList.of("i", "j")
       ), true);
+<<<<<<< HEAD
 }
+=======
 =======
 }
 

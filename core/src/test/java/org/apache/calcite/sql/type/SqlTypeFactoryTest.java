@@ -105,16 +105,16 @@ class SqlTypeFactoryTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2994">[CALCITE-2994]
    * Least restrictive type among structs does not consider nullability</a>. */
-  @Test void testLeastRestrictiveWithNullableStruct() {
-    SqlTypeFixture f = new SqlTypeFixture();
+  @Test public void testLeastRestrictiveWithNullableStruct() {
+    Fixture f = new Fixture();
     RelDataType leastRestrictive =
         f.typeFactory.leastRestrictive(ImmutableList.of(f.structOfIntNullable, f.structOfInt));
     assertThat(leastRestrictive.getSqlTypeName(), is(SqlTypeName.ROW));
     assertThat(leastRestrictive.isNullable(), is(true));
   }
 
-  @Test void testLeastRestrictiveWithNull() {
-    SqlTypeFixture f = new SqlTypeFixture();
+  @Test public void testLeastRestrictiveWithNull() {
+    Fixture f = new Fixture();
     RelDataType leastRestrictive =
         f.typeFactory.leastRestrictive(Lists.newArrayList(f.sqlNull, f.sqlNull));
     assertThat(leastRestrictive.getSqlTypeName(), is(SqlTypeName.NULL));
