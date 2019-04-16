@@ -109,6 +109,7 @@ public class ProjectSetOpTransposeRule
     }
 
     call.transformTo(node);
+<<<<<<< HEAD
   }
 
   /** Rule configuration. */
@@ -129,6 +130,8 @@ public class ProjectSetOpTransposeRule
 
     /** Sets {@link #preserveExprCondition()}. */
     Config withPreserveExprCondition(PushProjector.ExprCondition condition);
+=======
+>>>>>>> 0077c8281 ([CALCITE-3004] RexOver is incorrectly pushed down in ProjectSetOpTransposeRule and ProjectCorrelateTransposeRule (Chunwei Lei))
   }
 
   /** Rule configuration. */
@@ -138,8 +141,7 @@ public class ProjectSetOpTransposeRule
                     b0.operand(LogicalProject.class).oneInput(b1 ->
                             b1.operand(SetOp.class).anyInputs()))
             .as(Config.class)
-            .withPreserveExprCondition(PushProjector.ExprCondition.FALSE);
-
+            .withPreserveExprCondition(expr -> !(expr instanceof RexOver));
     @Override default ProjectSetOpTransposeRule toRule() {
       return new ProjectSetOpTransposeRule(this);
     }
