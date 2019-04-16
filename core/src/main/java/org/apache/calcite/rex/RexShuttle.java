@@ -98,6 +98,9 @@ public class RexShuttle implements RexVisitor<RexNode> {
 
   public RexNode visitCall(final RexCall call) {
     boolean[] update = {false};
+    if (call instanceof RexOver) {
+      return call;
+    }
     List<RexNode> clonedOperands = visitList(call.operands, update);
     if (update[0]) {
       // REVIEW jvs 8-Mar-2005:  This doesn't take into account
