@@ -6822,6 +6822,7 @@ SqlIdentifier ReservedFunctionName() :
     |   <HOUR>
     |   <LAG>
     |   <LEAD>
+    |   <LEFT>
     |   <LAST_VALUE>
     |   <LN>
     |   <LOCALTIME>
@@ -6843,6 +6844,7 @@ SqlIdentifier ReservedFunctionName() :
     |   <RANK>
     |   <REGR_SXX>
     |   <REGR_SYY>
+    |   <RIGHT>
     |   <ROW_NUMBER>
     |   <SECOND>
     |   <SOME>
@@ -6931,6 +6933,7 @@ SqlNode JdbcFunctionCall() :
         (
             // INSERT is a reserved word, but we need to handle {fn insert}
 <<<<<<< HEAD
+<<<<<<< HEAD
             // Similarly LEFT, RIGHT, TRUNCATE
 <<<<<<< HEAD
             LOOKAHEAD(1)
@@ -6943,6 +6946,10 @@ SqlNode JdbcFunctionCall() :
             // TRUNCATE is a reserved word, but we need to handle {fn truncate}
             <TRUNCATE> { name = unquotedIdentifier(); }
 >>>>>>> 9a182769c (Revert "[CALCITE-3005] Implement string functions: LEFT, RIGHT (xuqianjin)")
+=======
+            // Similarly LEFT, RIGHT, TRUNCATE
+            ( <INSERT> | <LEFT> | <RIGHT> | <TRUNCATE> ) { name = unquotedIdentifier(); }
+>>>>>>> ca39b3ae6 ([CALCITE-3005] Implement string functions: LEFT, RIGHT (xuqianjin))
         |
             // For cases like {fn power(1,2)} and {fn lower('a')}
             id = ReservedFunctionName() { name = id.getSimple(); }
