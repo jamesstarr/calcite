@@ -1848,6 +1848,13 @@ period:
 Not implemented:
 
 * {fn CHAR(string)}
+<<<<<<< HEAD
+=======
+* {fn DIFFERENCE(string, string)}
+* {fn REPEAT(string, integer)}
+* {fn SOUNDEX(string)}
+* {fn SPACE(integer)}
+>>>>>>> f44c1beaf ([CALCITE-3005] Implement string functions: LEFT, RIGHT (xuqianjin))
 
 #### Date/time
 
