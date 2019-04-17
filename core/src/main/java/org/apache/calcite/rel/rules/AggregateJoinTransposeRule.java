@@ -147,11 +147,12 @@ public class AggregateJoinTransposeRule
   // OUTER joins are supported for group by without aggregate functions
   // FULL OUTER JOIN is not supported since it could produce wrong result
   // due to bug (CALCITE-3012)
-  private static boolean isJoinSupported(final Join join, final Aggregate aggregate) {
-    return join.getJoinType() == JoinRelType.INNER || aggregate.getAggCallList().isEmpty();
+  private boolean isJoinSupported(final Join join, final Aggregate aggregate) {
+    return join.getJoinType() != JoinRelType.FULL
+        && (join.getJoinType() == JoinRelType.INNER || aggregate.getAggCallList().isEmpty());
   }
 
-  @Override public void onMatch(RelOptRuleCall call) {
+  public void onMatch(RelOptRuleCall call) {
     final Aggregate aggregate = call.rel(0);
     final Join join = call.rel(1);
     final RexBuilder rexBuilder = aggregate.getCluster().getRexBuilder();
