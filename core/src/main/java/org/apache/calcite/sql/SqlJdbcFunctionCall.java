@@ -766,6 +766,18 @@ public class SqlJdbcFunctionCall extends SqlFunction {
       this.map = map.build();
     }
 
+    private MakeCall trim(SqlTrimFunction.Flag flag) {
+      return new SimpleMakeCall(SqlStdOperatorTable.TRIM) {
+        @Override public SqlCall createCall(SqlParserPos pos,
+            SqlNode... operands) {
+          assert 1 == operands.length;
+          return super.createCall(pos, flag.symbol(pos),
+              SqlLiteral.createCharString(" ", SqlParserPos.ZERO),
+              operands[0]);
+        }
+      };
+    }
+
     private MakeCall simple(SqlOperator operator) {
       return new SimpleMakeCall(operator);
     }
