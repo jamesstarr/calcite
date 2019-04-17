@@ -7925,6 +7925,7 @@ LogicalSort(sort0=[$0], dir0=[ASC])
     </Resource>
   </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   <TestCase name="testOrderBasedRepeatFields">
     <Resource name="sql">
@@ -7939,6 +7940,8 @@ LogicalSort(sort0=[$0], dir0=[DESC])
     </Resource>
   </TestCase>
 >>>>>>> eee72a7ba ([CALCITE-4512] GROUP BY expression with argument name same with SELECT field and alias causes validation error)
+=======
+>>>>>>> d276b6e49 ([CALCITE-3009] DiffRepository should ensure that XML resource file does not contain duplicate test names)
     <TestCase name="testSelectFromDynamicTable">
         <Resource name="sql">
             <![CDATA[select n_nationkey, n_name from SALES.NATION]]>

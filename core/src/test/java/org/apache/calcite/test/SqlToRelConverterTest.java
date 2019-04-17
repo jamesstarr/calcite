@@ -90,10 +90,6 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
 
   /** Sets the SQL statement for a test. */
   public final Sql sql(String sql) {
-    return sql(tester, sql);
-  }
-
-  public final Sql sql(Tester tester, String sql) {
     return new Sql(sql, true, true, tester, false,
         SqlToRelConverter.Config.DEFAULT, tester.getConformance());
   }
@@ -1333,7 +1329,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     final String sql = "select d.deptno, e2.empno\n"
         + "from dept_nested as d,\n"
         + " UNNEST(d.employees) as e2(empno, y, z)";
-    sql(sql).ok();
+    sql(sql).with(getExtendedTester()).ok();
   }
 
   /**
@@ -2148,7 +2144,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
         + "  avg(sal) over w1\n"
         + "from emp\n"
         + "window w1 as (partition by job order by hiredate rows 2 preceding)";
-    sql(tester, sql).ok();
+    sql(sql).with(tester).ok();
   }
 
   @Test public void testOverCountStar() {
