@@ -5810,18 +5810,6 @@ LogicalSort(sort0=[$0], dir0=[ASC])
 ]]>
     </Resource>
   </TestCase>
-  <TestCase name="testOrderBasedRepeatFields">
-    <Resource name="sql">
-      <![CDATA[select empno from emp order by empno DESC, empno ASC]]>
-    </Resource>
-    <Resource name="plan">
-      <![CDATA[
-LogicalSort(sort0=[$0], dir0=[DESC])
-  LogicalProject(EMPNO=[$0])
-    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
-]]>
-    </Resource>
-  </TestCase>
     <TestCase name="testSelectFromDynamicTable">
         <Resource name="sql">
             <![CDATA[select n_nationkey, n_name from SALES.NATION]]>
