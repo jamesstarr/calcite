@@ -288,9 +288,6 @@ public class SqlFunctions {
 
   /** SQL {@code OVERLAY} function. */
   public static String overlay(String s, String r, int start) {
-    if (s == null || r == null) {
-      return null;
-    }
     return s.substring(0, start - 1)
         + r
         + s.substring(start - 1 + r.length());
@@ -298,9 +295,6 @@ public class SqlFunctions {
 
   /** SQL {@code OVERLAY} function. */
   public static String overlay(String s, String r, int start, int length) {
-    if (s == null || r == null) {
-      return null;
-    }
     return s.substring(0, start - 1)
         + r
         + s.substring(start - 1 + length);
@@ -308,9 +302,6 @@ public class SqlFunctions {
 
   /** SQL {@code OVERLAY} function applied to binary strings. */
   public static ByteString overlay(ByteString s, ByteString r, int start) {
-    if (s == null || r == null) {
-      return null;
-    }
     return s.substring(0, start - 1)
            .concat(r)
            .concat(s.substring(start - 1 + r.length()));
@@ -319,9 +310,6 @@ public class SqlFunctions {
   /** SQL {@code OVERLAY} function applied to binary strings. */
   public static ByteString overlay(ByteString s, ByteString r, int start,
       int length) {
-    if (s == null || r == null) {
-      return null;
-    }
     return s.substring(0, start - 1)
            .concat(r)
            .concat(s.substring(start - 1 + length));
