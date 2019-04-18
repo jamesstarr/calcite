@@ -32,6 +32,7 @@ Downloads are available on the
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## <a href="https://github.com/apache/calcite/releases/tag/calcite-1.23.0">1.23.0</a> / 2020-05-23
 {: #v1-23-0}
 
@@ -1078,10 +1079,20 @@ An adapter has also been added for [Apache Kafka](https://kafka.apache.org/).
 Compatibility: This release is tested
 on Linux, macOS, Microsoft Windows;
 using Oracle JDK 8, 9, 10, 11, 12, 13 and OpenJDK 8, 9, 10, 11, 12, 13;
+=======
+## <a href="https://github.com/apache/calcite/releases/tag/calcite-1.20.0">1.20.0</a> / under development
+{: #v1-20-0}
+
+
+Compatibility: This release is tested
+on Linux, macOS, Microsoft Windows;
+using Oracle JDK 8, 9, 10, 11, 12 and OpenJDK 8, 9, 10, 11, 12;
+>>>>>>> 683fad2e4 ([CALCITE-3001] Upgrade to Apache Druid 0.14.0-incubating)
 Guava versions 19.0 to 27.1-jre;
 Apache Druid version 0.14.0-incubating;
 other software versions as specified in `pom.xml`.
 
+<<<<<<< HEAD
 
 #### Breaking Changes
 
@@ -1257,6 +1268,8 @@ other software versions as specified in `pom.xml`.
 * Site: Add new committers (Haisheng Yuan, Hongze Zhang and Stamatis Zampetakis)
 * [<a href='https://issues.apache.org/jira/browse/CALCITE-2952'>CALCITE-2952</a>] Add JDK 12 as tested to 1.19.0 history
 
+=======
+>>>>>>> 683fad2e4 ([CALCITE-3001] Upgrade to Apache Druid 0.14.0-incubating)
 ## <a href="https://github.com/apache/calcite/releases/tag/calcite-1.19.0">1.19.0</a> / 2019-03-25
 =======
 ## <a href="https://github.com/apache/calcite/releases/tag/calcite-1.19.0">1.19.0</a> / 2019-03-18

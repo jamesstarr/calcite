@@ -37,65 +37,7 @@ import java.net.URL;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-  protected boolean enabled() {
-    return CalciteSystemProperty.TEST_DRUID.value();
-  }
-
-  /** Returns a consumer that checks that a particular Druid query is
-   * generated to implement a query. */
-  private static Consumer<List> druidChecker(final String... lines) {
-    return list -> {
-      assertThat(list.size(), is(1));
-      DruidQuery.QuerySpec querySpec = (DruidQuery.QuerySpec) list.get(0);
-      for (String line : lines) {
-        final String s = line.replace('\'', '"');
-        assertThat(querySpec.getQueryString(null, -1), containsString(s));
-      }
-    };
-  }
-
-  /**
-   * Creates a query against FOODMART with approximate parameters
-   * */
-  private CalciteAssert.AssertQuery foodmartApprox(String sql) {
-    return approxQuery(FOODMART, sql);
-  }
-
-  /**
-   * Creates a query against WIKI with approximate parameters
-   * */
-  private CalciteAssert.AssertQuery wikiApprox(String sql) {
-    return approxQuery(WIKI, sql);
-  }
-
-  private CalciteAssert.AssertQuery approxQuery(URL url, String sql) {
-    return CalciteAssert.that()
-            .enable(enabled())
-            .withModel(url)
-            .with(CalciteConnectionProperty.APPROXIMATE_DISTINCT_COUNT, true)
-            .with(CalciteConnectionProperty.APPROXIMATE_TOP_N, true)
-            .with(CalciteConnectionProperty.APPROXIMATE_DECIMAL, true)
-            .query(sql);
-  }
-
-  /** Creates a query against a data set given by a map. */
-  private CalciteAssert.AssertQuery sql(String sql, URL url) {
-    return CalciteAssert.that()
-        .enable(enabled())
-        .withModel(url)
-        .query(sql);
-  }
-
-  /** Creates a query against the {@link #FOODMART} data set. */
-  private CalciteAssert.AssertQuery sql(String sql) {
-    return sql(sql, FOODMART);
-  }
-
-  /** Tests a query against the {@link #WIKI} data set.
-   *
-   * <p>Most of the others in this suite are against {@link #FOODMART},
-   * but our examples in "druid-adapter.md" use wikipedia. */
-  @Test void testSelectDistinctWiki() {
+  @Test public void testSelectDistinctWiki() {
     final String explain = "PLAN="
         + "EnumerableInterpreter\n"
         + "  DruidQuery(table=[[wiki, wiki]], "
@@ -1357,7 +1299,7 @@ import java.sql.SQLException;
   }
 
   /** Tests a query that exposed several bugs in the interpreter. */
-  @Test void testWhereGroupBy() {
+  @Test public void testWhereGroupBy() {
     String sql = "select \"wikipedia\".\"countryName\" as \"c0\",\n"
         + " sum(\"wikipedia\".\"count\") as \"m1\",\n"
         + " sum(\"wikipedia\".\"deleted\") as \"m2\",\n"
@@ -2118,8 +2060,8 @@ import java.sql.SQLException;
         + "  DruidQuery(table=[[foodmart, foodmart]], "
         + "intervals=[[1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z]], "
         + "filter=[AND(=($2, 'Bird Call'), OR(=(EXTRACT(FLAG(WEEK), $0), 10), "
-        + "=(EXTRACT(FLAG(WEEK), $0), 11)))], projects=[[$63, $90, $91]], "
-        + "groups=[{0}], aggs=[[SUM($1), SUM($2)]], post_projects=[[$0, 'Bird Call', -($1, $2)]])";
+        + "=(EXTRACT(FLAG(WEEK), $0), 11)))], projects=[[$0, $2, $63, $90, $91]], "
+        + "groups=[{2}], aggs=[[SUM($3), SUM($4)]], post_projects=[[$0, 'Bird Call', -($1, $2)]])";
     sql(sql, FOODMART)
         .returnsOrdered("store_state=CA; brand_name=Bird Call; A=34.364599999999996",
             "store_state=OR; brand_name=Bird Call; A=39.16359999999999",
@@ -3058,7 +3000,7 @@ import java.sql.SQLException;
     sql(sql, WIKI)
         // make sure user_id column is not present
         .queryContains(
-            new DruidChecker("{'queryType':'scan','dataSource':'wikipedia','intervals':"
+            druidChecker("{'queryType':'scan','dataSource':'wikipedia','intervals':"
                 + "['1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z'],'virtualColumns':"
                 + "[{'type':'expression','name':'vc','expression':'\\'__time\\'',"
                 + "'outputType':'LONG'}],'columns':['vc','channel','cityName','comment',"
@@ -3226,7 +3168,7 @@ import java.sql.SQLException;
 
   @Test void testTimeWithFilterOnFloorOnTimeWithTimezoneConversion() {
     final String sql = "Select cast(\"__time\" as timestamp) as t, \"countryName\" as s, "
-        + "count(*) as c from \"wikiticker\" where floor(\"__time\" to HOUR)"
+        + "count(*) as c from \"wikipedia\" where floor(\"__time\" to HOUR)"
         + " >= '2015-09-12 08:00:00 Asia/Kolkata' group by cast(\"__time\" as timestamp), \"countryName\""
         + " order by t limit 4";
     final String druidQueryPart1 = "filter\":{\"type\":\"bound\",\"dimension\":\"__time\","
@@ -3251,7 +3193,7 @@ import java.sql.SQLException;
 
   @Test public void testTimeWithFilterOnFloorOnTimeWithTimezoneConversionCast() {
     final String sql = "Select cast(\"__time\" as timestamp) as t, \"countryName\" as s, "
-        + "count(*) as c from \"wikiticker\" where floor(\"__time\" to HOUR)"
+        + "count(*) as c from \"wikipedia\" where floor(\"__time\" to HOUR)"
         + " >= '2015-09-12 08:00:00 Asia/Kolkata' group by cast(\"__time\" as timestamp), \"countryName\""
         + " order by t limit 4";
     final String druidQueryPart1 = "filter\":{\"type\":\"bound\",\"dimension\":\"__time\","
@@ -4129,12 +4071,13 @@ import java.sql.SQLException;
         .returnsOrdered("EXPR$0=68222919");
   }
 
-  @Test void testAggOnTimeExtractColumn() {
+  @Test
+  public void testAggOnTimeExtractColumn() {
     final String sql = "SELECT SUM(EXTRACT(MONTH FROM \"__time\")) FROM \"wikipedia\"";
     sql(sql, WIKI_AUTO2)
         .returnsOrdered("EXPR$0=353196")
         .queryContains(
-            new DruidChecker("{'queryType':'timeseries','dataSource':'wikipedia',"
+            druidChecker("{'queryType':'timeseries','dataSource':'wikipedia',"
                 + "'descending':false,'granularity':'all','aggregations':[{"
                 + "'type':'longSum','name':'EXPR$0','expression':'timestamp_extract(\\'__time\\'"));
   }
@@ -4281,7 +4224,7 @@ import java.sql.SQLException;
         .explainContains("PLAN=EnumerableInterpreter\n"
             + "  BindableProject(QUARTER=[$4], WEEK=[$0], DAYOFWEEK=[$1], "
             + "DAYOFMONTH=[$2], DAYOFYEAR=[$3], SUM_ADDED=[$5])\n"
-            + "    DruidQuery(table=[[wiki, wikiticker]], "
+            + "    DruidQuery(table=[[wiki, wikipedia]], "
             + "intervals=[[1900-01-01T00:00:00.000Z/3000-01-01T00:00:00.000Z]], "
             + "projects=[[EXTRACT(FLAG(WEEK), $0), EXTRACT(FLAG(DOW), $0), "
             + "EXTRACT(FLAG(DAY), $0), EXTRACT(FLAG(DOY), $0), EXTRACT(FLAG(QUARTER), $0), $1]], "
