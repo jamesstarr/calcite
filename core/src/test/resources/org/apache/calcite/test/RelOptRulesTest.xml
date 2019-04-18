@@ -656,7 +656,11 @@ LogicalProject(DEPTNO=[$0])
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+<<<<<<< HEAD
     LogicalFilter(condition=[NOT(CAST(OR(AND(IS TRUE(<=($0, $9)), <>($10, 0)), AND(>($10, $11), null, <>($10, 0), IS NOT TRUE(<=($0, $9))), AND(<=($0, $9), <>($10, 0), IS NOT TRUE(<=($0, $9)), <=($10, $11)))):BOOLEAN NOT NULL)])
+=======
+    LogicalFilter(condition=[NOT(CAST(CASE(=($10, 0), false, IS TRUE(<=($0, $9)), true, >($10, $11), null, <=($0, $9))):BOOLEAN NOT NULL)])
+>>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
       LogicalJoin(condition=[true], joinType=[inner])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{}], m=[MAX($0)], c=[COUNT()], d=[COUNT($0)])
@@ -668,7 +672,11 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+<<<<<<< HEAD
     LogicalFilter(condition=[NOT(CAST(OR(AND(IS TRUE(<=($0, $9)), <>($10, 0)), AND(>($10, $11), null, <>($10, 0), IS NOT TRUE(<=($0, $9))), AND(<=($0, $9), <>($10, 0), IS NOT TRUE(<=($0, $9)), <=($10, $11)))):BOOLEAN NOT NULL)])
+=======
+    LogicalFilter(condition=[NOT(CAST(CASE(=($10, 0), false, IS TRUE(<=($0, $9)), true, >($10, $11), null, <=($0, $9))):BOOLEAN NOT NULL)])
+>>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
       LogicalJoin(condition=[true], joinType=[inner])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{}], m=[MAX($0)], c=[COUNT()], d=[COUNT($0)])
@@ -677,6 +685,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testCasePushIsAlwaysWorking">
         <Resource name="sql">
             <![CDATA[select empno from emp where case when sal > 1000 then empno else sal end = 1]]>
@@ -701,6 +710,14 @@ LogicalProject(EMPNO=[$0])
             <![CDATA[select name, deptno > ANY (
   select deptno from emp)
 from dept]]>
+=======
+    <TestCase name="testAnyInProjectNonNullable">
+        <Resource name="sql">
+            <![CDATA[select name, 
+ deptno > ANY (
+ select deptno from emp) 
+ from dept]]>
+>>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -713,7 +730,11 @@ LogicalProject(DEPTNO=[$7])
         </Resource>
         <Resource name="planMid">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(NAME=[$1], EXPR$1=[CAST(OR(AND(IS TRUE(>($0, $2)), <>($3, 0)), AND(>($3, $4), null, <>($3, 0), IS NOT TRUE(>($0, $2))), AND(>($0, $2), <>($3, 0), IS NOT TRUE(>($0, $2)), <=($3, $4)))):BOOLEAN NOT NULL])
+=======
+LogicalProject(NAME=[$1], EXPR$1=[CAST(CASE(=($3, 0), false, IS TRUE(>($0, $2)), true, >($3, $4), null, >($0, $2))):BOOLEAN NOT NULL])
+>>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
   LogicalJoin(condition=[true], joinType=[inner])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
     LogicalAggregate(group=[{}], m=[MIN($0)], c=[COUNT()], d=[COUNT($0)])
@@ -723,7 +744,11 @@ LogicalProject(NAME=[$1], EXPR$1=[CAST(OR(AND(IS TRUE(>($0, $2)), <>($3, 0)), AN
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(NAME=[$1], EXPR$1=[CAST(OR(AND(IS TRUE(>($0, $2)), <>($3, 0)), AND(>($3, $4), null, <>($3, 0), IS NOT TRUE(>($0, $2))), AND(>($0, $2), <>($3, 0), IS NOT TRUE(>($0, $2)), <=($3, $4)))):BOOLEAN NOT NULL])
+=======
+LogicalProject(NAME=[$1], EXPR$1=[CAST(CASE(=($3, 0), false, IS TRUE(>($0, $2)), true, >($3, $4), null, >($0, $2))):BOOLEAN NOT NULL])
+>>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
   LogicalJoin(condition=[true], joinType=[inner])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
     LogicalAggregate(group=[{}], m=[MIN($0)], c=[COUNT()], d=[COUNT($0)])
@@ -734,6 +759,7 @@ LogicalProject(NAME=[$1], EXPR$1=[CAST(OR(AND(IS TRUE(>($0, $2)), <>($3, 0)), AN
     </TestCase>
     <TestCase name="testAnyInProjectNullable">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[select deptno, name = ANY (
   select mgr from emp)
 from dept]]>
@@ -741,6 +767,16 @@ from dept]]>
         <Resource name="planBefore">
             <![CDATA[
 LogicalProject(DEPTNO=[$0], EXPR$1=[IN($1, {
+=======
+            <![CDATA[select deptno, 
+ name = ANY (
+ select mgr from emp) 
+ from dept]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(DEPTNO=[$0], EXPR$1=[= SOME($1, {
+>>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
 LogicalProject(MGR=[$3])
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 })])
@@ -749,6 +785,7 @@ LogicalProject(MGR=[$3])
         </Resource>
         <Resource name="planMid">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(DEPTNO=[$0], EXPR$1=[OR(AND(IS NOT NULL($5), <>($2, 0)), AND(<($3, $2), null, <>($2, 0), IS NULL($5)))])
   LogicalJoin(condition=[=($1, $4)], joinType=[left])
     LogicalJoin(condition=[true], joinType=[inner])
@@ -758,11 +795,19 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[OR(AND(IS NOT NULL($5), <>($2, 0)), AND(<($3
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalAggregate(group=[{0, 1}])
       LogicalProject(MGR=[$3], i=[true])
+=======
+LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($3, 0), false, IS TRUE(=($1, $2)), true, >($3, $4), null, =($1, $2))])
+  LogicalJoin(condition=[true], joinType=[inner])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalAggregate(group=[{}], m=[MAX($0)], c=[COUNT()], d=[COUNT($0)])
+      LogicalProject(MGR=[$3])
+>>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(DEPTNO=[$0], EXPR$1=[OR(AND(IS NOT NULL($5), <>($2, 0)), AND(<($3, $2), null, <>($2, 0), IS NULL($5)))])
   LogicalJoin(condition=[=($1, $4)], joinType=[left])
     LogicalJoin(condition=[true], joinType=[inner])
@@ -772,10 +817,18 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[OR(AND(IS NOT NULL($5), <>($2, 0)), AND(<($3
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalAggregate(group=[{0, 1}])
       LogicalProject(MGR=[$3], i=[true])
+=======
+LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($3, 0), false, IS TRUE(=($1, $2)), true, >($3, $4), null, =($1, $2))])
+  LogicalJoin(condition=[true], joinType=[inner])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalAggregate(group=[{}], m=[MAX($0)], c=[COUNT()], d=[COUNT($0)])
+      LogicalProject(MGR=[$3])
+>>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testConstantWindow">
       <Resource name="sql">
         <![CDATA[with empsalary(dept, empno, salary, enroll_date) as (VALUES ('x', 10, 5200, DATE '2007-08-01'), (NULL, NULL, NULL, NULL))
@@ -791,6 +844,8 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[OR(AND(IS NOT NULL($5), <>($2, 0)), AND(<($3
   ]]>
       </Resource>
     </TestCase>
+=======
+>>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
     <TestCase name="testCorrelationScalarAggAndFilter">
         <Resource name="sql">
             <![CDATA[SELECT e1.empno
