@@ -16,59 +16,23 @@
  */
 package org.apache.calcite.sql.fun;
 
-import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.sql.SqlCall;
-import org.apache.calcite.sql.SqlCallBinding;
 import org.apache.calcite.sql.SqlKind;
-import org.apache.calcite.sql.SqlOperatorBinding;
-import org.apache.calcite.sql.SqlSpecialOperator;
-import org.apache.calcite.sql.SqlWriter;
+import org.apache.calcite.sql.SqlPostfixOperator;
 import org.apache.calcite.sql.type.OperandTypes;
-import org.apache.calcite.sql.type.SqlOperandTypeInference;
-import org.apache.calcite.sql.type.SqlReturnTypeInference;
+import org.apache.calcite.sql.type.ReturnTypes;
 import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.sql.type.SqlTypeTransforms;
 
 /**
  * The JSON value expression operator which indicate that the value expression
  * should be parsed as JSON.
  */
-public class SqlJsonValueExpressionOperator extends SqlSpecialOperator {
-  private final boolean structured;
+public class SqlJsonValueExpressionOperator extends SqlPostfixOperator {
 
-  public SqlJsonValueExpressionOperator(String name, boolean structured) {
-    super(
-        name,
-        SqlKind.JSON_VALUE_EXPRESSION,
-        100,
-        true,
-        new SqlReturnTypeInference() {
-          @Override public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
-            return opBinding.getTypeFactory().createTypeWithNullability(
-                opBinding.getTypeFactory().createSqlType(SqlTypeName.ANY),
-                true);
-          }
-        },
-        new SqlOperandTypeInference() {
-          @Override public void inferOperandTypes(SqlCallBinding callBinding,
-                                                  RelDataType returnType,
-                                                  RelDataType[] operandTypes) {
-            if (callBinding.isOperandNull(0, false)) {
-              operandTypes[0] = callBinding.getTypeFactory().createTypeWithNullability(
-                  callBinding.getTypeFactory().createSqlType(SqlTypeName.ANY),
-                  true);
-            }
-          }
-        },
-        structured ? OperandTypes.ANY : OperandTypes.STRING
-    );
-    this.structured = structured;
-  }
-
-  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
-    call.operand(0).unparse(writer, 0, 0);
-    if (!structured) {
-      writer.keyword("FORMAT JSON");
-    }
+  public SqlJsonValueExpressionOperator() {
+    super("FORMAT JSON", SqlKind.JSON_VALUE_EXPRESSION, 28,
+        ReturnTypes.cascade(ReturnTypes.explicit(SqlTypeName.ANY),
+            SqlTypeTransforms.TO_NULLABLE), null, OperandTypes.CHARACTER);
   }
 }
 

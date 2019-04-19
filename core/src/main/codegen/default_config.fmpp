@@ -124,6 +124,9 @@ parser: {
     "DYNAMIC_FUNCTION_CODE"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
     "ENCODING"
     "EPOCH"
     "ERROR"
@@ -141,11 +144,15 @@ parser: {
     "FOLLOWING"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "FORMAT"
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
+=======
+    "FORMAT"
+>>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
     "FORTRAN"
     "FOUND"
     "FRAC_SECOND"

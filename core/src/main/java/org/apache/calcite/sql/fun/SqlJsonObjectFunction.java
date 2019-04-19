@@ -17,7 +17,7 @@
 package org.apache.calcite.sql.fun;
 
 import org.apache.calcite.rel.type.RelDataType;
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlCallBinding;
 import org.apache.calcite.sql.SqlFunction;
@@ -32,6 +32,7 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.ReturnTypes;
 import org.apache.calcite.sql.type.SqlOperandCountRanges;
 import org.apache.calcite.sql.type.SqlOperandTypeChecker;
+import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.sql.validate.SqlValidator;
 
@@ -44,14 +45,18 @@ import static org.apache.calcite.util.Static.RESOURCE;
  */
 public class SqlJsonObjectFunction extends SqlFunction {
   public SqlJsonObjectFunction() {
-    super(
-        "JSON_OBJECT",
-        SqlKind.OTHER_FUNCTION,
-        ReturnTypes.VARCHAR_2000,
-        null,
-        null,
-        SqlFunctionCategory.SYSTEM
-    );
+    super("JSON_OBJECT", SqlKind.OTHER_FUNCTION, ReturnTypes.VARCHAR_2000,
+        (callBinding, returnType, operandTypes) -> {
+          RelDataTypeFactory typeFactory = callBinding.getTypeFactory();
+          for (int i = 0; i < operandTypes.length; i++) {
+            if (i % 2 == 0) {
+              operandTypes[i] = typeFactory.createSqlType(SqlTypeName.VARCHAR);
+              continue;
+            }
+            operandTypes[i] = typeFactory.createTypeWithNullability(
+                typeFactory.createSqlType(SqlTypeName.ANY), true);
+          }
+        }, null, SqlFunctionCategory.SYSTEM);
   }
 
   @Override public SqlOperandCountRange getOperandCountRange() {

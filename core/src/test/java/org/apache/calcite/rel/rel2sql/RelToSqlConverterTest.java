@@ -4640,6 +4640,19 @@ class RelToSqlConverterTest {
     sql(query).ok(expected);
   }
 
+  @Test public void testJsonValueExpressionOperator() {
+    String query = "select \"product_name\" format json, "
+        + "\"product_name\" format json encoding utf8, "
+        + "\"product_name\" format json encoding utf16, "
+        + "\"product_name\" format json encoding utf32 from \"product\"";
+    final String expected = "SELECT \"product_name\" FORMAT JSON, "
+        + "\"product_name\" FORMAT JSON, "
+        + "\"product_name\" FORMAT JSON, "
+        + "\"product_name\" FORMAT JSON\n"
+        + "FROM \"foodmart\".\"product\"";
+    sql(query).ok(expected);
+  }
+
   @Test public void testMultiplicationNotAliasedToStar() {
     final String sql = "select s.\"customer_id\", sum(s.\"store_sales\" * s.\"store_cost\")"
             + "from \"sales_fact_1997\" as s\n"

@@ -115,8 +115,8 @@ public abstract class InferTypes {
         RelDataTypeFactory typeFactory = callBinding.getTypeFactory();
         for (int i = 0; i < operandTypes.length; ++i) {
           operandTypes[i] =
-                 typeFactory.createTypeWithNullability(
-                      typeFactory.createSqlType(SqlTypeName.ANY), true);
+              typeFactory.createTypeWithNullability(
+                  typeFactory.createSqlType(SqlTypeName.ANY), true);
         }
       };
 
