@@ -3328,6 +3328,16 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).with(tester).ok();
   }
 
+  @Test public void testJsonValueExpressionOperator() {
+    final String sql = "select ename format json,\n"
+        + "ename format json encoding utf8,\n"
+        + "ename format json encoding utf16,\n"
+        + "ename format json encoding utf32\n"
+        + "from emp";
+    System.out.println(sql);
+    sql(sql).ok();
+  }
+
   /**
    * Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-4145">[CALCITE-4145]
@@ -3378,6 +3388,36 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
 
   @Test public void testJsonQuery() {
     final String sql = "select json_query(ename, 'lax $')\n"
+        + "from emp";
+    sql(sql).ok();
+  }
+
+  @Test public void testJsonType() {
+    final String sql = "select json_type(ename)\n"
+        + "from emp";
+    sql(sql).ok();
+  }
+
+  @Test public void testJsonPretty() {
+    final String sql = "select json_pretty(ename)\n"
+        + "from emp";
+    sql(sql).ok();
+  }
+
+  @Test public void testJsonDepth() {
+    final String sql = "select json_depth(ename)\n"
+        + "from emp";
+    sql(sql).ok();
+  }
+
+  @Test public void testJsonLength() {
+    final String sql = "select json_length(ename, 'strict $')\n"
+        + "from emp";
+    sql(sql).ok();
+  }
+
+  @Test public void testJsonKeys() {
+    final String sql = "select json_keys(ename, 'strict $')\n"
         + "from emp";
     sql(sql).ok();
   }
