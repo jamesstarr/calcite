@@ -65,6 +65,12 @@ data: {
       "SqlDescribeSpacePower()"
     ]
 
+      # List of methods for parsing builtin function calls.
+      # Return type of method implementation should be "SqlNode".
+      # Example: DateFunctionCall().
+      builtinFunctionCallMethods: [
+      ]
+
     # List of methods for parsing extensions to "ALTER <scope>" calls.
     # Each must accept arguments "(SqlParserPos pos, String scope)".
     # Example: "SqlAlterTable".

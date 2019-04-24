@@ -78,6 +78,12 @@ data: {
       "ARCHIVE"
     ]
 
+      # List of methods for parsing builtin function calls.
+      # Return type of method implementation should be "SqlNode".
+      # Example: DateFunctionCall().
+      builtinFunctionCallMethods: [
+      ]
+
     # List of methods for parsing extensions to "CREATE [OR REPLACE]" calls.
     # Each must accept arguments "(SqlParserPos pos, boolean replace)".
     # Example: "SqlCreateForeignSchema".
