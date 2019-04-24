@@ -11514,6 +11514,8 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkExp("'{}' format json encoding utf16");
     checkExp("'{}' format json encoding utf32");
     checkExpType("'{}' format json", "ANY NOT NULL");
+    checkExpType("'null' format json", "ANY NOT NULL");
+    checkExpType("cast(null as varchar) format json", "ANY");
   }
 
   @Test public void testJsonExists() {
@@ -11579,7 +11581,7 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
   @Test public void testJsonPretty() {
     check("select json_pretty(ename) from emp");
     checkExp("json_pretty('{\"foo\":\"bar\"}')");
-    checkExpType("json_pretty('{\"foo\":\"bar\"}')", "VARCHAR(2000) NOT NULL");
+    checkExpType("json_pretty('{\"foo\":\"bar\"}')", "VARCHAR(2000)");
     if (!Bug.CALCITE_2869_FIXED) {
       // the case should throw an error but currently validation
       // is done during sql-to-rel process.
@@ -11638,8 +11640,8 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
 
   @Test public void testJsonKeys() {
     checkExp("json_keys('{\"foo\":\"bar\"}', 'lax $')");
-    checkExpType("json_keys('{\"foo\":\"bar\"}', 'lax $')", "VARCHAR(2000) NOT NULL");
-    checkExpType("json_keys('{\"foo\":\"bar\"}', 'strict $')", "VARCHAR(2000) NOT NULL");
+    checkExpType("json_keys('{\"foo\":\"bar\"}', 'lax $')", "VARCHAR(2000)");
+    checkExpType("json_keys('{\"foo\":\"bar\"}', 'strict $')", "VARCHAR(2000)");
   }
 
   @Test public void testJsonRemove() {

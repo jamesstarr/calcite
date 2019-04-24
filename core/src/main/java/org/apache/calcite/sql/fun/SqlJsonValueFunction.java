@@ -139,19 +139,6 @@ public class SqlJsonValueFunction extends SqlFunction {
     return super.checkOperandTypes(callBinding, throwOnFailure);
   }
 
-/*  @Override public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
-    assert opBinding.getOperandCount() == 5
-        || opBinding.getOperandCount() == 6;
-    RelDataType ret;
-    if (opBinding.getOperandCount() == 6) {
-      ret = opBinding.getOperandType(5);
-    } else {
-      ret = opBinding.getTypeFactory().createSqlType(SqlTypeName.ANY);
-    }
-    return opBinding.getTypeFactory().createTypeWithNullability(ret, true);
-  }
-*/
-
   @Override public String getSignatureTemplate(int operandsCount) {
     assert operandsCount == 6 || operandsCount == 7;
     if (operandsCount == 7) {

@@ -4583,6 +4583,11 @@ public abstract class SqlOperatorBaseTest {
         + "'lax $.foo1' error on error)", Boolean.FALSE);
     tester.checkBoolean("json_exists('{\"foo\":\"bar\"}', "
         + "'lax $.foo1' unknown on error)", Boolean.FALSE);
+
+    // nulls
+    tester.checkNull("json_exists(cast(null as varchar), "
+        + "'lax $.foo1' unknown on error)");
+
   }
 
   @Test public void testJsonValue() {
@@ -4656,6 +4661,9 @@ public abstract class SqlOperatorBaseTest {
     tester.checkString("json_value('{\"foo\":{}}', "
             + "'strict $.foo' default 'empty' on error)",
         "empty", "VARCHAR(2000)");
+
+    // nulls
+    tester.checkNull("json_value(cast(null as varchar), 'strict $')");
   }
 
   @Test public void testJsonQuery() {
@@ -4745,15 +4753,20 @@ public abstract class SqlOperatorBaseTest {
         "[100]", "VARCHAR(2000)");
 
 
+    // nulls
+    tester.checkNull("json_query(cast(null as varchar), 'lax $')");
   }
 
   @Test public void testJsonPretty() {
     tester.checkString("json_pretty('{\"foo\":100}')",
-        "{\n  \"foo\" : 100\n}", "VARCHAR(2000) NOT NULL");
+        "{\n  \"foo\" : 100\n}", "VARCHAR(2000)");
     tester.checkString("json_pretty('[1,2,3]')",
-        "[ 1, 2, 3 ]", "VARCHAR(2000) NOT NULL");
+        "[ 1, 2, 3 ]", "VARCHAR(2000)");
     tester.checkString("json_pretty('null')",
-        "null", "VARCHAR(2000) NOT NULL");
+        "null", "VARCHAR(2000)");
+
+    // nulls
+    tester.checkNull("json_pretty(cast(null as varchar))");
   }
 
   @Test public void testJsonStorageSize() {
@@ -4767,8 +4780,8 @@ public abstract class SqlOperatorBaseTest {
         "36", "INTEGER");
     tester.checkString("json_storage_size('12')",
         "2", "INTEGER");
-//    tester.checkString("json_storage_size('12' format json)",
-//        "2", "INTEGER");
+    tester.checkString("json_storage_size('12' format json)",
+        "2", "INTEGER");
     tester.checkString("json_storage_size('null')",
         "4", "INTEGER");
 
@@ -4786,7 +4799,7 @@ public abstract class SqlOperatorBaseTest {
             "BOOLEAN", "VARCHAR(20)");
     tester.checkString("json_type('null')",
             "NULL", "VARCHAR(20)");
-//    tester.checkNull("json_type(cast(null as varchar(1)))");
+    tester.checkNull("json_type(cast(null as varchar(1)))");
     tester.checkString("json_type('{\"a\": [10, true]}')",
             "OBJECT", "VARCHAR(20)");
     tester.checkString("json_type('{}')",
@@ -4795,6 +4808,9 @@ public abstract class SqlOperatorBaseTest {
             "ARRAY", "VARCHAR(20)");
     tester.checkString("json_type('\"2019-01-27 21:24:00\"')",
             "STRING", "VARCHAR(20)");
+
+    // nulls
+    tester.checkNull("json_type(cast(null as varchar))");
   }
 
   @Test public void testJsonDepth() {
@@ -4813,8 +4829,8 @@ public abstract class SqlOperatorBaseTest {
             "1", "INTEGER");
     tester.checkString("json_depth('null')",
             null, "INTEGER");
-//    tester.checkString("json_depth(cast(null as varchar(1)))",
-//            null, "INTEGER");
+    tester.checkString("json_depth(cast(null as varchar(1)))",
+            null, "INTEGER");
     tester.checkString("json_depth('[10, true]')",
             "2", "INTEGER");
     tester.checkString("json_depth('[[], {}]')",
@@ -4823,6 +4839,9 @@ public abstract class SqlOperatorBaseTest {
             "3", "INTEGER");
     tester.checkString("json_depth('[10, {\"a\": [[1,2]]}]')",
             "5", "INTEGER");
+
+    // nulls
+    tester.checkNull("json_depth(cast(null as varchar))");
   }
 
   @Test public void testJsonLength() {
@@ -4873,56 +4892,60 @@ public abstract class SqlOperatorBaseTest {
             "(?s).*Illegal jsonpath spec.*", true);
     tester.checkFails("json_length('{\"foo\":100}', 'strict $.foo1')",
             "(?s).*No results for path.*", true);
+
+    // nulls
+    tester.checkNull("json_length(cast(null as varchar))");
   }
 
   @Test public void testJsonKeys() {
     // no path context
     tester.checkString("json_keys('{}')",
-            "[]", "VARCHAR(2000) NOT NULL");
+            "[]", "VARCHAR(2000)");
     tester.checkString("json_keys('[]')",
-            "null", "VARCHAR(2000) NOT NULL");
+            "null", "VARCHAR(2000)");
     tester.checkString("json_keys('{\"foo\":100}')",
-            "[\"foo\"]", "VARCHAR(2000) NOT NULL");
+            "[\"foo\"]", "VARCHAR(2000)");
     tester.checkString("json_keys('{\"a\": 1, \"b\": {\"c\": 30}}')",
-            "[\"a\",\"b\"]", "VARCHAR(2000) NOT NULL");
+            "[\"a\",\"b\"]", "VARCHAR(2000)");
     tester.checkString("json_keys('[1, 2, {\"a\": 3}]')",
-            "null", "VARCHAR(2000) NOT NULL");
+            "null", "VARCHAR(2000)");
 
     // lax test
     tester.checkString("json_keys('{}', 'lax $')",
-            "[]", "VARCHAR(2000) NOT NULL");
+            "[]", "VARCHAR(2000)");
     tester.checkString("json_keys('[]', 'lax $')",
-            "null", "VARCHAR(2000) NOT NULL");
+            "null", "VARCHAR(2000)");
     tester.checkString("json_keys('{\"foo\":100}', 'lax $')",
-            "[\"foo\"]", "VARCHAR(2000) NOT NULL");
+            "[\"foo\"]", "VARCHAR(2000)");
     tester.checkString("json_keys('{\"a\": 1, \"b\": {\"c\": 30}}', 'lax $')",
-            "[\"a\",\"b\"]", "VARCHAR(2000) NOT NULL");
+            "[\"a\",\"b\"]", "VARCHAR(2000)");
     tester.checkString("json_keys('[1, 2, {\"a\": 3}]', 'lax $')",
-            "null", "VARCHAR(2000) NOT NULL");
+            "null", "VARCHAR(2000)");
     tester.checkString("json_keys('{\"a\": 1, \"b\": {\"c\": 30}}', 'lax $.b')",
-            "[\"c\"]", "VARCHAR(2000) NOT NULL");
+            "[\"c\"]", "VARCHAR(2000)");
     tester.checkString("json_keys('{\"foo\":100}', 'lax $.foo1')",
-            "null", "VARCHAR(2000) NOT NULL");
+            "null", "VARCHAR(2000)");
 
     // strict test
     tester.checkString("json_keys('{}', 'strict $')",
-            "[]", "VARCHAR(2000) NOT NULL");
+            "[]", "VARCHAR(2000)");
     tester.checkString("json_keys('[]', 'strict $')",
-            "null", "VARCHAR(2000) NOT NULL");
+            "null", "VARCHAR(2000)");
     tester.checkString("json_keys('{\"foo\":100}', 'strict $')",
-            "[\"foo\"]", "VARCHAR(2000) NOT NULL");
+            "[\"foo\"]", "VARCHAR(2000)");
     tester.checkString("json_keys('{\"a\": 1, \"b\": {\"c\": 30}}', 'strict $')",
-            "[\"a\",\"b\"]", "VARCHAR(2000) NOT NULL");
+            "[\"a\",\"b\"]", "VARCHAR(2000)");
     tester.checkString("json_keys('[1, 2, {\"a\": 3}]', 'strict $')",
-            "null", "VARCHAR(2000) NOT NULL");
+            "null", "VARCHAR(2000)");
     tester.checkString("json_keys('{\"a\": 1, \"b\": {\"c\": 30}}', 'strict $.b')",
-            "[\"c\"]", "VARCHAR(2000) NOT NULL");
+            "[\"c\"]", "VARCHAR(2000)");
 
     // catch error test
     tester.checkFails("json_keys('{\"foo\":100}', 'invalid $.foo')",
             "(?s).*Illegal jsonpath spec.*", true);
     tester.checkFails("json_keys('{\"foo\":100}', 'strict $.foo1')",
             "(?s).*No results for path.*", true);
+
   }
 
   @Test public void testJsonRemove() {
@@ -4984,6 +5007,13 @@ public abstract class SqlOperatorBaseTest {
         values,
         "{\"foo\":\"bar\",\"foo3\":\"bar3\"}",
         0.0D);
+  }
+
+  @Test public void testJsonValueExpressionOperator() {
+    tester.checkScalar("'{}' format json", "{}", "ANY NOT NULL");
+    tester.checkScalar("'[1, 2, 3]' format json", "[1, 2, 3]", "ANY NOT NULL");
+    tester.checkNull("cast(null as varchar) format json");
+    tester.checkScalar("'null' format json", "null", "ANY NOT NULL");
   }
 
   @Test public void testJsonArray() {
