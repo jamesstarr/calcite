@@ -860,6 +860,18 @@ public class Util {
   }
 
   /**
+   * Wraps an exception with {@link RuntimeException} and return it.
+   * If the exception is already an instance of RuntimeException,
+   * returns it directly.
+   */
+  public static RuntimeException toUnchecked(Exception e) {
+    if (e instanceof RuntimeException) {
+      return (RuntimeException) e;
+    }
+    return new RuntimeException(e);
+  }
+
+  /**
    * This method rethrows input throwable as is (if its unchecked) or
    * wraps it with {@link RuntimeException} and throws.
    * <p>The typical usage would be {@code throw throwAsRuntime(...)}, where {@code throw} statement
@@ -895,21 +907,6 @@ public class Util {
       return new UncheckedIOException(message, (IOException) throwable);
     }
     throw new RuntimeException(message, throwable);
-  }
-
-  /**
-   * Wraps an exception with {@link RuntimeException} and return it.
-   * If the exception is already an instance of RuntimeException,
-   * returns it directly.
-   */
-  public static RuntimeException toUnchecked(Exception e) {
-    if (e instanceof RuntimeException) {
-      return (RuntimeException) e;
-    }
-    if (e instanceof IOException) {
-      return new UncheckedIOException((IOException) e);
-    }
-    return new RuntimeException(e);
   }
 
   /**
