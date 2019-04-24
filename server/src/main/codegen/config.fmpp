@@ -493,6 +493,12 @@ data: {
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
 
+      # List of methods for parsing builtin function calls.
+      # Return type of method implementation should be "SqlNode".
+      # Example: DateFunctionCall().
+      builtinFunctionCallMethods: [
+      ]
+
     # List of methods for parsing extensions to "CREATE [OR REPLACE]" calls.
     # Each must accept arguments "(SqlParserPos pos, boolean replace)".
     # Example: "SqlCreateForeignSchema".

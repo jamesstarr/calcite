@@ -42,6 +42,7 @@ SqlNode DateFunctionCall() :
     }
 }
 
+<<<<<<< HEAD
 SqlNode DateaddFunctionCall() :
 {
     final SqlFunctionCategory funcType = SqlFunctionCategory.USER_DEFINED_FUNCTION;
@@ -97,4 +98,6 @@ void InfixCast(List<Object> list, ExprContext exprContext, Span s) :
     }
 }
 
+=======
+>>>>>>> 493df6ca3 ([CALCITE-3022] Babel: Various SQL parsing issues)
 // End parserImpls.ftl
