@@ -161,6 +161,22 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
 
     registerOp(SqlLibraryOperators.GREATEST, new GreatestConvertlet());
     registerOp(SqlLibraryOperators.LEAST, new GreatestConvertlet());
+    registerOp(SqlLibraryOperators.NVL,
+        (cx, call) -> {
+          final RexBuilder rexBuilder = cx.getRexBuilder();
+          final RexNode operand0 =
+              cx.convertExpression(call.getOperandList().get(0));
+          final RexNode operand1 =
+              cx.convertExpression(call.getOperandList().get(1));
+          final RelDataType type =
+              cx.getValidator().getValidatedNodeType(call);
+          return rexBuilder.makeCall(type, SqlStdOperatorTable.CASE,
+              ImmutableList.of(
+                  rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL,
+                      operand0),
+                  rexBuilder.makeCast(type, operand0),
+                  rexBuilder.makeCast(type, operand1)));
+        });
 
     registerOp(SqlLibraryOperators.NVL, StandardConvertletTable::convertNvl);
     registerOp(SqlLibraryOperators.DECODE,
@@ -282,15 +298,15 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
 
     registerOp(SqlStdOperatorTable.JSON_API_COMMON_SYNTAX,
         new JsonOperatorValueExprConvertlet(0));
-    registerOp(SqlStdOperatorTable.JSON_PRETTY,
+    registerOp(SqlLibraryOperators.JSON_PRETTY,
         new JsonOperatorValueExprConvertlet(0));
-    registerOp(SqlStdOperatorTable.JSON_TYPE,
+    registerOp(SqlLibraryOperators.JSON_TYPE,
         new JsonOperatorValueExprConvertlet(0));
-    registerOp(SqlStdOperatorTable.JSON_DEPTH,
+    registerOp(SqlLibraryOperators.JSON_DEPTH,
         new JsonOperatorValueExprConvertlet(0));
-    registerOp(SqlStdOperatorTable.JSON_LENGTH,
+    registerOp(SqlLibraryOperators.JSON_LENGTH,
         new JsonOperatorValueExprConvertlet(0));
-    registerOp(SqlStdOperatorTable.JSON_KEYS,
+    registerOp(SqlLibraryOperators.JSON_KEYS,
         new JsonOperatorValueExprConvertlet(0));
 
     // Convert json_value('{"foo":"bar"}', 'lax $.foo', returning varchar(2000))

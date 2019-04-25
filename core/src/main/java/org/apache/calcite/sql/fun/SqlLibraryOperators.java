@@ -30,7 +30,7 @@ import org.apache.calcite.sql.type.SqlTypeTransforms;
 import java.util.ArrayList;
 import java.util.List;
 
->>>>>>> 1d2fb0f01 ([CALCITE-3017] Re-organize how we represent built-in operators that are not in the standard operator table)
+import static org.apache.calcite.sql.fun.SqlLibrary.MYSQL;
 import static org.apache.calcite.sql.fun.SqlLibrary.ORACLE;
 import static org.apache.calcite.sql.fun.SqlLibrary.POSTGRESQL;
 
@@ -147,6 +147,20 @@ public abstract class SqlLibraryOperators {
   @LibraryOperator(libraries = {ORACLE, POSTGRESQL})
   public static final SqlFunction TRANSLATE3 = new SqlTranslate3Function();
 
+  @LibraryOperator(libraries = {MYSQL})
+  public static final SqlFunction JSON_TYPE = SqlStdOperatorTable.JSON_TYPE;
+
+  @LibraryOperator(libraries = {MYSQL})
+  public static final SqlFunction JSON_DEPTH = SqlStdOperatorTable.JSON_DEPTH;
+
+  @LibraryOperator(libraries = {MYSQL})
+  public static final SqlFunction JSON_LENGTH = SqlStdOperatorTable.JSON_LENGTH;
+
+  @LibraryOperator(libraries = {MYSQL})
+  public static final SqlFunction JSON_KEYS = SqlStdOperatorTable.JSON_KEYS;
+
+  @LibraryOperator(libraries = {MYSQL})
+  public static final SqlFunction JSON_PRETTY = SqlStdOperatorTable.JSON_PRETTY;
 }
 
 // End SqlLibraryOperators.java
