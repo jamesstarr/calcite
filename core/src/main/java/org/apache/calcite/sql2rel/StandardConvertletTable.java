@@ -46,12 +46,12 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlNumericLiteral;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlUtil;
-import org.apache.calcite.sql.fun.OracleSqlOperatorTable;
 import org.apache.calcite.sql.fun.SqlArrayValueConstructor;
 import org.apache.calcite.sql.fun.SqlBetweenOperator;
 import org.apache.calcite.sql.fun.SqlCase;
 import org.apache.calcite.sql.fun.SqlDatetimeSubtractionOperator;
 import org.apache.calcite.sql.fun.SqlExtractFunction;
+import org.apache.calcite.sql.fun.SqlLibraryOperators;
 import org.apache.calcite.sql.fun.SqlLiteralChainOperator;
 import org.apache.calcite.sql.fun.SqlMapValueConstructor;
 import org.apache.calcite.sql.fun.SqlMultisetQueryConstructor;
@@ -182,15 +182,15 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
           }
         });
 
-    registerOp(OracleSqlOperatorTable.LTRIM,
+    registerOp(SqlLibraryOperators.LTRIM,
         new TrimConvertlet(SqlTrimFunction.Flag.LEADING));
-    registerOp(OracleSqlOperatorTable.RTRIM,
+    registerOp(SqlLibraryOperators.RTRIM,
         new TrimConvertlet(SqlTrimFunction.Flag.TRAILING));
 
-    registerOp(OracleSqlOperatorTable.GREATEST, new GreatestConvertlet());
-    registerOp(OracleSqlOperatorTable.LEAST, new GreatestConvertlet());
+    registerOp(SqlLibraryOperators.GREATEST, new GreatestConvertlet());
+    registerOp(SqlLibraryOperators.LEAST, new GreatestConvertlet());
 
-    registerOp(OracleSqlOperatorTable.NVL,
+    registerOp(SqlLibraryOperators.NVL,
         new SqlRexConvertlet() {
           public RexNode convertCall(SqlRexContext cx, SqlCall call) {
             final RexBuilder rexBuilder = cx.getRexBuilder();
@@ -209,7 +209,7 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
           }
         });
 
-    registerOp(OracleSqlOperatorTable.DECODE,
+    registerOp(SqlLibraryOperators.DECODE,
         new SqlRexConvertlet() {
           public RexNode convertCall(SqlRexContext cx, SqlCall call) {
             final RexBuilder rexBuilder = cx.getRexBuilder();

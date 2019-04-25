@@ -39,6 +39,10 @@ public abstract class Sources {
     return new FileSource(file);
   }
 
+  public static Source of(URL url) {
+    return new FileSource(url);
+  }
+
   public static Source file(File baseDirectory, String fileName) {
     final File file = new File(fileName);
     if (baseDirectory != null && !file.isAbsolute()) {

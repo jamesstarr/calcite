@@ -606,7 +606,7 @@ public class SqlParserTest {
     return SqlParserImpl.FACTORY;
   }
 
-  protected SqlParser getSqlParser(String sql) {
+  public SqlParser getSqlParser(String sql) {
     return SqlParser.create(sql,
         SqlParser.configBuilder()
             .setParserFactory(parserImplFactory())
