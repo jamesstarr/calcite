@@ -82,19 +82,4 @@ where t.struct = ROW(2, ROW(3,4));
 =======
 >>>>>>> 4b83cdce6 ([CALCITE-3116] Upgrade to Avatica 1.15)
 
-# [CALCITE-3021] ArrayEqualityComparer should use Arrays#deepEquals/deepHashCode instead of Arrays#equals/hashCode
-select distinct * from (values
-    (1, ROW(1,1)),
-    (1, ROW(1,1)),
-    (2, ROW(2,2))) as v(id,struct);
-+----+--------+
-| ID | STRUCT |
-+----+--------+
-|  1 | {1, 1} |
-|  2 | {2, 2} |
-+----+--------+
-(2 rows)
-
-!ok
-
 # End struct.iq
