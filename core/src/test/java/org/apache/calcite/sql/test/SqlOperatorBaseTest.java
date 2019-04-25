@@ -35,7 +35,6 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperandCountRange;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.dialect.AnsiSqlDialect;
-import org.apache.calcite.sql.fun.OracleSqlOperatorTable;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.fun.SqlLibraryOperatorTableFactory;
 import org.apache.calcite.sql.fun.SqlLibraryOperators;
@@ -46,7 +45,6 @@ import org.apache.calcite.sql.type.BasicSqlType;
 import org.apache.calcite.sql.type.SqlOperandTypeChecker;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
-import org.apache.calcite.sql.util.ChainedSqlOperatorTable;
 import org.apache.calcite.sql.util.SqlString;
 import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
@@ -330,8 +328,8 @@ public abstract class SqlOperatorBaseTest {
     return tester
         .withConformance(conformance)
         .withOperatorTable(
-            ChainedSqlOperatorTable.of(OracleSqlOperatorTable.instance(),
-                SqlStdOperatorTable.instance()))
+            SqlLibraryOperatorTableFactory.INSTANCE
+                .getOperatorTable(SqlLibrary.STANDARD, SqlLibrary.ORACLE))
         .withConnectionFactory(
             CalciteAssert.EMPTY_CONNECTION_FACTORY
                 .with(new CalciteAssert
@@ -4651,7 +4649,7 @@ public abstract class SqlOperatorBaseTest {
   }
 
   @Test public void testJsonType() {
-    tester.setFor(SqlStdOperatorTable.JSON_TYPE);
+    tester.setFor(SqlLibraryOperators.JSON_TYPE);
     tester.checkString("json_type('\"1\"')",
             "STRING", "VARCHAR(20) NOT NULL");
     tester.checkString("json_type('1')",
@@ -4675,7 +4673,7 @@ public abstract class SqlOperatorBaseTest {
   }
 
   @Test public void testJsonDepth() {
-    tester.setFor(SqlStdOperatorTable.JSON_DEPTH);
+    tester.setFor(SqlLibraryOperators.JSON_DEPTH);
     tester.checkString("json_depth('1')",
             "1", "INTEGER");
     tester.checkString("json_depth('11.45')",
