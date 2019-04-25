@@ -71,11 +71,6 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
-<<<<<<< HEAD
-import java.util.function.Consumer;
-import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
-=======
 import javax.annotation.Nonnull;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -636,12 +631,15 @@ public class SqlParserTest {
   }
 
   public SqlParser getSqlParser(String sql) {
+<<<<<<< HEAD
     return getSqlParser(new SourceStringReader(sql), UnaryOperator.identity());
   }
 
   protected SqlParser getSqlParser(Reader source,
       UnaryOperator<SqlParser.ConfigBuilder> transform) {
     final SqlParser.ConfigBuilder configBuilder =
+=======
+    return SqlParser.create(sql,
         SqlParser.configBuilder()
             .setParserFactory(parserImplFactory())
             .setQuoting(quoting)

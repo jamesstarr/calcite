@@ -50,7 +50,10 @@ public abstract class Sources {
     return new FileSource(url);
   }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1d2fb0f01 ([CALCITE-3017] Re-organize how we represent built-in operators that are not in the standard operator table)
   public static Source file(File baseDirectory, String fileName) {
     final File file = new File(fileName);
     if (baseDirectory != null && !file.isAbsolute()) {

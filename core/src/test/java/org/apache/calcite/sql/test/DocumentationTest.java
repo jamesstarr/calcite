@@ -16,7 +16,7 @@
  */
 package org.apache.calcite.sql.test;
 
-import org.apache.calcite.sql.SqlFunction;
+  import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSpecialOperator;
 import org.apache.calcite.sql.fun.SqlLibrary;
@@ -29,7 +29,7 @@ import org.apache.calcite.test.DiffTestCase;
 import org.apache.calcite.util.Sources;
 import org.apache.calcite.util.Util;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,25 +37,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.assertThat;
 
 /** Various automated checks on the documentation. */
-class DocumentationTest {
+public class DocumentationTest {
   /** Generates a copy of {@code reference.md} with the current set of key
    * words. Fails if the copy is different from the original. */
-  @Test void testGenerateKeyWords() throws IOException {
+  @Test public void testGenerateKeyWords() throws IOException {
     final FileFixture f = new FileFixture();
     f.outFile.getParentFile().mkdirs();
     try (BufferedReader r = Util.reader(f.inFile);
@@ -100,7 +88,7 @@ class DocumentationTest {
 
   /** Tests that every function in {@link SqlStdOperatorTable} is documented in
    * reference.md. */
-  @Test void testAllFunctionsAreDocumented() throws IOException {
+  @Test public void testAllFunctionsAreDocumented() throws IOException {
     final FileFixture f = new FileFixture();
     final Map<String, PatternOp> map = new TreeMap<>();
     addOperators(map, "", SqlStdOperatorTable.instance().getOperatorList());
@@ -179,39 +167,25 @@ class DocumentationTest {
     final File inFile;
     final File outFile;
 
-    private boolean isProjectDir(File dir) {
-      return new File(dir, "pom.xml").isFile()
-          || new File(dir, "build.gradle.kts").isFile()
-          || new File(dir, "gradle.properties").isFile();
-    }
-
     FileFixture() {
-      // Algorithm:
-      // 1) Find location of DocumentationTest.class
-      // 2) Climb via getParentFile() until we detect pom.xml
-      // 3) It means we've got core/pom.xml, and we need to get core/../site/
-      Class<DocumentationTest> klass = DocumentationTest.class;
-      File docTestClass =
-          Sources.of(klass.getResource(klass.getSimpleName() + ".class")).file();
-
-      File core = docTestClass.getAbsoluteFile();
-      for (int i = 0; i < 42; i++) {
-        if (isProjectDir(core)) {
-          // Ok, core == core/
-          break;
-        }
-        core = core.getParentFile();
-      }
-      if (!isProjectDir(core)) {
-        fail("Unable to find neither core/pom.xml nor core/build.gradle.kts. Started with "
-            + docTestClass.getAbsolutePath()
-            + ", the current path is " + core.getAbsolutePath());
-      }
-      base = core.getParentFile();
+      // inUrl =
+      // "file:/home/x/calcite/core/target/test-classes/hsqldb-model.json"
+      String path = "hsqldb-model.json";
+      File hsqlDbModel =
+          Sources.of(SqlParserTest.class.getResource("/" + path)).file();
+      assert hsqlDbModel.getAbsolutePath().endsWith(
+          Paths.get("core", "target", "test-classes", "hsqldb-model.json")
+              .toString())
+          : hsqlDbModel.getAbsolutePath()
+          + " should end with core/target/test-classes/hsqldb-model.json";
+      // skip hsqldb-model.json, test-classes, target, core
+      // The assertion above protects us from walking over unrelated paths
+      base = hsqlDbModel.getAbsoluteFile()
+          .getParentFile().getParentFile().getParentFile().getParentFile();
       inFile = new File(base, "site/_docs/reference.md");
-      // TODO: replace with core/build/ when Maven is migrated to Gradle
-      // It does work in Gradle, however, we don't want to create "target" folder in Gradle
-      outFile = new File(base, "core/build/reports/documentationTest/reference.md");
+      outFile = new File(base, "core/target/surefire/reference.md");
     }
   }
 }
+
+// End DocumentationTest.java

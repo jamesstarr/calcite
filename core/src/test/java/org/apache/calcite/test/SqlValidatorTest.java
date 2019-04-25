@@ -38,11 +38,771 @@ import org.apache.calcite.sql.type.ArraySqlType;
 import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
+<<<<<<< HEAD
+=======
+import org.apache.calcite.sql.validate.SqlAbstractConformance;
+import org.apache.calcite.sql.validate.SqlConformance;
+import org.apache.calcite.sql.validate.SqlConformanceEnum;
+import org.apache.calcite.sql.validate.SqlDelegatingConformance;
+import org.apache.calcite.sql.validate.SqlMonotonicity;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.sql.validate.SqlValidatorUtil;
+import org.apache.calcite.util.Bug;
+import org.apache.calcite.util.ImmutableBitSet;
+
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Ordering;
+
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+/**
+ * Concrete child class of {@link SqlValidatorTestCase}, containing lots of unit
+ * tests.
+ *
+ * <p>If you want to run these same tests in a different environment, create a
+ * derived class whose {@link #getTester} returns a different implementation of
+ * {@link org.apache.calcite.sql.test.SqlTester}.
+ */
+public class SqlValidatorTest extends SqlValidatorTestCase {
+  //~ Static fields/initializers ---------------------------------------------
+
+  /**
+   * @deprecated Deprecated so that usages of this constant will show up in
+   * yellow in Intellij and maybe someone will fix them.
+   */
+  protected static final boolean TODO = false;
+  private static final String ANY = "(?s).*";
+
+  protected static final Logger LOGGER =
+      LoggerFactory.getLogger(SqlValidatorTest.class);
+
+  private static final String ERR_IN_VALUES_INCOMPATIBLE =
+      "Values in expression list must have compatible types";
+
+  private static final String ERR_IN_OPERANDS_INCOMPATIBLE =
+      "Values passed to IN operator must have compatible types";
+
+  private static final String ERR_AGG_IN_GROUP_BY =
+      "Aggregate expression is illegal in GROUP BY clause";
+
+  private static final String ERR_AGG_IN_ORDER_BY =
+      "Aggregate expression is illegal in ORDER BY clause of non-aggregating SELECT";
+
+  private static final String ERR_NESTED_AGG =
+      "Aggregate expressions cannot be nested";
+
+  private static final String EMP_RECORD_TYPE =
+      "RecordType(INTEGER NOT NULL EMPNO,"
+          + " VARCHAR(20) NOT NULL ENAME,"
+          + " VARCHAR(10) NOT NULL JOB,"
+          + " INTEGER MGR,"
+          + " TIMESTAMP(0) NOT NULL HIREDATE,"
+          + " INTEGER NOT NULL SAL,"
+          + " INTEGER NOT NULL COMM,"
+          + " INTEGER NOT NULL DEPTNO,"
+          + " BOOLEAN NOT NULL SLACKER) NOT NULL";
+
+  private static final String STR_AGG_REQUIRES_MONO =
+      "Streaming aggregation requires at least one monotonic expression in GROUP BY clause";
+
+  private static final String STR_ORDER_REQUIRES_MONO =
+      "Streaming ORDER BY must start with monotonic expression";
+
+  private static final String STR_SET_OP_INCONSISTENT =
+      "Set operator cannot combine streaming and non-streaming inputs";
+
+  private static final String ROW_RANGE_NOT_ALLOWED_WITH_RANK =
+      "ROW/RANGE not allowed with RANK, DENSE_RANK or ROW_NUMBER functions";
+
+  //~ Constructors -----------------------------------------------------------
+
+  public SqlValidatorTest() {
+    super();
+  }
+
+  //~ Methods ----------------------------------------------------------------
+
+  @BeforeClass public static void setUSLocale() {
+    // This ensures numbers in exceptions are printed as in asserts.
+    // For example, 1,000 vs 1 000
+    Locale.setDefault(Locale.US);
+  }
+
+  private static String cannotConvertToStream(String name) {
+    return "Cannot convert table '" + name + "' to stream";
+  }
+
+  private static String cannotConvertToRelation(String table) {
+    return "Cannot convert stream '" + table + "' to relation";
+  }
+
+  private static String cannotStreamResultsForNonStreamingInputs(String inputs) {
+    return "Cannot stream results of a query with no streaming inputs: '"
+        + inputs
+        + "'. At least one input should be convertible to a stream";
+  }
+
+  @Test public void testMultipleSameAsPass() {
+    check("select 1 as again,2 as \"again\", 3 as AGAiN from (values (true))");
+  }
+
+  @Test public void testMultipleDifferentAs() {
+    check("select 1 as c1,2 as c2 from (values(true))");
+  }
+
+  @Test public void testTypeOfAs() {
+    checkColumnType(
+        "select 1 as c1 from (values (true))",
+        "INTEGER NOT NULL");
+    checkColumnType(
+        "select 'hej' as c1 from (values (true))",
+        "CHAR(3) NOT NULL");
+    checkColumnType(
+        "select x'deadbeef' as c1 from (values (true))",
+        "BINARY(4) NOT NULL");
+    checkColumnType(
+        "select cast(null as boolean) as c1 from (values (true))",
+        "BOOLEAN");
+  }
+
+  @Test public void testTypesLiterals() {
+    checkExpType("'abc'", "CHAR(3) NOT NULL");
+    checkExpType("n'abc'", "CHAR(3) NOT NULL");
+    checkExpType("_UTF16'abc'", "CHAR(3) NOT NULL");
+    checkExpType("'ab '\n"
+        + "' cd'", "CHAR(6) NOT NULL");
+    checkExpType(
+        "'ab'\n"
+            + "'cd'\n"
+            + "'ef'\n"
+            + "'gh'\n"
+            + "'ij'\n"
+            + "'kl'",
+        "CHAR(12) NOT NULL");
+    checkExpType("n'ab '\n"
+            + "' cd'",
+        "CHAR(6) NOT NULL");
+    checkExpType("_UTF16'ab '\n"
+            + "' cd'",
+        "CHAR(6) NOT NULL");
+
+    checkExpFails(
+        "^x'abc'^",
+        "Binary literal string must contain an even number of hexits");
+    checkExpType("x'abcd'", "BINARY(2) NOT NULL");
+    checkExpType("x'abcd'\n"
+            + "'ff001122aabb'",
+        "BINARY(8) NOT NULL");
+    checkExpType(
+        "x'aaaa'\n"
+            + "'bbbb'\n"
+            + "'0000'\n"
+            + "'1111'",
+        "BINARY(8) NOT NULL");
+
+    checkExpType("1234567890", "INTEGER NOT NULL");
+    checkExpType("123456.7890", "DECIMAL(10, 4) NOT NULL");
+    checkExpType("123456.7890e3", "DOUBLE NOT NULL");
+    checkExpType("true", "BOOLEAN NOT NULL");
+    checkExpType("false", "BOOLEAN NOT NULL");
+    checkExpType("unknown", "BOOLEAN");
+  }
+
+  @Test public void testBooleans() {
+    check("select TRUE OR unknowN from (values(true))");
+    check("select false AND unknown from (values(true))");
+    check("select not UNKNOWn from (values(true))");
+    check("select not true from (values(true))");
+    check("select not false from (values(true))");
+  }
+
+  @Test public void testAndOrIllegalTypesFails() {
+    // TODO need col+line number
+    checkWholeExpFails(
+        "'abc' AND FaLsE",
+        "(?s).*'<CHAR.3.> AND <BOOLEAN>'.*");
+
+    checkWholeExpFails("TRUE OR 1", ANY);
+
+    checkWholeExpFails(
+        "unknown OR 1.0",
+        ANY);
+
+    checkWholeExpFails(
+        "true OR 1.0e4",
+        ANY);
+
+    if (TODO) {
+      checkWholeExpFails(
+          "TRUE OR (TIME '12:00' AT LOCAL)",
+          ANY);
+    }
+  }
+
+  @Test public void testNotIllegalTypeFails() {
+    assertExceptionIsThrown(
+        "select ^NOT 3.141^ from (values(true))",
+        "(?s).*Cannot apply 'NOT' to arguments of type 'NOT<DECIMAL.4, 3.>'.*");
+
+    assertExceptionIsThrown(
+        "select ^NOT 'abc'^ from (values(true))",
+        ANY);
+
+    assertExceptionIsThrown(
+        "select ^NOT 1^ from (values(true))",
+        ANY);
+  }
+
+  @Test public void testIs() {
+    check("select TRUE IS FALSE FROM (values(true))");
+    check("select false IS NULL FROM (values(true))");
+    check("select UNKNOWN IS NULL FROM (values(true))");
+    check("select FALSE IS UNKNOWN FROM (values(true))");
+
+    check("select TRUE IS NOT FALSE FROM (values(true))");
+    check("select TRUE IS NOT NULL FROM (values(true))");
+    check("select false IS NOT NULL FROM (values(true))");
+    check("select UNKNOWN IS NOT NULL FROM (values(true))");
+    check("select FALSE IS NOT UNKNOWN FROM (values(true))");
+
+    check("select 1 IS NULL FROM (values(true))");
+    check("select 1.2 IS NULL FROM (values(true))");
+    checkExpFails("^'abc' IS NOT UNKNOWN^", "(?s).*Cannot apply.*");
+  }
+
+  @Test public void testIsFails() {
+    assertExceptionIsThrown(
+        "select ^1 IS TRUE^ FROM (values(true))",
+        "(?s).*'<INTEGER> IS TRUE'.*");
+
+    assertExceptionIsThrown(
+        "select ^1.1 IS NOT FALSE^ FROM (values(true))",
+        ANY);
+
+    assertExceptionIsThrown(
+        "select ^1.1e1 IS NOT FALSE^ FROM (values(true))",
+        "(?s).*Cannot apply 'IS NOT FALSE' to arguments of type '<DOUBLE> IS NOT FALSE'.*");
+
+    assertExceptionIsThrown(
+        "select ^'abc' IS NOT TRUE^ FROM (values(true))",
+        ANY);
+  }
+
+  @Test public void testScalars() {
+    check("select 1  + 1 from (values(true))");
+    check("select 1  + 2.3 from (values(true))");
+    check("select 1.2+3 from (values(true))");
+    check("select 1.2+3.4 from (values(true))");
+
+    check("select 1  - 1 from (values(true))");
+    check("select 1  - 2.3 from (values(true))");
+    check("select 1.2-3 from (values(true))");
+    check("select 1.2-3.4 from (values(true))");
+
+    check("select 1  * 2 from (values(true))");
+    check("select 1.2* 3 from (values(true))");
+    check("select 1  * 2.3 from (values(true))");
+    check("select 1.2* 3.4 from (values(true))");
+
+    check("select 1  / 2 from (values(true))");
+    check("select 1  / 2.3 from (values(true))");
+    check("select 1.2/ 3 from (values(true))");
+    check("select 1.2/3.4 from (values(true))");
+  }
+
+  @Test public void testScalarsFails() {
+    assertExceptionIsThrown(
+        "select ^1+TRUE^ from (values(true))",
+        "(?s).*Cannot apply '\\+' to arguments of type '<INTEGER> \\+ <BOOLEAN>'\\. Supported form\\(s\\):.*");
+  }
+
+  @Test public void testNumbers() {
+    check("select 1+-2.*-3.e-1/-4>+5 AND true from (values(true))");
+  }
+
+  @Test public void testPrefix() {
+    checkExpType("+interval '1' second", "INTERVAL SECOND NOT NULL");
+    checkExpType("-interval '1' month", "INTERVAL MONTH NOT NULL");
+    checkFails(
+        "SELECT ^-'abc'^ from (values(true))",
+        "(?s).*Cannot apply '-' to arguments of type '-<CHAR.3.>'.*");
+    checkFails(
+        "SELECT ^+'abc'^ from (values(true))",
+        "(?s).*Cannot apply '\\+' to arguments of type '\\+<CHAR.3.>'.*");
+  }
+
+  @Test public void testEqualNotEqual() {
+    checkExp("''=''");
+    checkExp("'abc'=n''");
+    checkExp("''=_latin1''");
+    checkExp("n''=''");
+    checkExp("n'abc'=n''");
+    checkExp("n''=_latin1''");
+    checkExp("_latin1''=''");
+    checkExp("_latin1''=n''");
+    checkExp("_latin1''=_latin1''");
+
+    checkExp("''<>''");
+    checkExp("'abc'<>n''");
+    checkExp("''<>_latin1''");
+    checkExp("n''<>''");
+    checkExp("n'abc'<>n''");
+    checkExp("n''<>_latin1''");
+    checkExp("_latin1''<>''");
+    checkExp("_latin1'abc'<>n''");
+    checkExp("_latin1''<>_latin1''");
+
+    checkExp("true=false");
+    checkExp("unknown<>true");
+
+    checkExp("1=1");
+    checkExp("1=.1");
+    checkExp("1=1e-1");
+    checkExp("0.1=1");
+    checkExp("0.1=0.1");
+    checkExp("0.1=1e1");
+    checkExp("1.1e1=1");
+    checkExp("1.1e1=1.1");
+    checkExp("1.1e-1=1e1");
+
+    checkExp("''<>''");
+    checkExp("1<>1");
+    checkExp("1<>.1");
+    checkExp("1<>1e-1");
+    checkExp("0.1<>1");
+    checkExp("0.1<>0.1");
+    checkExp("0.1<>1e1");
+    checkExp("1.1e1<>1");
+    checkExp("1.1e1<>1.1");
+    checkExp("1.1e-1<>1e1");
+  }
+
+  @Test public void testEqualNotEqualFails() {
+    checkExp("''<>1"); // compare CHAR, INTEGER ok; implicitly convert CHAR
+    checkExp("'1'>=1");
+    checkExp("1<>n'abc'"); // compare INTEGER, NCHAR ok
+    checkExp("''=.1"); // compare CHAR, DECIMAL ok
+    checkExpFails(
+        "^true<>1e-1^",
+        "(?s).*Cannot apply '<>' to arguments of type '<BOOLEAN> <> <DOUBLE>'.*");
+    checkExp("false=''"); // compare BOOLEAN, CHAR ok
+    checkExpFails(
+        "^x'a4'=0.01^",
+        "(?s).*Cannot apply '=' to arguments of type '<BINARY.1.> = <DECIMAL.3, 2.>'.*");
+    checkExpFails(
+        "^x'a4'=1^",
+        "(?s).*Cannot apply '=' to arguments of type '<BINARY.1.> = <INTEGER>'.*");
+    checkExpFails(
+        "^x'13'<>0.01^",
+        "(?s).*Cannot apply '<>' to arguments of type '<BINARY.1.> <> <DECIMAL.3, 2.>'.*");
+    checkExpFails(
+        "^x'abcd'<>1^",
+        "(?s).*Cannot apply '<>' to arguments of type '<BINARY.2.> <> <INTEGER>'.*");
+  }
+
+  @Test public void testBinaryString() {
+    check("select x'face'=X'' from (values(true))");
+    check("select x'ff'=X'' from (values(true))");
+  }
+
+  @Test public void testBinaryStringFails() {
+    assertExceptionIsThrown(
+        "select ^x'ffee'='abc'^ from (values(true))",
+        "(?s).*Cannot apply '=' to arguments of type '<BINARY.2.> = <CHAR.3.>'.*");
+    assertExceptionIsThrown(
+        "select ^x'ff'=88^ from (values(true))",
+        "(?s).*Cannot apply '=' to arguments of type '<BINARY.1.> = <INTEGER>'.*");
+    assertExceptionIsThrown(
+        "select ^x''<>1.1e-1^ from (values(true))",
+        "(?s).*Cannot apply '<>' to arguments of type '<BINARY.0.> <> <DOUBLE>'.*");
+    assertExceptionIsThrown(
+        "select ^x''<>1.1^ from (values(true))",
+        "(?s).*Cannot apply '<>' to arguments of type '<BINARY.0.> <> <DECIMAL.2, 1.>'.*");
+  }
+
+  @Test public void testStringLiteral() {
+    check("select n''=_iso-8859-1'abc' from (values(true))");
+    check("select N'f'<>'''' from (values(true))");
+  }
+
+  @Test public void testStringLiteralBroken() {
+    check("select 'foo'\n"
+        + "'bar' from (values(true))");
+    check("select 'foo'\r'bar' from (values(true))");
+    check("select 'foo'\n\r'bar' from (values(true))");
+    check("select 'foo'\r\n'bar' from (values(true))");
+    check("select 'foo'\n'bar' from (values(true))");
+    checkFails(
+        "select 'foo' /* comment */ ^'bar'^ from (values(true))",
+        "String literal continued on same line");
+    check("select 'foo' -- comment\r from (values(true))");
+    checkFails(
+        "select 'foo' ^'bar'^ from (values(true))",
+        "String literal continued on same line");
+  }
+
+  @Test public void testArithmeticOperators() {
+    checkExp("power(2,3)");
+    checkExp("aBs(-2.3e-2)");
+    checkExp("MOD(5             ,\t\f\r\n2)");
+    checkExp("ln(5.43  )");
+    checkExp("log10(- -.2  )");
+
+    checkExp("mod(5.1, 3)");
+    checkExp("mod(2,5.1)");
+    checkExp("exp(3.67)");
+  }
+
+  @Test public void testArithmeticOperatorsFails() {
+    checkExpFails(
+        "^power(2,'abc')^",
+        "(?s).*Cannot apply 'POWER' to arguments of type 'POWER.<INTEGER>, <CHAR.3.>.*");
+    checkExpFails(
+        "^power(true,1)^",
+        "(?s).*Cannot apply 'POWER' to arguments of type 'POWER.<BOOLEAN>, <INTEGER>.*");
+    checkExpFails(
+        "^mod(x'1100',1)^",
+        "(?s).*Cannot apply 'MOD' to arguments of type 'MOD.<BINARY.2.>, <INTEGER>.*");
+    checkExpFails(
+        "^mod(1, x'1100')^",
+        "(?s).*Cannot apply 'MOD' to arguments of type 'MOD.<INTEGER>, <BINARY.2.>.*");
+    checkExpFails(
+        "^abs(x'')^",
+        "(?s).*Cannot apply 'ABS' to arguments of type 'ABS.<BINARY.0.>.*");
+    checkExpFails(
+        "^ln(x'face12')^",
+        "(?s).*Cannot apply 'LN' to arguments of type 'LN.<BINARY.3.>.*");
+    checkExpFails(
+        "^log10(x'fa')^",
+        "(?s).*Cannot apply 'LOG10' to arguments of type 'LOG10.<BINARY.1.>.*");
+    checkExpFails(
+        "^exp('abc')^",
+        "(?s).*Cannot apply 'EXP' to arguments of type 'EXP.<CHAR.3.>.*");
+  }
+
+  @Test public void testCaseExpression() {
+    checkExp("case 1 when 1 then 'one' end");
+    checkExp("case 1 when 1 then 'one' else null end");
+    checkExp("case 1 when 1 then 'one' else 'more' end");
+    checkExp("case 1 when 1 then 'one' when 2 then null else 'more' end");
+    checkExp("case when TRUE then 'true' else 'false' end");
+    check("values case when TRUE then 'true' else 'false' end");
+    checkExp(
+        "CASE 1 WHEN 1 THEN cast(null as integer) WHEN 2 THEN null END");
+    checkExp(
+        "CASE 1 WHEN 1 THEN cast(null as integer) WHEN 2 THEN cast(null as integer) END");
+    checkExp(
+        "CASE 1 WHEN 1 THEN null WHEN 2 THEN cast(null as integer) END");
+    checkExp(
+        "CASE 1 WHEN 1 THEN cast(null as integer) WHEN 2 THEN cast(cast(null as tinyint) as integer) END");
+  }
+
+  @Test public void testCaseExpressionTypes() {
+    checkExpType(
+        "case 1 when 1 then 'one' else 'not one' end",
+        "CHAR(7) NOT NULL");
+    checkExpType("case when 2<1 then 'impossible' end", "CHAR(10)");
+    checkExpType(
+        "case 'one' when 'two' then 2.00 when 'one' then 1.3 else 3.2 end",
+        "DECIMAL(3, 2) NOT NULL");
+    checkExpType(
+        "case 'one' when 'two' then 2 when 'one' then 1.00 else 3 end",
+        "DECIMAL(12, 2) NOT NULL");
+    checkExpType(
+        "case 1 when 1 then 'one' when 2 then null else 'more' end",
+        "CHAR(4)");
+    checkExpType(
+        "case when TRUE then 'true' else 'false' end",
+        "CHAR(5) NOT NULL");
+    checkExpType("CASE 1 WHEN 1 THEN cast(null as integer) END", "INTEGER");
+    checkExpType(
+        "CASE 1 WHEN 1 THEN NULL WHEN 2 THEN cast(cast(null as tinyint) as integer) END",
+        "INTEGER");
+    checkExpType(
+        "CASE 1 WHEN 1 THEN cast(null as integer) WHEN 2 THEN cast(null as integer) END",
+        "INTEGER");
+    checkExpType(
+        "CASE 1 WHEN 1 THEN cast(null as integer) WHEN 2 THEN cast(cast(null as tinyint) as integer) END",
+        "INTEGER");
+    checkExpType(
+        "CASE 1 WHEN 1 THEN INTERVAL '12 3:4:5.6' DAY TO SECOND(6) WHEN 2 THEN INTERVAL '12 3:4:5.6' DAY TO SECOND(9) END",
+        "INTERVAL DAY TO SECOND(9)");
+  }
+
+  @Test public void testCaseExpressionFails() {
+    // varchar not comparable with bit string
+    checkWholeExpFails(
+        "case 'string' when x'01' then 'zero one' else 'something' end",
+        "(?s).*Cannot apply '=' to arguments of type '<CHAR.6.> = <BINARY.1.>'.*");
+
+    // all thens and else return null
+    checkWholeExpFails(
+        "case 1 when 1 then null else null end",
+        "(?s).*ELSE clause or at least one THEN clause must be non-NULL.*");
+
+    // all thens and else return null
+    checkWholeExpFails(
+        "case 1 when 1 then null end",
+        "(?s).*ELSE clause or at least one THEN clause must be non-NULL.*");
+    checkWholeExpFails(
+        "case when true and true then 1 "
+            + "when false then 2 "
+            + "when false then true " + "else "
+            + "case when true then 3 end end",
+        "Illegal mixing of types in CASE or COALESCE statement");
+  }
+
+  @Test public void testNullIf() {
+    checkExp("nullif(1,2)");
+    checkExpType("nullif(1,2)", "INTEGER");
+    checkExpType("nullif('a','b')", "CHAR(1)");
+    checkExpType("nullif(345.21, 2)", "DECIMAL(5, 2)");
+    checkExpType("nullif(345.21, 2e0)", "DECIMAL(5, 2)");
+    checkWholeExpFails(
+        "nullif(1,2,3)",
+        "Invalid number of arguments to function 'NULLIF'. Was expecting 2 arguments");
+  }
+
+  @Test public void testCoalesce() {
+    checkExp("coalesce('a','b')");
+    checkExpType("coalesce('a','b','c')", "CHAR(1) NOT NULL");
+  }
+
+  @Test public void testCoalesceFails() {
+    checkWholeExpFails(
+        "coalesce('a',1)",
+        "Illegal mixing of types in CASE or COALESCE statement");
+    checkWholeExpFails(
+        "coalesce('a','b',1)",
+        "Illegal mixing of types in CASE or COALESCE statement");
+  }
+
+  @Test public void testStringCompare() {
+    checkExp("'a' = 'b'");
+    checkExp("'a' <> 'b'");
+    checkExp("'a' > 'b'");
+    checkExp("'a' < 'b'");
+    checkExp("'a' >= 'b'");
+    checkExp("'a' <= 'b'");
+
+    checkExp("cast('' as varchar(1))>cast('' as char(1))");
+    checkExp("cast('' as varchar(1))<cast('' as char(1))");
+    checkExp("cast('' as varchar(1))>=cast('' as char(1))");
+    checkExp("cast('' as varchar(1))<=cast('' as char(1))");
+    checkExp("cast('' as varchar(1))=cast('' as char(1))");
+    checkExp("cast('' as varchar(1))<>cast('' as char(1))");
+  }
+
+  @Test public void testStringCompareType() {
+    checkExpType("'a' = 'b'", "BOOLEAN NOT NULL");
+    checkExpType("'a' <> 'b'", "BOOLEAN NOT NULL");
+    checkExpType("'a' > 'b'", "BOOLEAN NOT NULL");
+    checkExpType("'a' < 'b'", "BOOLEAN NOT NULL");
+    checkExpType("'a' >= 'b'", "BOOLEAN NOT NULL");
+    checkExpType("'a' <= 'b'", "BOOLEAN NOT NULL");
+    checkExpType("CAST(NULL AS VARCHAR(33)) > 'foo'", "BOOLEAN");
+  }
+
+  @Test public void testConcat() {
+    checkExp("'a'||'b'");
+    checkExp("x'12'||x'34'");
+    checkExpType("'a'||'b'", "CHAR(2) NOT NULL");
+    checkExpType(
+        "cast('a' as char(1))||cast('b' as char(2))",
+        "CHAR(3) NOT NULL");
+    checkExpType("cast(null as char(1))||cast('b' as char(2))", "CHAR(3)");
+    checkExpType("'a'||'b'||'c'", "CHAR(3) NOT NULL");
+    checkExpType("'a'||'b'||'cde'||'f'", "CHAR(6) NOT NULL");
+    checkExpType(
+        "'a'||'b'||cast('cde' as VARCHAR(3))|| 'f'",
+        "VARCHAR(6) NOT NULL");
+    checkExp("_UTF16'a'||_UTF16'b'||_UTF16'c'");
+  }
+
+  @Test public void testConcatWithCharset() {
+    checkCharset(
+        "_UTF16'a'||_UTF16'b'||_UTF16'c'",
+        Charset.forName("UTF-16LE"));
+  }
+
+  @Test public void testConcatFails() {
+    checkWholeExpFails(
+        "'a'||x'ff'",
+        "(?s).*Cannot apply '\\|\\|' to arguments of type '<CHAR.1.> \\|\\| <BINARY.1.>'"
+            + ".*Supported form.s.: '<STRING> \\|\\| <STRING>.*'");
+  }
+
+  @Test public void testBetween() {
+    checkExp("1 between 2 and 3");
+    checkExp("'a' between 'b' and 'c'");
+    checkExp("'' between 2 and 3"); // can implicitly convert CHAR to INTEGER
+    checkWholeExpFails("date '2012-02-03' between 2 and 3",
+        "(?s).*Cannot apply 'BETWEEN ASYMMETRIC' to arguments of type.*");
+  }
+
+  @Test public void testCharsetMismatch() {
+    checkWholeExpFails(
+        "''=_UTF16''",
+        "Cannot apply .* to the two different charsets ISO-8859-1 and UTF-16LE");
+    checkWholeExpFails(
+        "''<>_UTF16''",
+        "(?s).*Cannot apply .* to the two different charsets.*");
+    checkWholeExpFails(
+        "''>_UTF16''",
+        "(?s).*Cannot apply .* to the two different charsets.*");
+    checkWholeExpFails(
+        "''<_UTF16''",
+        "(?s).*Cannot apply .* to the two different charsets.*");
+    checkWholeExpFails(
+        "''<=_UTF16''",
+        "(?s).*Cannot apply .* to the two different charsets.*");
+    checkWholeExpFails(
+        "''>=_UTF16''",
+        "(?s).*Cannot apply .* to the two different charsets.*");
+    checkWholeExpFails("''||_UTF16''", ANY);
+    checkWholeExpFails("'a'||'b'||_UTF16'c'", ANY);
+  }
+
+  // FIXME jvs 2-Feb-2005: all collation-related tests are disabled due to
+  // dtbug 280
+
+  public void _testSimpleCollate() {
+    checkExp("'s' collate latin1$en$1");
+    checkExpType("'s' collate latin1$en$1", "CHAR(1)");
+    checkCollation(
+        "'s'",
+        "ISO-8859-1$en_US$primary",
+        SqlCollation.Coercibility.COERCIBLE);
+    checkCollation(
+        "'s' collate latin1$sv$3",
+        "ISO-8859-1$sv$3",
+        SqlCollation.Coercibility.EXPLICIT);
+  }
+
+  public void _testCharsetAndCollateMismatch() {
+    // todo
+    checkExpFails("_UTF16's' collate latin1$en$1", "?");
+  }
+
+  public void _testDyadicCollateCompare() {
+    checkExp("'s' collate latin1$en$1 < 't'");
+    checkExp("'t' > 's' collate latin1$en$1");
+    checkExp("'s' collate latin1$en$1 <> 't' collate latin1$en$1");
+  }
+
+  public void _testDyadicCompareCollateFails() {
+    // two different explicit collations. difference in strength
+    checkExpFails("'s' collate latin1$en$1 <= 't' collate latin1$en$2",
+        "(?s).*Two explicit different collations.*are illegal.*");
+
+    // two different explicit collations. difference in language
+    checkExpFails("'s' collate latin1$sv$1 >= 't' collate latin1$en$1",
+        "(?s).*Two explicit different collations.*are illegal.*");
+  }
+
+  public void _testDyadicCollateOperator() {
+    checkCollation(
+        "'a' || 'b'",
+        "ISO-8859-1$en_US$primary",
+        SqlCollation.Coercibility.COERCIBLE);
+    checkCollation("'a' collate latin1$sv$3 || 'b'",
+        "ISO-8859-1$sv$3",
+        SqlCollation.Coercibility.EXPLICIT);
+    checkCollation("'a' collate latin1$sv$3 || 'b' collate latin1$sv$3",
+        "ISO-8859-1$sv$3",
+        SqlCollation.Coercibility.EXPLICIT);
+  }
+
+  @Test public void testCharLength() {
+    checkExp("char_length('string')");
+    checkExp("char_length(_UTF16'string')");
+    checkExp("character_length('string')");
+    checkExpType("char_length('string')", "INTEGER NOT NULL");
+    checkExpType("character_length('string')", "INTEGER NOT NULL");
+  }
+
+  @Test public void testUpperLower() {
+    checkExp("upper(_UTF16'sadf')");
+    checkExp("lower(n'sadf')");
+    checkExpType("lower('sadf')", "CHAR(4) NOT NULL");
+    checkWholeExpFails("upper(123)",
+        "(?s).*Cannot apply 'UPPER' to arguments of type 'UPPER.<INTEGER>.'.*");
+  }
+
+  @Test public void testPosition() {
+    checkExp("position('mouse' in 'house')");
+    checkExp("position(x'11' in x'100110')");
+    checkExp("position(x'11' in x'100110' FROM 10)");
+    checkExp("position(x'abcd' in x'')");
+    checkExpType("position('mouse' in 'house')", "INTEGER NOT NULL");
+    checkWholeExpFails("position(x'1234' in '110')",
+        "Parameters must be of the same type");
+    checkWholeExpFails("position(x'1234' in '110' from 3)",
+        "Parameters must be of the same type");
+  }
+
+  @Test public void testTrim() {
+    checkExp("trim('mustache' FROM 'beard')");
+    checkExp("trim(both 'mustache' FROM 'beard')");
+    checkExp("trim(leading 'mustache' FROM 'beard')");
+    checkExp("trim(trailing 'mustache' FROM 'beard')");
+    checkExpType("trim('mustache' FROM 'beard')", "VARCHAR(5) NOT NULL");
+    checkExpType("trim('beard  ')", "VARCHAR(7) NOT NULL");
+    checkExpType(
+        "trim('mustache' FROM cast(null as varchar(4)))",
+        "VARCHAR(4)");
+
+    if (TODO) {
+      final SqlCollation.Coercibility expectedCoercibility = null;
+      checkCollation(
+          "trim('mustache' FROM 'beard')",
+          "CHAR(5)",
+          expectedCoercibility);
+    }
+  }
+
+  @Test public void testTrimFails() {
+    checkWholeExpFails("trim(123 FROM 'beard')",
+        "(?s).*Cannot apply 'TRIM' to arguments of type.*");
+    checkWholeExpFails("trim('a' FROM 123)",
+        "(?s).*Cannot apply 'TRIM' to arguments of type.*");
+    checkWholeExpFails("trim('a' FROM _UTF16'b')",
+        "(?s).*not comparable to each other.*");
+  }
+
+  public void _testConvertAndTranslate() {
+    checkExp("convert('abc' using conversion)");
+    checkExp("translate('abc' using translation)");
+  }
+
+  @Test public void testTranslate3() {
+    // TRANSLATE3 is not in the standard operator table
+>>>>>>> 1d2fb0f01 ([CALCITE-3017] Re-organize how we represent built-in operators that are not in the standard operator table)
     checkWholeExpFails("translate('aabbcc', 'ab', '+-')",
         "No match found for function signature TRANSLATE3\\(<CHARACTER>, <CHARACTER>, <CHARACTER>\\)");
     tester = tester.withOperatorTable(
-            SqlOperatorTables.chain(OracleSqlOperatorTable.instance(),
-            SqlStdOperatorTable.instance()));
+        SqlLibraryOperatorTableFactory.INSTANCE
+            .getOperatorTable(SqlLibrary.STANDARD, SqlLibrary.ORACLE));
     checkExpType("translate('aabbcc', 'ab', '+-')",
         "VARCHAR(6) NOT NULL");
     checkWholeExpFails("translate('abc', 'ab')",

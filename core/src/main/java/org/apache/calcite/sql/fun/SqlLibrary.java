@@ -18,7 +18,7 @@ package org.apache.calcite.sql.fun;
 
 import org.apache.calcite.config.CalciteConnectionProperty;
 
-import com.google.common.base.Preconditions;
+>>>>>>> 1d2fb0f01 ([CALCITE-3017] Re-organize how we represent built-in operators that are not in the standard operator table)
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -42,6 +42,7 @@ import java.util.Objects;
  */
 public enum SqlLibrary {
   /** The standard operators. */
+<<<<<<< HEAD
   STANDARD("", "standard"),
   /** Geospatial operators. */
   SPATIAL("s", "spatial"),
@@ -55,6 +56,17 @@ public enum SqlLibrary {
   /** A collection of operators that are in PostgreSQL but not in standard
    * SQL. */
   POSTGRESQL("p", "postgresql");
+=======
+  STANDARD(""),
+  /** Geospatial operators. */
+  SPATIAL("s"),
+  /** A collection of operators that are in MySQL but not in standard SQL. */
+  MYSQL("m"),
+  /** A collection of operators that are in Oracle but not in standard SQL. */
+  ORACLE("o"),
+  /** A collection of operators that are in PostgreSQL but not in standard
+   * SQL. */
+  POSTGRESQL("p");
 
   /** Abbreviation for the library used in SQL reference. */
   public final String abbrev;
@@ -63,11 +75,9 @@ public enum SqlLibrary {
    * see {@link CalciteConnectionProperty#FUN}. */
   public final String fun;
 
-  SqlLibrary(String abbrev, String fun) {
+  SqlLibrary(String abbrev) {
     this.abbrev = Objects.requireNonNull(abbrev);
-    this.fun = Objects.requireNonNull(fun);
-    Preconditions.checkArgument(
-        fun.equals(name().toLowerCase(Locale.ROOT).replace("_", "")));
+    this.fun = name().toLowerCase(Locale.ROOT);
   }
 
   /** Looks up a value.
@@ -98,3 +108,8 @@ public enum SqlLibrary {
     MAP = builder.build();
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlLibrary.java
+>>>>>>> 1d2fb0f01 ([CALCITE-3017] Re-organize how we represent built-in operators that are not in the standard operator table)
