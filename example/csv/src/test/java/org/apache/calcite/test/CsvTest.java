@@ -301,20 +301,15 @@ class CsvTest {
         .returns("EMPNO=130; GENDER=F; NAME=Alice").ok();
   }
 
-  /** Filter that can be slightly handled by CsvFilterableTable. */
-  @Test void testFilterableWhere3() throws SQLException {
-    final String sql = "select empno, gender, name from EMPS\n"
-            + " where gender <> 'M' and empno > 125";
-    sql("filterable-model", sql)
-        .returns("EMPNO=130; GENDER=F; NAME=Alice")
-        .ok();
-  }
-
+>>>>>>> 1a55339c4 ([CALCITE-2292] Query result is wrong when table is implemented with FilterableTable and the sql has multiple where conditions)
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2272">[CALCITE-2272]
    * Incorrect result for {@code name like '%E%' and city not like '%W%'}</a>.
    */
+<<<<<<< HEAD
   @Test void testFilterableWhereWithNot1() throws SQLException {
+=======
+  @Test public void testFilterableWhereWithNot1() throws SQLException {
     sql("filterable-model",
         "select name, empno from EMPS "
             + "where name like '%E%' and city not like '%W%' ")
@@ -324,7 +319,7 @@ class CsvTest {
 
   /** Similar to {@link #testFilterableWhereWithNot1()};
    * But use the same column. */
-  @Test void testFilterableWhereWithNot2() throws SQLException {
+  @Test public void testFilterableWhereWithNot2() throws SQLException {
     sql("filterable-model",
         "select name, empno from EMPS "
             + "where name like '%i%' and name not like '%W%' ")
@@ -333,18 +328,11 @@ class CsvTest {
         .ok();
   }
 
-  @Test void testJson() throws SQLException {
-    final String sql = "select * from archers\n";
-    final String[] lines = {
-        "id=19990101; dow=Friday; longDate=New Years Day; title=Tractor trouble.; "
-            + "characters=[Alice, Bob, Xavier]; script=Julian Hyde; summary=; "
-            + "lines=[Bob's tractor got stuck in a field., "
-            + "Alice and Xavier hatch a plan to surprise Charlie.]",
-        "id=19990103; dow=Sunday; longDate=Sunday 3rd January; "
-            + "title=Charlie's surprise.; characters=[Alice, Zebedee, Charlie, Xavier]; "
-            + "script=William Shakespeare; summary=; "
-            + "lines=[Charlie is very surprised by Alice and Xavier's surprise plan.]",
-    };
+  @Test public void testJson() throws SQLException {
+    final String sql = "select _MAP['id'] as id,\n"
+        + " _MAP['title'] as title,\n"
+        + " CHAR_LENGTH(CAST(_MAP['title'] AS VARCHAR(30))) as len\n"
+        + " from \"archers\"\n";
     sql("bug", sql)
         .returns(lines)
         .ok();
