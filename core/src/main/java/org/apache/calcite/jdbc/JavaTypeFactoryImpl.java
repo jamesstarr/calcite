@@ -38,10 +38,9 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
-import com.google.common.base.Preconditions;
-=======
 import com.google.common.collect.Lists;
 
+=======
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -52,6 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link JavaTypeFactory}.
@@ -245,27 +245,21 @@ public class JavaTypeFactoryImpl
   /** Converts a type in Java format to a SQL-oriented type. */
   public static RelDataType toSql(final RelDataTypeFactory typeFactory,
       RelDataType type) {
-    return toSql(typeFactory, type, true);
-  }
-
-  private static RelDataType toSql(final RelDataTypeFactory typeFactory,
-      RelDataType type, boolean mustSetNullability) {
-    RelDataType sqlType = type;
     if (type instanceof RelRecordType) {
->>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
-      // We do not need to change the nullability of the nested fields,
-      // since it can be overridden by the existing implementation of createTypeWithNullability
-      // when we treat the nullability of the root struct type.
-      sqlType = typeFactory.createStructType(
-              Lists.transform(type.getFieldList(),
-                field -> toSql(typeFactory, field.getType(), false)),
-              type.getFieldNames());
+      return typeFactory.createTypeWithNullability(
+          typeFactory.createStructType(
+              type.getFieldList()
+                  .stream()
+                  .map(field -> toSql(typeFactory, field.getType()))
+                  .collect(Collectors.toList()),
+              type.getFieldNames()),
+          type.isNullable());
     } else if (type instanceof JavaType) {
-      sqlType = typeFactory.createSqlType(type.getSqlTypeName());
+      return typeFactory.createTypeWithNullability(
+          typeFactory.createSqlType(type.getSqlTypeName()),
+          type.isNullable());
     }
-    return mustSetNullability
-            ? typeFactory.createTypeWithNullability(sqlType, type.isNullable())
-            : sqlType;
+    return type;
   }
 
   private static RelDataType toSqlTypeWithNullToAny(

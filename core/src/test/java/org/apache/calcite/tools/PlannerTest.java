@@ -97,6 +97,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -762,6 +763,23 @@ public class PlannerTest {
         + "JavaType(class java.lang.String) name, REAL NOT NULL salary, "
         + "INTEGER NOT NULL commission) NOT NULL", typeString);
   }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3029">[CALCITE-3029]
+   * Java-oriented field type is wrongly forced to be NOT NULL after being converted to
+   * SQL-oriented</a>. */
+  @Test public void testInsertSourceRelTypeWithNullValues() throws Exception {
+    Planner planner = getPlanner(null, Programs.standard());
+    SqlNode parse = planner.parse(
+        "insert into \"emps\" values(1, 1, null, 1, 1)");
+    SqlNode validate = planner.validate(parse);
+    RelNode convert = planner.rel(validate).rel;
+    RelDataType insertSourceType = convert.getInput(0).getRowType();
+    String typeString = SqlTests.getTypeString(insertSourceType);
+    assertEquals("RecordType(INTEGER NOT NULL empid, INTEGER NOT NULL deptno, VARCHAR name, "
+            + "REAL NOT NULL salary, INTEGER commission) NOT NULL", typeString);
+  }
+
 
   /** Unit test that parses, validates, converts and plans. Planner is
    * provided with a list of RelTraitDefs to register. */
