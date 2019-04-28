@@ -709,6 +709,17 @@ LogicalProject(EXPR$0=[CHAR_LENGTH('foo')])
             <![CDATA[values (character_length('foo'))]]>
         </Resource>
     </TestCase>
+    <TestCase name="testGroupByNestedColumn">
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(X=[$1], A=[$0], EXPR$2=[$2])
+  LogicalAggregate(group=[{0, 1}], EXPR$2=[AVG($2)])
+    LogicalProject(A=[$7], X=[$4], $f2=[$5])
+      LogicalProject(CONTACTNO=[$0], FNAME=[$1], LNAME=[$2], EMAIL=[$3], X=[$4.X], Y=[$4.Y], M=[$5.M], A=[$5.SUB.A], B=[$5.SUB.B])
+        LogicalTableScan(table=[[CATALOG, CUSTOMER, CONTACT_PEEK]])
+]]>
+        </Resource>
+    </TestCase>
     <TestCase name="testOverAvg">
         <Resource name="plan">
             <![CDATA[
