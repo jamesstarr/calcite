@@ -63,11 +63,14 @@
   githubId: chunweilei
   org: Alibaba
   role: Committer
+<<<<<<< HEAD
 - name: Danny Chan
   apacheId: danny0405
   githubId: danny0405
   org: Alibaba
   role: PMC
+=======
+>>>>>>> a1e8602dc (Site: Add new committers and PMC (Chunwei Lei, Ruben Quesada Lopez, Zhiwei Peng and Stamatis Zampetakis))
 - name: Edmon Begoli
   apacheId: ebegoli
   githubId: ebegoli
@@ -229,13 +232,19 @@
   role: Committer
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a1e8602dc (Site: Add new committers and PMC (Chunwei Lei, Ruben Quesada Lopez, Zhiwei Peng and Stamatis Zampetakis))
 - name: Ruben Quesada Lopez
   apacheId: rubenql
   githubId: rubenada
   org: TIBCO
   role: Committer
+<<<<<<< HEAD
 =======
 >>>>>>> 9f9df1e8e (Site: Add committer Sergey Nuyanzin)
+=======
+>>>>>>> a1e8602dc (Site: Add new committers and PMC (Chunwei Lei, Ruben Quesada Lopez, Zhiwei Peng and Stamatis Zampetakis))
 - name: Sergey Nuyanzin
   apacheId: snuyanzin
   githubId: snuyanzin
@@ -260,6 +269,7 @@
   apacheId: zabetak
   githubId: zabetak
 <<<<<<< HEAD
+<<<<<<< HEAD
   org: Cloudera
   role: PMC Chair
   homepage: https://people.apache.org/~zabetak/
@@ -267,6 +277,10 @@
   org: TIBCO EBX
   role: Committer
 >>>>>>> 5d2e4f09c (Site: Add new committers (Haisheng Yuan, Hongze Zhang and Stamatis Zampetakis))
+=======
+  org: TIBCO
+  role: PMC
+>>>>>>> a1e8602dc (Site: Add new committers and PMC (Chunwei Lei, Ruben Quesada Lopez, Zhiwei Peng and Stamatis Zampetakis))
 - name: Steven Noels
   apacheId: stevenn
   githubId: stevenn
@@ -320,13 +334,19 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a1e8602dc (Site: Add new committers and PMC (Chunwei Lei, Ruben Quesada Lopez, Zhiwei Peng and Stamatis Zampetakis))
 - name: Zhiwei Peng
   apacheId: zhiwei
   githubId: pengzhiwei2018
   org: Ant Financial Group
   role: Committer
+<<<<<<< HEAD
 =======
 >>>>>>> 44fc5fd5f (Site: Add Zoltan Haindrich as committer)
+=======
+>>>>>>> a1e8602dc (Site: Add new committers and PMC (Chunwei Lei, Ruben Quesada Lopez, Zhiwei Peng and Stamatis Zampetakis))
 - name: Zoltan Haindrich
   apacheId: kgyrtkirk
   githubId: kgyrtkirk
