@@ -301,7 +301,15 @@ class CsvTest {
         .returns("EMPNO=130; GENDER=F; NAME=Alice").ok();
   }
 
->>>>>>> 1a55339c4 ([CALCITE-2292] Query result is wrong when table is implemented with FilterableTable and the sql has multiple where conditions)
+  /** Filter that can be slightly handled by CsvFilterableTable. */
+  @Test public void testFilterableWhere3() throws SQLException {
+    final String sql = "select empno, gender, name from EMPS\n"
+            + " where gender <> 'M' and empno > 125";
+    sql("filterable-model", sql)
+        .returns("EMPNO=130; GENDER=F; NAME=Alice")
+        .ok();
+  }
+
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2272">[CALCITE-2272]
    * Incorrect result for {@code name like '%E%' and city not like '%W%'}</a>.
