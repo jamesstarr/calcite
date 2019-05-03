@@ -57,7 +57,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
->>>>>>> 643817238 ([CALCITE-563] In JDBC adapter, push bindable parameters down to the underlying JDBC data source (Vladimir Sitnikov, Piotr Bojko))
+import javax.sql.DataSource;
 
 /**
  * Relational expression representing a scan of a table in a JDBC data source.
@@ -174,22 +174,15 @@ public class JdbcToEnumerableConverter
       enumerable = builder0.append("enumerable",
           Expressions.call(
               BuiltInMethod.RESULT_SET_ENUMERABLE_OF_PREPARED.method,
-              Expressions.call(
-                  Schemas.unwrap(jdbcConvention.expression,
-                      JdbcSchema.class),
-                  BuiltInMethod.JDBC_SCHEMA_DATA_SOURCE.method),
+              Schemas.unwrap(jdbcConvention.expression, DataSource.class),
               sql_,
               rowBuilderFactory_,
               preparedStatementConsumer_));
     } else {
-      enumerable = builder0.append(
-          "enumerable",
+      enumerable = builder0.append("enumerable",
           Expressions.call(
               BuiltInMethod.RESULT_SET_ENUMERABLE_OF.method,
-              Expressions.call(
-                  Schemas.unwrap(jdbcConvention.expression,
-                      JdbcSchema.class),
-                  BuiltInMethod.JDBC_SCHEMA_DATA_SOURCE.method),
+              Schemas.unwrap(jdbcConvention.expression, DataSource.class),
               sql_,
               rowBuilderFactory_));
     }

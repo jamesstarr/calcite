@@ -21,7 +21,9 @@ import org.apache.calcite.adapter.jdbc.JdbcCatalogSchema;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
 import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.jdbc.CalciteConnection;
->>>>>>> a84b64381 ([CALCITE-2859] Centralize Calcite system properties)
+import org.apache.calcite.jdbc.CalciteJdbc41Factory;
+import org.apache.calcite.jdbc.CalciteSchema;
+import org.apache.calcite.jdbc.Driver;
 import org.apache.calcite.schema.SchemaPlus;
 
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -37,17 +39,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
-<<<<<<< HEAD
-import java.util.Properties;
 =======
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /** Test case for joining tables from two different JDBC databases. */
 class MultiJdbcSchemaJoinTest {
@@ -97,7 +98,7 @@ class MultiJdbcSchemaJoinTest {
   }
 
   /** Tests {@link org.apache.calcite.adapter.jdbc.JdbcCatalogSchema}. */
-  @Test void test3() throws SQLException {
+  @Test public void test3() throws SQLException {
     final BasicDataSource dataSource = new BasicDataSource();
     dataSource.setUrl(TempDb.INSTANCE.getUrl());
     dataSource.setUsername("");
