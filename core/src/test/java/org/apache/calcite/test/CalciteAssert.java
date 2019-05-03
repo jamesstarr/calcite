@@ -1591,7 +1591,7 @@ public class CalciteAssert {
 
     public AssertQuery planUpdateHasSql(String expected, int count) {
       ensurePlan(checkUpdateCount(count));
-      expected = "getDataSource(), \""
+      expected = ".unwrap(javax.sql.DataSource.class), \""
           + expected.replace("\\", "\\\\")
           .replace("\"", "\\\"")
           .replaceAll("\n", "\\\\n")
@@ -1606,7 +1606,7 @@ public class CalciteAssert {
 
     public AssertQuery planHasSql(String expected) {
       return planContains(
-          "getDataSource(), \""
+          ".unwrap(javax.sql.DataSource.class), \""
               + expected.replace("\\", "\\\\")
               .replace("\"", "\\\"")
               .replaceAll("\n", "\\\\n")
