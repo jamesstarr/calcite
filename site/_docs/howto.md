@@ -572,12 +572,15 @@ from a contributor, found it satisfactory, and is about to merge it to master.
 Usually the contributor is not a committer (otherwise they would be committing
 it themselves, after you gave approval in a review).
 
+<<<<<<< HEAD
 There are certain kinds of continuous integration tests that are not run
 automatically against the PR. These tests can be triggered explicitly by adding
 an appropriate label to the PR. For instance, you can run slow tests by adding
 the `slow-tests-needed` label. It is up to you to decide if these additional
 tests need to run before merging.
 
+=======
+>>>>>>> 42db80129 (Site: Improve contribution guidelines for JIRA)
 If the PR has multiple commits, squash them into a single commit. The
 commit message should follow the conventions outined in
 [contribution guidelines]({{ site.baseurl }}/develop/#contributing).
@@ -597,7 +600,11 @@ must:
  * resolve the issue (do not close it as this will be done by the release
 manager);
  * select "Fixed" as resolution cause;
+<<<<<<< HEAD
  * mark the appropriate version (e.g., 1.22.0) in the "Fix version" field;
+=======
+ * mark the appropriate version (e.g., 1.20.0) in the "Fix version" field;
+>>>>>>> 42db80129 (Site: Improve contribution guidelines for JIRA)
  * add a comment (e.g., "Fixed in ...") with a hyperlink pointing to the commit
 which resolves the issue (in GitHub or GitBox), and also thank the contributor
 for their contribution.

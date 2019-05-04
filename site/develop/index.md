@@ -150,6 +150,7 @@ the contributor(s) involved in the discussion should:
  * resolve the issue (do not close it);
  * select the appropriate resolution cause ("Duplicate", "Invalid", "Won't fix", etc.);
  * add a comment with the reasoning if that's not obvious.
+<<<<<<< HEAD
 
 =======
 >>>>>>> 92e7e6af6 (Site: Add instructions for updating PRs based on the discussion in the dev list (Stamatis Zampetakis))
@@ -159,6 +160,8 @@ During a release, the release manager will update the issues that were
 During a release, the release manager will update the issues that were
 >>>>>>> 85c9d2fa6 (Cosmetic changes)
 not completed for the current release to the next release
+=======
+>>>>>>> 42db80129 (Site: Improve contribution guidelines for JIRA)
 
 >>>>>>> 766f53d49 (Site: Add guidelines for JIRA's fix version field)
 Fork the GitHub repository, and create a branch for your feature.
