@@ -3666,7 +3666,6 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
         + "ename format json encoding utf16,\n"
         + "ename format json encoding utf32\n"
         + "from emp";
-    System.out.println(sql);
     sql(sql).ok();
   }
 
