@@ -136,6 +136,10 @@ class ServerTest {
     }
   }
 
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3046">[CALCITE-3046]
+   * CompileException when inserting casted value of composited user defined type
+   * into table</a>. */
   @Test public void testCreateTable() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
@@ -158,24 +162,11 @@ class ServerTest {
 //      assertThat(b, is(false));
 //      x = s.executeUpdate("insert into w values (1, NULL)");
 //      assertThat(x, is(1));
-<<<<<<< HEAD
-
-      // Test user defined type name as component identifier.
-      b = s.execute("create schema a");
-      assertThat(b, is(false));
-      b = s.execute("create schema a.b");
-      assertThat(b, is(false));
-      b = s.execute("create type a.b.mytype as (i varchar(5))");
-      assertThat(b, is(false));
-      b = s.execute("create table t2 (i int not null, j a.b.mytype)");
-      assertThat(b, is(false));
-      x = s.executeUpdate("insert into t2 values (1, NULL)");
-      assertThat(x, is(1));
-=======
 >>>>>>> a76afe52d ([CALCITE-2464] Allow to set nullability for columns of structured types (Ruben Quesada Lopez))
     }
   }
 
+<<<<<<< HEAD
   @Test void testCreateFunction() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
@@ -240,6 +231,9 @@ class ServerTest {
 
   @Disabled
   @Test void testInsertCastedValueOfCompositeUdt() throws Exception {
+=======
+  @Ignore
+  @Test public void testInsertCastedValueOfCompositeUdt() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
       boolean b = s.execute("create type mytype as (i int, j int)");
@@ -252,27 +246,7 @@ class ServerTest {
     }
   }
 
-  @Test void testInsertCreateNewCompositeUdt() throws Exception {
-    try (Connection c = connect();
-        Statement s = c.createStatement()) {
-      boolean b = s.execute("create type mytype as (i int, j int)");
-      assertFalse(b);
-      b = s.execute("create table w (i int not null, j mytype)");
-      assertFalse(b);
-      int x = s.executeUpdate("insert into w "
-          + "values (1, mytype(1, 1))");
-      assertEquals(x, 1);
-
-      try (ResultSet r = s.executeQuery("select * from w")) {
-        assertTrue(r.next());
-        assertEquals(r.getInt("i"), 1);
-        assertArrayEquals(r.getObject("j", Struct.class).getAttributes(), new Object[] {1, 1});
-        assertFalse(r.next());
-      }
-    }
-  }
-
-  @Test void testStoredGeneratedColumn() throws Exception {
+  @Test public void testStoredGeneratedColumn() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
       final String sql0 = "create table t (\n"
