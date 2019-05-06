@@ -50,7 +50,7 @@ class ServerParserTest extends SqlParserTest {
     return SqlDdlParserImpl.FACTORY;
   }
 
-  @Test void testCreateSchema() {
+  @Test public void testCreateSchema() {
     sql("create schema x")
         .ok("CREATE SCHEMA `X`");
   }
