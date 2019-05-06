@@ -1846,7 +1846,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
    */
   public static final SqlFunction IN_FENNEL =
       new SqlMonotonicUnaryFunction(
-          "IN_FENNEL",
+          "$IN_FENNEL",
           SqlKind.OTHER_FUNCTION,
           ReturnTypes.ARG0,
           null,
