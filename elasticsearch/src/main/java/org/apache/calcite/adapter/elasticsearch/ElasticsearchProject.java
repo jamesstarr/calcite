@@ -71,21 +71,20 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
 
     final List<String> fields = new ArrayList<>();
     final List<String> scriptFields = new ArrayList<>();
->>>>>>> 130909e66 ([CALCITE-2347] running ElasticSearch in embedded mode for unit tests of ES adapter (Andrei Sereda)):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
 =======
+    // registers wherever "select *" is present
     boolean hasSelectStar = false;
     for (Pair<RexNode, String> pair: getNamedProjects()) {
       final String name = pair.right;
       final String expr = pair.left.accept(translator);
 
->>>>>>> c569852a9 ([CALCITE-2863] ElasticSearch Adapter. select * and predicates on _MAP fail)
-      if (ElasticsearchRules.isItem(pair.left)) {
-        implementor.addExpressionItemMapping(name, ElasticsearchRules.stripQuotes(expr));
-      }
-
+      // "select *" present ?
       hasSelectStar |= "_MAP".equals(name);
 
-      if (expr.equals(name)) {
+      if (ElasticsearchRules.isItem(pair.left)) {
+        implementor.addExpressionItemMapping(name, expr);
+        fields.add(expr);
+      } else if (expr.equals(name)) {
         fields.add(name);
       } else if (expr.matches("\"literal\":.+")) {
         scriptFields.add(ElasticsearchRules.quote(name)
@@ -106,9 +105,12 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
       return;
     }
 
-    StringBuilder query = new StringBuilder();
+    final StringBuilder query = new StringBuilder();
     if (scriptFields.isEmpty()) {
-      List<String> newList = fields.stream().map(ElasticsearchRules::quote)
+      List<String> newList = fields.stream()
+          // _id field is available implicitly
+          .filter(f -> !ElasticsearchConstants.ID.equals(f))
+          .map(ElasticsearchRules::quote)
           .collect(Collectors.toList());
 
       final String findString = String.join(", ", newList);
