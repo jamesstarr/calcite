@@ -82,16 +82,33 @@ class ElasticsearchRules {
     return null;
   }
 
+  /**
+   * Checks if current node represents item access as in {@code _MAP['foo']} or
+   * {@code cast(_MAP['foo'] as integer)}
+   *
+   * @return true if expression is item, false otherwise
+   */
   static boolean isItem(RexNode node) {
     final Boolean result = node.accept(new RexVisitorImpl<Boolean>(false) {
       @Override public Boolean visitCall(final RexCall call) {
-        return isItem(call) != null;
+        return isItemCall(uncast(call)) != null;
       }
     });
     return Boolean.TRUE.equals(result);
   }
 
->>>>>>> 623fe7430 ([CALCITE-2755] Expose document _id field when querying ElasticSearch)
+  /**
+   * Unwraps cast expressions from current call. {@code cast(cast(expr))} becomes {@code expr}.
+   */
+  private static RexCall uncast(RexCall maybeCast) {
+    if (maybeCast.getKind() == SqlKind.CAST && maybeCast.getOperands().get(0) instanceof RexCall) {
+      return uncast((RexCall) maybeCast.getOperands().get(0));
+    }
+
+    // not a cast
+    return maybeCast;
+  }
+
   static List<String> elasticsearchFieldNames(final RelDataType rowType) {
     return SqlValidatorUtil.uniquify(
         new AbstractList<String>() {
