@@ -419,24 +419,6 @@ public class RexImpTable {
             BuiltInMethod.UNIX_DATE_CEIL.method), false);
 
     defineMethod(LAST_DAY, "lastDay", NullPolicy.STRICT);
-<<<<<<< HEAD
-    defineImplementor(DAYNAME, NullPolicy.STRICT,
-        new PeriodNameImplementor("dayName",
-            BuiltInMethod.DAYNAME_WITH_TIMESTAMP,
-            BuiltInMethod.DAYNAME_WITH_DATE), false);
-    defineImplementor(MONTHNAME, NullPolicy.STRICT,
-        new PeriodNameImplementor("monthName",
-            BuiltInMethod.MONTHNAME_WITH_TIMESTAMP,
-            BuiltInMethod.MONTHNAME_WITH_DATE), false);
-    defineMethod(TIMESTAMP_SECONDS, "timestampSeconds", NullPolicy.STRICT);
-    defineMethod(TIMESTAMP_MILLIS, "timestampMillis", NullPolicy.STRICT);
-    defineMethod(TIMESTAMP_MICROS, "timestampMicros", NullPolicy.STRICT);
-    defineMethod(UNIX_SECONDS, "unixSeconds", NullPolicy.STRICT);
-    defineMethod(UNIX_MILLIS, "unixMillis", NullPolicy.STRICT);
-    defineMethod(UNIX_MICROS, "unixMicros", NullPolicy.STRICT);
-    defineMethod(DATE_FROM_UNIX_DATE, "dateFromUnixDate", NullPolicy.STRICT);
-    defineMethod(UNIX_DATE, "unixDate", NullPolicy.STRICT);
-=======
 
     map.put(IS_NULL, new IsXxxImplementor(null, false));
     map.put(IS_NOT_NULL, new IsXxxImplementor(null, true));
@@ -468,6 +450,7 @@ public class RexImpTable {
         NotImplementor.of(posixRegexImplementor), false);
     defineImplementor(SqlStdOperatorTable.NEGATED_POSIX_REGEX_CASE_SENSITIVE, NullPolicy.STRICT,
         NotImplementor.of(posixRegexImplementor), false);
+<<<<<<< HEAD
     defineImplementor(REGEXP_REPLACE, NullPolicy.STRICT,
         new NotNullImplementor() {
           final NotNullImplementor[] implementors = {
@@ -486,6 +469,7 @@ public class RexImpTable {
                 .implement(translator, call, translatedOperands);
           }
         }, false);
+=======
 
     // Multisets & arrays
     defineMethod(CARDINALITY, BuiltInMethod.COLLECTION_SIZE.method,

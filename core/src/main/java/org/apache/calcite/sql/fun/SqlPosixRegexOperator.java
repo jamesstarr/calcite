@@ -132,3 +132,8 @@ public class SqlPosixRegexOperator extends SqlBinaryOperator {
     writer.endList(frame);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlPosixRegexOperator.java
+>>>>>>> 2e167f8ed ([CALCITE-3063] Parse and process PostgreSQL posix regular expressions)

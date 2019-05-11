@@ -40,9 +40,7 @@ import static org.apache.calcite.runtime.SqlFunctions.initcap;
 import static org.apache.calcite.runtime.SqlFunctions.lesser;
 import static org.apache.calcite.runtime.SqlFunctions.lower;
 import static org.apache.calcite.runtime.SqlFunctions.ltrim;
-import static org.apache.calcite.runtime.SqlFunctions.md5;
 import static org.apache.calcite.runtime.SqlFunctions.posixRegex;
-import static org.apache.calcite.runtime.SqlFunctions.regexpReplace;
 import static org.apache.calcite.runtime.SqlFunctions.rtrim;
 import static org.apache.calcite.runtime.SqlFunctions.sha1;
 import static org.apache.calcite.runtime.SqlFunctions.subtractMonths;
@@ -112,24 +110,28 @@ class SqlFunctionsTest {
     assertThat(concat(null, "b"), is("nullb"));
   }
 
-  @Test void testPosixRegex() {
-    assertThat(posixRegex("abc", "abc", true), is(true));
-    assertThat(posixRegex("abc", "^a", true), is(true));
-    assertThat(posixRegex("abc", "(b|d)", true), is(true));
-    assertThat(posixRegex("abc", "^(b|c)", true), is(false));
+  @Test public void testPosixRegex() {
+    assertEquals(true, posixRegex("abc", "abc", true));
+    assertEquals(true, posixRegex("abc", "^a", true));
+    assertEquals(true, posixRegex("abc", "(b|d)", true));
+    assertEquals(false, posixRegex("abc", "^(b|c)", true));
 
-    assertThat(posixRegex("abc", "ABC", false), is(true));
-    assertThat(posixRegex("abc", "^A", false), is(true));
-    assertThat(posixRegex("abc", "(B|D)", false), is(true));
-    assertThat(posixRegex("abc", "^(B|C)", false), is(false));
+    assertEquals(true, posixRegex("abc", "ABC", false));
+    assertEquals(true, posixRegex("abc", "^A", false));
+    assertEquals(true, posixRegex("abc", "(B|D)", false));
+    assertEquals(false, posixRegex("abc", "^(B|C)", false));
 
-    assertThat(posixRegex("abc", "^[[:xdigit:]]$", false), is(false));
-    assertThat(posixRegex("abc", "^[[:xdigit:]]+$", false), is(true));
-    assertThat(posixRegex("abcq", "^[[:xdigit:]]+$", false), is(false));
+    assertEquals(false, posixRegex("abc", "^[[:xdigit:]]$", false));
+    assertEquals(true, posixRegex("abc", "^[[:xdigit:]]+$", false));
+    assertEquals(false, posixRegex("abcq", "^[[:xdigit:]]+$", false));
 
-    assertThat(posixRegex("abc", "[[:xdigit:]]", false), is(true));
-    assertThat(posixRegex("abc", "[[:xdigit:]]+", false), is(true));
-    assertThat(posixRegex("abcq", "[[:xdigit:]]", false), is(true));
+    assertEquals(true, posixRegex("abc", "[[:xdigit:]]", false));
+    assertEquals(true, posixRegex("abc", "[[:xdigit:]]+", false));
+    assertEquals(true, posixRegex("abcq", "[[:xdigit:]]", false));
+  }
+
+  @Test public void testLower() {
+    assertEquals("a bcd iijk", lower("A bCd Iijk"));
   }
 
   @Test void testRegexpReplace() {

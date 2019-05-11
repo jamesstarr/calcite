@@ -43,6 +43,7 @@ SqlNode DateFunctionCall() :
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 SqlNode DateaddFunctionCall() :
 {
     final SqlFunctionCategory funcType = SqlFunctionCategory.USER_DEFINED_FUNCTION;
@@ -70,10 +71,13 @@ SqlNode DateaddFunctionCall() :
     }
 }
 
+=======
+>>>>>>> 2e167f8ed ([CALCITE-3063] Parse and process PostgreSQL posix regular expressions)
 /* Extra operators */
 
 <DEFAULT, DQID, BTID> TOKEN :
 {
+<<<<<<< HEAD
     < DATE_PART: "DATE_PART" >
 |   < DATEADD: "DATEADD" >
 |   < DATEDIFF: "DATEDIFF" >
@@ -100,4 +104,10 @@ void InfixCast(List<Object> list, ExprContext exprContext, Span s) :
 
 =======
 >>>>>>> 493df6ca3 ([CALCITE-3022] Babel: Various SQL parsing issues)
+=======
+    < NEGATE: "!" >
+|   < TILDE: "~" >
+}
+
+>>>>>>> 2e167f8ed ([CALCITE-3063] Parse and process PostgreSQL posix regular expressions)
 // End parserImpls.ftl

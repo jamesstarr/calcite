@@ -373,14 +373,7 @@ public enum BuiltInMethod {
   LIKE(SqlFunctions.class, "like", String.class, String.class),
   SIMILAR(SqlFunctions.class, "similar", String.class, String.class),
   POSIX_REGEX(SqlFunctions.class, "posixRegex", String.class, String.class, Boolean.class),
-  REGEXP_REPLACE3(SqlFunctions.class, "regexpReplace", String.class,
-      String.class, String.class),
-  REGEXP_REPLACE4(SqlFunctions.class, "regexpReplace", String.class,
-      String.class, String.class, int.class),
-  REGEXP_REPLACE5(SqlFunctions.class, "regexpReplace", String.class,
-      String.class, String.class, int.class, int.class),
-  REGEXP_REPLACE6(SqlFunctions.class, "regexpReplace", String.class,
-      String.class, String.class, int.class, int.class, String.class),
+>>>>>>> 2e167f8ed ([CALCITE-3063] Parse and process PostgreSQL posix regular expressions)
   IS_TRUE(SqlFunctions.class, "isTrue", Boolean.class),
   IS_NOT_FALSE(SqlFunctions.class, "isNotFalse", Boolean.class),
   NOT(SqlFunctions.class, "not", Boolean.class),
@@ -453,7 +446,6 @@ public enum BuiltInMethod {
   MONTHNAME_WITH_DATE(SqlFunctions.class,
       "monthNameWithDate", int.class, Locale.class),
 =======
->>>>>>> 133dfb6da ([CALCITE-2908] Implement SQL LAST_DAY function (Chunwei Lei))
   CURRENT_TIMESTAMP(SqlFunctions.class, "currentTimestamp", DataContext.class),
   CURRENT_TIME(SqlFunctions.class, "currentTime", DataContext.class),
   CURRENT_DATE(SqlFunctions.class, "currentDate", DataContext.class),

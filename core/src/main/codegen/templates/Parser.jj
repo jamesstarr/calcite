@@ -4178,6 +4178,7 @@ List<Object> Expression2(ExprContext exprContext) :
                     <TILDE> { op = SqlStdOperatorTable.POSIX_REGEX_CASE_SENSITIVE; }
                     [ <STAR> { op = SqlStdOperatorTable.POSIX_REGEX_CASE_INSENSITIVE; } ]
                 </#if>
+<<<<<<< HEAD
 =======
 =======
                         LOOKAHEAD(2)
@@ -4187,6 +4188,8 @@ List<Object> Expression2(ExprContext exprContext) :
                         LOOKAHEAD(2)
                         <SIMILAR> <TO> { op = isNot ? SqlStdOperatorTable.NOT_SIMILAR_TO : SqlStdOperatorTable.SIMILAR_TO; }
 >>>>>>> d192c11b0 (Implement [NOT] LIKE ANY/ALL/SOME as logical rewrites)
+=======
+>>>>>>> 2e167f8ed ([CALCITE-3063] Parse and process PostgreSQL posix regular expressions)
                     )
                     list2 = Expression2(ExprContext.ACCEPT_SUB_QUERY) {
                         list.add(new SqlParserUtil.ToTreeListItem(op, s.pos()));

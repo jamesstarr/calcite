@@ -1766,6 +1766,7 @@ freemarkerLinks: {
         "parserImpls.ftl"
       ]
 
+      includePosixOperators: true
       includeCompoundIdentifier: true
       includeBraces: true
       includeAdditionalDeclarations: false

@@ -482,9 +482,13 @@ data: {
     ]
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     includePosixOperators: false
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+      includePosixOperators: false
+>>>>>>> 2e167f8ed ([CALCITE-3063] Parse and process PostgreSQL posix regular expressions)
   }
 =======
       # List of methods for parsing custom literals.
