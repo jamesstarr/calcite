@@ -3629,6 +3629,14 @@ List<Object> Expression2(ExprContext exprContext) :
                     |
                         LOOKAHEAD(2)
                         <SIMILAR> <TO> { op = isNot ? SqlStdOperatorTable.NOT_SIMILAR_TO : SqlStdOperatorTable.SIMILAR_TO; }
+                <#if parser.includePosixOperators>
+                |
+                    <NEGATE> <TILDE> { op = SqlStdOperatorTable.NEGATED_POSIX_REGEX_CASE_SENSITIVE; }
+                    [ <STAR> { op = SqlStdOperatorTable.NEGATED_POSIX_REGEX_CASE_INSENSITIVE; } ]
+                |
+                    <TILDE> { op = SqlStdOperatorTable.POSIX_REGEX_CASE_SENSITIVE; }
+                    [ <STAR> { op = SqlStdOperatorTable.POSIX_REGEX_CASE_INSENSITIVE; } ]
+                </#if>
                     )
                     list2 = Expression2(ExprContext.ACCEPT_SUB_QUERY) {
                         list.add(new SqlParserUtil.ToTreeListItem(op, s.pos()));

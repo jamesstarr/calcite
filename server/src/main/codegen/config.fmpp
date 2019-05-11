@@ -98,6 +98,7 @@ data: {
     implementationFiles: [
       "parserImpls.ftl"
     ]
+      includePosixOperators: false
   }
 }
 freemarkerLinks: {
