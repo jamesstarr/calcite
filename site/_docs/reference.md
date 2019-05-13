@@ -2010,7 +2010,11 @@ period:
 =======
 | {fn REPLACE(string, search, replacement)} | Returns a string in which all the occurrences of *search* in *string* are replaced with *replacement*; if *replacement* is the empty string, the occurrences of *search* are removed
 | {fn ASCII(string)} | Returns the corresponding ASCII code of the first character of *string*; Returns 0 if *string* is empty; Returns NULL if *string* is NULL; Returns the Unicode code point for non-ASCII character
+<<<<<<< HEAD
 >>>>>>> bd30002c0 ([CALCITE-2599] Implement SQL ASCII function (Chunwei Lei))
+=======
+| {fn REVERSE(string)} | Returns the *string* with the order of the characters reversed.
+>>>>>>> 2781e2f82 ([CALCITE-2601] Add REVERSE function (pingle wang))
 
 Not implemented:
 
@@ -3106,6 +3110,7 @@ semantics.
 | m | JSON_LENGTH(jsonValue [, path ])               | Returns a integer indicating the length of *jsonValue*
 | m | JSON_KEYS(jsonValue [, path ])                 | Returns a string indicating the keys of a JSON *jsonValue*
 | m | JSON_REMOVE(jsonValue, path[, path])           | Removes data from *jsonValue* using a series of *path* expressions and returns the result
+| m | REVERSE(string)                                | Returns the reverse order of *string*
 | o | DECODE(value, value1, result1 [, valueN, resultN ]* [, default ]) | Compares *value* to each *valueN* value one by one; if *value* is equal to a *valueN*, returns the corresponding *resultN*, else returns *default*, or NULL if *default* is not specified
 | o | NVL(value1, value2)                            | Returns *value1* if *value1* is not null, otherwise *value2*
 | o | LTRIM(string)                                  | Returns *string* with all blanks removed from the start
