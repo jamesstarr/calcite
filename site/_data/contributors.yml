@@ -64,13 +64,20 @@
   org: Alibaba
   role: Committer
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1894d9344 (Site: Add Danny Chan as committer)
 - name: Danny Chan
   apacheId: danny0405
   githubId: danny0405
   org: Alibaba
+<<<<<<< HEAD
   role: PMC
 =======
 >>>>>>> a1e8602dc (Site: Add new committers and PMC (Chunwei Lei, Ruben Quesada Lopez, Zhiwei Peng and Stamatis Zampetakis))
+=======
+  role: Committer
+>>>>>>> 1894d9344 (Site: Add Danny Chan as committer)
 - name: Edmon Begoli
   apacheId: ebegoli
   githubId: ebegoli
