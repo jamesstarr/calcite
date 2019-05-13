@@ -1460,13 +1460,13 @@ public abstract class AbstractMaterializedViewRule extends RelOptRule {
                 // Cannot rollup this aggregate, bail out
                 return null;
               }
+              rewritingMapping.set(k, queryAggregate.getGroupCount() + aggregateCalls.size());
               final RexInputRef operand = rexBuilder.makeInputRef(input, k);
               aggregateCalls.add(
                   relBuilder.aggregateCall(rollupAgg, operand)
                       .approximate(queryAggCall.isApproximate())
                       .distinct(queryAggCall.isDistinct())
                       .as(queryAggCall.name));
-              rewritingMapping.set(k, sourceIdx);
               added = true;
             }
           }
@@ -1499,9 +1499,10 @@ public abstract class AbstractMaterializedViewRule extends RelOptRule {
               rexBuilder.makeInputRef(result,
                   groupSet.indexOf(inverseMapping.getTarget(i))));
         }
-        for (int i = 0; i < queryAggregate.getAggCallList().size(); i++) {
+        // We add aggregate functions that are present in result to projection list
+        for (int i = queryAggregate.getGroupCount(); i < result.getRowType().getFieldCount(); i++) {
           projects.add(
-              rexBuilder.makeInputRef(result, queryAggregate.getGroupCount() + i));
+              rexBuilder.makeInputRef(result, i));
         }
         result = relBuilder
             .push(result)
