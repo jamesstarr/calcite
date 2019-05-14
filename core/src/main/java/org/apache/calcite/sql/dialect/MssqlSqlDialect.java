@@ -40,13 +40,11 @@ import org.apache.calcite.sql.type.ReturnTypes;
  * database.
  */
 public class MssqlSqlDialect extends SqlDialect {
-  public static final Context DEFAULT_CONTEXT = SqlDialect.EMPTY_CONTEXT
-      .withDatabaseProduct(SqlDialect.DatabaseProduct.MSSQL)
-      .withIdentifierQuoteString("[")
-      .withCaseSensitive(false)
-      .withNullCollation(NullCollation.LOW);
-
-  public static final SqlDialect DEFAULT = new MssqlSqlDialect(DEFAULT_CONTEXT);
+  public static final SqlDialect DEFAULT =
+      new MssqlSqlDialect(EMPTY_CONTEXT
+          .withDatabaseProduct(DatabaseProduct.MSSQL)
+          .withIdentifierQuoteString("[")
+          .withCaseSensitive(false));
 
   private static final SqlFunction MSSQL_SUBSTRING =
       new SqlFunction("SUBSTRING", SqlKind.OTHER_FUNCTION,

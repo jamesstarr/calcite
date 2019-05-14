@@ -423,242 +423,6 @@ class RelToSqlConverterTest {
     sql(query).ok(expected);
   }
 
-<<<<<<< HEAD
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2713">[CALCITE-2713]
-   * JDBC adapter may generate casts on PostgreSQL for VARCHAR type exceeding
-   * max length</a>. */
-  @Test void testCastLongVarchar1() {
-    final String query = "select cast(\"store_id\" as VARCHAR(10485761))\n"
-        + " from \"expense_fact\"";
-    final String expectedPostgreSQL = "SELECT CAST(\"store_id\" AS VARCHAR(256))\n"
-        + "FROM \"foodmart\".\"expense_fact\"";
-    sql(query)
-        .withPostgresqlModifiedTypeSystem()
-        .ok(expectedPostgreSQL);
-
-    final String expectedOracle = "SELECT CAST(\"store_id\" AS VARCHAR(512))\n"
-        + "FROM \"foodmart\".\"expense_fact\"";
-    sql(query)
-        .withOracleModifiedTypeSystem()
-        .ok(expectedOracle);
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2713">[CALCITE-2713]
-   * JDBC adapter may generate casts on PostgreSQL for VARCHAR type exceeding
-   * max length</a>. */
-  @Test void testCastLongVarchar2() {
-    final String query = "select cast(\"store_id\" as VARCHAR(175))\n"
-        + " from \"expense_fact\"";
-    final String expectedPostgreSQL = "SELECT CAST(\"store_id\" AS VARCHAR(175))\n"
-        + "FROM \"foodmart\".\"expense_fact\"";
-    sql(query)
-        .withPostgresqlModifiedTypeSystem()
-        .ok(expectedPostgreSQL);
-
-    final String expectedOracle = "SELECT CAST(\"store_id\" AS VARCHAR(175))\n"
-        + "FROM \"foodmart\".\"expense_fact\"";
-    sql(query)
-        .withOracleModifiedTypeSystem()
-        .ok(expectedOracle);
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-1174">[CALCITE-1174]
-   * When generating SQL, translate SUM0(x) to COALESCE(SUM(x), 0)</a>. */
-  @Test void testSum0BecomesCoalesce() {
-    final Function<RelBuilder, RelNode> fn = b -> b.scan("EMP")
-        .aggregate(b.groupKey(),
-            b.aggregateCall(SqlStdOperatorTable.SUM0, b.field(3))
-                .as("s"))
-        .build();
-    final String expectedMysql = "SELECT COALESCE(SUM(`MGR`), 0) AS `s`\n"
-        + "FROM `scott`.`EMP`";
-    final String expectedPostgresql = "SELECT COALESCE(SUM(\"MGR\"), 0) AS \"s\"\n"
-        + "FROM \"scott\".\"EMP\"";
-    relFn(fn)
-        .withPostgresql()
-        .ok(expectedPostgresql)
-        .withMysql()
-        .ok(expectedMysql);
-  }
-
-  /** As {@link #testSum0BecomesCoalesce()} but for windowed aggregates. */
-  @Test void testWindowedSum0BecomesCoalesce() {
-    final String query = "select\n"
-        + "  AVG(\"net_weight\") OVER (order by \"product_id\" rows 3 preceding)\n"
-        + "from \"foodmart\".\"product\"";
-    final String expectedPostgresql = "SELECT CASE WHEN (COUNT(\"net_weight\")"
-        + " OVER (ORDER BY \"product_id\" ROWS BETWEEN 3 PRECEDING AND CURRENT ROW)) > 0 "
-        + "THEN COALESCE(SUM(\"net_weight\")"
-        + " OVER (ORDER BY \"product_id\" ROWS BETWEEN 3 PRECEDING AND CURRENT ROW), 0)"
-        + " ELSE NULL END / (COUNT(\"net_weight\")"
-        + " OVER (ORDER BY \"product_id\" ROWS BETWEEN 3 PRECEDING AND CURRENT ROW))\n"
-        + "FROM \"foodmart\".\"product\"";
-    sql(query)
-        .withPostgresql()
-        .ok(expectedPostgresql);
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2722">[CALCITE-2722]
-   * SqlImplementor createLeftCall method throws StackOverflowError</a>. */
-  @Test void testStack() {
-    final Function<RelBuilder, RelNode> relFn = b -> b
-        .scan("EMP")
-        .filter(
-            b.or(
-                IntStream.range(1, 10000)
-                    .mapToObj(i -> b.equals(b.field("EMPNO"), b.literal(i)))
-                    .collect(Collectors.toList())))
-        .build();
-    final SqlDialect dialect = SqlDialect.DatabaseProduct.CALCITE.getDialect();
-    final RelNode root = relFn.apply(relBuilder());
-    final SqlNode sqlNode = new RelToSqlConverter(dialect)
-        .visitChild(0, root).asStatement();
-    final String sqlString = sqlNode.accept(new SqlShuttle())
-        .toSqlString(dialect).getSql();
-    assertThat(sqlString, notNullValue());
-  }
-
-  @Test void testAntiJoin() {
-    final RelBuilder builder = relBuilder();
-    final RelNode root = builder
-        .scan("DEPT")
-        .scan("EMP")
-        .join(
-            JoinRelType.ANTI, builder.equals(
-              builder.field(2, 1, "DEPTNO"),
-              builder.field(2, 0, "DEPTNO")))
-        .project(builder.field("DEPTNO"))
-        .build();
-    final String expectedSql = "SELECT \"DEPTNO\"\n"
-        + "FROM \"scott\".\"DEPT\"\n"
-        + "WHERE NOT EXISTS (SELECT 1\n"
-        + "FROM \"scott\".\"EMP\"\n"
-        + "WHERE \"DEPT\".\"DEPTNO\" = \"EMP\".\"DEPTNO\")";
-    assertThat(toSql(root), isLinux(expectedSql));
-  }
-
-  @Test void testSemiJoin() {
-    final RelBuilder builder = relBuilder();
-    final RelNode root = builder
-        .scan("DEPT")
-        .scan("EMP")
-        .join(
-            JoinRelType.SEMI, builder.equals(
-              builder.field(2, 1, "DEPTNO"),
-              builder.field(2, 0, "DEPTNO")))
-        .project(builder.field("DEPTNO"))
-        .build();
-    final String expectedSql = "SELECT \"DEPTNO\"\n"
-        + "FROM \"scott\".\"DEPT\"\n"
-        + "WHERE EXISTS (SELECT 1\n"
-        + "FROM \"scott\".\"EMP\"\n"
-        + "WHERE \"DEPT\".\"DEPTNO\" = \"EMP\".\"DEPTNO\")";
-    assertThat(toSql(root), isLinux(expectedSql));
-  }
-
-  @Test void testSemiJoinFilter() {
-    final RelBuilder builder = relBuilder();
-    final RelNode root = builder
-        .scan("DEPT")
-        .scan("EMP")
-        .filter(
-            builder.call(SqlStdOperatorTable.GREATER_THAN,
-              builder.field(builder.peek().getRowType().getField("EMPNO", false, false).getIndex()),
-              builder.literal((short) 10)))
-        .join(
-            JoinRelType.SEMI, builder.equals(
-            builder.field(2, 1, "DEPTNO"),
-            builder.field(2, 0, "DEPTNO")))
-        .project(builder.field("DEPTNO"))
-        .build();
-    final String expectedSql = "SELECT \"DEPTNO\"\n"
-        + "FROM \"scott\".\"DEPT\"\n"
-        + "WHERE EXISTS (SELECT 1\n"
-        + "FROM (SELECT *\n"
-        + "FROM \"scott\".\"EMP\"\n"
-        + "WHERE \"EMPNO\" > 10) AS \"t\"\n"
-        + "WHERE \"DEPT\".\"DEPTNO\" = \"t\".\"DEPTNO\")";
-    assertThat(toSql(root), isLinux(expectedSql));
-  }
-
-  @Test void testSemiJoinProject() {
-    final RelBuilder builder = relBuilder();
-    final RelNode root = builder
-        .scan("DEPT")
-        .scan("EMP")
-        .project(
-            builder.field(builder.peek().getRowType().getField("EMPNO", false, false).getIndex()),
-            builder.field(builder.peek().getRowType().getField("DEPTNO", false, false).getIndex()))
-        .join(
-            JoinRelType.SEMI, builder.equals(
-              builder.field(2, 1, "DEPTNO"),
-              builder.field(2, 0, "DEPTNO")))
-        .project(builder.field("DEPTNO"))
-        .build();
-    final String expectedSql = "SELECT \"DEPTNO\"\n"
-        + "FROM \"scott\".\"DEPT\"\n"
-        + "WHERE EXISTS (SELECT 1\n"
-        + "FROM (SELECT \"EMPNO\", \"DEPTNO\"\n"
-        + "FROM \"scott\".\"EMP\") AS \"t\"\n"
-        + "WHERE \"DEPT\".\"DEPTNO\" = \"t\".\"DEPTNO\")";
-    assertThat(toSql(root), isLinux(expectedSql));
-  }
-
-  @Test void testSemiNestedJoin() {
-    final RelBuilder builder = relBuilder();
-    final RelNode base = builder
-        .scan("EMP")
-        .scan("EMP")
-        .join(
-            JoinRelType.INNER, builder.equals(
-              builder.field(2, 0, "EMPNO"),
-              builder.field(2, 1, "EMPNO")))
-        .build();
-    final RelNode root = builder
-        .scan("DEPT")
-        .push(base)
-        .join(
-            JoinRelType.SEMI, builder.equals(
-              builder.field(2, 1, "DEPTNO"),
-              builder.field(2, 0, "DEPTNO")))
-        .project(builder.field("DEPTNO"))
-        .build();
-    final String expectedSql = "SELECT \"DEPTNO\"\n"
-        + "FROM \"scott\".\"DEPT\"\n"
-        + "WHERE EXISTS (SELECT 1\n"
-        + "FROM \"scott\".\"EMP\"\n"
-        + "INNER JOIN \"scott\".\"EMP\" AS \"EMP0\" ON \"EMP\".\"EMPNO\" = \"EMP0\".\"EMPNO\"\n"
-        + "WHERE \"DEPT\".\"DEPTNO\" = \"EMP\".\"DEPTNO\")";
-    assertThat(toSql(root), isLinux(expectedSql));
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2792">[CALCITE-2792]
-   * Stackoverflow while evaluating filter with large number of OR conditions</a>. */
-  @Test void testBalancedBinaryCall() {
-    final Function<RelBuilder, RelNode> relFn = b -> b
-        .scan("EMP")
-        .filter(
-            b.and(
-                b.or(IntStream.range(0, 4)
-                    .mapToObj(i -> b.equals(b.field("EMPNO"), b.literal(i)))
-                    .collect(Collectors.toList())),
-                b.or(IntStream.range(5, 8)
-                    .mapToObj(i -> b.equals(b.field("DEPTNO"), b.literal(i)))
-                    .collect(Collectors.toList()))))
-        .build();
-    final String expected = "SELECT *\n"
-        + "FROM \"scott\".\"EMP\"\n"
-        + "WHERE (\"EMPNO\" = 0 OR \"EMPNO\" = 1 OR (\"EMPNO\" = 2 OR \"EMPNO\" = 3))"
-        + " AND (\"DEPTNO\" = 5 OR (\"DEPTNO\" = 6 OR \"DEPTNO\" = 7))";
-    relFn(relFn).ok(expected);
-  }
-
-=======
 >>>>>>> 989724d9a ([CALCITE-3066] RelToSqlConverter may incorrectly throw an AssertionError for some decimal literals)
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2713">[CALCITE-2713]
@@ -765,6 +529,7 @@ class RelToSqlConverterTest {
         + "FROM \"foodmart\".\"product\"\n"
         + "GROUP BY \"product_id\") AS \"t1\"";
     final String expectedVertica = expectedPostgresql;
+<<<<<<< HEAD
     final String expectedBigQuery = "SELECT SUM(net_weight1) AS net_weight_converted\n"
         + "FROM (SELECT SUM(net_weight) AS net_weight1\n"
         + "FROM foodmart.product\n"
@@ -774,6 +539,7 @@ class RelToSqlConverterTest {
         + "FROM foodmart.product\n"
         + "GROUP BY product_id) t1";
     final String expectedSpark = expectedHive;
+=======
     sql(query)
         .withOracle()
         .ok(expectedOracle)
@@ -1141,7 +907,7 @@ class RelToSqlConverterTest {
     final String query = "select position('A' IN 'ABC') from \"product\"";
     final String expected = "SELECT STRPOS('ABC', 'A')\n"
         + "FROM foodmart.product";
-    sql(query).withBigquery().ok(expected);
+    sql(query).withBigQuery().ok(expected);
   }
 
   @Test public void testModFunctionForHive() {
@@ -1157,7 +923,7 @@ class RelToSqlConverterTest {
     final String expected = "SELECT MOD(11, 3)\n"
         + "FROM foodmart.product\n"
         + "UNION DISTINCT\nSELECT 1\nFROM foodmart.product";
-    sql(query).withBigquery().ok(expected);
+    sql(query).withBigQuery().ok(expected);
   }
 
   @Test public void testIntersectOperatorForBigQuery() {
@@ -1166,7 +932,7 @@ class RelToSqlConverterTest {
     final String expected = "SELECT MOD(11, 3)\n"
         + "FROM foodmart.product\n"
         + "INTERSECT DISTINCT\nSELECT 1\nFROM foodmart.product";
-    sql(query).withBigquery().ok(expected);
+    sql(query).withBigQuery().ok(expected);
   }
 
   @Test public void testExceptOperatorForBigQuery() {
@@ -1175,7 +941,7 @@ class RelToSqlConverterTest {
     final String expected = "SELECT MOD(11, 3)\n"
         + "FROM foodmart.product\n"
         + "EXCEPT DISTINCT\nSELECT 1\nFROM foodmart.product";
-    sql(query).withBigquery().ok(expected);
+    sql(query).withBigQuery().ok(expected);
   }
 
   @Test public void testHiveSelectQueryWithOrderByDescAndNullsFirstShouldBeEmulated() {
@@ -4460,6 +4226,7 @@ class RelToSqlConverterTest {
         .ok(expectedSnowflake)
         .withRedshift()
         .ok(expectedRedshift);
+<<<<<<< HEAD
   }
 
   @Test void testValuesEmpty() {
@@ -4504,6 +4271,8 @@ class RelToSqlConverterTest {
         + "FULL JOIN (VALUES  (1, 'x '),\n"
         + " (2, 'yy')) AS \"t0\" (\"a\", \"b\") ON TRUE";
     assertThat(toSql(root), isLinux(expectedSql));
+=======
+>>>>>>> b3be0b9f7 ([CALCITE-3050] Integrate SqlDialect and SqlParser.Config)
   }
 
   /** Test case for
@@ -4934,11 +4703,19 @@ class RelToSqlConverterTest {
       return dialect(SqlDialect.DatabaseProduct.SYBASE.getDialect());
     }
 
+    Sql withRedshift() {
+      return dialect(DatabaseProduct.REDSHIFT.getDialect());
+    }
+
+    Sql withSnowflake() {
+      return dialect(DatabaseProduct.SNOWFLAKE.getDialect());
+    }
+
     Sql withVertica() {
       return dialect(SqlDialect.DatabaseProduct.VERTICA.getDialect());
     }
 
-    Sql withBigquery() {
+    Sql withBigQuery() {
       return dialect(SqlDialect.DatabaseProduct.BIG_QUERY.getDialect());
     }
 

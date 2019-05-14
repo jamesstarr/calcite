@@ -16,7 +16,7 @@
  */
 package org.apache.calcite.sql.dialect;
 
->>>>>>> ef578f572 ([CALCITE-2188] JDBC adapter generates invalid SQL for DATE/INTERVAL arithmetic)
+import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.avatica.util.TimeUnit;
 import org.apache.calcite.avatica.util.TimeUnitRange;
 import org.apache.calcite.config.NullCollation;
@@ -55,6 +55,7 @@ public class MysqlSqlDialect extends SqlDialect {
       new MysqlSqlDialect(EMPTY_CONTEXT
           .withDatabaseProduct(DatabaseProduct.MYSQL)
           .withIdentifierQuoteString("`")
+          .withUnquotedCasing(Casing.UNCHANGED)
           .withNullCollation(NullCollation.LOW));
 
   /** MySQL specific function. */

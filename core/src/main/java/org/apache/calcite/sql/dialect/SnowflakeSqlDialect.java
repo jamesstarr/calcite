@@ -23,16 +23,19 @@ import org.apache.calcite.sql.SqlDialect;
  * A <code>SqlDialect</code> implementation for the Snowflake database.
  */
 public class SnowflakeSqlDialect extends SqlDialect {
-  public static final SqlDialect.Context DEFAULT_CONTEXT = SqlDialect.EMPTY_CONTEXT
-      .withDatabaseProduct(SqlDialect.DatabaseProduct.SNOWFLAKE)
-      .withIdentifierQuoteString("\"")
-      .withUnquotedCasing(Casing.TO_UPPER);
-
   public static final SqlDialect DEFAULT =
-      new SnowflakeSqlDialect(DEFAULT_CONTEXT);
+      new SnowflakeSqlDialect(EMPTY_CONTEXT
+          .withDatabaseProduct(DatabaseProduct.SNOWFLAKE)
+          .withIdentifierQuoteString("\"")
+          .withUnquotedCasing(Casing.TO_UPPER));
 
   /** Creates a SnowflakeSqlDialect. */
   public SnowflakeSqlDialect(Context context) {
     super(context);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SnowflakeSqlDialect.java
+>>>>>>> b3be0b9f7 ([CALCITE-3050] Integrate SqlDialect and SqlParser.Config)

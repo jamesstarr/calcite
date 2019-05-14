@@ -25,14 +25,13 @@ import org.apache.calcite.sql.SqlWriter;
  * A <code>SqlDialect</code> implementation for the Redshift database.
  */
 public class RedshiftSqlDialect extends SqlDialect {
-  public static final SqlDialect.Context DEFAULT_CONTEXT = SqlDialect.EMPTY_CONTEXT
-      .withDatabaseProduct(SqlDialect.DatabaseProduct.REDSHIFT)
-      .withIdentifierQuoteString("\"")
-      .withQuotedCasing(Casing.TO_LOWER)
-      .withUnquotedCasing(Casing.TO_LOWER)
-      .withCaseSensitive(false);
-
-  public static final SqlDialect DEFAULT = new RedshiftSqlDialect(DEFAULT_CONTEXT);
+  public static final SqlDialect DEFAULT =
+      new RedshiftSqlDialect(EMPTY_CONTEXT
+          .withDatabaseProduct(DatabaseProduct.REDSHIFT)
+          .withIdentifierQuoteString("\"")
+          .withQuotedCasing(Casing.TO_LOWER)
+          .withUnquotedCasing(Casing.TO_LOWER)
+          .withCaseSensitive(false));
 
   /** Creates a RedshiftSqlDialect. */
   public RedshiftSqlDialect(Context context) {

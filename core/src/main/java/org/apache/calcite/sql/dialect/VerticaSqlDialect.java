@@ -23,12 +23,11 @@ import org.apache.calcite.sql.SqlDialect;
  * A <code>SqlDialect</code> implementation for the Vertica database.
  */
 public class VerticaSqlDialect extends SqlDialect {
-  public static final SqlDialect.Context DEFAULT_CONTEXT = SqlDialect.EMPTY_CONTEXT
-      .withDatabaseProduct(SqlDialect.DatabaseProduct.VERTICA)
-      .withIdentifierQuoteString("\"")
-      .withUnquotedCasing(Casing.UNCHANGED);
-
-  public static final SqlDialect DEFAULT = new VerticaSqlDialect(DEFAULT_CONTEXT);
+  public static final SqlDialect DEFAULT =
+      new VerticaSqlDialect(EMPTY_CONTEXT
+          .withDatabaseProduct(DatabaseProduct.VERTICA)
+          .withIdentifierQuoteString("\"")
+          .withUnquotedCasing(Casing.UNCHANGED));
 
   /** Creates a VerticaSqlDialect. */
   public VerticaSqlDialect(Context context) {
