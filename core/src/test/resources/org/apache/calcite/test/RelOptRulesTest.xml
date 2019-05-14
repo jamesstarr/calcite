@@ -7482,10 +7482,17 @@ LogicalAggregate(group=[{0}])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin13">
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where ename = 'A') as e
+=======
+    <TestCase name="testPushAggregateThroughtOuterJoin13">
+        <Resource name="sql">
+            <![CDATA[select e.job
+from (select * from sales.emp where empno = 10) as e
+>>>>>>> 8647b883d ([CALCITE-3028] Support FULL OUTER JOIN with AggregateJoinTransposeRule (Vineet Garg))
 full outer join sales.dept as d on e.job = d.name
 group by e.job]]>
         </Resource>
@@ -7494,7 +7501,11 @@ group by e.job]]>
 LogicalAggregate(group=[{2}])
   LogicalJoin(condition=[=($2, $10)], joinType=[full])
     LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+<<<<<<< HEAD
       LogicalFilter(condition=[=($1, 'A')])
+=======
+      LogicalFilter(condition=[=($0, 10)])
+>>>>>>> 8647b883d ([CALCITE-3028] Support FULL OUTER JOIN with AggregateJoinTransposeRule (Vineet Garg))
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 ]]>
@@ -7505,14 +7516,22 @@ LogicalAggregate(group=[{0}])
   LogicalJoin(condition=[=($0, $1)], joinType=[full])
     LogicalAggregate(group=[{2}])
       LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+<<<<<<< HEAD
         LogicalFilter(condition=[=($1, 'A')])
+=======
+        LogicalFilter(condition=[=($0, 10)])
+>>>>>>> 8647b883d ([CALCITE-3028] Support FULL OUTER JOIN with AggregateJoinTransposeRule (Vineet Garg))
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalAggregate(group=[{1}])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin14">
+=======
+    <TestCase name="testPushAggregateThroughtOuterJoin14">
+>>>>>>> 8647b883d ([CALCITE-3028] Support FULL OUTER JOIN with AggregateJoinTransposeRule (Vineet Garg))
         <Resource name="sql">
             <![CDATA[select e.mgr, d.mgr
 from sales.emp as e
@@ -7542,10 +7561,17 @@ LogicalProject(MGR=[$1], MGR0=[$0])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin15">
         <Resource name="sql">
             <![CDATA[select e.ename, d.mgr
 from (select * from sales.emp where ename = 'A') as e
+=======
+    <TestCase name="testPushAggregateThroughtOuterJoin15">
+        <Resource name="sql">
+            <![CDATA[select e.ename, d.mgr
+from (select * from sales.emp where empno = 10) as e
+>>>>>>> 8647b883d ([CALCITE-3028] Support FULL OUTER JOIN with AggregateJoinTransposeRule (Vineet Garg))
 full outer join sales.emp as d on e.job = d.job
 group by e.ename,d.mgr]]>
         </Resource>
@@ -7554,7 +7580,11 @@ group by e.ename,d.mgr]]>
 LogicalAggregate(group=[{1, 12}])
   LogicalJoin(condition=[=($2, $11)], joinType=[full])
     LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+<<<<<<< HEAD
       LogicalFilter(condition=[=($1, 'A')])
+=======
+      LogicalFilter(condition=[=($0, 10)])
+>>>>>>> 8647b883d ([CALCITE-3028] Support FULL OUTER JOIN with AggregateJoinTransposeRule (Vineet Garg))
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
@@ -7565,17 +7595,28 @@ LogicalAggregate(group=[{0, 3}])
   LogicalJoin(condition=[=($1, $2)], joinType=[full])
     LogicalAggregate(group=[{1, 2}])
       LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+<<<<<<< HEAD
         LogicalFilter(condition=[=($1, 'A')])
+=======
+        LogicalFilter(condition=[=($0, 10)])
+>>>>>>> 8647b883d ([CALCITE-3028] Support FULL OUTER JOIN with AggregateJoinTransposeRule (Vineet Garg))
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalAggregate(group=[{2, 3}])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin16">
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where ename = 'A') as e
+=======
+    <TestCase name="testPushAggregateThroughtOuterJoin16">
+        <Resource name="sql">
+            <![CDATA[select e.job
+from (select * from sales.emp where empno = 10) as e
+>>>>>>> 8647b883d ([CALCITE-3028] Support FULL OUTER JOIN with AggregateJoinTransposeRule (Vineet Garg))
 full outer join sales.dept as d on e.job = d.name
 and e.deptno + e.empno = d.deptno + 5
 group by e.job]]>
@@ -7585,7 +7626,11 @@ group by e.job]]>
 LogicalAggregate(group=[{2}])
   LogicalJoin(condition=[AND(=($2, $11), =($9, $12))], joinType=[full])
     LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], $f9=[+($7, $0)])
+<<<<<<< HEAD
       LogicalFilter(condition=[=($1, 'A')])
+=======
+      LogicalFilter(condition=[=($0, 10)])
+>>>>>>> 8647b883d ([CALCITE-3028] Support FULL OUTER JOIN with AggregateJoinTransposeRule (Vineet Garg))
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalProject(DEPTNO=[$0], NAME=[$1], $f2=[+($0, 5)])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -7597,7 +7642,11 @@ LogicalAggregate(group=[{0}])
   LogicalJoin(condition=[AND(=($0, $2), =($1, $3))], joinType=[full])
     LogicalAggregate(group=[{2, 9}])
       LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], $f9=[+($7, $0)])
+<<<<<<< HEAD
         LogicalFilter(condition=[=($1, 'A')])
+=======
+        LogicalFilter(condition=[=($0, 10)])
+>>>>>>> 8647b883d ([CALCITE-3028] Support FULL OUTER JOIN with AggregateJoinTransposeRule (Vineet Garg))
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalAggregate(group=[{1, 2}])
       LogicalProject(DEPTNO=[$0], NAME=[$1], $f2=[+($0, 5)])
@@ -7605,11 +7654,14 @@ LogicalAggregate(group=[{0}])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin2">
         <Resource name="sql">
             <![CDATA[select d.ename
 from (select * from sales.emp where ename = 'A') as e
 =======
+=======
+>>>>>>> 8647b883d ([CALCITE-3028] Support FULL OUTER JOIN with AggregateJoinTransposeRule (Vineet Garg))
     <TestCase name="testPushAggregateThroughtOuterJoin2">
         <Resource name="sql">
             <![CDATA[select d.ename

@@ -148,8 +148,7 @@ public class AggregateJoinTransposeRule
   // FULL OUTER JOIN is not supported since it could produce wrong result
   // due to bug (CALCITE-3012)
   private boolean isJoinSupported(final Join join, final Aggregate aggregate) {
-    return join.getJoinType() != JoinRelType.FULL
-        && (join.getJoinType() == JoinRelType.INNER || aggregate.getAggCallList().isEmpty());
+    return join.getJoinType() == JoinRelType.INNER || aggregate.getAggCallList().isEmpty();
   }
 
   public void onMatch(RelOptRuleCall call) {
