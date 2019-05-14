@@ -415,7 +415,7 @@ class RelToSqlConverterTest {
     sql(query).ok(expected);
   }
 
-  @Test void testCastDecimal1() {
+  @Test public void testCastDecimal1() {
     final String query = "select -0.0000000123\n"
         + " from \"expense_fact\"";
     final String expected = "SELECT -1.23E-8\n"
@@ -423,6 +423,7 @@ class RelToSqlConverterTest {
     sql(query).ok(expected);
   }
 
+<<<<<<< HEAD
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2713">[CALCITE-2713]
    * JDBC adapter may generate casts on PostgreSQL for VARCHAR type exceeding
@@ -657,6 +658,8 @@ class RelToSqlConverterTest {
     relFn(relFn).ok(expected);
   }
 
+=======
+>>>>>>> 989724d9a ([CALCITE-3066] RelToSqlConverter may incorrectly throw an AssertionError for some decimal literals)
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2713">[CALCITE-2713]
    * JDBC adapter may generate casts on PostgreSQL for VARCHAR type exceeding
