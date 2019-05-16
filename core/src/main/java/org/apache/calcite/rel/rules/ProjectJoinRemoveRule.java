@@ -56,12 +56,6 @@ import java.util.stream.Collectors;
  * <pre>select s.product_id from sales as s</pre></blockquote>
  *
  */
-<<<<<<< HEAD
-public class ProjectJoinRemoveRule extends RelOptRule implements SubstitutionRule {
-  public static final ProjectJoinRemoveRule INSTANCE =
-      new ProjectJoinRemoveRule(LogicalProject.class,
-          LogicalJoin.class, RelFactories.LOGICAL_BUILDER);
-=======
 public class ProjectJoinRemoveRule extends RelOptRule {
   public static final ProjectJoinRemoveRule INSTANCE
       = new ProjectJoinRemoveRule(LogicalProject.class,
@@ -134,4 +128,3 @@ public class ProjectJoinRemoveRule extends RelOptRule {
 =======
 
 // End ProjectJoinRemoveRule.java
->>>>>>> 79d8735c6 ([CALCITE-2712] Add rule to remove null-generating side of a Join)

@@ -16,11 +16,21 @@
  */
 package org.apache.calcite.sql.dialect;
 
+import org.apache.calcite.avatica.util.TimeUnitRange;
 import org.apache.calcite.config.NullCollation;
 import org.apache.calcite.sql.JoinType;
+import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlDialect;
+import org.apache.calcite.sql.SqlFunction;
+import org.apache.calcite.sql.SqlFunctionCategory;
+import org.apache.calcite.sql.SqlKind;
+import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlUtil;
 import org.apache.calcite.sql.SqlWriter;
+import org.apache.calcite.sql.fun.SqlFloorFunction;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.type.ReturnTypes;
 
 /**
  * A <code>SqlDialect</code> implementation for the APACHE SPARK database.
@@ -30,6 +40,11 @@ public class SparkSqlDialect extends SqlDialect {
       new SparkSqlDialect(EMPTY_CONTEXT
           .withDatabaseProduct(DatabaseProduct.SPARK)
           .withNullCollation(NullCollation.LOW));
+
+  private static final SqlFunction SPARKSQL_SUBSTRING =
+      new SqlFunction("SUBSTRING", SqlKind.OTHER_FUNCTION,
+          ReturnTypes.ARG0_NULLABLE_VARYING, null, null,
+          SqlFunctionCategory.STRING);
 
   /**
    * Creates a SparkSqlDialect.
@@ -56,7 +71,7 @@ public class SparkSqlDialect extends SqlDialect {
       SqlNode fetch) {
     unparseFetchUsingLimit(writer, offset, fetch);
   }
-<<<<<<< HEAD
+>>>>>>> dd4536a41 ([CALCITE-3072] Generate right SQL for FLOOR&SUBSTRING functions in SparkSqlDialect (DonnyZone))
 
   @Override public void unparseCall(SqlWriter writer, SqlCall call,
       int leftPrec, int rightPrec) {
@@ -77,15 +92,17 @@ public class SparkSqlDialect extends SqlDialect {
             timeUnitNode.getParserPosition());
         SqlFloorFunction.unparseDatetimeFunction(writer, call2, "DATE_TRUNC", false);
         break;
+<<<<<<< HEAD
       case TRIM:
         unparseHiveTrim(writer, call, leftPrec, rightPrec);
         break;
+=======
+
       default:
         super.unparseCall(writer, call, leftPrec, rightPrec);
       }
     }
   }
-}
 =======
 }
 
