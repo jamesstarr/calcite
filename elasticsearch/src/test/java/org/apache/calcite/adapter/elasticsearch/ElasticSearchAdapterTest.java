@@ -534,7 +534,7 @@ public class ElasticSearchAdapterTest {
         .query("select count(*) from zips")
         .queryContains(
             ElasticsearchChecker.elasticsearchChecker("'_source':false",
-            "size:0"))
+            "size:0", "track_total_hits:true"))
         .returns("EXPR$0=149\n");
 
     // check with limit (should still return correct result).
@@ -546,7 +546,7 @@ public class ElasticSearchAdapterTest {
         .query("select count(*) as cnt from zips")
         .queryContains(
             ElasticsearchChecker.elasticsearchChecker("'_source':false",
-            "size:0"))
+            "size:0", "track_total_hits:true"))
         .returns("cnt=149\n");
 
     calciteAssert()
@@ -554,6 +554,7 @@ public class ElasticSearchAdapterTest {
         .queryContains(
             ElasticsearchChecker.elasticsearchChecker("'_source':false",
             "size:0",
+            "track_total_hits:true",
             "aggregations:{'EXPR$0':{min:{field:'pop'}},'EXPR$1':{max:"
                 + "{field:'pop'}}}"))
         .returns("EXPR$0=21; EXPR$1=112047\n");
