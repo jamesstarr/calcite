@@ -48,11 +48,15 @@ A basic example of a model file is given below:
       "factory": "org.apache.calcite.adapter.elasticsearch.ElasticsearchSchemaFactory",
       "operand": {
 <<<<<<< HEAD
+<<<<<<< HEAD
         "coordinates": "{'127.0.0.1': 9200}"
 =======
         "coordinates": "{'127.0.0.1': 9300}",
         "index": "usa"
 >>>>>>> 9fbe97bb2 (Site: Improve documentation for ElasticSearch Adapter)
+=======
+        "coordinates": "{'127.0.0.1': 9200}"
+>>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
       }
     }
   ]
@@ -76,27 +80,39 @@ $ ./sqlline
 sqlline> !connect jdbc:calcite:model=model.json admin admin
 {% endhighlight %}
 
+<<<<<<< HEAD
 You can also specify the index name and path prefix that is represented by the `index` and `pathPrefix` parameter in the model definition:
+=======
+You can also specify the index name that is represented by the `index` parameter in the model definition:
+>>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
 
 {% highlight json %}
 ...
 
       "operand": {
         "coordinates": "{'127.0.0.1': 9200}",
+<<<<<<< HEAD
         "index": "usa",
         "pathPrefix": "path"
+=======
+        "index": "usa"
+>>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
       }
 
 ...
 {% endhighlight %}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
 `sqlline` will now accept SQL queries which access your Elasticsearch.
 The purpose of this adapter is to compile the query into the most efficient
 Elasticsearch SEARCH JSON possible by exploiting filtering and sorting directly
 in Elasticsearch where possible.
 
 We can issue a simple query to fetch the names of all the states
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 stored in the index `usa`.
@@ -106,6 +122,9 @@ stored in the type `zips`.
 =======
 stored in the type `zips`.
 >>>>>>> b06e7746c (Cosmetic changes)
+=======
+stored in the index `usa`.
+>>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
 
 {% highlight sql %}
 sqlline> SELECT * from "usa";
@@ -178,6 +197,7 @@ scroll is automatically cleared (removed) when all query resuts are consumed.
 ### Supported versions
 
 Currently this adapter supports ElasticSearch versions 6.x (or newer). Generally
+<<<<<<< HEAD
 we try to follow official [support schedule](https://www.elastic.co/support/eol).
 Also, types are not supported (this adapter only supports indices).
 =======
@@ -202,6 +222,9 @@ scroll is automatically cleared (removed) when all query resuts are consumed.
 ### Supported versions
 
 Currently this adapter supports ElasticSearch versions 2.x (or newer). Generally
+=======
+>>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
 we try to follow official [support schedule](https://www.elastic.co/support/eol).
+Also, types are not supported (this adapter only supports indices).
 
 >>>>>>> ec2d09650 (Site: ElasticAdapter mention supported versions (and support schedule))

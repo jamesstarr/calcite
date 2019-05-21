@@ -31,7 +31,7 @@ package org.apache.calcite.adapter.elasticsearch;
       final RestClient client = connect(coordinates);
 
       final String index = (String) map.get("index");
-      Preconditions.checkState(index != null, "'index' is missing in configuration");
+
       return new ElasticsearchSchema(client, new ObjectMapper(), index);
     } catch (IOException e) {
       throw new RuntimeException("Cannot parse values from json", e);
