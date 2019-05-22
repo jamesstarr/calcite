@@ -8884,18 +8884,6 @@ public class SqlParserTest {
         "('100' IS NOT JSON SCALAR)");
   }
 
-  @Test public void testParenthesizedSubQueries() {
-    final String expected = "SELECT *\n"
-        + "FROM (SELECT *\n"
-        + "FROM `TAB`) AS `X`";
-
-    final String sql1 = "SELECT * FROM (((SELECT * FROM tab))) X";
-    sql(sql1).ok(expected);
-
-    final String sql2 = "SELECT * FROM ((((((((((((SELECT * FROM tab)))))))))))) X";
-    sql(sql2).ok(expected);
-  }
-
   @Test public void testParenthesizedSubQueries2() {
     final String expected = "SELECT `O_CUSTKEY`\n"
         + "FROM (SELECT `O1`.`O_CUSTKEY`\n"
@@ -9068,6 +9056,18 @@ public class SqlParserTest {
         "select unquotedColumn from \"doubleQuotedTable\"",
         is("SELECT \"unquotedcolumn\"\n"
             + "FROM \"doublequotedtable\""));
+  }
+
+  @Test public void testParenthesizedSubQueries() {
+    final String expected = "SELECT *\n"
+        + "FROM (SELECT *\n"
+        + "FROM `TAB`) AS `X`";
+
+    final String sql1 = "SELECT * FROM (((SELECT * FROM tab))) X";
+    sql(sql1).ok(expected);
+
+    final String sql2 = "SELECT * FROM ((((((((((((SELECT * FROM tab)))))))))))) X";
+    sql(sql2).ok(expected);
   }
 
   protected void checkDialect(SqlDialect dialect, String sql,
