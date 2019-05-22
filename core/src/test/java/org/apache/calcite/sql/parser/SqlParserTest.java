@@ -7510,29 +7510,6 @@ public class SqlParserTest {
         .fails("(?s).*Encountered \"= =\" at line 1, column 32\\..*");
   }
 
-<<<<<<< HEAD
-  @Test void qualify() {
-    check(
-            "SELECT a, b, c FROM mytable QUALIFY ROW_NUMBER() over (partition by p order by o) = 1",
-            "SELECT `A`, `B`, `C`\n"
-                    + "FROM `MYTABLE`\n"
-                    + "QUALIFY ((ROW_NUMBER() OVER (PARTITION BY `P` ORDER BY `O`)) = 1)");
-
-    check(
-            "SELECT a, b, SUM(c) OVER myWindow as sumC "
-                    + "FROM mytable "
-                    + "WINDOW myWindow AS (PARTITION BY a ORDER BY b) "
-                    + "QUALIFY sumC = 1 "
-                    + "ORDER BY a, b",
-            "SELECT `A`, `B`, (SUM(`C`) OVER `MYWINDOW`) AS `SUMC`\n"
-                    + "FROM `MYTABLE`\n"
-                    + "WINDOW `MYWINDOW` AS (PARTITION BY `A` ORDER BY `B`)\n"
-                    + "QUALIFY (`SUMC` = 1)\n"
-                    + "ORDER BY `A`, `B`");
-  }
-
-  @Test void testLongIdentifiers() {
-=======
   @Test public void qualify() {
     check(
             "SELECT a, b, c FROM mytable QUALIFY ROW_NUMBER() over (partition by p order by o) = 1",
@@ -9090,7 +9067,7 @@ public class SqlParserTest {
       Matcher<String> matcher) throws SqlParseException {
     final SqlParser parser = getDialectSqlParser(sql, dialect);
     final SqlNode node = parser.parseStmt();
-    assertThat(node.toSqlString(dialect).getSql(), matcher);
+    assertThat(linux(node.toSqlString(dialect).getSql()), matcher);
   }
 
   @Test public void testInvalidHintFormat() {
@@ -9140,7 +9117,10 @@ public class SqlParserTest {
         SqlNode sqlNode,
         String expected) {
       // no dialect, always parenthesize
+<<<<<<< HEAD
       final String actual = sqlNode.toSqlString(dialect, true).getSql();
+=======
+      final String actual = sqlNode.toSqlString(null, true).getSql();
       TestUtil.assertEqualsVerbose(expected, linux(actual));
     }
 
@@ -9191,11 +9171,8 @@ public class SqlParserTest {
         String sql,
         String expected) {
       final SqlNode sqlNode = parseExpressionAndHandleEx(sql);
-      String actual = sqlNode.toSqlString(null, true).getSql();
-      if (LINUXIFY.get()[0]) {
-        actual = Util.toLinux(actual);
-      }
-      TestUtil.assertEqualsVerbose(expected, actual);
+      final String actual = sqlNode.toSqlString(null, true).getSql();
+      TestUtil.assertEqualsVerbose(expected, linux(actual));
     }
 
     protected SqlNode parseExpressionAndHandleEx(String sql) {

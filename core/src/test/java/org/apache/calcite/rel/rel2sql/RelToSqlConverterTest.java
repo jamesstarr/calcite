@@ -529,17 +529,6 @@ class RelToSqlConverterTest {
         + "FROM \"foodmart\".\"product\"\n"
         + "GROUP BY \"product_id\") AS \"t1\"";
     final String expectedVertica = expectedPostgresql;
-<<<<<<< HEAD
-    final String expectedBigQuery = "SELECT SUM(net_weight1) AS net_weight_converted\n"
-        + "FROM (SELECT SUM(net_weight) AS net_weight1\n"
-        + "FROM foodmart.product\n"
-        + "GROUP BY product_id) AS t1";
-    final String expectedHive = "SELECT SUM(net_weight1) net_weight_converted\n"
-        + "FROM (SELECT SUM(net_weight) net_weight1\n"
-        + "FROM foodmart.product\n"
-        + "GROUP BY product_id) t1";
-    final String expectedSpark = expectedHive;
-=======
     sql(query)
         .withOracle()
         .ok(expectedOracle)
@@ -4272,7 +4261,6 @@ class RelToSqlConverterTest {
         + " (2, 'yy')) AS \"t0\" (\"a\", \"b\") ON TRUE";
     assertThat(toSql(root), isLinux(expectedSql));
 =======
->>>>>>> b3be0b9f7 ([CALCITE-3050] Integrate SqlDialect and SqlParser.Config)
   }
 
   /** Test case for
