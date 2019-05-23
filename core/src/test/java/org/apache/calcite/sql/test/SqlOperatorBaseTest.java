@@ -4730,6 +4730,24 @@ public abstract class SqlOperatorBaseTest {
         "null", "VARCHAR(2000) NOT NULL");
   }
 
+  @Test public void testJsonStorageSize() {
+    tester.checkString("json_storage_size('[100, \"sakila\", [1, 3, 5], 425.05]')",
+        "29", "INTEGER");
+    tester.checkString("json_storage_size('{\"a\": 1000,\"b\": \"aa\", \"c\": \"[1, 3, 5]\"}')",
+        "35", "INTEGER");
+    tester.checkString("json_storage_size('{\"a\": 1000, \"b\": \"wxyz\", \"c\": \"[1, 3]\"}')",
+        "34", "INTEGER");
+    tester.checkString("json_storage_size('[100, \"json\", [[10, 20, 30], 3, 5], 425.05]')",
+        "36", "INTEGER");
+    tester.checkString("json_storage_size('12')",
+        "2", "INTEGER");
+//    tester.checkString("json_storage_size('12' format json)",
+//        "2", "INTEGER");
+    tester.checkString("json_storage_size('null')",
+        "4", "INTEGER");
+
+  }
+
   @Test public void testJsonType() {
     tester.setFor(SqlLibraryOperators.JSON_TYPE);
     tester.checkString("json_type('\"1\"')",
