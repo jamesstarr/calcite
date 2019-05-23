@@ -293,21 +293,19 @@ public class HepPlannerTest extends RelOptTestBase {
     planner.findBestExp();
   }
 
-  @Test void testRelNodeCacheWithDigest() {
+  @Test public void testRelNodeCacheWithDigest() {
     HepProgramBuilder programBuilder = HepProgram.builder();
     HepPlanner planner =
         new HepPlanner(
             programBuilder.build());
     String query = "(select n_nationkey from SALES.CUSTOMER) union all\n"
         + "(select n_name from CUSTOMER_MODIFIABLEVIEW)";
-    sql(query).withTester(t -> createDynamicTester())
-        .withDecorrelation(true)
-        .with(programBuilder.build())
-        .with(planner)
-        .checkUnchanged();
+    Tester tester = createDynamicTester()
+        .withDecorrelation(true);
+    checkPlanning(tester, programBuilder.build(), planner, query, true);
   }
 
-  @Test void testRuleApplyCount() {
+  @Test public void testRuleApplyCount() {
     final long applyTimes1 = checkRuleApplyCount(HepMatchOrder.ARBITRARY);
     assertThat(applyTimes1, is(316L));
 
