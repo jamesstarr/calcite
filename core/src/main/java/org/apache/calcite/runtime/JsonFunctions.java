@@ -631,7 +631,19 @@ public class JsonFunctions {
     }
   }
 
->>>>>>> 355e516ff ([CALCITE-2975] Implement JSON_REMOVE function (xuqianjin))
+  public static Integer jsonStorageSize(String input) {
+    return jsonStorageSize(jsonValueExpression(input));
+  }
+
+  public static Integer jsonStorageSize(JsonValueContext input) {
+    try {
+      return JSON_PATH_JSON_PROVIDER.getObjectMapper()
+          .writeValueAsBytes(input.obj).length;
+    } catch (Exception e) {
+      throw RESOURCE.invalidInputForJsonStorageSize(Objects.toString(input.obj)).ex();
+    }
+  }
+
   public static boolean isJsonValue(String input) {
     try {
       dejsonize(input);
