@@ -79,7 +79,8 @@ public class CalcMergeRule extends RelRule<CalcMergeRule.Config>
             bottomCalc.getInput(),
             mergedProgram);
 
-    if (newCalc.getDigest().equals(bottomCalc.getDigest())) {
+    if (newCalc.getDigest().equals(bottomCalc.getDigest())
+        && newCalc.getRowType().equals(bottomCalc.getRowType())) {
       // newCalc is equivalent to bottomCalc, which means that topCalc
       // must be trivial. Take it out of the game.
       call.getPlanner().setImportance(topCalc, 0.0);
