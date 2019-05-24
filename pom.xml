@@ -1152,7 +1152,6 @@ limitations under the License.
   </reporting>
 
 
-
   <profiles>
     <profile>
       <!-- This profile adds/overrides few features of the 'apache-release'
