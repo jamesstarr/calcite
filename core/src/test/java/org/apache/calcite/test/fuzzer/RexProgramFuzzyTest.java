@@ -77,6 +77,15 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
   private static final long SEED =
       Long.getLong("rex.fuzzing.seed", 44);
 
+  private static final long DEFAULT_FUZZ_TEST_SEED =
+      Long.getLong("rex.fuzzing.default.seed", 0);
+  private static final Duration DEFAULT_FUZZ_TEST_DURATION =
+      Duration.of(Integer.getInteger("rex.fuzzing.default.duration", 5), ChronoUnit.SECONDS);
+  private static final long DEFAULT_FUZZ_TEST_ITERATIONS =
+      Long.getLong("rex.fuzzing.default.iterations", 0);
+  private static final boolean DEFAULT_FUZZ_TEST_FAIL =
+      Boolean.getBoolean("rex.fuzzing.default.fail");
+
   private PriorityQueue<SimplifyTask> slowestTasks;
 
   private long currentSeed = 0;
@@ -291,6 +300,30 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
   private static String nodeToString(RexNode node) {
     return node + "\n"
         + node.accept(new RexToTestCodeShuttle());
+  }
+
+  private static void trimStackTrace(Throwable t, int maxStackLines) {
+    StackTraceElement[] stackTrace = t.getStackTrace();
+    if (stackTrace == null || stackTrace.length <= maxStackLines) {
+      return;
+    }
+    stackTrace = Arrays.copyOf(stackTrace, maxStackLines);
+    t.setStackTrace(stackTrace);
+  }
+
+  @Test public void defaultFuzzTest() {
+    try {
+      runRexFuzzer(DEFAULT_FUZZ_TEST_SEED, DEFAULT_FUZZ_TEST_DURATION, 1,
+          DEFAULT_FUZZ_TEST_ITERATIONS, 0);
+    } catch (Throwable e) {
+      for (Throwable t = e; t != null; t = t.getCause()) {
+        trimStackTrace(t, DEFAULT_FUZZ_TEST_FAIL ? 8 : 4);
+      }
+      if (DEFAULT_FUZZ_TEST_FAIL) {
+        throw e;
+      }
+      LOGGER.info("Randomized test identified a potential defect. Feel free to fix that issue", e);
+    }
   }
 
   @Ignore("Ignore for now: CALCITE-3457")
