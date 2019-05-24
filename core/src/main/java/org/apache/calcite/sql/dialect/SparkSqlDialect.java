@@ -65,7 +65,13 @@ public class SparkSqlDialect extends SqlDialect {
     return JoinType.CROSS;
   }
 
->>>>>>> 8743a4811 (CALCITE-2856-Emulating Cross Join For SparkSqlDialect)
+  @Override public boolean supportsGroupByWithRollup() {
+    return true;
+  }
+
+  @Override public boolean supportsGroupByWithCube() {
+    return true;
+  }
 
   @Override public void unparseOffsetFetch(SqlWriter writer, SqlNode offset,
       SqlNode fetch) {

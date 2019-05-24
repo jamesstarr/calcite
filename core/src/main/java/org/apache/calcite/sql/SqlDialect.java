@@ -789,10 +789,6 @@ public class SqlDialect {
     return true;
   }
 
-<<<<<<< HEAD
- /** Returns SqlNode for type in "cast(column as type)", which might be
-  * different between databases by type name, precision etc. */
-=======
   public SqlNode getCastSpec(RelDataType type) {
     if (type instanceof BasicSqlType) {
       int maxPrecision = -1;
@@ -1003,6 +999,8 @@ public class SqlDialect {
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
   /**
    * Returns whether this dialect supports "WITH CUBE" in "GROUP BY" clause.
    */
@@ -1010,7 +1008,10 @@ public class SqlDialect {
     return false;
   }
 
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> c32de9d41 ([CALCITE-3077] Rewrite CUBE&ROLLUP queries in SparkSqlDialect (DonnyZone))
   /** Returns how NULL values are sorted if an ORDER BY item does not contain
    * NULLS ASCENDING or NULLS DESCENDING. */
   public NullCollation getNullCollation() {
