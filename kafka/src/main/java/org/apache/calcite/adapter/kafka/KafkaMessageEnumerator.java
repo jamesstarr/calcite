@@ -88,3 +88,7 @@ public class KafkaMessageEnumerator<K, V> implements Enumerator<Object[]> {
     consumer.close();
   }
 }
+<<<<<<< HEAD
+=======
+// End KafkaMessageEnumerator.java
+>>>>>>> 59490ebac ([CALCITE-2913] Adapter for Apache Kafka (Mingmin Xu))

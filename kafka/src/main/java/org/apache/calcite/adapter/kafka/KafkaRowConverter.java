@@ -24,16 +24,16 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 /**
  * Interface to handle formatting between Kafka message and Calcite row.
  *
- * @param <K> type for Kafka message key,
+ * @param <K>: type for Kafka message key,
  *           refer to {@link ConsumerConfig#KEY_DESERIALIZER_CLASS_CONFIG};
- * @param <V> type for Kafka message value,
+ * @param <V>: type for Kafka message value,
  *           refer to {@link ConsumerConfig#VALUE_DESERIALIZER_CLASS_CONFIG};
  *
  */
 public interface KafkaRowConverter<K, V> {
 
   /**
-   * Generates row type for a given Kafka topic.
+   * Generate row type for a given Kafka topic.
    *
    * @param topicName, Kafka topic name;
    * @return row type
@@ -41,11 +41,14 @@ public interface KafkaRowConverter<K, V> {
   RelDataType rowDataType(String topicName);
 
   /**
-   * Parses and reformats Kafka message from consumer,
-   * to align with row type defined as {@link #rowDataType(String)}.
-   *
+   * Parse and reformat Kafka message from consumer,
+   *  to align with row type defined as {@link #rowDataType(String)}.
    * @param message, the raw Kafka message record;
    * @return fields in the row
    */
   Object[] toRow(ConsumerRecord<K, V> message);
 }
+<<<<<<< HEAD
+=======
+// End KafkaRowConverter.java
+>>>>>>> 59490ebac ([CALCITE-2913] Adapter for Apache Kafka (Mingmin Xu))
