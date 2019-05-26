@@ -526,10 +526,9 @@ LogicalProject(EMPNO=[$0])
      </TestCase>
     <TestCase name="testAnyInProjectNonNullable">
         <Resource name="sql">
-            <![CDATA[select name,
- deptno > ANY (
- select deptno from emp)
- from dept]]>
+            <![CDATA[select name, deptno > ANY (
+  select deptno from emp)
+from dept]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -563,10 +562,9 @@ LogicalProject(NAME=[$1], EXPR$1=[CAST(OR(AND(IS TRUE(>($0, $2)), <>($3, 0)), AN
     </TestCase>
     <TestCase name="testAnyInProjectNullable">
         <Resource name="sql">
-            <![CDATA[select deptno,
- name = ANY (
- select mgr from emp)
- from dept]]>
+            <![CDATA[select deptno, name = ANY (
+  select mgr from emp)
+from dept]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -5684,7 +5682,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testPushAggregateThroughtOuterJoin1">
+    <TestCase name="testPushAggregateThroughOuterJoin1">
         <Resource name="sql">
             <![CDATA[select e.ename
 from (select * from sales.emp where empno = 10) as e
@@ -5714,9 +5712,9 @@ LogicalAggregate(group=[{0}])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testPushAggregateThroughtOuterJoin10">
+    <TestCase name="testPushAggregateThroughOuterJoin10">
         <Resource name="sql">
-            <![CDATA[select count(e.ename) 
+            <![CDATA[select count(e.ename)
 from (select * from sales.emp where empno = 10) as e
 left outer join sales.emp as d on e.job = d.job
 group by e.ename,d.mgr]]>
@@ -5733,7 +5731,7 @@ LogicalProject(EXPR$0=[$2])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testPushAggregateThroughtOuterJoin11">
+    <TestCase name="testPushAggregateThroughOuterJoin11">
         <Resource name="sql">
             <![CDATA[select e.empno,d.deptno
 from (select * from sales.emp where empno = 10) as e
@@ -5751,7 +5749,7 @@ LogicalAggregate(group=[{0, 9}])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testPushAggregateThroughtOuterJoin12">
+    <TestCase name="testPushAggregateThroughOuterJoin12">
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where empno = 10) as e
@@ -5781,7 +5779,7 @@ LogicalAggregate(group=[{0}])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testPushAggregateThroughtOuterJoin13">
+    <TestCase name="testPushAggregateThroughOuterJoin13">
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where empno = 10) as e
@@ -5811,7 +5809,7 @@ LogicalAggregate(group=[{0}])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testPushAggregateThroughtOuterJoin14">
+    <TestCase name="testPushAggregateThroughOuterJoin14">
         <Resource name="sql">
             <![CDATA[select e.mgr, d.mgr
 from sales.emp as e
@@ -5841,7 +5839,7 @@ LogicalProject(MGR=[$1], MGR0=[$0])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testPushAggregateThroughtOuterJoin15">
+    <TestCase name="testPushAggregateThroughOuterJoin15">
         <Resource name="sql">
             <![CDATA[select e.ename, d.mgr
 from (select * from sales.emp where empno = 10) as e
@@ -5871,7 +5869,7 @@ LogicalAggregate(group=[{0, 3}])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testPushAggregateThroughtOuterJoin16">
+    <TestCase name="testPushAggregateThroughOuterJoin16">
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where empno = 10) as e
@@ -5904,7 +5902,7 @@ LogicalAggregate(group=[{0}])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testPushAggregateThroughtOuterJoin2">
+    <TestCase name="testPushAggregateThroughOuterJoin2">
         <Resource name="sql">
             <![CDATA[select d.ename
 from (select * from sales.emp where empno = 10) as e
@@ -5934,7 +5932,7 @@ LogicalAggregate(group=[{1}])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testPushAggregateThroughtOuterJoin3">
+    <TestCase name="testPushAggregateThroughOuterJoin3">
         <Resource name="sql">
             <![CDATA[select e.ename, d.mgr
 from (select * from sales.emp where empno = 10) as e
@@ -5964,7 +5962,7 @@ LogicalAggregate(group=[{0, 3}])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testPushAggregateThroughtOuterJoin4">
+    <TestCase name="testPushAggregateThroughOuterJoin4">
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where empno = 10) as e
@@ -5994,7 +5992,7 @@ LogicalProject(JOB=[$0])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testPushAggregateThroughtOuterJoin5">
+    <TestCase name="testPushAggregateThroughOuterJoin5">
         <Resource name="sql">
             <![CDATA[select d.name
 from (select * from sales.emp where empno = 10) as e
@@ -6024,7 +6022,7 @@ LogicalAggregate(group=[{1}])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testPushAggregateThroughtOuterJoin6">
+    <TestCase name="testPushAggregateThroughOuterJoin6">
         <Resource name="sql">
             <![CDATA[select e.job,d.name
 from (select * from sales.emp where empno = 10) as e
@@ -6053,7 +6051,7 @@ LogicalJoin(condition=[=($0, $1)], joinType=[left])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testPushAggregateThroughtOuterJoin7">
+    <TestCase name="testPushAggregateThroughOuterJoin7">
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where empno = 10) as e
@@ -6086,7 +6084,7 @@ LogicalAggregate(group=[{0}])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testPushAggregateThroughtOuterJoin8">
+    <TestCase name="testPushAggregateThroughOuterJoin8">
         <Resource name="sql">
             <![CDATA[select d.name
 from (select * from sales.emp where empno = 10) as e
@@ -6119,7 +6117,7 @@ LogicalAggregate(group=[{2}])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testPushAggregateThroughtOuterJoin9">
+    <TestCase name="testPushAggregateThroughOuterJoin9">
         <Resource name="sql">
             <![CDATA[select e.job, d.name
 from (select * from sales.emp where empno = 10) as e

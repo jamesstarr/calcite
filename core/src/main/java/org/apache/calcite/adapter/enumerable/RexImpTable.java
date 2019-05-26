@@ -618,6 +618,7 @@ public class RexImpTable {
     case ANY:
     case STRICT:
     case SEMI_STRICT:
+    case ARG0:
       return (translator, call, nullAs) -> implementNullSemantics0(
           translator, call, nullAs, nullPolicy, harmonize,
           implementor);
@@ -978,8 +979,10 @@ public class RexImpTable {
       case NOT_POSSIBLE:
         throw e;
       case FALSE:
+      case IS_NOT_NULL:
         return FALSE_EXPR;
       case TRUE:
+      case IS_NULL:
         return TRUE_EXPR;
       default:
         return NULL_EXPR;
