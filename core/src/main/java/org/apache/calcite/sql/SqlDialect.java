@@ -998,9 +998,6 @@ public class SqlDialect {
     return false;
   }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   /**
    * Returns whether this dialect supports "WITH CUBE" in "GROUP BY" clause.
    */
@@ -1011,7 +1008,6 @@ public class SqlDialect {
 <<<<<<< HEAD
 =======
 =======
->>>>>>> c32de9d41 ([CALCITE-3077] Rewrite CUBE&ROLLUP queries in SparkSqlDialect (DonnyZone))
   /** Returns how NULL values are sorted if an ORDER BY item does not contain
    * NULLS ASCENDING or NULLS DESCENDING. */
   public NullCollation getNullCollation() {
