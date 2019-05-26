@@ -77,8 +77,7 @@ public class KafkaTableFactory implements TableFactory<KafkaStreamTable> {
         tableOptionBuilder.setConsumer(
             (Consumer) Class.forName(custConsumerClass)
                 .getConstructor(OffsetResetStrategy.class)
-                .newInstance(OffsetResetStrategy.NONE)
-        );
+                .newInstance(OffsetResetStrategy.NONE));
       } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException
           | InstantiationException | InvocationTargetException e) {
         final String details = String.format(
@@ -94,7 +93,7 @@ public class KafkaTableFactory implements TableFactory<KafkaStreamTable> {
     return new KafkaStreamTable(tableOptionBuilder);
   }
 }
-<<<<<<< HEAD
 =======
+
 // End KafkaTableFactory.java
 >>>>>>> 59490ebac ([CALCITE-2913] Adapter for Apache Kafka (Mingmin Xu))

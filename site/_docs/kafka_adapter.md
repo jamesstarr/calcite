@@ -22,10 +22,14 @@ limitations under the License.
 {% endcomment %}
 -->
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
   
 >>>>>>> 59490ebac ([CALCITE-2913] Adapter for Apache Kafka (Mingmin Xu))
+=======
+
+>>>>>>> 08fae5803 (Cosmetic changes)
 **Note**:
 
 KafkaAdapter is an experimental feature, changes in public API and usage are expected.
@@ -99,12 +103,18 @@ sqlline> SELECT STREAM *
 {% endhighlight %}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Kafka table is a streaming table, which runs continuously.
 
 If you want the query to end quickly, add `LIMIT` as follows:
 =======
 Kafka table is a streaming table, which runs continuously, `LIMIT` can be added to return fast as below: 
 >>>>>>> 59490ebac ([CALCITE-2913] Adapter for Apache Kafka (Mingmin Xu))
+=======
+Kafka table is a streaming table, which runs continuously.
+
+If you want the query to end quickly, add `LIMIT` as follows:
+>>>>>>> 08fae5803 (Cosmetic changes)
 
 {% highlight sql %}
 sqlline> SELECT STREAM *

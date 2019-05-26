@@ -109,7 +109,7 @@ public class KafkaAdapterTest {
         .failsAtValidation("Cannot convert stream 'MOCKTABLE' to relation");
   }
 }
-<<<<<<< HEAD
 =======
+
 // End KafkaAdapterTest.java
 >>>>>>> 59490ebac ([CALCITE-2913] Adapter for Apache Kafka (Mingmin Xu))

@@ -29,11 +29,15 @@
             "consumer.cust": "org.apache.calcite.adapter.kafka.KafkaMockConsumer"
           }
 <<<<<<< HEAD
+<<<<<<< HEAD
         }, {
 =======
         }
         ,{
 >>>>>>> 59490ebac ([CALCITE-2913] Adapter for Apache Kafka (Mingmin Xu))
+=======
+        }, {
+>>>>>>> 08fae5803 (Cosmetic changes)
           "name": "MOCKTABLE_CUST_ROW_CONVERTER",
           "type": "custom",
           "factory": "org.apache.calcite.adapter.kafka.KafkaTableFactory",
@@ -50,7 +54,11 @@
     }
   ]
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 =======
 }
 >>>>>>> 59490ebac ([CALCITE-2913] Adapter for Apache Kafka (Mingmin Xu))
+=======
+}
+>>>>>>> 08fae5803 (Cosmetic changes)

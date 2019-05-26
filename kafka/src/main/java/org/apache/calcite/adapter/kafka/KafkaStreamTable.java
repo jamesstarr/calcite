@@ -44,7 +44,9 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * A table which maps to an Apache Kafka topic, currently only {@link KafkaStreamTable} is
+ * A table that maps to an Apache Kafka topic.
+ *
+ * <p>Currently only {@link KafkaStreamTable} is
  * implemented as a STREAM table.
  */
 public class KafkaStreamTable implements ScannableTable, StreamableTable {
@@ -87,12 +89,30 @@ public class KafkaStreamTable implements ScannableTable, StreamableTable {
     return tableOptions.getRowConverter().rowDataType(tableOptions.getTopicName());
   }
 
-  /** Type of table. */
+  @Override public Statistic getStatistic() {
+    return Statistics.of(100d, ImmutableList.of(),
+        RelCollations.createSingleton(0));
+  }
+
+  @Override public boolean isRolledUp(final String column) {
+    return false;
+  }
+
+  @Override public boolean rolledUpColumnValidInsideAgg(final String column, final SqlCall call,
+      final SqlNode parent,
+      final CalciteConnectionConfig config) {
+    return false;
+  }
+
+  @Override public Table stream() {
+    return this;
+  }
+
   @Override public Schema.TableType getJdbcTableType() {
     return Schema.TableType.STREAM;
   }
 }
-<<<<<<< HEAD
 =======
+
 // End KafkaStreamTable.java
 >>>>>>> 59490ebac ([CALCITE-2913] Adapter for Apache Kafka (Mingmin Xu))

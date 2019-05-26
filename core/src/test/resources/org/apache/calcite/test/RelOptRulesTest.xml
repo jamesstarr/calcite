@@ -776,11 +776,17 @@ from dept]]>
 >>>>>>> 804308e89 ([CALCITE-2240] Extend rule to push predicates into CASE statement (Zoltan Haindrich))
     <TestCase name="testAnyInProjectNonNullable">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[select name,
  deptno > ANY (
  select deptno from emp)
  from dept]]>
 >>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
+=======
+            <![CDATA[select name, deptno > ANY (
+  select deptno from emp)
+from dept]]>
+>>>>>>> 08fae5803 (Cosmetic changes)
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -840,6 +846,7 @@ LogicalProject(NAME=[$1], EXPR$1=[CAST(OR(AND(IS TRUE(>($0, $2)), <>($3, 0)), AN
         <Resource name="sql">
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             <![CDATA[select deptno, name = ANY (
   select mgr from emp)
 from dept]]>
@@ -855,6 +862,11 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[IN($1, {
  name = ANY (
  select mgr from emp)
  from dept]]>
+=======
+            <![CDATA[select deptno, name = ANY (
+  select mgr from emp)
+from dept]]>
+>>>>>>> 08fae5803 (Cosmetic changes)
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -7345,12 +7357,16 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin1">
         <Resource name="sql">
             <![CDATA[select e.ename
 from (select * from sales.emp where ename = 'A') as e
 =======
     <TestCase name="testPushAggregateThroughtOuterJoin1">
+=======
+    <TestCase name="testPushAggregateThroughOuterJoin1">
+>>>>>>> 08fae5803 (Cosmetic changes)
         <Resource name="sql">
             <![CDATA[select e.ename
 from (select * from sales.emp where empno = 10) as e
@@ -7390,6 +7406,7 @@ LogicalAggregate(group=[{0}])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin10">
         <Resource name="sql">
             <![CDATA[select count(e.ename)
@@ -7398,6 +7415,11 @@ LogicalAggregate(group=[{0}])
         <Resource name="sql">
             <![CDATA[select count(e.ename) 
 >>>>>>> 33f139a23 ([CALCITE-3011] Support left and right outer joins with AggregateJoinTransposeRule (Vineet Garg))
+=======
+    <TestCase name="testPushAggregateThroughOuterJoin10">
+        <Resource name="sql">
+            <![CDATA[select count(e.ename)
+>>>>>>> 08fae5803 (Cosmetic changes)
 from (select * from sales.emp where empno = 10) as e
 left outer join sales.emp as d on e.job = d.job
 group by e.ename,d.mgr]]>
@@ -7415,10 +7437,14 @@ LogicalProject(EXPR$0=[$2])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin11">
 =======
     <TestCase name="testPushAggregateThroughtOuterJoin11">
 >>>>>>> 33f139a23 ([CALCITE-3011] Support left and right outer joins with AggregateJoinTransposeRule (Vineet Garg))
+=======
+    <TestCase name="testPushAggregateThroughOuterJoin11">
+>>>>>>> 08fae5803 (Cosmetic changes)
         <Resource name="sql">
             <![CDATA[select e.empno,d.deptno
 from (select * from sales.emp where empno = 10) as e
@@ -7437,12 +7463,16 @@ LogicalAggregate(group=[{0, 9}])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin12">
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where ename = 'A') as e
 =======
     <TestCase name="testPushAggregateThroughtOuterJoin12">
+=======
+    <TestCase name="testPushAggregateThroughOuterJoin12">
+>>>>>>> 08fae5803 (Cosmetic changes)
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where empno = 10) as e
@@ -7483,12 +7513,16 @@ LogicalAggregate(group=[{0}])
     </TestCase>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin13">
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where ename = 'A') as e
 =======
     <TestCase name="testPushAggregateThroughtOuterJoin13">
+=======
+    <TestCase name="testPushAggregateThroughOuterJoin13">
+>>>>>>> 08fae5803 (Cosmetic changes)
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where empno = 10) as e
@@ -7528,10 +7562,14 @@ LogicalAggregate(group=[{0}])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin14">
 =======
     <TestCase name="testPushAggregateThroughtOuterJoin14">
 >>>>>>> 8647b883d ([CALCITE-3028] Support FULL OUTER JOIN with AggregateJoinTransposeRule (Vineet Garg))
+=======
+    <TestCase name="testPushAggregateThroughOuterJoin14">
+>>>>>>> 08fae5803 (Cosmetic changes)
         <Resource name="sql">
             <![CDATA[select e.mgr, d.mgr
 from sales.emp as e
@@ -7562,12 +7600,16 @@ LogicalProject(MGR=[$1], MGR0=[$0])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin15">
         <Resource name="sql">
             <![CDATA[select e.ename, d.mgr
 from (select * from sales.emp where ename = 'A') as e
 =======
     <TestCase name="testPushAggregateThroughtOuterJoin15">
+=======
+    <TestCase name="testPushAggregateThroughOuterJoin15">
+>>>>>>> 08fae5803 (Cosmetic changes)
         <Resource name="sql">
             <![CDATA[select e.ename, d.mgr
 from (select * from sales.emp where empno = 10) as e
@@ -7607,12 +7649,16 @@ LogicalAggregate(group=[{0, 3}])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin16">
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where ename = 'A') as e
 =======
     <TestCase name="testPushAggregateThroughtOuterJoin16">
+=======
+    <TestCase name="testPushAggregateThroughOuterJoin16">
+>>>>>>> 08fae5803 (Cosmetic changes)
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where empno = 10) as e
@@ -7655,6 +7701,7 @@ LogicalAggregate(group=[{0}])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin2">
         <Resource name="sql">
             <![CDATA[select d.ename
@@ -7663,6 +7710,9 @@ from (select * from sales.emp where ename = 'A') as e
 =======
 >>>>>>> 8647b883d ([CALCITE-3028] Support FULL OUTER JOIN with AggregateJoinTransposeRule (Vineet Garg))
     <TestCase name="testPushAggregateThroughtOuterJoin2">
+=======
+    <TestCase name="testPushAggregateThroughOuterJoin2">
+>>>>>>> 08fae5803 (Cosmetic changes)
         <Resource name="sql">
             <![CDATA[select d.ename
 from (select * from sales.emp where empno = 10) as e
@@ -7702,12 +7752,16 @@ LogicalAggregate(group=[{1}])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin3">
         <Resource name="sql">
             <![CDATA[select e.ename, d.mgr
 from (select * from sales.emp where ename = 'A') as e
 =======
     <TestCase name="testPushAggregateThroughtOuterJoin3">
+=======
+    <TestCase name="testPushAggregateThroughOuterJoin3">
+>>>>>>> 08fae5803 (Cosmetic changes)
         <Resource name="sql">
             <![CDATA[select e.ename, d.mgr
 from (select * from sales.emp where empno = 10) as e
@@ -7747,12 +7801,16 @@ LogicalAggregate(group=[{0, 3}])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin4">
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where ename = 'A') as e
 =======
     <TestCase name="testPushAggregateThroughtOuterJoin4">
+=======
+    <TestCase name="testPushAggregateThroughOuterJoin4">
+>>>>>>> 08fae5803 (Cosmetic changes)
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where empno = 10) as e
@@ -7792,12 +7850,16 @@ LogicalProject(JOB=[$0])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin5">
         <Resource name="sql">
             <![CDATA[select d.name
 from (select * from sales.emp where ename = 'A') as e
 =======
     <TestCase name="testPushAggregateThroughtOuterJoin5">
+=======
+    <TestCase name="testPushAggregateThroughOuterJoin5">
+>>>>>>> 08fae5803 (Cosmetic changes)
         <Resource name="sql">
             <![CDATA[select d.name
 from (select * from sales.emp where empno = 10) as e
@@ -7837,12 +7899,16 @@ LogicalAggregate(group=[{1}])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin6">
         <Resource name="sql">
             <![CDATA[select e.job,d.name
 from (select * from sales.emp where ename = 'A') as e
 =======
     <TestCase name="testPushAggregateThroughtOuterJoin6">
+=======
+    <TestCase name="testPushAggregateThroughOuterJoin6">
+>>>>>>> 08fae5803 (Cosmetic changes)
         <Resource name="sql">
             <![CDATA[select e.job,d.name
 from (select * from sales.emp where empno = 10) as e
@@ -7881,12 +7947,16 @@ LogicalJoin(condition=[=($0, $1)], joinType=[left])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin7">
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where ename = 'A') as e
 =======
     <TestCase name="testPushAggregateThroughtOuterJoin7">
+=======
+    <TestCase name="testPushAggregateThroughOuterJoin7">
+>>>>>>> 08fae5803 (Cosmetic changes)
         <Resource name="sql">
             <![CDATA[select e.job
 from (select * from sales.emp where empno = 10) as e
@@ -7929,12 +7999,16 @@ LogicalAggregate(group=[{0}])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin8">
         <Resource name="sql">
             <![CDATA[select d.name
 from (select * from sales.emp where ename = 'A') as e
 =======
     <TestCase name="testPushAggregateThroughtOuterJoin8">
+=======
+    <TestCase name="testPushAggregateThroughOuterJoin8">
+>>>>>>> 08fae5803 (Cosmetic changes)
         <Resource name="sql">
             <![CDATA[select d.name
 from (select * from sales.emp where empno = 10) as e
@@ -7977,12 +8051,16 @@ LogicalAggregate(group=[{2}])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testPushAggregateThroughOuterJoin9">
         <Resource name="sql">
             <![CDATA[select e.job, d.name
 from (select * from sales.emp where ename = 'A') as e
 =======
     <TestCase name="testPushAggregateThroughtOuterJoin9">
+=======
+    <TestCase name="testPushAggregateThroughOuterJoin9">
+>>>>>>> 08fae5803 (Cosmetic changes)
         <Resource name="sql">
             <![CDATA[select e.job, d.name
 from (select * from sales.emp where empno = 10) as e
