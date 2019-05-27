@@ -300,6 +300,8 @@ public enum BuiltInMethod {
   SOUNDEX(SqlFunctions.class, "soundex", String.class),
   DIFFERENCE(SqlFunctions.class, "difference", String.class, String.class),
   REVERSE(SqlFunctions.class, "reverse", String.class),
+  TO_BASE64(SqlFunctions.class, "toBase64", String.class),
+  FROM_BASE64(SqlFunctions.class, "fromBase64", String.class),
   JSONIZE(JsonFunctions.class, "jsonize", Object.class),
   DEJSONIZE(JsonFunctions.class, "dejsonize", String.class),
   JSON_VALUE_EXPRESSION(JsonFunctions.class, "jsonValueExpression",
