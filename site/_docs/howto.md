@@ -33,6 +33,7 @@ adapters.
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Prerequisite is Java (JDK 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 or 18)
 and Gradle (version 7.4.2) on your path.
 
@@ -49,6 +50,9 @@ Prerequisite is Java (JDK 8, 9 or 10) on your path.
 =======
 Prerequisite is Java (JDK 8, 9, 10 or 11) on your path.
 >>>>>>> 4223da054 ([CALCITE-2575] Release Calcite 1.18.0)
+=======
+Prerequisite is Java (JDK 8, 9, 10, 11, or 12) on your path.
+>>>>>>> e5ce23d98 ([CALCITE-2952] Document JDK 12 support)
 
 Unpack the source distribution `.tar.gz` file,
 `cd` to the root directory of the unpacked source,
@@ -70,6 +74,7 @@ tests  (but you should use the `gradle` command rather than
 Prerequisites are git
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 and Java (JDK 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 or 18) on your path.
 =======
 and Java (JDK 8, 9 or 10) on your path.
@@ -77,6 +82,9 @@ and Java (JDK 8, 9 or 10) on your path.
 =======
 and Java (JDK 8, 9, 10 or 11) on your path.
 >>>>>>> 4223da054 ([CALCITE-2575] Release Calcite 1.18.0)
+=======
+and Java (JDK 8, 9, 10, 11, or 12) on your path.
+>>>>>>> e5ce23d98 ([CALCITE-2952] Document JDK 12 support)
 
 Create a local copy of the GitHub repository,
 `cd` to its root directory,
