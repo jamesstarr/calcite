@@ -49,7 +49,6 @@ import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelMdUtil;
 import org.apache.calcite.rel.metadata.RelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
-import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.runtime.Hook;
 import org.apache.calcite.sql.SqlExplainLevel;
@@ -906,25 +905,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
   }
 
   public void registerAbstractRelationalRules() {
-    addRule(CoreRules.FILTER_INTO_JOIN);
-    addRule(CoreRules.JOIN_CONDITION_PUSH);
-    addRule(AbstractConverter.ExpandConversionRule.INSTANCE);
-    addRule(CoreRules.JOIN_COMMUTE);
-    addRule(CoreRules.PROJECT_TO_SEMI_JOIN);
-    addRule(CoreRules.JOIN_TO_SEMI_JOIN);
-    if (CalciteSystemProperty.COMMUTE.value()) {
-      addRule(CoreRules.JOIN_ASSOCIATE);
-    }
-    addRule(CoreRules.AGGREGATE_REMOVE);
-    addRule(CoreRules.UNION_TO_DISTINCT);
-    addRule(CoreRules.AGGREGATE_MERGE);
-    addRule(CoreRules.PROJECT_REMOVE);
-    addRule(CoreRules.AGGREGATE_JOIN_TRANSPOSE);
-    addRule(CoreRules.AGGREGATE_PROJECT_MERGE);
-    addRule(CoreRules.CALC_REMOVE);
-    addRule(CoreRules.SORT_REMOVE);
-
-    // todo: rule which makes Project({OrdinalRef}) disappear
+    RelOptUtil.registerAbstractRelationalRules(this);
   }
 
   public void registerSchema(RelOptSchema schema) {

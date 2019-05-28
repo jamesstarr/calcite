@@ -40,7 +40,6 @@ public class CoreRules {
   public static final AggregateProjectMergeRule AGGREGATE_PROJECT_MERGE =
       AggregateProjectMergeRule.Config.DEFAULT.toRule();
 
-
   /** Rule that matches an {@link Aggregate} on
    * a {@link StarTable.StarTableScan}. */
   public static final AggregateStarTableRule AGGREGATE_STAR_TABLE =

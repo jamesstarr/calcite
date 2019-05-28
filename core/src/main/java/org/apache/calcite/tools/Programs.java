@@ -19,12 +19,12 @@ package org.apache.calcite.tools;
 import org.apache.calcite.adapter.enumerable.EnumerableRules;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteSystemProperty;
-import org.apache.calcite.interpreter.NoneToBindableConverterRule;
 import org.apache.calcite.plan.RelOptCostImpl;
 import org.apache.calcite.plan.RelOptLattice;
 import org.apache.calcite.plan.RelOptMaterialization;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptRule;
+import org.apache.calcite.plan.RelOptRules;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.plan.hep.HepMatchOrder;
@@ -58,25 +58,8 @@ import java.util.List;
  * Utilities for creating {@link Program}s.
  */
 public class Programs {
-
-  public static final ImmutableList<RelOptRule> CALC_RULES =
-      ImmutableList.of(
-          NoneToBindableConverterRule.INSTANCE,
-          EnumerableRules.ENUMERABLE_CALC_RULE,
-          EnumerableRules.ENUMERABLE_FILTER_TO_CALC_RULE,
-          EnumerableRules.ENUMERABLE_PROJECT_TO_CALC_RULE,
-          CoreRules.CALC_MERGE,
-          CoreRules.FILTER_CALC_MERGE,
-          CoreRules.PROJECT_CALC_MERGE,
-          CoreRules.FILTER_TO_CALC,
-          CoreRules.PROJECT_TO_CALC,
-          CoreRules.CALC_MERGE,
-
-          // REVIEW jvs 9-Apr-2006: Do we still need these two?  Doesn't the
-          // combination of CalcMergeRule, FilterToCalcRule, and
-          // ProjectToCalcRule have the same effect?
-          CoreRules.FILTER_CALC_MERGE,
-          CoreRules.PROJECT_CALC_MERGE);
+  @Deprecated // to be removed before 2.0
+  public static final ImmutableList<RelOptRule> CALC_RULES = RelOptRules.CALC_RULES;
 
   /** Program that converts filters and projects to {@link Calc}s. */
   public static final Program CALC_PROGRAM =
@@ -238,7 +221,7 @@ public class Programs {
   }
 
   public static Program calc(RelMetadataProvider metadataProvider) {
-    return hep(CALC_RULES, true, metadataProvider);
+    return hep(RelOptRules.CALC_RULES, true, metadataProvider);
   }
 
   @Deprecated // to be removed before 2.0
