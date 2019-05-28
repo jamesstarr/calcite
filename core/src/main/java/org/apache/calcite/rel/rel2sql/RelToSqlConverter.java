@@ -403,14 +403,21 @@ public class RelToSqlConverter extends SqlImplementor
           SqlStdOperatorTable.GROUPING_SETS.createCall(SqlParserPos.ZERO,
               aggregate.getGroupSets().stream()
                   .map(groupSet ->
-                      new SqlNodeList(
-                          groupSet.asList().stream()
-                              .map(key ->
-                                  groupKeys.get(aggregate.getGroupSet()
-                                      .indexOf(key)))
-                          .collect(Collectors.toList()),
-                          SqlParserPos.ZERO))
+                      groupItem(groupKeys, groupSet, aggregate.getGroupSet()))
                   .collect(Collectors.toList())));
+    }
+  }
+
+  private SqlNode groupItem(List<SqlNode> groupKeys,
+      ImmutableBitSet groupSet, ImmutableBitSet wholeGroupSet) {
+    final List<SqlNode> nodes = groupSet.asList().stream()
+        .map(key -> groupKeys.get(wholeGroupSet.indexOf(key)))
+        .collect(Collectors.toList());
+    switch (nodes.size()) {
+    case 1:
+      return nodes.get(0);
+    default:
+      return SqlStdOperatorTable.ROW.createCall(SqlParserPos.ZERO, nodes);
     }
   }
 
