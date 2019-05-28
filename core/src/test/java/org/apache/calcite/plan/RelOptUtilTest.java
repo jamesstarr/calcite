@@ -238,9 +238,6 @@ class RelOptUtilTest {
    * Test {@link RelOptUtil#splitJoinCondition(RelNode, RelNode, RexNode, List, List, List)}
    * where the join condition contains just one which is a EQUAL operator.
    */
-<<<<<<< HEAD
-  @Test void testSplitJoinConditionEquals() {
-=======
   @Test public void testSplitJoinConditionEquals() {
     int leftJoinIndex = empScan.getRowType().getFieldNames().indexOf("DEPTNO");
     int rightJoinIndex = deptRow.getFieldNames().indexOf("DEPTNO");
@@ -360,7 +357,6 @@ class RelOptUtilTest {
     List<Integer> actRightKeys = new ArrayList<>();
     List<Boolean> actFilterNulls = new ArrayList<>();
 
->>>>>>> d21e99739 (RelOptUtilTest concurrency fixup)
     RexNode actRemaining = RelOptUtil.splitJoinCondition(empScan, deptScan, joinCond, actLeftKeys,
         actRightKeys, actFilterNulls);
 

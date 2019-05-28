@@ -16,6 +16,11 @@
  */
 package org.apache.calcite.prepare;
 
+<<<<<<< HEAD
+=======
+import org.apache.calcite.adapter.enumerable.EnumerableTableScan;
+import org.apache.calcite.config.CalciteSystemProperty;
+>>>>>>> 1b15d3443 ([CALCITE-3095] Add several system properties to control enabling/disabling of rules and traits)
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.linq4j.tree.Expression;
 import org.apache.calcite.materialize.Lattice;
@@ -291,7 +296,7 @@ public class RelOptTableImpl extends Prepare.AbstractPreparingTable {
     if (Hook.ENABLE_BINDABLE.get(false)) {
       return LogicalTableScan.create(cluster, this, ImmutableList.of());
     }
-    if (CalcitePrepareImpl.ENABLE_ENUMERABLE
+    if (CalciteSystemProperty.ENABLE_ENUMERABLE.value()
         && table instanceof QueryableTable) {
       return EnumerableTableScan.create(cluster, this);
     }
@@ -300,7 +305,7 @@ public class RelOptTableImpl extends Prepare.AbstractPreparingTable {
         || table instanceof ProjectableFilterableTable) {
       return LogicalTableScan.create(cluster, this, ImmutableList.of());
     }
-    if (CalcitePrepareImpl.ENABLE_ENUMERABLE) {
+    if (CalciteSystemProperty.ENABLE_ENUMERABLE.value()) {
       return EnumerableTableScan.create(cluster, this);
     }
     throw new AssertionError();

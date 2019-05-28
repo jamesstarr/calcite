@@ -21,22 +21,16 @@ import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.interpreter.NoneToBindableConverterRule;
 import org.apache.calcite.linq4j.function.Experimental;
 import org.apache.calcite.plan.volcano.AbstractConverter;
-import org.apache.calcite.rel.rules.AggregateCaseToFilterRule;
+import org.apache.calcite.rel.rules.AbstractMaterializedViewRule;
 import org.apache.calcite.rel.rules.AggregateProjectPullUpConstantsRule;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.DateRangeRules;
 import org.apache.calcite.rel.rules.ExchangeRemoveConstantKeysRule;
 import org.apache.calcite.rel.rules.JoinPushThroughJoinRule;
-import org.apache.calcite.rel.rules.MatchRule;
 import org.apache.calcite.rel.rules.MaterializedViewFilterScanRule;
 import org.apache.calcite.rel.rules.PruneEmptyRules;
 import org.apache.calcite.rel.rules.SortRemoveConstantKeysRule;
-import org.apache.calcite.rel.rules.materialize.MaterializedViewOnlyAggregateRule;
-import org.apache.calcite.rel.rules.materialize.MaterializedViewOnlyFilterRule;
-import org.apache.calcite.rel.rules.materialize.MaterializedViewOnlyJoinRule;
-import org.apache.calcite.rel.rules.materialize.MaterializedViewProjectAggregateRule;
-import org.apache.calcite.rel.rules.materialize.MaterializedViewProjectFilterRule;
-import org.apache.calcite.rel.rules.materialize.MaterializedViewProjectJoinRule;
+import org.apache.calcite.rel.rules.TableScanRule;
 
 import com.google.common.collect.ImmutableList;
 
@@ -77,21 +71,9 @@ public class RelOptRules {
   static final List<RelOptRule> BASE_RULES = ImmutableList.of(
       CoreRules.AGGREGATE_STAR_TABLE,
       CoreRules.AGGREGATE_PROJECT_STAR_TABLE,
-      CalciteSystemProperty.COMMUTE.value()
-          ? CoreRules.JOIN_ASSOCIATE
-          : CoreRules.PROJECT_MERGE,
-      CoreRules.FILTER_SCAN,
-      CoreRules.PROJECT_FILTER_TRANSPOSE,
-      CoreRules.FILTER_PROJECT_TRANSPOSE,
-      CoreRules.FILTER_INTO_JOIN,
-      CoreRules.JOIN_PUSH_EXPRESSIONS,
-      CoreRules.AGGREGATE_EXPAND_DISTINCT_AGGREGATES,
-      CoreRules.AGGREGATE_REDUCE_FUNCTIONS,
-      AggregateCaseToFilterRule.INSTANCE,
       CoreRules.FILTER_AGGREGATE_TRANSPOSE,
       CoreRules.PROJECT_WINDOW_TRANSPOSE,
       CoreRules.JOIN_COMMUTE,
-      MatchRule.INSTANCE,
       JoinPushThroughJoinRule.RIGHT,
       JoinPushThroughJoinRule.LEFT,
       CoreRules.SORT_PROJECT_TRANSPOSE,
@@ -149,12 +131,14 @@ public class RelOptRules {
       CoreRules.PROJECT_VALUES_MERGE,
       CoreRules.AGGREGATE_VALUES);
 
-  public static final List<RelOptRule> MATERIALIZATION_RULES = ImmutableList.of(
+  static final List<RelOptRule> MATERIALIZATION_RULES = ImmutableList.of(
       MaterializedViewFilterScanRule.INSTANCE,
-      MaterializedViewProjectFilterRule.INSTANCE,
-      MaterializedViewOnlyFilterRule.INSTANCE,
-      MaterializedViewProjectJoinRule.INSTANCE,
-      MaterializedViewOnlyJoinRule.INSTANCE,
-      MaterializedViewProjectAggregateRule.INSTANCE,
-      MaterializedViewOnlyAggregateRule.INSTANCE);
+      AbstractMaterializedViewRule.INSTANCE_PROJECT_FILTER,
+      AbstractMaterializedViewRule.INSTANCE_FILTER,
+      AbstractMaterializedViewRule.INSTANCE_PROJECT_JOIN,
+      AbstractMaterializedViewRule.INSTANCE_JOIN,
+      AbstractMaterializedViewRule.INSTANCE_PROJECT_AGGREGATE,
+      AbstractMaterializedViewRule.INSTANCE_AGGREGATE);
 }
+
+// End RelOptRules.java

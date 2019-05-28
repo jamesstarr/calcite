@@ -19,6 +19,35 @@ package org.apache.calcite.tools;
 import org.apache.calcite.adapter.enumerable.EnumerableRules;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteSystemProperty;
+<<<<<<< HEAD
+=======
+import org.apache.calcite.plan.RelOptCostImpl;
+import org.apache.calcite.plan.RelOptLattice;
+import org.apache.calcite.plan.RelOptMaterialization;
+import org.apache.calcite.plan.RelOptPlanner;
+import org.apache.calcite.plan.RelOptRule;
+import org.apache.calcite.plan.RelOptRules;
+import org.apache.calcite.plan.RelOptUtil;
+import org.apache.calcite.plan.RelTraitSet;
+import org.apache.calcite.plan.hep.HepMatchOrder;
+import org.apache.calcite.plan.hep.HepPlanner;
+import org.apache.calcite.plan.hep.HepProgram;
+import org.apache.calcite.plan.hep.HepProgramBuilder;
+import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.core.Calc;
+import org.apache.calcite.rel.core.RelFactories;
+import org.apache.calcite.rel.metadata.ChainedRelMetadataProvider;
+import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
+import org.apache.calcite.rel.metadata.RelMetadataProvider;
+import org.apache.calcite.rel.rules.CoreRules;
+import org.apache.calcite.rel.rules.JoinPushThroughJoinRule;
+import org.apache.calcite.rel.rules.LoptOptimizeJoinRule;
+import org.apache.calcite.rel.rules.TableScanRule;
+import org.apache.calcite.sql2rel.RelDecorrelator;
+import org.apache.calcite.sql2rel.RelFieldTrimmer;
+import org.apache.calcite.sql2rel.SqlToRelConverter;
+
+>>>>>>> 1b15d3443 ([CALCITE-3095] Add several system properties to control enabling/disabling of rules and traits)
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -32,25 +61,8 @@ import java.util.List;
  * Utilities for creating {@link Program}s.
  */
 public class Programs {
-
-  public static final ImmutableList<RelOptRule> CALC_RULES =
-      ImmutableList.of(
-          NoneToBindableConverterRule.INSTANCE,
-          EnumerableRules.ENUMERABLE_CALC_RULE,
-          EnumerableRules.ENUMERABLE_FILTER_TO_CALC_RULE,
-          EnumerableRules.ENUMERABLE_PROJECT_TO_CALC_RULE,
-          CoreRules.CALC_MERGE,
-          CoreRules.FILTER_CALC_MERGE,
-          CoreRules.PROJECT_CALC_MERGE,
-          CoreRules.FILTER_TO_CALC,
-          CoreRules.PROJECT_TO_CALC,
-          CoreRules.CALC_MERGE,
-
-          // REVIEW jvs 9-Apr-2006: Do we still need these two?  Doesn't the
-          // combination of CalcMergeRule, FilterToCalcRule, and
-          // ProjectToCalcRule have the same effect?
-          CoreRules.FILTER_CALC_MERGE,
-          CoreRules.PROJECT_CALC_MERGE);
+  @Deprecated // to be removed before 2.0
+  public static final ImmutableList<RelOptRule> CALC_RULES = RelOptRules.CALC_RULES;
 
   /** Program that converts filters and projects to {@link Calc}s. */
   public static final Program CALC_PROGRAM =

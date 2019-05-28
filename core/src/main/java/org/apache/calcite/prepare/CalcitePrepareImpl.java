@@ -16,13 +16,11 @@
  */
 package org.apache.calcite.prepare;
 
-<<<<<<< HEAD
-=======
 import org.apache.calcite.adapter.enumerable.EnumerableBindable;
+=======
 import org.apache.calcite.adapter.enumerable.EnumerableCalc;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
-import org.apache.calcite.adapter.enumerable.EnumerableInterpreterRule;
 import org.apache.calcite.adapter.enumerable.EnumerableRel;
 import org.apache.calcite.adapter.enumerable.EnumerableRules;
 import org.apache.calcite.adapter.enumerable.RexToLixTranslator;
@@ -33,7 +31,6 @@ import org.apache.calcite.avatica.Meta;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.interpreter.BindableConvention;
-import org.apache.calcite.interpreter.Bindables;
 import org.apache.calcite.interpreter.Interpreters;
 import org.apache.calcite.jdbc.CalcitePrepare;
 import org.apache.calcite.jdbc.CalciteSchema;
@@ -74,15 +71,7 @@ import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableScan;
->>>>>>> a84b64381 ([CALCITE-2859] Centralize Calcite system properties)
-import org.apache.calcite.rel.rules.AbstractMaterializedViewRule;
-import org.apache.calcite.rel.rules.CoreRules;
-import org.apache.calcite.rel.rules.ExchangeRemoveConstantKeysRule;
-import org.apache.calcite.rel.rules.JoinPushThroughJoinRule;
-import org.apache.calcite.rel.rules.MaterializedViewFilterScanRule;
-import org.apache.calcite.rel.rules.SortRemoveConstantKeysRule;
-import org.apache.calcite.rel.rules.TableScanRule;
-import org.apache.calcite.rel.stream.StreamRules;
+>>>>>>> 1b15d3443 ([CALCITE-3095] Add several system properties to control enabling/disabling of rules and traits)
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeField;
@@ -149,21 +138,23 @@ import static org.apache.calcite.util.Static.RESOURCE;
  * subject to change without notice.</p>
  */
 public class CalcitePrepareImpl implements CalcitePrepare {
-  /** Whether to enable the collation trait. Some extra optimizations are
-   * possible if enabled, but queries should work either way. At some point
-   * this will become a preference, or we will run multiple phases: first
-   * disabled, then enabled. */
-  private static final boolean ENABLE_COLLATION_TRAIT = true;
+
+  @Deprecated // to be removed before 2.0
+  public static final boolean ENABLE_ENUMERABLE =
+      CalciteSystemProperty.ENABLE_ENUMERABLE.value();
+
+  @Deprecated // to be removed before 2.0
+  public static final boolean ENABLE_STREAM =
+      CalciteSystemProperty.ENABLE_STREAM.value();
+
+  @Deprecated // to be removed before 2.0
+  public static final List<RelOptRule> ENUMERABLE_RULES =
+      EnumerableRules.ENUMERABLE_RULES;
+
 
   /** Whether the bindable convention should be the root convention of any
    * plan. If not, enumerable convention is the default. */
   public final boolean enableBindable = Hook.ENABLE_BINDABLE.get(false);
-
-  /** Whether the enumerable convention is enabled. */
-  public static final boolean ENABLE_ENUMERABLE = true;
-
-  /** Whether the streaming is enabled. */
-  public static final boolean ENABLE_STREAM = true;
 
   private static final Set<String> SIMPLE_SQLS =
       ImmutableSet.of(
@@ -173,68 +164,6 @@ public class CalcitePrepareImpl implements CalcitePrepare {
           "select 1 from dual",
           "values 1",
           "VALUES 1");
-
-  public static final List<RelOptRule> ENUMERABLE_RULES =
-      ImmutableList.of(
-          EnumerableRules.ENUMERABLE_JOIN_RULE,
-          EnumerableRules.ENUMERABLE_MERGE_JOIN_RULE,
-          EnumerableRules.ENUMERABLE_CORRELATE_RULE,
-          EnumerableRules.ENUMERABLE_PROJECT_RULE,
-          EnumerableRules.ENUMERABLE_FILTER_RULE,
-          EnumerableRules.ENUMERABLE_AGGREGATE_RULE,
-          EnumerableRules.ENUMERABLE_SORT_RULE,
-          EnumerableRules.ENUMERABLE_LIMIT_RULE,
-          EnumerableRules.ENUMERABLE_COLLECT_RULE,
-          EnumerableRules.ENUMERABLE_UNCOLLECT_RULE,
-          EnumerableRules.ENUMERABLE_UNION_RULE,
-          EnumerableRules.ENUMERABLE_REPEAT_UNION_RULE,
-          EnumerableRules.ENUMERABLE_TABLE_SPOOL_RULE,
-          EnumerableRules.ENUMERABLE_INTERSECT_RULE,
-          EnumerableRules.ENUMERABLE_MINUS_RULE,
-          EnumerableRules.ENUMERABLE_TABLE_MODIFICATION_RULE,
-          EnumerableRules.ENUMERABLE_VALUES_RULE,
-          EnumerableRules.ENUMERABLE_WINDOW_RULE,
-          EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
-          EnumerableRules.ENUMERABLE_TABLE_FUNCTION_SCAN_RULE);
-
-  private static final List<RelOptRule> DEFAULT_RULES =
-      ImmutableList.of(
-          CoreRules.AGGREGATE_STAR_TABLE,
-          CoreRules.AGGREGATE_PROJECT_STAR_TABLE,
-          TableScanRule.INSTANCE,
-          CalciteSystemProperty.COMMUTE.value()
-              ? CoreRules.JOIN_ASSOCIATE
-              : CoreRules.PROJECT_MERGE,
-          CoreRules.FILTER_SCAN,
-          CoreRules.PROJECT_FILTER_TRANSPOSE,
-          CoreRules.FILTER_PROJECT_TRANSPOSE,
-          CoreRules.FILTER_INTO_JOIN,
-          CoreRules.JOIN_PUSH_EXPRESSIONS,
-          CoreRules.AGGREGATE_EXPAND_DISTINCT_AGGREGATES,
-          CoreRules.AGGREGATE_REDUCE_FUNCTIONS,
-          CoreRules.FILTER_AGGREGATE_TRANSPOSE,
-          CoreRules.PROJECT_WINDOW_TRANSPOSE,
-          CoreRules.JOIN_COMMUTE,
-          JoinPushThroughJoinRule.RIGHT,
-          JoinPushThroughJoinRule.LEFT,
-          CoreRules.SORT_PROJECT_TRANSPOSE,
-          CoreRules.SORT_JOIN_TRANSPOSE,
-          SortRemoveConstantKeysRule.INSTANCE,
-          CoreRules.SORT_UNION_TRANSPOSE,
-          ExchangeRemoveConstantKeysRule.EXCHANGE_INSTANCE,
-          ExchangeRemoveConstantKeysRule.SORT_EXCHANGE_INSTANCE);
-
-  private static final List<RelOptRule> CONSTANT_REDUCTION_RULES =
-      ImmutableList.of(
-          CoreRules.PROJECT_REDUCE_EXPRESSIONS,
-          CoreRules.FILTER_REDUCE_EXPRESSIONS,
-          CoreRules.CALC_REDUCE_EXPRESSIONS,
-          CoreRules.JOIN_REDUCE_EXPRESSIONS,
-          CoreRules.WINDOW_REDUCE_EXPRESSIONS,
-          CoreRules.FILTER_VALUES_MERGE,
-          CoreRules.PROJECT_FILTER_VALUES_MERGE,
-          CoreRules.PROJECT_VALUES_MERGE,
-          CoreRules.AGGREGATE_VALUES);
 
   public CalcitePrepareImpl() {
   }
@@ -506,27 +435,9 @@ public class CalcitePrepareImpl implements CalcitePrepare {
     if (CalciteSystemProperty.ENABLE_COLLATION_TRAIT.value()) {
       planner.addRelTraitDef(RelCollationTraitDef.INSTANCE);
     }
-    RelOptUtil.registerAbstractRels(planner);
-    for (RelOptRule rule : DEFAULT_RULES) {
-      planner.addRule(rule);
-    }
-    if (prepareContext.config().materializationsEnabled()) {
-      planner.addRule(MaterializedViewFilterScanRule.INSTANCE);
-      planner.addRule(AbstractMaterializedViewRule.INSTANCE_PROJECT_FILTER);
-      planner.addRule(AbstractMaterializedViewRule.INSTANCE_FILTER);
-      planner.addRule(AbstractMaterializedViewRule.INSTANCE_PROJECT_JOIN);
-      planner.addRule(AbstractMaterializedViewRule.INSTANCE_JOIN);
-      planner.addRule(AbstractMaterializedViewRule.INSTANCE_PROJECT_AGGREGATE);
-      planner.addRule(AbstractMaterializedViewRule.INSTANCE_AGGREGATE);
-    }
-    if (enableBindable) {
-      for (RelOptRule rule : Bindables.RULES) {
-        planner.addRule(rule);
-      }
-    }
-    planner.addRule(Bindables.BINDABLE_TABLE_SCAN_RULE);
-    planner.addRule(CoreRules.PROJECT_TABLE_SCAN);
-    planner.addRule(CoreRules.PROJECT_INTERPRETER_TABLE_SCAN);
+    RelOptUtil.registerDefaultRules(planner,
+        prepareContext.config().materializationsEnabled(),
+        enableBindable);
 
     final CalcitePrepare.SparkHandler spark = prepareContext.spark();
     if (spark.enabled()) {
@@ -1032,7 +943,6 @@ public class CalcitePrepareImpl implements CalcitePrepare {
         RelDataTypeFactory typeFactory,
         CalciteSchema schema,
         EnumerableRel.Prefer prefer,
->>>>>>> 1782bf62d ([CALCITE-2018] Queries failed with AssertionError: rel has lower cost than best cost of subset)
         Convention resultConvention,
         SqlRexConvertletTable convertletTable,
         RelOptCluster cluster) {
