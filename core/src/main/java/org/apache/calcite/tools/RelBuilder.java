@@ -17,6 +17,7 @@
 package org.apache.calcite.tools;
 
 import org.apache.calcite.linq4j.Ord;
+import org.apache.calcite.linq4j.function.Experimental;
 import org.apache.calcite.plan.Context;
 import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.Convention;
@@ -25,6 +26,7 @@ import org.apache.calcite.plan.RelOptPredicateList;
 import org.apache.calcite.plan.RelOptSchema;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelOptUtil;
+import org.apache.calcite.prepare.RelOptTableImpl;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelDistribution;
@@ -41,11 +43,14 @@ import org.apache.calcite.rel.core.Match;
 import org.apache.calcite.rel.core.Minus;
 import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.RelFactories;
+import org.apache.calcite.rel.core.RepeatUnion;
 import org.apache.calcite.rel.core.SemiJoin;
 import org.apache.calcite.rel.core.Snapshot;
 import org.apache.calcite.rel.core.Sort;
+import org.apache.calcite.rel.core.Spool;
 import org.apache.calcite.rel.core.TableFunctionScan;
 import org.apache.calcite.rel.core.TableScan;
+import org.apache.calcite.rel.core.TableSpool;
 import org.apache.calcite.rel.core.Uncollect;
 import org.apache.calcite.rel.core.Union;
 import org.apache.calcite.rel.core.Values;
@@ -73,6 +78,8 @@ import org.apache.calcite.rex.RexSubQuery;
 import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.runtime.Hook;
 import org.apache.calcite.schema.SchemaPlus;
+import org.apache.calcite.schema.TransientTable;
+import org.apache.calcite.schema.impl.ListTransientTable;
 import org.apache.calcite.server.CalciteServerStatement;
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlFunction;
@@ -152,6 +159,8 @@ public class RelBuilder {
   private final RelFactories.SortExchangeFactory sortExchangeFactory;
   private final RelFactories.TableFunctionScanFactory tableFunctionScanFactory;
   private final RelFactories.SnapshotFactory snapshotFactory;
+  private final RelFactories.SpoolFactory spoolFactory;
+  private final RelFactories.RepeatUnionFactory repeatUnionFactory;
   private final Deque<Frame> stack = new ArrayDeque<>();
   private final boolean simplify;
   private final RexSimplify simplifier;
@@ -181,6 +190,12 @@ public class RelBuilder {
     this.snapshotFactory =
         Util.first(context.unwrap(RelFactories.SnapshotFactory.class),
             RelFactories.DEFAULT_SNAPSHOT_FACTORY);
+    this.spoolFactory =
+        Util.first(context.unwrap(RelFactories.SpoolFactory.class),
+            RelFactories.DEFAULT_SPOOL_FACTORY);
+    this.repeatUnionFactory =
+        Util.first(context.unwrap(RelFactories.RepeatUnionFactory.class),
+            RelFactories.DEFAULT_REPEAT_UNION_FACTORY);
     final RexExecutor executor =
         Util.first(context.unwrap(RexExecutor.class),
             Util.first(cluster.getPlanner().getExecutor(), RexUtil.EXECUTOR));
@@ -287,6 +302,18 @@ public class RelBuilder {
   /** Creates a {@link RelBuilderFactory} that uses a given set of factories. */
   public static RelBuilderFactory proto(Object... factories) {
     return proto(Contexts.of(factories));
+  }
+
+  public RelOptCluster getCluster() {
+    return cluster;
+  }
+
+  public RelOptSchema getRelOptSchema() {
+    return relOptSchema;
+  }
+
+  public RelFactories.TableScanFactory getScanFactory() {
+    return struct.scanFactory;
   }
 
   // Methods for manipulating the stack
@@ -2037,6 +2064,85 @@ public class RelBuilder {
    */
   public RelBuilder minus(boolean all, int n) {
     return setOp(all, SqlKind.EXCEPT, n);
+  }
+
+  /**
+   * Creates a {@link TableScan} on a {@link TransientTable} with the given name, using as type
+   * the top of the stack's type.
+   *
+   * @param tableName table name
+   */
+  @Experimental
+  public RelBuilder transientScan(String tableName) {
+    return this.transientScan(tableName, this.peek().getRowType());
+  }
+
+  /**
+   * Creates a {@link TableScan} on a {@link TransientTable} with the given name and type.
+   *
+   * @param tableName table name
+   * @param rowType row type of the table
+   */
+  @Experimental
+  public RelBuilder transientScan(String tableName, RelDataType rowType) {
+    ListTransientTable transientTable = new ListTransientTable(tableName, rowType);
+    RelOptTable relOptTable = RelOptTableImpl.create(
+        relOptSchema,
+        rowType,
+        transientTable,
+        ImmutableList.of(tableName));
+    RelNode scan = struct.scanFactory.createScan(cluster, relOptTable, ImmutableList.of());
+    push(scan);
+    rename(rowType.getFieldNames());
+    return this;
+  }
+
+  /**
+   * Creates a {@link TableSpool} for the most recent relation expression.
+   *
+   * @param readType spool's read type (as described in {@link Spool.Type})
+   * @param writeType spool's write type (as described in {@link Spool.Type})
+   * @param tableName table name
+   */
+  private RelBuilder tableSpool(Spool.Type readType, Spool.Type writeType, String tableName) {
+    RelNode spool =  spoolFactory.createTableSpool(peek(), readType, writeType, tableName);
+    replaceTop(spool);
+    return this;
+  }
+
+  /**
+   * Creates a {@link RepeatUnion} associated to a {@link TransientTable} without a maximum number
+   * of iterations, i.e. repeatUnion(tableName, all, -1).
+   *
+   * @param tableName name of the {@link TransientTable} associated to the {@link RepeatUnion}
+   * @param all whether duplicates will be considered or not
+   */
+  @Experimental
+  public RelBuilder repeatUnion(String tableName, boolean all) {
+    return repeatUnion(tableName, all, -1);
+  }
+
+  /**
+   * Creates a {@link RepeatUnion} associated to a {@link TransientTable} of the two most recent
+   * relational expressions on the stack. Warning: if these relational expressions are not
+   * correctly defined, this operation might lead to an infinite loop.
+   * The generated {@link RepeatUnion} will:
+   *   - Evaluate its left term once, propagating the results into the {@link TransientTable}.
+   *   - Evaluate its right term (which may contain a {@link TableScan} on the
+   *   {@link TransientTable}) over and over until it produces no more results (or until an
+   *   optional maximum number of iterations is reached). On each iteration, the results will be
+   *   propagated into the {@link TransientTable}, overwriting the results from the previous one.
+   *
+   * @param tableName name of the {@link TransientTable} associated to the {@link RepeatUnion}
+   * @param all whether duplicates will be considered or not
+   * @param maxRep maximum number of iterations, -1 means no limit
+   */
+  @Experimental
+  public RelBuilder repeatUnion(String tableName, boolean all, int maxRep) {
+    RelNode iterative = tableSpool(Spool.Type.LAZY, Spool.Type.LAZY, tableName).build();
+    RelNode seed = tableSpool(Spool.Type.LAZY, Spool.Type.LAZY, tableName).build();
+    RelNode repeatUnion = repeatUnionFactory.createRepeatUnion(seed, iterative, all, maxRep);
+    return push(repeatUnion);
   }
 
   /** Creates a {@link Join}. */
