@@ -16,7 +16,7 @@
  */
 package org.apache.calcite.rel.core;
 
->>>>>>> 273e6a302 (DX-34523:cherry pick 051b6919dfc5b60406e81d5e8b8d)
+import org.apache.calcite.linq4j.function.Experimental;
 import org.apache.calcite.plan.Context;
 import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.RelOptCluster;
@@ -36,7 +36,7 @@ import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalMatch;
 import org.apache.calcite.rel.logical.LogicalMinus;
 import org.apache.calcite.rel.logical.LogicalProject;
->>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
+import org.apache.calcite.rel.logical.LogicalRepeatUnion;
 import org.apache.calcite.rel.logical.LogicalSnapshot;
 import org.apache.calcite.rel.logical.LogicalSort;
 import org.apache.calcite.rel.logical.LogicalSortExchange;
@@ -112,6 +112,12 @@ public class RelFactories {
 
   public static final SnapshotFactory DEFAULT_SNAPSHOT_FACTORY =
       new SnapshotFactoryImpl();
+
+  public static final SpoolFactory DEFAULT_SPOOL_FACTORY =
+      new SpoolFactoryImpl();
+
+  public static final RepeatUnionFactory DEFAULT_REPEAT_UNION_FACTORY =
+      new RepeatUnionFactoryImpl();
 
   public static final Struct DEFAULT_STRUCT =
       new Struct(DEFAULT_FILTER_FACTORY,
@@ -586,6 +592,47 @@ public class RelFactories {
 <<<<<<< HEAD
 =======
 
+  /**
+   * Can create a {@link Spool} of
+   * the appropriate type for a rule's calling convention.
+   */
+  public interface SpoolFactory {
+    /** Creates a {@link TableSpool}. */
+    RelNode createTableSpool(RelNode input, Spool.Type readType, Spool.Type writeType,
+                             String tableName);
+  }
+
+  /**
+   * Implementation of {@link SpoolFactory}
+   * that returns Logical Spools.
+   */
+  private static class SpoolFactoryImpl implements SpoolFactory {
+    public RelNode createTableSpool(RelNode input, Spool.Type readType, Spool.Type writeType,
+                                    String tableName) {
+      return LogicalTableSpool.create(input, readType, writeType, tableName);
+    }
+  }
+
+  /**
+   * Can create a {@link RepeatUnion} of
+   * the appropriate type for a rule's calling convention.
+   */
+  @Experimental
+  public interface RepeatUnionFactory {
+    /** Creates a {@link RepeatUnion}. */
+    RelNode createRepeatUnion(RelNode seed, RelNode iterative, boolean all, int maxRep);
+  }
+
+  /**
+   * Implementation of {@link RepeatUnion}
+   * that returns a {@link LogicalRepeatUnion}.
+   */
+  private static class RepeatUnionFactoryImpl implements RepeatUnionFactory {
+    public RelNode createRepeatUnion(RelNode seed, RelNode iterative, boolean all, int maxRep) {
+      return LogicalRepeatUnion.create(seed, iterative, all, maxRep);
+    }
+  }
+
   /** Immutable record that contains an instance of each factory. */
   public static class Struct {
     public final FilterFactory filterFactory;
@@ -594,7 +641,6 @@ public class RelFactories {
     public final SortFactory sortFactory;
     public final ExchangeFactory exchangeFactory;
     public final SortExchangeFactory sortExchangeFactory;
-
     public final SetOpFactory setOpFactory;
     public final JoinFactory joinFactory;
     public final CorrelateFactory correlateFactory;

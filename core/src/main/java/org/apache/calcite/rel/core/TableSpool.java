@@ -18,11 +18,12 @@ package org.apache.calcite.rel.core;
 
 import org.apache.calcite.linq4j.function.Experimental;
 import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptTable;
+>>>>>>> e323a2a7b ([CALCITE-2812] Add algebraic operators to allow expressing recursive queries)
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelWriter;
 
+<<<<<<< HEAD
 import java.util.Objects;
 
 /**
@@ -30,24 +31,31 @@ import java.util.Objects;
  *
  * <p>NOTE: The current API is experimental and subject to change without
  * notice.
+=======
+/**
+ * Spool that writes into a table.
+ *
+ * <p>NOTE: The current API is experimental and subject to change without notice.</p>
  */
 @Experimental
 public abstract class TableSpool extends Spool {
 
-  protected final RelOptTable table;
+  protected final String tableName;
 
-  protected TableSpool(RelOptCluster cluster, RelTraitSet traitSet,
-      RelNode input, Type readType, Type writeType, RelOptTable table) {
+  protected TableSpool(RelOptCluster cluster, RelTraitSet traitSet, RelNode input,
+                    Type readType, Type writeType, String tableName) {
     super(cluster, traitSet, input, readType, writeType);
-    this.table = Objects.requireNonNull(table);
+    this.tableName = tableName;
   }
 
-  public RelOptTable getTable() {
-    return table;
+  public String getTableName() {
+    return tableName;
   }
 
   @Override public RelWriter explainTerms(RelWriter pw) {
     super.explainTerms(pw);
-    return pw.item("table", table.getQualifiedName());
+    return pw.item("tableName", tableName);
   }
 }
+
+// End TableSpool.java

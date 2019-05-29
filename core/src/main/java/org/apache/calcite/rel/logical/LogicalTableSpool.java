@@ -19,7 +19,7 @@ package org.apache.calcite.rel.logical;
 import org.apache.calcite.linq4j.function.Experimental;
 import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptTable;
+>>>>>>> e323a2a7b ([CALCITE-2812] Add algebraic operators to allow expressing recursive queries)
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelDistributionTraitDef;
@@ -29,24 +29,29 @@ import org.apache.calcite.rel.core.TableSpool;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 
 /**
+<<<<<<< HEAD
  * Sub-class of {@link TableSpool} not targeted at any particular engine or
  * calling convention.
  *
  * <p>NOTE: The current API is experimental and subject to change without
  * notice.
+=======
+ * Sub-class of {@link TableSpool} not targeted at any particular engine or calling convention.
+ *
+ * <p>NOTE: The current API is experimental and subject to change without notice.</p>
  */
 @Experimental
 public class LogicalTableSpool extends TableSpool {
 
   //~ Constructors -----------------------------------------------------------
   public LogicalTableSpool(RelOptCluster cluster, RelTraitSet traitSet, RelNode input,
-      Type readType, Type writeType, RelOptTable table) {
-    super(cluster, traitSet, input, readType, writeType, table);
+                           Type readType, Type writeType, String tableName) {
+    super(cluster, traitSet, input, readType, writeType, tableName);
   }
 
   /** Creates a LogicalTableSpool. */
-  public static LogicalTableSpool create(RelNode input, Type readType,
-      Type writeType, RelOptTable table) {
+  public static LogicalTableSpool create(RelNode input, Type readType, Type writeType,
+                                         String tableName) {
     RelOptCluster cluster = input.getCluster();
     RelMetadataQuery mq = cluster.getMetadataQuery();
     RelTraitSet traitSet = cluster.traitSetOf(Convention.NONE)
@@ -54,14 +59,16 @@ public class LogicalTableSpool extends TableSpool {
             () -> mq.collations(input))
         .replaceIf(RelDistributionTraitDef.INSTANCE,
             () -> mq.distribution(input));
-    return new LogicalTableSpool(cluster, traitSet, input, readType, writeType, table);
+    return new LogicalTableSpool(cluster, traitSet, input, readType, writeType, tableName);
   }
 
   //~ Methods ----------------------------------------------------------------
 
   @Override protected Spool copy(RelTraitSet traitSet, RelNode input,
-      Type readType, Type writeType) {
+                                 Type readType, Type writeType) {
     return new LogicalTableSpool(input.getCluster(), traitSet, input,
-        readType, writeType, table);
+        readType, writeType, tableName);
   }
 }
+
+// End LogicalTableSpool.java

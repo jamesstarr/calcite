@@ -18,89 +18,83 @@ package org.apache.calcite.rel.core;
 
 import org.apache.calcite.linq4j.function.Experimental;
 import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptTable;
+>>>>>>> e323a2a7b ([CALCITE-2812] Add algebraic operators to allow expressing recursive queries)
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.BiRel;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelWriter;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
+<<<<<<< HEAD
 import org.apache.calcite.schema.TransientTable;
+=======
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.Lists;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.util.List;
 
-import static java.util.Objects.requireNonNull;
-
 /**
- * Relational expression that computes a repeat union (recursive union in SQL
- * terminology).
+ * Relational expression that computes a Repeat Union (Recursive Union in SQL terminology).
  *
- * <p>This operation is executed as follows:
+ * This operation is executed as follows:
+ *  <ul>
+ *   <li>Evaluate the left input (i.e., seed relational expression) once.
+ *   For UNION (but not UNION ALL), discard duplicated rows.</li>
+ *   <li>Evaluate the right input (i.e., iterative relational expression) over and over until it
+ *   produces no more results (or until an optional maximum number of iterations is reached).
+ *   For UNION (but not UNION ALL), discard duplicated results.</li>
+ *  </ul>
  *
- * <ul>
- * <li>Evaluate the left input (i.e., seed relational expression) once.  For
- *   UNION (but not UNION ALL), discard duplicated rows.
- *
- * <li>Evaluate the right input (i.e., iterative relational expression) over and
- *   over until it produces no more results (or until an optional maximum number
- *   of iterations is reached).  For UNION (but not UNION ALL), discard
- *   duplicated results.
- * </ul>
- *
- * <p>NOTE: The current API is experimental and subject to change without
- * notice.
+ * <p>NOTE: The current API is experimental and subject to change without notice.</p>
  */
 @Experimental
 public abstract class RepeatUnion extends BiRel {
 
   /**
-   * Whether duplicates are considered.
+   * Whether duplicates will be considered or not
    */
   public final boolean all;
 
   /**
-   * Maximum number of times to repeat the iterative relational expression;
-   * negative value means no limit, 0 means only seed will be evaluated
+   * Maximum number of times to repeat the iterative relational expression,
+   * -1 means no limit, 0 means only seed will be evaluated
    */
-  public final int iterationLimit;
+  public final int maxRep;
 
-  /**
-   * Transient table where repeat union's intermediate results will be stored (optional).
-   */
-  protected final @Nullable RelOptTable transientTable;
+
 
   //~ Constructors -----------------------------------------------------------
-  protected RepeatUnion(RelOptCluster cluster, RelTraitSet traitSet,
-      RelNode seed, RelNode iterative, boolean all, int iterationLimit,
-      @Nullable RelOptTable transientTable) {
+  protected RepeatUnion(
+          RelOptCluster cluster,
+          RelTraitSet traitSet,
+          RelNode seed,
+          RelNode iterative,
+          boolean all,
+          int maxRep) {
+
     super(cluster, traitSet, seed, iterative);
-    this.iterationLimit = iterationLimit;
-    this.all = all;
-    this.transientTable = transientTable;
-    if (transientTable != null) {
-      requireNonNull(transientTable.unwrap(TransientTable.class));
+    if (maxRep < -1) {
+      throw new IllegalArgumentException("Wrong maxRep value");
     }
+    this.maxRep = maxRep;
+    this.all = all;
   }
 
   @Override public double estimateRowCount(RelMetadataQuery mq) {
     // TODO implement a more accurate row count?
     double seedRowCount = mq.getRowCount(getSeedRel());
-    if (iterationLimit == 0) {
+    if (maxRep == 0) {
       return seedRowCount;
     }
     return seedRowCount
-        + mq.getRowCount(getIterativeRel()) * (iterationLimit < 0 ? 10 : iterationLimit);
+              + mq.getRowCount(getIterativeRel()) * (maxRep != -1 ? maxRep : 10);
   }
 
   @Override public RelWriter explainTerms(RelWriter pw) {
     super.explainTerms(pw);
-    if (iterationLimit >= 0) {
-      pw.item("iterationLimit", iterationLimit);
+    if (maxRep != -1) {
+      pw.item("maxRep", maxRep);
     }
     return pw.item("all", all);
   }
@@ -113,20 +107,21 @@ public abstract class RepeatUnion extends BiRel {
     return right;
   }
 
-  public @Nullable RelOptTable getTransientTable() {
-    return transientTable;
-  }
-
   @Override protected RelDataType deriveRowType() {
     final List<RelDataType> inputRowTypes =
-        Lists.transform(getInputs(), RelNode::getRowType);
+            Lists.transform(getInputs(), RelNode::getRowType);
     final RelDataType rowType =
-        getCluster().getTypeFactory().leastRestrictive(inputRowTypes);
+            getCluster().getTypeFactory().leastRestrictive(inputRowTypes);
     if (rowType == null) {
       throw new IllegalArgumentException("Cannot compute compatible row type "
-          + "for arguments: "
-          + Util.sepList(inputRowTypes, ", "));
+              + "for arguments: "
+              + Util.sepList(inputRowTypes, ", "));
     }
     return rowType;
   }
 }
+<<<<<<< HEAD
+=======
+
+// End RepeatUnion.java
+>>>>>>> e323a2a7b ([CALCITE-2812] Add algebraic operators to allow expressing recursive queries)
