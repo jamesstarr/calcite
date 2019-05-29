@@ -25,9 +25,6 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelWriter;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
-<<<<<<< HEAD
-import org.apache.calcite.schema.TransientTable;
-=======
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.Lists;
@@ -124,4 +121,3 @@ public abstract class RepeatUnion extends BiRel {
 =======
 
 // End RepeatUnion.java
->>>>>>> e323a2a7b ([CALCITE-2812] Add algebraic operators to allow expressing recursive queries)

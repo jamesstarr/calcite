@@ -26,12 +26,6 @@ import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.RepeatUnion;
 import org.apache.calcite.util.BuiltInMethod;
-<<<<<<< HEAD
-import org.apache.calcite.util.Util;
-
-import java.util.List;
-
-=======
 
 import java.util.List;
 
@@ -83,7 +77,6 @@ public class EnumerableRepeatUnion extends RepeatUnion implements EnumerableRel 
     Expression seedExp = builder.append("seed", seedResult.block);
     Expression iterativeExp = builder.append("iteration", iterationResult.block);
 
->>>>>>> e323a2a7b ([CALCITE-2812] Add algebraic operators to allow expressing recursive queries)
     return implementor.result(physType, builder.toBlock());
   }
 

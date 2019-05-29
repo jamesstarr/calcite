@@ -35,13 +35,6 @@ import org.apache.calcite.util.BuiltInMethod;
 /**
  * Implementation of {@link TableSpool} in
  * {@link EnumerableConvention enumerable calling convention}
-<<<<<<< HEAD
- * that writes into a {@link ModifiableTable} (which must exist in the current
- * schema).
- *
- * <p>NOTE: The current API is experimental and subject to change without
- * notice.
-=======
  * that writes into a {@link ModifiableTable} (which must exist in the current schema).
  *
  * <p>NOTE: The current API is experimental and subject to change without notice.</p>
@@ -82,7 +75,6 @@ public class EnumerableTableSpool extends TableSpool implements EnumerableRel {
     RelNode input = getInput();
     Result inputResult = implementor.visitChild(this, 0, (EnumerableRel) input, pref);
 
->>>>>>> e323a2a7b ([CALCITE-2812] Add algebraic operators to allow expressing recursive queries)
     Expression tableExp = Expressions.convert_(
         Expressions.call(
             Expressions.call(
