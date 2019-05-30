@@ -151,7 +151,8 @@ public class AggregateFilterTransposeRule
       }
       final Aggregate topAggregate =
           aggregate.copy(aggregate.getTraitSet(), newFilter,
-              topGroupSet.build(), newGroupingSets, topAggCallList);
+              false, topGroupSet.build(),
+              newGroupingSets, topAggCallList);
       call.transformTo(topAggregate);
     }
   }

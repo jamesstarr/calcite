@@ -388,7 +388,8 @@ public final class AggregateExpandDistinctAggregatesRule
       groupSetToAdd++;
     }
     relBuilder.push(
-        aggregate.copy(aggregate.getTraitSet(), relBuilder.build(),
+        aggregate.copy(aggregate.getTraitSet(),
+            relBuilder.build(), false,
             ImmutableBitSet.of(topGroupSet), null, topAggregateCalls));
     return relBuilder;
   }
@@ -598,7 +599,8 @@ public final class AggregateExpandDistinctAggregatesRule
     final int cardinality = aggregate.getGroupSet().cardinality();
     relBuilder.push(
         aggregate.copy(aggregate.getTraitSet(), relBuilder.build(),
-            ImmutableBitSet.range(cardinality), null, newAggCalls));
+            false, ImmutableBitSet.range(cardinality), null,
+            newAggCalls));
     return relBuilder;
   }
 
@@ -740,7 +742,7 @@ public final class AggregateExpandDistinctAggregatesRule
 
     relBuilder.push(
         aggregate.copy(aggregate.getTraitSet(), relBuilder.build(),
-            newGroupSet, newGroupingSets, aggCallList));
+            false, newGroupSet, newGroupingSets, aggCallList));
 
     // If there's no left child yet, no need to create the join
     if (n == 0) {
@@ -752,7 +754,7 @@ public final class AggregateExpandDistinctAggregatesRule
     // where {f0, f1, ...} are the GROUP BY fields.
     final List<RelDataTypeField> distinctFields =
         relBuilder.peek().getRowType().getFieldList();
-    final List<RexNode> conditions = new ArrayList<>();
+    final List<RexNode> conditions = Lists.newArrayList();
     for (i = 0; i < groupCount; ++i) {
       // null values form its own group
       // use "is not distinct from" so that the join condition

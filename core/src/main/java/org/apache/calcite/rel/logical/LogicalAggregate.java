@@ -27,7 +27,7 @@ import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.hint.RelHint;
 import org.apache.calcite.util.ImmutableBitSet;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.base.Preconditions;
 
 import java.util.List;
 
@@ -69,7 +69,9 @@ public final class LogicalAggregate extends Aggregate {
       ImmutableBitSet groupSet,
       List<ImmutableBitSet> groupSets,
       List<AggregateCall> aggCalls) {
-    super(cluster, traitSet, hints, input, groupSet, groupSets, aggCalls);
+    super(cluster, traitSet, child, groupSet, groupSets, aggCalls);
+    Preconditions.checkArgument(!indicator,
+        "indicator is not supported, use GROUPING function instead");
   }
 
   @Deprecated // to be removed before 2.0

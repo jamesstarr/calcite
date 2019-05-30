@@ -79,7 +79,8 @@ import java.util.Set;
 
     final Aggregate newAggregate =
         aggregate.copy(aggregate.getTraitSet(), project.getInput(),
-            newGroupSet, newGroupingSets, aggCalls.build());
+            false, newGroupSet, newGroupingSets,
+            aggCalls.build());
 
     // Add a project if the group set is not in the same order or
     // contains duplicates.

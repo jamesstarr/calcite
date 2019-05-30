@@ -42,6 +42,10 @@ class EnumerableAggregateRule extends ConverterRule {
           rel.getCluster(),
           traitSet,
           convert(agg.getInput(), EnumerableConvention.INSTANCE),
+<<<<<<< HEAD
+=======
+          false,
+>>>>>>> 392abe9db ([CALCITE-2944] Deprecate Aggregate indicator and remove fields where possible)
           agg.getGroupSet(),
           agg.getGroupSets(),
           agg.getAggCallList());

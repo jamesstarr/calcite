@@ -710,9 +710,11 @@ public class Bindables {
         List<ImmutableBitSet> groupSets,
         List<AggregateCall> aggCalls)
         throws InvalidRelException {
-      super(cluster, traitSet, ImmutableList.of(), input, groupSet, groupSets, aggCalls);
+      super(cluster, traitSet, input, groupSet, groupSets, aggCalls);
       assert getConvention() instanceof BindableConvention;
 
+      Preconditions.checkArgument(!indicator,
+          "indicator is not supported, use GROUPING function instead");
       for (AggregateCall aggCall : aggCalls) {
         if (aggCall.isDistinct()) {
           throw new InvalidRelException(

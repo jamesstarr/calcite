@@ -71,143 +71,7 @@ import org.apache.calcite.tools.RuleSet;
 import org.apache.calcite.tools.RuleSets;
 import org.apache.calcite.util.ImmutableBitSet;
 
-import com.google.common.collect.ImmutableList;
-
-import org.junit.jupiter.api.Test;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-/**
- * Tests that determine whether trait propagation work in Volcano Planner.
- */
-class TraitPropagationTest {
-  static final Convention PHYSICAL =
-      new Convention.Impl("PHYSICAL", Phys.class);
-  static final RelCollation COLLATION =
-      RelCollations.of(
-          new RelFieldCollation(0,
-              RelFieldCollation.Direction.ASCENDING,
-              RelFieldCollation.NullDirection.FIRST));
-
-  static final RuleSet RULES =
-      RuleSets.ofList(PhysAggRule.INSTANCE,
-          PhysProjRule.INSTANCE,
-          PhysTableRule.INSTANCE,
-          PhysSortRule.INSTANCE,
-          CoreRules.SORT_REMOVE,
-          ExpandConversionRule.INSTANCE);
-
-  @Test void testOne() throws Exception {
-    RelNode planned = run(new PropAction(), RULES);
-    if (CalciteSystemProperty.DEBUG.value()) {
-      System.out.println(
-          RelOptUtil.dumpPlan("LOGICAL PLAN", planned, SqlExplainFormat.TEXT,
-              SqlExplainLevel.ALL_ATTRIBUTES));
-    }
-    final RelMetadataQuery mq = planned.getCluster().getMetadataQuery();
-    assertEquals(3, 0, mq.getCumulativeCost(planned).getRows(),
-        "Sortedness was not propagated");
-  }
-
-  /**
-   * Materialized anonymous class for simplicity
-   */
-  private static class PropAction {
-    public RelNode apply(RelOptCluster cluster, RelOptSchema relOptSchema,
-        SchemaPlus rootSchema) {
-      final RelDataTypeFactory typeFactory = cluster.getTypeFactory();
-      final RexBuilder rexBuilder = cluster.getRexBuilder();
-      final RelOptPlanner planner = cluster.getPlanner();
-
-      final RelDataType stringType = typeFactory.createJavaType(String.class);
-      final RelDataType integerType = typeFactory.createJavaType(Integer.class);
-      final RelDataType sqlBigInt =
-          typeFactory.createSqlType(SqlTypeName.BIGINT);
-
-      // SELECT * from T;
-      final Table table = new AbstractTable() {
-        public RelDataType getRowType(RelDataTypeFactory typeFactory) {
-          return typeFactory.builder()
-              .add("s", stringType)
-              .add("i", integerType).build();
-        }
-
-        @Override public Statistic getStatistic() {
-          return Statistics.of(100d, ImmutableList.of(),
-              ImmutableList.of(COLLATION));
-        }
-      };
-
-      final RelOptAbstractTable t1 = new RelOptAbstractTable(relOptSchema,
-          "t1", table.getRowType(typeFactory)) {
-        @Override public <T> T unwrap(Class<T> clazz) {
-          return clazz.isInstance(table)
-              ? clazz.cast(table)
-              : super.unwrap(clazz);
-        }
-      };
-
-      final RelNode rt1 = LogicalTableScan.create(cluster, t1, ImmutableList.of());
-
-      // project s column
-      RelNode project = LogicalProject.create(rt1,
-          ImmutableList.of(),
-          ImmutableList.of(
-              (RexNode) rexBuilder.makeInputRef(stringType, 0),
-              rexBuilder.makeInputRef(integerType, 1)),
-          typeFactory.builder().add("s", stringType).add("i", integerType)
-          .build());
-
-      // aggregate on s, count
-      AggregateCall aggCall = AggregateCall.create(SqlStdOperatorTable.COUNT,
-          false, false, Collections.singletonList(1), -1, RelCollations.EMPTY,
-          sqlBigInt, "cnt");
-      RelNode agg = new LogicalAggregate(cluster,
-          cluster.traitSetOf(Convention.NONE), ImmutableList.of(), project,
-          ImmutableBitSet.of(0), null, Collections.singletonList(aggCall));
-
-      final RelNode rootRel = agg;
-
-      RelOptUtil.dumpPlan("LOGICAL PLAN", rootRel, SqlExplainFormat.TEXT,
-          SqlExplainLevel.DIGEST_ATTRIBUTES);
-
-      RelTraitSet desiredTraits = rootRel.getTraitSet().replace(PHYSICAL);
-      final RelNode rootRel2 = planner.changeTraits(rootRel, desiredTraits);
-      planner.setRoot(rootRel2);
-      return planner.findBestExp();
-    }
-  }
-
-  // RULES
-
-  /** Rule for PhysAgg */
-  private static class PhysAggRule extends RelOptRule {
-    static final PhysAggRule INSTANCE = new PhysAggRule();
-
-    private PhysAggRule() {
-      super(anyChild(LogicalAggregate.class), "PhysAgg");
-    }
-
-    public void onMatch(RelOptRuleCall call) {
-      RelTraitSet empty = call.getPlanner().emptyTraitSet();
-      LogicalAggregate rel = call.rel(0);
-      assert rel.getGroupSet().cardinality() == 1;
-      int aggIndex = rel.getGroupSet().iterator().next();
-      RelTrait collation = RelCollations.of(
-          new RelFieldCollation(aggIndex,
-              RelFieldCollation.Direction.ASCENDING,
-              RelFieldCollation.NullDirection.FIRST));
-      RelTraitSet desiredTraits = empty.replace(PHYSICAL).replace(collation);
-      RelNode convertedInput = convert(rel.getInput(), desiredTraits);
-      call.transformTo(
-          new PhysAgg(rel.getCluster(), empty.replace(PHYSICAL),
-              convertedInput, rel.getGroupSet(),
+              convertedInput, false, rel.getGroupSet(),
               rel.getGroupSets(), rel.getAggCallList()));
     }
   }
@@ -298,7 +162,9 @@ class TraitPropagationTest {
     PhysAgg(RelOptCluster cluster, RelTraitSet traitSet, RelNode input,
         ImmutableBitSet groupSet,
         List<ImmutableBitSet> groupSets, List<AggregateCall> aggCalls) {
-      super(cluster, traitSet, ImmutableList.of(), input, groupSet, groupSets, aggCalls);
+      super(cluster, traits, child, groupSet, groupSets, aggCalls);
+      Preconditions.checkArgument(!indicator,
+          "indicator is not supported, use GROUPING function instead");
     }
 
     public Aggregate copy(RelTraitSet traitSet, RelNode input,
