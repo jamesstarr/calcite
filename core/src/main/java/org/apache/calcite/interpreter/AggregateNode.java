@@ -78,7 +78,6 @@ public class AggregateNode extends AbstractSingleNode<Aggregate> {
 
     this.unionGroups = union;
     this.outputRowLength = unionGroups.cardinality()
-        + (rel.indicator ? unionGroups.cardinality() : 0)
         + rel.getAggCallList().size();
 
     ImmutableList.Builder<AccumulatorFactory> builder = ImmutableList.builder();
@@ -337,9 +336,6 @@ public class AggregateNode extends AbstractSingleNode<Aggregate> {
         for (Integer groupPos : unionGroups) {
           if (grouping.get(groupPos)) {
             rb.set(index, key.getObject(index));
-            if (rel.indicator) {
-              rb.set(unionGroups.cardinality() + index, true);
-            }
           }
           // need to set false when not part of grouping set.
 

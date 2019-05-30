@@ -71,6 +71,7 @@ import org.apache.calcite.tools.RuleSet;
 import org.apache.calcite.tools.RuleSets;
 import org.apache.calcite.util.ImmutableBitSet;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 
@@ -207,7 +208,7 @@ public class TraitPropagationTest {
       RelNode convertedInput = convert(rel.getInput(), desiredTraits);
       call.transformTo(
           new PhysAgg(rel.getCluster(), empty.replace(PHYSICAL),
-              convertedInput, rel.indicator, rel.getGroupSet(),
+              convertedInput, false, rel.getGroupSet(),
               rel.getGroupSets(), rel.getAggCallList()));
     }
   }
@@ -298,8 +299,9 @@ public class TraitPropagationTest {
     PhysAgg(RelOptCluster cluster, RelTraitSet traits, RelNode child,
         boolean indicator, ImmutableBitSet groupSet,
         List<ImmutableBitSet> groupSets, List<AggregateCall> aggCalls) {
-      super(cluster, traits, child, indicator, groupSet, groupSets, aggCalls);
-
+      super(cluster, traits, child, groupSet, groupSets, aggCalls);
+      Preconditions.checkArgument(!indicator,
+          "indicator is not supported, use GROUPING function instead");
     }
 
     public Aggregate copy(RelTraitSet traitSet, RelNode input,

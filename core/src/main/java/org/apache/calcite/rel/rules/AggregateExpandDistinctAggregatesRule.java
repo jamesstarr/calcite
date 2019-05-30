@@ -193,9 +193,8 @@ public final class AggregateExpandDistinctAggregatesRule extends RelOptRule {
     final List<RexInputRef> refs = new ArrayList<>();
     final List<String> fieldNames = aggregate.getRowType().getFieldNames();
     final ImmutableBitSet groupSet = aggregate.getGroupSet();
-    final int groupAndIndicatorCount =
-        aggregate.getGroupCount() + aggregate.getIndicatorCount();
-    for (int i : Util.range(groupAndIndicatorCount)) {
+    final int groupCount = aggregate.getGroupCount();
+    for (int i : Util.range(groupCount)) {
       refs.add(RexInputRef.of(i, aggFields));
     }
 
@@ -210,8 +209,8 @@ public final class AggregateExpandDistinctAggregatesRule extends RelOptRule {
       }
       refs.add(
           new RexInputRef(
-              groupAndIndicatorCount + newAggCallList.size(),
-              aggFields.get(groupAndIndicatorCount + i).getType()));
+              groupCount + newAggCallList.size(),
+              aggFields.get(groupCount + i).getType()));
       newAggCallList.add(aggCall);
     }
 
@@ -367,7 +366,7 @@ public final class AggregateExpandDistinctAggregatesRule extends RelOptRule {
     }
     relBuilder.push(
         aggregate.copy(aggregate.getTraitSet(),
-            relBuilder.build(), aggregate.indicator,
+            relBuilder.build(), false,
             ImmutableBitSet.of(topGroupSet), null, topAggregateCalls));
     return relBuilder;
   }
@@ -548,7 +547,7 @@ public final class AggregateExpandDistinctAggregatesRule extends RelOptRule {
     final int cardinality = aggregate.getGroupSet().cardinality();
     relBuilder.push(
         aggregate.copy(aggregate.getTraitSet(), relBuilder.build(),
-            aggregate.indicator, ImmutableBitSet.range(cardinality), null,
+            false, ImmutableBitSet.range(cardinality), null,
             newAggCalls));
     return relBuilder;
   }
@@ -638,9 +637,8 @@ public final class AggregateExpandDistinctAggregatesRule extends RelOptRule {
     final List<AggregateCall> aggCallList = new ArrayList<>();
     final List<AggregateCall> aggCalls = aggregate.getAggCallList();
 
-    final int groupAndIndicatorCount =
-        aggregate.getGroupCount() + aggregate.getIndicatorCount();
-    int i = groupAndIndicatorCount - 1;
+    final int groupCount = aggregate.getGroupCount();
+    int i = groupCount - 1;
     for (AggregateCall aggCall : aggCalls) {
       ++i;
 
@@ -671,11 +669,11 @@ public final class AggregateExpandDistinctAggregatesRule extends RelOptRule {
       assert refs.get(i) == null;
       if (n == 0) {
         refs.set(i,
-            new RexInputRef(groupAndIndicatorCount + aggCallList.size(),
+            new RexInputRef(groupCount + aggCallList.size(),
                 newAggCall.getType()));
       } else {
         refs.set(i,
-            new RexInputRef(leftFields.size() + groupAndIndicatorCount
+            new RexInputRef(leftFields.size() + groupCount
                 + aggCallList.size(), newAggCall.getType()));
       }
       aggCallList.add(newAggCall);
@@ -689,15 +687,10 @@ public final class AggregateExpandDistinctAggregatesRule extends RelOptRule {
     assert newGroupSet
         .equals(ImmutableBitSet.range(aggregate.getGroupSet().cardinality()));
     ImmutableList<ImmutableBitSet> newGroupingSets = null;
-    if (aggregate.indicator) {
-      newGroupingSets =
-          ImmutableBitSet.ORDERING.immutableSortedCopy(
-              ImmutableBitSet.permute(aggregate.getGroupSets(), map));
-    }
 
     relBuilder.push(
         aggregate.copy(aggregate.getTraitSet(), relBuilder.build(),
-            aggregate.indicator, newGroupSet, newGroupingSets, aggCallList));
+            false, newGroupSet, newGroupingSets, aggCallList));
 
     // If there's no left child yet, no need to create the join
     if (n == 0) {
@@ -710,7 +703,7 @@ public final class AggregateExpandDistinctAggregatesRule extends RelOptRule {
     final List<RelDataTypeField> distinctFields =
         relBuilder.peek().getRowType().getFieldList();
     final List<RexNode> conditions = Lists.newArrayList();
-    for (i = 0; i < groupAndIndicatorCount; ++i) {
+    for (i = 0; i < groupCount; ++i) {
       // null values form its own group
       // use "is not distinct from" so that the join condition
       // allows null values to match.

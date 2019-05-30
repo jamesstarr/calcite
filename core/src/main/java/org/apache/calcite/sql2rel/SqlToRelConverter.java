@@ -5263,7 +5263,6 @@ public class SqlToRelConverter {
           rexBuilder.addAggCall(
               aggCall,
               groupExprs.size(),
-              false,
               aggCalls,
               aggCallMapping,
               argTypes);

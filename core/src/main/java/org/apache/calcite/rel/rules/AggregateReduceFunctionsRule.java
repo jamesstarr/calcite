@@ -273,7 +273,6 @@ public class AggregateReduceFunctionsRule
               oldAggRel.getInput().getRowType(), oldCall.getArgList());
       return rexBuilder.addAggCall(oldCall,
           nGroups,
-          oldAggRel.indicator,
           newCalls,
           aggCallMapping,
           oldArgTypes);
@@ -342,14 +341,12 @@ public class AggregateReduceFunctionsRule
     RexNode numeratorRef =
         rexBuilder.addAggCall(sumCall,
             nGroups,
-            oldAggRel.indicator,
             newCalls,
             aggCallMapping,
             ImmutableList.of(avgInputType));
     final RexNode denominatorRef =
         rexBuilder.addAggCall(countCall,
             nGroups,
-            oldAggRel.indicator,
             newCalls,
             aggCallMapping,
             ImmutableList.of(avgInputType));
@@ -397,7 +394,6 @@ public class AggregateReduceFunctionsRule
     RexNode sumZeroRef =
         rexBuilder.addAggCall(sumZeroCall,
             nGroups,
-            oldAggRel.indicator,
             newCalls,
             aggCallMapping,
             ImmutableList.of(argType));
@@ -410,7 +406,6 @@ public class AggregateReduceFunctionsRule
     RexNode countRef =
         rexBuilder.addAggCall(countCall,
             nGroups,
-            oldAggRel.indicator,
             newCalls,
             aggCallMapping,
             ImmutableList.of(argType));
@@ -467,7 +462,6 @@ public class AggregateReduceFunctionsRule
     final RexNode sumArgSquared =
         rexBuilder.addAggCall(sumArgSquaredAggCall,
             nGroups,
-            oldAggRel.indicator,
             newCalls,
             aggCallMapping,
             ImmutableList.of(sumArgSquaredAggCall.getType()));
@@ -487,7 +481,6 @@ public class AggregateReduceFunctionsRule
     final RexNode sumArg =
         rexBuilder.addAggCall(sumArgAggCall,
             nGroups,
-            oldAggRel.indicator,
             newCalls,
             aggCallMapping,
             ImmutableList.of(sumArgAggCall.getType()));
@@ -511,7 +504,6 @@ public class AggregateReduceFunctionsRule
     final RexNode countArg =
         rexBuilder.addAggCall(countArgAggCall,
             nGroups,
-            oldAggRel.indicator,
             newCalls,
             aggCallMapping,
             ImmutableList.of(argOrdinalType));
