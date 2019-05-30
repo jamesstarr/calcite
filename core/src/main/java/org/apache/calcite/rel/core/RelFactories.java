@@ -594,8 +594,8 @@ public class RelFactories {
    */
   public interface SpoolFactory {
     /** Creates a {@link TableSpool}. */
-    RelNode createTableSpool(RelNode input, Spool.Type readType, Spool.Type writeType,
-                             String tableName);
+    RelNode createTableSpool(RelNode input, Spool.Type readType,
+        Spool.Type writeType, String tableName);
   }
 
   /**
@@ -603,8 +603,8 @@ public class RelFactories {
    * that returns Logical Spools.
    */
   private static class SpoolFactoryImpl implements SpoolFactory {
-    public RelNode createTableSpool(RelNode input, Spool.Type readType, Spool.Type writeType,
-                                    String tableName) {
+    public RelNode createTableSpool(RelNode input, Spool.Type readType,
+        Spool.Type writeType, String tableName) {
       return LogicalTableSpool.create(input, readType, writeType, tableName);
     }
   }
@@ -616,7 +616,8 @@ public class RelFactories {
   @Experimental
   public interface RepeatUnionFactory {
     /** Creates a {@link RepeatUnion}. */
-    RelNode createRepeatUnion(RelNode seed, RelNode iterative, boolean all, int maxRep);
+    RelNode createRepeatUnion(RelNode seed, RelNode iterative, boolean all,
+        int maxRep);
   }
 
   /**
@@ -624,7 +625,8 @@ public class RelFactories {
    * that returns a {@link LogicalRepeatUnion}.
    */
   private static class RepeatUnionFactoryImpl implements RepeatUnionFactory {
-    public RelNode createRepeatUnion(RelNode seed, RelNode iterative, boolean all, int maxRep) {
+    public RelNode createRepeatUnion(RelNode seed, RelNode iterative,
+        boolean all, int maxRep) {
       return LogicalRepeatUnion.create(seed, iterative, all, maxRep);
     }
   }

@@ -177,7 +177,7 @@ public abstract class Join extends BiRel implements Hintable {
 
   @Override public RelOptCost computeSelfCost(RelOptPlanner planner,
       RelMetadataQuery mq) {
-    // Maybe we should remove this for semi-join ?
+    // Maybe we should remove this for semi-join?
     if (isSemiJoin()) {
       // REVIEW jvs 9-Apr-2006:  Just for now...
       return planner.getCostFactory().makeTinyCost();
