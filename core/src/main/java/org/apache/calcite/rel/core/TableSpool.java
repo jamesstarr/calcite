@@ -23,7 +23,7 @@ import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelWriter;
 
-<<<<<<< HEAD
+=======
 import java.util.Objects;
 
 /**
@@ -31,21 +31,16 @@ import java.util.Objects;
  *
  * <p>NOTE: The current API is experimental and subject to change without
  * notice.
-=======
-/**
- * Spool that writes into a table.
- *
- * <p>NOTE: The current API is experimental and subject to change without notice.</p>
  */
 @Experimental
 public abstract class TableSpool extends Spool {
 
   protected final String tableName;
 
-  protected TableSpool(RelOptCluster cluster, RelTraitSet traitSet, RelNode input,
-                    Type readType, Type writeType, String tableName) {
+  protected TableSpool(RelOptCluster cluster, RelTraitSet traitSet,
+      RelNode input, Type readType, Type writeType, String tableName) {
     super(cluster, traitSet, input, readType, writeType);
-    this.tableName = tableName;
+    this.tableName = Objects.requireNonNull(tableName);
   }
 
   public String getTableName() {

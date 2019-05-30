@@ -1093,7 +1093,10 @@ Apache Druid version 0.14.0-incubating;
 other software versions as specified in `pom.xml`.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4c207a5fb (Cosmetic changes)
 #### Breaking Changes
 
 * Make `EnumerableMergeJoin` extend `Join` instead of `EquiJoin`
@@ -1104,6 +1107,7 @@ other software versions as specified in `pom.xml`.
   with join type `JoinRelType.SEMI` instead of a `SemiJoin`
 * Rules: `SemiJoinFilterTransposeRule`, `SemiJoinJoinTransposeRule`, `SemiJoinProjectTransposeRule`
   and `SemiJoinRemoveRule` match `LogicalJoin` with join type `SEMI` instead of `SemiJoin`.
+<<<<<<< HEAD
 * `SemiJoin`, `EnumerableSemiJoin`, `SemiJoinType` and `CorrelateJoinType`, and methods that use them,
   are deprecated for quick removal in 1.21
 * The Elasticsearch adapter no longer supports [Elasticsearch types](
@@ -1270,6 +1274,9 @@ other software versions as specified in `pom.xml`.
 
 =======
 >>>>>>> 683fad2e4 ([CALCITE-3001] Upgrade to Apache Druid 0.14.0-incubating)
+=======
+
+>>>>>>> 4c207a5fb (Cosmetic changes)
 ## <a href="https://github.com/apache/calcite/releases/tag/calcite-1.19.0">1.19.0</a> / 2019-03-25
 =======
 ## <a href="https://github.com/apache/calcite/releases/tag/calcite-1.19.0">1.19.0</a> / 2019-03-18
