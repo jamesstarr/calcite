@@ -26,7 +26,8 @@ import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.mapping.IntPair;
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import com.google.common.collect.ImmutableList;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -47,9 +48,11 @@ public class JoinInfo {
   public final ImmutableList<RexNode> nonEquiConditions;
 
   /** Creates a JoinInfo. */
-  protected JoinInfo(ImmutableIntList leftKeys, ImmutableIntList rightKeys) {
+  protected JoinInfo(ImmutableIntList leftKeys, ImmutableIntList rightKeys,
+      ImmutableList<RexNode> nonEquiConditions) {
     this.leftKeys = Objects.requireNonNull(leftKeys);
     this.rightKeys = Objects.requireNonNull(rightKeys);
+    this.nonEquiConditions = Objects.requireNonNull(nonEquiConditions);
     assert leftKeys.size() == rightKeys.size();
   }
 
@@ -58,16 +61,11 @@ public class JoinInfo {
     final List<Integer> leftKeys = new ArrayList<>();
     final List<Integer> rightKeys = new ArrayList<>();
     final List<Boolean> filterNulls = new ArrayList<>();
-    RexNode remaining =
-        RelOptUtil.splitJoinCondition(left, right, condition, leftKeys,
-            rightKeys, filterNulls);
-    if (remaining.isAlwaysTrue()) {
-      return new EquiJoinInfo(ImmutableIntList.copyOf(leftKeys),
-          ImmutableIntList.copyOf(rightKeys));
-    } else {
-      return new NonEquiJoinInfo(ImmutableIntList.copyOf(leftKeys),
-          ImmutableIntList.copyOf(rightKeys), remaining);
-    }
+    final List<RexNode> nonEquiList = new ArrayList<>();
+    RelOptUtil.splitJoinCondition(left, right, condition, leftKeys, rightKeys,
+        filterNulls, nonEquiList);
+    return new JoinInfo(ImmutableIntList.copyOf(leftKeys),
+        ImmutableIntList.copyOf(rightKeys), ImmutableList.copyOf(nonEquiList));
   }
 
   /** Creates an equi-join. */
@@ -109,8 +107,6 @@ public class JoinInfo {
     return FlatLists.of(leftKeys, rightKeys);
   }
 
-<<<<<<< HEAD
-=======
   /** JoinInfo that represents an equi-join. */
   private static class EquiJoinInfo extends JoinInfo {
     protected EquiJoinInfo(ImmutableIntList leftKeys,
@@ -146,4 +142,5 @@ public class JoinInfo {
       return remaining;
     }
   }
+=======
 }

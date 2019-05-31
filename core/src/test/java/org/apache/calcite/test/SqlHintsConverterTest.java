@@ -20,9 +20,8 @@ import org.apache.calcite.plan.hep.HepPlanner;
 import org.apache.calcite.plan.hep.HepProgram;
 import org.apache.calcite.plan.hep.HepProgramBuilder;
 import org.apache.calcite.plan.volcano.VolcanoPlanner;
-<<<<<<< HEAD
-=======
 import org.apache.calcite.rel.InvalidRelException;
+=======
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelShuttleImpl;
 import org.apache.calcite.rel.RelVisitor;
@@ -47,7 +46,6 @@ import org.apache.calcite.tools.Program;
 import org.apache.calcite.tools.Programs;
 import org.apache.calcite.tools.RuleSet;
 import org.apache.calcite.tools.RuleSets;
-import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
@@ -408,18 +406,12 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
       final RelNode left = newInputs.get(0);
       final RelNode right = newInputs.get(1);
       final JoinInfo info = join.analyzeCondition();
-      final EnumerableHashJoin hashJoin;
-      try {
-        hashJoin = EnumerableHashJoin.create(
-                left,
-                right,
-                info.getEquiCondition(left, right, cluster.getRexBuilder()),
-                join.getVariablesSet(),
-                join.getJoinType());
-      } catch (InvalidRelException e) {
-        throw TestUtil.rethrow(e);
-      }
-      return hashJoin;
+      return EnumerableHashJoin.create(
+        left,
+        right,
+        info.getEquiCondition(left, right, cluster.getRexBuilder()),
+        join.getVariablesSet(),
+        join.getJoinType());
     }
   }
 

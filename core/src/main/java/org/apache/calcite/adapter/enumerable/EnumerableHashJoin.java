@@ -23,15 +23,14 @@ import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptCost;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelTraitSet;
-<<<<<<< HEAD
-=======
 import org.apache.calcite.rel.InvalidRelException;
->>>>>>> 8bead079a ([CALCITE-2554] Enrich enumerable join operators with order preserving information (Stamatis Zampetakis))
+=======
+>>>>>>> fc94695f0 ([CALCITE-3089] Deprecate EquiJoin)
 import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelNodes;
 import org.apache.calcite.rel.core.CorrelationId;
-import org.apache.calcite.rel.core.EquiJoin;
+import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.metadata.RelMdCollation;
 import org.apache.calcite.rel.metadata.RelMdUtil;
@@ -49,7 +48,7 @@ import java.util.Set;
 
 /** Implementation of {@link org.apache.calcite.rel.core.Join} in
  * {@link org.apache.calcite.adapter.enumerable.EnumerableConvention enumerable calling convention}. */
-public class EnumerableHashJoin extends EquiJoin implements EnumerableRel {
+public class EnumerableHashJoin extends Join implements EnumerableRel {
   /** Creates an EnumerableHashJoin.
    *
    * <p>Use {@link #create} unless you know what you're doing. */
@@ -75,7 +74,7 @@ public class EnumerableHashJoin extends EquiJoin implements EnumerableRel {
   protected EnumerableHashJoin(RelOptCluster cluster, RelTraitSet traits,
       RelNode left, RelNode right, RexNode condition, ImmutableIntList leftKeys,
       ImmutableIntList rightKeys, JoinRelType joinType,
-      Set<String> variablesStopped) throws InvalidRelException {
+      Set<String> variablesStopped) {
     this(cluster, traits, left, right, condition, CorrelationId.setOf(variablesStopped), joinType);
   }
 
@@ -99,14 +98,8 @@ public class EnumerableHashJoin extends EquiJoin implements EnumerableRel {
   @Override public EnumerableHashJoin copy(RelTraitSet traitSet, RexNode condition,
       RelNode left, RelNode right, JoinRelType joinType,
       boolean semiJoinDone) {
-    try {
-      return new EnumerableHashJoin(getCluster(), traitSet, left, right,
-          condition, variablesSet, joinType);
-    } catch (InvalidRelException e) {
-      // Semantic error not possible. Must be a bug. Convert to
-      // internal error.
-      throw new AssertionError(e);
-    }
+    return new EnumerableHashJoin(getCluster(), traitSet, left, right,
+        condition, variablesSet, joinType);
   }
 
   @Override public RelOptCost computeSelfCost(RelOptPlanner planner,

@@ -84,22 +84,11 @@ class EnumerableMergeJoinRule extends ConverterRule {
     final RelNode right = newInputs.get(1);
     final RelOptCluster cluster = join.getCluster();
     RelNode newRel;
-    try {
-      RelTraitSet traits = join.getTraitSet()
-          .replace(EnumerableConvention.INSTANCE);
-      if (!collations.isEmpty()) {
-        traits = traits.replace(collations);
-      }
-      newRel = new EnumerableMergeJoin(cluster,
-          traits,
-          left,
-          right,
-          info.getEquiCondition(left, right, cluster.getRexBuilder()),
-          join.getVariablesSet(),
-          join.getJoinType());
-    } catch (InvalidRelException e) {
-      EnumerableRules.LOGGER.debug(e.toString());
-      return null;
+
+    RelTraitSet traitSet = join.getTraitSet()
+        .replace(EnumerableConvention.INSTANCE);
+    if (!collations.isEmpty()) {
+      traitSet = traitSet.replace(collations);
     }
     newRel = new EnumerableMergeJoin(cluster,
         traitSet,

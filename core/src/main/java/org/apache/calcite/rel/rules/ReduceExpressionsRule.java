@@ -378,15 +378,6 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
               config.matchNullability(), config.treatDynamicCallsAsConstant())) {
         return;
       }
-      if (RelOptUtil.forceEquiJoin(join)) {
-        final JoinInfo joinInfo =
-            JoinInfo.of(join.getLeft(), join.getRight(), expList.get(0));
-        if (!joinInfo.isEqui()) {
-          // This kind of join must be an equi-join, and the condition is
-          // no longer an equi-join. SemiJoin is an example of this.
-          return;
-        }
-      }
       call.transformTo(
           join.copy(
               join.getTraitSet(),

@@ -30,7 +30,7 @@ import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.CorrelationId;
-import org.apache.calcite.rel.core.EquiJoin;
+import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.metadata.RelMdCollation;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
@@ -59,8 +59,7 @@ public class EnumerableMergeJoin extends Join implements EnumerableRel {
       RelNode right,
       RexNode condition,
       Set<CorrelationId> variablesSet,
-      JoinRelType joinType)
-      throws InvalidRelException {
+      JoinRelType joinType) {
     super(cluster, traits, left, right, condition, variablesSet, joinType);
     final List<RelCollation> collations =
         traits.getTraits(RelCollationTraitDef.INSTANCE);
@@ -71,7 +70,7 @@ public class EnumerableMergeJoin extends Join implements EnumerableRel {
   EnumerableMergeJoin(RelOptCluster cluster, RelTraitSet traits, RelNode left,
       RelNode right, RexNode condition, ImmutableIntList leftKeys,
       ImmutableIntList rightKeys, Set<CorrelationId> variablesSet,
-      JoinRelType joinType) throws InvalidRelException {
+      JoinRelType joinType) {
     this(cluster, traits, left, right, condition, variablesSet, joinType);
   }
 
@@ -85,7 +84,7 @@ public class EnumerableMergeJoin extends Join implements EnumerableRel {
   }
 
   public static EnumerableMergeJoin create(RelNode left, RelNode right,
-      RexNode condition, ImmutableIntList leftKeys,
+      RexLiteral condition, ImmutableIntList leftKeys,
       ImmutableIntList rightKeys, JoinRelType joinType) {
     final RelOptCluster cluster = right.getCluster();
     RelTraitSet traitSet = cluster.traitSet();
@@ -102,14 +101,8 @@ public class EnumerableMergeJoin extends Join implements EnumerableRel {
   @Override public EnumerableMergeJoin copy(RelTraitSet traitSet,
       RexNode condition, RelNode left, RelNode right, JoinRelType joinType,
       boolean semiJoinDone) {
-    try {
-      return new EnumerableMergeJoin(getCluster(), traitSet, left, right,
-          condition, variablesSet, joinType);
-    } catch (InvalidRelException e) {
-      // Semantic error not possible. Must be a bug. Convert to
-      // internal error.
-      throw new AssertionError(e);
-    }
+    return new EnumerableMergeJoin(getCluster(), traitSet, left, right,
+        condition, variablesSet, joinType);
   }
 
   @Override public RelOptCost computeSelfCost(RelOptPlanner planner,

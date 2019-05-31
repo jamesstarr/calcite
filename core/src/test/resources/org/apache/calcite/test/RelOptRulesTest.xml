@@ -1795,10 +1795,14 @@ LogicalProject(SAL=[$0])
             <![CDATA[
 LogicalProject(SAL=[$0])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalJoin(condition=[=(200, $2)], joinType=[semi])
 =======
   LogicalJoin(condition=[=($1, $2)], joinType=[semi])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+  LogicalJoin(condition=[=(200, $2)], joinType=[semi])
+>>>>>>> fc94695f0 ([CALCITE-3089] Deprecate EquiJoin)
     LogicalFilter(condition=[=($1, 200)])
       LogicalProject(SAL=[$5], DEPTNO=[$7])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])

@@ -17,36 +17,72 @@
 package org.apache.calcite.adapter.enumerable;
 
 import org.apache.calcite.plan.Convention;
+<<<<<<< HEAD
+=======
+import org.apache.calcite.plan.RelOptCluster;
+import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.convert.ConverterRule;
+import org.apache.calcite.rel.core.JoinInfo;
+import org.apache.calcite.rel.core.JoinRelType;
+import org.apache.calcite.rel.logical.LogicalJoin;
+import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.rex.RexUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** Planner rule that converts a
+ * {@link org.apache.calcite.rel.logical.LogicalJoin} relational expression
+ * {@link org.apache.calcite.adapter.enumerable.EnumerableConvention enumerable calling convention}. */
+class EnumerableJoinRule extends ConverterRule {
+  EnumerableJoinRule() {
+    super(
+        LogicalJoin.class,
+        Convention.NONE,
+        EnumerableConvention.INSTANCE,
+        "EnumerableJoinRule");
+  }
+
+  @Override public RelNode convert(RelNode rel) {
+    LogicalJoin join = (LogicalJoin) rel;
+    List<RelNode> newInputs = new ArrayList<>();
+    for (RelNode input : join.getInputs()) {
+      if (!(input.getConvention() instanceof EnumerableConvention)) {
+        input =
+            convert(
+                input,
+                input.getTraitSet()
+                    .replace(EnumerableConvention.INSTANCE));
+      }
+      newInputs.add(input);
+    }
+>>>>>>> fc94695f0 ([CALCITE-3089] Deprecate EquiJoin)
     final RelOptCluster cluster = join.getCluster();
     final RelNode left = newInputs.get(0);
     final RelNode right = newInputs.get(1);
-    final JoinInfo info = JoinInfo.of(left, right, join.getCondition());
+    final JoinInfo info = join.analyzeCondition();
     if (!info.isEqui() && join.getJoinType() != JoinRelType.INNER) {
-      // EnumerableJoinRel only supports equi-join. We can put a filter on top
+      // EnumerableHashJoin only supports equi-join. We can put a filter on top
       // if it is an inner join.
-      try {
-        return EnumerableNestedLoopJoin.create(left, right,
-            join.getCondition(), join.getVariablesSet(), join.getJoinType());
-      } catch (InvalidRelException e) {
-        EnumerableRules.LOGGER.debug(e.toString());
-        return null;
-      }
+      return EnumerableNestedLoopJoin.create(
+          left,
+          right,
+          join.getCondition(),
+          join.getVariablesSet(),
+          join.getJoinType());
     } else {
       RelNode newRel;
-      try {
-        newRel = EnumerableHashJoin.create(
-            left,
-            right,
-            info.getEquiCondition(left, right, cluster.getRexBuilder()),
-            join.getVariablesSet(),
-            join.getJoinType());
-      } catch (InvalidRelException e) {
-        EnumerableRules.LOGGER.debug(e.toString());
-        return null;
-      }
+      newRel = EnumerableHashJoin.create(
+          left,
+          right,
+          info.getEquiCondition(left, right, cluster.getRexBuilder()),
+          join.getVariablesSet(),
+          join.getJoinType());
       if (!info.isEqui()) {
+        RexNode nonEqui = RexUtil.composeConjunction(cluster.getRexBuilder(),
+            info.nonEquiConditions);
         newRel = new EnumerableFilter(cluster, newRel.getTraitSet(),
-            newRel, info.getRemaining(cluster.getRexBuilder()));
+            newRel, nonEqui);
       }
       return newRel;
     }
