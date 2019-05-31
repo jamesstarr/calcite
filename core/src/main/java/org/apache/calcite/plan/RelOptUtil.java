@@ -34,7 +34,6 @@ import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.core.Calc;
 import org.apache.calcite.rel.core.CorrelationId;
-import org.apache.calcite.rel.core.EquiJoin;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
@@ -957,10 +956,10 @@ public abstract class RelOptUtil {
     final List<RexNode> nonEquiList = new ArrayList<>();
 
     splitJoinCondition(left, right, condition, leftKeys, rightKeys,
-            filterNulls, nonEquiList);
+        filterNulls, nonEquiList);
 
     return RexUtil.composeConjunction(
-            left.getCluster().getRexBuilder(), nonEquiList, false);
+        left.getCluster().getRexBuilder(), nonEquiList);
   }
 
   /** As
@@ -4078,12 +4077,6 @@ public abstract class RelOptUtil {
       this.indicator = indicator;
       this.outerJoin = outerJoin;
     }
-  }
-
-  /** Check if it is the join whose condition is based on column equality,
-   * this mostly depends on the physical implementation of the join. */
-  public static boolean forceEquiJoin(Join join) {
-    return join.isSemiJoin() || join instanceof EquiJoin;
   }
 }
 

@@ -67,6 +67,8 @@ public abstract class Join extends BiRel implements Hintable {
    */
   protected final JoinRelType joinType;
 
+  protected final JoinInfo joinInfo;
+
   //~ Constructors -----------------------------------------------------------
 
   /**
@@ -97,6 +99,7 @@ public abstract class Join extends BiRel implements Hintable {
     this.variablesSet = ImmutableSet.copyOf(variablesSet);
     this.joinType = Objects.requireNonNull(joinType);
     this.hints = ImmutableList.copyOf(hints);
+    this.joinInfo = JoinInfo.of(left, right, condition);
   }
 
   @Deprecated // to be removed before 2.0
@@ -304,7 +307,7 @@ public abstract class Join extends BiRel implements Hintable {
    * @return Analyzed join condition
    */
   public JoinInfo analyzeCondition() {
-    return JoinInfo.of(left, right, condition);
+    return joinInfo;
   }
 
   @Override public ImmutableList<RelHint> getHints() {

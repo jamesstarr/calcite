@@ -16,6 +16,7 @@
  */
 package org.apache.calcite.rel.rules;
 
+import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
@@ -56,21 +57,19 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
   @Deprecated // to be removed before 2.0
   public static final Predicate TRUE_PREDICATE = (join, joinType, exp) -> true;
 
+  /** Predicate that returns true if the join is not Enumerable convention,
+   * will be replaced by {@link #TRUE_PREDICATE} once enumerable join supports
+   * non-equi join. */
+  @Deprecated // to be removed before 1.22.0
+  private static final Predicate NOT_ENUMERABLE = (join, joinType, exp) ->
+      join.getConvention() != EnumerableConvention.INSTANCE;
+
   /** Creates a FilterJoinRule. */
   protected FilterJoinRule(C config) {
     super(config);
   }
 
   //~ Methods ----------------------------------------------------------------
-
-  /** Returns if it is needed to push the filter condition above join
-   * into the join condition.
-   */
-  private boolean needsPushInto(Join join) {
-    // If the join force the join info to be based on column equality,
-    // or it is a non-correlated semijoin, returns false.
-    return !RelOptUtil.forceEquiJoin(join);
-  }
 
   protected void perform(RelOptRuleCall call, Filter filter,
       Join join) {
@@ -118,7 +117,7 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
         join,
         aboveFilters,
         joinType,
-        needsPushInto(join),
+        true,
         !joinType.generatesNullsOnLeft(),
         !joinType.generatesNullsOnRight(),
         joinFilters,
@@ -391,7 +390,7 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
                               b1.operand(Join.class).anyInputs()))
               .as(FilterIntoJoinRule.Config.class)
               .withSmart(true)
-              .withPredicate((join, joinType, exp) -> true)
+              .withPredicate(NOT_ENUMERABLE)
               .as(FilterIntoJoinRule.Config.class);
 
       @Override default FilterIntoJoinRule toRule() {
