@@ -383,8 +383,6 @@ public abstract class MutableRels {
           tableFunctionScan.getRowType(), inputs, tableFunctionScan.getCall(),
           tableFunctionScan.getElementType(), tableFunctionScan.getColumnMappings());
     }
-    // It is necessary that SemiJoin is placed in front of Join here, since SemiJoin
-    // is a sub-class of Join.
     if (rel instanceof Join) {
       final Join join = (Join) rel;
       final MutableRel left = toMutable(join.getLeft());
