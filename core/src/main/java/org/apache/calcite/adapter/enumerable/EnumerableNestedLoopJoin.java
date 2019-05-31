@@ -141,7 +141,7 @@ public class EnumerableNestedLoopJoin extends Join implements EnumerableRel {
                     physType,
                     ImmutableList.of(leftResult.physType,
                         rightResult.physType)),
-                Expressions.constant(EnumUtils.toLinq4jJoinType(joinType))))
+                Expressions.constant(joinType.toLinq4jJoinType())))
             .toBlock());
   }
 <<<<<<< HEAD

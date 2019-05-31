@@ -192,15 +192,7 @@ public class RelMdSize implements MetadataHandler<BuiltInMetadata.Size> {
     return list.build();
   }
 
-<<<<<<< HEAD
-=======
-  public List<Double> averageColumnSizes(Join rel, RelMetadataQuery mq) {
-    return averageJoinColumnSizes(rel, mq);
-  }
-
-  private List<Double> averageJoinColumnSizes(Join rel, RelMetadataQuery mq) {
->>>>>>> 08c4ce185 ([CALCITE-3126] Remove deprecated SemiJoin usage completely)
-    boolean semijoin = rel.isSemiJoin();
+    boolean semiOrAntijoin = !rel.getJoinType().projectsRight();
     final RelNode left = rel.getLeft();
     final RelNode right = rel.getRight();
     final List<Double> lefts = mq.getAverageColumnSizes(left);

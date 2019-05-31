@@ -130,10 +130,9 @@ public class EnumerableCorrelate extends Correlate
 
     builder.append(
         Expressions.call(leftExpression, BuiltInMethod.CORRELATE_JOIN.method,
-<<<<<<< HEAD
-            Expressions.constant(EnumUtils.toLinq4jJoinType(joinType)),
-=======
             Expressions.constant(joinType.toLinq4j()),
+=======
+            Expressions.constant(joinType.toLinq4jCorrelateJoinType()),
             Expressions.lambda(corrBlock.toBlock(), corrArg),
             selector));
 

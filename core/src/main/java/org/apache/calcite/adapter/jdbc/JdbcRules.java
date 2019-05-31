@@ -282,15 +282,12 @@ public class JdbcRules {
 
     @Override public RelNode convert(RelNode rel) {
       final Join join = (Join) rel;
-      if (join.isSemiJoin()) {
-        // It's not possible to convert semi-joins. They have fewer columns
+      switch (join.getJoinType()) {
+      case SEMI:
+      case ANTI:
+        // It's not possible to convert semi-joins or anti-joins. They have fewer columns
         // than regular joins.
         return null;
-      default:
-        return convert(join, true);
-      }
-<<<<<<< HEAD
-=======
     }
   }
 
@@ -541,7 +538,6 @@ public class JdbcRules {
     /** Creates a JdbcFilterRule. */
     public JdbcFilterRule(JdbcConvention out,
         RelBuilderFactory relBuilderFactory) {
->>>>>>> 0a6ba20d6 ([CALCITE-2914] Add a new statistic provider, to improve how LatticeSuggester deduces foreign keys)
       super(Filter.class,
           (Predicate<Filter>) r -> !userDefinedFunctionInFilter(r),
           Convention.NONE, out, relBuilderFactory, "JdbcFilterRule");

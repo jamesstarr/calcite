@@ -85,3 +85,8 @@ public enum JoinType {
   }
 
 }
+<<<<<<< HEAD
+=======
+
+// End JoinType.java
+>>>>>>> 3038c3397 ([CALCITE-2968] New AntiJoin relational expression)

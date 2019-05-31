@@ -1644,8 +1644,7 @@ public abstract class EnumerableDefaults {
       final Enumerable<TSource> outer, final Enumerable<TInner> inner,
       final Function1<TSource, TKey> outerKeySelector,
       final Function1<TInner, TKey> innerKeySelector) {
-    return semiEquiJoin_(outer, inner, outerKeySelector, innerKeySelector, null,
-        false);
+    return semiJoin(outer, inner, outerKeySelector, innerKeySelector, null, false);
   }
 
   public static <TSource, TInner, TKey> Enumerable<TSource> semiJoin(
@@ -1653,19 +1652,7 @@ public abstract class EnumerableDefaults {
       final Function1<TSource, TKey> outerKeySelector,
       final Function1<TInner, TKey> innerKeySelector,
       final EqualityComparer<TKey> comparer) {
-    return semiEquiJoin_(outer, inner, outerKeySelector, innerKeySelector, comparer,
-        false);
-  }
-
-  public static <TSource, TInner, TKey> Enumerable<TSource> semiJoin(
-      final Enumerable<TSource> outer, final Enumerable<TInner> inner,
-      final Function1<TSource, TKey> outerKeySelector,
-      final Function1<TInner, TKey> innerKeySelector,
-      final EqualityComparer<TKey> comparer,
-      final Predicate2<TSource, TInner> nonEquiPredicate) {
-    return semiJoin(outer, inner, outerKeySelector,
-        innerKeySelector, comparer,
-        false, nonEquiPredicate);
+    return semiJoin(outer, inner, outerKeySelector, innerKeySelector, comparer, false);
   }
 
   /**
@@ -1676,8 +1663,7 @@ public abstract class EnumerableDefaults {
       final Enumerable<TSource> outer, final Enumerable<TInner> inner,
       final Function1<TSource, TKey> outerKeySelector,
       final Function1<TInner, TKey> innerKeySelector) {
-    return semiEquiJoin_(outer, inner, outerKeySelector, innerKeySelector, null,
-        true);
+    return semiJoin(outer, inner, outerKeySelector, innerKeySelector, null, true);
   }
 
   public static <TSource, TInner, TKey> Enumerable<TSource> antiJoin(
@@ -1685,54 +1671,20 @@ public abstract class EnumerableDefaults {
       final Function1<TSource, TKey> outerKeySelector,
       final Function1<TInner, TKey> innerKeySelector,
       final EqualityComparer<TKey> comparer) {
-    return semiEquiJoin_(outer, inner, outerKeySelector, innerKeySelector, comparer,
-        true);
-  }
-
-  public static <TSource, TInner, TKey> Enumerable<TSource> antiJoin(
-      final Enumerable<TSource> outer, final Enumerable<TInner> inner,
-      final Function1<TSource, TKey> outerKeySelector,
-      final Function1<TInner, TKey> innerKeySelector,
-      final EqualityComparer<TKey> comparer,
-      final Predicate2<TSource, TInner> nonEquiPredicate) {
-    return semiJoin(outer, inner, outerKeySelector,
-        innerKeySelector, comparer,
-        true, nonEquiPredicate);
+    return semiJoin(outer, inner, outerKeySelector, innerKeySelector, comparer, true);
   }
 
   /**
    * Returns elements of {@code outer} for which there is (semi-join) / is not (anti-semi-join)
    * a member of {@code inner} with a matching key. A specified
    * {@code EqualityComparer<TSource>} is used to compare keys.
-   * A predicate is used to filter the join result per-row.
    */
-  public static <TSource, TInner, TKey> Enumerable<TSource> semiJoin(
+  private static <TSource, TInner, TKey> Enumerable<TSource> semiJoin(
       final Enumerable<TSource> outer, final Enumerable<TInner> inner,
       final Function1<TSource, TKey> outerKeySelector,
       final Function1<TInner, TKey> innerKeySelector,
       final EqualityComparer<TKey> comparer,
-      final boolean anti,
-      final Predicate2<TSource, TInner> nonEquiPredicate) {
-    if (nonEquiPredicate == null) {
-      return semiEquiJoin_(outer, inner, outerKeySelector, innerKeySelector,
-          comparer,
-          anti);
-    } else {
-      return semiJoinWithPredicate_(outer, inner, outerKeySelector,
-          innerKeySelector,
-          comparer,
-          anti, nonEquiPredicate);
-    }
-  }
-
-  private static <TSource, TInner, TKey> Enumerable<TSource> semiJoinWithPredicate_(
-      final Enumerable<TSource> outer, final Enumerable<TInner> inner,
-      final Function1<TSource, TKey> outerKeySelector,
-      final Function1<TInner, TKey> innerKeySelector,
-      final EqualityComparer<TKey> comparer,
-      final boolean anti,
-      final Predicate2<TSource, TInner> nonEquiPredicate) {
-
+      final boolean anti) {
     return new AbstractEnumerable<TSource>() {
       public Enumerator<TSource> enumerator() {
         // CALCITE-2909 Delay the computation of the innerLookup until the moment when we are sure
@@ -1742,10 +1694,11 @@ public abstract class EnumerableDefaults {
                 ? inner.select(innerKeySelector).distinct()
                 : inner.select(innerKeySelector).distinct(comparer));
 
-        return EnumerableDefaults.where(outer.enumerator(), v0 -> {
-          final TKey key = outerKeySelector.apply(v0);
-          return innerLookup.get().contains(key);
-        });
+        final Predicate1<TSource> predicate = anti
+            ? v0 -> !innerLookup.get().contains(outerKeySelector.apply(v0))
+            : v0 -> innerLookup.get().contains(outerKeySelector.apply(v0));
+
+        return EnumerableDefaults.where(outer.enumerator(), predicate);
       }
     };
   }
@@ -1757,9 +1710,10 @@ public abstract class EnumerableDefaults {
       final Enumerable<TSource> outer, final Enumerable<TInner> inner,
       final Predicate2<TSource, TInner> predicate,
       Function2<TSource, TInner, TResult> resultSelector,
-      final boolean generateNullsOnLeft,
-      final boolean generateNullsOnRight) {
+      final JoinType joinType) {
     // Building the result as a list is easy but hogs memory. We should iterate.
+    final boolean generateNullsOnLeft = joinType.generatesNullsOnLeft();
+    final boolean generateNullsOnRight = joinType.generatesNullsOnRight();
     final List<TResult> result = new ArrayList<>();
     final Enumerator<TSource> lefts = outer.enumerator();
     final List<TInner> rightList = inner.toList();
@@ -1770,34 +1724,26 @@ public abstract class EnumerableDefaults {
     } else {
       rightUnmatched = null;
     }
-    try (Enumerator<TSource> lefts = outer.enumerator()) {
-      while (lefts.moveNext()) {
-        int leftMatchCount = 0;
-        final TSource left = lefts.current();
-        for (TInner right : rightList) {
-          if (predicate.apply(left, right)) {
-            ++leftMatchCount;
-            if (joinType == JoinType.ANTI) {
-              break;
-            } else {
-              if (rightUnmatched != null) {
-                rightUnmatched.remove(right);
-              }
-              result.add(resultSelector.apply(left, right));
-              if (joinType == JoinType.SEMI) {
-                break;
-              }
+    while (lefts.moveNext()) {
+      int leftMatchCount = 0;
+      final TSource left = lefts.current();
+      final Enumerator<TInner> rights = Linq4j.iterableEnumerator(rightList);
+      while (rights.moveNext()) {
+        TInner right = rights.current();
+        if (predicate.apply(left, right)) {
+          ++leftMatchCount;
+          if (joinType == JoinType.ANTI) {
+            break;
+          } else {
+            if (rightUnmatched != null) {
+              rightUnmatched.remove(right);
             }
+            result.add(resultSelector.apply(left, right));
           }
         }
-        if (leftMatchCount == 0 && (generateNullsOnRight || joinType == JoinType.ANTI)) {
-          result.add(resultSelector.apply(left, null));
-        }
       }
-      if (rightUnmatched != null) {
-        for (TInner right : rightUnmatched) {
-          result.add(resultSelector.apply(null, right));
-        }
+      if (leftMatchCount == 0 && (generateNullsOnRight || joinType == JoinType.ANTI)) {
+        result.add(resultSelector.apply(left, null));
       }
       return Linq4j.asEnumerable(result);
     }
