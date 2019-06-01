@@ -653,18 +653,19 @@ public class RelBuilder {
 
   /** Creates a group key. */
   public GroupKey groupKey(Iterable<? extends RexNode> nodes) {
-    return new GroupKeyImpl(ImmutableList.copyOf(nodes), false, null, null);
+    return new GroupKeyImpl(ImmutableList.copyOf(nodes), null, null);
   }
 
   /** Creates a group key with grouping sets. */
   public GroupKey groupKey(Iterable<? extends RexNode> nodes, boolean indicator,
       Iterable<? extends Iterable<? extends RexNode>> nodeLists) {
+    Aggregate.checkIndicator(indicator);
     final ImmutableList.Builder<ImmutableList<RexNode>> builder =
         ImmutableList.builder();
     for (Iterable<? extends RexNode> nodeList : nodeLists) {
       builder.add(ImmutableList.copyOf(nodeList));
     }
-    return new GroupKeyImpl(ImmutableList.copyOf(nodes), indicator, builder.build(), null);
+    return new GroupKeyImpl(ImmutableList.copyOf(nodes), builder.build(), null);
   }
 
   /** Creates a group key of fields identified by ordinal. */
@@ -685,17 +686,18 @@ public class RelBuilder {
    * are coming from an existing {@link Aggregate}. */
   public GroupKey groupKey(ImmutableBitSet groupSet,
       ImmutableList<ImmutableBitSet> groupSets) {
-    return groupKey_(groupSet, false, groupSets);
+    return groupKey_(groupSet, groupSets);
   }
 
   /** @deprecated Use {@link #groupKey(ImmutableBitSet, ImmutableList)}. */
   @Deprecated // to be removed before 2.0
   public GroupKey groupKey(ImmutableBitSet groupSet, boolean indicator,
       ImmutableList<ImmutableBitSet> groupSets) {
-    return groupKey_(groupSet, indicator, groupSets);
+    Aggregate.checkIndicator(indicator);
+    return groupKey_(groupSet, groupSets);
   }
 
-  private GroupKey groupKey_(ImmutableBitSet groupSet, boolean indicator,
+  private GroupKey groupKey_(ImmutableBitSet groupSet,
       ImmutableList<ImmutableBitSet> groupSets) {
     if (groupSet.length() > peek().getRowType().getFieldCount()) {
       throw new IllegalArgumentException("out of bounds: " + groupSet);
@@ -712,7 +714,7 @@ public class RelBuilder {
                 return fields(ImmutableIntList.of(input.toArray()));
               }
             });
-    return groupKey(nodes, indicator, nodeLists);
+    return groupKey(nodes, false, nodeLists);
   }
 
   @Deprecated // to be removed before 2.0
@@ -1278,7 +1280,7 @@ public class RelBuilder {
     final ImmutableBitSet groupSet =
         ImmutableBitSet.of(registrar.registerExpressions(groupKey_.nodes));
   label:
-    if (Iterables.isEmpty(aggCalls) && !groupKey_.indicator) {
+    if (Iterables.isEmpty(aggCalls)) {
       final RelMetadataQuery mq = peek().getCluster().getMetadataQuery();
       if (groupSet.isEmpty()) {
         final Double minRowCount = mq.getMinRowCount(peek());
@@ -1375,7 +1377,7 @@ public class RelBuilder {
       assert groupSet.contains(set);
     }
     final RelNode aggregate = struct.aggregateFactory.createAggregate(r,
-        groupKey_.indicator, groupSet, groupSets, aggregateCalls);
+        groupSet, groupSets, aggregateCalls);
 
     // build field list
     final ImmutableList.Builder<Field> fields = ImmutableList.builder();
@@ -1399,17 +1401,7 @@ public class RelBuilder {
       }
       i++;
     }
-    // second, indicator fields (copy from aggregate rel type)
-    if (groupKey_.indicator) {
-      for (int j = 0; j < groupSet.cardinality(); ++j) {
-        final RelDataTypeField field = aggregateFields.get(i);
-        final RelDataTypeField fieldType =
-            new RelDataTypeFieldImpl(field.getName(), i, field.getType());
-        fields.add(new Field(ImmutableSet.<String>of(), fieldType));
-        i++;
-      }
-    }
-    // third, aggregate fields. retain `i' as field index
+    // second, aggregate fields. retain `i' as field index
     for (int j = 0; j < aggregateCalls.size(); ++j) {
       final AggregateCall call = aggregateCalls.get(j);
       final RelDataTypeField fieldType =
@@ -2113,15 +2105,12 @@ public class RelBuilder {
   /** Implementation of {@link RelBuilder.GroupKey}. */
   protected static class GroupKeyImpl implements GroupKey {
     final ImmutableList<RexNode> nodes;
-    final boolean indicator;
     final ImmutableList<ImmutableList<RexNode>> nodeLists;
     final String alias;
 
-    GroupKeyImpl(ImmutableList<RexNode> nodes, boolean indicator,
+    GroupKeyImpl(ImmutableList<RexNode> nodes,
         ImmutableList<ImmutableList<RexNode>> nodeLists, String alias) {
       this.nodes = Preconditions.checkNotNull(nodes);
-      assert !indicator;
-      this.indicator = indicator;
       this.nodeLists = nodeLists;
       this.alias = alias;
     }
@@ -2133,7 +2122,7 @@ public class RelBuilder {
     public GroupKey alias(String alias) {
       return Objects.equals(this.alias, alias)
           ? this
-          : new GroupKeyImpl(nodes, indicator, nodeLists, alias);
+          : new GroupKeyImpl(nodes, nodeLists, alias);
     }
   }
 

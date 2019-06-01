@@ -95,7 +95,7 @@ public class AggregateFilterTransposeRule extends RelOptRule {
         contains(filterColumns);
     final Aggregate newAggregate =
         aggregate.copy(aggregate.getTraitSet(), input,
-                false, newGroupSet, null, aggregate.getAggCallList());
+            newGroupSet, null, aggregate.getAggCallList());
     final Mappings.TargetMapping mapping = Mappings.target(
         new Function<Integer, Integer>() {
           public Integer apply(Integer a0) {
@@ -155,8 +155,7 @@ public class AggregateFilterTransposeRule extends RelOptRule {
       }
       final Aggregate topAggregate =
           aggregate.copy(aggregate.getTraitSet(), newFilter,
-              false, topGroupSet.build(),
-              newGroupingSets, topAggCallList);
+              topGroupSet.build(), newGroupingSets, topAggCallList);
       call.transformTo(topAggregate);
     }
   }
