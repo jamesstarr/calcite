@@ -92,7 +92,10 @@ public class PigRelFactories {
     public static final PigAggregateFactory INSTANCE = new PigAggregateFactory();
 
     @Override public RelNode createAggregate(RelNode input,
+<<<<<<< HEAD
         List<RelHint> hints,
+=======
+>>>>>>> a5ef91d2f (Following [CALCITE-2944] remove internal uses of Aggregate.indicator)
         ImmutableBitSet groupSet, ImmutableList<ImmutableBitSet> groupSets,
         List<AggregateCall> aggCalls) {
       return new PigAggregate(input.getCluster(), input.getTraitSet(), input,

@@ -44,7 +44,7 @@ public class PigAggregate extends Aggregate implements PigRel {
   public PigAggregate(RelOptCluster cluster, RelTraitSet traitSet,
       RelNode input, ImmutableBitSet groupSet,
       List<ImmutableBitSet> groupSets, List<AggregateCall> aggCalls) {
-    super(cluster, traitSet, ImmutableList.of(), input, groupSet, groupSets, aggCalls);
+    super(cluster, traitSet, input, groupSet, groupSets, aggCalls);
     assert getConvention() == PigRel.CONVENTION;
   }
 

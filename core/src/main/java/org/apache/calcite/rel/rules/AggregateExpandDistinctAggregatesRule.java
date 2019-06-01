@@ -325,8 +325,9 @@ public final class AggregateExpandDistinctAggregatesRule
     }
     // Generate the aggregate B (see the reference example above)
     relBuilder.push(
-        aggregate.copy(aggregate.getTraitSet(), relBuilder.build(),
-            false, bottomGroupSet, null, bottomAggregateCalls));
+        aggregate.copy(
+            aggregate.getTraitSet(), relBuilder.build(),
+            ImmutableBitSet.of(bottomGroupSet), null, bottomAggregateCalls));
 
     // Add aggregate A (see the reference example above), the top aggregate
     // to handle the rest of the aggregation that the bottom aggregate hasn't handled
@@ -388,8 +389,7 @@ public final class AggregateExpandDistinctAggregatesRule
       groupSetToAdd++;
     }
     relBuilder.push(
-        aggregate.copy(aggregate.getTraitSet(),
-            relBuilder.build(), false,
+        aggregate.copy(aggregate.getTraitSet(), relBuilder.build(),
             ImmutableBitSet.of(topGroupSet), null, topAggregateCalls));
     return relBuilder;
   }
@@ -599,8 +599,7 @@ public final class AggregateExpandDistinctAggregatesRule
     final int cardinality = aggregate.getGroupSet().cardinality();
     relBuilder.push(
         aggregate.copy(aggregate.getTraitSet(), relBuilder.build(),
-            false, ImmutableBitSet.range(cardinality), null,
-            newAggCalls));
+            ImmutableBitSet.range(cardinality), null, newAggCalls));
     return relBuilder;
   }
 
@@ -742,7 +741,7 @@ public final class AggregateExpandDistinctAggregatesRule
 
     relBuilder.push(
         aggregate.copy(aggregate.getTraitSet(), relBuilder.build(),
-            false, newGroupSet, newGroupingSets, aggCallList));
+            newGroupSet, newGroupingSets, aggCallList));
 
     // If there's no left child yet, no need to create the join
     if (n == 0) {

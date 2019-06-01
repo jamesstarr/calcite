@@ -50,7 +50,7 @@ public class GeodeAggregate extends Aggregate implements GeodeRel {
       ImmutableBitSet groupSet,
       List<ImmutableBitSet> groupSets,
       List<AggregateCall> aggCalls) {
-    super(cluster, traitSet, ImmutableList.of(), input, groupSet, groupSets, aggCalls);
+    super(cluster, traitSet, input, groupSet, groupSets, aggCalls);
 
     assert getConvention() == GeodeRel.CONVENTION;
     assert getConvention() == this.input.getConvention();

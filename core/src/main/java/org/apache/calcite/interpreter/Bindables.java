@@ -713,8 +713,6 @@ public class Bindables {
       super(cluster, traitSet, input, groupSet, groupSets, aggCalls);
       assert getConvention() instanceof BindableConvention;
 
-      Preconditions.checkArgument(!indicator,
-          "indicator is not supported, use GROUPING function instead");
       for (AggregateCall aggCall : aggCalls) {
         if (aggCall.isDistinct()) {
           throw new InvalidRelException(
