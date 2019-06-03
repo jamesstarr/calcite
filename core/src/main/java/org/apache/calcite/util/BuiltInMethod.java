@@ -183,7 +183,9 @@ public enum BuiltInMethod {
       Enumerable.class, Predicate2.class, Function2.class, JoinType.class),
   CORRELATE_JOIN(ExtendedEnumerable.class, "correlateJoin",
       JoinType.class, Function1.class, Function2.class),
->>>>>>> 0a404408f ([CALCITE-3119] Deprecate Linq4j CorrelateJoinType (in favor of JoinType))
+  CORRELATE_BATCH_JOIN(EnumerableDefaults.class, "correlateBatchJoin",
+      JoinType.class, Enumerable.class, Function1.class, Function2.class,
+      Predicate2.class, int.class),
   SELECT(ExtendedEnumerable.class, "select", Function1.class),
   SELECT2(ExtendedEnumerable.class, "select", Function2.class),
   SELECT_MANY(ExtendedEnumerable.class, "selectMany", Function1.class),

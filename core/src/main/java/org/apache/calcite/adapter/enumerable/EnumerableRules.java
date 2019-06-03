@@ -53,7 +53,9 @@ public class EnumerableRules {
   public static final RelOptRule ENUMERABLE_CORRELATE_RULE =
       new EnumerableCorrelateRule(RelFactories.LOGICAL_BUILDER);
 
->>>>>>> 1b15d3443 ([CALCITE-3095] Add several system properties to control enabling/disabling of rules and traits)
+  public static final RelOptRule ENUMERABLE_BATCH_NESTED_LOOP_JOIN_RULE =
+      new EnumerableBatchNestedLoopJoinRule(RelFactories.LOGICAL_BUILDER);
+
   public static final EnumerableProjectRule ENUMERABLE_PROJECT_RULE =
       new EnumerableProjectRule();
 

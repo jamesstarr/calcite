@@ -16,27 +16,10 @@
  */
 package org.apache.calcite.adapter.enumerable;
 
-import org.apache.calcite.linq4j.tree.BlockBuilder;
-import org.apache.calcite.linq4j.tree.DeclarationStatement;
-import org.apache.calcite.linq4j.tree.Expression;
-import org.apache.calcite.linq4j.tree.Expressions;
-import org.apache.calcite.linq4j.tree.ParameterExpression;
-import org.apache.calcite.linq4j.tree.Primitive;
-import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptCost;
-import org.apache.calcite.plan.RelOptPlanner;
-import org.apache.calcite.plan.RelTraitSet;
-import org.apache.calcite.rel.RelCollationTraitDef;
-import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.rel.RelWriter;
-import org.apache.calcite.rel.core.CorrelationId;
-import org.apache.calcite.rel.core.Join;
-import org.apache.calcite.rel.core.JoinRelType;
-import org.apache.calcite.rel.metadata.RelMdCollation;
-import org.apache.calcite.rel.metadata.RelMetadataQuery;
-import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.rex.RexProgramBuilder;
 import org.apache.calcite.util.BuiltInMethod;
 import org.apache.calcite.util.ImmutableBitSet;
+import org.apache.calcite.util.Pair;
 
 import com.google.common.collect.ImmutableList;
 
@@ -199,9 +182,11 @@ public class EnumerableBatchNestedLoopJoin extends Join implements EnumerableRel
             joinType, physType,
             ImmutableList.of(leftResult.physType, rightResult.physType));
 
-    final Expression predicate =
-        EnumUtils.generatePredicate(implementor, getCluster().getRexBuilder(), left, right,
-            leftResult.physType, rightResult.physType, condition);
+    final BlockBuilder builderPredicate = new BlockBuilder();
+    final Expression predicate = generatePredicate(implementor,
+        builderPredicate,
+        leftResult.physType,
+        rightResult.physType);
 
     builder.append(
         Expressions.call(BuiltInMethod.CORRELATE_BATCH_JOIN.method,
@@ -213,4 +198,35 @@ public class EnumerableBatchNestedLoopJoin extends Join implements EnumerableRel
             Expressions.constant(variablesSet.size())));
     return implementor.result(physType, builder.toBlock());
   }
+
+  // Predicate "matches" that is going to be used in correlateBatchJoin to compare two tuples
+  private Expression generatePredicate(EnumerableRelImplementor implementor,
+      BlockBuilder builder, PhysType leftPhysType, PhysType rightPhysType) {
+    final ParameterExpression left_ =
+        Expressions.parameter(leftPhysType.getJavaRowType(), "left");
+    final ParameterExpression right_ =
+        Expressions.parameter(rightPhysType.getJavaRowType(), "right");
+    final RexProgramBuilder program =
+        new RexProgramBuilder(
+            implementor.getTypeFactory().builder()
+                .addAll(left.getRowType().getFieldList())
+                .addAll(right.getRowType().getFieldList())
+                .build(),
+            getCluster().getRexBuilder());
+    program.addCondition(condition);
+    builder.add(
+        Expressions.return_(null,
+            RexToLixTranslator.translateCondition(program.getProgram(),
+                implementor.getTypeFactory(),
+                builder,
+                new RexToLixTranslator.InputGetterImpl(
+                    ImmutableList.of(Pair.of(left_, leftPhysType),
+                        Pair.of(right_, rightPhysType))),
+                implementor.allCorrelateVariables,
+                implementor.getConformance())));
+    return Expressions.lambda(Predicate2.class, builder.toBlock(), left_,
+        right_);
+  }
 }
+
+// End EnumerableBatchNestedLoopJoin.java
