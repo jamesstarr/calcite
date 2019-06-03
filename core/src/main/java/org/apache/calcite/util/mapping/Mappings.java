@@ -219,7 +219,8 @@ public abstract class Mappings {
   public static ImmutableList<ImmutableBitSet> apply2(final Mapping mapping,
       Iterable<ImmutableBitSet> bitSets) {
     return ImmutableList.copyOf(
-        Iterables.transform(bitSets, input1 -> apply(mapping, input1)));
+        ImmutableBitSet.ORDERING.sortedCopy(
+            Iterables.transform(bitSets, input1 -> apply(mapping, input1))));
   }
 
   /**
@@ -430,12 +431,10 @@ public abstract class Mappings {
     int prevTarget = -1;
     for (int i = 0; i < mapping.getSourceCount(); i++) {
       int target = mapping.getTargetOpt(i);
-      if (target != -1) {
-        if (target < prevTarget) {
-          return false;
-        }
-        prevTarget = target;
+      if (target != -1 && target < prevTarget) {
+        return false;
       }
+      prevTarget = target;
     }
     return true;
   }

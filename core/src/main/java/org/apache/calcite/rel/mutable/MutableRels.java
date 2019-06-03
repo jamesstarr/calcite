@@ -152,7 +152,8 @@ public abstract class MutableRels {
       mapping.set(posList.get(i), i);
     }
     return MutableProject.of(
-        RelOptUtil.permute(child.cluster.getTypeFactory(), rowType, mapping),
+        RelOptUtil.permute(child.cluster.getTypeFactory(), rowType,
+            Mappings.bijection(posList).inverse()),
         child,
         new AbstractList<RexNode>() {
           public int size() {
