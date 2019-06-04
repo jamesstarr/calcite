@@ -543,7 +543,24 @@ import org.apache.calcite.tools.RelBuilderFactory;
 
     // Aggregate does not change input ordering so corVars will be
     // located at the same position as the input newProject.
-    return register(rel, newRel, outputMap, corDefOutputs);
+    return register(rel, relBuilder.build(), outputMap, corDefOutputs);
+  }
+
+  /**
+   * Shift the mapping to fixed offset from the {@code startIndex}.
+   * @param mapping    the original mapping
+   * @param startIndex any output whose index equals with or bigger than the starting index
+   *                   would be shift
+   * @param offset     shift offset
+   */
+  private static void shiftMapping(Map<Integer, Integer> mapping, int startIndex, int offset) {
+    for (Map.Entry<Integer, Integer> entry : mapping.entrySet()) {
+      if (entry.getValue() >= startIndex) {
+        mapping.put(entry.getKey(), entry.getValue() + offset);
+      } else {
+        mapping.put(entry.getKey(), entry.getValue());
+      }
+    }
   }
 
   /**

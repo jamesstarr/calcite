@@ -4808,27 +4808,6 @@ class RelOptRulesTest extends RelOptTestBase {
         .check();
   }
 
-<<<<<<< HEAD
-  @Test void testIsNullPushDown2() {
-    HepProgramBuilder preBuilder = new HepProgramBuilder();
-    preBuilder.addRuleInstance(CoreRules.PROJECT_TO_LOGICAL_PROJECT_AND_WINDOW);
-
-    HepProgramBuilder builder = new HepProgramBuilder();
-    builder.addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
-    builder.addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS);
-    HepPlanner hepPlanner = new HepPlanner(builder.build());
-
-    final String sql = "select empno, deptno, w_count from (\n"
-        + "  select empno, deptno, count(empno) over (ROWS BETWEEN 10 PRECEDING AND 1 PRECEDING) w_count\n"
-        + "  from emp\n"
-        + ") sub_query where w_count is null";
-    sql(sql)
-        .withPre(preBuilder.build())
-        .with(hepPlanner)
-        .check();
-  }
-
-=======
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-750">[CALCITE-750]
    * Allow windowed aggregate on top of regular aggregate</a>. */
@@ -6680,21 +6659,29 @@ class RelOptRulesTest extends RelOptTestBase {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2744">[CALCITE-2744]
    * RelDecorrelator use wrong output map for LogicalAggregate decorrelate</a>. */
+<<<<<<< HEAD
   @Test void testDecorrelateAggWithConstantGroupKey() {
     final String sql = "SELECT * FROM emp A where sal in\n"
+=======
+  @Test public void testDecorrelateAggWithConstantGroupKey() {
+    final String sql = "SELECT * FROM emp A where sal in \n"
         + "(SELECT max(sal) FROM emp B where A.mgr = B.empno group by deptno, 'abc')";
     sql(sql)
         .withLateDecorrelation(true)
         .withTrim(true)
-        .withContext(Contexts.of(RelBuilder.Config.DEFAULT.withPruneInputOfAggregate(false)))
+>>>>>>> 2a57079b4 ([CALCITE-2744] RelDecorrelator use wrong output map for LogicalAggregate decorrelate (godfreyhe and Danny Chan))
         .with(HepProgram.builder().build())
         .check();
   }
 
   /** Test case for CALCITE-2744 for aggregate decorrelate with multi-param agg call
    * but without group key. */
+<<<<<<< HEAD
   @Disabled
   @Test void testDecorrelateAggWithMultiParamsAggCall() {
+=======
+  @Ignore
+  @Test public void testDecorrelateAggWithMultiParamsAggCall() {
     final String sql = "SELECT * FROM (SELECT MY_AVG(sal, 1) AS c FROM emp) as m,\n"
                        + " LATERAL TABLE(ramp(m.c)) AS T(s)";
     sql(sql)
@@ -6706,8 +6693,8 @@ class RelOptRulesTest extends RelOptTestBase {
 
   /** Same as {@link #testDecorrelateAggWithMultiParamsAggCall}
    * but with constant grouping key. */
-  @Disabled
-  @Test void testDecorrelateAggWithMultiParamsAggCall2() {
+  @Ignore
+  @Test public void testDecorrelateAggWithMultiParamsAggCall2() {
     final String sql = "SELECT * FROM "
         + "(SELECT MY_AVG(sal, 1) AS c FROM emp group by empno, 'abc') as m,\n"
         + " LATERAL TABLE(ramp(m.c)) AS T(s)";

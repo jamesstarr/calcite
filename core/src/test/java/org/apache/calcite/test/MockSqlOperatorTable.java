@@ -29,40 +29,7 @@ import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
-import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.calcite.sql.util.ChainedSqlOperatorTable;
-import org.apache.calcite.sql.util.ListSqlOperatorTable;
-import org.apache.calcite.util.Optionality;
-
-import com.google.common.collect.ImmutableList;
-
-/**
- * Mock operator table for testing purposes. Contains the standard SQL operator
- * table, plus a list of operators.
- */
-public class MockSqlOperatorTable extends ChainedSqlOperatorTable {
-  private final ListSqlOperatorTable listOpTab;
-
-  public MockSqlOperatorTable(SqlOperatorTable parentTable) {
-    super(ImmutableList.of(parentTable, new ListSqlOperatorTable()));
-    listOpTab = (ListSqlOperatorTable) tableList.get(1);
-  }
-
-  /**
-   * Adds an operator to this table.
-   */
-  public void addOperator(SqlOperator op) {
-    listOpTab.add(op);
-  }
-
-  public static void addRamp(MockSqlOperatorTable opTab) {
-    // Don't use anonymous inner classes. They can't be instantiated
-    // using reflection when we are deserializing from JSON.
-    opTab.addOperator(new RampFunction());
-    opTab.addOperator(new DedupFunction());
-    opTab.addOperator(new MyAvgAggFunction());
-    opTab.addOperator(new StructuredFunction());
-    opTab.addOperator(new MyFunction());
+>>>>>>> 2a57079b4 ([CALCITE-2744] RelDecorrelator use wrong output map for LogicalAggregate decorrelate (godfreyhe and Danny Chan))
   }
 
   /** "RAMP" user-defined function. */
@@ -104,6 +71,28 @@ public class MockSqlOperatorTable extends ChainedSqlOperatorTable {
           .build();
     }
   }
+<<<<<<< HEAD
+=======
+
+  /** "MY_AVG" user-defined aggregate function. */
+  public static class MyAvgAggFunction extends SqlAggFunction {
+    public MyAvgAggFunction() {
+      super("MY_AVG",
+          null,
+          SqlKind.AVG,
+          ReturnTypes.AVG_AGG_FUNCTION,
+          null,
+          OperandTypes.family(SqlTypeFamily.NUMERIC, SqlTypeFamily.NUMERIC),
+          SqlFunctionCategory.NUMERIC,
+          false,
+          false);
+    }
+
+    @Override public boolean isDeterministic() {
+      return false;
+    }
+  }
+}
 
   /** "MY_AVG" user-defined aggregate function, with two arguments. */
   public static class MyAvgAggFunction extends SqlAggFunction {

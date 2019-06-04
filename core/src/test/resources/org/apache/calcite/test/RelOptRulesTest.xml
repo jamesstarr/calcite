@@ -3620,9 +3620,15 @@ LogicalProject("K0"=[$0], "C1"=[$1], "F1"."A0"=[$2], "F2"."A0"=[$3], "F0"."C0"=[
         <Resource name="planBefore">
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+<<<<<<< HEAD
   LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{3, 5}])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalFilter(condition=[=($cor0.SAL, $0)])
+=======
+  LogicalFilter(condition=[=($5, $9)])
+    LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{3}])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+>>>>>>> 2a57079b4 ([CALCITE-2744] RelDecorrelator use wrong output map for LogicalAggregate decorrelate (godfreyhe and Danny Chan))
       LogicalAggregate(group=[{0}])
         LogicalProject(EXPR$0=[$2])
           LogicalAggregate(group=[{0, 1}], EXPR$0=[MAX($2)])
@@ -3634,9 +3640,15 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
         <Resource name="planMid">
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+<<<<<<< HEAD
   LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{3, 5}])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalFilter(condition=[=($cor0.SAL, $0)])
+=======
+  LogicalFilter(condition=[=($5, $9)])
+    LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{3}])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+>>>>>>> 2a57079b4 ([CALCITE-2744] RelDecorrelator use wrong output map for LogicalAggregate decorrelate (godfreyhe and Danny Chan))
       LogicalAggregate(group=[{0}])
         LogicalProject(EXPR$0=[$2])
           LogicalAggregate(group=[{0, 1}], EXPR$0=[MAX($2)])
@@ -3650,10 +3662,21 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalJoin(condition=[AND(=($3, $10), =($5, $9))], joinType=[inner])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+<<<<<<< HEAD
     LogicalProject(EXPR$0=[$2], EMPNO=[$1])
       LogicalAggregate(group=[{0, 1}], EXPR$0=[MAX($2)])
         LogicalProject(DEPTNO=[$7], EMPNO=[$0], SAL=[$5])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+=======
+    LogicalAggregate(group=[{0, 1}])
+      LogicalProject(EXPR$0=[$0], EMPNO=[$1])
+        LogicalProject(EXPR$0=[$3], EMPNO=[$1])
+          LogicalProject(DEPTNO=[$0], EMPNO=[$1], $f2=['abc'], EXPR$0=[$2])
+            LogicalAggregate(group=[{0, 1}], EXPR$0=[MAX($3)])
+              LogicalProject(DEPTNO=[$0], EMPNO=[$3], $f1=[$1], SAL=[$2])
+                LogicalProject(DEPTNO=[$7], $f1=['abc'], SAL=[$5], EMPNO=[$0])
+                  LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+>>>>>>> 2a57079b4 ([CALCITE-2744] RelDecorrelator use wrong output map for LogicalAggregate decorrelate (godfreyhe and Danny Chan))
 ]]>
         </Resource>
     </TestCase>
@@ -12342,7 +12365,7 @@ LogicalProject(D=[$0])
         <Resource name="sql">
             <![CDATA[select
     EXTRACT(SECOND FROM CAST({ts '2018-01-01 01:23:45'} AS TIMESTAMP)) =
-    EXTRACT(SECOND FROM d) 
+    EXTRACT(SECOND FROM d)
     FROM (VALUES({ts '2018-01-01 01:23:45'})) tbl(d)]]>
         </Resource>
         <Resource name="planBefore">
