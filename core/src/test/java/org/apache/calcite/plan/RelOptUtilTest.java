@@ -542,9 +542,10 @@ public class RelOptUtilTest {
                 SqlStdOperatorTable.EQUALS,
                 // Computed field is added at the end (and index start at 0)
                 RexInputRef.of(empRow.getFieldCount(), join.getRowType()),
-                RexInputRef.of(empRow.getFieldCount() + 2 + rightJoinIndex, join.getRowType())),
-                // Right side is shifted by 1
-                RexInputRef.of(empRow.getFieldCount() + 1 + rightJoinIndex, join.getRowType()))
+                RexInputRef.of(empRow.getFieldCount() + 1 + rightJoinIndex, join.getRowType())),
+                relBuilder.call(
+                    SqlStdOperatorTable.IS_NOT_NULL,
+                RexInputRef.of(leftJoinIndex, join.getRowType())))
               .toString()));
     assertThat(newJoin.getLeft(), is(instanceOf(Project.class)));
     Project leftInput = (Project) newJoin.getLeft();
