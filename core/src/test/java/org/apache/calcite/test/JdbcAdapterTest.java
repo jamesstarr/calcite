@@ -90,7 +90,7 @@ class JdbcAdapterTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3115">[CALCITE-3115]
    * Cannot add JdbcRules which have different JdbcConvention
    * to same VolcanoPlanner's RuleSet.</a>*/
-  @Test void testUnionPlan2() {
+  @Test public void testUnionPlan2() {
     CalciteAssert.model(JdbcTest.FOODMART_SCOTT_MODEL)
         .query("select \"store_name\" from \"foodmart\".\"store\" where \"store_id\" < 10\n"
             + "union all\n"
@@ -114,7 +114,7 @@ class JdbcAdapterTest {
                 + "WHERE \"EMPNO\" > 10");
   }
 
-  @Test void testFilterUnionPlan() {
+  @Test public void testFilterUnionPlan() {
     CalciteAssert.model(JdbcTest.FOODMART_MODEL)
         .query("select * from (\n"
             + "  select * from \"sales_fact_1997\"\n"

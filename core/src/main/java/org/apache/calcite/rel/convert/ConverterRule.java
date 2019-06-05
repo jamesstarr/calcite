@@ -25,7 +25,7 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.tools.RelBuilderFactory;
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -50,22 +50,19 @@ public abstract class ConverterRule extends RelOptRule {
    * @param descriptionPrefix Description prefix of rule
    */
   public ConverterRule(Class<? extends RelNode> clazz, RelTrait in,
-<<<<<<< HEAD
+      RelTrait out, String description) {
+=======
       RelTrait out, String descriptionPrefix) {
     this(clazz, (Predicate<RelNode>) r -> true, in, out,
         RelFactories.LOGICAL_BUILDER, descriptionPrefix);
-=======
-      RelTrait out, String description) {
-    this(clazz, (Predicate<RelNode>) r -> true, in, out,
-        RelFactories.LOGICAL_BUILDER, description);
   }
 
   @SuppressWarnings("Guava")
   @Deprecated // to be removed before 2.0
   public <R extends RelNode> ConverterRule(Class<R> clazz,
       com.google.common.base.Predicate<? super R> predicate,
-      RelTrait in, RelTrait out, String description) {
-    this(clazz, predicate, in, out, RelFactories.LOGICAL_BUILDER, description);
+      RelTrait in, RelTrait out, String descriptionPrefix) {
+    this(clazz, predicate, in, out, RelFactories.LOGICAL_BUILDER, descriptionPrefix);
   }
 
   /**
@@ -83,9 +80,7 @@ public abstract class ConverterRule extends RelOptRule {
       RelBuilderFactory relBuilderFactory, String descriptionPrefix) {
     super(convertOperand(clazz, predicate, in),
         relBuilderFactory,
-        description == null
-            ? "ConverterRule(in:" + in + ",out:" + out + ")"
-            : description);
+        createDescription(descriptionPrefix, in, out));
     this.inTrait = Objects.requireNonNull(in);
     this.outTrait = Objects.requireNonNull(out);
 
