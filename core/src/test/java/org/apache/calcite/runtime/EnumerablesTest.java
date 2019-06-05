@@ -283,37 +283,6 @@ class EnumerablesTest {
         equalTo("[]"));
   }
 
-<<<<<<< HEAD
-  @Test void testNestedLoopSemiJoinEmp() {
-    assertThat(
-        EnumerableDefaults.nestedLoopJoin(EMPS, DEPTS, EMP_DEPT_EQUAL_DEPTNO,
-            (e, d) -> e.toString(), JoinType.SEMI).toList().toString(),
-        equalTo("[Emp(20, Theodore), Emp(20, Sebastian)]"));
-  }
-
-  @Test void testNestedLoopSemiJoinDept() {
-    assertThat(
-        EnumerableDefaults.nestedLoopJoin(DEPTS, EMPS, DEPT_EMP_EQUAL_DEPTNO,
-            (d, e) -> d.toString(), JoinType.SEMI).toList().toString(),
-        equalTo("[Dept(20, Sales)]"));
-  }
-
-  @Test void testNestedLoopAntiJoinEmp() {
-    assertThat(
-        EnumerableDefaults.nestedLoopJoin(EMPS, DEPTS, EMP_DEPT_EQUAL_DEPTNO,
-            (e, d) -> e.toString(), JoinType.ANTI).toList().toString(),
-        equalTo("[Emp(10, Fred), Emp(30, Joe)]"));
-  }
-
-  @Test void testNestedLoopAntiJoinDept() {
-    assertThat(
-        EnumerableDefaults.nestedLoopJoin(DEPTS, EMPS, DEPT_EMP_EQUAL_DEPTNO,
-            (d, e) -> d.toString(), JoinType.ANTI).toList().toString(),
-        equalTo("[Dept(15, Marketing)]"));
-  }
-
-  @Test @Disabled // TODO fix this
-=======
   @Test
   @Ignore // TODO fix this
   public void testMatch() {
@@ -474,7 +443,6 @@ class EnumerablesTest {
   }
 
 =======
->>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
   /** Employee record. */
   private static class Emp {
     final int deptno;

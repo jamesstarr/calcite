@@ -567,10 +567,17 @@ LogicalProject(EXPR$0=[1])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testNotPushExpression">
         <Resource name="sql">
             <![CDATA[select 1 from emp inner join dept
 on emp.deptno=dept.deptno and emp.ename is not null]]>
+=======
+    <TestCase name="testNotPushExpression">
+        <Resource name="sql">
+            <![CDATA[select 1 from emp inner join dept
+            on emp.deptno=dept.deptno and emp.ename is not null]]>
+>>>>>>> d986fd172 ([CALCITE-3101] Don't push non-equi join conditions into Project below Join)
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -589,9 +596,12 @@ LogicalProject(EXPR$0=[1])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+>>>>>>> d986fd172 ([CALCITE-3101] Don't push non-equi join conditions into Project below Join)
     <TestCase name="testAddRedundantSemiJoinRule">
         <Resource name="sql">
             <![CDATA[select 1 from emp inner join dept on emp.deptno = dept.deptno]]>
@@ -8446,6 +8456,7 @@ in (select dept.deptno from dept where emp.empno > 20)]]>
             <![CDATA[
 LogicalProject(EMPNO=[$0])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalJoin(condition=[AND(IS NOT DISTINCT FROM($7, $8), >($0, 20))], joinType=[semi])
     LogicalTableScan(table=[[scott, EMP]])
     LogicalTableScan(table=[[scott, DEPT]])
@@ -8473,6 +8484,11 @@ LogicalProject(DEPTNO=[$0])
       LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], $f8=[>($0, 20)])
         LogicalTableScan(table=[[scott, EMP]])
       LogicalTableScan(table=[[scott, DEPT]])
+=======
+  LogicalJoin(condition=[AND(IS NOT DISTINCT FROM($7, $8), >($0, 20))], joinType=[semi])
+    LogicalTableScan(table=[[scott, EMP]])
+    LogicalTableScan(table=[[scott, DEPT]])
+>>>>>>> d986fd172 ([CALCITE-3101] Don't push non-equi join conditions into Project below Join)
 ]]>
         </Resource>
     </TestCase>

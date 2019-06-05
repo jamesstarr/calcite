@@ -127,11 +127,6 @@ public class EnumerableMatch extends Match implements EnumerableRel {
 
     final RelDataTypeFactory.Builder typeBuilder =
         implementor.getTypeFactory().builder();
-<<<<<<< HEAD
-
-    measures.forEach((name, value) ->
-        typeBuilder.add(name, value.getType()).nullable(true));
-=======
     measures.forEach((name, value) -> typeBuilder.add(name, value.getType()));
 
     final PhysType emitType =
@@ -220,7 +215,6 @@ public class EnumerableMatch extends Match implements EnumerableRel {
                 builder.toBlock())));
   }
 
->>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
   private Expression implementMatcher(EnumerableRelImplementor implementor,
       PhysType physType, BlockBuilder builder, ParameterExpression row_) {
     final Expression patternBuilder_ = builder.append("patternBuilder",
@@ -296,9 +290,6 @@ public class EnumerableMatch extends Match implements EnumerableRel {
       //     return this.test(row, (List) rows);
       //   }
       final ParameterExpression row0_ =
-<<<<<<< HEAD
-          Expressions.parameter(Object.class, "row");
-=======
               Expressions.parameter(Object.class, "row");
       final ParameterExpression rowsO_ =
           Expressions.parameter(Object.class, "rows");
@@ -392,7 +383,6 @@ public class EnumerableMatch extends Match implements EnumerableRel {
   }
 
   /**
->>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
    * A special Getter that "interchanges" the PREV and the field call.
    */
   static class PrevInputGetter implements RexToLixTranslator.InputGetter {
