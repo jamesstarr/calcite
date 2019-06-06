@@ -19,9 +19,12 @@
 !set outputformat mysql
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 !if (fixed.calcite2776) {
 >>>>>>> 66594a820 ([CALCITE-2677] Struct types with one field are not mapped correctly to Java Classes)
+=======
+>>>>>>> 4b83cdce6 ([CALCITE-3116] Upgrade to Avatica 1.15)
 # [CALCITE-2677] Struct types with one field are not mapped correctly to Java Classes
 select * from (values
     (1, ROW(1)),
@@ -35,6 +38,7 @@ select * from (values
 (2 rows)
 
 !ok
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 # [CALCITE-3482] Equality of nested ROWs returns false for identical literal value
@@ -75,5 +79,7 @@ where t.struct = ROW(2, ROW(3,4));
 =======
 !}
 >>>>>>> 66594a820 ([CALCITE-2677] Struct types with one field are not mapped correctly to Java Classes)
+=======
+>>>>>>> 4b83cdce6 ([CALCITE-3116] Upgrade to Avatica 1.15)
 
 # End struct.iq
