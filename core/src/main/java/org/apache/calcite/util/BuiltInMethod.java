@@ -183,9 +183,7 @@ public enum BuiltInMethod {
       Enumerable.class, Predicate2.class, Function2.class, JoinType.class),
   CORRELATE_JOIN(ExtendedEnumerable.class, "correlateJoin",
       JoinType.class, Function1.class, Function2.class),
-  CORRELATE_BATCH_JOIN(EnumerableDefaults.class, "correlateBatchJoin",
-      JoinType.class, Enumerable.class, Function1.class, Function2.class,
-      Predicate2.class, int.class),
+>>>>>>> 0a404408f ([CALCITE-3119] Deprecate Linq4j CorrelateJoinType (in favor of JoinType))
   SELECT(ExtendedEnumerable.class, "select", Function1.class),
   SELECT2(ExtendedEnumerable.class, "select", Function2.class),
   SELECT_MANY(ExtendedEnumerable.class, "selectMany", Function1.class),
@@ -386,7 +384,6 @@ public enum BuiltInMethod {
   GREATER(SqlFunctions.class, "greater", Comparable.class, Comparable.class),
   BIT_AND(SqlFunctions.class, "bitAnd", long.class, long.class),
   BIT_OR(SqlFunctions.class, "bitOr", long.class, long.class),
->>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
   MODIFIABLE_TABLE_GET_MODIFIABLE_COLLECTION(ModifiableTable.class,
       "getModifiableCollection"),
   SCANNABLE_TABLE_SCAN(ScannableTable.class, "scan", DataContext.class),

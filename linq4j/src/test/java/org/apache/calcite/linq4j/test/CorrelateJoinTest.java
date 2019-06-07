@@ -21,6 +21,7 @@ import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.linq4j.ExtendedEnumerable;
 import org.apache.calcite.linq4j.JoinType;
 import org.apache.calcite.linq4j.Linq4j;
+import org.apache.calcite.linq4j.function.Function1;
 import org.apache.calcite.linq4j.function.Function2;
 
 import com.google.common.collect.ImmutableList;
@@ -39,7 +40,7 @@ class CorrelateJoinTest {
   static final Function2<Integer, Integer, Integer[]> SELECT_BOTH =
       (v0, v1) -> new Integer[]{v0, v1};
 
-  @Test void testInner() {
+  @Test public void testInner() {
     testJoin(JoinType.INNER, new Integer[][]{
         {2, 20},
         {3, -30},
@@ -49,7 +50,7 @@ class CorrelateJoinTest {
         {30, -600}});
   }
 
-  @Test void testLeft() {
+  @Test public void testLeft() {
     testJoin(JoinType.LEFT, new Integer[][]{
         {1, null},
         {2, 20},
@@ -61,7 +62,7 @@ class CorrelateJoinTest {
         {30, -600}});
   }
 
-  @Test void testSemi() {
+  @Test public void testSemi() {
     testJoin(JoinType.SEMI, new Integer[][]{
         {2, null},
         {3, null},
@@ -69,7 +70,7 @@ class CorrelateJoinTest {
         {30, null}});
   }
 
-  @Test void testAnti() {
+  @Test public void testAnti() {
     testJoin(JoinType.ANTI, new Integer[][]{
         {1, null},
         {10, null}});
