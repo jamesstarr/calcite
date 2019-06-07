@@ -1951,8 +1951,46 @@ public class RelBuilder {
     for (ImmutableBitSet set : groupSets) {
       assert groupSet.contains(set);
     }
-    final RelNode aggregate = struct.aggregateFactory.createAggregate(r,
-        ImmutableList.of(), groupSet, groupSets, aggregateCalls);
+
+    if (Util.isDistinct(aggregateCalls)) {
+      return aggregate_(groupSet, groupSets, r, aggregateCalls,
+          registrar.extraNodes, frame.fields);
+    } else {
+      // There are duplicate aggregate calls.
+      final Set<AggregateCall> callSet = new HashSet<>();
+      final List<Integer> projects =
+          new ArrayList<>(Util.range(groupSet.cardinality()));
+      final List<AggregateCall> distinctAggregateCalls = new ArrayList<>();
+      for (AggregateCall aggregateCall : aggregateCalls) {
+        final int i;
+        if (callSet.add(aggregateCall)) {
+          i = distinctAggregateCalls.size();
+          distinctAggregateCalls.add(aggregateCall);
+        } else {
+          i = distinctAggregateCalls.indexOf(aggregateCall);
+          assert i >= 0;
+        }
+        projects.add(i);
+      }
+      aggregate_(groupSet, groupSets, r, distinctAggregateCalls,
+          registrar.extraNodes, frame.fields);
+      final List<RexNode> fields =
+          new ArrayList<>(fields(Util.range(groupSet.cardinality())));
+      for (Ord<Integer> project : Ord.zip(projects)) {
+        fields.add(alias(field(project.e), aggregateCalls.get(project.i).name));
+      }
+      return project(fields);
+    }
+  }
+
+  /** Finishes the implementation of {@link #aggregate} by creating an
+   * {@link Aggregate} and pushing it onto the stack. */
+  private RelBuilder aggregate_(ImmutableBitSet groupSet,
+      ImmutableList<ImmutableBitSet> groupSets, RelNode input,
+      List<AggregateCall> aggregateCalls, List<RexNode> extraNodes,
+      ImmutableList<Field> inFields) {
+    final RelNode aggregate = struct.aggregateFactory.createAggregate(input,
+            ImmutableList.of(), groupSet, groupSets, aggregateCalls);
 
     // build field list
     final ImmutableList.Builder<Field> fields = ImmutableList.builder();
