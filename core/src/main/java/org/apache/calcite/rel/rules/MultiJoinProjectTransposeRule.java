@@ -89,17 +89,14 @@ public class MultiJoinProjectTransposeRule extends JoinProjectTransposeRule {
 
   //~ Methods ----------------------------------------------------------------
 
-  // override JoinProjectTransposeRule
   @Override protected boolean hasLeftChild(RelOptRuleCall call) {
     return call.rels.length != 4;
   }
 
-  // override JoinProjectTransposeRule
   @Override protected boolean hasRightChild(RelOptRuleCall call) {
     return call.rels.length > 3;
   }
 
-  // override JoinProjectTransposeRule
   @Override protected Project getRightChild(RelOptRuleCall call) {
     if (call.rels.length == 4) {
       return call.rel(2);
