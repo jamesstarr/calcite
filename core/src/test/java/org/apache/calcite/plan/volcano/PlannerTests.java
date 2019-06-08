@@ -61,15 +61,13 @@ class PlannerTests {
 
   static final Convention PHYS_CALLING_CONVENTION_2 =
       new Convention.Impl("PHYS_2", RelNode.class) {
-      };
+        @Override public boolean canConvertConvention(Convention toConvention) {
+          return true;
+        }
 
-  static final Convention PHYS_CALLING_CONVENTION_3 =
-      new Convention.Impl("PHYS_3", RelNode.class) {
-        @Override public boolean satisfies(RelTrait trait) {
-          if (trait.equals(PHYS_CALLING_CONVENTION)) {
-            return true;
-          }
-          return super.satisfies(trait);
+        @Override public boolean useAbstractConvertersForConversion(
+            RelTraitSet fromTraits, RelTraitSet toTraits) {
+          return true;
         }
       };
 
@@ -248,6 +246,30 @@ class PlannerTests {
           new PhysSingleRel(single.getCluster(), physInput));
     }
   }
+<<<<<<< HEAD
+=======
+
+  /**
+   * Planner rule that matches a parent with two children and asserts that they
+   * are not the same.
+   */
+  static class AssertOperandsDifferentRule extends RelOptRule {
+    AssertOperandsDifferentRule() {
+      super(
+          operand(PhysBiRel.class,
+              operand(PhysLeafRel.class, any()),
+              operand(PhysLeafRel.class, any())));
+    }
+
+    public void onMatch(RelOptRuleCall call) {
+      PhysLeafRel left = call.rel(1);
+      PhysLeafRel right = call.rel(2);
+
+      assert left != right : left + " should be different from " + right;
+    }
+  }
+}
+>>>>>>> 9e40b5a40 ([CALCITE-3118] VolcanoRuleCall should look at RelSubset rather than RelSet when checking child ordinal of a parent operand (Botong Huang))
 
   /**
    * Planner rule that matches a parent with two children and asserts that they

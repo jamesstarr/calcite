@@ -356,16 +356,9 @@ public class VolcanoRuleCall extends RelOptRuleCall {
           }
           final RelSubset input =
               (RelSubset) rel.getInput(previousOperand.ordinalInParent);
-          if (previousOperand.getMatchedClass() == RelSubset.class) {
-            // The matched subset (previous) should satisfy our input subset (input)
-            if (input.getSubsetsSatisfyingThis().noneMatch(previous::equals)) {
-              continue;
-            }
-          } else {
-            List<RelNode> inputRels = input.getRelList();
-            if (!inputRels.contains(previous)) {
-              continue;
-            }
+          List<RelNode> inputRels = input.getRelList();
+          if (!inputRels.contains(previous)) {
+            continue;
           }
         }
 

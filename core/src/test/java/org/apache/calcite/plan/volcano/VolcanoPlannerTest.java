@@ -51,7 +51,7 @@ import static org.apache.calcite.plan.volcano.PlannerTests.NoneLeafRel;
 import static org.apache.calcite.plan.volcano.PlannerTests.NoneSingleRel;
 import static org.apache.calcite.plan.volcano.PlannerTests.PHYS_CALLING_CONVENTION;
 import static org.apache.calcite.plan.volcano.PlannerTests.PHYS_CALLING_CONVENTION_2;
-import static org.apache.calcite.plan.volcano.PlannerTests.PHYS_CALLING_CONVENTION_3;
+>>>>>>> 9e40b5a40 ([CALCITE-3118] VolcanoRuleCall should look at RelSubset rather than RelSet when checking child ordinal of a parent operand (Botong Huang))
 import static org.apache.calcite.plan.volcano.PlannerTests.PhysBiRel;
 import static org.apache.calcite.plan.volcano.PlannerTests.PhysLeafRel;
 import static org.apache.calcite.plan.volcano.PlannerTests.PhysLeafRule;
@@ -128,7 +128,10 @@ class VolcanoPlannerTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3118">[CALCITE-3118]
    * VolcanoRuleCall should look at RelSubset rather than RelSet
    * when checking child ordinal of a parent operand</a>. */
+<<<<<<< HEAD
   @Test void testMatchedOperandsDifferent() {
+=======
+  @Test public void testMatchedOperandsDifferent() {
     VolcanoPlanner planner = new VolcanoPlanner();
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
     RelOptCluster cluster = newCluster(planner);
@@ -157,6 +160,7 @@ class VolcanoPlannerTest {
     planner.chooseDelegate().findBestExp();
   }
 
+<<<<<<< HEAD
   /**
    * A pattern that matches a three input union with third child matching for
    * a PhysLeafRel node.
@@ -202,6 +206,8 @@ class VolcanoPlannerTest {
     planner.chooseDelegate().findBestExp();
   }
 
+=======
+>>>>>>> 9e40b5a40 ([CALCITE-3118] VolcanoRuleCall should look at RelSubset rather than RelSet when checking child ordinal of a parent operand (Botong Huang))
   /**
    * Tests a rule that is fired once per subset (whereas most rules are fired
    * once per rel in a set or rel in a subset)
