@@ -6684,6 +6684,7 @@ SqlNode JdbcFunctionCall() :
         (
             // INSERT is a reserved word, but we need to handle {fn insert}
             // Similarly LEFT, RIGHT, TRUNCATE
+            LOOKAHEAD(1)
             ( <INSERT> | <LEFT> | <RIGHT> | <TRUNCATE> ) { name = unquotedIdentifier(); }
         |
             // For cases like {fn power(1,2)} and {fn lower('a')}

@@ -29,10 +29,10 @@ import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
-import org.apache.calcite.sql.type.SqlTypeFamily;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.util.ChainedSqlOperatorTable;
 import org.apache.calcite.sql.util.ListSqlOperatorTable;
+import org.apache.calcite.util.Optionality;
 
 import com.google.common.collect.ImmutableList;
 
@@ -111,25 +111,18 @@ public class MockSqlOperatorTable extends ChainedSqlOperatorTable {
     }
   }
 
-  /** "MY_AVG" user-defined aggregate function. */
+  /** "MY_AVG" user-defined aggregate function, with two arguments. */
   public static class MyAvgAggFunction extends SqlAggFunction {
     public MyAvgAggFunction() {
-      super("MY_AVG",
-          null,
-          SqlKind.AVG,
-          ReturnTypes.AVG_AGG_FUNCTION,
-          null,
-          OperandTypes.family(SqlTypeFamily.NUMERIC, SqlTypeFamily.NUMERIC),
-          SqlFunctionCategory.NUMERIC,
-          false,
-          false);
+      super("MY_AVG", null, SqlKind.AVG, ReturnTypes.AVG_AGG_FUNCTION,
+          null, OperandTypes.NUMERIC_NUMERIC, SqlFunctionCategory.NUMERIC,
+          false, false, Optionality.FORBIDDEN);
     }
 
     @Override public boolean isDeterministic() {
       return false;
     }
   }
-
   /** "STRUCTURED_FUNC" user-defined function whose return type is structured type. */
   public static class StructuredFunction extends SqlFunction {
     StructuredFunction() {
