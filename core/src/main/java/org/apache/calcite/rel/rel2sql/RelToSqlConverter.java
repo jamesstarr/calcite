@@ -35,7 +35,9 @@ import org.apache.calcite.rel.core.TableModify;
 import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.core.Union;
 import org.apache.calcite.rel.core.Values;
+import org.apache.calcite.rel.core.Window;
 import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexLiteral;
@@ -194,6 +196,30 @@ public class RelToSqlConverter extends SqlImplementor
       SqlNode sqlExpr = builder.context.toSql(null,
           simplifyDatetimePlus(ref, e.getCluster().getRexBuilder()));
       addSelect(selectList, sqlExpr, e.getRowType());
+    }
+
+    builder.setSelect(new SqlNodeList(selectList, POS));
+    return builder.result();
+  }
+
+  /** @see #dispatch */
+  public Result visit(Window e) {
+    Result x = visitChild(0, e.getInput());
+    Builder builder = x.builder(e);
+    RelNode input = e.getInput();
+    int inputFieldCount = input.getRowType().getFieldCount();
+    final List<SqlNode> rexOvers = new ArrayList<>();
+    for (Window.Group group: e.groups) {
+      rexOvers.addAll(builder.context.toSql(group, e.constants, inputFieldCount));
+    }
+    final List<SqlNode> selectList = new ArrayList<>();
+
+    for (RelDataTypeField field: input.getRowType().getFieldList()) {
+      addSelect(selectList, builder.context.field(field.getIndex()), e.getRowType());
+    }
+
+    for (SqlNode rexOver: rexOvers) {
+      addSelect(selectList, rexOver, e.getRowType());
     }
 
     builder.setSelect(new SqlNodeList(selectList, POS));

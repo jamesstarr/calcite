@@ -375,7 +375,7 @@ public abstract class Window extends SingleRel {
     }
 
     @Override public RexCall clone(RelDataType type, List<RexNode> operands) {
-      throw new UnsupportedOperationException();
+      return super.clone(type, operands);
     }
   }
 }
