@@ -3552,32 +3552,6 @@ public class SqlOperatorTest {
 
   @Test void testReplaceFunc() {
     final SqlOperatorFixture f = fixture();
-<<<<<<< HEAD
-    checkReplaceFunc(f);
-    // case-sensitive
-    f.checkString("REPLACE('ciAao', 'a', 'ciao')", "ciAciaoo",
-        "VARCHAR(5) NOT NULL");
-    f.checkString("REPLACE('ciAao', 'A', 'ciao')", "ciciaoao",
-        "VARCHAR(5) NOT NULL");
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-6791">[CALCITE-6791]
-   * Search pattern during matching in REPLACE function should be case insensitive
-   * in MSSQL</a>. */
-  @Test void testReplaceMSSQLFunc() {
-    final SqlOperatorFixture f = fixture();
-    checkReplaceFunc(f);
-    // case-insensitive
-    SqlOperatorFixture f1 = f.withConformance(SqlConformanceEnum.SQL_SERVER_2008);
-    f1.checkString("REPLACE('ciAao', 'a', 'ciao')", "ciciaociaoo",
-        "VARCHAR(5) NOT NULL");
-    f1.checkString("REPLACE('ciAao', 'A', 'ciao')", "ciciaociaoo",
-        "VARCHAR(5) NOT NULL");
-  }
-
-  private static void checkReplaceFunc(SqlOperatorFixture f) {
-=======
     f.setFor(SqlStdOperatorTable.REPLACE, VmName.EXPAND);
     f.checkString("REPLACE('ciao', 'ciao', '')", "",
         "VARCHAR(4) NOT NULL");
@@ -7197,7 +7171,6 @@ public class SqlOperatorTest {
 <<<<<<< HEAD
 =======
             + "<MAP>\\[<ANY>\\]\n"
->>>>>>> 8761ecbb0 ([CALCITE-4999] ARRAY, MULTISET functions should return a collection of scalars if a sub-query returns 1 column)
             + "<ROW>\\[<CHARACTER>\\|<INTEGER>\\]",
         false);
 
