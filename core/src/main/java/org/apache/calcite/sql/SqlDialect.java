@@ -203,6 +203,12 @@ public class SqlDialect {
     this.dataTypeSystem = Objects.requireNonNull(context.dataTypeSystem());
     this.databaseProduct =
         Objects.requireNonNull(context.databaseProduct());
+    this.literalQuoteString =
+        Objects.requireNonNull(context.literalQuoteString());
+    this.literalEndQuoteString =
+        Objects.requireNonNull(context.literalQuoteString());
+    this.literalEscapedQuote =
+        Objects.requireNonNull(context.literalEscapedQuoteString());
     String identifierQuoteString = context.identifierQuoteString();
     if (identifierQuoteString != null) {
       identifierQuoteString = identifierQuoteString.trim();
@@ -227,7 +233,8 @@ public class SqlDialect {
 
   /** Creates an empty context. Use {@link #EMPTY_CONTEXT} if possible. */
   protected static Context emptyContext() {
-    return new ContextImpl(DatabaseProduct.UNKNOWN, null, null, -1, -1, null,
+    return new ContextImpl(DatabaseProduct.UNKNOWN, null, null, -1, -1,
+        "'", "''", null,
         Casing.UNCHANGED, Casing.TO_UPPER, true, SqlConformanceEnum.DEFAULT,
         NullCollation.HIGH, RelDataTypeSystemImpl.DEFAULT,
         JethroDataSqlDialect.JethroInfo.EMPTY);
@@ -346,8 +353,12 @@ public class SqlDialect {
         || !identifierNeedsQuote(val)) {
       buf.append(val);
     } else {
+      String val2 =
+          val.replaceAll(
+              identifierEndQuoteString,
+              identifierEscapedQuote);
       buf.append(identifierQuoteString);
-      buf.append(val.replace(identifierEndQuoteString, identifierEscapedQuote));
+      buf.append(val2);
       buf.append(identifierEndQuoteString);
     }
     return buf;
@@ -1398,6 +1409,7 @@ public class SqlDialect {
     private ContextImpl(DatabaseProduct databaseProduct,
         String databaseProductName, String databaseVersion,
         int databaseMajorVersion, int databaseMinorVersion,
+        String literalQuoteString, String literalEscapedQuoteString,
         String identifierQuoteString, Casing quotedCasing,
         Casing unquotedCasing, boolean caseSensitive,
         SqlConformance conformance, NullCollation nullCollation,
@@ -1429,10 +1441,9 @@ public class SqlDialect {
         @Nonnull DatabaseProduct databaseProduct) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
-          identifierQuoteString, quotedCasing, unquotedCasing,
-          caseSensitive,
-          conformance, nullCollation,
-          dataTypeSystem, jethroInfo);
+          literalQuoteString, literalEscapedQuoteString,
+          identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
+          conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
 
     public String databaseProductName() {
@@ -1442,6 +1453,7 @@ public class SqlDialect {
     public Context withDatabaseProductName(String databaseProductName) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1453,6 +1465,7 @@ public class SqlDialect {
     public Context withDatabaseVersion(String databaseVersion) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1464,6 +1477,7 @@ public class SqlDialect {
     public Context withDatabaseMajorVersion(int databaseMajorVersion) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1475,6 +1489,32 @@ public class SqlDialect {
     public Context withDatabaseMinorVersion(int databaseMinorVersion) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
+          identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
+          conformance, nullCollation, dataTypeSystem, jethroInfo);
+    }
+
+    public String literalQuoteString() {
+      return literalQuoteString;
+    }
+
+    public Context withLiteralQuoteString(String literalQuoteString) {
+      return new ContextImpl(databaseProduct, databaseProductName,
+          databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
+          identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
+          conformance, nullCollation, dataTypeSystem, jethroInfo);
+    }
+
+    public String literalEscapedQuoteString() {
+      return literalEscapedQuoteString;
+    }
+
+    public Context withLiteralEscapedQuoteString(
+        String literalEscapedQuoteString) {
+      return new ContextImpl(databaseProduct, databaseProductName,
+          databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1487,6 +1527,7 @@ public class SqlDialect {
         String identifierQuoteString) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1498,6 +1539,7 @@ public class SqlDialect {
     @Nonnull public Context withUnquotedCasing(Casing unquotedCasing) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1509,6 +1551,7 @@ public class SqlDialect {
     @Nonnull public Context withQuotedCasing(Casing quotedCasing) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1520,6 +1563,7 @@ public class SqlDialect {
     @Nonnull public Context withCaseSensitive(boolean caseSensitive) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1531,6 +1575,7 @@ public class SqlDialect {
     @Nonnull public Context withConformance(SqlConformance conformance) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1543,6 +1588,7 @@ public class SqlDialect {
         @Nonnull NullCollation nullCollation) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1554,6 +1600,7 @@ public class SqlDialect {
     public Context withDataTypeSystem(@Nonnull RelDataTypeSystem dataTypeSystem) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1565,6 +1612,7 @@ public class SqlDialect {
     public Context withJethroInfo(JethroDataSqlDialect.JethroInfo jethroInfo) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }

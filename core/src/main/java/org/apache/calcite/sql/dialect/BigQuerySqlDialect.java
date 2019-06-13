@@ -22,28 +22,33 @@ import org.apache.calcite.config.NullCollation;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlDialect;
 import org.apache.calcite.sql.SqlKind;
+import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSetOperator;
 import org.apache.calcite.sql.SqlSyntax;
 import org.apache.calcite.sql.SqlWriter;
 >>>>>>> d270fc28f ([CALCITE-2623] Add specific translation for POSITION, MOD and set operators in BigQuery and Hive SQL dialects)
 
+import com.google.common.collect.ImmutableList;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
+
 /**
  * A <code>SqlDialect</code> implementation for Google BigQuery's "Standard SQL"
  * dialect.
  */
 public class BigQuerySqlDialect extends SqlDialect {
-  public static final SqlDialect.Context DEFAULT_CONTEXT = SqlDialect.EMPTY_CONTEXT
-      .withDatabaseProduct(SqlDialect.DatabaseProduct.BIG_QUERY)
-      .withLiteralQuoteString("'")
-      .withLiteralEscapedQuoteString("\\'")
-      .withIdentifierQuoteString("`")
-      .withNullCollation(NullCollation.LOW)
-      .withUnquotedCasing(Casing.UNCHANGED)
-      .withQuotedCasing(Casing.UNCHANGED)
-      .withCaseSensitive(false);
-
-  public static final SqlDialect DEFAULT = new BigQuerySqlDialect(DEFAULT_CONTEXT);
+  public static final SqlDialect DEFAULT =
+      new BigQuerySqlDialect(
+          EMPTY_CONTEXT
+              .withDatabaseProduct(SqlDialect.DatabaseProduct.BIG_QUERY)
+              .withLiteralQuoteString("'")
+              .withLiteralEscapedQuoteString("\\'")
+              .withIdentifierQuoteString("`")
+              .withNullCollation(NullCollation.LOW));
 
   private static final List<String> RESERVED_KEYWORDS =
       ImmutableList.copyOf(
@@ -74,6 +79,25 @@ public class BigQuerySqlDialect extends SqlDialect {
   }
 <<<<<<< HEAD
 =======
+
+  @Override public String quoteIdentifier(String val) {
+    return quoteIdentifier(new StringBuilder(), val).toString();
+  }
+
+  @Override protected boolean identifierNeedsQuote(String val) {
+    return !IDENTIFIER_REGEX.matcher(val).matches()
+        || RESERVED_KEYWORDS.contains(val.toUpperCase(Locale.ROOT));
+  }
+
+  @Override public SqlNode emulateNullDirection(SqlNode node,
+      boolean nullsFirst, boolean desc) {
+    return emulateNullDirectionWithIsNull(node, nullsFirst, desc);
+  }
+
+  @Override public void unparseOffsetFetch(SqlWriter writer, SqlNode offset,
+      SqlNode fetch) {
+    unparseFetchUsingLimit(writer, offset, fetch);
+  }
 
   @Override public void unparseCall(final SqlWriter writer, final SqlCall call, final int leftPrec,
       final int rightPrec) {
