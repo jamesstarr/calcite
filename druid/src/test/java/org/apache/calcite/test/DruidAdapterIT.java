@@ -37,6 +37,140 @@ import java.net.URL;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+<<<<<<< HEAD
+=======
+import java.util.List;
+import java.util.function.Consumer;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+/**
+ * Tests for the {@code org.apache.calcite.adapter.druid} package.
+ *
+ * <p>Before calling this test, you need to populate Druid, as follows:
+ *
+ * <blockquote><code>
+ * git clone https://github.com/vlsi/calcite-test-dataset<br>
+ * cd calcite-test-dataset<br>
+ * mvn install
+ * </code></blockquote>
+ *
+ * <p>This will create a virtual machine with Druid and test data set.
+ *
+ * <p>Features not yet implemented:
+ * <ul>
+ *   <li>push LIMIT into "select" query</li>
+ *   <li>push SORT and/or LIMIT into "groupBy" query</li>
+ *   <li>push HAVING into "groupBy" query</li>
+ * </ul>
+ *
+ * <p>These tests use TIMESTAMP WITH LOCAL TIME ZONE type for the
+ * Druid timestamp column, instead of TIMESTAMP type as
+ * {@link DruidAdapterIT2}.
+ */
+public class DruidAdapterIT {
+  /** URL of the "druid-foodmart" model. */
+  public static final URL FOODMART =
+      DruidAdapterIT.class.getResource("/druid-foodmart-model.json");
+
+  /** URL of the "druid-wiki" model
+   * and the "wikipedia" data set. */
+  public static final URL WIKI =
+      DruidAdapterIT.class.getResource("/druid-wiki-model.json");
+
+  /** URL of the "druid-wiki-no-columns" model
+   * and the "wikipedia" data set. */
+  public static final URL WIKI_AUTO =
+      DruidAdapterIT.class.getResource("/druid-wiki-no-columns-model.json");
+
+  /** URL of the "druid-wiki-no-tables" model
+   * and the "wikipedia" data set. */
+  public static final URL WIKI_AUTO2 =
+      DruidAdapterIT.class.getResource("/druid-wiki-no-tables-model.json");
+
+  private static final String VARCHAR_TYPE =
+      "VARCHAR";
+
+  private static final String FOODMART_TABLE = "\"foodmart\"";
+
+  /** Whether to run this test. */
+  protected boolean enabled() {
+    return CalciteSystemProperty.TEST_DRUID.value();
+  }
+
+  /** Returns a consumer that checks that a particular Druid query is
+   * generated to implement a query. */
+  private static Consumer<List> druidChecker(final String... lines) {
+    return list -> {
+      assertThat(list.size(), is(1));
+      DruidQuery.QuerySpec querySpec = (DruidQuery.QuerySpec) list.get(0);
+      for (String line : lines) {
+        final String s = line.replace('\'', '"');
+        assertThat(querySpec.getQueryString(null, -1), containsString(s));
+      }
+    };
+  }
+
+  /** Returns a consumer that checks that a particular Druid query is
+   * generated to implement a query. Expected lines should be exactly
+   * included in the actual query text, without changing quote types. */
+  private Consumer<List> druidOriginalChecker(final String... lines) {
+    return list -> {
+      assertThat(list.size(), is(1));
+      DruidQuery.QuerySpec querySpec = (DruidQuery.QuerySpec) list.get(0);
+      for (String line : lines) {
+        assertThat(querySpec.getQueryString(null, -1), containsString(line));
+      }
+    };
+  }
+
+  /**
+   * Creates a query against FOODMART with approximate parameters
+   * */
+  private CalciteAssert.AssertQuery foodmartApprox(String sql) {
+    return approxQuery(FOODMART, sql);
+  }
+
+  /**
+   * Creates a query against WIKI with approximate parameters
+   * */
+  private CalciteAssert.AssertQuery wikiApprox(String sql) {
+    return approxQuery(WIKI, sql);
+  }
+
+  private CalciteAssert.AssertQuery approxQuery(URL url, String sql) {
+    return CalciteAssert.that()
+            .enable(enabled())
+            .withModel(url)
+            .with(CalciteConnectionProperty.APPROXIMATE_DISTINCT_COUNT, true)
+            .with(CalciteConnectionProperty.APPROXIMATE_TOP_N, true)
+            .with(CalciteConnectionProperty.APPROXIMATE_DECIMAL, true)
+            .query(sql);
+  }
+
+  /** Creates a query against a data set given by a map. */
+  private CalciteAssert.AssertQuery sql(String sql, URL url) {
+    return CalciteAssert.that()
+        .enable(enabled())
+        .withModel(url)
+        .query(sql);
+  }
+
+  /** Creates a query against the {@link #FOODMART} data set. */
+  private CalciteAssert.AssertQuery sql(String sql) {
+    return sql(sql, FOODMART);
+  }
+
+  /** Tests a query against the {@link #WIKI} data set.
+   *
+   * <p>Most of the others in this suite are against {@link #FOODMART},
+   * but our examples in "druid-adapter.md" use wikipedia. */
+>>>>>>> 799df8e3d (Following [CALCITE-2804], fix incorrect expected Druid query in test case DruidAdapterIT#testCastToTimestamp (Justin Szeluga))
   @Test public void testSelectDistinctWiki() {
     final String explain = "PLAN="
         + "EnumerableInterpreter\n"
@@ -461,23 +595,17 @@ import java.sql.SQLException;
    */
   @Test public void testCastToTimestamp() {
     final String sql = "select cast(\"timestamp\" as timestamp) from \"foodmart\"";
-    final String druidQuery = "{'queryType':'scan','dataSource':'foodmart',"
-        + "'intervals':['1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z']',"
-        + "'virtualColumns:[{'type':'expression','name':'vc',"
-        + "'expression':'timestamp_parse("
-        + "timestamp_format(\"__time\",'yyyy-MM-dd\\u0027T\\u0027HH:mm:ss.SSS\\u0027Z\\u0027',"
-        + "'America/New_York'),'yyyy-MM-dd\\u0027T\\u0027HH:mm:ss.SSS\\u0027Z\\u0027','UTC')',"
-        + "'outputType':'LONG'}],"
-        + "'columns':['vc'],"
-        + "'resultFormat':'compactedList'}";
+    final String druidQuery = "timestamp_format(\\\"__time\\\","
+        + "'yyyy-MM-dd\\\\u0027T\\\\u0027HH:mm:ss.SSS\\\\u0027Z\\\\u0027',"
+        + "'America/New_York'),'yyyy-MM-dd\\\\u0027T\\\\u0027HH:mm:ss.SSS\\\\u0027Z\\\\u0027','UTC')\"";
 
     CalciteAssert.that()
-         .enable(enabled())
-         .withModel(FOODMART)
-         .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "America/New_York")
-         .query(sql)
-         .runs()
-         .queryContains(druidChecker(druidQuery));
+        .enable(enabled())
+        .withModel(FOODMART)
+        .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "America/New_York")
+        .query(sql)
+        .runs()
+        .queryContains(druidOriginalChecker(druidQuery));
   }
 
   @Test public void testDistinctLimit() {
