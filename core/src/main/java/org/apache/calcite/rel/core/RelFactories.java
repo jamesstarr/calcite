@@ -595,7 +595,7 @@ public class RelFactories {
   public interface SpoolFactory {
     /** Creates a {@link TableSpool}. */
     RelNode createTableSpool(RelNode input, Spool.Type readType,
-        Spool.Type writeType, String tableName);
+        Spool.Type writeType, RelOptTable table);
   }
 
   /**
@@ -604,8 +604,8 @@ public class RelFactories {
    */
   private static class SpoolFactoryImpl implements SpoolFactory {
     public RelNode createTableSpool(RelNode input, Spool.Type readType,
-        Spool.Type writeType, String tableName) {
-      return LogicalTableSpool.create(input, readType, writeType, tableName);
+        Spool.Type writeType, RelOptTable table) {
+      return LogicalTableSpool.create(input, readType, writeType, table);
     }
   }
 
@@ -617,7 +617,7 @@ public class RelFactories {
   public interface RepeatUnionFactory {
     /** Creates a {@link RepeatUnion}. */
     RelNode createRepeatUnion(RelNode seed, RelNode iterative, boolean all,
-        int maxRep);
+        int iterationLimit);
   }
 
   /**
@@ -626,8 +626,8 @@ public class RelFactories {
    */
   private static class RepeatUnionFactoryImpl implements RepeatUnionFactory {
     public RelNode createRepeatUnion(RelNode seed, RelNode iterative,
-        boolean all, int maxRep) {
-      return LogicalRepeatUnion.create(seed, iterative, all, maxRep);
+        boolean all, int iterationLimit) {
+      return LogicalRepeatUnion.create(seed, iterative, all, iterationLimit);
     }
   }
 
