@@ -122,9 +122,12 @@ public class SqlDialect {
 
   //~ Instance fields --------------------------------------------------------
 
-  private final String identifierQuoteString;
-  private final String identifierEndQuoteString;
-  private final String identifierEscapedQuote;
+  protected final String identifierQuoteString;
+  protected final String identifierEndQuoteString;
+  protected final String identifierEscapedQuote;
+  protected final String literalQuoteString;
+  protected final String literalEndQuoteString;
+  protected final String literalEscapedQuote;
   private final DatabaseProduct databaseProduct;
   protected final NullCollation nullCollation;
   private final RelDataTypeSystem dataTypeSystem;
@@ -191,6 +194,12 @@ public class SqlDialect {
     this.dataTypeSystem = Objects.requireNonNull(context.dataTypeSystem());
     this.databaseProduct =
         Objects.requireNonNull(context.databaseProduct());
+    this.literalQuoteString =
+        Objects.requireNonNull(context.literalQuoteString());
+    this.literalEndQuoteString =
+        Objects.requireNonNull(context.literalQuoteString());
+    this.literalEscapedQuote =
+        Objects.requireNonNull(context.literalEscapedQuoteString());
     String identifierQuoteString = context.identifierQuoteString();
     if (identifierQuoteString != null) {
       identifierQuoteString = identifierQuoteString.trim();
@@ -215,7 +224,8 @@ public class SqlDialect {
 
   /** Creates an empty context. Use {@link #EMPTY_CONTEXT} if possible. */
   protected static Context emptyContext() {
-    return new ContextImpl(DatabaseProduct.UNKNOWN, null, null, -1, -1, null,
+    return new ContextImpl(DatabaseProduct.UNKNOWN, null, null, -1, -1,
+        "'", "''", null,
         Casing.UNCHANGED, Casing.TO_UPPER, true, SqlConformanceEnum.DEFAULT,
         NullCollation.HIGH, RelDataTypeSystemImpl.DEFAULT,
         JethroDataSqlDialect.JethroInfo.EMPTY);
@@ -336,17 +346,18 @@ public class SqlDialect {
   public StringBuilder quoteIdentifier(
       StringBuilder buf,
       String val) {
-    if (identifierQuoteString == null) {
-      buf.append(val); // quoting is not supported
-      return buf;
+    if (identifierQuoteString == null // quoting is not supported
+        || !identifierNeedsQuote(val)) {
+      buf.append(val);
+    } else {
+      String val2 =
+          val.replaceAll(
+              identifierEndQuoteString,
+              identifierEscapedQuote);
+      buf.append(identifierQuoteString);
+      buf.append(val2);
+      buf.append(identifierEndQuoteString);
     }
-    String val2 =
-        val.replaceAll(
-            identifierEndQuoteString,
-            identifierEscapedQuote);
-    buf.append(identifierQuoteString);
-    buf.append(val2);
-    buf.append(identifierEndQuoteString);
     return buf;
   }
 
@@ -370,6 +381,12 @@ public class SqlDialect {
     return buf;
   }
 
+  /** Returns whether to quote an identifier.
+   * By default, all identifiers are quoted. */
+  protected boolean identifierNeedsQuote(String val) {
+    return true;
+  }
+
   /**
    * Returns whether a given identifier needs to be quoted.
    */
@@ -378,17 +395,34 @@ public class SqlDialect {
   }
 
   /**
-   * Converts a string into a string literal. For example, <code>can't
-   * run</code> becomes <code>'can''t run'</code>.
+   * Converts a string into a string literal.
+   *
+   * <p>For example, {@code "can't run"} becomes {@code "'can''t run'"}.
    */
-  public String quoteStringLiteral(String val) {
-    if (containsNonAscii(val)) {
-      final StringBuilder buf = new StringBuilder();
+  public final String quoteStringLiteral(String val) {
+    final StringBuilder buf = new StringBuilder();
+    quoteStringLiteral(buf, null, val);
+    return buf.toString();
+  }
+
+  /** Appends a string literal to a buffer.
+   *
+   * @param buf Buffer
+   * @param charsetName Character set name, e.g. "utf16", or null
+   * @param val String value
+   */
+  public void quoteStringLiteral(StringBuilder buf, String charsetName,
+      String val) {
+    if (containsNonAscii(val) && charsetName == null) {
       quoteStringLiteralUnicode(buf, val);
-      return buf.toString();
     } else {
-      val = FakeUtil.replace(val, "'", "''");
-      return "'" + val + "'";
+      if (charsetName != null) {
+        buf.append("_");
+        buf.append(charsetName);
+      }
+      buf.append(literalQuoteString);
+      buf.append(val.replace(literalEndQuoteString, literalEscapedQuote));
+      buf.append(literalEndQuoteString);
     }
   }
 
@@ -505,15 +539,18 @@ public class SqlDialect {
 
   /**
    * Returns whether the string contains any characters outside the
-   * comfortable 7-bit ASCII range (32 through 127).
+   * comfortable 7-bit ASCII range (32 through 127, plus linefeed (10) and
+   * carriage return (13)).
+   *
+   * <p>Such characters can be used unquoted in SQL character literals.
    *
    * @param s String
    * @return Whether string contains any non-7-bit-ASCII characters
    */
-  private static boolean containsNonAscii(String s) {
+  protected static boolean containsNonAscii(String s) {
     for (int i = 0; i < s.length(); i++) {
       char c = s.charAt(i);
-      if (c < 32 || c >= 128) {
+      if (c < 32 && c != 10 && c != 13 || c >= 128) {
         return true;
       }
     }
@@ -554,16 +591,13 @@ public class SqlDialect {
    * run'</code> becomes <code>can't run</code>.
    */
   public String unquoteStringLiteral(String val) {
-    if ((val != null)
-        && (val.charAt(0) == '\'')
-        && (val.charAt(val.length() - 1) == '\'')) {
-      if (val.length() > 2) {
-        val = FakeUtil.replace(val, "''", "'");
-        return val.substring(1, val.length() - 1);
-      } else {
-        // zero length string
-        return "";
-      }
+    if (val != null
+        && val.startsWith(literalQuoteString)
+        && val.endsWith(literalEndQuoteString)) {
+      final String stripped =
+          val.substring(literalQuoteString.length(),
+              val.length() - literalEndQuoteString.length());
+      return stripped.replace(literalEscapedQuote, literalEndQuoteString);
     }
     return val;
   }
@@ -1091,6 +1125,7 @@ public class SqlDialect {
    * copied them because we wish to keep SqlDialect's dependencies to a
    * minimum.
    */
+  @Deprecated // to be removed before 2.0
   public static class FakeUtil {
     public static Error newInternal(Throwable e, String s) {
       String message = "Internal error: \u0000" + s;
@@ -1251,6 +1286,11 @@ public class SqlDialect {
     Context withDatabaseMajorVersion(int databaseMajorVersion);
     int databaseMinorVersion();
     Context withDatabaseMinorVersion(int databaseMinorVersion);
+    @Nonnull String literalQuoteString();
+    @Nonnull Context withLiteralQuoteString(String literalQuoteString);
+    @Nonnull String literalEscapedQuoteString();
+    @Nonnull Context withLiteralEscapedQuoteString(
+        String literalEscapedQuoteString);
     String identifierQuoteString();
     @Nonnull Context withIdentifierQuoteString(String identifierQuoteString);
     @Nonnull Casing unquotedCasing();
@@ -1276,6 +1316,8 @@ public class SqlDialect {
     private final String databaseVersion;
     private final int databaseMajorVersion;
     private final int databaseMinorVersion;
+    private final String literalQuoteString;
+    private final String literalEscapedQuoteString;
     private final String identifierQuoteString;
     private final Casing unquotedCasing;
     private final Casing quotedCasing;
@@ -1288,6 +1330,7 @@ public class SqlDialect {
     private ContextImpl(DatabaseProduct databaseProduct,
         String databaseProductName, String databaseVersion,
         int databaseMajorVersion, int databaseMinorVersion,
+        String literalQuoteString, String literalEscapedQuoteString,
         String identifierQuoteString, Casing quotedCasing,
         Casing unquotedCasing, boolean caseSensitive,
         SqlConformance conformance, NullCollation nullCollation,
@@ -1298,6 +1341,8 @@ public class SqlDialect {
       this.databaseVersion = databaseVersion;
       this.databaseMajorVersion = databaseMajorVersion;
       this.databaseMinorVersion = databaseMinorVersion;
+      this.literalQuoteString = literalQuoteString;
+      this.literalEscapedQuoteString = literalEscapedQuoteString;
       this.identifierQuoteString = identifierQuoteString;
       this.quotedCasing = Objects.requireNonNull(quotedCasing);
       this.unquotedCasing = Objects.requireNonNull(unquotedCasing);
@@ -1317,10 +1362,9 @@ public class SqlDialect {
         @Nonnull DatabaseProduct databaseProduct) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
-          identifierQuoteString, quotedCasing, unquotedCasing,
-          caseSensitive,
-          conformance, nullCollation,
-          dataTypeSystem, jethroInfo);
+          literalQuoteString, literalEscapedQuoteString,
+          identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
+          conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
 
     public String databaseProductName() {
@@ -1330,6 +1374,7 @@ public class SqlDialect {
     public Context withDatabaseProductName(String databaseProductName) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1341,6 +1386,7 @@ public class SqlDialect {
     public Context withDatabaseVersion(String databaseVersion) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1352,6 +1398,7 @@ public class SqlDialect {
     public Context withDatabaseMajorVersion(int databaseMajorVersion) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1363,6 +1410,32 @@ public class SqlDialect {
     public Context withDatabaseMinorVersion(int databaseMinorVersion) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
+          identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
+          conformance, nullCollation, dataTypeSystem, jethroInfo);
+    }
+
+    public String literalQuoteString() {
+      return literalQuoteString;
+    }
+
+    public Context withLiteralQuoteString(String literalQuoteString) {
+      return new ContextImpl(databaseProduct, databaseProductName,
+          databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
+          identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
+          conformance, nullCollation, dataTypeSystem, jethroInfo);
+    }
+
+    public String literalEscapedQuoteString() {
+      return literalEscapedQuoteString;
+    }
+
+    public Context withLiteralEscapedQuoteString(
+        String literalEscapedQuoteString) {
+      return new ContextImpl(databaseProduct, databaseProductName,
+          databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1375,6 +1448,7 @@ public class SqlDialect {
         String identifierQuoteString) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1386,6 +1460,7 @@ public class SqlDialect {
     @Nonnull public Context withUnquotedCasing(Casing unquotedCasing) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1397,6 +1472,7 @@ public class SqlDialect {
     @Nonnull public Context withQuotedCasing(Casing quotedCasing) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1408,6 +1484,7 @@ public class SqlDialect {
     @Nonnull public Context withCaseSensitive(boolean caseSensitive) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1419,6 +1496,7 @@ public class SqlDialect {
     @Nonnull public Context withConformance(SqlConformance conformance) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1431,6 +1509,7 @@ public class SqlDialect {
         @Nonnull NullCollation nullCollation) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1442,6 +1521,7 @@ public class SqlDialect {
     public Context withDataTypeSystem(@Nonnull RelDataTypeSystem dataTypeSystem) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
@@ -1453,6 +1533,7 @@ public class SqlDialect {
     public Context withJethroInfo(JethroDataSqlDialect.JethroInfo jethroInfo) {
       return new ContextImpl(databaseProduct, databaseProductName,
           databaseVersion, databaseMajorVersion, databaseMinorVersion,
+          literalQuoteString, literalEscapedQuoteString,
           identifierQuoteString, quotedCasing, unquotedCasing, caseSensitive,
           conformance, nullCollation, dataTypeSystem, jethroInfo);
     }
