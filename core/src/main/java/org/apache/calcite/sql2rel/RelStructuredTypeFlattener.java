@@ -221,9 +221,6 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
       // REVIEW jvs 23-Mar-2005:  How do we make sure that this
       // implementation stays in Java?  Fennel can't handle
       // structured types.
-<<<<<<< HEAD
-      return restructured;
-=======
       return relBuilder.push(flattened)
           .projectNamed(structuringExps, root.getRowType().getFieldNames(),
               true)
@@ -983,7 +980,6 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
           }
         }
 =======
->>>>>>> 12a8385b9 ([CALCITE-2290] Fix type issue while flattening)
       }
       if (!rexCall.isA(SqlKind.COMPARISON)) {
         return super.visitCall(rexCall);

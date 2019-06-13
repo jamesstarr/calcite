@@ -1576,7 +1576,8 @@ public abstract class RelOptUtil {
         joinKeys,
         correlatedJoinKeys,
         nonEquiList,
-        extractCorrelatedFieldAccess);
+        extractCorrelatedFieldAccess
+    );
   }
 
   private static void splitCorrelatedFilterCondition(

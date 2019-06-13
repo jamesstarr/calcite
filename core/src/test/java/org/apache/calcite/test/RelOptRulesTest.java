@@ -54,9 +54,7 @@ import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.core.SetOp;
 import org.apache.calcite.rel.core.Union;
-import org.apache.calcite.rel.logical.LogicalAggregate;
 import org.apache.calcite.rel.logical.LogicalCorrelate;
-import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.logical.LogicalTableModify;
 import org.apache.calcite.rel.logical.LogicalTableScan;
@@ -4559,34 +4557,56 @@ class RelOptRulesTest extends RelOptTestBase {
         .checkUnchanged();
   }
 
-  @Test public void testNestedCorrelatedQueriesUsingOuterContext() {
-    final String sql = ""
-        + "SELECT deptno\n"
-        + "FROM emp e\n"
-        + "WHERE EXISTS (\n"
-        + "  SELECT *\n"
-        + "  FROM dept d\n"
-        + "  WHERE d.deptno = e.deptno\n"
-        + "    AND exists(\n"
-        + "      SELECT *\n"
-        + "      FROM emp_address ea\n"
-        + "      WHERE ea.empno = e.empno)\n"
-        + "    AND exists(\n"
-        + "      SELECT *\n"
-        + "      FROM bonus b\n"
-        + "      WHERE b.ename = e.ename\n))";
-    sql(sql)
-        .expand(false)
-        .with(HepProgram.builder()
-            .addRuleInstance(CoreRules.FILTER_SUB_QUERY_TO_CORRELATE)
-            .addRuleInstance(CoreRules.PROJECT_MERGE)
-            .addRuleInstance(CoreRules.FILTER_MERGE)
-            .addRuleInstance(CoreRules.FILTER_PROJECT_TRANSPOSE)
-            .addRuleInstance(CoreRules.AGGREGATE_FILTER_TRANSPOSE)
-            .addRuleInstance(CoreRules.AGGREGATE_PROJECT_MERGE)
-            .build())
-        .withLateDecorrelation(true)
-        .check();
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3111">[CALCITE-3111]
+   * Allow custom implementations of Correlate in RelDecorrelator </a>
+   */
+  @Test public void testCustomDecorrelate() {
+    final String sql = "SELECT e1.empno\n"
+        + "FROM emp e1, dept d1 where e1.deptno = d1.deptno\n"
+        + "and e1.deptno < 10 and d1.deptno < 15\n"
+        + "and e1.sal > (select avg(sal) from emp e2 where e1.empno = e2.empno)";
+
+    // Convert sql to rel
+    RelRoot root = tester.convertSqlToRel(sql);
+
+    // Create a duplicate rel tree with a custom correlate instead of logical correlate
+    LogicalCorrelate logicalCorrelate = (LogicalCorrelate) root.rel.getInput(0).getInput(0);
+    CustomCorrelate customCorrelate = new CustomCorrelate(
+        logicalCorrelate.getCluster(),
+        logicalCorrelate.getTraitSet(),
+        logicalCorrelate.getLeft(),
+        logicalCorrelate.getRight(),
+        logicalCorrelate.getCorrelationId(),
+        logicalCorrelate.getRequiredColumns(),
+        logicalCorrelate.getJoinType());
+    RelNode newRoot = root.rel.copy(
+        root.rel.getTraitSet(),
+        ImmutableList.of(
+            root.rel.getInput(0).copy(
+                root.rel.getInput(0).getTraitSet(),
+                ImmutableList.<RelNode>of(customCorrelate)))
+        );
+
+    // Decorrelate both trees using the same relBuilder
+    RelNode logicalDecorrelated = RelDecorrelator.decorrelateQuery(root.rel, false);
+    RelNode customDecorrelated = RelDecorrelator.decorrelateQuery(newRoot, false);
+    String logicalDecorrelatedPlan = NL + RelOptUtil.toString(logicalDecorrelated);
+    String customDecorrelatedPlan = NL + RelOptUtil.toString(customDecorrelated);
+
+    // Ensure that the plans are equal
+    getDiffRepos().assertEquals("Comparing Plans from LogicalCorrelate and CustomCorrelate",
+        logicalDecorrelatedPlan, customDecorrelatedPlan);
+  }
+
+  @Test public void testProjectWindowTransposeRule() {
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(ProjectToWindowRule.PROJECT)
+        .addRuleInstance(ProjectWindowTransposeRule.INSTANCE)
+        .build();
+
+    final String sql = "select count(empno) over(), deptno from emp";
+    checkPlanning(program, sql);
   }
 
 

@@ -39,7 +39,10 @@ import org.apache.calcite.rel.RelRoot;
 import org.apache.calcite.rel.RelShuttle;
 import org.apache.calcite.rel.core.Correlate;
 import org.apache.calcite.rel.core.CorrelationId;
+<<<<<<< HEAD
 import org.apache.calcite.rel.core.JoinRelType;
+=======
+>>>>>>> 8ac7ac60a ([CALCITE-3111] Allow custom implementations of Correlate in RelDecorrelator)
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalTableScan;
 import org.apache.calcite.rel.type.RelDataType;
@@ -50,6 +53,7 @@ import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexExecutor;
 import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.schema.ColumnStrategy;
+import org.apache.calcite.sql.SemiJoinType;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
@@ -997,6 +1001,33 @@ public abstract class SqlToRelTestBase {
     @Override public Correlate copy(RelTraitSet traitSet,
         RelNode left, RelNode right, CorrelationId correlationId,
         ImmutableBitSet requiredColumns, JoinRelType joinType) {
+      return new CustomCorrelate(getCluster(), traitSet, left, right,
+          correlationId, requiredColumns, joinType);
+    }
+
+    @Override public RelNode accept(RelShuttle shuttle) {
+      return shuttle.visit(this);
+    }
+  }
+
+  /**
+   * Custom implementation of Correlate for testing.
+   */
+  public static class CustomCorrelate extends Correlate {
+    public CustomCorrelate(
+        RelOptCluster cluster,
+        RelTraitSet traits,
+        RelNode left,
+        RelNode right,
+        CorrelationId correlationId,
+        ImmutableBitSet requiredColumns,
+        SemiJoinType joinType) {
+      super(cluster, traits, left, right, correlationId, requiredColumns, joinType);
+    }
+
+    @Override public Correlate copy(RelTraitSet traitSet,
+        RelNode left, RelNode right, CorrelationId correlationId,
+        ImmutableBitSet requiredColumns, SemiJoinType joinType) {
       return new CustomCorrelate(getCluster(), traitSet, left, right,
           correlationId, requiredColumns, joinType);
     }

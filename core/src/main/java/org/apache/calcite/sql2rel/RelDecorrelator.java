@@ -93,7 +93,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
    * positions. This is from the view point of the parent rel of a new rel. */
   private final Map<RelNode, Frame> map = new HashMap<>();
 
-  private final HashSet<Correlate> generatedCorRels = new HashSet<>();
+  private final HashSet<Correlate> generatedCorRels = Sets.newHashSet();
 
   // Force value generator to be created similar to Calcite 1.12
   private boolean forceValueGenerator;
@@ -220,11 +220,25 @@ import org.apache.calcite.tools.RelBuilderFactory;
   }
 
   private Function2<RelNode, RelNode, Void> createCopyHook() {
-    return (oldNode, newNode) -> {
+    return new Function2<RelNode, RelNode, Void>() {
+      public Void apply(RelNode oldNode, RelNode newNode) {
+        if (cm.mapRefRelToCorRef.containsKey(oldNode)) {
+          cm.mapRefRelToCorRef.putAll(newNode,
+              cm.mapRefRelToCorRef.get(oldNode));
+        }
+        if (oldNode instanceof Correlate
+            && newNode instanceof Correlate) {
+          Correlate oldCor = (Correlate) oldNode;
+          CorrelationId c = oldCor.getCorrelationId();
+          if (cm.mapCorToCorRel.get(c) == oldNode) {
+            cm.mapCorToCorRel.put(c, newNode);
+          }
 
-      if (cm.mapRefRelToCorRef.containsKey(oldNode)) {
-        cm.mapRefRelToCorRef.putAll(newNode,
-            cm.mapRefRelToCorRef.get(oldNode));
+          if (generatedCorRels.contains(oldNode)) {
+            generatedCorRels.add((Correlate) newNode);
+          }
+        }
+        return null;
       }
       if (oldNode instanceof Correlate
           && newNode instanceof Correlate) {
@@ -336,51 +350,10 @@ import org.apache.calcite.tools.RelBuilderFactory;
 
   /**
    * Rewrite {@link LogicalSort}.
-   *
-   * @param rel Sort to be rewritten
-   */
-  public Frame decorrelateRel(LogicalSort rel, boolean isCorVarDefined) {
-    return decorrelateRel((Sort) rel, isCorVarDefined);
-  }
-
-  public Frame decorrelateRel(Sort rel, boolean isCorVarDefined) {
-    //
-    // Rewrite logic:
-    //
-    // 1. change the collations field to reference the new input.
-    //
-
-    // Sort itself should not reference corVars.
-    assert !cm.mapRefRelToCorRef.containsKey(rel);
-
-    // Sort only references field positions in collations field.
-    // The collations field in the newRel now need to refer to the
-    // new output positions in its input.
-    // Its output does not change the input ordering, so there's no
-    // need to call propagateExpr.
-
-    final RelNode oldInput = rel.getInput();
-    final Frame frame = getInvoke(oldInput, isCorVarDefined, rel);
-    if (frame == null) {
-      // If input has not been rewritten, do not rewrite this rel.
-      return null;
-    }
-    final RelNode newInput = frame.r;
-
-    Mappings.TargetMapping mapping =
-        Mappings.target(frame.oldToNewOutputs,
-            oldInput.getRowType().getFieldCount(),
-            newInput.getRowType().getFieldCount());
-
-    RelCollation oldCollation = rel.getCollation();
-    RelCollation newCollation = RexUtil.apply(mapping, oldCollation);
-
-    final int offset = rel.offset == null ? -1 : RexLiteral.intValue(rel.offset);
-    final int fetch = rel.fetch == null ? -1 : RexLiteral.intValue(rel.fetch);
-
-    final RelNode newSort = relBuilder
+    final Sort newSort =
+        (Sort) relBuilder
             .push(newInput)
-            .sortLimit(offset, fetch, relBuilder.fields(newCollation))
+            .sortLimit(newCollation, rel.offset, rel.fetch)
             .build();
 
     // Sort does not change input ordering
@@ -392,11 +365,24 @@ import org.apache.calcite.tools.RelBuilderFactory;
     return null;
   }
 
-  public Frame decorrelateRel(LogicalAggregate rel, boolean isCorVarDefined) {
-    return decorrelateRel((Aggregate) rel, isCorVarDefined);
+  /**
+   * Rewrites a {@link LogicalAggregate}.
+   *
+   * @param rel Aggregate to rewrite
+   */
+  public Frame decorrelateRel(LogicalAggregate rel) {
+    return decorrelateRel((Aggregate) rel);
   }
 
-  public  Frame decorrelateRel(Aggregate rel, boolean isCorVarDefined) {
+  /**
+   * Rewrites a {@link Aggregate}.
+   *
+   * @param rel Aggregate to rewrite
+   */
+  public Frame decorrelateRel(Aggregate rel) {
+    if (rel.getGroupType() != Aggregate.Group.SIMPLE) {
+      throw new AssertionError(Bug.CALCITE_461_FIXED);
+    }
     //
     // Rewrite logic:
     //
@@ -557,11 +543,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
           newInputOutputFieldCount + i);
     }
 
-    relBuilder.push(newProject)
-        .aggregate(newGroupSets == null
-                ? relBuilder.groupKey(newGroupSet)
-                : relBuilder.groupKey(newGroupSet, newGroupSets),
-            newAggCalls);
+    relBuilder.push(newProject).aggregate(relBuilder.groupKey(newGroupSet, null), newAggCalls);
 
     if (!omittedConstants.isEmpty()) {
       final List<RexNode> postProjects = new ArrayList<>(relBuilder.fields());
@@ -635,11 +617,21 @@ import org.apache.calcite.tools.RelBuilderFactory;
     return null;
   }
 
-  public Frame decorrelateRel(LogicalProject rel, boolean isCorVarDefined) {
-    return decorrelateRel((Project) rel, isCorVarDefined);
+  /**
+   * Rewrite {@link LogicalProject}.
+   *
+   * @param rel the project rel to rewrite
+   */
+  public Frame decorrelateRel(LogicalProject rel) {
+    return decorrelateRel((Project) rel);
   }
 
-  public Frame decorrelateRel(Project rel, boolean isCorVarDefined) {
+  /**
+   * Rewrite {@link Project}.
+   *
+   * @param rel the project rel to rewrite
+   */
+  public Frame decorrelateRel(Project rel) {
     //
     // Rewrite logic:
     //
@@ -690,10 +682,6 @@ import org.apache.calcite.tools.RelBuilderFactory;
     RelNode newProject = relBuilder.push(frame.r)
         .projectNamed(Pair.left(projects), Pair.right(projects), true)
         .build();
-<<<<<<< HEAD
-
-    newProject = RelOptUtil.copyRelHints(rel, newProject);
-=======
 
     return register(rel, newProject, mapOldToNewOutputs, corDefOutputs);
   }
@@ -922,9 +910,9 @@ import org.apache.calcite.tools.RelBuilderFactory;
     RelNode valueGen =
         createValueGenerator(corVarList, leftInputOutputCount, corDefOutputs);
 
-    RelNode join =
-        LogicalJoin.create(frame.r, valueGen, relBuilder.literal(true),
-            ImmutableSet.<CorrelationId>of(), JoinRelType.INNER);
+    RelNode join = relBuilder.push(frame.r).push(valueGen)
+        .join(JoinRelType.INNER, relBuilder.literal(true),
+        ImmutableSet.<CorrelationId>of()).build();
 
     // Join or Filter does not change the old input ordering. All
     // input fields from newLeftInput (i.e. the original input to the old
@@ -990,29 +978,23 @@ import org.apache.calcite.tools.RelBuilderFactory;
   }
 
   /**
+<<<<<<< HEAD
    * Rewrite LogicalSnapshot.
+=======
+   * Rewrite {@link LogicalFilter}.
    *
    * @param rel the snapshot rel to rewrite
    */
-  public Frame decorrelateRel(LogicalSnapshot rel, boolean isCorVarDefined) {
-    if (RexUtil.containsCorrelation(rel.getPeriod())) {
-      return null;
-    }
-    return decorrelateRel((RelNode) rel, isCorVarDefined);
+  public Frame decorrelateRel(LogicalFilter rel) {
+    return decorrelateRel((Filter) rel);
   }
 
-  public Frame decorrelateRel(LogicalTableFunctionScan rel, boolean isCorVarDefined) {
-    if (RexUtil.containsCorrelation(rel.getCall())) {
-      return null;
-    }
-    return decorrelateRel((RelNode) rel, isCorVarDefined);
-  }
-
-  public Frame decorrelateRel(LogicalFilter rel, boolean isCorVarDefined) {
-    return decorrelateRel((Filter) rel, isCorVarDefined);
-  }
-
-  public Frame decorrelateRel(Filter rel, boolean isCorVarDefined) {
+  /**
+   * Rewrite {@link Filter}.
+   *
+   * @param rel the filter rel to rewrite
+   */
+  public Frame decorrelateRel(Filter rel) {
     //
     // Rewrite logic:
     //
@@ -1061,11 +1043,21 @@ import org.apache.calcite.tools.RelBuilderFactory;
         frame.corDefOutputs);
   }
 
-  public Frame decorrelateRel(LogicalCorrelate rel, boolean isCorVarDefined) {
-    return decorrelateRel((Correlate) rel, isCorVarDefined);
+  /**
+   * Rewrite {@link LogicalCorrelate} into a left outer join.
+   *
+   * @param rel LogicalCorrelator
+   */
+  public Frame decorrelateRel(LogicalCorrelate rel) {
+    return decorrelateRel((Correlate) rel);
   }
 
-  public Frame decorrelateRel(Correlate rel, boolean isCorVarDefined) {
+  /**
+   * Rewrite {@link Correlate} into a left outer join.
+   *
+   * @param rel Correlator
+   */
+  public Frame decorrelateRel(Correlate rel) {
     //
     // Rewrite logic:
     //
@@ -1159,25 +1151,27 @@ import org.apache.calcite.tools.RelBuilderFactory;
     final RexNode condition =
         RexUtil.composeConjunction(relBuilder.getRexBuilder(), conditions,
             false);
-    RelNode newJoin =
-        LogicalJoin.create(leftFrame.r, rightFrame.r, condition,
-            ImmutableSet.<CorrelationId>of(), rel.getJoinType().toJoinType());
+    RelNode newJoin = relBuilder.push(leftFrame.r).push(rightFrame.r)
+        .join(rel.getJoinType().toJoinType(), condition, ImmutableSet.<CorrelationId>of()).build();
 
     return register(rel, newJoin, mapOldToNewOutputs, corDefOutputs);
   }
 
-  public Frame decorrelateRel(LogicalJoin rel, boolean isCorVarDefined) {
-    return decorrelateRel((Join) rel, isCorVarDefined);
+  /**
+   * Rewrite {@link LogicalJoin}.
+   *
+   * @param rel Join
+   */
+  public Frame decorrelateRel(LogicalJoin rel) {
+    return decorrelateRel((Join) rel);
   }
 
-  public Frame decorrelateRel(Join rel, boolean isCorVarDefined) {
-    // For SEMI/ANTI join decorrelate it's input directly,
-    // because the correlate variables can only be propagated from
-    // the left side, which is not supported yet.
-    if (!rel.getJoinType().projectsRight()) {
-      decorrelateRel((RelNode) rel, isCorVarDefined);
-    }
-
+  /**
+   * Rewrite {@link Join}.
+   *
+   * @param rel Join
+   */
+  public Frame decorrelateRel(Join rel) {
     //
     // Rewrite logic:
     //
@@ -1196,16 +1190,12 @@ import org.apache.calcite.tools.RelBuilderFactory;
       return null;
     }
 
-    RelNode newJoin = relBuilder
+    final RelNode newJoin = relBuilder
         .push(leftFrame.r)
         .push(rightFrame.r)
-        .join(rel.getJoinType(),
-            decorrelateExpr(currentRel, map, cm, rel.getCondition()),
-            ImmutableSet.of())
-        .hints(rel.getHints())
+        .join(rel.getJoinType(), decorrelateExpr(currentRel, map, cm, rel.getCondition()),
+            ImmutableSet.<CorrelationId>of())
         .build();
-
-    newJoin = RelOptUtil.copyRelHints(rel, newJoin);
 
     // Create the mapping between the output of the old correlation rel
     // and the new join rel
@@ -1897,8 +1887,8 @@ import org.apache.calcite.tools.RelBuilderFactory;
           operand(
               Aggregate.class,
               operand(
-                  LogicalProject.class,
-                  operand(LogicalAggregate.class, any()))),
+                  Project.class,
+                  operand(Aggregate.class, any()))),
           relBuilderFactory, null);
     }
 
@@ -1948,8 +1938,8 @@ import org.apache.calcite.tools.RelBuilderFactory;
       super(
           operand(Correlate.class,
               operand(RelNode.class, any()),
-              operand(LogicalAggregate.class,
-                  operand(LogicalProject.class,
+              operand(Aggregate.class,
+                  operand(Project.class,
                       operand(RelNode.class, any())))),
           relBuilderFactory, null);
     }
@@ -2146,9 +2136,9 @@ import org.apache.calcite.tools.RelBuilderFactory;
       super(
           operand(Correlate.class,
               operand(RelNode.class, any()),
-              operand(LogicalProject.class,
-                  operand(LogicalAggregate.class, null, Aggregate.IS_SIMPLE,
-                      operand(LogicalProject.class,
+              operand(Project.class,
+                  operand(Aggregate.class, null, Aggregate.IS_SIMPLE,
+                      operand(Project.class,
                           operand(RelNode.class, any()))))),
           relBuilderFactory, null);
     }
@@ -2479,9 +2469,8 @@ import org.apache.calcite.tools.RelBuilderFactory;
 
       ImmutableBitSet groupSet =
           ImmutableBitSet.range(groupCount);
-      builder.push(joinOutputProject)
-          .aggregate(builder.groupKey(groupSet), newAggCalls);
-      List<RexNode> newAggOutputProjectList = new ArrayList<>();
+      builder.push(joinOutputProject).aggregate(builder.groupKey(groupSet, null), newAggCalls);
+      List<RexNode> newAggOutputProjectList = Lists.newArrayList();
       for (int i : groupSet) {
         newAggOutputProjectList.add(
             rexBuilder.makeInputRef(builder.peek(), i));
@@ -2496,8 +2485,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
                   true),
               newAggOutputProjects));
 
-      builder.push(newAggregate)
-          .project(newAggOutputProjectList);
+      builder.project(newAggOutputProjectList);
       call.transformTo(builder.build());
 
       removeCorVarFromTree(correlate);
@@ -2522,11 +2510,11 @@ import org.apache.calcite.tools.RelBuilderFactory;
           flavor
               ? operand(Correlate.class,
                   operand(RelNode.class, any()),
-                  operand(Project.class,
-                      operand(Aggregate.class, any())))
+                      operand(Project.class,
+                          operand(Aggregate.class, any())))
               : operand(Correlate.class,
                   operand(RelNode.class, any()),
-                      operand(LogicalAggregate.class, any())),
+                      operand(Aggregate.class, any())),
           relBuilderFactory, null);
       this.flavor = flavor;
     }
@@ -2552,7 +2540,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
         final RelBuilder relBuilder = call.builder();
         relBuilder.push(aggregate)
             .projectNamed(Pair.left(projects), Pair.right(projects), true);
-        aggOutputProject = (LogicalProject) relBuilder.build();
+        aggOutputProject = (Project) relBuilder.build();
       }
       onMatch2(call, correlate, left, aggOutputProject, aggregate);
     }
@@ -2620,15 +2608,9 @@ import org.apache.calcite.tools.RelBuilderFactory;
       //     leftInput
       //     Aggregate(groupby (0), agg0(), agg1()...)
       //
-
-      List<RexNode> requiredNodes =
-          correlate.getRequiredColumns().asList().stream()
-              .map(ord -> relBuilder.getRexBuilder().makeInputRef(correlate, ord))
-              .collect(Collectors.toList());
       Correlate newCorrelate = (Correlate) relBuilder.push(leftInput)
           .push(aggregate).correlate(correlate.getJoinType(),
-              correlate.getCorrelationId(),
-              requiredNodes).build();
+              correlate.getCorrelationId(), correlate.getRequiredColumns()).build();
 
       // remember this rel so we don't fire rule on it again
       // REVIEW jhyde 29-Oct-2007: rules should not save state; rule
@@ -2815,7 +2797,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
   }
 
   /** Builds a {@link org.apache.calcite.sql2rel.RelDecorrelator.CorelMap}. */
-  public static class CorelMapBuilder extends RelHomogeneousShuttle {
+  private static class CorelMapBuilder extends RelHomogeneousShuttle {
     final SortedMap<CorrelationId, RelNode> mapCorToCorRel =
         new TreeMap<>();
 
