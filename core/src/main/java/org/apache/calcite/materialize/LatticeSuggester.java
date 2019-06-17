@@ -63,7 +63,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -200,20 +200,23 @@ public class LatticeSuggester {
             new Lattice.Measure(measure.aggregate, measure.distinct,
                 measure.name,
                 Lists.transform(measure.arguments, colRef -> {
+                  final Lattice.Column column;
                   if (colRef instanceof BaseColRef) {
                     final BaseColRef baseColRef = (BaseColRef) colRef;
                     final MutableNode node = nodes.get(baseColRef.t);
                     final int table = flatNodes.indexOf(node);
-                    return latticeBuilder.column(table, baseColRef.c);
+                    column = latticeBuilder.column(table, baseColRef.c);
                   } else if (colRef instanceof DerivedColRef) {
                     final DerivedColRef derivedColRef =
                         (DerivedColRef) colRef;
                     final String alias = deriveAlias(measure, derivedColRef);
-                    return latticeBuilder.expression(derivedColRef.e, alias,
+                    column = latticeBuilder.expression(derivedColRef.e, alias,
                         derivedColRef.tableAliases());
                   } else {
                     throw new AssertionError("expression in measure");
                   }
+                  latticeBuilder.use(column, true);
+                  return column;
                 })));
       }
 
@@ -224,6 +227,7 @@ public class LatticeSuggester {
           final Lattice.Column expression =
               latticeBuilder.expression(derivedColRef.e,
                   derivedColRef.alias, derivedColRef.tableAliases());
+          latticeBuilder.use(expression, false);
         }
       }
 
@@ -231,12 +235,85 @@ public class LatticeSuggester {
       final Lattice lattice1 = findMatch(lattice0, rootNode);
       lattices.add(lattice1);
     }
-        for (Lattice.Measure measure : bestMatch.defaultMeasures) {
-          builder.addMeasure(measure.copy(mapper(bestMatch, builder)));
+    return ImmutableList.copyOf(lattices);
+  }
+
+  /** Derives the alias of an expression that is the argument to a measure.
+   *
+   * <p>For example, if the measure is called "sum_profit" and the aggregate
+   * function is "sum", returns "profit".
+   */
+  private static String deriveAlias(MutableMeasure measure,
+      DerivedColRef derivedColRef) {
+    if (!derivedColRef.alias.contains("$")) {
+      // User specified an alias. Use that.
+      return derivedColRef.alias;
+    }
+    String alias = measure.name;
+    if (alias.contains("$")) {
+      // User did not specify an alias for the aggregate function, and it got a
+      // system-generated name like 'EXPR$2'. Don't try to derive anything from
+      // it.
+      return derivedColRef.alias;
+    }
+    final String aggUpper =
+        measure.aggregate.getName().toUpperCase(Locale.ROOT);
+    final String aliasUpper = alias.toUpperCase(Locale.ROOT);
+    if (aliasUpper.startsWith(aggUpper + "_")) {
+      // Convert "sum_profit" to "profit"
+      return alias.substring((aggUpper + "_").length());
+    } else if (aliasUpper.startsWith(aggUpper)) {
+      // Convert "sumprofit" to "profit"
+      return alias.substring(aggUpper.length());
+    } else if (aliasUpper.endsWith("_" + aggUpper)) {
+      // Convert "profit_sum" to "profit"
+      return alias.substring(0, alias.length() - ("_" + aggUpper).length());
+    } else if (aliasUpper.endsWith(aggUpper)) {
+      // Convert "profitsum" to "profit"
+      return alias.substring(0, alias.length() - aggUpper.length());
+    } else {
+      return alias;
+    }
+  }
+
+  /** Returns the best match for a lattice. If no match, registers the lattice
+   * and returns it. Never returns null. */
+  private Lattice findMatch(final Lattice lattice, MutableNode mutableNode) {
+    final Lattice lattice1 = latticeMap.get(lattice.toString());
+    if (lattice1 != null) {
+      // Exact match for an existing lattice
+      return lattice1;
+    }
+
+    if (evolve) {
+      // No exact match. Scan existing lattices for a sub-set.
+      int bestMatchQuality = 0;
+      Lattice bestMatch = null;
+      for (Lattice lattice2 : latticeMap.values()) {
+        int q = matchQuality(lattice2, lattice);
+        if (q > bestMatchQuality) {
+          bestMatch = lattice2;
+          bestMatchQuality = q;
+        } else if (q == bestMatchQuality
+            && bestMatch != null
+            && !lattice2.rootNode.paths.equals(bestMatch.rootNode.paths)
+            && lattice2.rootNode.paths.containsAll(bestMatch.rootNode.paths)) {
+          bestMatch = lattice2;
         }
-        for (Lattice.Measure measure : lattice.defaultMeasures) {
-          builder.addMeasure(measure.copy(mapper(lattice, builder)));
+      }
+
+      if (bestMatch != null) {
+        // Fix up the best batch
+        for (Path path
+            : minus(bestMatch.rootNode.paths, lattice.rootNode.paths)) {
+          // TODO: assign alias based on node in bestMatch
+          mutableNode.addPath(path, null);
         }
+        final CalciteSchema rootSchema = CalciteSchema.createRootSchema(false);
+        final Lattice.Builder builder =
+            new Lattice.Builder(space, rootSchema, mutableNode);
+        copyMeasures(builder, bestMatch);
+        copyMeasures(builder, lattice);
         final Lattice lattice2 = builder.build();
         latticeMap.remove(bestMatch.toString());
         obsoleteLatticeMap.put(bestMatch, lattice2);
@@ -250,19 +327,29 @@ public class LatticeSuggester {
     return lattice;
   }
 
-  private java.util.function.Function<Lattice.Column, Lattice.Column> mapper(
-      final Lattice lattice, final Lattice.Builder builder) {
-    return (Lattice.Column c) -> {
-      if (c instanceof Lattice.BaseColumn) {
-        Lattice.BaseColumn baseColumn = (Lattice.BaseColumn) c;
-        Pair<Path, Integer> p = lattice.columnToPathOffset(baseColumn);
-        return builder.pathOffsetToColumn(p.left, p.right);
-      } else {
-        final Lattice.DerivedColumn derivedColumn = (Lattice.DerivedColumn) c;
-        return builder.expression(derivedColumn.e, derivedColumn.alias,
-            derivedColumn.tables);
-      }
-    };
+  /** Copies measures and column usages from an existing lattice into a builder,
+   * using a mapper to translate old-to-new columns, so that the new lattice can
+   * inherit from the old. */
+  private void copyMeasures(Lattice.Builder builder, Lattice lattice) {
+    final Function<Lattice.Column, Lattice.Column> mapper =
+        (Lattice.Column c) -> {
+          if (c instanceof Lattice.BaseColumn) {
+            Lattice.BaseColumn baseColumn = (Lattice.BaseColumn) c;
+            Pair<Path, Integer> p = lattice.columnToPathOffset(baseColumn);
+            return builder.pathOffsetToColumn(p.left, p.right);
+          } else {
+            final Lattice.DerivedColumn derivedColumn = (Lattice.DerivedColumn) c;
+            return builder.expression(derivedColumn.e, derivedColumn.alias,
+                derivedColumn.tables);
+          }
+        };
+    for (Lattice.Measure measure : lattice.defaultMeasures) {
+      builder.addMeasure(measure.copy(mapper));
+    }
+    for (Map.Entry<Integer, Boolean> entry : lattice.columnUses.entries()) {
+      final Lattice.Column column = lattice.columns.get(entry.getKey());
+      builder.use(mapper.apply(column), entry.getValue());
+    }
   }
 
   private int matchQuality(Lattice lattice, Lattice target) {

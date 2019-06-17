@@ -44,9 +44,6 @@ import org.apache.calcite.sql.fun.SqlTrimFunction;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.test.JdbcTest;
-<<<<<<< HEAD
-import org.apache.calcite.test.MockSqlOperatorTable;
-=======
 import org.apache.calcite.test.RelBuilderTest;
 import org.apache.calcite.tools.FrameworkConfig;
 import org.apache.calcite.tools.Frameworks;
@@ -57,7 +54,6 @@ import org.apache.calcite.util.TestUtil;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
->>>>>>> 6102b7372 ([CALCITE-2858] Improvements in JSON writer and reader for plans)
 
 import org.junit.jupiter.api.Test;
 
