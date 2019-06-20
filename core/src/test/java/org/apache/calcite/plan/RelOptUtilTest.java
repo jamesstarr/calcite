@@ -24,6 +24,7 @@ import org.apache.calcite.rel.RelDistributionTraitDef;
 import org.apache.calcite.rel.RelDistributions;
 import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.convert.ConverterRule;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.core.Project;
@@ -168,7 +169,7 @@ class RelOptUtilTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3136">[CALCITE-3136]
    * Fix the default rule description of ConverterRule</a>. */
-  @Test void testConvertRuleDefaultRuleDescription() {
+  @Test public void testConvertRuleDefaultRuleDescription() {
     RelCollation collation1 =
             RelCollations.of(new RelFieldCollation(4, RelFieldCollation.Direction.DESCENDING));
     RelCollation collation2 =
