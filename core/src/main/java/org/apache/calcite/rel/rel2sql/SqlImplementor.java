@@ -25,7 +25,6 @@ import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.core.Window;
-import org.apache.calcite.rel.logical.LogicalAggregate;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeField;
@@ -1068,12 +1067,6 @@ public abstract class SqlImplementor {
 
   public Context matchRecognizeContext(Context context) {
     return new MatchRecognizeContext(dialect, ((AliasContext) context).aliases);
-<<<<<<< HEAD
-  }
-
-  public Context tableFunctionScanContext(List<SqlNode> inputSqlNodes) {
-    return new TableFunctionScanContext(dialect, inputSqlNodes);
-=======
 >>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
   }
 
@@ -1218,7 +1211,26 @@ public abstract class SqlImplementor {
      * @return A builder
      */
     public Builder builder(RelNode rel, Clause... clauses) {
+<<<<<<< HEAD
       final boolean needNew = needNewSubQuery(rel, clauses);
+=======
+      final Clause maxClause = maxClause();
+      boolean needNew = false;
+      // If old and new clause are equal and belong to below set,
+      // then new SELECT wrap is not required
+      Set<Clause> nonWrapSet = ImmutableSet.of(Clause.SELECT);
+      for (Clause clause : clauses) {
+        if (maxClause.ordinal() > clause.ordinal()
+            || (maxClause == clause && !nonWrapSet.contains(clause))) {
+          needNew = true;
+        }
+      }
+      if (rel instanceof Aggregate
+          && !dialect.supportsNestedAggregations()
+          && hasNestedAggregations((Aggregate) rel)) {
+        needNew = true;
+      }
+
       SqlSelect select;
       Expressions.FluentList<Clause> clauseList = Expressions.list();
       if (needNew) {
@@ -1289,45 +1301,8 @@ public abstract class SqlImplementor {
           needNew ? null : aliases);
     }
 
-    protected boolean hasNestedAggregations(LogicalAggregate rel) {
-<<<<<<< HEAD
-      List<AggregateCall> aggCallList = rel.getAggCallList();
-      HashSet<Integer> aggregatesArgs = new HashSet<>();
-      for (AggregateCall aggregateCall: aggCallList) {
-        aggregatesArgs.addAll(aggregateCall.getArgList());
-      }
-      for (Integer aggregatesArg : aggregatesArgs) {
-        SqlNode selectNode = ((SqlSelect) node).getSelectList().get(aggregatesArg);
-        if (!(selectNode instanceof SqlBasicCall)) {
-          continue;
-        }
-      }
-
-      if (rel instanceof Project
-          && this.clauses.contains(Clause.HAVING)
-          && dialect.getConformance().isHavingAlias()) {
-        return true;
-      }
-
-      if (rel instanceof Aggregate) {
-        final Aggregate agg = (Aggregate) rel;
-        final boolean hasNestedAgg = hasNestedAggregations(agg);
-        if (!dialect.supportsNestedAggregations()
-            && hasNestedAgg) {
-          return true;
-        }
-
-        if (this.clauses.contains(Clause.GROUP_BY)) {
-          // Avoid losing the distinct attribute of inner aggregate.
-          return !hasNestedAgg || Aggregate.isNotGrandTotal(agg);
-        }
-      }
-
-      return false;
-    }
-
-    private boolean hasNestedAggregations(Aggregate rel) {
 =======
+    private boolean hasNestedAggregations(Aggregate rel) {
       if (node instanceof SqlSelect) {
         final SqlNodeList selectList = ((SqlSelect) node).getSelectList();
         if (selectList != null) {
