@@ -20,11 +20,11 @@ import org.apache.calcite.linq4j.Ord;
 import org.apache.calcite.linq4j.tree.Expressions;
 import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.core.Window;
-import org.apache.calcite.rel.logical.LogicalAggregate;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexCall;
@@ -1093,9 +1093,9 @@ public abstract class SqlImplementor {
           needNew = true;
         }
       }
-      if (rel instanceof LogicalAggregate
+      if (rel instanceof Aggregate
           && !dialect.supportsNestedAggregations()
-          && hasNestedAggregations((LogicalAggregate) rel)) {
+          && hasNestedAggregations((Aggregate) rel)) {
         needNew = true;
       }
 
@@ -1142,7 +1142,7 @@ public abstract class SqlImplementor {
           needNew ? null : aliases);
     }
 
-    protected boolean hasNestedAggregations(LogicalAggregate rel) {
+    private boolean hasNestedAggregations(Aggregate rel) {
       if (node instanceof SqlSelect) {
         final SqlNodeList selectList = ((SqlSelect) node).getSelectList();
         if (selectList != null) {
