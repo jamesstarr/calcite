@@ -103,11 +103,15 @@ import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.runtime.Hook;
 import org.apache.calcite.schema.Schemas;
+import org.apache.calcite.sql.SqlFunction;
+import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperator;
+import org.apache.calcite.sql.SqlOperatorBinding;
 import org.apache.calcite.sql.SqlSpecialOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.validate.SqlMonotonicity;
@@ -147,6 +151,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EQUALS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_NOT_DISTINCT_FROM;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -8117,6 +8122,53 @@ class RelOptRulesTest extends RelOptTestBase {
 
     sql("select * from emp e1 left outer join dept d on e1.deptno = d.deptno where d.deptno > 3")
         .withPre(preProgram).with(program).check();
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3151">[CALCITE-3151]
+   * RexCall's Monotonicity is not considered in determining a Calc's collation</a>
+   */
+  @Test public void testMonotonicityUDF() throws Exception {
+    final SqlFunction monotonicityFun =
+        new SqlFunction("MONOFUN", SqlKind.OTHER_FUNCTION, ReturnTypes.BIGINT, null,
+            OperandTypes.NILADIC, SqlFunctionCategory.USER_DEFINED_FUNCTION) {
+          @Override public boolean isDeterministic() {
+            return false;
+          }
+
+          @Override public SqlMonotonicity getMonotonicity(SqlOperatorBinding call) {
+            return SqlMonotonicity.INCREASING;
+          }
+        };
+
+    // Build a tree equivalent to the SQL
+    // SELECT sal, MONOFUN() AS n FROM emp
+    final RelBuilder builder =
+        RelBuilder.create(RelBuilderTest.config().build());
+    final RelNode root =
+        builder.scan("EMP")
+            .project(builder.field("SAL"),
+                builder.alias(builder.call(monotonicityFun), "M"))
+            .build();
+
+    HepProgram preProgram = new HepProgramBuilder().build();
+    HepPlanner prePlanner = new HepPlanner(preProgram);
+    prePlanner.setRoot(root);
+    final RelNode relBefore = prePlanner.findBestExp();
+    final RelCollation collationBefore =
+        relBefore.getTraitSet().getTrait(RelCollationTraitDef.INSTANCE);
+
+    HepProgram hepProgram = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.PROJECT_TO_CALC)
+        .build();
+
+    HepPlanner hepPlanner = new HepPlanner(hepProgram);
+    hepPlanner.setRoot(root);
+    final RelNode relAfter = hepPlanner.findBestExp();
+    final RelCollation collationAfter =
+        relAfter.getTraitSet().getTrait(RelCollationTraitDef.INSTANCE);
+
+    assertEquals(collationBefore, collationAfter);
   }
 
   /**
