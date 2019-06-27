@@ -58,12 +58,13 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
           .softValues()
           .build(CacheLoader.from(RelDataTypeFactoryImpl::keyToType));
 
-  private static RelDataType keyToType(@Nonnull Object k) {
-    if (k instanceof RelDataType) {
-      return (RelDataType) k;
-    }
-    @SuppressWarnings("unchecked")
-    final Key key = (Key) k;
+  /**
+   * Global cache for RelDataType.
+   */
+  private static final Interner<RelDataType> DATATYPE_CACHE =
+      Interners.newWeakInterner();
+
+  private static RelDataType keyToType(@Nonnull Key key) {
     final ImmutableList.Builder<RelDataTypeField> list =
         ImmutableList.builder();
     for (int i = 0; i < key.names.size(); i++) {
@@ -364,13 +365,14 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
       final List<String> names,
       final List<RelDataType> types,
       final boolean nullable) {
-    final RelDataType type = CACHE.getIfPresent(new Key(kind, names, types, nullable));
+    final RelDataType type = KEY2TYPE_CACHE.getIfPresent(
+        new Key(kind, names, types, nullable));
     if (type != null) {
       return type;
     }
     final ImmutableList<String> names2 = ImmutableList.copyOf(names);
     final ImmutableList<RelDataType> types2 = ImmutableList.copyOf(types);
-    return CACHE.getUnchecked(new Key(kind, names2, types2, nullable));
+    return KEY2TYPE_CACHE.getUnchecked(new Key(kind, names2, types2, nullable));
   }
 
   protected RelDataType canonize(final StructKind kind,
