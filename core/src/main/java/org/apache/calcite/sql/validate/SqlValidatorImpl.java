@@ -4449,7 +4449,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
             selectItem,
             select,
             targetRowType.isStruct()
-                && targetRowType.getFieldCount() >= i
+                && targetRowType.getFieldCount() > i
                 ? targetRowType.getFieldList().get(i).getType()
                 : unknownType,
             expandedSelectItems,
