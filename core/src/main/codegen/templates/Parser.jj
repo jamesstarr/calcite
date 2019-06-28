@@ -747,8 +747,12 @@ SqlNode OrderByLimitOpt(SqlNode e) :
             start = UnsignedNumericLiteralOrParam()
             <COMMA> count = UnsignedNumericLiteralOrParam() {
                 if (!this.conformance.isLimitStartCountAllowed()) {
+<<<<<<< HEAD
                     throw new ParseException(RESOURCE.limitStartCountNotAllowed().str());
 >>>>>>> 96a990b05 ([CALCITE-2847] Optimize global LOOKAHEAD for SQL parsers)
+=======
+                    throw SqlUtil.newContextException(getPos(), RESOURCE.limitStartCountNotAllowed());
+>>>>>>> c1eea5150 ([CALCITE-3152] Unify throws in sql parser)
                 }
             }
         |
