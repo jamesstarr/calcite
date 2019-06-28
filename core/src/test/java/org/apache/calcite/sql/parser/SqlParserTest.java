@@ -991,7 +991,7 @@ public class SqlParserTest {
     //   you that != is SQL's not-equals operator; those texts are false;
     //   it's one of those unstampoutable urban myths."
     // Therefore, we only support != with certain SQL conformance levels.
-    checkExpFails("'abc'!=123",
+    checkExpFails("'abc'^!=^123",
         "Bang equal '!=' is not allowed under the current SQL conformance level");
   }
 
@@ -2382,8 +2382,9 @@ public class SqlParserTest {
   @Test public void testSetMinus() {
     final String pattern =
         "MINUS is not allowed under the current SQL conformance level";
-    final String sql = "select col1 from table1 MINUS select col1 from table2";
-    sql(sql).fails(pattern);
+    final String sql0 = "select col1 from table1 ^MINUS^ select col1 from table2";
+    final String sql1 = "select col1 from table1 MINUS select col1 from table2";
+    sql(sql0).fails(pattern);
 
     conformance = SqlConformanceEnum.ORACLE_10;
     final String expected = "(SELECT `COL1`\n"
@@ -2391,7 +2392,7 @@ public class SqlParserTest {
         + "EXCEPT\n"
         + "SELECT `COL1`\n"
         + "FROM `TABLE2`)";
-    sql(sql).ok(expected);
+    sql(sql1).ok(expected);
 
     final String sql2 =
         "select col1 from table1 MINUS ALL select col1 from table2";
@@ -2981,7 +2982,7 @@ public class SqlParserTest {
     conformance = SqlConformanceEnum.DEFAULT;
     final String error = "'LIMIT start, count' is not allowed under the "
         + "current SQL conformance level";
-    sql("select a from foo limit 1,2")
+    sql("select a from foo limit 1,^2^")
         .fails(error);
 
     // "limit all" is equivalent to no limit
