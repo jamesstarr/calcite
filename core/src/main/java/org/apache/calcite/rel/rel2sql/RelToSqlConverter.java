@@ -93,6 +93,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Utility to convert relational expressions to SQL abstract syntax tree.
@@ -467,8 +468,19 @@ public class RelToSqlConverter extends SqlImplementor
       // or, if rename is required
       //   (VALUES (v0, v1), (v2, v3)) AS t (c0, c1)
       final SqlNodeList selects = new SqlNodeList(POS);
-      for (List<RexLiteral> tuple : e.getTuples()) {
-        selects.add(ANONYMOUS_ROW.createCall(exprList(context, tuple)));
+      final boolean isEmpty = Values.isEmpty(e);
+      if (isEmpty) {
+        // In case of empty values, we need to build:
+        // select * from VALUES(NULL, NULL ...) as T (C1, C2 ...)
+        // where 1=0.
+        List<SqlNode> nulls = IntStream.range(0, fieldNames.size())
+            .mapToObj(i ->
+                SqlLiteral.createNull(POS)).collect(Collectors.toList());
+        selects.add(ANONYMOUS_ROW.createCall(new SqlNodeList(nulls, POS)));
+      } else {
+        for (List<RexLiteral> tuple : e.getTuples()) {
+          selects.add(ANONYMOUS_ROW.createCall(exprList(context, tuple)));
+        }
       }
       query = SqlStdOperatorTable.VALUES.createCall(selects);
       if (rename) {
@@ -479,6 +491,16 @@ public class RelToSqlConverter extends SqlImplementor
           list.add(new SqlIdentifier(fieldName, POS));
         }
         query = SqlStdOperatorTable.AS.createCall(POS, list);
+      }
+      if (isEmpty) {
+        if (!rename) {
+          query = as(query, "t");
+        }
+        query = new SqlSelect(POS, null,
+                null, query,
+                createAlwaysFalseCondition(),
+                null, null, null, null,
+                null, null, null, null);
       }
     }
     return result(query, clauses, e, null);
@@ -573,10 +595,10 @@ public class RelToSqlConverter extends SqlImplementor
     return !dialect.supportsAggregateFunction(SqlKind.ROLLUP)
         && dialect.supportsGroupByWithRollup()
         && (aggregate.getGroupType() == Aggregate.Group.ROLLUP
-            || aggregate.getGroupType() == Aggregate.Group.CUBE
-                && aggregate.getGroupSet().cardinality() == 1)
+        || aggregate.getGroupType() == Aggregate.Group.CUBE
+        && aggregate.getGroupSet().cardinality() == 1)
         && e.collation.getFieldCollations().stream().allMatch(fc ->
-            fc.getFieldIndex() < aggregate.getGroupSet().cardinality());
+        fc.getFieldIndex() < aggregate.getGroupSet().cardinality());
   }
 
   /** @see #dispatch */
