@@ -2504,9 +2504,6 @@ public class SqlToRelConverter {
     final List<String> measureNames = unpivot.measureList.getList().stream()
         .map(node -> ((SqlIdentifier) node).getSimple())
         .collect(Util.toImmutableList());
-<<<<<<< HEAD
-    final List<String> axisNames = unpivot.axisList.getList().stream()
-=======
     final List<String> axisNames =  unpivot.axisList.getList().stream()
         .map(node -> ((SqlIdentifier) node).getSimple())
         .collect(Util.toImmutableList());
@@ -2994,7 +2991,6 @@ public class SqlToRelConverter {
   private Pair<RexNode, RelNode> convertOnCondition(
       Blackboard bb,
       SqlJoin join,
->>>>>>> 40704db1d (Revert "Revert "[CALCITE-4210] Replaying subqueries in ON clauses (James Starr)"")
       RelNode leftRel,
       RelNode rightRel) {
     SqlNode condition = join.getCondition();

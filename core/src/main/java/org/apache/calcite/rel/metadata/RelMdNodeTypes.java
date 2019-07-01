@@ -29,7 +29,10 @@ import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.Match;
 import org.apache.calcite.rel.core.Minus;
 import org.apache.calcite.rel.core.Project;
+<<<<<<< HEAD
 import org.apache.calcite.rel.core.Sample;
+=======
+>>>>>>> 08c4ce185 ([CALCITE-3126] Remove deprecated SemiJoin usage completely)
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableModify;
 import org.apache.calcite.rel.core.TableScan;

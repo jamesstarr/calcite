@@ -413,6 +413,11 @@ public abstract class MutableRels {
           tableFunctionScan.getRowType(), inputs, tableFunctionScan.getCall(),
           tableFunctionScan.getElementType(), tableFunctionScan.getColumnMappings());
     }
+<<<<<<< HEAD
+=======
+    // It is necessary that SemiJoin is placed in front of Join here, since SemiJoin
+    // is a sub-class of Join.
+>>>>>>> 08c4ce185 ([CALCITE-3126] Remove deprecated SemiJoin usage completely)
     if (rel instanceof Join) {
       final Join join = (Join) rel;
       final MutableRel left = toMutable(join.getLeft());

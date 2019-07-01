@@ -133,9 +133,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-<<<<<<< HEAD
-import java.util.Optional;
-=======
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
@@ -1796,7 +1793,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     if (node instanceof SqlIdentifier) {
       return getCatalogReader().getNamedType((SqlIdentifier) node);
     }
->>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
     return null;
   }
 
@@ -2199,134 +2195,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     return new PivotNamespace(this, call, enclosingNode);
   }
 
-<<<<<<< HEAD
-=======
-  private void registerUnpivot(
-      SqlValidatorScope parentScope,
-      SqlValidatorScope usingScope,
-      SqlUnpivot call,
-      SqlNode enclosingNode,
-      String alias,
-      boolean forceNullable) {
-    final UnpivotNamespace namespace =
-        createUnpivotNameSpace(call, enclosingNode);
-    registerNamespace(usingScope, alias, namespace, forceNullable);
-
-    final SqlValidatorScope scope =
-        new UnpivotScope(parentScope, call);
-    scopes.put(call, scope);
-
-    // parse input query
-    SqlNode expr = call.query;
-    SqlNode newExpr = registerFrom(parentScope, scope, true, expr,
-        expr, null, null, forceNullable, false);
-    if (expr != newExpr) {
-      call.setOperand(0, newExpr);
-    }
-  }
-
-  protected UnpivotNamespace createUnpivotNameSpace(SqlUnpivot call,
-      SqlNode enclosingNode) {
-    return new UnpivotNamespace(this, call, enclosingNode);
-  }
-
->>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
-  /**
-   * Registers a new namespace, and adds it as a child of its parent scope.
-   * Derived class can override this method to tinker with namespaces as they
-   * are created.
-   *
-   * @param usingScope    Parent scope (which will want to look for things in
-   *                      this namespace)
-   * @param alias         Alias by which parent will refer to this namespace
-   * @param ns            Namespace
-   * @param forceNullable Whether to force the type of namespace to be nullable
-   */
-  protected void registerNamespace(
-      SqlValidatorScope usingScope,
-      String alias,
-      SqlValidatorNamespace ns,
-      boolean forceNullable) {
-    namespaces.put(ns.getNode(), ns);
-    if (usingScope != null) {
-      usingScope.addChild(ns, alias, forceNullable);
-    }
-  }
-
-  /**
-   * Registers scopes and namespaces implied a relational expression in the
-   * FROM clause.
-   *
-   * <p>{@code parentScope} and {@code usingScope} are often the same. They
-   * differ when the namespace are not visible within the parent. (Example
-   * needed.)
-   *
-   * <p>Likewise, {@code enclosingNode} and {@code node} are often the same.
-   * {@code enclosingNode} is the topmost node within the FROM clause, from
-   * which any decorations like an alias (<code>AS alias</code>) or a table
-   * sample clause are stripped away to get {@code node}. Both are recorded in
-   * the namespace.
-   *
-   * @param parentScope   Parent scope which this scope turns to in order to
-   *                      resolve objects
-   * @param usingScope    Scope whose child list this scope should add itself to
-   * @param register      Whether to register this scope as a child of
-   *                      {@code usingScope}
-   * @param node          Node which namespace is based on
-   * @param enclosingNode Outermost node for namespace, including decorations
-   *                      such as alias and sample clause
-   * @param alias         Alias
-   * @param extendList    Definitions of extended columns
-   * @param forceNullable Whether to force the type of namespace to be
-   *                      nullable because it is in an outer join
-   * @param lateral       Whether LATERAL is specified, so that items to the
-   *                      left of this in the JOIN tree are visible in the
-   *                      scope
-   * @return registered node, usually the same as {@code node}
-   */
-  private SqlNode registerFrom(
-      SqlValidatorScope parentScope,
-      SqlValidatorScope usingScope,
-      boolean register,
-      final SqlNode node,
-      SqlNode enclosingNode,
-      String alias,
-      SqlNodeList extendList,
-      boolean forceNullable,
-      final boolean lateral) {
-    final SqlKind kind = node.getKind();
-
-    SqlNode expr;
-    SqlNode newExpr;
-
-    // Add an alias if necessary.
-    SqlNode newNode = node;
-    if (alias == null) {
-      switch (kind) {
-      case IDENTIFIER:
-      case OVER:
-        alias = deriveAlias(node, -1);
-        if (alias == null) {
-          alias = deriveAlias(node, nextGeneratedId++);
-        }
-        if (config.identifierExpansion()) {
-          newNode = SqlValidatorUtil.addAlias(node, alias);
-        }
-        break;
-
-      case SELECT:
-      case UNION:
-      case INTERSECT:
-      case EXCEPT:
-      case VALUES:
-      case UNNEST:
-      case OTHER_FUNCTION:
-      case COLLECTION_TABLE:
-      case PIVOT:
-<<<<<<< HEAD
-=======
       case UNPIVOT:
->>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
       case MATCH_RECOGNIZE:
 
         // give this anonymous construct a name since later
