@@ -693,10 +693,10 @@ public class RelToSqlConverter extends SqlImplementor
     return !dialect.supportsAggregateFunction(SqlKind.ROLLUP)
         && dialect.supportsGroupByWithRollup()
         && (aggregate.getGroupType() == Aggregate.Group.ROLLUP
-        || aggregate.getGroupType() == Aggregate.Group.CUBE
-        && aggregate.getGroupSet().cardinality() == 1)
+            || aggregate.getGroupType() == Aggregate.Group.CUBE
+                && aggregate.getGroupSet().cardinality() == 1)
         && e.collation.getFieldCollations().stream().allMatch(fc ->
-        fc.getFieldIndex() < aggregate.getGroupSet().cardinality());
+            fc.getFieldIndex() < aggregate.getGroupSet().cardinality());
   }
 
 <<<<<<< HEAD
