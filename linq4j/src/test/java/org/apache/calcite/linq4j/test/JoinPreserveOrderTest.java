@@ -280,10 +280,6 @@ import static org.junit.Assert.assertTrue;
     PRESERVED {
       @Override <E> void check(final List<E> expected, final List<E> actual,
           final boolean nullsFirst) {
-<<<<<<< HEAD
-        assertTrue(isOrderPreserved(expected, actual, nullsFirst),
-            () -> "Order is not preserved. Expected:<" + expected + "> but was:<" + actual + ">");
-=======
         assertTrue("Order is not preserved. Expected:<" + expected + "> but was:<" + actual + ">",
             isOrderPreserved(expected, actual, nullsFirst));
       }
@@ -380,7 +376,6 @@ import static org.junit.Assert.assertTrue;
       new Employee(120, "Ilias", 30),
       new Employee(130, "Ruben", 40),
       new Employee(140, "Tanguy", 50),
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
       new Employee(150, "Andrew", -10),
       // Nulls on name
       new Employee(160, null, 60),
@@ -396,9 +391,6 @@ import static org.junit.Assert.assertTrue;
       new Employee(230, "Loukia", -40)
   };
 
-<<<<<<< HEAD
-  private static final Department[] DEPTS = {
-=======
   private static final Department[] DEPTS = new Department[]{
       new Department(1, 10, "Sales"),
       new Department(2, 20, "Pre-sales"),
@@ -426,4 +418,3 @@ import static org.junit.Assert.assertTrue;
 =======
 
 // End JoinPreserveOrderTest.java
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)

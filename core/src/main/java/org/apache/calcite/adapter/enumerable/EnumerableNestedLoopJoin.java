@@ -61,27 +61,6 @@ public class EnumerableNestedLoopJoin extends Join implements EnumerableRel {
   @Override public EnumerableNestedLoopJoin copy(RelTraitSet traitSet,
       RexNode condition, RelNode left, RelNode right, JoinRelType joinType,
       boolean semiJoinDone) {
-<<<<<<< HEAD
-    return new EnumerableNestedLoopJoin(getCluster(), traitSet, left, right,
-        condition, variablesSet, joinType);
-  }
-
-  /** Creates an EnumerableThetaJoin. */
-  public static EnumerableNestedLoopJoin create(
-      RelNode left,
-      RelNode right,
-      RexNode condition,
-      Set<CorrelationId> variablesSet,
-      JoinRelType joinType) {
-    final RelOptCluster cluster = left.getCluster();
-    final RelMetadataQuery mq = cluster.getMetadataQuery();
-    final RelTraitSet traitSet =
-        cluster.traitSetOf(EnumerableConvention.INSTANCE)
-            .replaceIfs(RelCollationTraitDef.INSTANCE,
-                () -> RelMdCollation.enumerableNestedLoopJoin(mq, left, right, joinType));
-    return new EnumerableNestedLoopJoin(cluster, traitSet, left, right, condition,
-        variablesSet, joinType);
-=======
     try {
       return new EnumerableNestedLoopJoin(getCluster(), traitSet, left, right,
           condition, variablesSet, joinType);
@@ -122,7 +101,6 @@ public class EnumerableNestedLoopJoin extends Join implements EnumerableRel {
       rowCount = rightRowCount;
     }
 
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
   public Result implement(EnumerableRelImplementor implementor, Prefer pref) {
     final BlockBuilder builder = new BlockBuilder();
     final Result leftResult =

@@ -28,14 +28,10 @@ import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.tools.RelBuilderFactory;
 
-<<<<<<< HEAD
-import com.google.common.collect.ImmutableList;
-=======
 import com.google.common.collect.ImmutableSet;
 
 /**
  * Planner rule that pushes {@code SemiJoin}s down in a tree past
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
  * a {@link org.apache.calcite.rel.core.Filter}.
  *
  * <p>The intention is to trigger other rules that will convert

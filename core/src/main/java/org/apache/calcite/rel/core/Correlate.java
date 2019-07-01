@@ -27,79 +27,8 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelWriter;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.sql.validate.SqlValidatorUtil;
-import org.apache.calcite.util.ImmutableBitSet;
-import org.apache.calcite.util.Litmus;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-
-import java.util.List;
-import java.util.Set;
-
-/**
- * A relational operator that performs nested-loop joins.
- *
- * <p>It behaves like a kind of {@link org.apache.calcite.rel.core.Join},
- * but works by setting variables in its environment and restarting its
- * right-hand input.
- *
- * <p>Correlate is not a join since: typical rules should not match Correlate.
- *
- * <p>A Correlate is used to represent a correlated query. One
- * implementation strategy is to de-correlate the expression.
- *
- * <table>
- *   <caption>Mapping of physical operations to logical ones</caption>
- *   <tr><th>Physical operation</th><th>Logical operation</th></tr>
- *   <tr><td>NestedLoops</td><td>Correlate(A, B, regular)</td></tr>
- *   <tr><td>NestedLoopsOuter</td><td>Correlate(A, B, outer)</td></tr>
- *   <tr><td>NestedLoopsSemi</td><td>Correlate(A, B, semi)</td></tr>
- *   <tr><td>NestedLoopsAnti</td><td>Correlate(A, B, anti)</td></tr>
- *   <tr><td>HashJoin</td><td>EquiJoin(A, B)</td></tr>
- *   <tr><td>HashJoinOuter</td><td>EquiJoin(A, B, outer)</td></tr>
- *   <tr><td>HashJoinSemi</td><td>SemiJoin(A, B, semi)</td></tr>
- *   <tr><td>HashJoinAnti</td><td>SemiJoin(A, B, anti)</td></tr>
- * </table>
- *
- * @see CorrelationId
- */
-public abstract class Correlate extends BiRel {
-  //~ Instance fields --------------------------------------------------------
-
-  protected final CorrelationId correlationId;
-  protected final ImmutableBitSet requiredColumns;
-  protected final JoinRelType joinType;
-
-  //~ Constructors -----------------------------------------------------------
-
-  /**
-   * Creates a Correlate.
-   *
-   * @param cluster      Cluster this relational expression belongs to
-   * @param left         Left input relational expression
-   * @param right        Right input relational expression
-   * @param correlationId Variable name for the row of left input
-   * @param requiredColumns Set of columns that are used by correlation
-   * @param joinType Join type
-   */
-  protected Correlate(
-      RelOptCluster cluster,
-      RelTraitSet traits,
-      RelNode left,
-      RelNode right,
-      CorrelationId correlationId,
-      ImmutableBitSet requiredColumns,
-      JoinRelType joinType) {
-    super(cluster, traits, left, right);
-    assert !joinType.generatesNullsOnLeft() : "Correlate has invalid join type " + joinType;
-    this.joinType = joinType;
-    this.correlationId = correlationId;
-    this.requiredColumns = requiredColumns;
-  }
 <<<<<<< HEAD
-=======
-
   @Deprecated // To be removed before 2.0
   protected Correlate(RelOptCluster cluster, RelTraitSet traits, RelNode left,
       RelNode right, CorrelationId correlationId, ImmutableBitSet
@@ -110,7 +39,8 @@ public abstract class Correlate extends BiRel {
     this.requiredColumns = requiredColumns;
   }
 
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> 7ae993b90 ([CALCITE-3133] Remove completely SemiJoinType)
   /**
    * Creates a Correlate by parsing serialized output.
    *

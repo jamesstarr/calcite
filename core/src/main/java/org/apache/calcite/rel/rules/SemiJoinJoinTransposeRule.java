@@ -29,9 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
-<<<<<<< HEAD
- * Planner rule that pushes a {@link Join#isSemiJoin semi-join}
-=======
  * Planner rule that pushes a {@code SemiJoin}
  * down in a tree past a {@link org.apache.calcite.rel.core.Join}
  * in order to trigger other rules that will convert {@code SemiJoin}s.
@@ -75,7 +72,6 @@ public class SemiJoinJoinTransposeRule
       return;
     }
     final ImmutableIntList leftKeys = semiJoin.analyzeCondition().leftKeys;
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
 
     // X is the left child of the join below the semi-join
     // Y is the right child of the join below the semi-join
@@ -114,9 +110,6 @@ public class SemiJoinJoinTransposeRule
 
     // need to convert the semi-join condition and possibly the keys
     RexNode newSemiJoinFilter;
-<<<<<<< HEAD
-
-=======
     int[] adjustments = new int[nTotalFields];
     if (nKeysFromX > 0) {
       // (X, Y, Z) --> (X, Z, Y)
@@ -136,7 +129,6 @@ public class SemiJoinJoinTransposeRule
                   semiJoin.getCluster().getRexBuilder(),
                   fields,
                   adjustments));
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     } else {
       // (X, Y, Z) --> (X, Y, Z)
       // semiJoin(Y, Z)
