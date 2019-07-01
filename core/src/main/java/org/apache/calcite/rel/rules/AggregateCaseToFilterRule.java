@@ -36,7 +36,7 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
-import org.apache.calcite.util.ImmutableBitSet;
+>>>>>>> 0218f4ee7 ([CALCITE-3144] Add rule, AggregateCaseToFilterRule, that converts "SUM(CASE WHEN b THEN x END)" to "SUM(x) FILTER (WHERE b)")
 
 import com.google.common.collect.ImmutableList;
 
@@ -132,7 +132,10 @@ public class AggregateCaseToFilterRule extends RelOptRule {
 
     final RelBuilder.GroupKey groupKey =
         relBuilder.groupKey(aggregate.getGroupSet(),
+<<<<<<< HEAD
             (Iterable<ImmutableBitSet>) aggregate.getGroupSets());
+=======
+            aggregate.getGroupSets());
 
     relBuilder.aggregate(groupKey, newCalls)
         .convert(aggregate.getRowType(), false);
@@ -166,7 +169,7 @@ public class AggregateCaseToFilterRule extends RelOptRule {
 
     // Operand 1: Filter
     final SqlPostfixOperator op =
-        flip ? SqlStdOperatorTable.IS_NOT_TRUE : SqlStdOperatorTable.IS_TRUE;
+        flip ? SqlStdOperatorTable.IS_FALSE : SqlStdOperatorTable.IS_TRUE;
     final RexNode filterFromCase =
         rexBuilder.makeCall(op, caseCall.operands.get(0));
 
@@ -265,3 +268,8 @@ public class AggregateCaseToFilterRule extends RelOptRule {
         && SqlTypeName.INT_TYPES.contains(rexNode.getType().getSqlTypeName());
   }
 }
+<<<<<<< HEAD
+=======
+
+// End AggregateCaseToFilterRule.java
+>>>>>>> 0218f4ee7 ([CALCITE-3144] Add rule, AggregateCaseToFilterRule, that converts "SUM(CASE WHEN b THEN x END)" to "SUM(x) FILTER (WHERE b)")

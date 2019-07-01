@@ -22,6 +22,7 @@ import org.apache.calcite.interpreter.NoneToBindableConverterRule;
 import org.apache.calcite.linq4j.function.Experimental;
 import org.apache.calcite.plan.volcano.AbstractConverter;
 import org.apache.calcite.rel.rules.AbstractMaterializedViewRule;
+import org.apache.calcite.rel.rules.AggregateCaseToFilterRule;
 import org.apache.calcite.rel.rules.AggregateProjectPullUpConstantsRule;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.DateRangeRules;
@@ -71,6 +72,21 @@ public class RelOptRules {
   static final List<RelOptRule> BASE_RULES = ImmutableList.of(
       CoreRules.AGGREGATE_STAR_TABLE,
       CoreRules.AGGREGATE_PROJECT_STAR_TABLE,
+<<<<<<< HEAD
+=======
+      TableScanRule.INSTANCE,
+      CalciteSystemProperty.COMMUTE.value()
+          ? CoreRules.JOIN_ASSOCIATE
+          : CoreRules.PROJECT_MERGE,
+      CoreRules.FILTER_SCAN,
+      CoreRules.PROJECT_FILTER_TRANSPOSE,
+      CoreRules.FILTER_PROJECT_TRANSPOSE,
+      CoreRules.FILTER_INTO_JOIN,
+      CoreRules.JOIN_PUSH_EXPRESSIONS,
+      CoreRules.AGGREGATE_EXPAND_DISTINCT_AGGREGATES,
+      CoreRules.AGGREGATE_REDUCE_FUNCTIONS,
+      AggregateCaseToFilterRule.INSTANCE,
+>>>>>>> 0218f4ee7 ([CALCITE-3144] Add rule, AggregateCaseToFilterRule, that converts "SUM(CASE WHEN b THEN x END)" to "SUM(x) FILTER (WHERE b)")
       CoreRules.FILTER_AGGREGATE_TRANSPOSE,
       CoreRules.PROJECT_WINDOW_TRANSPOSE,
       CoreRules.JOIN_COMMUTE,

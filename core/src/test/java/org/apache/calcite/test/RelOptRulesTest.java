@@ -64,6 +64,7 @@ import org.apache.calcite.rel.metadata.CachingRelMetadataProvider;
 import org.apache.calcite.rel.metadata.ChainedRelMetadataProvider;
 import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelMetadataProvider;
+import org.apache.calcite.rel.rules.AggregateCaseToFilterRule;
 import org.apache.calcite.rel.rules.AggregateExtractProjectRule;
 import org.apache.calcite.rel.rules.AggregateJoinJoinRemoveRule;
 import org.apache.calcite.rel.rules.AggregateJoinRemoveRule;
@@ -3862,7 +3863,7 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).withPre(pre).withRule(rule).checkUnchanged();
   }
 
-  @Test void testAggregateCaseToFilter() {
+  @Test public void testAggregateCaseToFilter() {
     final String sql = "select\n"
         + " sum(sal) as sum_sal,\n"
         + " count(distinct case\n"
@@ -3877,7 +3878,7 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).withRule(AggregateCaseToFilterRule.INSTANCE).check();
   }
 
-  @Test void testPullAggregateThroughUnion() {
+  @Test public void testPullAggregateThroughUnion() {
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(CoreRules.AGGREGATE_UNION_AGGREGATE)
         .build();
@@ -5171,11 +5172,9 @@ class RelOptRulesTest extends RelOptTestBase {
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3121">[CALCITE-3121]
-<<<<<<< HEAD
-   * VolcanoPlanner hangs due to sub-query with dynamic star</a>. */
-  @Test void testSubQueryWithDynamicStarHang() {
-=======
    * VolcanoPlanner hangs due to subquery with dynamic star</a>. */
+=======
+   * VolcanoPlanner hangs due to sub-query with dynamic star</a>. */
   @Test public void testSubQueryWithDynamicStarHang() {
     String sql = "select n.n_regionkey from (select * from "
         + "(select * from sales.customer) t) n where n.n_nationkey >1";

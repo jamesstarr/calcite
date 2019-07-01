@@ -27,6 +27,7 @@ import org.apache.calcite.util.Optionality;
 import org.apache.calcite.util.mapping.Mapping;
 import org.apache.calcite.util.mapping.Mappings;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
@@ -101,13 +102,9 @@ public class AggregateCall {
     this.distinct = distinct;
     this.approximate = approximate;
     this.ignoreNulls = ignoreNulls;
-<<<<<<< HEAD
-    Preconditions.checkArgument(
-        aggFunction.getDistinctOptionality() != Optionality.IGNORED || !distinct,
-        "DISTINCT has no effect for this aggregate function, so must be false");
-    Preconditions.checkArgument(filterArg < 0 || aggFunction.allowsFilter());
-=======
 >>>>>>> cf7bf148e ([CALCITE-883] Support RESPECT NULLS, IGNORE NULLS option for LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE functions (Chunwei Lei))
+=======
+    Preconditions.checkArgument(filterArg < 0 || aggFunction.allowsFilter());
   }
 
   //~ Methods ----------------------------------------------------------------

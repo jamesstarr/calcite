@@ -2637,6 +2637,9 @@ select deptno, bit_and(empno), bit_or(empno) from "scott".emp group by deptno;
 !ok
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0218f4ee7 ([CALCITE-3144] Add rule, AggregateCaseToFilterRule, that converts "SUM(CASE WHEN b THEN x END)" to "SUM(x) FILTER (WHERE b)")
 # Based on [DRUID-7593] Exact distinct-COUNT with complex expression (CASE, IN) throws
 # NullPointerException
 WITH wikipedia AS (
