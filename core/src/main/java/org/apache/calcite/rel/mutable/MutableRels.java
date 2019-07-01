@@ -32,7 +32,6 @@ import org.apache.calcite.rel.core.Minus;
 import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.core.Sample;
-import org.apache.calcite.rel.core.SemiJoin;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableFunctionScan;
 import org.apache.calcite.rel.core.TableModify;
@@ -244,12 +243,6 @@ public abstract class MutableRels {
       relBuilder.push(fromMutable(join.getRight(), relBuilder));
       relBuilder.join(join.joinType, join.condition, join.variablesSet);
       return relBuilder.build();
-    case SEMIJOIN:
-      final MutableSemiJoin semiJoin = (MutableSemiJoin) node;
-      relBuilder.push(fromMutable(semiJoin.getLeft(), relBuilder));
-      relBuilder.push(fromMutable(semiJoin.getRight(), relBuilder));
-      relBuilder.semiJoin(semiJoin.condition);
-      return relBuilder.build();
     case CORRELATE:
       final MutableCorrelate correlate = (MutableCorrelate) node;
       return LogicalCorrelate.create(fromMutable(correlate.getLeft(), relBuilder),
@@ -367,13 +360,6 @@ public abstract class MutableRels {
     }
     // It is necessary that SemiJoin is placed in front of Join here, since SemiJoin
     // is a sub-class of Join.
-    if (rel instanceof SemiJoin) {
-      final SemiJoin semiJoin = (SemiJoin) rel;
-      final MutableRel left = toMutable(semiJoin.getLeft());
-      final MutableRel right = toMutable(semiJoin.getRight());
-      return MutableSemiJoin.of(semiJoin.getRowType(), left, right,
-          semiJoin.getCondition(), semiJoin.getLeftKeys(), semiJoin.getRightKeys());
-    }
     if (rel instanceof Join) {
       final Join join = (Join) rel;
       final MutableRel left = toMutable(join.getLeft());

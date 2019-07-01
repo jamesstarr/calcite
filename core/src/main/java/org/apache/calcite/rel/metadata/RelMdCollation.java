@@ -93,7 +93,6 @@ public class RelMdCollation
    * {@link org.apache.calcite.rel.core.Intersect},
    * {@link org.apache.calcite.rel.core.Minus},
    * {@link org.apache.calcite.rel.core.Join},
-   * {@link org.apache.calcite.rel.core.SemiJoin},
    * {@link org.apache.calcite.rel.core.Correlate}
    * do not in general return sorted results
    * (but implementations using particular algorithms may).
