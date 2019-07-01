@@ -602,15 +602,13 @@ public interface ExtendedEnumerable<TSource> {
    * For each row of the current enumerable returns the correlated rows
    * from the {@code inner} enumerable (nested loops join).
    *
-   * @deprecated Use {@link #correlateJoin(JoinType, Function1, Function2)}
-   *
    * @param joinType inner, left, semi or anti join type
    * @param inner generator of inner enumerable
    * @param resultSelector selector of the result. For semi/anti join
    *                       inner argument is always null.
    */
-  @Deprecated // to be removed before 1.21
   <TInner, TResult> Enumerable<TResult> correlateJoin(
+<<<<<<< HEAD
       JoinType joinType, Function1<TSource, Enumerable<TInner>> inner,
       Function2<TSource, TInner, TResult> resultSelector);
 
@@ -625,23 +623,10 @@ public interface ExtendedEnumerable<TSource> {
    */
   @SuppressWarnings("deprecation")
   default <TInner, TResult> Enumerable<TResult> correlateJoin(
+=======
+>>>>>>> b73e57d77 ([CALCITE-3125] Remove completely CorrelateJoinType)
       JoinType joinType, Function1<TSource, Enumerable<TInner>> inner,
-      Function2<TSource, TInner, TResult> resultSelector) {
-    // temporary default implementation for backwards compatibility
-    switch (joinType) {
-    case INNER:
-      return correlateJoin(CorrelateJoinType.INNER, inner, resultSelector);
-    case LEFT:
-      return correlateJoin(CorrelateJoinType.LEFT, inner, resultSelector);
-    case SEMI:
-      return correlateJoin(CorrelateJoinType.SEMI, inner, resultSelector);
-    case ANTI:
-      return correlateJoin(CorrelateJoinType.ANTI, inner, resultSelector);
-    default:
-      throw new IllegalArgumentException("JoinType " + joinType + " is not valid for correlation");
-    }
-  }
-
+      Function2<TSource, TInner, TResult> resultSelector);
 
   /**
    * Returns the last element of a sequence. (Defined
