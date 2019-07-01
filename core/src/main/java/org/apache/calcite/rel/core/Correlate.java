@@ -27,26 +27,8 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelWriter;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
-<<<<<<< HEAD
-=======
-import org.apache.calcite.sql.validate.SqlValidatorUtil;
-import org.apache.calcite.util.ImmutableBitSet;
-import org.apache.calcite.util.Litmus;
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
-
-<<<<<<< HEAD
-  @Deprecated // To be removed before 2.0
-  protected Correlate(RelOptCluster cluster, RelTraitSet traits, RelNode left,
-      RelNode right, CorrelationId correlationId, ImmutableBitSet
-      requiredColumns, SemiJoinType joinType) {
-    super(cluster, traits, left, right);
-    this.joinType = joinType.toJoinType();
-    this.correlationId = correlationId;
-    this.requiredColumns = requiredColumns;
-  }
-
-=======
 >>>>>>> 7ae993b90 ([CALCITE-3133] Remove completely SemiJoinType)
+=======
   /**
    * Creates a Correlate by parsing serialized output.
    *
