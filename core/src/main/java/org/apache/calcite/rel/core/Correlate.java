@@ -97,7 +97,6 @@ public abstract class Correlate extends BiRel {
     this.correlationId = correlationId;
     this.requiredColumns = requiredColumns;
   }
-
   /**
    * Creates a Correlate by parsing serialized output.
    *
