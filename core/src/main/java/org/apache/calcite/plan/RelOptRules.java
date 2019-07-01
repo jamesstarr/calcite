@@ -22,6 +22,7 @@ import org.apache.calcite.interpreter.NoneToBindableConverterRule;
 import org.apache.calcite.linq4j.function.Experimental;
 import org.apache.calcite.plan.volcano.AbstractConverter;
 import org.apache.calcite.rel.rules.AbstractMaterializedViewRule;
+import org.apache.calcite.rel.rules.AggregateCaseToFilterRule;
 import org.apache.calcite.rel.rules.AggregateProjectPullUpConstantsRule;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.DateRangeRules;
@@ -82,6 +83,7 @@ public class RelOptRules {
       CoreRules.JOIN_PUSH_EXPRESSIONS,
       CoreRules.AGGREGATE_EXPAND_DISTINCT_AGGREGATES,
       CoreRules.AGGREGATE_REDUCE_FUNCTIONS,
+      AggregateCaseToFilterRule.INSTANCE,
       CoreRules.FILTER_AGGREGATE_TRANSPOSE,
       CoreRules.PROJECT_WINDOW_TRANSPOSE,
       CoreRules.JOIN_COMMUTE,
