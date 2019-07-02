@@ -100,9 +100,7 @@ public class ProjectFilterTransposeRule
     }
 
     if ((origProj != null)
-        && origProj.getRowType().isStruct()
-        && origProj.getRowType().getFieldList().stream()
-          .anyMatch(RelDataTypeField::isDynamicStar)) {
+        && origProj.getRowType().getFieldList().get(0).isDynamicStar()) {
       // The PushProjector would change the plan:
       //
       //    prj(**=[$0])

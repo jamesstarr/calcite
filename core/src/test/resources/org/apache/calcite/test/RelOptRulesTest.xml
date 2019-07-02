@@ -13347,6 +13347,9 @@ LogicalProject(EMPNO=[$0])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ac79dae95 ([CALCITE-3121] VolcanoPlanner hangs due to subquery with dynamic star)
     <TestCase name="testSubQueryWithDynamicStarHang">
         <Resource name="sql">
             <![CDATA[select n.n_regionkey from (select * from
@@ -13368,6 +13371,7 @@ EnumerableProject(N_REGIONKEY=[ITEM($0, 'N_REGIONKEY')])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testProjectFilterTransposeRuleOnEmptyRowType">
         <Resource name="planAfter">
             <![CDATA[
@@ -13378,6 +13382,8 @@ LogicalProject
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> ac79dae95 ([CALCITE-3121] VolcanoPlanner hangs due to subquery with dynamic star)
     <TestCase name="testSelectAnyCorrelated">
         <Resource name="sql">
             <![CDATA[select empno > ANY (
