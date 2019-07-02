@@ -162,7 +162,6 @@ public class RelBuilder {
   private final RelFactories.SpoolFactory spoolFactory;
   private final RelFactories.RepeatUnionFactory repeatUnionFactory;
   private final Deque<Frame> stack = new ArrayDeque<>();
-  private final boolean simplify;
   private final RexSimplify simplifier;
   private final Config config;
   private final RelFactories.Struct struct;
@@ -174,7 +173,6 @@ public class RelBuilder {
     if (context == null) {
       context = Contexts.EMPTY_CONTEXT;
     }
-    this.simplify = Hook.REL_BUILDER_SIMPLIFY.get(true);
     this.config = getConfig(context);
     this.struct =
         Objects.requireNonNull(RelFactories.Struct.fromContext(context));
@@ -1585,7 +1583,7 @@ public class RelBuilder {
     }
 
     // Simplify expressions.
-    if (simplify) {
+    if (config.simplify()) {
       for (int i = 0; i < nodeList.size(); i++) {
         nodeList.set(i, simplifier.simplifyPreservingType(nodeList.get(i)));
       }
@@ -1949,7 +1947,7 @@ public class RelBuilder {
       assert groupSet.contains(set);
     }
 
-    if (Util.isDistinct(aggregateCalls)) {
+    if (!config.dedupAggregateCalls() || Util.isDistinct(aggregateCalls)) {
       return aggregate_(groupSet, groupSets, r, aggregateCalls,
           registrar.extraNodes, frame.fields);
     } else {
@@ -2220,7 +2218,7 @@ public class RelBuilder {
     final RelNode join;
     final boolean correlate = variablesSet.size() == 1;
     RexNode postCondition = literal(true);
-    if (simplify) {
+    if (config.simplify()) {
       condition = simplifier.simplifyUnknownAsFalse(condition);
     }
     if (correlate) {
