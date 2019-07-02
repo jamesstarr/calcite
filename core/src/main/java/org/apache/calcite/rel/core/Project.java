@@ -160,6 +160,12 @@ public abstract class Project extends SingleRel implements Hintable {
     if (this.exps == exps) {
       return this;
     }
+    final RelDataType rowType =
+        RexUtil.createStructType(
+            getInput().getCluster().getTypeFactory(),
+            exps,
+            this.rowType.getFieldNames(),
+            null);
     return copy(traitSet, getInput(), exps, rowType);
   }
 
