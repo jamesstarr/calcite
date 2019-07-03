@@ -2382,9 +2382,8 @@ public class SqlParserTest {
   @Test public void testSetMinus() {
     final String pattern =
         "MINUS is not allowed under the current SQL conformance level";
-    final String sql0 = "select col1 from table1 ^MINUS^ select col1 from table2";
-    final String sql1 = "select col1 from table1 MINUS select col1 from table2";
-    sql(sql0).fails(pattern);
+    final String sql = "select col1 from table1 ^MINUS^ select col1 from table2";
+    sql(sql).fails(pattern);
 
     conformance = SqlConformanceEnum.ORACLE_10;
     final String expected = "(SELECT `COL1`\n"
@@ -2392,7 +2391,7 @@ public class SqlParserTest {
         + "EXCEPT\n"
         + "SELECT `COL1`\n"
         + "FROM `TABLE2`)";
-    sql(sql1).ok(expected);
+    sql(sql).sansCarets().ok(expected);
 
     final String sql2 =
         "select col1 from table1 MINUS ALL select col1 from table2";
@@ -2706,6 +2705,29 @@ public class SqlParserTest {
             + "from emp as x tablesample bernoulli(50)",
         "SELECT *\n"
             + "FROM `EMP` AS `X` TABLESAMPLE BERNOULLI(50.0)");
+
+    check(
+        "select * "
+            + "from emp as x "
+            + "tablesample bernoulli(50) REPEATABLE(10) ",
+        "SELECT *\n"
+            + "FROM `EMP` AS `X` TABLESAMPLE BERNOULLI(50.0) REPEATABLE(10)");
+
+    // test repeatable with invalid int literal.
+    checkFails(
+        "select * "
+            + "from emp as x "
+            + "tablesample bernoulli(50) REPEATABLE(^100000000000000000000^) ",
+        "Literal '100000000000000000000' "
+            + "can not be parsed to type 'java\\.lang\\.Integer'");
+
+    // test repeatable with invalid negative int literal.
+    checkFails(
+        "select * "
+            + "from emp as x "
+            + "tablesample bernoulli(50) REPEATABLE(-^100000000000000000000^) ",
+        "Literal '100000000000000000000' "
+            + "can not be parsed to type 'java\\.lang\\.Integer'");
   }
 
   @Test public void testLiteral() {
