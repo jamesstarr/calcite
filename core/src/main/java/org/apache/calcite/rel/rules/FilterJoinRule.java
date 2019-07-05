@@ -88,7 +88,7 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
 
     final List<RexNode> aboveFilters =
         filter != null
-            ? conjunctions(filter.getCondition())
+            ? getConjunctions(filter)
             : new ArrayList<>();
     final ImmutableList<RexNode> origAboveFilters =
         ImmutableList.copyOf(aboveFilters);
