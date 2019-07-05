@@ -89,6 +89,7 @@ public class EnumerableTableScan
     return new EnumerableTableScan(cluster, traitSet, relOptTable, elementType);
   }
 
+<<<<<<< HEAD
   /** Returns whether EnumerableTableScan can generate code to handle a
    * particular variant of the Table SPI.
    * @deprecated
@@ -106,6 +107,8 @@ public class EnumerableTableScan
         || table instanceof ScannableTable;
   }
 
+=======
+>>>>>>> 89d1f11c6 ([CALCITE-3167] Make equals and hashCode methods final in AbstractRelNode, and remove overriding methods in EnumerableTableScan (Jin Xing))
   /** Returns whether EnumerableTableScan can generate code to handle a
    * particular variant of the Table SPI.
    **/

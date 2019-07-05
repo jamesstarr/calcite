@@ -32,84 +32,6 @@ import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.tools.RelBuilderFactory;
 
 import com.google.common.base.Suppliers;
-<<<<<<< HEAD
-=======
-import com.google.common.collect.ImmutableList;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Supplier;
-
-/**
- * Planner rule that converts
- * a {@link org.apache.calcite.rel.core.Filter}
- * on a {@link org.apache.calcite.rel.core.TableScan}
- * to a {@link org.apache.calcite.rel.core.Filter} on Materialized View
- */
-public class MaterializedViewFilterScanRule
-        extends RelRule<MaterializedViewFilterScanRule.Config>
-        implements TransformationRule {
-
-  /** Rule that converts a {@link Filter} on a {@link TableScan}
-   * to a {@link Filter} on a Materialized View. */
-  public static final MaterializedViewFilterScanRule INSTANCE =
-          MaterializedViewFilterScanRule.Config.DEFAULT.toRule();
-
-  private static final Supplier<HepProgram> PROGRAM = Suppliers.memoize(() ->
-          new HepProgramBuilder()
-                  .addRuleInstance(CoreRules.FILTER_PROJECT_TRANSPOSE)
-                  .addRuleInstance(CoreRules.PROJECT_MERGE)
-                  .build())::get;
-
-  //~ Constructors -----------------------------------------------------------
-
-  /** Creates a MaterializedViewFilterScanRule. */
-  protected MaterializedViewFilterScanRule(Config config) {
-    super(config);
-  }
-
-  @Deprecated // to be removed before 2.0
-  public MaterializedViewFilterScanRule(RelBuilderFactory relBuilderFactory) {
-    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
-            .as(Config.class));
-  }
-
-  //~ Methods ----------------------------------------------------------------
-
-  @Override public void onMatch(RelOptRuleCall call) {
-    final Filter filter = call.rel(0);
-    final TableScan scan = call.rel(1);
-    apply(call, filter, scan);
-  }
-
-  protected void apply(RelOptRuleCall call, Filter filter, TableScan scan) {
-    final RelOptPlanner planner = call.getPlanner();
-    final List<RelOptMaterialization> materializations =
-        planner.getMaterializations();
-    if (!materializations.isEmpty()) {
-      RelNode root = filter.copy(filter.getTraitSet(),
-          Collections.singletonList((RelNode) scan));
-      List<RelOptMaterialization> applicableMaterializations =
-          RelOptMaterializations.getApplicableMaterializations(root, materializations);
-      for (RelOptMaterialization materialization : applicableMaterializations) {
-        if (RelOptUtil.areRowTypesEqual(scan.getRowType(),
-            materialization.queryRel.getRowType(), false)) {
-          RelNode target = materialization.queryRel;
-          final HepPlanner hepPlanner =
-              new HepPlanner(PROGRAM.get(), planner.getContext());
-          hepPlanner.setRoot(target);
-          target = hepPlanner.findBestExp();
-          List<RelNode> subs = new SubstitutionVisitor(target, root)
-              .go(materialization.tableRel);
-          for (RelNode s : subs) {
-            call.transformTo(s);
-          }
-        }
-      }
-    }
-  }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -130,7 +52,6 @@ public class MaterializedViewFilterScanRule
     }
   }
 }
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

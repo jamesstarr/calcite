@@ -43,10 +43,6 @@ import java.util.List;
  * past a {@link org.apache.calcite.rel.core.Join}
  * by splitting the projection into a projection on top of each child of
  * the join.
-<<<<<<< HEAD
- *
- * @see CoreRules#PROJECT_JOIN_TRANSPOSE
-=======
 
  *
  * @see CoreRules#PROJECT_JOIN_TRANSPOSE
@@ -59,7 +55,6 @@ public class ProjectJoinTransposeRule
   /** Creates a ProjectJoinTransposeRule. */
   protected ProjectJoinTransposeRule(Config config) {
     super(config);
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
   }
 
   @Deprecated // to be removed before 2.0

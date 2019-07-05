@@ -381,9 +381,6 @@ public class PlannerTest {
     Program program =
         Programs.ofRules(
             CoreRules.FILTER_MERGE,
-<<<<<<< HEAD
-            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
-=======
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
     Planner planner = getPlanner(null, program);
@@ -654,7 +651,6 @@ public class PlannerTest {
     RuleSet ruleSet =
         RuleSets.ofList(
             CoreRules.SORT_REMOVE,
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
             EnumerableRules.ENUMERABLE_PROJECT_RULE,
             EnumerableRules.ENUMERABLE_WINDOW_RULE,
             EnumerableRules.ENUMERABLE_SORT_RULE,
@@ -724,9 +720,6 @@ public class PlannerTest {
     RuleSet ruleSet =
         RuleSets.ofList(
             CoreRules.FILTER_MERGE,
-<<<<<<< HEAD
-            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
-=======
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
     final List<RelTraitDef> traitDefs = new ArrayList<>();
@@ -752,7 +745,6 @@ public class PlannerTest {
     RuleSet ruleSet =
         RuleSets.ofList(
             CoreRules.FILTER_MERGE,
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
     Planner planner = getPlanner(null, Programs.of(ruleSet));

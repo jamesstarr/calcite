@@ -81,26 +81,6 @@ public class AggregateUnionAggregateRule
 
   //~ Methods ----------------------------------------------------------------
 
-<<<<<<< HEAD
-  /**
-   * Returns an input with the same row type with the input Aggregate,
-   * create a Project node if needed.
-   */
-  private RelNode getInputWithSameRowType(Aggregate bottomAggRel) {
-    if (RelOptUtil.areRowTypesEqual(
-            bottomAggRel.getRowType(),
-            bottomAggRel.getInput(0).getRowType(),
-            false)) {
-      return bottomAggRel.getInput(0);
-    } else {
-      return RelOptUtil.createProject(
-          bottomAggRel.getInput(),
-          bottomAggRel.getGroupSet().asList());
-    }
-  }
-
-  public void onMatch(RelOptRuleCall call) {
-=======
   @Override public void onMatch(RelOptRuleCall call) {
     final Aggregate topAggRel = call.rel(0);
     final Union union = call.rel(1);
@@ -181,7 +161,6 @@ public class AggregateUnionAggregateRule
     }
   }
 }
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

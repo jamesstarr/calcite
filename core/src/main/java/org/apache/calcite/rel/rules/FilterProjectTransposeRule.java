@@ -21,11 +21,6 @@ import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptRuleOperand;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
-<<<<<<< HEAD
-import org.apache.calcite.plan.RelTraitSet;
-import org.apache.calcite.rel.RelCollationTraitDef;
-import org.apache.calcite.rel.RelDistributionTraitDef;
-=======
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Project;
@@ -257,7 +252,6 @@ public class FilterProjectTransposeRule
     }
   }
 }
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /**
    * Simplifies the filter condition using a simplifier created by the

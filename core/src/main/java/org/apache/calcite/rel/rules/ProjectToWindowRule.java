@@ -74,14 +74,6 @@ public abstract class ProjectToWindowRule
         extends RelRule<ProjectToWindowRule.Config>
         implements TransformationRule {
 
-<<<<<<< HEAD
-  public static final ProjectToWindowRule INSTANCE =
-      new CalcToWindowRule(RelFactories.LOGICAL_BUILDER);
-
-  public static final ProjectToWindowRule PROJECT =
-      new ProjectToLogicalProjectAndWindowRule(RelFactories.LOGICAL_BUILDER);
-
-=======
   /** Creates a ProjectToWindowRule. */
   protected ProjectToWindowRule(Config config) {
     super(config);
@@ -402,7 +394,6 @@ public abstract class ProjectToWindowRule
     @Override ProjectToWindowRule toRule();
   }
 }
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
