@@ -26,6 +26,7 @@ import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rex.RexBuilder;
+import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.tools.RelBuilder;
@@ -87,7 +88,7 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
 
     final List<RexNode> aboveFilters =
         filter != null
-            ? conjunctions(filter.getCondition())
+            ? getConjunctions(filter)
             : new ArrayList<>();
     final ImmutableList<RexNode> origAboveFilters =
         ImmutableList.copyOf(aboveFilters);
@@ -231,6 +232,28 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
         RexUtil.fixUp(rexBuilder, aboveFilters,
             RelOptUtil.getFieldTypeList(relBuilder.peek().getRowType())));
     call.transformTo(relBuilder.build());
+  }
+
+  /**
+   * Get conjunctions of filter's condition but with collapsed
+   * {@code IS NOT DISTINCT FROM} expressions if needed.
+   *
+   * @param filter filter containing condition
+   * @return condition conjunctions with collapsed {@code IS NOT DISTINCT FROM}
+   * expressions if any
+   * @see RelOptUtil#conjunctions(RexNode)
+   */
+  private List<RexNode> getConjunctions(Filter filter) {
+    List<RexNode> conjunctions = conjunctions(filter.getCondition());
+    RexBuilder rexBuilder = filter.getCluster().getRexBuilder();
+    for (int i = 0; i < conjunctions.size(); i++) {
+      RexNode node = conjunctions.get(i);
+      if (node instanceof RexCall) {
+        conjunctions.set(i,
+            RelOptUtil.collapseExpandedIsNotDistinctFromExpr((RexCall) node, rexBuilder));
+      }
+    }
+    return conjunctions;
   }
 
   /**
