@@ -39,4 +39,8 @@
     "DEPTNO": 60,
     "NAME": "60"
   }
+<<<<<<< HEAD
 ]
+=======
+]
+>>>>>>> 9addb8c46 ([CALCITE-3176] File adapter for parsing JSON files)

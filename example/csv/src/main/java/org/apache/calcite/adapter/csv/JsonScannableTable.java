@@ -45,8 +45,13 @@ public class JsonScannableTable extends JsonTable
   public Enumerable<Object[]> scan(DataContext root) {
     return new AbstractEnumerable<Object[]>() {
       public Enumerator<Object[]> enumerator() {
-        return new JsonEnumerator(getDataList(root.getTypeFactory()));
+        return new JsonEnumerator(list);
       }
     };
   }
 }
+<<<<<<< HEAD
+=======
+
+// End JsonScannableTable.java
+>>>>>>> 9addb8c46 ([CALCITE-3176] File adapter for parsing JSON files)
