@@ -8365,6 +8365,7 @@ LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testCanNotPushAntiJoinConditionsToLeft">
         <Resource name="sql">
             <![CDATA[select * from emp
@@ -8395,6 +8396,8 @@ LogicalProject(EMPNO=[$0])
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> 61eb479a0 ([CALCITE-3171] SemiJoin on conditions push down throws IndexOutOfBoundsException)
     <TestCase name="testPushSemiJoinConditionsToLeft">
         <Resource name="sql">
             <![CDATA[select * from emp
@@ -8404,6 +8407,7 @@ in (select dept.deptno from dept where emp.empno > 20)]]>
         <Resource name="planAfter">
             <![CDATA[
 LogicalProject(EMPNO=[$0])
+<<<<<<< HEAD
   LogicalJoin(condition=[AND(IS NOT DISTINCT FROM($7, $8), >($0, 20))], joinType=[semi])
     LogicalTableScan(table=[[scott, EMP]])
     LogicalTableScan(table=[[scott, DEPT]])
@@ -8425,6 +8429,16 @@ LogicalProject(DEPTNO=[$0])
 =======
 
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+  LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7])
+    LogicalJoin(condition=[AND(IS NOT DISTINCT FROM($7, $9), $8)], joinType=[semi])
+      LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], $f8=[>($0, 20)])
+        LogicalTableScan(table=[[scott, EMP]])
+      LogicalTableScan(table=[[scott, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+>>>>>>> 61eb479a0 ([CALCITE-3171] SemiJoin on conditions push down throws IndexOutOfBoundsException)
     <TestCase name="testSemiJoinRuleExists">
         <Resource name="sql">
             <![CDATA[select * from dept where exists (
