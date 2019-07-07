@@ -8366,6 +8366,9 @@ LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5
     </TestCase>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9c20aa709 ([CALCITE-3170] ANTI join on conditions push down generates wrong plan)
     <TestCase name="testCanNotPushAntiJoinConditionsToLeft">
         <Resource name="sql">
             <![CDATA[select * from emp
@@ -8396,8 +8399,11 @@ LogicalProject(EMPNO=[$0])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 >>>>>>> 61eb479a0 ([CALCITE-3171] SemiJoin on conditions push down throws IndexOutOfBoundsException)
+=======
+>>>>>>> 9c20aa709 ([CALCITE-3170] ANTI join on conditions push down generates wrong plan)
     <TestCase name="testPushSemiJoinConditionsToLeft">
         <Resource name="sql">
             <![CDATA[select * from emp

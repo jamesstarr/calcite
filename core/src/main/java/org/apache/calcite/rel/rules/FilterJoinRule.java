@@ -68,7 +68,7 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
    */
   private boolean needsPushInto(Join join) {
     // If the join force the join info to be based on column equality,
-    // Or it is a non-correlated semijoin, returns false.
+    // or it is a non-correlated semijoin, returns false.
     return !RelOptUtil.forceEquiJoin(join);
   }
 
