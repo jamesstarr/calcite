@@ -569,8 +569,7 @@ public class SubstitutionVisitor {
               final UnifyResult result = rule.apply(call);
               if (result != null) {
                 ++count;
-                attempted.add(
-                    new Replacement(result.call.query, result.result, result.stopTrying));
+                attempted.add(new Replacement(result.call.query, result.result));
                 result.call.query.replaceInParent(result.result);
 
                 // Replace previous equivalents with new equivalents, higher up
@@ -640,7 +639,7 @@ public class SubstitutionVisitor {
       return litmus.fail("Mismatch for column count: [{}]", Pair.of(rel0, rel1));
     }
     for (Pair<RelDataTypeField, RelDataTypeField> pair
-        : Pair.zip(rel0.rowType.getFieldList(), rel1.rowType.getFieldList())) {
+        : Pair.zip(rel0.rowType.getFieldList(), rel0.rowType.getFieldList())) {
       if (!pair.left.getType().equals(pair.right.getType())) {
         return litmus.fail("Mismatch for column type: [{}]", Pair.of(rel0, rel1));
       }
