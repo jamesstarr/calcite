@@ -108,6 +108,18 @@ public interface RelDataTypeSystem {
   boolean shouldConvertRaggedUnionTypesToVarying();
 
   /**
+   * Returns whether a decimal multiplication should be implemented by casting
+   * arguments to double values.
+   *
+   * <p>Pre-condition: <code>createDecimalProduct(type1, type2) != null</code>
+   */
+  default boolean shouldUseDoubleMultiplication(RelDataTypeFactory typeFactory,
+      RelDataType type1, RelDataType type2) {
+    assert deriveDecimalMultiplyType(typeFactory, type1, type2) != null;
+    return false;
+  }
+
+  /**
    * Infers the return type of a decimal addition. Decimal addition involves
    * at least one decimal operand and requires both operands to have exact
    * numeric types.

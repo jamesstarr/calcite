@@ -132,9 +132,6 @@ public class AggregateCaseToFilterRule extends RelOptRule {
 
     final RelBuilder.GroupKey groupKey =
         relBuilder.groupKey(aggregate.getGroupSet(),
-<<<<<<< HEAD
-            (Iterable<ImmutableBitSet>) aggregate.getGroupSets());
-=======
             aggregate.getGroupSets());
 
     relBuilder.aggregate(groupKey, newCalls)
@@ -272,4 +269,3 @@ public class AggregateCaseToFilterRule extends RelOptRule {
 =======
 
 // End AggregateCaseToFilterRule.java
->>>>>>> 0218f4ee7 ([CALCITE-3144] Add rule, AggregateCaseToFilterRule, that converts "SUM(CASE WHEN b THEN x END)" to "SUM(x) FILTER (WHERE b)")

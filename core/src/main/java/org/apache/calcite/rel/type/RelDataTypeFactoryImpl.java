@@ -457,27 +457,32 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
   }
 
   /**
-   * Delegates to {@link RelDataTypeSystem#deriveDecimalMultiplyType} to get the return type
-   * for the operation.
+   * Delegates to
+   * {@link RelDataTypeSystem#deriveDecimalMultiplyType(RelDataTypeFactory, RelDataType, RelDataType)}
+   * to get the return type for the operation.
    */
   @Deprecated
   public RelDataType createDecimalProduct(
       RelDataType type1,
       RelDataType type2) {
-    return  typeSystem.deriveDecimalMultiplyType(this, type1, type2);
-  }
-
-  // implement RelDataTypeFactory
-  public boolean useDoubleMultiplication(
-      RelDataType type1,
-      RelDataType type2) {
-    assert createDecimalProduct(type1, type2) != null;
-    return false;
+    return typeSystem.deriveDecimalMultiplyType(this, type1, type2);
   }
 
   /**
-   * Delegates to {@link RelDataTypeSystem#deriveDecimalDivideType} to get the return type
-   * for the operation.
+   * Delegates to
+   * {@link RelDataTypeSystem#shouldUseDoubleMultiplication(RelDataTypeFactory, RelDataType, RelDataType)}
+   * to get if double should be used for multiplication.
+   */
+  public boolean useDoubleMultiplication(
+      RelDataType type1,
+      RelDataType type2) {
+    return typeSystem.shouldUseDoubleMultiplication(this, type1, type2);
+  }
+
+  /**
+   * Delegates to
+   * {@link RelDataTypeSystem#deriveDecimalDivideType(RelDataTypeFactory, RelDataType, RelDataType)}
+   * to get the return type for the operation.
    */
   @Deprecated
   public boolean useDoubleMultiplication(
@@ -544,7 +549,6 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
     // create decimal type and sync nullability
     return createTypeWithNullability(decimalOf2(type), type.isNullable());
   }
-
   /** Create decimal type equivalent with the given {@code type} while sans nullability. */
   private RelDataType decimalOf2(RelDataType type) {
     assert SqlTypeUtil.isNumeric(type) || SqlTypeUtil.isNull(type);
