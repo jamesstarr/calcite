@@ -18,6 +18,8 @@ package org.apache.calcite.sql.dialect;
 
 import org.apache.calcite.avatica.util.TimeUnitRange;
 import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeSystem;
+import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
 import org.apache.calcite.sql.SqlAbstractDateTimeLiteral;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlDataTypeSpec;
@@ -34,6 +36,7 @@ import org.apache.calcite.sql.fun.SqlFloorFunction;
 import org.apache.calcite.sql.fun.SqlLibraryOperators;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.calcite.sql.type.SqlTypeName;
 
 import com.google.common.collect.ImmutableList;
 
@@ -43,10 +46,26 @@ import java.util.List;
  * A <code>SqlDialect</code> implementation for the Oracle database.
  */
 public class OracleSqlDialect extends SqlDialect {
+
+  /** OracleDB type system. */
+  private static final RelDataTypeSystem ORACLE_TYPE_SYSTEM =
+      new RelDataTypeSystemImpl() {
+        @Override public int getMaxPrecision(SqlTypeName typeName) {
+          switch (typeName) {
+          case VARCHAR:
+            // Maximum size of 4000 bytes for varchar2.
+            return 4000;
+          default:
+            return super.getMaxPrecision(typeName);
+          }
+        }
+      };
+
   public static final SqlDialect DEFAULT =
       new OracleSqlDialect(EMPTY_CONTEXT
           .withDatabaseProduct(DatabaseProduct.ORACLE)
-          .withIdentifierQuoteString("\""));
+          .withIdentifierQuoteString("\"")
+          .withDataTypeSystem(ORACLE_TYPE_SYSTEM));
 
   /** Creates an OracleSqlDialect. */
   public OracleSqlDialect(Context context) {
@@ -101,13 +120,13 @@ public class OracleSqlDialect extends SqlDialect {
   @Override public void unparseDateTimeLiteral(SqlWriter writer,
       SqlAbstractDateTimeLiteral literal, int leftPrec, int rightPrec) {
     if (literal instanceof SqlTimestampLiteral) {
-      writer.literal("TO_TIMESTAMP('"
+      writer.literal("TO_TIMESTAMP ('"
           + literal.toFormattedString() + "', 'YYYY-MM-DD HH24:MI:SS.FF')");
     } else if (literal instanceof SqlDateLiteral) {
-      writer.literal("TO_DATE('"
+      writer.literal("TO_DATE ('"
           + literal.toFormattedString() + "', 'YYYY-MM-DD')");
     } else if (literal instanceof SqlTimeLiteral) {
-      writer.literal("TO_TIME('"
+      writer.literal("TO_TIME ('"
           + literal.toFormattedString() + "', 'HH24:MI:SS.FF')");
     } else {
       super.unparseDateTimeLiteral(writer, literal, leftPrec, rightPrec);
