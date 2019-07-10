@@ -13392,6 +13392,9 @@ EnumerableProject(N_REGIONKEY=[ITEM($0, 'N_REGIONKEY')])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 5995101f6 ([CALCITE-3188] IndexOutOfBoundsException in ProjectFilterTransposeRule when executing SELECT COUNT(*))
     <TestCase name="testProjectFilterTransposeRuleOnEmptyRowType">
         <Resource name="planAfter">
             <![CDATA[
@@ -13402,8 +13405,11 @@ LogicalProject
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 >>>>>>> ac79dae95 ([CALCITE-3121] VolcanoPlanner hangs due to subquery with dynamic star)
+=======
+>>>>>>> 5995101f6 ([CALCITE-3188] IndexOutOfBoundsException in ProjectFilterTransposeRule when executing SELECT COUNT(*))
     <TestCase name="testSelectAnyCorrelated">
         <Resource name="sql">
             <![CDATA[select empno > ANY (
