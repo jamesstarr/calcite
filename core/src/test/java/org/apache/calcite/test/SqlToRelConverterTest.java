@@ -2642,6 +2642,64 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).with(getTesterWithDynamicTable()).ok();
   }
 
+  @Test public void testDynamicNestedColumn() {
+    final String sql = "select t3.fake_q1['fake_col2'] as fake2\n"
+        + "from (\n"
+        + "  select t2.fake_col as fake_q1\n"
+        + "  from SALES.CUSTOMER as t2) as t3";
+    sql(sql).with(getTesterWithDynamicTable()).ok();
+  }
+
+
+  @Test
+  public void testNestedStructFieldAccess() {
+    final String sql =
+        "select dn.skill['others'] from sales.dept_nested dn";
+    sql(sql).ok();
+  }
+
+  @Test
+  public void testNestedStructPrimitiveFieldAccess() {
+    final String sql =
+        "select dn.skill['others']['a'] from sales.dept_nested dn";
+    sql(sql).ok();
+  }
+
+  @Test
+  public void testNestedPrimitiveFieldAccess() {
+    final String sql =
+        "select dn.skill['desc'] from sales.dept_nested dn";
+    sql(sql).ok();
+  }
+
+  @Test
+  public void testArrayElementNestedPrimitive() {
+    final String sql =
+        "select dn.employees[0]['empno'] from sales.dept_nested dn";
+    sql(sql).ok();
+  }
+
+  @Test
+  public void testArrayElementDoublyNestedPrimitive() {
+    final String sql =
+        "select dn.employees[0]['detail']['skills'][0]['type'] from sales.dept_nested dn";
+    sql(sql).ok();
+  }
+
+  @Test
+  public void testArrayElementDoublyNestedStruct() {
+    final String sql =
+        "select dn.employees[0]['detail']['skills'][0] from sales.dept_nested dn";
+    sql(sql).ok();
+  }
+
+  @Test
+  public void testArrayElementThreeTimesNestedStruct() {
+    final String sql =
+        "select dn.employees[0]['detail']['skills'][0]['others'] from sales.dept_nested dn";
+    sql(sql).ok();
+  }
+
   /**
    * Test case for <a href="https://issues.apache.org/jira/browse/CALCITE-3003">[CALCITE-3003]
    * AssertionError when GROUP BY nested field</a>.

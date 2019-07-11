@@ -722,18 +722,18 @@ public class PlannerTest {
    * cannot be pushed into an outer join (emps left join depts).
    */
   @Test public void testHeuristicLeftJoin() throws Exception {
-    checkHeuristic(
-        "select * from \"emps\" as e\n"
-            + "left join \"depts\" as d using (\"deptno\")\n"
-            + "join \"dependents\" as p on e.\"empid\" = p.\"empid\"",
-        "EnumerableProject(empid=[$0], deptno=[$1], name=[$2], salary=[$3], commission=[$4], deptno0=[$5], name0=[$6], employees=[$7], location=[$8], location9=[$9], empid0=[$10], name1=[$11])\n"
-            + "  EnumerableProject(empid=[$2], deptno=[$3], name=[$4], salary=[$5], commission=[$6], deptno0=[$7], name0=[$8], employees=[$9], x=[$10], y=[$11], empid0=[$0], name1=[$1])\n"
-            + "    EnumerableHashJoin(condition=[=($0, $2)], joinType=[inner])\n"
-            + "      EnumerableTableScan(table=[[hr, dependents]])\n"
-            + "      EnumerableHashJoin(condition=[=($1, $5)], joinType=[left])\n"
-            + "        EnumerableTableScan(table=[[hr, emps]])\n"
-            + "        EnumerableProject(deptno=[$0], name=[$1], employees=[$2], x=[$3.x], y=[$3.y])\n"
-            + "          EnumerableTableScan(table=[[hr, depts]])");
+    final String sql = "select * from \"emps\" as e\n"
+        + "left join \"depts\" as d on e.\"deptno\" = d.\"deptno\"\n"
+        + "join \"dependents\" as p on e.\"empid\" = p.\"empid\"";
+    final String expected = ""
+        + "EnumerableProject(empid=[$2], deptno=[$3], name=[$4], salary=[$5], commission=[$6], deptno0=[$7], name0=[$8], employees=[$9], location=[ROW($10, $11)], empid0=[$0], name1=[$1])\n"
+        + "  EnumerableHashJoin(condition=[=($0, $2)], joinType=[inner])\n"
+        + "    EnumerableTableScan(table=[[hr, dependents]])\n"
+        + "    EnumerableHashJoin(condition=[=($1, $5)], joinType=[left])\n"
+        + "      EnumerableTableScan(table=[[hr, emps]])\n"
+        + "      EnumerableProject(deptno=[$0], name=[$1], employees=[$2], x=[$3.x], y=[$3.y])\n"
+        + "        EnumerableTableScan(table=[[hr, depts]])";
+    checkHeuristic(sql, expected);
   }
 
   /** It would probably be OK to transform
@@ -743,36 +743,36 @@ public class PlannerTest {
    * but we do not currently allow it.
    */
   @Test public void testHeuristicPushInnerJoin() throws Exception {
-    checkHeuristic(
-        "select * from \"emps\" as e\n"
-            + "right join \"depts\" as d using (\"deptno\")\n"
-            + "join \"dependents\" as p on e.\"empid\" = p.\"empid\"",
-        "EnumerableProject(empid=[$0], deptno=[$1], name=[$2], salary=[$3], commission=[$4], deptno0=[$5], name0=[$6], employees=[$7], location=[$8], location9=[$9], empid0=[$10], name1=[$11])\n"
-            + "  EnumerableProject(empid=[$2], deptno=[$3], name=[$4], salary=[$5], commission=[$6], deptno0=[$7], name0=[$8], employees=[$9], x=[$10], y=[$11], empid0=[$0], name1=[$1])\n"
-            + "    EnumerableHashJoin(condition=[=($0, $2)], joinType=[inner])\n"
-            + "      EnumerableTableScan(table=[[hr, dependents]])\n"
-            + "      EnumerableProject(empid=[$5], deptno=[$6], name=[$7], salary=[$8], commission=[$9], deptno0=[$0], name0=[$1], employees=[$2], x=[$3], y=[$4])\n"
-            + "        EnumerableHashJoin(condition=[=($0, $6)], joinType=[left])\n"
-            + "          EnumerableProject(deptno=[$0], name=[$1], employees=[$2], x=[$3.x], y=[$3.y])\n"
-            + "            EnumerableTableScan(table=[[hr, depts]])\n"
-            + "          EnumerableTableScan(table=[[hr, emps]])");
+    final String sql = "select * from \"emps\" as e\n"
+        + "right join \"depts\" as d on e.\"deptno\" = d.\"deptno\"\n"
+        + "join \"dependents\" as p on e.\"empid\" = p.\"empid\"";
+    final String expected = ""
+        + "EnumerableProject(empid=[$2], deptno=[$3], name=[$4], salary=[$5], commission=[$6], deptno0=[$7], name0=[$8], employees=[$9], location=[ROW($10, $11)], empid0=[$0], name1=[$1])\n"
+        + "  EnumerableHashJoin(condition=[=($0, $2)], joinType=[inner])\n"
+        + "    EnumerableTableScan(table=[[hr, dependents]])\n"
+        + "    EnumerableProject(empid=[$5], deptno=[$6], name=[$7], salary=[$8], commission=[$9], deptno0=[$0], name0=[$1], employees=[$2], x=[$3], y=[$4])\n"
+        + "      EnumerableHashJoin(condition=[=($0, $6)], joinType=[left])\n"
+        + "        EnumerableProject(deptno=[$0], name=[$1], employees=[$2], x=[$3.x], y=[$3.y])\n"
+        + "          EnumerableTableScan(table=[[hr, depts]])\n"
+        + "        EnumerableTableScan(table=[[hr, emps]])";
+    checkHeuristic(sql, expected);
   }
 
   /** Tests that a relation (dependents) that is on the null-generating side of
    * an outer join cannot be pushed into an inner join (emps join depts). */
   @Test public void testHeuristicRightJoin() throws Exception {
-    checkHeuristic(
-        "select * from \"emps\" as e\n"
-            + "join \"depts\" as d using (\"deptno\")\n"
-            + "right join \"dependents\" as p on e.\"empid\" = p.\"empid\"",
-        "EnumerableProject(empid=[$0], deptno=[$1], name=[$2], salary=[$3], commission=[$4], deptno0=[$5], name0=[$6], employees=[$7], location=[$8], location9=[$9], empid0=[$10], name1=[$11])\n"
-            + "  EnumerableProject(empid=[$2], deptno=[$3], name=[$4], salary=[$5], commission=[$6], deptno0=[$7], name0=[$8], employees=[$9], x=[$10], y=[$11], empid0=[$0], name1=[$1])\n"
-            + "    EnumerableHashJoin(condition=[=($0, $2)], joinType=[left])\n"
-            + "      EnumerableTableScan(table=[[hr, dependents]])\n"
-            + "      EnumerableHashJoin(condition=[=($1, $5)], joinType=[inner])\n"
-            + "        EnumerableTableScan(table=[[hr, emps]])\n"
-            + "        EnumerableProject(deptno=[$0], name=[$1], employees=[$2], x=[$3.x], y=[$3.y])\n"
-            + "          EnumerableTableScan(table=[[hr, depts]])");
+    final String sql = "select * from \"emps\" as e\n"
+        + "join \"depts\" as d on e.\"deptno\" = d.\"deptno\"\n"
+        + "right join \"dependents\" as p on e.\"empid\" = p.\"empid\"";
+    final String expected = ""
+        + "EnumerableProject(empid=[$2], deptno=[$3], name=[$4], salary=[$5], commission=[$6], deptno0=[$7], name0=[$8], employees=[$9], location=[ROW($10, $11)], empid0=[$0], name1=[$1])\n"
+        + "  EnumerableHashJoin(condition=[=($0, $2)], joinType=[left])\n"
+        + "    EnumerableTableScan(table=[[hr, dependents]])\n"
+        + "    EnumerableHashJoin(condition=[=($1, $5)], joinType=[inner])\n"
+        + "      EnumerableTableScan(table=[[hr, emps]])\n"
+        + "      EnumerableProject(deptno=[$0], name=[$1], employees=[$2], x=[$3.x], y=[$3.y])\n"
+        + "        EnumerableTableScan(table=[[hr, depts]])";
+    checkHeuristic(sql, expected);
   }
 
   private void checkHeuristic(String sql, String expected) throws Exception {
