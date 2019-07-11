@@ -1592,6 +1592,8 @@ public class RexBuilder {
     case INTERVAL_SECOND:
       return makeIntervalLiteral((BigDecimal) value,
           type.getIntervalQualifier());
+    case SYMBOL:
+      return makeFlag((Enum) value);
     case MAP:
       final MapSqlType mapType = (MapSqlType) type;
       @SuppressWarnings("unchecked")
