@@ -39,6 +39,50 @@ import org.apache.calcite.util.DateString;
 import org.apache.calcite.util.NlsString;
 import org.apache.calcite.util.Util;
 
+<<<<<<< HEAD
+=======
+
+import com.google.common.collect.ImmutableList;
+
+import org.hamcrest.Matcher;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.function.Function;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+/**
+ * Unit test for {@link org.apache.calcite.rex.RexExecutorImpl}.
+ */
+public class RexExecutorTest {
+  public RexExecutorTest() {
+  }
+
+  protected void check(final Action action) throws Exception {
+    Frameworks.withPrepare((cluster, relOptSchema, rootSchema, statement) -> {
+      final RexBuilder rexBuilder = cluster.getRexBuilder();
+      DataContext dataContext =
+          Schemas.createDataContext(statement.getConnection(), rootSchema);
+      final RexExecutorImpl executor = new RexExecutorImpl(dataContext);
+      action.check(rexBuilder, executor);
+      return null;
+    });
+  }
+
+  /** Tests an executor that uses variables stored in a {@link DataContext}.
+   * Can change the value of the variable and execute again. */
+>>>>>>> 90bb2364a ([CALCITE-3196] In Frameworks, add interface BasePrepareAction (a functional interface) and deprecate abstract class PrepareAction)
   @Test public void testVariableExecution() throws Exception {
     check((rexBuilder, executor) -> {
 
@@ -181,27 +225,22 @@ import org.apache.calcite.util.Util;
       final SqlOperator operator,
       final DataContext.Variable variable,
       final Object value) {
-    Frameworks.withPrepare(new Frameworks.PrepareAction<Void>() {
-      public Void apply(final RelOptCluster cluster,
-          final RelOptSchema relOptSchema,
-          final SchemaPlus rootSchema,
-          final CalciteServerStatement statement) {
-        final RexBuilder rexBuilder = cluster.getRexBuilder();
-        final RexExecutorImpl executor =
-            new RexExecutorImpl(
-                new SingleValueDataContext(variable.camelName, value));
-        try {
-          checkConstant(value, builder -> {
-            final List<RexNode> output = new ArrayList<>();
-            executor.reduce(rexBuilder,
-                ImmutableList.of(rexBuilder.makeCall(operator)), output);
-            return output.get(0);
-          });
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-        return null;
+    Frameworks.withPrepare((cluster, relOptSchema, rootSchema, statement) -> {
+      final RexBuilder rexBuilder = cluster.getRexBuilder();
+      final RexExecutorImpl executor =
+          new RexExecutorImpl(
+              new SingleValueDataContext(variable.camelName, value));
+      try {
+        checkConstant(value, builder -> {
+          final List<RexNode> output = new ArrayList<>();
+          executor.reduce(rexBuilder,
+              ImmutableList.of(rexBuilder.makeCall(operator)), output);
+          return output.get(0);
+        });
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
+      return null;
     });
   }
 
