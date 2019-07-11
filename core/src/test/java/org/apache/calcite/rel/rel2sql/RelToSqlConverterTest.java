@@ -4446,22 +4446,6 @@ class RelToSqlConverterTest {
     }
 
     Sql config(SqlToRelConverter.Config config) {
-<<<<<<< HEAD
-      return new Sql(schema, sql, dialect, parserConfig, config, relFn,
-          transforms);
-    }
-
-    Sql optimize(final RuleSet ruleSet, final RelOptPlanner relOptPlanner) {
-      return new Sql(schema, sql, dialect, parserConfig, config, relFn,
-          FlatLists.append(transforms, r -> {
-            Program program = Programs.of(ruleSet);
-            final RelOptPlanner p =
-                Util.first(relOptPlanner,
-                    new HepPlanner(
-                        new HepProgramBuilder().addRuleClass(RelOptRule.class)
-                            .build()));
-            return program.run(p, r, r.getTraitSet(),
-=======
       return new Sql(schema, sql, dialect, config, transforms);
     }
 
@@ -4495,7 +4479,6 @@ class RelToSqlConverterTest {
 =======
       final Planner planner =
           getPlanner(null, SqlParser.Config.DEFAULT, schema, config);
->>>>>>> ca3727fe0 ([CALCITE-2417] Fix ClassCastException in RelToSqlConverter with structs (Benoit Hanotte))
       try {
         RelNode rel;
         if (relFn != null) {

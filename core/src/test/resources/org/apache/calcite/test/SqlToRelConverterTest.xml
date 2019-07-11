@@ -836,6 +836,7 @@ LogicalAggregate(group=[{0}], groups=[[{0}, {}]])
         </Resource>
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[ITEM(ITEM($3, 1).DETAIL.SKILLS, +(2, 3)).DESC])
   LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
 ]]>
@@ -861,6 +862,11 @@ LogicalSort(sort0=[$0], dir0=[ASC])
             <![CDATA[
 LogicalProject(EXPR$0=[ROW(ITEM($3, 1).EMPNO, ITEM($3, 1).ENAME, ROW(ITEM($3, 1).DETAIL.SKILLS))])
   LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+=======
+LogicalProject(EXPR$0=[DOT(ITEM(DOT(DOT(ITEM($6, 1), 'DETAIL'), 'SKILLS'), +(2, 3)), 'DESC')])
+  LogicalProject(DEPTNO=[$0], NAME=[$1], TYPE=[$2.TYPE], DESC=[$2.DESC], A=[$2.OTHERS.A], B=[$2.OTHERS.B], EMPLOYEES=[$3])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+>>>>>>> af4516c57 ([CALCITE-3138] RelStructuredTypeFlattener doesn't restructure ROW type fields (Igor Guzenko))
 ]]>
         </Resource>
     </TestCase>
@@ -871,8 +877,9 @@ LogicalProject(EXPR$0=[ROW(ITEM($3, 1).EMPNO, ITEM($3, 1).ENAME, ROW(ITEM($3, 1)
         <Resource name="plan">
             <![CDATA[
 LogicalSort(sort0=[$0], dir0=[ASC])
-  LogicalProject(EXPR$0=[DOT(ITEM(DOT(DOT(ITEM($2, 1), 'DETAIL'), 'SKILLS'), +(2, 3)), 'DESC')])
-    LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+  LogicalProject(EXPR$0=[DOT(ITEM(DOT(DOT(ITEM($6, 1), 'DETAIL'), 'SKILLS'), +(2, 3)), 'DESC')])
+    LogicalProject(DEPTNO=[$0], NAME=[$1], TYPE=[$2.TYPE], DESC=[$2.DESC], A=[$2.OTHERS.A], B=[$2.OTHERS.B], EMPLOYEES=[$3])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
 ]]>
         </Resource>
     </TestCase>
@@ -1312,6 +1319,11 @@ LogicalProject(EXPR$0=[CHAR_LENGTH('foo')])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> af4516c57 ([CALCITE-3138] RelStructuredTypeFlattener doesn't restructure ROW type fields (Igor Guzenko))
     <TestCase name="testDotLiteralAfterNestedRow">
         <Resource name="sql">
             <![CDATA[select ((1,2),(3,4,5))."EXPR$1"."EXPR$2" from emp]]>
@@ -1334,6 +1346,7 @@ LogicalProject(EXPR$0=[ROW(1, 2).EXPR$1])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testRowValueConstructorWithSubquery">
         <Resource name="sql">
             <![CDATA[select ROW((select deptno
@@ -1351,6 +1364,8 @@ LogicalProject(EXPR$0=[ROW($9, $1)])
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> af4516c57 ([CALCITE-3138] RelStructuredTypeFlattener doesn't restructure ROW type fields (Igor Guzenko))
     <TestCase name="testDynamicNestedColumn">
         <Resource name="sql">
             <![CDATA[select t3.fake_q1['fake_col2'] as fake2
@@ -1361,7 +1376,12 @@ from (
         <Resource name="plan">
             <![CDATA[
 LogicalProject(FAKE2=[ITEM($0, 'fake_col2')])
+<<<<<<< HEAD
   LogicalTableScan(table=[[CATALOG, SALES, CUSTOMER]])
+=======
+  LogicalProject(FAKE_Q1=[$0])
+    LogicalTableScan(table=[[CATALOG, SALES, CUSTOMER]])
+>>>>>>> af4516c57 ([CALCITE-3138] RelStructuredTypeFlattener doesn't restructure ROW type fields (Igor Guzenko))
 ]]>
         </Resource>
     </TestCase>
@@ -1378,6 +1398,75 @@ LogicalProject(ZIP=[$3])
             <![CDATA[select empa.home_address.zip from sales.emp_address empa where empa.home_address.city = 'abc']]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
+=======
+    <TestCase name="testNestedStructFieldAccess">
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EXPR$0=[ROW($0, $1)])
+  LogicalProject(EXPR$0=[$4], EXPR$00=[$5])
+    LogicalProject(DEPTNO=[$0], NAME=[$1], TYPE=[$2.TYPE], DESC=[$2.DESC], A=[$2.OTHERS.A], B=[$2.OTHERS.B], EMPLOYEES=[$3])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testNestedStructPrimitiveFieldAccess">
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EXPR$0=[$4])
+  LogicalProject(DEPTNO=[$0], NAME=[$1], TYPE=[$2.TYPE], DESC=[$2.DESC], A=[$2.OTHERS.A], B=[$2.OTHERS.B], EMPLOYEES=[$3])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testNestedPrimitiveFieldAccess">
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EXPR$0=[$3])
+  LogicalProject(DEPTNO=[$0], NAME=[$1], TYPE=[$2.TYPE], DESC=[$2.DESC], A=[$2.OTHERS.A], B=[$2.OTHERS.B], EMPLOYEES=[$3])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testArrayElementNestedPrimitive">
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EXPR$0=[ITEM(ITEM($6, 0), 'empno')])
+  LogicalProject(DEPTNO=[$0], NAME=[$1], TYPE=[$2.TYPE], DESC=[$2.DESC], A=[$2.OTHERS.A], B=[$2.OTHERS.B], EMPLOYEES=[$3])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testArrayElementDoublyNestedPrimitive">
+    <Resource name="plan">
+      <![CDATA[
+LogicalProject(EXPR$0=[ITEM(ITEM(ITEM(ITEM(ITEM($6, 0), 'detail'), 'skills'), 0), 'type')])
+  LogicalProject(DEPTNO=[$0], NAME=[$1], TYPE=[$2.TYPE], DESC=[$2.DESC], A=[$2.OTHERS.A], B=[$2.OTHERS.B], EMPLOYEES=[$3])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+]]>
+    </Resource>
+    </TestCase>
+    <TestCase name="testArrayElementDoublyNestedStruct">
+      <Resource name="plan">
+        <![CDATA[
+LogicalProject(EXPR$0=[ROW($0, $1, ROW($2, $3))])
+  LogicalProject(EXPR$0$0=[ITEM(ITEM(ITEM(ITEM($6, 0), 'detail'), 'skills'), 0).TYPE], EXPR$0$1=[ITEM(ITEM(ITEM(ITEM($6, 0), 'detail'), 'skills'), 0).DESC], EXPR$0$2$0=[ITEM(ITEM(ITEM(ITEM($6, 0), 'detail'), 'skills'), 0).OTHERS.A], EXPR$0$2$1=[ITEM(ITEM(ITEM(ITEM($6, 0), 'detail'), 'skills'), 0).OTHERS.B])
+    LogicalProject(DEPTNO=[$0], NAME=[$1], TYPE=[$2.TYPE], DESC=[$2.DESC], A=[$2.OTHERS.A], B=[$2.OTHERS.B], EMPLOYEES=[$3])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+]]>
+      </Resource>
+    </TestCase>
+    <TestCase name="testArrayElementThreeTimesNestedStruct">
+      <Resource name="plan">
+        <![CDATA[
+LogicalProject(EXPR$0=[ROW($0, $1)])
+  LogicalProject(EXPR$0$0$2$0=[ITEM(ITEM(ITEM(ITEM($6, 0), 'detail'), 'skills'), 0).OTHERS.A], EXPR$0$0$2$1=[ITEM(ITEM(ITEM(ITEM($6, 0), 'detail'), 'skills'), 0).OTHERS.B])
+    LogicalProject(DEPTNO=[$0], NAME=[$1], TYPE=[$2.TYPE], DESC=[$2.DESC], A=[$2.OTHERS.A], B=[$2.OTHERS.B], EMPLOYEES=[$3])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+]]>
+      </Resource>
+    </TestCase>
+>>>>>>> af4516c57 ([CALCITE-3138] RelStructuredTypeFlattener doesn't restructure ROW type fields (Igor Guzenko))
     <TestCase name="testSelectNestedColumnType">
         <Resource name="plan">
             <![CDATA[
@@ -1407,8 +1496,11 @@ where
   fname = 'john']]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 >>>>>>> 60acae674 ([CALCITE-3003] AssertionError when GROUP BY nested field (Will Yu))
+=======
+>>>>>>> af4516c57 ([CALCITE-3138] RelStructuredTypeFlattener doesn't restructure ROW type fields (Igor Guzenko))
     <TestCase name="testGroupByNestedColumn">
         <Resource name="plan">
             <![CDATA[
@@ -2379,11 +2471,12 @@ LogicalProject(A=[$0], B=[$1], C=[$2], DEPTNO=[$3], NAME=[$4])
     </TestCase>
     <TestCase name="testStructTypeAlias">
         <Resource name="sql">
-            <![CDATA[select t.r AS myRow 
+            <![CDATA[select t.r AS myRow
 from (select row(row(1)) r from dept) t]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 <<<<<<< HEAD
 LogicalProject(MYROW=[ROW(ROW(1))])
   LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -2392,6 +2485,12 @@ LogicalProject(MYROW=[$0])
   LogicalProject(R$$0$$0=[1])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 >>>>>>> 8485a2311 ([CALCITE-2468] Validator throws IndexOutOfBoundsException when trying to infer operand type from STRUCT return type (Rong Rong))
+=======
+LogicalProject(MYROW=[ROW(ROW($0))])
+  LogicalProject(MYROW=[$0])
+    LogicalProject(R$$0$$0=[1])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+>>>>>>> af4516c57 ([CALCITE-3138] RelStructuredTypeFlattener doesn't restructure ROW type fields (Igor Guzenko))
 ]]>
         </Resource>
     </TestCase>

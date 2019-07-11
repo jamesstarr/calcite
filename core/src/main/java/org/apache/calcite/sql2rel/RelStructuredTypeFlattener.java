@@ -19,7 +19,7 @@ package org.apache.calcite.sql2rel;
 import org.apache.calcite.linq4j.Ord;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable;
->>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
+import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.RelNode;
@@ -82,7 +82,7 @@ import org.apache.calcite.util.mapping.Mappings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.SortedSetMultimap;
 
-import java.util.ArrayDeque;
+>>>>>>> af4516c57 ([CALCITE-3138] RelStructuredTypeFlattener doesn't restructure ROW type fields (Igor Guzenko))
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -200,6 +200,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
     RelNode flattened = getNewForOldRel(root);
     flattenedRootType = flattened.getRowType();
     if (restructure) {
+<<<<<<< HEAD
       return tryRestructure(root, flattened);
     }
     return flattened;
@@ -227,7 +228,25 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
           .build();
     } else {
       return flattened;
+=======
+      iRestructureInput = 0;
+      restructured = false;
+      final List<RexNode> structuringExps = restructureFields(root.getRowType());
+      if (restructured) {
+        List<String> resultFieldNames = root.getRowType().getFieldNames();
+        // If requested, add an additional projection which puts
+        // everything back into structured form for return to the
+        // client.
+        RelNode restructured = relBuilder.push(flattened)
+            .project(structuringExps, resultFieldNames, true)
+            .build();
+        // REVIEW jvs 23-Mar-2005:  How do we make sure that this
+        // implementation stays in Java?  Fennel can't handle
+        // structured types.
+        return restructured;
+      }
     }
+    return flattened;
   }
 
   /**
@@ -322,20 +341,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
           .findFirst()
           .orElseThrow(NoSuchElementException::new);
   }
-
-  /** Returns whether the old field at index {@code fieldIdx} was not flattened. */
-  private boolean noFlatteningForInput(int fieldIdx) {
-    final List<RelNode> inputs = currentRel.getInputs();
-    int fieldCnt = 0;
-    for (RelNode input : inputs) {
-      fieldCnt += input.getRowType().getFieldCount();
-      if (fieldCnt > fieldIdx) {
-        return getNewForOldRel(input).getRowType().getFieldList().size()
-            == input.getRowType().getFieldList().size();
-      }
-    }
-    return false;
-  }
+>>>>>>> af4516c57 ([CALCITE-3138] RelStructuredTypeFlattener doesn't restructure ROW type fields (Igor Guzenko))
 
   /**
    * Maps the ordinal of a field pre-flattening to the ordinal of the
@@ -527,16 +533,18 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
   }
 
   public void rewriteRel(LogicalProject rel) {
-    final List<Pair<RexNode, String>> flattenedExpList = Lists.newArrayList();
-    flattenProjections(new RewriteRexShuttle(),
-        rel.getProjects(),
-        rel.getRowType().getFieldNames(),
-        "",
-        flattenedExpList);
-    relBuilder.push(getNewForOldRel(rel.getInput()))
-        .projectNamed(Pair.left(flattenedExpList), Pair.right(flattenedExpList),
-            true);
-    setNewForOldRel(rel, relBuilder.build());
+    RewriteRexShuttle shuttle = new RewriteRexShuttle();
+    List<RexNode> oldProjects = rel.getProjects();
+    List<String> oldNames = rel.getRowType().getFieldNames();
+    List<Pair<RexNode, String>> flattenedExpList = new ArrayList<>();
+    flattenProjections(shuttle, oldProjects, oldNames, "", flattenedExpList);
+    RelNode newInput = getNewForOldRel(rel.getInput());
+    List<RexNode> newProjects = Pair.left(flattenedExpList);
+    List<String> newNames = Pair.right(flattenedExpList);
+    RelNode newRel = relBuilder.push(newInput)
+        .project(newProjects, newNames, true)
+        .build();
+    setNewForOldRel(rel, newRel);
   }
 
   public void rewriteRel(LogicalCalc rel) {
@@ -755,13 +763,15 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
   public void rewriteRel(TableScan rel) {
     RelNode newRel = rel.getTable().toRel(toRelContext);
     if (!SqlTypeUtil.isFlat(rel.getRowType())) {
-      final List<Pair<RexNode, String>> flattenedExpList = Lists.newArrayList();
-      flattenInputs(rel.getRowType().getFieldList(),
-          rexBuilder.makeRangeReference(newRel),
-          flattenedExpList);
+      final List<Pair<RexNode, String>> flattenedExpList = new ArrayList<>();
+      RexNode newRowRef = rexBuilder.makeRangeReference(newRel);
+      List<RelDataTypeField> inputRowFields = rel.getRowType().getFieldList();
+      flattenInputs(inputRowFields, newRowRef, flattenedExpList);
+      // cover new scan with flattening projection
+      List<RexNode> projects = Pair.left(flattenedExpList);
+      List<String> fieldNames = Pair.right(flattenedExpList);
       newRel = relBuilder.push(newRel)
-          .projectNamed(Pair.left(flattenedExpList),
-              Pair.right(flattenedExpList), true)
+          .project(projects, fieldNames, true)
           .build();
     }
     setNewForOldRel(rel, newRel);
@@ -981,6 +991,31 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
         }
 =======
       }
+
+      if (rexCall.op == SqlStdOperatorTable.ITEM
+          && rexCall.operands.get(0).getType().isStruct()
+          && rexCall.operands.get(1).isA(SqlKind.LITERAL)
+          && SqlTypeUtil.inCharFamily(rexCall.operands.get(1).getType())) {
+        RexNode firstOp = rexCall.operands.get(0);
+        final String literalString = ((RexLiteral) rexCall.operands.get(1))
+            .getValueAs(String.class);
+        if (firstOp instanceof RexInputRef) {
+          int oldOrdinal = ((RexInputRef) firstOp).getIndex();
+          int newInnerOrdinal = getNewInnerOrdinal(firstOp, literalString);
+          Ord<RelDataType> newField = getNewFieldForOldInput(oldOrdinal, newInnerOrdinal);
+          RexInputRef newRef = rexBuilder.makeInputRef(newField.e, newField.i);
+          return newRef;
+        } else {
+          RexNode newFirstOp = firstOp.accept(this);
+          if (newFirstOp instanceof RexInputRef) {
+            int newRefOrdinal = ((RexInputRef) newFirstOp).getIndex()
+                + getNewInnerOrdinal(firstOp, literalString);
+            RelDataTypeField newField = getNewInputFieldByNewOrdinal(newRefOrdinal);
+            RexInputRef newRef = rexBuilder.makeInputRef(newField.getType(), newRefOrdinal);
+            return newRef;
+          }
+        }
+      }
       if (!rexCall.isA(SqlKind.COMPARISON)) {
         return super.visitCall(rexCall);
       }
@@ -1050,6 +1085,24 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
         return conjunction;
       }
     }
+<<<<<<< HEAD
+=======
+
+  }
+
+  private int getNewInnerOrdinal(RexNode firstOp, String literalString) {
+    int newInnerOrdinal = 0;
+    for (RelDataTypeField field : firstOp.getType().getFieldList()) {
+      if (literalString.equalsIgnoreCase(field.getName())) {
+        break;
+      } else {
+        newInnerOrdinal += postFlattenSize(field.getType());
+      }
+    }
+    return newInnerOrdinal;
+  }
+
+}
 
   }
 

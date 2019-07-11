@@ -3205,7 +3205,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).with(getTesterWithDynamicTable()).ok();
   }
 
-  @Test void testDynamicNestedColumn() {
+  @Test public void testDynamicNestedColumn() {
     final String sql = "select t3.fake_q1['fake_col2'] as fake2\n"
         + "from (\n"
         + "  select t2.fake_col as fake_q1\n"
@@ -3213,196 +3213,54 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).with(getTesterWithDynamicTable()).ok();
   }
 
-  /**
-   * Test case for <a href="https://issues.apache.org/jira/browse/CALCITE-2900">[CALCITE-2900]
-   * RelStructuredTypeFlattener generates wrong types on nested columns</a>.
-   */
-  @Test void testNestedColumnType() {
+
+  @Test
+  public void testNestedStructFieldAccess() {
     final String sql =
-        "select empa.home_address.zip from sales.emp_address empa where empa.home_address.city = 'abc'";
+        "select dn.skill['others'] from sales.dept_nested dn";
     sql(sql).ok();
   }
 
-  /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2962">[CALCITE-2962]
-   * RelStructuredTypeFlattener generates wrong types for nested column when
-   * flattenProjection</a>.
-   */
-  @Test void testSelectNestedColumnType() {
-    final String sql = "select\n"
-        + "  char_length(coord.\"unit\") as unit_length\n"
-        + "from\n"
-        + "  (\n"
-        + "    select\n"
-        + "      fname,\n"
-        + "      coord\n"
-        + "    from\n"
-        + "      customer.contact_peek\n"
-        + "    where\n"
-        + "      coord.x > 1\n"
-        + "      and coord.y > 1\n"
-        + "  ) as view\n"
-        + "where\n"
-        + "  fname = 'john'";
-    sql(sql).ok();
-  }
-
-  @Test void testNestedStructFieldAccess() {
-    final String sql = "select dn.skill['others']\n"
-        + "from sales.dept_nested dn";
-    sql(sql).ok();
-  }
-
-  @Test void testNestedStructPrimitiveFieldAccess() {
-    final String sql = "select dn.skill['others']['a']\n"
-        + "from sales.dept_nested dn";
-    sql(sql).ok();
-  }
-
-  @Test void testFunctionWithStructInput() {
-    final String sql = "select json_type(skill)\n"
-        + "from sales.dept_nested";
-    sql(sql).ok();
-  }
-
-  @Test void testAggregateFunctionForStructInput() {
-    final String sql = "select "
-        + "collect(skill) as collect_skill, count(skill) as count_skill, count(*) as count_star, "
-        + "approx_count_distinct(skill) as approx_count_distinct_skill, "
-        + "max(skill) as max_skill, min(skill) as min_skill, "
-        + "any_value(skill) as any_value_skill "
-        + "from sales.dept_nested";
-    sql(sql).ok();
-  }
-
-  @Test void testAggregateFunctionForStructInputByName() {
-    final String sql = "select "
-        + "collect(skill) as collect_skill, count(skill) as count_skill, count(*) as count_star, "
-        + "approx_count_distinct(skill) as approx_count_distinct_skill, "
-        + "max(skill) as max_skill, min(skill) as min_skill, "
-        + "any_value(skill) as any_value_skill "
-        + "from sales.dept_nested group by name";
-    sql(sql).ok();
-  }
-
-  @Test void testNestedPrimitiveFieldAccess() {
-    final String sql = "select dn.skill['desc']\n"
-        + "from sales.dept_nested dn";
-    sql(sql).ok();
-  }
-
-  @Test void testArrayElementNestedPrimitive() {
-    final String sql = "select dn.employees[0]['empno']\n"
-        + "from sales.dept_nested dn";
-    sql(sql).ok();
-  }
-
-  @Test void testArrayElementDoublyNestedPrimitive() {
-    final String sql = "select dn.employees[0]['detail']['skills'][0]['type']\n"
-        + "from sales.dept_nested dn";
-    sql(sql).ok();
-  }
-
-  @Test void testArrayElementDoublyNestedStruct() {
-    final String sql = "select dn.employees[0]['detail']['skills'][0]\n"
-        + "from sales.dept_nested dn";
-    sql(sql).ok();
-  }
-
-  @Test void testArrayElementThreeTimesNestedStruct() {
-    final String sql = ""
-        + "select dn.employees[0]['detail']['skills'][0]['others']\n"
-        + "from sales.dept_nested dn";
-    sql(sql).ok();
-  }
-
-  /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3003">[CALCITE-3003]
-   * AssertionError when GROUP BY nested field</a>.
-   */
-  @Test void testGroupByNestedColumn() {
+  @Test
+  public void testNestedStructPrimitiveFieldAccess() {
     final String sql =
-        "select\n"
-            + "  coord.x,\n"
-            + "  coord_ne.sub.a,\n"
-            + "  avg(coord.y)\n"
-            + "from\n"
-            + "  customer.contact_peek\n"
-            + "group by\n"
-            + "  coord_ne.sub.a,\n"
-            + "  coord.x";
+        "select dn.skill['others']['a'] from sales.dept_nested dn";
     sql(sql).ok();
   }
 
-  /**
-   * Similar to {@link #testGroupByNestedColumn()},
-   * but with grouping sets.
-   */
-  @Test void testGroupingSetsWithNestedColumn() {
+  @Test
+  public void testNestedPrimitiveFieldAccess() {
     final String sql =
-        "select\n"
-            + "  coord.x,\n"
-            + "  coord.\"unit\",\n"
-            + "  coord_ne.sub.a,\n"
-            + "  avg(coord.y)\n"
-            + "from\n"
-            + "  customer.contact_peek\n"
-            + "group by\n"
-            + "  grouping sets (\n"
-            + "    (coord_ne.sub.a, coord.x, coord.\"unit\"),\n"
-            + "    (coord.x, coord.\"unit\")\n"
-            + "  )";
+        "select dn.skill['desc'] from sales.dept_nested dn";
     sql(sql).ok();
   }
 
-  /**
-   * Similar to {@link #testGroupByNestedColumn()},
-   * but with cube.
-   */
-  @Test void testGroupByCubeWithNestedColumn() {
+  @Test
+  public void testArrayElementNestedPrimitive() {
     final String sql =
-        "select\n"
-            + "  coord.x,\n"
-            + "  coord.\"unit\",\n"
-            + "  coord_ne.sub.a,\n"
-            + "  avg(coord.y)\n"
-            + "from\n"
-            + "  customer.contact_peek\n"
-            + "group by\n"
-            + "  cube (coord_ne.sub.a, coord.x, coord.\"unit\")";
+        "select dn.employees[0]['empno'] from sales.dept_nested dn";
     sql(sql).ok();
   }
 
-  @Test void testDynamicSchemaUnnest() {
-    final String sql3 = "select t1.c_nationkey, t3.fake_col3\n"
-        + "from SALES.CUSTOMER as t1,\n"
-        + "lateral (select t2.\"$unnest\" as fake_col3\n"
-        + "         from unnest(t1.fake_col) as t2) as t3";
-    sql(sql3).with(getTesterWithDynamicTable()).ok();
+  @Test
+  public void testArrayElementDoublyNestedPrimitive() {
+    final String sql =
+        "select dn.employees[0]['detail']['skills'][0]['type'] from sales.dept_nested dn";
+    sql(sql).ok();
   }
 
-  @Test void testStarDynamicSchemaUnnest() {
-    final String sql3 = "select *\n"
-        + "from SALES.CUSTOMER as t1,\n"
-        + "lateral (select t2.\"$unnest\" as fake_col3\n"
-        + "         from unnest(t1.fake_col) as t2) as t3";
-    sql(sql3).with(getTesterWithDynamicTable()).ok();
+  @Test
+  public void testArrayElementDoublyNestedStruct() {
+    final String sql =
+        "select dn.employees[0]['detail']['skills'][0] from sales.dept_nested dn";
+    sql(sql).ok();
   }
 
-  @Test void testStarDynamicSchemaUnnest2() {
-    final String sql3 = "select *\n"
-        + "from SALES.CUSTOMER as t1,\n"
-        + "unnest(t1.fake_col) as t2";
-    sql(sql3).with(getTesterWithDynamicTable()).ok();
-  }
-
-  @Test void testStarDynamicSchemaUnnestNestedSubQuery() {
-    String sql3 = "select t2.c1\n"
-        + "from (select * from SALES.CUSTOMER) as t1,\n"
-        + "unnest(t1.fake_col) as t2(c1)";
-    sql(sql3).with(getTesterWithDynamicTable()).ok();
+  @Test
+  public void testArrayElementThreeTimesNestedStruct() {
+    final String sql =
+        "select dn.employees[0]['detail']['skills'][0]['others'] from sales.dept_nested dn";
+    sql(sql).ok();
   }
 
   /**
