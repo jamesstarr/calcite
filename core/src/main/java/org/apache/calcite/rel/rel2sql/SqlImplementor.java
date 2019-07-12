@@ -493,6 +493,24 @@ public abstract class SqlImplementor {
         null, null, SqlNodeList.EMPTY, null, null, null);
   }
 
+  /** Returns whether we need to add an alias if this node is to be the FROM
+   * clause of a SELECT. */
+  private boolean requiresAlias(SqlNode node) {
+    if (!dialect.requiresAliasForFromItems()) {
+      return false;
+    }
+    switch (node.getKind()) {
+    case IDENTIFIER:
+      return !dialect.hasImplicitTableAlias();
+    case AS:
+    case JOIN:
+    case EXPLICIT_TABLE:
+      return false;
+    default:
+      return true;
+    }
+  }
+
   /** Context for translating a {@link RexNode} expression (within a
    * {@link RelNode}) into a {@link SqlNode} expression (within a SQL parse
    * tree). */

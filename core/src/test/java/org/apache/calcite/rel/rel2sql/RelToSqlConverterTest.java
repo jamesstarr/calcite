@@ -28,7 +28,7 @@ import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.ProjectJoinTransposeRule;
 import org.apache.calcite.rel.rules.ProjectToWindowRule;
-import org.apache.calcite.rel.rules.UnionMergeRule;
+import org.apache.calcite.rel.rules.PruneEmptyRules;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
@@ -66,7 +66,7 @@ import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RuleSet;
 import org.apache.calcite.tools.RuleSets;
 import org.apache.calcite.util.TestUtil;
->>>>>>> ab8849d1f ([CALCITE-2878] Avoid use of new RuntimeException(e) in tests)
+import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -748,54 +748,7 @@ class RelToSqlConverterTest {
     sql(query).ok(expected);
   }
 
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3811">[CALCITE-3811]
-   * JDBC adapter generates SQL with invalid field names if Filter's row type
-   * is different from its input</a>. */
-  @Test void testHavingAlias() {
-    final RelBuilder builder = relBuilder();
-    builder.scan("EMP")
-        .project(builder.alias(builder.field("DEPTNO"), "D"))
-        .aggregate(builder.groupKey(builder.field("D")),
-            builder.countStar("emps.count"))
-        .filter(
-            builder.call(SqlStdOperatorTable.LESS_THAN,
-                builder.field("emps.count"), builder.literal(2)));
-
-    final LogicalFilter filter = (LogicalFilter) builder.build();
-    assertThat(filter.getRowType().getFieldNames().toString(),
-        is("[D, emps.count]"));
-
-    // Create a LogicalAggregate similar to the input of filter, but with different
-    // field names.
-    final LogicalAggregate newAggregate =
-        (LogicalAggregate) builder.scan("EMP")
-            .project(builder.alias(builder.field("DEPTNO"), "D2"))
-            .aggregate(builder.groupKey(builder.field("D2")),
-                builder.countStar("emps.count"))
-            .build();
-    assertThat(newAggregate.getRowType().getFieldNames().toString(),
-        is("[D2, emps.count]"));
-
-    // Change filter's input. Its row type does not change.
-    filter.replaceInput(0, newAggregate);
-    assertThat(filter.getRowType().getFieldNames().toString(),
-        is("[D, emps.count]"));
-
-    final RelNode root =
-        builder.push(filter)
-            .project(builder.alias(builder.field("D"), "emps.deptno"))
-            .build();
-    final String sql = toSql(root, DatabaseProduct.MYSQL.getDialect());
-    final String expectedSql = "SELECT `D2` AS `emps.deptno`\n"
-        + "FROM (SELECT `DEPTNO` AS `D2`, COUNT(*) AS `emps.count`\n"
-        + "FROM `scott`.`EMP`\n"
-        + "GROUP BY `DEPTNO`\n"
-        + "HAVING COUNT(*) < 2) AS `t1`";
-    assertThat(sql, isLinux(expectedSql));
-  }
-
-  @Test void testHaving4() {
+  @Test public void testHaving4() {
     final String query = "select \"product_id\"\n"
         + "from (\n"
         + "  select \"product_id\", avg(\"gross_weight\") as agw\n"
@@ -816,9 +769,8 @@ class RelToSqlConverterTest {
     sql(query).ok(expected);
   }
 
-  @Test void testSelectQueryWithOrderByClause() {
-    String query = "select \"product_id\" from \"product\"\n"
-        + "order by \"net_weight\"";
+  @Test public void testSelectQueryWithOrderByClause() {
+    String query = "select \"product_id\"  from \"product\" order by \"net_weight\"";
     final String expected = "SELECT \"product_id\", \"net_weight\"\n"
         + "FROM \"foodmart\".\"product\"\n"
         + "ORDER BY \"net_weight\"";
@@ -2122,11 +2074,9 @@ class RelToSqlConverterTest {
         + "SELECT \"product_class_id\" AS \"PRODUCT_ID\"\n"
         + "FROM \"foodmart\".\"product_class\"";
 
-    final HepProgram program =
-        new HepProgramBuilder().addRuleClass(UnionMergeRule.class).build();
     final RuleSet rules = RuleSets.ofList(CoreRules.UNION_MERGE);
     sql(query)
-        .optimize(rules, new HepPlanner(program))
+        .optimize(rules, null)
         .ok(expected);
   }
 
@@ -4359,6 +4309,31 @@ class RelToSqlConverterTest {
         .ok(expectedRedshift);
   }
 
+  @Test public void testValuesEmpty() {
+    final String sql = "select *\n"
+        + "from (values (1, 'a'), (2, 'bb')) as t(x, y)\n"
+        + "limit 0";
+    final RuleSet rules =
+        RuleSets.ofList(PruneEmptyRules.SORT_FETCH_ZERO_INSTANCE);
+    final String expectedMysql = "SELECT *\n"
+        + "FROM (SELECT NULL AS `X`, NULL AS `Y`) AS `t`\n"
+        + "WHERE 1 = 0";
+    final String expectedOracle = "SELECT NULL \"X\", NULL \"Y\"\n"
+        + "FROM \"DUAL\"\n"
+        + "WHERE 1 = 0";
+    final String expectedPostgresql = "SELECT *\n"
+        + "FROM (VALUES  (NULL, NULL)) AS \"t\" (\"X\", \"Y\")\n"
+        + "WHERE 1 = 0";
+    sql(sql)
+        .optimize(rules, null)
+        .withMysql()
+        .ok(expectedMysql)
+        .withOracle()
+        .ok(expectedOracle)
+        .withPostgresql()
+        .ok(expectedPostgresql);
+  }
+
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2118">[CALCITE-2118]
    * RelToSqlConverter should only generate "*" if field names match</a>. */
@@ -4815,7 +4790,7 @@ class RelToSqlConverterTest {
 
   @Test public void testDateLiteralOracle() {
     String query = "SELECT DATE '1978-05-02' FROM \"employee\"";
-    String expected = "SELECT TO_DATE ('1978-05-02', 'YYYY-MM-DD')\n"
+    String expected = "SELECT TO_DATE('1978-05-02', 'YYYY-MM-DD')\n"
         + "FROM \"foodmart\".\"employee\"";
     sql(query)
         .withOracle()
@@ -4824,7 +4799,8 @@ class RelToSqlConverterTest {
 
   @Test public void testTimestampLiteralOracle() {
     String query = "SELECT TIMESTAMP '1978-05-02 12:34:56.78' FROM \"employee\"";
-    String expected = "SELECT TO_TIMESTAMP ('1978-05-02 12:34:56.78', 'YYYY-MM-DD HH24:MI:SS.FF')\n"
+    String expected = "SELECT TO_TIMESTAMP('1978-05-02 12:34:56.78',"
+        + " 'YYYY-MM-DD HH24:MI:SS.FF')\n"
         + "FROM \"foodmart\".\"employee\"";
     sql(query)
         .withOracle()
@@ -4833,7 +4809,7 @@ class RelToSqlConverterTest {
 
   @Test public void testTimeLiteralOracle() {
     String query = "SELECT TIME '12:34:56.78' FROM \"employee\"";
-    String expected = "SELECT TO_TIME ('12:34:56.78', 'HH24:MI:SS.FF')\n"
+    String expected = "SELECT TO_TIME('12:34:56.78', 'HH24:MI:SS.FF')\n"
         + "FROM \"foodmart\".\"employee\"";
     sql(query)
         .withOracle()
@@ -5019,7 +4995,12 @@ class RelToSqlConverterTest {
       return new Sql(schema, sql, dialect, config,
           FlatLists.append(transforms, r -> {
             Program program = Programs.of(ruleSet);
-            return program.run(relOptPlanner, r, r.getTraitSet(),
+            final RelOptPlanner p =
+                Util.first(relOptPlanner,
+                    new HepPlanner(
+                        new HepProgramBuilder().addRuleClass(RelOptRule.class)
+                            .build()));
+            return program.run(p, r, r.getTraitSet(),
                 ImmutableList.of(), ImmutableList.of());
           }));
     }

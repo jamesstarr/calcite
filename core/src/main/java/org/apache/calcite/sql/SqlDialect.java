@@ -1057,6 +1057,7 @@ public class SqlDialect {
     return true;
   }
 
+
   /** Returns the name of the system table that has precisely one row.
    * If there is no such table, returns null, and we will generate SELECT with
    * no FROM clause.
@@ -1066,7 +1067,7 @@ public class SqlDialect {
    * MySQL returns null and we generate "SELECT 1".
    */
   @Experimental
-  public List<String> getSingleRowTableName() {
+  public @Nullable List<String> getSingleRowTableName() {
     return null;
   }
 

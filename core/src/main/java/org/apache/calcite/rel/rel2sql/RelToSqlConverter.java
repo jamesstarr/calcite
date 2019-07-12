@@ -509,16 +509,13 @@ public class RelToSqlConverter extends SqlImplementor
         list.add(
             new SqlSelect(POS, null,
                 new SqlNodeList(values2, POS),
-                new SqlIdentifier("DUAL", POS), null, null,
+                getDual(), null, null,
                 null, null, null, null, null, null, null));
       }
       if (list.isEmpty()) {
         // In this case we need to construct the following query:
         // SELECT NULL as C0, NULL as C1, NULL as C2 ... FROM DUAL WHERE FALSE
         // This would return an empty result set with the same number of columns as the field names.
-<<<<<<< HEAD
-        final List<SqlNode> nullColumnNames = new ArrayList<>(fieldNames.size());
-=======
         final List<SqlNode> nullColumnNames = new ArrayList<>();
         for (String fieldName : fieldNames) {
           SqlCall nullColumnName = as(SqlLiteral.createNull(POS), fieldName);
@@ -570,6 +567,7 @@ public class RelToSqlConverter extends SqlImplementor
       query = SqlStdOperatorTable.VALUES.createCall(selects);
       if (rename) {
         query = as(query, "t", fieldNames.toArray(new String[0]));
+<<<<<<< HEAD
       }
       if (isEmpty) {
         if (!rename) {
@@ -580,6 +578,7 @@ public class RelToSqlConverter extends SqlImplementor
                 createAlwaysFalseCondition(),
                 null, null, null, null,
                 null, null, null, null);
+=======
       }
       if (isEmpty) {
         if (!rename) {
@@ -699,23 +698,6 @@ public class RelToSqlConverter extends SqlImplementor
             fc.getFieldIndex() < aggregate.getGroupSet().cardinality());
   }
 
-<<<<<<< HEAD
-  private SqlIdentifier getSqlTargetTable(RelNode e) {
-    final SqlIdentifier sqlTargetTable;
-    final JdbcTable jdbcTable = e.getTable().unwrap(JdbcTable.class);
-    if (jdbcTable != null) {
-      // Use the foreign catalog, schema and table names, if they exist,
-      // rather than the qualified name of the shadow table in Calcite.
-      sqlTargetTable = jdbcTable.tableName();
-    } else {
-      final List<String> qualifiedName = e.getTable().getQualifiedName();
-      sqlTargetTable = new SqlIdentifier(qualifiedName, SqlParserPos.ZERO);
-    }
-
-    return sqlTargetTable;
-  }
-
-=======
   /** @see #dispatch */
   public Result visit(TableModify modify) {
     final Map<String, RelDataType> pairs = ImmutableMap.of();
@@ -873,6 +855,7 @@ public class RelToSqlConverter extends SqlImplementor
     return result(matchRecognize, Expressions.list(Clause.FROM), e, null);
   }
 
+<<<<<<< HEAD
   private SqlCall as(SqlNode e, String alias) {
     return SqlStdOperatorTable.AS.createCall(POS, e,
         new SqlIdentifier(alias, POS));
@@ -927,6 +910,7 @@ public class RelToSqlConverter extends SqlImplementor
     return result;
   }
 
+=======
   @Override public void addSelect(List<SqlNode> selectList, SqlNode node,
       RelDataType rowType) {
     String name = rowType.getFieldNames().get(selectList.size());
