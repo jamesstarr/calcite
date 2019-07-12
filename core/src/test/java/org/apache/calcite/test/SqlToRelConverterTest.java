@@ -17,10 +17,16 @@
 package org.apache.calcite.test;
 
 import org.apache.calcite.plan.Context;
+import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.RelOptCluster;
+import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptUtil;
+import org.apache.calcite.plan.RelTrait;
+import org.apache.calcite.plan.RelTraitDef;
+import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.prepare.Prepare;
 import org.apache.calcite.prepare.Prepare.CatalogReader;
+import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
 import org.apache.calcite.rel.RelShuttleImpl;
@@ -28,6 +34,8 @@ import org.apache.calcite.rel.RelVisitor;
 import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.externalize.RelXmlWriter;
 import org.apache.calcite.rel.logical.LogicalCorrelate;
+import org.apache.calcite.rel.logical.LogicalFilter;
+import org.apache.calcite.rel.logical.LogicalSort;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
@@ -45,6 +53,7 @@ import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import org.junit.Ignore;
@@ -53,10 +62,13 @@ import org.junit.Test;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -1783,6 +1795,57 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
   @Test public void testSortWithTrim() {
     final String sql = "select ename from (select * from emp order by sal) a";
     sql(sql).trim(true).ok();
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3183">[CALCITE-3183]
+   * Trimming method for Filter rel uses wrong traitSet </a> */
+  @Test public void testFilterAndSortWithTrim() {
+    // Create a customized test with RelCollation trait in the test cluster.
+    Tester tester = new TesterImpl(getDiffRepos(),
+        false, true,
+        true, false,
+        null, null) {
+      @Override public RelOptPlanner createPlanner() {
+        return new MockRelOptPlanner(Contexts.empty()) {
+          @Override public List<RelTraitDef> getRelTraitDefs() {
+            return ImmutableList.<RelTraitDef>of(RelCollationTraitDef.INSTANCE);
+          }
+          @Override public RelTraitSet emptyTraitSet() {
+            return RelTraitSet.createEmpty().plus(
+                RelCollationTraitDef.INSTANCE.getDefault());
+          }
+        };
+      }
+    };
+
+    // Run query and save plan after trimming
+    final String sql = "select count(a.EMPNO)\n"
+        + "from (select * from emp order by sal limit 3) a\n"
+        + "where a.EMPNO > 10 group by 2";
+    RelNode afterTrim = tester.convertSqlToRel(sql).rel;
+
+    // Get Sort and Filter operators
+    final List<RelNode> rels = new ArrayList<>();
+    final RelShuttleImpl visitor = new RelShuttleImpl() {
+      @Override public RelNode visit(LogicalSort sort) {
+        rels.add(sort);
+        return super.visit(sort);
+      }
+      @Override public RelNode visit(LogicalFilter filter) {
+        rels.add(filter);
+        return super.visit(filter);
+      }
+    };
+    visitor.visit(afterTrim);
+
+    // Ensure sort and filter operators have consistent traitSet after trimming
+    assertThat(rels.size(), is(2));
+    RelTrait filterCollation = rels.get(0).getTraitSet()
+        .getTrait(RelCollationTraitDef.INSTANCE);
+    RelTrait sortCollation = rels.get(1).getTraitSet()
+        .getTrait(RelCollationTraitDef.INSTANCE);
+    assertTrue(filterCollation.satisfies(sortCollation));
   }
 
   @Test public void testOffset0() {

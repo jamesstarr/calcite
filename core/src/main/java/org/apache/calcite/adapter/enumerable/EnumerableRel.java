@@ -25,6 +25,8 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 
+import com.google.common.base.Preconditions;
+
 import java.util.List;
 
 /**
@@ -35,10 +37,9 @@ import java.util.List;
 public interface EnumerableRel
     extends RelNode {
   RelFactories.FilterFactory FILTER_FACTORY =
-      new RelFactories.FilterFactory() {
-        public RelNode createFilter(RelNode child, RexNode condition) {
-          return EnumerableFilter.create(child, condition);
-        }
+      (input, condition, correlVariables) -> {
+        Preconditions.checkArgument(correlVariables.isEmpty());
+        return EnumerableFilter.create(input, condition);
       };
 
   RelFactories.ProjectFactory PROJECT_FACTORY =

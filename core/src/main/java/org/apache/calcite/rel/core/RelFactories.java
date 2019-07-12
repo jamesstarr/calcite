@@ -45,6 +45,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBitSet;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import java.util.List;
 import java.util.Map;
@@ -221,7 +222,13 @@ public class RelFactories {
    */
   public interface FilterFactory {
     /** Creates a filter. */
-    RelNode createFilter(RelNode input, RexNode condition);
+    RelNode createFilter(RelNode input, RexNode condition,
+        Set<CorrelationId> correlVariables);
+
+    @Deprecated // to be removed before 2.0
+    default RelNode createFilter(RelNode input, RexNode condition) {
+      return createFilter(input, condition, ImmutableSet.of());
+    }
   }
 
   /**
@@ -229,8 +236,9 @@ public class RelFactories {
    * returns a vanilla {@link LogicalFilter}.
    */
   private static class FilterFactoryImpl implements FilterFactory {
-    public RelNode createFilter(RelNode input, RexNode condition) {
-      return LogicalFilter.create(input, condition);
+    public RelNode createFilter(RelNode input, RexNode condition,
+        Set<CorrelationId> correlVariables) {
+      return LogicalFilter.create(input, condition, ImmutableSet.copyOf(correlVariables));
     }
   }
 
