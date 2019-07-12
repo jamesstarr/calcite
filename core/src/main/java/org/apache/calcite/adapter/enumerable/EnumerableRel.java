@@ -18,14 +18,23 @@ package org.apache.calcite.adapter.enumerable;
 
 import org.apache.calcite.linq4j.tree.BlockStatement;
 import org.apache.calcite.rel.RelNode;
+  RelFactories.FilterFactory FILTER_FACTORY =
+      (input, condition, correlVariables) -> {
+        Preconditions.checkArgument(correlVariables.isEmpty());
+        return EnumerableFilter.create(input, condition);
+      };
 
-/**
- * A relational expression of one of the
- * {@link org.apache.calcite.adapter.enumerable.EnumerableConvention} calling
- * conventions.
- */
-public interface EnumerableRel
-    extends RelNode {
+  RelFactories.ProjectFactory PROJECT_FACTORY =
+      new RelFactories.ProjectFactory() {
+        public RelNode createProject(RelNode child,
+            List<? extends RexNode> projects, List<String> fieldNames) {
+          final RelOptCluster cluster = child.getCluster();
+          final RelDataType rowType =
+              RexUtil.createStructType(cluster.getTypeFactory(), projects,
+                  fieldNames, SqlValidatorUtil.F_SUGGESTER);
+          return EnumerableProject.create(child, projects, rowType);
+        }
+      };
 
   //~ Methods ----------------------------------------------------------------
 

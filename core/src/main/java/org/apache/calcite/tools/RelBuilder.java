@@ -113,9 +113,8 @@ import java.math.BigDecimal;
 import java.util.AbstractList;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+
 import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1383,18 +1382,17 @@ public class RelBuilder {
    * <p>The predicates are combined using AND,
    * and optimized in a similar way to the {@link #and} method.
    * If the result is TRUE no filter is created. */
-  public RelBuilder filter(Iterable<CorrelationId> variablesSet,
+  public RelBuilder filter(Iterable<CorrelationId> correlVariables,
       Iterable<? extends RexNode> predicates) {
-    final RexNode x = simplifier.simplifyFilterPredicates(predicates);
-    if (x == null) {
+    final RexNode x = simplifierUnknownAsFalse.simplifyAnds(predicates);
+    if (x.isAlwaysFalse()) {
       return empty();
     }
 
     if (!x.isAlwaysTrue()) {
       final Frame frame = stack.pop();
-      final RelNode filter =
-          struct.filterFactory.createFilter(frame.rel,
-              x, ImmutableSet.copyOf(variablesSet));
+      final RelNode filter = filterFactory.createFilter(frame.rel,
+          x2, ImmutableSet.copyOf(correlVariables));
       stack.push(new Frame(filter, frame.fields));
     }
     return this;

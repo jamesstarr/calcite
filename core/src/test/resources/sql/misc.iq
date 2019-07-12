@@ -506,7 +506,11 @@ where not exists (select 1 from "hr"."emps");
 
 !ok
 EnumerableCalc(expr#0..1=[{inputs}], expr#2=[IS NULL($t1)], deptno=[$t0], $condition=[$t2])
+<<<<<<< HEAD
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+=======
+  EnumerableJoin(condition=[true], joinType=[left])
+>>>>>>> 8eb4baa00 ([CALCITE-3183] Trimming method for Filter rel uses wrong traitSet)
     EnumerableCalc(expr#0..3=[{inputs}], deptno=[$t0])
       EnumerableTableScan(table=[[hr, depts]])
     EnumerableAggregate(group=[{}], agg#0=[MIN($0)])
@@ -561,7 +565,11 @@ where not exists (select 1 from "hr"."emps" where "empid" < 0);
 
 !ok
 EnumerableCalc(expr#0..1=[{inputs}], expr#2=[IS NULL($t1)], deptno=[$t0], $condition=[$t2])
+<<<<<<< HEAD
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+=======
+  EnumerableJoin(condition=[true], joinType=[left])
+>>>>>>> 8eb4baa00 ([CALCITE-3183] Trimming method for Filter rel uses wrong traitSet)
     EnumerableCalc(expr#0..3=[{inputs}], deptno=[$t0])
       EnumerableTableScan(table=[[hr, depts]])
     EnumerableAggregate(group=[{}], agg#0=[MIN($0)])

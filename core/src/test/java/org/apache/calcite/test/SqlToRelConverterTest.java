@@ -17,10 +17,16 @@
 package org.apache.calcite.test;
 
 import org.apache.calcite.plan.Context;
+import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.RelOptCluster;
+import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptUtil;
+import org.apache.calcite.plan.RelTrait;
+import org.apache.calcite.plan.RelTraitDef;
+import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.prepare.Prepare;
 import org.apache.calcite.prepare.Prepare.CatalogReader;
+import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
 import org.apache.calcite.rel.RelShuttleImpl;
@@ -28,6 +34,8 @@ import org.apache.calcite.rel.RelVisitor;
 import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.externalize.RelXmlWriter;
 import org.apache.calcite.rel.logical.LogicalCorrelate;
+import org.apache.calcite.rel.logical.LogicalFilter;
+import org.apache.calcite.rel.logical.LogicalSort;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
@@ -46,25 +54,13 @@ import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-
-import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
-import java.util.Properties;
+>>>>>>> 8eb4baa00 ([CALCITE-3183] Trimming method for Filter rel uses wrong traitSet)
 import java.util.Set;
 import java.util.function.Function;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -2356,11 +2352,18 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3183">[CALCITE-3183]
    * Trimming method for Filter rel uses wrong traitSet </a> */
+<<<<<<< HEAD
   @Test void testFilterAndSortWithTrim() {
     // Create a customized test with RelCollation trait in the test cluster.
     Tester tester = new TesterImpl(getDiffRepos(),
         false, true,
         true, false, true,
+=======
+  @Test public void testFilterAndSortWithTrim() {
+    // Create a customized test with RelCollation trait in the test cluster.
+    Tester tester = new TesterImpl(getDiffRepos(),
+        false, true,
+        true, false,
         null, null) {
       @Override public RelOptPlanner createPlanner() {
         return new MockRelOptPlanner(Contexts.empty()) {
@@ -2404,44 +2407,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     assertTrue(filterCollation.satisfies(sortCollation));
   }
 
-  @Test void testRelShuttleForLogicalCalc() {
-    final String sql = "select ename from emp";
-    final RelNode rel = tester.convertSqlToRel(sql).rel;
-    final HepProgramBuilder programBuilder = HepProgram.builder();
-    programBuilder.addRuleInstance(ProjectToCalcRule.INSTANCE);
-    final HepPlanner planner = new HepPlanner(programBuilder.build());
-    planner.setRoot(rel);
-    final LogicalCalc calc = (LogicalCalc) planner.findBestExp();
-    final List<RelNode> rels = new ArrayList<>();
-    final RelShuttleImpl visitor = new RelShuttleImpl() {
-      @Override public RelNode visit(LogicalCalc calc) {
-        RelNode visitedRel = super.visit(calc);
-        rels.add(visitedRel);
-        return visitedRel;
-      }
-    };
-    visitor.visit(calc);
-    assertThat(rels.size(), is(1));
-    assertThat(rels.get(0), instanceOf(LogicalCalc.class));
-  }
-
-  @Test void testRelShuttleForLogicalTableModify() {
-    final String sql = "insert into emp select * from emp";
-    final LogicalTableModify rel = (LogicalTableModify) tester.convertSqlToRel(sql).rel;
-    final List<RelNode> rels = new ArrayList<>();
-    final RelShuttleImpl visitor = new RelShuttleImpl() {
-      @Override public RelNode visit(LogicalTableModify modify) {
-        RelNode visitedRel = super.visit(modify);
-        rels.add(visitedRel);
-        return visitedRel;
-      }
-    };
-    visitor.visit(rel);
-    assertThat(rels.size(), is(1));
-    assertThat(rels.get(0), instanceOf(LogicalTableModify.class));
-  }
-
-  @Test void testOffset0() {
+  @Test public void testOffset0() {
     final String sql = "select * from emp offset 0";
     sql(sql).ok();
   }
