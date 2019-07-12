@@ -420,14 +420,12 @@ public class RelToSqlConverter extends SqlImplementor
         final List<SqlNode> values2 = new ArrayList<>();
         final SqlNodeList exprList = exprList(context, tuple);
         for (Pair<SqlNode, String> value : Pair.zip(exprList, fieldNames)) {
-          values2.add(
-              SqlStdOperatorTable.AS.createCall(POS, value.left,
-                  new SqlIdentifier(value.right, POS)));
+          values2.add(as(value.left, value.right));
         }
         list.add(
             new SqlSelect(POS, null,
                 new SqlNodeList(values2, POS),
-                new SqlIdentifier("DUAL", POS), null, null,
+                getDual(), null, null,
                 null, null, null, null, null, null, null));
       }
       if (list.isEmpty()) {
@@ -484,13 +482,7 @@ public class RelToSqlConverter extends SqlImplementor
       }
       query = SqlStdOperatorTable.VALUES.createCall(selects);
       if (rename) {
-        final List<SqlNode> list = new ArrayList<>();
-        list.add(query);
-        list.add(new SqlIdentifier("t", POS));
-        for (String fieldName : fieldNames) {
-          list.add(new SqlIdentifier(fieldName, POS));
-        }
-        query = SqlStdOperatorTable.AS.createCall(POS, list);
+        query = as(query, "t", fieldNames.toArray(new String[0]));
       }
       if (isEmpty) {
         if (!rename) {
@@ -757,11 +749,6 @@ public class RelToSqlConverter extends SqlImplementor
         pattern, strictStart, strictEnd, patternDefList, measureList, after,
         subsetList, rowsPerMatch, partitionList, orderByList, interval);
     return result(matchRecognize, Expressions.list(Clause.FROM), e, null);
-  }
-
-  private SqlCall as(SqlNode e, String alias) {
-    return SqlStdOperatorTable.AS.createCall(POS, e,
-        new SqlIdentifier(alias, POS));
   }
 
   @Override public void addSelect(List<SqlNode> selectList, SqlNode node,

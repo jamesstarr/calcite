@@ -53,6 +53,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * <code>SqlDialect</code> encapsulates the differences between dialects of SQL.
@@ -607,7 +608,20 @@ public class SqlDialect {
   }
 
   // -- behaviors --
-  protected boolean requiresAliasForFromItems() {
+
+  /** Whether a sub-query in the FROM clause must have an alias.
+   *
+   * <p>For example, in PostgreSQL, this query is legal:
+   *
+   * <blockquote>{@code SELECT * FROM (SELECT * FROM Emp) As e}</blockquote>
+   *
+   * <p>but remove the alias {@code e} and it is not:
+   *
+   * <blockquote>{@code SELECT * FROM (SELECT * FROM Emp)}</blockquote>
+   *
+   * <p>In Oracle, both queries are legal.
+   */
+  public boolean requiresAliasForFromItems() {
     return false;
   }
 
@@ -1016,6 +1030,7 @@ public class SqlDialect {
     return true;
   }
 
+
   /** Returns the name of the system table that has precisely one row.
    * If there is no such table, returns null, and we will generate SELECT with
    * no FROM clause.
@@ -1025,7 +1040,7 @@ public class SqlDialect {
    * MySQL returns null and we generate "SELECT 1".
    */
   @Experimental
-  public List<String> getSingleRowTableName() {
+  public @Nullable List<String> getSingleRowTableName() {
     return null;
   }
 

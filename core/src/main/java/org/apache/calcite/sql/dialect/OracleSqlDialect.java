@@ -120,13 +120,13 @@ public class OracleSqlDialect extends SqlDialect {
   @Override public void unparseDateTimeLiteral(SqlWriter writer,
       SqlAbstractDateTimeLiteral literal, int leftPrec, int rightPrec) {
     if (literal instanceof SqlTimestampLiteral) {
-      writer.literal("TO_TIMESTAMP ('"
+      writer.literal("TO_TIMESTAMP('"
           + literal.toFormattedString() + "', 'YYYY-MM-DD HH24:MI:SS.FF')");
     } else if (literal instanceof SqlDateLiteral) {
-      writer.literal("TO_DATE ('"
+      writer.literal("TO_DATE('"
           + literal.toFormattedString() + "', 'YYYY-MM-DD')");
     } else if (literal instanceof SqlTimeLiteral) {
-      writer.literal("TO_TIME ('"
+      writer.literal("TO_TIME('"
           + literal.toFormattedString() + "', 'HH24:MI:SS.FF')");
     } else {
       super.unparseDateTimeLiteral(writer, literal, leftPrec, rightPrec);
