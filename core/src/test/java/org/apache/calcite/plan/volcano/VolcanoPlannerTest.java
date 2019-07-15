@@ -128,9 +128,6 @@ class VolcanoPlannerTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3118">[CALCITE-3118]
    * VolcanoRuleCall should look at RelSubset rather than RelSet
    * when checking child ordinal of a parent operand</a>. */
-<<<<<<< HEAD
-  @Test void testMatchedOperandsDifferent() {
-=======
   @Test public void testMatchedOperandsDifferent() {
     VolcanoPlanner planner = new VolcanoPlanner();
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
@@ -207,7 +204,6 @@ class VolcanoPlannerTest {
   }
 
 =======
->>>>>>> 9e40b5a40 ([CALCITE-3118] VolcanoRuleCall should look at RelSubset rather than RelSet when checking child ordinal of a parent operand (Botong Huang))
   /**
    * Tests a rule that is fired once per subset (whereas most rules are fired
    * once per rel in a set or rel in a subset)

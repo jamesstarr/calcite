@@ -273,6 +273,35 @@ class UdfTest {
 =======
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
   /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3195">[CALCITE-3195]
+   * Handle a UDF that throws checked exceptions in the Enumerable code generator</a>. */
+  @Test public void testUserDefinedFunctionWithException() throws Exception {
+    final String sql1 = "select \"adhoc\".my_exception(\"deptno\") as p\n"
+        + "from \"adhoc\".EMPLOYEES";
+    final String expected1 = "P=20\n"
+        + "P=30\n"
+        + "P=20\n"
+        + "P=20\n";
+    withUdf().query(sql1).returns(expected1);
+
+    final String sql2 = "select cast(\"adhoc\".my_exception(\"deptno\") as double) as p\n"
+        + "from \"adhoc\".EMPLOYEES";
+    final String expected2 = "P=20.0\n"
+        + "P=30.0\n"
+        + "P=20.0\n"
+        + "P=20.0\n";
+    withUdf().query(sql2).returns(expected2);
+
+    final String sql3 = "select \"adhoc\".my_exception(\"deptno\" * 2 + 11) as p\n"
+        + "from \"adhoc\".EMPLOYEES";
+    final String expected3 = "P=41\n"
+        + "P=61\n"
+        + "P=41\n"
+        + "P=41\n";
+    withUdf().query(sql3).returns(expected3);
+  }
+
+  /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-937">[CALCITE-937]
    * User-defined function within view</a>. */
   @Test void testUserDefinedFunctionInView() throws Exception {

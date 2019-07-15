@@ -196,6 +196,36 @@ class InlinerTest {
             + "}\n",
         Expressions.toString(builder.toBlock()));
   }
+<<<<<<< HEAD
+=======
+
+  @Test public void testInlineInTryCatchStatement() {
+    final BlockBuilder builder = new BlockBuilder(true);
+    final ParameterExpression t = Expressions.parameter(int.class, "t");
+    builder.add(Expressions.declare(Modifier.FINAL, t, ONE));
+    final ParameterExpression u = Expressions.parameter(int.class, "u");
+    builder.add(Expressions.declare(Modifier.FINAL, u, null));
+    Statement st = Expressions.statement(
+        Expressions.assign(u,
+            Expressions.makeBinary(ExpressionType.Add, t, TWO)));
+    ParameterExpression e = Expressions.parameter(0, Exception.class, "e");
+    CatchBlock cb = Expressions.catch_(e, Expressions.throw_(e));
+    builder.add(Expressions.tryCatch(st, cb));
+    builder.add(Expressions.return_(null, u));
+    assertEquals(
+        "{\n"
+            + "  final int u;\n"
+            + "  try {\n"
+            + "    u = 1 + 2;\n"
+            + "  } catch (Exception e) {\n"
+            + "    throw e;\n"
+            + "  }\n"
+            + "  return u;\n"
+            + "}\n",
+        builder.toBlock().toString());
+  }
+}
+>>>>>>> 426dc8abb ([CALCITE-3195] Handle a UDF that throws checked exceptions in the Enumerable code generator (DonnyZone))
 
   @Test void testInlineInTryCatchStatement() {
     final BlockBuilder builder = new BlockBuilder(true);
