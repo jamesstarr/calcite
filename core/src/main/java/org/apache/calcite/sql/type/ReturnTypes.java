@@ -487,11 +487,13 @@ public abstract class ReturnTypes {
    * product of two exact numeric operands where at least one of the operands
    * is a decimal.
    */
-  public static final SqlReturnTypeInference DECIMAL_PRODUCT = opBinding -> {
-    RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-    RelDataType type1 = opBinding.getOperandType(0);
-    RelDataType type2 = opBinding.getOperandType(1);
-    return typeFactory.getTypeSystem().deriveDecimalMultiplyType(typeFactory, type1, type2);
+  public static final SqlReturnTypeInference DECIMAL_PRODUCT = new SqlReturnTypeInference() {
+    public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
+      RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+      RelDataType type1 = opBinding.getOperandType(0);
+      RelDataType type2 = opBinding.getOperandType(1);
+      return typeFactory.getTypeSystem().deriveDecimalMultiplyType(typeFactory, type1, type2);
+    }
   };
 
   /**
@@ -518,11 +520,13 @@ public abstract class ReturnTypes {
    * quotient of two exact numeric operands where at least one of the operands
    * is a decimal.
    */
-  public static final SqlReturnTypeInference DECIMAL_QUOTIENT = opBinding -> {
-    RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-    RelDataType type1 = opBinding.getOperandType(0);
-    RelDataType type2 = opBinding.getOperandType(1);
-    return typeFactory.getTypeSystem().deriveDecimalDivideType(typeFactory, type1, type2);
+  public static final SqlReturnTypeInference DECIMAL_QUOTIENT = new SqlReturnTypeInference() {
+    public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
+      RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+      RelDataType type1 = opBinding.getOperandType(0);
+      RelDataType type2 = opBinding.getOperandType(1);
+      return typeFactory.getTypeSystem().deriveDecimalDivideType(typeFactory, type1, type2);
+    }
   };
 
   /**
@@ -548,11 +552,14 @@ public abstract class ReturnTypes {
    * sum of two exact numeric operands where at least one of the operands is a
    * decimal.
    */
-  public static final SqlReturnTypeInference DECIMAL_SUM = opBinding -> {
-    RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-    RelDataType type1 = opBinding.getOperandType(0);
-    RelDataType type2 = opBinding.getOperandType(1);
-    return typeFactory.getTypeSystem().deriveDecimalPlusType(typeFactory, type1, type2);
+  public static final SqlReturnTypeInference DECIMAL_SUM = new SqlReturnTypeInference() {
+    public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
+      RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+      RelDataType type1 = opBinding.getOperandType(0);
+      RelDataType type2 = opBinding.getOperandType(1);
+      return typeFactory.getTypeSystem().deriveDecimalPlusType(typeFactory, type1, type2);
+    }
+
   };
 
   /**
@@ -571,28 +578,26 @@ public abstract class ReturnTypes {
   public static final SqlReturnTypeInference NULLABLE_SUM =
       new SqlReturnTypeInferenceChain(DECIMAL_SUM_NULLABLE, LEAST_RESTRICTIVE);
 
-  public static final SqlReturnTypeInference DECIMAL_MOD = opBinding -> {
-    RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-    RelDataType type1 = opBinding.getOperandType(0);
-    RelDataType type2 = opBinding.getOperandType(1);
-    return typeFactory.getTypeSystem().deriveDecimalModType(typeFactory, type1, type2);
+  public static final SqlReturnTypeInference DECIMAL_MOD = new SqlReturnTypeInference() {
+    public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
+      RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+      RelDataType type1 = opBinding.getOperandType(0);
+      RelDataType type2 = opBinding.getOperandType(1);
+      return typeFactory.getTypeSystem().deriveDecimalModType(typeFactory, type1, type2);
+    }
   };
 
-  /**
-   * Type-inference strategy whereby the result type of a call is the decimal
-   * modulus of two exact numeric operands where at least one of the operands is a
-   * decimal.
-   */
-  public static final SqlReturnTypeInference DECIMAL_MOD_NULLABLE =
+  private static final SqlReturnTypeInference DECIMAL_MOD_NULLABLE =
           cascade(DECIMAL_MOD, SqlTypeTransforms.TO_NULLABLE);
   /**
    * Type-inference strategy whereby the result type of a call is
    * {@link #DECIMAL_MOD_NULLABLE} with a fallback to {@link #ARG1_NULLABLE}
-   * These rules are used for modulus.
+   * These rules are used for modulo.
    */
   public static final SqlReturnTypeInference NULLABLE_MOD =
           chain(DECIMAL_MOD_NULLABLE, ARG1_NULLABLE);
 
+<<<<<<< HEAD
   /**
    * Type-inference strategy for DATE - DATE.
    */
@@ -645,6 +650,8 @@ public abstract class ReturnTypes {
       new SqlReturnTypeInferenceChain(
           DECIMAL_SUM_NULLABLE, TIMESTAMP_MINUS, DATE_MINUS, LEAST_RESTRICTIVE);
 
+=======
+>>>>>>> 06c1d66b8 (DX-17294: Make calcite rules pluggable.)
   /**
    * Type-inference strategy for DATE - DATE.
    */

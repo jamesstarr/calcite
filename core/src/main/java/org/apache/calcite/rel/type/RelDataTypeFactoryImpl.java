@@ -457,21 +457,27 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
   }
 
   /**
-   * Delegates to
-   * {@link RelDataTypeSystem#deriveDecimalMultiplyType(RelDataTypeFactory, RelDataType, RelDataType)}
-   * to get the return type for the operation.
+   * Delegates to {@link RelDataTypeSystem#deriveDecimalMultiplyType} to get the return type
+   * for the operation.
    */
   @Deprecated
   public RelDataType createDecimalProduct(
       RelDataType type1,
       RelDataType type2) {
-    return typeSystem.deriveDecimalMultiplyType(this, type1, type2);
+    return  typeSystem.deriveDecimalMultiplyType(this, type1, type2);
+  }
+
+  // implement RelDataTypeFactory
+  public boolean useDoubleMultiplication(
+      RelDataType type1,
+      RelDataType type2) {
+    assert createDecimalProduct(type1, type2) != null;
+    return false;
   }
 
   /**
-   * Delegates to
-   * {@link RelDataTypeSystem#shouldUseDoubleMultiplication(RelDataTypeFactory, RelDataType, RelDataType)}
-   * to get if double should be used for multiplication.
+   * Delegates to {@link RelDataTypeSystem#deriveDecimalDivideType} to get the return type
+   * for the operation.
    */
   @Deprecated
   public boolean useDoubleMultiplication(
@@ -490,6 +496,7 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
       RelDataType type1,
       RelDataType type2) {
     return typeSystem.deriveDecimalDivideType(this, type1, type2);
+<<<<<<< HEAD
   }
 
   public RelDataType decimalOf(RelDataType type) {
@@ -529,6 +536,8 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
       // default precision and scale.
       return createSqlType(SqlTypeName.DECIMAL);
     }
+=======
+>>>>>>> 06c1d66b8 (DX-17294: Make calcite rules pluggable.)
   }
 
   public Charset getDefaultCharset() {

@@ -275,7 +275,7 @@ public interface RelDataTypeFactory {
    * @deprecated Use
    * {@link RelDataTypeSystem#deriveDecimalMultiplyType(RelDataTypeFactory, RelDataType, RelDataType)}
    */
-  @Deprecated // to be removed before 2.0
+  @Deprecated
   RelDataType createDecimalProduct(
       RelDataType type1,
       RelDataType type2);
@@ -309,7 +309,7 @@ public interface RelDataTypeFactory {
    * @deprecated Use
    * {@link RelDataTypeSystem#deriveDecimalDivideType(RelDataTypeFactory, RelDataType, RelDataType)}
    */
-  @Deprecated // to be removed before 2.0
+  @Deprecated
   RelDataType createDecimalQuotient(
       RelDataType type1,
       RelDataType type2);

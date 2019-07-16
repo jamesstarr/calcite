@@ -19,8 +19,7 @@ package org.apache.calcite.sql.type;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
 
-import com.google.common.collect.ImmutableList;
-
+>>>>>>> 06c1d66b8 (DX-17294: Make calcite rules pluggable.)
 /** Sets up data needed by a test. */
 public class Fixture {
   SqlTypeFactoryImpl typeFactory = new SqlTypeFactoryImpl(new RelDataTypeSystemImpl() {
@@ -67,6 +66,7 @@ public class Fixture {
           typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 9), false);
   final RelDataType sqlDate = typeFactory.createTypeWithNullability(
           typeFactory.createSqlType(SqlTypeName.DATE), false);
+<<<<<<< HEAD
   final RelDataType structOfInt = typeFactory.createTypeWithNullability(
       typeFactory.createStructType(
           ImmutableList.of(sqlInt, sqlInt),
@@ -78,3 +78,7 @@ public class Fixture {
           ImmutableList.of("i", "j")
       ), true);
 }
+=======
+}
+
+// End Fixture.java
