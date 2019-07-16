@@ -263,6 +263,8 @@ public interface RelDataTypeFactory {
       SqlIntervalQualifier intervalQualifier);
 
   /**
+   * @deprecated Use {@link RelDataTypeSystem#deriveDecimalMultiplyType}
+   *
    * Infers the return type of a decimal multiplication. Decimal
    * multiplication involves at least one decimal operand and requires both
    * operands to have exact numeric types.
@@ -272,6 +274,7 @@ public interface RelDataTypeFactory {
    * @return the result type for a decimal multiplication, or null if decimal
    * multiplication should not be applied to the operands.
    */
+  @Deprecated
   RelDataType createDecimalProduct(
       RelDataType type1,
       RelDataType type2);
@@ -287,6 +290,8 @@ public interface RelDataTypeFactory {
       RelDataType type2);
 
   /**
+   * @deprecated Use {@link RelDataTypeSystem#deriveDecimalDivideType}
+   *
    * Infers the return type of a decimal division. Decimal division involves
    * at least one decimal operand and requires both operands to have exact
    * numeric types.
@@ -296,6 +301,7 @@ public interface RelDataTypeFactory {
    * @return the result type for a decimal division, or null if decimal
    * division should not be applied to the operands.
    */
+  @Deprecated
   RelDataType createDecimalQuotient(
       RelDataType type1,
       RelDataType type2);

@@ -17,7 +17,6 @@
 package org.apache.calcite.sql.type;
 
 import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
 
 import com.google.common.collect.Lists;
 
@@ -150,54 +149,6 @@ public class SqlTypeFactoryTest {
     assertThat(SqlTypeUtil.comparePrecision(p0, p1), is(expectedComparison));
     assertThat(SqlTypeUtil.comparePrecision(p0, p0), is(0));
     assertThat(SqlTypeUtil.comparePrecision(p1, p1), is(0));
-  }
-
-  /** Sets up data needed by a test. */
-  private static class Fixture {
-    SqlTypeFactoryImpl typeFactory = new SqlTypeFactoryImpl(new RelDataTypeSystemImpl() {
-      public int getMaxPrecision(SqlTypeName typeName) {
-        if (typeName == SqlTypeName.TIMESTAMP) {
-          return 9;
-        }
-        return super.getMaxPrecision(typeName);
-      };
-    });
-    final RelDataType sqlBigInt = typeFactory.createTypeWithNullability(
-        typeFactory.createSqlType(SqlTypeName.BIGINT), false);
-    final RelDataType sqlBigIntNullable = typeFactory.createTypeWithNullability(
-        typeFactory.createSqlType(SqlTypeName.BIGINT), true);
-    final RelDataType sqlInt = typeFactory.createTypeWithNullability(
-        typeFactory.createSqlType(SqlTypeName.INTEGER), false);
-    final RelDataType sqlVarcharNullable = typeFactory.createTypeWithNullability(
-        typeFactory.createSqlType(SqlTypeName.VARCHAR), true);
-    final RelDataType sqlNull = typeFactory.createTypeWithNullability(
-        typeFactory.createSqlType(SqlTypeName.NULL), false);
-    final RelDataType sqlAny = typeFactory.createTypeWithNullability(
-        typeFactory.createSqlType(SqlTypeName.ANY), false);
-    final RelDataType sqlFloat = typeFactory.createTypeWithNullability(
-        typeFactory.createSqlType(SqlTypeName.FLOAT), false);
-    final RelDataType arrayFloat = typeFactory.createTypeWithNullability(
-        typeFactory.createArrayType(sqlFloat, -1), false);
-    final RelDataType arrayBigInt = typeFactory.createTypeWithNullability(
-        typeFactory.createArrayType(sqlBigIntNullable, -1), false);
-    final RelDataType multisetFloat = typeFactory.createTypeWithNullability(
-        typeFactory.createMultisetType(sqlFloat, -1), false);
-    final RelDataType multisetBigInt = typeFactory.createTypeWithNullability(
-        typeFactory.createMultisetType(sqlBigIntNullable, -1), false);
-    final RelDataType arrayBigIntNullable = typeFactory.createTypeWithNullability(
-        typeFactory.createArrayType(sqlBigIntNullable, -1), true);
-    final RelDataType arrayOfArrayBigInt = typeFactory.createTypeWithNullability(
-        typeFactory.createArrayType(arrayBigInt, -1), false);
-    final RelDataType arrayOfArrayFloat = typeFactory.createTypeWithNullability(
-        typeFactory.createArrayType(arrayFloat, -1), false);
-    final RelDataType sqlTimestamp3 = typeFactory.createTypeWithNullability(
-        typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 3), false);
-    final RelDataType sqlTimestamp6 = typeFactory.createTypeWithNullability(
-        typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 6), false);
-    final RelDataType sqlTimestamp9 = typeFactory.createTypeWithNullability(
-        typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 9), false);
-    final RelDataType sqlDate = typeFactory.createTypeWithNullability(
-            typeFactory.createSqlType(SqlTypeName.DATE), false);
   }
 
 }

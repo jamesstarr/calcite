@@ -18,6 +18,7 @@ package org.apache.calcite.rel.type;
 
 import org.apache.calcite.sql.type.SqlTypeFamily;
 import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.sql.type.SqlTypeUtil;
 
 /** Default implementation of
  * {@link org.apache.calcite.rel.type.RelDataTypeSystem},
@@ -243,6 +244,122 @@ public abstract class RelDataTypeSystemImpl implements RelDataTypeSystem {
 
   public boolean isSchemaCaseSensitive() {
     return true;
+  }
+
+
+  @Override public RelDataType deriveDecimalPlusType(RelDataTypeFactory typeFactory,
+      RelDataType type1, RelDataType type2) {
+    if (SqlTypeUtil.isExactNumeric(type1)
+            && SqlTypeUtil.isExactNumeric(type2)) {
+      if (SqlTypeUtil.isDecimal(type1)
+              || SqlTypeUtil.isDecimal(type2)) {
+        int p1 = type1.getPrecision();
+        int p2 = type2.getPrecision();
+        int s1 = type1.getScale();
+        int s2 = type2.getScale();
+        int scale = Math.max(s1, s2);
+        assert scale <= getMaxNumericScale();
+        int precision = Math.max(p1 - s1, p2 - s2) + scale + 1;
+        precision =
+                Math.min(
+                        precision,
+                        getMaxNumericPrecision());
+        assert precision > 0;
+
+        return typeFactory.createSqlType(
+                SqlTypeName.DECIMAL,
+                precision,
+                scale);
+      }
+    }
+    return null;
+  }
+
+  @Override public RelDataType deriveDecimalMultiplyType(RelDataTypeFactory typeFactory,
+      RelDataType type1, RelDataType type2) {
+    if (SqlTypeUtil.isExactNumeric(type1)
+            && SqlTypeUtil.isExactNumeric(type2)) {
+      if (SqlTypeUtil.isDecimal(type1)
+              || SqlTypeUtil.isDecimal(type2)) {
+        int p1 = type1.getPrecision();
+        int p2 = type2.getPrecision();
+        int s1 = type1.getScale();
+        int s2 = type2.getScale();
+
+        int scale = s1 + s2;
+        scale = Math.min(scale, getMaxNumericScale());
+        int precision = p1 + p2;
+        precision =
+                Math.min(
+                        precision,
+                        getMaxNumericPrecision());
+
+        RelDataType ret;
+        ret = typeFactory.createSqlType(
+                SqlTypeName.DECIMAL,
+                precision,
+                scale);
+
+        return ret;
+      }
+    }
+
+    return null;
+  }
+
+  @Override public RelDataType deriveDecimalDivideType(RelDataTypeFactory typeFactory,
+      RelDataType type1, RelDataType type2) {
+
+    if (SqlTypeUtil.isExactNumeric(type1)
+            && SqlTypeUtil.isExactNumeric(type2)) {
+      if (SqlTypeUtil.isDecimal(type1)
+              || SqlTypeUtil.isDecimal(type2)) {
+        int p1 = type1.getPrecision();
+        int p2 = type2.getPrecision();
+        int s1 = type1.getScale();
+        int s2 = type2.getScale();
+
+        final int maxNumericPrecision = getMaxNumericPrecision();
+        int dout =
+                Math.min(
+                        p1 - s1 + s2,
+                        maxNumericPrecision);
+
+        int scale = Math.max(6, s1 + p2 + 1);
+        scale =
+                Math.min(
+                        scale,
+                        maxNumericPrecision - dout);
+        scale = Math.min(scale, getMaxNumericScale());
+
+        int precision = dout + scale;
+        assert precision <= maxNumericPrecision;
+        assert precision > 0;
+
+        RelDataType ret;
+        ret = typeFactory.
+                createSqlType(
+                        SqlTypeName.DECIMAL,
+                        precision,
+                        scale);
+
+        return ret;
+      }
+    }
+
+    return null;
+  }
+
+  @Override public RelDataType deriveDecimalModType(RelDataTypeFactory typeFactory,
+      RelDataType type1, RelDataType type2) {
+    if (SqlTypeUtil.isExactNumeric(type1)
+            && SqlTypeUtil.isExactNumeric(type2)) {
+      if (SqlTypeUtil.isDecimal(type1)
+              || SqlTypeUtil.isDecimal(type2)) {
+        return type2;
+      }
+    }
+    return null;
   }
 
 }
