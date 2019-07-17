@@ -2504,9 +2504,7 @@ class RelOptRulesTest extends RelOptTestBase {
    * ReduceExpressionsRule throws "duplicate key" exception</a>. */
   @Test public void testReduceConstantsDup() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
         .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
-        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
 
     final String sql = "select d.deptno"
@@ -2522,7 +2520,6 @@ class RelOptRulesTest extends RelOptTestBase {
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
         .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
-        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
 
     final String sql = "select *\n"
@@ -2532,6 +2529,90 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).withRule(CoreRules.PROJECT_REDUCE_EXPRESSIONS,
             CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .check();
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
+   * Enhance RexSimplify to handle (x<>a or x<>b)</a>. */
+  @Test public void testReduceConstantsDup3() throws Exception {
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .build();
+
+    final String sql = "select d.deptno"
+        + " from dept d"
+        + " where d.deptno<>7 or d.deptno<>8";
+    checkPlanning(new HepPlanner(program), sql);
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
+   * Enhance RexSimplify to handle (x<>a or x<>b)</a>. */
+  @Test public void testReduceConstantsDup3Null() throws Exception {
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .build();
+
+    final String sql = "select e.empno"
+        + " from emp e"
+        + " where e.mgr<>7 or e.mgr<>8";
+    checkPlanning(new HepPlanner(program), sql);
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
+   * Enhance RexSimplify to handle (x<>a or x<>b)</a>. */
+  @Test public void testReduceConstantsDupNot() throws Exception {
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .build();
+
+    final String sql = "select d.deptno"
+        + " from dept d"
+        + " where not(d.deptno=7 and d.deptno=8)";
+    checkPlanning(new HepPlanner(program), sql);
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
+   * Enhance RexSimplify to handle (x<>a or x<>b)</a>. */
+  @Test public void testReduceConstantsDupNotNull() throws Exception {
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .build();
+
+    final String sql = "select e.empno"
+        + " from emp e"
+        + " where not(e.mgr=7 and e.mgr=8)";
+    checkPlanning(new HepPlanner(program), sql);
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
+   * Enhance RexSimplify to handle (x<>a or x<>b)</a>. */
+  @Test public void testReduceConstantsDupNot2() throws Exception {
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .build();
+
+    final String sql = "select d.deptno"
+        + " from dept d"
+        + " where not(d.deptno=7 and d.name='foo' and d.deptno=8)";
+    checkPlanning(new HepPlanner(program), sql);
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
+   * Enhance RexSimplify to handle (x<>a or x<>b)</a>. */
+  @Test public void testReduceConstantsDupNot2Null() throws Exception {
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .build();
+
+    final String sql = "select e.empno"
+        + " from emp e"
+        + " where not(e.mgr=7 and e.deptno=8 and e.mgr=8)";
+    checkPlanning(new HepPlanner(program), sql);
   }
 
   @Test public void testPullNull() throws Exception {

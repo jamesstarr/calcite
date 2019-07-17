@@ -2992,6 +2992,9 @@ LogicalProject(DEPTNO=[$0])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> beb64afe2 ([CALCITE-3198] Enhance RexSimplify to handle (x<>a or x<>b))
     <TestCase name="testReduceConstantsDup3">
         <Resource name="sql">
             <![CDATA[select d.deptno from dept d where d.deptno<>7 or d.deptno<>8]]>
@@ -3103,8 +3106,11 @@ LogicalProject(EMPNO=[$0])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+>>>>>>> beb64afe2 ([CALCITE-3198] Enhance RexSimplify to handle (x<>a or x<>b))
 
     <TestCase name="testReduceConstantsEliminatesFilter">
         <Resource name="sql">
