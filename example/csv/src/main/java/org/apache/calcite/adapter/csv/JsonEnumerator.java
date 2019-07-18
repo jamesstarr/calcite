@@ -27,9 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
-<<<<<<< HEAD
- * Enumerator that reads from a Object List.
-=======
  * Enumerator that reads from a JSON file.
  */
 public class JsonEnumerator implements Enumerator<Object[]> {
@@ -50,7 +47,6 @@ public class JsonEnumerator implements Enumerator<Object[]> {
       }
     }
     enumerator = Linq4j.enumerator(objs);
->>>>>>> 9addb8c46 ([CALCITE-3176] File adapter for parsing JSON files)
   }
 
   public Object[] current() {

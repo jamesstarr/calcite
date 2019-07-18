@@ -97,7 +97,6 @@ import org.apache.calcite.sql.util.SqlShuttle;
 import org.apache.calcite.sql.util.SqlVisitor;
 import org.apache.calcite.sql.validate.implicit.TypeCoercion;
 import org.apache.calcite.sql.validate.implicit.TypeCoercions;
-import org.apache.calcite.sql2rel.InitializerContext;
 import org.apache.calcite.util.BitString;
 import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.ImmutableBitSet;
@@ -140,6 +139,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import static org.apache.calcite.sql.SqlUtil.stripAs;
@@ -4640,14 +4640,34 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     final RelDataType logicalSourceRowType =
         getLogicalSourceRowType(sourceRowType, insert);
 
-    checkFieldCount(insert.getTargetTable(), table, source,
-            logicalSourceRowType, logicalTargetRowType);
+    final List<ColumnStrategy> strategies =
+        table.unwrap(RelOptTable.class).getColumnStrategies();
 
-    checkTypeAssignment(logicalSourceRowType, logicalTargetRowType, insert);
+    final RelDataType realTargetRowType = typeFactory.createStructType(
+        logicalTargetRowType.getFieldList()
+            .stream().filter(f -> strategies.get(f.getIndex()).canInsertInto())
+            .collect(Collectors.toList()));
+
+    final RelDataType targetRowTypeToValidate =
+        logicalSourceRowType.getFieldCount() == logicalTargetRowType.getFieldCount()
+        ? logicalTargetRowType
+        : realTargetRowType;
+
+    checkFieldCount(insert.getTargetTable(), table, strategies,
+        targetRowTypeToValidate, realTargetRowType,
+        source, logicalSourceRowType, logicalTargetRowType);
+
+    // Skip the virtual columns(can not insert into) type assignment
+    // check if the source fields num is equals with
+    // the real target table fields num, see how #checkFieldCount was used.
+    checkTypeAssignment(logicalSourceRowType, targetRowTypeToValidate, insert);
 
     checkConstraint(table, source, logicalTargetRowType);
 
     validateAccess(insert.getTargetTable(), table, SqlAccessEnum.INSERT);
+
+    // Refresh the insert row type to keep sync with source.
+    setValidatedNodeType(insert, targetRowTypeToValidate);
   }
 
   /**
@@ -4746,31 +4766,38 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     }
   }
 
+  /**
+   * Check the field count of sql insert source and target node row type.
+   * @param node                    target table sql identifier
+   * @param table                   target table
+   * @param strategies              column strategies of target table
+   * @param targetRowTypeToValidate row type to validate mainly for column strategies
+   * @param realTargetRowType       target table row type exclusive virtual columns
+   * @param source                  source node
+   * @param logicalSourceRowType    source node row type
+   * @param logicalTargetRowType    logical target row type, contains only target columns if
+   *                                they are specified or if the sql dialect allows subset insert,
+   *                                make a subset of fields(start from the left first field) whose
+   *                                length is equals with the source row type fields number.
+   */
   private void checkFieldCount(SqlNode node, SqlValidatorTable table,
-      SqlNode source, RelDataType logicalSourceRowType,
-      RelDataType logicalTargetRowType) {
+      List<ColumnStrategy> strategies, RelDataType targetRowTypeToValidate,
+      RelDataType realTargetRowType, SqlNode source,
+      RelDataType logicalSourceRowType, RelDataType logicalTargetRowType) {
     final int sourceFieldCount = logicalSourceRowType.getFieldCount();
     final int targetFieldCount = logicalTargetRowType.getFieldCount();
-    if (sourceFieldCount != targetFieldCount) {
+    final int targetRealFieldCount = realTargetRowType.getFieldCount();
+    if (sourceFieldCount != targetFieldCount
+        && sourceFieldCount != targetRealFieldCount) {
+      // we allow the source row fields equals with either the target row fields num,
+      // or the number of real(exclusive columns that can not insert into) target row fields.
       throw newValidationError(node,
           RESOURCE.unmatchInsertColumn(targetFieldCount, sourceFieldCount));
     }
     // Ensure that non-nullable fields are targeted.
-    final InitializerContext rexBuilder =
-        new InitializerContext() {
-          public RexBuilder getRexBuilder() {
-            return new RexBuilder(typeFactory);
-          }
-
-          public RexNode convertExpression(SqlNode e) {
-            throw new UnsupportedOperationException();
-          }
-        };
-    final List<ColumnStrategy> strategies =
-        table.unwrap(RelOptTable.class).getColumnStrategies();
     for (final RelDataTypeField field : table.getRowType().getFieldList()) {
       final RelDataTypeField targetField =
-          logicalTargetRowType.getField(field.getName(), true, false);
+          targetRowTypeToValidate.getField(field.getName(), true, false);
       switch (strategies.get(field.getIndex())) {
       case NOT_NULLABLE:
         assert !field.getType().isNullable();

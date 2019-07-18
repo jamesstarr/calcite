@@ -273,9 +273,6 @@ class SqlTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1754">[CALCITE-1754]
    * In Csv adapter, convert DATE and TIME values to int, and TIMESTAMP values
    * to long</a>. */
-<<<<<<< HEAD
-  @Test void testCsvGroupByTimestampAdd() throws SQLException {
-=======
   @Test public void testCsvGroupByTimestampAdd() throws SQLException {
     final String sql = "select count(*) as c,\n"
         + "  {fn timestampadd(SQL_TSI_DAY, 1, JOINEDAT) } as t\n"
@@ -429,7 +426,6 @@ class SqlTest {
         .ok();
   }
 }
->>>>>>> 9addb8c46 ([CALCITE-3176] File adapter for parsing JSON files)
 
   /** Reads the DEPTS table from the JSON schema. */
   @Test void testJsonSalesDepts() throws SQLException {
