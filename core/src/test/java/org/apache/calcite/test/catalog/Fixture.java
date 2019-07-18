@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 final class Fixture extends AbstractFixture {
   final RelDataType intType;
   final RelDataType intTypeNull;
+  final RelDataType bigintTypeNull;
   final RelDataType decimalType;
   final RelDataType varcharType;
   final RelDataType varchar10Type;
@@ -71,6 +72,7 @@ final class Fixture extends AbstractFixture {
     super(typeFactory);
     intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
     intTypeNull = typeFactory.createTypeWithNullability(intType, true);
+    bigintTypeNull = typeFactory.createTypeWithNullability(bigintType, true);
     decimalType = typeFactory.createSqlType(SqlTypeName.DECIMAL);
     varcharType = typeFactory.createSqlType(SqlTypeName.VARCHAR);
     varchar10Type = typeFactory.createSqlType(SqlTypeName.VARCHAR, 10);
