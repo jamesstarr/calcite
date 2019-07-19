@@ -24,10 +24,9 @@ import org.apache.calcite.util.TestUtil;
 
 import com.google.common.collect.ImmutableList;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
+import org.junit.Assume;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -810,29 +809,14 @@ public class TpchTest {
 
   private CalciteAssert.AssertThat with() {
     // Only run on JDK 1.7 or higher. The io.airlift.tpch library requires it.
-    return CalciteAssert.model(TPCH_MODEL).enable(ENABLE);
-  }
-
-  /** Tests the customer table with scale factor 5. */
-  @Disabled("it's wasting time")
-  @Test void testCustomer5() {
-    with()
-        .query("select * from tpch_5.customer")
-        .returnsCount(750000);
-  }
-
-  @Test void testQuery01() {
-    checkQuery(1);
-  }
-
-  @Disabled("Infinite planning")
-  @Test void testQuery02() {
+  @Ignore("Infinite planning")
+  @Test public void testQuery02() {
     checkQuery(2);
   }
 
+  @Ignore("Infinite planning")
   @Test public void testQuery02Conversion() {
-    query(2, true)
-        .enable(ENABLE)
+    query(2)
         .convertMatches(relNode -> {
           String s = RelOptUtil.toString(relNode);
           assertThat(s, not(containsString("Correlator")));
@@ -858,9 +842,9 @@ public class TpchTest {
     checkQuery(6);
   }
 
-  @Disabled("slow")
-  @Test void testQuery07() {
-    assumeTrue(Bug.CALCITE_2223_FIXED);
+  @Ignore("slow")
+  @Test public void testQuery07() {
+    Assume.assumeTrue(Bug.CALCITE_2223_FIXED);
     checkQuery(7);
   }
 
@@ -946,6 +930,6 @@ public class TpchTest {
    */
   private CalciteAssert.AssertQuery query(int i) {
     return with()
-        .query(QUERIES.get(i - 1).replace("tpch.", "tpch_01."));
+      .query(QUERIES.get(i - 1).replaceAll("tpch\\.", "tpch_01."));
   }
 }
