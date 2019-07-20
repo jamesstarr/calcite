@@ -402,8 +402,8 @@ public class FrameworksTest {
             .traitDefs(traitDefs)
             // define the rules you want to apply
             .ruleSets(
-                    RuleSets.ofList(AbstractConverter.ExpandConversionRule.INSTANCE,
-                            CoreRules.PROJECT_TABLE_SCAN))
+                RuleSets.ofList(AbstractConverter.ExpandConversionRule.INSTANCE,
+                    CoreRules.PROJECT_TABLE_SCAN))
             .programs(Programs.ofRules(Programs.RULE_SET))
             .build();
 

@@ -77,3 +77,8 @@ public class JpsTableFunction {
   }
 
 }
+<<<<<<< HEAD
+=======
+
+// End JpsTableFunction.java
+>>>>>>> 6234ac291 ([CALCITE-3204] Implement jps command for OS adapter (Qianjin Xu))
