@@ -256,7 +256,7 @@ public abstract class SqlImplementor {
     case LESS_THAN:
     case LESS_THAN_OR_EQUAL:
     case LIKE:
-      node = stripCastFromString(node, dialect);
+      node = stripCastFromString(node);
       operands = ((RexCall) node).getOperands();
       op = ((RexCall) node).getOperator();
       if (operands.size() == 2
