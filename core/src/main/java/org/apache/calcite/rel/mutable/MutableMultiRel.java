@@ -20,10 +20,9 @@ import org.apache.calcite.linq4j.Ord;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.rel.type.RelDataType;
 
-<<<<<<< HEAD
-=======
 import com.google.common.collect.ImmutableList;
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+=======
+>>>>>>> 8b0011dd1 ([CALCITE-3209] When calling MutableMultiRel::setInput, exception thrown (Jin Xing))
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;

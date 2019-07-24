@@ -38,7 +38,8 @@ import org.apache.calcite.util.Litmus;
 import com.google.common.collect.ImmutableList;
 
 import org.hamcrest.MatcherAssert;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -178,8 +179,7 @@ class MutableRelTest {
         + "intersect select * from emp where ename like 'John%'");
   }
 
-<<<<<<< HEAD
-  @Test void testUpdateInputOfUnion() {
+  @Test public void testUpdateInputOfUnion() {
     MutableRel mutableRel = createMutableRel(
         "select sal from emp where deptno = 10"
             + "union select sal from emp where ename like 'John%'");
@@ -198,29 +198,8 @@ class MutableRelTest {
     MatcherAssert.assertThat(actual, Matchers.isLinux(expected));
   }
 
-  @Test void testParentInfoOfUnion() {
-    MutableRel mutableRel = createMutableRel(
-        "select sal from emp where deptno = 10"
-            + "union select sal from emp where ename like 'John%'");
-    for (MutableRel input: mutableRel.getInputs()) {
-      assertSame(input.getParent(), mutableRel);
-    }
-  }
-
-  @Test void testMutableTableFunctionScanEquals() {
-    final String sql = "SELECT * FROM TABLE(RAMP(3))";
-    final MutableRel mutableRel1 = createMutableRel(sql);
-    final MutableRel mutableRel2 = createMutableRel(sql);
-    final String actual = RelOptUtil.toString(MutableRels.fromMutable(mutableRel1));
-    final String expected = ""
-        + "LogicalProject(I=[$0])\n"
-        + "  LogicalTableFunctionScan(invocation=[RAMP(3)], rowType=[RecordType(INTEGER I)])\n";
-    MatcherAssert.assertThat(actual, Matchers.isLinux(expected));
-    assertEquals(mutableRel1, mutableRel2);
-  }
-
-=======
 >>>>>>> 67fdf4c16 ([CALCITE-3447] MutableScans with the same qualified name are not equivalent (Dai Min, Jin Xing))
+=======
   /** Verifies equivalence of {@link MutableScan} */
   @Test public void testMutableScanEquivalence() {
     final FrameworkConfig config = RelBuilderTest.config().build();
@@ -320,5 +299,12 @@ class MutableRelTest {
   private MutableScan mutableScanOf(RelBuilder builder, String... tableNames) {
     final RelNode scan = builder.scan(tableNames).build();
     return (MutableScan) MutableRels.toMutable(scan);
+  }
+
+  private static MutableRel createMutableRel(String sql) {
+    final SqlToRelTestBase test = new SqlToRelTestBase() {
+    };
+    RelNode rel = test.createTester().convertSqlToRel(sql).rel;
+    return MutableRels.toMutable(rel);
   }
 }
