@@ -426,7 +426,8 @@ public abstract class MutableRels {
   }
 
   private static List<MutableRel> toMutables(List<RelNode> nodes) {
-    return Lists.transform(nodes, MutableRels::toMutable);
+    return nodes.stream().map(MutableRels::toMutable)
+        .collect(Collectors.toList());
   }
 }
 
