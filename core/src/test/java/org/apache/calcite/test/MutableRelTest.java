@@ -198,8 +198,16 @@ class MutableRelTest {
     MatcherAssert.assertThat(actual, Matchers.isLinux(expected));
   }
 
->>>>>>> 67fdf4c16 ([CALCITE-3447] MutableScans with the same qualified name are not equivalent (Dai Min, Jin Xing))
 =======
+  @Test public void testParentInfoOfUnion() {
+    MutableRel mutableRel = createMutableRel(
+        "select sal from emp where deptno = 10"
+            + "union select sal from emp where ename like 'John%'");
+    for (MutableRel input: mutableRel.getInputs()) {
+      Assert.assertTrue(input.getParent() == mutableRel);
+    }
+  }
+
   /** Verifies equivalence of {@link MutableScan} */
   @Test public void testMutableScanEquivalence() {
     final FrameworkConfig config = RelBuilderTest.config().build();
