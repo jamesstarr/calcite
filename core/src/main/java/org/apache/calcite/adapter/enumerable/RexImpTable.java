@@ -301,10 +301,6 @@ public class RexImpTable {
     defineMethod(INITCAP,  BuiltInMethod.INITCAP.method, NullPolicy.STRICT);
     defineMethod(TO_BASE64, BuiltInMethod.TO_BASE64.method, NullPolicy.STRICT);
     defineMethod(FROM_BASE64, BuiltInMethod.FROM_BASE64.method, NullPolicy.STRICT);
-<<<<<<< HEAD
-    defineMethod(MD5, BuiltInMethod.MD5.method, NullPolicy.STRICT);
-    defineMethod(SHA1, BuiltInMethod.SHA1.method, NullPolicy.STRICT);
-=======
 >>>>>>> 9f2a994f2 ([CALCITE-2460] [CALCITE-2459] Add TO_BASE64 / FROM_BASE64 SQL functions (Wenhui Tang))
     defineMethod(SUBSTRING, BuiltInMethod.SUBSTRING.method, NullPolicy.STRICT);
     defineImplementor(REPLACE, NullPolicy.STRICT, new ReplaceImplementor(), false);
@@ -2224,11 +2220,15 @@ public class RexImpTable {
         case YEAR:
         case QUARTER:
         case MONTH:
+<<<<<<< HEAD
         case WEEK:
         case DAY:
           final Expression operand1 =
               preFloor ? call(operand, type, TimeUnit.DAY) : operand;
           return Expressions.call(floorMethod, tur, operand1);
+=======
+          return Expressions.call(floorMethod, tur,
+              call(operand, type, TimeUnit.DAY));
         case NANOSECOND:
         default:
           return call(operand, type, timeUnitRange.startUnit);
@@ -2583,11 +2583,14 @@ public class RexImpTable {
         }
         break;
       case MILLISECOND:
-        return mod(operand, TimeUnit.MINUTE.multiplier.longValue());
       case MICROSECOND:
+      case NANOSECOND:
+        if (sqlTypeName == SqlTypeName.DATE) {
+          return Expressions.constant(0L);
+        }
         operand = mod(operand, TimeUnit.MINUTE.multiplier.longValue());
         return Expressions.multiply(
-            operand, Expressions.constant(TimeUnit.SECOND.multiplier.longValue()));
+            operand, Expressions.constant((long) (1 / unit.multiplier.doubleValue())));
       case EPOCH:
         switch (sqlTypeName) {
         case DATE:

@@ -5266,6 +5266,7 @@ TimeUnit TimeUnit() :
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     <MILLISECOND> { return TimeUnit.MILLISECOND; }
 =======
     <MICROSECOND> { return TimeUnit.MICROSECOND; }
@@ -5278,6 +5279,9 @@ TimeUnit TimeUnit() :
 =======
     <MICROSECOND> { return TimeUnit.MICROSECOND; }
 |   <MILLISECOND> { return TimeUnit.MILLISECOND; }
+=======
+    <MILLISECOND> { return TimeUnit.MILLISECOND; }
+>>>>>>> 491096f5b ([CALCITE-2496] Return 0 in case of extract(milli/micro/nanosecond from datel) (Sergey Nuyanzin, Chunwei Lei))
 |   <SECOND> { return TimeUnit.SECOND; }
 >>>>>>> 2fd3f202e (Reapply [CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin))
 =======
@@ -6507,9 +6511,14 @@ SqlNode BuiltinFunctionCall() :
 =======
 =======
             LOOKAHEAD(2)
+<<<<<<< HEAD
 >>>>>>> 7f011cb5c ([CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin))
             <MICROSECOND> { unit = TimeUnit.MICROSECOND; }
 >>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
+=======
+            <NANOSECOND> { unit = TimeUnit.NANOSECOND; }
+        |   <MICROSECOND> { unit = TimeUnit.MICROSECOND; }
+>>>>>>> 491096f5b ([CALCITE-2496] Return 0 in case of extract(milli/micro/nanosecond from datel) (Sergey Nuyanzin, Chunwei Lei))
         |   unit = TimeUnit()
         )
         { args = startList(new SqlIntervalQualifier(unit, null, getPos())); }
