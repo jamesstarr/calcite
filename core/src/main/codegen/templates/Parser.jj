@@ -4637,12 +4637,12 @@ SqlIntervalQualifier IntervalQualifier() :
 
 /**
  * Parses time unit for EXTRACT, CEIL and FLOOR functions.
+ * Note that it does't include NANOSECOND and MICROSECOND.
  */
 TimeUnit TimeUnit() :
 {}
 {
-    <MICROSECOND> { return TimeUnit.MICROSECOND; }
-|   <MILLISECOND> { return TimeUnit.MILLISECOND; }
+    <MILLISECOND> { return TimeUnit.MILLISECOND; }
 |   <SECOND> { return TimeUnit.SECOND; }
 |   <MINUTE> { return TimeUnit.MINUTE; }
 |   <HOUR> { return TimeUnit.HOUR; }
@@ -5472,7 +5472,8 @@ SqlNode BuiltinFunctionCall() :
         <LPAREN>
         (
             LOOKAHEAD(2)
-            <MICROSECOND> { unit = TimeUnit.MICROSECOND; }
+            <NANOSECOND> { unit = TimeUnit.NANOSECOND; }
+        |   <MICROSECOND> { unit = TimeUnit.MICROSECOND; }
         |   unit = TimeUnit()
         )
         { args = startList(new SqlIntervalQualifier(unit, null, getPos())); }
