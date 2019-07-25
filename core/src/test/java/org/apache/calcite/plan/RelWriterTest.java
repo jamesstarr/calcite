@@ -120,6 +120,7 @@ class RelWriterTest {
       + "            \"kind\": \"COUNT\",\n"
       + "            \"syntax\": \"FUNCTION_STAR\"\n"
       + "          },\n"
+>>>>>>> b1f936dda ([CALCITE-3177]Ensure correct deserialization of relational algebra.)
       + "          \"type\": {\n"
       + "            \"type\": \"BIGINT\",\n"
       + "            \"nullable\": false\n"
@@ -127,10 +128,12 @@ class RelWriterTest {
       + "          \"distinct\": true,\n"
       + "          \"operands\": [\n"
       + "            1\n"
-      + "          ],\n"
-      + "          \"name\": \"c\"\n"
+      + "          ]\n"
       + "        },\n"
       + "        {\n"
+<<<<<<< HEAD
+      + "        \"agg\": {\n"
+=======
       + "          \"agg\": {\n"
       + "            \"name\": \"COUNT\",\n"
       + "            \"kind\": \"COUNT\",\n"
@@ -141,14 +144,15 @@ class RelWriterTest {
       + "            \"nullable\": false\n"
       + "          },\n"
       + "          \"distinct\": false,\n"
-      + "          \"operands\": [],\n"
-      + "          \"name\": \"d\"\n"
+      + "          \"operands\": []\n"
       + "        }\n"
       + "      ]\n"
       + "    }\n"
       + "  ]\n"
       + "}";
 
+<<<<<<< HEAD
+=======
   public static final String XXNULL = "{\n"
       + "  \"rels\": [\n"
       + "    {\n"
@@ -221,68 +225,6 @@ class RelWriterTest {
       + "  ]\n"
       + "}";
 
-<<<<<<< HEAD
-=======
-  public static final String XXNULL = "{\n"
-      + "  \"rels\": [\n"
-      + "    {\n"
-      + "      \"id\": \"0\",\n"
-      + "      \"relOp\": \"LogicalTableScan\",\n"
-      + "      \"table\": [\n"
-      + "        \"hr\",\n"
-      + "        \"emps\"\n"
-      + "      ],\n"
-      + "      \"inputs\": []\n"
-      + "    },\n"
-      + "    {\n"
-      + "      \"id\": \"1\",\n"
-      + "      \"relOp\": \"LogicalFilter\",\n"
-      + "      \"condition\": {\n"
-      + "        \"op\": \"=\",\n"
-      + "        \"operands\": [\n"
-      + "          {\n"
-      + "            \"input\": 1,\n"
-      + "            \"name\": \"$1\"\n"
-      + "          },\n"
-      + "          {\n"
-      + "            \"literal\": null,\n"
-      + "            \"type\": \"INTEGER\"\n"
-      + "          }\n"
-      + "        ]\n"
-      + "      }\n"
-      + "    },\n"
-      + "    {\n"
-      + "      \"id\": \"2\",\n"
-      + "      \"relOp\": \"LogicalAggregate\",\n"
-      + "      \"group\": [\n"
-      + "        0\n"
-      + "      ],\n"
-      + "      \"aggs\": [\n"
-      + "        {\n"
-      + "          \"agg\": \"COUNT\",\n"
-      + "          \"type\": {\n"
-      + "            \"type\": \"BIGINT\",\n"
-      + "            \"nullable\": false\n"
-      + "          },\n"
-      + "          \"distinct\": true,\n"
-      + "          \"operands\": [\n"
-      + "            1\n"
-      + "          ]\n"
-      + "        },\n"
-      + "        {\n"
-      + "          \"agg\": \"COUNT\",\n"
-      + "          \"type\": {\n"
-      + "            \"type\": \"BIGINT\",\n"
-      + "            \"nullable\": false\n"
-      + "          },\n"
-      + "          \"distinct\": false,\n"
-      + "          \"operands\": []\n"
-      + "        }\n"
-      + "      ]\n"
-      + "    }\n"
-      + "  ]\n"
-      + "}";
-
   public static final String XX2 = "{\n"
       + "  \"rels\": [\n"
       + "    {\n"
@@ -308,7 +250,11 @@ class RelWriterTest {
       + "          \"name\": \"$0\"\n"
       + "        },\n"
       + "        {\n"
-      + "          \"op\": \"COUNT\",\n"
+      + "          \"op\": {\n"
+      + "            \"name\": \"COUNT\",\n"
+      + "            \"kind\": \"COUNT\",\n"
+      + "            \"syntax\": \"FUNCTION_STAR\"\n"
+      + "          },\n"
       + "          \"operands\": [\n"
       + "            {\n"
       + "              \"input\": 0,\n"
@@ -346,7 +292,11 @@ class RelWriterTest {
       + "          }\n"
       + "        },\n"
       + "        {\n"
-      + "          \"op\": \"SUM\",\n"
+      + "          \"op\": {\n"
+      + "            \"name\": \"SUM\",\n"
+      + "            \"kind\": \"SUM\",\n"
+      + "            \"syntax\": \"FUNCTION\"\n"
+      + "          },\n"
       + "          \"operands\": [\n"
       + "            {\n"
       + "              \"input\": 0,\n"
@@ -611,6 +561,38 @@ class RelWriterTest {
         });
     final String expected = ""
         + "LogicalProject(trimmed_ename=[TRIM(FLAG(BOTH), ' ', $1)])\n"
+        + "  LogicalTableScan(table=[[scott, EMP]])\n";
+    assertThat(s, isLinux(expected));
+  }
+
+  @Test public void testPlusOperator() {
+    final FrameworkConfig config = RelBuilderTest.config().build();
+    final RelBuilder builder = RelBuilder.create(config);
+    final RelNode rel = builder
+        .scan("EMP")
+        .project(
+            builder.call(SqlStdOperatorTable.PLUS,
+                builder.field("SAL"),
+                builder.literal(10)))
+        .build();
+    RelJsonWriter jsonWriter = new RelJsonWriter();
+    rel.explain(jsonWriter);
+    String relJson = jsonWriter.asString();
+    String s =
+        Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
+          final RelJsonReader reader = new RelJsonReader(
+              cluster, getSchema(rel), rootSchema);
+          RelNode node;
+          try {
+            node = reader.read(relJson);
+          } catch (IOException e) {
+            throw TestUtil.rethrow(e);
+          }
+          return RelOptUtil.dumpPlan("", node, SqlExplainFormat.TEXT,
+              SqlExplainLevel.EXPPLAN_ATTRIBUTES);
+        });
+    final String expected = ""
+        + "LogicalProject($f0=[+($5, 10)])\n"
         + "  LogicalTableScan(table=[[scott, EMP]])\n";
     assertThat(s, isLinux(expected));
   }
