@@ -1029,6 +1029,8 @@ public class RexSimplify {
       Set<SqlKind> safeOps = EnumSet.noneOf(SqlKind.class);
 
       safeOps.addAll(SqlKind.COMPARISON);
+      safeOps.add(SqlKind.PLUS_PREFIX);
+      safeOps.add(SqlKind.MINUS_PREFIX);
       safeOps.add(SqlKind.PLUS);
       safeOps.add(SqlKind.MINUS);
       safeOps.add(SqlKind.TIMES);
@@ -1038,6 +1040,8 @@ public class RexSimplify {
       safeOps.add(SqlKind.IS_NOT_TRUE);
       safeOps.add(SqlKind.IS_NULL);
       safeOps.add(SqlKind.IS_NOT_NULL);
+      safeOps.add(SqlKind.IS_DISTINCT_FROM);
+      safeOps.add(SqlKind.IS_NOT_DISTINCT_FROM);
       safeOps.add(SqlKind.IN);
       safeOps.add(SqlKind.NOT_IN);
       safeOps.add(SqlKind.OR);
@@ -1046,6 +1050,16 @@ public class RexSimplify {
       safeOps.add(SqlKind.CASE);
       safeOps.add(SqlKind.LIKE);
       safeOps.add(SqlKind.COALESCE);
+      safeOps.add(SqlKind.TRIM);
+      safeOps.add(SqlKind.LTRIM);
+      safeOps.add(SqlKind.RTRIM);
+      safeOps.add(SqlKind.BETWEEN);
+      safeOps.add(SqlKind.CEIL);
+      safeOps.add(SqlKind.FLOOR);
+      safeOps.add(SqlKind.REVERSE);
+      safeOps.add(SqlKind.TIMESTAMP_ADD);
+      safeOps.add(SqlKind.TIMESTAMP_DIFF);
+      safeOps.add(SqlKind.LIKE);
       this.safeOps = Sets.immutableEnumSet(safeOps);
     }
 
