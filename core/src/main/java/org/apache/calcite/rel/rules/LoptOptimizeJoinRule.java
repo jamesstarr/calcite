@@ -807,6 +807,11 @@ public class LoptOptimizeJoinRule extends RelOptRule {
         }
       }
 
+      if (findOnlyOneOrdering && dimWeight > 0) {
+        return factor;
+      }
+
+
       // only compute the join cardinality if we know that
       // this factor joins with some part of the current join
       // tree and is potentially better than other factors
@@ -930,7 +935,8 @@ public class LoptOptimizeJoinRule extends RelOptRule {
             factorToAdd,
             filtersToAdd,
             selfJoin);
-    LoptJoinTree pushDownTree =
+    LoptJoinTree pushDownTree = findOnlyOneOrdering ? null
+            :
         pushDownFactor(
             mq,
             relBuilder,
@@ -1870,6 +1876,10 @@ public class LoptOptimizeJoinRule extends RelOptRule {
       LoptJoinTree left,
       LoptJoinTree right,
       boolean selfJoin) {
+    if (findOnlyOneOrdering) {
+      return false;
+    }
+
     boolean swap = false;
 
     if (selfJoin) {
