@@ -34,6 +34,7 @@ import org.apache.calcite.util.Glossary;
 
 import com.google.common.base.Preconditions;
 
+import java.math.BigDecimal;
 import java.util.AbstractList;
 import java.util.List;
 
@@ -428,12 +429,62 @@ public abstract class ReturnTypes {
    */
   public static final SqlReturnTypeInference DECIMAL_PRODUCT = new SqlReturnTypeInference() {
     public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
-      RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-      RelDataType type1 = opBinding.getOperandType(0);
-      RelDataType type2 = opBinding.getOperandType(1);
-      return typeFactory.getTypeSystem().deriveDecimalMultiplyType(typeFactory, type1, type2);
+      return deriveDecimalReturnType(opBinding, opBinding.getTypeFactory().getTypeSystem()
+              ::deriveDecimalMultiplyType);
     }
+
+
   };
+
+  private static RelDataType deriveDecimalReturnType(SqlOperatorBinding opBinding,
+                                                     TriFunction<RelDataTypeFactory,
+                                                             RelDataType, RelDataType,
+                                                             RelDataType> deriveFunction) {
+    RelDataType type1 = opBinding.getOperandType(0);
+    RelDataType type2 = opBinding.getOperandType(1);
+
+    if (SqlTypeUtil.isExactNumeric(type1)
+            && SqlTypeUtil.isExactNumeric(type2)) {
+      if (SqlTypeUtil.isDecimal(type1)
+              || SqlTypeUtil.isDecimal(type2)) {
+        RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+
+        // Exact numeric can only be integer/big integer/decimal
+        if (opBinding.isOperandLiteral(0, false)
+                && (type1.getSqlTypeName() == SqlTypeName.INTEGER || type1.getSqlTypeName
+                () == SqlTypeName.BIGINT)) {
+          BigDecimal literalValue = opBinding.getOperandLiteralValue(0, BigDecimal.class);
+          type1 = typeFactory.getTypeSystem().
+                  updateExactNumericLiteralType(typeFactory, literalValue, type1);
+        }
+
+        if (opBinding.isOperandLiteral(1, false)
+                && (type2.getSqlTypeName() == SqlTypeName.INTEGER || type2.getSqlTypeName
+                () == SqlTypeName.BIGINT)) {
+          BigDecimal literalValue = opBinding.getOperandLiteralValue(1, BigDecimal.class);
+          type2 = typeFactory.getTypeSystem().
+                  updateExactNumericLiteralType(typeFactory, literalValue, type2);
+        }
+
+        return deriveFunction.apply(typeFactory, type1, type2);
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Helper interface for passing around decimal derivation functions
+   * @param <T> RelDataType Factory
+   * @param <U> Type of operand1
+   * @param <V> Type of operand2
+   * @param <R> Return type that is derived
+   */
+  @FunctionalInterface
+  interface TriFunction<T, U, V, R> {
+    R apply(T t, U u, V v);
+  }
+
 
   /**
    * Same as {@link #DECIMAL_PRODUCT} but returns with nullability if any of
@@ -461,10 +512,8 @@ public abstract class ReturnTypes {
    */
   public static final SqlReturnTypeInference DECIMAL_QUOTIENT = new SqlReturnTypeInference() {
     public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
-      RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-      RelDataType type1 = opBinding.getOperandType(0);
-      RelDataType type2 = opBinding.getOperandType(1);
-      return typeFactory.getTypeSystem().deriveDecimalDivideType(typeFactory, type1, type2);
+      return deriveDecimalReturnType(opBinding, opBinding.getTypeFactory()
+              .getTypeSystem()::deriveDecimalDivideType);
     }
   };
 
@@ -504,10 +553,8 @@ public abstract class ReturnTypes {
    */
   public static final SqlReturnTypeInference DECIMAL_SUM = new SqlReturnTypeInference() {
     public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
-      RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-      RelDataType type1 = opBinding.getOperandType(0);
-      RelDataType type2 = opBinding.getOperandType(1);
-      return typeFactory.getTypeSystem().deriveDecimalPlusType(typeFactory, type1, type2);
+      return deriveDecimalReturnType(opBinding, opBinding.getTypeFactory().getTypeSystem()
+              ::deriveDecimalPlusType);
     }
 
   };
@@ -530,10 +577,8 @@ public abstract class ReturnTypes {
 
   public static final SqlReturnTypeInference DECIMAL_MOD = new SqlReturnTypeInference() {
     public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
-      RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-      RelDataType type1 = opBinding.getOperandType(0);
-      RelDataType type2 = opBinding.getOperandType(1);
-      return typeFactory.getTypeSystem().deriveDecimalModType(typeFactory, type1, type2);
+      return deriveDecimalReturnType(opBinding, opBinding.getTypeFactory().
+              getTypeSystem()::deriveDecimalModType);
     }
   };
 
