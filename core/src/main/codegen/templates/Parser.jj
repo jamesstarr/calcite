@@ -5170,7 +5170,6 @@ SqlIdentifier ReservedFunctionName() :
     |   <HOUR>
     |   <LAG>
     |   <LEAD>
-    |   <LEFT>
     |   <LAST_VALUE>
     |   <LN>
     |   <LOCALTIME>
@@ -5189,7 +5188,6 @@ SqlIdentifier ReservedFunctionName() :
     |   <RANK>
     |   <REGR_SXX>
     |   <REGR_SYY>
-    |   <RIGHT>
     |   <ROW_NUMBER>
     |   <SECOND>
     |   <SQRT>
@@ -5274,8 +5272,10 @@ SqlNode JdbcFunctionCall() :
     |
         (
             // INSERT is a reserved word, but we need to handle {fn insert}
-            // Similarly LEFT, RIGHT, TRUNCATE
-            ( <INSERT> | <LEFT> | <RIGHT> | <TRUNCATE> ) { name = unquotedIdentifier(); }
+            <INSERT> { name = unquotedIdentifier(); }
+        |
+            // TRUNCATE is a reserved word, but we need to handle {fn truncate}
+            <TRUNCATE> { name = unquotedIdentifier(); }
         |
             // For cases like {fn power(1,2)} and {fn lower('a')}
             id = ReservedFunctionName() { name = id.getSimple(); }
