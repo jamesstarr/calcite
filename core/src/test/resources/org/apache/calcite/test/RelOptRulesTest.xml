@@ -1481,10 +1481,18 @@ LogicalAggregate(group=[{0}], EXPR$1=[SUM($1)], EXPR$2=[MIN($2)], EXPR$3=[SUM($0
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testRemoveDistinctOnAgg">
         <Resource name="sql">
             <![CDATA[SELECT empno, SUM(distinct sal), MIN(sal), MIN(distinct sal), MAX(distinct sal), bit_and(distinct sal), bit_or(sal), count(distinct sal) from sales.emp group by empno, deptno
 ]]>
+=======
+    <TestCase name="testRemoveDistinctOnAgg">
+        <Resource name="sql">
+            <![CDATA[SELECT empno, SUM(distinct sal), MIN(sal), MIN(distinct sal), MAX(distinct sal), bit_and(distinct sal), bit_or(sal), count(distinct sal)
+FROM sales.emp
+GROUP BY empno, deptno]]>
+>>>>>>> 873c9f8db ([CALCITE-3159] Remove DISTINCT flag from calls to MIN, MAX, BIT_OR, BIT_AND aggregate functions (xuqianjin))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -1501,9 +1509,12 @@ LogicalProject(EMPNO=[$0], EXPR$1=[$5], EXPR$2=[$5], EXPR$3=[$5], EXPR$4=[$5], E
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+>>>>>>> 873c9f8db ([CALCITE-3159] Remove DISTINCT flag from calls to MIN, MAX, BIT_OR, BIT_AND aggregate functions (xuqianjin))
     <TestCase name="testMultipleDistinctWithGrouping">
         <Resource name="sql">
             <![CDATA[SELECT sal, SUM(comm), AVG(DISTINCT comm), SUM(DISTINCT sal)
@@ -11056,7 +11067,7 @@ LogicalAggregate(group=[{}], X=[SUM($5)], Z=[MIN($5)])
         <Resource name="planBefore">
             <![CDATA[
 LogicalProject(EMPNO=[$0], EXPR$1=[$2], EXPR$2=[$3], EXPR$3=[$4], EXPR$4=[$5], EXPR$5=[$6], EXPR$6=[$7])
-  LogicalAggregate(group=[{0, 1}], EXPR$1=[SUM($2)], EXPR$2=[MIN($2)], EXPR$3=[MAX($2)], EXPR$4=[BIT_AND(DISTINCT $2)], EXPR$5=[BIT_OR($2)], EXPR$6=[COUNT(DISTINCT $2)])
+  LogicalAggregate(group=[{0, 1}], EXPR$1=[SUM($2)], EXPR$2=[MIN($2)], EXPR$3=[MAX($2)], EXPR$4=[BIT_AND($2)], EXPR$5=[BIT_OR($2)], EXPR$6=[COUNT(DISTINCT $2)])
     LogicalProject(EMPNO=[$0], DEPTNO=[$7], SAL=[$5])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>

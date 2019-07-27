@@ -102,8 +102,10 @@ public class AggregateCall {
     this.distinct = distinct;
     this.approximate = approximate;
     this.ignoreNulls = ignoreNulls;
->>>>>>> cf7bf148e ([CALCITE-883] Support RESPECT NULLS, IGNORE NULLS option for LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE functions (Chunwei Lei))
 =======
+    Preconditions.checkArgument(
+        aggFunction.getDistinctOptionality() != Optionality.IGNORED || !distinct,
+        "DISTINCT has no effect for this aggregate function, so must be false");
     Preconditions.checkArgument(filterArg < 0 || aggFunction.allowsFilter());
   }
 
@@ -192,7 +194,9 @@ public class AggregateCall {
       boolean distinct, boolean approximate, boolean ignoreNulls,
       List<Integer> argList, int filterArg, RelCollation collation,
       RelDataType type, String name) {
-    return new AggregateCall(aggFunction, distinct, approximate, ignoreNulls,
+    final boolean distinct2 = distinct
+        && (aggFunction.getDistinctOptionality() != Optionality.IGNORED);
+    return new AggregateCall(aggFunction, distinct2, approximate, ignoreNulls,
         argList, filterArg, collation, type, name);
   }
 
