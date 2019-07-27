@@ -19,8 +19,6 @@ package org.apache.calcite.rel.type;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.Glossary;
 
-import java.math.BigDecimal;
-
 /**
  * Type system.
  *
@@ -205,21 +203,6 @@ public interface RelDataTypeSystem {
   RelDataType deriveDecimalModType(RelDataTypeFactory typeFactory,
        RelDataType type1, RelDataType type2);
 
-
-
-  default RelDataType updateExactNumericLiteralType(RelDataTypeFactory typeFactory,
-                                                    BigDecimal literalValue, RelDataType type1) {
-    RelDataType result;
-    assert type1.getSqlTypeName() == SqlTypeName.BIGINT
-             || type1.getSqlTypeName() == (SqlTypeName.INTEGER);
-    long l = literalValue.longValue();
-    if ((l >= Integer.MIN_VALUE) && (l <= Integer.MAX_VALUE)) {
-      result = typeFactory.createSqlType(SqlTypeName.DECIMAL, 10, 0);
-    } else {
-      result = typeFactory.createSqlType(SqlTypeName.DECIMAL, 19, 0);
-    }
-    return result;
-  }
 }
 
 // End RelDataTypeSystem.java
