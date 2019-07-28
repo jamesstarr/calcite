@@ -17,7 +17,6 @@
 package org.apache.calcite.adapter.tpcds;
 
 import org.apache.calcite.config.CalciteSystemProperty;
-import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelTraitDef;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.JoinRelType;
@@ -42,6 +41,10 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
+
+import static org.apache.calcite.test.Matchers.hasTree;
+
+import static org.junit.Assert.assertThat;
 
 /** Unit test for {@link org.apache.calcite.adapter.tpcds.TpcdsSchema}.
  *
@@ -165,30 +168,30 @@ public class TpcdsTest {
 
   @Test public void testTableCount() {
     final CalciteAssert.AssertThat with = with();
-//    foo(with, "CALL_CENTER", 6);
-//    foo(with, "CATALOG_PAGE", 11_718);
-//    foo(with, "CATALOG_RETURNS", 144_067);
-//    foo(with, "CATALOG_SALES", 1_441_548);
-//    foo(with, "CUSTOMER", 100_000);
-//    foo(with, "CUSTOMER_ADDRESS", 50_000);
-//    foo(with, "CUSTOMER_DEMOGRAPHICS", 1_920_800);
-//    foo(with, "DATE_DIM", 73_049);
-//    foo(with, "HOUSEHOLD_DEMOGRAPHICS", 7_200);
-//    foo(with, "INCOME_BAND", 20);
-//    foo(with, "INVENTORY", 11_745_000);
-//    foo(with, "ITEM", 18_000);
-//    foo(with, "PROMOTION", 300);
-//    foo(with, "REASON", 35);
-//    foo(with, "SHIP_MODE", 20);
-//    foo(with, "STORE", 12);
-//    foo(with, "STORE_RETURNS", 287_514);
-//    foo(with, "STORE_SALES", 2_880_404);
-//    foo(with, "TIME_DIM", 86_400);
-//    foo(with, "WAREHOUSE", 5);
-//    foo(with, "WEB_PAGE", 60);
-//    foo(with, "WEB_RETURNS", 71_763);
-//    foo(with, "WEB_SALES", 719_384);
-//    foo(with, "WEB_SITE", 30);
+    foo(with, "CALL_CENTER", 6);
+    foo(with, "CATALOG_PAGE", 11_718);
+    foo(with, "CATALOG_RETURNS", 144_067);
+    foo(with, "CATALOG_SALES", 1_441_548);
+    foo(with, "CUSTOMER", 100_000);
+    foo(with, "CUSTOMER_ADDRESS", 50_000);
+    foo(with, "CUSTOMER_DEMOGRAPHICS", 1_920_800);
+    foo(with, "DATE_DIM", 73_049);
+    foo(with, "HOUSEHOLD_DEMOGRAPHICS", 7_200);
+    foo(with, "INCOME_BAND", 20);
+    foo(with, "INVENTORY", 11_745_000);
+    foo(with, "ITEM", 18_000);
+    foo(with, "PROMOTION", 300);
+    foo(with, "REASON", 35);
+    foo(with, "SHIP_MODE", 20);
+    foo(with, "STORE", 12);
+    foo(with, "STORE_RETURNS", 287_514);
+    foo(with, "STORE_SALES", 2_880_404);
+    foo(with, "TIME_DIM", 86_400);
+    foo(with, "WAREHOUSE", 5);
+    foo(with, "WEB_PAGE", 60);
+    foo(with, "WEB_RETURNS", 71_763);
+    foo(with, "WEB_SALES", 719_384);
+    foo(with, "WEB_SITE", 30);
     foo(with, "DBGEN_VERSION", 1);
   }
 
