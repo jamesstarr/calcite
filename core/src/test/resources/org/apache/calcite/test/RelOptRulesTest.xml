@@ -6791,6 +6791,7 @@ LogicalProject(EXPR$0=[1])
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> 34395e939 ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
@@ -6817,6 +6818,9 @@ LogicalProject(EXPR$0=[1])
 =======
     LogicalFilter(condition=[>($7, 7)])
 >>>>>>> 09d7d66cf ([CALCITE-2338] Make Simplification API more conservative)
+=======
+    LogicalFilter(condition=[OR(>($7, 7), >($7, 10))])
+>>>>>>> 683068274 ([CALCITE-3192] Simplification may weaken OR conditions containing inequalities)
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -7157,7 +7161,7 @@ LogicalProject(EXPR$0=[1])
       LogicalProject(DEPTNO=[$7])
         LogicalFilter(condition=[>($7, 1)])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
-    LogicalFilter(condition=[OR(>($7, 7), >($7, 1))])
+    LogicalFilter(condition=[OR(>($7, 7), >($7, 10), >($7, 1))])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
