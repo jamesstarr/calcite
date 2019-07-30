@@ -19,12 +19,13 @@ package org.apache.calcite.sql.dialect;
 import org.apache.calcite.config.NullCollation;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlDialect;
+import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSyntax;
 import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
->>>>>>> d270fc28f ([CALCITE-2623] Add specific translation for POSITION, MOD and set operators in BigQuery and Hive SQL dialects)
+import org.apache.calcite.sql.fun.SqlTrimFunction;
 
 /**
  * A <code>SqlDialect</code> implementation for the Apache Hive database.
@@ -66,8 +67,8 @@ public class HiveSqlDialect extends SqlDialect {
     return null;
   }
 
-  @Override public void unparseCall(final SqlWriter writer, final SqlCall call, final int leftPrec,
-      final int rightPrec) {
+  @Override public void unparseCall(final SqlWriter writer, final SqlCall call,
+      final int leftPrec, final int rightPrec) {
     switch (call.getKind()) {
     case POSITION:
       final SqlWriter.Frame frame = writer.startFunCall("INSTR");
@@ -84,29 +85,38 @@ public class HiveSqlDialect extends SqlDialect {
       SqlOperator op = SqlStdOperatorTable.PERCENT_REMAINDER;
       SqlSyntax.BINARY.unparse(writer, op, call, leftPrec, rightPrec);
       break;
-<<<<<<< HEAD
-    case TRIM:
-      RelToSqlConverterUtil.unparseHiveTrim(writer, call, leftPrec, rightPrec);
-      break;
-    case OTHER_FUNCTION:
-      if (call.getOperator() instanceof SqlSubstringFunction) {
-        final SqlWriter.Frame funCallFrame = writer.startFunCall(call.getOperator().getName());
-        call.operand(0).unparse(writer, leftPrec, rightPrec);
-        writer.sep(",", true);
-        call.operand(1).unparse(writer, leftPrec, rightPrec);
-        if (3 == call.operandCount()) {
-          writer.sep(",", true);
-          call.operand(2).unparse(writer, leftPrec, rightPrec);
-        }
-        writer.endFunCall(funCallFrame);
-      } else {
-        super.unparseCall(writer, call, leftPrec, rightPrec);
-      }
-      break;
 =======
+    case TRIM:
+      unparseTrim(writer, call, leftPrec, rightPrec);
+      break;
     default:
       super.unparseCall(writer, call, leftPrec, rightPrec);
     }
+  }
+
+  /**
+   * For usage of TRIM, LTRIM and RTRIM in Hive, see
+   * <a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF">Hive UDF usage</a>.
+   */
+  private void unparseTrim(SqlWriter writer, SqlCall call, int leftPrec,
+      int rightPrec) {
+    assert call.operand(0) instanceof SqlLiteral : call.operand(0);
+    SqlLiteral flag = call.operand(0);
+    final String operatorName;
+    switch (flag.getValueAs(SqlTrimFunction.Flag.class)) {
+    case LEADING:
+      operatorName = "LTRIM";
+      break;
+    case TRAILING:
+      operatorName = "RTRIM";
+      break;
+    default:
+      operatorName = call.getOperator().getName();
+      break;
+    }
+    final SqlWriter.Frame frame = writer.startFunCall(operatorName);
+    call.operand(2).unparse(writer, leftPrec, rightPrec);
+    writer.endFunCall(frame);
   }
 
   @Override public boolean supportsCharSet() {
