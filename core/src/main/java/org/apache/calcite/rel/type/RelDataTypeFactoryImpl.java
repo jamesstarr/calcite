@@ -473,17 +473,6 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
    * {@link RelDataTypeSystem#shouldUseDoubleMultiplication(RelDataTypeFactory, RelDataType, RelDataType)}
    * to get if double should be used for multiplication.
    */
-  public boolean useDoubleMultiplication(
-      RelDataType type1,
-      RelDataType type2) {
-    return typeSystem.shouldUseDoubleMultiplication(this, type1, type2);
-  }
-
-  /**
-   * Delegates to
-   * {@link RelDataTypeSystem#deriveDecimalDivideType(RelDataTypeFactory, RelDataType, RelDataType)}
-   * to get the return type for the operation.
-   */
   @Deprecated
   public boolean useDoubleMultiplication(
       RelDataType type1,
@@ -497,6 +486,7 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
    * to get the return type for the operation.
    */
   @Deprecated
+>>>>>>> a1996197c (Fix compiler warnings)
   public RelDataType createDecimalQuotient(
       RelDataType type1,
       RelDataType type2) {
@@ -542,7 +532,6 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
       return createSqlType(SqlTypeName.DECIMAL);
     }
 =======
->>>>>>> 06c1d66b8 (DX-17294: Make calcite rules pluggable.)
   }
 
   public RelDataType decimalOf(RelDataType type) {
