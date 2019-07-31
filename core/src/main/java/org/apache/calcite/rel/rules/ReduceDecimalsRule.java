@@ -939,7 +939,8 @@ public class ReduceDecimalsRule
       // a lower scale, then the number should be scaled down.
       int divisor = scaleA + scaleB - call.getType().getScale();
 
-      if (builder.getTypeFactory().useDoubleMultiplication(
+      if (builder.getTypeFactory().getTypeSystem().shouldUseDoubleMultiplication(
+          builder.getTypeFactory(),
           typeA,
           typeB)) {
         // Approximate implementation:
