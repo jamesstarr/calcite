@@ -258,7 +258,10 @@ public interface RelDataTypeSystem {
    * Infers the return type of a decimal division. Decimal division involves
    * at least one decimal operand and requires both operands to have exact
    * numeric types.
-   * Rules:
+   *
+   * <p>The default implementation is SQL:2003 compliant.
+   *
+   * <p>Rules:
    *
    * <ul>
    * <li>Let p1, s1 be the precision and scale of the first operand
