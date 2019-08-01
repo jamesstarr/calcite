@@ -3628,6 +3628,7 @@ EnumerableCalc(expr#0..6=[{inputs}], expr#7=[>($t1, $t2)], expr#8=[IS TRUE($t7)]
 (14 rows)
 
 !ok
+<<<<<<< HEAD
 =======
 !use scott
 >>>>>>> f5151a38b ([CALCITE-1513] Correlated NOT IN query throws AssertionError (Vineet Garg))
@@ -3677,4 +3678,8 @@ EnumerableAggregate(group=[{}], C=[COUNT()])
 
 
 >>>>>>> c52133959 ([CALCITE-1726] Subquery in FILTER is left untransformed (Vineet Garg))
+=======
+
+
+>>>>>>> 6dce00874 (More compiler fixes, and cosmetic changes)
 # End sub-query.iq

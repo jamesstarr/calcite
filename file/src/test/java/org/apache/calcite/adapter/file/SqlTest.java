@@ -389,11 +389,7 @@ class SqlTest {
     });
   }
 
-  /**
-   * Test returns the result of two json file joins.
-   *
-   * @throws SQLException
-   */
+  /** Test returns the result of two json file joins. */
   @Test public void testJsonJoinOnString() throws SQLException {
     final String sql = "select emps.EMPNO, emps.NAME, depts.deptno from emps\n"
         + "join depts on emps.deptno = depts.deptno";
@@ -405,11 +401,7 @@ class SqlTest {
     sql("sales-json", sql).returns(lines).ok();
   }
 
-  /**
-   * The folder contains both JSON files and CSV files joins.
-   *
-   * @throws SQLException
-   */
+  /** The folder contains both JSON files and CSV files joins. */
   @Test public void testJsonWithCsvJoin() throws SQLException {
     final String sql = "select emps.empno,\n"
         + " NAME,\n"
