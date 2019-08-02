@@ -126,7 +126,13 @@ public class JoinToMultiJoinRule
 
   //~ Methods ----------------------------------------------------------------
 
-  @Override public void onMatch(RelOptRuleCall call) {
+
+  @Override public boolean matches(RelOptRuleCall call) {
+    final Join origJoin = call.rel(0);
+    return origJoin.getJoinType().projectsRight();
+  }
+
+  public void onMatch(RelOptRuleCall call) {
     final Join origJoin = call.rel(0);
     final RelNode left = call.rel(1);
     final RelNode right = call.rel(2);
