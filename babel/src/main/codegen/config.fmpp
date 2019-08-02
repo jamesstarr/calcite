@@ -1741,6 +1741,7 @@ freemarkerLinks: {
       # Example: DateFunctionCall().
       builtinFunctionCallMethods: [
          "DateFunctionCall()"
+         "DateaddFunctionCall()"
       ]
 
       # List of methods for parsing extensions to "ALTER <scope>" calls.
