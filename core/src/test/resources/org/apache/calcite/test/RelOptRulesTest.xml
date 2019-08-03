@@ -537,7 +537,7 @@ LogicalProject(MGR=[$3])
         </Resource>
         <Resource name="planMid">
             <![CDATA[
-LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true, <($3, $2), null:NULL, false)])
+LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true, <($3, $2), null:BOOLEAN, false)])
   LogicalJoin(condition=[=($1, $4)], joinType=[left])
     LogicalJoin(condition=[true], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -552,7 +552,7 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true,
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
-LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true, <($3, $2), null:NULL, false)])
+LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($2, 0), false, IS NOT NULL($5), true, <($3, $2), null:BOOLEAN, false)])
   LogicalJoin(condition=[=($1, $4)], joinType=[left])
     LogicalJoin(condition=[true], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -8296,7 +8296,7 @@ LogicalProject(DEPTNO=[$1])
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
-LogicalProject(EMPNO=[$0], D=[CASE(=($2, 0), false, IS NULL($1), null:NULL, IS NOT NULL($5), true, <($3, $2), null:NULL, false)])
+LogicalProject(EMPNO=[$0], D=[CASE(=($2, 0), false, IS NULL($1), null:BOOLEAN, IS NOT NULL($5), true, <($3, $2), null:BOOLEAN, false)])
   LogicalJoin(condition=[=($1, $4)], joinType=[left])
     LogicalJoin(condition=[true], joinType=[inner])
       LogicalProject(EMPNO=[$0], DEPTNO=[CASE(true, CAST($7):INTEGER, null:INTEGER)])
@@ -8346,7 +8346,7 @@ LogicalProject(EXPR$0=[CASE(true, CAST($7):INTEGER, null:INTEGER)])
             <![CDATA[
 LogicalProject(EMPNO=[$0])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
-    LogicalFilter(condition=[<($0, CASE(=(CASE(=($9, 0), false, IS NOT NULL($12), true, <($10, $9), null:NULL, false), true), 10, =(CASE(=($9, 0), false, IS NOT NULL($12), true, <($10, $9), null:NULL, false), false), 20, 30))])
+    LogicalFilter(condition=[<($0, CASE(=(CASE(=($9, 0), false, IS NOT NULL($12), true, <($10, $9), null:BOOLEAN, false), true), 10, =(CASE(=($9, 0), false, IS NOT NULL($12), true, <($10, $9), null:BOOLEAN, false), false), 20, 30))])
       LogicalJoin(condition=[=($7, $11)], joinType=[left])
         LogicalJoin(condition=[true], joinType=[inner])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
