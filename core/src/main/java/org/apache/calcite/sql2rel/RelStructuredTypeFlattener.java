@@ -709,7 +709,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
     for (RelDataTypeField field : flattenedType.getFieldList()) {
       flattenedExps.add(
           Pair.of(
-              rexBuilder.makeCast(field.getType(), rexBuilder.constantNull()),
+              rexBuilder.makeNullLiteral(field.getType()),
               field.getName()));
     }
   }

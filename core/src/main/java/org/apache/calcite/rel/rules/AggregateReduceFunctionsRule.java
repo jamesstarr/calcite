@@ -414,7 +414,7 @@ public class AggregateReduceFunctionsRule
     return rexBuilder.makeCall(SqlStdOperatorTable.CASE,
         rexBuilder.makeCall(SqlStdOperatorTable.EQUALS,
             countRef, rexBuilder.makeExactLiteral(BigDecimal.ZERO)),
-        rexBuilder.makeCast(sumZeroRef.getType(), rexBuilder.constantNull()),
+        rexBuilder.makeNullLiteral(sumZeroRef.getType()),
         sumZeroRef);
   }
 
@@ -512,50 +512,45 @@ public class AggregateReduceFunctionsRule
             aggCallMapping,
             ImmutableList.of(argOrdinalType));
 
-    final RexNode avgSumSquaredArg =
-        rexBuilder.makeCall(
-            SqlStdOperatorTable.DIVIDE, sumSquaredArg, countArg);
+    final RexNode div = divide(biased, rexBuilder, sumArgSquared, sumSquaredArg,
+        countArg);
 
-    final RexNode diff =
-        rexBuilder.makeCall(
-            SqlStdOperatorTable.MINUS,
-            sumArgSquared, avgSumSquaredArg);
-
-    final RexNode denominator;
-    if (biased) {
-      denominator = countArg;
-    } else {
-      final RexLiteral one =
-          rexBuilder.makeExactLiteral(BigDecimal.ONE);
-      final RexNode nul =
-          rexBuilder.makeCast(countArg.getType(), rexBuilder.constantNull());
-      final RexNode countMinusOne =
-          rexBuilder.makeCall(
-              SqlStdOperatorTable.MINUS, countArg, one);
-      final RexNode countEqOne =
-          rexBuilder.makeCall(
-              SqlStdOperatorTable.EQUALS, countArg, one);
-      denominator =
-          rexBuilder.makeCall(
-              SqlStdOperatorTable.CASE,
-              countEqOne, nul, countMinusOne);
-    }
-
-    final RexNode div =
-        rexBuilder.makeCall(
-            SqlStdOperatorTable.DIVIDE, diff, denominator);
-
-    RexNode result = div;
+    final RexNode result;
     if (sqrt) {
       final RexNode half =
           rexBuilder.makeExactLiteral(new BigDecimal("0.5"));
       result =
           rexBuilder.makeCall(
               SqlStdOperatorTable.POWER, div, half);
+    } else {
+      result = div;
     }
 
     return rexBuilder.makeCast(
         oldCall.getType(), result);
+  }
+
+  private static RexNode divide(boolean biased, RexBuilder rexBuilder,
+      RexNode sumXY, RexNode sumXSumY, RexNode countArg) {
+    final RexNode avgSumSquaredArg =
+         rexBuilder.makeCall(SqlStdOperatorTable.DIVIDE, sumXSumY, countArg);
+    final RexNode diff =
+        rexBuilder.makeCall(SqlStdOperatorTable.MINUS, sumXY, avgSumSquaredArg);
+    final RexNode denominator;
+    if (biased) {
+      denominator = countArg;
+    } else {
+      final RexLiteral one = rexBuilder.makeExactLiteral(BigDecimal.ONE);
+      final RexNode nul = rexBuilder.makeNullLiteral(countArg.getType());
+      final RexNode countMinusOne =
+          rexBuilder.makeCall(SqlStdOperatorTable.MINUS, countArg, one);
+      final RexNode countEqOne =
+          rexBuilder.makeCall(SqlStdOperatorTable.EQUALS, countArg, one);
+      denominator =
+          rexBuilder.makeCall(SqlStdOperatorTable.CASE, countEqOne, nul,
+              countMinusOne);
+    }
+    return rexBuilder.makeCall(SqlStdOperatorTable.DIVIDE, diff, denominator);
   }
 
   /**

@@ -487,14 +487,31 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
     SqlNodeList thenList = call.getThenOperands();
     assert whenList.size() == thenList.size();
 
-    final List<RexNode> exprList = new ArrayList<>();
-    for (int i = 0; i < whenList.size(); i++) {
-      exprList.add(cx.convertExpression(whenList.get(i)));
-      exprList.add(cx.convertExpression(thenList.get(i)));
-    }
-    exprList.add(cx.convertExpression(call.getElseOperand()));
-
     RexBuilder rexBuilder = cx.getRexBuilder();
+    final List<RexNode> exprList = new ArrayList<>();
+    final RelDataTypeFactory typeFactory = rexBuilder.getTypeFactory();
+    final RexLiteral unknownLiteral = rexBuilder.makeNullLiteral(
+        typeFactory.createSqlType(SqlTypeName.BOOLEAN));
+    final RexLiteral nullLiteral = rexBuilder.makeNullLiteral(
+        typeFactory.createSqlType(SqlTypeName.NULL));
+    for (int i = 0; i < whenList.size(); i++) {
+      if (SqlUtil.isNullLiteral(whenList.get(i), false)) {
+        exprList.add(unknownLiteral);
+      } else {
+        exprList.add(cx.convertExpression(whenList.get(i)));
+      }
+      if (SqlUtil.isNullLiteral(thenList.get(i), false)) {
+        exprList.add(nullLiteral);
+      } else {
+        exprList.add(cx.convertExpression(thenList.get(i)));
+      }
+    }
+    if (SqlUtil.isNullLiteral(call.getElseOperand(), false)) {
+      exprList.add(nullLiteral);
+    } else {
+      exprList.add(cx.convertExpression(call.getElseOperand()));
+    }
+
     RelDataType type =
         rexBuilder.deriveReturnType(call.getOperator(), exprList);
     for (int i : elseArgs(exprList.size())) {

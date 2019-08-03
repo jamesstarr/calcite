@@ -173,9 +173,9 @@ public class ValuesReduceRule
         ImmutableList.builder();
     for (int row = 0; row < values.getTuples().size(); ++row) {
       int i = 0;
-      RexNode reducedValue;
       if (conditionExpr != null) {
-        reducedValue = reducibleExps.get((row * fieldsPerRow) + i);
+        final RexNode reducedValue =
+            reducibleExps.get((row * fieldsPerRow) + i);
         ++i;
         if (!reducedValue.isAlwaysTrue()) {
           ++changeCount;
@@ -183,17 +183,18 @@ public class ValuesReduceRule
         }
       }
 
-      ImmutableList<RexLiteral> valuesList;
+      final ImmutableList<RexLiteral> valuesList;
       if (projectExprs != null) {
         ++changeCount;
         final ImmutableList.Builder<RexLiteral> tupleBuilder =
             ImmutableList.builder();
         for (; i < fieldsPerRow; ++i) {
-          reducedValue = reducibleExps.get((row * fieldsPerRow) + i);
+          final RexNode reducedValue =
+              reducibleExps.get((row * fieldsPerRow) + i);
           if (reducedValue instanceof RexLiteral) {
             tupleBuilder.add((RexLiteral) reducedValue);
           } else if (RexUtil.isNullLiteral(reducedValue, true)) {
-            tupleBuilder.add(rexBuilder.constantNull());
+            tupleBuilder.add(rexBuilder.makeNullLiteral(reducedValue.getType()));
           } else {
             return;
           }
