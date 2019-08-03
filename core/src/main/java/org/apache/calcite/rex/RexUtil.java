@@ -463,9 +463,6 @@ import org.apache.calcite.util.mapping.Mappings;
       case OR:
         incrementAndCheck();
         operands = flattenOr(((RexCall) rex).getOperands());
-<<<<<<< HEAD
-        final List<RexNode> dnfOperands = new ArrayList<>();
-=======
         final List<RexNode> dnfOperands = Lists.newArrayList();
         for (RexNode node : operands) {
           RexNode dnf = toDnf2(node);
@@ -526,7 +523,6 @@ import org.apache.calcite.util.mapping.Mappings;
       private OverflowError() {}
     }
   }
->>>>>>> 1a728e568 ([CALCITE-5238] Add a maxNodeCount parameter to RexUtil.toDnf)
 
     private void incrementAndCheck() {
       if (maxNodeCount >= 0 && ++currentCount > maxNodeCount) {
