@@ -9160,11 +9160,15 @@ LogicalProject(NAME=[$1])
 from dept a
 left join (select name, 1 from dept) as b
 <<<<<<< HEAD
+<<<<<<< HEAD
 on a.name = b.name]]>
 =======
 on a.name = b.name
 ]]>
 >>>>>>> a6360c2df ([CALCITE-1338] JoinProjectTransposeRule should not pull a literal up through the null-generating side of a join (Chunwei Lei))
+=======
+on a.name = b.name]]>
+>>>>>>> 5ec7c4918 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -9191,11 +9195,15 @@ LogicalProject(DEPTNO=[$0], NAME=[$1], NAME0=[$2], EXPR$1=[$3])
 from (select name, 1 from dept) as a
 right join dept b
 <<<<<<< HEAD
+<<<<<<< HEAD
 on a.name = b.name]]>
 =======
 on a.name = b.name
 ]]>
 >>>>>>> a6360c2df ([CALCITE-1338] JoinProjectTransposeRule should not pull a literal up through the null-generating side of a join (Chunwei Lei))
+=======
+on a.name = b.name]]>
+>>>>>>> 5ec7c4918 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -9220,6 +9228,7 @@ LogicalProject(NAME=[$0], EXPR$1=[$1], DEPTNO=[$2], NAME0=[$3])
         <Resource name="sql">
             <![CDATA[select *
 <<<<<<< HEAD
+<<<<<<< HEAD
 from dept a
 left join (select x name, y is not null from
 (values (2, cast(null as integer)), (2, 1)) as t(x, y)) b
@@ -9230,6 +9239,12 @@ left join (select x name, y is not null from
 on a.name = b.name
 ]]>
 >>>>>>> a6360c2df ([CALCITE-1338] JoinProjectTransposeRule should not pull a literal up through the null-generating side of a join (Chunwei Lei))
+=======
+from dept a
+left join (select x name, y is not null from
+(values (2, cast(null as integer)), (2, 1)) as t(x, y)) b
+on a.name = b.name]]>
+>>>>>>> 5ec7c4918 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -9263,6 +9278,7 @@ LogicalProject(DEPTNO=[$0], NAME=[$1], NAME0=[$2], EXPR$1=[$3])
         <Resource name="sql">
             <![CDATA[select *
 <<<<<<< HEAD
+<<<<<<< HEAD
 from dept a
 left join (select name, 1 + 1 from dept) as b
 on a.name = b.name]]>
@@ -9272,6 +9288,11 @@ left join (select x name, y is not null from
 on a.name = b.name
 ]]>
 >>>>>>> a6360c2df ([CALCITE-1338] JoinProjectTransposeRule should not pull a literal up through the null-generating side of a join (Chunwei Lei))
+=======
+from dept a
+left join (select name, 1 + 1 from dept) as b
+on a.name = b.name]]>
+>>>>>>> 5ec7c4918 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -9298,11 +9319,15 @@ LogicalProject(DEPTNO=[$0], NAME=[$1], NAME0=[$2], EXPR$1=[$3])
 from (select name, 1 from dept) a
 full join (select name, 1 from dept) as b
 <<<<<<< HEAD
+<<<<<<< HEAD
 on a.name = b.name]]>
 =======
 on a.name = b.name
 ]]>
 >>>>>>> a6360c2df ([CALCITE-1338] JoinProjectTransposeRule should not pull a literal up through the null-generating side of a join (Chunwei Lei))
+=======
+on a.name = b.name]]>
+>>>>>>> 5ec7c4918 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -9331,11 +9356,15 @@ LogicalProject(NAME=[$0], EXPR$1=[$1], NAME0=[$2], EXPR$10=[$3])
 from dept a
 left join (select name from dept) as b
 <<<<<<< HEAD
+<<<<<<< HEAD
  on a.name = b.name]]>
 =======
 on a.name = b.name
 ]]>
 >>>>>>> a6360c2df ([CALCITE-1338] JoinProjectTransposeRule should not pull a literal up through the null-generating side of a join (Chunwei Lei))
+=======
+ on a.name = b.name]]>
+>>>>>>> 5ec7c4918 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -9361,15 +9390,21 @@ LogicalProject(DEPTNO=[$0], NAME=[$1], NAME0=[$2])
             <![CDATA[select *
 from dept a
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 5ec7c4918 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
 left join (
   select name, deptno > 10 and cast(null as boolean)
   from dept) as b
 on a.name = b.name]]>
+<<<<<<< HEAD
 =======
 left join (select name, deptno > 10 and cast(null as boolean) from dept b) as b
 on a.name = b.name
 ]]>
 >>>>>>> a6360c2df ([CALCITE-1338] JoinProjectTransposeRule should not pull a literal up through the null-generating side of a join (Chunwei Lei))
+=======
+>>>>>>> 5ec7c4918 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
         </Resource>
         <Resource name="planBefore">
             <![CDATA[

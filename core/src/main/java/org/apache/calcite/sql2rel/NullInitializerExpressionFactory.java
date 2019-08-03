@@ -59,10 +59,13 @@ public class NullInitializerExpressionFactory implements InitializerExpressionFa
     final RelDataType fieldType =
         table.getRowType().getFieldList().get(iColumn).getType();
     return context.getRexBuilder().makeNullLiteral(fieldType);
+<<<<<<< HEAD
   }
 
   public BiFunction<InitializerContext, RelNode, RelNode> postExpressionConversionHook() {
     return null;
+=======
+>>>>>>> 5ec7c4918 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
   }
 
   public RexNode newAttributeInitializer(RelDataType type,
