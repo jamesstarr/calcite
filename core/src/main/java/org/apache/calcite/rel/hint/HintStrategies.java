@@ -62,6 +62,14 @@ public abstract class HintStrategies {
   }
 
   /**
+   * Creates a HintStrategyCascade instance whose strategy rules are satisfied only if
+   * all the {@code hintStrategies} are satisfied.
+   */
+  public static HintStrategy cascade(HintStrategy... hintStrategies) {
+    return new HintStrategyCascade(hintStrategies);
+  }
+
+  /**
    * Creates a {@link CompositeHintStrategy} instance whose strategy rules are satisfied only if
    * all the {@code hintStrategies} are satisfied.
    */

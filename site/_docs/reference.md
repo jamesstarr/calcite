@@ -252,12 +252,16 @@ columnDecl:
       column type [ NOT NULL ]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
 hint:
       hintName
   |   hintName '(' hintOptions ')'
 
 hintOptions:
       hintKVOption [, hintKVOption]*
+<<<<<<< HEAD
   |   optionName [, optionName]*
   |   optionValue [, optionValue]*
 
@@ -271,6 +275,13 @@ optionValue:
 
 =======
 >>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+=======
+  |   optionName, [, optionName]*
+
+hintKVOption:
+      optionName '=' stringLiteral
+
+>>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
 pivot:
       PIVOT '('
       pivotAgg [, pivotAgg ]*

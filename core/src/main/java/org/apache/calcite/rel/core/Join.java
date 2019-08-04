@@ -59,6 +59,7 @@ public abstract class Join extends BiRel implements Hintable {
 
   protected final RexNode condition;
   protected final ImmutableSet<CorrelationId> variablesSet;
+  protected final ImmutableList<RelHint> hints;
 
   /**
    * Values must be of enumeration {@link JoinRelType}, except that
@@ -98,6 +99,7 @@ public abstract class Join extends BiRel implements Hintable {
     this.variablesSet = ImmutableSet.copyOf(variablesSet);
 >>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
     this.joinType = Preconditions.checkNotNull(joinType);
+    this.hints = ImmutableList.copyOf(hints);
   }
 
   @Deprecated // to be removed before 2.0
@@ -311,6 +313,6 @@ public abstract class Join extends BiRel implements Hintable {
   }
 
   @Override public ImmutableList<RelHint> getHints() {
-    return ImmutableList.of();
+    return hints;
   }
 }

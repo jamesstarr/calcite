@@ -194,7 +194,7 @@ public final class LogicalJoin extends Join {
       RelNode left, RelNode right, JoinRelType joinType, boolean semiJoinDone) {
     assert traitSet.containsIfApplicable(Convention.NONE);
     return new LogicalJoin(getCluster(),
-        getCluster().traitSetOf(Convention.NONE), ImmutableList.of(), left, right, conditionExpr,
+        getCluster().traitSetOf(Convention.NONE), hints, left, right, conditionExpr,
         variablesSet, joinType, semiJoinDone, systemFieldList);
   }
 

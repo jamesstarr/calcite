@@ -50,57 +50,7 @@ public class SqlSelect extends SqlCall {
   SqlNodeList orderBy;
   SqlNode offset;
   SqlNode fetch;
-<<<<<<< HEAD
-=======
-  SqlMatchRecognize matchRecognize;
->>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
-  SqlNodeList hints;
-
-  //~ Constructors -----------------------------------------------------------
-
-  public SqlSelect(SqlParserPos pos,
-      SqlNodeList keywordList,
-      SqlNodeList selectList,
-      SqlNode from,
-      SqlNode where,
-      SqlNodeList groupBy,
-      SqlNode having,
-      SqlNodeList windowDecls,
-      SqlNode qualify,
-      SqlNodeList orderBy,
-      SqlNode offset,
-      SqlNode fetch,
-      SqlNodeList hints) {
-    super(pos);
-    this.keywordList = Objects.requireNonNull(keywordList != null
-        ? keywordList : new SqlNodeList(pos));
-    this.selectList = selectList;
-    this.from = from;
-    this.where = where;
-    this.groupBy = groupBy;
-    this.having = having;
-    this.windowDecls = Objects.requireNonNull(windowDecls != null
-        ? windowDecls : new SqlNodeList(pos));
-    this.qualify = qualify;
-    this.orderBy = orderBy;
-    this.offset = offset;
-    this.fetch = fetch;
-    this.hints = hints;
-  }
-
-  //~ Methods ----------------------------------------------------------------
-
-  public SqlOperator getOperator() {
-    return SqlSelectOperator.INSTANCE;
-  }
-
-  @Override public SqlKind getKind() {
-    return SqlKind.SELECT;
-  }
-
-  @Override public List<SqlNode> getOperandList() {
-    return ImmutableNullableList.of(keywordList, selectList, from, where,
-        groupBy, having, windowDecls, qualify, orderBy, offset, fetch, hints);
+        groupBy, having, windowDecls, orderBy, offset, fetch, hints);
   }
 
   @Override public void setOperand(int i, SqlNode operand) {

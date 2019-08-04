@@ -1011,8 +1011,11 @@ public abstract class SqlToRelTestBase {
     private final RelOptCluster cluster;
     private final SqlToRelConverter.Config config;
 
-    MockViewExpander(SqlValidator validator, Prepare.CatalogReader catalogReader,
-        RelOptCluster cluster, SqlToRelConverter.Config config) {
+    MockViewExpander(
+        SqlValidator validator,
+        Prepare.CatalogReader catalogReader,
+        RelOptCluster cluster,
+        SqlToRelConverter.Config config) {
       this.validator = validator;
       this.catalogReader = catalogReader;
       this.cluster = cluster;

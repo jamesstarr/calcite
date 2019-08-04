@@ -741,40 +741,6 @@ public abstract class SqlUtil {
       throw Util.needToImplement(query);
     }
   }
-<<<<<<< HEAD
-=======
-
-<<<<<<< HEAD
-  /**
-   * If an identifier is a legitimate call to a function which has no
-   * arguments and requires no parentheses (for example "CURRENT_USER"),
-   * returns a call to that function, otherwise returns null.
-   */
-  public static SqlCall makeCall(
-      SqlOperatorTable opTab,
-      SqlIdentifier id) {
-    if (id.names.size() == 1 && !id.isComponentQuoted(0)) {
-      final List<SqlOperator> list = new ArrayList<>();
-      opTab.lookupOperatorOverloads(id, null, SqlSyntax.FUNCTION, list);
-      for (SqlOperator operator : list) {
-        if (operator.getSyntax() == SqlSyntax.FUNCTION_ID) {
-          // Even though this looks like an identifier, it is a
-          // actually a call to a function. Construct a fake
-          // call to this function, so we can use the regular
-          // operator validation.
-          return new SqlBasicCall(
-              operator,
-              SqlNode.EMPTY_ARRAY,
-              id.getParserPosition(),
-              true,
-              null);
-        }
-      }
-    }
-    return null;
-  }
-
-=======
 >>>>>>> 8782d9063 ([CALCITE-2928] When resolving user-defined functions (UDFs), use the case-sensitivity of the current connection (Danny Chan))
   public static String deriveAliasFromOrdinal(int ordinal) {
     // Use a '$' so that queries can't easily reference the
@@ -1037,9 +1003,14 @@ public abstract class SqlUtil {
    * Returns an immutable list of {@link RelHint} from sql hints, with a given
    * inherit path from the root node.
    *
+<<<<<<< HEAD
    * <p>The inherit path would be empty list.
    *
    * @param hintStrategies The hint strategies to validate the sql hints
+=======
+   * <p>The inherit path would be empty [].
+   *
+   * @param hintStrategies The hint strategies to validate if the sql hints
    * @param sqlHints       The sql hints nodes
    * @return the {@code RelHint} list
    */
@@ -1051,28 +1022,10 @@ public abstract class SqlUtil {
     for (SqlNode node : sqlHints) {
       assert node instanceof SqlHint;
       final SqlHint sqlHint = (SqlHint) node;
-      final String hintName = sqlHint.getName();
-
-      final RelHint.Builder builder = RelHint.builder(hintName);
-      switch (sqlHint.getOptionFormat()) {
-      case EMPTY:
-        // do nothing.
-        break;
-      case LITERAL_LIST:
-      case ID_LIST:
-        builder.hintOptions(sqlHint.getOptionList());
-        break;
-      case KV_LIST:
-        builder.hintOptions(sqlHint.getOptionKVPairs());
-        break;
-      default:
-        throw new AssertionError("Unexpected hint option format");
-      }
-      final RelHint relHint = builder.build();
-      if (hintStrategies.validateHint(relHint)) {
-        // Skips the hint if the validation fails.
-        relHints.add(relHint);
-      }
+      hintStrategies.validateHint(sqlHint.getName());
+      final RelHint relHint = new RelHint(new ArrayList<>(),
+          sqlHint.getName(), sqlHint.getOptionList(), sqlHint.getOptionKVPairs());
+      relHints.add(relHint);
     }
     return ImmutableList.copyOf(relHints);
   }

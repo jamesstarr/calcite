@@ -74,3 +74,8 @@ public class SqlTableRef extends SqlCall {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlTableRef.java
+>>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)

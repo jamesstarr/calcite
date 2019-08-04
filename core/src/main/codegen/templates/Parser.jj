@@ -100,7 +100,10 @@ import org.apache.calcite.sql.SqlSampleSpec;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.SqlSetOption;
+<<<<<<< HEAD
 import org.apache.calcite.sql.SqlSnapshot;
+=======
+>>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
 import org.apache.calcite.sql.SqlTableRef;
 import org.apache.calcite.sql.SqlTimeLiteral;
 import org.apache.calcite.sql.SqlTimestampLiteral;
@@ -1215,22 +1218,37 @@ SqlNodeList ParenthesizedKeyValueOptionCommaList() :
 {
     { s = span(); }
     <LPAREN>
+<<<<<<< HEAD
     KeyValueOption(list)
     (
         <COMMA>
         KeyValueOption(list)
     )*
+=======
+    [
+        KeyValueOption(list)
+        (
+            <COMMA>
+            KeyValueOption(list)
+        )*
+    ]
+>>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
     <RPAREN> {
         return new SqlNodeList(list, s.end(this));
     }
 }
 
 /**
+<<<<<<< HEAD
 * Parses an option with format key=val whose key is a simple identifier or string literal
+=======
+* Parses an option with format key=val whose key is a simple identifier
+>>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
 * and value is a string literal.
 */
 void KeyValueOption(List<SqlNode> list) :
 {
+<<<<<<< HEAD
     final SqlNode key;
     final SqlNode value;
 }
@@ -1243,10 +1261,21 @@ void KeyValueOption(List<SqlNode> list) :
     <EQ>
     value = StringLiteral() {
         list.add(key);
+=======
+    final SqlIdentifier id;
+    final SqlNode value;
+}
+{
+    id = SimpleIdentifier()
+    <EQ>
+    value = StringLiteral() {
+        list.add(id);
+>>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
         list.add(value);
     }
 }
 
+<<<<<<< HEAD
 /**
 * Parses an option value, it's either a string or a numeric.
 */
@@ -1293,17 +1322,23 @@ SqlNodeList ParenthesizedLiteralOptionCommaList() :
     }
 }
 
+=======
+>>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
 void CommaSepatatedSqlHints(List<SqlNode> hints) :
 {
     SqlIdentifier hintName;
     SqlNodeList hintOptions;
+<<<<<<< HEAD
     SqlNode optionVal;
     SqlHint.HintOptionFormat optionFormat;
+=======
+>>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
 }
 {
     hintName = SimpleIdentifier()
     (   LOOKAHEAD(5)
         hintOptions = ParenthesizedKeyValueOptionCommaList() {
+<<<<<<< HEAD
             optionFormat = SqlHint.HintOptionFormat.KV_LIST;
         }
     |
@@ -1327,12 +1362,27 @@ void CommaSepatatedSqlHints(List<SqlNode> hints) :
     {
         hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions, optionFormat));
     }
+=======
+            hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
+        }
+    |
+        hintOptions = ParenthesizedSimpleIdentifierList() {
+            hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
+        }
+    |
+        {
+            hintOptions = SqlNodeList.EMPTY;
+            hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
+        }
+    )
+>>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
     (
         <COMMA>
         hintName = SimpleIdentifier()
         (
             LOOKAHEAD(5)
             hintOptions = ParenthesizedKeyValueOptionCommaList() {
+<<<<<<< HEAD
                 optionFormat = SqlHint.HintOptionFormat.KV_LIST;
             }
         |
@@ -1356,6 +1406,20 @@ void CommaSepatatedSqlHints(List<SqlNode> hints) :
         {
             hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions, optionFormat));
         }
+=======
+                hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
+            }
+        |
+            hintOptions = ParenthesizedSimpleIdentifierList() {
+                hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
+            }
+        |
+            {
+                hintOptions = SqlNodeList.EMPTY;
+                hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
+            }
+        )
+>>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
     )*
 }
 
@@ -2217,10 +2281,14 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
     (
         LOOKAHEAD(2)
 <<<<<<< HEAD
+<<<<<<< HEAD
         tableRef = TableRefWithHintsOpt()
 =======
         tableRef = CompoundIdentifier()
 >>>>>>> 620865484 (DX-42079: Add extensibility hook for table version specifier)
+=======
+        tableRef = TableRefWithHintsOpt()
+>>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
 <#if (parser.tableVersionContextParserMethod!default.parser.tableVersionContextParserMethod)?has_content >
         [
             tableRef = ${parser.tableVersionContextParserMethod}(tableRef)
@@ -8809,7 +8877,11 @@ of the 'normal states'.
 
 <DEFAULT, DQID, BTID> TOKEN :
 {
+<<<<<<< HEAD
     < HINT_BEG: "/*+">
+=======
+    < HINT_BEG: "/*+" ~["/"] >
+>>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
 |   < COMMENT_END: "*/" >
 }
 
