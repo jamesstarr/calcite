@@ -18,6 +18,7 @@ package org.apache.calcite.sql.parser;
 
 import org.apache.calcite.util.CalciteParserException;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -120,12 +121,23 @@ public class SqlParseException extends Exception
       return Collections.emptyList();
     }
     int maxLength = 0;
+
+    // The preference for longer token sequences as described in the function documentation is
+    // affected by the <HINT_BEG> token being introduced in the grammar (CALCITE-482). Some of
+    // the token sequences being generated before will now have <HINT_BEG> at the beginning of
+    // the list, increasing the length of the sequence. To preserve the pre-existing (and better)
+    // recommendations, we don't let the <HINT_BEG> token influence our calculation of max token
+    // sequence length.
+    int hintImageIdx = Arrays.asList(tokenImages).indexOf("<HINT_BEG>");
+    int hintOffset = 0;
     for (int[] expectedTokenSequence : expectedTokenSequences) {
-      maxLength = Math.max(expectedTokenSequence.length, maxLength);
+      hintOffset = hintImageIdx == expectedTokenSequence[0] ? 1 : 0;
+      maxLength = Math.max(expectedTokenSequence.length - hintOffset, maxLength);
     }
     final Set<String> set = new TreeSet<String>();
     for (int[] expectedTokenSequence : expectedTokenSequences) {
-      if (expectedTokenSequence.length == maxLength) {
+      hintOffset = hintImageIdx == expectedTokenSequence[0] ? 1 : 0;
+      if (expectedTokenSequence.length - hintOffset == maxLength) {
         set.add(
             tokenImages[
                 expectedTokenSequence[

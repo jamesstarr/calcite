@@ -1043,13 +1043,19 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       // Handle extended identifiers.
       final SqlCall call = (SqlCall) node;
       switch (call.getOperator().getKind()) {
+      case TABLE_REF:
+        return getNamespace(call.operand(0), scope);
       case EXTEND:
-        final SqlIdentifier id = (SqlIdentifier) call.getOperandList().get(0);
+        final SqlNode operand0 = call.getOperandList().get(0);
+        final SqlIdentifier identifier = operand0.getKind() == SqlKind.TABLE_REF
+            ? ((SqlCall) operand0).operand(0)
+            : (SqlIdentifier) operand0;
         final DelegatingScope idScope = (DelegatingScope) scope;
-        return getNamespace(id, idScope);
+        return getNamespace(identifier, idScope);
       case AS:
         final SqlNode nested = call.getOperandList().get(0);
         switch (nested.getKind()) {
+        case TABLE_REF:
         case EXTEND:
           return getNamespace(nested, scope);
         }
@@ -1082,6 +1088,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
         return ns;
       }
       // fall through
+    case TABLE_REF:
     case OVER:
     case COLLECTION_TABLE:
     case ORDER_BY:
@@ -2359,6 +2366,22 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
 
       return newNode;
 
+    case TABLE_REF:
+      call = (SqlCall) node;
+      registerFrom(parentScope,
+          usingScope,
+          register,
+          call.operand(0),
+          enclosingNode,
+          alias,
+          extendList,
+          forceNullable,
+          lateral);
+      if (extendList != null && extendList.size() != 0) {
+        return enclosingNode;
+      }
+      return newNode;
+
     case EXTEND:
       final SqlCall extend = (SqlCall) node;
       return registerFrom(parentScope,
@@ -3129,6 +3152,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     Preconditions.checkNotNull(targetRowType);
     switch (node.getKind()) {
     case AS:
+    case TABLE_REF:
       validateFrom(
           ((SqlCall) node).operand(0),
           targetRowType,
@@ -4328,7 +4352,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
         getLogicalSourceRowType(sourceRowType, insert);
 
     checkFieldCount(insert.getTargetTable(), table, source,
-        logicalSourceRowType, logicalTargetRowType);
+            logicalSourceRowType, logicalTargetRowType);
 
     checkTypeAssignment(logicalSourceRowType, logicalTargetRowType, insert);
 

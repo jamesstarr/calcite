@@ -57,6 +57,7 @@ import org.apache.calcite.sql.SqlExplainFormat;
 import org.apache.calcite.sql.SqlExplainLevel;
 import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlFunctionCategory;
+import org.apache.calcite.sql.SqlHint;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlInsert;
 import org.apache.calcite.sql.SqlInsertKeyword;
@@ -82,6 +83,7 @@ import org.apache.calcite.sql.SqlSampleSpec;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.SqlSetOption;
+import org.apache.calcite.sql.SqlTableRef;
 import org.apache.calcite.sql.SqlTimeLiteral;
 import org.apache.calcite.sql.SqlTimestampLiteral;
 import org.apache.calcite.sql.SqlTypeNameSpec;
@@ -1066,6 +1068,115 @@ SqlNode SqlStmtEof() :
     <#include "/@includes/"+file />
 </#list>
 
+SqlNodeList ParenthesizedKeyValueOptionCommaList() :
+{
+    final Span s;
+    final List<SqlNode> list = new ArrayList<SqlNode>();
+}
+{
+    { s = span(); }
+    <LPAREN>
+    [
+        KeyValueOption(list)
+        (
+            <COMMA>
+            KeyValueOption(list)
+        )*
+    ]
+    <RPAREN> {
+        return new SqlNodeList(list, s.end(this));
+    }
+}
+
+/**
+* Parses an option with format key=val whose key is a simple identifier
+* and value is a string literal.
+*/
+void KeyValueOption(List<SqlNode> list) :
+{
+    final SqlIdentifier id;
+    final SqlNode value;
+}
+{
+    id = SimpleIdentifier()
+    <EQ>
+    value = StringLiteral() {
+        list.add(id);
+        list.add(value);
+    }
+}
+
+void CommaSepatatedSqlHints(List<SqlNode> hints) :
+{
+    SqlIdentifier hintName;
+    SqlNodeList hintOptions;
+}
+{
+    hintName = SimpleIdentifier()
+    (   LOOKAHEAD(5)
+        hintOptions = ParenthesizedKeyValueOptionCommaList() {
+            hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
+        }
+    |
+        hintOptions = ParenthesizedSimpleIdentifierList() {
+            hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
+        }
+    |
+        {
+            hintOptions = SqlNodeList.EMPTY;
+            hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
+        }
+    )
+    (
+        <COMMA>
+        hintName = SimpleIdentifier()
+        (
+            LOOKAHEAD(5)
+            hintOptions = ParenthesizedKeyValueOptionCommaList() {
+                hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
+            }
+        |
+            hintOptions = ParenthesizedSimpleIdentifierList() {
+                hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
+            }
+        |
+            {
+                hintOptions = SqlNodeList.EMPTY;
+                hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
+            }
+        )
+    )*
+}
+
+/**
+ * Parses a table reference with optional hints.
+ */
+SqlNode TableRefWithHintsOpt() :
+{
+    SqlNode tableRef;
+    SqlNodeList hintList;
+    final List<SqlNode> hints = new ArrayList<SqlNode>();
+    final Span s;
+}
+{
+    { s = span(); }
+    tableRef = CompoundIdentifier()
+    [
+        LOOKAHEAD(2)
+        <HINT_BEG>
+        CommaSepatatedSqlHints(hints)
+        <COMMENT_END>
+        {
+            hintList = new SqlNodeList(hints, s.addAll(hints).end(this));
+            tableRef = new SqlTableRef(Span.of(tableRef, hintList).pos(),
+                    (SqlIdentifier) tableRef, hintList);
+        }
+    ]
+    {
+        return tableRef;
+    }
+}
+
 /**
  * Parses a leaf SELECT expression without ORDER BY.
  */
@@ -1087,6 +1198,11 @@ SqlSelect SqlSelect() :
     {
         s = span();
     }
+    [
+        <HINT_BEG>
+        CommaSepatatedSqlHints(hints)
+        <COMMENT_END>
+    ]
     SqlSelectKeywords(keywords)
     (
         <STREAM> {
@@ -1371,7 +1487,7 @@ SqlNode SqlInsert() :
     SqlInsertKeywords(keywords) {
         keywordList = new SqlNodeList(keywords, s.addAll(keywords).pos());
     }
-    <INTO> table = CompoundIdentifier()
+    <INTO> table = TableRefWithHintsOpt()
     [
         LOOKAHEAD(5)
         [ <EXTEND> ]
@@ -1420,7 +1536,7 @@ SqlNode SqlDelete() :
     <DELETE> {
         s = span();
     }
-    <FROM> table = CompoundIdentifier()
+    <FROM> table = TableRefWithHintsOpt()
     [
         [ <EXTEND> ]
         extendList = ExtendList() {
@@ -1452,7 +1568,7 @@ SqlNode SqlUpdate() :
 }
 {
     <UPDATE> { s = span(); }
-    table = CompoundIdentifier() {
+    table = TableRefWithHintsOpt() {
         targetColumnList = new SqlNodeList(s.pos());
         sourceExpressionList = new SqlNodeList(s.pos());
     }
@@ -1504,7 +1620,7 @@ SqlNode SqlMerge() :
     final Span s;
 }
 {
-    <MERGE> { s = span(); } <INTO> table = CompoundIdentifier()
+    <MERGE> { s = span(); } <INTO> table = TableRefWithHintsOpt()
     [
         [ <EXTEND> ]
         extendList = ExtendList() {
@@ -1876,7 +1992,7 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
 {
     (
         LOOKAHEAD(2)
-        tableRef = CompoundIdentifier()
+        tableRef = TableRefWithHintsOpt()
 <#if (parser.tableVersionContextParserMethod!default.parser.tableVersionContextParserMethod)?has_content >
         [
             tableRef = ${parser.tableVersionContextParserMethod}(tableRef)
@@ -3775,6 +3891,7 @@ SqlCall SequenceExpression() :
     (
         <NEXT> { f = SqlStdOperatorTable.NEXT_VALUE; s = span(); }
     |
+        LOOKAHEAD(3)
         <CURRENT> { f = SqlStdOperatorTable.CURRENT_VALUE; s = span(); }
     )
     <VALUE> <FOR> sequenceRef = CompoundIdentifier() {
@@ -6945,6 +7062,12 @@ of the 'normal states'.
 
 /* COMMENTS */
 
+<DEFAULT, DQID, BTID> TOKEN :
+{
+    < HINT_BEG: "/*+" ~["/"] >
+|   < COMMENT_END: "*/" >
+}
+
 <DEFAULT, DQID, BTID> MORE :
 {
     <"/**" ~["/"]> { pushState(); } : IN_FORMAL_COMMENT
@@ -6963,13 +7086,13 @@ of the 'normal states'.
 <IN_FORMAL_COMMENT>
 SPECIAL_TOKEN :
 {
-    <FORMAL_COMMENT: "*/" > { popState(); }
+    <FORMAL_COMMENT: <COMMENT_END> > { popState(); }
 }
 
 <IN_MULTI_LINE_COMMENT>
 SPECIAL_TOKEN :
 {
-    <MULTI_LINE_COMMENT: "*/" > { popState(); }
+    <MULTI_LINE_COMMENT: <COMMENT_END> > { popState(); }
 }
 
 <IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT>

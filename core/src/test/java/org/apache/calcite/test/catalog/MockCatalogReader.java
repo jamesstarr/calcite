@@ -23,6 +23,7 @@ import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.linq4j.QueryProvider;
 import org.apache.calcite.linq4j.Queryable;
 import org.apache.calcite.linq4j.tree.Expression;
+import org.apache.calcite.linq4j.tree.Expressions;
 import org.apache.calcite.plan.RelOptSchema;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.prepare.CalciteCatalogReader;
@@ -472,7 +473,7 @@ public abstract class MockCatalogReader extends CalciteCatalogReader {
     }
 
     public RelNode toRel(ToRelContext context) {
-      return LogicalTableScan.create(context.getCluster(), this, ImmutableList.of());
+      return LogicalTableScan.create(context.getCluster(), this, context.getTableHints());
     }
 
     public List<RelCollation> getCollationList() {
@@ -532,7 +533,8 @@ public abstract class MockCatalogReader extends CalciteCatalogReader {
     }
 
     public Expression getExpression(Class clazz) {
-      throw new UnsupportedOperationException();
+      // Return a true constant just to pass the tests in EnumerableTableScanRule.
+      return Expressions.constant(true);
     }
 
     public void addColumn(String name, RelDataType type) {

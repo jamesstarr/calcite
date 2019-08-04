@@ -40,6 +40,7 @@ import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.externalize.RelJsonWriter;
 import org.apache.calcite.rel.externalize.RelWriterImpl;
 import org.apache.calcite.rel.externalize.RelXmlWriter;
+import org.apache.calcite.rel.hint.HintStrategyTable;
 import org.apache.calcite.rel.hint.Hintable;
 import org.apache.calcite.rel.hint.RelHint;
 import org.apache.calcite.rel.logical.LogicalAggregate;
@@ -456,6 +457,23 @@ public abstract class RelOptUtil {
    * or {@code newRel} directly if one of them are not {@link Hintable}
    */
   public static RelNode copyRelHints(RelNode originalRel, RelNode newRel, boolean filterHints) {
+    if (originalRel instanceof Hintable
+        && newRel instanceof Hintable
+        && ((Hintable) originalRel).getHints().size() > 0) {
+      HintStrategyTable hintStrategies = originalRel.getCluster().getHintStrategies();
+      final List<RelHint> hints = ((Hintable) originalRel).getHints();
+      // Keep all the hints of project node for 2 reasons:
+      // 1. Keep sync with the hints propagation logic,
+      // see RelHintPropagateShuttle for details.
+      // 2. We may re-propagate these hints when decorrelating a query.
+      if (originalRel instanceof Project
+              && newRel instanceof Project) {
+        return ((Hintable) newRel).attachHints(hints);
+      } else {
+        return ((Hintable) newRel)
+                .attachHints(hintStrategies.apply(hints, newRel));
+      }
+    }
     return newRel;
   }
 

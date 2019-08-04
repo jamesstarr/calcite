@@ -57,8 +57,9 @@ public class HepRuleCall extends RelOptRuleCall {
       RelHintsPropagator handler) {
     final RelNode rel0 = rels[0];
     RelOptUtil.verifyTypeEquivalence(rel0, rel, rel0);
+    rel = handler.propagate(rel0, rel);
     results.add(rel);
-    rel(0).getCluster().invalidateMetadataQuery();
+    rel0.getCluster().invalidateMetadataQuery();
   }
 
   List<RelNode> getResults() {

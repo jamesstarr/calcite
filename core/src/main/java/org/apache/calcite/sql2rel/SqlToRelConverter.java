@@ -33,6 +33,7 @@ import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
+import org.apache.calcite.rel.RelShuttleImpl;
 import org.apache.calcite.rel.SingleRel;
 import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.core.Collect;
@@ -45,8 +46,11 @@ import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.core.Sample;
 import org.apache.calcite.rel.core.Sort;
+import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.core.Uncollect;
 import org.apache.calcite.rel.core.Values;
+import org.apache.calcite.rel.hint.HintStrategyTable;
+import org.apache.calcite.rel.hint.Hintable;
 import org.apache.calcite.rel.hint.RelHint;
 import org.apache.calcite.rel.logical.LogicalAggregate;
 import org.apache.calcite.rel.logical.LogicalCorrelate;
@@ -191,8 +195,10 @@ import java.math.BigDecimal;
 import java.util.AbstractList;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -244,6 +250,7 @@ public class SqlToRelConverter {
   private final SqlOperatorTable opTab;
   protected final RelDataTypeFactory typeFactory;
   private final SqlNodeToRexConverter exprConverter;
+  protected final HintStrategyTable hintStrategies;
   private int explainParamCount;
   public final SqlToRelConverter.Config config;
   private final RelBuilder relBuilder;
@@ -323,11 +330,13 @@ public class SqlToRelConverter {
     this.subQueryConverter = new NoOpSubQueryConverter();
     this.rexBuilder = cluster.getRexBuilder();
     this.typeFactory = rexBuilder.getTypeFactory();
-    this.cluster = Preconditions.checkNotNull(cluster);
     this.exprConverter = new SqlNodeToRexConverterImpl(convertletTable);
     this.explainParamCount = 0;
     this.config = new ConfigBuilder().withConfig(config).build();
     this.relBuilder = config.getRelBuilderFactory().create(cluster, null);
+    this.hintStrategies = config.getHintStrategyTable();
+    this.cluster = Preconditions.checkNotNull(cluster)
+        .withHintStrategies(this.hintStrategies);
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -598,8 +607,18 @@ public class SqlToRelConverter {
     }
 
     final RelDataType validatedRowType = validator.getValidatedNodeType(query);
+    List<RelHint> hints = new ArrayList<>();
+    if (query.getKind() == SqlKind.SELECT) {
+      final SqlSelect select = (SqlSelect) query;
+      if (select.hasHints()) {
+        hints = SqlUtil.getRelHint(hintStrategies, select.getHints());
+      }
+    }
+    // propagate the hints.
+    result = result.accept(new RelHintPropagateShuttle(this.hintStrategies));
     return RelRoot.of(result, validatedRowType, query.getKind())
-        .withCollation(collation);
+        .withCollation(collation)
+        .withHints(hints);
   }
 
   private static boolean isStream(SqlNode query) {
@@ -692,10 +711,30 @@ public class SqlToRelConverter {
     if (select.isDistinct()) {
       distinctify(bb, true);
     }
+
     convertOrder(
         select, bb, collation, orderExprList, select.getOffset(),
         select.getFetch());
-    bb.setRoot(bb.root, true);
+
+    if (select.hasHints()) {
+      final List<RelHint> hints = SqlUtil.getRelHint(hintStrategies, select.getHints());
+      // Attach the hints to the first project we found from the root node.
+      bb.setRoot(bb.root
+          .accept(
+              new RelShuttleImpl() {
+                boolean attached = false;
+                @Override public RelNode visit(LogicalProject project) {
+                  if (!attached) {
+                    attached = true;
+                    return project.attachHints(hints);
+                  } else {
+                    return project;
+                  }
+                }
+              }), true);
+    } else {
+      bb.setRoot(bb.root, true);
+    }
   }
 
   /**
@@ -2053,15 +2092,23 @@ public class SqlToRelConverter {
       }
       return;
 
+    case TABLE_REF:
+      call = (SqlCall) from;
+      convertIdentifier(bb, call.operand(0), null, call.operand(1));
+      return;
+
     case IDENTIFIER:
-      convertIdentifier(bb, (SqlIdentifier) from, null);
+      convertIdentifier(bb, (SqlIdentifier) from, null, null);
       return;
 
     case EXTEND:
       call = (SqlCall) from;
-      SqlIdentifier id = (SqlIdentifier) call.getOperandList().get(0);
+      final SqlNode operand0 = call.getOperandList().get(0);
+      final SqlIdentifier id = operand0.getKind() == SqlKind.TABLE_REF
+          ? ((SqlCall) operand0).operand(0)
+          : (SqlIdentifier) operand0;
       SqlNodeList extendedColumns = (SqlNodeList) call.getOperandList().get(1);
-      convertIdentifier(bb, id, extendedColumns);
+      convertIdentifier(bb, id, extendedColumns, null);
       return;
 
     case JOIN:
@@ -2408,7 +2455,7 @@ public class SqlToRelConverter {
   }
 
   private void convertIdentifier(Blackboard bb, SqlIdentifier id,
-      SqlNodeList extendedColumns) {
+      SqlNodeList extendedColumns, SqlNodeList tableHints) {
     final SqlValidatorNamespace fromNamespace =
         validator.getNamespace(id).resolve();
     if (fromNamespace.getNode() != null) {
@@ -2430,11 +2477,16 @@ public class SqlToRelConverter {
               extendedColumns);
       table = table.extend(extendedFields);
     }
+    // Review Danny 2020-01-13: hacky to construct a new table scan
+    // in order to apply the hint strategies.
+    final List<RelHint> hints = hintStrategies.apply(
+            SqlUtil.getRelHint(hintStrategies, tableHints),
+            LogicalTableScan.create(cluster, table, ImmutableList.of()));
     final RelNode tableRel;
     if (config.isConvertTableAccess()) {
-      tableRel = toRel(table, ImmutableList.of());
+      tableRel = toRel(table, hints);
     } else {
-      tableRel = LogicalTableScan.create(cluster, table, ImmutableList.of());
+      tableRel = LogicalTableScan.create(cluster, table, hints);
     }
     bb.setRoot(tableRel, true);
     if (usedDataset[0]) {
@@ -5816,6 +5868,117 @@ public class SqlToRelConverter {
     }
   }
 
+  /**
+   * A {@code RelShuttle} which propagates all the hints of relational expression to
+   * their children nodes.
+   *
+   * <p>Given a plan:
+   *
+   * <blockquote><pre>
+   * Filter Hint1
+   * +- Join
+   *    +- Scan
+   *    +- Project Hint2
+   *       +- Scan
+   * </pre></blockquote>
+   *
+   * <p>Every hint has a {@code inheritPath} (integers list) which records its propagate path,
+   * number `0` represents the hint is propagated from the first(left) child, number `1`
+   * represents the hint is propagated from the second(right) child, so the plan would have
+   * hints path as follows:
+   *
+   * <ol>
+   *   <li>Filter would have hints {Hint1[]}</li>
+   *   <li>Join would have hints {Hint1[0]}</li>
+   *   <li>Scan would have hints {Hint1[0, 0]}</li>
+   *   <li>Project would have hints {Hint1[0,1], Hint2}</li>
+   *   <li>Scan2 would have hints {[Hint1[0, 1, 0], Hint2[0]}</li>
+   * </ol>
+   */
+  private static class RelHintPropagateShuttle extends RelShuttleImpl {
+    /**
+     * Stack recording the hints and its current inheritPath.
+     */
+    private final Deque<Pair<List<RelHint>, Deque<Integer>>> inheritPaths =
+        new ArrayDeque<>();
+
+    /**
+     * The hint strategies to decide if a hint should be attached to
+     * a relational expression.
+     */
+    private final HintStrategyTable hintStrategies;
+
+    RelHintPropagateShuttle(HintStrategyTable hintStrategies) {
+      this.hintStrategies = hintStrategies;
+    }
+
+    /**
+     * Visits a particular child of a parent.
+     */
+    protected RelNode visitChild(RelNode parent, int i, RelNode child) {
+      inheritPaths.forEach(inheritPath -> inheritPath.right.push(i));
+      try {
+        RelNode child2 = child.accept(this);
+        if (child2 != child) {
+          final List<RelNode> newInputs = new ArrayList<>(parent.getInputs());
+          newInputs.set(i, child2);
+          return parent.copy(parent.getTraitSet(), newInputs);
+        }
+        return parent;
+      } finally {
+        inheritPaths.forEach(inheritPath -> inheritPath.right.pop());
+      }
+    }
+
+    public RelNode visit(LogicalJoin join) {
+      final LogicalJoin join1 = (LogicalJoin) super.visit(join);
+      return attachHints(join1);
+    }
+
+    public RelNode visit(LogicalProject project) {
+      final List<RelHint> topHints = project.getHints();
+      final boolean hasHints = topHints != null && topHints.size() > 0;
+      if (hasHints) {
+        inheritPaths.push(Pair.of(topHints, new ArrayDeque<>()));
+      }
+      final RelNode project1 = super.visit(project);
+      if (hasHints) {
+        inheritPaths.pop();
+      }
+      return attachHints(project1);
+    }
+
+    public RelNode visit(TableScan scan) {
+      TableScan scan1 = (TableScan) super.visit(scan);
+      return attachHints(scan1);
+    }
+
+    private RelNode attachHints(RelNode original) {
+      assert original instanceof Hintable;
+      if (inheritPaths.size() > 0) {
+        final List<RelHint> hints = inheritPaths.stream()
+            .sorted(Comparator.comparingInt(o -> o.right.size()))
+            .map(path -> copyWithInheritPath(path.left, path.right))
+            .reduce(new ArrayList<>(), (acc, hints1) -> {
+              acc.addAll(hints1);
+              return acc;
+            });
+        final List<RelHint> filteredHints = hintStrategies.apply(hints, original);
+        if (filteredHints.size() > 0) {
+          return ((Hintable) original).attachHints(filteredHints);
+        }
+      }
+      return original;
+    }
+
+    private static List<RelHint> copyWithInheritPath(List<RelHint> hints,
+        Deque<Integer> inheritPath) {
+      return hints.stream()
+          .map(hint -> hint.copy(Arrays.asList(inheritPath.toArray(new Integer[]{}))))
+          .collect(Collectors.toList());
+    }
+  }
+
   /** Creates a builder for a {@link Config}. */
   public static ConfigBuilder configBuilder() {
     return new ConfigBuilder();
@@ -5876,6 +6039,11 @@ public class SqlToRelConverter {
     /** Returns the factory to create {@link RelBuilder}, never null. Default is
      * {@link RelFactories#LOGICAL_BUILDER}. */
     RelBuilderFactory getRelBuilderFactory();
+
+    /** Returns the hint strategies used to decide how the hints are propagated to
+     * the relational expressions. Default is
+     * {@link HintStrategyTable#EMPTY}. */
+    HintStrategyTable getHintStrategyTable();
   }
 
   /** Builder for a {@link Config}. */
@@ -5888,6 +6056,7 @@ public class SqlToRelConverter {
     private boolean expand = true;
     private int inSubQueryThreshold = DEFAULT_IN_SUB_QUERY_THRESHOLD;
     private RelBuilderFactory relBuilderFactory = RelFactories.LOGICAL_BUILDER;
+    private HintStrategyTable hintStrategyTable = HintStrategyTable.EMPTY;
 
     private ConfigBuilder() {}
 
@@ -5901,6 +6070,7 @@ public class SqlToRelConverter {
       this.expand = config.isExpand();
       this.inSubQueryThreshold = config.getInSubQueryThreshold();
       this.relBuilderFactory = config.getRelBuilderFactory();
+      this.hintStrategyTable = config.getHintStrategyTable();
       return this;
     }
 
@@ -5950,11 +6120,17 @@ public class SqlToRelConverter {
       return this;
     }
 
+    public ConfigBuilder withHintStrategyTable(
+        HintStrategyTable hintStrategyTable) {
+      this.hintStrategyTable = hintStrategyTable;
+      return this;
+    }
+
     /** Builds a {@link Config}. */
     public Config build() {
       return new ConfigImpl(convertTableAccess, decorrelationEnabled,
           trimUnusedFields, createValuesRel, explain, expand,
-          inSubQueryThreshold, relBuilderFactory);
+          inSubQueryThreshold, relBuilderFactory, hintStrategyTable);
     }
   }
 
@@ -5969,11 +6145,13 @@ public class SqlToRelConverter {
     private final boolean expand;
     private final int inSubQueryThreshold;
     private final RelBuilderFactory relBuilderFactory;
+    private final HintStrategyTable hintStrategyTable;
 
     private ConfigImpl(boolean convertTableAccess, boolean decorrelationEnabled,
         boolean trimUnusedFields, boolean createValuesRel, boolean explain,
         boolean expand, int inSubQueryThreshold,
-        RelBuilderFactory relBuilderFactory) {
+        RelBuilderFactory relBuilderFactory,
+        HintStrategyTable hintStrategyTable) {
       this.convertTableAccess = convertTableAccess;
       this.decorrelationEnabled = decorrelationEnabled;
       this.trimUnusedFields = trimUnusedFields;
@@ -5982,6 +6160,7 @@ public class SqlToRelConverter {
       this.expand = expand;
       this.inSubQueryThreshold = inSubQueryThreshold;
       this.relBuilderFactory = relBuilderFactory;
+      this.hintStrategyTable = hintStrategyTable;
     }
 
     public boolean isConvertTableAccess() {
@@ -6014,6 +6193,10 @@ public class SqlToRelConverter {
 
     public RelBuilderFactory getRelBuilderFactory() {
       return relBuilderFactory;
+    }
+
+    public HintStrategyTable getHintStrategyTable() {
+      return hintStrategyTable;
     }
   }
 }

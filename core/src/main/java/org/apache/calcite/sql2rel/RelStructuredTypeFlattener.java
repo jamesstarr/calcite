@@ -19,6 +19,7 @@ package org.apache.calcite.sql2rel;
 import org.apache.calcite.linq4j.Ord;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable;
+import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelFieldCollation;
@@ -416,12 +417,13 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
   }
 
   public void rewriteRel(LogicalJoin rel) {
-    final LogicalJoin newRel =
+    LogicalJoin newRel =
         LogicalJoin.create(getNewForOldRel(rel.getLeft()),
             getNewForOldRel(rel.getRight()),
             rel.getHints(),
             rel.getCondition().accept(new RewriteRexShuttle()),
             rel.getVariablesSet(), rel.getJoinType());
+    newRel = (LogicalJoin) RelOptUtil.copyRelHints(rel, newRel);
     setNewForOldRel(rel, newRel);
   }
 
@@ -493,6 +495,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
     RelNode newRel = relBuilder.push(newInput)
         .project(newProjects, newNames, true)
         .build();
+    newRel = RelOptUtil.copyRelHints(rel, newRel);
     setNewForOldRel(rel, newRel);
   }
 
@@ -724,6 +727,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
           .project(projects, fieldNames, true)
           .build();
     }
+    newRel = RelOptUtil.copyRelHints(rel, newRel);
     setNewForOldRel(rel, newRel);
   }
 
