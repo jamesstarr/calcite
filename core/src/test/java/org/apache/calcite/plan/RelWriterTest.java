@@ -131,9 +131,6 @@ class RelWriterTest {
       + "          ]\n"
       + "        },\n"
       + "        {\n"
-<<<<<<< HEAD
-      + "        \"agg\": {\n"
-=======
       + "          \"agg\": {\n"
       + "            \"name\": \"COUNT\",\n"
       + "            \"kind\": \"COUNT\",\n"
@@ -345,7 +342,6 @@ class RelWriterTest {
       + "  ]\n"
       + "}";
 
->>>>>>> 6102b7372 ([CALCITE-2858] Improvements in JSON writer and reader for plans)
   /**
    * Unit test for {@link org.apache.calcite.rel.externalize.RelJsonWriter} on
    * a simple tree of relational expressions, consisting of a table and a
