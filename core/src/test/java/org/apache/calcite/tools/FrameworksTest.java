@@ -383,7 +383,7 @@ public class FrameworksTest {
    * 2) the aggregate can be removed during optimization.
    * 3) all aggregate calls are simplified to the same reference.
    * */
-  @Test void testPushProjectToScan() throws Exception {
+  @Test public void testPushProjectToScan() throws Exception {
     Table table = new TableImpl();
     final SchemaPlus rootSchema = Frameworks.createRootSchema(true);
     SchemaPlus schema = rootSchema.add("x", new AbstractSchema());
@@ -402,8 +402,8 @@ public class FrameworksTest {
             .traitDefs(traitDefs)
             // define the rules you want to apply
             .ruleSets(
-                RuleSets.ofList(AbstractConverter.ExpandConversionRule.INSTANCE,
-                    CoreRules.PROJECT_TABLE_SCAN))
+                    RuleSets.ofList(AbstractConverter.ExpandConversionRule.INSTANCE,
+                            CoreRules.PROJECT_TABLE_SCAN))
             .programs(Programs.ofRules(Programs.RULE_SET))
             .build();
 

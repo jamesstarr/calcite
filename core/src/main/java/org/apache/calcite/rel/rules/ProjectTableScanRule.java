@@ -26,10 +26,6 @@ import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
-<<<<<<< HEAD
-import org.apache.calcite.rex.RexUtil;
-import org.apache.calcite.rex.RexVisitorImpl;
-=======
 >>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.calcite.tools.RelBuilderFactory;
@@ -103,6 +99,7 @@ public class ProjectTableScanRule
   protected void apply(RelOptRuleCall call, Project project, TableScan scan) {
     final RelOptTable table = scan.getTable();
     assert table.unwrap(ProjectableFilterableTable.class) != null;
+<<<<<<< HEAD
 
     final List<Integer> selectedColumns = new ArrayList<>();
     project.getProjects().forEach(proj -> {
@@ -115,6 +112,13 @@ public class ProjectTableScanRule
         }
       });
     });
+=======
+    if (!project.isMapping()) {
+      return;
+    }
+    final Mappings.TargetMapping mapping = Project.getPartialMapping(
+            project.getInput().getRowType().getFieldCount(),
+            project.getProjects());
 
     final List<RexNode> filtersPushDown;
     final List<Integer> projectsPushDown;
