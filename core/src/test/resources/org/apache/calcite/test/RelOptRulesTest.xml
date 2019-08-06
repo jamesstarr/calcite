@@ -5110,6 +5110,48 @@ LogicalProject(EXPR$0=[1])
 ]]>
         </Resource>
     </TestCase>
+
+    <TestCase name="testTransitiveInferenceFunction">
+        <Resource name="sql">
+            <![CDATA[
+            select 1
+            from (
+                select d.deptno + 2 as deptno1
+                from sales.emp d
+            ) emp1
+            inner join (
+                select e.deptno + 2 as deptno2
+                from sales.emp e
+            ) emp2
+            on emp1.deptno1 = emp2.deptno2
+            where emp1.deptno1=3
+        ]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(EXPR$0=[1])
+  LogicalJoin(condition=[=($0, $1)], joinType=[inner])
+    LogicalProject(DEPTNO1=[+($7, 2)])
+      LogicalFilter(condition=[=(+($7, 2), 3)])
+        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalProject(DEPTNO2=[+($7, 2)])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(EXPR$0=[1])
+  LogicalJoin(condition=[=($0, $1)], joinType=[inner])
+    LogicalProject(DEPTNO1=[+($7, 2)])
+      LogicalFilter(condition=[=(+($7, 2), 3)])
+        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalFilter(condition=[=($0, 3)])
+      LogicalProject(DEPTNO2=[+($7, 2)])
+        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+
     <TestCase name="testPullConstantIntoProject">
         <Resource name="sql">
             <![CDATA[select deptno, deptno + 1, empno + deptno from sales.emp where deptno = 10]]>

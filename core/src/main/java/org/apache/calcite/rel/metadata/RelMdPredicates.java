@@ -43,6 +43,7 @@ import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexPermuteInputsShuttle;
+import org.apache.calcite.rex.RexShuttle;
 import org.apache.calcite.rex.RexSimplify;
 import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.rex.RexVisitorImpl;
@@ -52,6 +53,7 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.util.BitSets;
 import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.BuiltInMethod;
+import org.apache.calcite.util.ControlFlowException;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.Util;
 import org.apache.calcite.util.mapping.Mapping;
@@ -73,6 +75,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 
@@ -96,13 +99,13 @@ import java.util.SortedMap;
  *   &rarr; max(b) &gt; 7 or max(b) is null
  * </pre>
  *
- * <li> For Projections we only look at columns that are projected without
- * any function applied. So:
+ * <li> For Projections we look at columns that are projected with
+ * & without any function applied. So:
  * <pre>
  * select a from R1 where a &gt; 7
  *   &rarr; "a &gt; 7" is pulled up from the Projection.
  * select a + 1 from R1 where a + 1 &gt; 7
- *   &rarr; "a + 1 gt; 7" is not pulled up
+ *   &rarr; "a + 1 gt; 7" is pulled up
  * </pre>
  *
  * <li> There are several restrictions on Joins:
@@ -156,6 +159,187 @@ public class RelMdPredicates
   }
 
   /**
+   * Key for rexnodes in a map.
+   */
+  private static class ComparableRexNode {
+    private final RexNode node;
+
+    ComparableRexNode(RexNode node) {
+      this.node = node;
+    }
+
+    public int hashCode() {
+      return Objects.hash(node.toString(), node.getType().getFullTypeString());
+    }
+
+    public boolean equals(Object o) {
+      if (!(o instanceof ComparableRexNode)) {
+        return false;
+      }
+      if (o == this) {
+        return true;
+      }
+      ComparableRexNode other = (ComparableRexNode) o;
+      return other.node.toString().equals(this.node.toString())
+              && other.node.getType().equals(this.node.getType());
+    }
+  }
+
+  /** A shuttle that stores a list of projection columns.
+   * The shuttle can be used to visit child predicates to see
+   * if they can be expressed in terms of projection columns.
+   */
+  private static class ProjectMapper extends RexShuttle {
+    private final Map<ComparableRexNode, Integer> positions;
+    private final RexBuilder rexBuilder;
+    private final Project project;
+
+    // RexCalls can be composed of RexCalls.
+    // When mapping a RexCall, we need to know if we are mapping the parent RexCall
+    // or a child. If we can't fully map the parent,
+    // then we will try pull up weakened partial predicates.
+    private boolean nestedCall = false;
+    private List<RexNode> nestedPartials;
+
+    ProjectMapper(RexBuilder rexBuilder, Project project) {
+      Map<ComparableRexNode, Integer> positions = new HashMap<>();
+
+      for (Ord<RexNode> o : Ord.zip(project.getProjects())) {
+        positions.putIfAbsent(new ComparableRexNode(o.e), o.i);
+      }
+
+      this.positions = positions;
+      this.rexBuilder = rexBuilder;
+      this.project = project;
+    }
+
+    /**
+     *
+     * @param node The node is either a input ref or call.
+     * @return  If the ref or call is projected return the projection column reference.
+     *          Otherwise, null.
+     */
+    protected RexNode getReference(final RexNode node) {
+      final Integer integer = positions.get(new ComparableRexNode(node));
+      if (integer != null) {
+        return new RexInputRef(integer, node.getType());
+      }
+      return null;
+    }
+
+    @Override public RexNode visitLiteral(final RexLiteral literal) {
+      return literal;
+    }
+
+    /** Exception thrown to exit a matcher. Not really an error.
+     *  It means nothing new can be said of the projected columns. */
+    private static class ProjectColumnMiss extends ControlFlowException {
+      @SuppressWarnings("ThrowableInstanceNeverThrown")
+      public static final ProjectColumnMiss INSTANCE = new ProjectColumnMiss();
+    }
+
+    /** Exception thrown within a matcher to communicate
+     *  a subset of the given statement could be put in terms of project columns.
+     *  Not really an error. */
+    private static class ProjectColumnPartialMiss extends ControlFlowException {
+      @SuppressWarnings("ThrowableInstanceNeverThrown")
+      public static final ProjectColumnPartialMiss INSTANCE = new ProjectColumnPartialMiss();
+    }
+
+    /**
+     *
+     * @param ref In terms of input columns.
+     * @return ref in terms of project columns, or null.
+     */
+    @Override public RexNode visitInputRef(final RexInputRef ref) {
+      final RexNode newRef = getReference(ref);
+      if (newRef != null) {
+        return newRef;
+      }
+      throw ProjectColumnMiss.INSTANCE;
+    }
+
+    /**
+     *
+     * @param call a RexCall in terms of the input columns.
+     * @return a RexCall in terms of project columns, a weakened predicate in the case of a partial
+     * match.
+     * @Throws a ProjectColumnMiss if nothing can be mapped to projection columns;
+     *         a ProjectColumnPartialMiss if some columns can be mapped.
+     */
+    @Override public RexNode visitCall(final RexCall call) {
+      // If the entire call is projected, give the reference to project column back.
+      final RexNode newRef = getReference(call);
+      if (newRef != null) {
+        return newRef;
+      }
+
+      List<RexNode> newOperands = new ArrayList<>();
+      final List<RexNode> weakenedPredicates = new ArrayList<>();
+      boolean fullMatch = true;
+
+      for (RexNode op: call.getOperands()) {
+        // We need to remember whether this is the root call or not.
+        final boolean previousNestedState = nestedCall;
+        try {
+          nestedCall = true;
+          final RexNode mappedRex = op.accept(this);
+          newOperands.add(mappedRex);
+
+        } catch (ProjectColumnMiss e) {
+          fullMatch = false;
+
+        } catch (ProjectColumnPartialMiss e) {
+          // Collect all the sub matches to see if we can weaken them later on.
+          fullMatch = false;
+          weakenedPredicates.addAll(nestedPartials);
+          nestedPartials.clear();
+
+        } finally {
+          nestedCall = previousNestedState;
+        }
+      }
+      if (fullMatch) {
+        // Return the original call in terms of the projection columns.
+        return call.clone(call.type, newOperands);
+      }
+
+      for (RexNode r: newOperands) {
+        final int colNum;
+
+        // We can only make weakened conclusions about projected columns.
+        if (!(r instanceof RexInputRef)) {
+          continue;
+        }
+
+        final RexInputRef inp = (RexInputRef) r;
+        colNum = inp.getIndex();
+
+        if (project.getRowType().getFieldList().get(colNum).getType().isNullable()
+                && Strong.isNull(r, ImmutableBitSet.of(colNum))) {
+          weakenedPredicates.add(rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL, r));
+        }
+      }
+
+      // Nothing can be concluded about the subset of columns
+      if (weakenedPredicates.isEmpty()) {
+        throw ProjectColumnMiss.INSTANCE;
+      }
+
+      // Pass the conclusions about our columns up the chain
+      // so they may be combined with siblings.
+      if (nestedCall) {
+        nestedPartials = weakenedPredicates;
+        throw ProjectColumnPartialMiss.INSTANCE;
+
+      }
+
+      // Return the weakened predicates to the user if this is the parent node.
+      return RexUtil.composeDisjunction(rexBuilder, weakenedPredicates);
+    }
+  }
+
+  /**
    * Infers predicates for a project.
    *
    * <ol>
@@ -181,27 +365,19 @@ public class RelMdPredicates
     final RelOptPredicateList inputInfo = mq.getPulledUpPredicates(input);
     final List<RexNode> projectPullUpPredicates = new ArrayList<>();
 
-    ImmutableBitSet.Builder columnsMappedBuilder = ImmutableBitSet.builder();
-    Mapping m = Mappings.create(MappingType.PARTIAL_FUNCTION,
-        input.getRowType().getFieldCount(),
-        project.getRowType().getFieldCount());
+    ProjectMapper callMapper = new ProjectMapper(rexBuilder, project);
 
-    for (Ord<RexNode> o : Ord.zip(project.getProjects())) {
-      if (o.e instanceof RexInputRef) {
-        int sIdx = ((RexInputRef) o.e).getIndex();
-        m.set(sIdx, o.i);
-        columnsMappedBuilder.set(sIdx);
-      }
-    }
 
-    // Go over childPullUpPredicates. If a predicate only contains columns in
-    // 'columnsMapped' construct a new predicate based on mapping.
-    final ImmutableBitSet columnsMapped = columnsMappedBuilder.build();
+    // Go over child pullUpPredicates. If a predicate is made from projected columns
+    // then pull up the predicate in terms of the projected columns.
+    // If a predicate contains columns outside the projection, see if we can pull up
+    // a weaker predicate on the projection columns it does use.
     for (RexNode r : inputInfo.pulledUpPredicates) {
-      RexNode r2 = projectPredicate(rexBuilder, input, r, columnsMapped);
-      if (!r2.isAlwaysTrue()) {
-        r2 = r2.accept(new RexPermuteInputsShuttle(m, input));
-        projectPullUpPredicates.add(r2);
+      try {
+        final RexNode newRex = r.accept(callMapper);
+        projectPullUpPredicates.add(newRex);
+      } catch (ProjectMapper.ProjectColumnMiss e) {
+        continue;
       }
     }
 
@@ -222,57 +398,6 @@ public class RelMdPredicates
       }
     }
     return RelOptPredicateList.of(rexBuilder, projectPullUpPredicates);
-  }
-
-  /** Converts a predicate on a particular set of columns into a predicate on
-   * a subset of those columns, weakening if necessary.
-   *
-   * <p>If not possible to simplify, returns {@code true}, which is the weakest
-   * possible predicate.
-   *
-   * <p>Examples:<ol>
-   * <li>The predicate {@code $7 = $9} on columns [7]
-   *     becomes {@code $7 is not null}
-   * <li>The predicate {@code $7 = $9 + $11} on columns [7, 9]
-   *     becomes {@code $7 is not null or $9 is not null}
-   * <li>The predicate {@code $7 = $9 and $9 = 5} on columns [7] becomes
-   *   {@code $7 = 5}
-   * <li>The predicate
-   *   {@code $7 = $9 and ($9 = $1 or $9 = $2) and $1 > 3 and $2 > 10}
-   *   on columns [7] becomes {@code $7 > 3}
-   * </ol>
-   *
-   * <p>We currently only handle examples 1 and 2.
-   *
-   * @param rexBuilder Rex builder
-   * @param input Input relational expression
-   * @param r Predicate expression
-   * @param columnsMapped Columns which the final predicate can reference
-   * @return Predicate expression narrowed to reference only certain columns
-   */
-  private RexNode projectPredicate(final RexBuilder rexBuilder, RelNode input,
-      RexNode r, ImmutableBitSet columnsMapped) {
-    ImmutableBitSet rCols = RelOptUtil.InputFinder.bits(r);
-    if (columnsMapped.contains(rCols)) {
-      // All required columns are present. No need to weaken.
-      return r;
-    }
-    if (columnsMapped.intersects(rCols)) {
-      final List<RexNode> list = new ArrayList<>();
-      for (int c : columnsMapped.intersect(rCols)) {
-        if (input.getRowType().getFieldList().get(c).getType().isNullable()
-            && Strong.isNull(r, ImmutableBitSet.of(c))) {
-          list.add(
-              rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL,
-                  rexBuilder.makeInputRef(input, c)));
-        }
-      }
-      if (!list.isEmpty()) {
-        return RexUtil.composeDisjunction(rexBuilder, list);
-      }
-    }
-    // Cannot weaken to anything non-trivial
-    return rexBuilder.makeLiteral(true);
   }
 
   /**
