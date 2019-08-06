@@ -2600,34 +2600,22 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3229">[CALCITE-3229]
    * UnsupportedOperationException for UPDATE with IN query</a>.
    */
-  @Test void testUpdateSubQueryWithIn() {
+  @Test public void testUpdateSubQueryWithIn() {
     final String sql = "update emp\n"
             + "set empno = 1 where empno in (\n"
             + "  select empno from emp where empno=2)";
     sql(sql).ok();
   }
 
-  /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3292">[CALCITE-3292]
-   * NPE for UPDATE with IN query</a>.
-   */
-  @Test void testUpdateSubQueryWithIn1() {
-    final String sql = "update emp\n"
-            + "set empno = 1 where emp.empno in (\n"
-            + "  select emp.empno from emp where emp.empno=2)";
-    sql(sql).ok();
-  }
-
   /** Similar to {@link #testUpdateSubQueryWithIn()} but with not in instead of in. */
-  @Test void testUpdateSubQueryWithNotIn() {
+  @Test public void testUpdateSubQueryWithNotIn() {
     final String sql = "update emp\n"
             + "set empno = 1 where empno not in (\n"
             + "  select empno from emp where empno=2)";
     sql(sql).ok();
   }
 
-  @Test void testUpdateWhere() {
+  @Test public void testUpdateWhere() {
     final String sql = "update emp set empno = empno + 1 where deptno = 10";
     sql(sql).ok();
   }
