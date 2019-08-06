@@ -6289,6 +6289,7 @@ SqlTypeNameSpec DateTimeTypeName() :
         }
         return new SqlBasicTypeNameSpec(typeName, precision, getPos());
         }
+<<<<<<< HEAD
 |
     <TIMESTAMP>
     precision = PrecisionOpt()
@@ -6396,6 +6397,8 @@ SqlTypeNameSpec DateTimeTypeName() :
         }
         return new SqlBasicTypeNameSpec(typeName, precision, getPos());
     }
+=======
+>>>>>>> d625a4bcc ([CALCITE-3231] Support ARRAY type for SqlDataTypeSpec)
 |
     <TIMESTAMP>
     precision = PrecisionOpt()

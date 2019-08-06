@@ -52,9 +52,6 @@ public class SortJoinCopyRule extends RelOptRule {
 
   public static final SortJoinCopyRule INSTANCE =
       new SortJoinCopyRule(LogicalSort.class,
-<<<<<<< HEAD
-          LogicalJoin.class, RelFactories.LOGICAL_BUILDER);
-=======
           Join.class, RelFactories.LOGICAL_BUILDER);
 
   //~ Constructors -----------------------------------------------------------
@@ -170,4 +167,3 @@ public class SortJoinCopyRule extends RelOptRule {
 =======
 
 // End SortJoinCopyRule.java
->>>>>>> d4e1bdf10 ([CALCITE-2624] Add a rule to copy a sort below a join operator (Khawla Mouhoubi))
