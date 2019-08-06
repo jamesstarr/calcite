@@ -75,34 +75,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-
-/**
- * Utility to infer Predicates that are applicable above a RelNode.
- *
- * <p>This is currently used by
- * {@link org.apache.calcite.rel.rules.JoinPushTransitivePredicatesRule} to
- * infer <em>Predicates</em> that can be inferred from one side of a Join
- * to the other.
- *
- * <p>The PullUp Strategy is sound but not complete. Here are some of the
- * limitations:
- * <ol>
- *
- * <li> For Aggregations we only PullUp predicates that only contain
- * Grouping Keys. This can be extended to infer predicates on Aggregation
- * expressions from  expressions on the aggregated columns. For e.g.
- * <pre>
- * select a, max(b) from R1 where b &gt; 7
- *   &rarr; max(b) &gt; 7 or max(b) is null
- * </pre>
- *
- * <li> For Projections we look at columns that are projected with
- * &amp; without any function applied. So:
+ * & without any function applied. So:
  * <pre>
  * select a from R1 where a &gt; 7
  *   &rarr; "a &gt; 7" is pulled up from the Projection.

@@ -4479,13 +4479,12 @@ class RelOptRulesTest extends RelOptTestBase {
         .withRule(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES).check();
   }
 
-  @Test void testPullConstantIntoProject() throws Exception {
-    final String sql = "select deptno, deptno + 1, empno + deptno\n"
-        + "from sales.emp where deptno = 10";
-    sql(sql).withPre(getTransitiveProgram())
-        .withRule(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES,
-            CoreRules.PROJECT_REDUCE_EXPRESSIONS)
-        .check();
+  @Test public void testTransitiveInferenceFunction() throws Exception {
+    transitiveInference();
+  }
+
+  @Test public void testPullConstantIntoProject() throws Exception {
+    transitiveInference(ReduceExpressionsRule.PROJECT_INSTANCE);
   }
 
   @Test void testPullConstantIntoFilter() throws Exception {
