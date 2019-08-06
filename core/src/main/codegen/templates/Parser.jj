@@ -5362,7 +5362,7 @@ SqlTypeNameSpec DateTimeTypeName() :
             typeName = SqlTypeName.TIME;
         }
         return new SqlBasicTypeNameSpec(typeName, precision, getPos());
-    }
+        }
 |
     <TIMESTAMP>
     precision = PrecisionOpt()
