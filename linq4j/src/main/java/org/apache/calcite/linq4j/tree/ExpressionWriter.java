@@ -194,8 +194,6 @@ class ExpressionWriter {
       indentPending = false;
     }
   }
-<<<<<<< HEAD
-=======
 
   /** Helps generate strings of spaces, to indent text. */
   private static class Indent extends ArrayList<String> {
@@ -221,5 +219,6 @@ class ExpressionWriter {
       }
     }
   }
->>>>>>> c1d7f8f6f ([CALCITE-2559] Update Checkstyle to 7.8.2)
+=======
+>>>>>>> 19d567a58 ([CALCITE-3237] IndexOutOfBoundsException when generating deeply nested Java code from linq4j (Sahith Nallapareddy))
 }
