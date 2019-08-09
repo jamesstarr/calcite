@@ -2533,7 +2533,7 @@ class RelOptRulesTest extends RelOptTestBase {
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
-   * Enhance RexSimplify to handle (x!=a or x!=b)</a>. */
+   * Enhance RexSimplify to handle (x&lt;&gt;a or x&lt;&gt;b)</a>. */
   @Test public void testReduceConstantsDup3() throws Exception {
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
@@ -2547,7 +2547,7 @@ class RelOptRulesTest extends RelOptTestBase {
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
-   * Enhance RexSimplify to handle (x!=a or x!=b)</a>. */
+   * Enhance RexSimplify to handle (x&lt;&gt;a or x&lt;&gt;b)</a>. */
   @Test public void testReduceConstantsDup3Null() throws Exception {
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
@@ -2561,7 +2561,7 @@ class RelOptRulesTest extends RelOptTestBase {
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
-   * Enhance RexSimplify to handle (x!=a or x!=b)</a>. */
+   * Enhance RexSimplify to handle (x&lt;&gt;a or x&lt;&gt;b)</a>. */
   @Test public void testReduceConstantsDupNot() throws Exception {
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
@@ -2575,7 +2575,7 @@ class RelOptRulesTest extends RelOptTestBase {
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
-   * Enhance RexSimplify to handle (x!=a or x!=b)</a>. */
+   * Enhance RexSimplify to handle (x&lt;&gt;a or x&lt;&gt;b)</a>. */
   @Test public void testReduceConstantsDupNotNull() throws Exception {
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
@@ -2589,7 +2589,7 @@ class RelOptRulesTest extends RelOptTestBase {
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
-   * Enhance RexSimplify to handle (x!=a or x!=b)</a>. */
+   * Enhance RexSimplify to handle (x&lt;&gt;a or x&lt;&gt;b)</a>. */
   @Test public void testReduceConstantsDupNot2() throws Exception {
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
@@ -2603,7 +2603,7 @@ class RelOptRulesTest extends RelOptTestBase {
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
-   * Enhance RexSimplify to handle (x!=a or x!=b)</a>. */
+   * Enhance RexSimplify to handle (x&lt;&gt;a or x&lt;&gt;b)</a>. */
   @Test public void testReduceConstantsDupNot2Null() throws Exception {
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
