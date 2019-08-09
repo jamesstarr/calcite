@@ -1187,12 +1187,16 @@ Note:
 | MULTISET | Unordered collection that may contain duplicates | Example: int multiset
 | ARRAY    | Ordered, contiguous collection that may contain duplicates | Example: varchar(10) array
 | CURSOR   | Cursor over the result of executing a query |
+<<<<<<< HEAD
 | VARIANT | Dynamically-typed value that can have at runtime a value of any other type | VARIANT
+=======
+>>>>>>> 378c49b87 ([CALCITE-3233] Support Row type for SqlDataTypeSpec)
 
 Note:
 
 * Every `ROW` column type can have an optional [ NULL | NOT NULL ] suffix
   to indicate if this column type is nullable, default is not nullable.
+<<<<<<< HEAD
 
 ### The `VARIANT` type
 
@@ -1242,6 +1246,8 @@ the runtime types are represented as follows:
 
 The function VARIANTNULL() can be used to create an instance
 of the `VARIANT` `null` value.
+=======
+>>>>>>> 378c49b87 ([CALCITE-3233] Support Row type for SqlDataTypeSpec)
 
 ### Spatial types
 
@@ -1698,6 +1704,63 @@ Implicit type coercion of following cases are ignored:
   i.e. `VARCHAR` and `INTEGER` will return `INTEGER`,
   we allow some precision loss when widening decimal to fractional,
   or promote to `VARCHAR` type.
+
+Supported data types:
+
+{% highlight sql %}
+type:
+      typeName [ '(' precision [, scale] ')' ]
+      [ CHARACTER SET charSetName ]
+      [ collectionsTypeName ]
+
+typeName:
+      sqlTypeName
+  |   collectionsTypeName
+  |   rowTypeName
+  |   compoundIdentifier
+
+sqlTypeName:
+      char
+  |   varchar
+  |   DATE
+  |   TIME
+  |   TIMESTAMP
+  |   GEOMETRY
+  |   decimal
+  |   BOOLEAN
+  |   integer
+  |   BINARY
+  |   varbinary
+  |   TINYINT
+  |   SMALLINT
+  |   BIGINT
+  |   REAL
+  |   double
+  |   FLOAT
+  |   ANY
+
+collectionsTypeName:
+      ARRAY | MULTISET
+
+rowTypeName:
+      ROW '('
+        fieldName1 fieldType1 [ [ NULL | NOT NULL ] ]
+        [ , fieldName2 fieldType2 [ [ NULL | NOT NULL ] ] ]*
+        ')'
+
+char:
+      CHARACTER | CHAR
+varchar:
+      char VARYING | VARCHAR
+decimal:
+      DECIMAL | DEC | NUMERIC
+integer:
+      INTEGER | INT
+varbinary:
+      BINARY VARYING | VARBINARY
+double:
+      DOUBLE [PRECISION]
+{% endhighlight %}
 
 ### Value constructors
 

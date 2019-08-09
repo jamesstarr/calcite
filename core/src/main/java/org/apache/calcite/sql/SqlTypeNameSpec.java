@@ -17,55 +17,28 @@
 package org.apache.calcite.sql;
 
 import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.util.Litmus;
 
 /**
- * A <code>SqlTypeNameSpec</code> is a type name specification that allows user to
+ * A <code>SqlTypeNameSpec</code> is a type name that allows user to
  * customize sql node unparsing and data type deriving.
  *
- * <p>To customize sql node unparsing, override the method
- * {@link #unparse(SqlWriter, int, int)}.
- *
- * <p>To customize data type deriving, override the method
- * {@link #deriveType(SqlValidator)}.
+ * <p>To customize sql node unparsing, override the method {@link #unparse(SqlWriter, int, int)}.
  */
-public abstract class SqlTypeNameSpec {
-  private final SqlIdentifier typeName;
-  private final SqlParserPos pos;
+public abstract class SqlTypeNameSpec extends SqlIdentifier {
 
   /**
    * Creates a {@code SqlTypeNameSpec}.
    *
-   * @param name Name of the type
-   * @param pos  Parser position, must not be null
+   * @param name Name of the type.
+   * @param pos  Parser position, must not be null.
    */
-  public SqlTypeNameSpec(SqlIdentifier name, SqlParserPos pos) {
-    this.typeName = name;
-    this.pos = pos;
+  SqlTypeNameSpec(String name, SqlParserPos pos) {
+    super(name, pos);
   }
 
-  /**
-   * Derive type from this SqlTypeNameSpec.
-   *
-   * @param validator The sql validator
-   * @return the {@code RelDataType} instance, throws exception if we could not
-   *         deduce the type
-   */
-  public abstract RelDataType deriveType(SqlValidator validator);
-
-  /** Writes a SQL representation of this spec to a writer. */
-  public abstract void unparse(SqlWriter writer, int leftPrec, int rightPrec);
-
-  /** Returns whether this spec is structurally equivalent to another spec. */
-  public abstract boolean equalsDeep(SqlTypeNameSpec spec, Litmus litmus);
-
-  public SqlParserPos getParserPos() {
-    return pos;
-  }
-
-  public SqlIdentifier getTypeName() {
-    return typeName;
-  }
+  public abstract RelDataType deriveType(RelDataTypeFactory typeFactory);
 }
+
+// End SqlTypeNameSpec.java

@@ -19,6 +19,7 @@ package org.apache.calcite.test.catalog;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeComparability;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rel.type.RelDataTypeFieldImpl;
 import org.apache.calcite.rel.type.StructKind;
 import org.apache.calcite.sql.SqlIdentifier;
@@ -27,11 +28,14 @@ import org.apache.calcite.sql.type.ObjectSqlType;
 import org.apache.calcite.sql.type.SqlTypeName;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /** Types used during initialization. */
-final class Fixture {
+final class Fixture extends AbstractFixture {
   final RelDataType intType;
   final RelDataType intTypeNull;
+  final RelDataType decimalType;
+  final RelDataType varcharType;
   final RelDataType varchar10Type;
   final RelDataType varchar10TypeNull;
   final RelDataType varchar20Type;
@@ -49,10 +53,24 @@ final class Fixture {
   final RelDataType empRecordType;
   final RelDataType empListType;
   final ObjectSqlType addressType;
+  // Row(f0 int, f1 varchar)
+  final RelDataType recordType1;
+  // Row(f0 int not null, f1 varchar null)
+  final RelDataType recordType2;
+  // Row(f0 Row(ff0 int not null, ff1 varchar null) null, f1 timestamp not null)
+  final RelDataType recordType3;
+  // Row(f0 bigint not null, f1 decimal null) array
+  final RelDataType recordType4;
+  // Row(f0 varchar not null, f1 timestamp null) multiset
+  final RelDataType recordType5;
+  final RelDataType bigintType = sqlType(SqlTypeName.BIGINT);
 
   Fixture(RelDataTypeFactory typeFactory) {
+    super(typeFactory);
     intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
     intTypeNull = typeFactory.createTypeWithNullability(intType, true);
+    decimalType = typeFactory.createSqlType(SqlTypeName.DECIMAL);
+    varcharType = typeFactory.createSqlType(SqlTypeName.VARCHAR);
     varchar10Type = typeFactory.createSqlType(SqlTypeName.VARCHAR, 10);
     varchar10TypeNull = typeFactory.createTypeWithNullability(varchar10Type, true);
     varchar20Type = typeFactory.createSqlType(SqlTypeName.VARCHAR, 20);
@@ -119,6 +137,59 @@ final class Fixture {
                 new RelDataTypeFieldImpl("ZIP", 2, intType),
                 new RelDataTypeFieldImpl("STATE", 3, varchar20Type)),
             RelDataTypeComparability.NONE);
+    // Row(f0 int, f1 varchar)
+    recordType1 = typeFactory.createStructType(
+        Arrays.asList(intType, varcharType),
+        Arrays.asList("f0", "f1"));
+    // Row(f0 int not null, f1 varchar null)
+    recordType2 = typeFactory.createStructType(
+        Arrays.asList(intType,
+            nullable(typeFactory, varcharType)),
+        Arrays.asList("f0", "f1"));
+    // Row(f0 Row(ff0 int not null, ff1 varchar null) null, f1 timestamp not null)
+    recordType3 = typeFactory.createStructType(
+        Arrays.asList(
+            nullable(typeFactory,
+                typeFactory.createStructType(
+                    recordType2.getFieldList().stream()
+                        .map(RelDataTypeField::getType).collect(Collectors.toList()),
+                    Arrays.asList("ff0", "ff1"))), timestampType),
+        Arrays.asList("f0", "f1"));
+    // Row(f0 bigint not null, f1 decimal null) array
+    recordType4 = typeFactory.createArrayType(
+        typeFactory.createStructType(
+            Arrays.asList(bigintType, nullable(typeFactory, decimalType)),
+            Arrays.asList("f0", "f1")),
+        -1);
+    // Row(f0 varchar not null, f1 timestamp null) multiset
+    recordType5 = typeFactory.createMultisetType(
+        typeFactory.createStructType(
+            Arrays.asList(varcharType, nullable(typeFactory, timestampType)),
+            Arrays.asList("f0", "f1")),
+        -1);
+
+  }
+
+  private static RelDataType nullable(RelDataTypeFactory typeFactory, RelDataType type) {
+    return typeFactory.createTypeWithNullability(type, true);
+  }
+
+  private RelDataType sqlType(SqlTypeName typeName, int... args) {
+    assert args.length < 3 : "unknown size of additional int args";
+    return args.length == 2 ? typeFactory.createSqlType(typeName, args[0], args[1])
+        : args.length == 1 ? typeFactory.createSqlType(typeName, args[0])
+        : typeFactory.createSqlType(typeName);
+  }
+}
+
+/**
+ * Just a little trick to store factory ref before field init in fixture.
+ */
+abstract class AbstractFixture {
+  final RelDataTypeFactory typeFactory;
+
+  AbstractFixture(RelDataTypeFactory typeFactory) {
+    this.typeFactory = typeFactory;
   }
 }
 

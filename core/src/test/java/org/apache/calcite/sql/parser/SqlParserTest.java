@@ -4070,29 +4070,6 @@ public class SqlParserTest {
         .node(not(isDdl()));
   }
 
-<<<<<<< HEAD
-  /** Same as testMergeSelectSource but set with compound identifier. */
-  @Test void testMergeSelectSource2() {
-    final String sql = "merge into emps e "
-        + "using (select * from tempemps where deptno is null) t "
-        + "on e.empno = t.empno "
-        + "when matched then update "
-        + "set e.name = t.name, e.deptno = t.deptno, e.salary = t.salary * .1 "
-        + "when not matched then insert (name, dept, salary) "
-        + "values(t.name, 10, t.salary * .15)";
-    final String expected = "MERGE INTO `EMPS` AS `E`\n"
-        + "USING (SELECT *\n"
-        + "FROM `TEMPEMPS`\n"
-        + "WHERE (`DEPTNO` IS NULL)) AS `T`\n"
-        + "ON (`E`.`EMPNO` = `T`.`EMPNO`)\n"
-        + "WHEN MATCHED THEN UPDATE SET `E`.`NAME` = `T`.`NAME`"
-        + ", `E`.`DEPTNO` = `T`.`DEPTNO`"
-        + ", `E`.`SALARY` = (`T`.`SALARY` * 0.1)\n"
-        + "WHEN NOT MATCHED THEN INSERT (`NAME`, `DEPT`, `SALARY`) "
-        + "(VALUES (ROW(`T`.`NAME`, 10, (`T`.`SALARY` * 0.15))))";
-    sql(sql).ok(expected)
-        .node(not(isDdl()));
-=======
   @Test public void testMergeTableRefSource() {
     final String sql = "merge into emps e "
         + "using tempemps as t "
@@ -4990,6 +4967,7 @@ public class SqlParserTest {
         .ok("(ARRAY[(ROW(1, 'a')), (ROW(2, 'b'))])");
   }
 
+<<<<<<< HEAD
   @Test void testCastAsCollectionType() {
     // test array type.
     expr("cast(a as int array)")
@@ -5048,6 +5026,30 @@ public class SqlParserTest {
         .ok("(MAP[1, 'x', 2, 'y'])");
     expr("map[]")
         .ok("(MAP[])");
+=======
+  @Test public void testCastAsRowType() {
+    checkExp("cast(a as row(f0 int, f1 varchar))",
+        "CAST(`A` AS ROW(`F0` INTEGER, `F1` VARCHAR))");
+    checkExp("cast(a as row(f0 int not null, f1 varchar null))",
+        "CAST(`A` AS ROW(`F0` INTEGER, `F1` VARCHAR NULL))");
+//    // test nested row type.
+    checkExp("cast(a as row("
+        + "f0 row(ff0 int not null, ff1 varchar null) null, "
+        + "f1 timestamp not null))",
+        "CAST(`A` AS ROW("
+            + "`F0` ROW(`FF0` INTEGER, `FF1` VARCHAR NULL) NULL, "
+            + "`F1` TIMESTAMP))");
+    // test row type in collection data types.
+    checkExp("cast(a as row(f0 bigint not null, f1 decimal null) array)",
+        "CAST(`A` AS ROW(`F0` BIGINT, `F1` DECIMAL NULL) ARRAY)");
+    checkExp("cast(a as row(f0 varchar not null, f1 timestamp null) multiset)",
+        "CAST(`A` AS ROW(`F0` VARCHAR, `F1` TIMESTAMP NULL) MULTISET)");
+  }
+
+  @Test public void testMapValueConstructor() {
+    checkExp("map[1, 'x', 2, 'y']", "(MAP[1, 'x', 2, 'y'])");
+    checkExp("map [1, 'x', 2, 'y']", "(MAP[1, 'x', 2, 'y'])");
+    checkExp("map[]", "(MAP[])");
   }
 
   /**

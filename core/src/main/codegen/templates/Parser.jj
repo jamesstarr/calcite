@@ -87,7 +87,11 @@ import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlPivot;
 import org.apache.calcite.sql.SqlPostfixOperator;
 import org.apache.calcite.sql.SqlPrefixOperator;
+<<<<<<< HEAD
 import org.apache.calcite.sql.SqlRowTypeNameSpec;
+=======
+import org.apache.calcite.sql.SqlRowTypeSpec;
+>>>>>>> 378c49b87 ([CALCITE-3233] Support Row type for SqlDataTypeSpec)
 import org.apache.calcite.sql.SqlSampleSpec;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.SqlSelectKeyword;
@@ -5306,8 +5310,13 @@ SqlDataTypeSpec DataType() :
 // spaces in them but are not quoted.
 SqlTypeNameSpec TypeName() :
 {
+<<<<<<< HEAD
     final SqlTypeNameSpec typeNameSpec;
     final SqlIdentifier typeName;
+=======
+    final SqlTypeName sqlTypeName;
+    final SqlIdentifier typeName; // typeName can be a SqlIdentifier or SqlTypeNameSpec
+>>>>>>> 378c49b87 ([CALCITE-3233] Support Row type for SqlDataTypeSpec)
     final Span s = Span.of();
 }
 {
@@ -5337,6 +5346,7 @@ SqlTypeNameSpec TypeName() :
     |
         typeNameSpec = RowTypeName()
     |
+<<<<<<< HEAD
         typeName = CompoundIdentifier() {
             if (SqlTypeName.get(typeName.toString()) != null) {
                 typeNameSpec = new SqlBasicTypeNameSpec(SqlTypeName.get(typeName.toString()), s.end(this));
@@ -5345,6 +5355,11 @@ SqlTypeNameSpec TypeName() :
                 typeNameSpec = new SqlUserDefinedTypeNameSpec(typeName, s.end(this));
             }
         }
+=======
+        typeName = RowTypeName()
+    |
+        typeName = CompoundIdentifier()
+>>>>>>> 378c49b87 ([CALCITE-3233] Support Row type for SqlDataTypeSpec)
     )
     {
         return typeNameSpec;
@@ -5540,8 +5555,29 @@ SqlTypeNameSpec CollectionsTypeName(SqlTypeNameSpec elementTypeName) :
 */
 boolean NullableOptDefaultTrue() :
 {
+    final SqlTypeName collectionTypeName;
 }
 {
+<<<<<<< HEAD
+=======
+    (
+        <MULTISET> { collectionTypeName = SqlTypeName.MULTISET; }
+    |
+        <ARRAY> { collectionTypeName = SqlTypeName.ARRAY; }
+    )
+    {
+        return new SqlIdentifier(collectionTypeName.getName(), getPos());
+    }
+}
+
+/**
+* Parse a nullable option, default is true.
+*/
+boolean NullableOptDefaultTrue() :
+{
+}
+{
+>>>>>>> 378c49b87 ([CALCITE-3233] Support Row type for SqlDataTypeSpec)
     <NULL> { return true; }
 |
     <NOT> <NULL> { return false; }
@@ -5582,6 +5618,37 @@ void FieldNameTypeCommaList(
     {
         fieldNames.add(fName);
         fieldTypes.add(fType.withNullable(nullable));
+<<<<<<< HEAD
+=======
+    }
+    (
+        <COMMA>
+        fName = SimpleIdentifier()
+        fType = DataType()
+        nullable = NullableOptDefaultFalse()
+        {
+            fieldNames.add(fName);
+            fieldTypes.add(fType.withNullable(nullable));
+        }
+    )*
+}
+
+/**
+* Parse Row type with format: Row(name1 type1, name2 type2).
+* Every item type can have suffix of `NULL` or `NOT NULL` to indicate if this type is nullable.
+* i.e. Row(f0 int not null, f1 varchar null).
+*/
+SqlIdentifier RowTypeName() :
+{
+    List<SqlIdentifier> fieldNames = new ArrayList<SqlIdentifier>();
+    List<SqlDataTypeSpec> fieldTypes = new ArrayList<SqlDataTypeSpec>();
+}
+{
+    <ROW>
+    <LPAREN> FieldNameTypeCommaList(fieldNames, fieldTypes) <RPAREN>
+    {
+        return new SqlRowTypeSpec(getPos(), fieldNames, fieldTypes);
+>>>>>>> 378c49b87 ([CALCITE-3233] Support Row type for SqlDataTypeSpec)
     }
     (
         <COMMA>
