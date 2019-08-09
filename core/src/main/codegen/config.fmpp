@@ -43,6 +43,8 @@ data: {
     package: "org.apache.calcite.sql.parser.impl",
     class: "SqlParserImpl",
 
+    # Return "SqlTypeNameSpec" if you want to customize sql unparsing
+    # and data type deriving.
     # List of files in @includes directory that have parser method
     # implementations for parsing custom SQL statements, literals or types
     # given as part of "statementParserMethods", "literalParserMethods" or
