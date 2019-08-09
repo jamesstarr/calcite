@@ -1541,7 +1541,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
-   * Enhance RexSimplify to handle (x!=a or x!=b)</a>. */
+   * Enhance RexSimplify to handle (x&lt;&gt;a or x&lt;&gt;b)</a>. */
   @Test public void testSimplifyOrNotEqualsNotNullable() {
     checkSimplify(
         or(
@@ -1552,7 +1552,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
-   * Enhance RexSimplify to handle (x!=a or x!=b)</a>. */
+   * Enhance RexSimplify to handle (x&lt;&gt;a or x&lt;&gt;b)</a>. */
   @Test public void testSimplifyOrNotEqualsNotNullable2() {
     checkSimplify(
         or(
@@ -1564,7 +1564,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
-   * Enhance RexSimplify to handle (x!=a or x!=b)</a>. */
+   * Enhance RexSimplify to handle (x&lt;&gt;a or x&lt;&gt;b)</a>. */
   @Test public void testSimplifyOrNotEqualsNullable() {
     checkSimplify3(
         or(
@@ -1575,7 +1575,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
-   * Enhance RexSimplify to handle (x!=a or x!=b)</a>. */
+   * Enhance RexSimplify to handle (x&lt;&gt;a or x&lt;&gt;b)</a>. */
   @Test public void testSimplifyOrNotEqualsNullable2() {
     checkSimplify3(
         or(
