@@ -20,7 +20,7 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.calcite.sql.validate.SqlValidator;
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.Pair;
 
@@ -45,9 +45,13 @@ import java.util.stream.Collectors;
  *   &lt;field name&gt; &lt;data type&gt;
  * </pre></blockquote>
  *
+<<<<<<< HEAD
  * <p>As a extended syntax to the standard SQL, each field type can have a
  * [ NULL | NOT NULL ] suffix specification, i.e.
  * Row(f0 int null, f1 varchar not null). The default is NOT NULL(not nullable).
+=======
+ * <p>We also support to add a [ NULL | NOT NULL ] suffix for every field type, i.e.
+ * Row(f0 int null, f1 varchar not null), the default is not nullable.
  */
 public class SqlRowTypeNameSpec extends SqlTypeNameSpec {
 
@@ -57,9 +61,9 @@ public class SqlRowTypeNameSpec extends SqlTypeNameSpec {
   /**
    * Creates a row type specification.
    *
-   * @param pos        The parser position
-   * @param fieldNames The field names
-   * @param fieldTypes The field data types
+   * @param pos        The parser position.
+   * @param fieldNames The field names.
+   * @param fieldTypes The field data types.
    */
   public SqlRowTypeNameSpec(
       SqlParserPos pos,
@@ -124,14 +128,18 @@ public class SqlRowTypeNameSpec extends SqlTypeNameSpec {
     return litmus.succeed();
   }
 
-  @Override public RelDataType deriveType(SqlValidator sqlValidator) {
-    final RelDataTypeFactory typeFactory = sqlValidator.getTypeFactory();
+  @Override public RelDataType deriveType(RelDataTypeFactory typeFactory) {
     return typeFactory.createStructType(
         fieldTypes.stream()
-            .map(dt -> dt.deriveType(sqlValidator))
+            .map(dt -> dt.deriveType(typeFactory))
             .collect(Collectors.toList()),
         fieldNames.stream()
             .map(SqlIdentifier::toString)
             .collect(Collectors.toList()));
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlRowTypeNameSpec.java
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)

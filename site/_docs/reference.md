@@ -653,10 +653,14 @@ IMPLEMENTATION,
 **IMPORT**,
 **IN**,
 <<<<<<< HEAD
+<<<<<<< HEAD
 **INCLUDE**,
 =======
 INCLUDE,
 >>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
+=======
+**INCLUDE**,
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
 INCLUDING,
 INCREMENT,
 **INDICATOR**,
@@ -826,10 +830,14 @@ PATH,
 **PERIOD**,
 **PERMUTE**,
 <<<<<<< HEAD
+<<<<<<< HEAD
 **PIVOT**,
 =======
 PIVOT,
 >>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+=======
+**PIVOT**,
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
 PLACING,
 PLAN,
 PLI,
@@ -1059,10 +1067,14 @@ UNDER,
 UNNAMED,
 **UNNEST**,
 <<<<<<< HEAD
+<<<<<<< HEAD
 **UNPIVOT**,
 =======
 UNPIVOT,
 >>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
+=======
+**UNPIVOT**,
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
 **UPDATE**,
 **UPPER**,
 **UPSERT**,
@@ -1709,35 +1721,33 @@ Supported data types:
 
 {% highlight sql %}
 type:
-      typeName [ '(' precision [, scale] ')' ]
-      [ CHARACTER SET charSetName ]
+      typeName
       [ collectionsTypeName ]
 
 typeName:
       sqlTypeName
-  |   collectionsTypeName
   |   rowTypeName
   |   compoundIdentifier
 
 sqlTypeName:
-      char
-  |   varchar
+      char [ precision ] [ charSet ]
+  |   varchar [ precision ] [ charSet ]
   |   DATE
-  |   TIME
-  |   TIMESTAMP
+  |   time
+  |   timestamp
   |   GEOMETRY
-  |   decimal
+  |   decimal [ precision [, scale] ]
   |   BOOLEAN
   |   integer
-  |   BINARY
-  |   varbinary
+  |   BINARY [ precision ]
+  |   varbinary [ precision ]
   |   TINYINT
   |   SMALLINT
   |   BIGINT
   |   REAL
   |   double
   |   FLOAT
-  |   ANY
+  |   ANY [ precision [, scale] ]
 
 collectionsTypeName:
       ARRAY | MULTISET
@@ -1750,16 +1760,34 @@ rowTypeName:
 
 char:
       CHARACTER | CHAR
+
 varchar:
       char VARYING | VARCHAR
+
 decimal:
       DECIMAL | DEC | NUMERIC
+
 integer:
       INTEGER | INT
+
 varbinary:
       BINARY VARYING | VARBINARY
+
 double:
-      DOUBLE [PRECISION]
+      DOUBLE [ PRECISION ]
+
+time:
+      TIME [ precision ] [ timeZone ]
+
+timestamp:
+      TIMESTAMP [ precision ] [ timeZone ]
+
+charSet:
+      CHARACTER SET charSetName
+
+timeZone:
+      WITHOUT TIME ZONE
+  |   WITH LOCAL TIME ZONE
 {% endhighlight %}
 
 ### Value constructors

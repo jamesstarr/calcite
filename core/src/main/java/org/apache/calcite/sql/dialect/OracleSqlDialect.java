@@ -18,10 +18,7 @@ package org.apache.calcite.sql.dialect;
 
 import org.apache.calcite.avatica.util.TimeUnitRange;
 import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeSystem;
-import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
 import org.apache.calcite.sql.SqlAbstractDateTimeLiteral;
-import org.apache.calcite.sql.SqlAlienSystemTypeNameSpec;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlDataTypeSpec;
 import org.apache.calcite.sql.SqlDateLiteral;
@@ -30,13 +27,7 @@ import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlTimeLiteral;
 import org.apache.calcite.sql.SqlTimestampLiteral;
-import org.apache.calcite.sql.SqlUtil;
-import org.apache.calcite.sql.SqlWriter;
-import org.apache.calcite.sql.fun.SqlFloorFunction;
-import org.apache.calcite.sql.fun.SqlLibraryOperators;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
-import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.type.SqlTypeName;
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
 
 import com.google.common.collect.ImmutableList;
 
@@ -89,6 +80,7 @@ public class OracleSqlDialect extends SqlDialect {
     String castSpec;
     switch (type.getSqlTypeName()) {
     case SMALLINT:
+<<<<<<< HEAD
       castSpec = "NUMBER(5)";
       break;
     case INTEGER:
@@ -99,13 +91,24 @@ public class OracleSqlDialect extends SqlDialect {
       break;
     case DOUBLE:
       castSpec = "DOUBLE PRECISION";
+=======
+      castSpec = "_NUMBER(5)";
+      break;
+    case INTEGER:
+      castSpec = "_NUMBER(10)";
+      break;
+    case BIGINT:
+      castSpec = "_NUMBER(19)";
+      break;
+    case DOUBLE:
+      castSpec = "_DOUBLE PRECISION";
       break;
     default:
       return super.getCastSpec(type);
     }
 
     return new SqlDataTypeSpec(
-        new SqlAlienSystemTypeNameSpec(castSpec, type.getSqlTypeName(), SqlParserPos.ZERO),
+        new SqlUserDefinedTypeNameSpec(castSpec, SqlParserPos.ZERO),
         SqlParserPos.ZERO);
   }
 

@@ -28,6 +28,7 @@ For a full list of releases, see
 Downloads are available on the
 [downloads page]({{ site.baseurl }}/downloads/).
 
+<<<<<<< HEAD
 ## <a href="https://github.com/apache/calcite/releases/tag/calcite-1.23.0">1.23.0</a> / 2020-05-23
 {: #v1-23-0}
 
@@ -1501,10 +1502,14 @@ other software versions as specified in `pom.xml`.
 * Update year in NOTICE
 
 ## <a href="https://github.com/apache/calcite/releases/tag/calcite-1.18.0">1.18.0</a> / 2018-12-21
+=======
+## <a href="https://github.com/apache/calcite/releases/tag/calcite-1.17.0">1.17.0</a> / under development
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
 ## 1.21.0
 
 #### Breaking Changes
 
+<<<<<<< HEAD
 * core parser config.fmpp#dataTypeParserMethods should return "SqlTypeNameSpec"
 instead of "SqlIdentifier".
 
@@ -1972,6 +1977,11 @@ and the Elasticsearch and Apache Geode adapters.
   list (Stamatis Zampetakis)
 * Site: Add committer Sergey Nuyanzin
 * Site: News item for release 1.17.0
+=======
+* core parser config.fmpp#dataTypeParserMethods should return "SqlTypeNameSpec" 
+instead of "SqlIdentifier".
+
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
 
 {: #v1-17-0}
 

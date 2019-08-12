@@ -21,7 +21,7 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
-import org.apache.calcite.sql.validate.SqlValidator;
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
 import org.apache.calcite.util.Litmus;
 
 import java.nio.charset.Charset;
@@ -80,6 +80,7 @@ public class SqlBasicTypeNameSpec extends SqlTypeNameSpec {
 
   /**
    * Create a basic sql type name specification.
+<<<<<<< HEAD
    *
    * @param typeName    Type name
    * @param precision   Precision of the type name if it is allowed, default is -1
@@ -87,6 +88,13 @@ public class SqlBasicTypeNameSpec extends SqlTypeNameSpec {
    * @param charSetName Char set of the type, only works when the type
    *                    belong to CHARACTER type family
    * @param pos         The parser position
+=======
+   * @param typeName    Type name.
+   * @param precision   Precision of the type name if it is allowed, default is -1.
+   * @param scale       Scale of the type name if it is allowed, default is -1.
+   * @param charSetName Char set of the type, only works when the type
+   *                    belong to CHARACTER type family.
+   * @param pos         The parser position.
    */
   public SqlBasicTypeNameSpec(
       SqlTypeName typeName,
@@ -185,8 +193,7 @@ public class SqlBasicTypeNameSpec extends SqlTypeNameSpec {
     }
   }
 
-  @Override public RelDataType deriveType(SqlValidator validator) {
-    final RelDataTypeFactory typeFactory = validator.getTypeFactory();
+  @Override public RelDataType deriveType(RelDataTypeFactory typeFactory) {
     if (sqlTypeName == null) {
       return null;
     }
@@ -250,8 +257,8 @@ public class SqlBasicTypeNameSpec extends SqlTypeNameSpec {
   /**
    * Remove the local time zone definition of the {@code typeName}.
    *
-   * @param typeName Type name
-   * @return new type name without local time zone definition
+   * @param typeName Type name.
+   * @return new type name without local time zone definition.
    */
   private SqlTypeName stripLocalTimeZoneDef(SqlTypeName typeName) {
     switch (typeName) {
@@ -264,3 +271,8 @@ public class SqlBasicTypeNameSpec extends SqlTypeNameSpec {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlBasicTypeNameSpec.java
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)

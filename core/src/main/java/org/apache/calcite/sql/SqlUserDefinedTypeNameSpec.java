@@ -17,8 +17,8 @@
 package org.apache.calcite.sql;
 
 import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.util.Litmus;
 
 /**
@@ -26,14 +26,8 @@ import org.apache.calcite.util.Litmus;
  *
  * <p>Usually you should register the UDT into the {@link org.apache.calcite.jdbc.CalciteSchema}
  * first before referencing it in the sql statement.
- */
-public class SqlUserDefinedTypeNameSpec extends SqlTypeNameSpec {
-
-  /**
-   * Create a SqlUserDefinedTypeNameSpec instance.
-   *
-   * @param typeName Type name as SQL identifier
-   * @param pos The parser position
+   * @param typeName Type name as SQL identifier.
+   * @param pos The parser position.
    */
   public SqlUserDefinedTypeNameSpec(SqlIdentifier typeName, SqlParserPos pos) {
     super(typeName, pos);
@@ -43,14 +37,23 @@ public class SqlUserDefinedTypeNameSpec extends SqlTypeNameSpec {
     this(new SqlIdentifier(name, pos), pos);
   }
 
-  @Override public RelDataType deriveType(SqlValidator validator) {
+  @Override public RelDataType deriveType(RelDataTypeFactory typeFactory) {
     // The type name is a compound identifier, that means it is a UDT,
-    // use SqlValidator to deduce its type from the Schema.
-    return validator.getValidatedNodeType(getTypeName());
+    // returns null to let the SqlValidator deduce its type from
+    // the Schema.
+    return null;
   }
 
   @Override public void unparse(SqlWriter writer, int leftPrec, int rightPrec) {
-    getTypeName().unparse(writer, leftPrec, rightPrec);
+    final String name = getTypeName().getSimple();
+    if (name.startsWith("_")) {
+      // We're generating a type for an alien system. For example,
+      // UNSIGNED is a built-in type in MySQL.
+      // (Need a more elegant way than '_' of flagging this.)
+      writer.keyword(name.substring(1));
+    } else {
+      getTypeName().unparse(writer, leftPrec, rightPrec);
+    }
   }
 
   @Override public boolean equalsDeep(SqlTypeNameSpec spec, Litmus litmus) {
@@ -64,3 +67,8 @@ public class SqlUserDefinedTypeNameSpec extends SqlTypeNameSpec {
     return litmus.succeed();
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlUserDefinedTypeNameSpec.java
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)

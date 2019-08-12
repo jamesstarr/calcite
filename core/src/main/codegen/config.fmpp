@@ -47,8 +47,11 @@ data: {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
+=======
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
     # List of additional classes and packages to import.
     # Example. "org.apache.calcite.sql.*", "java.util.List".
     imports: [
@@ -61,6 +64,7 @@ data: {
 
     # List of keywords from "keywords" section that are not reserved.
     nonReservedKeywords: [
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -401,6 +405,8 @@ data: {
 >>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 =======
 >>>>>>> fc317a98f (Revert "Revert "[CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved"")
+=======
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
         "A"
         "ABSOLUTE"
         "ACTION"
@@ -688,6 +694,7 @@ data: {
         "ZONE"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 38576ceb2 ([CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved)
 =======
 >>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
@@ -695,6 +702,8 @@ data: {
 >>>>>>> bfa324222 (Revert "[CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved")
 =======
 >>>>>>> fc317a98f (Revert "Revert "[CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved"")
+=======
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
     ]
 
     # List of additional join types. Each is a method with no arguments.
@@ -716,23 +725,33 @@ data: {
 
     # List of methods for parsing custom data types.
 <<<<<<< HEAD
+<<<<<<< HEAD
     # Return type of method implementation should be "SqlTypeNameSpec".
 =======
     # Return type of method implementation should be "SqlIdentifier".
 >>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
+=======
+    # Return type of method implementation should be "SqlTypeNameSpec".
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
     # Example: SqlParseTimeStampZ().
     dataTypeParserMethods: [
     ]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
     # List of methods for parsing builtin function calls.
     # Return type of method implementation should be "SqlNode".
     # Example: DateFunctionCall().
     builtinFunctionCallMethods: [
     ]
 
+<<<<<<< HEAD
 =======
 >>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
+=======
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
     # List of methods for parsing extensions to "ALTER <scope>" calls.
     # Each must accept arguments "(SqlParserPos pos, String scope)".
     # Example: "SqlUploadJarNode"
@@ -750,6 +769,9 @@ data: {
     ]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
     # Binary operators tokens
     binaryOperatorsTokens: [
     ]
@@ -758,6 +780,7 @@ data: {
     extraBinaryExpressions: [
     ]
 
+<<<<<<< HEAD
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
@@ -768,6 +791,8 @@ data: {
     # Return "SqlTypeNameSpec" if you want to customize sql unparsing
     # and data type deriving.
 >>>>>>> 378c49b87 ([CALCITE-3233] Support Row type for SqlDataTypeSpec)
+=======
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
     # List of files in @includes directory that have parser method
     # implementations for parsing custom SQL statements, literals or types
     # given as part of "statementParserMethods", "literalParserMethods" or

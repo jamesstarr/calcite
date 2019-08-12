@@ -19,67 +19,18 @@ package org.apache.calcite.sql;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.util.SqlVisitor;
-import org.apache.calcite.sql.validate.SqlMonotonicity;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql.validate.SqlValidatorScope;
-import org.apache.calcite.util.Litmus;
-
-import java.util.Objects;
-import java.util.TimeZone;
-
-/**
- * Represents a SQL data type specification in a parse tree.
- *
- * <p>A <code>SqlDataTypeSpec</code> is immutable; once created, you cannot
- * change any of the fields.</p>
- *
- * <p>We support the following data type expressions:
- *
- * <p>we support complex type expressions
- * like:</p>
- *
- * <blockquote><code>ROW(<br>
- *   foo NUMBER(5, 2) NOT NULL,<br>
- *   rec ROW(b BOOLEAN, i MyUDT NOT NULL))</code></blockquote>
- *
- * <p>Internally we use {@link SqlTypeNameSpec} to specify such complex data types.
- *
- * <p>We support simple data types like CHAR, VARCHAR and DOUBLE,
- * with optional precision and scale.</p>
- *
- * <p>Internally we use {@link SqlIdentifier} to specify simple data types.
- */
-public class SqlDataTypeSpec extends SqlNode {
-  //~ Instance fields --------------------------------------------------------
-
-  private final SqlIdentifier collectionsTypeName;
-  private final SqlIdentifier typeName;
-  private final SqlIdentifier baseTypeName;
-  private final int scale;
-  private final int precision;
-  private final String charSetName;
-  private final TimeZone timeZone;
-
-  /** Whether data type allows nulls.
-   *
-   * <p>Nullable is nullable! Null means "not specified". E.g.
-   * {@code CAST(x AS INTEGER)} preserves the same nullability as {@code x}.
-   */
-  private Boolean nullable;
-
-  //~ Constructors -----------------------------------------------------------
+      SqlParserPos pos) {
+    this(null, typeNameSpec, null, null, pos);
+  }
 
   /**
-   * Creates a type specification representing a type.
-   *
-   * @param typeNameSpec The type name can be basic sql type, row type,
-   *                     collections type and user defined type
+   * Creates a type specification representing a regular, non-collection type.
    */
   public SqlDataTypeSpec(
       final SqlTypeNameSpec typeNameSpec,
+      TimeZone timeZone,
       SqlParserPos pos) {
-    this(typeNameSpec, null, null, pos);
+    this(null, typeNameSpec, timeZone, null, pos);
   }
 
   /**
@@ -107,13 +58,9 @@ public class SqlDataTypeSpec extends SqlNode {
    */
   public SqlDataTypeSpec(
       SqlIdentifier collectionsTypeName,
-      SqlIdentifier typeName,
-      int precision,
-      int scale,
-      String charSetName,
+      SqlTypeNameSpec typeNameSpec,
       SqlParserPos pos) {
-    this(collectionsTypeName, typeName, precision, scale, charSetName, null,
-        null, pos);
+    this(collectionsTypeName, typeNameSpec, null, null, pos);
   }
 
   /**
@@ -121,15 +68,11 @@ public class SqlDataTypeSpec extends SqlNode {
    */
   public SqlDataTypeSpec(
       SqlIdentifier collectionsTypeName,
-      SqlIdentifier typeName,
-      int precision,
-      int scale,
-      String charSetName,
+      SqlTypeNameSpec typeName,
       TimeZone timeZone,
       Boolean nullable,
       SqlParserPos pos) {
-    this(collectionsTypeName, typeName, typeName, precision, scale, charSetName,
-        timeZone, nullable, pos);
+    this(collectionsTypeName, typeName, typeName, timeZone, nullable, pos);
   }
 
   /**
@@ -137,21 +80,15 @@ public class SqlDataTypeSpec extends SqlNode {
    */
   public SqlDataTypeSpec(
       SqlIdentifier collectionsTypeName,
-      SqlIdentifier typeName,
-      SqlIdentifier baseTypeName,
-      int precision,
-      int scale,
-      String charSetName,
+      SqlTypeNameSpec typeNameSpec,
+      SqlTypeNameSpec baseTypeName,
       TimeZone timeZone,
       Boolean nullable,
       SqlParserPos pos) {
     super(pos);
     this.collectionsTypeName = collectionsTypeName;
-    this.typeName = typeName;
+    this.typeNameSpec = typeNameSpec;
     this.baseTypeName = baseTypeName;
-    this.precision = precision;
-    this.scale = scale;
-    this.charSetName = charSetName;
     this.timeZone = timeZone;
     this.nullable = nullable;
   }
@@ -159,7 +96,9 @@ public class SqlDataTypeSpec extends SqlNode {
   //~ Methods ----------------------------------------------------------------
 
   public SqlNode clone(SqlParserPos pos) {
-    return new SqlDataTypeSpec(typeNameSpec, timeZone, pos);
+    return (collectionsTypeName != null)
+        ? new SqlDataTypeSpec(collectionsTypeName, typeNameSpec, pos)
+        : new SqlDataTypeSpec(typeNameSpec, timeZone, pos);
   }
 
   public SqlMonotonicity getMonotonicity(SqlValidatorScope scope) {
@@ -195,7 +134,8 @@ public class SqlDataTypeSpec extends SqlNode {
     if (Objects.equals(nullable, this.nullable)) {
       return this;
     }
-    return new SqlDataTypeSpec(typeNameSpec, timeZone, nullable, getParserPosition());
+    return new SqlDataTypeSpec(collectionsTypeName, typeNameSpec, timeZone,
+        nullable, getParserPosition());
   }
 
   /**
@@ -204,55 +144,18 @@ public class SqlDataTypeSpec extends SqlNode {
    * Collection types are <code>ARRAY</code> and <code>MULTISET</code>.
    */
   public SqlDataTypeSpec getComponentTypeSpec() {
-    assert typeNameSpec instanceof SqlCollectionTypeNameSpec;
-    SqlTypeNameSpec elementTypeName =
-        ((SqlCollectionTypeNameSpec) typeNameSpec).getElementTypeName();
-    return new SqlDataTypeSpec(elementTypeName, timeZone, getParserPosition());
+    assert getCollectionsTypeName() != null;
+    return new SqlDataTypeSpec(
+        typeNameSpec,
+        timeZone,
+        getParserPosition());
   }
 
-  public void unparse(
-      SqlWriter writer,
-      int leftPrec,
-      int rightPrec) {
-    String name = typeName.getSimple();
-    if (typeName instanceof SqlTypeNameSpec) {
-      typeName.unparse(writer, leftPrec, rightPrec);
-      if (collectionsTypeName != null) {
-        writer.keyword(collectionsTypeName.getSimple());
-      }
-    } else if (SqlTypeName.get(name) != null) {
-      SqlTypeName sqlTypeName = SqlTypeName.get(name);
-
-      // we have a built-in data type
-      writer.keyword(name);
-
-      if (sqlTypeName.allowsPrec() && (precision >= 0)) {
-        final SqlWriter.Frame frame =
-            writer.startList(SqlWriter.FrameTypeEnum.FUN_CALL, "(", ")");
-        writer.print(precision);
-        if (sqlTypeName.allowsScale() && (scale >= 0)) {
-          writer.sep(",", true);
-          writer.print(scale);
-        }
-        writer.endList(frame);
-      }
-
-      if (charSetName != null) {
-        writer.keyword("CHARACTER SET");
-        writer.identifier(charSetName);
-      }
-
-      if (collectionsTypeName != null) {
-        writer.keyword(collectionsTypeName.getSimple());
-      }
-    } else if (name.startsWith("_")) {
-      // We're generating a type for an alien system. For example,
-      // UNSIGNED is a built-in type in MySQL.
-      // (Need a more elegant way than '_' of flagging this.)
-      writer.keyword(name.substring(1));
-    } else {
-      // else we have a user defined type
-      typeName.unparse(writer, leftPrec, rightPrec);
+  public void unparse(SqlWriter writer, int leftPrec, int rightPrec) {
+    typeNameSpec.unparse(writer, leftPrec, rightPrec);
+    // collection type can have elements as builtin sql type and UDT.
+    if (collectionsTypeName != null) {
+      writer.keyword(collectionsTypeName.getSimple());
     }
   }
 
@@ -272,124 +175,14 @@ public class SqlDataTypeSpec extends SqlNode {
     if (!Objects.equals(this.timeZone, that.timeZone)) {
       return litmus.fail("{} != {}", this, node);
     }
-    if (!this.typeNameSpec.equalsDeep(that.typeNameSpec, litmus)) {
-      return litmus.fail(null);
-    }
-    return litmus.succeed();
-  }
-
-  /**
-   * Throws an error if the type is not found.
-   */
-  public RelDataType deriveType(SqlValidator validator) {
-    RelDataType type = null;
-    if (typeName.isSimple()) {
-      if (null != collectionsTypeName) {
-        final String collectionName = collectionsTypeName.getSimple();
-        if (SqlTypeName.get(collectionName) == null) {
-          throw validator.newValidationError(this,
-              RESOURCE.unknownDatatypeName(collectionName));
-        }
-      }
-
-      RelDataTypeFactory typeFactory = validator.getTypeFactory();
-      type = deriveType(typeFactory);
-    }
+    type = createTypeFromTypeNameSpec(typeFactory, typeNameSpec);
     if (type == null) {
-      type = validator.getValidatedNodeType(typeName);
-    }
-    return type;
-  }
-
-  /**
-   * Does not throw an error if the type is not built-in.
-   */
-  public RelDataType deriveType(RelDataTypeFactory typeFactory) {
-    return deriveType(typeFactory, false);
-  }
-
-  /**
-   * Converts this type specification to a {@link RelDataType}.
-   *
-   * <p>Throws an error if the type is not found.
-   *
-   * @param nullable Whether the type is nullable if the type specification
-   *                 does not explicitly state
-   */
-  public RelDataType deriveType(RelDataTypeFactory typeFactory,
-      boolean nullable) {
-    if (!typeName.isSimple()) {
+      // This is definitely not a builtin data type, returns null.
       return null;
-    }
-    RelDataType type;
-    if (typeName instanceof SqlTypeNameSpec) {
-      // Create type directly if this typeName is a SqlTypeNameSpec.
-      type = createTypeFromTypeNameSpec(typeFactory, (SqlTypeNameSpec) typeName);
-      if (type == null) {
-        return null;
-      }
-    } else {
-      final String name = typeName.getSimple();
-      final SqlTypeName sqlTypeName = SqlTypeName.get(name);
-      if (sqlTypeName == null) {
-        return null;
-      }
-
-      // NOTE jvs 15-Jan-2009:  earlier validation is supposed to
-      // have caught these, which is why it's OK for them
-      // to be assertions rather than user-level exceptions.
-      if ((precision >= 0) && (scale >= 0)) {
-        assert sqlTypeName.allowsPrecScale(true, true);
-        type = typeFactory.createSqlType(sqlTypeName, precision, scale);
-      } else if (precision >= 0) {
-        assert sqlTypeName.allowsPrecNoScale();
-        type = typeFactory.createSqlType(sqlTypeName, precision);
-      } else {
-        assert sqlTypeName.allowsNoPrecNoScale();
-        type = typeFactory.createSqlType(sqlTypeName);
-      }
-    }
-
-    // Fix-up the nullability, default is false.
-    final RelDataTypeFactory typeFactory = validator.getTypeFactory();
-    type = fixUpNullability(typeFactory, type, nullable);
-    return type;
-  }
-
-      Charset charset;
-      if (null == charSetName) {
-        charset = typeFactory.getDefaultCharset();
-      } else {
-        String javaCharSetName =
-            Preconditions.checkNotNull(
-                SqlUtil.translateCharacterSetName(charSetName), charSetName);
-        charset = Charset.forName(javaCharSetName);
-      }
-      type =
-          typeFactory.createTypeWithCharsetAndCollation(
-              type,
-              charset,
-              collation);
     }
 
     if (null != collectionsTypeName) {
-      final String collectionName = collectionsTypeName.getSimple();
-      final SqlTypeName collectionsSqlTypeName =
-          Preconditions.checkNotNull(SqlTypeName.get(collectionName),
-              collectionName);
-
-      switch (collectionsSqlTypeName) {
-      case MULTISET:
-        type = typeFactory.createMultisetType(type, -1);
-        break;
-
-      case ARRAY:
-        type = typeFactory.createArrayType(type, -1);
-        break;
-
-      default:
-        throw Util.unexpected(collectionsSqlTypeName);
-      }
+      type = createCollectionType(type, typeFactory);
     }
 
   /**
@@ -407,6 +200,33 @@ public class SqlDataTypeSpec extends SqlNode {
       nullable = this.nullable;
     }
     return typeFactory.createTypeWithNullability(type, nullable);
+  }
+
+  //~ Tools ------------------------------------------------------------------
+
+  /**
+   * Create collection data type.
+   * @param elementType Type of the collection element.
+   * @param typeFactory Type factory.
+   * @return The collection data type, or throw exception if the collection
+   *         type name does not belong to {@code SqlTypeName} enumerations.
+   */
+  private RelDataType createCollectionType(RelDataType elementType,
+      RelDataTypeFactory typeFactory) {
+    final String collectionName = collectionsTypeName.getSimple();
+    final SqlTypeName collectionsSqlTypeName =
+        Objects.requireNonNull(SqlTypeName.get(collectionName),
+            collectionName);
+
+    switch (collectionsSqlTypeName) {
+    case MULTISET:
+      return typeFactory.createMultisetType(elementType, -1);
+    case ARRAY:
+      return typeFactory.createArrayType(elementType, -1);
+
+    default:
+      throw Util.unexpected(collectionsSqlTypeName);
+    }
   }
 
   /**

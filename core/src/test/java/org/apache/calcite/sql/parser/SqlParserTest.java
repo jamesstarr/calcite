@@ -1542,81 +1542,58 @@ public class SqlParserTest {
         .ok("CEIL((`X` + INTERVAL '1:20' MINUTE TO SECOND) TO MILLENNIUM)");
   }
 
-  @Test void testCast() {
-    expr("cast(x as boolean)")
-        .ok("CAST(`X` AS BOOLEAN)");
-    expr("cast(x as integer)")
-        .ok("CAST(`X` AS INTEGER)");
-    expr("cast(x as varchar(1))")
-        .ok("CAST(`X` AS VARCHAR(1))");
-    expr("cast(x as date)")
-        .ok("CAST(`X` AS DATE)");
-    expr("cast(x as time)")
-        .ok("CAST(`X` AS TIME)");
-    expr("cast(x as time without time zone)")
-        .ok("CAST(`X` AS TIME)");
-    expr("cast(x as time with local time zone)")
-        .ok("CAST(`X` AS TIME WITH LOCAL TIME ZONE)");
-    expr("cast(x as timestamp without time zone)")
-        .ok("CAST(`X` AS TIMESTAMP)");
-    expr("cast(x as timestamp with local time zone)")
-        .ok("CAST(`X` AS TIMESTAMP WITH LOCAL TIME ZONE)");
-    expr("cast(x as time(0))")
-        .ok("CAST(`X` AS TIME(0))");
-    expr("cast(x as time(0) without time zone)")
-        .ok("CAST(`X` AS TIME(0))");
-    expr("cast(x as time(0) with local time zone)")
-        .ok("CAST(`X` AS TIME(0) WITH LOCAL TIME ZONE)");
-    expr("cast(x as timestamp(0))")
-        .ok("CAST(`X` AS TIMESTAMP(0))");
-    expr("cast(x as timestamp(0) without time zone)")
-        .ok("CAST(`X` AS TIMESTAMP(0))");
-    expr("cast(x as timestamp(0) with local time zone)")
-        .ok("CAST(`X` AS TIMESTAMP(0) WITH LOCAL TIME ZONE)");
-    expr("cast(x as timestamp)")
-        .ok("CAST(`X` AS TIMESTAMP)");
-    expr("cast(x as decimal(1,1))")
-        .ok("CAST(`X` AS DECIMAL(1, 1))");
-    expr("cast(x as char(1))")
-        .ok("CAST(`X` AS CHAR(1))");
-    expr("cast(x as binary(1))")
-        .ok("CAST(`X` AS BINARY(1))");
-    expr("cast(x as varbinary(1))")
-        .ok("CAST(`X` AS VARBINARY(1))");
-    expr("cast(x as tinyint)")
-        .ok("CAST(`X` AS TINYINT)");
-    expr("cast(x as smallint)")
-        .ok("CAST(`X` AS SMALLINT)");
-    expr("cast(x as bigint)")
-        .ok("CAST(`X` AS BIGINT)");
-    expr("cast(x as real)")
-        .ok("CAST(`X` AS REAL)");
-    expr("cast(x as double)")
-        .ok("CAST(`X` AS DOUBLE)");
-    expr("cast(x as decimal)")
-        .ok("CAST(`X` AS DECIMAL)");
-    expr("cast(x as decimal(0))")
-        .ok("CAST(`X` AS DECIMAL(0))");
-    expr("cast(x as decimal(1,2))")
-        .ok("CAST(`X` AS DECIMAL(1, 2))");
+  @Test public void testCast() {
+    checkExp("cast(x as boolean)", "CAST(`X` AS BOOLEAN)");
+    checkExp("cast(x as integer)", "CAST(`X` AS INTEGER)");
+    checkExp("cast(x as varchar(1))", "CAST(`X` AS VARCHAR(1))");
+    checkExp("cast(x as date)", "CAST(`X` AS DATE)");
+    checkExp("cast(x as time)", "CAST(`X` AS TIME)");
+    checkExp("cast(x as time without time zone)", "CAST(`X` AS TIME)");
+    checkExp("cast(x as time with local time zone)",
+        "CAST(`X` AS TIME WITH LOCAL TIME ZONE)");
+    checkExp("cast(x as timestamp without time zone)", "CAST(`X` AS TIMESTAMP)");
+    checkExp("cast(x as timestamp with local time zone)",
+        "CAST(`X` AS TIMESTAMP WITH LOCAL TIME ZONE)");
+    checkExp("cast(x as time(0))", "CAST(`X` AS TIME(0))");
+    checkExp("cast(x as time(0) without time zone)", "CAST(`X` AS TIME(0))");
+    checkExp("cast(x as time(0) with local time zone)",
+        "CAST(`X` AS TIME(0) WITH LOCAL TIME ZONE)");
+    checkExp("cast(x as timestamp(0))", "CAST(`X` AS TIMESTAMP(0))");
+    checkExp("cast(x as timestamp(0) without time zone)",
+        "CAST(`X` AS TIMESTAMP(0))");
+    checkExp("cast(x as timestamp(0) with local time zone)",
+        "CAST(`X` AS TIMESTAMP(0) WITH LOCAL TIME ZONE)");
+    checkExp("cast(x as timestamp)", "CAST(`X` AS TIMESTAMP)");
+    checkExp("cast(x as decimal(1,1))", "CAST(`X` AS DECIMAL(1, 1))");
+    checkExp("cast(x as char(1))", "CAST(`X` AS CHAR(1))");
+    checkExp("cast(x as binary(1))", "CAST(`X` AS BINARY(1))");
+    checkExp("cast(x as varbinary(1))", "CAST(`X` AS VARBINARY(1))");
+    checkExp("cast(x as tinyint)", "CAST(`X` AS TINYINT)");
+    checkExp("cast(x as smallint)", "CAST(`X` AS SMALLINT)");
+    checkExp("cast(x as bigint)", "CAST(`X` AS BIGINT)");
+    checkExp("cast(x as real)", "CAST(`X` AS REAL)");
+    checkExp("cast(x as double)", "CAST(`X` AS DOUBLE)");
+    checkExp("cast(x as decimal)", "CAST(`X` AS DECIMAL)");
+    checkExp("cast(x as decimal(0))", "CAST(`X` AS DECIMAL(0))");
+    checkExp("cast(x as decimal(1,2))", "CAST(`X` AS DECIMAL(1, 2))");
 
     expr("cast('foo' as bar)")
         .ok("CAST('foo' AS `BAR`)");
   }
 
-  @Test void testCastFails() {
-    expr("cast(x as time with ^time^ zone)")
-        .fails("(?s).*Encountered \"time\" at .*");
-    expr("cast(x as time(0) with ^time^ zone)")
-        .fails("(?s).*Encountered \"time\" at .*");
-    expr("cast(x as timestamp with ^time^ zone)")
-        .fails("(?s).*Encountered \"time\" at .*");
-    expr("cast(x as timestamp(0) with ^time^ zone)")
-        .fails("(?s).*Encountered \"time\" at .*");
-    expr("cast(x as varchar(10) ^with^ local time zone)")
-        .fails("(?s).*Encountered \"with\" at line 1, column 23.\n.*");
-    expr("cast(x as varchar(10) ^without^ time zone)")
-        .fails("(?s).*Encountered \"without\" at line 1, column 23.\n.*");
+  @Test public void testCastFails() {
+    checkExpFails("cast(x as time ^with^ time zone",
+        "(?s).*Encountered \"with time\" at .*");
+    checkExpFails("cast(x as time(0) ^with^ time zone)",
+        "(?s).*Encountered \"with time\" at .*");
+    checkExpFails("cast(x as timestamp ^with^ time zone)",
+        "(?s).*Encountered \"with time\" at .*");
+    checkExpFails("cast(x as timestamp(0) ^with^ time zone)",
+        "(?s).*Encountered \"with time\" at .*");
+    checkExpFails("cast(x as varchar(10) ^with^ local time zone)",
+        "(?s).*Encountered \"with\" at line 1, column 23.\n.*");
+    checkExpFails("cast(x as varchar(10) ^without^ time zone)",
+        "(?s).*Encountered \"without\" at line 1, column 23.\n.*");
   }
 
   @Test void testAddFunction() {
@@ -2407,16 +2384,6 @@ public class SqlParserTest {
         + "where name like (select ^some^ name from emp)";
     sql(sql3).fails("(?s).*Encountered \"some name\" at .*");
 
-<<<<<<< HEAD
-    final String sql4 = "select * from emp\n"
-        + "where name like some (select name from emp)";
-    final String expected4 = "SELECT *\n"
-        + "FROM `EMP`\n"
-        + "WHERE (`NAME` LIKE SOME ((SELECT `NAME`\n"
-        +  "FROM `EMP`)))";
-    sql(sql4).ok(expected4);
-
-=======
 >>>>>>> d192c11b0 (Implement [NOT] LIKE ANY/ALL/SOME as logical rewrites)
     final String sql5 = "select * from emp where empno = any (10,20)";
     final String expected5 = "SELECT *\n"
@@ -5129,7 +5096,7 @@ public class SqlParserTest {
         "CAST(`A` AS ROW(`F0` INTEGER, `F1` VARCHAR))");
     checkExp("cast(a as row(f0 int not null, f1 varchar null))",
         "CAST(`A` AS ROW(`F0` INTEGER, `F1` VARCHAR NULL))");
-//    // test nested row type.
+    // test nested row type.
     checkExp("cast(a as row("
         + "f0 row(ff0 int not null, ff1 varchar null) null, "
         + "f1 timestamp not null))",
@@ -7249,6 +7216,7 @@ public class SqlParserTest {
         .ok("INTERVAL 'wael was here' HOUR");
   }
 
+<<<<<<< HEAD
   @Test void testDateMinusDate() {
     expr("(date1 - date2) HOUR")
         .ok("((`DATE1` - `DATE2`) HOUR)");
@@ -7301,6 +7269,10 @@ public class SqlParserTest {
   @Test void testGeometry() {
     expr("cast(null as ^geometry^)")
         .fails("Geo-spatial extensions and the GEOMETRY data type are not enabled");
+=======
+  @Test public void testGeometry() {
+    checkExpFails("cast(null as ^geometry^)",
+        "Geo-spatial extensions and the GEOMETRY data type are not enabled");
     conformance = SqlConformanceEnum.LENIENT;
     expr("cast(null as geometry)")
         .ok("CAST(NULL AS GEOMETRY)");
