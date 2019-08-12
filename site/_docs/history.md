@@ -29,6 +29,14 @@ Downloads are available on the
 [downloads page]({{ site.baseurl }}/downloads/).
 
 ## <a href="https://github.com/apache/calcite/releases/tag/calcite-1.17.0">1.17.0</a> / under development
+## 1.21.0
+
+#### Breaking Changes
+
+* core parser config.fmpp#dataTypeParserMethods should return "SqlTypeNameSpec" 
+instead of "SqlIdentifier".
+
+
 {: #v1-17-0}
 
 Compatibility: This release is tested

@@ -22,18 +22,19 @@ import org.apache.calcite.config.NullCollation;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlBasicTypeNameSpec;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlDataTypeSpec;
 import org.apache.calcite.sql.SqlDialect;
 import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlFunctionCategory;
-import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlIntervalQualifier;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlSelect;
+import org.apache.calcite.sql.SqlUserDefinedTypeNameSpec;
 import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.fun.SqlCase;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
@@ -41,6 +42,7 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.InferTypes;
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
+import org.apache.calcite.sql.type.SqlTypeName;
 
 /**
  * A <code>SqlDialect</code> implementation for the MySQL database.
@@ -102,11 +104,14 @@ public class MysqlSqlDialect extends SqlDialect {
     switch (type.getSqlTypeName()) {
     case VARCHAR:
       // MySQL doesn't have a VARCHAR type, only CHAR.
-      return new SqlDataTypeSpec(new SqlIdentifier("CHAR", SqlParserPos.ZERO),
-          type.getPrecision(), -1, null, null, SqlParserPos.ZERO);
+      return new SqlDataTypeSpec(
+          new SqlBasicTypeNameSpec(SqlTypeName.CHAR, type.getPrecision(), SqlParserPos.ZERO),
+          SqlParserPos.ZERO);
     case INTEGER:
-      return new SqlDataTypeSpec(new SqlIdentifier("_UNSIGNED", SqlParserPos.ZERO),
-          type.getPrecision(), -1, null, null, SqlParserPos.ZERO);
+    case BIGINT:
+      return new SqlDataTypeSpec(
+          new SqlUserDefinedTypeNameSpec("_SIGNED", SqlParserPos.ZERO),
+          SqlParserPos.ZERO);
     }
     return super.getCastSpec(type);
   }
