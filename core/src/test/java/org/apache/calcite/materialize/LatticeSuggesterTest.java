@@ -19,7 +19,11 @@ package org.apache.calcite.materialize;
 import org.apache.calcite.prepare.PlannerImpl;
 import org.apache.calcite.rel.RelRoot;
 import org.apache.calcite.schema.SchemaPlus;
+import org.apache.calcite.sql.SqlDialect;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlOperatorTable;
+import org.apache.calcite.sql.fun.SqlLibrary;
+import org.apache.calcite.sql.fun.SqlLibraryOperatorTableFactory;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.statistic.MapSqlStatisticProvider;
@@ -45,6 +49,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -362,7 +367,7 @@ public class LatticeSuggesterTest {
                   .build())
           .build());
     }
-<<<<<<< HEAD
+>>>>>>> ab7e82741 ([CALCITE-3235] Add CONCAT function for Redshift (Ryan Fu))
 
     Tester withDialect(SqlDialect dialect) {
       return withParser(dialect::configureParser);
@@ -373,8 +378,10 @@ public class LatticeSuggesterTest {
           .getOperatorTable(EnumSet.of(SqlLibrary.STANDARD, library));
       return withConfig(builder().operatorTable(opTab).build());
     }
+<<<<<<< HEAD
   }
 }
+=======
 =======
 =======
   }

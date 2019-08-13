@@ -20,8 +20,8 @@ import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.runtime.GeoFunctions;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlOperatorTable;
+import org.apache.calcite.sql.util.ChainedSqlOperatorTable;
 import org.apache.calcite.sql.util.ListSqlOperatorTable;
-import org.apache.calcite.sql.util.SqlOperatorTables;
 import org.apache.calcite.util.Util;
 
 import com.google.common.cache.CacheBuilder;
@@ -41,7 +41,7 @@ import java.util.concurrent.ExecutionException;
  *
  * <blockquote>
  *   <pre>SqlOperatorTable opTab =
- *     SqlDialectOperatorTableFactory.INSTANCE.getOperatorTable(
+ *     SqlLibraryOperatorTableFactory.INSTANCE.getOperatorTable(
  *         EnumSet.of(SqlLibrary.ORACLE, SqlLibrary.MYSQL))</pre>
  * </blockquote>
  *
@@ -116,7 +116,7 @@ public class SqlLibraryOperatorTableFactory {
     SqlOperatorTable operatorTable = new ListSqlOperatorTable(list.build());
     if (standard) {
       operatorTable =
-        SqlOperatorTables.chain(SqlStdOperatorTable.instance(),
+          ChainedSqlOperatorTable.of(SqlStdOperatorTable.instance(),
               operatorTable);
     }
     return operatorTable;
