@@ -225,48 +225,7 @@ public abstract class ReturnTypes {
   public static final SqlReturnTypeInference DATE =
       explicit(SqlTypeName.DATE);
 
-<<<<<<< HEAD
-=======
-  /**
-   * Type-inference strategy whereby the result type of a call is nullable
-   * Date.
-   */
-  public static final SqlReturnTypeInference DATE_NULLABLE =
-      cascade(DATE, SqlTypeTransforms.TO_NULLABLE);
-
->>>>>>> 133dfb6da ([CALCITE-2908] Implement SQL LAST_DAY function (Chunwei Lei))
-  /**
-   * Type-inference strategy whereby the result type of a call is nullable
-   * DATE.
-   */
-  public static final SqlReturnTypeInference DATE_NULLABLE =
-      cascade(DATE, SqlTypeTransforms.TO_NULLABLE);
-
-  /**
-   * Type-inference strategy whereby the result type of a call is TIME(0).
-   */
-  public static final SqlReturnTypeInference TIME =
-      explicit(SqlTypeName.TIME, 0);
-
-  /**
-   * Type-inference strategy whereby the result type of a call is nullable
-   * TIME(0).
-   */
-  public static final SqlReturnTypeInference TIME_NULLABLE =
-      cascade(TIME, SqlTypeTransforms.TO_NULLABLE);
-
-  /**
-   * Type-inference strategy whereby the result type of a call is TIMESTAMP.
-   */
-  public static final SqlReturnTypeInference TIMESTAMP =
-      explicit(SqlTypeName.TIMESTAMP);
-
-  /**
-   * Type-inference strategy whereby the result type of a call is nullable
-   * TIMESTAMP.
-   */
-  public static final SqlReturnTypeInference TIMESTAMP_NULLABLE =
-      cascade(TIMESTAMP, SqlTypeTransforms.TO_NULLABLE);
+      TIMESTAMP.andThen(SqlTypeTransforms.TO_NULLABLE);
 
   /**
    * Type-inference strategy whereby the result type of a call is Double.

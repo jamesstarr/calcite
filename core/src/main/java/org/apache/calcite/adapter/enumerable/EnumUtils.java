@@ -45,13 +45,8 @@ import org.apache.calcite.rex.RexProgramBuilder;
 import org.apache.calcite.runtime.Utilities;
 import org.apache.calcite.sql.SqlCollation;
 import org.apache.calcite.util.BuiltInMethod;
-<<<<<<< HEAD
-<<<<<<< HEAD
-import org.apache.calcite.util.Pair;
-=======
 =======
 import org.apache.calcite.util.Pair;
->>>>>>> 483a37eed ([CALCITE-3309] Refactor generatePredicate method from EnumerableNestedLoopJoin/EnumerableHashJoin/EnumerableBatchNestedLoopJoin into a single location)
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
