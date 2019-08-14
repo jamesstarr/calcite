@@ -242,6 +242,20 @@ public abstract class ReturnTypes {
    */
   public static final SqlReturnTypeInference TIME_NULLABLE =
       cascade(TIME, SqlTypeTransforms.TO_NULLABLE);
+
+  /**
+   * Type-inference strategy whereby the result type of a call is TIMESTAMP.
+   */
+  public static final SqlReturnTypeInference TIMESTAMP =
+      explicit(SqlTypeName.TIMESTAMP);
+
+  /**
+   * Type-inference strategy whereby the result type of a call is nullable
+   * TIMESTAMP.
+   */
+  public static final SqlReturnTypeInference TIMESTAMP_NULLABLE =
+      TIMESTAMP.andThen(SqlTypeTransforms.TO_NULLABLE);
+
   /**
    * Type-inference strategy whereby the result type of a call is Double.
    */
