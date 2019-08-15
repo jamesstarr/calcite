@@ -1765,7 +1765,7 @@ Supported data types syntax:
 {% highlight sql %}
 type:
       typeName
-      [ collectionsTypeName ]
+      [ collectionsTypeName ]*
 
 typeName:
       sqlTypeName

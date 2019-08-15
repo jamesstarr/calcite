@@ -19,32 +19,20 @@ package org.apache.calcite.sql;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.parser.SqlParserPos;
-      SqlParserPos pos) {
-    this(null, typeNameSpec, null, null, pos);
-  }
-
-  /**
-   * Creates a type specification representing a regular, non-collection type.
-   */
-  public SqlDataTypeSpec(
-      final SqlTypeNameSpec typeNameSpec,
-      TimeZone timeZone,
-      SqlParserPos pos) {
-    this(null, typeNameSpec, timeZone, null, pos);
-  }
-
-  /**
-   * Creates a type specification representing a type, with time zone specified.
+   * Creates a type specification representing a type, with time zone
+   * and nullability specified.
    *
    * @param typeNameSpec The type name can be basic sql type, row type,
-   *                     collections type and user defined type
-   * @param timeZone     Specified time zone
+   *                     collections type and user defined type.
+   * @param timeZone     Specified time zone.
+   * @param nullable     The nullability.
    */
   public SqlDataTypeSpec(
-      final SqlTypeNameSpec typeNameSpec,
+      SqlTypeNameSpec typeNameSpec,
       TimeZone timeZone,
+      Boolean nullable,
       SqlParserPos pos) {
-    this(typeNameSpec, timeZone, null, pos);
+    this(typeNameSpec, typeNameSpec, timeZone, nullable, pos);
   }
 
   /**
@@ -52,41 +40,18 @@ import org.apache.calcite.sql.parser.SqlParserPos;
    * nullability and base type name specified.
    *
    * @param typeNameSpec The type name can be basic sql type, row type,
-   *                     collections type and user defined type
-   * @param timeZone     Specified time zone
-   * @param nullable     The nullability
+   *                     collections type and user defined type.
+   * @param baseTypeName The base type name.
+   * @param timeZone     Specified time zone.
+   * @param nullable     The nullability.
    */
   public SqlDataTypeSpec(
-      SqlIdentifier collectionsTypeName,
-      SqlTypeNameSpec typeNameSpec,
-      SqlParserPos pos) {
-    this(collectionsTypeName, typeNameSpec, null, null, pos);
-  }
-
-  /**
-   * Creates a type specification that has no base type.
-   */
-  public SqlDataTypeSpec(
-      SqlIdentifier collectionsTypeName,
-      SqlTypeNameSpec typeName,
-      TimeZone timeZone,
-      Boolean nullable,
-      SqlParserPos pos) {
-    this(collectionsTypeName, typeName, typeName, timeZone, nullable, pos);
-  }
-
-  /**
-   * Creates a type specification.
-   */
-  public SqlDataTypeSpec(
-      SqlIdentifier collectionsTypeName,
       SqlTypeNameSpec typeNameSpec,
       SqlTypeNameSpec baseTypeName,
       TimeZone timeZone,
       Boolean nullable,
       SqlParserPos pos) {
     super(pos);
-    this.collectionsTypeName = collectionsTypeName;
     this.typeNameSpec = typeNameSpec;
     this.baseTypeName = baseTypeName;
     this.timeZone = timeZone;
@@ -96,9 +61,7 @@ import org.apache.calcite.sql.parser.SqlParserPos;
   //~ Methods ----------------------------------------------------------------
 
   public SqlNode clone(SqlParserPos pos) {
-    return (collectionsTypeName != null)
-        ? new SqlDataTypeSpec(collectionsTypeName, typeNameSpec, pos)
-        : new SqlDataTypeSpec(typeNameSpec, timeZone, pos);
+    return new SqlDataTypeSpec(typeNameSpec, timeZone, pos);
   }
 
   public SqlMonotonicity getMonotonicity(SqlValidatorScope scope) {
@@ -134,8 +97,7 @@ import org.apache.calcite.sql.parser.SqlParserPos;
     if (Objects.equals(nullable, this.nullable)) {
       return this;
     }
-    return new SqlDataTypeSpec(collectionsTypeName, typeNameSpec, timeZone,
-        nullable, getParserPosition());
+    return new SqlDataTypeSpec(typeNameSpec, timeZone, nullable, getParserPosition());
   }
 
   /**
@@ -144,19 +106,14 @@ import org.apache.calcite.sql.parser.SqlParserPos;
    * Collection types are <code>ARRAY</code> and <code>MULTISET</code>.
    */
   public SqlDataTypeSpec getComponentTypeSpec() {
-    assert getCollectionsTypeName() != null;
-    return new SqlDataTypeSpec(
-        typeNameSpec,
-        timeZone,
-        getParserPosition());
+    assert typeNameSpec instanceof SqlCollectionTypeNameSpec;
+    SqlTypeNameSpec elementTypeName =
+        ((SqlCollectionTypeNameSpec) typeNameSpec).getElementTypeName();
+    return new SqlDataTypeSpec(elementTypeName, timeZone, getParserPosition());
   }
 
   public void unparse(SqlWriter writer, int leftPrec, int rightPrec) {
     typeNameSpec.unparse(writer, leftPrec, rightPrec);
-    // collection type can have elements as builtin sql type and UDT.
-    if (collectionsTypeName != null) {
-      writer.keyword(collectionsTypeName.getSimple());
-    }
   }
 
   public void validate(SqlValidator validator, SqlValidatorScope scope) {
@@ -175,13 +132,12 @@ import org.apache.calcite.sql.parser.SqlParserPos;
     if (!Objects.equals(this.timeZone, that.timeZone)) {
       return litmus.fail("{} != {}", this, node);
     }
-<<<<<<< HEAD
-=======
     if (!SqlNode.equalDeep(
         this.collectionsTypeName,
         that.collectionsTypeName, litmus)) {
       return litmus.fail(null);
     }
+=======
     if (!this.typeNameSpec.equalsDeep(that.typeNameSpec, litmus)) {
       return litmus.fail(null);
     }
@@ -192,28 +148,17 @@ import org.apache.calcite.sql.parser.SqlParserPos;
    * Throws an error if the type is not found.
    */
   public RelDataType deriveType(SqlValidator validator) {
-    // validate collection type name first.
-    if (null != collectionsTypeName) {
-      final String collectionName = collectionsTypeName.getSimple();
-      if (SqlTypeName.get(collectionName) == null) {
-        throw validator.newValidationError(this,
-            RESOURCE.unknownDatatypeName(collectionName));
-      }
-    }
-    RelDataTypeFactory typeFactory = validator.getTypeFactory();
-    RelDataType type = deriveType(typeFactory);
-    if (type == null) {
-      // the type is a UDT.
-      type = validator.getValidatedNodeType(typeNameSpec.getTypeName());
-      if (null != collectionsTypeName) {
-        type = createCollectionType(type, typeFactory);
-      }
-    }
+    RelDataType type;
+    type = typeNameSpec.deriveType(validator);
+
+    // Fix-up the nullability, default is false.
+    final RelDataTypeFactory typeFactory = validator.getTypeFactory();
+    type = fixUpNullability(typeFactory, type, false);
     return type;
   }
 
   /**
-   * Does not throw an error if the type is not built-in.
+   * Does not throw an error (returns null) if the type is not built-in.
    */
   public RelDataType deriveType(RelDataTypeFactory typeFactory) {
     return deriveType(typeFactory, false);
@@ -222,7 +167,7 @@ import org.apache.calcite.sql.parser.SqlParserPos;
   /**
    * Converts this type specification to a {@link RelDataType}.
    *
-   * <p>Does not throw an error if the type is not built-in.
+   * <p>Does not throw an error (returns null) if the type is not built-in.
    *
    * @param nullable Whether the type is nullable if the type specification
    *                 does not explicitly state
@@ -240,18 +185,19 @@ import org.apache.calcite.sql.parser.SqlParserPos;
       return null;
     }
 
-    if (null != collectionsTypeName) {
-      type = createCollectionType(type, typeFactory);
-    }
+    type = fixUpNullability(typeFactory, type, nullable);
+    return type;
+  }
+
+  //~ Tools ------------------------------------------------------------------
 
   /**
    * Fix up the nullability of the {@code type}.
-   *
-   * @param typeFactory Type factory
-   * @param type        The type to coerce nullability
+   * @param typeFactory Type factory.
+   * @param type        The type to coerce nullability.
    * @param nullable    Default nullability to use if this type specification does not
-   *                    specify nullability
-   * @return Type with specified nullability or the default(false)
+   *                    specify nullability.
+   * @return type with specified nullability or the default.
    */
   private RelDataType fixUpNullability(RelDataTypeFactory typeFactory,
       RelDataType type, boolean nullable) {
@@ -259,33 +205,6 @@ import org.apache.calcite.sql.parser.SqlParserPos;
       nullable = this.nullable;
     }
     return typeFactory.createTypeWithNullability(type, nullable);
-  }
-
-  //~ Tools ------------------------------------------------------------------
-
-  /**
-   * Create collection data type.
-   * @param elementType Type of the collection element.
-   * @param typeFactory Type factory.
-   * @return The collection data type, or throw exception if the collection
-   *         type name does not belong to {@code SqlTypeName} enumerations.
-   */
-  private RelDataType createCollectionType(RelDataType elementType,
-      RelDataTypeFactory typeFactory) {
-    final String collectionName = collectionsTypeName.getSimple();
-    final SqlTypeName collectionsSqlTypeName =
-        Objects.requireNonNull(SqlTypeName.get(collectionName),
-            collectionName);
-
-    switch (collectionsSqlTypeName) {
-    case MULTISET:
-      return typeFactory.createMultisetType(elementType, -1);
-    case ARRAY:
-      return typeFactory.createArrayType(elementType, -1);
-
-    default:
-      throw Util.unexpected(collectionsSqlTypeName);
-    }
   }
 
   /**

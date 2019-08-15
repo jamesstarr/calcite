@@ -5656,17 +5656,22 @@ int IntLiteral() :
 SqlDataTypeSpec DataType() :
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     SqlTypeNameSpec typeName;
 =======
     final SqlTypeNameSpec typeName;
     SqlIdentifier collectionTypeName = null;
 >>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
+=======
+    SqlTypeNameSpec typeName;
+>>>>>>> 68925eecb ([CALCITE-3250] Support nested collection type for SqlDataTypeSpec)
     final Span s;
 }
 {
     typeName = TypeName() {
         s = span();
     }
+<<<<<<< HEAD
 <<<<<<< HEAD
     (
         typeName = CollectionsTypeName(typeName)
@@ -5859,13 +5864,12 @@ SqlTypeNameSpec SqlTypeName3(Span s) :
     [
         collectionTypeName = CollectionsTypeName()
     ]
+=======
+    (
+        typeName = CollectionsTypeName(typeName)
+    )*
+>>>>>>> 68925eecb ([CALCITE-3250] Support nested collection type for SqlDataTypeSpec)
     {
-        if (null != collectionTypeName) {
-            return new SqlDataTypeSpec(
-                collectionTypeName,
-                typeName,
-                s.end(collectionTypeName));
-        }
         return new SqlDataTypeSpec(
             typeName,
             s.end(this));
@@ -6078,22 +6082,23 @@ SqlLiteral JdbcOdbcDataType() :
 */
 SqlTypeNameSpec CollectionsTypeName(SqlTypeNameSpec elementTypeName) :
 {
+    final SqlTypeName collectionTypeName;
 }
 {
     (
-        <MULTISET> {
-            return new SqlIdentifier(SqlTypeName.MULTISET.name(), getPos());
-        }
+        <MULTISET> { collectionTypeName = SqlTypeName.MULTISET; }
     |
-        <ARRAY> {
-            return new SqlIdentifier(SqlTypeName.ARRAY.name(), getPos());
-        }
+        <ARRAY> { collectionTypeName = SqlTypeName.ARRAY; }
     )
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 68925eecb ([CALCITE-3250] Support nested collection type for SqlDataTypeSpec)
     {
         return new SqlCollectionTypeNameSpec(elementTypeName,
                 collectionTypeName, getPos());
     }
+<<<<<<< HEAD
 }
 
 /**
@@ -6116,6 +6121,8 @@ boolean NullableOptDefaultTrue() :
     }
 =======
 >>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
+=======
+>>>>>>> 68925eecb ([CALCITE-3250] Support nested collection type for SqlDataTypeSpec)
 }
 
 /**

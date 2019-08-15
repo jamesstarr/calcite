@@ -21,7 +21,7 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
->>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
+import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.util.Litmus;
 
 import java.nio.charset.Charset;
@@ -182,6 +182,11 @@ public class SqlBasicTypeNameSpec extends SqlTypeNameSpec {
       writer.keyword("CHARACTER SET");
       writer.identifier(charSetName);
     }
+  }
+
+  @Override public RelDataType deriveType(SqlValidator validator) {
+    final RelDataTypeFactory typeFactory = validator.getTypeFactory();
+    return deriveType(typeFactory);
   }
 
   @Override public RelDataType deriveType(RelDataTypeFactory typeFactory) {

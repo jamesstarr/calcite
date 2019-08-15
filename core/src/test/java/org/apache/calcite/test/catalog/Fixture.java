@@ -34,9 +34,11 @@ import java.util.stream.Collectors;
 final class Fixture extends AbstractFixture {
   final RelDataType intType;
   final RelDataType intTypeNull;
+  final RelDataType bigintType;
   final RelDataType bigintTypeNull;
   final RelDataType decimalType;
   final RelDataType varcharType;
+  final RelDataType varchar5Type;
   final RelDataType varchar10Type;
   final RelDataType varchar10TypeNull;
   final RelDataType varchar20Type;
@@ -65,16 +67,27 @@ final class Fixture extends AbstractFixture {
   final RelDataType recordType4;
   // Row(f0 varchar not null, f1 timestamp null) multiset
   final RelDataType recordType5;
-  final RelDataType bigintType = sqlType(SqlTypeName.BIGINT);
+  final RelDataType intArrayType;
   final RelDataType varchar5ArrayType;
+  final RelDataType intArrayArrayType;
+  final RelDataType varchar5ArrayArrayType;
+  final RelDataType intMultisetType;
+  final RelDataType varchar5MultisetType;
+  final RelDataType intMultisetArrayType;
+  final RelDataType varchar5MultisetArrayType;
+  final RelDataType intArrayMultisetType;
+  // Row(f0 int array multiset, f1 varchar(5) array) array multiset
+  final RelDataType rowArrayMultisetType;
 
   Fixture(RelDataTypeFactory typeFactory) {
     super(typeFactory);
     intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
     intTypeNull = typeFactory.createTypeWithNullability(intType, true);
+    bigintType = typeFactory.createSqlType(SqlTypeName.BIGINT);
     bigintTypeNull = typeFactory.createTypeWithNullability(bigintType, true);
     decimalType = typeFactory.createSqlType(SqlTypeName.DECIMAL);
     varcharType = typeFactory.createSqlType(SqlTypeName.VARCHAR);
+    varchar5Type = typeFactory.createSqlType(SqlTypeName.VARCHAR, 5);
     varchar10Type = typeFactory.createSqlType(SqlTypeName.VARCHAR, 10);
     varchar10TypeNull = typeFactory.createTypeWithNullability(varchar10Type, true);
     varchar20Type = typeFactory.createSqlType(SqlTypeName.VARCHAR, 20);
@@ -175,9 +188,23 @@ final class Fixture extends AbstractFixture {
             Arrays.asList(varcharType, nullable(typeFactory, timestampType)),
             Arrays.asList("f0", "f1")),
         -1);
-    varchar5ArrayType = typeFactory.createArrayType(
-            typeFactory.createSqlType(SqlTypeName.VARCHAR, 5),
-            -1);
+    intArrayType = typeFactory.createArrayType(intType, -1);
+    varchar5ArrayType = typeFactory.createArrayType(varchar5Type, -1);
+    intArrayArrayType = typeFactory.createArrayType(intArrayType, -1);
+    varchar5ArrayArrayType = typeFactory.createArrayType(varchar5ArrayType, -1);
+    intMultisetType = typeFactory.createMultisetType(intType, -1);
+    varchar5MultisetType = typeFactory.createMultisetType(varchar5Type, -1);
+    intMultisetArrayType = typeFactory.createArrayType(intMultisetType, -1);
+    varchar5MultisetArrayType = typeFactory.createArrayType(varchar5MultisetType, -1);
+    intArrayMultisetType = typeFactory.createMultisetType(intArrayType, -1);
+    // Row(f0 int array multiset, f1 varchar(5) array) array multiset
+    rowArrayMultisetType = typeFactory.createMultisetType(
+        typeFactory.createArrayType(
+            typeFactory.createStructType(
+                Arrays.asList(intArrayMultisetType, varchar5ArrayType),
+                Arrays.asList("f0", "f1")),
+            -1),
+        -1);
   }
 
   private static RelDataType nullable(RelDataTypeFactory typeFactory, RelDataType type) {
