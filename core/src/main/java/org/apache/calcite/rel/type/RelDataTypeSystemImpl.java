@@ -255,6 +255,14 @@ public abstract class RelDataTypeSystemImpl implements RelDataTypeSystem {
             && SqlTypeUtil.isExactNumeric(type2)) {
       if (SqlTypeUtil.isDecimal(type1)
               || SqlTypeUtil.isDecimal(type2)) {
+        // Java numeric will always have invalid precision/scale,
+        // use its default decimal precision/scale instead.
+        type1 = RelDataTypeFactoryImpl.isJavaType(type1)
+            ? typeFactory.decimalOf(type1)
+            : type1;
+        type2 = RelDataTypeFactoryImpl.isJavaType(type2)
+            ? typeFactory.decimalOf(type2)
+            : type2;
         int p1 = type1.getPrecision();
         int p2 = type2.getPrecision();
         int s1 = type1.getScale();
@@ -283,6 +291,14 @@ public abstract class RelDataTypeSystemImpl implements RelDataTypeSystem {
             && SqlTypeUtil.isExactNumeric(type2)) {
       if (SqlTypeUtil.isDecimal(type1)
               || SqlTypeUtil.isDecimal(type2)) {
+        // Java numeric will always have invalid precision/scale,
+        // use its default decimal precision/scale instead.
+        type1 = RelDataTypeFactoryImpl.isJavaType(type1)
+            ? typeFactory.decimalOf(type1)
+            : type1;
+        type2 = RelDataTypeFactoryImpl.isJavaType(type2)
+            ? typeFactory.decimalOf(type2)
+            : type2;
         int p1 = type1.getPrecision();
         int p2 = type2.getPrecision();
         int s1 = type1.getScale();
@@ -316,6 +332,14 @@ public abstract class RelDataTypeSystemImpl implements RelDataTypeSystem {
             && SqlTypeUtil.isExactNumeric(type2)) {
       if (SqlTypeUtil.isDecimal(type1)
               || SqlTypeUtil.isDecimal(type2)) {
+        // Java numeric will always have invalid precision/scale,
+        // use its default decimal precision/scale instead.
+        type1 = RelDataTypeFactoryImpl.isJavaType(type1)
+            ? typeFactory.decimalOf(type1)
+            : type1;
+        type2 = RelDataTypeFactoryImpl.isJavaType(type2)
+            ? typeFactory.decimalOf(type2)
+            : type2;
         int p1 = type1.getPrecision();
         int p2 = type2.getPrecision();
         int s1 = type1.getScale();
