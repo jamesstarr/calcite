@@ -467,7 +467,8 @@ public class ReflectiveSchemaTest {
       return input.getTime(1);
     case java.sql.Types.TIMESTAMP:
       return input.getTimestamp(1);
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+    case java.sql.Types.DECIMAL:
+      return input.getBigDecimal(1);
     default:
       throw new AssertionError(type);
     }
@@ -591,7 +592,7 @@ public class ReflectiveSchemaTest {
         .returns("C=null\n");
   }
 
-  @Test void testDivideDoubleBigDecimal() {
+  @Test public void testDivideDoubleBigDecimal() {
     final CalciteAssert.AssertThat with =
         CalciteAssert.that().withSchema("s", CATCHALL);
     with.query("select \"wrapperDouble\" / \"bigDecimal\" as c\n"
@@ -599,7 +600,7 @@ public class ReflectiveSchemaTest {
         .runs();
   }
 
-  @Test void testDivideWraperWrapper() throws Exception {
+  @Test public void testDivideWraperWrapper() throws Exception {
     final CalciteAssert.AssertThat with =
         CalciteAssert.that().withSchema("s", CATCHALL);
     with.query("select \"wrapperLong\" / \"wrapperLong\" as c\n"
