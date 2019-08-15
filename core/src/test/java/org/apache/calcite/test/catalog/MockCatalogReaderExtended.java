@@ -150,6 +150,19 @@ public class MockCatalogReaderExtended extends MockCatalogReaderSimple {
     registerTable(virtualColumnsTable1);
     registerTable(virtualColumnsTable2);
 
+    complexTypeColumnsTable.addColumn("intArrayType", f.intArrayType);
+    complexTypeColumnsTable.addColumn("varchar5ArrayType", f.varchar5ArrayType);
+    complexTypeColumnsTable.addColumn("intArrayArrayType", f.intArrayArrayType);
+    complexTypeColumnsTable.addColumn("varchar5ArrayArrayType", f.varchar5ArrayArrayType);
+    complexTypeColumnsTable.addColumn("intMultisetType", f.intMultisetType);
+    complexTypeColumnsTable.addColumn("varchar5MultisetType", f.varchar5MultisetType);
+    complexTypeColumnsTable.addColumn("intMultisetArrayType", f.intMultisetArrayType);
+    complexTypeColumnsTable.addColumn("varchar5MultisetArrayType",
+        f.varchar5MultisetArrayType);
+    complexTypeColumnsTable.addColumn("intArrayMultisetType", f.intArrayMultisetType);
+    complexTypeColumnsTable.addColumn("rowArrayMultisetType", f.rowArrayMultisetType);
+    registerTable(complexTypeColumnsTable);
+
     return this;
   }
 }
