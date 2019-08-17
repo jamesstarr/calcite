@@ -60,7 +60,7 @@ import java.util.TreeSet;
 import static org.apache.calcite.linq4j.test.BlockBuilderBase.ONE;
 import static org.apache.calcite.linq4j.test.BlockBuilderBase.TWO;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+>>>>>>> da1ff4734 ([CALCITE-3260] Add Expressions.evaluate(Node), a public API for evaluating linq4j expressions (Wang Yanlin))
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -1611,12 +1611,16 @@ public class ExpressionTest {
         Expressions.toString(Expressions.constant(map)));
   }
 
+<<<<<<< HEAD
   @Test void testEvaluate() {
+=======
+  @Test public void testEvaluate() {
     Expression x = Expressions.add(ONE, TWO);
     Object value = Expressions.evaluate(x);
     assertThat(value, is(3));
   }
 
+<<<<<<< HEAD
   @Test void testEmptySetLiteral() throws Exception {
     assertEquals("com.google.common.collect.ImmutableSet.of()",
         Expressions.toString(Expressions.constant(new HashSet())));
@@ -1686,6 +1690,8 @@ public class ExpressionTest {
         Expressions.toString(Expressions.constant(set)));
   }
 
+=======
+>>>>>>> da1ff4734 ([CALCITE-3260] Add Expressions.evaluate(Node), a public API for evaluating linq4j expressions (Wang Yanlin))
   /** An enum. */
   enum MyEnum {
     X,

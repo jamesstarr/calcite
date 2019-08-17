@@ -3064,6 +3064,15 @@ public abstract class Expressions {
 >>>>>>> 42ca94873 (Apply small refactorings to Calcite codebase (Java 5, Java 7, Java 8))
   }
 
+  /**
+   * Evaluates an expression and returns the result.
+   */
+  public static Object evaluate(Node node) {
+    Objects.requireNonNull(node);
+    final Evaluator evaluator = new Evaluator();
+    return ((AbstractNode) node).evaluate(evaluator);
+  }
+
   // ~ Private helper methods ------------------------------------------------
 
   private static boolean shouldLift(Expression left, Expression right,
