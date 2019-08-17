@@ -164,6 +164,8 @@ public class SqlCreateTable extends SqlCreate
     final ImmutableList.Builder<ColumnDef> b = ImmutableList.builder();
     final RelDataTypeFactory.Builder builder = typeFactory.builder();
     final RelDataTypeFactory.Builder storedBuilder = typeFactory.builder();
+    // REVIEW 2019-08-19 Danny Chan: Should we implement the
+    // #validate(SqlValidator) to get the SqlValidator instance?
     for (Ord<SqlNode> c : Ord.zip(columnList)) {
       if (c.e instanceof SqlColumnDeclaration) {
         final SqlColumnDeclaration d = (SqlColumnDeclaration) c.e;
