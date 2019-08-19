@@ -118,10 +118,8 @@ import static org.apache.calcite.rex.RexUtil.removeAll;
  * {@link org.apache.calcite.rel.core.TableScan},
  * {@link org.apache.calcite.rel.core.Filter},
  * {@link org.apache.calcite.rel.core.Project},
- * {@link org.apache.calcite.rel.core.Calc},
  * {@link org.apache.calcite.rel.core.Join},
  * {@link org.apache.calcite.rel.core.Union},
- * {@link org.apache.calcite.rel.core.Intersect},
  * {@link org.apache.calcite.rel.core.Aggregate}.</p>
  */
 public class SubstitutionVisitor {
@@ -1050,7 +1048,7 @@ public class SubstitutionVisitor {
 
   /** Implementation of {@link UnifyRule} that matches
    * {@link org.apache.calcite.rel.core.TableScan}. */
-  public static class ScanToProjectUnifyRule extends AbstractUnifyRule {
+  private static class ScanToProjectUnifyRule extends AbstractUnifyRule {
     public static final ScanToProjectUnifyRule INSTANCE =
         new ScanToProjectUnifyRule();
 
@@ -1086,7 +1084,7 @@ public class SubstitutionVisitor {
 
   /** Implementation of {@link UnifyRule} that matches
    * {@link org.apache.calcite.rel.core.Project}. */
-  public static class ProjectToProjectUnifyRule extends AbstractUnifyRule {
+  private static class ProjectToProjectUnifyRule extends AbstractUnifyRule {
     public static final ProjectToProjectUnifyRule INSTANCE =
         new ProjectToProjectUnifyRule();
 
@@ -1274,6 +1272,89 @@ public class SubstitutionVisitor {
     }
   }
 
+<<<<<<< HEAD
+=======
+  /** Implementation of {@link UnifyRule} that matches a
+   * {@link org.apache.calcite.rel.core.Aggregate} to a
+   * {@link org.apache.calcite.rel.core.Aggregate}, provided
+   * that they have the same child. */
+  private static class AggregateToAggregateUnifyRule extends AbstractUnifyRule {
+    public static final AggregateToAggregateUnifyRule INSTANCE =
+        new AggregateToAggregateUnifyRule();
+
+    private AggregateToAggregateUnifyRule() {
+      super(operand(MutableAggregate.class, query(0)),
+          operand(MutableAggregate.class, target(0)), 1);
+    }
+
+    public UnifyResult apply(UnifyRuleCall call) {
+      final MutableAggregate query = (MutableAggregate) call.query;
+      final MutableAggregate target = (MutableAggregate) call.target;
+      assert query != target;
+      // in.query can be rewritten in terms of in.target if its groupSet is
+      // a subset, and its aggCalls are a superset. For example:
+      //   query: SELECT x, COUNT(b) FROM t GROUP BY x
+      //   target: SELECT x, y, SUM(a) AS s, COUNT(b) AS cb FROM t GROUP BY x, y
+      // transforms to
+      //   result: SELECT x, SUM(cb) FROM (target) GROUP BY x
+      if (query.getInput() != target.getInput()) {
+        return null;
+      }
+      if (!target.groupSet.contains(query.groupSet)) {
+        return null;
+      }
+      MutableRel result = unifyAggregates(query, target);
+      if (result == null) {
+        return null;
+      }
+      return call.result(result);
+    }
+  }
+
+  public static MutableAggregate permute(MutableAggregate aggregate,
+      MutableRel input, Mapping mapping) {
+    ImmutableBitSet groupSet = Mappings.apply(mapping, aggregate.groupSet);
+    ImmutableList<ImmutableBitSet> groupSets =
+        Mappings.apply2(mapping, aggregate.groupSets);
+    List<AggregateCall> aggregateCalls =
+        apply(mapping, aggregate.aggCalls);
+    return MutableAggregate.of(input, groupSet, groupSets, aggregateCalls);
+  }
+
+  private static List<AggregateCall> apply(final Mapping mapping,
+      List<AggregateCall> aggCallList) {
+    return Lists.transform(aggCallList,
+        call -> call.copy(Mappings.apply2(mapping, call.getArgList()),
+            Mappings.apply(mapping, call.filterArg)));
+  }
+
+  public static MutableRel unifyAggregates(MutableAggregate query,
+      MutableAggregate target) {
+    MutableRel result;
+    if (query.groupSets.equals(target.groupSets)) {
+      // Same level of aggregation. Generate a project.
+      final List<Integer> projects = new ArrayList<>();
+      final int groupCount = query.groupSet.cardinality();
+      for (int i = 0; i < groupCount; i++) {
+        projects.add(i);
+      }
+      for (AggregateCall aggregateCall : query.aggCalls) {
+        int i = target.aggCalls.indexOf(aggregateCall);
+        if (i < 0) {
+          return null;
+        }
+        projects.add(groupCount + i);
+      }
+      result = MutableRels.createProject(target, projects);
+    } else if (target.getGroupType() == Aggregate.Group.SIMPLE) {
+      // Query is coarser level of aggregation. Generate an aggregate.
+      final Map<Integer, Integer> map = new HashMap<>();
+      target.groupSet.forEach(k -> map.put(k, map.size()));
+      for (int c : query.groupSet) {
+        if (!map.containsKey(c)) {
+          return null;
+        }
+>>>>>>> cf8c4c6d1 ([CALCITE-3262] Refine doc of SubstitutionVisitor.java (Jin Xing))
       }
       final ImmutableBitSet groupSet = query.groupSet.permute(map);
       ImmutableList<ImmutableBitSet> groupSets = null;
