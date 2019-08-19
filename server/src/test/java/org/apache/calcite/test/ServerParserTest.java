@@ -161,7 +161,7 @@ class ServerParserTest extends SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testCreateTableWithUDT() {
+  @Test public void testCreateTableWithUDT() {
     final String sql = "create table if not exists t (\n"
         + "  f0 MyType0 not null,\n"
         + "  f1 db_name.MyType1,\n"
@@ -173,7 +173,7 @@ class ServerParserTest extends SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testCreateView() {
+  @Test public void testCreateView() {
     final String sql = "create or replace view v as\n"
         + "select * from (values (1, '2'), (3, '45')) as t (x, y)";
     final String expected = "CREATE OR REPLACE VIEW `V` AS\n"

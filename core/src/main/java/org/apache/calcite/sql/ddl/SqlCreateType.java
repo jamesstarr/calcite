@@ -31,14 +31,8 @@ import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSpecialOperator;
 import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.parser.SqlParserPos;
-<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.util.ImmutableNullableList;
-import org.apache.calcite.util.Pair;
-
-import java.util.List;
-import java.util.Objects;
 =======
+import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.util.ImmutableNullableList;
 import org.apache.calcite.util.Pair;
 
@@ -72,25 +66,21 @@ public class SqlCreateType extends SqlCreate
   @Override public void execute(CalcitePrepare.Context context) {
     final Pair<CalciteSchema, String> pair =
         SqlDdlNodes.schema(context, true, name);
-<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
+    pair.left.add(pair.right, typeFactory -> {
+      if (dataType != null) {
+        return dataType.deriveType(typeFactory);
+=======
     final SqlValidator validator = SqlDdlNodes.validator(context, false);
     pair.left.add(pair.right, typeFactory -> {
       if (dataType != null) {
         return dataType.deriveType(validator);
-=======
-    pair.left.add(pair.right, typeFactory -> {
-      if (dataType != null) {
-        return dataType.deriveType(typeFactory);
->>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen)):server/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
+>>>>>>> 4d120eff7 ([CALCITE-3267] Remove method SqlDataTypeSpec#deriveType(RelDataTypefactory))
       } else {
         final RelDataTypeFactory.Builder builder = typeFactory.builder();
         for (SqlNode def : attributeDefs) {
           final SqlAttributeDefinition attributeDef =
               (SqlAttributeDefinition) def;
           final SqlDataTypeSpec typeSpec = attributeDef.dataType;
-<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
-          final RelDataType type = typeSpec.deriveType(validator);
-=======
           RelDataType type = typeSpec.deriveType(typeFactory);
           if (type == null) {
             Pair<CalciteSchema, String> pair1 =
@@ -98,7 +88,9 @@ public class SqlCreateType extends SqlCreate
             type = pair1.left.getType(pair1.right, false).getType()
                 .apply(typeFactory);
           }
->>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen)):server/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
+=======
+          final RelDataType type = typeSpec.deriveType(validator);
+>>>>>>> 4d120eff7 ([CALCITE-3267] Remove method SqlDataTypeSpec#deriveType(RelDataTypefactory))
           builder.add(attributeDef.name.getSimple(), type);
         }
         return builder.build();

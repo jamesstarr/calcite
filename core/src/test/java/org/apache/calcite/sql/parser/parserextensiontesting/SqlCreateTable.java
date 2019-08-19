@@ -50,7 +50,7 @@ import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.dialect.CalciteSqlDialect;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.pretty.SqlPrettyWriter;
+>>>>>>> 4d120eff7 ([CALCITE-3267] Remove method SqlDataTypeSpec#deriveType(RelDataTypefactory))
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.test.JdbcTest;
 import org.apache.calcite.tools.FrameworkConfig;
@@ -155,6 +155,7 @@ public class SqlCreateTable extends SqlCreate
     } else {
       queryRowType = null;
     }
+<<<<<<< HEAD
     final RelDataTypeFactory.Builder builder = typeFactory.builder();
     if (columnList != null) {
       final SqlValidator validator = new ContextSqlValidator(context, false);
@@ -168,6 +169,13 @@ public class SqlCreateTable extends SqlCreate
             RESOURCE.createTableRequiresColumnList());
       }
       builder.addAll(queryRowType.getFieldList());
+=======
+    final JavaTypeFactory typeFactory = context.getTypeFactory();
+    final RelDataTypeFactory.Builder builder = typeFactory.builder();
+    final SqlValidator validator = new ContextSqlValidator(context, false);
+    for (Pair<SqlIdentifier, SqlDataTypeSpec> pair : nameTypes()) {
+      builder.add(pair.left.getSimple(),
+          pair.right.deriveType(validator, true));
     }
     final RelDataType rowType = builder.build();
     schema.add(name.getSimple(),

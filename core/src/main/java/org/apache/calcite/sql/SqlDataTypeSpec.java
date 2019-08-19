@@ -145,46 +145,28 @@ import org.apache.calcite.sql.parser.SqlParserPos;
   }
 
   /**
-   * Throws an error if the type is not found.
+   * Converts this type specification to a {@link RelDataType}.
+   *
+   * <p>Throws an error if the type is not found.
    */
   public RelDataType deriveType(SqlValidator validator) {
-    RelDataType type;
-    type = typeNameSpec.deriveType(validator);
-
-    // Fix-up the nullability, default is false.
-    final RelDataTypeFactory typeFactory = validator.getTypeFactory();
-    type = fixUpNullability(typeFactory, type, false);
-    return type;
-  }
-
-  /**
-   * Does not throw an error (returns null) if the type is not built-in.
-   */
-  public RelDataType deriveType(RelDataTypeFactory typeFactory) {
-    return deriveType(typeFactory, false);
+    return deriveType(validator, false);
   }
 
   /**
    * Converts this type specification to a {@link RelDataType}.
    *
-   * <p>Does not throw an error (returns null) if the type is not built-in.
+   * <p>Throws an error if the type is not found.
    *
    * @param nullable Whether the type is nullable if the type specification
-   *                 does not explicitly state
+   *                 does not explicitly state.
    */
-  public RelDataType deriveType(RelDataTypeFactory typeFactory,
-      boolean nullable) {
-    if (!typeNameSpec.getTypeName().isSimple()) {
-      return null;
-    }
+  public RelDataType deriveType(SqlValidator validator, boolean nullable) {
     RelDataType type;
->>>>>>> f48aee584 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
-    type = createTypeFromTypeNameSpec(typeFactory, typeNameSpec);
-    if (type == null) {
-      // This is definitely not a builtin data type, returns null.
-      return null;
-    }
+    type = typeNameSpec.deriveType(validator);
 
+    // Fix-up the nullability, default is false.
+    final RelDataTypeFactory typeFactory = validator.getTypeFactory();
     type = fixUpNullability(typeFactory, type, nullable);
     return type;
   }
@@ -205,16 +187,5 @@ import org.apache.calcite.sql.parser.SqlParserPos;
       nullable = this.nullable;
     }
     return typeFactory.createTypeWithNullability(type, nullable);
-  }
-
-  /**
-   * Create type from the type name specification directly.
-   * @param typeFactory type factory.
-   * @return the type.
-   */
-  private RelDataType createTypeFromTypeNameSpec(
-      RelDataTypeFactory typeFactory,
-      SqlTypeNameSpec typeNameSpec) {
-    return typeNameSpec.deriveType(typeFactory);
   }
 }

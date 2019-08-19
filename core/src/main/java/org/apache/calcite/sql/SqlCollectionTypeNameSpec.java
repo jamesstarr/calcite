@@ -76,26 +76,5 @@ public class SqlCollectionTypeNameSpec extends SqlTypeNameSpec {
     return elementTypeName;
   }
 
-   * @param elementType Type of the collection element.
-   * @param typeFactory Type factory.
-   * @return The collection data type, or throw exception if the collection
-   *         type name does not belong to {@code SqlTypeName} enumerations.
-   */
-  private RelDataType createCollectionType(RelDataType elementType,
-      RelDataTypeFactory typeFactory) {
-    switch (collectionTypeName) {
-    case MULTISET:
-      return typeFactory.createMultisetType(elementType, -1);
-    case ARRAY:
-      return typeFactory.createArrayType(elementType, -1);
-
-    default:
-      throw Util.unexpected(collectionTypeName);
-    }
-  }
-}
-<<<<<<< HEAD
-=======
 
 // End SqlCollectionTypeNameSpec.java
->>>>>>> 68925eecb ([CALCITE-3250] Support nested collection type for SqlDataTypeSpec)

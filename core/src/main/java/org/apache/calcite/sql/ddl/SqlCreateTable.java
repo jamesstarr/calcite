@@ -166,13 +166,6 @@ public class SqlCreateTable extends SqlCreate
     final RelDataTypeFactory.Builder storedBuilder = typeFactory.builder();
     // REVIEW 2019-08-19 Danny Chan: Should we implement the
     // #validate(SqlValidator) to get the SqlValidator instance?
->>>>>>> da1ff4734 ([CALCITE-3260] Add Expressions.evaluate(Node), a public API for evaluating linq4j expressions (Wang Yanlin))
-    for (Ord<SqlNode> c : Ord.zip(columnList)) {
-      if (c.e instanceof SqlColumnDeclaration) {
-        final SqlColumnDeclaration d = (SqlColumnDeclaration) c.e;
-<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlCreateTable.java
-        final RelDataType type = d.dataType.deriveType(validator, true);
-=======
         RelDataType type = d.dataType.deriveType(typeFactory, true);
         final Pair<CalciteSchema, String> pairForType =
             SqlDdlNodes.schema(context, true, d.dataType.getTypeName());
@@ -182,6 +175,12 @@ public class SqlCreateTable extends SqlCreate
             type = typeEntry.getType().apply(typeFactory);
           }
         }
+=======
+    final SqlValidator validator = SqlDdlNodes.validator(context, true);
+    for (Ord<SqlNode> c : Ord.zip(columnList)) {
+      if (c.e instanceof SqlColumnDeclaration) {
+        final SqlColumnDeclaration d = (SqlColumnDeclaration) c.e;
+        final RelDataType type = d.dataType.deriveType(validator, true);
         builder.add(d.name.getSimple(), type);
         if (d.strategy != ColumnStrategy.VIRTUAL) {
           storedBuilder.add(d.name.getSimple(), type);
