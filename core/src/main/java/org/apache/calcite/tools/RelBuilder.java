@@ -1514,6 +1514,42 @@ public class RelBuilder {
     return this;
   }
 
+  /** Creates a {@link org.apache.calcite.rel.core.Correlate}
+   * with a {@link CorrelationId} and an array of fields that are used by correlation. */
+  public RelBuilder correlate(SemiJoinType joinType,
+      CorrelationId correlationId, RexNode... requiredFields) {
+    return correlate(joinType, correlationId, ImmutableList.copyOf(requiredFields));
+  }
+
+  /** Creates a {@link org.apache.calcite.rel.core.Correlate}
+   * with a {@link CorrelationId} and a list of fields that are used by correlation. */
+  public RelBuilder correlate(SemiJoinType joinType,
+      CorrelationId correlationId, Iterable<? extends RexNode> requiredFields) {
+    Frame right = stack.pop();
+    final Registrar registrar = new Registrar();
+
+    registrar.extraNodes.addAll(fields());
+    registrar.names.addAll(peek().getRowType().getFieldNames());
+
+    List<Integer> requiredOrdinals =
+        registrar.registerExpressions(ImmutableList.copyOf(requiredFields));
+
+    project(registrar.extraNodes);
+    rename(registrar.names);
+    Frame left = stack.pop();
+
+    final RelNode correlate = correlateFactory
+        .createCorrelate(left.rel, right.rel, correlationId,
+            ImmutableBitSet.of(requiredOrdinals), joinType);
+
+    final ImmutableList.Builder<Field> fields = ImmutableList.builder();
+    fields.addAll(left.fields);
+    fields.addAll(right.fields);
+    stack.push(new Frame(correlate, fields.build()));
+
+    return this;
+  }
+
   /** Creates a {@link org.apache.calcite.rel.core.Join} using USING syntax.
    *
    * <p>For each of the field names, both left and right inputs must have a
@@ -1755,6 +1791,13 @@ public class RelBuilder {
   /** Creates a {@link Sort} by expressions, with limit and offset. */
   public RelBuilder sortLimit(int offset, int fetch, RexNode... nodes) {
     return sortLimit(offset, fetch, ImmutableList.copyOf(nodes));
+  }
+
+  /** Creates a {@link Sort} by collation, with limit and offset. */
+  public RelBuilder sortLimit(RelCollation collation, RexNode offset, RexNode fetch) {
+    final RelNode sort = sortFactory.createSort(peek(), collation, offset, fetch);
+    replaceTop(sort);
+    return this;
   }
 
   /** Creates a {@link Sort} by a list of expressions, with limit and offset.
