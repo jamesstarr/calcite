@@ -39,6 +39,7 @@ import org.apache.calcite.util.TimeWithTimeZoneString;
 import org.apache.calcite.util.TimestampWithTimeZoneString;
 import org.apache.calcite.util.Util;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.language.Soundex;
 
 import com.google.common.base.Splitter;
@@ -72,6 +73,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
 
 import static org.apache.calcite.util.Static.RESOURCE;
 
@@ -170,6 +172,26 @@ public class SqlFunctions {
     } catch (IllegalArgumentException e) {
       return null;
     }
+  }
+
+  /** SQL MD5(string) function. */
+  public static @Nonnull String md5(@Nonnull String string)  {
+    return DigestUtils.md5Hex(string.getBytes(UTF_8));
+  }
+
+  /** SQL MD5(string) function for binary string. */
+  public static @Nonnull String md5(@Nonnull ByteString string)  {
+    return DigestUtils.md5Hex(string.getBytes());
+  }
+
+  /** SQL SHA1(string) function. */
+  public static @Nonnull String sha1(@Nonnull String string)  {
+    return DigestUtils.sha1Hex(string.getBytes(UTF_8));
+  }
+
+  /** SQL SHA1(string) function for binary string. */
+  public static @Nonnull String sha1(@Nonnull ByteString string)  {
+    return DigestUtils.sha1Hex(string.getBytes());
   }
 
   /** SQL SUBSTRING(string FROM ... FOR ...) function. */
