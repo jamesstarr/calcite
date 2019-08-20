@@ -258,9 +258,12 @@ public class RelToSqlConverter extends SqlImplementor
     final Builder builder =
         x.builder(e, Clause.SELECT);
     final List<SqlNode> selectList = new ArrayList<>();
-    for (RexNode ref : e.getProjects()) {
+    for (RexNode ref : e.getChildExps()) {
       SqlNode sqlExpr = builder.context.toSql(null,
           simplifyDatetimePlus(ref, e.getCluster().getRexBuilder()));
+      if (SqlUtil.isNullLiteral(sqlExpr, false)) {
+        sqlExpr = castNullType(sqlExpr, e.getRowType().getFieldList().get(selectList.size()));
+      }
       addSelect(selectList, sqlExpr, e.getRowType());
     }
 
@@ -279,6 +282,7 @@ public class RelToSqlConverter extends SqlImplementor
             sqlNodeNull, dialect.getCastSpec(field.getType()));
   }
 
+<<<<<<< HEAD
   /** @see #dispatch */
   public Result visit(Window e) {
     Result x = visitChild(0, e.getInput());
@@ -303,6 +307,8 @@ public class RelToSqlConverter extends SqlImplementor
     return builder.result();
   }
 
+=======
+>>>>>>> e4d1f252d ([CALCITE-3210] JDBC adapter should generate 'CAST(NULL AS type)' rather than 'NULL' conditionally)
   /** @see #dispatch */
   public Result visit(Window e) {
     Result x = visitChild(0, e.getInput());
