@@ -67,6 +67,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.SqlUpdate;
+import org.apache.calcite.sql.SqlUtil;
 import org.apache.calcite.sql.fun.SqlRowOperator;
 import org.apache.calcite.sql.fun.SqlSingleValueAggFunction;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
@@ -210,14 +211,28 @@ public class RelToSqlConverter extends SqlImplementor
     final Builder builder =
         x.builder(e, Clause.SELECT);
     final List<SqlNode> selectList = new ArrayList<>();
-    for (RexNode ref : e.getProjects()) {
+    for (RexNode ref : e.getChildExps()) {
       SqlNode sqlExpr = builder.context.toSql(null,
           simplifyDatetimePlus(ref, e.getCluster().getRexBuilder()));
+      if (SqlUtil.isNullLiteral(sqlExpr, false)) {
+        sqlExpr = castNullType(sqlExpr, e.getRowType().getFieldList().get(selectList.size()));
+      }
       addSelect(selectList, sqlExpr, e.getRowType());
     }
 
     builder.setSelect(new SqlNodeList(selectList, POS));
     return builder.result();
+  }
+
+  /**
+   * Wrap the {@code sqlNodeNull} in a CAST operator with target type as {@code field}.
+   * @param sqlNodeNull NULL literal
+   * @param field field description of {@code sqlNodeNull}
+   * @return null literal wrapped in CAST call.
+   */
+  private SqlNode castNullType(SqlNode sqlNodeNull, RelDataTypeField field) {
+    return SqlStdOperatorTable.CAST.createCall(POS,
+            sqlNodeNull, dialect.getCastSpec(field.getType()));
   }
 
   /** @see #dispatch */
