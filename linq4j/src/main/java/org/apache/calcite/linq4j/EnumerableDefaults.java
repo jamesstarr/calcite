@@ -1091,7 +1091,7 @@ public abstract class EnumerableDefaults {
       Function2<TSource, TInner, TResult> resultSelector,
       EqualityComparer<TKey> comparer, boolean generateNullsOnLeft,
       boolean generateNullsOnRight) {
-    return hashJoin_(
+    return hashEquiJoin_(
         outer,
         inner,
         outerKeySelector,
@@ -1140,7 +1140,7 @@ public abstract class EnumerableDefaults {
 
   /** Implementation of join that builds the right input and probes with the
    * left. */
-  private static <TSource, TInner, TKey, TResult> Enumerable<TResult> hashJoin_(
+  private static <TSource, TInner, TKey, TResult> Enumerable<TResult> hashEquiJoin_(
       final Enumerable<TSource> outer, final Enumerable<TInner> inner,
       final Function1<TSource, TKey> outerKeySelector,
       final Function1<TInner, TKey> innerKeySelector,
@@ -1644,7 +1644,8 @@ public abstract class EnumerableDefaults {
       final Enumerable<TSource> outer, final Enumerable<TInner> inner,
       final Function1<TSource, TKey> outerKeySelector,
       final Function1<TInner, TKey> innerKeySelector) {
-    return semiJoin(outer, inner, outerKeySelector, innerKeySelector, null, false);
+    return semiEquiJoin_(outer, inner, outerKeySelector, innerKeySelector, null,
+        false);
   }
 
   public static <TSource, TInner, TKey> Enumerable<TSource> semiJoin(
@@ -1652,7 +1653,19 @@ public abstract class EnumerableDefaults {
       final Function1<TSource, TKey> outerKeySelector,
       final Function1<TInner, TKey> innerKeySelector,
       final EqualityComparer<TKey> comparer) {
-    return semiJoin(outer, inner, outerKeySelector, innerKeySelector, comparer, false);
+    return semiEquiJoin_(outer, inner, outerKeySelector, innerKeySelector, comparer,
+        false);
+  }
+
+  public static <TSource, TInner, TKey> Enumerable<TSource> semiJoin(
+      final Enumerable<TSource> outer, final Enumerable<TInner> inner,
+      final Function1<TSource, TKey> outerKeySelector,
+      final Function1<TInner, TKey> innerKeySelector,
+      final EqualityComparer<TKey> comparer,
+      final Predicate2<TSource, TInner> nonEquiPredicate) {
+    return semiJoin(outer, inner, outerKeySelector,
+        innerKeySelector, comparer,
+        false, nonEquiPredicate);
   }
 
   /**
@@ -1663,7 +1676,8 @@ public abstract class EnumerableDefaults {
       final Enumerable<TSource> outer, final Enumerable<TInner> inner,
       final Function1<TSource, TKey> outerKeySelector,
       final Function1<TInner, TKey> innerKeySelector) {
-    return semiJoin(outer, inner, outerKeySelector, innerKeySelector, null, true);
+    return semiEquiJoin_(outer, inner, outerKeySelector, innerKeySelector, null,
+        true);
   }
 
   public static <TSource, TInner, TKey> Enumerable<TSource> antiJoin(
@@ -1671,7 +1685,85 @@ public abstract class EnumerableDefaults {
       final Function1<TSource, TKey> outerKeySelector,
       final Function1<TInner, TKey> innerKeySelector,
       final EqualityComparer<TKey> comparer) {
-    return semiJoin(outer, inner, outerKeySelector, innerKeySelector, comparer, true);
+    return semiEquiJoin_(outer, inner, outerKeySelector, innerKeySelector, comparer,
+        true);
+  }
+
+  public static <TSource, TInner, TKey> Enumerable<TSource> antiJoin(
+      final Enumerable<TSource> outer, final Enumerable<TInner> inner,
+      final Function1<TSource, TKey> outerKeySelector,
+      final Function1<TInner, TKey> innerKeySelector,
+      final EqualityComparer<TKey> comparer,
+      final Predicate2<TSource, TInner> nonEquiPredicate) {
+    return semiJoin(outer, inner, outerKeySelector,
+        innerKeySelector, comparer,
+        true, nonEquiPredicate);
+  }
+
+  /**
+   * Returns elements of {@code outer} for which there is (semi-join) / is not (anti-semi-join)
+   * a member of {@code inner} with a matching key. A specified
+   * {@code EqualityComparer<TSource>} is used to compare keys.
+   * A predicate is used to filter the join result per-row.
+   */
+  public static <TSource, TInner, TKey> Enumerable<TSource> semiJoin(
+      final Enumerable<TSource> outer, final Enumerable<TInner> inner,
+      final Function1<TSource, TKey> outerKeySelector,
+      final Function1<TInner, TKey> innerKeySelector,
+      final EqualityComparer<TKey> comparer,
+      final boolean anti,
+      final Predicate2<TSource, TInner> nonEquiPredicate) {
+    if (nonEquiPredicate == null) {
+      return semiEquiJoin_(outer, inner, outerKeySelector, innerKeySelector,
+          comparer,
+          anti);
+    } else {
+      return semiJoinWithPredicate_(outer, inner, outerKeySelector,
+          innerKeySelector,
+          comparer,
+          anti, nonEquiPredicate);
+    }
+  }
+
+  private static <TSource, TInner, TKey> Enumerable<TSource> semiJoinWithPredicate_(
+      final Enumerable<TSource> outer, final Enumerable<TInner> inner,
+      final Function1<TSource, TKey> outerKeySelector,
+      final Function1<TInner, TKey> innerKeySelector,
+      final EqualityComparer<TKey> comparer,
+      final boolean anti,
+      final Predicate2<TSource, TInner> nonEquiPredicate) {
+
+    return new AbstractEnumerable<TSource>() {
+      public Enumerator<TSource> enumerator() {
+        // CALCITE-2909 Delay the computation of the innerLookup until the
+        // moment when we are sure
+        // that it will be really needed, i.e. when the first outer
+        // enumerator item is processed
+        final Supplier<Lookup<TKey, TInner>> innerLookup = Suppliers.memoize(
+            () ->
+                comparer == null
+                    ? inner.toLookup(innerKeySelector)
+                    : inner.toLookup(innerKeySelector, comparer));
+
+        final Predicate1<TSource> predicate = v0 -> {
+          TKey key = outerKeySelector.apply(v0);
+          if (!innerLookup.get().containsKey(key)) {
+            return anti;
+          }
+          Enumerable<TInner> innersOfKey = innerLookup.get().get(key);
+          try (Enumerator<TInner> os = innersOfKey.enumerator()) {
+            while (os.moveNext()) {
+              TInner v1 = os.current();
+              if (nonEquiPredicate.apply(v0, v1)) {
+                return !anti;
+              }
+            }
+            return anti;
+          }
+        };
+        return EnumerableDefaults.where(outer.enumerator(), predicate);
+      }
+    };
   }
 
   /**
@@ -1679,7 +1771,7 @@ public abstract class EnumerableDefaults {
    * a member of {@code inner} with a matching key. A specified
    * {@code EqualityComparer<TSource>} is used to compare keys.
    */
-  private static <TSource, TInner, TKey> Enumerable<TSource> semiJoin(
+  private static <TSource, TInner, TKey> Enumerable<TSource> semiEquiJoin_(
       final Enumerable<TSource> outer, final Enumerable<TInner> inner,
       final Function1<TSource, TKey> outerKeySelector,
       final Function1<TInner, TKey> innerKeySelector,

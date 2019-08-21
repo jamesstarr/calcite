@@ -326,8 +326,7 @@ class EnumerablesTest {
             + "[Emp(20, Sebastian), Emp(30, Joe)] null 2]"));
   }
 
-<<<<<<< HEAD
-  @Test void testInnerHashJoin() {
+  @Test public void testInnerHashJoin() {
     assertThat(
         EnumerableDefaults.hashJoin(
             Linq4j.asEnumerable(
@@ -353,7 +352,7 @@ class EnumerablesTest {
             + " Emp(30, Greg), Dept(30, Development)]"));
   }
 
-  @Test void testLeftHashJoinWithNonEquiConditions() {
+  @Test public void testLeftHashJoinWithNonEquiConditions() {
     assertThat(
         EnumerableDefaults.hashJoin(
             Linq4j.asEnumerable(
@@ -383,7 +382,7 @@ class EnumerablesTest {
             + " Emp(30, Greg), null]"));
   }
 
-  @Test void testRightHashJoinWithNonEquiConditions() {
+  @Test public void testRightHashJoinWithNonEquiConditions() {
     assertThat(
         EnumerableDefaults.hashJoin(
             Linq4j.asEnumerable(
@@ -412,7 +411,7 @@ class EnumerablesTest {
             + " null, Dept(30, Development)]"));
   }
 
-  @Test void testFullHashJoinWithNonEquiConditions() {
+  @Test public void testFullHashJoinWithNonEquiConditions() {
     assertThat(
         EnumerableDefaults.hashJoin(
             Linq4j.asEnumerable(
@@ -442,7 +441,10 @@ class EnumerablesTest {
             + " null, Dept(30, Development)]"));
   }
 
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> dad1a9684 ([CALCITE-2973],[CALCITE-3284] Allow joins(hash,semi,anti) that have equi conditions to be executed using a hash join algorithm)
   /** Employee record. */
   private static class Emp {
     final int deptno;

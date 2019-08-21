@@ -23,15 +23,15 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.test.JdbcTest;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 /**
  * Unit test for
  * {@link org.apache.calcite.adapter.enumerable.EnumerableHashJoin}.
  */
-class EnumerableHashJoinTest {
+public class EnumerableHashJoinTest {
 
-  @Test void innerJoin() {
+  @Test public void innerJoin() {
     tester(false, new JdbcTest.HrSchema())
         .query(
             "select e.empid, e.name, d.name as dept from emps e join depts "
@@ -49,16 +49,16 @@ class EnumerableHashJoinTest {
             "empid=150; name=Sebastian; dept=Sales");
   }
 
-  @Test void innerJoinWithPredicate() {
+  @Test public void innerJoinWithPredicate() {
     tester(false, new JdbcTest.HrSchema())
         .query(
             "select e.empid, e.name, d.name as dept from emps e join depts d"
                 + " on e.deptno=d.deptno and e.empid<150 and e.empid>d.deptno")
-        .explainContains("EnumerableCalc(expr#0..4=[{inputs}], empid=[$t0], name=[$t2], "
-            + "dept=[$t4])\n"
-            + "  EnumerableHashJoin(condition=[AND(=($1, $3), >($0, $3))], joinType=[inner])\n"
-            + "    EnumerableCalc(expr#0..4=[{inputs}], expr#5=[150], expr#6=[<($t0, $t5)], "
-            + "proj#0..2=[{exprs}], $condition=[$t6])\n"
+        .explainContains("EnumerableCalc(expr#0..4=[{inputs}], expr#5=[>($t0,"
+            + " $t3)], empid=[$t0], name=[$t2], dept=[$t4], $condition=[$t5])\n"
+            + "  EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])\n"
+            + "    EnumerableCalc(expr#0..4=[{inputs}], expr#5=[150], "
+            + "expr#6=[<($t0, $t5)], proj#0..2=[{exprs}], $condition=[$t6])\n"
             + "      EnumerableTableScan(table=[[s, emps]])\n"
             + "    EnumerableCalc(expr#0..3=[{inputs}], proj#0..1=[{exprs}])\n"
             + "      EnumerableTableScan(table=[[s, depts]])\n")
@@ -67,7 +67,7 @@ class EnumerableHashJoinTest {
             "empid=110; name=Theodore; dept=Sales");
   }
 
-  @Test void leftOuterJoin() {
+  @Test public void leftOuterJoin() {
     tester(false, new JdbcTest.HrSchema())
         .query(
             "select e.empid, e.name, d.name as dept from emps e  left outer "
@@ -86,7 +86,7 @@ class EnumerableHashJoinTest {
             "empid=200; name=Eric; dept=null");
   }
 
-  @Test void rightOuterJoin() {
+  @Test public void rightOuterJoin() {
     tester(false, new JdbcTest.HrSchema())
         .query(
             "select e.empid, e.name, d.name as dept from emps e  right outer "
@@ -106,7 +106,7 @@ class EnumerableHashJoinTest {
             "empid=null; name=null; dept=HR");
   }
 
-  @Test void leftOuterJoinWithPredicate() {
+  @Test public void leftOuterJoinWithPredicate() {
     tester(false, new JdbcTest.HrSchema())
         .query(
             "select e.empid, e.name, d.name as dept from emps e left outer "
@@ -127,7 +127,7 @@ class EnumerableHashJoinTest {
             "empid=200; name=Eric; dept=null");
   }
 
-  @Test void rightOuterJoinWithPredicate() {
+  @Test public void rightOuterJoinWithPredicate() {
     tester(false, new JdbcTest.HrSchema())
         .query(
             "select e.empid, e.name, d.name as dept from emps e right outer "
@@ -148,7 +148,7 @@ class EnumerableHashJoinTest {
   }
 
 
-  @Test void semiJoin() {
+  @Test public void semiJoin() {
     tester(false, new JdbcTest.HrSchema())
         .query(
             "SELECT d.deptno, d.name FROM depts d WHERE d.deptno in (SELECT e.deptno FROM emps e)")
@@ -161,7 +161,7 @@ class EnumerableHashJoinTest {
             "deptno=10; name=Sales");
   }
 
-  @Test void semiJoinWithPredicate() {
+  @Test public void semiJoinWithPredicate() {
     tester(false, new JdbcTest.HrSchema())
         .query("?")
         .withRel(
@@ -199,3 +199,8 @@ class EnumerableHashJoinTest {
         .withSchema("s", new ReflectiveSchema(schema));
   }
 }
+<<<<<<< HEAD
+=======
+
+// End EnumerableHashJoinTest.java
+>>>>>>> dad1a9684 ([CALCITE-2973],[CALCITE-3284] Allow joins(hash,semi,anti) that have equi conditions to be executed using a hash join algorithm)
