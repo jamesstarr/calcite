@@ -17,7 +17,8 @@
 package org.apache.calcite.materialize;
 
 import org.apache.calcite.plan.RelOptTable;
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
+import org.apache.calcite.rel.type.RelDataTypeField;
+import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.util.Util;
 import org.apache.calcite.util.graph.AttributedDirectedGraph;
 import org.apache.calcite.util.mapping.IntPair;
@@ -25,6 +26,7 @@ import org.apache.calcite.util.mapping.IntPair;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,12 +40,13 @@ class LatticeSpace {
   final SqlStatisticProvider statisticProvider;
   private final Map<List<String>, LatticeTable> tableMap = new HashMap<>();
   final AttributedDirectedGraph<LatticeTable, Step> g =
-      new AttributedDirectedGraph<>(new Step.Factory());
+      new AttributedDirectedGraph<>(new Step.Factory(this));
   private final Map<List<String>, String> simpleTableNames = new HashMap<>();
   private final Set<String> simpleNames = new HashSet<>();
   /** Root nodes, indexed by digest. */
   final Map<String, LatticeRootNode> nodeMap = new HashMap<>();
   final Map<ImmutableList<Step>, Path> pathMap = new HashMap<>();
+  final Map<LatticeTable, List<RexNode>> tableExpressions = new HashMap<>();
 
   LatticeSpace(SqlStatisticProvider statisticProvider) {
     this.statisticProvider = Objects.requireNonNull(statisticProvider);
@@ -131,7 +134,7 @@ class LatticeSpace {
     return path2;
   }
 
-<<<<<<< HEAD
+>>>>>>> d7fe6de6b ([CALCITE-3286] In LatticeSuggester, allow join conditions that use expressions)
   /** Registers an expression as a derived column of a given table.
    *
    * <p>Its ordinal is the number of fields in the row type plus the ordinal
@@ -166,7 +169,9 @@ class LatticeSpace {
       return tableExpressions.get(table).get(field - fieldCount).toString();
     }
   }
+<<<<<<< HEAD
 }
+=======
 =======
 }
 
