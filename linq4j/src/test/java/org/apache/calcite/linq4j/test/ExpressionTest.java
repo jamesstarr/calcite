@@ -1611,9 +1611,6 @@ public class ExpressionTest {
         Expressions.toString(Expressions.constant(map)));
   }
 
-<<<<<<< HEAD
-  @Test void testEvaluate() {
-=======
   @Test public void testEvaluate() {
     Expression x = Expressions.add(ONE, TWO);
     Object value = Expressions.evaluate(x);
@@ -1691,7 +1688,6 @@ public class ExpressionTest {
   }
 
 =======
->>>>>>> da1ff4734 ([CALCITE-3260] Add Expressions.evaluate(Node), a public API for evaluating linq4j expressions (Wang Yanlin))
   /** An enum. */
   enum MyEnum {
     X,
