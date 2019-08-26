@@ -1138,23 +1138,7 @@ class RelToSqlConverterTest {
     sql(query).dialect(HiveSqlDialect.DEFAULT).ok(expected);
   }
 
-  @Test void testHiveSelectQueryWithOverAscAndNullsLastShouldBeEmulated() {
-    final String query = "SELECT row_number() over "
-        + "(order by \"hire_date\" nulls last) FROM \"employee\"";
-    final String expected = "SELECT ROW_NUMBER() OVER (ORDER BY hire_date IS NULL, hire_date)\n"
-        + "FROM foodmart.employee";
-    sql(query).dialect(HiveSqlDialect.DEFAULT).ok(expected);
-  }
-
-  @Test void testHiveSelectQueryWithOverAscNullsFirstShouldNotAddNullEmulation() {
-    final String query = "SELECT row_number() over "
-        + "(order by \"hire_date\" nulls first) FROM \"employee\"";
-    final String expected = "SELECT ROW_NUMBER() OVER (ORDER BY hire_date)\n"
-        + "FROM foodmart.employee";
-    sql(query).dialect(HiveSqlDialect.DEFAULT).ok(expected);
-  }
-
-  @Test void testHiveSubstring() {
+  @Test public void testHiveSubstring() {
     String query = "SELECT SUBSTRING('ABC', 2)"
             + "from \"foodmart\".\"reserve_employee\"";
     final String expected = "SELECT SUBSTRING('ABC', 2)\n"
@@ -1162,7 +1146,7 @@ class RelToSqlConverterTest {
     sql(query).withHive().ok(expected);
   }
 
-  @Test void testHiveSubstringWithLength() {
+  @Test public void testHiveSubstringWithLength() {
     String query = "SELECT SUBSTRING('ABC', 2, 3)"
             + "from \"foodmart\".\"reserve_employee\"";
     final String expected = "SELECT SUBSTRING('ABC', 2, 3)\n"
@@ -1170,7 +1154,7 @@ class RelToSqlConverterTest {
     sql(query).withHive().ok(expected);
   }
 
-  @Test void testHiveSubstringWithANSI() {
+  @Test public void testHiveSubstringWithANSI() {
     String query = "SELECT SUBSTRING('ABC' FROM 2)"
             + "from \"foodmart\".\"reserve_employee\"";
     final String expected = "SELECT SUBSTRING('ABC', 2)\n"
@@ -1178,7 +1162,7 @@ class RelToSqlConverterTest {
     sql(query).withHive().ok(expected);
   }
 
-  @Test void testHiveSubstringWithANSIAndLength() {
+  @Test public void testHiveSubstringWithANSIAndLength() {
     String query = "SELECT SUBSTRING('ABC' FROM 2 FOR 3)"
             + "from \"foodmart\".\"reserve_employee\"";
     final String expected = "SELECT SUBSTRING('ABC', 2, 3)\n"
@@ -1186,15 +1170,7 @@ class RelToSqlConverterTest {
     sql(query).withHive().ok(expected);
   }
 
-  @Test void testHiveSelectQueryWithOverDescNullsLastShouldNotAddNullEmulation() {
-    final String query = "SELECT row_number() over "
-            + "(order by \"hire_date\" desc nulls last) FROM \"employee\"";
-    final String expected = "SELECT ROW_NUMBER() OVER (ORDER BY hire_date DESC)\n"
-            + "FROM foodmart.employee";
-    sql(query).dialect(HiveSqlDialect.DEFAULT).ok(expected);
-  }
-
-  @Test void testHiveSelectQueryWithOrderByDescAndHighNullsWithVersionGreaterThanOrEq21() {
+  @Test public void testHiveSelectQueryWithOrderByDescAndHighNullsWithVersionGreaterThanOrEq21() {
     final HiveSqlDialect hive2_1Dialect =
         new HiveSqlDialect(HiveSqlDialect.DEFAULT_CONTEXT
             .withDatabaseMajorVersion(2)
