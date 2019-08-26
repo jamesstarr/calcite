@@ -2390,13 +2390,14 @@ semantics.
 | m | FROM_BASE64(string)                            | Returns the decoded result of a base-64 *string* as a string
 | m p | MD5(string)                                  | Calculates an MD5 128-bit checksum of *string* and returns it as a hex string
 | m | MONTHNAME(date)                                | Returns the name, in the connection's locale, of the month in *datetime*; for example, it returns '二月' for both DATE '2020-02-10' and TIMESTAMP '2020-02-10 10:10:10'
+| m o | REGEXP_REPLACE(string, regexp, rep, [, pos [, occurrence [, matchType]]]) | Replaces all substrings of *string* that match *regexp* with *rep* at the starting *pos* in expr (if omitted, the default is 1), *occurrence* means which occurrence of a match to search for (if omitted, the default is 1), *matchType* specifies how to perform matching
 | m | REVERSE(string)                                | Returns *string* with the order of the characters reversed
 | o | DECODE(value, value1, result1 [, valueN, resultN ]* [, default ]) | Compares *value* to each *valueN* value one by one; if *value* is equal to a *valueN*, returns the corresponding *resultN*, else returns *default*, or NULL if *default* is not specified
 | o | NVL(value1, value2)                            | Returns *value1* if *value1* is not null, otherwise *value2*
 | o | LTRIM(string)                                  | Returns *string* with all blanks removed from the start
 | o | RTRIM(string)                                  | Returns *string* with all blanks removed from the end
 | m p | SHA1(string)                                 | Calculates a SHA-1 hash value of *string* and returns it as a hex string
-| o | SUBSTR(string, position [, substring_length ]) | Returns a portion of *string*, beginning at character *position*, *substring_length* characters long. SUBSTR calculates lengths using characters as defined by the input character set
+| o | SUBSTR(string, position [, substringLength ]) | Returns a portion of *string*, beginning at character *position*, *substringLength* characters long. SUBSTR calculates lengths using characters as defined by the input character set
 | o | GREATEST(expr [, expr ]*)                      | Returns the greatest of the expressions
 | o | LEAST(expr [, expr ]* )                        | Returns the least of the expressions
 | o p | TRANSLATE(expr, fromString, toString)        | Returns *expr* with all occurrences of each character in *fromString* replaced by its corresponding character in *toString*. Characters in *expr* that are not in *fromString* are not replaced

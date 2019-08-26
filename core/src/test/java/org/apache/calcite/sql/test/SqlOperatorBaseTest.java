@@ -81,6 +81,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -4647,6 +4648,45 @@ public abstract class SqlOperatorBaseTest {
     tester.checkString("upper('1')", "1", "CHAR(1) NOT NULL");
     tester.checkString("upper('aa')", "AA", "CHAR(2) NOT NULL");
     tester.checkNull("upper(cast(null as varchar(1)))");
+  }
+
+  @Test public void testRegexpReplaceFunc() {
+    Stream.of(SqlLibrary.MYSQL, SqlLibrary.ORACLE)
+        .map(this::tester)
+        .forEach(t -> {
+          t.setFor(SqlLibraryOperators.REGEXP_REPLACE);
+          t.checkString("regexp_replace('a b c', 'b', 'X')", "a X c",
+              "VARCHAR NOT NULL");
+          t.checkString("regexp_replace('abc def ghi', '[a-z]+', 'X')", "X X X",
+              "VARCHAR NOT NULL");
+          t.checkString("regexp_replace('100-200', '(\\d+)', 'num')", "num-num",
+              "VARCHAR NOT NULL");
+          t.checkString("regexp_replace('100-200', '(-)', '###')", "100###200",
+              "VARCHAR NOT NULL");
+          t.checkNull("regexp_replace(cast(null as varchar), '(-)', '###')");
+          t.checkNull("regexp_replace('100-200', cast(null as varchar), '###')");
+          t.checkNull("regexp_replace('100-200', '(-)', cast(null as varchar))");
+          t.checkString("regexp_replace('abc def ghi', '[a-z]+', 'X', 2)", "aX X X",
+              "VARCHAR NOT NULL");
+          t.checkString("regexp_replace('abc def ghi', '[a-z]+', 'X', 1, 3)", "abc def X",
+              "VARCHAR NOT NULL");
+          t.checkString("regexp_replace('abc def GHI', '[a-z]+', 'X', 1, 3, 'c')", "abc def GHI",
+              "VARCHAR NOT NULL");
+          t.checkString("regexp_replace('abc def GHI', '[a-z]+', 'X', 1, 3, 'i')", "abc def X",
+              "VARCHAR NOT NULL");
+          t.checkString("regexp_replace('abc def GHI', '[a-z]+', 'X', 1, 3, 'i')", "abc def X",
+              "VARCHAR NOT NULL");
+          t.checkString("regexp_replace('abc\t\ndef\t\nghi', '\t', '+')", "abc+\ndef+\nghi",
+              "VARCHAR NOT NULL");
+          t.checkString("regexp_replace('abc\t\ndef\t\nghi', '\t\n', '+')", "abc+def+ghi",
+              "VARCHAR NOT NULL");
+          t.checkString("regexp_replace('abc\t\ndef\t\nghi', '\\w+', '+')", "+\t\n+\t\n+",
+              "VARCHAR NOT NULL");
+          t.checkQuery("select regexp_replace('a b c', 'b', 'X')");
+          t.checkQuery("select regexp_replace('a b c', 'b', 'X', 1)");
+          t.checkQuery("select regexp_replace('a b c', 'b', 'X', 1, 3)");
+          t.checkQuery("select regexp_replace('a b c', 'b', 'X', 1, 3, 'i')");
+        });
   }
 
   @Test public void testJsonExists() {
