@@ -47,3 +47,8 @@ public class MatchUtils {
     System.out.println(s);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End MatchUtils.java
+>>>>>>> 73334a91f ([CALCITE-3302] Implement CLASSIFIER and LAST functions for MATCH_RECOGNIZE)

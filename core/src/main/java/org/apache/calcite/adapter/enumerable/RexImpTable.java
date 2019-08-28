@@ -48,7 +48,7 @@ import org.apache.calcite.schema.impl.AggregateFunctionImpl;
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlBinaryOperator;
 import org.apache.calcite.sql.SqlJsonConstructorNullClause;
->>>>>>> 48dfb0754 ([CALCITE-2787] JSON aggregate calls with different null clause get incorrectly merged during converting from SQL to relational algebra)
+import org.apache.calcite.sql.SqlMatchFunction;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlJsonArrayAggAggFunction;
 import org.apache.calcite.sql.fun.SqlJsonObjectAggAggFunction;
@@ -135,6 +135,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CBRT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CEIL;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CHARACTER_LENGTH;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CHAR_LENGTH;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CLASSIFIER;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.COALESCE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.COLLECT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CONCAT;
@@ -160,7 +161,6 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EQUALS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EVERY;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EXP;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EXTRACT;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.FINAL;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.FIRST_VALUE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.FLOOR;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.FUSION;
@@ -198,7 +198,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_QUERY;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_VALUE_ANY;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.JSON_VALUE_EXPRESSION;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.LAG;
->>>>>>> 133dfb6da ([CALCITE-2908] Implement SQL LAST_DAY function (Chunwei Lei))
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.LAST;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.LAST_DAY;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.LAST_VALUE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.LEAD;
@@ -296,6 +296,8 @@ public class RexImpTable {
   private final Map<SqlAggFunction, Supplier<? extends AggImplementor>> aggMap =
       new HashMap<>();
   private final Map<SqlAggFunction, Supplier<? extends WinAggImplementor>> winAggMap =
+      new HashMap<>();
+  private final Map<SqlMatchFunction, Supplier<? extends MatchImplementor>> matchMap =
       new HashMap<>();
 
   RexImpTable() {
@@ -640,14 +642,6 @@ public class RexImpTable {
     winAggMap.put(COUNT, constructorSupplier(CountWinImplementor.class));
 
     // Functions for MATCH_RECOGNIZE
-<<<<<<< HEAD
-    matchMap.put(CLASSIFIER, ClassifierImplementor::new);
-    matchMap.put(LAST, LastImplementor::new);
-    map.put(PREV, new PrevImplementor());
-    tvfImplementorMap.put(TUMBLE, TumbleImplementor::new);
-    tvfImplementorMap.put(HOP, HopImplementor::new);
-    tvfImplementorMap.put(SESSION, SessionImplementor::new);
-=======
     defineMethod(FINAL, "abs", NullPolicy.ANY);
 
     map.put(PREV, (translator, call, nullAs) -> {
@@ -658,6 +652,10 @@ public class RexImpTable {
       ((EnumerableMatch.PrevInputGetter) translator.inputGetter).setOffset(offs);
       return translator.translate(node, nullAs);
     });
+=======
+    matchMap.put(CLASSIFIER, ClassifierImplementor::new);
+    matchMap.put(LAST, LastImplementor::new);
+    map.put(PREV, new PrevImplementor());
   }
 
   private <T> Supplier<T> constructorSupplier(Class<T> klass) {
@@ -954,16 +952,7 @@ public class RexImpTable {
     }
   }
 
-  public TableFunctionCallImplementor get(final SqlWindowTableFunction operator) {
-    final Supplier<? extends TableFunctionCallImplementor> supplier =
-        tvfImplementorMap.get(operator);
-    if (supplier != null) {
-      return supplier.get();
-    } else {
-      throw new IllegalStateException("Supplier should not be null");
-    }
-  }
-
+>>>>>>> 73334a91f ([CALCITE-3302] Implement CLASSIFIER and LAST functions for MATCH_RECOGNIZE)
   static Expression maybeNegate(boolean negate, Expression expression) {
     if (!negate) {
       return expression;
@@ -3109,6 +3098,78 @@ public class RexImpTable {
       }
     }
   }
+<<<<<<< HEAD
+=======
+
+  /** Implements CLASSIFIER match-recognize function. */
+  private static class ClassifierImplementor implements MatchImplementor {
+    @Override public Expression implement(RexToLixTranslator translator, RexCall call,
+        ParameterExpression row, ParameterExpression rows,
+        ParameterExpression symbols, ParameterExpression i) {
+      return Types.castIfNecessary(String.class,
+          Expressions.call(symbols, BuiltInMethod.LIST_GET.method, i));
+    }
+  }
+
+  /** Implements the LAST match-recognize function. */
+  private static class LastImplementor implements MatchImplementor {
+    @Override public Expression implement(RexToLixTranslator translator, RexCall call,
+        ParameterExpression row, ParameterExpression rows,
+        ParameterExpression symbols, ParameterExpression i) {
+      final RexNode node = call.getOperands().get(0);
+
+      final String alpha = ((RexPatternFieldRef) call.getOperands().get(0)).getAlpha();
+
+      final BinaryExpression lastIndex = Expressions.subtract(
+          Expressions.call(rows, BuiltInMethod.COLLECTION_SIZE.method),
+          Expressions.constant(1));
+
+      // Just take the last one, if exists
+      if ("*".equals(alpha)) {
+        ((EnumerableMatch.PassedRowsInputGetter) translator.inputGetter).setIndex(i);
+        // Important, unbox the node / expression to avoid NullAs.NOT_POSSIBLE
+        final RexPatternFieldRef ref = (RexPatternFieldRef) node;
+        final RexPatternFieldRef newRef =
+            new RexPatternFieldRef(ref.getAlpha(),
+                ref.getIndex(),
+                translator.typeFactory.createTypeWithNullability(ref.getType(),
+                    true));
+        final Expression expression = translator.translate(newRef, NullAs.NULL);
+        ((EnumerableMatch.PassedRowsInputGetter) translator.inputGetter).setIndex(null);
+        return expression;
+      } else {
+        // Alpha != "*" so we have to search for a specific one to find and use that, if found
+        ((EnumerableMatch.PassedRowsInputGetter) translator.inputGetter).setIndex(
+            Expressions.call(BuiltInMethod.MATCH_UTILS_LAST_WITH_SYMBOL.method,
+                Expressions.constant(alpha), rows, symbols, i));
+
+        // Important, unbox the node / expression to avoid NullAs.NOT_POSSIBLE
+        final RexPatternFieldRef ref = (RexPatternFieldRef) node;
+        final RexPatternFieldRef newRef =
+            new RexPatternFieldRef(ref.getAlpha(),
+                ref.getIndex(),
+                translator.typeFactory.createTypeWithNullability(ref.getType(),
+                    true));
+        final Expression expression = translator.translate(newRef, NullAs.NULL);
+        ((EnumerableMatch.PassedRowsInputGetter) translator.inputGetter).setIndex(null);
+        return expression;
+      }
+    }
+  }
+
+  /** Implements PREV match-recognize function. */
+  private static class PrevImplementor implements CallImplementor {
+    @Override public Expression implement(RexToLixTranslator translator, RexCall call,
+        NullAs nullAs) {
+      final RexNode node = call.getOperands().get(0);
+      final RexNode offset = call.getOperands().get(1);
+      final Expression offs = Expressions.multiply(translator.translate(offset),
+          Expressions.constant(-1));
+      ((EnumerableMatch.PrevInputGetter) translator.inputGetter).setOffset(offs);
+      return translator.translate(node, nullAs);
+    }
+  }
+}
 
   /** Implements CLASSIFIER match-recognize function. */
   private static class ClassifierImplementor implements MatchImplementor {

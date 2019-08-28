@@ -326,12 +326,9 @@ class RelWriterTest {
     final RelDataTypeField field = scan.getRowType().getField("SAL", false, false);
     programBuilder.addIdentity();
     programBuilder.addCondition(
-        rexBuilder.makeCall(
-            SqlStdOperatorTable.GREATER_THAN,
+        rexBuilder.makeCall(SqlStdOperatorTable.GREATER_THAN,
             new RexInputRef(field.getIndex(), field.getType()),
-            builder.literal(10)
-        )
-    );
+            builder.literal(10)));
     final LogicalCalc calc = LogicalCalc.create(scan, programBuilder.getProgram());
     String relJson = RelOptUtil.dumpPlan("", calc,
         SqlExplainFormat.JSON, SqlExplainLevel.EXPPLAN_ATTRIBUTES);
@@ -377,8 +374,7 @@ class RelWriterTest {
         + "  LogicalFilter(condition=[=($0, $cor0.DEPTNO)])\n"
         + "    LogicalTableScan(table=[[scott, DEPT]])\n";
 
-    assertThat(s, isLinux(expected)
-    );
+    assertThat(s, isLinux(expected));
   }
 
   /** Returns the schema of a {@link org.apache.calcite.rel.core.TableScan}

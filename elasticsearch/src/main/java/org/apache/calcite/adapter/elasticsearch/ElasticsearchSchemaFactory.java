@@ -16,10 +16,45 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-      final Map<String, Integer> coordinates =
-          mapper.readValue((String) map.get("coordinates"),
-              new TypeReference<Map<String, Integer>>() { });
 =======
+import org.apache.calcite.schema.Schema;
+import org.apache.calcite.schema.SchemaFactory;
+import org.apache.calcite.schema.SchemaPlus;
+
+import org.apache.http.HttpHost;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
+
+import org.elasticsearch.client.RestClient;
+
+import java.io.IOException;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+/**
+ * Factory that creates an {@link ElasticsearchSchema}.
+ *
+ * <p>Allows a custom schema to be included in a model.json file.
+ */
+@SuppressWarnings("UnusedDeclaration")
+public class ElasticsearchSchemaFactory implements SchemaFactory {
+
+  public ElasticsearchSchemaFactory() {
+  }
+
+  @Override public Schema create(SchemaPlus parentSchema, String name,
+      Map<String, Object> operand) {
+
+    final Map map = (Map) operand;
+
+    final ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+
+    try {
       final String coordinatesString = (String) map.get("coordinates");
       Preconditions.checkState(coordinatesString != null,
           "'coordinates' is missing in configuration");

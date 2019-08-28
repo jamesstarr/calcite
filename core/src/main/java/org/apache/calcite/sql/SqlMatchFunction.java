@@ -29,3 +29,8 @@ public class SqlMatchFunction extends SqlFunction {
     super(name, kind, returnTypeInference, operandTypeInference, operandTypeChecker, category);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlMatchFunction.java
+>>>>>>> 73334a91f ([CALCITE-3302] Implement CLASSIFIER and LAST functions for MATCH_RECOGNIZE)

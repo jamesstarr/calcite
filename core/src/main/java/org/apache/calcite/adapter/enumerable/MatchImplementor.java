@@ -42,3 +42,8 @@ public interface MatchImplementor {
       ParameterExpression currentIndex);
 
 }
+<<<<<<< HEAD
+=======
+
+// End MatchImplementor.java
+>>>>>>> 73334a91f ([CALCITE-3302] Implement CLASSIFIER and LAST functions for MATCH_RECOGNIZE)
