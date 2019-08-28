@@ -34,7 +34,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
 /**
  * Factory that creates an {@link ElasticsearchSchema}.
  *
