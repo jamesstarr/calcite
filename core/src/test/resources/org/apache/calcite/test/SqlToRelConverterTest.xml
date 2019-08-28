@@ -982,6 +982,7 @@ LogicalSort(sort0=[$0], dir0=[ASC])
             <![CDATA[
 LogicalProject(EXPR$0=[ROW(ITEM($3, 1).EMPNO, ITEM($3, 1).ENAME, ROW(ITEM($3, 1).DETAIL.SKILLS))])
   LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+<<<<<<< HEAD
 =======
 LogicalProject(EXPR$0=[DOT(ITEM(DOT(DOT(ITEM($6, 1), 'DETAIL'), 'SKILLS'), +(2, 3)), 'DESC')])
 =======
@@ -1018,6 +1019,8 @@ LogicalSort(sort0=[$0], dir0=[ASC])
 LogicalProject(EXPR$0=[ROW($0, $1, ROW($2))])
   LogicalProject(EXPR$0$0=[ITEM($3, 1).EMPNO], EXPR$0$1=[ITEM($3, 1).ENAME], EXPR$0$2$0=[ITEM($3, 1).DETAIL.SKILLS])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+=======
+>>>>>>> 67a93a027 ([CALCITE-3297] PigToSqlAggregateRule should be applied on multi-set projection to produce an optimal plan (Igor Guzenko))
 ]]>
         </Resource>
     </TestCase>
@@ -1669,18 +1672,16 @@ LogicalProject(EXPR$0=[ITEM(ITEM(ITEM(ITEM(ITEM($3, 0), 'detail'), 'skills'), 0)
     <TestCase name="testArrayElementDoublyNestedStruct">
       <Resource name="plan">
         <![CDATA[
-LogicalProject(EXPR$0=[ROW($0, $1, ROW($2, $3))])
-  LogicalProject(EXPR$0$0=[ITEM(ITEM(ITEM(ITEM($3, 0), 'detail'), 'skills'), 0).TYPE], EXPR$0$1=[ITEM(ITEM(ITEM(ITEM($3, 0), 'detail'), 'skills'), 0).DESC], EXPR$0$2$0=[ITEM(ITEM(ITEM(ITEM($3, 0), 'detail'), 'skills'), 0).OTHERS.A], EXPR$0$2$1=[ITEM(ITEM(ITEM(ITEM($3, 0), 'detail'), 'skills'), 0).OTHERS.B])
-    LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+LogicalProject(EXPR$0=[ROW(ITEM(ITEM(ITEM(ITEM($3, 0), 'detail'), 'skills'), 0).TYPE, ITEM(ITEM(ITEM(ITEM($3, 0), 'detail'), 'skills'), 0).DESC, ROW(ITEM(ITEM(ITEM(ITEM($3, 0), 'detail'), 'skills'), 0).OTHERS.A, ITEM(ITEM(ITEM(ITEM($3, 0), 'detail'), 'skills'), 0).OTHERS.B))])
+  LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
 ]]>
       </Resource>
     </TestCase>
     <TestCase name="testArrayElementThreeTimesNestedStruct">
       <Resource name="plan">
         <![CDATA[
-LogicalProject(EXPR$0=[ROW($0, $1)])
-  LogicalProject(EXPR$0$0$2$0=[ITEM(ITEM(ITEM(ITEM($3, 0), 'detail'), 'skills'), 0).OTHERS.A], EXPR$0$0$2$1=[ITEM(ITEM(ITEM(ITEM($3, 0), 'detail'), 'skills'), 0).OTHERS.B])
-    LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+LogicalProject(EXPR$0=[ROW(ITEM(ITEM(ITEM(ITEM($3, 0), 'detail'), 'skills'), 0).OTHERS.A, ITEM(ITEM(ITEM(ITEM($3, 0), 'detail'), 'skills'), 0).OTHERS.B)])
+  LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
 ]]>
       </Resource>
     </TestCase>
@@ -2744,6 +2745,7 @@ from (select row(row(1)) r from dept) t]]>
             <![CDATA[
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(MYROW=[ROW(ROW(1))])
   LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 =======
@@ -2762,6 +2764,10 @@ LogicalProject(MYROW=[ROW(ROW($0))])
   LogicalProject(MYROW$$0$$0=[1])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
+=======
+LogicalProject(MYROW=[ROW(ROW(1))])
+  LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+>>>>>>> 67a93a027 ([CALCITE-3297] PigToSqlAggregateRule should be applied on multi-set projection to produce an optimal plan (Igor Guzenko))
 ]]>
         </Resource>
     </TestCase>

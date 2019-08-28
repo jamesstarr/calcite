@@ -622,18 +622,6 @@ public class RelToSqlConverter extends SqlImplementor
       query = SqlStdOperatorTable.VALUES.createCall(selects);
       if (rename) {
         query = as(query, "t", fieldNames.toArray(new String[0]));
-<<<<<<< HEAD
-      }
-      if (isEmpty) {
-        if (!rename) {
-          query = as(query, "t");
-        }
-        query = new SqlSelect(POS, null,
-                null, query,
-                createAlwaysFalseCondition(),
-                null, null, null, null,
-                null, null, null, null);
-=======
       }
       if (isEmpty) {
         if (!rename) {
@@ -926,7 +914,6 @@ public class RelToSqlConverter extends SqlImplementor
     return result(asNode, ImmutableList.of(Clause.FROM), e, null);
   }
 
->>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)
   /**
    * Creates operands for a full AS operator. Format SqlNode AS alias(col_1, col_2,... ,col_n).
    *

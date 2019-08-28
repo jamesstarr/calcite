@@ -263,10 +263,6 @@ public class PigRelBuilder extends RelBuilder {
    * @return This builder
    */
   private RelBuilder scan(RelOptTable tableSchema) {
-<<<<<<< HEAD
-    final RelNode scan = getScanFactory().createScan(
-        ViewExpanders.simpleContext(cluster), tableSchema);
-=======
     final RelNode scan = getScanFactory().createScan(cluster, tableSchema, ImmutableList.of());
     push(scan);
     return this;
@@ -672,4 +668,3 @@ public class PigRelBuilder extends RelBuilder {
 =======
 
 // End PigRelBuilder.java
->>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)

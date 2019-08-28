@@ -255,11 +255,6 @@ public class PigToSqlAggregateRule extends RelOptRule {
 
     // Step 2 build new Aggregate
     // Copy the group key
-<<<<<<< HEAD
-    final RelBuilder.GroupKey groupKey =
-        relBuilder.groupKey(oldAgg.getGroupSet(),
-            (Iterable<ImmutableBitSet>) oldAgg.groupSets);
-=======
     final RelBuilder.GroupKey groupKey = relBuilder.groupKey(oldAgg.getGroupSet(),
         oldAgg.groupSets);
     // The construct the agg call list
@@ -414,4 +409,3 @@ public class PigToSqlAggregateRule extends RelOptRule {
 =======
 
 // End PigToSqlAggregateRule.java
->>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)
