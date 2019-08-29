@@ -1020,6 +1020,12 @@ public abstract class SqlImplementor {
       for (int arg : aggCall.getArgList()) {
         operandList.add(field(arg));
       }
+
+      if ((op instanceof SqlCountAggFunction) && operandList.isEmpty()) {
+        // If there is no parameter in "count" function, add a star identifier to it
+        operandList.add(SqlIdentifier.star(POS));
+      }
+
       final SqlLiteral qualifier =
           aggCall.isDistinct() ? SqlSelectKeyword.DISTINCT.symbol(POS) : null;
       final SqlNode[] operands = operandList.toArray(new SqlNode[0]);
