@@ -48,6 +48,7 @@ import org.apache.calcite.rex.RexWindowBound;
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.SqlIntervalQualifier;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSyntax;
@@ -243,6 +244,12 @@ public class RelJson {
             Util.enumVal(SqlTypeName.class, (String) map.get("type"));
         final Integer precision = (Integer) map.get("precision");
         final Integer scale = (Integer) map.get("scale");
+        if (SqlTypeName.INTERVAL_TYPES.contains(sqlTypeName)) {
+          TimeUnit startUnit = sqlTypeName.getStartUnit();
+          TimeUnit endUnit = sqlTypeName.getEndUnit();
+          return typeFactory.createSqlIntervalType(
+              new SqlIntervalQualifier(startUnit, endUnit, SqlParserPos.ZERO));
+        }
         final RelDataType type;
         if (precision == null) {
           type = typeFactory.createSqlType(sqlTypeName);
@@ -488,9 +495,14 @@ public class RelJson {
         if (window != null) {
           final SqlAggFunction operator = toAggregation(relInput, op, opMap);
           final RelDataType type = toType(typeFactory, jsonType);
-          final List<RexNode> partitionKeys = toRexList(relInput, (List) window.get("partition"));
-          final List<RexFieldCollation> orderKeys =
-              toRexFieldCollationList(relInput, (List) window.get("order"));
+          List<RexNode> partitionKeys = new ArrayList<>();
+          if (window.containsKey("partition")) {
+            partitionKeys = toRexList(relInput, (List) window.get("partition"));
+          }
+          List<RexFieldCollation> orderKeys = new ArrayList<>();
+          if (window.containsKey("order")) {
+            orderKeys = toRexFieldCollationList(relInput, (List) window.get("order"));
+          }
           final RexWindowBound lowerBound;
           final RexWindowBound upperBound;
           final boolean physical;
