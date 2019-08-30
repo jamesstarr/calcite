@@ -342,7 +342,13 @@ public class AggregateCall {
   }
 
   @Override public int hashCode() {
-    return Objects.hash(aggFunction, distinct, argList, filterArg, collation);
+    return Objects.hash(aggFunction,
+            distinct,
+            approximate,
+            ignoreNulls,
+            argList,
+            filterArg,
+            collation);
   }
 
   /**
