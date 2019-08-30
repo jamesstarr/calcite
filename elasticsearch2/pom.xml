@@ -190,6 +190,45 @@ limitations under the License.
           </execution>
         </executions>
       </plugin>
+<<<<<<< HEAD:elasticsearch2/pom.xml
+=======
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration />
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>${maven-dependency-plugin.version}</version>
+        <!-- configurations do not cascade, so all of the definition from
+             ../pom.xml:build:plugin-management:plugins:plugin must be repeated in child poms -->
+        <executions>
+          <execution>
+            <id>analyze</id>
+            <goals>
+              <goal>analyze-only</goal>
+            </goals>
+            <configuration>
+              <failOnWarning>true</failOnWarning>
+              <!-- ignore "unused but declared" warnings -->
+              <ignoredUnusedDeclaredDependencies>
+                <ignoredUnusedDeclaredDependency>xerces:xercesImpl</ignoredUnusedDeclaredDependency>
+                <ignoredUnusedDeclaredDependency>xalan:xalan</ignoredUnusedDeclaredDependency>
+              </ignoredUnusedDeclaredDependencies>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <configuration>
+          <!-- Never fail the build for this module but still check for vulnerabilities. -->
+          <failBuildOnCVSS>11</failBuildOnCVSS>
+        </configuration>
+      </plugin>
+>>>>>>> 9fa50352f ([CALCITE-3314] CVSS dependency-check-maven fails for calcite-pig, calcite-piglet, calcite-spark):spark/pom.xml
     </plugins>
   </build>
 </project>
