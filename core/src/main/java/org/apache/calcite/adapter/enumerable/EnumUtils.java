@@ -34,21 +34,24 @@ import org.apache.calcite.linq4j.tree.MethodCallExpression;
 import org.apache.calcite.linq4j.tree.MethodDeclaration;
 import org.apache.calcite.linq4j.tree.ParameterExpression;
 import org.apache.calcite.linq4j.tree.Primitive;
-import org.apache.calcite.linq4j.tree.Types;
-import org.apache.calcite.linq4j.tree.UnaryExpression;
+>>>>>>> 483a37eed ([CALCITE-3309] Refactor generatePredicate method from EnumerableNestedLoopJoin/EnumerableHashJoin/EnumerableBatchNestedLoopJoin into a single location)
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.rex.RexProgramBuilder;
 import org.apache.calcite.runtime.Utilities;
 import org.apache.calcite.sql.SqlCollation;
 import org.apache.calcite.util.BuiltInMethod;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import org.apache.calcite.util.Pair;
 =======
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+=======
+import org.apache.calcite.util.Pair;
+>>>>>>> 483a37eed ([CALCITE-3309] Refactor generatePredicate method from EnumerableNestedLoopJoin/EnumerableHashJoin/EnumerableBatchNestedLoopJoin into a single location)
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
@@ -1140,5 +1143,40 @@ public class EnumUtils {
             Expressions.constant(locale.getCountry()),
             Expressions.constant(locale.getVariant())),
         Expressions.constant(strength));
+  }
+
+  /** Returns a predicate expression based on a join condition. **/
+  static Expression generatePredicate(
+      EnumerableRelImplementor implementor,
+      RexBuilder rexBuilder,
+      RelNode left,
+      RelNode right,
+      PhysType leftPhysType,
+      PhysType rightPhysType,
+      RexNode condition) {
+    final BlockBuilder builder = new BlockBuilder();
+    final ParameterExpression left_ =
+        Expressions.parameter(leftPhysType.getJavaRowType(), "left");
+    final ParameterExpression right_ =
+        Expressions.parameter(rightPhysType.getJavaRowType(), "right");
+    final RexProgramBuilder program =
+        new RexProgramBuilder(
+            implementor.getTypeFactory().builder()
+                .addAll(left.getRowType().getFieldList())
+                .addAll(right.getRowType().getFieldList())
+                .build(),
+            rexBuilder);
+    program.addCondition(condition);
+    builder.add(
+        Expressions.return_(null,
+            RexToLixTranslator.translateCondition(program.getProgram(),
+                implementor.getTypeFactory(),
+                builder,
+                new RexToLixTranslator.InputGetterImpl(
+                    ImmutableList.of(Pair.of(left_, leftPhysType),
+                        Pair.of(right_, rightPhysType))),
+                implementor.allCorrelateVariables,
+                implementor.getConformance())));
+    return Expressions.lambda(Predicate2.class, builder.toBlock(), left_, right_);
   }
 }

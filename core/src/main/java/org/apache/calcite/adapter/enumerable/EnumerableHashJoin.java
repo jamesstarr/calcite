@@ -16,11 +16,9 @@
  */
 package org.apache.calcite.adapter.enumerable;
 
-import org.apache.calcite.linq4j.function.Predicate2;
 import org.apache.calcite.linq4j.tree.BlockBuilder;
 import org.apache.calcite.linq4j.tree.Expression;
 import org.apache.calcite.linq4j.tree.Expressions;
-import org.apache.calcite.linq4j.tree.ParameterExpression;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptCost;
 import org.apache.calcite.plan.RelOptPlanner;
@@ -38,43 +36,8 @@ import org.apache.calcite.rel.metadata.RelMdCollation;
 import org.apache.calcite.rel.metadata.RelMdUtil;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rex.RexNode;
-    Expression predicate = Expressions.constant(null);
-    if (!joinInfo.nonEquiConditions.isEmpty()) {
-      RexNode nonEquiCondition = RexUtil.composeConjunction(
-          getCluster().getRexBuilder(), joinInfo.nonEquiConditions, true);
-      if (nonEquiCondition != null) {
-        predicate = generatePredicate(implementor,
-            leftResult.physType,
-            rightResult.physType, nonEquiCondition);
-      }
-    }
-    return implementor.result(
-        physType,
-        builder.append(
-            Expressions.call(
-                leftExpression,
-                BuiltInMethod.HASH_JOIN.method,
-                Expressions.list(
-                    rightExpression,
-                    leftResult.physType.generateAccessor(joinInfo.leftKeys),
-                    rightResult.physType.generateAccessor(joinInfo.rightKeys),
-                    EnumUtils.joinSelector(joinType,
-                        physType,
-                        ImmutableList.of(
-                            leftResult.physType, rightResult.physType)))
-                    .append(
-                        Util.first(keyPhysType.comparer(),
-                            Expressions.constant(null)))
-                    .append(
-                        Expressions.constant(joinType.generatesNullsOnLeft()))
-                    .append(
-                        Expressions.constant(
-                            joinType.generatesNullsOnRight())).append(predicate)
-            ))
-            .toBlock());
-<<<<<<< HEAD
-=======
   }
+<<<<<<< HEAD
 
   Expression generatePredicate(EnumerableRelImplementor implementor,
       PhysType leftPhysType, PhysType rightPhysType,
@@ -104,8 +67,9 @@ import org.apache.calcite.rex.RexNode;
                 implementor.getConformance())));
     return Expressions.lambda(Predicate2.class, builder.toBlock(), left_,
         right_);
->>>>>>> dad1a9684 ([CALCITE-2973],[CALCITE-3284] Allow joins(hash,semi,anti) that have equi conditions to be executed using a hash join algorithm)
   }
+=======
+>>>>>>> 483a37eed ([CALCITE-3309] Refactor generatePredicate method from EnumerableNestedLoopJoin/EnumerableHashJoin/EnumerableBatchNestedLoopJoin into a single location)
 }
 <<<<<<< HEAD
 =======
