@@ -37,12 +37,10 @@ import java.net.URL;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-<<<<<<< HEAD
-=======
 import java.util.List;
 import java.util.function.Consumer;
+=======
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
@@ -101,32 +99,6 @@ public class DruidAdapterIT {
   /** Whether to run this test. */
   protected boolean enabled() {
     return CalciteSystemProperty.TEST_DRUID.value();
-  }
-
-  /** Returns a consumer that checks that a particular Druid query is
-   * generated to implement a query. */
-  private static Consumer<List> druidChecker(final String... lines) {
-    return list -> {
-      assertThat(list.size(), is(1));
-      DruidQuery.QuerySpec querySpec = (DruidQuery.QuerySpec) list.get(0);
-      for (String line : lines) {
-        final String s = line.replace('\'', '"');
-        assertThat(querySpec.getQueryString(null, -1), containsString(s));
-      }
-    };
-  }
-
-  /** Returns a consumer that checks that a particular Druid query is
-   * generated to implement a query. Expected lines should be exactly
-   * included in the actual query text, without changing quote types. */
-  private Consumer<List> druidOriginalChecker(final String... lines) {
-    return list -> {
-      assertThat(list.size(), is(1));
-      DruidQuery.QuerySpec querySpec = (DruidQuery.QuerySpec) list.get(0);
-      for (String line : lines) {
-        assertThat(querySpec.getQueryString(null, -1), containsString(line));
-      }
-    };
   }
 
   /**
@@ -605,7 +577,7 @@ public class DruidAdapterIT {
         .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "America/New_York")
         .query(sql)
         .runs()
-        .queryContains(druidOriginalChecker(druidQuery));
+        .queryContains(new DruidChecker(false, druidQuery));
   }
 
   @Test public void testDistinctLimit() {
@@ -830,7 +802,7 @@ public class DruidAdapterIT {
             throw TestUtil.rethrow(e);
           }
         })
-        .queryContains(druidChecker(druidQuery));
+        .queryContains(new DruidChecker(druidQuery));
   }
 
   /** As {@link #testFilterSortDesc()} but the bounds are numeric. */
@@ -859,7 +831,7 @@ public class DruidAdapterIT {
             throw TestUtil.rethrow(e);
           }
         })
-        .queryContains(druidChecker(druidQuery));
+        .queryContains(new DruidChecker(druidQuery));
   }
 
   /** Tests a query whose filter removes all rows. */
@@ -905,7 +877,7 @@ public class DruidAdapterIT {
             throw TestUtil.rethrow(e);
           }
         })
-        .queryContains(druidChecker(druidQuery, druidFilter, druidQuery2));
+        .queryContains(new DruidChecker(druidQuery, druidFilter, druidQuery2));
   }
 
   @Test void testUnionPlan() {
@@ -3128,7 +3100,7 @@ public class DruidAdapterIT {
     sql(sql, WIKI)
         // make sure user_id column is not present
         .queryContains(
-            druidChecker("{'queryType':'scan','dataSource':'wikipedia','intervals':"
+            new DruidChecker("{'queryType':'scan','dataSource':'wikipedia','intervals':"
                 + "['1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z'],'virtualColumns':"
                 + "[{'type':'expression','name':'vc','expression':'\\'__time\\'',"
                 + "'outputType':'LONG'}],'columns':['vc','channel','cityName','comment',"
@@ -3290,7 +3262,7 @@ public class DruidAdapterIT {
         .with(CalciteConnectionProperty.TIME_ZONE, "Asia/Kolkata")
         .query(sql)
         .runs()
-        .queryContains(druidChecker(druidQueryPart1, druidQueryPart2))
+        .queryContains(new DruidChecker(druidQueryPart1, druidQueryPart2))
         .returnsOrdered("T=2015-09-12 14:00:01");
   }
 
@@ -3312,7 +3284,7 @@ public class DruidAdapterIT {
         .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "Asia/Kolkata")
         .query(sql)
         .runs()
-        .queryContains(druidChecker(druidQueryPart1, druidQueryPart2))
+        .queryContains(new DruidChecker(druidQueryPart1, druidQueryPart2))
         .returnsOrdered("T=2015-09-12 08:00:02; S=null; C=1",
             "T=2015-09-12 08:00:04; S=null; C=1",
             "T=2015-09-12 08:00:05; S=null; C=1",
@@ -3371,7 +3343,7 @@ public class DruidAdapterIT {
         .with(CalciteConnectionProperty.TIME_ZONE.camelName(), "Asia/Kolkata")
         .query(sql)
         .runs()
-        .queryContains(druidChecker(druidQuery))
+        .queryContains(new DruidChecker(druidQuery))
         .returnsOrdered("T=1997-05-01 00:00:00");
   }
 
@@ -3491,7 +3463,7 @@ public class DruidAdapterIT {
             + "intervals=[[1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z]], "
             + "projects=[[0]], groups=[{}], aggs=[[COUNT()]])")
         .queryContains(
-            druidChecker(
+            new DruidChecker(
                 "{\"queryType\":\"timeseries\",\"dataSource\":\"foodmart\","
                     + "\"descending\":false,\"granularity\":\"all\","
                     + "\"aggregations\":[{\"type\":\"count\",\"name\":\"EXPR$0\"}],"
@@ -3588,7 +3560,7 @@ public class DruidAdapterIT {
             + "filter=[=(CAST(CAST($0):DATE NOT NULL):VARCHAR NOT NULL, '1997-01-01')], "
             + "groups=[{}], aggs=[[COUNT()]])")
         .queryContains(
-            druidChecker("{\"type\":\"expression\","
+            new DruidChecker("{\"type\":\"expression\","
                 + "\"expression\":\"(timestamp_format(timestamp_floor("))
         .returnsUnordered("EXPR$0=117");
   }
@@ -3839,7 +3811,7 @@ public class DruidAdapterIT {
             + "  DruidQuery(table=[[foodmart, foodmart]], "
             + "intervals=[[1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z]], "
             + "filter=[<>($1, '1')], groups=[{}], aggs=[[COUNT()]])")
-        .queryContains(druidChecker("\"queryType\":\"timeseries\""))
+        .queryContains(new DruidChecker("\"queryType\":\"timeseries\""))
         .returnsOrdered("EXPR$0=86803");
   }
 
@@ -4050,7 +4022,7 @@ public class DruidAdapterIT {
         .explainContains("PLAN=EnumerableInterpreter\n"
             + "  DruidQuery(table=[[foodmart, foodmart]], "
             + "intervals=[[1900-01-09T00:00:00.000Z/2992-01-10T00:00:00.000Z]], "
-            + "filter=[AND(IS NOT TRUE(=($1, 1020)), <>($1, 1020))],"
+            + "filter=[AND(IS NOT TRUE(=(CAST($1):INTEGER, 1020)), <>(CAST($1):INTEGER, 1020))],"
             + " groups=[{}], aggs=[[COUNT()]])");
     final String sql2 = "SELECT COUNT(*) FROM " + FOODMART_TABLE + "WHERE "
         + "\"product_id\" <> 1020";
@@ -4205,7 +4177,7 @@ public class DruidAdapterIT {
     sql(sql, WIKI_AUTO2)
         .returnsOrdered("EXPR$0=353196")
         .queryContains(
-            druidChecker("{'queryType':'timeseries','dataSource':'wikipedia',"
+            new DruidChecker("{'queryType':'timeseries','dataSource':'wikipedia',"
                 + "'descending':false,'granularity':'all','aggregations':[{"
                 + "'type':'longSum','name':'EXPR$0','expression':'timestamp_extract(\\'__time\\'"));
   }
@@ -4276,7 +4248,8 @@ public class DruidAdapterIT {
     sql(sql, FOODMART)
         .returnsOrdered(
             "QR_TIMESTAMP_OK=1; SUM_STORE_SALES=139628.34999999971; YR_TIMESTAMP_OK=1997")
-        .queryContains(druidChecker("\"queryType\":\"groupBy\"", extract_year, extract_expression))
+        .queryContains(
+            new DruidChecker("\"queryType\":\"groupBy\"", extract_year, extract_expression))
         .explainContains("PLAN=EnumerableInterpreter\n"
             + "  BindableProject(QR_TIMESTAMP_OK=[$0], SUM_STORE_SALES=[$2], YR_TIMESTAMP_OK=[$1])\n"
             + "    DruidQuery(table=[[foodmart, foodmart]], intervals=[[1900-01-09T00:00:00.000Z/"
@@ -4357,7 +4330,7 @@ public class DruidAdapterIT {
             + "projects=[[EXTRACT(FLAG(WEEK), $0), EXTRACT(FLAG(DOW), $0), "
             + "EXTRACT(FLAG(DAY), $0), EXTRACT(FLAG(DOY), $0), EXTRACT(FLAG(QUARTER), $0), $1]], "
             + "groups=[{0, 1, 2, 3, 4}], aggs=[[SUM($5)]], fetch=[1])")
-        .queryContains(druidChecker("\"queryType\":\"groupBy\""));
+        .queryContains(new DruidChecker("\"queryType\":\"groupBy\""));
   }
 
   @Test void testCastConcatOverPostAggregates() {
