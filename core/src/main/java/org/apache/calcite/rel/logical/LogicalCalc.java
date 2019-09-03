@@ -92,6 +92,16 @@ public final class LogicalCalc extends Calc {
     this(cluster, traitSet, ImmutableList.of(), child, program);
   }
 
+  /**
+   * Creates a LogicalCalc by parsing serialized output.
+   */
+  public LogicalCalc(RelInput input) {
+    this(input.getCluster(),
+        input.getTraitSet(),
+        input.getInput(),
+        RexProgram.create(input));
+  }
+
   @Deprecated // to be removed before 2.0
   public LogicalCalc(
       RelOptCluster cluster,
