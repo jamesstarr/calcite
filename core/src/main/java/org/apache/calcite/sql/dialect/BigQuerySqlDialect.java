@@ -17,7 +17,7 @@
 package org.apache.calcite.sql.dialect;
 
 import org.apache.calcite.avatica.util.Casing;
-import org.apache.calcite.avatica.util.TimeUnit;
+>>>>>>> 49f7145dc ([CALCITE-3321] BigQuery does not have correct casing rules (Lindsey Meyer))
 import org.apache.calcite.config.NullCollation;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlDialect;
@@ -27,7 +27,6 @@ import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSetOperator;
 import org.apache.calcite.sql.SqlSyntax;
 import org.apache.calcite.sql.SqlWriter;
->>>>>>> d270fc28f ([CALCITE-2623] Add specific translation for POSITION, MOD and set operators in BigQuery and Hive SQL dialects)
 
 import com.google.common.collect.ImmutableList;
 
@@ -48,7 +47,10 @@ public class BigQuerySqlDialect extends SqlDialect {
               .withLiteralQuoteString("'")
               .withLiteralEscapedQuoteString("\\'")
               .withIdentifierQuoteString("`")
-              .withNullCollation(NullCollation.LOW));
+              .withNullCollation(NullCollation.LOW)
+              .withUnquotedCasing(Casing.UNCHANGED)
+              .withQuotedCasing(Casing.UNCHANGED)
+              .withCaseSensitive(false));
 
   private static final List<String> RESERVED_KEYWORDS =
       ImmutableList.copyOf(
