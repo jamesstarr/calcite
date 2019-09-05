@@ -152,14 +152,6 @@ public class ReduceDecimalsRule
         return savedResult;
       }
 
-      // permanently updates a call in place
-      List<RexNode> newOperands = apply(call.getOperands());
-      if (true) {
-        // FIXME: Operands are now immutable. Create a new call with
-        //   new operands?
-        throw new AssertionError();
-      }
-
       RexNode newCall = call;
       RexNode rewrite = rewriteCall(call);
       if (rewrite != call) {
