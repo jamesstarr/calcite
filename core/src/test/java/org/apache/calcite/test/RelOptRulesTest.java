@@ -7438,6 +7438,19 @@ class RelOptRulesTest extends RelOptTestBase {
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
   }
 
+  /**
+   * Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3319">[CALCITE-3319]
+   * AssertionError for ReduceDecimalsRule </a>
+   */
+  @Test public void testReduceDecimal() {
+    final HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.FILTER_TO_CALC)
+        .addRuleInstance(CoreRules.CALC_REDUCE_DECIMALS)
+        .build();
+    checkPlanning(program, "select ename from emp where sal > cast (100.0 as decimal(4, 1))");
+  }
+
   @Test public void testEnumerableCalcRule() {
     final String sql = "select FNAME, LNAME from SALES.CUSTOMER where CONTACTNO > 10";
     VolcanoPlanner planner = new VolcanoPlanner(null, null);
