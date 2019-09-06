@@ -27,6 +27,7 @@ limitations under the License.
 <<<<<<< HEAD:elasticsearch2/pom.xml
 <<<<<<< HEAD:elasticsearch2/pom.xml
 <<<<<<< HEAD:elasticsearch2/pom.xml
+<<<<<<< HEAD:elasticsearch2/pom.xml
     <version>1.16.0-SNAPSHOT</version>
 =======
     <version>1.18.0-SNAPSHOT</version>
@@ -46,10 +47,14 @@ limitations under the License.
 =======
     <version>1.21.0-SNAPSHOT</version>
 >>>>>>> 73086d810 ([maven-release-plugin] prepare for next development iteration):spark/pom.xml
+=======
+    <version>1.21.0</version>
+>>>>>>> 7ee18ce85 ([maven-release-plugin] prepare release calcite-1.21.0):spark/pom.xml
   </parent>
 
   <artifactId>calcite-elasticsearch2</artifactId>
   <packaging>jar</packaging>
+<<<<<<< HEAD:elasticsearch2/pom.xml
 <<<<<<< HEAD:elasticsearch2/pom.xml
 <<<<<<< HEAD:elasticsearch2/pom.xml
 <<<<<<< HEAD:elasticsearch2/pom.xml
@@ -76,6 +81,9 @@ limitations under the License.
 =======
   <version>1.21.0-SNAPSHOT</version>
 >>>>>>> 73086d810 ([maven-release-plugin] prepare for next development iteration):spark/pom.xml
+=======
+  <version>1.21.0</version>
+>>>>>>> 7ee18ce85 ([maven-release-plugin] prepare release calcite-1.21.0):spark/pom.xml
   <name>Calcite Spark</name>
 >>>>>>> a8362b70b ([maven-release-plugin] prepare for next development iteration):spark/pom.xml
 

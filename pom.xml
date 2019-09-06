@@ -33,6 +33,7 @@ limitations under the License.
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   <version>1.16.0-SNAPSHOT</version>
 =======
   <version>1.18.0-SNAPSHOT</version>
@@ -52,6 +53,9 @@ limitations under the License.
 =======
   <version>1.21.0-SNAPSHOT</version>
 >>>>>>> 73086d810 ([maven-release-plugin] prepare for next development iteration)
+=======
+  <version>1.21.0</version>
+>>>>>>> 7ee18ce85 ([maven-release-plugin] prepare release calcite-1.21.0)
 
   <!-- More project information. -->
   <name>Calcite</name>
@@ -202,7 +206,7 @@ limitations under the License.
     <connection>scm:git:https://gitbox.apache.org/repos/asf/calcite.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/calcite.git</developerConnection>
     <url>https://github.com/apache/calcite</url>
-    <tag>calcite-1.21.0-SNAPSHOT</tag>
+    <tag>calcite-1.21.0</tag>
   </scm>
 
   <modules>
