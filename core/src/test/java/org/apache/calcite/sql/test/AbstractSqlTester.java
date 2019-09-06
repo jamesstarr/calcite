@@ -83,8 +83,10 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
   protected final SqlTestFactory factory;
   protected final UnaryOperator<SqlValidator> validatorTransform;
 
-  public AbstractSqlTester(SqlTestFactory factory) {
-    this.factory = factory;
+  public AbstractSqlTester(SqlTestFactory factory,
+      UnaryOperator<SqlValidator> validatorTransform) {
+    this.factory = Objects.requireNonNull(factory);
+    this.validatorTransform = Objects.requireNonNull(validatorTransform);
   }
 
   public final SqlTestFactory getFactory() {
@@ -142,24 +144,7 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
     }
 
     SqlTests.checkEx(thrown, expectedMsgPattern, sap, SqlTests.Stage.VALIDATE);
-  }
-
-  protected void checkParseEx(Throwable e, String expectedMsgPattern, String sql) {
-    try {
-      throw e;
-    } catch (SqlParseException spe) {
-      String errMessage = spe.getMessage();
-      if (expectedMsgPattern == null) {
-        throw new RuntimeException("Error while parsing query:" + sql, spe);
-      } else if (errMessage == null
-          || !errMessage.matches(expectedMsgPattern)) {
-        throw new RuntimeException("Error did not match expected ["
-            + expectedMsgPattern + "] while parsing query ["
-            + sql + "]", spe);
-      }
-    } catch (Throwable t) {
-      throw new RuntimeException("Error while parsing query: " + sql, t);
-    }
+>>>>>>> 0b1e41df1 ([CALCITE-3327] Simplify SqlValidatorTest and SqlParserTest by making test methods fluent)
   }
 
   protected void checkParseEx(Throwable e, String expectedMsgPattern, String sql) {
@@ -355,7 +340,6 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
   public SqlTester enableTypeCoercion(boolean enabled) {
     return with("enableTypeCoercion", enabled);
 =======
->>>>>>> 0f9894602 (Use real properties, not their names, in tests):core/src/test/java/org/apache/calcite/sql/test/SqlTesterImpl.java
   }
 
   public SqlTester enableTypeCoercion(boolean enabled) {

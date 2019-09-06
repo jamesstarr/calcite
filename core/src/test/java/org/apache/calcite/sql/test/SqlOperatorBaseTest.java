@@ -90,7 +90,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.function.Consumer;
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 >>>>>>> 510cf3429 ([CALCITE-3280] Add REGEXP_REPLACE function in Oracle, MySQL libraries (Shuming Li))

@@ -18,20 +18,22 @@ package org.apache.calcite.sql.test;
 
 import org.apache.calcite.sql.validate.SqlValidator;
 
->>>>>>> 954dccdd1 ([CALCITE-2535] Enable SqlTester.checkFails (previously it was a no-op) (Hongze Zhang))
+import java.util.function.UnaryOperator;
+
 /**
  * Tester of {@link SqlValidator}.
  */
 public class SqlValidatorTester extends AbstractSqlTester {
 
   public SqlValidatorTester(SqlTestFactory factory) {
-<<<<<<< HEAD
+>>>>>>> 0b1e41df1 ([CALCITE-3327] Simplify SqlValidatorTest and SqlParserTest by making test methods fluent)
     this(factory, UnaryOperator.identity());
   }
 
   SqlValidatorTester(SqlTestFactory factory,
       UnaryOperator<SqlValidator> validatorTransform) {
     super(factory, validatorTransform);
+<<<<<<< HEAD
   }
 
   @Override protected SqlTester with(SqlTestFactory factory) {
@@ -46,10 +48,17 @@ public class SqlValidatorTester extends AbstractSqlTester {
 }
 =======
     super(factory);
+=======
   }
 
   @Override protected SqlTester with(SqlTestFactory factory) {
-    return new SqlValidatorTester(factory);
+    return new SqlValidatorTester(factory, validatorTransform);
+  }
+
+  public SqlTester withValidatorTransform(
+      UnaryOperator<UnaryOperator<SqlValidator>> transform) {
+    return new SqlValidatorTester(factory,
+        transform.apply(validatorTransform));
   }
 }
 

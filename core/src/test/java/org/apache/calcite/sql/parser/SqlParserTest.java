@@ -598,17 +598,11 @@ public class SqlParserTest {
   }
 
   protected Sql sql(String sql) {
-    return new Sql(sql, false, null, parser -> { });
+    return new Sql(sql, false, null);
   }
 
   protected Sql expr(String sql) {
-    return new Sql(sql, true, null, parser -> { });
-  }
-
-  /** Creates an instance of helper class {@link SqlList} to test parsing a
-   * list of statements. */
-  protected SqlList sqlList(String sql) {
-    return new SqlList(sql);
+    return new Sql(sql, true, null);
   }
 
   /** Creates an instance of helper class {@link SqlList} to test parsing a
@@ -626,11 +620,12 @@ public class SqlParserTest {
   }
 
   public SqlParser getSqlParser(String sql) {
-    return getSqlParser(new SourceStringReader(sql));
+    return getSqlParser(new SourceStringReader(sql), UnaryOperator.identity());
   }
 
-  protected SqlParser getSqlParser(Reader source) {
-    return SqlParser.create(source,
+  protected SqlParser getSqlParser(Reader source,
+      UnaryOperator<SqlParser.ConfigBuilder> transform) {
+    final SqlParser.ConfigBuilder configBuilder =
         SqlParser.configBuilder()
             .setParserFactory(parserImplFactory())
             .setQuoting(quoting)
@@ -640,13 +635,10 @@ public class SqlParserTest {
     final SqlParser.Config config =
         transform.apply(configBuilder).build();
     return SqlParser.create(source, config);
+>>>>>>> 0b1e41df1 ([CALCITE-3327] Simplify SqlValidatorTest and SqlParserTest by making test methods fluent)
   }
 
-  protected SqlParser getDialectSqlParser(String sql, SqlDialect dialect) {
-    return SqlParser.create(new SourceStringReader(sql),
-        dialect.configureParser(SqlParser.configBuilder()).build());
-  }
-
+  @Deprecated // to be removed before 1.23
   protected void checkExp(
       String sql,
       String expected) {
@@ -745,7 +737,10 @@ public class SqlParserTest {
    * "&lt;IDENTIFIER&gt;") are removed, but reserved words such as "AND"
    * remain.
    */
+<<<<<<< HEAD
   @Test void testExceptionCleanup() {
+=======
+  @Test public void testExceptionCleanup() {
     sql("select 0.5e1^.1^ from sales.emps")
         .fails("(?s).*Encountered \".1\" at line 1, column 13.\n"
             + "Was expecting one of:\n"
@@ -770,14 +765,14 @@ public class SqlParserTest {
             + "FROM `EMP`");
   }
 
-  @Test void testDerivedColumnList() {
+  @Test public void testDerivedColumnList() {
     sql("select * from emp as e (empno, gender) where true")
         .ok("SELECT *\n"
             + "FROM `EMP` AS `E` (`EMPNO`, `GENDER`)\n"
             + "WHERE TRUE");
   }
 
-  @Test void testDerivedColumnListInJoin() {
+  @Test public void testDerivedColumnListInJoin() {
     final String sql = "select * from emp as e (empno, gender)\n"
         + " join dept as d (deptno, dname) on emp.deptno = dept.deptno";
     final String expected = "SELECT *\n"
@@ -810,56 +805,56 @@ public class SqlParserTest {
 
   @Ignore
   @Test public void testDerivedColumnListNoAs() {
-    check("select * from emp e (empno, gender) where true", "foo");
+    sql("select * from emp e (empno, gender) where true").ok("foo");
   }
 
   // jdbc syntax
-  @Disabled
-  @Test void testEmbeddedCall() {
+  @Ignore
+  @Test public void testEmbeddedCall() {
     expr("{call foo(?, ?)}")
         .ok("foo");
   }
 
-  @Disabled
-  @Test void testEmbeddedFunction() {
+  @Ignore
+  @Test public void testEmbeddedFunction() {
     expr("{? = call bar (?, ?)}")
         .ok("foo");
   }
 
-  @Test void testColumnAliasWithAs() {
+  @Test public void testColumnAliasWithAs() {
     sql("select 1 as foo from emp")
         .ok("SELECT 1 AS `FOO`\n"
             + "FROM `EMP`");
   }
 
-  @Test void testColumnAliasWithoutAs() {
+  @Test public void testColumnAliasWithoutAs() {
     sql("select 1 foo from emp")
         .ok("SELECT 1 AS `FOO`\n"
             + "FROM `EMP`");
   }
 
-  @Test void testEmbeddedDate() {
+  @Test public void testEmbeddedDate() {
     expr("{d '1998-10-22'}")
         .ok("DATE '1998-10-22'");
   }
 
-  @Test void testEmbeddedTime() {
+  @Test public void testEmbeddedTime() {
     expr("{t '16:22:34'}")
         .ok("TIME '16:22:34'");
   }
 
-  @Test void testEmbeddedTimestamp() {
+  @Test public void testEmbeddedTimestamp() {
     expr("{ts '1998-10-22 16:22:34'}")
         .ok("TIMESTAMP '1998-10-22 16:22:34'");
   }
 
-  @Test void testNot() {
+  @Test public void testNot() {
     sql("select not true, not false, not null, not unknown from t")
         .ok("SELECT (NOT TRUE), (NOT FALSE), (NOT NULL), (NOT UNKNOWN)\n"
             + "FROM `T`");
   }
 
-  @Test void testBooleanPrecedenceAndAssociativity() {
+  @Test public void testBooleanPrecedenceAndAssociativity() {
     sql("select * from t where true and false")
         .ok("SELECT *\n"
             + "FROM `T`\n"
@@ -881,7 +876,7 @@ public class SqlParserTest {
             + "WHERE (1 AND TRUE)");
   }
 
-  @Test void testLessThanAssociativity() {
+  @Test public void testLessThanAssociativity() {
     expr("NOT a = b")
         .ok("(NOT (`A` = `B`))");
 
@@ -960,7 +955,7 @@ public class SqlParserTest {
     }
   }
 
-  @Test void testIsBooleanPrecedenceAndAssociativity() {
+  @Test public void testIsBooleanPrecedenceAndAssociativity() {
     sql("select * from t where x is unknown is not unknown")
         .ok("SELECT *\n"
             + "FROM `T`\n"
@@ -990,7 +985,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testEqualNotEqual() {
+  @Test public void testEqualNotEqual() {
     expr("'abc'=123")
         .ok("('abc' = 123)");
     expr("'abc'<>123")
@@ -1010,11 +1005,11 @@ public class SqlParserTest {
     //   you that != is SQL's not-equals operator; those texts are false;
     //   it's one of those unstampoutable urban myths."
     // Therefore, we only support != with certain SQL conformance levels.
-    checkExpFails("'abc'^!=^123",
-        "Bang equal '!=' is not allowed under the current SQL conformance level");
+    expr("'abc'^!=^123")
+        .fails("Bang equal '!=' is not allowed under the current SQL conformance level");
   }
 
-  @Test void testBetween() {
+  @Test public void testBetween() {
     sql("select * from t where price between 1 and 2")
         .ok("SELECT *\n"
             + "FROM `T`\n"
@@ -1093,13 +1088,13 @@ public class SqlParserTest {
         .ok("VALUES (ROW((`A` BETWEEN ASYMMETRIC ((`B` OR (`C` AND `D`)) OR `E`) AND `F`)))");
   }
 
-  @Test void testOperateOnColumn() {
+  @Test public void testOperateOnColumn() {
     sql("select c1*1,c2  + 2,c3/3,c4-4,c5*c4  from t")
         .ok("SELECT (`C1` * 1), (`C2` + 2), (`C3` / 3), (`C4` - 4), (`C5` * `C4`)\n"
             + "FROM `T`");
   }
 
-  @Test void testRow() {
+  @Test public void testRow() {
     sql("select t.r.\"EXPR$1\", t.r.\"EXPR$0\" from (select (1,2) r from sales.depts) t")
         .ok("SELECT `T`.`R`.`EXPR$1`, `T`.`R`.`EXPR$0`\n"
             + "FROM (SELECT (ROW(1, 2)) AS `R`\n"
@@ -1157,38 +1152,35 @@ public class SqlParserTest {
     sql(whereRow2).sansCarets().ok(whereExpected);
   }
 
-  @Test public void testRowValueExpression() throws SqlParseException {
+  @Test public void testRowValueExpression() {
     final String expected0 = "INSERT INTO \"EMPS\"\n"
-            + "VALUES ROW(1, 'Fred'),\n"
-            + "ROW(2, 'Eric')";
+        + "VALUES (ROW(1, 'Fred')),\n"
+        + "(ROW(2, 'Eric'))";
     String sql = "insert into emps values (1,'Fred'),(2, 'Eric')";
-//    sql(sql)
-//            .withDialect(SqlDialect.DatabaseProduct.CALCITE.getDialect())
-//            .ok(expected0);
-    checkDialect(SqlDialect.DatabaseProduct.CALCITE.getDialect(),
-            sql,
-            is(expected0));
+    sql(sql)
+      .withDialect(SqlDialect.DatabaseProduct.CALCITE.getDialect())
+      .ok(expected0);
 
     final String expected1 = "INSERT INTO `emps`\n"
-            + "VALUES  (1, 'Fred'),\n"
-            + " (2, 'Eric')";
-    checkDialect(SqlDialect.DatabaseProduct.MYSQL.getDialect(),
-            sql,
-            is(expected1));
+        + "VALUES (1, 'Fred'),\n"
+        + "(2, 'Eric')";
+    sql(sql)
+      .withDialect(SqlDialect.DatabaseProduct.MYSQL.getDialect())
+      .ok(expected1);
 
     final String expected2 = "INSERT INTO \"EMPS\"\n"
-            + "VALUES  (1, 'Fred'),\n"
-            + " (2, 'Eric')";
-    checkDialect(SqlDialect.DatabaseProduct.ORACLE.getDialect(),
-            sql,
-            is(expected2));
+        + "VALUES (1, 'Fred'),\n"
+        + "(2, 'Eric')";
+    sql(sql)
+      .withDialect(SqlDialect.DatabaseProduct.ORACLE.getDialect())
+      .ok(expected2);
 
     final String expected3 = "INSERT INTO [EMPS]\n"
-            + "VALUES  (1, 'Fred'),\n"
-            + " (2, 'Eric')";
-    checkDialect(SqlDialect.DatabaseProduct.MSSQL.getDialect(),
-            sql,
-            is(expected3));
+        + "VALUES (1, 'Fred'),\n"
+        + "(2, 'Eric')";
+    sql(sql)
+      .withDialect(SqlDialect.DatabaseProduct.MSSQL.getDialect())
+      .ok(expected3);
   }
 
   /** Whether this is a sub-class that tests un-parsing as well as parsing. */
@@ -1197,17 +1189,19 @@ public class SqlParserTest {
   }
 
   @Test public void testRowWithDot() {
-    check("select (1,2).a from c.t", "SELECT ((ROW(1, 2)).`A`)\nFROM `C`.`T`");
-    check("select row(1,2).a from c.t", "SELECT ((ROW(1, 2)).`A`)\nFROM `C`.`T`");
-    check("select tbl.foo(0).col.bar from tbl",
-        "SELECT ((`TBL`.`FOO`(0).`COL`).`BAR`)\nFROM `TBL`");
+    sql("select (1,2).a from c.t")
+        .ok("SELECT ((ROW(1, 2)).`A`)\nFROM `C`.`T`");
+    sql("select row(1,2).a from c.t")
+        .ok("SELECT ((ROW(1, 2)).`A`)\nFROM `C`.`T`");
+    sql("select tbl.foo(0).col.bar from tbl")
+        .ok("SELECT ((`TBL`.`FOO`(0).`COL`).`BAR`)\nFROM `TBL`");
   }
 
   @Test public void testPeriod() {
     // We don't have a PERIOD constructor currently;
     // ROW constructor is sufficient for now.
-    checkExp("period (date '1969-01-05', interval '2-3' year to month)",
-        "(ROW(DATE '1969-01-05', INTERVAL '2-3' YEAR TO MONTH))");
+    expr("period (date '1969-01-05', interval '2-3' year to month)")
+        .ok("(ROW(DATE '1969-01-05', INTERVAL '2-3' YEAR TO MONTH))");
   }
 
   /** Whether this is a sub-class that tests un-parsing as well as parsing. */
@@ -1271,16 +1265,14 @@ public class SqlParserTest {
     final String expected = "SELECT *\n"
         + "FROM `EMP`,\n"
         + "`DEPT`";
-    sqlList("select * from emp, dept")
-         .ok(expected);
+    sqlList("select * from emp, dept").ok(expected);
   }
 
   @Test public void testStmtListWithSelectAndSemicolon() {
     final String expected = "SELECT *\n"
         + "FROM `EMP`,\n"
         + "`DEPT`";
-    sqlList("select * from emp, dept;")
-         .ok(expected);
+    sqlList("select * from emp, dept;").ok(expected);
   }
 
   @Test public void testStmtListWithTwoSelect() {
@@ -1305,7 +1297,7 @@ public class SqlParserTest {
         + "`DEPT`";
     final String expected1 = "DELETE FROM `EMP`";
     sqlList("select * from emp, dept; delete from emp")
-         .ok(expected, expected1);
+        .ok(expected, expected1);
   }
 
   @Test public void testStmtListWithSelectDeleteUpdate() {
@@ -1337,7 +1329,7 @@ public class SqlParserTest {
         + "WHERE (`NAME` LIKE 'toto;')";
     final String expected1 = "DELETE FROM `EMP`";
     sqlList("select * from emp where name like 'toto;'; delete from emp")
-         .ok(expected, expected1);
+        .ok(expected, expected1);
   }
 
   @Test public void testStmtListWithInsertSelectInsert() {
@@ -1371,9 +1363,8 @@ public class SqlParserTest {
   }
 
   @Test public void testIsDistinctFrom() {
-    check(
-        "select x is distinct from y from t",
-        "SELECT (`X` IS DISTINCT FROM `Y`)\n"
+    sql("select x is distinct from y from t")
+        .ok("SELECT (`X` IS DISTINCT FROM `Y`)\n"
             + "FROM `T`");
 
     sql("select * from t where x is distinct from y")
@@ -1386,15 +1377,13 @@ public class SqlParserTest {
             + "FROM `T`\n"
             + "WHERE (`X` IS DISTINCT FROM (ROW(4, 5, 6)))");
 
-    check(
-        "select * from t where x is distinct from row (4,5,6)",
-        "SELECT *\n"
+    sql("select * from t where x is distinct from row (4,5,6)")
+        .ok("SELECT *\n"
             + "FROM `T`\n"
             + "WHERE (`X` IS DISTINCT FROM (ROW(4, 5, 6)))");
 
-    check(
-        "select * from t where true is distinct from true",
-        "SELECT *\n"
+    sql("select * from t where true is distinct from true")
+        .ok("SELECT *\n"
             + "FROM `T`\n"
             + "WHERE (TRUE IS DISTINCT FROM TRUE)");
 
@@ -1404,7 +1393,7 @@ public class SqlParserTest {
             + "WHERE ((TRUE IS DISTINCT FROM TRUE) IS TRUE)");
   }
 
-  @Test void testIsNotDistinct() {
+  @Test public void testIsNotDistinct() {
     sql("select x is not distinct from y from t")
         .ok("SELECT (`X` IS NOT DISTINCT FROM `Y`)\n"
             + "FROM `T`");
@@ -1415,7 +1404,7 @@ public class SqlParserTest {
             + "WHERE (TRUE IS NOT DISTINCT FROM TRUE)");
   }
 
-  @Test void testFloor() {
+  @Test public void testFloor() {
     expr("floor(1.5)")
         .ok("FLOOR(1.5)");
     expr("floor(x)")
@@ -1484,7 +1473,7 @@ public class SqlParserTest {
         .ok("FLOOR((`X` + INTERVAL '1:20' MINUTE TO SECOND) TO MILLENNIUM)");
   }
 
-  @Test void testCeil() {
+  @Test public void testCeil() {
     expr("ceil(3453.2)")
         .ok("CEIL(3453.2)");
     expr("ceil(x)")
@@ -1553,57 +1542,80 @@ public class SqlParserTest {
   }
 
   @Test public void testCast() {
-    checkExp("cast(x as boolean)", "CAST(`X` AS BOOLEAN)");
-    checkExp("cast(x as integer)", "CAST(`X` AS INTEGER)");
-    checkExp("cast(x as varchar(1))", "CAST(`X` AS VARCHAR(1))");
-    checkExp("cast(x as date)", "CAST(`X` AS DATE)");
-    checkExp("cast(x as time)", "CAST(`X` AS TIME)");
-    checkExp("cast(x as time without time zone)", "CAST(`X` AS TIME)");
-    checkExp("cast(x as time with local time zone)",
-        "CAST(`X` AS TIME WITH LOCAL TIME ZONE)");
-    checkExp("cast(x as timestamp without time zone)", "CAST(`X` AS TIMESTAMP)");
-    checkExp("cast(x as timestamp with local time zone)",
-        "CAST(`X` AS TIMESTAMP WITH LOCAL TIME ZONE)");
-    checkExp("cast(x as time(0))", "CAST(`X` AS TIME(0))");
-    checkExp("cast(x as time(0) without time zone)", "CAST(`X` AS TIME(0))");
-    checkExp("cast(x as time(0) with local time zone)",
-        "CAST(`X` AS TIME(0) WITH LOCAL TIME ZONE)");
-    checkExp("cast(x as timestamp(0))", "CAST(`X` AS TIMESTAMP(0))");
-    checkExp("cast(x as timestamp(0) without time zone)",
-        "CAST(`X` AS TIMESTAMP(0))");
-    checkExp("cast(x as timestamp(0) with local time zone)",
-        "CAST(`X` AS TIMESTAMP(0) WITH LOCAL TIME ZONE)");
-    checkExp("cast(x as timestamp)", "CAST(`X` AS TIMESTAMP)");
-    checkExp("cast(x as decimal(1,1))", "CAST(`X` AS DECIMAL(1, 1))");
-    checkExp("cast(x as char(1))", "CAST(`X` AS CHAR(1))");
-    checkExp("cast(x as binary(1))", "CAST(`X` AS BINARY(1))");
-    checkExp("cast(x as varbinary(1))", "CAST(`X` AS VARBINARY(1))");
-    checkExp("cast(x as tinyint)", "CAST(`X` AS TINYINT)");
-    checkExp("cast(x as smallint)", "CAST(`X` AS SMALLINT)");
-    checkExp("cast(x as bigint)", "CAST(`X` AS BIGINT)");
-    checkExp("cast(x as real)", "CAST(`X` AS REAL)");
-    checkExp("cast(x as double)", "CAST(`X` AS DOUBLE)");
-    checkExp("cast(x as decimal)", "CAST(`X` AS DECIMAL)");
-    checkExp("cast(x as decimal(0))", "CAST(`X` AS DECIMAL(0))");
-    checkExp("cast(x as decimal(1,2))", "CAST(`X` AS DECIMAL(1, 2))");
+    expr("cast(x as boolean)")
+        .ok("CAST(`X` AS BOOLEAN)");
+    expr("cast(x as integer)")
+        .ok("CAST(`X` AS INTEGER)");
+    expr("cast(x as varchar(1))")
+        .ok("CAST(`X` AS VARCHAR(1))");
+    expr("cast(x as date)")
+        .ok("CAST(`X` AS DATE)");
+    expr("cast(x as time)")
+        .ok("CAST(`X` AS TIME)");
+    expr("cast(x as time without time zone)")
+        .ok("CAST(`X` AS TIME)");
+    expr("cast(x as time with local time zone)")
+        .ok("CAST(`X` AS TIME WITH LOCAL TIME ZONE)");
+    expr("cast(x as timestamp without time zone)")
+        .ok("CAST(`X` AS TIMESTAMP)");
+    expr("cast(x as timestamp with local time zone)")
+        .ok("CAST(`X` AS TIMESTAMP WITH LOCAL TIME ZONE)");
+    expr("cast(x as time(0))")
+        .ok("CAST(`X` AS TIME(0))");
+    expr("cast(x as time(0) without time zone)")
+        .ok("CAST(`X` AS TIME(0))");
+    expr("cast(x as time(0) with local time zone)")
+        .ok("CAST(`X` AS TIME(0) WITH LOCAL TIME ZONE)");
+    expr("cast(x as timestamp(0))")
+        .ok("CAST(`X` AS TIMESTAMP(0))");
+    expr("cast(x as timestamp(0) without time zone)")
+        .ok("CAST(`X` AS TIMESTAMP(0))");
+    expr("cast(x as timestamp(0) with local time zone)")
+        .ok("CAST(`X` AS TIMESTAMP(0) WITH LOCAL TIME ZONE)");
+    expr("cast(x as timestamp)")
+        .ok("CAST(`X` AS TIMESTAMP)");
+    expr("cast(x as decimal(1,1))")
+        .ok("CAST(`X` AS DECIMAL(1, 1))");
+    expr("cast(x as char(1))")
+        .ok("CAST(`X` AS CHAR(1))");
+    expr("cast(x as binary(1))")
+        .ok("CAST(`X` AS BINARY(1))");
+    expr("cast(x as varbinary(1))")
+        .ok("CAST(`X` AS VARBINARY(1))");
+    expr("cast(x as tinyint)")
+        .ok("CAST(`X` AS TINYINT)");
+    expr("cast(x as smallint)")
+        .ok("CAST(`X` AS SMALLINT)");
+    expr("cast(x as bigint)")
+        .ok("CAST(`X` AS BIGINT)");
+    expr("cast(x as real)")
+        .ok("CAST(`X` AS REAL)");
+    expr("cast(x as double)")
+        .ok("CAST(`X` AS DOUBLE)");
+    expr("cast(x as decimal)")
+        .ok("CAST(`X` AS DECIMAL)");
+    expr("cast(x as decimal(0))")
+        .ok("CAST(`X` AS DECIMAL(0))");
+    expr("cast(x as decimal(1,2))")
+        .ok("CAST(`X` AS DECIMAL(1, 2))");
 
     expr("cast('foo' as bar)")
         .ok("CAST('foo' AS `BAR`)");
   }
 
   @Test public void testCastFails() {
-    checkExpFails("cast(x as time with ^time^ zone",
-        "(?s).*Encountered \"time\" at .*");
-    checkExpFails("cast(x as time(0) with ^time^ zone)",
-        "(?s).*Encountered \"time\" at .*");
-    checkExpFails("cast(x as timestamp with ^time^ zone)",
-        "(?s).*Encountered \"time\" at .*");
-    checkExpFails("cast(x as timestamp(0) with ^time^ zone)",
-        "(?s).*Encountered \"time\" at .*");
-    checkExpFails("cast(x as varchar(10) ^with^ local time zone)",
-        "(?s).*Encountered \"with\" at line 1, column 23.\n.*");
-    checkExpFails("cast(x as varchar(10) ^without^ time zone)",
-        "(?s).*Encountered \"without\" at line 1, column 23.\n.*");
+    expr("cast(x as time with ^time^ zone)")
+        .fails("(?s).*Encountered \"time\" at .*");
+    expr("cast(x as time(0) with ^time^ zone)")
+        .fails("(?s).*Encountered \"time\" at .*");
+    expr("cast(x as timestamp with ^time^ zone)")
+        .fails("(?s).*Encountered \"time\" at .*");
+    expr("cast(x as timestamp(0) with ^time^ zone)")
+        .fails("(?s).*Encountered \"time\" at .*");
+    expr("cast(x as varchar(10) ^with^ local time zone)")
+        .fails("(?s).*Encountered \"with\" at line 1, column 23.\n.*");
+    expr("cast(x as varchar(10) ^without^ time zone)")
+        .fails("(?s).*Encountered \"without\" at line 1, column 23.\n.*");
   }
 
   @Test public void testAddFunction() {
@@ -1614,67 +1626,13 @@ public class SqlParserTest {
   }
 
   @Test public void testLikeAndSimilar() {
-    check(
-        "select * from t where x like '%abc%'",
-        "SELECT *\n"
+    sql("select * from t where x like '%abc%'")
+        .ok("SELECT *\n"
             + "FROM `T`\n"
             + "WHERE (`X` LIKE '%abc%')");
 
-    check(
-            "select * from t where x like any ('%abc%', '%ab%')",
-            "SELECT *\n"
-                    + "FROM `T`\n"
-                    + "WHERE (`X` LIKE ANY ('%abc%', '%ab%'))");
-
-    checkFails(
-            "select * from t where x like any ('%abc%', '%ab%') ^escape^ 'd'",
-            "(?s).*Encountered \"escape\" at .*");
-
-    check(
-            "select * from t where x like ('%abc%', '%ab%')",
-            "SELECT *\n"
-                    + "FROM `T`\n"
-                    + "WHERE (`X` LIKE (ROW('%abc%', '%ab%')))");
-
-    check(
-            "select * from t where x like any ('%abc%')",
-            "SELECT *\n"
-                    + "FROM `T`\n"
-                    + "WHERE (`X` LIKE ANY ('%abc%'))");
-
-    check(
-            "select * from t where x like some ('%abc%', '%ab%')",
-            "SELECT *\n"
-                    + "FROM `T`\n"
-                    + "WHERE (`X` LIKE SOME ('%abc%', '%ab%'))");
-
-    check(
-            "select * from t where x like all ('%abc%', '%ab%')",
-            "SELECT *\n"
-                    + "FROM `T`\n"
-                    + "WHERE (`X` LIKE ALL ('%abc%', '%ab%'))");
-
-    check(
-            "select * from t where x not like any ('%abc%', '%ab%')",
-            "SELECT *\n"
-                    + "FROM `T`\n"
-                    + "WHERE (`X` NOT LIKE ANY ('%abc%', '%ab%'))");
-
-    check(
-            "select * from t where x not like some ('%abc%', '%ab%')",
-            "SELECT *\n"
-                    + "FROM `T`\n"
-                    + "WHERE (`X` NOT LIKE SOME ('%abc%', '%ab%'))");
-
-    check(
-            "select * from t where x not like all ('%abc%', '%ab%')",
-            "SELECT *\n"
-                    + "FROM `T`\n"
-                    + "WHERE (`X` NOT LIKE ALL ('%abc%', '%ab%'))");
-
-    check(
-        "select * from t where x+1 not siMilaR to '%abc%' ESCAPE 'e'",
-        "SELECT *\n"
+    sql("select * from t where x+1 not siMilaR to '%abc%' ESCAPE 'e'")
+        .ok("SELECT *\n"
             + "FROM `T`\n"
             + "WHERE ((`X` + 1) NOT SIMILAR TO '%abc%' ESCAPE 'e')");
 
@@ -1773,9 +1731,8 @@ public class SqlParserTest {
             "VALUES (ROW(((`A` LIKE `B`) AND ((`C` NOT LIKE ALL (`D`, `E`)) OR (`E` NOT LIKE ANY (`F`, `G`))))))");
 
     if (isReserved("ESCAPE")) {
-      checkFails(
-          "select * from t where ^escape^ 'e'",
-          "(?s).*Encountered \"escape\" at .*");
+      sql("select * from t where ^escape^ 'e'")
+          .fails("(?s).*Encountered \"escape\" at .*");
     }
 
     // LIKE with +
@@ -1788,16 +1745,14 @@ public class SqlParserTest {
 
     // ESCAPE with no expression
     if (isReserved("ESCAPE")) {
-      checkFails(
-          "values a ^like^ escape d",
-          "(?s).*Encountered \"like escape\" at .*");
+      sql("values a ^like^ escape d")
+          .fails("(?s).*Encountered \"like escape\" at .*");
     }
 
     // ESCAPE with no expression
     if (isReserved("ESCAPE")) {
-      checkFails(
-          "values a like b || c ^escape^ and false",
-          "(?s).*Encountered \"escape and\" at line 1, column 22.*");
+      sql("values a like b || c ^escape^ and false")
+          .fails("(?s).*Encountered \"escape and\" at line 1, column 22.*");
     }
 
     // ESCAPE with LIKE ANY
@@ -1853,7 +1808,7 @@ public class SqlParserTest {
   @Test void testFoo() {
   }
 
-  @Test void testArithmeticOperators() {
+  @Test public void testArithmeticOperators() {
     expr("1-2+3*4/5/6-7")
         .ok("(((1 - 2) + (((3 * 4) / 5) / 6)) - 7)");
     expr("power(2,3)")
@@ -1868,7 +1823,7 @@ public class SqlParserTest {
         .ok("LOG10(0.2)");
   }
 
-  @Test void testExists() {
+  @Test public void testExists() {
     sql("select * from dept where exists (select 1 from emp where emp.deptno = dept.deptno)")
         .ok("SELECT *\n"
             + "FROM `DEPT`\n"
@@ -1877,7 +1832,7 @@ public class SqlParserTest {
             + "WHERE (`EMP`.`DEPTNO` = `DEPT`.`DEPTNO`)))");
   }
 
-  @Test void testExistsInWhere() {
+  @Test public void testExistsInWhere() {
     sql("select * from emp where 1 = 2 and exists (select 1 from dept) and 3 = 4")
         .ok("SELECT *\n"
             + "FROM `EMP`\n"
@@ -1885,23 +1840,23 @@ public class SqlParserTest {
             + "FROM `DEPT`))) AND (3 = 4))");
   }
 
-  @Test void testFromWithAs() {
+  @Test public void testFromWithAs() {
     sql("select 1 from emp as e where 1")
         .ok("SELECT 1\n"
             + "FROM `EMP` AS `E`\n"
             + "WHERE 1");
   }
 
-  @Test void testConcat() {
+  @Test public void testConcat() {
     expr("'a' || 'b'").ok("('a' || 'b')");
   }
 
-  @Test void testReverseSolidus() {
+  @Test public void testReverseSolidus() {
     expr("'\\'").ok("'\\'");
   }
 
-  @Test void testSubstring() {
-    expr("substring('a'\nFROM \t  1)")
+  @Test public void testSubstring() {
+    expr("substring('a' \n  FROM \t  1)")
         .ok("SUBSTRING('a' FROM 1)");
     expr("substring('a' FROM 1 FOR 3)")
         .ok("SUBSTRING('a' FROM 1 FOR 3)");
@@ -1916,7 +1871,7 @@ public class SqlParserTest {
         .ok("SUBSTRING('a' FROM 1)");
   }
 
-  @Test void testFunction() {
+  @Test public void testFunction() {
     sql("select substring('Eggs and ham', 1, 3 + 2) || ' benedict' from emp")
         .ok("SELECT (SUBSTRING('Eggs and ham' FROM 1 FOR (3 + 2)) || ' benedict')\n"
             + "FROM `EMP`");
@@ -1929,7 +1884,7 @@ public class SqlParserTest {
             + " - (6 * LOG10(((7 / ABS(8)) + 9))))) * POWER(10, 11)))");
   }
 
-  @Test void testFunctionWithDistinct() {
+  @Test public void testFunctionWithDistinct() {
     expr("count(DISTINCT 1)").ok("COUNT(DISTINCT 1)");
     expr("count(ALL 1)").ok("COUNT(ALL 1)");
     expr("count(1)").ok("COUNT(1)");
@@ -1939,16 +1894,24 @@ public class SqlParserTest {
   }
 
   @Test public void testFunctionCallWithDot() {
-    checkExp("foo(a,b).c", "(`FOO`(`A`, `B`).`C`)");
+    expr("foo(a,b).c")
+        .ok("(`FOO`(`A`, `B`).`C`)");
   }
 
   @Test public void testFunctionInFunction() {
-    checkExp("ln(power(2,2))", "LN(POWER(2, 2))");
-  }
-
-  @Test void testFunctionInFunction() {
     expr("ln(power(2,2))")
         .ok("LN(POWER(2, 2))");
+  }
+
+  @Test public void testFunctionNamedArgument() {
+    expr("foo(x => 1)")
+        .ok("`FOO`(`X` => 1)");
+    expr("foo(x => 1, \"y\" => 'a', z => x <= y)")
+        .ok("`FOO`(`X` => 1, `y` => 'a', `Z` => (`X` <= `Y`))");
+    expr("foo(x.y ^=>^ 1)")
+        .fails("(?s).*Encountered \"=>\" at .*");
+    expr("foo(a => 1, x.y ^=>^ 2, c => 3)")
+        .fails("(?s).*Encountered \"=>\" at .*");
   }
 
   @Test void testFunctionNamedArgument() {
@@ -2025,14 +1988,14 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testGroup() {
+  @Test public void testGroup() {
     sql("select deptno, min(foo) as x from emp group by deptno, gender")
         .ok("SELECT `DEPTNO`, MIN(`FOO`) AS `X`\n"
             + "FROM `EMP`\n"
             + "GROUP BY `DEPTNO`, `GENDER`");
   }
 
-  @Test void testGroupEmpty() {
+  @Test public void testGroupEmpty() {
     sql("select count(*) from emp group by ()")
         .ok("SELECT COUNT(*)\n"
             + "FROM `EMP`\n"
@@ -2064,7 +2027,7 @@ public class SqlParserTest {
             + "GROUP BY (`EMPNO` + `DEPTNO`)");
   }
 
-  @Test void testHavingAfterGroup() {
+  @Test public void testHavingAfterGroup() {
     final String sql = "select deptno from emp group by deptno, emp\n"
         + "having count(*) > 5 and 1 = 2 order by 5, 2";
     final String expected = "SELECT `DEPTNO`\n"
@@ -2075,13 +2038,13 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testHavingBeforeGroupFails() {
+  @Test public void testHavingBeforeGroupFails() {
     final String sql = "select deptno from emp\n"
         + "having count(*) > 5 and deptno < 4 ^group^ by deptno, emp";
     sql(sql).fails("(?s).*Encountered \"group\" at .*");
   }
 
-  @Test void testHavingNoGroup() {
+  @Test public void testHavingNoGroup() {
     sql("select deptno from emp having count(*) > 5")
         .ok("SELECT `DEPTNO`\n"
             + "FROM `EMP`\n"
@@ -2125,7 +2088,7 @@ public class SqlParserTest {
             + "GROUP BY GROUPING SETS(())");
   }
 
-  @Test void testGroupByCube() {
+  @Test public void testGroupByCube() {
     final String sql = "select deptno from emp\n"
         + "group by cube ((a, b), (c, d))";
     final String expected = "SELECT `DEPTNO`\n"
@@ -2134,7 +2097,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testGroupByCube2() {
+  @Test public void testGroupByCube2() {
     final String sql = "select deptno from emp\n"
         + "group by cube ((a, b), (c, d)) order by a";
     final String expected = "SELECT `DEPTNO`\n"
@@ -2148,7 +2111,7 @@ public class SqlParserTest {
     sql(sql2).fails("(?s)Encountered \"\\)\" at .*");
   }
 
-  @Test void testGroupByRollup() {
+  @Test public void testGroupByRollup() {
     final String sql = "select deptno from emp\n"
         + "group by rollup (deptno, deptno + 1, gender)";
     final String expected = "SELECT `DEPTNO`\n"
@@ -2162,7 +2125,7 @@ public class SqlParserTest {
     sql(sql1).fails("(?s)Encountered \", rollup\" at .*");
   }
 
-  @Test void testGrouping() {
+  @Test public void testGrouping() {
     final String sql = "select deptno, grouping(deptno) from emp\n"
         + "group by grouping sets (deptno, (deptno, gender), ())";
     final String expected = "SELECT `DEPTNO`, (GROUPING(`DEPTNO`))\n"
@@ -2171,7 +2134,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testWith() {
+  @Test public void testWith() {
     final String sql = "with femaleEmps as (select * from emps where gender = 'F')"
         + "select deptno from femaleEmps";
     final String expected = "WITH `FEMALEEMPS` AS (SELECT *\n"
@@ -2181,7 +2144,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testWith2() {
+  @Test public void testWith2() {
     final String sql = "with femaleEmps as (select * from emps where gender = 'F'),\n"
         + "marriedFemaleEmps(x, y) as (select * from femaleEmps where maritaStatus = 'M')\n"
         + "select deptno from femaleEmps";
@@ -2194,14 +2157,14 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testWithFails() {
+  @Test public void testWithFails() {
     final String sql = "with femaleEmps as ^select^ *\n"
         + "from emps where gender = 'F'\n"
         + "select deptno from femaleEmps";
     sql(sql).fails("(?s)Encountered \"select\" at .*");
   }
 
-  @Test void testWithValues() {
+  @Test public void testWithValues() {
     final String sql = "with v(i,c) as (values (1, 'a'), (2, 'bb'))\n"
         + "select c, i from v";
     final String expected = "WITH `V` (`I`, `C`) AS (VALUES (ROW(1, 'a')),\n"
@@ -2246,7 +2209,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testIdentifier() {
+  @Test public void testIdentifier() {
     expr("ab").ok("`AB`");
     expr("     \"a  \"\" b!c\"").ok("`a  \" b!c`");
     expr("     ^`^a  \" b!c`")
@@ -2255,8 +2218,8 @@ public class SqlParserTest {
     expr("^`^x`y`z`")
         .fails("(?s).*Encountered.*");
 
-    checkExp("myMap[field] + myArray[1 + 2]",
-        "(`MYMAP`[`FIELD`] + `MYARRAY`[(1 + 2)])");
+    expr("myMap[field] + myArray[1 + 2]")
+        .ok("(`MYMAP`[`FIELD`] + `MYARRAY`[(1 + 2)])");
 
     getTester().checkNode("VALUES a", isQuoted(0, false));
     getTester().checkNode("VALUES \"a\"", isQuoted(0, true));
@@ -2275,8 +2238,8 @@ public class SqlParserTest {
         .fails("(?s).*Encountered.*");
     expr("`x``y``z`").ok("`x``y``z`");
 
-    checkExp("myMap[field] + myArray[1 + 2]",
-        "(`MYMAP`[`FIELD`] + `MYARRAY`[(1 + 2)])");
+    expr("myMap[field] + myArray[1 + 2]")
+        .ok("(`MYMAP`[`FIELD`] + `MYARRAY`[(1 + 2)])");
 
     getTester().checkNode("VALUES a", isQuoted(0, false));
     getTester().checkNode("VALUES `a`", isQuoted(0, true));
@@ -2323,19 +2286,19 @@ public class SqlParserTest {
             + "WHERE (`x`.`DEPTNO` IN (10, 20))");
   }
 
-  @Test void testInList() {
+  @Test public void testInList() {
     sql("select * from emp where deptno in (10, 20) and gender = 'F'")
         .ok("SELECT *\n"
             + "FROM `EMP`\n"
             + "WHERE ((`DEPTNO` IN (10, 20)) AND (`GENDER` = 'F'))");
   }
 
-  @Test void testInListEmptyFails() {
+  @Test public void testInListEmptyFails() {
     sql("select * from emp where deptno in (^)^ and gender = 'F'")
         .fails("(?s).*Encountered \"\\)\" at line 1, column 36\\..*");
   }
 
-  @Test void testInQuery() {
+  @Test public void testInQuery() {
     sql("select * from emp where deptno in (select deptno from dept)")
         .ok("SELECT *\n"
             + "FROM `EMP`\n"
@@ -2352,7 +2315,7 @@ public class SqlParserTest {
   /**
    * Tricky for the parser - looks like "IN (scalar, scalar)" but isn't.
    */
-  @Test void testInQueryWithComma() {
+  @Test public void testInQueryWithComma() {
     sql("select * from emp where deptno in (select deptno from dept group by 1, 2)")
         .ok("SELECT *\n"
             + "FROM `EMP`\n"
@@ -2361,7 +2324,7 @@ public class SqlParserTest {
             + "GROUP BY 1, 2))");
   }
 
-  @Test void testInSetop() {
+  @Test public void testInSetop() {
     sql("select * from emp where deptno in (\n"
         + "(select deptno from dept union select * from dept)"
         + "except\n"
@@ -2430,7 +2393,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testUnion() {
+  @Test public void testUnion() {
     sql("select * from a union select * from a")
         .ok("(SELECT *\n"
             + "FROM `A`\n"
@@ -2451,7 +2414,7 @@ public class SqlParserTest {
             + "FROM `A`)");
   }
 
-  @Test void testUnionOrder() {
+  @Test public void testUnionOrder() {
     sql("select a, b from t "
         + "union all "
         + "select x, y from u "
@@ -2480,19 +2443,9 @@ public class SqlParserTest {
         .fails("(?s).*Encountered \"union\" at .*");
   }
 
-  @Test void testUnionOfNonQueryFails() {
+  @Test public void testUnionOfNonQueryFails() {
     sql("select 1 from emp union ^2^ + 5")
         .fails("Non-query expression encountered in illegal context");
-  }
-
-  @Test public void testParameterizedUnion() {
-    check("select * from ((select 100.0 as c1)\n"
-            + "union\n"
-            + "(select 20.55 as c2))",
-            "SELECT *\n"
-                 +   "FROM (SELECT 100.0 AS `C1`\n"
-                 +   "UNION\n"
-                 +   "SELECT 20.55 AS `C2`)");
   }
 
   @Test public void testParameterizedUnion() {
@@ -2509,14 +2462,14 @@ public class SqlParserTest {
    * In modern SQL, a query can occur almost everywhere that an expression
    * can. This test tests the few exceptions.
    */
-  @Test void testQueryInIllegalContext() {
+  @Test public void testQueryInIllegalContext() {
     sql("select 0, multiset[^(^select * from emp), 2] from dept")
         .fails("Query expression encountered in illegal context");
     sql("select 0, multiset[1, ^(^select * from emp), 2, 3] from dept")
         .fails("Query expression encountered in illegal context");
   }
 
-  @Test void testExcept() {
+  @Test public void testExcept() {
     sql("select * from a except select * from a")
         .ok("(SELECT *\n"
             + "FROM `A`\n"
@@ -2576,7 +2529,7 @@ public class SqlParserTest {
         .fails("(?s).*Encountered \"minus\" at .*");
   }
 
-  @Test void testIntersect() {
+  @Test public void testIntersect() {
     sql("select * from a intersect select * from a")
         .ok("(SELECT *\n"
             + "FROM `A`\n"
@@ -2597,14 +2550,14 @@ public class SqlParserTest {
             + "FROM `A`)");
   }
 
-  @Test void testJoinCross() {
+  @Test public void testJoinCross() {
     sql("select * from a as a2 cross join b")
         .ok("SELECT *\n"
             + "FROM `A` AS `A2`\n"
             + "CROSS JOIN `B`");
   }
 
-  @Test void testJoinOn() {
+  @Test public void testJoinOn() {
     sql("select * from a left join b on 1 = 1 and 2 = 2 where 3 = 3")
         .ok("SELECT *\n"
             + "FROM `A`\n"
@@ -2642,7 +2595,7 @@ public class SqlParserTest {
             + "WHERE (3 = 3)");
   }
 
-  @Test void testExplicitTableInJoin() {
+  @Test public void testExplicitTableInJoin() {
     sql("select * from a left join (table b) on 2 = 2 where 3 = 3")
         .ok("SELECT *\n"
             + "FROM `A`\n"
@@ -2665,7 +2618,7 @@ public class SqlParserTest {
             + "WHERE (4 = 4)");
   }
 
-  @Test void testOuterJoinNoiseWord() {
+  @Test public void testOuterJoinNoiseWord() {
     sql("select * from a left outer join b on 1 = 1 and 2 = 2 where 3 = 3")
         .ok("SELECT *\n"
             + "FROM `A`\n"
@@ -2673,7 +2626,7 @@ public class SqlParserTest {
             + "WHERE (3 = 3)");
   }
 
-  @Test void testJoinQuery() {
+  @Test public void testJoinQuery() {
     sql("select * from a join (select * from b) as b2 on true")
         .ok("SELECT *\n"
             + "FROM `A`\n"
@@ -2695,7 +2648,7 @@ public class SqlParserTest {
             + "FULL JOIN `B`");
   }
 
-  @Test void testInnerOuterJoinFails() {
+  @Test public void testInnerOuterJoinFails() {
     sql("select * from a ^inner^ outer join b")
         .fails("(?s).*Encountered \"inner outer\" at line 1, column 17.*");
   }
@@ -2722,14 +2675,14 @@ public class SqlParserTest {
   // Note: "select * from a natural cross join b" is actually illegal SQL
   // ("cross" is the only join type which cannot be modified with the
   // "natural") but the parser allows it; we and catch it at validate time
-  @Test void testNaturalCrossJoin() {
+  @Test public void testNaturalCrossJoin() {
     sql("select * from a natural cross join b")
         .ok("SELECT *\n"
             + "FROM `A`\n"
             + "NATURAL CROSS JOIN `B`");
   }
 
-  @Test void testJoinUsing() {
+  @Test public void testJoinUsing() {
     sql("select * from a join b using (x)")
         .ok("SELECT *\n"
             + "FROM `A`\n"
@@ -2817,7 +2770,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testTableSample() {
+  @Test public void testTableSample() {
     final String sql0 = "select * from ("
         + "  select * "
         + "  from emp "
@@ -2840,37 +2793,35 @@ public class SqlParserTest {
         + "INNER JOIN `DEPT` TABLESAMPLE SUBSTITUTE('LARGE') ON (`X`.`DEPTNO` = `DEPT`.`DEPTNO`)";
     sql(sql1).ok(expected1);
 
-    check(
-        "select * "
-            + "from emp as x tablesample bernoulli(50)",
-        "SELECT *\n"
-            + "FROM `EMP` AS `X` TABLESAMPLE BERNOULLI(50.0)");
+    final String sql2 = "select * "
+        + "from emp as x tablesample bernoulli(50)";
+    final String expected2 = "SELECT *\n"
+        + "FROM `EMP` AS `X` TABLESAMPLE BERNOULLI(50.0)";
+    sql(sql2).ok(expected2);
 
-    check(
-        "select * "
-            + "from emp as x "
-            + "tablesample bernoulli(50) REPEATABLE(10) ",
-        "SELECT *\n"
-            + "FROM `EMP` AS `X` TABLESAMPLE BERNOULLI(50.0) REPEATABLE(10)");
+    final String sql3 = "select * "
+        + "from emp as x "
+        + "tablesample bernoulli(50) REPEATABLE(10) ";
+    final String expected3 = "SELECT *\n"
+        + "FROM `EMP` AS `X` TABLESAMPLE BERNOULLI(50.0) REPEATABLE(10)";
+    sql(sql3).ok(expected3);
 
     // test repeatable with invalid int literal.
-    checkFails(
-        "select * "
-            + "from emp as x "
-            + "tablesample bernoulli(50) REPEATABLE(^100000000000000000000^) ",
-        "Literal '100000000000000000000' "
+    sql("select * "
+        + "from emp as x "
+        + "tablesample bernoulli(50) REPEATABLE(^100000000000000000000^) ")
+        .fails("Literal '100000000000000000000' "
             + "can not be parsed to type 'java\\.lang\\.Integer'");
 
     // test repeatable with invalid negative int literal.
-    checkFails(
-        "select * "
-            + "from emp as x "
-            + "tablesample bernoulli(50) REPEATABLE(-^100000000000000000000^) ",
-        "Literal '100000000000000000000' "
+    sql("select * "
+        + "from emp as x "
+        + "tablesample bernoulli(50) REPEATABLE(-^100000000000000000000^) ")
+        .fails("Literal '100000000000000000000' "
             + "can not be parsed to type 'java\\.lang\\.Integer'");
   }
 
-  @Test void testLiteral() {
+  @Test public void testLiteral() {
     expr("'foo'").same();
     expr("100").same();
     sql("select 1 as uno, 'x' as x, null as n from emp")
@@ -2894,18 +2845,14 @@ public class SqlParserTest {
   }
 
   @Test public void testContinuedLiteral() {
-    checkExp(
-        "'abba'\n'abba'",
-        "'abba'\n'abba'");
-    checkExp(
-        "'abba'\n'0001'",
-        "'abba'\n'0001'");
-    checkExp(
-        "N'yabba'\n'dabba'\n'doo'",
-        "_ISO-8859-1'yabba'\n'dabba'\n'doo'");
-    checkExp(
-        "_iso-8859-1'yabba'\n'dabba'\n'don''t'",
-        "_ISO-8859-1'yabba'\n'dabba'\n'don''t'");
+    expr("'abba'\n'abba'")
+        .ok("'abba'\n'abba'");
+    expr("'abba'\n'0001'")
+        .ok("'abba'\n'0001'");
+    expr("N'yabba'\n'dabba'\n'doo'")
+        .ok("_ISO-8859-1'yabba'\n'dabba'\n'doo'");
+    expr("_iso-8859-1'yabba'\n'dabba'\n'don''t'")
+        .ok("_ISO-8859-1'yabba'\n'dabba'\n'don''t'");
 
     expr("x'01aa'\n'03ff'")
         .ok("X'01AA'\n'03FF'");
@@ -2925,7 +2872,7 @@ public class SqlParserTest {
             + "INNER JOIN `D` USING (`Y`)");
   }
 
-  @Test void testMixedStar() {
+  @Test public void testMixedStar() {
     sql("select emp.*, 1 as foo from emp, dept")
         .ok("SELECT `EMP`.*, 1 AS `FOO`\n"
             + "FROM `EMP`,\n"
@@ -2954,22 +2901,21 @@ public class SqlParserTest {
   }
 
   @Test public void testNotExists() {
-    check(
-        "select * from dept where not not exists (select * from emp) and true",
-        "SELECT *\n"
+    sql("select * from dept where not not exists (select * from emp) and true")
+        .ok("SELECT *\n"
             + "FROM `DEPT`\n"
             + "WHERE ((NOT (NOT (EXISTS (SELECT *\n"
             + "FROM `EMP`)))) AND TRUE)");
   }
 
-  @Test void testOrder() {
+  @Test public void testOrder() {
     sql("select * from emp order by empno, gender desc, deptno asc, empno asc, name desc")
         .ok("SELECT *\n"
             + "FROM `EMP`\n"
             + "ORDER BY `EMPNO`, `GENDER` DESC, `DEPTNO`, `EMPNO`, `NAME` DESC");
   }
 
-  @Test void testOrderNullsFirst() {
+  @Test public void testOrderNullsFirst() {
     final String sql = "select * from emp\n"
         + "order by gender desc nulls last,\n"
         + " deptno asc nulls first,\n"
@@ -2981,7 +2927,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testOrderInternal() {
+  @Test public void testOrderInternal() {
     sql("(select * from emp order by empno) union select * from emp")
         .ok("((SELECT *\n"
             + "FROM `EMP`\n"
@@ -2998,7 +2944,7 @@ public class SqlParserTest {
             + "WHERE (`A` = `B`)");
   }
 
-  @Test void testOrderIllegalInExpression() {
+  @Test public void testOrderIllegalInExpression() {
     sql("select (select 1 from foo order by x,y) from t where a = b")
         .ok("SELECT (SELECT 1\n"
             + "FROM `FOO`\n"
@@ -3009,7 +2955,7 @@ public class SqlParserTest {
         .fails("ORDER BY unexpected");
   }
 
-  @Test void testOrderOffsetFetch() {
+  @Test public void testOrderOffsetFetch() {
     sql("select a from foo order by b, c offset 1 row fetch first 2 row only")
         .ok("SELECT `A`\n"
             + "FROM `FOO`\n"
@@ -3080,7 +3026,7 @@ public class SqlParserTest {
    * "OFFSET ... FETCH". It all maps down to a parse tree that looks like
    * SQL:2008.
    */
-  @Test void testLimit() {
+  @Test public void testLimit() {
     sql("select a from foo order by b, c limit 2 offset 1")
         .ok("SELECT `A`\n"
             + "FROM `FOO`\n"
@@ -3171,40 +3117,21 @@ public class SqlParserTest {
         .fails("(?s).*Encountered \"all\" at line 1.*");
   }
 
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-5086">[CALCITE-5086]
-   * Calcite supports OFFSET start LIMIT count expression</a>. */
-  @org.junit.jupiter.api.Test void testOffsetStartLimitCount() {
-    conformance = SqlConformanceEnum.LENIENT;
-    final String error = "'OFFSET start LIMIT count' is not allowed under the "
-        + "current SQL conformance level";
-    sql("select a from foo order by b, c offset 1 limit 2")
-        .ok("SELECT `A`\n"
-            + "FROM `FOO`\n"
-            + "ORDER BY `B`, `C`\n"
-            + "OFFSET 1 ROWS\n"
-            + "FETCH NEXT 2 ROWS ONLY");
-
-    conformance = SqlConformanceEnum.DEFAULT;
-    sql("select a from foo order by b, c ^offset 1 limit 2^")
-        .fails(error);
-
-    conformance = SqlConformanceEnum.LENIENT;
-    // "limit 2" overrides the earlier "offset 4"
-    final String expected3 = "SELECT `A`\n"
-        + "FROM `FOO`\n"
-        + "OFFSET 2 ROWS\n"
-        + "FETCH NEXT 3 ROWS ONLY";
-    sql("select a from foo offset 4 limit 2,3")
-        .ok(expected3);
-
-    // "fetch next 4" is illegal following "limit 3"
-    sql("select a from foo offset 2 limit 3 ^fetch^ next 4 rows only")
-        .fails("(?s).*Encountered \"fetch\" at line 1.*");
-
-    // "limit start, all" is not valid
-    sql("select a from foo offset 1 limit 2, ^all^")
-        .fails("(?s).*Encountered \"all\" at line 1.*");
+  @Test public void testSqlInlineComment() {
+    sql("select 1 from t --this is a comment\n")
+        .ok("SELECT 1\n"
+            + "FROM `T`");
+    sql("select 1 from t--\n")
+        .ok("SELECT 1\n"
+            + "FROM `T`");
+    sql("select 1 from t--this is a comment\n"
+        + "where a>b-- this is comment\n")
+        .ok("SELECT 1\n"
+            + "FROM `T`\n"
+            + "WHERE (`A` > `B`)");
+    sql("select 1 from t\n--select")
+        .ok("SELECT 1\n"
+            + "FROM `T`");
   }
 
   @Test void testSqlInlineComment() {
@@ -3232,7 +3159,7 @@ public class SqlParserTest {
 
     // on several lines
     sql("select /* 1,\n"
-        + " 2,\n"
+        + " 2, \n"
         + " */ 3 from t")
         .ok("SELECT 3\n"
             + "FROM `T`");
@@ -3283,7 +3210,7 @@ public class SqlParserTest {
     // a preceding "/*" in the same <simple comment>, it will prematurely
     // terminate the containing <bracketed comment>.
     if (Bug.FRG73_FIXED) {
-      final String sql = "values /* multiline contains -- singline */\n"
+      final String sql = "values /* multiline contains -- singline */ \n"
           + " (1)";
       sql(sql).fails("xxx");
     }
@@ -3292,7 +3219,7 @@ public class SqlParserTest {
     if (Bug.FRG73_FIXED) {
       // Test should fail, and it does, but it should give "*/" as the
       // erroneous token.
-      final String sql = "values ( -- rest of line /* a comment\n"
+      final String sql = "values ( -- rest of line /* a comment  \n"
           + " 1, ^*/^ 2)";
       sql(sql).fails("Encountered \"/\\*\" at");
     }
@@ -3302,12 +3229,12 @@ public class SqlParserTest {
         .ok("VALUES (ROW((1 + 2)))");
 
     // multiline comment inside single-line comment
-    sql("values -- rest of line /* a comment */\n"
+    sql("values -- rest of line /* a comment */ \n"
         + "(1)")
         .ok("VALUES (ROW(1))");
 
     // non-terminated multiline comment inside single-line comment
-    sql("values -- rest of line /* a comment\n"
+    sql("values -- rest of line /* a comment  \n"
         + "(1)")
         .ok("VALUES (ROW(1))");
 
@@ -3361,49 +3288,49 @@ public class SqlParserTest {
         .ok("(1 + ((-2 * -3E-1) / -4))");
   }
 
-  @Test void testParseNumberFails() {
+  @Test public void testParseNumberFails() {
     sql("SELECT 0.5e1^.1^ from t")
         .fails("(?s).*Encountered .*\\.1.* at line 1.*");
   }
 
-  @Test void testMinusPrefixInExpression() {
+  @Test public void testMinusPrefixInExpression() {
     expr("-(1+2)")
         .ok("(- (1 + 2))");
   }
 
   // operator precedence
-  @Test void testPrecedence0() {
+  @Test public void testPrecedence0() {
     expr("1 + 2 * 3 * 4 + 5")
         .ok("((1 + ((2 * 3) * 4)) + 5)");
   }
 
-  @Test void testPrecedence1() {
+  @Test public void testPrecedence1() {
     expr("1 + 2 * (3 * (4 + 5))")
         .ok("(1 + (2 * (3 * (4 + 5))))");
   }
 
-  @Test void testPrecedence2() {
+  @Test public void testPrecedence2() {
     expr("- - 1").ok("1"); // special case for unary minus
   }
 
-  @Test void testPrecedence2b() {
+  @Test public void testPrecedence2b() {
     expr("not not 1").ok("(NOT (NOT 1))"); // two prefixes
   }
 
-  @Test void testPrecedence3() {
+  @Test public void testPrecedence3() {
     expr("- 1 is null").ok("(-1 IS NULL)"); // prefix vs. postfix
   }
 
-  @Test void testPrecedence4() {
+  @Test public void testPrecedence4() {
     expr("1 - -2").ok("(1 - -2)"); // infix, prefix '-'
   }
 
-  @Test void testPrecedence5() {
+  @Test public void testPrecedence5() {
     expr("1++2").ok("(1 + 2)"); // infix, prefix '+'
     expr("1+ +2").ok("(1 + 2)"); // infix, prefix '+'
   }
 
-  @Test void testPrecedenceSetOps() {
+  @Test public void testPrecedenceSetOps() {
     final String sql = "select * from a union "
         + "select * from b intersect "
         + "select * from c intersect "
@@ -3444,7 +3371,7 @@ public class SqlParserTest {
             + "FROM `DEPT`) AS `D`");
   }
 
-  @Test void testQuotesInString() {
+  @Test public void testQuotesInString() {
     expr("'a''b'")
         .ok("'a''b'");
     expr("'''x'")
@@ -3455,7 +3382,7 @@ public class SqlParserTest {
         .ok("'Quoted strings aren''t \"hard\"'");
   }
 
-  @Test void testScalarQueryInWhere() {
+  @Test public void testScalarQueryInWhere() {
     sql("select * from emp where 3 = (select count(*) from dept where dept.deptno = emp.deptno)")
         .ok("SELECT *\n"
             + "FROM `EMP`\n"
@@ -3464,7 +3391,7 @@ public class SqlParserTest {
             + "WHERE (`DEPT`.`DEPTNO` = `EMP`.`DEPTNO`)))");
   }
 
-  @Test void testScalarQueryInSelect() {
+  @Test public void testScalarQueryInSelect() {
     sql("select x, (select count(*) from dept where dept.deptno = emp.deptno) from emp")
         .ok("SELECT `X`, (SELECT COUNT(*)\n"
             + "FROM `DEPT`\n"
@@ -3472,14 +3399,14 @@ public class SqlParserTest {
             + "FROM `EMP`");
   }
 
-  @Test void testSelectList() {
+  @Test public void testSelectList() {
     sql("select * from emp, dept")
         .ok("SELECT *\n"
             + "FROM `EMP`,\n"
             + "`DEPT`");
   }
 
-  @Test void testSelectWithoutFrom() {
+  @Test public void testSelectWithoutFrom() {
     sql("select 2+2")
         .ok("SELECT (2 + 2)");
   }
@@ -3509,7 +3436,7 @@ public class SqlParserTest {
         .fails("(?s).*Encountered \"having\" at line .*");
   }
 
-  @Test void testSelectList3() {
+  @Test public void testSelectList3() {
     sql("select 1, emp.*, 2 from emp")
         .ok("SELECT 1, `EMP`.*, 2\n"
             + "FROM `EMP`");
@@ -3517,12 +3444,11 @@ public class SqlParserTest {
 
   @Test public void testSelectList4() {
     // FIXME
-    checkFails(
-        "select ^from^ emp",
-        "(?s).*Encountered \"from\" at line .*");
+    sql("select ^from^ emp")
+        .fails("(?s).*Encountered \"from\" at line .*");
   }
 
-  @Test void testStar() {
+  @Test public void testStar() {
     sql("select * from emp")
         .ok("SELECT *\n"
             + "FROM `EMP`");
@@ -3538,7 +3464,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testSelectDistinct() {
+  @Test public void testSelectDistinct() {
     sql("select distinct foo from bar")
         .ok("SELECT DISTINCT `FOO`\n"
             + "FROM `BAR`");
@@ -3564,31 +3490,31 @@ public class SqlParserTest {
             + "FROM `BAR`");
   }
 
-  @Test void testWhere() {
+  @Test public void testWhere() {
     sql("select * from emp where empno > 5 and gender = 'F'")
         .ok("SELECT *\n"
             + "FROM `EMP`\n"
             + "WHERE ((`EMPNO` > 5) AND (`GENDER` = 'F'))");
   }
 
-  @Test void testNestedSelect() {
+  @Test public void testNestedSelect() {
     sql("select * from (select * from emp)")
         .ok("SELECT *\n"
             + "FROM (SELECT *\n"
             + "FROM `EMP`)");
   }
 
-  @Test void testValues() {
+  @Test public void testValues() {
     sql("values(1,'two')")
         .ok("VALUES (ROW(1, 'two'))");
   }
 
-  @Test void testValuesExplicitRow() {
+  @Test public void testValuesExplicitRow() {
     sql("values row(1,'two')")
         .ok("VALUES (ROW(1, 'two'))");
   }
 
-  @Test void testFromValues() {
+  @Test public void testFromValues() {
     sql("select * from (values(1,'two'), 3, (4, 'five'))")
         .ok("SELECT *\n"
             + "FROM (VALUES (ROW(1, 'two')),\n"
@@ -3597,9 +3523,8 @@ public class SqlParserTest {
   }
 
   @Test public void testFromValuesWithoutParens() {
-    checkFails(
-        "select 1 from ^values^('x')",
-        "(?s)Encountered \"values\" at line 1, column 15\\.\n"
+    sql("select 1 from ^values^('x')")
+        .fails("(?s)Encountered \"values\" at line 1, column 15\\.\n"
             + "Was expecting one of:\n"
             + "    \"LATERAL\" \\.\\.\\.\n"
             + "    \"TABLE\" \\.\\.\\.\n"
@@ -3613,9 +3538,8 @@ public class SqlParserTest {
   }
 
   @Test public void testEmptyValues() {
-    checkFails(
-        "select * from (values(^)^)",
-        "(?s).*Encountered \"\\)\" at .*");
+    sql("select * from (values(^)^)")
+        .fails("(?s).*Encountered \"\\)\" at .*");
   }
 
   /** Test case for
@@ -3656,63 +3580,48 @@ public class SqlParserTest {
             + "WHERE (`X` = `Y`)");
   }
 
-  @Test void testExplicitTable() {
+  @Test public void testExplicitTable() {
     sql("table emp")
         .ok("(TABLE `EMP`)");
 
-    checkFails(
-        "table ^123^",
-        "(?s)Encountered \"123\" at line 1, column 7\\.\n.*");
+    sql("table ^123^")
+        .fails("(?s)Encountered \"123\" at line 1, column 7\\.\n.*");
   }
 
-  @Test void testExplicitTableOrdered() {
+  @Test public void testExplicitTableOrdered() {
     sql("table emp order by name")
         .ok("(TABLE `EMP`)\n"
             + "ORDER BY `NAME`");
   }
 
-  @Test void testSelectFromExplicitTable() {
+  @Test public void testSelectFromExplicitTable() {
     sql("select * from (table emp)")
         .ok("SELECT *\n"
             + "FROM (TABLE `EMP`)");
   }
 
   @Test public void testSelectFromBareExplicitTableFails() {
-    checkFails(
-        "select * from table ^emp^",
-        "(?s).*Encountered \"emp\" at .*");
+    sql("select * from table ^emp^")
+        .fails("(?s).*Encountered \"emp\" at .*");
 
-    checkFails(
-        "select * from (table (^select^ empno from emp))",
-        "(?s)Encountered \"select\".*");
+    sql("select * from (table (^select^ empno from emp))")
+        .fails("(?s)Encountered \"select\".*");
   }
 
-  @Test void testCollectionTable() {
+  @Test public void testCollectionTable() {
     sql("select * from table(ramp(3, 4))")
         .ok("SELECT *\n"
             + "FROM TABLE(`RAMP`(3, 4))");
   }
 
-  @Test void testDescriptor() {
-    sql("select * from table(ramp(descriptor(column_name)))")
-        .ok("SELECT *\n"
-            + "FROM TABLE(`RAMP`(DESCRIPTOR(`COLUMN_NAME`)))");
-    sql("select * from table(ramp(descriptor(\"COLUMN_NAME\")))")
-        .ok("SELECT *\n"
-            + "FROM TABLE(`RAMP`(DESCRIPTOR(`COLUMN_NAME`)))");
-    sql("select * from table(ramp(descriptor(column_name1, column_name2, column_name3)))")
-        .ok("SELECT *\n"
-            + "FROM TABLE(`RAMP`(DESCRIPTOR(`COLUMN_NAME1`, `COLUMN_NAME2`, `COLUMN_NAME3`)))");
-  }
-
-  @Test void testCollectionTableWithCursorParam() {
+  @Test public void testCollectionTableWithCursorParam() {
     sql("select * from table(dedup(cursor(select * from emps),'name'))")
         .ok("SELECT *\n"
             + "FROM TABLE(`DEDUP`((CURSOR ((SELECT *\n"
             + "FROM `EMPS`))), 'name'))");
   }
 
-  @Test void testCollectionTableWithColumnListParam() {
+  @Test public void testCollectionTableWithColumnListParam() {
     sql("select * from table(dedup(cursor(select * from emps),"
         + "row(empno, name)))")
         .ok("SELECT *\n"
@@ -3741,14 +3650,15 @@ public class SqlParserTest {
     sql("select * from lateral table(ramp(1)) as t(x)")
         .ok(expected + " AS `T` (`X`)");
     // Bad: Parentheses make it look like a sub-query
-    checkFails("select * from lateral (^table(ramp(1))^)",
-        "Expected query or join");
+    sql("select * from lateral (^table(ramp(1))^)")
+        .fails("(?s)Expected query or join.*");
 
     // Good: LATERAL (subQuery)
     final String expected2 = "SELECT *\n"
         + "FROM LATERAL (SELECT *\n"
         + "FROM `EMP`)";
-    sql("select * from lateral (select * from emp)").ok(expected2);
+    sql("select * from lateral (select * from emp)")
+        .ok(expected2);
     sql("select * from lateral (select * from emp) as t")
         .ok(expected2 + " AS `T`");
     sql("select * from lateral (select * from emp) as t(x)")
@@ -3830,7 +3740,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testIllegalCursors() {
+  @Test public void testIllegalCursors() {
     sql("select ^cursor^(select * from emps) from emps")
         .fails("CURSOR expression encountered in illegal context");
     sql("call list(^cursor^(select * from emps))")
@@ -3866,21 +3776,21 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testExplainWithImpl() {
+  @Test public void testExplainWithImpl() {
     sql("explain plan with implementation for select * from emps")
         .ok("EXPLAIN PLAN INCLUDING ATTRIBUTES WITH IMPLEMENTATION FOR\n"
             + "SELECT *\n"
             + "FROM `EMPS`");
   }
 
-  @Test void testExplainWithoutImpl() {
+  @Test public void testExplainWithoutImpl() {
     sql("explain plan without implementation for select * from emps")
         .ok("EXPLAIN PLAN INCLUDING ATTRIBUTES WITHOUT IMPLEMENTATION FOR\n"
             + "SELECT *\n"
             + "FROM `EMPS`");
   }
 
-  @Test void testExplainWithType() {
+  @Test public void testExplainWithType() {
     sql("explain plan with type for (values (true))")
         .ok("EXPLAIN PLAN INCLUDING ATTRIBUTES WITH TYPE FOR\n"
             + "(VALUES (ROW(TRUE)))");
@@ -3894,8 +3804,8 @@ public class SqlParserTest {
   }
 
   @Test public void testDescribeSchema() {
-    check("describe schema A",
-        "DESCRIBE SCHEMA `A`");
+    sql("describe schema A")
+        .ok("DESCRIBE SCHEMA `A`");
     // Currently DESCRIBE DATABASE, DESCRIBE CATALOG become DESCRIBE SCHEMA.
     // See [CALCITE-1221] Implement DESCRIBE DATABASE, CATALOG, STATEMENT
     sql("describe database A")
@@ -3904,7 +3814,7 @@ public class SqlParserTest {
         .ok("DESCRIBE SCHEMA `A`");
   }
 
-  @Test void testDescribeTable() {
+  @Test public void testDescribeTable() {
     sql("describe emps")
         .ok("DESCRIBE TABLE `EMPS`");
     sql("describe \"emps\"")
@@ -3957,10 +3867,10 @@ public class SqlParserTest {
         + "VALUES (ROW(1, 'a'))";
     sql("describe insert into emps values (1, 'a')").ok(expected3);
     // only allow query or DML, not explain, inside describe
-    checkFails("describe ^explain^ plan for select * from emps",
-        "(?s).*Encountered \"explain\" at .*");
-    checkFails("describe statement ^explain^ plan for select * from emps",
-        "(?s).*Encountered \"explain\" at .*");
+    sql("describe ^explain^ plan for select * from emps")
+        .fails("(?s).*Encountered \"explain\" at .*");
+    sql("describe statement ^explain^ plan for select * from emps")
+        .fails("(?s).*Encountered \"explain\" at .*");
   }
 
   @Test void testSelectIsNotDdl() {
@@ -4136,7 +4046,7 @@ public class SqlParserTest {
         .node(not(isDdl()));
   }
 
-  @Test void testDeleteWhere() {
+  @Test public void testDeleteWhere() {
     sql("delete from emps where empno=12")
         .ok("DELETE FROM `EMPS`\n"
             + "WHERE (`EMPNO` = 12)");
@@ -4215,34 +4125,6 @@ public class SqlParserTest {
 
   /** Same with testMergeTableRefSource but set with compound identifier. */
   @Test public void testMergeTableRefSource2() {
-    check(
-        "merge into emps e "
-            + "using tempemps as t "
-            + "on e.empno = t.empno "
-            + "when matched then update "
-            + "set e.name = t.name, e.deptno = t.deptno, e.salary = t.salary * .1 "
-            + "when not matched then insert (name, dept, salary) "
-            + "values(t.name, 10, t.salary * .15)",
-
-        "MERGE INTO `EMPS` AS `E`\n"
-            + "USING `TEMPEMPS` AS `T`\n"
-            + "ON (`E`.`EMPNO` = `T`.`EMPNO`)\n"
-            + "WHEN MATCHED THEN UPDATE SET `E`.`NAME` = `T`.`NAME`"
-            + ", `E`.`DEPTNO` = `T`.`DEPTNO`"
-            + ", `E`.`SALARY` = (`T`.`SALARY` * 0.1)\n"
-            + "WHEN NOT MATCHED THEN INSERT (`NAME`, `DEPT`, `SALARY`) "
-            + "(VALUES (ROW(`T`.`NAME`, 10, (`T`.`SALARY` * 0.15))))");
-  }
-
-  @Test public void testBitStringNotImplemented() {
-    // Bit-string is longer part of the SQL standard. We do not support it.
-    checkFails(
-        "select B^'1011'^ || 'foobar' from (values (true))",
-        "(?s).*Encountered \"\\\\'1011\\\\'\" at line 1, column 9.*");
-  }
-
-  /** Same with testMergeTableRefSource but set with compound identifier. */
-  @Test void testMergeTableRefSource2() {
     final String sql = "merge into emps e "
         + "using tempemps as t "
         + "on e.empno = t.empno "
@@ -4261,22 +4143,22 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testBitStringNotImplemented() {
+  @Test public void testBitStringNotImplemented() {
     // Bit-string is longer part of the SQL standard. We do not support it.
     sql("select B^'1011'^ || 'foobar' from (values (true))")
         .fails("(?s).*Encountered \"\\\\'1011\\\\'\" at line 1, column 9.*");
   }
 
-  @Test void testHexAndBinaryString() {
+  @Test public void testHexAndBinaryString() {
     expr("x''=X'2'")
         .ok("(X'' = X'2')");
     expr("x'fffff'=X''")
         .ok("(X'FFFFF' = X'')");
-    expr("x'1' \t\t\f\r\n"
-        + "'2'--hi this is a comment'FF'\r\r\t\f\n"
+    expr("x'1' \t\t\f\r \n"
+        + "'2'--hi this is a comment'FF'\r\r\t\f \n"
         + "'34'")
         .ok("X'1'\n'2'\n'34'");
-    expr("x'1' \t\t\f\r\n"
+    expr("x'1' \t\t\f\r \n"
         + "'000'--\n"
         + "'01'")
         .ok("X'1'\n'000'\n'01'");
@@ -4288,7 +4170,7 @@ public class SqlParserTest {
         .ok("(X'001' = X'000102')");
   }
 
-  @Test void testHexAndBinaryStringFails() {
+  @Test public void testHexAndBinaryStringFails() {
     sql("select ^x'FeedGoats'^ from t")
         .fails("Binary literal string must contain only characters '0' - '9', 'A' - 'F'");
     sql("select ^x'abcdefG'^ from t")
@@ -4304,26 +4186,26 @@ public class SqlParserTest {
   }
 
   @Test public void testStringLiteral() {
-    checkExp("_latin1'hi'", "_LATIN1'hi'");
-    checkExp(
-        "N'is it a plane? no it''s superman!'",
-        "_ISO-8859-1'is it a plane? no it''s superman!'");
-    checkExp("n'lowercase n'", "_ISO-8859-1'lowercase n'");
-    checkExp("'boring string'", "'boring string'");
-    checkExp("_iSo-8859-1'bye'", "_ISO-8859-1'bye'");
-    checkExp(
-        "'three' \n ' blind'\n' mice'",
-        "'three'\n' blind'\n' mice'");
-    checkExp(
-        "'three' -- comment \n ' blind'\n' mice'",
-        "'three'\n' blind'\n' mice'");
-    checkExp(
-        "N'bye' \t\r\f\f\n' bye'",
-        "_ISO-8859-1'bye'\n' bye'");
-    checkExp(
-        "_iso-8859-1'bye' \n\n--\n-- this is a comment\n' bye'",
-        "_ISO-8859-1'bye'\n' bye'");
-    checkExp("_utf8'hi'", "_UTF8'hi'");
+    expr("_latin1'hi'")
+        .ok("_LATIN1'hi'");
+    expr("N'is it a plane? no it''s superman!'")
+        .ok("_ISO-8859-1'is it a plane? no it''s superman!'");
+    expr("n'lowercase n'")
+        .ok("_ISO-8859-1'lowercase n'");
+    expr("'boring string'")
+        .ok("'boring string'");
+    expr("_iSo-8859-1'bye'")
+        .ok("_ISO-8859-1'bye'");
+    expr("'three' \n ' blind'\n' mice'")
+        .ok("'three'\n' blind'\n' mice'");
+    expr("'three' -- comment \n ' blind'\n' mice'")
+        .ok("'three'\n' blind'\n' mice'");
+    expr("N'bye' \t\r\f\f\n' bye'")
+        .ok("_ISO-8859-1'bye'\n' bye'");
+    expr("_iso-8859-1'bye' \n\n--\n-- this is a comment\n' bye'")
+        .ok("_ISO-8859-1'bye'\n' bye'");
+    expr("_utf8'hi'")
+        .ok("_UTF8'hi'");
 
     // newline in string literal
     expr("'foo\rbar'")
@@ -4342,18 +4224,17 @@ public class SqlParserTest {
     }
   }
 
-  @Test void testStringLiteralFails() {
+  @Test public void testStringLiteralFails() {
     sql("select N ^'space'^")
         .fails("(?s).*Encountered .*space.* at line 1, column ...*");
-    sql("select _latin1\n^'newline'^")
+    sql("select _latin1 \n^'newline'^")
         .fails("(?s).*Encountered.*newline.* at line 2, column ...*");
     sql("select ^_unknown-charset''^ from (values(true))")
         .fails("Unknown character set 'unknown-charset'");
 
     // valid syntax, but should give a validator error
-    check(
-        "select N'1' '2' from t",
-        "SELECT _ISO-8859-1'1'\n'2'\n"
+    sql("select N'1' '2' from t")
+        .ok("SELECT _ISO-8859-1'1'\n'2'\n"
             + "FROM `T`");
   }
 
@@ -4369,7 +4250,7 @@ public class SqlParserTest {
         .ok(fooBar);
     expr("   'foo'\r\n'bar'")
         .ok(fooBar);
-    expr("   'foo'\r\n\r\n'bar'\n'baz'")
+    expr("   'foo'\r\n\r\n'bar'  \n   'baz'")
         .ok(fooBarBaz);
     expr("   'foo' /* a comment */ 'bar'")
         .ok(fooBar);
@@ -4392,7 +4273,7 @@ public class SqlParserTest {
         .ok("(CASE WHEN (`NBR` IS FALSE) THEN 'one' ELSE NULL END)");
 
     // multiple WHENs
-    expr("case col1 when\n1.2 then 'one' when 2 then 'two' else 'three' end")
+    expr("case col1 when \n1.2 then 'one' when 2 then 'two' else 'three' end")
         .ok("(CASE WHEN (`COL1` = 1.2) THEN 'one' WHEN (`COL1` = 2) THEN 'two' ELSE 'three' END)");
 
     // sub-queries as case expression operands
@@ -4411,9 +4292,8 @@ public class SqlParserTest {
     expr("case x when 2, 4 then 3 else 4 end")
         .ok("(CASE WHEN (`X` IN (2, 4)) THEN 3 ELSE 4 END)");
     // comma-list must not be empty
-    checkFails(
-        "case x when 2, 4 then 3 when ^then^ 5 else 4 end",
-        "(?s)Encountered \"then\" at .*");
+    sql("case x when 2, 4 then 3 when ^then^ 5 else 4 end")
+        .fails("(?s)Encountered \"then\" at .*");
     // commas not allowed in boolean case
     sql("case when b1, b2 ^when^ 2, 4 then 3 else 4 end")
         .fails("(?s)Encountered \"when\" at .*");
@@ -4430,17 +4310,15 @@ public class SqlParserTest {
   }
 
   @Test public void testNullIf() {
-    checkExp(
-        "nullif(v1,v2)",
-        "(NULLIF(`V1`, `V2`))");
+    expr("nullif(v1,v2)")
+        .ok("(NULLIF(`V1`, `V2`))");
     if (isReserved("NULLIF")) {
-      checkExpFails(
-          "1 + ^nullif^ + 3",
-          "(?s)Encountered \"nullif \\+\" at line 1, column 5.*");
+      expr("1 + ^nullif^ + 3")
+          .fails("(?s)Encountered \"nullif \\+\" at line 1, column 5.*");
     }
   }
 
-  @Test void testCoalesce() {
+  @Test public void testCoalesce() {
     expr("coalesce(v1)")
         .ok("(COALESCE(`V1`))");
     expr("coalesce(v1,v2)")
@@ -4470,39 +4348,21 @@ public class SqlParserTest {
         .ok("('str1' COLLATE ISO-8859-1$sv_SE$primary <= 'str2' COLLATE ISO-8859-1$sv_FI$primary)");
   }
 
-  @Test void testCharLength() {
+  @Test public void testCharLength() {
     expr("char_length('string')")
         .ok("CHAR_LENGTH('string')");
     expr("character_length('string')")
         .ok("CHARACTER_LENGTH('string')");
   }
 
-  @Test void testPosition() {
+  @Test public void testPosition() {
     expr("posiTion('mouse' in 'house')")
         .ok("POSITION('mouse' IN 'house')");
   }
 
-  @Test void testReplace() {
+  @Test public void testReplace() {
     expr("replace('x', 'y', 'z')")
         .ok("REPLACE('x', 'y', 'z')");
-  }
-
-  @Test void testDateLiteral() {
-    final String expected = "SELECT DATE '1980-01-01'\n"
-        + "FROM `T`";
-    sql("select date '1980-01-01' from t").ok(expected);
-    final String expected1 = "SELECT TIME '00:00:00'\n"
-        + "FROM `T`";
-    sql("select time '00:00:00' from t").ok(expected1);
-    final String expected2 = "SELECT TIMESTAMP '1980-01-01 00:00:00'\n"
-        + "FROM `T`";
-    sql("select timestamp '1980-01-01 00:00:00' from t").ok(expected2);
-    final String expected3 = "SELECT INTERVAL '3' DAY\n"
-        + "FROM `T`";
-    sql("select interval '3' day from t").ok(expected3);
-    final String expected4 = "SELECT INTERVAL '5:6' HOUR TO MINUTE\n"
-        + "FROM `T`";
-    sql("select interval '5:6' hour to minute from t").ok(expected4);
   }
 
   @Test public void testDateLiteral() {
@@ -4641,7 +4501,7 @@ public class SqlParserTest {
         .ok("CAST(DATE '2004-12-21' AS VARCHAR(10))");
   }
 
-  @Test void testTrim() {
+  @Test public void testTrim() {
     expr("trim('mustache' FROM 'beard')")
         .ok("TRIM(BOTH 'mustache' FROM 'beard')");
     expr("trim('mustache')")
@@ -4663,26 +4523,26 @@ public class SqlParserTest {
         .fails("(?s).*'FROM' without operands preceding it is illegal.*");
   }
 
-  @Test void testConvertAndTranslate() {
+  @Test public void testConvertAndTranslate() {
     expr("convert('abc' using conversion)")
         .ok("CONVERT('abc' USING `CONVERSION`)");
     expr("translate('abc' using lazy_translation)")
         .ok("TRANSLATE('abc' USING `LAZY_TRANSLATION`)");
   }
 
-  @Test void testTranslate3() {
+  @Test public void testTranslate3() {
     expr("translate('aaabbbccc', 'ab', '+-')")
         .ok("TRANSLATE('aaabbbccc', 'ab', '+-')");
   }
 
-  @Test void testOverlay() {
+  @Test public void testOverlay() {
     expr("overlay('ABCdef' placing 'abc' from 1)")
         .ok("OVERLAY('ABCdef' PLACING 'abc' FROM 1)");
     expr("overlay('ABCdef' placing 'abc' from 1 for 3)")
         .ok("OVERLAY('ABCdef' PLACING 'abc' FROM 1 FOR 3)");
   }
 
-  @Test void testJdbcFunctionCall() {
+  @Test public void testJdbcFunctionCall() {
     expr("{fn apa(1,'1')}")
         .ok("{fn APA(1, '1') }");
     expr("{ Fn apa(log10(ln(1))+2)}")
@@ -4725,7 +4585,7 @@ public class SqlParserTest {
         .fails("(?s)Encountered \"INTERVAL\" at.*");
   }
 
-  @Test void testWindowReference() {
+  @Test public void testWindowReference() {
     expr("sum(sal) over (w)")
         .ok("(SUM(`SAL`) OVER (`W`))");
 
@@ -4734,7 +4594,7 @@ public class SqlParserTest {
         .fails("(?s)Encountered \"w1\" at.*");
   }
 
-  @Test void testWindowInSubQuery() {
+  @Test public void testWindowInSubQuery() {
     final String sql = "select * from (\n"
         + " select sum(x) over w, sum(y) over w\n"
         + " from s\n"
@@ -4801,9 +4661,8 @@ public class SqlParserTest {
         .fails("(?s).*Encountered \"unbounded\".*");
 
     // WINDOW keyword is not permissible.
-    checkFails(
-        "select sum(x) over ^window^ (order by x) from bids",
-        "(?s).*Encountered \"window\".*");
+    sql("select sum(x) over ^window^ (order by x) from bids")
+        .fails("(?s).*Encountered \"window\".*");
 
     // ORDER BY must be before Frame spec
     sql("select sum(x) over (rows 2 preceding ^order^ by x) from emp")
@@ -4903,7 +4762,7 @@ public class SqlParserTest {
         .fails("(?s).*Encountered \"over\".*");
   }
 
-  @Test void testAsAliases() {
+  @Test public void testAsAliases() {
     sql("select x from t as t1 (a, b) where foo")
         .ok("SELECT `X`\n"
             + "FROM `T` AS `T1` (`A`, `B`)\n"
@@ -4916,9 +4775,8 @@ public class SqlParserTest {
             + "WHERE (`a` > `B`)");
 
     // must have at least one column
-    checkFails(
-        "select x from (values (1, 2), (3, 4)) as t1 (^)^",
-        "(?s).*Encountered \"\\)\" at .*");
+    sql("select x from (values (1, 2), (3, 4)) as t1 (^)^")
+        .fails("(?s).*Encountered \"\\)\" at .*");
 
     // cannot have expressions
     sql("select x from t as t1 (x ^+^ y)")
@@ -4933,7 +4791,7 @@ public class SqlParserTest {
             + "    \",\" \\.\\.\\..*");
   }
 
-  @Test void testOver() {
+  @Test public void testOver() {
     expr("sum(sal) over ()")
         .ok("(SUM(`SAL`) OVER ())");
     expr("sum(sal) over (partition by x, y)")
@@ -4977,36 +4835,36 @@ public class SqlParserTest {
             + "AND INTERVAL '5' DAY FOLLOWING))");
   }
 
-  @Test void testElementFunc() {
+  @Test public void testElementFunc() {
     expr("element(a)")
         .ok("ELEMENT(`A`)");
   }
 
-  @Test void testCardinalityFunc() {
+  @Test public void testCardinalityFunc() {
     expr("cardinality(a)")
         .ok("CARDINALITY(`A`)");
   }
 
-  @Test void testMemberOf() {
+  @Test public void testMemberOf() {
     expr("a member of b")
         .ok("(`A` MEMBER OF `B`)");
     expr("a member of multiset[b]")
         .ok("(`A` MEMBER OF (MULTISET[`B`]))");
   }
 
-  @Test void testSubMultisetrOf() {
+  @Test public void testSubMultisetrOf() {
     expr("a submultiset of b")
         .ok("(`A` SUBMULTISET OF `B`)");
   }
 
-  @Test void testIsASet() {
+  @Test public void testIsASet() {
     expr("b is a set")
         .ok("(`B` IS A SET)");
     expr("a is a set")
         .ok("(`A` IS A SET)");
   }
 
-  @Test void testMultiset() {
+  @Test public void testMultiset() {
     expr("multiset[1]")
         .ok("(MULTISET[1])");
     expr("multiset[1,2.3]")
@@ -5024,37 +4882,46 @@ public class SqlParserTest {
   }
 
   @Test public void testMultisetUnion() {
-    checkExp("a multiset union b", "(`A` MULTISET UNION ALL `B`)");
-    checkExp("a multiset union all b", "(`A` MULTISET UNION ALL `B`)");
-    checkExp("a multiset union distinct b", "(`A` MULTISET UNION DISTINCT `B`)");
+    expr("a multiset union b")
+        .ok("(`A` MULTISET UNION ALL `B`)");
+    expr("a multiset union all b")
+        .ok("(`A` MULTISET UNION ALL `B`)");
+    expr("a multiset union distinct b")
+        .ok("(`A` MULTISET UNION DISTINCT `B`)");
   }
 
   @Test public void testMultisetExcept() {
-    checkExp("a multiset EXCEPT b", "(`A` MULTISET EXCEPT ALL `B`)");
-    checkExp("a multiset EXCEPT all b", "(`A` MULTISET EXCEPT ALL `B`)");
-    checkExp("a multiset EXCEPT distinct b", "(`A` MULTISET EXCEPT DISTINCT `B`)");
+    expr("a multiset EXCEPT b")
+        .ok("(`A` MULTISET EXCEPT ALL `B`)");
+    expr("a multiset EXCEPT all b")
+        .ok("(`A` MULTISET EXCEPT ALL `B`)");
+    expr("a multiset EXCEPT distinct b")
+        .ok("(`A` MULTISET EXCEPT DISTINCT `B`)");
   }
 
   @Test public void testMultisetIntersect() {
-    checkExp("a multiset INTERSECT b", "(`A` MULTISET INTERSECT ALL `B`)");
-    checkExp(
-        "a multiset INTERSECT all b",
-        "(`A` MULTISET INTERSECT ALL `B`)");
-    checkExp(
-        "a multiset INTERSECT distinct b",
-        "(`A` MULTISET INTERSECT DISTINCT `B`)");
+    expr("a multiset INTERSECT b")
+        .ok("(`A` MULTISET INTERSECT ALL `B`)");
+    expr("a multiset INTERSECT all b")
+        .ok("(`A` MULTISET INTERSECT ALL `B`)");
+    expr("a multiset INTERSECT distinct b")
+        .ok("(`A` MULTISET INTERSECT DISTINCT `B`)");
   }
 
   @Test public void testMultisetMixed() {
-    checkExp(
-        "multiset[1] MULTISET union b",
-        "((MULTISET[1]) MULTISET UNION ALL `B`)");
-    checkExp(
-        "a MULTISET union b multiset intersect c multiset except d multiset union e",
-        "(((`A` MULTISET UNION ALL (`B` MULTISET INTERSECT ALL `C`)) MULTISET EXCEPT ALL `D`) MULTISET UNION ALL `E`)");
+    expr("multiset[1] MULTISET union b")
+        .ok("((MULTISET[1]) MULTISET UNION ALL `B`)");
+    final String sql = "a MULTISET union b "
+        + "multiset intersect c "
+        + "multiset except d "
+        + "multiset union e";
+    final String expected = "(((`A` MULTISET UNION ALL "
+        + "(`B` MULTISET INTERSECT ALL `C`)) "
+        + "MULTISET EXCEPT ALL `D`) MULTISET UNION ALL `E`)";
+    expr(sql).ok(expected);
   }
 
-  @Test void testMapItem() {
+  @Test public void testMapItem() {
     expr("a['foo']")
         .ok("`A`['foo']");
     expr("a['x' || 'y']")
@@ -5065,7 +4932,7 @@ public class SqlParserTest {
         .ok("`A`['foo']['bar']");
   }
 
-  @Test void testMapItemPrecedence() {
+  @Test public void testMapItemPrecedence() {
     expr("1 + a['foo'] * 3")
         .ok("(1 + (`A`['foo'] * 3))");
     expr("1 * a['foo'] + 3")
@@ -5076,7 +4943,7 @@ public class SqlParserTest {
         .ok("`A`[`B`[('foo' || 'bar')]]");
   }
 
-  @Test void testArrayElement() {
+  @Test public void testArrayElement() {
     expr("a[1]")
         .ok("`A`[1]");
     expr("a[b[1]]")
@@ -5085,14 +4952,14 @@ public class SqlParserTest {
         .ok("`A`[(`B`[(1 + 2)] + 3)]");
   }
 
-  @Test void testArrayElementWithDot() {
+  @Test public void testArrayElementWithDot() {
     expr("a[1+2].b.c[2].d")
         .ok("(((`A`[(1 + 2)].`B`).`C`)[2].`D`)");
     expr("a[b[1]].c.f0[d[1]]")
         .ok("((`A`[`B`[1]].`C`).`F0`)[`D`[1]]");
   }
 
-  @Test void testArrayValueConstructor() {
+  @Test public void testArrayValueConstructor() {
     expr("array[1, 2]").ok("(ARRAY[1, 2])");
     expr("array [1, 2]").ok("(ARRAY[1, 2])"); // with space
 
@@ -5105,53 +4972,62 @@ public class SqlParserTest {
 
   @Test public void testCastAsCollectionType() {
     // test array type.
-    checkExp("cast(a as int array)", "CAST(`A` AS INTEGER ARRAY)");
-    checkExp("cast(a as varchar(5) array)", "CAST(`A` AS VARCHAR(5) ARRAY)");
-    checkExp("cast(a as int array array)", "CAST(`A` AS INTEGER ARRAY ARRAY)");
-    checkExp("cast(a as varchar(5) array array)",
-        "CAST(`A` AS VARCHAR(5) ARRAY ARRAY)");
-    checkExpFails("cast(a as int array^<^10>)",
-        "(?s).*Encountered \"<\" at line 1, column 20.\n.*");
+    expr("cast(a as int array)")
+        .ok("CAST(`A` AS INTEGER ARRAY)");
+    expr("cast(a as varchar(5) array)")
+        .ok("CAST(`A` AS VARCHAR(5) ARRAY)");
+    expr("cast(a as int array array)")
+        .ok("CAST(`A` AS INTEGER ARRAY ARRAY)");
+    expr("cast(a as varchar(5) array array)")
+        .ok("CAST(`A` AS VARCHAR(5) ARRAY ARRAY)");
+    expr("cast(a as int array^<^10>)")
+        .fails("(?s).*Encountered \"<\" at line 1, column 20.\n.*");
     // test multiset type.
-    checkExp("cast(a as int multiset)", "CAST(`A` AS INTEGER MULTISET)");
-    checkExp("cast(a as varchar(5) multiset)", "CAST(`A` AS VARCHAR(5) MULTISET)");
-    checkExp("cast(a as int multiset array)", "CAST(`A` AS INTEGER MULTISET ARRAY)");
-    checkExp("cast(a as varchar(5) multiset array)",
-        "CAST(`A` AS VARCHAR(5) MULTISET ARRAY)");
+    expr("cast(a as int multiset)")
+        .ok("CAST(`A` AS INTEGER MULTISET)");
+    expr("cast(a as varchar(5) multiset)")
+        .ok("CAST(`A` AS VARCHAR(5) MULTISET)");
+    expr("cast(a as int multiset array)")
+        .ok("CAST(`A` AS INTEGER MULTISET ARRAY)");
+    expr("cast(a as varchar(5) multiset array)")
+        .ok("CAST(`A` AS VARCHAR(5) MULTISET ARRAY)");
     // test row type nested in collection type.
-    checkExp("cast(a as row(f0 int array multiset, f1 varchar(5) array) array multiset)",
-        "CAST(`A` AS "
+    expr("cast(a as row(f0 int array multiset, f1 varchar(5) array) array multiset)")
+        .ok("CAST(`A` AS "
             + "ROW(`F0` INTEGER ARRAY MULTISET, "
             + "`F1` VARCHAR(5) ARRAY) "
             + "ARRAY MULTISET)");
     // test UDT collection type.
-    checkExp("cast(a as MyUDT array multiset)",
-        "CAST(`A` AS `MYUDT` ARRAY MULTISET)");
+    expr("cast(a as MyUDT array multiset)")
+        .ok("CAST(`A` AS `MYUDT` ARRAY MULTISET)");
   }
 
   @Test public void testCastAsRowType() {
-    checkExp("cast(a as row(f0 int, f1 varchar))",
-        "CAST(`A` AS ROW(`F0` INTEGER, `F1` VARCHAR))");
-    checkExp("cast(a as row(f0 int not null, f1 varchar null))",
-        "CAST(`A` AS ROW(`F0` INTEGER, `F1` VARCHAR NULL))");
+    expr("cast(a as row(f0 int, f1 varchar))")
+        .ok("CAST(`A` AS ROW(`F0` INTEGER, `F1` VARCHAR))");
+    expr("cast(a as row(f0 int not null, f1 varchar null))")
+        .ok("CAST(`A` AS ROW(`F0` INTEGER, `F1` VARCHAR NULL))");
     // test nested row type.
-    checkExp("cast(a as row("
+    expr("cast(a as row("
         + "f0 row(ff0 int not null, ff1 varchar null) null, "
-        + "f1 timestamp not null))",
-        "CAST(`A` AS ROW("
+        + "f1 timestamp not null))")
+        .ok("CAST(`A` AS ROW("
             + "`F0` ROW(`FF0` INTEGER, `FF1` VARCHAR NULL) NULL, "
             + "`F1` TIMESTAMP))");
     // test row type in collection data types.
-    checkExp("cast(a as row(f0 bigint not null, f1 decimal null) array)",
-        "CAST(`A` AS ROW(`F0` BIGINT, `F1` DECIMAL NULL) ARRAY)");
-    checkExp("cast(a as row(f0 varchar not null, f1 timestamp null) multiset)",
-        "CAST(`A` AS ROW(`F0` VARCHAR, `F1` TIMESTAMP NULL) MULTISET)");
+    expr("cast(a as row(f0 bigint not null, f1 decimal null) array)")
+        .ok("CAST(`A` AS ROW(`F0` BIGINT, `F1` DECIMAL NULL) ARRAY)");
+    expr("cast(a as row(f0 varchar not null, f1 timestamp null) multiset)")
+        .ok("CAST(`A` AS ROW(`F0` VARCHAR, `F1` TIMESTAMP NULL) MULTISET)");
   }
 
   @Test public void testMapValueConstructor() {
-    checkExp("map[1, 'x', 2, 'y']", "(MAP[1, 'x', 2, 'y'])");
-    checkExp("map [1, 'x', 2, 'y']", "(MAP[1, 'x', 2, 'y'])");
-    checkExp("map[]", "(MAP[])");
+    expr("map[1, 'x', 2, 'y']")
+        .ok("(MAP[1, 'x', 2, 'y'])");
+    expr("map [1, 'x', 2, 'y']")
+        .ok("(MAP[1, 'x', 2, 'y'])");
+    expr("map[]")
+        .ok("(MAP[])");
   }
 
   /**
@@ -6820,10 +6696,14 @@ public class SqlParserTest {
             + "    <EOF> \n"
             + "    \"\\(\" \\.\\.\\.\n"
             + "    \"\\.\" \\.\\.\\..*");
-    checkExpFails("interval '1-2' year ^to^ day", ANY);
-    checkExpFails("interval '1-2' year ^to^ hour", ANY);
-    checkExpFails("interval '1-2' year ^to^ minute", ANY);
-    checkExpFails("interval '1-2' year ^to^ second", ANY);
+    expr("interval '1-2' year ^to^ day")
+        .fails(ANY);
+    expr("interval '1-2' year ^to^ hour")
+        .fails(ANY);
+    expr("interval '1-2' year ^to^ minute")
+        .fails(ANY);
+    expr("interval '1-2' year ^to^ second")
+        .fails(ANY);
 
     expr("interval '1-2' month ^to^ year")
         .fails(ANY);
@@ -7052,7 +6932,7 @@ public class SqlParserTest {
         .fails(ANY);
   }
 
-  @Test void testUnparseableIntervalQualifiers2() {
+  @Test public void testUnparseableIntervalQualifiers2() {
     expr("interval '1-2' day(3) ^to^ year(2)")
         .fails(ANY);
     expr("interval '1-2' day(3) ^to^ month(2)")
@@ -7108,23 +6988,40 @@ public class SqlParserTest {
         .fails(ANY);
 
     // precision of -1 (< minimum allowed)
-    checkExpFails("INTERVAL '0' YEAR(^-^1)", ANY);
-    checkExpFails("INTERVAL '0-0' YEAR(^-^1) TO MONTH", ANY);
-    checkExpFails("INTERVAL '0' MONTH(^-^1)", ANY);
-    checkExpFails("INTERVAL '0' DAY(^-^1)", ANY);
-    checkExpFails("INTERVAL '0 0' DAY(^-^1) TO HOUR", ANY);
-    checkExpFails("INTERVAL '0 0' DAY(^-^1) TO MINUTE", ANY);
-    checkExpFails("INTERVAL '0 0:0:0' DAY(^-^1) TO SECOND", ANY);
-    checkExpFails("INTERVAL '0 0:0:0' DAY TO SECOND(^-^1)", ANY);
-    checkExpFails("INTERVAL '0' HOUR(^-^1)", ANY);
-    checkExpFails("INTERVAL '0:0' HOUR(^-^1) TO MINUTE", ANY);
-    checkExpFails("INTERVAL '0:0:0' HOUR(^-^1) TO SECOND", ANY);
-    checkExpFails("INTERVAL '0:0:0' HOUR TO SECOND(^-^1)", ANY);
-    checkExpFails("INTERVAL '0' MINUTE(^-^1)", ANY);
-    checkExpFails("INTERVAL '0:0' MINUTE(^-^1) TO SECOND", ANY);
-    checkExpFails("INTERVAL '0:0' MINUTE TO SECOND(^-^1)", ANY);
-    checkExpFails("INTERVAL '0' SECOND(^-^1)", ANY);
-    checkExpFails("INTERVAL '0' SECOND(1, ^-^1)", ANY);
+    expr("INTERVAL '0' YEAR(^-^1)")
+        .fails(ANY);
+    expr("INTERVAL '0-0' YEAR(^-^1) TO MONTH")
+        .fails(ANY);
+    expr("INTERVAL '0' MONTH(^-^1)")
+        .fails(ANY);
+    expr("INTERVAL '0' DAY(^-^1)")
+        .fails(ANY);
+    expr("INTERVAL '0 0' DAY(^-^1) TO HOUR")
+        .fails(ANY);
+    expr("INTERVAL '0 0' DAY(^-^1) TO MINUTE")
+        .fails(ANY);
+    expr("INTERVAL '0 0:0:0' DAY(^-^1) TO SECOND")
+        .fails(ANY);
+    expr("INTERVAL '0 0:0:0' DAY TO SECOND(^-^1)")
+        .fails(ANY);
+    expr("INTERVAL '0' HOUR(^-^1)")
+        .fails(ANY);
+    expr("INTERVAL '0:0' HOUR(^-^1) TO MINUTE")
+        .fails(ANY);
+    expr("INTERVAL '0:0:0' HOUR(^-^1) TO SECOND")
+        .fails(ANY);
+    expr("INTERVAL '0:0:0' HOUR TO SECOND(^-^1)")
+        .fails(ANY);
+    expr("INTERVAL '0' MINUTE(^-^1)")
+        .fails(ANY);
+    expr("INTERVAL '0:0' MINUTE(^-^1) TO SECOND")
+        .fails(ANY);
+    expr("INTERVAL '0:0' MINUTE TO SECOND(^-^1)")
+        .fails(ANY);
+    expr("INTERVAL '0' SECOND(^-^1)")
+        .fails(ANY);
+    expr("INTERVAL '0' SECOND(1, ^-^1)")
+        .fails(ANY);
 
     // These may actually be legal per SQL2003, as the first field is
     // "more significant" than the last, but we do not support them
@@ -7156,46 +7053,7 @@ public class SqlParserTest {
         .fails(ANY);
   }
 
-  /** Tests that plural time units are allowed when not in strict mode. */
-  @Test void testIntervalPluralUnits() {
-    expr("interval '2' years")
-        .hasWarning(checkWarnings("YEARS"))
-        .ok("INTERVAL '2' YEAR");
-    expr("interval '2:1' years to months")
-        .hasWarning(checkWarnings("YEARS", "MONTHS"))
-        .ok("INTERVAL '2:1' YEAR TO MONTH");
-    expr("interval '2' days")
-        .hasWarning(checkWarnings("DAYS"))
-        .ok("INTERVAL '2' DAY");
-    expr("interval '2:1' days to hours")
-        .hasWarning(checkWarnings("DAYS", "HOURS"))
-        .ok("INTERVAL '2:1' DAY TO HOUR");
-    expr("interval '2:1' day to hours")
-        .hasWarning(checkWarnings("HOURS"))
-        .ok("INTERVAL '2:1' DAY TO HOUR");
-    expr("interval '2:1' days to hour")
-        .hasWarning(checkWarnings("DAYS"))
-        .ok("INTERVAL '2:1' DAY TO HOUR");
-    expr("interval '1:1' minutes to seconds")
-        .hasWarning(checkWarnings("MINUTES", "SECONDS"))
-        .ok("INTERVAL '1:1' MINUTE TO SECOND");
-  }
-
-  @Nonnull private Consumer<List<? extends Throwable>> checkWarnings(
-      String... tokens) {
-    final List<String> messages = new ArrayList<>();
-    for (String token : tokens) {
-      messages.add("Warning: use of non-standard feature '" + token + "'");
-    }
-    return throwables -> {
-      assertThat(throwables.size(), is(messages.size()));
-      for (Pair<? extends Throwable, String> pair : Pair.zip(throwables, messages)) {
-        assertThat(pair.left.getMessage(), containsString(pair.right));
-      }
-    };
-  }
-
-  @Test void testMiscIntervalQualifier() {
+  @Test public void testMiscIntervalQualifier() {
     expr("interval '-' day")
         .ok("INTERVAL '-' DAY");
 
@@ -7209,7 +7067,7 @@ public class SqlParserTest {
         .ok("INTERVAL '1:x:2' HOUR TO SECOND");
   }
 
-  @Test void testIntervalOperators() {
+  @Test public void testIntervalOperators() {
     expr("-interval '1' day")
         .ok("(- INTERVAL '1' DAY)");
     expr("interval '1' day + interval '1' day")
@@ -7229,15 +7087,64 @@ public class SqlParserTest {
         .ok("INTERVAL 'wael was here' HOUR");
   }
 
+  @Test public void testDateMinusDate() {
+    expr("(date1 - date2) HOUR")
+        .ok("((`DATE1` - `DATE2`) HOUR)");
+    expr("(date1 - date2) YEAR TO MONTH")
+        .ok("((`DATE1` - `DATE2`) YEAR TO MONTH)");
+    expr("(date1 - date2) HOUR > interval '1' HOUR")
+        .ok("(((`DATE1` - `DATE2`) HOUR) > INTERVAL '1' HOUR)");
+    expr("^(date1 + date2) second^")
+        .fails("(?s).*Illegal expression. "
+            + "Was expecting ..DATETIME - DATETIME. INTERVALQUALIFIER.*");
+    expr("^(date1,date2,date2) second^")
+        .fails("(?s).*Illegal expression. "
+            + "Was expecting ..DATETIME - DATETIME. INTERVALQUALIFIER.*");
+  }
+
+  @Test public void testExtract() {
+    expr("extract(year from x)")
+        .ok("EXTRACT(YEAR FROM `X`)");
+    expr("extract(month from x)")
+        .ok("EXTRACT(MONTH FROM `X`)");
+    expr("extract(day from x)")
+        .ok("EXTRACT(DAY FROM `X`)");
+    expr("extract(hour from x)")
+        .ok("EXTRACT(HOUR FROM `X`)");
+    expr("extract(minute from x)")
+        .ok("EXTRACT(MINUTE FROM `X`)");
+    expr("extract(second from x)")
+        .ok("EXTRACT(SECOND FROM `X`)");
+    expr("extract(dow from x)")
+        .ok("EXTRACT(DOW FROM `X`)");
+    expr("extract(doy from x)")
+        .ok("EXTRACT(DOY FROM `X`)");
+    expr("extract(week from x)")
+        .ok("EXTRACT(WEEK FROM `X`)");
+    expr("extract(epoch from x)")
+        .ok("EXTRACT(EPOCH FROM `X`)");
+    expr("extract(quarter from x)")
+        .ok("EXTRACT(QUARTER FROM `X`)");
+    expr("extract(decade from x)")
+        .ok("EXTRACT(DECADE FROM `X`)");
+    expr("extract(century from x)")
+        .ok("EXTRACT(CENTURY FROM `X`)");
+    expr("extract(millennium from x)")
+        .ok("EXTRACT(MILLENNIUM FROM `X`)");
+
+    expr("extract(day ^to^ second from x)")
+        .fails("(?s)Encountered \"to\".*");
+  }
+
   @Test public void testGeometry() {
-    checkExpFails("cast(null as ^geometry^)",
-        "Geo-spatial extensions and the GEOMETRY data type are not enabled");
+    expr("cast(null as ^geometry^)")
+        .fails("Geo-spatial extensions and the GEOMETRY data type are not enabled");
     conformance = SqlConformanceEnum.LENIENT;
     expr("cast(null as geometry)")
         .ok("CAST(NULL AS GEOMETRY)");
   }
 
-  @Test void testIntervalArithmetics() {
+  @Test public void testIntervalArithmetics() {
     expr("TIME '23:59:59' - interval '1' hour ")
         .ok("(TIME '23:59:59' - INTERVAL '1' HOUR)");
     expr("TIMESTAMP '2000-01-01 23:59:59.1' - interval '1' hour ")
@@ -7263,7 +7170,7 @@ public class SqlParserTest {
         .ok("(INTERVAL '1' HOUR / 8)");
   }
 
-  @Test void testIntervalCompare() {
+  @Test public void testIntervalCompare() {
     expr("interval '1' hour = interval '1' second")
         .ok("(INTERVAL '1' HOUR = INTERVAL '1' SECOND)");
     expr("interval '1' hour <> interval '1' second")
@@ -7278,7 +7185,7 @@ public class SqlParserTest {
         .ok("(INTERVAL '1' HOUR >= INTERVAL '1' SECOND)");
   }
 
-  @Test void testCastToInterval() {
+  @Test public void testCastToInterval() {
     expr("cast(x as interval year)")
         .ok("CAST(`X` AS INTERVAL YEAR)");
     expr("cast(x as interval month)")
@@ -7309,7 +7216,7 @@ public class SqlParserTest {
         .ok("CAST(INTERVAL '3-2' YEAR TO MONTH AS CHAR(5))");
   }
 
-  @Test void testCastToVarchar() {
+  @Test public void testCastToVarchar() {
     expr("cast(x as varchar(5))")
         .ok("CAST(`X` AS VARCHAR(5))");
     expr("cast(x as varchar)")
@@ -7374,7 +7281,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Test void testUnnest() {
+  @Test public void testUnnest() {
     sql("select*from unnest(x)")
         .ok("SELECT *\n"
             + "FROM (UNNEST(`X`))");
@@ -7416,24 +7323,20 @@ public class SqlParserTest {
   @Test void testParensInFrom() {
     // UNNEST may not occur within parentheses.
     // FIXME should fail at "unnest"
-    checkFails(
-        "select *from (^unnest(x)^)",
-        "Expected query or join");
+    sql("select *from (^unnest(x)^)")
+        .fails("(?s)Expected query or join.*");
 
     // <table-name> may not occur within parentheses.
-    checkFails(
-        "select * from (^emp^)",
-        "Expected query or join");
+    sql("select * from (^emp^)")
+        .fails("(?s)Expected query or join.*");
 
     // <table-name> may not occur within parentheses.
-    checkFails(
-        "select * from (^emp as x^)",
-        "Expected query or join");
+    sql("select * from (^emp as x^)")
+        .fails("(?s)Expected query or join.*");
 
     // <table-name> may not occur within parentheses.
-    checkFails(
-        "select * from (^emp^) as x",
-        "Expected query or join");
+    sql("select * from (^emp^) as x")
+        .fails("(?s)Expected query or join.*");
 
     // Parentheses around JOINs are OK, and sometimes necessary.
     if (false) {
@@ -7444,7 +7347,7 @@ public class SqlParserTest {
     }
   }
 
-  @Test void testProcedureCall() {
+  @Test public void testProcedureCall() {
     sql("call blubber(5)")
         .ok("CALL `BLUBBER`(5)");
     sql("call \"blubber\"(5)")
@@ -7453,7 +7356,7 @@ public class SqlParserTest {
         .ok("CALL `WHALE`.`BLUBBER`(5)");
   }
 
-  @Test void testNewSpecification() {
+  @Test public void testNewSpecification() {
     expr("new udt()")
         .ok("(NEW `UDT`())");
     expr("new my.udt(1, 'hey')")
@@ -7464,7 +7367,7 @@ public class SqlParserTest {
         .ok("(1 + (NEW `UDT`()))");
   }
 
-  @Test void testMultisetCast() {
+  @Test public void testMultisetCast() {
     expr("cast(multiset[1] as double multiset)")
         .ok("CAST((MULTISET[1]) AS DOUBLE MULTISET)");
   }
@@ -7554,9 +7457,8 @@ public class SqlParserTest {
   }
 
   @Test public void testTabStop() {
-    check(
-        "SELECT *\n\tFROM mytable",
-        "SELECT *\n"
+    sql("SELECT *\n\tFROM mytable")
+        .ok("SELECT *\n"
             + "FROM `MYTABLE`");
 
     // make sure that the tab stops do not affect the placement of the
@@ -7615,7 +7517,7 @@ public class SqlParserTest {
    *
    * @see org.apache.calcite.test.SqlValidatorTest#testQuotedFunction()
    */
-  @Test void testQuotedFunction() {
+  @Test public void testQuotedFunction() {
     expr("\"CAST\"(1 ^as^ double)")
         .fails("(?s).*Encountered \"as\" at .*");
     expr("\"POSITION\"('b' ^in^ 'alphabet')")
@@ -7630,17 +7532,17 @@ public class SqlParserTest {
    * Tests that applying member function of a specific type as a suffix function
    */
   @Test public void testMemberFunction() {
-    check("SELECT myColumn.func(a, b) FROM tbl",
-        "SELECT `MYCOLUMN`.`FUNC`(`A`, `B`)\n"
+    sql("SELECT myColumn.func(a, b) FROM tbl")
+        .ok("SELECT `MYCOLUMN`.`FUNC`(`A`, `B`)\n"
             + "FROM `TBL`");
-    check("SELECT myColumn.mySubField.func() FROM tbl",
-        "SELECT `MYCOLUMN`.`MYSUBFIELD`.`FUNC`()\n"
+    sql("SELECT myColumn.mySubField.func() FROM tbl")
+        .ok("SELECT `MYCOLUMN`.`MYSUBFIELD`.`FUNC`()\n"
             + "FROM `TBL`");
-    check("SELECT tbl.myColumn.mySubField.func() FROM tbl",
-        "SELECT `TBL`.`MYCOLUMN`.`MYSUBFIELD`.`FUNC`()\n"
+    sql("SELECT tbl.myColumn.mySubField.func() FROM tbl")
+        .ok("SELECT `TBL`.`MYCOLUMN`.`MYSUBFIELD`.`FUNC`()\n"
             + "FROM `TBL`");
-    check("SELECT tbl.foo(0).col.bar(2, 3) FROM tbl",
-        "SELECT ((`TBL`.`FOO`(0).`COL`).`BAR`(2, 3))\n"
+    sql("SELECT tbl.foo(0).col.bar(2, 3) FROM tbl")
+        .ok("SELECT ((`TBL`.`FOO`(0).`COL`).`BAR`(2, 3))\n"
             + "FROM `TBL`");
   }
 
@@ -7692,10 +7594,10 @@ public class SqlParserTest {
     sql(in).ok(out);
 
     // Verify that we can override with an explicit escape character
-    sql(in.replace("\\", "!") + "UESCAPE '!'").ok(out);
+    sql(in.replaceAll("\\\\", "!") + "UESCAPE '!'").ok(out);
   }
 
-  @Test void testIllegalUnicodeEscape() {
+  @Test public void testIllegalUnicodeEscape() {
     expr("U&'abc' UESCAPE '!!'")
         .fails(".*must be exactly one character.*");
     expr("U&'abc' UESCAPE ''")
@@ -8458,9 +8360,6 @@ public class SqlParserTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2993">[CALCITE-2993]
    * ParseException may be thrown for legal SQL queries due to incorrect
    * "LOOKAHEAD(1)" hints</a>. */
-<<<<<<< HEAD
-  @Test void testMatchRecognizePatternSkip6() {
-=======
   @Test public void testMatchRecognizePatternSkip6() {
     final String sql = "select *\n"
         + "  from t match_recognize\n"
@@ -8698,100 +8597,103 @@ public class SqlParserTest {
   }
 
   @Test public void testJsonValueExpressionOperator() {
-    checkExp("foo format json",
-        "`FOO` FORMAT JSON");
+    expr("foo format json")
+        .ok("`FOO` FORMAT JSON");
     // Currently, encoding js not valid
-    checkExp("foo format json encoding utf8",
-        "`FOO` FORMAT JSON");
-    checkExp("foo format json encoding utf16",
-        "`FOO` FORMAT JSON");
-    checkExp("foo format json encoding utf32",
-        "`FOO` FORMAT JSON");
-    checkExp("null format json", "NULL FORMAT JSON");
+    expr("foo format json encoding utf8")
+        .ok("`FOO` FORMAT JSON");
+    expr("foo format json encoding utf16")
+        .ok("`FOO` FORMAT JSON");
+    expr("foo format json encoding utf32")
+        .ok("`FOO` FORMAT JSON");
+    expr("null format json")
+        .ok("NULL FORMAT JSON");
     // Test case to eliminate choice conflict on token <FORMAT>
-    check("select foo format from tab", "SELECT `FOO` AS `FORMAT`\n"
-        + "FROM `TAB`");
+    sql("select foo format from tab")
+        .ok("SELECT `FOO` AS `FORMAT`\n"
+            + "FROM `TAB`");
     // Test case to eliminate choice conflict on token <ENCODING>
-    check("select foo format json encoding from tab", "SELECT `FOO` FORMAT JSON AS `ENCODING`\n"
-        + "FROM `TAB`");
+    sql("select foo format json encoding from tab")
+        .ok("SELECT `FOO` FORMAT JSON AS `ENCODING`\n"
+            + "FROM `TAB`");
   }
 
   @Test public void testJsonExists() {
-    checkExp("json_exists('{\"foo\": \"bar\"}', 'lax $.foo')",
-        "JSON_EXISTS('{\"foo\": \"bar\"}', 'lax $.foo')");
-    checkExp("json_exists('{\"foo\": \"bar\"}', 'lax $.foo' error on error)",
-        "JSON_EXISTS('{\"foo\": \"bar\"}', 'lax $.foo' ERROR ON ERROR)");
+    expr("json_exists('{\"foo\": \"bar\"}', 'lax $.foo')")
+        .ok("JSON_EXISTS('{\"foo\": \"bar\"}', 'lax $.foo')");
+    expr("json_exists('{\"foo\": \"bar\"}', 'lax $.foo' error on error)")
+        .ok("JSON_EXISTS('{\"foo\": \"bar\"}', 'lax $.foo' ERROR ON ERROR)");
   }
 
   @Test public void testJsonValue() {
-    checkExp("json_value('{\"foo\": \"100\"}', 'lax $.foo' "
-            + "returning integer)",
-        "JSON_VALUE('{\"foo\": \"100\"}', 'lax $.foo' "
+    expr("json_value('{\"foo\": \"100\"}', 'lax $.foo' "
+        + "returning integer)")
+        .ok("JSON_VALUE('{\"foo\": \"100\"}', 'lax $.foo' "
             + "RETURNING INTEGER NULL ON EMPTY NULL ON ERROR)");
-    checkExp("json_value('{\"foo\": \"100\"}', 'lax $.foo' "
-            + "returning integer default 10 on empty error on error)",
-        "JSON_VALUE('{\"foo\": \"100\"}', 'lax $.foo' "
+    expr("json_value('{\"foo\": \"100\"}', 'lax $.foo' "
+        + "returning integer default 10 on empty error on error)")
+        .ok("JSON_VALUE('{\"foo\": \"100\"}', 'lax $.foo' "
             + "RETURNING INTEGER DEFAULT 10 ON EMPTY ERROR ON ERROR)");
   }
 
   @Test public void testJsonQuery() {
-    checkExp("json_query('{\"foo\": \"bar\"}', 'lax $' WITHOUT ARRAY WRAPPER)",
-        "JSON_QUERY('{\"foo\": \"bar\"}', "
+    expr("json_query('{\"foo\": \"bar\"}', 'lax $' WITHOUT ARRAY WRAPPER)")
+        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
             + "'lax $' WITHOUT ARRAY WRAPPER NULL ON EMPTY NULL ON ERROR)");
-    checkExp("json_query('{\"foo\": \"bar\"}', 'lax $' WITH WRAPPER)",
-        "JSON_QUERY('{\"foo\": \"bar\"}', "
+    expr("json_query('{\"foo\": \"bar\"}', 'lax $' WITH WRAPPER)")
+        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
             + "'lax $' WITH UNCONDITIONAL ARRAY WRAPPER NULL ON EMPTY NULL ON ERROR)");
-    checkExp("json_query('{\"foo\": \"bar\"}', 'lax $' WITH UNCONDITIONAL WRAPPER)",
-        "JSON_QUERY('{\"foo\": \"bar\"}', "
+    expr("json_query('{\"foo\": \"bar\"}', 'lax $' WITH UNCONDITIONAL WRAPPER)")
+        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
             + "'lax $' WITH UNCONDITIONAL ARRAY WRAPPER NULL ON EMPTY NULL ON ERROR)");
-    checkExp("json_query('{\"foo\": \"bar\"}', 'lax $' WITH CONDITIONAL WRAPPER)",
-        "JSON_QUERY('{\"foo\": \"bar\"}', "
+    expr("json_query('{\"foo\": \"bar\"}', 'lax $' WITH CONDITIONAL WRAPPER)")
+        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
             + "'lax $' WITH CONDITIONAL ARRAY WRAPPER NULL ON EMPTY NULL ON ERROR)");
-    checkExp("json_query('{\"foo\": \"bar\"}', 'lax $' NULL ON EMPTY)",
-        "JSON_QUERY('{\"foo\": \"bar\"}', "
+    expr("json_query('{\"foo\": \"bar\"}', 'lax $' NULL ON EMPTY)")
+        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
             + "'lax $' WITHOUT ARRAY WRAPPER NULL ON EMPTY NULL ON ERROR)");
-    checkExp("json_query('{\"foo\": \"bar\"}', 'lax $' ERROR ON EMPTY)",
-        "JSON_QUERY('{\"foo\": \"bar\"}', "
+    expr("json_query('{\"foo\": \"bar\"}', 'lax $' ERROR ON EMPTY)")
+        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
             + "'lax $' WITHOUT ARRAY WRAPPER ERROR ON EMPTY NULL ON ERROR)");
-    checkExp("json_query('{\"foo\": \"bar\"}', 'lax $' EMPTY ARRAY ON EMPTY)",
-        "JSON_QUERY('{\"foo\": \"bar\"}', "
+    expr("json_query('{\"foo\": \"bar\"}', 'lax $' EMPTY ARRAY ON EMPTY)")
+        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
             + "'lax $' WITHOUT ARRAY WRAPPER EMPTY ARRAY ON EMPTY NULL ON ERROR)");
-    checkExp("json_query('{\"foo\": \"bar\"}', 'lax $' EMPTY OBJECT ON EMPTY)",
-        "JSON_QUERY('{\"foo\": \"bar\"}', "
+    expr("json_query('{\"foo\": \"bar\"}', 'lax $' EMPTY OBJECT ON EMPTY)")
+        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
             + "'lax $' WITHOUT ARRAY WRAPPER EMPTY OBJECT ON EMPTY NULL ON ERROR)");
-    checkExp("json_query('{\"foo\": \"bar\"}', 'lax $' NULL ON ERROR)",
-        "JSON_QUERY('{\"foo\": \"bar\"}', "
+    expr("json_query('{\"foo\": \"bar\"}', 'lax $' NULL ON ERROR)")
+        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
             + "'lax $' WITHOUT ARRAY WRAPPER NULL ON EMPTY NULL ON ERROR)");
-    checkExp("json_query('{\"foo\": \"bar\"}', 'lax $' ERROR ON ERROR)",
-        "JSON_QUERY('{\"foo\": \"bar\"}', "
+    expr("json_query('{\"foo\": \"bar\"}', 'lax $' ERROR ON ERROR)")
+        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
             + "'lax $' WITHOUT ARRAY WRAPPER NULL ON EMPTY ERROR ON ERROR)");
-    checkExp("json_query('{\"foo\": \"bar\"}', 'lax $' EMPTY ARRAY ON ERROR)",
-        "JSON_QUERY('{\"foo\": \"bar\"}', "
+    expr("json_query('{\"foo\": \"bar\"}', 'lax $' EMPTY ARRAY ON ERROR)")
+        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
             + "'lax $' WITHOUT ARRAY WRAPPER NULL ON EMPTY EMPTY ARRAY ON ERROR)");
-    checkExp("json_query('{\"foo\": \"bar\"}', 'lax $' EMPTY OBJECT ON ERROR)",
-        "JSON_QUERY('{\"foo\": \"bar\"}', "
+    expr("json_query('{\"foo\": \"bar\"}', 'lax $' EMPTY OBJECT ON ERROR)")
+        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
             + "'lax $' WITHOUT ARRAY WRAPPER NULL ON EMPTY EMPTY OBJECT ON ERROR)");
-    checkExp("json_query('{\"foo\": \"bar\"}', 'lax $' EMPTY ARRAY ON EMPTY "
-            + "EMPTY OBJECT ON ERROR)",
-        "JSON_QUERY('{\"foo\": \"bar\"}', "
+    expr("json_query('{\"foo\": \"bar\"}', 'lax $' EMPTY ARRAY ON EMPTY "
+        + "EMPTY OBJECT ON ERROR)")
+        .ok("JSON_QUERY('{\"foo\": \"bar\"}', "
             + "'lax $' WITHOUT ARRAY WRAPPER EMPTY ARRAY ON EMPTY EMPTY OBJECT ON ERROR)");
   }
 
   @Test public void testJsonObject() {
-    checkExp("json_object('foo': 'bar')",
-        "JSON_OBJECT(KEY 'foo' VALUE 'bar' NULL ON NULL)");
-    checkExp("json_object('foo': 'bar', 'foo2': 'bar2')",
-        "JSON_OBJECT(KEY 'foo' VALUE 'bar', KEY 'foo2' VALUE 'bar2' NULL ON NULL)");
-    checkExp("json_object('foo' value 'bar')",
-        "JSON_OBJECT(KEY 'foo' VALUE 'bar' NULL ON NULL)");
-    checkExp("json_object(key 'foo' value 'bar')",
-        "JSON_OBJECT(KEY 'foo' VALUE 'bar' NULL ON NULL)");
-    checkExp("json_object('foo': null)",
-        "JSON_OBJECT(KEY 'foo' VALUE NULL NULL ON NULL)");
-    checkExp("json_object('foo': null absent on null)",
-        "JSON_OBJECT(KEY 'foo' VALUE NULL ABSENT ON NULL)");
-    checkExp("json_object('foo': json_object('foo': 'bar') format json)",
-        "JSON_OBJECT(KEY 'foo' VALUE "
+    expr("json_object('foo': 'bar')")
+        .ok("JSON_OBJECT(KEY 'foo' VALUE 'bar' NULL ON NULL)");
+    expr("json_object('foo': 'bar', 'foo2': 'bar2')")
+        .ok("JSON_OBJECT(KEY 'foo' VALUE 'bar', KEY 'foo2' VALUE 'bar2' NULL ON NULL)");
+    expr("json_object('foo' value 'bar')")
+        .ok("JSON_OBJECT(KEY 'foo' VALUE 'bar' NULL ON NULL)");
+    expr("json_object(key 'foo' value 'bar')")
+        .ok("JSON_OBJECT(KEY 'foo' VALUE 'bar' NULL ON NULL)");
+    expr("json_object('foo': null)")
+        .ok("JSON_OBJECT(KEY 'foo' VALUE NULL NULL ON NULL)");
+    expr("json_object('foo': null absent on null)")
+        .ok("JSON_OBJECT(KEY 'foo' VALUE NULL ABSENT ON NULL)");
+    expr("json_object('foo': json_object('foo': 'bar') format json)")
+        .ok("JSON_OBJECT(KEY 'foo' VALUE "
             + "JSON_OBJECT(KEY 'foo' VALUE 'bar' NULL ON NULL) "
             + "FORMAT JSON NULL ON NULL)");
 
@@ -8804,139 +8706,145 @@ public class SqlParserTest {
     // You can see the generated codes that are located at method
     // SqlParserImpl#JsonObjectFunctionCall. Looking ahead fails
     // immediately after seeking the tokens <KEY> and <COLON>.
-    checkExp("json_object(key: value)",
-        "JSON_OBJECT(KEY `KEY` VALUE `VALUE` NULL ON NULL)");
+    expr("json_object(key: value)")
+        .ok("JSON_OBJECT(KEY `KEY` VALUE `VALUE` NULL ON NULL)");
   }
 
   @Test public void testJsonType() {
-    checkExp("json_type('11.56')", "JSON_TYPE('11.56')");
-    checkExp("json_type('{}')", "JSON_TYPE('{}')");
-    checkExp("json_type(null)", "JSON_TYPE(NULL)");
-    checkExp("json_type('[\"foo\",null]')",
-            "JSON_TYPE('[\"foo\",null]')");
-    checkExp("json_type('{\"foo\": \"100\"}')",
-            "JSON_TYPE('{\"foo\": \"100\"}')");
+    expr("json_type('11.56')")
+        .ok("JSON_TYPE('11.56')");
+    expr("json_type('{}')")
+        .ok("JSON_TYPE('{}')");
+    expr("json_type(null)")
+        .ok("JSON_TYPE(NULL)");
+    expr("json_type('[\"foo\",null]')")
+        .ok("JSON_TYPE('[\"foo\",null]')");
+    expr("json_type('{\"foo\": \"100\"}')")
+        .ok("JSON_TYPE('{\"foo\": \"100\"}')");
   }
 
   @Test public void testJsonDepth() {
-    checkExp("json_depth('11.56')", "JSON_DEPTH('11.56')");
-    checkExp("json_depth('{}')", "JSON_DEPTH('{}')");
-    checkExp("json_depth(null)", "JSON_DEPTH(NULL)");
-    checkExp("json_depth('[\"foo\",null]')",
-            "JSON_DEPTH('[\"foo\",null]')");
-    checkExp("json_depth('{\"foo\": \"100\"}')",
-            "JSON_DEPTH('{\"foo\": \"100\"}')");
+    expr("json_depth('11.56')")
+        .ok("JSON_DEPTH('11.56')");
+    expr("json_depth('{}')")
+        .ok("JSON_DEPTH('{}')");
+    expr("json_depth(null)")
+        .ok("JSON_DEPTH(NULL)");
+    expr("json_depth('[\"foo\",null]')")
+        .ok("JSON_DEPTH('[\"foo\",null]')");
+    expr("json_depth('{\"foo\": \"100\"}')")
+        .ok("JSON_DEPTH('{\"foo\": \"100\"}')");
   }
 
   @Test public void testJsonLength() {
-    checkExp("json_length('{\"foo\": \"bar\"}')",
-            "JSON_LENGTH('{\"foo\": \"bar\"}')");
-    checkExp("json_length('{\"foo\": \"bar\"}', 'lax $')",
-            "JSON_LENGTH('{\"foo\": \"bar\"}', 'lax $')");
-    checkExp("json_length('{\"foo\": \"bar\"}', 'strict $')",
-            "JSON_LENGTH('{\"foo\": \"bar\"}', 'strict $')");
-    checkExp("json_length('{\"foo\": \"bar\"}', 'invalid $')",
-            "JSON_LENGTH('{\"foo\": \"bar\"}', 'invalid $')");
+    expr("json_length('{\"foo\": \"bar\"}')")
+        .ok("JSON_LENGTH('{\"foo\": \"bar\"}')");
+    expr("json_length('{\"foo\": \"bar\"}', 'lax $')")
+        .ok("JSON_LENGTH('{\"foo\": \"bar\"}', 'lax $')");
+    expr("json_length('{\"foo\": \"bar\"}', 'strict $')")
+        .ok("JSON_LENGTH('{\"foo\": \"bar\"}', 'strict $')");
+    expr("json_length('{\"foo\": \"bar\"}', 'invalid $')")
+        .ok("JSON_LENGTH('{\"foo\": \"bar\"}', 'invalid $')");
   }
 
   @Test public void testJsonKeys() {
-    checkExp("json_keys('{\"foo\": \"bar\"}', 'lax $')",
-            "JSON_KEYS('{\"foo\": \"bar\"}', 'lax $')");
-    checkExp("json_keys('{\"foo\": \"bar\"}', 'strict $')",
-            "JSON_KEYS('{\"foo\": \"bar\"}', 'strict $')");
-    checkExp("json_keys('{\"foo\": \"bar\"}', 'invalid $')",
-            "JSON_KEYS('{\"foo\": \"bar\"}', 'invalid $')");
+    expr("json_keys('{\"foo\": \"bar\"}', 'lax $')")
+        .ok("JSON_KEYS('{\"foo\": \"bar\"}', 'lax $')");
+    expr("json_keys('{\"foo\": \"bar\"}', 'strict $')")
+        .ok("JSON_KEYS('{\"foo\": \"bar\"}', 'strict $')");
+    expr("json_keys('{\"foo\": \"bar\"}', 'invalid $')")
+        .ok("JSON_KEYS('{\"foo\": \"bar\"}', 'invalid $')");
   }
 
   @Test public void testJsonRemove() {
-    checkExp("json_remove('[\"a\", [\"b\", \"c\"], \"d\"]', '$')",
-            "JSON_REMOVE('[\"a\", [\"b\", \"c\"], \"d\"]', '$')");
-    checkExp("json_remove('[\"a\", [\"b\", \"c\"], \"d\"]', '$[1]', '$[0]')",
-            "JSON_REMOVE('[\"a\", [\"b\", \"c\"], \"d\"]', '$[1]', '$[0]')");
+    expr("json_remove('[\"a\", [\"b\", \"c\"], \"d\"]', '$')")
+        .ok("JSON_REMOVE('[\"a\", [\"b\", \"c\"], \"d\"]', '$')");
+    expr("json_remove('[\"a\", [\"b\", \"c\"], \"d\"]', '$[1]', '$[0]')")
+        .ok("JSON_REMOVE('[\"a\", [\"b\", \"c\"], \"d\"]', '$[1]', '$[0]')");
   }
 
   @Test public void testJsonObjectAgg() {
-    checkExp("json_objectagg(k_column: v_column)",
-        "JSON_OBJECTAGG(KEY `K_COLUMN` VALUE `V_COLUMN` NULL ON NULL)");
-    checkExp("json_objectagg(k_column value v_column)",
-        "JSON_OBJECTAGG(KEY `K_COLUMN` VALUE `V_COLUMN` NULL ON NULL)");
-    checkExp("json_objectagg(key k_column value v_column)",
-        "JSON_OBJECTAGG(KEY `K_COLUMN` VALUE `V_COLUMN` NULL ON NULL)");
-    checkExp("json_objectagg(k_column: null)",
-        "JSON_OBJECTAGG(KEY `K_COLUMN` VALUE NULL NULL ON NULL)");
-    checkExp("json_objectagg(k_column: null absent on null)",
-        "JSON_OBJECTAGG(KEY `K_COLUMN` VALUE NULL ABSENT ON NULL)");
-    checkExp("json_objectagg(k_column: json_object(k_column: v_column) format json)",
-        "JSON_OBJECTAGG(KEY `K_COLUMN` VALUE "
+    expr("json_objectagg(k_column: v_column)")
+        .ok("JSON_OBJECTAGG(KEY `K_COLUMN` VALUE `V_COLUMN` NULL ON NULL)");
+    expr("json_objectagg(k_column value v_column)")
+        .ok("JSON_OBJECTAGG(KEY `K_COLUMN` VALUE `V_COLUMN` NULL ON NULL)");
+    expr("json_objectagg(key k_column value v_column)")
+        .ok("JSON_OBJECTAGG(KEY `K_COLUMN` VALUE `V_COLUMN` NULL ON NULL)");
+    expr("json_objectagg(k_column: null)")
+        .ok("JSON_OBJECTAGG(KEY `K_COLUMN` VALUE NULL NULL ON NULL)");
+    expr("json_objectagg(k_column: null absent on null)")
+        .ok("JSON_OBJECTAGG(KEY `K_COLUMN` VALUE NULL ABSENT ON NULL)");
+    expr("json_objectagg(k_column: json_object(k_column: v_column) format json)")
+        .ok("JSON_OBJECTAGG(KEY `K_COLUMN` VALUE "
             + "JSON_OBJECT(KEY `K_COLUMN` VALUE `V_COLUMN` NULL ON NULL) "
             + "FORMAT JSON NULL ON NULL)");
   }
 
   @Test public void testJsonArray() {
-    checkExp("json_array('foo')",
-        "JSON_ARRAY('foo' ABSENT ON NULL)");
-    checkExp("json_array(null)",
-        "JSON_ARRAY(NULL ABSENT ON NULL)");
-    checkExp("json_array(null null on null)",
-        "JSON_ARRAY(NULL NULL ON NULL)");
-    checkExp("json_array(json_array('foo', 'bar') format json)",
-        "JSON_ARRAY(JSON_ARRAY('foo', 'bar' ABSENT ON NULL) FORMAT JSON ABSENT ON NULL)");
+    expr("json_array('foo')")
+        .ok("JSON_ARRAY('foo' ABSENT ON NULL)");
+    expr("json_array(null)")
+        .ok("JSON_ARRAY(NULL ABSENT ON NULL)");
+    expr("json_array(null null on null)")
+        .ok("JSON_ARRAY(NULL NULL ON NULL)");
+    expr("json_array(json_array('foo', 'bar') format json)")
+        .ok("JSON_ARRAY(JSON_ARRAY('foo', 'bar' ABSENT ON NULL) FORMAT JSON ABSENT ON NULL)");
   }
 
   @Test public void testJsonPretty() {
-    checkExp("json_pretty('foo')",
-            "JSON_PRETTY('foo')");
-    checkExp("json_pretty(null)",
-            "JSON_PRETTY(NULL)");
+    expr("json_pretty('foo')")
+        .ok("JSON_PRETTY('foo')");
+    expr("json_pretty(null)")
+        .ok("JSON_PRETTY(NULL)");
   }
 
   @Test public void testJsonStorageSize() {
-    checkExp("json_storage_size('foo')",
-        "JSON_STORAGE_SIZE('foo')");
-    checkExp("json_storage_size(null)",
-        "JSON_STORAGE_SIZE(NULL)");
+    expr("json_storage_size('foo')")
+        .ok("JSON_STORAGE_SIZE('foo')");
+    expr("json_storage_size(null)")
+        .ok("JSON_STORAGE_SIZE(NULL)");
   }
 
   @Test public void testJsonArrayAgg1() {
-    checkExp("json_arrayagg(\"column\")",
-        "JSON_ARRAYAGG(`column` ABSENT ON NULL)");
-    checkExp("json_arrayagg(\"column\" null on null)",
-        "JSON_ARRAYAGG(`column` NULL ON NULL)");
-    checkExp("json_arrayagg(json_array(\"column\") format json)",
-        "JSON_ARRAYAGG(JSON_ARRAY(`column` ABSENT ON NULL) FORMAT JSON ABSENT ON NULL)");
+    expr("json_arrayagg(\"column\")")
+        .ok("JSON_ARRAYAGG(`column` ABSENT ON NULL)");
+    expr("json_arrayagg(\"column\" null on null)")
+        .ok("JSON_ARRAYAGG(`column` NULL ON NULL)");
+    expr("json_arrayagg(json_array(\"column\") format json)")
+        .ok("JSON_ARRAYAGG(JSON_ARRAY(`column` ABSENT ON NULL) FORMAT JSON ABSENT ON NULL)");
   }
 
   @Test public void testJsonArrayAgg2() {
-    checkExp("json_arrayagg(\"column\" order by \"column\")",
-        "JSON_ARRAYAGG(`column` ABSENT ON NULL) WITHIN GROUP (ORDER BY `column`)");
-    checkExp("json_arrayagg(\"column\") within group (order by \"column\")",
-        "JSON_ARRAYAGG(`column` ABSENT ON NULL) WITHIN GROUP (ORDER BY `column`)");
-    checkFails("^json_arrayagg(\"column\" order by \"column\") within group (order by \"column\")^",
-        "(?s).*Including both WITHIN GROUP\\(\\.\\.\\.\\) and inside ORDER BY "
+    expr("json_arrayagg(\"column\" order by \"column\")")
+        .ok("JSON_ARRAYAGG(`column` ABSENT ON NULL) WITHIN GROUP (ORDER BY `column`)");
+    expr("json_arrayagg(\"column\") within group (order by \"column\")")
+        .ok("JSON_ARRAYAGG(`column` ABSENT ON NULL) WITHIN GROUP (ORDER BY `column`)");
+    sql("^json_arrayagg(\"column\" order by \"column\") within group (order by \"column\")^")
+        .fails("(?s).*Including both WITHIN GROUP\\(\\.\\.\\.\\) and inside ORDER BY "
             + "in a single JSON_ARRAYAGG call is not allowed.*");
   }
 
   @Test public void testJsonPredicate() {
-    checkExp("'{}' is json",
-        "('{}' IS JSON VALUE)");
-    checkExp("'{}' is json value",
-        "('{}' IS JSON VALUE)");
-    checkExp("'{}' is json object",
-        "('{}' IS JSON OBJECT)");
-    checkExp("'[]' is json array",
-        "('[]' IS JSON ARRAY)");
-    checkExp("'100' is json scalar",
-        "('100' IS JSON SCALAR)");
-    checkExp("'{}' is not json",
-        "('{}' IS NOT JSON VALUE)");
-    checkExp("'{}' is not json value",
-        "('{}' IS NOT JSON VALUE)");
-    checkExp("'{}' is not json object",
-        "('{}' IS NOT JSON OBJECT)");
-    checkExp("'[]' is not json array",
-        "('[]' IS NOT JSON ARRAY)");
-    checkExp("'100' is not json scalar",
-        "('100' IS NOT JSON SCALAR)");
+    expr("'{}' is json")
+        .ok("('{}' IS JSON VALUE)");
+    expr("'{}' is json value")
+        .ok("('{}' IS JSON VALUE)");
+    expr("'{}' is json object")
+        .ok("('{}' IS JSON OBJECT)");
+    expr("'[]' is json array")
+        .ok("('[]' IS JSON ARRAY)");
+    expr("'100' is json scalar")
+        .ok("('100' IS JSON SCALAR)");
+    expr("'{}' is not json")
+        .ok("('{}' IS NOT JSON VALUE)");
+    expr("'{}' is not json value")
+        .ok("('{}' IS NOT JSON VALUE)");
+    expr("'{}' is not json object")
+        .ok("('{}' IS NOT JSON OBJECT)");
+    expr("'[]' is not json array")
+        .ok("('[]' IS NOT JSON ARRAY)");
+    expr("'100' is not json scalar")
+        .ok("('100' IS NOT JSON SCALAR)");
   }
 
   @Test public void testParenthesizedSubQueries2() {
@@ -9083,7 +8991,7 @@ public class SqlParserTest {
 
   @Test public void testParseWithReader() throws Exception {
     String query = "select * from dual";
-    SqlParser sqlParserReader = getSqlParser(new StringReader(query));
+    SqlParser sqlParserReader = getSqlParser(new StringReader(query), b -> b);
     SqlNode node1 = sqlParserReader.parseQuery();
     SqlParser sqlParserString = getSqlParser(query);
     SqlNode node2 = sqlParserString.parseQuery();
@@ -9092,35 +9000,35 @@ public class SqlParserTest {
 
   @Test public void testConfigureFromDialect() throws SqlParseException {
     // Calcite's default converts unquoted identifiers to upper case
-    checkDialect(SqlDialect.DatabaseProduct.CALCITE.getDialect(),
-        "select unquotedColumn from \"doubleQuotedTable\"",
-        is("SELECT \"UNQUOTEDCOLUMN\"\n"
-            + "FROM \"doubleQuotedTable\""));
+    sql("select unquotedColumn from \"doubleQuotedTable\"")
+        .withDialect(SqlDialect.DatabaseProduct.CALCITE.getDialect())
+        .ok("SELECT \"UNQUOTEDCOLUMN\"\n"
+            + "FROM \"doubleQuotedTable\"");
     // MySQL leaves unquoted identifiers unchanged
-    checkDialect(SqlDialect.DatabaseProduct.MYSQL.getDialect(),
-        "select unquotedColumn from `doubleQuotedTable`",
-        is("SELECT `unquotedColumn`\n"
-            + "FROM `doubleQuotedTable`"));
+    sql("select unquotedColumn from `doubleQuotedTable`")
+        .withDialect(SqlDialect.DatabaseProduct.MYSQL.getDialect())
+        .ok("SELECT `unquotedColumn`\n"
+            + "FROM `doubleQuotedTable`");
     // Oracle converts unquoted identifiers to upper case
-    checkDialect(SqlDialect.DatabaseProduct.ORACLE.getDialect(),
-        "select unquotedColumn from \"doubleQuotedTable\"",
-        is("SELECT \"UNQUOTEDCOLUMN\"\n"
-            + "FROM \"doubleQuotedTable\""));
+    sql("select unquotedColumn from \"doubleQuotedTable\"")
+        .withDialect(SqlDialect.DatabaseProduct.ORACLE.getDialect())
+        .ok("SELECT \"UNQUOTEDCOLUMN\"\n"
+            + "FROM \"doubleQuotedTable\"");
     // PostgreSQL converts unquoted identifiers to lower case
-    checkDialect(SqlDialect.DatabaseProduct.POSTGRESQL.getDialect(),
-        "select unquotedColumn from \"doubleQuotedTable\"",
-        is("SELECT \"unquotedcolumn\"\n"
-            + "FROM \"doubleQuotedTable\""));
+    sql("select unquotedColumn from \"doubleQuotedTable\"")
+        .withDialect(SqlDialect.DatabaseProduct.POSTGRESQL.getDialect())
+        .ok("SELECT \"unquotedcolumn\"\n"
+            + "FROM \"doubleQuotedTable\"");
     // Redshift converts all identifiers to lower case
-    checkDialect(SqlDialect.DatabaseProduct.REDSHIFT.getDialect(),
-        "select unquotedColumn from \"doubleQuotedTable\"",
-        is("SELECT \"unquotedcolumn\"\n"
-            + "FROM \"doublequotedtable\""));
+    sql("select unquotedColumn from \"doubleQuotedTable\"")
+        .withDialect(SqlDialect.DatabaseProduct.REDSHIFT.getDialect())
+        .ok("SELECT \"unquotedcolumn\"\n"
+            + "FROM \"doublequotedtable\"");
     // BigQuery leaves quoted and unquoted identifers unchanged
-    checkDialect(SqlDialect.DatabaseProduct.BIG_QUERY.getDialect(),
-        "select unquotedColumn from `doubleQuotedTable`",
-        is("SELECT unquotedColumn\n"
-            + "FROM doubleQuotedTable"));
+    sql("select unquotedColumn from `doubleQuotedTable`")
+        .withDialect(SqlDialect.DatabaseProduct.BIG_QUERY.getDialect())
+        .ok("SELECT unquotedColumn\n"
+            + "FROM doubleQuotedTable");
   }
 
   @Test public void testParenthesizedSubQueries() {
@@ -9133,13 +9041,6 @@ public class SqlParserTest {
 
     final String sql2 = "SELECT * FROM ((((((((((((SELECT * FROM tab)))))))))))) X";
     sql(sql2).ok(expected);
-  }
-
-  protected void checkDialect(SqlDialect dialect, String sql,
-      Matcher<String> matcher) throws SqlParseException {
-    final SqlParser parser = getDialectSqlParser(sql, dialect);
-    final SqlNode node = parser.parseStmt();
-    assertThat(linux(node.toSqlString(dialect).getSql()), matcher);
   }
 
   @Test public void testInvalidHintFormat() {
@@ -9169,6 +9070,13 @@ public class SqlParserTest {
    */
   protected interface Tester {
     void checkList(String sql, List<String> expected);
+<<<<<<< HEAD
+=======
+
+    void check(String sql, SqlDialect dialect, String expected);
+
+    void checkExp(String sql, String expected);
+
     void checkFails(String sql, boolean list, String expectedMsgPattern);
 
     void checkExpFails(String sql, String expectedMsgPattern);
@@ -9187,12 +9095,12 @@ public class SqlParserTest {
           String expected) {
 =======
         SqlNode sqlNode,
+        SqlDialect dialect,
         String expected) {
       // no dialect, always parenthesize
-<<<<<<< HEAD
-      final String actual = sqlNode.toSqlString(dialect, true).getSql();
-=======
       final String actual = sqlNode.toSqlString(null, true).getSql();
+=======
+      final String actual = sqlNode.toSqlString(dialect, true).getSql();
       TestUtil.assertEqualsVerbose(expected, linux(actual));
     }
 
@@ -9204,22 +9112,24 @@ public class SqlParserTest {
 
       for (int i = 0; i < sqlNodeList.size(); i++) {
         SqlNode sqlNode = sqlNodeList.get(i);
-        check(sqlNode, expected.get(i));
+        check(sqlNode, null, expected.get(i));
       }
     }
 
-    public void check(
-        String sql,
-        String expected) {
-      final SqlNode sqlNode = parseStmtAndHandleEx(sql);
-      check(sqlNode, expected);
+    public void check(String sql, SqlDialect dialect, String expected) {
+      final SqlNode sqlNode = parseStmtAndHandleEx(sql,
+          dialect == null ? UnaryOperator.identity() : dialect::configureParser);
+      check(sqlNode, dialect, expected);
     }
 
-    protected SqlNode parseStmtAndHandleEx(String sql) {
+    protected SqlNode parseStmtAndHandleEx(String sql,
+        UnaryOperator<SqlParser.ConfigBuilder> transform) {
+      final SqlParser parser =
+          getSqlParser(new SourceStringReader(sql), transform);
       final SqlNode sqlNode;
       try {
         sqlNode = parser.parseStmt();
-        parserChecker.accept(parser);
+>>>>>>> 0b1e41df1 ([CALCITE-3327] Simplify SqlValidatorTest and SqlParserTest by making test methods fluent)
       } catch (SqlParseException e) {
         throw new RuntimeException("Error while parsing SQL: " + sql, e);
       }
@@ -9309,7 +9219,8 @@ public class SqlParserTest {
 
     protected void checkEx(String expectedMsgPattern, StringAndPos sap,
         Throwable thrown) {
-      SqlValidatorTestCase.checkEx(thrown, expectedMsgPattern, sap);
+      SqlTests.checkEx(thrown, expectedMsgPattern, sap,
+          SqlTests.Stage.VALIDATE);
     }
   }
 
@@ -9417,10 +9328,12 @@ public class SqlParserTest {
       assertThat(sql3, notNullValue());
     }
 
-    @Override public void check(String sql, String expected) {
-      SqlNode sqlNode = parseStmtAndHandleEx(sql);
-      // Unparse with no dialect, always parenthesize.
-      final String actual = sqlNode.toSqlString(null, true).getSql();
+    @Override public void check(String sql, SqlDialect dialect,
+        String expected) {
+      SqlNode sqlNode = parseStmtAndHandleEx(sql,
+          dialect == null ? UnaryOperator.identity() : dialect::configureParser);
+      // Unparse with the given dialect, always parenthesize.
+      final String actual = sqlNode.toSqlString(dialect, true).getSql();
       assertEquals(expected, linux(actual));
       // Unparse again in Calcite dialect (which we can parse), and
       // minimal parentheses.
@@ -9431,7 +9344,7 @@ public class SqlParserTest {
       final Quoting q = quoting;
       try {
         quoting = Quoting.DOUBLE_QUOTE;
-        sqlNode2 = parseStmtAndHandleEx(sql1);
+        sqlNode2 = parseStmtAndHandleEx(sql1, b -> b);
       } finally {
         quoting = q;
       }
@@ -9439,9 +9352,10 @@ public class SqlParserTest {
               sqlNode2.toSqlString(CalciteSqlDialect.DEFAULT, false).getSql();
       // Should be the same as we started with.
       assertEquals(sql1, sql2);
-      // Now unparse again in the null dialect.
+      // Now unparse again in the given dialect.
       // If the unparser is not including sufficient parens to override
       // precedence, the problem will show up here.
+<<<<<<< HEAD
       checkList(sqlNodeList2, expected);
 
       final Random random = new Random();
@@ -9477,6 +9391,7 @@ public class SqlParserTest {
       // Now unparse again in the given dialect.
       // If the unparser is not including sufficient parens to override
       // precedence, the problem will show up here.
+=======
       final String actual2 = sqlNode2.toSqlString(dialect, true).getSql();
       assertEquals(expected, linux(actual2));
     }
@@ -9506,14 +9421,11 @@ public class SqlParserTest {
     private final String sql;
     private final boolean expression;
     private final SqlDialect dialect;
-    private final Consumer<SqlParser> parserChecker;
 
-    Sql(String sql, boolean expression, SqlDialect dialect,
-        Consumer<SqlParser> parserChecker) {
-      this.sql = Objects.requireNonNull(sql);
+    Sql(String sql, boolean expression, SqlDialect dialect) {
+      this.sql = sql;
       this.expression = expression;
       this.dialect = dialect;
-      this.parserChecker = Objects.requireNonNull(parserChecker);
     }
 
     public Sql same() {
@@ -9524,7 +9436,7 @@ public class SqlParserTest {
       if (expression) {
         getTester().checkExp(sql, expected, parserChecker);
       } else {
-        getTester().check(sql, dialect, expected, parserChecker);
+        getTester().check(sql, dialect, expected);
       }
       return this;
     }
@@ -9550,47 +9462,18 @@ public class SqlParserTest {
 
     /** Flags that this is an expression, not a whole query. */
     public Sql expression() {
-      return expression ? this : new Sql(sql, true, dialect, parserChecker);
+      return expression ? this : new Sql(sql, true, dialect);
     }
 
     /** Removes the carets from the SQL string. Useful if you want to run
      * a test once at a conformance level where it fails, then run it again
      * at a conformance level where it succeeds. */
     public Sql sansCarets() {
-      return new Sql(sql.replace("^", ""), expression, dialect, parserChecker);
+      return new Sql(sql.replace("^", ""), expression, dialect);
     }
 
     public Sql withDialect(SqlDialect dialect) {
-      return new Sql(sql, expression, dialect, parserChecker);
-    }
-  }
-
-  /** Helper class for building fluent code,
-   * similar to {@link Sql}, but used to manipulate
-   * a list of statements, such as
-   * {@code sqlList("select * from a;").ok();}. */
-  protected class SqlList {
-    private final String sql;
-
-    SqlList(String sql) {
-      this.sql = sql;
-    }
-
-    public SqlList ok(String... expected) {
-      getTester().checkList(sql, ImmutableList.copyOf(expected));
-      return this;
-    }
-
-    public SqlList fails(String expectedMsgPattern) {
-      getTester().checkFails(sql, true, expectedMsgPattern);
-      return this;
-    }
-
-    /** Removes the carets from the SQL string. Useful if you want to run
-     * a test once at a conformance level where it fails, then run it again
-     * at a conformance level where it succeeds. */
-    public Sql sansCarets() {
-      return new Sql(sql.replace("^", ""), expression);
+      return new Sql(sql, expression, dialect);
     }
   }
 
