@@ -1760,7 +1760,7 @@ Implicit type coercion of following cases are ignored:
 =======
 >>>>>>> e9f91b4bc ([CALCITE-3053] Add a test to ensure that all functions are documented in the SQL reference)
 
-Supported data types:
+Supported data types syntax:
 
 {% highlight sql %}
 type:
@@ -1797,9 +1797,9 @@ collectionsTypeName:
 
 rowTypeName:
       ROW '('
-        fieldName1 fieldType1 [ [ NULL | NOT NULL ] ]
-        [ , fieldName2 fieldType2 [ [ NULL | NOT NULL ] ] ]*
-        ')'
+      fieldName1 fieldType1 [ NULL | NOT NULL ]
+      [ , fieldName2 fieldType2 [ NULL | NOT NULL ] ]*
+      ')'
 
 char:
       CHARACTER | CHAR
@@ -1832,6 +1832,73 @@ timeZone:
       WITHOUT TIME ZONE
   |   WITH LOCAL TIME ZONE
 {% endhighlight %}
+
+#### Implicit Type Conversion
+
+Calcite automatically converts a value from one datatype to another
+when such a conversion makes sense. The table below is a matrix of
+Calcite type conversions. The table shows all possible conversions,
+without regard to the context in which it is made. The rules governing
+these details follow the table.
+
+| FROM - TO           | NULL | BOOLEAN | TINYINT | SMALLINT | INT | BIGINT | DECIMAL | FLOAT or REAL | DOUBLE | INTERVAL | DATE | TIME | TIMESTAMP | CHAR or VARCHAR | BINARY or VARBINARY
+|:------------------- |:---- |:------- |:------- |:-------- |:--- |:------ |:------- |:------------- |:------ |:-------- |:---- |:---- |:--------- |:--------------- |:-----------
+| NULL                | i    | i       | i       | i        | i   | i      | i       | i             | i      | i        | i    | i    | i         | i               | i
+| BOOLEAN             | x    | i       | e       | e        | e   | e      | e       | e             | e      | x        | x    | x    | x         | i               | x
+| TINYINT             | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x
+| SMALLINT            | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x
+| INT                 | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x
+| BIGINT              | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x
+| DECIMAL             | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x
+| FLOAT/REAL          | x    | e       | i       | i        | i   | i      | i       | i             | i      | x        | x    | x    | e         | i               | x
+| DOUBLE              | x    | e       | i       | i        | i   | i      | i       | i             | i      | x        | x    | x    | e         | i               | x
+| INTERVAL            | x    | x       | e       | e        | e   | e      | e       | x             | x      | i        | x    | x    | x         | e               | x
+| DATE                | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | i    | x    | i         | i               | x
+| TIME                | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | x    | i    | e         | i               | x
+| TIMESTAMP           | x    | x       | e       | e        | e   | e      | e       | e             | e      | x        | i    | e    | i         | i               | x
+| CHAR or VARCHAR     | x    | e       | i       | i        | i   | i      | i       | i             | i      | i        | i    | i    | i         | i               | i
+| BINARY or VARBINARY | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | e    | e    | e         | i               | i
+
+i: implicit cast / e: explicit cast / x: not allowed
+
+##### Conversion Contexts and Strategies
+
+* Set operation (`UNION`, `EXCEPT`, `INTERSECT`): Compare every branch
+  row data type and find the common type of each fields pair;
+* Binary arithmetic expression (`+`, `-`, `&`, `^`, `/`, `%`): promote
+  string operand to data type of the other numeric operand;
+* Binary comparison (`=`, `<`, `<=`, `<>`, `>`, `>=`):
+  if operands are `STRING` and `TIMESTAMP`, promote to `TIMESTAMP`;
+  make `1 = true` and `0 = false` always evaluate to `TRUE`;
+  if there is numeric type operand, find common type for both operands.
+* `IN` sub-query: compare type of LHS and RHS, and find the common type;
+  if it is struct type, find wider type for every field;
+* `IN` expression list: compare every expression to find the common type;
+* `CASE WHEN` expression or `COALESCE`: find the common wider type of the `THEN`
+  and `ELSE` operands;
+* Character + `INTERVAL` or character - `INTERVAL`: Promote character to
+  `TIMESTAMP`;
+* Built-in function: Look up the type families registered in the checker,
+  find the family default type if checker rules allow it;
+* User-defined function (UDF): Coerce based on the declared argument types
+  of the `eval()` method.
+
+##### Strategies for Finding Common Type
+
+* If the operator has expected data types, just take them as the
+  desired one. (e.g. the UDF would have `eval()` method which has
+  reflection argument types);
+* If there is no expected data type but the data type families are
+  registered, try to coerce the arguments to the family's default data
+  type, i.e. the String family will have a `VARCHAR` type;
+* If neither expected data type nor families are specified, try to
+  find the tightest common type of the node types, i.e. `INTEGER` and
+  `DOUBLE` will return `DOUBLE`, the numeric precision does not lose
+  for this case;
+* If no tightest common type is found, try to find a wider type,
+  i.e. `VARCHAR` and `INTEGER` will return `INTEGER`,
+  we allow some precision loss when widening decimal to fractional,
+  or promote to `VARCHAR` type.
 
 ### Value constructors
 
