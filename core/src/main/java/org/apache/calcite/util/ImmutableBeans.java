@@ -16,22 +16,15 @@
  */
 package org.apache.calcite.util;
 
-import org.apache.calcite.sql.validate.SqlConformance;
-import org.apache.calcite.sql.validate.SqlConformanceEnum;
-
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
-import com.google.common.util.concurrent.UncheckedExecutionException;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.invoke.MethodHandle;
+>>>>>>> b894a59ed ([CALCITE-3328] Immutable beans, powered by reflection)
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -39,6 +32,7 @@ import java.lang.reflect.Proxy;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+<<<<<<< HEAD
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
@@ -96,12 +90,25 @@ public class ImmutableBeans {
   }
 
   private static <T extends Object> Def<T> makeDef(Class<T> beanClass) {
+=======
+import java.util.Set;
+import java.util.TreeMap;
+
+/** Utilities for creating immutable beans. */
+public class ImmutableBeans {
+  private ImmutableBeans() {}
+
+  /** Creates an immutable bean that implements a given interface. */
+  public static <T> T create(Class<T> beanClass) {
+    if (!beanClass.isInterface()) {
+      throw new IllegalArgumentException("must be interface");
+    }
     final ImmutableSortedMap.Builder<String, Class> propertyNameBuilder =
         ImmutableSortedMap.naturalOrder();
     final ImmutableMap.Builder<Method, Handler<T>> handlers =
         ImmutableMap.builder();
     final Set<String> requiredPropertyNames = new HashSet<>();
-    final Set<String> copyPropertyNames = new HashSet<>();
+>>>>>>> b894a59ed ([CALCITE-3328] Immutable beans, powered by reflection)
 
     // First pass, add "get" methods and build a list of properties.
     for (Method method : beanClass.getMethods()) {
@@ -135,7 +142,11 @@ public class ImmutableBeans {
         throw new IllegalArgumentException("method '" + methodName
             + "' has too many parameters");
       }
+<<<<<<< HEAD
       final boolean required = propertyType.isPrimitive()
+=======
+      final boolean required = property.required()
+          || propertyType.isPrimitive()
           || hasNonnull;
       if (required) {
         requiredPropertyNames.add(propertyName);
@@ -151,8 +162,7 @@ public class ImmutableBeans {
             return v;
           }
           if (required && defaultValue == null) {
-            throw new IllegalArgumentException("property '" + beanClass.getName()
-                + "#" + propertyName
+            throw new IllegalArgumentException("property '" + propertyName
                 + "' is required and has no default value");
           }
           return defaultValue2;
@@ -166,11 +176,9 @@ public class ImmutableBeans {
     final ImmutableMap<String, Class> propertyNames =
         propertyNameBuilder.build();
     for (Method method : beanClass.getMethods()) {
-      if (!Modifier.isPublic(method.getModifiers())
-          || method.isDefault()) {
+      if (!Modifier.isPublic(method.getModifiers())) {
         continue;
       }
-      final Property property = method.getAnnotation(Property.class);
       final Mode mode;
       final String propertyName;
       final String methodName = method.getName();
@@ -178,11 +186,7 @@ public class ImmutableBeans {
         continue;
       } else if (methodName.startsWith("is")) {
         continue;
-      } else if (property != null) {
-        // If there is a property annotation, treat this as a getter. For
-        // example, there could be a property "set", with getter method
-        // "Set<String> set()" and setter method "Bean withSet(Set<String>)".
-        continue;
+>>>>>>> b894a59ed ([CALCITE-3328] Immutable beans, powered by reflection)
       } else if (methodName.startsWith("with")) {
         propertyName = methodName.substring("with".length());
         mode = Mode.WITH;
@@ -200,8 +204,11 @@ public class ImmutableBeans {
       }
       switch (mode) {
       case WITH:
+<<<<<<< HEAD
         if (method.getReturnType() != beanClass
             && method.getReturnType() != method.getDeclaringClass()) {
+=======
+        if (method.getReturnType() != beanClass) {
           throw new IllegalArgumentException("method '" + methodName
               + "' should return the bean class '" + beanClass
               + "', actually returns '" + method.getReturnType() + "'");
@@ -213,9 +220,7 @@ public class ImmutableBeans {
               + "' should return void, actually returns '"
               + method.getReturnType() + "'");
         }
-        break;
-      default:
-        break;
+>>>>>>> b894a59ed ([CALCITE-3328] Immutable beans, powered by reflection)
       }
       if (method.getParameterCount() != 1) {
         throw new IllegalArgumentException("method '" + methodName
@@ -229,7 +234,9 @@ public class ImmutableBeans {
             + ", actually has " + method.getParameterTypes()[0]);
       }
       final boolean required = requiredPropertyNames.contains(propertyName);
+<<<<<<< HEAD
       final boolean copy = copyPropertyNames.contains(propertyName);
+=======
       handlers.put(method, (bean, args) -> {
         switch (mode) {
         case WITH:
@@ -268,31 +275,7 @@ public class ImmutableBeans {
       });
     }
 
-    // Third pass, add default methods.
-    for (Method method : beanClass.getMethods()) {
-      if (method.isDefault()) {
-        final MethodHandle methodHandle;
-        try {
-          methodHandle = Compatible.INSTANCE.lookupPrivate(beanClass)
-              .unreflectSpecial(method, beanClass);
-        } catch (Throwable throwable) {
-          throw new RuntimeException("while binding method " + method,
-              throwable);
-        }
-        handlers.put(method, (bean, args) -> {
-          try {
-            return methodHandle.bindTo(bean.asBean())
-                .invokeWithArguments(args);
-          } catch (RuntimeException | Error e) {
-            throw e;
-          } catch (Throwable throwable) {
-            throw new RuntimeException("while invoking method " + method,
-                throwable);
-          }
-        });
-      }
-    }
-
+>>>>>>> b894a59ed ([CALCITE-3328] Immutable beans, powered by reflection)
     handlers.put(getMethod(Object.class, "toString"),
         (bean, args) -> new TreeMap<>(bean.map).toString());
     handlers.put(getMethod(Object.class, "hashCode"),
@@ -306,7 +289,10 @@ public class ImmutableBeans {
             // Strictly, a bean should not equal a Map but it's convenient
             || args[0] instanceof Map
             && bean.map.equals(args[0]));
+<<<<<<< HEAD
     return new Def<>(beanClass, handlers.build());
+=======
+    return makeBean(beanClass, handlers.build(), ImmutableMap.of());
   }
 
   /** Looks for an annotation by class name.
@@ -346,11 +332,7 @@ public class ImmutableBeans {
   }
 
   private static Object convertDefault(Object defaultValue, String propertyName,
-      Class<?> propertyType) {
-    if (propertyType.equals(SqlConformance.class)) {
-      // Workaround for SqlConformance because it is actually not a Enum.
-      propertyType = SqlConformanceEnum.class;
-    }
+      Class propertyType) {
     if (defaultValue == null || !propertyType.isEnum()) {
       return defaultValue;
     }
@@ -373,7 +355,13 @@ public class ImmutableBeans {
     }
   }
 
-  /** Whether the method is reading or writing. */
+  private static <T> T makeBean(Class<T> beanClass,
+      ImmutableMap<Method, Handler<T>> handlers,
+      ImmutableMap<String, Object> map) {
+    return new BeanImpl<>(beanClass, handlers, map).asBean();
+  }
+
+  /** Is the method reading or writing? */
   private enum Mode {
     GET, SET, WITH
   }
@@ -381,7 +369,7 @@ public class ImmutableBeans {
   /** Handler for a particular method call; called with "this" and arguments.
    *
    * @param <T> Bean type */
-  private interface Handler<T extends Object> {
+  private interface Handler<T> {
     Object apply(BeanImpl<T> bean, Object[] args);
   }
 
@@ -439,17 +427,20 @@ public class ImmutableBeans {
    * so that it can retrieve calls from a reflective proxy.
    *
    * @param <T> Bean type */
-  private static class BeanImpl<T extends Object> implements InvocationHandler {
-    private final Def<T> def;
+  private static class BeanImpl<T> implements InvocationHandler {
+    private final ImmutableMap<Method, Handler<T>> handlers;
     private final ImmutableMap<String, Object> map;
+    private final Class<T> beanClass;
 
-    BeanImpl(Def<T> def, ImmutableMap<String, Object> map) {
-      this.def = Objects.requireNonNull(def, "def");
-      this.map = Objects.requireNonNull(map, "map");
+    BeanImpl(Class<T> beanClass, ImmutableMap<Method, Handler<T>> handlers,
+        ImmutableMap<String, Object> map) {
+      this.beanClass = beanClass;
+      this.handlers = handlers;
+      this.map = map;
     }
 
-    @Override public Object invoke(Object proxy, Method method, Object[] args) {
-      final Handler handler = def.handlers.get(method);
+    public Object invoke(Object proxy, Method method, Object[] args) {
+      final Handler handler = handlers.get(method);
       if (handler == null) {
         throw new IllegalArgumentException("no handler for method " + method);
       }
@@ -458,32 +449,16 @@ public class ImmutableBeans {
 
     /** Returns a copy of this bean that has a different map. */
     BeanImpl<T> withMap(ImmutableMap<String, Object> map) {
-      return new BeanImpl<>(def, map);
+      return new BeanImpl<T>(beanClass, handlers, map);
     }
 
     /** Wraps this handler in a proxy that implements the required
      * interface. */
     T asBean() {
-      return def.beanClass.cast(
-          Proxy.newProxyInstance(def.beanClass.getClassLoader(),
-              new Class[] {def.beanClass}, this));
-    }
-  }
-
-  /** Definition of a bean. Consists of its class and handlers.
-   *
-   * @param <T> Class of bean */
-  private static class Def<T extends Object> {
-    private final Class<T> beanClass;
-    private final ImmutableMap<Method, Handler<T>> handlers;
-
-    Def(Class<T> beanClass, ImmutableMap<Method, Handler<T>> handlers) {
-      this.beanClass = Objects.requireNonNull(beanClass, "beanClass");
-      this.handlers = Objects.requireNonNull(handlers, "handlers");
-    }
-
-    private T makeBean(ImmutableMap<String, Object> map) {
-      return new BeanImpl<>(this, map).asBean();
+      return beanClass.cast(
+          Proxy.newProxyInstance(beanClass.getClassLoader(),
+              new Class[] {beanClass}, this));
     }
   }
 }
+// End ImmutableBeans.java

@@ -17,7 +17,7 @@
 package org.apache.calcite.util;
 
 import org.hamcrest.Matcher;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -26,12 +26,13 @@ import javax.annotation.Nonnull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.fail;
 
 /** Unit test for {@link ImmutableBeans}. */
-class ImmutableBeanTest {
+public class ImmutableBeanTest {
 
-  @Test void testSimple() {
+  @Test
+  public void testSimple() {
     final MyBean b = ImmutableBeans.create(MyBean.class);
     assertThat(b.withFoo(1).getFoo(), is(1));
     assertThat(b.withBar(false).isBar(), is(false));
@@ -58,7 +59,7 @@ class ImmutableBeanTest {
     assertThat(b4.equals(b3), is(false));
   }
 
-  @Test void testDefault() {
+  @Test public void testDefault() {
     final Bean2 b = ImmutableBeans.create(Bean2.class);
 
     // int, no default
@@ -67,8 +68,7 @@ class ImmutableBeanTest {
       throw new AssertionError("expected error, got " + v);
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(),
-          is("property 'org.apache.calcite.util.ImmutableBeanTest$Bean2#IntSansDefault' "
-              + "is required and has no default value"));
+          is("property 'IntSansDefault' is required and has no default value"));
     }
     assertThat(b.withIntSansDefault(4).getIntSansDefault(), is(4));
 
@@ -83,8 +83,8 @@ class ImmutableBeanTest {
       throw new AssertionError("expected error, got " + v);
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(),
-          is("property 'org.apache.calcite.util.ImmutableBeanTest$Bean2#BooleanSansDefault' "
-              + "is required and has no default value"));
+          is("property 'BooleanSansDefault' is required and has no default "
+              + "value"));
     }
     assertThat(b.withBooleanSansDefault(false).isBooleanSansDefault(),
         is(false));
@@ -96,8 +96,15 @@ class ImmutableBeanTest {
     assertThat(b.withBooleanWithDefault(true).isBooleanWithDefault(),
         is(true));
 
-    // string, no default - returns null for nullable string properties
-    assertThat(b.getStringSansDefault(), nullValue());
+    // string, no default
+    try {
+      final String v = b.getStringSansDefault();
+      throw new AssertionError("expected error, got " + v);
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(),
+          is("property 'StringSansDefault' is required and has no default "
+              + "value"));
+    }
     assertThat(b.withStringSansDefault("a").getStringSansDefault(), is("a"));
 
     // string, no default
@@ -106,8 +113,7 @@ class ImmutableBeanTest {
       throw new AssertionError("expected error, got " + v);
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(),
-          is("property 'org.apache.calcite.util.ImmutableBeanTest$Bean2#NonnullString' "
-              + "is required and has no default value"));
+          is("property 'NonnullString' is required and has no default value"));
     }
     assertThat(b.withNonnullString("a").getNonnullString(), is("a"));
 
@@ -202,7 +208,7 @@ class ImmutableBeanTest {
     }
   }
 
-  @Test void testValidate() {
+  @Test public void testValidate() {
     check(BeanWhoseDefaultIsBadEnumValue.class,
         is("property 'Color' is an enum but its default value YELLOW is not a "
             + "valid enum constant"));
@@ -243,11 +249,7 @@ class ImmutableBeanTest {
         is("method 'setFoo' should have one parameter, actually has 0"));
   }
 
-  @Test void testDefaultMethod() {
-    assertThat(ImmutableBeans.create(BeanWithDefault.class)
-        .withChar('a').nTimes(2), is("aa"));
-  }
-
+>>>>>>> b894a59ed ([CALCITE-3328] Immutable beans, powered by reflection)
   /** Bean whose default value is not a valid value for the enum;
    * used in {@link #testValidate()}. */
   interface BeanWhoseDefaultIsBadEnumValue {
@@ -430,6 +432,7 @@ class ImmutableBeanTest {
     BLUE,
     GREEN
   }
+<<<<<<< HEAD
 
   /** Bean interface that has a default method and one property. */
   public interface BeanWithDefault {
@@ -446,3 +449,6 @@ class ImmutableBeanTest {
     BeanWithDefault withChar(char c);
   }
 }
+=======
+}
+// End ImmutableBeanTest.java
