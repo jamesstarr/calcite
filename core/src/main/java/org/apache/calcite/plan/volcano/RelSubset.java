@@ -320,7 +320,7 @@ public class RelSubset extends AbstractRelNode {
 
   /**
    * Checks whether a relexp has made its subset cheaper, and if it so,
-   * recursively checks whether that subset's parents have gotten cheaper.
+   * propagate new cost to parent rel nodes using breadth first manner.
    *
    * @param planner   Planner
    * @param mq        Metadata query
