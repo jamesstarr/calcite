@@ -33,47 +33,18 @@ import org.apache.calcite.sql.fun.SqlCase;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlTypeFamily;
 import org.apache.calcite.sql.type.SqlTypeUtil;
-<<<<<<< HEAD
-=======
-import org.apache.calcite.sql.validate.SqlUserDefinedTableMacro;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql.validate.SqlValidatorScope;
-
-import java.math.BigDecimal;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Default implementation of Calcite implicit type cast.
- */
-public class TypeCoercionImpl extends AbstractTypeCoercion {
-
-  public TypeCoercionImpl(SqlValidator validator) {
-    super(validator);
-  }
-
-  /**
-   * Widen a SqlNode's field type to target type,
-   * mainly used for set operations like UNION, INTERSECT and EXCEPT.
-   *
-   * <p>Rules:
-   * <pre>
-   *
-   *       type1, type2  type3       select a, b, c from t1
-<<<<<<< HEAD
-   *          \      \      \
-   *         type4  type5  type6              UNION
-   *          /      /      /
-=======
    *         |      |      |
    *       type4  type5  type6              union
    *         |      |      |
+=======
+   *          \      \      \
+   *         type4  type5  type6              UNION
+   *          /      /      /
    *       type7  type8  type9       select d, e, f from t2
    * </pre>
    * For struct type (type1, type2, type3) union type (type4, type5, type6),
    * infer the first result column type type7 as the wider type of type1 and type4,
-   * the second column type as the wider type of type2 and type5 and so forth.
+   * the second column type as the wider type of type2 and type5 and so on.
    *
    * @param scope       validator scope
    * @param query       query node to update the field type for
@@ -119,7 +90,7 @@ public class TypeCoercionImpl extends AbstractTypeCoercion {
   }
 
   /**
-   * Coerce operands in binary arithmetic expressions to Numeric types.
+   * Coerce operands in binary arithmetic expressions to NUMERIC types.
    *
    * <p>Rules:</p>
    * <ul>
@@ -200,7 +171,7 @@ public class TypeCoercionImpl extends AbstractTypeCoercion {
   }
 
   /**
-   * For numeric and string operands, cast string to data type of the other operand.
+   * For NUMERIC and STRING operands, cast STRING to data type of the other operand.
    **/
   protected boolean binaryArithmeticWithStrings(
       SqlCallBinding binding,
@@ -354,7 +325,7 @@ public class TypeCoercionImpl extends AbstractTypeCoercion {
   /**
    * STRATEGIES
    *
-   * <p>with/Without sub-query:
+   * <p>With(Without) sub-query:
    *
    * <ul>
    *
