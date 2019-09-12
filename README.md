@@ -32,6 +32,7 @@ Apache Calcite is a dynamic data management framework.
 
 It contains many of the pieces that comprise a typical
 database management system but omits the storage primitives.
+<<<<<<< HEAD
 It provides an industry standard SQL parser and validator,
 a customisable optimizer with pluggable rules and cost functions,
 logical and physical algebraic operators, various transformation
@@ -39,5 +40,14 @@ algorithms from SQL to algebra (and the opposite), and many
 adapters for executing SQL queries over Cassandra, Druid,
 Elasticsearch, MongoDB, Kafka, and others, with minimal
 configuration.
+=======
+It provides an industry standard SQL parser and validator, 
+a customisable optimizer with pluggable rules and cost functions,
+logical and physical algebraic operators, various transformation
+algorithms from SQL to algebra (and the opposite), and many
+adapters for executing SQL queries over Cassandra, Druid, 
+Elasticsearch, MongoDB, Kafka, and others, with minimal 
+configuration.  
+>>>>>>> 0c5dd4d55 (Improve READMEs and release howto instructions)
 
 For more details, see the [home page](http://calcite.apache.org).
