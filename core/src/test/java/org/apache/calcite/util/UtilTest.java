@@ -89,6 +89,7 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.ObjIntConsumer;
 
 import static org.apache.calcite.test.Matchers.isLinux;
 
@@ -1942,7 +1943,7 @@ class UtilTest {
   }
 
   /** Tests {@link Ord#forEach(Iterable, ObjIntConsumer)}. */
-  @Test void testOrdForEach() {
+  @Test public void testOrdForEach() {
     final String[] strings = {"ab", "", "cde"};
     final StringBuilder b = new StringBuilder();
     final String expected = "0:ab;1:;2:cde;";
