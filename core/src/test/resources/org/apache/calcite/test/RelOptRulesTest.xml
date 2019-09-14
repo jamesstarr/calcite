@@ -17420,4 +17420,42 @@ LogicalJoin(condition=[=($2, $12)], joinType=[anti])
 ]]>
         </Resource>
     </TestCase>
+    <TestCase name="testReduceDecimal">
+        <Resource name="sql">
+            <![CDATA[select ename from emp where sal > cast (100.0 as decimal(4, 1))]]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalFilter(condition=[>($5, 100.0:DECIMAL(4, 1))])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalCalc(expr#0..8=[{inputs}], expr#9=[10:BIGINT], expr#10=[*($t5, $t9)], expr#11=[100.0:DECIMAL(4, 1)], expr#12=[Reinterpret($t11)], expr#13=[>($t10, $t12)], proj#0..8=[{exprs}], $condition=[$t13])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testEnumerableCalcRule">
+        <Resource name="sql">
+            <![CDATA[select ename from emp where sal > 10.0]]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(FNAME=[$1], LNAME=[$2])
+  LogicalFilter(condition=[>($0, 10)])
+    LogicalTableScan(table=[[CATALOG, SALES, CUSTOMER]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+EnumerableProject(FNAME=[$1], LNAME=[$2])
+  EnumerableCalc(expr#0..2=[{inputs}], expr#3=[10], expr#4=[>($t0, $t3)], proj#0..2=[{exprs}], $condition=[$t4])
+    EnumerableTableScan(table=[[CATALOG, SALES, CUSTOMER]])
+]]>
+        </Resource>
+    </TestCase>
 </Root>
