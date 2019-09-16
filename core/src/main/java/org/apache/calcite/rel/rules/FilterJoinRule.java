@@ -276,7 +276,8 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
     final Iterator<RexNode> filterIter = joinFilters.iterator();
     while (filterIter.hasNext()) {
       RexNode exp = filterIter.next();
-      if (!config.getPredicate().apply(join, joinType, exp)) {
+      // Do not pull up filter conditions for semi/anti join.
+      if (!config.getPredicate().apply(join, joinType, exp) && joinType.projectsRight()) {
         aboveFilters.add(exp);
         filterIter.remove();
       }
