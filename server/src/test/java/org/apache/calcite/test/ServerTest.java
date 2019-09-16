@@ -32,7 +32,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Struct;
+>>>>>>> 422e13704 ([CALCITE-3349] Add CREATE FUNCTION and DROP FUNCTION ddl (Zhenqiu Huang))
 import java.util.ArrayList;
 import java.util.List;
 
@@ -178,13 +178,16 @@ class ServerTest {
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   @Test void testCreateFunction() throws Exception {
+=======
+  @Test public void testCreateFunction() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
       boolean b = s.execute("create schema s");
       assertThat(b, is(false));
       try {
-        boolean f = s.execute("create function if not exists s.t\n"
+        boolean f = s.execute("create function if not exists s.t \n"
                 + "as 'org.apache.calcite.udf.TableFun.demoUdf'\n"
                 + "using jar 'file:/path/udf/udf-0.0.1-SNAPSHOT.jar'");
       } catch (SQLException e) {
@@ -194,7 +197,7 @@ class ServerTest {
     }
   }
 
-  @Test void testDropFunction() throws Exception {
+  @Test public void testDropFunction() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
       boolean b = s.execute("create schema s");
@@ -240,8 +243,6 @@ class ServerTest {
     }
   }
 
-  @Disabled
-  @Test void testInsertCastedValueOfCompositeUdt() throws Exception {
 =======
   @Ignore
   @Test public void testInsertCastedValueOfCompositeUdt() throws Exception {
