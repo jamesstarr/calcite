@@ -19,6 +19,11 @@ package org.apache.calcite.rel.rules;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
+import org.apache.calcite.plan.RelTraitSet;
+import org.apache.calcite.rel.RelCollation;
+import org.apache.calcite.rel.RelCollationTraitDef;
+import org.apache.calcite.rel.RelCollations;
+import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.Project;
@@ -28,9 +33,10 @@ import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexShuttle;
+import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBeans;
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
+import org.apache.calcite.util.mapping.Mappings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +48,6 @@ import java.util.List;
  * the join.
  *
  * @see CoreRules#PROJECT_JOIN_TRANSPOSE
-
  */
 public class ProjectJoinTransposeRule
         extends RelRule<ProjectJoinTransposeRule.Config>
@@ -156,12 +161,11 @@ public class ProjectJoinTransposeRule
         final List<RelFieldCollation> fieldCollations = collation.getFieldCollations();
         for (RelFieldCollation relFieldCollation: fieldCollations) {
           final int fieldIndex = relFieldCollation.getFieldIndex();
-          Mappings.TargetMapping mapping = fieldIndex < originLeftCnt ? leftMapping : rightMapping;
-          RelFieldCollation newFieldCollation = RexUtil.apply(mapping, relFieldCollation);
-          if (newFieldCollation == null) {
-            break;
+          if (fieldIndex < originLeftCnt) {
+            fc.add(RexUtil.apply(leftMapping, relFieldCollation));
+          } else {
+            fc.add(RexUtil.apply(rightMapping, relFieldCollation));
           }
-          fc.add(newFieldCollation);
         }
         newCollations.add(RelCollations.of(fc));
       }
