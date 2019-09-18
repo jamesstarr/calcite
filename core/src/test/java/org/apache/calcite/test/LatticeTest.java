@@ -719,7 +719,7 @@ public class LatticeTest {
 
   /** A tile with no measures should inherit default measure list from the
    * lattice. */
-  @Test void testTileWithNoMeasures() {
+  @Test public void testTileWithNoMeasures() {
     foodmartModel(" auto: false,\n"
         + "  defaultMeasures: [ {\n"
         + "    agg: 'count'\n"
@@ -739,7 +739,7 @@ public class LatticeTest {
 
   /** A lattice with no default measure list should get "count(*)" is its
    * default measure. */
-  @Test void testLatticeWithNoMeasures() {
+  @Test public void testLatticeWithNoMeasures() {
     foodmartModel(" auto: false,\n"
         + "  tiles: [ {\n"
         + "    dimensions: [ 'the_year', ['t', 'quarter'] ],\n"
@@ -754,7 +754,7 @@ public class LatticeTest {
         .returnsCount(1);
   }
 
-  @Test void testDimensionIsInvalidColumn() {
+  @Test public void testDimensionIsInvalidColumn() {
     foodmartModel(" auto: false,\n"
         + "  tiles: [ {\n"
         + "    dimensions: [ 'invalid_column'],\n"
@@ -763,7 +763,7 @@ public class LatticeTest {
         .connectThrows("Unknown lattice column 'invalid_column'");
   }
 
-  @Test void testMeasureArgIsInvalidColumn() {
+  @Test public void testMeasureArgIsInvalidColumn() {
     foodmartModel(" auto: false,\n"
         + "  defaultMeasures: [ {\n"
         + "   agg: 'sum',\n"
@@ -778,7 +778,7 @@ public class LatticeTest {
 
   /** It is an error for "time_id" to be a measure arg, because is not a
    * unique alias. Both "s" and "t" have "time_id". */
-  @Test void testMeasureArgIsNotUniqueAlias() {
+  @Test public void testMeasureArgIsNotUniqueAlias() {
     foodmartModel(" auto: false,\n"
         + "  defaultMeasures: [ {\n"
         + "    agg: 'count',\n"
@@ -791,7 +791,7 @@ public class LatticeTest {
         .connectThrows("Lattice column alias 'time_id' is not unique");
   }
 
-  @Test void testMeasureAggIsInvalid() {
+  @Test public void testMeasureAggIsInvalid() {
     foodmartModel(" auto: false,\n"
         + "  defaultMeasures: [ {\n"
         + "    agg: 'invalid_count',\n"
