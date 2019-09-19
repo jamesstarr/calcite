@@ -1479,9 +1479,14 @@ PI
 
 # CBRT
 select cbrt(-8);
+<<<<<<< HEAD
 EXPR$0
 -2.0
 !ok
+=======
+SELECT "CBRT"(-8)
+!explain-validated-on calcite
+>>>>>>> 35df78c18 ([CALCITE-3361] Add 'lenientOperatorLookup' connection property)
 
 # CEILING (or CEIL)
 select ceiling(10.5);
@@ -1622,12 +1627,15 @@ EXPR$0
 -0.8939966636005579
 !ok
 
+<<<<<<< HEAD
 # SINH
 select sinh(1);
 EXPR$0
 1.1752011936438014
 !ok
 
+=======
+>>>>>>> 35df78c18 ([CALCITE-3361] Add 'lenientOperatorLookup' connection property)
 # SIGN
 select sign(23);
 EXPR$0

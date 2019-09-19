@@ -39,7 +39,9 @@ import net.hydromatic.quidem.Command;
 import net.hydromatic.quidem.CommandHandler;
 import net.hydromatic.quidem.Quidem;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.sql.Connection;
 import java.util.Collection;
@@ -51,7 +53,14 @@ import java.util.regex.Pattern;
 /**
  * Unit tests for the Babel SQL parser.
  */
-class BabelQuidemTest extends QuidemTest {
+@RunWith(Parameterized.class)
+public class BabelQuidemTest extends QuidemTest {
+  /** Creates a BabelQuidemTest. Public per {@link Parameterized}. */
+  @SuppressWarnings("WeakerAccess")
+  public BabelQuidemTest(String path) {
+    super(path);
+  }
+
   /** Runs a test from the command line.
    *
    * <p>For example:
@@ -61,15 +70,17 @@ class BabelQuidemTest extends QuidemTest {
    * </blockquote> */
   public static void main(String[] args) throws Exception {
     for (String arg : args) {
-      new BabelQuidemTest().test(arg);
+      new BabelQuidemTest(arg).test();
     }
   }
 
-  @BeforeEach public void setup() {
+  @Override @Test public void test() throws Exception {
     MaterializationService.setThreadLocal();
+    super.test();
   }
 
-  /** For {@link QuidemTest#test(String)} parameters. */
+  /** For {@link Parameterized} runner. */
+  @Parameterized.Parameters(name = "{index}: quidem({0})")
   public static Collection<Object[]> data() {
     // Start with a test file we know exists, then find the directory and list
     // its files.
@@ -102,6 +113,7 @@ class BabelQuidemTest extends QuidemTest {
                   SqlConformanceEnum.BABEL)
               .with(CalciteConnectionProperty.LENIENT_OPERATOR_LOOKUP, true)
               .connect();
+<<<<<<< HEAD
         case "scott-big-query":
           return CalciteAssert.that()
               .with(CalciteAssert.Config.SCOTT)
@@ -112,6 +124,8 @@ class BabelQuidemTest extends QuidemTest {
                   SqlConformanceEnum.BABEL)
               .with(CalciteConnectionProperty.LENIENT_OPERATOR_LOOKUP, true)
               .connect();
+=======
+>>>>>>> 35df78c18 ([CALCITE-3361] Add 'lenientOperatorLookup' connection property)
         default:
           return super.connect(name, reference);
         }
