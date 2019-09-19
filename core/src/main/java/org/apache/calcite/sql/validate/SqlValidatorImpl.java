@@ -323,7 +323,9 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     groupFinder = new AggFinder(opTab, false, false, true, null, nameMatcher);
     aggOrOverOrGroupFinder = new AggFinder(opTab, true, true, true, null,
         nameMatcher);
-    this.typeCoercion = TypeCoercions.getTypeCoercion(this, config.sqlConformance());
+    @SuppressWarnings("argument.type.incompatible")
+    TypeCoercion typeCoercion = TypeCoercions.getTypeCoercion(this, config.sqlConformance());
+    this.typeCoercion = typeCoercion;
     this.validationMessage = "";
   }
 
