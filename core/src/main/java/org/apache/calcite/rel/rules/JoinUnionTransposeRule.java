@@ -83,7 +83,8 @@ public class JoinUnionTransposeRule
         return;
       }
     } else {
-      if (join.getJoinType().generatesNullsOnRight()) {
+      if (join.getJoinType().generatesNullsOnRight()
+          || !join.getJoinType().projectsRight()) {
         return;
       }
     }
