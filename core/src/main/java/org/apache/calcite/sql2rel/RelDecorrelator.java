@@ -1188,7 +1188,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
     return register(rel, newJoin, mapOldToNewOutputs, corDefOutputs);
   }
 
-  public Frame decorrelateRel(Union rel, boolean isCorVarDefined) {
+  public Frame decorrelateRel(Union rel) {
     assert !cm.mapRefRelToCorRef.containsKey(rel);
 
     final List<RelNode> oldInputs = rel.getInputs();
@@ -1200,7 +1200,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
     // the corDefOutputs from the frames. Note that the
     // corDefOutputs might be different among the frames.
     for (RelNode oldInput: oldInputs) {
-      final Frame frame = getInvoke(oldInput, isCorVarDefined, rel);
+      final Frame frame = getInvoke(oldInput, rel);
       if (frame == null) {
         return null;
       }

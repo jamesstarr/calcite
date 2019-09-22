@@ -6659,17 +6659,12 @@ class RelOptRulesTest extends RelOptTestBase {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2744">[CALCITE-2744]
    * RelDecorrelator use wrong output map for LogicalAggregate decorrelate</a>. */
-<<<<<<< HEAD
-  @Test void testDecorrelateAggWithConstantGroupKey() {
-    final String sql = "SELECT * FROM emp A where sal in\n"
-=======
   @Test public void testDecorrelateAggWithConstantGroupKey() {
     final String sql = "SELECT * FROM emp A where sal in \n"
         + "(SELECT max(sal) FROM emp B where A.mgr = B.empno group by deptno, 'abc')";
     sql(sql)
         .withLateDecorrelation(true)
         .withTrim(true)
->>>>>>> 2a57079b4 ([CALCITE-2744] RelDecorrelator use wrong output map for LogicalAggregate decorrelate (godfreyhe and Danny Chan))
         .with(HepProgram.builder().build())
         .check();
   }
@@ -7741,5 +7736,66 @@ class RelOptRulesTest extends RelOptTestBase {
         + "order by e1.empno";
 
     sql(sql).with(HepProgram.builder().build()).withDecorrelation(true).checkUnchanged();
+  }
+
+  @Test public void testDecorrelateUnion0() {
+    final String sql = ""
+        + "SELECT deptno FROM dept where exists\n"
+        + "(SELECT 1 FROM emp where sal < 100 and emp.deptno=dept.deptno\n"
+        + "UNION ALL\n"
+        + "SELECT 1 FROM bonus where bonus.comm=dept.deptno)";
+    sql(sql)
+        .withLateDecorrelation(true)
+        .withTrim(true)
+        .with(HepProgram.builder().build())
+        .check();
+  }
+
+  /**
+   * Input frames with the same correlated variables and old-new output mappings,
+   * but correlated variables referenced by different columns.
+   */
+  @Test public void testDecorrelateUnion1() {
+    final String sql = "SELECT * FROM emp where exists \n"
+        + "(SELECT 1 FROM dept where deptno = emp.deptno\n"
+        + "UNION ALL\n"
+        + "SELECT 1 FROM dept where deptno + 1 = emp.deptno)";
+    sql(sql)
+        .withLateDecorrelation(true)
+        .withTrim(true)
+        .with(HepProgram.builder().build())
+        .check();
+  }
+
+  /**
+   * Input frames with different correlated variables
+   * and referenced by different columns;
+   */
+  @Test public void testDecorrelateUnion2() {
+    final String sql = "SELECT * FROM emp where exists \n"
+        + "(SELECT 1 FROM dept where deptno = emp.deptno\n"
+        + "UNION ALL\n"
+        + "SELECT 1 FROM dept where name = emp.ename)";
+    sql(sql)
+        .withLateDecorrelation(true)
+        .withTrim(true)
+        .with(HepProgram.builder().build())
+        .check();
+  }
+
+  /**
+   * Input frames with the same correlated variables,
+   * but different old-new output mappings.
+   */
+  @Test public void testDecorrelateUnion3() {
+    final String sql = "SELECT * FROM emp A where (deptno, sal) in \n"
+        + "(SELECT deptno, max(sal) FROM emp B where A.mgr = B.empno group by deptno\n"
+        + "UNION ALL\n"
+        + "SELECT deptno, sal FROM emp B where A.mgr = B.empno)";
+    sql(sql)
+        .withLateDecorrelation(true)
+        .withTrim(true)
+        .with(HepProgram.builder().build())
+        .check();
   }
 }
