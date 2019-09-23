@@ -278,10 +278,10 @@ public class SqlFunction extends SqlOperator {
       if (function == null) {
         if (validator.config().typeCoercionEnabled()) {
           // try again if implicit type coercion is allowed.
-          function = (SqlFunction) SqlUtil.lookupRoutine(validator.getOperatorTable(),
-              getNameAsId(), argTypes, argNames, getFunctionType(), SqlSyntax.FUNCTION, getKind(),
-              validator.getCatalogReader().nameMatcher(),
-              true);
+          function = (SqlFunction)
+              SqlUtil.lookupRoutine(validator.getOperatorTable(), getNameAsId(),
+                  argTypes, argNames, getFunctionType(), SqlSyntax.FUNCTION,
+                  getKind(), validator.getCatalogReader().nameMatcher(), true);
           // try to coerce the function arguments to the declared sql type name.
           // if we succeed, the arguments would be wrapped with CAST operator.
           if (function != null) {

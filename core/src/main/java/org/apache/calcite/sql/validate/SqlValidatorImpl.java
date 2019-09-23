@@ -276,6 +276,8 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
 
   private SqlNode top;
 
+  protected boolean lenientOperatorLookup;
+
   private NullCollation nullCollation = NullCollation.HIGH;
 
   // TODO jvs 11-Dec-2008:  make this local to performUnconditionalRewrites
@@ -326,6 +328,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     groupFinder = new AggFinder(opTab, false, false, true, null, nameMatcher);
     aggOrOverOrGroupFinder = new AggFinder(opTab, true, true, true, null,
         nameMatcher);
+    this.lenientOperatorLookup = false;
     @SuppressWarnings("argument.type.incompatible")
     TypeCoercion typeCoercion = TypeCoercions.getTypeCoercion(this, config.sqlConformance());
     this.typeCoercion = typeCoercion;
@@ -4136,6 +4139,15 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
   public SqlValidatorScope getWithScope(SqlNode withItem) {
     assert withItem.getKind() == SqlKind.WITH_ITEM;
     return scopes.get(withItem);
+  }
+
+  public SqlValidator setLenientOperatorLookup(boolean lenient) {
+    this.lenientOperatorLookup = lenient;
+    return this;
+  }
+
+  public boolean isLenientOperatorLookup() {
+    return this.lenientOperatorLookup;
   }
 
   public SqlValidator setEnableTypeCoercion(boolean enabled) {

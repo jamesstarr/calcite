@@ -737,9 +737,6 @@ public class SqlParserTest {
    * "&lt;IDENTIFIER&gt;") are removed, but reserved words such as "AND"
    * remain.
    */
-<<<<<<< HEAD
-  @Test void testExceptionCleanup() {
-=======
   @Test public void testExceptionCleanup() {
     sql("select 0.5e1^.1^ from sales.emps")
         .fails("(?s).*Encountered \".1\" at line 1, column 13.\n"
@@ -9129,7 +9126,6 @@ public class SqlParserTest {
       final SqlNode sqlNode;
       try {
         sqlNode = parser.parseStmt();
->>>>>>> 0b1e41df1 ([CALCITE-3327] Simplify SqlValidatorTest and SqlParserTest by making test methods fluent)
       } catch (SqlParseException e) {
         throw new RuntimeException("Error while parsing SQL: " + sql, e);
       }

@@ -143,7 +143,8 @@ public class SqlTestFactory {
     return validatorFactory.create(operatorTable.get(),
         catalogReader.get(),
         typeFactory.get(),
-        config);
+        config)
+        .setLenientOperatorLookup(lenientOperatorLookup);
   }
 
   public SqlAdvisor createAdvisor() {

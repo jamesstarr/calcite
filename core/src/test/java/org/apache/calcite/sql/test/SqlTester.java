@@ -83,13 +83,15 @@ public interface SqlTester extends AutoCloseable, SqlValidatorTestCase.Tester {
   /** Returns a tester that tests with implicit type coercion on/off. */
   SqlTester enableTypeCoercion(boolean enabled);
 
-<<<<<<< HEAD
+>>>>>>> 0d57e8fc8 ([CALCITE-3323] Add mode to SqlValidator that treats statements as valid if they contain unknown functions)
   /** Returns a tester that does not fail validation if it encounters an
    * unknown function. */
   SqlTester withLenientOperatorLookup(boolean lenient);
 
+<<<<<<< HEAD
 =======
->>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+>>>>>>> 0d57e8fc8 ([CALCITE-3323] Add mode to SqlValidator that treats statements as valid if they contain unknown functions)
   /** Returns a tester that gets connections from a given factory. */
   SqlTester withConnectionFactory(
       CalciteAssert.ConnectionFactory connectionFactory);
