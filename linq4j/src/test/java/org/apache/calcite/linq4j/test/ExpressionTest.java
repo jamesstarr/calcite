@@ -1474,12 +1474,12 @@ public class ExpressionTest {
         Expressions.toString(Expressions.constant(Arrays.asList())));
   }
 
-  @Test void testOneElementListLiteral() throws Exception {
+  @Test public void testOneElementListLiteral() throws Exception {
     assertEquals("java.util.Arrays.asList(1)",
         Expressions.toString(Expressions.constant(Arrays.asList(1))));
   }
 
-  @Test void testTwoElementsListLiteral() throws Exception {
+  @Test public void testTwoElementsListLiteral() throws Exception {
     assertEquals("java.util.Arrays.asList(1,\n"
             + "  2)",
         Expressions.toString(Expressions.constant(Arrays.asList(1, 2))));
@@ -1505,13 +1505,13 @@ public class ExpressionTest {
         Expressions.toString(Expressions.constant(Collections.singletonMap("abc", 42))));
   }
 
-  @Test void testTwoElementsMapLiteral() throws Exception {
+  @Test public void testTwoElementsMapLiteral() throws Exception {
     assertEquals("com.google.common.collect.ImmutableMap.of(\"abc\", 42,\n"
             + "\"def\", 43)",
         Expressions.toString(Expressions.constant(ImmutableMap.of("abc", 42, "def", 43))));
   }
 
-  @Test void testTenElementsMapLiteral() throws Exception {
+  @Test public void testTenElementsMapLiteral() throws Exception {
     Map<String, String> map = new LinkedHashMap<>(); // for consistent output
     for (int i = 0; i < 10; i++) {
       map.put("key_" + i, "value_" + i);
@@ -1535,24 +1535,23 @@ public class ExpressionTest {
     assertThat(value, is(3));
   }
 
-<<<<<<< HEAD
-  @Test void testEmptySetLiteral() throws Exception {
+  @Test public void testEmptySetLiteral() throws Exception {
     assertEquals("com.google.common.collect.ImmutableSet.of()",
         Expressions.toString(Expressions.constant(new HashSet())));
   }
 
-  @Test void testOneElementSetLiteral() throws Exception {
+  @Test public void testOneElementSetLiteral() throws Exception {
     assertEquals("com.google.common.collect.ImmutableSet.of(1)",
         Expressions.toString(Expressions.constant(Sets.newHashSet(1))));
   }
 
-  @Test void testTwoElementsSetLiteral() throws Exception {
+  @Test public void testTwoElementsSetLiteral() throws Exception {
     assertEquals("com.google.common.collect.ImmutableSet.of(1,2)",
         Expressions.toString(Expressions.constant(ImmutableSet.of(1, 2))));
   }
 
-  @Test void testTenElementsSetLiteral() throws Exception {
-    Set set = new LinkedHashSet(); // for consistent output
+  @Test public void testTenElementsSetLiteral() throws Exception {
+    Set set = new HashSet(); // for consistent output
     for (int i = 0; i < 10; i++) {
       set.add(i);
     }
@@ -1569,7 +1568,7 @@ public class ExpressionTest {
         Expressions.toString(Expressions.constant(set)));
   }
 
-  @Test void testTenElementsLinkedHashSetLiteral() throws Exception {
+  @Test public void testTenElementsLinkedHashSetLiteral() throws Exception {
     Set set = new LinkedHashSet(); // for consistent output
     for (Integer i = 0; i < 10; i++) {
       set.add(i);
@@ -1587,7 +1586,7 @@ public class ExpressionTest {
         Expressions.toString(Expressions.constant(set)));
   }
 
-  @Test void testTenElementsSetStringLiteral() throws Exception {
+  @Test public void testTenElementsSetStringLiteral() throws Exception {
     Set set = new LinkedHashSet(); // for consistent output
     for (int i = 10; i > 0; i--) {
       set.add(String.valueOf(i));
@@ -1605,7 +1604,10 @@ public class ExpressionTest {
         Expressions.toString(Expressions.constant(set)));
   }
 
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 51bb28c66 ([CALCITE-3288] In ConstantExpression support SET literals (xy2953396112))
   /** An enum. */
   enum MyEnum {
     X,
