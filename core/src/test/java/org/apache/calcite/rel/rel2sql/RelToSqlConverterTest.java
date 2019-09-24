@@ -1079,7 +1079,7 @@ class RelToSqlConverterTest {
     sql(query).withBigQuery().ok(expected);
   }
 
-  @Test public void testHiveSelectQueryWithOrderByDescAndNullsFirstShouldBeEmulated() {
+  @Test public void testSelectOrderByDescNullsFirst() {
     final String query = "select \"product_id\" from \"product\"\n"
         + "order by \"product_id\" desc nulls first";
     // Hive and MSSQL do not support NULLS FIRST, so need to emulate
@@ -1094,7 +1094,7 @@ class RelToSqlConverterTest {
         .dialect(MssqlSqlDialect.DEFAULT).ok(mssqlExpected);
   }
 
-  @Test void testSelectOrderByAscNullsLast() {
+  @Test public void testSelectOrderByAscNullsLast() {
     final String query = "select \"product_id\" from \"product\"\n"
         + "order by \"product_id\" nulls last";
     // Hive and MSSQL do not support NULLS LAST, so need to emulate
@@ -1109,7 +1109,7 @@ class RelToSqlConverterTest {
         .dialect(MssqlSqlDialect.DEFAULT).ok(mssqlExpected);
   }
 
-  @Test void testSelectOrderByAscNullsFirst() {
+  @Test public void testSelectOrderByAscNullsFirst() {
     final String query = "select \"product_id\" from \"product\"\n"
         + "order by \"product_id\" nulls first";
     // Hive and MSSQL do not support NULLS FIRST, but nulls sort low, so no
@@ -1125,7 +1125,7 @@ class RelToSqlConverterTest {
         .dialect(MssqlSqlDialect.DEFAULT).ok(mssqlExpected);
   }
 
-  @Test void testSelectOrderByDescNullsLast() {
+  @Test public void testSelectOrderByDescNullsLast() {
     final String query = "select \"product_id\" from \"product\"\n"
         + "order by \"product_id\" desc nulls last";
     // Hive and MSSQL do not support NULLS LAST, but nulls sort low, so no
@@ -1139,6 +1139,7 @@ class RelToSqlConverterTest {
     sql(query)
         .dialect(HiveSqlDialect.DEFAULT).ok(expected)
         .dialect(MssqlSqlDialect.DEFAULT).ok(mssqlExpected);
+<<<<<<< HEAD
   }
 
   @Test void testHiveSelectQueryWithOverDescAndNullsFirstShouldBeEmulated() {
@@ -1148,6 +1149,8 @@ class RelToSqlConverterTest {
         + "OVER (ORDER BY hire_date IS NULL DESC, hire_date DESC)\n"
         + "FROM foodmart.employee";
     sql(query).dialect(HiveSqlDialect.DEFAULT).ok(expected);
+=======
+>>>>>>> 4fc68204e ([CALCITE-3370] In JDBC adapter for Microsoft SQL Server, emulate NULLS FIRST using CASE expression (Justin Swett))
   }
 
   @Test public void testHiveSubstring() {
@@ -1655,10 +1658,10 @@ class RelToSqlConverterTest {
         + "FETCH NEXT 100 ROWS ONLY";
     final String expectedMssql10 = "SELECT TOP (100) [product_id]\n"
         + "FROM [foodmart].[product]\n"
-        + "ORDER BY [product_id]";
+        + "ORDER BY CASE WHEN [product_id] IS NULL THEN 1 ELSE 0 END, [product_id]";
     final String expectedMssql = "SELECT [product_id]\n"
         + "FROM [foodmart].[product]\n"
-        + "ORDER BY [product_id]\n"
+        + "ORDER BY CASE WHEN [product_id] IS NULL THEN 1 ELSE 0 END, [product_id]\n"
         + "FETCH NEXT 100 ROWS ONLY";
     final String expectedSybase = "SELECT TOP (100) product_id\n"
         + "FROM foodmart.product\n"
