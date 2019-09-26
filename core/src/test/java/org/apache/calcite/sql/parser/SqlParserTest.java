@@ -20,6 +20,7 @@ import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.avatica.util.Quoting;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlDialect;
+import org.apache.calcite.sql.SqlExplain;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
@@ -3851,16 +3852,16 @@ public class SqlParserTest {
             + "(VALUES (ROW(TRUE)))");
   }
 
-  @Test void testExplainJsonFormat() {
+  @Test public void testExplainJsonFormat() {
     final String sql = "explain plan as json for select * from emps";
     TesterImpl tester = (TesterImpl) getTester();
     SqlExplain sqlExplain = (SqlExplain) tester.parseStmtsAndHandleEx(sql).get(0);
     assertEquals(sqlExplain.isJson(), true);
   }
 
-  @Test void testDescribeSchema() {
-    sql("describe schema A")
-        .ok("DESCRIBE SCHEMA `A`");
+  @Test public void testDescribeSchema() {
+    check("describe schema A",
+        "DESCRIBE SCHEMA `A`");
     // Currently DESCRIBE DATABASE, DESCRIBE CATALOG become DESCRIBE SCHEMA.
     // See [CALCITE-1221] Implement DESCRIBE DATABASE, CATALOG, STATEMENT
     sql("describe database A")
