@@ -341,6 +341,7 @@ data: {
       "TRIGGER_CATALOG"
       "TRIGGER_NAME"
       "TRIGGER_SCHEMA"
+      "TUMBLE"
       "TYPE"
       "UNBOUNDED"
       "UNCOMMITTED"
