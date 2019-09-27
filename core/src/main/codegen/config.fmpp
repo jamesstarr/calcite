@@ -378,9 +378,13 @@ data: {
       "TRIGGER_NAME"
       "TRIGGER_SCHEMA"
 <<<<<<< HEAD
+<<<<<<< HEAD
       "TUMBLE"
 =======
 >>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
+=======
+      "TUMBLE"
+>>>>>>> c830b4f5a ([CALCITE-3382] Hard-wire the TUMBLE grouping function into SQL parser (Rui Wang))
       "TYPE"
       "UNBOUNDED"
       "UNCOMMITTED"

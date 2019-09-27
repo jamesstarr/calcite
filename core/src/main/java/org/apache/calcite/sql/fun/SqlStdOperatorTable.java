@@ -2286,18 +2286,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
         }
       };
 
-  /** DESCRIPTOR(column_name, ...). */
-  public static final SqlOperator DESCRIPTOR = new SqlDescriptorOperator();
-
-  /** TUMBLE as a table function. */
-  public static final SqlFunction TUMBLE = new SqlTumbleTableFunction();
-
-  /** HOP as a table function. */
-  public static final SqlFunction HOP = new SqlHopTableFunction();
-
-  /** SESSION as a table function. */
-  public static final SqlFunction SESSION = new SqlSessionTableFunction();
-
+>>>>>>> c830b4f5a ([CALCITE-3382] Hard-wire the TUMBLE grouping function into SQL parser (Rui Wang))
   /** The {@code TUMBLE} group function.
    *
    * <p>This operator is named "$TUMBLE" (not "TUMBLE") because it is created
@@ -2311,7 +2300,10 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
    * this TUMBLE group function, and in fact all group functions. See
    * [CALCITE-3340] for details.
    */
+<<<<<<< HEAD
   public static final SqlGroupedWindowFunction TUMBLE_OLD =
+=======
+  public static final SqlGroupedWindowFunction TUMBLE =
       new SqlGroupedWindowFunction("$TUMBLE", SqlKind.TUMBLE,
           null, ReturnTypes.ARG0, null,
           OperandTypes.or(OperandTypes.DATETIME_INTERVAL,

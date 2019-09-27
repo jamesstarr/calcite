@@ -6720,10 +6720,15 @@ SqlNode BuiltinFunctionCall() :
     |
         node = JsonArrayAggFunctionCall() { return node; }
 <<<<<<< HEAD
+<<<<<<< HEAD
     |
         node = GroupByWindowingCall() { return node; }
 =======
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+    |
+        node = GroupByWindowingCall() { return node; }
+>>>>>>> c830b4f5a ([CALCITE-3382] Hard-wire the TUMBLE grouping function into SQL parser (Rui Wang))
     )
 }
 
@@ -7872,6 +7877,7 @@ SqlCall GroupByWindowingCall():
 {
     final Span s;
     final List<SqlNode> args;
+<<<<<<< HEAD
     final SqlOperator op;
 }
 {
@@ -7896,6 +7902,13 @@ SqlCall GroupByWindowingCall():
     )
     args = UnquantifiedFunctionParameterList(ExprContext.ACCEPT_SUB_QUERY) {
         return op.createCall(s.end(this), args);
+=======
+}
+{
+    <TUMBLE> { s = span(); }
+    args = UnquantifiedFunctionParameterList(ExprContext.ACCEPT_SUB_QUERY) {
+        return SqlStdOperatorTable.TUMBLE.createCall(s.end(this), args);
+>>>>>>> c830b4f5a ([CALCITE-3382] Hard-wire the TUMBLE grouping function into SQL parser (Rui Wang))
     }
 }
 
