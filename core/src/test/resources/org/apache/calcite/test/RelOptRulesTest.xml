@@ -10008,10 +10008,17 @@ LogicalProject(QX=[CAST(CASE(=($0, 1), 1, 2)):INTEGER])
     </TestCase>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testReduceCastsNullable">
         <Resource name="sql">
             <![CDATA[insert into sales.dept(deptno, name)
 select empno, cast(job as varchar(128)) from sales.empnullables]]>
+=======
+    <TestCase name="testReduceCastsNullable">
+        <Resource name="sql">
+            <![CDATA[insert into sales.dept(deptno, name)
+select empno, cast(job as varchar(128)) from sales.EMPNULLABLES]]>
+>>>>>>> d5492d7cf ([CALCITE-3346] Re-enable some ignored tests in RelOptRuleTests (Wang Yanlin))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -10023,11 +10030,16 @@ LogicalTableModify(table=[[CATALOG, SALES, DEPT]], operation=[INSERT], flattened
         <Resource name="planAfter">
             <![CDATA[
 LogicalTableModify(table=[[CATALOG, SALES, DEPT]], operation=[INSERT], flattened=[false])
+<<<<<<< HEAD
   LogicalCalc(expr#0..8=[{inputs}], expr#9=[CAST($t2):VARCHAR(10) NOT NULL], DEPTNO=[$t0], NAME=[$t9])
+=======
+  LogicalCalc(expr#0..8=[{inputs}], expr#9=[CAST($t2):VARCHAR(128)], expr#10=[CAST($t9):VARCHAR(10) NOT NULL], DEPTNO=[$t0], NAME=[$t10])
+>>>>>>> d5492d7cf ([CALCITE-3346] Re-enable some ignored tests in RelOptRuleTests (Wang Yanlin))
     LogicalTableScan(table=[[CATALOG, SALES, EMPNULLABLES]])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testReduceCaseWhenWithCast">
         <Resource name="planBefore">
             <![CDATA[
@@ -10044,6 +10056,8 @@ LogicalProject($f0=[CAST(CASE(=(MOD($0, 2:BIGINT), 1), <($0, 2:BIGINT), =(MOD($0
     </TestCase>
 =======
 >>>>>>> a609b49b6 ([CALCITE-2687] Is distinct from could lead to Exceptions in ReduceExpressionRule (Zoltan Haindrich))
+=======
+>>>>>>> d5492d7cf ([CALCITE-3346] Re-enable some ignored tests in RelOptRuleTests (Wang Yanlin))
     <TestCase name="testReduceConstants3">
         <Resource name="sql">
             <![CDATA[select e.mgr is not distinct from f.mgr from emp e join emp f on (e.mgr=f.mgr) where e.mgr is null]]>
