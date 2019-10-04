@@ -769,7 +769,6 @@ public abstract class SqlImplementor {
             return createLeftCall(op, nodeList);
           }
         }
-
         return op.createCall(new SqlNodeList(nodeList, POS));
       }
     }
@@ -958,6 +957,22 @@ public abstract class SqlImplementor {
         node = op.createCall(new SqlNodeList(ImmutableList.of(node, nodeList.get(i)), POS));
       }
       return node;
+    }
+
+    /**
+     * Create a balanced binary call from sql node list,
+     * start inclusive, end exclusive.
+     */
+    private SqlNode createBalancedCall(SqlOperator op,
+        List<SqlNode> nodeList, int start, int end) {
+      assert start < end && end <= nodeList.size();
+      if (start + 1 == end) {
+        return nodeList.get(start);
+      }
+      int mid = (end - start) / 2 + start;
+      SqlNode leftNode = createBalancedCall(op, nodeList, start, mid);
+      SqlNode rightNode = createBalancedCall(op, nodeList, mid, end);
+      return op.createCall(new SqlNodeList(ImmutableList.of(leftNode, rightNode), POS));
     }
 
     protected List<SqlNode> toSql(RexProgram program, List<RexNode> operandList) {
