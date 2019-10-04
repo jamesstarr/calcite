@@ -154,9 +154,7 @@ public class AggregateNode extends AbstractSingleNode<Aggregate> {
       case REAL:
         clazz = MinDouble.class;
         break;
-      case DECIMAL:
-        clazz = MinBigDecimal.class;
-        break;
+>>>>>>> 936380d89 ([CALCITE-3400] Implement left/right/semi/anti/full join in interpreter (Wang Yanlin))
       case BOOLEAN:
         clazz = MinBoolean.class;
         break;
@@ -573,6 +571,7 @@ public class AggregateNode extends AbstractSingleNode<Aggregate> {
   }
 
   /** Implementation of {@code MIN} function to calculate the minimum of
+<<<<<<< HEAD
    * {@code BigDecimal} values as a user-defined aggregate.
    */
   public static class MinBigDecimal extends NumericComparison<BigDecimal> {
@@ -586,6 +585,7 @@ public class AggregateNode extends AbstractSingleNode<Aggregate> {
   }
 
   /** Implementation of {@code MIN} function to calculate the minimum of
+=======
    * {@code boolean} values as a user-defined aggregate.
    */
   public static class MinBoolean {
@@ -608,7 +608,7 @@ public class AggregateNode extends AbstractSingleNode<Aggregate> {
     }
   }
 
-  /** Implementation of {@code MAX} function to calculate the maximum of
+  /** Implementation of {@code MAX} function to calculate the minimum of
    * {@code integer} values as a user-defined aggregate.
    */
   public static class MaxInt extends NumericComparison<Integer> {
