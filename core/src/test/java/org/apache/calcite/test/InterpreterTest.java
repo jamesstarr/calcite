@@ -162,9 +162,23 @@ class InterpreterTest {
     sql(sql).withProject(true).returnsRows("[c]", "[b]", "[a]");
   }
 
-  @Test void testInterpretMultiset() throws Exception {
+  @Test public void testInterpretMultiset() throws Exception {
     final String sql = "select multiset['a', 'b', 'c']";
-    sql(sql).withProject(true).returnsRows("[[a, b, c]]");
+    SqlNode parse = planner.parse(sql);
+    SqlNode validate = planner.validate(parse);
+    RelNode convert = planner.rel(validate).project();
+
+    final Interpreter interpreter = new Interpreter(dataContext, convert);
+    assertRows(interpreter, "[[a, b, c]]");
+  }
+
+  private static void assertRows(Interpreter interpreter, String... rows) {
+    assertRows(interpreter, false, rows);
+  }
+
+  private static void assertRowsUnordered(Interpreter interpreter,
+      String... rows) {
+    assertRows(interpreter, true, rows);
   }
 
   private static void assertRows(Interpreter interpreter,

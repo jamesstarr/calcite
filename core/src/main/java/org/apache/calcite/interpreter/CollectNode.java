@@ -43,3 +43,8 @@ public class CollectNode extends AbstractSingleNode<Collect> {
     sink.send(row);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End CollectNode.java
+>>>>>>> ab093e069 ([CALCITE-3397] AssertionError for interpretering multiset value (Wang Yanlin))
