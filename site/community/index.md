@@ -27,6 +27,7 @@ limitations under the License.
 # Upcoming talks
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 There are no upcoming talks at the moment. Stay tuned!
 =======
 * September 8th-12th, 2019
@@ -43,6 +44,13 @@ There are no upcoming talks at the moment. Stay tuned!
   * Unifying Batch and Stream Data Processing with Apache Calcite and
     Apache Beam (Khai Tran)
 >>>>>>> 0074fe110 (Site: Add upcoming talks at ApacheCon NA 2019)
+=======
+## Fast federated SQL with Apache Calcite (Chris Baynes)
+
+At [ApacheCon Europe 2019](https://aceu19.apachecon.com/), Berlin, Germany, October 24, 2019; 
+[[summary](https://aceu19.apachecon.com/session/fast-federated-sql-apache-calcite)].   
+
+>>>>>>> 1ef81f97e (Site: Update upcoming talks section for ApacheCon Europe 2019)
 
 # Project Members
 
