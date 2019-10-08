@@ -636,6 +636,7 @@ ball because that would be
 
 ## Set up Nexus repository credentials (for Calcite committers)
 
+<<<<<<< HEAD
 Gradle provides multiple ways to [configure project properties](https://docs.gradle.org/current/userguide/build_environment.html#sec:gradle_configuration_properties).
 For instance, you could update `$HOME/.gradle/gradle.properties`.
 
@@ -656,6 +657,9 @@ Note: when https://github.com/vlsi/asflike-release-environment is used, the cred
 
 Note: if you want to uses `gpg-agent`, you need to pass `useGpgCmd` property, and specify the key id
 via `signing.gnupg.keyName`.
+=======
+Follow the instructions [here](https://www.apache.org/dev/publishing-maven-artifacts.html#dev-env) to add your credentials to your maven configuration.
+>>>>>>> 75c34cb7b ([CALCITE-3391] Insecure pages warning on Chrome)
 
 ## Making a snapshot (for Calcite committers)
 
