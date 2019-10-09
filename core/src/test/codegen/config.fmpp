@@ -39,25 +39,17 @@ data: {
       "JAR"
     ]
 
-        "ABSENT"
-        "CONDITIONAL"
-        "ENCODING"
-        "ERROR"
-        "FORMAT"
-        "IGNORE"
-        "JSON_DEPTH"
-        "JSON_KEYS"
-        "JSON_LENGTH"
-        "JSON_PRETTY"
-        "JSON_TYPE"
-        "PASSING"
-        "RESPECT"
-        "RETURNING"
-        "SCALAR"
-        "UNCONDITIONAL"
-        "UTF8"
-        "UTF16"
-        "UTF32"
+
+    # List of non-reserved keywords to add;
+    # items in this list become non-reserved
+    nonReservedKeywordsToAdd: [
+    ]
+
+    # List of non-reserved keywords to remove;
+    # items in this list become reserved
+    nonReservedKeywordsToRemove: [
+    ]
+
     # List of methods for parsing custom SQL statements.
     # Return type of method implementation should be 'SqlNode'.
     # Example: "SqlShowDatabases()", "SqlShowTables()".
@@ -65,11 +57,14 @@ data: {
       "SqlDescribeSpacePower()"
     ]
 
-      # List of methods for parsing builtin function calls.
-      # Return type of method implementation should be "SqlNode".
-      # Example: DateFunctionCall().
-      builtinFunctionCallMethods: [
-      ]
+    # Return type of method implementation should be "SqlNode".
+    # Return type of method implementation should be "SqlTypeNameSpec".
+    # Example: SqlParseTimeStampZ().
+    # List of methods for parsing builtin function calls.
+    # Return type of method implementation should be "SqlNode".
+    # Example: DateFunctionCall().
+    builtinFunctionCallMethods: [
+    ]
 
     # List of methods for parsing extensions to "ALTER <scope>" calls.
     # Each must accept arguments "(SqlParserPos pos, String scope)".
@@ -85,13 +80,13 @@ data: {
       "SqlCreateTable"
     ]
 
-      # Binary operators tokens
-      binaryOperatorsTokens: [
-      ]
+    # Binary operators tokens
+    binaryOperatorsTokens: [
+    ]
 
-      # Binary operators initialization
-      extraBinaryExpressions: [
-      ]
+    # Binary operators initialization
+    extraBinaryExpressions: [
+    ]
 
     # List of files in @includes directory that have parser method
     # implementations for parsing custom SQL statements, literals or types
@@ -100,9 +95,10 @@ data: {
     implementationFiles: [
       "parserImpls.ftl"
     ]
-      includePosixOperators: false
+    includePosixOperators: false
   }
 }
+
 freemarkerLinks: {
-    includes: includes/
+  includes: includes/
 }
