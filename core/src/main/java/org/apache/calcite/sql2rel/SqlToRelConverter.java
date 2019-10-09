@@ -120,6 +120,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlNumericLiteral;
 import org.apache.calcite.sql.SqlOperator;
+import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlPivot;
 import org.apache.calcite.sql.SqlSampleSpec;
@@ -247,6 +248,7 @@ public class SqlToRelConverter {
   private SubQueryConverter subQueryConverter;
   protected final Map<RelNode, Integer> leaves = new HashMap<>();
   private final List<SqlDynamicParam> dynamicParamSqlNodes = new ArrayList<>();
+  private final SqlOperatorTable opTab;
   protected final RelDataTypeFactory typeFactory;
   private final SqlNodeToRexConverter exprConverter;
   protected final HintStrategyTable hintStrategies;
@@ -322,6 +324,10 @@ public class SqlToRelConverter {
       SqlRexConvertletTable convertletTable,
       Config config) {
     this.viewExpander = viewExpander;
+    this.opTab =
+        (validator
+            == null) ? SqlStdOperatorTable.instance()
+            : validator.getOperatorTable();
     this.validator = validator;
     this.catalogReader = catalogReader;
     this.subQueryConverter = new NoOpSubQueryConverter();
@@ -3681,36 +3687,38 @@ public class SqlToRelConverter {
         Util.first(table.unwrap(InitializerExpressionFactory.class),
             NullInitializerExpressionFactory.INSTANCE);
 
-    // Lazily create a blackboard that contains all non-generated columns.
-    final Supplier<Blackboard> bb = () -> {
+    boolean hasVirtualFields = table.getRowType()
+        .getFieldList().stream()
+        .anyMatch(f -> ief.generationStrategy(table, f.getIndex()) == ColumnStrategy.VIRTUAL);
 
-      RexNode sourceRef = rexBuilder.makeRangeReference(scan);
-      return createInsertBlackboard(table, sourceRef,
-          table.getRowType().getFieldNames());
+    if (hasVirtualFields) {
+      // Lazily create a blackboard that contains all non-generated columns.
+      final Supplier<Blackboard> bb = () -> {
 
-    };
+        RexNode sourceRef = rexBuilder.makeRangeReference(scan);
+        return createInsertBlackboard(table, sourceRef,
+            table.getRowType().getFieldNames());
 
-    int virtualCount = 0;
-    final List<RexNode> list = new ArrayList<>();
-    for (RelDataTypeField f : table.getRowType().getFieldList()) {
-      final ColumnStrategy strategy =
-          ief.generationStrategy(table, f.getIndex());
-      switch (strategy) {
-      case VIRTUAL:
-        list.add(ief.newColumnDefaultValue(table, f.getIndex(), bb.get()));
-        ++virtualCount;
-        break;
-      default:
-        list.add(
-            rexBuilder.makeInputRef(scan,
-                RelOptTableImpl.realOrdinal(table, f.getIndex())));
+      };
+      final List<RexNode> list = new ArrayList<>();
+      for (RelDataTypeField f : table.getRowType().getFieldList()) {
+        final ColumnStrategy strategy =
+            ief.generationStrategy(table, f.getIndex());
+        switch (strategy) {
+        case VIRTUAL:
+          list.add(ief.newColumnDefaultValue(table, f.getIndex(), bb.get()));
+          break;
+        default:
+          list.add(
+              rexBuilder.makeInputRef(scan,
+                  RelOptTableImpl.realOrdinal(table, f.getIndex())));
+        }
       }
-    }
-    if (virtualCount > 0) {
       relBuilder.push(scan);
       relBuilder.project(list);
       return relBuilder.build();
     }
+
     return scan;
   }
 
@@ -5448,6 +5456,12 @@ public class SqlToRelConverter {
 
     public RexBuilder getRexBuilder() {
       return rexBuilder;
+    }
+
+    public SqlNode validateExpression(RelDataType rowType, SqlNode expr) {
+      return SqlValidatorUtil.validateExprWithRowType(
+          catalogReader.nameMatcher().isCaseSensitive(), opTab,
+          typeFactory, rowType, expr).left;
     }
 
     public RexRangeRef getSubQueryExpr(SqlCall call) {
