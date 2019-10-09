@@ -29,37 +29,10 @@ import org.apache.calcite.sql.parser.SqlParser;
 public interface InitializerContext {
   RexBuilder getRexBuilder();
 
-  /**
-   * Parse a column computation expression for a table. Usually this expression is declared
-   * in the create table statement, i.e.
-   * <pre>
-   *   create table t(
-   *     a int not null,
-   *     b varchar(5) as (my_udf(a)) virtual,
-   *     c int not null as (a + 1)
-   *   );
-   * </pre>
-   *
-   * <p>You can use the string format expression "my_udf(a)" and "a + 1"
-   * as the initializer expression of column b and c.
-   *
-   * <p>Calcite doesn't really need this now because the DDL nodes
-   * can be executed directly from {@code SqlNode}s, but we still provide the way
-   * to initialize from a SQL-like string, because a string can be used to persist easily and
-   * the column expressions are important part of the table metadata.
-   *
-   * @param config parse config
-   * @param expr   the SQL-style column expression
-   * @return a {@code SqlNode} instance
-   */
-  default SqlNode parseExpression(SqlParser.Config config, String expr) {
-    SqlParser parser = SqlParser.create(expr, config);
-    try {
-      return parser.parseExpression();
-    } catch (SqlParseException e) {
-      throw new RuntimeException("Failed to parse expression " + expr, e);
-    }
-  }
+  SqlNode validateExpression(RelDataType rowType, SqlNode expr);
+
+  RexNode convertExpression(SqlNode e);
+}
 
   /**
    * Validate the expression with a base table row type. The expression may reference the fields
