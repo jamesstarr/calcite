@@ -44,6 +44,7 @@ data: {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       "DAYS"
       "HOURS"
       "MINUTES"
@@ -345,10 +346,14 @@ data: {
 >>>>>>> 38576ceb2 ([CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved)
 
 <<<<<<< HEAD
+=======
+
+>>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
     # List of non-reserved keywords to add;
     # items in this list become non-reserved
     nonReservedKeywordsToAdd: [
     ]
+<<<<<<< HEAD
 =======
       # List of additional join types. Each is a method with no arguments.
       # Example: LeftSemiJoin()
@@ -376,6 +381,14 @@ data: {
         "UTF16"
         "UTF32"
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+
+    # List of non-reserved keywords to remove;
+    # items in this list become reserved
+    nonReservedKeywordsToRemove: [
+    ]
+
+>>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
     # List of methods for parsing custom SQL statements.
     # Return type of method implementation should be 'SqlNode'.
     # Example: "SqlShowDatabases()", "SqlShowTables()".
@@ -419,11 +432,14 @@ data: {
     builtinFunctionCallMethods: [
     ]
 
-      # List of methods for parsing builtin function calls.
-      # Return type of method implementation should be "SqlNode".
-      # Example: DateFunctionCall().
-      builtinFunctionCallMethods: [
-      ]
+    # Return type of method implementation should be "SqlNode".
+    # Return type of method implementation should be "SqlTypeNameSpec".
+    # Example: SqlParseTimeStampZ().
+    # List of methods for parsing builtin function calls.
+    # Return type of method implementation should be "SqlNode".
+    # Example: DateFunctionCall().
+    builtinFunctionCallMethods: [
+    ]
 
     # List of methods for parsing extensions to "ALTER <scope>" calls.
     # Each must accept arguments "(SqlParserPos pos, String scope)".
@@ -439,6 +455,7 @@ data: {
       "SqlCreateTable"
     ]
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     # Binary operators tokens
     binaryOperatorsTokens: [
@@ -478,10 +495,15 @@ data: {
       # Binary operators tokens
       binaryOperatorsTokens: [
       ]
+=======
+    # Binary operators tokens
+    binaryOperatorsTokens: [
+    ]
+>>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
 
-      # Binary operators initialization
-      extraBinaryExpressions: [
-      ]
+    # Binary operators initialization
+    extraBinaryExpressions: [
+    ]
 
 >>>>>>> d01e418b9 ([CALCITE-2843] Support PostgreSQL cast operator '::' (Muhammad Gelbana))
     # List of files in @includes directory that have parser method
@@ -494,12 +516,16 @@ data: {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     includePosixOperators: false
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
       includePosixOperators: false
 >>>>>>> 2e167f8ed ([CALCITE-3063] Parse and process PostgreSQL posix regular expressions)
+=======
+    includePosixOperators: false
+>>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
   }
 =======
       # List of methods for parsing custom literals.

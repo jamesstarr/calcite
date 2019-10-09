@@ -25,6 +25,9 @@ data: {
     class: "SqlDdlParserImpl",
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
     # List of import statements.
     imports: [
       "org.apache.calcite.schema.ColumnStrategy"
@@ -34,6 +37,7 @@ data: {
       "java.util.Map"
       "java.util.HashMap"
     ]
+<<<<<<< HEAD
 =======
       # List of import statements.
       imports: [
@@ -45,6 +49,8 @@ data: {
         "java.util.HashMap"
       ]
 >>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
+=======
+>>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
 
     # List of new keywords. Example: "DATABASES", "TABLES". If the keyword is
     # not a reserved keyword, add it to the 'nonReservedKeywords' section.
@@ -66,6 +72,10 @@ data: {
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
+    # List of non-reserved keywords to add;
+    # items in this list become non-reserved
+    nonReservedKeywordsToAdd: [
+    ]
     # List of non-reserved keywords to add;
     # items in this list become non-reserved
     nonReservedKeywordsToAdd: [
@@ -474,11 +484,19 @@ data: {
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
 
-      # List of methods for parsing builtin function calls.
-      # Return type of method implementation should be "SqlNode".
-      # Example: DateFunctionCall().
-      builtinFunctionCallMethods: [
-      ]
+    # List of non-reserved keywords to remove;
+    # items in this list become reserved
+    nonReservedKeywordsToRemove: [
+    ]
+
+    # Return type of method implementation should be "SqlNode".
+    # Return type of method implementation should be "SqlTypeNameSpec".
+    # Example: SqlParseTimeStampZ().
+    # List of methods for parsing builtin function calls.
+    # Return type of method implementation should be "SqlNode".
+    # Example: DateFunctionCall().
+    builtinFunctionCallMethods: [
+    ]
 
     # List of methods for parsing extensions to "CREATE [OR REPLACE]" calls.
     # Each must accept arguments "(SqlParserPos pos, boolean replace)".
@@ -490,7 +508,7 @@ data: {
       "SqlCreateTable"
       "SqlCreateType"
       "SqlCreateView"
-        "SqlCreateFunction"
+      "SqlCreateFunction"
     ]
 
     # List of methods for parsing extensions to "DROP" calls.
@@ -502,19 +520,25 @@ data: {
       "SqlDropTable"
       "SqlDropType"
       "SqlDropView"
-        "SqlDropFunction"
+      "SqlDropFunction"
     ]
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 =======
       # Binary operators tokens
       binaryOperatorsTokens: [
       ]
+=======
+    # Binary operators tokens
+    binaryOperatorsTokens: [
+    ]
+>>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
 
-      # Binary operators initialization
-      extraBinaryExpressions: [
-      ]
+    # Binary operators initialization
+    extraBinaryExpressions: [
+    ]
 
 >>>>>>> d01e418b9 ([CALCITE-2843] Support PostgreSQL cast operator '::' (Muhammad Gelbana))
     # List of files in @includes directory that have parser method
@@ -528,12 +552,16 @@ data: {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     includePosixOperators: false
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
       includePosixOperators: false
 >>>>>>> 2e167f8ed ([CALCITE-3063] Parse and process PostgreSQL posix regular expressions)
+=======
+    includePosixOperators: false
+>>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
   }
 =======
 =======

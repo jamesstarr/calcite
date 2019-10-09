@@ -69,6 +69,9 @@ data: {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
       "A"
       "ABSENT"
       "ABSOLUTE"
@@ -123,7 +126,10 @@ data: {
       "DATABASE"
       "DATETIME_INTERVAL_CODE"
       "DATETIME_INTERVAL_PRECISION"
+<<<<<<< HEAD
       "DAYS"
+=======
+>>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
       "DECADE"
       "DEFAULTS"
       "DEFERRABLE"
@@ -164,8 +170,11 @@ data: {
       "GOTO"
       "GRANTED"
       "HIERARCHY"
+<<<<<<< HEAD
       "HOP"
       "HOURS"
+=======
+>>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
       "IGNORE"
       "IMMEDIATE"
       "IMMEDIATELY"
@@ -207,9 +216,13 @@ data: {
       "MICROSECOND"
       "MILLENNIUM"
       "MILLISECOND"
+<<<<<<< HEAD
       "MINUTES"
       "MINVALUE"
       "MONTHS"
+=======
+      "MINVALUE"
+>>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
       "MORE_"
       "MUMPS"
       "NAME"
@@ -276,7 +289,10 @@ data: {
       "SCOPE_CATALOGS"
       "SCOPE_NAME"
       "SCOPE_SCHEMA"
+<<<<<<< HEAD
       "SECONDS"
+=======
+>>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
       "SECTION"
       "SECURITY"
       "SELF"
@@ -361,7 +377,10 @@ data: {
       "TRIGGER_CATALOG"
       "TRIGGER_NAME"
       "TRIGGER_SCHEMA"
+<<<<<<< HEAD
       "TUMBLE"
+=======
+>>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
       "TYPE"
       "UNBOUNDED"
       "UNCOMMITTED"
@@ -383,7 +402,10 @@ data: {
       "WRAPPER"
       "WRITE"
       "XML"
+<<<<<<< HEAD
       "YEARS"
+=======
+>>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
       "ZONE"
     ]
 
@@ -395,6 +417,7 @@ data: {
     # List of non-reserved keywords to remove;
     # items in this list become reserved
     nonReservedKeywordsToRemove: [
+<<<<<<< HEAD
     ]
 
     # List of additional join types. Each is a method with no arguments.
@@ -727,6 +750,8 @@ data: {
 >>>>>>> fc317a98f (Revert "Revert "[CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved"")
 =======
 >>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
+=======
+>>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
     ]
 
     # List of additional join types. Each is a method with no arguments.
