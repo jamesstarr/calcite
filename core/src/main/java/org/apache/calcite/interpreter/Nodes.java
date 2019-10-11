@@ -96,13 +96,6 @@ public class Nodes {
     public void visit(Collect collect) {
       node = new CollectNode(this, collect);
     }
-<<<<<<< HEAD
-
-    public void visit(Uncollect uncollect) {
-      node = new UncollectNode(this, uncollect);
-    }
 =======
-=======
->>>>>>> ab093e069 ([CALCITE-3397] AssertionError for interpretering multiset value (Wang Yanlin))
   }
 }

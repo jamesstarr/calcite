@@ -68,6 +68,10 @@ public class NullInitializerExpressionFactory implements InitializerExpressionFa
 >>>>>>> 5ec7c4918 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
   }
 
+  public BiFunction<InitializerContext, RelNode, RelNode> postExpressionConversionHook() {
+    return null;
+  }
+
   public RexNode newAttributeInitializer(RelDataType type,
       SqlFunction constructor, int iAttribute, List<RexNode> constructorArgs,
       InitializerContext context) {
