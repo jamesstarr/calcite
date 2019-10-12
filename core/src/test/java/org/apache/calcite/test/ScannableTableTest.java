@@ -326,9 +326,9 @@ public class ScannableTableTest {
   }
 
   /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3405">[CALCITE-3405]
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-1031">[CALCITE-3405]
    * Prune columns for ProjectableFilterable when project is not simple mapping</a>. */
-  @Test void testPushNonSimpleMappingProject() throws Exception {
+  @Test public void testPushNonSimpleMappingProject() throws Exception {
     final StringBuilder buf = new StringBuilder();
     final Table table = new BeatlesProjectableFilterableTable(buf, true);
     final String explain = "PLAN="
@@ -337,7 +337,7 @@ public class ScannableTableTest {
         + "  EnumerableInterpreter\n"
         + "    BindableTableScan(table=[[s, beatles]], projects=[[2, 0]])";
     CalciteAssert.that()
-        .with(newSchema("s", Pair.of("beatles", table)))
+        .with(newSchema("s", "beatles", table))
         .query("select \"k\", \"i\", \"k\", \"i\"+\"i\" \"ii\", 3 from \"s\".\"beatles\"")
         .explainContains(explain)
         .returnsUnordered(
@@ -349,9 +349,9 @@ public class ScannableTableTest {
   }
 
   /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3405">[CALCITE-3405]
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-1031">[CALCITE-3405]
    * Prune columns for ProjectableFilterable when project is not simple mapping</a>. */
-  @Test void testPushSimpleMappingProject() throws Exception {
+  @Test public void testPushSimpleMappingProject() throws Exception {
     final StringBuilder buf = new StringBuilder();
     final Table table = new BeatlesProjectableFilterableTable(buf, true);
     // Note that no redundant Project on EnumerableInterpreter
@@ -359,7 +359,7 @@ public class ScannableTableTest {
         + "EnumerableInterpreter\n"
         + "  BindableTableScan(table=[[s, beatles]], projects=[[2, 0]])";
     CalciteAssert.that()
-        .with(newSchema("s", Pair.of("beatles", table)))
+        .with(newSchema("s", "beatles", table))
         .query("select \"k\", \"i\" from \"s\".\"beatles\"")
         .explainContains(explain)
         .returnsUnordered(
@@ -368,6 +368,7 @@ public class ScannableTableTest {
             "k=1942; i=4",
             "k=1943; i=6");
     assertThat(buf.toString(), is("returnCount=4, projects=[2, 0]"));
+<<<<<<< HEAD
   }
 
   /** Test case for
@@ -392,6 +393,8 @@ public class ScannableTableTest {
                     + "where \"s\".\"b1\".\"i\" = 10 and \"s\".\"b2\".\"i\" = 10 "
                     + "and \"s\".\"b1\".\"i\" = \"s\".\"b2\".\"i\"")
             .explainContains(explain);
+=======
+>>>>>>> a4e9ec0f2 ([CALCITE-3405] Prune columns for ProjectableFilterableTable when Project is not simple mapping (Jin Xing))
   }
 
   /** Test case for
