@@ -41,6 +41,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBeans;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.ImmutableIntList;
+import org.apache.calcite.util.Optionality;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
@@ -50,6 +51,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -59,6 +61,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Planner rule that expands distinct aggregates
@@ -124,44 +128,65 @@ public final class AggregateExpandDistinctAggregatesRule
     }
 
     // Find all of the agg expressions. We use a LinkedHashSet to ensure determinism.
-    int nonDistinctAggCallCount = 0;  // find all aggregate calls without distinct
-    int filterCount = 0;
-    int unsupportedNonDistinctAggCallCount = 0;
-    final Set<Pair<List<Integer>, Integer>> argLists = new LinkedHashSet<>();
-    for (AggregateCall aggCall : aggregate.getAggCallList()) {
-      if (aggCall.filterArg >= 0) {
-        ++filterCount;
-      }
-      if (!aggCall.isDistinct()) {
-        ++nonDistinctAggCallCount;
-        final SqlKind aggCallKind = aggCall.getAggregation().getKind();
-        // We only support COUNT/SUM/MIN/MAX for the "single" count distinct optimization
-        switch (aggCallKind) {
-        case COUNT:
-        case SUM:
-        case SUM0:
-        case MIN:
-        case MAX:
-          break;
-        default:
-          ++unsupportedNonDistinctAggCallCount;
-        }
-      } else {
-        argLists.add(Pair.of(aggCall.getArgList(), aggCall.filterArg));
-      }
-    }
+    final List<AggregateCall> aggCalls = aggregate.getAggCallList();
+    // Find all aggregate calls with distinct
+    final List<AggregateCall> distinctAggCalls = aggCalls.stream()
+        .filter(AggregateCall::isDistinct).collect(Collectors.toList());
+    // Find all aggregate calls without distinct
+    final List<AggregateCall> nonDistinctAggCalls = aggCalls.stream()
+        .filter(aggCall -> !aggCall.isDistinct()).collect(Collectors.toList());
+    final long filterCount = aggCalls.stream()
+        .filter(aggCall -> aggCall.filterArg >= 0).count();
+    final long unsupportedNonDistinctAggCallCount = nonDistinctAggCalls.stream()
+        .filter(aggCall -> {
+          final SqlKind aggCallKind = aggCall.getAggregation().getKind();
+          // We only support COUNT/SUM/MIN/MAX for the "single" count distinct optimization
+          switch (aggCallKind) {
+          case COUNT:
+          case SUM:
+          case SUM0:
+          case MIN:
+          case MAX:
+            return false;
+          default:
+            return true;
+          }
+        }).count();
+    // Argument list of distinct agg calls.
+    final Set<Pair<List<Integer>, Integer>> distinctCallArgLists = distinctAggCalls.stream()
+        .map(aggCall -> Pair.of(aggCall.getArgList(), aggCall.filterArg))
+        .collect(Collectors.toCollection(LinkedHashSet::new));
 
-    final int distinctAggCallCount =
-        aggregate.getAggCallList().size() - nonDistinctAggCallCount;
-    Preconditions.checkState(argLists.size() > 0, "containsDistinctCall lied");
+    Preconditions.checkState(distinctCallArgLists.size() > 0,
+        "containsDistinctCall lied");
 
     // If all of the agg expressions are distinct and have the same
     // arguments then we can use a more efficient form.
-    if (nonDistinctAggCallCount == 0
-        && argLists.size() == 1
+
+    // MAX, MIN, BIT_AND, BIT_OR always ignore distinct attribute,
+    // when they are mixed in with other distinct agg calls,
+    // we can still use this promotion.
+
+    // Treat the agg expression with Optionality.IGNORED as distinct and
+    // re-statistic the non-distinct agg call count and the distinct agg
+    // call arguments.
+    final List<AggregateCall> nonDistinctAggCallsOfIgnoredOptionality =
+        nonDistinctAggCalls.stream().filter(aggCall ->
+            aggCall.getAggregation().getDistinctOptionality() == Optionality.IGNORED)
+            .collect(Collectors.toList());
+    // Different with distinctCallArgLists, this list also contains args that come from
+    // agg call which can ignore the distinct constraint.
+    final Set<Pair<List<Integer>, Integer>> distinctCallArgLists2 =
+        Stream.of(distinctAggCalls, nonDistinctAggCallsOfIgnoredOptionality)
+            .flatMap(Collection::stream)
+            .map(aggCall -> Pair.of(aggCall.getArgList(), aggCall.filterArg))
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+
+    if ((nonDistinctAggCalls.size() - nonDistinctAggCallsOfIgnoredOptionality.size()) == 0
+        && distinctCallArgLists2.size() == 1
         && aggregate.getGroupType() == Group.SIMPLE) {
       final Pair<List<Integer>, Integer> pair =
-          Iterables.getOnlyElement(argLists);
+          Iterables.getOnlyElement(distinctCallArgLists2);
       final RelBuilder relBuilder = call.builder();
       convertMonopole(relBuilder, aggregate, pair.left, pair.right);
       call.transformTo(relBuilder.build());
@@ -175,12 +200,12 @@ public final class AggregateExpandDistinctAggregatesRule
 
     // If only one distinct aggregate and one or more non-distinct aggregates,
     // we can generate multi-phase aggregates
-    if (distinctAggCallCount == 1 // one distinct aggregate
+    if (distinctAggCalls.size() == 1 // one distinct aggregate
         && filterCount == 0 // no filter
         && unsupportedNonDistinctAggCallCount == 0 // sum/min/max/count in non-distinct aggregate
-        && nonDistinctAggCallCount > 0) { // one or more non-distinct aggregates
+        && nonDistinctAggCalls.size() > 0) { // one or more non-distinct aggregates
       final RelBuilder relBuilder = call.builder();
-      convertSingletonDistinct(relBuilder, aggregate, argLists);
+      convertSingletonDistinct(relBuilder, aggregate, distinctCallArgLists);
       call.transformTo(relBuilder.build());
       return;
     }
@@ -228,7 +253,7 @@ public final class AggregateExpandDistinctAggregatesRule
 
     // For each set of operands, find and rewrite all calls which have that
     // set of operands.
-    for (Pair<List<Integer>, Integer> argList : argLists) {
+    for (Pair<List<Integer>, Integer> argList : distinctCallArgLists) {
       doRewrite(relBuilder, aggregate, n++, argList.left, argList.right, refs);
     }
 
@@ -734,7 +759,8 @@ public final class AggregateExpandDistinctAggregatesRule
       // arguments. If we're rewriting aggregates whose args are {sal}, we will
       // rewrite COUNT(DISTINCT sal) and SUM(DISTINCT sal) but ignore
       // COUNT(DISTINCT gender) or SUM(sal).
-      if (!aggCall.isDistinct()) {
+      if (!aggCall.isDistinct()
+          && aggCall.getAggregation().getDistinctOptionality() != Optionality.IGNORED) {
         continue;
       }
       if (!aggCall.getArgList().equals(argList)) {
@@ -821,9 +847,7 @@ public final class AggregateExpandDistinctAggregatesRule
         RexNode condition =
             rexBuilder.makeCall(SqlStdOperatorTable.CASE, filterRef,
                 argRef.left,
-                rexBuilder.ensureType(argRef.left.getType(),
-                    rexBuilder.makeNullLiteral(argRef.left.getType()),
-                    true));
+                rexBuilder.makeNullLiteral(argRef.left.getType()));
         sourceOf.put(arg, projects.size());
         projects.add(Pair.of(condition, "i$" + argRef.right));
         continue;
