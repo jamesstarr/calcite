@@ -876,9 +876,7 @@ public final class AggregateExpandDistinctAggregatesRule
         RexNode condition =
             rexBuilder.makeCall(SqlStdOperatorTable.CASE, filterRef,
                 argRef.left,
-                rexBuilder.ensureType(argRef.left.getType(),
-                    rexBuilder.makeNullLiteral(argRef.left.getType()),
-                    true));
+                rexBuilder.makeNullLiteral(argRef.left.getType()));
         sourceOf.put(arg, projects.size());
         projects.add(Pair.of(condition, "i$" + argRef.right));
         continue;
