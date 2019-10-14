@@ -44,12 +44,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import java.util.function.UnaryOperator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * RelOptTestBase is an abstract base for tests which exercise a planner and/or
@@ -65,12 +65,8 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
   protected Tester createDynamicTester() {
     return getTesterWithDynamicTable();
   }
-  /**
-   * Checks the plan for a SQL statement before/after executing a given rule.
-   *
-   * @param rule Planner rule
-   * @param sql  SQL query
-   */
+
+  @Deprecated // to be removed before 1.23
   protected void checkPlanning(
       RelOptRule rule,
       String sql) {
@@ -82,69 +78,12 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
         sql);
   }
 
-  /**
-   * Checks the plan for a SQL statement before/after executing a given rule.
-   *
-   * @param rule Planner rule
-   * @param sql  SQL query
-   */
-  protected void checkPlanningDynamic(
-      RelOptRule rule,
-      String sql) {
-    HepProgramBuilder programBuilder = HepProgram.builder();
-    programBuilder.addRuleInstance(rule);
-
-    checkPlanning(
-        createDynamicTester(),
-        null,
-        new HepPlanner(programBuilder.build()),
-        sql);
-  }
-  /**
-   * Checks the plan for a SQL statement before/after executing a given rule.
-   *
-   * @param sql  SQL query
-   */
-  protected void checkPlanningDynamic(
-      String sql) {
-    checkPlanning(
-        createDynamicTester(),
-        null,
-        new HepPlanner(HepProgram.builder().build()),
-        sql);
-  }
-
-  /**
-   * Checks the plan for a SQL statement before/after executing a given
-   * program.
-   *
-   * @param program Planner program
-   * @param sql     SQL query
-   */
+  @Deprecated // to be removed before 1.23
   protected void checkPlanning(HepProgram program, String sql) {
     checkPlanning(new HepPlanner(program), sql);
   }
 
-  /**
-   * Checks the plan for a SQL statement before/after executing a given
-   * program, but with specified implicit type coercion flag.
-   *
-   * @param program      Planner program
-   * @param sql          SQL query
-   * @param typeCoercion Whether to open up the implicit type coercion
-   */
-  protected void checkPlanning(HepProgram program, String sql, boolean typeCoercion) {
-    final Tester tester = typeCoercion ? this.tester : this.strictTester;
-    checkPlanning(tester, null, new HepPlanner(program), sql);
-  }
-
-  /**
-   * Checks the plan for a SQL statement before/after executing a given
-   * planner.
-   *
-   * @param planner Planner
-   * @param sql     SQL query
-   */
+  @Deprecated // to be removed before 1.23
   protected void checkPlanning(RelOptPlanner planner, String sql) {
     checkPlanning(tester, null, planner, sql);
   }
@@ -179,10 +118,6 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
 
     assertNotNull(relInitial);
 
-<<<<<<< HEAD
-=======
-    List<RelMetadataProvider> list = Lists.newArrayList();
-=======
     List<RelMetadataProvider> list = new ArrayList<>();
     list.add(DefaultRelMetadataProvider.INSTANCE);
     RelMetadataProvider plannerChain =
@@ -230,7 +165,7 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
 
   /** Sets the SQL statement for a test. */
   Sql sql(String sql) {
-    return new Sql(sql, null, null,
+    return new Sql(tester, sql, null, null,
         ImmutableMap.of(), ImmutableList.of());
   }
 
@@ -243,7 +178,7 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
     private final ImmutableMap<Hook, Consumer> hooks;
     private ImmutableList<Function<Tester, Tester>> transforms;
 
-    Sql(String sql, HepProgram preProgram, HepPlanner hepPlanner,
+    Sql(Tester tester, String sql, HepProgram preProgram, HepPlanner hepPlanner,
         ImmutableMap<Hook, Consumer> hooks,
         ImmutableList<Function<Tester, Tester>> transforms) {
       this.tester = tester;
@@ -260,6 +195,7 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
 
     public Sql withPre(HepProgram preProgram) {
       return new Sql(tester, sql, preProgram, hepPlanner, hooks, transforms);
+<<<<<<< HEAD
     }
 
     public Sql withPreRule(RelOptRule... rules) {
@@ -268,6 +204,7 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
         builder.addRuleInstance(rule);
       }
       return withPre(builder.build());
+=======
     }
 
     public Sql with(HepPlanner hepPlanner) {
@@ -298,7 +235,7 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
      * hook (by calling {@link Hook#addThread(Consumer)})
      * just before running the query, and remove the hook afterwards. */
     public <T> Sql withHook(Hook hook, Consumer<T> handler) {
-      return new Sql(sql, preProgram, hepPlanner,
+      return new Sql(tester, sql, preProgram, hepPlanner,
           FlatLists.append(hooks, hook, handler), transforms);
     }
 
