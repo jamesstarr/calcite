@@ -26,7 +26,7 @@ import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.SetOp;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableScan;
-import org.apache.calcite.rel.core.Uncollect;
+>>>>>>> aa6a1fa65 ([CALCITE-3407] Implement MINUS and INTERSECT in interpreter (Wang Yanlin))
 import org.apache.calcite.rel.core.Values;
 import org.apache.calcite.rel.core.Window;
 import org.apache.calcite.rex.RexNode;
@@ -91,7 +91,6 @@ public class Nodes {
     public void visit(Match match) {
       node = new MatchNode(this, match);
     }
->>>>>>> ab093e069 ([CALCITE-3397] AssertionError for interpretering multiset value (Wang Yanlin))
 
     public void visit(Collect collect) {
       node = new CollectNode(this, collect);

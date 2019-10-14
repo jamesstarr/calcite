@@ -544,6 +544,13 @@ public class Interpreter extends AbstractEnumerable<Object[]>
 =======
 >>>>>>> 42ca94873 (Apply small refactorings to Calcite codebase (Java 5, Java 7, Java 8))
         }
+      } else {
+        for (Edge edge : edges2) {
+          if (nodeInfo.sinks.containsKey(edge)) {
+            continue;
+          }
+          nodeInfo.sinks.put(edge, new ListSink(new ArrayDeque<>()));
+        }
       }
       if (edges.size() == 1) {
         return Iterables.getOnlyElement(nodeInfo.sinks.values());

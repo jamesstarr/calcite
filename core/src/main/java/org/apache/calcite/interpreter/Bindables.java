@@ -588,6 +588,7 @@ public class Bindables {
 
     public Node implement(InterpreterImplementor implementor) {
       return new SetOpNode(implementor.compiler, this);
+<<<<<<< HEAD
     }
   }
 
@@ -638,6 +639,8 @@ public class Bindables {
 
     public Node implement(InterpreterImplementor implementor) {
       return new SetOpNode(implementor.compiler, this);
+=======
+>>>>>>> aa6a1fa65 ([CALCITE-3407] Implement MINUS and INTERSECT in interpreter (Wang Yanlin))
     }
   }
 
