@@ -222,7 +222,7 @@ public class PhysTypeImpl implements PhysType {
     final List<Expression> expressions = new ArrayList<>();
     for (int field : argList) {
       expressions.add(
-          EnumUtils.convert(
+          RexToLixTranslator.convert(
               fieldReference(v1, field),
               fieldClass(field)));
     }
@@ -320,8 +320,8 @@ public class PhysTypeImpl implements PhysType {
       Expression arg1 = fieldReference(parameterV1, index);
       switch (Primitive.flavor(fieldClass(index))) {
       case OBJECT:
-        arg0 = EnumUtils.convert(arg0, Comparable.class);
-        arg1 = EnumUtils.convert(arg1, Comparable.class);
+        arg0 = RexToLixTranslator.convert(arg0, Comparable.class);
+        arg1 = RexToLixTranslator.convert(arg1, Comparable.class);
       }
       final boolean nullsFirst =
           collation.nullDirection
@@ -423,8 +423,8 @@ public class PhysTypeImpl implements PhysType {
       Expression arg1 = fieldReference(parameterV1, index);
       switch (Primitive.flavor(fieldClass(index))) {
       case OBJECT:
-        arg0 = EnumUtils.convert(arg0, Comparable.class);
-        arg1 = EnumUtils.convert(arg1, Comparable.class);
+        arg0 = RexToLixTranslator.convert(arg0, Comparable.class);
+        arg1 = RexToLixTranslator.convert(arg1, Comparable.class);
       }
       final boolean nullsFirst =
           fieldCollation.nullDirection
@@ -584,7 +584,7 @@ public class PhysTypeImpl implements PhysType {
       // }
       Class returnType = fieldClasses.get(field0);
       Expression fieldReference =
-          EnumUtils.convert(
+          RexToLixTranslator.convert(
               fieldReference(v1, field0),
               returnType);
       return Expressions.lambda(

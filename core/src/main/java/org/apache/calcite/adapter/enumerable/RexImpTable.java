@@ -1124,7 +1124,7 @@ public class RexImpTable {
       final Expression ifTrue;
       switch (nullAs) {
       case NULL:
-        ifTrue = Types.castIfNecessary(box.getType(), NULL_EXPR);
+        ifTrue = RexToLixTranslator.convert(NULL_EXPR, box.getType());
         break;
       case IS_NULL:
         ifTrue = TRUE_EXPR;
@@ -1407,7 +1407,7 @@ public class RexImpTable {
         next = Expressions.call(acc, "add", add.arguments().get(0));
       } else {
         next = Expressions.add(acc,
-            EnumUtils.convert(add.arguments().get(0), acc.type));
+            RexToLixTranslator.convert(add.arguments().get(0), acc.type));
       }
       accAdvance(add, acc, next);
     }
@@ -2224,13 +2224,6 @@ public class RexImpTable {
         case YEAR:
         case QUARTER:
         case MONTH:
-<<<<<<< HEAD
-        case WEEK:
-        case DAY:
-          final Expression operand1 =
-              preFloor ? call(operand, type, TimeUnit.DAY) : operand;
-          return Expressions.call(floorMethod, tur, operand1);
-=======
           return Expressions.call(floorMethod, tur,
               call(operand, type, TimeUnit.DAY));
         case NANOSECOND:
@@ -2246,8 +2239,12 @@ public class RexImpTable {
     private Expression call(Expression operand, Type type,
         TimeUnit timeUnit) {
       return Expressions.call(SqlFunctions.class, methodName,
+<<<<<<< HEAD
           EnumUtils.convert(operand, type),
           EnumUtils.convert(
+=======
+          RexToLixTranslator.convert(operand, type),
+          RexToLixTranslator.convert(
               Expressions.constant(timeUnit.multiplier), type));
     }
   }
@@ -2275,89 +2272,10 @@ public class RexImpTable {
 
       final Type returnType =
           translator.typeFactory.getJavaClass(call.getType());
-      return EnumUtils.convert(expression, returnType);
+      return RexToLixTranslator.convert(expression, returnType);
     }
   }
 
-<<<<<<< HEAD
-  /**
-   * Implementor for JSON_VALUE function, convert to solid format
-   * "JSON_VALUE(json_doc, path, empty_behavior, empty_default, error_behavior, error default)"
-   * in order to simplify the runtime implementation.
-   *
-   * <p>We should avoid this when we support
-   * variable arguments function.
-   */
-  private static class JsonValueImplementor extends MethodImplementor {
-    JsonValueImplementor(Method method) {
-      super(method);
-    }
-
-    public Expression implement(
-        RexToLixTranslator translator,
-        RexCall call,
-        List<Expression> translatedOperands) {
-      final Expression expression;
-      final List<Expression> newOperands = new ArrayList<>();
-      newOperands.add(translatedOperands.get(0));
-      newOperands.add(translatedOperands.get(1));
-      List<Expression> leftExprs = Util.skip(translatedOperands, 2);
-      // Default value for JSON_VALUE behaviors.
-      Expression emptyBehavior = Expressions.constant(SqlJsonValueEmptyOrErrorBehavior.NULL);
-      Expression defaultValueOnEmpty = Expressions.constant(null);
-      Expression errorBehavior = Expressions.constant(SqlJsonValueEmptyOrErrorBehavior.NULL);
-      Expression defaultValueOnError = Expressions.constant(null);
-      // Patched up with user defines.
-      if (leftExprs.size() > 0) {
-        for (int i = 0; i < leftExprs.size(); i++) {
-          Expression expr = leftExprs.get(i);
-          if (expr instanceof ConstantExpression) {
-            final ConstantExpression constExpr = (ConstantExpression) expr;
-            final Object exprVal = constExpr.value;
-            int defaultSymbolIdx = i - 2;
-            if (exprVal == SqlJsonEmptyOrError.EMPTY) {
-              if (defaultSymbolIdx >= 0
-                  && unwrapConstExprVal(leftExprs.get(defaultSymbolIdx))
-                    == SqlJsonValueEmptyOrErrorBehavior.DEFAULT) {
-                defaultValueOnEmpty = leftExprs.get(i - 1);
-                emptyBehavior = leftExprs.get(defaultSymbolIdx);
-              } else {
-                emptyBehavior = leftExprs.get(i - 1);
-              }
-            } else if (exprVal == SqlJsonEmptyOrError.ERROR) {
-              if (defaultSymbolIdx >= 0
-                  && unwrapConstExprVal(leftExprs.get(defaultSymbolIdx))
-                    == SqlJsonValueEmptyOrErrorBehavior.DEFAULT) {
-                defaultValueOnError = leftExprs.get(i - 1);
-                errorBehavior = leftExprs.get(defaultSymbolIdx);
-              } else {
-                errorBehavior = leftExprs.get(i - 1);
-              }
-            }
-          }
-        }
-      }
-      newOperands.add(emptyBehavior);
-      newOperands.add(defaultValueOnEmpty);
-      newOperands.add(errorBehavior);
-      newOperands.add(defaultValueOnError);
-      Class clazz = method.getDeclaringClass();
-      expression = EnumUtils.call(clazz, method.getName(), newOperands);
-
-      final Type returnType =
-          translator.typeFactory.getJavaClass(call.getType());
-      return EnumUtils.convert(expression, returnType);
-    }
-  }
-
-  private static Object unwrapConstExprVal(Expression expression) {
-    if (expression instanceof ConstantExpression) {
-      return ((ConstantExpression) expression).value;
-    }
-    return null;
-  }
-
-=======
   /** Implementor for SQL functions that generates calls to a given method name.
    *
    * <p>Use this, as opposed to {@link MethodImplementor}, if the SQL function
@@ -2471,7 +2389,10 @@ public class RexImpTable {
 
       final Type returnType =
           translator.typeFactory.getJavaClass(call.getType());
+<<<<<<< HEAD
       return EnumUtils.convert(
+=======
+      return RexToLixTranslator.convert(
           Expressions.makeBinary(expressionType, expressions.get(0),
               expressions.get(1)),
           returnType);
@@ -3106,8 +3027,9 @@ public class RexImpTable {
     @Override public Expression implement(RexToLixTranslator translator, RexCall call,
         ParameterExpression row, ParameterExpression rows,
         ParameterExpression symbols, ParameterExpression i) {
-      return Types.castIfNecessary(String.class,
-          Expressions.call(symbols, BuiltInMethod.LIST_GET.method, i));
+      return RexToLixTranslator.convert(
+          Expressions.call(symbols, BuiltInMethod.LIST_GET.method, i),
+          String.class);
     }
   }
 

@@ -17,7 +17,7 @@
 package org.apache.calcite.schema;
 
 import org.apache.calcite.DataContext;
-import org.apache.calcite.adapter.enumerable.EnumUtils;
+import org.apache.calcite.adapter.enumerable.RexToLixTranslator;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
@@ -176,7 +176,7 @@ public final class Schemas {
           Expressions.constant(elementType),
           Expressions.constant(tableName));
     }
-    return EnumUtils.convert(expression, clazz);
+    return RexToLixTranslator.convert(expression, clazz);
   }
 
   public static DataContext createDataContext(
