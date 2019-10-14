@@ -267,6 +267,11 @@ class QueryableRelBuilder<T> implements QueryableFactory<T> {
 
   public Queryable<T> except(
       Queryable<T> source, Enumerable<T> enumerable) {
+    return except(source, enumerable, false);
+  }
+
+  public Queryable<T> except(
+      Queryable<T> source, Enumerable<T> enumerable, boolean all) {
     throw new UnsupportedOperationException();
   }
 
@@ -274,6 +279,14 @@ class QueryableRelBuilder<T> implements QueryableFactory<T> {
       Queryable<T> source,
       Enumerable<T> enumerable,
       EqualityComparer<T> tEqualityComparer) {
+    return except(source, enumerable, tEqualityComparer, false);
+  }
+
+  public Queryable<T> except(
+      Queryable<T> source,
+      Enumerable<T> enumerable,
+      EqualityComparer<T> tEqualityComparer,
+      boolean all) {
     throw new UnsupportedOperationException();
   }
 
@@ -385,6 +398,11 @@ class QueryableRelBuilder<T> implements QueryableFactory<T> {
 
   public Queryable<T> intersect(
       Queryable<T> source, Enumerable<T> enumerable) {
+    return intersect(source, enumerable, false);
+  }
+
+  public Queryable<T> intersect(
+      Queryable<T> source, Enumerable<T> enumerable, boolean all) {
     throw new UnsupportedOperationException();
   }
 
@@ -392,6 +410,13 @@ class QueryableRelBuilder<T> implements QueryableFactory<T> {
       Queryable<T> source,
       Enumerable<T> enumerable,
       EqualityComparer<T> tEqualityComparer) {
+    return intersect(source, enumerable, tEqualityComparer, false);
+  }
+
+  public Queryable<T> intersect(
+      Queryable<T> source,
+      Enumerable<T> enumerable,
+      EqualityComparer<T> tEqualityComparer, boolean all) {
     throw new UnsupportedOperationException();
   }
 

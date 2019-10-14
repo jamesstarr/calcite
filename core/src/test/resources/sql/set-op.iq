@@ -19,19 +19,19 @@
 !set outputformat mysql
 
 # Intersect all
-#select * from
-#(select x, y from (values (1, 'a'), (1, 'a'), (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y))
-#intersect all
-#(select x, y from (values (1, 'a'), (1, 'a'), (2, 'c'), (4, 'x')) as t2(x, y));
-#+---+---+
-#| X | Y |
-#+---+---+
-#| 1 | a |
-#| 1 | a |
-#+---+---+
-#(2 rows)
+select * from
+(select x, y from (values (1, 'a'), (1, 'a'), (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y))
+intersect all
+(select x, y from (values (1, 'a'), (1, 'a'), (2, 'c'), (4, 'x')) as t2(x, y));
++---+---+
+| X | Y |
++---+---+
+| 1 | a |
+| 1 | a |
++---+---+
+(2 rows)
 
-#!ok
+!ok
 
 # Intersect
 select * from
@@ -48,22 +48,22 @@ intersect
 !ok
 
 # Intersect all with null value rows
-#select * from
-#(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
-#  (cast(NULL as int), cast(NULL as varchar(1))), (cast(NULL as int), cast(NULL as varchar(1)))) as t(x, y))
-#intersect all
-#(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
-#  (cast(NULL as int), cast(NULL as varchar(1)))) as t2(x, y));
+select * from
+(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
+  (cast(NULL as int), cast(NULL as varchar(1))), (cast(NULL as int), cast(NULL as varchar(1)))) as t(x, y))
+intersect all
+(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
+  (cast(NULL as int), cast(NULL as varchar(1)))) as t2(x, y));
 
-#+---+---+
-#| X | Y |
-#+---+---+
-#|   |   |
-#|   |   |
-#+---+---+
-#(2 rows)
++---+---+
+| X | Y |
++---+---+
+|   |   |
+|   |   |
++---+---+
+(2 rows)
 
-#!ok
+!ok
 
 # Intersect with null value rows
 select * from
@@ -157,21 +157,21 @@ union
 !ok
 
 # Except all
-#select * from
-#(select x, y from (values (1, 'a'), (1, 'a'), (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y))
-#except all
-#(select x, y from (values (1, 'a'), (2, 'c'), (4, 'x')) as t2(x, y));
-#+---+---+
-#| X | Y |
-#+---+---+
-#| 1 | a |
-#| 1 | a |
-#| 2 | b |
-#| 3 | c |
-#+---+---+
-#(4 rows)
+select * from
+(select x, y from (values (1, 'a'), (1, 'a'), (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y))
+except all
+(select x, y from (values (1, 'a'), (2, 'c'), (4, 'x')) as t2(x, y));
++---+---+
+| X | Y |
++---+---+
+| 1 | a |
+| 1 | a |
+| 2 | b |
+| 3 | c |
++---+---+
+(4 rows)
 
-#!ok
+!ok
 
 # Except
 select * from
@@ -189,21 +189,21 @@ except
 !ok
 
 # Except all with null value rows
-#select * from
-#(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
-#  (cast(NULL as int), cast(NULL as varchar(1))), (cast(NULL as int), cast(NULL as varchar(1)))) as t(x, y))
-#except all
-#(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
-#  (cast(NULL as int), cast(NULL as varchar(1)))) as t2(x, y));
+select * from
+(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
+  (cast(NULL as int), cast(NULL as varchar(1))), (cast(NULL as int), cast(NULL as varchar(1)))) as t(x, y))
+except all
+(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
+  (cast(NULL as int), cast(NULL as varchar(1)))) as t2(x, y));
 
-#+---+---+
-#| X | Y |
-#+---+---+
-#|   |   |
-#+---+---+
-#(1 row)
++---+---+
+| X | Y |
++---+---+
+|   |   |
++---+---+
+(1 row)
 
-#!ok
+!ok
 
 # Except with null value rows
 select * from
