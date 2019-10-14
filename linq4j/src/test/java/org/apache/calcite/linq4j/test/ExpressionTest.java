@@ -1260,7 +1260,7 @@ public class ExpressionTest {
     constant.accept(new Shuttle());
   }
 
-  @Test void testBigDecimalConstantExpression() {
+  @Test public void testBigDecimalConstantExpression() {
     assertEquals("java.math.BigDecimal.valueOf(104L)",
         Expressions.toString(Expressions.constant("104", BigDecimal.class)));
     assertEquals("java.math.BigDecimal.valueOf(1L, -3)",
@@ -1275,7 +1275,7 @@ public class ExpressionTest {
         Expressions.toString(Expressions.constant(12.34, BigDecimal.class)));
   }
 
-  @Test void testClassDecl() {
+  @Test public void testClassDecl() {
     final NewExpression newExpression =
         Expressions.new_(
             Object.class,

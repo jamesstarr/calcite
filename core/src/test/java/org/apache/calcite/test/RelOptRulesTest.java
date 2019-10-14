@@ -798,159 +798,6 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).withPre(preProgram)
         .with(program)
         .check();
-<<<<<<< HEAD
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-1338">[CALCITE-1338]
-   * JoinProjectTransposeRule should not pull a literal above the
-   * null-generating side of a join</a>. */
-  @Test void testJoinProjectTranspose2() {
-    final String sql = "select *\n"
-        + "from dept a\n"
-        + "left join (select name, 1 from dept) as b\n"
-        + "on a.name = b.name";
-    sql(sql)
-        .withRule(CoreRules.JOIN_PROJECT_RIGHT_TRANSPOSE_INCLUDE_OUTER)
-        .checkUnchanged();
-  }
-
-  /** As {@link #testJoinProjectTranspose2()};
-   * should not transpose since the left project of right join has literal. */
-  @Test void testJoinProjectTranspose3() {
-    final String sql = "select *\n"
-        + "from (select name, 1 from dept) as a\n"
-        + "right join dept b\n"
-        + "on a.name = b.name";
-    sql(sql)
-        .withRule(CoreRules.JOIN_PROJECT_LEFT_TRANSPOSE_INCLUDE_OUTER)
-        .checkUnchanged();
-  }
-
-  /** As {@link #testJoinProjectTranspose2()};
-   * should not transpose since the right project of left join has not-strong
-   * expression {@code y is not null}. */
-  @Test void testJoinProjectTranspose4() {
-    final String sql = "select *\n"
-        + "from dept a\n"
-        + "left join (select x name, y is not null from\n"
-        + "(values (2, cast(null as integer)), (2, 1)) as t(x, y)) b\n"
-        + "on a.name = b.name";
-    sql(sql)
-        .withRule(CoreRules.JOIN_PROJECT_RIGHT_TRANSPOSE_INCLUDE_OUTER)
-        .checkUnchanged();
-  }
-
-  /** As {@link #testJoinProjectTranspose2()};
-   * should not transpose since the right project of left join has not-strong
-   * expression {@code 1 + 1}. */
-  @Test void testJoinProjectTranspose5() {
-    final String sql = "select *\n"
-        + "from dept a\n"
-        + "left join (select name, 1 + 1 from dept) as b\n"
-        + "on a.name = b.name";
-    sql(sql)
-        .withRule(CoreRules.JOIN_PROJECT_RIGHT_TRANSPOSE_INCLUDE_OUTER)
-        .checkUnchanged();
-  }
-
-  /** As {@link #testJoinProjectTranspose2()};
-   * should not transpose since both the left project and right project have
-   * literal. */
-  @Test void testJoinProjectTranspose6() {
-    final String sql = "select *\n"
-        + "from (select name, 1 from dept) a\n"
-        + "full join (select name, 1 from dept) as b\n"
-        + "on a.name = b.name";
-    sql(sql)
-        .withRule(CoreRules.JOIN_PROJECT_RIGHT_TRANSPOSE_INCLUDE_OUTER)
-        .checkUnchanged();
-  }
-
-  /** As {@link #testJoinProjectTranspose2()};
-   * Should transpose since all expressions in the right project of left join
-   * are strong. */
-  @Test void testJoinProjectTranspose7() {
-    final String sql = "select *\n"
-        + "from dept a\n"
-        + "left join (select name from dept) as b\n"
-        + " on a.name = b.name";
-    sql(sql)
-        .withRule(CoreRules.JOIN_PROJECT_RIGHT_TRANSPOSE_INCLUDE_OUTER)
-        .check();
-  }
-
-  /** As {@link #testJoinProjectTranspose2()};
-   * should transpose since all expressions including
-   * {@code deptno > 10 and cast(null as boolean)} in the right project of left
-   * join are strong. */
-  @Test void testJoinProjectTranspose8() {
-    final String sql = "select *\n"
-        + "from dept a\n"
-        + "left join (\n"
-        + "  select name, deptno > 10 and cast(null as boolean)\n"
-        + "  from dept) as b\n"
-        + "on a.name = b.name";
-    sql(sql)
-        .withRule(CoreRules.JOIN_PROJECT_RIGHT_TRANSPOSE_INCLUDE_OUTER)
-        .check();
-  }
-
-  @Test void testJoinProjectTransposeWindow() {
-    final String sql = "select *\n"
-        + "from dept a\n"
-        + "join (select rank() over (order by name) as r, 1 + 1 from dept) as b\n"
-        + "on a.name = b.r";
-    sql(sql)
-        .withRule(CoreRules.JOIN_PROJECT_BOTH_TRANSPOSE)
-        .check();
-  }
-
-  /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3353">[CALCITE-3353]
-   * ProjectJoinTransposeRule caused AssertionError when creating a new Join</a>.
-   */
-  @Test void testProjectJoinTransposeWithMergeJoin() {
-    ProjectJoinTransposeRule testRule = new ProjectJoinTransposeRule(
-             Project.class, Join.class, expr -> !(expr instanceof RexOver),
-             RelFactories.LOGICAL_BUILDER);
-
-    ImmutableList<RelOptRule> commonRules = ImmutableList.of(
-            EnumerableRules.ENUMERABLE_PROJECT_RULE,
-            EnumerableRules.ENUMERABLE_MERGE_JOIN_RULE,
-            EnumerableRules.ENUMERABLE_SORT_RULE,
-            EnumerableRules.ENUMERABLE_VALUES_RULE);
-    final RuleSet rules = RuleSets.ofList(ImmutableList.<RelOptRule>builder()
-            .addAll(commonRules)
-            .add(CoreRules.PROJECT_JOIN_TRANSPOSE)
-            .build());
-    final RuleSet testRules = RuleSets.ofList(ImmutableList.<RelOptRule>builder()
-            .addAll(commonRules)
-            .add(testRule).build());
-
-    FrameworkConfig config = Frameworks.newConfigBuilder()
-            .parserConfig(SqlParser.Config.DEFAULT)
-            .traitDefs(ConventionTraitDef.INSTANCE, RelCollationTraitDef.INSTANCE)
-            .build();
-
-    RelBuilder builder = RelBuilder.create(config);
-    RelNode logicalPlan = builder
-            .values(new String[]{"id", "name"}, "1", "anna", "2", "bob", "3", "tom")
-            .values(new String[]{"name", "age"}, "anna", "14", "bob", "17", "tom", "22")
-            .join(JoinRelType.INNER, "name")
-            .project(builder.field(3))
-            .build();
-
-    RelTraitSet desiredTraits = logicalPlan.getTraitSet()
-            .replace(EnumerableConvention.INSTANCE);
-    RelOptPlanner planner = logicalPlan.getCluster().getPlanner();
-    RelNode enumerablePlan1 = Programs.of(rules).run(planner, logicalPlan,
-            desiredTraits, ImmutableList.of(), ImmutableList.of());
-    RelNode enumerablePlan2 = Programs.of(testRules).run(planner, logicalPlan,
-            desiredTraits, ImmutableList.of(), ImmutableList.of());
-    assertEquals(RelOptUtil.toString(enumerablePlan1), RelOptUtil.toString(enumerablePlan2));
-=======
   }
 
   /** Test case for
@@ -2067,7 +1914,6 @@ class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.PROJECT_TO_CALC)
         .build();
 
->>>>>>> 2a2064ec9 ([CALCITE-3410] Simplify RelOptRulesTest and HepPlannerTest by making test methods fluent)
     final String sql = "select d.name as dname,e.ename as ename\n"
         + " from emp e inner join dept d\n"
         + " on e.deptno=d.deptno\n"
@@ -2929,9 +2775,6 @@ class RelOptRulesTest extends RelOptTestBase {
   @Test public void testReduceValuesUnderProjectFilter() throws Exception {
     // Plan should be same as for
     // select * from (values (11, 1, 10), (23, 3, 20)) as t(x, b, a)");
-<<<<<<< HEAD
-    final String sql = "select a + b as x, b, a\n"
-=======
     final String sql = "select a + b as x, b, a \n"
         + "from (values (10, 1), (30, 7), (20, 3)) as t(a, b)\n"
         + "where a - b < 21";
@@ -3026,7 +2869,6 @@ class RelOptRulesTest extends RelOptTestBase {
   }
 
   @Test public void testReduceConstantsIsNotNull() throws Exception {
->>>>>>> 2a2064ec9 ([CALCITE-3410] Simplify RelOptRulesTest and HepPlannerTest by making test methods fluent)
     final String sql = "select empno from emp\n"
         + "where empno=10 and empno is not null";
     sql(sql).withRule(CoreRules.FILTER_REDUCE_EXPRESSIONS).check();
@@ -3039,17 +2881,6 @@ class RelOptRulesTest extends RelOptTestBase {
   }
 
   @Test public void testReduceConstantsNegatedInverted() throws Exception {
-<<<<<<< HEAD
-    HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
-        .build();
-
-    HepPlanner hepPlanner = new HepPlanner(program);
-    hepPlanner.setRoot(root);
-    final RelNode relAfter = hepPlanner.findBestExp();
-    final String planAfter = NL + RelOptUtil.toString(relAfter);
-    diffRepos.assertEquals("planAfter", "${planAfter}", planAfter);
-=======
     final String sql = "select empno from emp where empno>10 and empno<=10";
     sql(sql).withRule(CoreRules.FILTER_REDUCE_EXPRESSIONS).check();
   }
@@ -3814,7 +3645,6 @@ class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_PROJECT_MERGE)
         .addRuleInstance(CoreRules.AGGREGATE_UNION_AGGREGATE)
         .build();
->>>>>>> 2a2064ec9 ([CALCITE-3410] Simplify RelOptRulesTest and HepPlannerTest by making test methods fluent)
     sql(sql).withTester(t -> tester)
         .withPre(preProgram)
         .withRule(CoreRules.SORT_JOIN_TRANSPOSE)
