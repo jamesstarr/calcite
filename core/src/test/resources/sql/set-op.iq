@@ -20,6 +20,9 @@
 
 # Intersect all
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4c84a9cf2 ([CALCITE-3408] Add support for enumerable intersect/minus all (Wang Yanlin))
 select * from
 (select x, y from (values (1, 'a'), (1, 'a'), (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y))
 intersect all
@@ -31,6 +34,7 @@ intersect all
 | 1 | a |
 +---+---+
 (2 rows)
+<<<<<<< HEAD
 
 !ok
 =======
@@ -48,6 +52,10 @@ intersect all
 
 #!ok
 >>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
+=======
+
+!ok
+>>>>>>> 4c84a9cf2 ([CALCITE-3408] Add support for enumerable intersect/minus all (Wang Yanlin))
 
 # Intersect
 select * from
@@ -65,12 +73,16 @@ intersect
 
 # Intersect all with null value rows
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4c84a9cf2 ([CALCITE-3408] Add support for enumerable intersect/minus all (Wang Yanlin))
 select * from
 (select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
   (cast(NULL as int), cast(NULL as varchar(1))), (cast(NULL as int), cast(NULL as varchar(1)))) as t(x, y))
 intersect all
 (select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
   (cast(NULL as int), cast(NULL as varchar(1)))) as t2(x, y));
+<<<<<<< HEAD
 
 +---+---+
 | X | Y |
@@ -88,17 +100,23 @@ intersect all
 #intersect all
 #(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
 #  (cast(NULL as int), cast(NULL as varchar(1)))) as t2(x, y));
+=======
+>>>>>>> 4c84a9cf2 ([CALCITE-3408] Add support for enumerable intersect/minus all (Wang Yanlin))
 
-#+---+---+
-#| X | Y |
-#+---+---+
-#|   |   |
-#|   |   |
-#+---+---+
-#(2 rows)
++---+---+
+| X | Y |
++---+---+
+|   |   |
+|   |   |
++---+---+
+(2 rows)
 
+<<<<<<< HEAD
 #!ok
 >>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
+=======
+!ok
+>>>>>>> 4c84a9cf2 ([CALCITE-3408] Add support for enumerable intersect/minus all (Wang Yanlin))
 
 # Intersect with null value rows
 select * from
@@ -193,6 +211,9 @@ union
 
 # Except all
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4c84a9cf2 ([CALCITE-3408] Add support for enumerable intersect/minus all (Wang Yanlin))
 select * from
 (select x, y from (values (1, 'a'), (1, 'a'), (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y))
 except all
@@ -206,6 +227,7 @@ except all
 | 3 | c |
 +---+---+
 (4 rows)
+<<<<<<< HEAD
 
 !ok
 =======
@@ -225,6 +247,10 @@ except all
 
 #!ok
 >>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
+=======
+
+!ok
+>>>>>>> 4c84a9cf2 ([CALCITE-3408] Add support for enumerable intersect/minus all (Wang Yanlin))
 
 # Except
 select * from
@@ -243,12 +269,16 @@ except
 
 # Except all with null value rows
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4c84a9cf2 ([CALCITE-3408] Add support for enumerable intersect/minus all (Wang Yanlin))
 select * from
 (select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
   (cast(NULL as int), cast(NULL as varchar(1))), (cast(NULL as int), cast(NULL as varchar(1)))) as t(x, y))
 except all
 (select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
   (cast(NULL as int), cast(NULL as varchar(1)))) as t2(x, y));
+<<<<<<< HEAD
 
 +---+---+
 | X | Y |
@@ -265,16 +295,22 @@ except all
 #except all
 #(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
 #  (cast(NULL as int), cast(NULL as varchar(1)))) as t2(x, y));
+=======
+>>>>>>> 4c84a9cf2 ([CALCITE-3408] Add support for enumerable intersect/minus all (Wang Yanlin))
 
-#+---+---+
-#| X | Y |
-#+---+---+
-#|   |   |
-#+---+---+
-#(1 row)
++---+---+
+| X | Y |
++---+---+
+|   |   |
++---+---+
+(1 row)
 
+<<<<<<< HEAD
 #!ok
 >>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
+=======
+!ok
+>>>>>>> 4c84a9cf2 ([CALCITE-3408] Add support for enumerable intersect/minus all (Wang Yanlin))
 
 # Except with null value rows
 select * from

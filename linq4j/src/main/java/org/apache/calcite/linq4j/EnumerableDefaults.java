@@ -36,7 +36,7 @@ import org.apache.calcite.linq4j.function.Predicate2;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
->>>>>>> 8337355b6 ([CALCITE-2909] Optimize Enumerable SemiJoin with lazy computation of innerLookup (Ruben Quesada Lopez))
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 

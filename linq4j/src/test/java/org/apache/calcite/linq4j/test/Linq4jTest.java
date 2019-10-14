@@ -829,7 +829,7 @@ public class Linq4jTest {
     assertEquals(Integer.valueOf(2), enumerator.current());
   }
 
-  @Test void testConcat() {
+  @Test public void testConcat() {
     assertThat(
         Linq4j.asEnumerable(emps)
             .concat(Linq4j.asEnumerable(badEmps))
@@ -837,7 +837,7 @@ public class Linq4jTest {
         is(5));
   }
 
-  @Test void testUnion() {
+  @Test public void testUnion() {
     assertThat(
         Linq4j.asEnumerable(emps)
             .union(Linq4j.asEnumerable(badEmps))
@@ -858,30 +858,18 @@ public class Linq4jTest {
         is(1));
   }
 
-  @Test void testIntersectAll() {
+  @Test public void testExceptAll() {
     final Employee[] emps2 = {
         new Employee(150, "Theodore", 10),
-        emps[3],
-        emps[3],
-        emps[3]
+        new Employee(150, "Theodore", 10),
+        emps[0],
+        emps[1]
     };
     assertThat(
         Linq4j.asEnumerable(emps2)
-            .intersect(Linq4j.asEnumerable(emps), true)
+            .except(Linq4j.asEnumerable(emps), true)
             .count(),
-        is(1));
-  }
-
-  @Test void testExcept() {
-    final Employee[] emps2 = {
-        new Employee(150, "Theodore", 10),
-        emps[3],
-    };
-    assertThat(
-        Linq4j.asEnumerable(emps)
-            .except(Linq4j.asEnumerable(emps2), false)
-            .count(),
-        is(3));
+        is(2));
   }
 
   @Test void testExceptAll() {
