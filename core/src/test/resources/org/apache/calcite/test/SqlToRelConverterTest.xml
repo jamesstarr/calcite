@@ -1470,18 +1470,6 @@ LogicalProject(NAME=[$0])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testFunctionWithStructInput">
-        <Resource name="sql">
-            <![CDATA[select json_type(skill)
-from sales.dept_nested]]>
-        </Resource>
-        <Resource name="plan">
-            <![CDATA[
-LogicalProject(EXPR$0=[JSON_TYPE($2.TYPE)])
-  LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
-]]>
-        </Resource>
-    </TestCase>
   <TestCase name="testGroupByExprArgFieldSameWithAlias">
     <Resource name="sql">
       <![CDATA[SELECT floor(deptno / 2) AS deptno
@@ -7451,6 +7439,17 @@ from emp window w as (order by empno)]]>
             <![CDATA[
 LogicalProject(EXPR$0=[IGNORE NULLS(LEAD($5, 4))], EXPR$1=[LEAD($5, 4) OVER (ORDER BY $0 RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)])
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testFunctionWithStructInput">
+        <Resource name="sql">
+            <![CDATA[select json_type(skill) from sales.dept_nested]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EXPR$0=[JSON_TYPE(ROW($2.TYPE, $2.DESC, ROW($2.OTHERS.A, $2.OTHERS.B)))])
+  LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
 ]]>
         </Resource>
     </TestCase>
