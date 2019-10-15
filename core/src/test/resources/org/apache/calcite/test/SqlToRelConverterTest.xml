@@ -2017,18 +2017,6 @@ LogicalProject(NAME=[$0])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testFunctionWithStructInput">
-        <Resource name="sql">
-            <![CDATA[select json_type(skill)
-from sales.dept_nested]]>
-        </Resource>
-        <Resource name="plan">
-            <![CDATA[
-LogicalProject(EXPR$0=[JSON_TYPE($2.TYPE)])
-  LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
-]]>
-        </Resource>
-    </TestCase>
   <TestCase name="testGroupByExprArgFieldSameWithAlias">
     <Resource name="sql">
       <![CDATA[SELECT floor(deptno / 2) AS deptno
@@ -10608,5 +10596,19 @@ LogicalProject(EXPR$0=[IGNORE NULLS(LEAD($5, 4))], EXPR$1=[LEAD($5, 4) OVER (ORD
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 >>>>>>> f4ca5cc24 ([CALCITE-3310] Approximate and exact aggregate calls are recognized as the same during sql-to-rel conversion)
+=======
+    <TestCase name="testFunctionWithStructInput">
+        <Resource name="sql">
+            <![CDATA[select json_type(skill) from sales.dept_nested]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EXPR$0=[JSON_TYPE(ROW($2.TYPE, $2.DESC, ROW($2.OTHERS.A, $2.OTHERS.B)))])
+  LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+]]>
+        </Resource>
+    </TestCase>
+>>>>>>> 66fb66503 ([CALCITE-3393] RelStructuredTypeFlattener: improve support for functions with struct input (Igor Guzenko))
 </Root>
