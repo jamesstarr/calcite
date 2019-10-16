@@ -985,9 +985,12 @@ public class RelMetadataTest extends SqlToRelTestBase {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-509">[CALCITE-509]
    * "RelMdColumnUniqueness uses ImmutableBitSet.Builder twice, gets
    * NullPointerException"</a>. */
-  @Test void testJoinUniqueKeys() {
-    checkGetUniqueKeys("select * from emp join bonus using (ename)",
-        ImmutableSet.of());
+  @Test public void testJoinUniqueKeys() {
+    RelNode rel = convertSql("select * from emp join bonus using (ename)");
+    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
+    Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
+    assertThat(result.isEmpty(), is(true));
+    assertUniqueConsistent(rel);
   }
 
   @Test void testCorrelateUniqueKeys() {
@@ -1017,7 +1020,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
 
   @Test public void testGroupByEmptyUniqueKeys() {
     RelNode rel = convertSql("select count(*) from emp");
-    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
     Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
     assertThat(result,
         CoreMatchers.equalTo(
@@ -1027,7 +1030,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
 
   @Test public void testGroupByEmptyHavingUniqueKeys() {
     RelNode rel = convertSql("select count(*) from emp where 1 = 1");
-    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
     final Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
     assertThat(result,
         CoreMatchers.equalTo(
@@ -1043,7 +1046,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
         + "group by cast(null as int)) as d on e.empno = d.deptno \n"
         + "group by e.empno, d.deptno";
     RelNode rel = convertSql(sql);
-    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
     final ImmutableBitSet allCols =
         ImmutableBitSet.range(0, rel.getRowType().getFieldCount());
     Boolean areGroupByKeysUnique = mq.areColumnsUnique(rel.getInput(0), allCols);
@@ -1211,7 +1214,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
   @Test public void testGroupBy() {
     RelNode rel = convertSql("select deptno, count(*), sum(sal) from emp\n"
             + "group by deptno");
-    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
     final Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
     assertThat(result,
         CoreMatchers.equalTo(
@@ -1223,7 +1226,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     RelNode rel = convertSql("select deptno from emp\n"
             + "union\n"
             + "select deptno from dept");
-    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
     final Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
     assertThat(result,
         CoreMatchers.equalTo(
@@ -1554,7 +1557,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
   @Test public void testColumnUniquenessForValues() {
     Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
       final RexBuilder rexBuilder = cluster.getRexBuilder();
-      final RelMetadataQuery mq = RelMetadataQuery.instance();
+      final RelMetadataQuery mq = cluster.getMetadataQuery();
       final RelDataType rowType = cluster.getTypeFactory().builder()
           .add("a", SqlTypeName.INTEGER)
           .add("b", SqlTypeName.VARCHAR)
@@ -1635,7 +1638,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
   private void checkAverageRowSize(RelOptCluster cluster, RelOptTable empTable,
       RelOptTable deptTable) {
     final RexBuilder rexBuilder = cluster.getRexBuilder();
-    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final RelMetadataQuery mq = cluster.getMetadataQuery();
     final LogicalTableScan empScan = LogicalTableScan.create(cluster, empTable, ImmutableList.of());
 
     Double rowSize = mq.getAverageRowSize(empScan);
@@ -1922,7 +1925,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
              JdbcAdapterTest.LockWrapper.lock(LOCK)) {
       // FIXME: fix timeout when enable implicit type coercion.
       final RelNode rel = convertSql(sql, false);
-      final RelMetadataQuery mq = RelMetadataQuery.instance();
+      final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
       RelOptPredicateList inputSet = mq.getPulledUpPredicates(rel.getInput(0));
       assertThat(inputSet.pulledUpPredicates.size(), is(12));
     }
@@ -2041,7 +2044,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
 
   @Test void testDistributionSimple() {
     RelNode rel = convertSql("select * from emp where deptno = 10");
-    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
     RelDistribution d = mq.getDistribution(rel);
     assertThat(d, is(RelDistributions.BROADCAST_DISTRIBUTED));
   }
@@ -2051,7 +2054,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final RelDistribution dist = RelDistributions.hash(ImmutableList.of(1));
     final LogicalExchange exchange = LogicalExchange.create(rel, dist);
 
-    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
     RelDistribution d = mq.getDistribution(exchange);
     assertThat(d, is(dist));
   }
@@ -2061,7 +2064,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final RelDistribution dist = RelDistributions.hash(ImmutableList.<Integer>of());
     final LogicalExchange exchange = LogicalExchange.create(rel, dist);
 
-    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
     RelDistribution d = mq.getDistribution(exchange);
     assertThat(d, is(dist));
   }
@@ -2071,7 +2074,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final RelDistribution dist = RelDistributions.SINGLETON;
     final LogicalExchange exchange = LogicalExchange.create(rel, dist);
 
-    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
     RelDistribution d = mq.getDistribution(exchange);
     assertThat(d, is(dist));
   }
@@ -2201,7 +2204,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
   @Test public void testExpressionLineageLeftJoinLeft() {
     // ename is column 1 in catalog.sales.emp
     final RelNode rel = convertSql("select ename from emp left join dept using (deptno)");
-    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
 
     final RexNode ref = RexInputRef.of(0, rel.getRowType().getFieldList());
     final Set<RexNode> r = mq.getExpressionLineage(rel, ref);
@@ -2214,7 +2217,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
   @Test public void testExpressionLineageRightJoinRight() {
     // ename is column 0 in catalog.sales.bonus
     final RelNode rel = convertSql("select bonus.ename from emp right join bonus using (ename)");
-    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
 
     final RexNode ref = RexInputRef.of(0, rel.getRowType().getFieldList());
     final Set<RexNode> r = mq.getExpressionLineage(rel, ref);
@@ -2628,7 +2631,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
             LogicalJoin.create(nodeWithUnknown, node, ImmutableList.of(),
             rexBuilder.makeLiteral(true),
             ImmutableSet.of(), JoinRelType.INNER);
-    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final RelMetadataQuery mq = node.getCluster().getMetadataQuery();
     final Set<RelTableRef> tableReferences = mq.getTableReferences(join);
     assertNull(tableReferences);
   }
@@ -2675,7 +2678,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final LogicalUnion union =
         LogicalUnion.create(ImmutableList.of(nodeWithUnknown, node),
             true);
-    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final RelMetadataQuery mq = node.getCluster().getMetadataQuery();
     final Set<RelTableRef> tableReferences = mq.getTableReferences(union);
     assertNull(tableReferences);
   }
@@ -2984,7 +2987,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
   @Test public void testEmptyAggregateTableOrigin() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
-    RelMetadataQuery mq = RelMetadataQuery.instance();
+    RelMetadataQuery mq = builder.getCluster().getMetadataQuery();
     RelNode agg = builder
         .scan("EMP")
         .aggregate(builder.groupKey())

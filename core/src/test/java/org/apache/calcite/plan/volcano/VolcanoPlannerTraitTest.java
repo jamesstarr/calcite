@@ -255,12 +255,12 @@ class VolcanoPlannerTraitTest {
     RelOptCluster cluster = newCluster(planner);
     NoneTinyLeafRel leaf = new NoneTinyLeafRel(cluster, "noneLeafRel");
     planner.setRoot(leaf);
-    RelOptCost cost = planner.getCost(leaf, RelMetadataQuery.instance());
+    RelOptCost cost = planner.getCost(leaf, cluster.getMetadataQuery());
 
     assertTrue(cost.isInfinite());
 
     planner.setNoneConventionHasInfiniteCost(false);
-    cost = planner.getCost(leaf, RelMetadataQuery.instance());
+    cost = planner.getCost(leaf, cluster.getMetadataQuery());
     assertTrue(!cost.isInfinite());
   }
 

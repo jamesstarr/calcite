@@ -110,7 +110,7 @@ public class TraitPropagationTest {
           RelOptUtil.dumpPlan("LOGICAL PLAN", planned, SqlExplainFormat.TEXT,
               SqlExplainLevel.ALL_ATTRIBUTES));
     }
-    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final RelMetadataQuery mq = planned.getCluster().getMetadataQuery();
     assertEquals("Sortedness was not propagated", 3,
         mq.getCumulativeCost(planned).getRows(), 0);
   }
