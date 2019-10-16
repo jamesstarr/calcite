@@ -25,7 +25,7 @@ import org.apache.calcite.plan.hep.HepProgram;
 import org.apache.calcite.plan.hep.HepProgramBuilder;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
-import org.apache.calcite.rel.rules.CoreRules;
+>>>>>>> 3a965ef31 (Refactor InterpreterTest)
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParser;
@@ -129,7 +129,10 @@ class InterpreterTest {
     return new Sql(sql, dataContext, planner, false);
   }
 
+<<<<<<< HEAD
   @BeforeEach public void setUp() {
+=======
+  @Before public void setUp() {
     rootSchema = Frameworks.createRootSchema(true);
     final FrameworkConfig config = Frameworks.newConfigBuilder()
         .parserConfig(SqlParser.Config.DEFAULT)
@@ -147,7 +150,7 @@ class InterpreterTest {
   }
 
   /** Tests executing a simple plan using an interpreter. */
-  @Test void testInterpretProjectFilterValues() throws Exception {
+  @Test public void testInterpretProjectFilterValues() throws Exception {
     final String sql = "select y, x\n"
         + "from (values (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y)\n"
         + "where x > 1";
@@ -164,21 +167,7 @@ class InterpreterTest {
 
   @Test public void testInterpretMultiset() throws Exception {
     final String sql = "select multiset['a', 'b', 'c']";
-    SqlNode parse = planner.parse(sql);
-    SqlNode validate = planner.validate(parse);
-    RelNode convert = planner.rel(validate).project();
-
-    final Interpreter interpreter = new Interpreter(dataContext, convert);
-    assertRows(interpreter, "[[a, b, c]]");
-  }
-
-  private static void assertRows(Interpreter interpreter, String... rows) {
-    assertRows(interpreter, false, rows);
-  }
-
-  private static void assertRowsUnordered(Interpreter interpreter,
-      String... rows) {
-    assertRows(interpreter, true, rows);
+    sql(sql).withProject(true).returnsRows("[[a, b, c]]");
   }
 
   private static void assertRows(Interpreter interpreter,
@@ -196,7 +185,7 @@ class InterpreterTest {
   }
 
   /** Tests executing a simple plan using an interpreter. */
-  @Test void testInterpretTable() throws Exception {
+  @Test public void testInterpretTable() throws Exception {
     sql("select * from \"hr\".\"emps\" order by \"empid\"")
         .returnsRows("[100, 10, Bill, 10000.0, 1000]",
             "[110, 10, Theodore, 11500.0, 250]",
@@ -274,6 +263,7 @@ class InterpreterTest {
         + "union\n"
         + "select * from \"simple\"";
     sql(sql).returnsRowsUnordered("[0]", "[10]", "[20]", "[30]");
+<<<<<<< HEAD
   }
 
   @Test void testInterpretUnionWithNullValue() throws Exception {
@@ -507,5 +497,8 @@ class InterpreterTest {
     } catch (NullPointerException e) {
       assertThat(e.getMessage(), equalTo("NULL value for unnest."));
     }
+=======
+>>>>>>> 3a965ef31 (Refactor InterpreterTest)
   }
+
 }
