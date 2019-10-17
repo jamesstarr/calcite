@@ -33,10 +33,32 @@ import org.apache.calcite.sql.fun.SqlCase;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlTypeFamily;
 import org.apache.calcite.sql.type.SqlTypeUtil;
-   *         |      |      |
-   *       type4  type5  type6              union
-   *         |      |      |
 =======
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.sql.validate.SqlValidatorScope;
+
+import java.math.BigDecimal;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Default implementation of Calcite implicit type cast.
+ */
+public class TypeCoercionImpl extends AbstractTypeCoercion {
+
+  public TypeCoercionImpl(SqlValidator validator) {
+    super(validator);
+  }
+
+  /**
+   * Widen a SqlNode's field type to target type,
+   * mainly used for set operations like UNION, INTERSECT and EXCEPT.
+   *
+   * <p>Rules:
+   * <pre>
+   *
+   *       type1, type2  type3       select a, b, c from t1
    *          \      \      \
    *         type4  type5  type6              UNION
    *          /      /      /
@@ -488,6 +510,27 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
     final List<RelDataType> paramTypes = function.getParamTypes();
     assert paramTypes != null;
     boolean coerced = false;
+<<<<<<< HEAD
+=======
+    for (int i = 0; i < call.operandCount(); i++) {
+      SqlNode operand = call.operand(i);
+      if (operand.getKind() == SqlKind.ARGUMENT_ASSIGNMENT) {
+        final List<SqlNode> operandList = ((SqlCall) operand).getOperandList();
+        String name = ((SqlIdentifier) operandList.get(1)).getSimple();
+        int formalIndex = function.getParamNames().indexOf(name);
+        if (formalIndex < 0) {
+          return false;
+        }
+        // Column list operand type is not supported now.
+        coerced = coerceOperandType(scope, (SqlCall) operand, 0,
+            paramTypes.get(formalIndex)) || coerced;
+      } else {
+        coerced = coerceOperandType(scope, call, i, paramTypes.get(i)) || coerced;
+      }
+    }
+    return coerced;
+  }
+>>>>>>> a720fa3ec ([CALCITE-3423] Support using CAST operation and BOOLEAN type value in table macro (Wang Yanlin))
 }
 
 // End TypeCoercionImpl.java
