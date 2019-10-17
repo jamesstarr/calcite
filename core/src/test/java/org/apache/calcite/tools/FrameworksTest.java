@@ -19,6 +19,8 @@ package org.apache.calcite.tools;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.adapter.enumerable.EnumerableTableScan;
+import org.apache.calcite.config.CalciteConnectionConfigImpl;
+import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.QueryProvider;
@@ -84,9 +86,9 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Unit tests for methods in {@link Frameworks}.
@@ -248,7 +250,7 @@ public class FrameworksTest {
 
   /** Unit test for {@link CalciteConnectionConfigImpl#set}
    * and {@link CalciteConnectionConfigImpl#isSet}. */
-  @Test void testConnectionConfig() {
+  @Test public void testConnectionConfig() {
     final CalciteConnectionProperty forceDecorrelate =
         CalciteConnectionProperty.FORCE_DECORRELATE;
     final CalciteConnectionProperty lenientOperatorLookup =
