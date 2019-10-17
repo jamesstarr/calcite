@@ -158,7 +158,8 @@ public class RelToSqlConverter extends SqlImplementor
           condition,
           leftContext,
           rightContext,
-          e.getLeft().getRowType().getFieldCount());
+          e.getLeft().getRowType().getFieldCount(),
+          dialect);
     }
     SqlNode join =
         new SqlJoin(POS,
