@@ -2241,8 +2241,11 @@ public class RexImpTable {
         case YEAR:
         case QUARTER:
         case MONTH:
-          return Expressions.call(floorMethod, tur,
-              call(operand, type, TimeUnit.DAY));
+        case WEEK:
+        case DAY:
+          final Expression operand1 =
+              preFloor ? call(operand, type, TimeUnit.DAY) : operand;
+          return Expressions.call(floorMethod, tur, operand1);
         case NANOSECOND:
         default:
           return call(operand, type, timeUnitRange.startUnit);
