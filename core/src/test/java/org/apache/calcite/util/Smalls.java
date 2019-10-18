@@ -75,7 +75,8 @@ public class Smalls {
       Types.lookupMethod(Smalls.class, "generateStrings", Integer.class);
   public static final Method GENERATE_STRINGS_OF_INPUT_SIZE_METHOD =
       Types.lookupMethod(Smalls.class, "generateStringsOfInputSize", List.class);
->>>>>>> e6c059346 ([CALCITE-3424] AssertionError thrown for user-defined table function with array argument (Igor Guzenko))
+  public static final Method GENERATE_STRINGS_OF_INPUT_MAP_SIZE_METHOD =
+      Types.lookupMethod(Smalls.class, "generateStringsOfInputMapSize", Map.class);
   public static final Method MAZE_METHOD =
       Types.lookupMethod(MazeTable.class, "generate", int.class, int.class,
           int.class);
@@ -189,11 +190,10 @@ public class Smalls {
   public static QueryableTable generateStringsOfInputSize(final List<Integer> list) {
     return generateStrings(list.size());
   }
-<<<<<<< HEAD
+=======
   public static QueryableTable generateStringsOfInputMapSize(final Map<Integer, Integer> map) {
     return generateStrings(map.size());
   }
-=======
 
   /** A function that generates multiplication table of {@code ncol} columns x
    * {@code nrow} rows. */

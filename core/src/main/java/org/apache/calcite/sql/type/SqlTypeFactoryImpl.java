@@ -222,11 +222,10 @@ public class SqlTypeFactoryImpl extends RelDataTypeFactoryImpl {
         : "use createMultisetType() instead";
     assert typeName != SqlTypeName.ARRAY
         : "use createArrayType() instead";
-<<<<<<< HEAD
+>>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
+=======
     assert typeName != SqlTypeName.MAP
         : "use createMapType() instead";
-=======
->>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
     assert typeName != SqlTypeName.ROW
         : "use createStructType() instead";
     assert !SqlTypeName.INTERVAL_TYPES.contains(typeName)
