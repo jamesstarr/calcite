@@ -3801,7 +3801,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select e.job,d.name\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "join sales.dept as d on e.job = d.name\n"
         + "group by e.job,d.name";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
@@ -3817,7 +3817,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select e.ename\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "left outer join sales.dept as d on e.job = d.name\n"
         + "group by e.ename";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
@@ -3833,7 +3833,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select d.ename\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "left outer join sales.emp as d on e.job = d.job\n"
         + "group by d.ename";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
@@ -3849,7 +3849,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select e.ename, d.mgr\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "left outer join sales.emp as d on e.job = d.job\n"
         + "group by e.ename,d.mgr";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
@@ -3865,7 +3865,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select e.job\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "left outer join sales.dept as d on e.job = d.name\n"
         + "group by e.job";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
@@ -3881,7 +3881,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select d.name\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "left outer join sales.dept as d on e.job = d.name\n"
         + "group by d.name";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
@@ -3897,7 +3897,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select e.job,d.name\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "left outer join sales.dept as d on e.job = d.name\n"
         + "group by e.job,d.name";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
@@ -3913,7 +3913,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select e.job\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "left outer join sales.dept as d on e.job = d.name\n"
         + "and e.deptno + e.empno = d.deptno + 5\n"
         + "group by e.job";
@@ -3930,7 +3930,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select d.name\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "left outer join sales.dept as d on e.job = d.name\n"
         + "and e.deptno + e.empno = d.deptno + 5\n"
         + "group by d.name";
@@ -3947,7 +3947,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select e.job, d.name\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "left outer join sales.dept as d on e.job = d.name\n"
         + "and e.deptno + e.empno = d.deptno + 5\n"
         + "group by e.job, d.name";
@@ -3996,7 +3996,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select e.job\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "right outer join sales.dept as d on e.job = d.name\n"
         + "group by e.job";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
@@ -4012,7 +4012,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select e.job\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "full outer join sales.dept as d on e.job = d.name\n"
         + "group by e.job";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
@@ -4044,7 +4044,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select e.ename, d.mgr\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "full outer join sales.emp as d on e.job = d.job\n"
         + "group by e.ename,d.mgr";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
@@ -4060,7 +4060,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select e.job\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "full outer join sales.dept as d on e.job = d.name\n"
         + "and e.deptno + e.empno = d.deptno + 5\n"
         + "group by e.job";
@@ -4075,7 +4075,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select e.job,d.name\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "join sales.dept as d on e.job = d.name\n"
         + "and e.deptno + e.empno = d.deptno + 5\n"
         + "group by e.job,d.name";
@@ -4214,7 +4214,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select e.job,sum(sal)\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "join sales.dept as d on e.job = d.name\n"
         + "group by e.job,d.name";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
@@ -4232,7 +4232,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select sum(sal)\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "join sales.dept as d on e.job = d.name";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
   }
@@ -4253,7 +4253,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.AGGREGATE_JOIN_TRANSPOSE_EXTENDED)
         .build();
     final String sql = "select sum(sal)\n"
-        + "from (select * from sales.emp where empno = 10) as e\n"
+        + "from (select * from sales.emp where ename = 'A') as e\n"
         + "join sales.dept as d on e.job = d.name";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
   }
@@ -4597,6 +4597,28 @@ public class RelOptRulesTest extends RelOptTestBase {
     final String sql = "select deptno, max(sal) "
         + "from sales.emp group by deptno\n";
     checkPlanUnchanged(new HepPlanner(program), sql);
+  }
+
+  /**
+   * The top Aggregate should be removed -- given "deptno=100",
+   * the input of top Aggregate must be already distinct by "mgr"
+   */
+  @Test public void testAggregateRemove7() {
+    final HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.AGGREGATE_REMOVE)
+        .addRuleInstance(CoreRules.PROJECT_MERGE)
+        .build();
+    final String sql = ""
+        + "select mgr, sum(sum_sal)\n"
+        + "from\n"
+        + "(select mgr, deptno, sum(sal) sum_sal\n"
+        + " from sales.emp\n"
+        + " group by mgr, deptno)\n"
+        + "where deptno=100\n"
+        + "group by mgr";
+    sql(sql)
+        .with(program)
+        .check();
   }
 
   /** Test case for
