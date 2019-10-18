@@ -81,10 +81,14 @@ sqlline> !connect jdbc:calcite:model=model.json admin admin
 {% endhighlight %}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 You can also specify the index name and path prefix that is represented by the `index` and `pathPrefix` parameter in the model definition:
 =======
 You can also specify the index name that is represented by the `index` parameter in the model definition:
 >>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
+=======
+You can also specify the index name and path prefix that is represented by the `index` and `pathPrefix` parameter in the model definition:
+>>>>>>> ebcc1d137 ([CALCITE-3434] ElasticSearch schema with pathPrefix (Jeffery Zhang))
 
 {% highlight json %}
 ...
@@ -92,20 +96,29 @@ You can also specify the index name that is represented by the `index` parameter
       "operand": {
         "coordinates": "{'127.0.0.1': 9200}",
 <<<<<<< HEAD
+<<<<<<< HEAD
         "index": "usa",
         "pathPrefix": "path"
 =======
         "index": "usa"
 >>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
+=======
+        "index": "usa",
+        "pathPrefix": "path"
+>>>>>>> ebcc1d137 ([CALCITE-3434] ElasticSearch schema with pathPrefix (Jeffery Zhang))
       }
 
 ...
 {% endhighlight %}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
+=======
+
+>>>>>>> ebcc1d137 ([CALCITE-3434] ElasticSearch schema with pathPrefix (Jeffery Zhang))
 `sqlline` will now accept SQL queries which access your Elasticsearch.
 The purpose of this adapter is to compile the query into the most efficient
 Elasticsearch SEARCH JSON possible by exploiting filtering and sorting directly
