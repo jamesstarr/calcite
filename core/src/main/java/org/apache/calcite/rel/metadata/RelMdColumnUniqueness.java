@@ -44,9 +44,6 @@ import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
-<<<<<<< HEAD
-import org.apache.calcite.rex.RexProgram;
-=======
 >>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.util.BuiltInMethod;
@@ -150,12 +147,14 @@ public class RelMdColumnUniqueness
   public Boolean areColumnsUnique(Sort rel, RelMetadataQuery mq,
       ImmutableBitSet columns, boolean ignoreNulls) {
     columns = decorateWithConstantColumnsFromPredicates(columns, rel, mq);
+<<<<<<< HEAD
     return mq.areColumnsUnique(rel.getInput(), columns, ignoreNulls);
   }
 
   public Boolean areColumnsUnique(TableModify rel, RelMetadataQuery mq,
       ImmutableBitSet columns, boolean ignoreNulls) {
     columns = decorateWithConstantColumnsFromPredicates(columns, rel, mq);
+=======
     return mq.areColumnsUnique(rel.getInput(), columns, ignoreNulls);
   }
 
@@ -351,29 +350,10 @@ public class RelMdColumnUniqueness
 
   public Boolean areColumnsUnique(Aggregate rel, RelMetadataQuery mq,
       ImmutableBitSet columns, boolean ignoreNulls) {
-    if (Aggregate.isSimple(rel) || ignoreNulls) {
-      columns = decorateWithConstantColumnsFromPredicates(columns, rel, mq);
-      // group by keys form a unique key
-      final ImmutableBitSet groupKey = ImmutableBitSet.range(rel.getGroupCount());
-      final boolean contained = columns.contains(groupKey);
-      if (contained) {
-        return true;
-      } else if (!Aggregate.isSimple(rel)) {
-        return false;
-      }
-
-      final ImmutableBitSet commonKeys = columns.intersect(groupKey);
-      if (commonKeys.isEmpty()) {
-        return false;
-      }
-      final ImmutableBitSet.Builder targetColumns = ImmutableBitSet.builder();
-      for (int key: commonKeys) {
-        targetColumns.set(rel.getGroupSet().nth(key));
-      }
-
-      return mq.areColumnsUnique(rel.getInput(), targetColumns.build(), ignoreNulls);
-    }
-    return null;
+    columns = decorateWithConstantColumnsFromPredicates(columns, rel, mq);
+    // group by keys form a unique key
+    ImmutableBitSet groupKey = ImmutableBitSet.range(rel.getGroupCount());
+    return columns.contains(groupKey);
   }
 
   public Boolean areColumnsUnique(Values rel, RelMetadataQuery mq,
@@ -475,6 +455,32 @@ public class RelMdColumnUniqueness
     }
     return Pair.of(leftBuilder.build(), rightBuilder.build());
   }
+<<<<<<< HEAD
+=======
+
+  /**
+   * Deduce constant columns from predicates of rel and return the union
+   * bitsets of checkingColumns and the constant columns.
+   */
+  private static ImmutableBitSet decorateWithConstantColumnsFromPredicates(
+      ImmutableBitSet checkingColumns, RelNode rel, RelMetadataQuery mq) {
+    final RelOptPredicateList predicates = mq.getPulledUpPredicates(rel);
+    if (predicates != null) {
+      final Set<Integer> constantIndexes = new HashSet();
+      predicates.constantMap.keySet().forEach(rex -> {
+        if (rex instanceof RexInputRef) {
+          constantIndexes.add(((RexInputRef) rex).getIndex());
+        }
+      });
+      if (!constantIndexes.isEmpty()) {
+        return checkingColumns.union(ImmutableBitSet.of(constantIndexes));
+      }
+    }
+    // If no constant columns deduced, return the original "checkingColumns".
+    return checkingColumns;
+  }
+}
+>>>>>>> 16625330a ([CALCITE-3428] Refine RelMdColumnUniqueness for Filter by considering constant columns (Jin Xing))
 
   /**
    * Deduce constant columns from predicates of rel and return the union

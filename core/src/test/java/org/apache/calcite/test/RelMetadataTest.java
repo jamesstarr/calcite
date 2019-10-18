@@ -1052,6 +1052,145 @@ public class RelMetadataTest extends SqlToRelTestBase {
     assertThat(areGroupByKeysUnique, is(false));
   }
 
+  @Test public void testColumnUniquenessForFilterWithConstantColumns() {
+    checkColumnUniquenessForFilterWithConstantColumns(""
+        + "select *\n"
+        + "from (select distinct deptno, sal from emp)\n"
+        + "where sal=1000");
+    checkColumnUniquenessForFilterWithConstantColumns(""
+        + "select *\n"
+        + "from (select distinct deptno, sal from emp)\n"
+        + "where 1000=sal");
+  }
+
+  private void checkColumnUniquenessForFilterWithConstantColumns(String sql) {
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final RelNode rel = convertSql(sql);
+    assertThat(rel.getRowType().getFieldNames().toString(),
+        is("[DEPTNO, SAL]"));
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(0, 1)), is(true));
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(0)), is(true));
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(1)), is(false));
+  }
+
+  @Test public void testColumnUniquenessForUnionWithConstantColumns() {
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final String sql = ""
+        + "select deptno, sal from emp where sal=1000\n"
+        + "union\n"
+        + "select deptno, sal from emp where sal=1000\n";
+    final RelNode rel = convertSql(sql);
+    assertThat(rel.getRowType().getFieldNames().toString(),
+        is("[DEPTNO, SAL]"));
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(0)), is(true));
+  }
+
+  @Test public void testColumnUniquenessForIntersectWithConstantColumns() {
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final String sql = ""
+        + "select deptno, sal\n"
+        + "from (select distinct deptno, sal from emp)\n"
+        + "where sal=1000\n"
+        + "intersect all\n"
+        + "select deptno, sal from emp\n";
+    final RelNode rel = convertSql(sql);
+    assertThat(rel.getRowType().getFieldNames().toString(),
+        is("[DEPTNO, SAL]"));
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(0, 1)), is(true));
+  }
+
+  @Test public void testColumnUniquenessForMinusWithConstantColumns() {
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final String sql = ""
+        + "select deptno, sal\n"
+        + "from (select distinct deptno, sal from emp)\n"
+        + "where sal=1000\n"
+        + "except all\n"
+        + "select deptno, sal from emp\n";
+    final RelNode rel = convertSql(sql);
+    assertThat(rel.getRowType().getFieldNames().toString(),
+        is("[DEPTNO, SAL]"));
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(0)), is(true));
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(0, 1)), is(true));
+  }
+
+  @Test public void testColumnUniquenessForSortWithConstantColumns() {
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final String sql = ""
+        + "select *\n"
+        + "from (select distinct deptno, sal from emp)\n"
+        + "where sal=1000\n"
+        + "order by deptno";
+    final RelNode rel = convertSql(sql);
+    assertThat(rel.getRowType().getFieldNames().toString(),
+        is("[DEPTNO, SAL]"));
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(0, 1)), is(true));
+  }
+
+  @Test public void testColumnUniquenessForJoinWithConstantColumns() {
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final String sql = ""
+        + "select *\n"
+        + "from (select distinct deptno, sal from emp) A\n"
+        + "join (select distinct deptno, sal from emp) B\n"
+        + "on A.deptno=B.deptno and A.sal=1000 and B.sal=1000";
+    final RelNode rel = convertSql(sql);
+    assertThat(rel.getRowType().getFieldNames().toString(),
+        is("[DEPTNO, SAL, DEPTNO0, SAL0]"));
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(0, 2)), is(true));
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(0, 1, 2)), is(true));
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(0, 2, 3)), is(true));
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(0, 1)), is(false));
+  }
+
+  @Test public void testColumnUniquenessForAggregateWithConstantColumns() {
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final String sql = ""
+        + "select deptno, ename, sum(sal)\n"
+        + "from emp\n"
+        + "where deptno=1010\n"
+        + "group by deptno, ename";
+    final RelNode rel = convertSql(sql);
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(1)), is(true));
+  }
+
+  @Test public void testColumnUniquenessForExchangeWithConstantColumns() {
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final FrameworkConfig config = RelBuilderTest.config().build();
+    final RelBuilder builder = RelBuilder.create(config);
+    RelNode exchange = builder.scan("EMP")
+        .project(builder.field("DEPTNO"), builder.field("SAL"))
+        .distinct()
+        .filter(builder.equals(builder.field("SAL"), builder.literal(1)))
+        .exchange(RelDistributions.hash(ImmutableList.of(1)))
+        .build();
+    assertThat(mq.areColumnsUnique(exchange, ImmutableBitSet.of(0)), is(true));
+  }
+
+  @Test public void testColumnUniquenessForCorrelateWithConstantColumns() {
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    final FrameworkConfig config = RelBuilderTest.config().build();
+    final RelBuilder builder = RelBuilder.create(config);
+    RelNode rel0 = builder.scan("EMP")
+        .project(builder.field("DEPTNO"), builder.field("SAL"))
+        .distinct()
+        .filter(builder.equals(builder.field("SAL"), builder.literal(1)))
+        .build();
+    final Holder<RexCorrelVariable> v = Holder.of(null);
+    final RelNode rel1 = builder.scan("EMP")
+        .variable(v)
+        .project(builder.field("DEPTNO"), builder.field("SAL"))
+        .filter(
+            builder.equals(builder.field(0), builder.field(v.get(), "DEPTNO")))
+        .build();
+    final RelNode correl = builder.push(rel0)
+        .variable(v)
+        .push(rel1)
+        .correlate(JoinRelType.SEMI, v.get().id, builder.field(2, 0, "DEPTNO"))
+        .build();
+    assertThat(mq.areColumnsUnique(correl, ImmutableBitSet.of(0)), is(true));
+  }
+
   @Test public void testGroupBy() {
     RelNode rel = convertSql("select deptno, count(*), sum(sal) from emp\n"
             + "group by deptno");

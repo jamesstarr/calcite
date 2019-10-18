@@ -719,11 +719,15 @@ where exists (
 !ok
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 16625330a ([CALCITE-3428] Refine RelMdColumnUniqueness for Filter by considering constant columns (Jin Xing))
 EnumerableCalc(expr#0..3=[{inputs}], DEPTNO=[$t1], DNAME=[$t2], LOC=[$t3])
   EnumerableHashJoin(condition=[=($0, $1)], joinType=[inner])
     EnumerableCalc(expr#0..7=[{inputs}], expr#8=['SMITH':VARCHAR(10)], expr#9=[=($t1, $t8)], expr#10=[IS NOT NULL($t7)], expr#11=[AND($t9, $t10)], DEPTNO=[$t7], $condition=[$t11])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableTableScan(table=[[scott, DEPT]])
+<<<<<<< HEAD
 =======
 EnumerableSemiJoin(condition=[=($0, $10)], joinType=[inner])
 =======
@@ -733,6 +737,8 @@ EnumerableHashJoin(condition=[=($0, $10)], joinType=[semi])
   EnumerableCalc(expr#0..7=[{inputs}], expr#8=['SMITH':VARCHAR(10)], expr#9=[=($t1, $t8)], expr#10=[IS NOT NULL($t7)], expr#11=[AND($t9, $t10)], proj#0..7=[{exprs}], $condition=[$t11])
     EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> b738c2747 (DX-14991: Update surefire plugin version)
+=======
+>>>>>>> 16625330a ([CALCITE-3428] Refine RelMdColumnUniqueness for Filter by considering constant columns (Jin Xing))
 !plan
 
 # [DRILL-5644]
