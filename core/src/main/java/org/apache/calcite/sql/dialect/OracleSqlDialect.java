@@ -46,11 +46,26 @@ import java.util.List;
  * A <code>SqlDialect</code> implementation for the Oracle database.
  */
 public class OracleSqlDialect extends SqlDialect {
-  public static final SqlDialect DEFAULT =
-      new OracleSqlDialect(EMPTY_CONTEXT
-          .withDatabaseProduct(DatabaseProduct.ORACLE)
-          .withIdentifierQuoteString("\"")
-          .withDataTypeSystem(ORACLE_TYPE_SYSTEM));
+  /** OracleDB type system. */
+  private static final RelDataTypeSystem ORACLE_TYPE_SYSTEM =
+      new RelDataTypeSystemImpl() {
+        @Override public int getMaxPrecision(SqlTypeName typeName) {
+          switch (typeName) {
+          case VARCHAR:
+            // Maximum size of 4000 bytes for varchar2.
+            return 4000;
+          default:
+            return super.getMaxPrecision(typeName);
+          }
+        }
+      };
+
+  public static final SqlDialect.Context DEFAULT_CONTEXT = SqlDialect.EMPTY_CONTEXT
+      .withDatabaseProduct(SqlDialect.DatabaseProduct.ORACLE)
+      .withIdentifierQuoteString("\"")
+      .withDataTypeSystem(ORACLE_TYPE_SYSTEM);
+
+  public static final SqlDialect DEFAULT = new OracleSqlDialect(DEFAULT_CONTEXT);
 
   /** Creates an OracleSqlDialect. */
   public OracleSqlDialect(Context context) {

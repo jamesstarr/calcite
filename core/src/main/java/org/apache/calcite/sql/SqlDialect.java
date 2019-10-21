@@ -233,8 +233,8 @@ public class SqlDialect {
 
   //~ Methods ----------------------------------------------------------------
 
-  /** Creates an empty context. Use {@link #EMPTY_CONTEXT} if possible. */
-  protected static Context emptyContext() {
+  /** Creates an empty context. Use {@link #EMPTY_CONTEXT} to reference the instance. */
+  private static Context emptyContext() {
     return new ContextImpl(DatabaseProduct.UNKNOWN, null, null, -1, -1,
         "'", "''", null,
         Casing.UNCHANGED, Casing.TO_UPPER, true, SqlConformanceEnum.DEFAULT,

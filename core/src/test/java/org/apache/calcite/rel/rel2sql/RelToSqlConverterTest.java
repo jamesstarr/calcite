@@ -5095,8 +5095,7 @@ class RelToSqlConverterTest {
     Sql withMssql(int majorVersion) {
       final SqlDialect mssqlDialect = SqlDialect.DatabaseProduct.MSSQL.getDialect();
       return dialect(
-          new MssqlSqlDialect(SqlDialect.EMPTY_CONTEXT
-              .withDatabaseProduct(SqlDialect.DatabaseProduct.MSSQL)
+          new MssqlSqlDialect(MssqlSqlDialect.DEFAULT_CONTEXT
               .withDatabaseMajorVersion(majorVersion)
               .withIdentifierQuoteString(mssqlDialect.quoteIdentifier("")
                   .substring(0, 1))
@@ -5110,8 +5109,7 @@ class RelToSqlConverterTest {
     Sql withMysql8() {
       final SqlDialect mysqlDialect = DatabaseProduct.MYSQL.getDialect();
       return dialect(
-          new SqlDialect(SqlDialect.EMPTY_CONTEXT
-              .withDatabaseProduct(DatabaseProduct.MYSQL)
+          new SqlDialect(MysqlSqlDialect.DEFAULT_CONTEXT
               .withDatabaseMajorVersion(8)
               .withIdentifierQuoteString(mysqlDialect.quoteIdentifier("")
                   .substring(0, 1))
@@ -5153,9 +5151,7 @@ class RelToSqlConverterTest {
     Sql withPostgresqlModifiedTypeSystem() {
       // Postgresql dialect with max length for varchar set to 256
       final PostgresqlSqlDialect postgresqlSqlDialect =
-          new PostgresqlSqlDialect(SqlDialect.EMPTY_CONTEXT
-              .withDatabaseProduct(DatabaseProduct.POSTGRESQL)
-              .withIdentifierQuoteString("\"")
+          new PostgresqlSqlDialect(PostgresqlSqlDialect.DEFAULT_CONTEXT
               .withDataTypeSystem(new RelDataTypeSystemImpl() {
                 @Override public int getMaxPrecision(SqlTypeName typeName) {
                   switch (typeName) {
@@ -5179,9 +5175,7 @@ class RelToSqlConverterTest {
     Sql withOracleModifiedTypeSystem() {
       // Oracle dialect with max length for varchar set to 512
       final OracleSqlDialect oracleSqlDialect =
-          new OracleSqlDialect(SqlDialect.EMPTY_CONTEXT
-              .withDatabaseProduct(DatabaseProduct.ORACLE)
-              .withIdentifierQuoteString("\"")
+          new OracleSqlDialect(OracleSqlDialect.DEFAULT_CONTEXT
               .withDataTypeSystem(new RelDataTypeSystemImpl() {
                 @Override public int getMaxPrecision(SqlTypeName typeName) {
                   switch (typeName) {
