@@ -1067,6 +1067,10 @@ public abstract class MockCatalogReader extends CalciteCatalogReader {
           return table.isKey(columns);
         }
 
+        public List<ImmutableBitSet> getKeys() {
+          return table.getKeys();
+        }
+
         public List<RelReferentialConstraint> getReferentialConstraints() {
           return table.getReferentialConstraints();
         }
