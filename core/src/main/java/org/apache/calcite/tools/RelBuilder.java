@@ -1843,13 +1843,13 @@ public class RelBuilder {
         final Boolean unique = mq.areColumnsUnique(peek(), groupSet);
         if (unique != null && unique) {
           // Rel is already unique.
-          return project(fields(groupSet.asList()));
+          return project(fields(groupSet));
         }
       }
       final Double maxRowCount = mq.getMaxRowCount(peek());
       if (maxRowCount != null && maxRowCount <= 1D) {
         // If there is at most one row, rel is already unique.
-        return project(fields(groupSet.asList()));
+        return project(fields(groupSet));
       }
     }
     final ImmutableList<ImmutableBitSet> groupSets;

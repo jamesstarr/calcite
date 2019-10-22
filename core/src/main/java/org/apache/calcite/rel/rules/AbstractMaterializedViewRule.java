@@ -1204,7 +1204,7 @@ public abstract class AbstractMaterializedViewRule extends RelOptRule {
         // Aggregate was not inserted but we need to prune columns
         result = relBuilder
             .push(result)
-            .project(relBuilder.fields(groupSet.asList()))
+            .project(relBuilder.fields(groupSet))
             .build();
       }
       if (topProject != null) {
@@ -1488,7 +1488,7 @@ public abstract class AbstractMaterializedViewRule extends RelOptRule {
           // Aggregate was not inserted but we need to prune columns
           result = relBuilder
               .push(result)
-              .project(relBuilder.fields(groupSet.asList()))
+              .project(relBuilder.fields(groupSet))
               .build();
         }
         // We introduce a project on top, as group by columns order is lost
