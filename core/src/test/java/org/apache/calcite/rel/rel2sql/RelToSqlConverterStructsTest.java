@@ -158,6 +158,10 @@ public class RelToSqlConverterStructsTest {
       return false;
     }
 
+    @Override public List<ImmutableBitSet> getKeys() {
+      return ImmutableList.of();
+    }
+
     @Override public List<RelReferentialConstraint> getReferentialConstraints() {
       return ImmutableList.of();
     }

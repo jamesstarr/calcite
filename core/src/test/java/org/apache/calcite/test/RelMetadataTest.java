@@ -196,7 +196,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     return convertSql(tester, sql);
   }
 
-  private static RelNode convertSql(Tester tester, String sql) {
+  private RelNode convertSql(Tester tester, String sql) {
     final RelRoot root = tester.convertSqlToRel(sql);
     root.rel.getCluster().setMetadataProvider(DefaultRelMetadataProvider.INSTANCE);
     return root.rel;
@@ -931,30 +931,24 @@ public class RelMetadataTest extends SqlToRelTestBase {
   /**
    * Checks result of getting unique keys for sql, using specific tester.
    */
-  private void checkGetUniqueKeys(String sql, Set<ImmutableBitSet> expectedUniqueKeySet,
-      Function<String, RelNode> converter) {
-    RelNode rel = converter.apply(sql);
-    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-    Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
-    assertEquals(
-        ImmutableSortedSet.copyOf(expectedUniqueKeySet),
-        ImmutableSortedSet.copyOf(result));
-    assertUniqueConsistent(rel);
-  }
-
-  /**
-   * Checks result of getting unique keys for sql, using specific tester.
-   */
   private void checkGetUniqueKeys(Tester tester,
       String sql, Set<ImmutableBitSet> expectedUniqueKeySet) {
-    checkGetUniqueKeys(sql, expectedUniqueKeySet, s -> convertSql(tester, s));
+    RelNode rel = convertSql(tester, sql);
+    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
+    Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
+    assertThat(result, CoreMatchers.equalTo(expectedUniqueKeySet));
+    assertUniqueConsistent(rel);
   }
 
   /**
    * Checks result of getting unique keys for sql, using default tester.
    */
   private void checkGetUniqueKeys(String sql, Set<ImmutableBitSet> expectedUniqueKeySet) {
-    checkGetUniqueKeys(tester, sql, expectedUniqueKeySet);
+    RelNode rel = convertSql(sql);
+    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
+    Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
+    assertThat(result, CoreMatchers.equalTo(expectedUniqueKeySet));
+    assertUniqueConsistent(rel);
   }
 
   /** Asserts that {@link RelMetadataQuery#getUniqueKeys(RelNode)}
@@ -987,11 +981,8 @@ public class RelMetadataTest extends SqlToRelTestBase {
    * "RelMdColumnUniqueness uses ImmutableBitSet.Builder twice, gets
    * NullPointerException"</a>. */
   @Test public void testJoinUniqueKeys() {
-    RelNode rel = convertSql("select * from emp join bonus using (ename)");
-    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-    Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
-    assertThat(result.isEmpty(), is(true));
-    assertUniqueConsistent(rel);
+    checkGetUniqueKeys("select * from emp join bonus using (ename)",
+        ImmutableSet.of());
   }
 
   @Test void testCorrelateUniqueKeys() {
@@ -1020,23 +1011,13 @@ public class RelMetadataTest extends SqlToRelTestBase {
   }
 
   @Test public void testGroupByEmptyUniqueKeys() {
-    RelNode rel = convertSql("select count(*) from emp");
-    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-    Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
-    assertThat(result,
-        CoreMatchers.equalTo(
-            ImmutableSet.of(ImmutableBitSet.of())));
-    assertUniqueConsistent(rel);
+    checkGetUniqueKeys("select count(*) from emp",
+        ImmutableSet.of(ImmutableBitSet.of()));
   }
 
   @Test public void testGroupByEmptyHavingUniqueKeys() {
-    RelNode rel = convertSql("select count(*) from emp where 1 = 1");
-    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-    final Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
-    assertThat(result,
-        CoreMatchers.equalTo(
-            ImmutableSet.of(ImmutableBitSet.of())));
-    assertUniqueConsistent(rel);
+    checkGetUniqueKeys("select count(*) from emp where 1 = 1",
+        ImmutableSet.of(ImmutableBitSet.of()));
   }
 
   @Test public void testFullOuterJoinUniqueness1() {
@@ -1213,26 +1194,51 @@ public class RelMetadataTest extends SqlToRelTestBase {
   }
 
   @Test public void testGroupBy() {
-    RelNode rel = convertSql("select deptno, count(*), sum(sal) from emp\n"
-            + "group by deptno");
-    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-    final Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
-    assertThat(result,
-        CoreMatchers.equalTo(
-            ImmutableSet.of(ImmutableBitSet.of(0))));
-    assertUniqueConsistent(rel);
+    checkGetUniqueKeys("select deptno, count(*), sum(sal) from emp group by deptno",
+        ImmutableSet.of(ImmutableBitSet.of(0)));
   }
 
   @Test public void testUnion() {
-    RelNode rel = convertSql("select deptno from emp\n"
-            + "union\n"
-            + "select deptno from dept");
-    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-    final Set<ImmutableBitSet> result = mq.getUniqueKeys(rel);
-    assertThat(result,
-        CoreMatchers.equalTo(
-            ImmutableSet.of(ImmutableBitSet.of(0))));
-    assertUniqueConsistent(rel);
+    checkGetUniqueKeys("select deptno from emp\n"
+        + "union\n"
+        + "select deptno from dept",
+        ImmutableSet.of(ImmutableBitSet.of(0)));
+  }
+
+  @Test public void testSingleKeyTableScanUniqueKeys() {
+    // select key column
+    checkGetUniqueKeys("select empno, ename from emp",
+        ImmutableSet.of(ImmutableBitSet.of(0)));
+
+    // select non key column
+    checkGetUniqueKeys("select ename, deptno from emp",
+        ImmutableSet.of());
+  }
+
+  @Test public void testCompositeKeysTableScanUniqueKeys() {
+    SqlTestFactory.MockCatalogReaderFactory factory = (typeFactory, caseSensitive) -> {
+      CompositeKeysCatalogReader catalogReader =
+          new CompositeKeysCatalogReader(typeFactory, false);
+      catalogReader.init();
+      return catalogReader;
+    };
+    Tester newTester = tester.withCatalogReaderFactory(factory);
+
+    // all columns, contain composite keys
+    checkGetUniqueKeys(newTester, "select * from s.composite_keys_table",
+        ImmutableSet.of(ImmutableBitSet.of(0, 1)));
+
+    // only contain composite keys
+    checkGetUniqueKeys(newTester, "select key1, key2 from s.composite_keys_table",
+        ImmutableSet.of(ImmutableBitSet.of(0, 1)));
+
+    // partial column of composite keys
+    checkGetUniqueKeys(newTester, "select key1, value1 from s.composite_keys_table",
+        ImmutableSet.of());
+
+    // no column of composite keys
+    checkGetUniqueKeys(newTester, "select value1 from s.composite_keys_table",
+        ImmutableSet.of());
   }
 
   @Test public void testBrokenCustomProviderWithMetadataFactory() {
@@ -3166,6 +3172,30 @@ public class RelMetadataTest extends SqlToRelTestBase {
      */
     DummyRelNode(RelOptCluster cluster, RelTraitSet traits, RelNode input) {
       super(cluster, traits, input);
+    }
+  }
+
+  /**
+   * Mocked catalog reader for registering table with composite keys.
+   */
+  private class CompositeKeysCatalogReader extends MockCatalogReaderSimple {
+
+    CompositeKeysCatalogReader(RelDataTypeFactory typeFactory, boolean caseSensitive) {
+      super(typeFactory, caseSensitive);
+    }
+
+    @Override public MockCatalogReader init() {
+      super.init();
+      MockSchema tSchema = new MockSchema("s");
+      registerSchema(tSchema);
+      // Register "T1" table.
+      final MockTable t1 =
+          MockTable.create(this, tSchema, "composite_keys_table", false, 7.0, null);
+      t1.addColumn("key1", typeFactory.createSqlType(SqlTypeName.VARCHAR), true);
+      t1.addColumn("key2", typeFactory.createSqlType(SqlTypeName.VARCHAR), true);
+      t1.addColumn("value1", typeFactory.createSqlType(SqlTypeName.INTEGER));
+      registerTable(t1);
+      return this;
     }
   }
 }
