@@ -839,7 +839,7 @@ class RelToSqlConverterTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3440">[CALCITE-3440]
    * RelToSqlConverter does not properly alias ambiguous ORDER BY</a>. */
-  @Test void testOrderByColumnWithSameNameAsAlias() {
+  @Test public void testOrderByColumnWithSameNameAsAlias() {
     String query = "select \"product_id\" as \"p\",\n"
         + " \"net_weight\" as \"product_id\"\n"
         + "from \"product\"\n"
@@ -851,7 +851,7 @@ class RelToSqlConverterTest {
     sql(query).ok(expected);
   }
 
-  @Test void testOrderByColumnWithSameNameAsAlias2() {
+  @Test public void testOrderByColumnWithSameNameAsAlias2() {
     // We use ordinal "2" because the column name "product_id" is obscured
     // by alias "product_id".
     String query = "select \"net_weight\" as \"product_id\",\n"
@@ -870,7 +870,7 @@ class RelToSqlConverterTest {
         .withMysql().ok(expectedMysql);
   }
 
-  @Test void testHiveSelectCharset() {
+  @Test public void testHiveSelectCharset() {
     String query = "select \"hire_date\", cast(\"hire_date\" as varchar(10)) "
         + "from \"foodmart\".\"reserve_employee\"";
     final String expected = "SELECT hire_date, CAST(hire_date AS VARCHAR(10))\n"
