@@ -28,7 +28,11 @@ from sales.dept_nested]]>
         <Resource name="plan">
             <![CDATA[
 LogicalProject(COLLECT_SKILL=[$0], COUNT_SKILL=[$1], COUNT_STAR=[$1], APPROX_COUNT_DISTINCT_SKILL=[$2], MAX_SKILL=[ROW($3.TYPE, $3.DESC, ROW($3.OTHERS.A, $3.OTHERS.B))], MIN_SKILL=[ROW($4.TYPE, $4.DESC, ROW($4.OTHERS.A, $4.OTHERS.B))], ANY_VALUE_SKILL=[ROW($5.TYPE, $5.DESC, ROW($5.OTHERS.A, $5.OTHERS.B))])
+<<<<<<< HEAD
   LogicalAggregate(group=[{}], COLLECT_SKILL=[COLLECT($0)], COUNT_SKILL=[COUNT()], APPROX_COUNT_DISTINCT_SKILL=[COUNT(APPROXIMATE DISTINCT $0)], MAX_SKILL=[MAX($0)], MIN_SKILL=[MIN($0)], ANY_VALUE_SKILL=[ANY_VALUE($0)])
+=======
+  LogicalAggregate(group=[{}], COLLECT_SKILL=[COLLECT($0)], COUNT_SKILL=[COUNT()], APPROX_COUNT_DISTINCT_SKILL=[COUNT(DISTINCT $0)], MAX_SKILL=[MAX($0)], MIN_SKILL=[MIN($0)], ANY_VALUE_SKILL=[ANY_VALUE($0)])
+>>>>>>> 69f813903 (Cosmetic)
     LogicalProject(SKILL=[ROW($2.TYPE, $2.DESC, ROW($2.OTHERS.A, $2.OTHERS.B))])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
 ]]>
@@ -46,7 +50,11 @@ from sales.dept_nested group by name]]>
         <Resource name="plan">
             <![CDATA[
 LogicalProject(COLLECT_SKILL=[$1], COUNT_SKILL=[$2], COUNT_STAR=[$2], APPROX_COUNT_DISTINCT_SKILL=[$3], MAX_SKILL=[ROW($4.TYPE, $4.DESC, ROW($4.OTHERS.A, $4.OTHERS.B))], MIN_SKILL=[ROW($5.TYPE, $5.DESC, ROW($5.OTHERS.A, $5.OTHERS.B))], ANY_VALUE_SKILL=[ROW($6.TYPE, $6.DESC, ROW($6.OTHERS.A, $6.OTHERS.B))])
+<<<<<<< HEAD
   LogicalAggregate(group=[{0}], COLLECT_SKILL=[COLLECT($1)], COUNT_SKILL=[COUNT()], APPROX_COUNT_DISTINCT_SKILL=[COUNT(APPROXIMATE DISTINCT $1)], MAX_SKILL=[MAX($1)], MIN_SKILL=[MIN($1)], ANY_VALUE_SKILL=[ANY_VALUE($1)])
+=======
+  LogicalAggregate(group=[{0}], COLLECT_SKILL=[COLLECT($1)], COUNT_SKILL=[COUNT()], APPROX_COUNT_DISTINCT_SKILL=[COUNT(DISTINCT $1)], MAX_SKILL=[MAX($1)], MIN_SKILL=[MIN($1)], ANY_VALUE_SKILL=[ANY_VALUE($1)])
+>>>>>>> 69f813903 (Cosmetic)
     LogicalProject(NAME=[$1], SKILL=[ROW($2.TYPE, $2.DESC, ROW($2.OTHERS.A, $2.OTHERS.B))])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
 ]]>
@@ -274,6 +282,9 @@ group by deptno]]>
     </TestCase>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 69f813903 (Cosmetic)
     <TestCase name="testArrayElementDoublyNestedPrimitive">
         <Resource name="sql">
             <![CDATA[select dn.employees[0]['detail']['skills'][0]['type']
@@ -319,6 +330,7 @@ from sales.dept_nested dn]]>
             <![CDATA[
 LogicalProject(EXPR$0=[ROW(ITEM(ITEM(ITEM(ITEM($3, 0), 'detail'), 'skills'), 0).OTHERS.A, ITEM(ITEM(ITEM(ITEM($3, 0), 'detail'), 'skills'), 0).OTHERS.B)])
   LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+<<<<<<< HEAD
 =======
     <TestCase name="testCaseWithinGroupingSets">
         <Resource name="sql">
@@ -341,6 +353,11 @@ LogicalAggregate(group=[{0, 1}], groups=[[{0, 1}, {0}]])
     </TestCase>
 =======
 >>>>>>> 0ec344147 (Revert "Temp fix for CALCITE-5045/CALCITE-5145")
+=======
+]]>
+        </Resource>
+    </TestCase>
+>>>>>>> 69f813903 (Cosmetic)
     <TestCase name="testCollectionTableWithLateral">
         <Resource name="sql">
             <![CDATA[select * from dept, lateral table(ramp(dept.deptno))]]>
@@ -1295,25 +1312,6 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
   LATERAL (select * from dept where emp.deptno=dept.deptno)]]>
         </Resource>
     </TestCase>
-  <TestCase name="testDynamicSchemaUnnest">
-    <Resource name="sql">
-      <![CDATA[select t1.c_nationkey, t3.fake_col3
-from SALES.CUSTOMER as t1,
-lateral (select t2."$unnest" as fake_col3
-         from unnest(t1.fake_col) as t2) as t3]]>
-    </Resource>
-    <Resource name="plan">
-      <![CDATA[
-LogicalProject(C_NATIONKEY=[$1], FAKE_COL3=[$2])
-  LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{0}])
-    LogicalTableScan(table=[[CATALOG, SALES, CUSTOMER]])
-    LogicalProject(FAKE_COL3=[$0])
-      Uncollect
-        LogicalProject(FAKE_COL=[$cor0.FAKE_COL])
-          LogicalValues(tuples=[[{ 0 }]])
-]]>
-    </Resource>
-  </TestCase>
     <TestCase name="testElement">
         <Resource name="plan">
             <![CDATA[
@@ -1584,6 +1582,7 @@ LogicalProject(ZIP=[$3])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     <TestCase name="testNestedStructFieldAccess">
         <Resource name="plan">
@@ -1686,6 +1685,8 @@ LogicalProject(EXPR$0=[ROW(ITEM(ITEM(ITEM(ITEM($3, 0), 'detail'), 'skills'), 0).
       </Resource>
     </TestCase>
 >>>>>>> af4516c57 ([CALCITE-3138] RelStructuredTypeFlattener doesn't restructure ROW type fields (Igor Guzenko))
+=======
+>>>>>>> 69f813903 (Cosmetic)
     <TestCase name="testSelectNestedColumnType">
         <Resource name="plan">
             <![CDATA[
@@ -1804,6 +1805,7 @@ LogicalProject(C_NATIONKEY=[$1], FAKE_COL3=[$2])
       Uncollect
         LogicalProject(FAKE_COL=[$cor0.FAKE_COL])
           LogicalValues(tuples=[[{ 0 }]])
+<<<<<<< HEAD
 =======
     LogicalProject(A=[$7], X=[$4], $f2=[$5])
       LogicalProject(CONTACTNO=[$0], FNAME=[$1], LNAME=[$2], EMAIL=[$3], X=[$4.X], Y=[$4.Y], M=[$5.M], A=[$5.SUB.A], B=[$5.SUB.B])
@@ -1813,6 +1815,8 @@ LogicalProject(C_NATIONKEY=[$1], FAKE_COL3=[$2])
     LogicalProject(A=[$5.SUB.A], X=[$4.X], $f2=[$4.Y])
       LogicalTableScan(table=[[CATALOG, CUSTOMER, CONTACT_PEEK]])
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
+=======
+>>>>>>> 69f813903 (Cosmetic)
 ]]>
         </Resource>
     </TestCase>
@@ -2010,6 +2014,18 @@ LogicalProject(NAME=[$0])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
     LogicalProject(NAME=[$1])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testFunctionWithStructInput">
+        <Resource name="sql">
+            <![CDATA[select json_type(skill)
+from sales.dept_nested]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EXPR$0=[JSON_TYPE($2.TYPE)])
+  LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
 ]]>
         </Resource>
     </TestCase>
@@ -5102,6 +5118,9 @@ LogicalAggregate(group=[{0}], EXPR$1=[SUM($1) FILTER $2], EXPR$2=[COUNT()])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 69f813903 (Cosmetic)
     <TestCase name="testNestedPrimitiveFieldAccess">
         <Resource name="sql">
             <![CDATA[select dn.skill['desc']
@@ -7116,7 +7135,7 @@ LogicalTableModify(table=[[CATALOG, SALES, EMP]], operation=[UPDATE], updateColu
     <TestCase name="testUpdateSubQueryWithNotIn">
         <Resource name="sql">
             <![CDATA[update emp
-set empno = 1 where empno not in(
+set empno = 1 where empno not in (
   select empno from emp where empno=2)]]>
         </Resource>
         <Resource name="plan">
@@ -7137,8 +7156,8 @@ LogicalTableModify(table=[[CATALOG, SALES, EMP]], operation=[UPDATE], updateColu
     <TestCase name="testUpdateSubQueryWithIn1">
         <Resource name="sql">
             <![CDATA[update emp
-set empno = 1 where empno in (
-  select empno from emp where empno=2)]]>
+set empno = 1 where emp.empno in (
+  select emp.empno from emp where emp.empno=2)]]>
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -9522,6 +9541,7 @@ LogicalProject(C=[$0], N=[$1])
         <Resource name="sql">
             <![CDATA[SELECT empno, count(distinct ename),
 approx_count_distinct(ename)
+<<<<<<< HEAD
 FROM emp
 GROUP BY empno]]>
         </Resource>
@@ -10563,6 +10583,8 @@ LogicalProject(C=[$0], N=[$1])
         <Resource name="sql">
             <![CDATA[SELECT empno, count(distinct ename),
 approx_count_distinct(ename) "
+=======
+>>>>>>> 69f813903 (Cosmetic)
 FROM emp
 GROUP BY empno]]>
         </Resource>

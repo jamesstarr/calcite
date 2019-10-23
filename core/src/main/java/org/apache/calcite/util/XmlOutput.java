@@ -377,10 +377,9 @@ public class XmlOutput {
       stringEncodeXML(data, out);
       out.println();
     }
-<<<<<<< HEAD
-=======
     out.println();
->>>>>>> 2c93738cc ([CALCITE-3259] Align 'Property' in the serialized xml string of RelXmlWriter (Wang Yanlin).)
+=======
+>>>>>>> 69f813903 (Cosmetic)
     out.flush();
     tagsWritten++;
   }
