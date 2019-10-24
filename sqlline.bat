@@ -22,8 +22,17 @@
 :: sqlline> !connect jdbc:calcite: admin admin
 
 :: Copy dependency jars on first call.
+<<<<<<< HEAD
 :: To force jar refresh, remove core\target\dependencies)
 if not exist build\libs\sqllineClasspath.jar (call gradlew buildSqllineClasspath)
+=======
+:: (To force jar refresh, remove core\target\dependencies)
+:: We remove slf4j-log4j, otherwise slf4j complains about multiple bindings.
+if not exist core\target\dependencies (
+  call .\mvnw -B dependency:copy-dependencies -DoverWriteReleases=false -DoverWriteSnapshots=false -DoverWriteIfNewer=true -DoutputDirectory=target\dependencies
+  del /q /s slf4j-log4j12-*.jar
+)
+>>>>>>> 040dd0c60 ([CALCITE-3444] Upgrade SQLLine to 1.9.0, and solve "Class path contains multiple SLF4J bindings" problem)
 
 <<<<<<< HEAD
 java -Xmx1G -jar build\libs\sqllineClasspath.jar %*

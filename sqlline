@@ -26,8 +26,21 @@ case $(uname -s) in
 (*) cygwin=;;
 esac
 
+<<<<<<< HEAD
 # Build classpath on first call. To update it run ./gradlew buildSqllineClasspath
 root=$(cd "$(dirname "$(readlink $0)")"; pwd)
+=======
+# Build classpath on first call.
+# (To force rebuild, remove target/fullclasspath.txt.)
+# Remove slf4j-log4j, otherwise slf4j complains about multiple bindings.
+cd $(dirname $0)
+if [ ! -f target/fullclasspath.txt ]; then
+    ./mvnw dependency:build-classpath -Dmdep.outputFile=target/classpath.txt
+    awk -v RS=: -v ORS=: '{if (!m[$0] && $0 !~ /slf4j-log4j12/) {m[$0]=1; print}}' \
+        target/classpath.txt \
+        */target/classpath.txt > target/fullclasspath.txt
+fi
+>>>>>>> 040dd0c60 ([CALCITE-3444] Upgrade SQLLine to 1.9.0, and solve "Class path contains multiple SLF4J bindings" problem)
 
 <<<<<<< HEAD
 CP=$root/build/libs/sqllineClasspath.jar
