@@ -31,9 +31,8 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-<<<<<<< HEAD
-=======
 import org.apache.calcite.sql.type.SqlTypeAssignmentRules;
+=======
 import org.apache.calcite.sql.type.SqlTypeFamily;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
@@ -216,6 +215,7 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
         && fromType.getSqlTypeName() == SqlTypeName.VARCHAR) {
       return false;
     }
+
     // No need to cast if the source type precedence list
     // contains target type. i.e. do not cast from
     // tinyint to int or int to bigint.
@@ -224,10 +224,14 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
         && SqlTypeUtil.isIntType(toType)) {
       return false;
     }
+
+    // Implicit type coercion does not handle nullability.
+    if (SqlTypeUtil.equalSansNullability(factory, fromType, toType)) {
+      return false;
+    }
     // Should keep sync with rules in SqlTypeAssignmentRules.
-    return !SqlTypeUtil.equalSansNullability(factory, fromType, toType)
-        && SqlTypeAssignmentRules.instance(true)
-            .canCastFrom(toType.getSqlTypeName(), fromType.getSqlTypeName());
+    assert SqlTypeUtil.canCastFrom(toType, fromType, true);
+    return true;
   }
 
   /** It should not be used directly, because some other work should be done
