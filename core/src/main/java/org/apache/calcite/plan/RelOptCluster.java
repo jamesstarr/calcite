@@ -53,7 +53,8 @@ public class RelOptCluster {
   private MetadataFactory metadataFactory;
   private HintStrategyTable hintStrategies;
   private final RelTraitSet emptyTraitSet;
->>>>>>> 3d7bdad35 ([] use RelMetadataProvider/RelMetadataQuery set in cluster instead of the default/empty ones)
+  private RelMetadataQuery mq;
+  private Supplier<RelMetadataQuery> mqSupplier;
 
   //~ Constructors -----------------------------------------------------------
 
@@ -88,7 +89,7 @@ public class RelOptCluster {
     // set up a default rel metadata provider,
     // giving the planner first crack at everything
     setMetadataProvider(DefaultRelMetadataProvider.INSTANCE);
-    setMetadataQuerySupplier(RelMetadataQuery::instance);
+    setMetadataQuery(RelMetadataQuery::instance);
     this.emptyTraitSet = planner.emptyTraitSet();
     assert emptyTraitSet.size() == planner.getRelTraitDefs().size();
   }
@@ -141,8 +142,7 @@ public class RelOptCluster {
   @SuppressWarnings("deprecation")
   public void setMetadataProvider(RelMetadataProvider metadataProvider) {
     this.metadataProvider = metadataProvider;
-    this.metadataFactory =
-        new org.apache.calcite.rel.metadata.MetadataFactoryImpl(metadataProvider);
+    this.metadataFactory = new MetadataFactoryImpl(metadataProvider);
     // Wrap the metadata provider as a JaninoRelMetadataProvider
     // and set it to the ThreadLocal,
     // JaninoRelMetadataProvider is required by the RelMetadataQuery.
@@ -161,36 +161,29 @@ public class RelOptCluster {
   }
 
   /**
-   * Sets up the customized {@link RelMetadataQuery} instance supplier that to
-   * use during rule planning.
+   * Set up the customized {@link RelMetadataQuery} instance that to use during rule planning.
    *
    * <p>Note that the {@code mqSupplier} should return
    * a fresh new {@link RelMetadataQuery} instance because the instance would be
    * cached in this cluster, and we may invalidate and re-generate it
    * for each {@link RelOptRuleCall} cycle.
    */
-  public void setMetadataQuerySupplier(Supplier<RelMetadataQuery> mqSupplier) {
+  public void setMetadataQuery(Supplier<RelMetadataQuery> mqSupplier) {
     this.mqSupplier = mqSupplier;
   }
 
-  /**
-   * Returns the current RelMetadataQuery.
+  /** Returns the current RelMetadataQuery.
    *
    * <p>This method might be changed or moved in future.
    * If you have a {@link RelOptRuleCall} available,
    * for example if you are in a {@link RelOptRule#onMatch(RelOptRuleCall)}
    * method, then use {@link RelOptRuleCall#getMetadataQuery()} instead. */
   public RelMetadataQuery getMetadataQuery() {
-    if (metadataProvider == null) {
-      return RelMetadataQuery.instance();
-    } else {
-      return RelMetadataQuery.instance(this.metadataProvider);
+    if (mq == null) {
+      mq = mqSupplier.get();
     }
-<<<<<<< HEAD
-=======
     return RelMetadataQuery.instance();
 =======
->>>>>>> bc938e435 (Revert "DX-12806: Remove JaninoRelMetadataProvider")
   }
 
   /**
@@ -198,6 +191,9 @@ public class RelOptCluster {
    */
   public Supplier<RelMetadataQuery> getMetadataQuerySupplier() {
     return this.mqSupplier;
+=======
+    return mq;
+>>>>>>> a320d6088 ([CALCITE-3446] Make RelMetadataQuery extensible)
   }
 
   /**
@@ -205,6 +201,7 @@ public class RelOptCluster {
    * invalid. Typically invoked from {@link RelOptRuleCall#transformTo}.
    */
   public void invalidateMetadataQuery() {
+    mq = null;
   }
 
   /**

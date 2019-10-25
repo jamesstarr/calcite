@@ -195,22 +195,7 @@ public abstract class RelOptRuleCall {
   }
 
   /**
-   * Determines whether the rule is excluded by any root node hint.
-   *
-   * @return true iff rule should be excluded
-   */
-  public boolean isRuleExcluded() {
-    if (!(rels[0] instanceof Hintable)) {
-      return false;
-    }
-
-    return rels[0].getCluster()
-        .getHintStrategies()
-        .isRuleExcluded((Hintable) rels[0], rule);
-  }
-
-  /**
-   * Returns the current RelMetadataQuery
+   * Returns the current RelMetadataQuery or its sub-class,
    * to be used for instance by
    * {@link RelOptRule#onMatch(RelOptRuleCall)}.
    */

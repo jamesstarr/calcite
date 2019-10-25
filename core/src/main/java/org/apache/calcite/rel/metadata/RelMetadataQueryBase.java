@@ -18,9 +18,10 @@ package org.apache.calcite.rel.metadata;
 
 import org.apache.calcite.rel.RelNode;
 
-import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.Table;
-
+import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -46,7 +47,7 @@ import java.util.function.Supplier;
  * "SOURCE"s with default ones also works).
  * <li>Set {@code MyRelMetadataProvider} into the cluster instance.
  * <li>Use
- * {@link org.apache.calcite.plan.RelOptCluster#setMetadataQuerySupplier(Supplier)}
+ * {@link org.apache.calcite.plan.RelOptCluster#setMetadataQuery(Supplier)}
  * to set the metadata query {@link Supplier} into the cluster instance. This {@link Supplier}
  * should return a <strong>fresh new</strong> instance.
  * <li>Use the cluster instance to create
@@ -59,11 +60,9 @@ public class RelMetadataQueryBase {
   //~ Instance fields --------------------------------------------------------
 
   /** Set of active metadata queries, and cache of previous results. */
-  //@Deprecated // to be removed before 2.0
-  public final Table<RelNode, Object, Object> map;
+  public final Map<List, Object> map = new HashMap<>();
 
-  public final RelMetadataCache cache;
-  protected final RelMetadataHandlerProvider relMetadataHandlerProvider;
+  public final JaninoRelMetadataProvider metadataProvider;
 
   //~ Static fields/initializers ---------------------------------------------
 
@@ -72,33 +71,27 @@ public class RelMetadataQueryBase {
 
   //~ Constructors -----------------------------------------------------------
 
+  protected RelMetadataQueryBase(JaninoRelMetadataProvider metadataProvider) {
+    this.metadataProvider = metadataProvider;
+  }
 
-  protected RelMetadataQueryBase(RelMetadataHandlerProvider relMetadataHandlerProvider) {
-    this.relMetadataHandlerProvider = relMetadataHandlerProvider;
-    this.cache = relMetadataHandlerProvider.buildCache();
-    if (cache instanceof TableRelMetadataCache) {
-      map = ((TableRelMetadataCache) cache).map;
-    } else {
-      map = ImmutableTable.of();
-    }
+  protected static <H> H initialHandler(Class<H> handlerClass) {
+    return handlerClass.cast(
+        Proxy.newProxyInstance(RelMetadataQuery.class.getClassLoader(),
+            new Class[] {handlerClass}, (proxy, method, args) -> {
+              final RelNode r = (RelNode) args[0];
+              throw new JaninoRelMetadataProvider.NoHandler(r.getClass());
+            }));
   }
 
   //~ Methods ----------------------------------------------------------------
 
   /** Re-generates the handler for a given kind of metadata, adding support for
    * {@code class_} if it is not already present. */
-  protected <M extends Metadata, H extends MetadataHandler<M>> H revise(
-      Class<? extends RelNode> relClass, MetadataDef<M> def) {
-    return relMetadataHandlerProvider.revise(relClass, def);
-  }
-
-  /**
-   * Removes cached metadata values for specified RelNode.
-   *
-   * @param rel RelNode whose cached metadata should be removed
-   * @return true if cache for the provided RelNode was not empty
-   */
-  public boolean clearCache(RelNode rel) {
-    return cache.clear(rel);
+  protected <M extends Metadata, H extends MetadataHandler<M>> H
+      revise(Class<? extends RelNode> class_, MetadataDef<M> def) {
+    return metadataProvider.revise(class_, def);
   }
 }
+
+// End RelMetadataQueryBase.java
