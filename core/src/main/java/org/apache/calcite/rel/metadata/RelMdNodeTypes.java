@@ -29,9 +29,6 @@ import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.Match;
 import org.apache.calcite.rel.core.Minus;
 import org.apache.calcite.rel.core.Project;
-<<<<<<< HEAD
-import org.apache.calcite.rel.core.Sample;
-=======
 >>>>>>> 08c4ce185 ([CALCITE-3126] Remove deprecated SemiJoin usage completely)
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableModify;
@@ -142,6 +139,7 @@ public class RelMdNodeTypes
     return getNodeTypes(rel, TableModify.class, mq);
   }
 
+<<<<<<< HEAD
   public Multimap<Class<? extends RelNode>, RelNode> getNodeTypes(Exchange rel,
       RelMetadataQuery mq) {
     return getNodeTypes(rel, Exchange.class, mq);
@@ -167,6 +165,7 @@ public class RelMdNodeTypes
     return getNodeTypes(rel, Match.class, mq);
   }
 
+=======
   private static Multimap<Class<? extends RelNode>, RelNode> getNodeTypes(RelNode rel,
       Class<? extends RelNode> c, RelMetadataQuery mq) {
     final Multimap<Class<? extends RelNode>, RelNode> nodeTypeCount = ArrayListMultimap.create();

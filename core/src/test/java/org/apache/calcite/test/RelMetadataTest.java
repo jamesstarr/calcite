@@ -2617,9 +2617,6 @@ public class RelMetadataTest extends SqlToRelTestBase {
         sortsAs("[=([CATALOG, SALES, EMP].#1.$0, 5), true, true]"));
   }
 
-<<<<<<< HEAD
-  @Test void testTableReferencesJoinUnknownNode() {
-=======
   @Test public void testTableReferencesJoinUnknownNode() {
     final String sql = "select * from emp limit 10";
     final RelNode node = convertSql(sql);
@@ -2738,7 +2735,10 @@ public class RelMetadataTest extends SqlToRelTestBase {
     checkNodeTypeCount(sql, expected);
   }
 
+<<<<<<< HEAD
   @Test void testNodeTypeCountTableModify() {
+=======
+  @Test public void testNodeTypeTableModify() {
     final String sql = "insert into emp select * from emp";
     final Map<Class<? extends RelNode>, Integer> expected = new HashMap<>();
     expected.put(TableScan.class, 1);
@@ -2747,38 +2747,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     checkNodeTypeCount(sql, expected);
   }
 
-  @Test void testNodeTypeCountExchange() {
-
-    final RelNode rel = convertSql("select * from emp");
-    final RelDistribution dist = RelDistributions.hash(ImmutableList.<Integer>of());
-    final LogicalExchange exchange = LogicalExchange.create(rel, dist);
-
-    final Map<Class<? extends RelNode>, Integer> expected = new HashMap<>();
-    expected.put(TableScan.class, 1);
-    expected.put(Exchange.class, 1);
-    expected.put(Project.class, 1);
-
-    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-    final Multimap<Class<? extends RelNode>, RelNode> result = mq.getNodeTypes(exchange);
-    assertThat(result, notNullValue());
-    final Map<Class<? extends RelNode>, Integer> resultCount = new HashMap<>();
-    for (Entry<Class<? extends RelNode>, Collection<RelNode>> e : result.asMap().entrySet()) {
-      resultCount.put(e.getKey(), e.getValue().size());
-    }
-    assertThat(expected, equalTo(resultCount));
-  }
-
-  @Test void testNodeTypeCountSample() {
-    final String sql = "select * from emp tablesample system(50) where empno > 5";
-    final Map<Class<? extends RelNode>, Integer> expected = new HashMap<>();
-    expected.put(TableScan.class, 1);
-    expected.put(Filter.class, 1);
-    expected.put(Project.class, 1);
-    expected.put(Sample.class, 1);
-    checkNodeTypeCount(sql, expected);
-  }
-
-  @Test void testNodeTypeCountJoinFinite() {
+  @Test public void testNodeTypeCountJoinFinite() {
     final String sql = "select * from (select * from emp limit 14) as emp\n"
         + "inner join (select * from dept limit 4) as dept\n"
         + "on emp.deptno = dept.deptno";
