@@ -44,8 +44,6 @@ import static org.junit.Assert.assertTrue;
 public class SqlPrettyWriterTest {
   //~ Static fields/initializers ---------------------------------------------
 
-  public static final String NL = System.getProperty("line.separator");
-
   //~ Constructors -----------------------------------------------------------
 
   public SqlPrettyWriterTest() {
@@ -67,8 +65,9 @@ public class SqlPrettyWriterTest {
     try {
       node = SqlParser.create(sql).parseQuery();
     } catch (SqlParseException e) {
-      String message = "Received error while parsing SQL '" + sql
-          + "'; error is:" + NL + e.toString();
+      String message = "Received error while parsing SQL '" + sql + "'"
+          + "; error is:\n"
+          + e.toString();
       throw new AssertionError(message);
     }
     return node;
@@ -99,20 +98,20 @@ public class SqlPrettyWriterTest {
 
     Sql expectingDesc(String desc) {
       return Objects.equals(this.desc, desc)
-              ? this
-              : new Sql(sql, expr, desc, formatted, transform);
+          ? this
+          : new Sql(sql, expr, desc, formatted, transform);
     }
 
     Sql withExpr(boolean expr) {
       return this.expr == expr
-              ? this
-              : new Sql(sql, expr, desc, formatted, transform);
+          ? this
+          : new Sql(sql, expr, desc, formatted, transform);
     }
 
     Sql expectingFormatted(String formatted) {
       return Objects.equals(this.formatted, formatted)
-              ? this
-              : new Sql(sql, expr, desc, formatted, transform);
+          ? this
+          : new Sql(sql, expr, desc, formatted, transform);
     }
 
     Sql check() {
@@ -145,11 +144,11 @@ public class SqlPrettyWriterTest {
 
       // Now parse the result, and make sure it is structurally equivalent
       // to the original.
-      final String actual2 = formatted.replace("`", "\"");
+      final String actual2 = formatted.replaceAll("`", "\"");
       final SqlNode node2;
       if (expr) {
         final SqlCall valuesCall =
-                (SqlCall) parseQuery("VALUES (" + actual2 + ")");
+            (SqlCall) parseQuery("VALUES (" + actual2 + ")");
         final SqlCall rowCall = valuesCall.operand(0);
         node2 = rowCall.operand(0);
       } else {
@@ -163,19 +162,19 @@ public class SqlPrettyWriterTest {
 
   private Sql simple() {
     return sql("select x as a, b as b, c as c, d,"
-            + " 'mixed-Case string',"
-            + " unquotedCamelCaseId,"
-            + " \"quoted id\" "
-            + "from"
-            + " (select *"
-            + " from t"
-            + " where x = y and a > 5"
-            + " group by z, zz"
-            + " window w as (partition by c),"
-            + "  w1 as (partition by c,d order by a, b"
-            + "   range between interval '2:2' hour to minute preceding"
-            + "    and interval '1' day following)) "
-            + "order by gg");
+        + " 'mixed-Case string',"
+        + " unquotedCamelCaseId,"
+        + " \"quoted id\" "
+        + "from"
+        + " (select *"
+        + " from t"
+        + " where x = y and a > 5"
+        + " group by z, zz"
+        + " window w as (partition by c),"
+        + "  w1 as (partition by c,d order by a, b"
+        + "   range between interval '2:2' hour to minute preceding"
+        + "    and interval '1' day following)) "
+        + "order by gg");
   }
 
   private Sql sql(String sql) {
@@ -183,12 +182,12 @@ public class SqlPrettyWriterTest {
   }
 
   private Sql expr(String sql) {
-    return sql(sql).withExpr(true);
+    return sql(sql).withExpr(true).expectingDesc(null);
   }
 
   // ~ Tests ----------------------------------------------------------------
 
-  @Test public void testDefault() throws Exception {
+  @Test public void testDefault() {
     simple().check();
   }
 
@@ -407,6 +406,7 @@ public class SqlPrettyWriterTest {
 
   @Test public void testMultiset() {
     sql("values (multiset (select * from t))")
+        .expectingDesc(null)
         .check();
   }
 
@@ -421,6 +421,7 @@ public class SqlPrettyWriterTest {
 
   @Test public void testInnerJoin() {
     sql("select * from x inner join y on x.k=y.k")
+        .expectingDesc(null)
         .check();
   }
 
