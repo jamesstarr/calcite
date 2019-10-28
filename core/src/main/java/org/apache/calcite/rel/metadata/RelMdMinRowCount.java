@@ -20,7 +20,7 @@ import org.apache.calcite.adapter.enumerable.EnumerableLimit;
 import org.apache.calcite.plan.volcano.RelSubset;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
-import org.apache.calcite.rel.core.Calc;
+>>>>>>> 211582e05 ([CALCITE-3454] Support Exchange in RelMdMaxRowCount,RelMdMinRowCount,RelMdRowCount (xy2953396112))
 import org.apache.calcite.rel.core.Exchange;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Intersect;
@@ -98,10 +98,12 @@ public class RelMdMinRowCount
     return mq.getMinRowCount(rel.getInput());
   }
 
+<<<<<<< HEAD
   public Double getMinRowCount(TableModify rel, RelMetadataQuery mq) {
     return mq.getMinRowCount(rel.getInput());
   }
 
+=======
   public Double getMinRowCount(Sort rel, RelMetadataQuery mq) {
     Double rowCount = mq.getMinRowCount(rel.getInput());
     if (rowCount == null) {
