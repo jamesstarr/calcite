@@ -937,10 +937,11 @@ public interface SqlValidator {
     boolean lenientOperatorLookup();
 
     /**
-     * Sets whether this validator should be lenient upon encountering an unknown
-     * function.
-     *
-     * @param lenient Whether to be lenient when encountering an unknown function
+   * Sets enable or disable implicit type coercion when the validator does validation.
+   *
+   * @param enabled if enable the type coercion, default is true
+   *
+   * @see org.apache.calcite.sql.validate.implicit.TypeCoercionImpl TypeCoercionImpl
      */
     Config withLenientOperatorLookup(boolean lenient);
 
@@ -950,9 +951,11 @@ public interface SqlValidator {
     boolean typeCoercionEnabled();
 
     /**
-     * Sets whether to enable implicit type coercion for validation, default true.
-     *
-     * @see org.apache.calcite.sql.validate.implicit.TypeCoercionImpl TypeCoercionImpl
+   * Sets an instance of type coercion, you can customize the coercion rules to
+   * override the default ones defined in
+   * {@link org.apache.calcite.sql.validate.implicit.TypeCoercionImpl}.
+   *
+   * @param typeCoercion {@link TypeCoercion} instance
      */
     Config withTypeCoercionEnabled(boolean enabled);
 
