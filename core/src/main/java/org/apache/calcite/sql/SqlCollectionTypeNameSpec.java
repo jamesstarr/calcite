@@ -49,9 +49,10 @@ import java.util.Objects;
  *   &lt;data type&gt; MULTISET
  * </pre></blockquote>
  *
- * <p>This class is intended to be used in nested collection type, it can be used as the
- * element type name of {@link SqlDataTypeSpec}. i.e. "int array array" or "int array multiset".
- * For simple collection type like "int array", {@link SqlBasicTypeNameSpec} is descriptive enough.
+ * <p>This class is intended to describe SQL collection type. It can describe
+ * either simple collection type like "int array" or nested collection type like
+ * "int array array" or "int array multiset". For nested collection type, the element type
+ * name of this {@code SqlCollectionTypeNameSpec} is also a {@code SqlCollectionTypeNameSpec}.
  */
 public class SqlCollectionTypeNameSpec extends SqlTypeNameSpec {
   private final SqlTypeNameSpec elementTypeName;
@@ -60,9 +61,9 @@ public class SqlCollectionTypeNameSpec extends SqlTypeNameSpec {
   /**
    * Creates a {@code SqlCollectionTypeNameSpec}.
    *
-   * @param elementTypeName    Type of the collection element.
-   * @param collectionTypeName Collection type name.
-   * @param pos                Parser position, must not be null.
+   * @param elementTypeName    Type of the collection element
+   * @param collectionTypeName Collection type name
+   * @param pos                Parser position, must not be null
    */
   public SqlCollectionTypeNameSpec(SqlTypeNameSpec elementTypeName,
       SqlTypeName collectionTypeName,
@@ -76,5 +77,55 @@ public class SqlCollectionTypeNameSpec extends SqlTypeNameSpec {
     return elementTypeName;
   }
 
+<<<<<<< HEAD
+=======
+  @Override public RelDataType deriveType(SqlValidator validator) {
+    final RelDataType type = elementTypeName.deriveType(validator);
+    return createCollectionType(type, validator.getTypeFactory());
+  }
+
+  @Override public void unparse(SqlWriter writer, int leftPrec, int rightPrec) {
+    elementTypeName.unparse(writer, leftPrec, rightPrec);
+    writer.keyword(collectionTypeName.name());
+  }
+
+  @Override public boolean equalsDeep(SqlTypeNameSpec spec, Litmus litmus) {
+    if (!(spec instanceof SqlCollectionTypeNameSpec)) {
+      return litmus.fail("{} != {}", this, spec);
+    }
+    SqlCollectionTypeNameSpec that = (SqlCollectionTypeNameSpec) spec;
+    if (!this.elementTypeName.equalsDeep(that.elementTypeName, litmus)) {
+      return litmus.fail("{} != {}", this, spec);
+    }
+    if (!Objects.equals(this.collectionTypeName, that.collectionTypeName)) {
+      return litmus.fail("{} != {}", this, spec);
+    }
+    return litmus.succeed();
+  }
+
+  //~ Tools ------------------------------------------------------------------
+
+  /**
+   * Create collection data type.
+   *
+   * @param elementType Type of the collection element
+   * @param typeFactory Type factory
+   * @return The collection data type, or throw exception if the collection
+   *         type name does not belong to {@code SqlTypeName} enumerations
+   */
+  private RelDataType createCollectionType(RelDataType elementType,
+      RelDataTypeFactory typeFactory) {
+    switch (collectionTypeName) {
+    case MULTISET:
+      return typeFactory.createMultisetType(elementType, -1);
+    case ARRAY:
+      return typeFactory.createArrayType(elementType, -1);
+
+    default:
+      throw Util.unexpected(collectionTypeName);
+    }
+  }
+}
+>>>>>>> 7dff01713 (Cosmetic changes)
 
 // End SqlCollectionTypeNameSpec.java

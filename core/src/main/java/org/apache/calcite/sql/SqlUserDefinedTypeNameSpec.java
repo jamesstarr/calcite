@@ -26,8 +26,17 @@ import org.apache.calcite.util.Litmus;
  *
  * <p>Usually you should register the UDT into the {@link org.apache.calcite.jdbc.CalciteSchema}
  * first before referencing it in the sql statement.
-   * @param typeName Type name as SQL identifier.
-   * @param pos The parser position.
+ *
+ * <p>Internally we may new the {@code SqlUserDefinedTypeNameSpec} instance directly
+ * for some sql dialects during rel-to-sql conversion.
+ */
+public class SqlUserDefinedTypeNameSpec extends SqlTypeNameSpec {
+
+  /**
+   * Create a SqlUserDefinedTypeNameSpec instance.
+   *
+   * @param typeName Type name as SQL identifier
+   * @param pos The parser position
    */
   public SqlUserDefinedTypeNameSpec(SqlIdentifier typeName, SqlParserPos pos) {
     super(typeName, pos);
