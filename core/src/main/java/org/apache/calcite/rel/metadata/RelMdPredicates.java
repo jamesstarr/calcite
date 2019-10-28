@@ -551,6 +551,13 @@ public class RelMdPredicates
   }
 
   /**
+   * Infers predicates for a TableModify.
+   */
+  public RelOptPredicateList getPredicates(TableModify tableModify, RelMetadataQuery mq) {
+    return mq.getPulledUpPredicates(tableModify.getInput());
+  }
+
+  /**
    * Infers predicates for an Exchange.
    */
   public RelOptPredicateList getPredicates(Exchange exchange,

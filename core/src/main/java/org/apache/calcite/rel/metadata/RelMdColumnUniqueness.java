@@ -150,6 +150,12 @@ public class RelMdColumnUniqueness
     return mq.areColumnsUnique(rel.getInput(), columns, ignoreNulls);
   }
 
+  public Boolean areColumnsUnique(TableModify rel, RelMetadataQuery mq,
+      ImmutableBitSet columns, boolean ignoreNulls) {
+    columns = decorateWithConstantColumnsFromPredicates(columns, rel, mq);
+    return mq.areColumnsUnique(rel.getInput(), columns, ignoreNulls);
+  }
+
   public Boolean areColumnsUnique(Exchange rel, RelMetadataQuery mq,
       ImmutableBitSet columns, boolean ignoreNulls) {
     columns = decorateWithConstantColumnsFromPredicates(columns, rel, mq);

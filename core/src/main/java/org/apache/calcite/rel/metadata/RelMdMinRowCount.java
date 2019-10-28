@@ -98,11 +98,13 @@ public class RelMdMinRowCount
     return mq.getMinRowCount(rel.getInput());
   }
 
-<<<<<<< HEAD
+>>>>>>> 7ddb4b7ee ([CALCITE-3454] Support Exchange, SetOp and TableModify for builtin)
   public Double getMinRowCount(TableModify rel, RelMetadataQuery mq) {
     return mq.getMinRowCount(rel.getInput());
   }
 
+<<<<<<< HEAD
+=======
 =======
   public Double getMinRowCount(Sort rel, RelMetadataQuery mq) {
     Double rowCount = mq.getMinRowCount(rel.getInput());

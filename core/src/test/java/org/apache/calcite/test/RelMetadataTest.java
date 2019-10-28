@@ -36,12 +36,13 @@ import org.apache.calcite.rel.SingleRel;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.core.Correlate;
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import org.apache.calcite.rel.core.Exchange;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.core.Minus;
 import org.apache.calcite.rel.core.Project;
+import org.apache.calcite.rel.core.Sample;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableModify;
 import org.apache.calcite.rel.core.TableScan;
@@ -535,13 +536,13 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
     final Double result = mq.getRowCount(rel);
     assertThat(result, notNullValue());
-    assertEquals(expected, result, 0d);
+    assertThat(result, is(expected));
     final Double max = mq.getMaxRowCount(rel);
     assertThat(max, notNullValue());
-    assertEquals(expectedMax, max, 0d);
+    assertThat(max, is(expectedMax));
     final Double min = mq.getMinRowCount(rel);
-    assertThat(max, notNullValue());
-    assertEquals(expectedMin, min, 0d);
+    assertThat(min, notNullValue());
+    assertThat(min, is(expectedMin));
   }
 
   @Test public void testRowCountEmp() {
@@ -687,6 +688,11 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final RelDistribution dist = RelDistributions.hash(ImmutableList.<Integer>of());
     final LogicalExchange exchange = LogicalExchange.create(rel, dist);
     checkExchangeRowCount(exchange, EMP_SIZE, 0D, 123456D);
+  }
+
+  @Test public void testRowCountTableModify() {
+    final String sql = "insert into emp select * from emp order by ename limit 123456";
+    checkRowCount(sql, EMP_SIZE, 0D, 123456D);
   }
 
   @Test public void testRowCountSortHighLimit() {
@@ -2566,7 +2572,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
             + "[CATALOG, SALES, EMP].#2, [CATALOG, SALES, EMP].#3]"));
   }
 
-  @Test void testTableReferenceForIntersect() {
+  @Test public void testTableReferenceForIntersect() {
     final String sql1 = "select a.deptno, a.sal from emp a\n"
         + "intersect all select b.deptno, b.sal from emp b where empno = 5";
     final RelNode rel1 = convertSql(sql1);
@@ -2584,7 +2590,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
 
   }
 
-  @Test void testTableReferenceForMinus() {
+  @Test public void testTableReferenceForMinus() {
     final String sql = "select emp.deptno, emp.sal from emp\n"
         + "except all select emp.deptno, emp.sal from emp where empno = 5";
     final RelNode rel = convertSql(sql);
@@ -2594,7 +2600,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
         equalTo("[[CATALOG, SALES, EMP].#0, [CATALOG, SALES, EMP].#1]"));
   }
 
-  @Test void testAllPredicatesCrossJoinMultiTable() {
+  @Test public void testAllPredicatesCrossJoinMultiTable() {
     final String sql = "select x.sal from\n"
         + "(select a.deptno, c.sal from (select * from emp limit 7) as a\n"
         + "cross join (select * from dept limit 1) as b\n"
@@ -2730,15 +2736,45 @@ public class RelMetadataTest extends SqlToRelTestBase {
     checkNodeTypeCount(sql, expected);
   }
 
-<<<<<<< HEAD
-  @Test void testNodeTypeCountTableModify() {
-=======
   @Test public void testNodeTypeTableModify() {
+=======
+  @Test public void testNodeTypeCountTableModify() {
     final String sql = "insert into emp select * from emp";
     final Map<Class<? extends RelNode>, Integer> expected = new HashMap<>();
     expected.put(TableScan.class, 1);
     expected.put(TableModify.class, 1);
     expected.put(Project.class, 1);
+    checkNodeTypeCount(sql, expected);
+  }
+
+  @Test public void testNodeTypeCountExchange() {
+
+    final RelNode rel = convertSql("select * from emp");
+    final RelDistribution dist = RelDistributions.hash(ImmutableList.<Integer>of());
+    final LogicalExchange exchange = LogicalExchange.create(rel, dist);
+
+    final Map<Class<? extends RelNode>, Integer> expected = new HashMap<>();
+    expected.put(TableScan.class, 1);
+    expected.put(Exchange.class, 1);
+    expected.put(Project.class, 1);
+
+    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
+    final Multimap<Class<? extends RelNode>, RelNode> result = mq.getNodeTypes(exchange);
+    assertThat(result, notNullValue());
+    final Map<Class<? extends RelNode>, Integer> resultCount = new HashMap<>();
+    for (Entry<Class<? extends RelNode>, Collection<RelNode>> e : result.asMap().entrySet()) {
+      resultCount.put(e.getKey(), e.getValue().size());
+    }
+    assertThat(expected, equalTo(resultCount));
+  }
+
+  @Test public void testNodeTypeCountSample() {
+    final String sql = "select * from emp tablesample system(50) where empno > 5";
+    final Map<Class<? extends RelNode>, Integer> expected = new HashMap<>();
+    expected.put(TableScan.class, 1);
+    expected.put(Filter.class, 1);
+    expected.put(Project.class, 1);
+    expected.put(Sample.class, 1);
     checkNodeTypeCount(sql, expected);
   }
 
