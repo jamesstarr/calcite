@@ -18,6 +18,7 @@ package org.apache.calcite.rel.metadata;
 
 import org.apache.calcite.rel.RelNode;
 
+
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
 
