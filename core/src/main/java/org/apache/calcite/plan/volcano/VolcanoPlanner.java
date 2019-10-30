@@ -892,20 +892,20 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
       for (RelSubset subset : set.subsets) {
         if (subset.set != set) {
           return litmus.fail("subset [{}] is in wrong set [{}]",
-              subset.getDescription(), set);
+              subset, set);
         }
 
         // Make sure best RelNode is valid
         if (subset.best != null && !subset.set.rels.contains(subset.best)) {
           return litmus.fail("RelSubset [{}] does not contain its best RelNode [{}]",
-                  subset.getDescription(), subset.best.getDescription());
+                    subset, subset.best);
         }
 
         for (RelNode rel : subset.getRels()) {
           RelOptCost relCost = getCost(rel, rel.getCluster().getMetadataQuery());
           if (relCost.isLt(subset.bestCost)) {
             return litmus.fail("rel [{}] has lower cost {} than best cost {} of subset [{}]",
-                rel.getDescription(), relCost, subset.bestCost, subset.getDescription());
+                      rel, relCost, subset.bestCost, subset);
           }
         }
       }
@@ -1159,7 +1159,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
    * @see #normalizePlan(String)
    */
   public void dump(PrintWriter pw) {
-    pw.println("Root: " + root.getDescription());
+    pw.println("Root: " + root);
     pw.println("Original rel:");
 
     if (originalRoot != null) {
@@ -1200,7 +1200,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
       for (RelSubset subset : set.subsets) {
         ++j;
         pw.println(
-            "\t" + subset.getDescription() + ", best="
+            "\t" + subset + ", best="
             + ((subset.best == null) ? "null"
                 : ("rel#" + subset.best.getId())) + ", importance="
                 + ruleQueue.getImportance(subset));
@@ -1211,7 +1211,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
         }
         for (RelNode rel : subset.getRels()) {
           // "\t\trel#34:JavaProject(rel#32:JavaFilter(...), ...)"
-          pw.print("\t\t" + rel.getDescription());
+          pw.print("\t\t" + rel);
           for (RelNode input : rel.getInputs()) {
             RelSubset inputSubset =
                 getSubset(
@@ -1269,7 +1269,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
         // It can happen due to RelTraitset#simplify
         // If the traits are different, we want to keep them on a graph
         String traits = "." + getSubset(rel).getTraitSet().toString();
-        String title = rel.getDescription().replace(traits, "");
+        String title = rel.toString().replace(traits, "");
         if (title.endsWith(")")) {
           int openParen = title.indexOf('(');
           if (openParen != -1) {
@@ -1304,7 +1304,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
         pw.print("\t\tsubset");
         pw.print(subset.getId());
         pw.print(" [label=");
-        Util.printJavaString(pw, subset.getDescription(), false);
+        Util.printJavaString(pw, subset.toString(), false);
         boolean empty = !nonEmptySubsets.contains(subset);
         if (empty) {
           // We don't want to iterate over rels when we know the set is not empty
@@ -1712,7 +1712,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
       RelSet equivSet = getSet(equivExp);
       if (equivSet != null) {
         LOGGER.trace(
-            "Register: rel#{} is equivalent to {}", rel.getId(), equivExp.getDescription());
+            "Register: rel#{} is equivalent to {}", rel.getId(), equivExp);
         return registerSubset(set, getSubset(equivExp));
       }
     }
@@ -1783,7 +1783,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     final RelNode xx = mapDigestToRel.put(key, rel);
     assert xx == null || xx == rel : rel.getDigest();
 
-    LOGGER.trace("Register {} in {}", rel.getDescription(), subset.getDescription());
+    LOGGER.trace("Register {} in {}", rel, subset);
 
     // This relational expression may have been registered while we
     // recursively registered its children. If this is the case, we're done.

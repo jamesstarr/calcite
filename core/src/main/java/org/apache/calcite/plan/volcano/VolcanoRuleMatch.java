@@ -17,59 +17,7 @@
 package org.apache.calcite.plan.volcano;
 
 import org.apache.calcite.plan.RelOptRuleOperand;
-import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.util.Litmus;
-
-import java.util.List;
-import java.util.Map;
-
-/**
- * A match of a rule to a particular set of target relational expressions,
- * frozen in time.
- */
-public class VolcanoRuleMatch extends VolcanoRuleCall {
-  //~ Instance fields --------------------------------------------------------
-
-  private String digest;
-
-  //~ Constructors -----------------------------------------------------------
-
-  /**
-   * Creates a <code>VolcanoRuleMatch</code>.
-   *
-   * @param operand0 Primary operand
-   * @param rels     List of targets; copied by the constructor, so the client
-   *                 can modify it later
-   * @param nodeInputs Map from relational expressions to their inputs
-   */
-  public VolcanoRuleMatch(VolcanoPlanner volcanoPlanner, RelOptRuleOperand operand0,
-      RelNode[] rels, Map<RelNode, List<RelNode>> nodeInputs) {
-    super(volcanoPlanner, operand0, rels.clone(), nodeInputs);
-    assert allNotNull(rels, Litmus.THROW);
-
-    digest = computeDigest();
-  }
-
-  //~ Methods ----------------------------------------------------------------
-
-  public String toString() {
-    return digest;
-  }
-
-  /**
-   * Computes a string describing this rule match. Two rule matches are
-   * equivalent if and only if their digests are the same.
-   *
-   * @return description of this rule match
-   */
-  private String computeDigest() {
-    StringBuilder buf =
-        new StringBuilder("rule [" + getRule() + "] rels [");
-    for (int i = 0; i < rels.length; i++) {
-      if (i > 0) {
-        buf.append(',');
-      }
-      buf.append('#').append(rels[i].getId());
+      RelOptUtil.appendRelDescription(buf, rels[i]);
     }
     buf.append(']');
     return buf.toString();
