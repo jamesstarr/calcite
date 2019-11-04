@@ -1109,7 +1109,20 @@ class RelToSqlConverterTest {
         + "UNION select 1 from \"product\"";
     final String expected = "SELECT MOD(11, 3)\n"
         + "FROM foodmart.product\n"
-        + "UNION DISTINCT\nSELECT 1\nFROM foodmart.product";
+        + "UNION DISTINCT\n"
+        + "SELECT 1\n"
+        + "FROM foodmart.product";
+    sql(query).withBigQuery().ok(expected);
+  }
+
+  @Test public void testUnionAllOperatorForBigQuery() {
+    final String query = "select mod(11,3) from \"product\"\n"
+        + "UNION ALL select 1 from \"product\"";
+    final String expected = "SELECT MOD(11, 3)\n"
+        + "FROM foodmart.product\n"
+        + "UNION ALL\n"
+        + "SELECT 1\n"
+        + "FROM foodmart.product";
     sql(query).withBigQuery().ok(expected);
   }
 
@@ -1118,7 +1131,9 @@ class RelToSqlConverterTest {
         + "INTERSECT select 1 from \"product\"";
     final String expected = "SELECT MOD(11, 3)\n"
         + "FROM foodmart.product\n"
-        + "INTERSECT DISTINCT\nSELECT 1\nFROM foodmart.product";
+        + "INTERSECT DISTINCT\n"
+        + "SELECT 1\n"
+        + "FROM foodmart.product";
     sql(query).withBigQuery().ok(expected);
   }
 
@@ -1127,7 +1142,9 @@ class RelToSqlConverterTest {
         + "EXCEPT select 1 from \"product\"";
     final String expected = "SELECT MOD(11, 3)\n"
         + "FROM foodmart.product\n"
-        + "EXCEPT DISTINCT\nSELECT 1\nFROM foodmart.product";
+        + "EXCEPT DISTINCT\n"
+        + "SELECT 1\n"
+        + "FROM foodmart.product";
     sql(query).withBigQuery().ok(expected);
   }
 
