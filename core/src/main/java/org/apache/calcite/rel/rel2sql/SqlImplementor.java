@@ -1137,6 +1137,10 @@ public abstract class SqlImplementor {
 >>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
   }
 
+  public Context tableFunctionScanContext(List<SqlNode> inputSqlNodes) {
+    return new TableFunctionScanContext(dialect, inputSqlNodes);
+  }
+
   /**
    * Context for translating MATCH_RECOGNIZE clause
    */

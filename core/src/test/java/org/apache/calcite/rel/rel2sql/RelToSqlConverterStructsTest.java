@@ -141,10 +141,11 @@ public class RelToSqlConverterStructsTest {
       return false;
     }
 
-    @Override public boolean rolledUpColumnValidInsideAgg(String column,
-                                                          SqlCall call,
-                                                          SqlNode parent,
-                                                          CalciteConnectionConfig config) {
+    @Override public boolean rolledUpColumnValidInsideAgg(
+        String column,
+        SqlCall call,
+        SqlNode parent,
+        CalciteConnectionConfig config) {
       return false;
     }
   };

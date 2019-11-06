@@ -920,6 +920,28 @@ public class RelToSqlConverter extends SqlImplementor
     return result(asNode, ImmutableList.of(Clause.FROM), e, null);
   }
 
+  public Result visit(TableFunctionScan e) {
+    final List<SqlNode> inputSqlNodes = new ArrayList<>();
+    final int inputSize = e.getInputs().size();
+    for (int i = 0; i < inputSize; i++) {
+      Result child = visitChild(i, e.getInput(i));
+      inputSqlNodes.add(child.asStatement());
+    }
+    final Context context = tableFunctionScanContext(inputSqlNodes);
+    SqlNode callNode = context.toSql(null, e.getCall());
+    // Convert to table function call, "TABLE($function_name(xxx))"
+    SqlNode tableCall = new SqlBasicCall(
+        SqlStdOperatorTable.COLLECTION_TABLE,
+        new SqlNode[]{callNode},
+        SqlParserPos.ZERO);
+    SqlNode select = new SqlSelect(
+        SqlParserPos.ZERO, null, null, tableCall,
+        null, null, null, null, null, null, null, null, SqlNodeList.EMPTY);
+    Result x = new Result(select,
+        ImmutableList.of(Clause.SELECT), null, e.getRowType(), null);
+    return x;
+  }
+
   /**
    * Creates operands for a full AS operator. Format SqlNode AS alias(col_1, col_2,... ,col_n).
    *
