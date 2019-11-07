@@ -39,7 +39,7 @@ import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.test.CalciteAssert.ConnectionPostProcessor;
-import org.apache.calcite.util.NlsString;
+>>>>>>> 31f6a392c ([CALCITE-3479] Stack overflow error thrown when running join queryi (Xiening Dai))
 import org.apache.calcite.util.Pair;
 
 import com.google.common.collect.ImmutableMap;
@@ -337,7 +337,7 @@ public class ScannableTableTest {
         + "  EnumerableInterpreter\n"
         + "    BindableTableScan(table=[[s, beatles]], projects=[[2, 0]])";
     CalciteAssert.that()
-        .with(newSchema("s", "beatles", table))
+        .with(newSchema("s", Pair.of("beatles", table)))
         .query("select \"k\", \"i\", \"k\", \"i\"+\"i\" \"ii\", 3 from \"s\".\"beatles\"")
         .explainContains(explain)
         .returnsUnordered(
@@ -359,7 +359,7 @@ public class ScannableTableTest {
         + "EnumerableInterpreter\n"
         + "  BindableTableScan(table=[[s, beatles]], projects=[[2, 0]])";
     CalciteAssert.that()
-        .with(newSchema("s", "beatles", table))
+        .with(newSchema("s", Pair.of("beatles", table)))
         .query("select \"k\", \"i\" from \"s\".\"beatles\"")
         .explainContains(explain)
         .returnsUnordered(
@@ -394,7 +394,30 @@ public class ScannableTableTest {
                     + "and \"s\".\"b1\".\"i\" = \"s\".\"b2\".\"i\"")
             .explainContains(explain);
 =======
->>>>>>> a4e9ec0f2 ([CALCITE-3405] Prune columns for ProjectableFilterableTable when Project is not simple mapping (Jin Xing))
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3479">[CALCITE-3479]
+   * Stack overflow error thrown when running join query</a>
+   * Test two ProjectableFilterableTable can join and produce right plan.
+   */
+  @Test public void testProjectableFilterableTableJoin() throws Exception {
+    final StringBuilder buf = new StringBuilder();
+    final String explain = "PLAN="
+        + "EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])\n"
+        + "  EnumerableInterpreter\n"
+        + "    BindableTableScan(table=[[s, b1]], filters=[[=($0, 10)]])\n"
+        + "  EnumerableInterpreter\n"
+        + "    BindableTableScan(table=[[s, b2]], filters=[[=($0, 10)]])";
+    CalciteAssert.that()
+            .with(
+              newSchema("s",
+                  Pair.of("b1", new BeatlesProjectableFilterableTable(buf, true)),
+                  Pair.of("b2", new BeatlesProjectableFilterableTable(buf, true))))
+            .query("select * from \"s\".\"b1\", \"s\".\"b2\" "
+                    + "where \"s\".\"b1\".\"i\" = 10 and \"s\".\"b2\".\"i\" = 10 "
+                    + "and \"s\".\"b1\".\"i\" = \"s\".\"b2\".\"i\"")
+            .explainContains(explain);
   }
 
   /** Test case for
@@ -468,12 +491,14 @@ public class ScannableTableTest {
   }
 
   protected ConnectionPostProcessor newSchema(final String schemaName,
-      final String tableName, final Table table) {
+      Pair<String, Table>... tables) {
     return connection -> {
       CalciteConnection con = connection.unwrap(CalciteConnection.class);
       SchemaPlus rootSchema = con.getRootSchema();
       SchemaPlus schema = rootSchema.add(schemaName, new AbstractSchema());
-      schema.add(tableName, table);
+      for (Pair<String, Table> t : tables) {
+        schema.add(t.left, t.right);
+      }
       connection.setSchema(schemaName);
       return connection;
     };
