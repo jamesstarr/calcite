@@ -352,18 +352,6 @@ public abstract class RelDataTypeSystemImpl implements RelDataTypeSystem {
     return null;
   }
 
-  @Override public RelDataType deriveDecimalModType(RelDataTypeFactory typeFactory,
-      RelDataType type1, RelDataType type2) {
-    if (SqlTypeUtil.isExactNumeric(type1)
-            && SqlTypeUtil.isExactNumeric(type2)) {
-      if (SqlTypeUtil.isDecimal(type1)
-              || SqlTypeUtil.isDecimal(type2)) {
-        return type2;
-      }
-    }
-    return null;
-  }
-
   public boolean allowExtendedTrim() {
     return false;
   }

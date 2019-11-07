@@ -280,11 +280,11 @@ public interface RelDataTypeSystem {
    *
    * @see Glossary#SQL2003 SQL:2003 Part 2 Section 6.26
    *
-   * @param typeFactory typeFactory used to create output type
-   * @param type1 type of the first operand
-   * @param type2 type of the second operand
-   * @return the result type for a decimal division, or null if decimal
-   * division should not be applied to the operands.
+   * @param typeFactory TypeFactory used to create output type
+   * @param type1       Type of the first operand
+   * @param type2       Type of the second operand
+   * @return Result type for a decimal division, or null if decimal
+   * division should not be applied to the operands
    */
   default @Nullable RelDataType deriveDecimalDivideType(RelDataTypeFactory typeFactory,
       RelDataType type1, RelDataType type2) {
