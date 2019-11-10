@@ -32,6 +32,7 @@ import org.apache.calcite.sql.SqlSpecialOperator;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.fun.SqlLibraryOperatorTableFactory;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.test.SqlTester;
 import org.apache.calcite.sql.type.ArraySqlType;
@@ -66,8 +67,10 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -11970,6 +11973,23 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
       // the error does not contain the original query (using a Reader)
       assertThat(error.getOriginalStatement(), nullValue());
     }
+  }
+
+  @Test public void testValidateParameterizedExpression() throws SqlParseException {
+    final SqlParser.Config config = configBuilder().build();
+    final SqlValidator validator = tester.getValidator();
+    final RelDataTypeFactory typeFactory = validator.getTypeFactory();
+    final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
+    final RelDataType intTypeNull = typeFactory.createTypeWithNullability(intType, true);
+    final Map<String, RelDataType> nameToTypeMap = new HashMap<>();
+    nameToTypeMap.put("A", intType);
+    nameToTypeMap.put("B", intTypeNull);
+    final String expr = "a + b";
+    final SqlParser parser = SqlParser.create(expr, config);
+    final SqlNode sqlNode = parser.parseExpression();
+    final SqlNode validated = validator.validateParameterizedExpression(sqlNode, nameToTypeMap);
+    final RelDataType resultType = validator.getValidatedNodeType(validated);
+    assertThat(resultType.toString(), is("INTEGER"));
   }
 
 }
