@@ -2,24 +2,42 @@
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
+<<<<<<< HEAD
  * The ASF licenses this file to you under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
+=======
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+<<<<<<< HEAD
  */
+=======
+ *
+ */
+
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 pluginManagement {
     plugins {
         fun String.v() = extra["$this.version"].toString()
         fun PluginDependenciesSpec.idv(id: String, key: String = id) = id(id) version key.v()
 
+<<<<<<< HEAD
         idv("com.github.autostyle")
+=======
+        idv("com.diffplug.gradle.spotless")
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
         idv("com.github.johnrengelman.shadow")
         idv("com.github.spotbugs")
         idv("com.github.vlsi.crlf", "com.github.vlsi.vlsi-release-plugins")
@@ -29,7 +47,10 @@ pluginManagement {
         idv("com.github.vlsi.stage-vote-release", "com.github.vlsi.vlsi-release-plugins")
         idv("com.google.protobuf")
         idv("de.thetaphi.forbiddenapis")
+<<<<<<< HEAD
         idv("me.champeau.gradle.jmh")
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
         idv("org.jetbrains.gradle.plugin.idea-ext")
         idv("org.nosphere.apache.rat")
         idv("org.owasp.dependencycheck")
@@ -59,7 +80,10 @@ include(
     "pig",
     "piglet",
     "plus",
+<<<<<<< HEAD
     "redis",
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
     "server",
     "spark",
     "splunk",
@@ -89,9 +113,12 @@ property("localAvatica")?.ifBlank { "../calcite-avatica" }?.let {
     println("Importing project '$it'")
     includeBuild(it)
 }
+<<<<<<< HEAD
 
 // This enables to try local Autostyle
 property("localAutostyle")?.ifBlank { "../autostyle" }?.let {
     println("Importing project '$it'")
     includeBuild("../autostyle")
 }
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)

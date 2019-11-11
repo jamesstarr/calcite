@@ -15,6 +15,10 @@
  * limitations under the License.
  *
  */
+<<<<<<< HEAD
+=======
+
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 plugins {
     kotlin("jvm")
     id("com.github.vlsi.ide")
@@ -22,6 +26,7 @@ plugins {
     calcite.javacc
 }
 
+<<<<<<< HEAD
 // Disable ALL Babel tasks after they are created
 afterEvaluate {
     // Disable all tasks in this project
@@ -30,6 +35,8 @@ afterEvaluate {
     }
 }
 
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 dependencies {
     api(project(":core"))
 

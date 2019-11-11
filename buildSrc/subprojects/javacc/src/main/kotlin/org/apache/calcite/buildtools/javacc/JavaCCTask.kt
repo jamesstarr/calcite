@@ -26,7 +26,10 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+<<<<<<< HEAD
 import org.gradle.api.tasks.Internal
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.property
@@ -38,6 +41,7 @@ open class JavaCCTask @Inject constructor(
     val javaCCClasspath = objectFactory.property<Configuration>()
         .convention(project.configurations.named(JavaCCPlugin.JAVACC_CLASSPATH_CONFIGURATION_NAME))
 
+<<<<<<< HEAD
     @Internal
     val inputFile = objectFactory.property<File>()
 
@@ -50,6 +54,11 @@ open class JavaCCTask @Inject constructor(
         null
     }
 
+=======
+    @InputFile
+    val inputFile = objectFactory.property<File>()
+
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
     @Input
     val lookAhead = objectFactory.property<Int>().convention(1)
 
@@ -69,7 +78,11 @@ open class JavaCCTask @Inject constructor(
         project.javaexec {
             classpath = javaCCClasspath.get()
             // The class is in the top-level package
+<<<<<<< HEAD
             mainClass.set("javacc")
+=======
+            main = "javacc"
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
             args("-STATIC=${static.get()}")
             args("-LOOKAHEAD:${lookAhead.get()}")
             args("-OUTPUT_DIRECTORY:${output.get()}/${packageName.get().replace('.', '/')}")

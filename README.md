@@ -20,10 +20,14 @@ limitations under the License.
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.calcite/calcite-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.calcite/calcite-core)
 [![Travis Build Status](https://travis-ci.org/apache/calcite.svg?branch=master)](https://travis-ci.org/apache/calcite)
+<<<<<<< HEAD
 [![CI Status](https://github.com/apache/calcite/workflows/CI/badge.svg?branch=master)](https://github.com/apache/calcite/actions?query=branch%3Amaster)
 =======
 [![Travis Build Status](https://travis-ci.org/apache/calcite.svg?branch=master)](https://travis-ci.org/apache/calcite)
 >>>>>>> 9f3c8c3ae (Update build status badges in README.md)
+=======
+[![CI Status](https://github.com/apache/calcite/workflows/CI/badge.svg)](https://github.com/apache/calcite/actions)
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/apache/calcite?svg=true&branch=master)](https://ci.appveyor.com/project/ApacheSoftwareFoundation/calcite)
 
 # Apache Calcite

@@ -16,14 +16,21 @@
  *
  */
 
+<<<<<<< HEAD
 import com.github.vlsi.gradle.properties.dsl.props
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
     `kotlin-dsl` apply false
+<<<<<<< HEAD
     id("com.github.autostyle")
     id("com.github.vlsi.gradle-extensions")
+=======
+    id("com.diffplug.gradle.spotless")
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 }
 
 repositories {
@@ -31,9 +38,13 @@ repositories {
     gradlePluginPortal()
 }
 
+<<<<<<< HEAD
 val skipAutostyle by props()
 
 allprojects {
+=======
+subprojects {
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
     repositories {
         jcenter()
         gradlePluginPortal()
@@ -44,11 +55,24 @@ allprojects {
 fun Project.applyKotlinProjectConventions() {
     apply(plugin = "org.gradle.kotlin.kotlin-dsl")
 
+<<<<<<< HEAD
     tasks.withType<KotlinCompile> {
+=======
+    plugins.withType<KotlinDslPlugin> {
+        configure<KotlinDslPluginOptions> {
+            experimentalWarning.set(false)
+        }
+    }
+
+    tasks.withType<KotlinCompile> {
+        sourceCompatibility = "unused"
+        targetCompatibility = "unused"
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
         kotlinOptions {
             jvmTarget = "1.8"
         }
     }
+<<<<<<< HEAD
 
     // Configure task dependencies after evaluation
     afterEvaluate {
@@ -71,6 +95,19 @@ fun Project.applyKotlinProjectConventions() {
                 trimTrailingWhitespace()
                 endWithNewline()
             }
+=======
+    apply(plugin = "com.diffplug.gradle.spotless")
+    spotless {
+        kotlin {
+            ktlint()
+            trimTrailingWhitespace()
+            endWithNewline()
+        }
+        kotlinGradle {
+            ktlint()
+            trimTrailingWhitespace()
+            endWithNewline()
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
         }
     }
 }

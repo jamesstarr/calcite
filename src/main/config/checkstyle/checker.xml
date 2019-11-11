@@ -299,11 +299,15 @@
     <property name="influenceFormat" value="$1"/>
   </module>
 
+<<<<<<< HEAD
 
 
 
 
 
+=======
+  <module name="net.hydromatic.toolbox.checkstyle.HydromaticFileSetCheck"/>
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 
   <module name="SuppressionFilter">
     <property name="file" value="${base_dir}/src/main/config/checkstyle/suppressions.xml"/>

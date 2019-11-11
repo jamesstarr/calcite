@@ -2,18 +2,32 @@
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
+<<<<<<< HEAD
  * The ASF licenses this file to you under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
+=======
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+<<<<<<< HEAD
  */
+=======
+ *
+ */
+
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 plugins {
     `java-platform`
 }
@@ -52,12 +66,18 @@ dependencies {
         apiv("com.fasterxml.jackson.core:jackson-core", "jackson")
         apiv("com.fasterxml.jackson.core:jackson-databind")
         apiv("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", "jackson")
+<<<<<<< HEAD
         apiv("com.github.kstyrc:embedded-redis")
         apiv("com.github.stephenc.jcip:jcip-annotations")
         apiv("com.google.code.findbugs:jsr305", "findbugs.jsr305")
         apiv("com.google.guava:guava")
         api("com.google.errorprone:error_prone_annotations:2.28.0")
         api("org.checkerframework:checker-qual:3.10.0")
+=======
+        apiv("com.github.stephenc.jcip:jcip-annotations")
+        apiv("com.google.code.findbugs:jsr305", "findbugs.jsr305")
+        apiv("com.google.guava:guava")
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
         apiv("com.google.protobuf:protobuf-java", "protobuf")
         apiv("com.h2database:h2")
         apiv("com.jayway.jsonpath:json-path")
@@ -74,7 +94,10 @@ dependencies {
         apiv("javax.servlet:javax.servlet-api", "servlet")
         apiv("joda-time:joda-time")
         apiv("junit:junit", "junit4")
+<<<<<<< HEAD
         apiv("log4j:log4j", "log4j")
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
         apiv("mysql:mysql-connector-java")
         apiv("net.hydromatic:aggdesigner-algorithm")
         apiv("net.hydromatic:chinook-data-hsqldb")
@@ -84,7 +107,10 @@ dependencies {
         apiv("net.hydromatic:quidem")
         apiv("net.hydromatic:scott-data-hsqldb")
         apiv("net.hydromatic:tpcds", "hydromatic.tpcds")
+<<<<<<< HEAD
         apiv("net.java.dev.jna:jna")
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
         apiv("net.sf.opencsv:opencsv")
         apiv("org.apache.calcite.avatica:avatica-core", "calcite.avatica")
         apiv("org.apache.calcite.avatica:avatica-server", "calcite.avatica")
@@ -100,6 +126,7 @@ dependencies {
         apiv("org.apache.kerby:kerb-client", "kerby")
         apiv("org.apache.kerby:kerb-core", "kerby")
         apiv("org.apache.kerby:kerb-simplekdc", "kerby")
+<<<<<<< HEAD
         apiv("org.apache.logging.log4j:log4j-api", "log4j2")
         apiv("org.apache.logging.log4j:log4j-core", "log4j2")
         apiv("org.apache.logging.log4j:log4j-slf4j-impl", "log4j2")
@@ -107,6 +134,13 @@ dependencies {
         apiv("org.apache.pig:pigunit", "pig")
         apiv("org.apache.spark:spark-core_2.10", "spark")
         apiv("org.apiguardian:apiguardian-api")
+=======
+        apiv("org.apache.logging.log4j:log4j-api", "log4j")
+        apiv("org.apache.logging.log4j:log4j-core", "log4j")
+        apiv("org.apache.pig:pig")
+        apiv("org.apache.pig:pigunit", "pig")
+        apiv("org.apache.spark:spark-core_2.10", "spark")
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
         apiv("org.bouncycastle:bcpkix-jdk15on", "bouncycastle")
         apiv("org.bouncycastle:bcprov-jdk15on", "bouncycastle")
         apiv("org.cassandraunit:cassandra-unit")
@@ -141,12 +175,20 @@ dependencies {
         apiv("org.scala-lang:scala-library")
         apiv("org.slf4j:slf4j-api", "slf4j")
         apiv("org.slf4j:slf4j-log4j12", "slf4j")
+<<<<<<< HEAD
         apiv("redis.clients:jedis")
         apiv("sqlline:sqlline")
         runtimev("org.junit.jupiter:junit-jupiter-engine", "junit5")
         runtimev("org.junit.vintage:junit-vintage-engine", "junit5")
         apiv("org.openjdk.jmh:jmh-core", "jmh")
         apiv("org.openjdk.jmh:jmh-generator-annprocess", "jmh")
+=======
+        apiv("sqlline:sqlline")
+        runtimev("org.junit.jupiter:junit-jupiter-engine", "junit5")
+        runtimev("org.junit.vintage:junit-vintage-engine", "junit5")
+        runtimev("org.openjdk.jmh:jmh-core", "jmh")
+        runtimev("org.openjdk.jmh:jmh-generator-annprocess", "jmh")
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
         runtimev("xalan:xalan")
         runtimev("xerces:xercesImpl")
     }

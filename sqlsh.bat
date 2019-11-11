@@ -1,4 +1,8 @@
 @echo off
+<<<<<<< HEAD
+=======
+:: sqlline.bat - Windows script to launch SQL shell
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 ::
 :: Licensed to the Apache Software Foundation (ASF) under one or more
 :: contributor license agreements.  See the NOTICE file distributed with
@@ -15,8 +19,11 @@
 :: See the License for the specific language governing permissions and
 :: limitations under the License.
 ::
+<<<<<<< HEAD
 
 :: sqlline.bat - Windows script to launch SQL shell
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 :: Example:
 :: > sqlline.bat
 :: sqlline> !connect jdbc:calcite: admin admin

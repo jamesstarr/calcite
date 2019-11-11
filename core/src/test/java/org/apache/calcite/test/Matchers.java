@@ -200,7 +200,6 @@ public class Matchers {
    * to Unix-style line endings ("\n"), contains the given {@code value}
    * as a substring.
    */
-  @Factory
   public static Matcher<RelNode> inTree(final String value) {
     return compose(StringContains.containsString(value), input -> {
       // Convert RelNode to a string with Linux line-endings

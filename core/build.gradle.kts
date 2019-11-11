@@ -2,18 +2,32 @@
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
+<<<<<<< HEAD
  * The ASF licenses this file to you under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
+=======
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+<<<<<<< HEAD
  */
+=======
+ *
+ */
+
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 import com.github.vlsi.gradle.crlf.CrLfSpec
 import com.github.vlsi.gradle.crlf.LineEndings
 
@@ -41,22 +55,34 @@ dependencies {
 
     api("com.fasterxml.jackson.core:jackson-annotations")
     api("org.apache.calcite.avatica:avatica-core")
+<<<<<<< HEAD
     api("org.apiguardian:apiguardian-api")
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 
     implementation("com.esri.geometry:esri-geometry-api")
     implementation("com.fasterxml.jackson.core:jackson-core")
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
     implementation("com.google.code.findbugs:jsr305"/* optional*/)
+<<<<<<< HEAD
     implementation("com.google.errorprone:error_prone_annotations")
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
     implementation("com.google.guava:guava")
     implementation("com.jayway.jsonpath:json-path")
     implementation("com.yahoo.datasketches:sketches-core")
     implementation("commons-codec:commons-codec")
     implementation("net.hydromatic:aggdesigner-algorithm")
+<<<<<<< HEAD
     implementation("org.apache.commons:commons-dbcp2")
     implementation("org.apache.commons:commons-lang3")
     implementation("commons-io:commons-io")
+=======
+    implementation("org.apache.calcite.avatica:avatica-server")
+    implementation("org.apache.commons:commons-dbcp2")
+    implementation("org.apache.commons:commons-lang3")
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
     implementation("org.codehaus.janino:commons-compiler")
     implementation("org.codehaus.janino:janino")
     implementation("org.slf4j:slf4j-api")
@@ -66,19 +92,28 @@ dependencies {
     testOracle("com.oracle.ojdbc:ojdbc8")
     testPostgresql("org.postgresql:postgresql")
 
+<<<<<<< HEAD
+=======
+    testImplementation("com.github.stephenc.jcip:jcip-annotations")
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
     testImplementation("net.hydromatic:foodmart-data-hsqldb")
     testImplementation("net.hydromatic:foodmart-queries")
     testImplementation("net.hydromatic:quidem")
     testImplementation("net.hydromatic:scott-data-hsqldb")
+<<<<<<< HEAD
     testImplementation("org.apache.calcite.avatica:avatica-server")
     testImplementation("org.apache.commons:commons-pool2")
     testImplementation("log4j:log4j") {
         because("SqlHintsConverterTest needs to implement a MockAppender")
     }
+=======
+    testImplementation("org.apache.commons:commons-pool2")
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
     testImplementation("org.hsqldb:hsqldb")
     testImplementation("org.incava:java-diff")
     testImplementation("sqlline:sqlline")
     testImplementation(kotlin("stdlib-jdk8"))
+<<<<<<< HEAD
     testImplementation(kotlin("test-junit5"))
     testRuntimeOnly("org.slf4j:slf4j-log4j12")
 }
@@ -94,6 +129,13 @@ publishing {
     }
 }
 
+=======
+    testImplementation(kotlin("test"))
+    testImplementation(kotlin("test-junit"))
+    testRuntimeOnly("org.slf4j:slf4j-log4j12")
+}
+
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 tasks.jar {
     CrLfSpec(LineEndings.LF).run {
         into("codegen") {
@@ -102,6 +144,7 @@ tasks.jar {
     }
 }
 
+<<<<<<< HEAD
 val generatedVersionDir = File(buildDir, "generated/sources/version")
 val versionClass by tasks.registering(Sync::class) {
     val re = Regex("^(\\d+)\\.(\\d+).*")
@@ -147,6 +190,8 @@ sourceSets {
     }
 }
 
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 tasks.withType<Checkstyle>().configureEach {
     exclude("org/apache/calcite/runtime/Resources.java")
 }
@@ -165,6 +210,7 @@ val javaCCMain by tasks.registering(org.apache.calcite.buildtools.javacc.JavaCCT
     packageName.set("org.apache.calcite.sql.parser.impl")
 }
 
+<<<<<<< HEAD
 tasks.compileKotlin {
     dependsOn(versionClass)
     dependsOn(javaCCMain)
@@ -187,6 +233,8 @@ afterEvaluate {
     }
 }
 
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 val fmppTest by tasks.registering(org.apache.calcite.buildtools.fmpp.FmppTask::class) {
     config.set(file("src/test/codegen/config.fmpp"))
     templates.set(file("src/main/codegen/templates"))
@@ -201,10 +249,13 @@ val javaCCTest by tasks.registering(org.apache.calcite.buildtools.javacc.JavaCCT
     packageName.set("org.apache.calcite.sql.parser.parserextensiontesting")
 }
 
+<<<<<<< HEAD
 tasks.compileTestKotlin {
     dependsOn(javaCCTest)
 }
 
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 ide {
     fun generatedSource(javacc: TaskProvider<org.apache.calcite.buildtools.javacc.JavaCCTask>, sourceSet: String) =
         generatedJavaSources(javacc.get(), javacc.get().output.get().asFile, sourceSets.named(sourceSet))

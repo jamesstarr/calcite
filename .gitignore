@@ -15,6 +15,7 @@
 #
 *~
 <<<<<<< HEAD
+<<<<<<< HEAD
 .gradle
 /target
 .DS_Store
@@ -40,6 +41,24 @@ target
 .DS_Store
 .idea
 >>>>>>> 9b10f38e2 (Add .DS_Store into .gitignore)
+=======
+.gradle
+/target
+.DS_Store
+/*/target
+/example/*/target
+/build
+/*/build
+/example/*/build
+/buildSrc/build
+/buildSrc/subprojects/*/build
+
+# IDEA
+/out
+/*/out/
+/example/*/out
+/.idea
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 *.iml
 
 settings.xml

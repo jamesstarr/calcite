@@ -27,6 +27,7 @@ case $(uname -s) in
 esac
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Build classpath on first call. To update it run ./gradlew buildSqllineClasspath
 root=$(cd "$(dirname "$(readlink $0)")"; pwd)
 =======
@@ -43,6 +44,11 @@ fi
 >>>>>>> 040dd0c60 ([CALCITE-3444] Upgrade SQLLine to 1.9.0, and solve "Class path contains multiple SLF4J bindings" problem)
 
 <<<<<<< HEAD
+=======
+# Build classpath on first call. To update it run ./gradlew buildSqllineClasspath
+root=$(cd "$(dirname "$(readlink $0)")"; pwd)
+
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 CP=$root/build/libs/sqllineClasspath.jar
 if [ ! -f $CP ]; then
   (
@@ -50,6 +56,7 @@ if [ ! -f $CP ]; then
     ./gradlew :buildSqllineClasspath
   )
 fi
+<<<<<<< HEAD
 =======
 CP=
 for module in core cassandra druid elasticsearch file kafka mongodb server spark splunk geode example/csv example/function; do
@@ -58,6 +65,8 @@ for module in core cassandra druid elasticsearch file kafka mongodb server spark
 done
 CP="${CP}$(cat target/fullclasspath.txt)"
 >>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 
 VM_OPTS=
 if [ "$cygwin" ]; then

@@ -239,5 +239,8 @@ Currently this adapter supports ElasticSearch versions 2.x (or newer). Generally
 >>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
 we try to follow official [support schedule](https://www.elastic.co/support/eol).
 Also, types are not supported (this adapter only supports indices).
+<<<<<<< HEAD
 
 >>>>>>> ec2d09650 (Site: ElasticAdapter mention supported versions (and support schedule))
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)

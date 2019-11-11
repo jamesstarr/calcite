@@ -1,8 +1,12 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 **/local.properties
 >>>>>>> eb5cf8076 ([CALCITE-3749] Ignore local.proproperties in RAT, Autostyle checks, a… (#87))
+=======
+
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 **/.editorconfig
 **/.gitignore
 **/.gitattributes

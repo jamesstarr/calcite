@@ -50,6 +50,7 @@ open class FmppTask @Inject constructor(
     @TaskAction
     fun run() {
         project.delete(output.asFileTree)
+<<<<<<< HEAD
 
         // Find the default_config.fmpp file
         val configFile = config.get().asFile
@@ -78,6 +79,8 @@ open class FmppTask @Inject constructor(
             "tdd(${configFile.absolutePath})"
         }
 
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
         ant.withGroovyBuilder {
             "taskdef"("name" to "fmpp",
                 "classname" to "fmpp.tools.AntTask",
@@ -85,8 +88,12 @@ open class FmppTask @Inject constructor(
             "fmpp"(
                 "configuration" to config.get(),
                 "sourceRoot" to templates.get().asFile,
+<<<<<<< HEAD
                 "outputRoot" to output.get().asFile,
                 "data" to dataParam
+=======
+                "outputRoot" to output.get().asFile
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
             )
         }
     }

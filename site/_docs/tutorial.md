@@ -54,6 +54,7 @@ several important concepts:
 ## Download and build
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 You need Java (version 8, 9 or 10) and Git.
 
 {% highlight bash %}
@@ -69,6 +70,14 @@ $ cd calcite
 $ ./mvnw install -DskipTests -Dcheckstyle.skip=true
 $ cd example/csv
 >>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
+=======
+You need Java (version 8, 9 or 10) and Git.
+
+{% highlight bash %}
+$ git clone https://github.com/apache/calcite.git
+$ cd calcite/example/csv
+$ ./sqlline
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 {% endhighlight %}
 
 ## First queries

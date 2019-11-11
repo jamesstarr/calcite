@@ -40,12 +40,16 @@ limitations under the License.
   <suppress checks="Header" files="NOTICE"/>
   <suppress checks=".*" files="Foo.java"/>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
   <suppress checks=".*" files="[/\\]target[/\\]maven-archiver[/\\]pom.properties"/>
   <suppress checks=".*" files="[/\\]target[/\\]generated-sources[/\\]"/>
   <suppress checks=".*" files="[/\\]target[/\\]generated-test-sources[/\\]"/>
   <suppress checks=".*" files="[/\\]target[/\\]embeddedCassandra[/\\]log4j-embedded-cassandra.properties"/>
   <suppress checks=".*" files="org[/\\]apache[/\\]calcite[/\\]runtime[/\\]Resources.java"/>
 
+<<<<<<< HEAD
   <suppress checks=".*" files="git.properties"/>
   <suppress checks=".*" files="release.properties"/>
 <<<<<<< HEAD
@@ -57,6 +61,8 @@ limitations under the License.
   <suppress checks=".*" files=".*[/\\]target[/\\]generated-sources[/\\].*"/>
   <suppress checks=".*" files=".*[/\\]target[/\\]generated-test-sources[/\\].*"/>
   <suppress checks=".*" files=".*[/\\]target[/\\]embeddedCassandra[/\\]log4j-embedded-cassandra.properties"/>
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
   <suppress checks=".*" files="git.properties"/>
   <suppress checks=".*" files="release.properties"/>
 >>>>>>> be19299a5 ([CALCITE-2642] Checkstyle complains that maven-wrapper.properties is missing a header)

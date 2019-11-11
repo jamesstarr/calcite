@@ -550,6 +550,9 @@ To further modify the `AggCall`, call its methods:
 | `filter(expr)`       | Filters rows before aggregating (see SQL `FILTER (WHERE ...)`)
 | `sort(expr...)`<br/>`sort(exprList)` | Sorts rows before aggregating (see SQL `WITHIN GROUP`)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
+=======
+>>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
