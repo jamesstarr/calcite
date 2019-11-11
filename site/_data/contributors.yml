@@ -116,10 +116,14 @@
   githubId: hsyuan
   org: Alibaba
 <<<<<<< HEAD
+<<<<<<< HEAD
   role: PMC
 =======
   role: Committer
 >>>>>>> 5d2e4f09c (Site: Add new committers (Haisheng Yuan, Hongze Zhang and Stamatis Zampetakis))
+=======
+  role: PMC
+>>>>>>> ca5bed635 (Site: Add Haisheng Yuan as PMC)
 - name: Hongze Zhang
   apacheId: hongze
   githubId: zhztheplayer
