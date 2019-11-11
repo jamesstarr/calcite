@@ -14,10 +14,24 @@
 # limitations under the License.
 #
 *~
-target
+.gradle
+/target
 .DS_Store
-.idea
+/*/target
+/example/*/target
+/build
+/*/build
+/example/*/build
+/buildSrc/build
+/buildSrc/subprojects/*/build
+
+# IDEA
+/out
+/*/out/
+/example/*/out
+/.idea
 *.iml
+
 settings.xml
 .classpath.txt
 .fullclasspath.txt
