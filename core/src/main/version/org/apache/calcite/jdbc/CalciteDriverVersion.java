@@ -21,7 +21,7 @@ import org.apache.calcite.avatica.DriverVersion;
 /**
  * Provides information on the current Calcite version.
  */
-<<<<<<< HEAD:core/src/main/version/org/apache/calcite/jdbc/CalciteDriverVersion.java
+>>>>>>> 2619f909b ([CALCITE-2905] Use code generation to create DriverVersion)
 class CalciteDriverVersion {
   static final DriverVersion INSTANCE =
       new DriverVersion(
@@ -37,6 +37,7 @@ class CalciteDriverVersion {
 
   private CalciteDriverVersion() {
   }
+<<<<<<< HEAD
 =======
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -54,7 +55,8 @@ class CalciteDriverVersion {
     JoinPreserveOrderTest.class
     })
 public class Linq4jSuite {
->>>>>>> 8bead079a ([CALCITE-2554] Enrich enumerable join operators with order preserving information (Stamatis Zampetakis)):linq4j/src/test/java/org/apache/calcite/linq4j/test/Linq4jSuite.java
+=======
+>>>>>>> 2619f909b ([CALCITE-2905] Use code generation to create DriverVersion)
 }
 
 // End CalciteDriverVersion.java

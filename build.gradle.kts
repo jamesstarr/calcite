@@ -286,7 +286,11 @@ val semaphore = `java.util.concurrent`.Semaphore(1)
 val licenseHeaderFile = file("config/license.header.java")
 
 val javaccGeneratedPatterns = arrayOf(
+<<<<<<< HEAD
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    "org/apache/calcite/jdbc/CalciteDriverVersion.java",
+>>>>>>> 2619f909b ([CALCITE-2905] Use code generation to create DriverVersion)
     "**/parser/**/*ParserImpl*.*",
     "**/parser/**/PigletParser.*",
     "**/parser/**/PigletParserConstants.*",

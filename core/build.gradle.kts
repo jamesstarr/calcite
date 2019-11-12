@@ -145,6 +145,9 @@ tasks.jar {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 2619f909b ([CALCITE-2905] Use code generation to create DriverVersion)
 val generatedVersionDir = File(buildDir, "generated/sources/version")
 val versionClass by tasks.registering(Sync::class) {
     val re = Regex("^(\\d+)\\.(\\d+).*")
@@ -190,8 +193,11 @@ sourceSets {
     }
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> 2619f909b ([CALCITE-2905] Use code generation to create DriverVersion)
 tasks.withType<Checkstyle>().configureEach {
     exclude("org/apache/calcite/runtime/Resources.java")
 }
