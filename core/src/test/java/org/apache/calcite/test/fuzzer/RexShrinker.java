@@ -45,13 +45,7 @@ public class RexShrinker extends RexShuttle {
     if (didWork || r.nextInt(100) > 80) {
       return super.visitCall(call);
     }
-    if (r.nextInt(100) < 10 && !call.operands.isEmpty()) {
-      // Replace with its argument
-      RexNode node = call.operands.get(r.nextInt(call.operands.size()));
-      if (node.getType().equals(type)) {
-        return node;
-      }
-    }
+>>>>>>> 2148b0192 (Add shrinker for RexProgramFuzzy so the results are simpler to reason about)
     if (r.nextInt(100) < 10) {
       // Replace with simple value
       RexNode res = null;
@@ -117,3 +111,7 @@ public class RexShrinker extends RexShuttle {
     return super.visitCall(call);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End RexShrinker.java

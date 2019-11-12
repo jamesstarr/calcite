@@ -26,82 +26,11 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.Pair;
 
-<<<<<<< HEAD
-=======
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
-
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-/**
- * An expression formed by a call to an operator with zero or more expressions
- * as operands.
- *
- * <p>Operators may be binary, unary, functions, special syntactic constructs
- * like <code>CASE ... WHEN ... END</code>, or even internally generated
- * constructs like implicit type conversions. The syntax of the operator is
- * really irrelevant, because row-expressions (unlike
- * {@link org.apache.calcite.sql.SqlNode SQL expressions})
- * do not directly represent a piece of source code.
- *
- * <p>It's not often necessary to sub-class this class. The smarts should be in
- * the operator, rather than the call. Any extra information about the call can
- * often be encoded as extra arguments. (These don't need to be hidden, because
- * no one is going to be generating source code from this tree.)</p>
- */
-public class RexCall extends RexNode {
-  //~ Instance fields --------------------------------------------------------
-
-  public final SqlOperator op;
-  public final ImmutableList<RexNode> operands;
-  public final RelDataType type;
-
-  /**
-   * Simple binary operators are those operators which expects operands from the same Domain.
-   *
-   * <p>Example: simple comparisions ({@code =}, {@code <}).
-   *
-   * <p>Note: it does not contain {@code IN} because that is defined on D x D^n.
-   */
->>>>>>> 213e62494 ([CALCITE-2842] Computing RexCall digest containing IN expressions leads to Exceptions)
-  private static final Set<SqlKind> SIMPLE_BINARY_OPS;
-
-
-  /**
-   * Cache of hash code.
-   */
-  protected int hash = 0;
-
-  /**
-   * Cache of normalized variables used for #equals and #hashCode.
-   */
-  private @Nullable Pair<SqlOperator, List<RexNode>> normalized;
-
-  static {
-    EnumSet<SqlKind> kinds = EnumSet.of(SqlKind.PLUS, SqlKind.MINUS, SqlKind.TIMES, SqlKind.DIVIDE);
-    kinds.addAll(SqlKind.COMPARISON);
-    kinds.remove(SqlKind.IN);
-    SIMPLE_BINARY_OPS = Sets.immutableEnumSet(kinds);
-  }
-
-  //~ Constructors -----------------------------------------------------------
-
-  protected RexCall(
-      RelDataType type,
-      SqlOperator op,
-      List<? extends RexNode> operands) {
-<<<<<<< HEAD
-    this.type = Objects.requireNonNull(type, "type");
-    this.op = Objects.requireNonNull(op, "operator");
-=======
     this.type = Objects.requireNonNull(type);
     this.op = Objects.requireNonNull(op);
+=======
+    this.type = Objects.requireNonNull(type, "type");
+    this.op = Objects.requireNonNull(op, "operator");
     this.operands = ImmutableList.copyOf(operands);
     assert op.getKind() != null : op;
     assert op.validRexOperands(operands.size(), Litmus.THROW) : this;

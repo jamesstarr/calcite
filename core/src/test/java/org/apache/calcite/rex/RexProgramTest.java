@@ -76,6 +76,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 =======
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 >>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
@@ -996,6 +997,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplifyUnchanged(cast(cast(vVarchar(), tInt()), tVarchar()));
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Disabled("CALCITE-3457: AssertionError in RexSimplify.validateStrongPolicy")
   @Test void reproducerFor3457() {
     // Identified with RexProgramFuzzyTest#testFuzzy, seed=4887662474363391810L
@@ -1003,11 +1005,35 @@ public class RexProgramTest extends RexProgramBuilderBase {
         eq(
           unaryMinus(abstractCast(literal(1), tInt(true))),
           unaryMinus(abstractCast(literal(1), tInt(true)))
+=======
+  @Ignore("CALCITE-3457: AssertionError in RexSimplify.validateStrongPolicy:843")
+  @Test public void reproducerFor3457() {
+    checkSimplify(
+        mul(
+          abstractCast(literal(1), tInt(true)),
+          case_(
+            eq(
+              unaryMinus(
+                abstractCast(
+                  literal(1),
+                  tInt(true)
+                )
+              ),
+              unaryMinus(
+                abstractCast(
+                  literal(1),
+                  tInt(true)))
+            ),
+            nullInt,
+            abstractCast(literal(1), tInt(true))
+          )
+>>>>>>> 2148b0192 (Add shrinker for RexProgramFuzzy so the results are simpler to reason about):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
         ),
         "I've no idea what I'm doing 🐕"
     );
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testNoCommonReturnTypeFails() {
     try {
       final RexNode node = coalesce(vVarchar(1), vInt(2));
@@ -1039,6 +1065,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
 >>>>>>> acb36fb58 (Ensure that tests are not calling checkSimplify3 with expected, expectedFalse, expectedTrue all the same):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
+=======
+>>>>>>> 2148b0192 (Add shrinker for RexProgramFuzzy so the results are simpler to reason about):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   @Test public void testNoCommonReturnTypeFails() {
     try {
       final RexNode node = coalesce(vVarchar(1), vInt(2));

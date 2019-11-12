@@ -22,7 +22,7 @@ import org.apache.calcite.rex.RexFieldAccess;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexVisitorImpl;
->>>>>>> 2640ba45b ([CALCITE-2504] Add randomized test for better code coverage of rex node create and simplification)
+import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
@@ -44,6 +44,7 @@ public class RexToTestCodeShuttle extends RexVisitorImpl<String> {
           .put(SqlStdOperatorTable.AND, "and")
           .put(SqlStdOperatorTable.OR, "or")
           .put(SqlStdOperatorTable.CASE, "case_")
+          .put(SqlStdOperatorTable.CAST, "abstractCast")
           .put(SqlStdOperatorTable.COALESCE, "coalesce")
           .put(SqlStdOperatorTable.IS_NULL, "isNull")
           .put(SqlStdOperatorTable.IS_NOT_NULL, "isNotNull")
@@ -96,6 +97,15 @@ public class RexToTestCodeShuttle extends RexVisitorImpl<String> {
       }
       sb.append(operand.accept(this));
     }
+    if (operator.kind == SqlKind.CAST) {
+      sb.append(", t");
+      appendSqlType(sb, call.getType());
+      sb.append('(');
+      if (call.getType().isNullable()) {
+        sb.append("true");
+      }
+      sb.append(')');
+    }
     sb.append(')');
     return sb.toString();
   }
@@ -127,7 +137,7 @@ public class RexToTestCodeShuttle extends RexVisitorImpl<String> {
     StringBuilder sb = new StringBuilder();
     sb.append("v");
     RelDataType type = fieldAccess.getType();
-<<<<<<< HEAD
+>>>>>>> 2148b0192 (Add shrinker for RexProgramFuzzy so the results are simpler to reason about)
     appendSqlType(sb, type);
     if (!type.isNullable()) {
       sb.append("NotNull");
@@ -139,6 +149,8 @@ public class RexToTestCodeShuttle extends RexVisitorImpl<String> {
   }
 
   private void appendSqlType(StringBuilder sb, RelDataType type) {
+<<<<<<< HEAD
+=======
 =======
     switch (type.getSqlTypeName()) {
     case BOOLEAN:
@@ -151,13 +163,6 @@ public class RexToTestCodeShuttle extends RexVisitorImpl<String> {
       sb.append("Varchar");
       break;
     }
-    if (!type.isNullable()) {
-      sb.append("NotNull");
-    }
-    sb.append("(");
-    sb.append(fieldAccess.getField().getIndex() % 10);
-    sb.append(")");
-    return sb.toString();
   }
 }
 
