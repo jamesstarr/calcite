@@ -1008,7 +1008,9 @@ public class RexProgramTest extends RexProgramBuilderBase {
 =======
   @Ignore("CALCITE-3457: AssertionError in RexSimplify.validateStrongPolicy:843")
   @Test public void reproducerFor3457() {
+    // Identified with RexProgramFuzzyTest#testFuzzy, seed=4887662474363391810L
     checkSimplify(
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
         mul(
           abstractCast(literal(1), tInt(true)),
           case_(
@@ -1028,6 +1030,11 @@ public class RexProgramTest extends RexProgramBuilderBase {
             abstractCast(literal(1), tInt(true))
           )
 >>>>>>> 2148b0192 (Add shrinker for RexProgramFuzzy so the results are simpler to reason about):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+        eq(
+          unaryMinus(abstractCast(literal(1), tInt(true))),
+          unaryMinus(abstractCast(literal(1), tInt(true)))
+>>>>>>> c896ba0fc (Simplify reproducerFor3457 test):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
         ),
         "I've no idea what I'm doing 🐕"
     );
@@ -3352,8 +3359,12 @@ public class RexProgramTest extends RexProgramBuilderBase {
     RexNode expr = cast(isTrue(vBoolNotNull()), tBool(true));
 =======
   @Test public void testRemovalOfNullabilityWideningCast() {
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     RexNode expr = cast(isTrue(vBoolNotNull()), tBoolean(true));
 >>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+    RexNode expr = cast(isTrue(vBoolNotNull()), tBool(true));
+>>>>>>> c896ba0fc (Simplify reproducerFor3457 test):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     assertThat(expr.getType().isNullable(), is(true));
     RexNode result = simplify.simplifyUnknownAs(expr, RexUnknownAs.UNKNOWN);
     assertThat(result.getType().isNullable(), is(false));
