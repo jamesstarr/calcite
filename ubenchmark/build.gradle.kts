@@ -60,6 +60,7 @@ tasks.withType<JavaExec>().configureEach {
  *
  */
 
+<<<<<<< HEAD
 dependencies {
     api(project(":core"))
     api(project(":linq4j"))
@@ -68,4 +69,19 @@ dependencies {
     api("org.openjdk.jmh:jmh-core")
     api("org.openjdk.jmh:jmh-generator-annprocess")
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+plugins {
+    id("me.champeau.gradle.jmh")
+>>>>>>> 02ef5191a ([CALCITE-2905] Use me.champeau.gradle.jmh for JMH)
 }
+
+dependencies {
+    jmh(project(":core"))
+    jmh(project(":linq4j"))
+    jmh("com.google.guava:guava")
+    jmh("org.codehaus.janino:commons-compiler")
+    jmh("org.openjdk.jmh:jmh-core")
+    jmh("org.openjdk.jmh:jmh-generator-annprocess")
+}
+
+// See https://github.com/melix/jmh-gradle-plugin

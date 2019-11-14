@@ -48,9 +48,13 @@ pluginManagement {
         idv("com.google.protobuf")
         idv("de.thetaphi.forbiddenapis")
 <<<<<<< HEAD
+<<<<<<< HEAD
         idv("me.champeau.gradle.jmh")
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+        idv("me.champeau.gradle.jmh")
+>>>>>>> 02ef5191a ([CALCITE-2905] Use me.champeau.gradle.jmh for JMH)
         idv("org.jetbrains.gradle.plugin.idea-ext")
         idv("org.nosphere.apache.rat")
         idv("org.owasp.dependencycheck")

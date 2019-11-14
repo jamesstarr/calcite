@@ -938,12 +938,18 @@ allprojects {
                 return@configure
             }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 02ef5191a ([CALCITE-2905] Use me.champeau.gradle.jmh for JMH)
             if (!project.props.bool("nexus.publish", default = true)) {
                 // Some of the artifacts do not need to be published
                 return@configure
             }
+<<<<<<< HEAD
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> 02ef5191a ([CALCITE-2905] Use me.champeau.gradle.jmh for JMH)
             publications {
                 create<MavenPublication>(project.name) {
                     artifactId = archivesBaseName
