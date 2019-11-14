@@ -16,7 +16,7 @@
  */
 package org.apache.calcite.adapter.file;
 
->>>>>>> ab8849d1f ([CALCITE-2878] Avoid use of new RuntimeException(e) in tests)
+import org.apache.calcite.util.Sources;
 import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
 
