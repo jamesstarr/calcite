@@ -114,6 +114,7 @@ class EnumerablesTest {
                     new Dept(30, "Development"))),
             e -> e.deptno,
             d -> d.deptno,
+            (e, d) -> true,
             (v0, v1) -> v0 + ", " + v1, false, false).toList().toString(),
         equalTo("[Emp(20, Theodore), Dept(20, Sales),"
             + " Emp(20, Sebastian), Dept(20, Sales),"
@@ -193,32 +194,31 @@ class EnumerablesTest {
         equalTo("[]"));
   }
 
-  private static <T extends Comparable<T>> void testIntersect(
-      List<T> list0, List<T> list1, org.hamcrest.Matcher<String> matcher) {
+  @Test public void testMergeJoin4() {
     assertThat(
-        intersect(list0, list1).toList().toString(),
-        matcher);
-
-    // Repeat test with nulls at the end of left / right: result should not be impacted
-
-    // Null at the end of left
-    list0.add(null);
-    assertThat(
-        intersect(list0, list1).toList().toString(),
-        matcher);
-
-    // Null at the end of right
-    list0.remove(list0.size() - 1);
-    list1.add(null);
-    assertThat(
-        intersect(list0, list1).toList().toString(),
-        matcher);
-
-    // Null at the end of left and right
-    list0.add(null);
-    assertThat(
-        intersect(list0, list1).toList().toString(),
-        matcher);
+        EnumerableDefaults.mergeJoin(
+            Linq4j.asEnumerable(
+                Arrays.asList(
+                    new Emp(1, "Fred"),
+                    new Emp(2, "Fred"),
+                    new Emp(3, "Joe"),
+                    new Emp(4, "Joe"),
+                    new Emp(5, "Peter"))),
+            Linq4j.asEnumerable(
+                Arrays.asList(
+                    new Emp(2, "Fred"),
+                    new Emp(3, "Joe"),
+                    new Emp(5, "Joe"),
+                    new Emp(6, "Peter"))),
+            e1 -> e1.name,
+            e2 -> e2.name,
+            (e1, e2) -> e1.deptno < e2.deptno,
+            (v0, v1) -> v0 + ", " + v1, false, false).toList().toString(),
+        equalTo("["
+            + "Emp(1, Fred), Emp(2, Fred), "
+            + "Emp(3, Joe), Emp(5, Joe), "
+            + "Emp(4, Joe), Emp(5, Joe), "
+            + "Emp(5, Peter), Emp(6, Peter)]"));
   }
 
   private static <T extends Comparable<T>> Enumerable<T> intersect(
@@ -227,7 +227,7 @@ class EnumerablesTest {
         Linq4j.asEnumerable(list0),
         Linq4j.asEnumerable(list1),
         Functions.identitySelector(),
-        Functions.identitySelector(), (v0, v1) -> v0, false, false);
+        Functions.identitySelector(), (v0, v1) -> true, (v0, v1) -> v0, false, false);
   }
 
   @Test public void testNestedLoopJoin() {
