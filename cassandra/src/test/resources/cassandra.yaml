@@ -49,10 +49,14 @@ hinted_handoff_throttle_in_kb: 1024
 max_hints_delivery_threads: 2
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 hints_directory: build/embeddedCassandra/hints
 =======
 hints_directory: target/embeddedCassandra/hints
 >>>>>>> 6c2e00988 ([CALCITE-2419] Use embedded Cassandra for tests)
+=======
+hints_directory: build/embeddedCassandra/hints
+>>>>>>> a1b3408f5 ([CALCITE-2905] Drop pom.xml files)
 
 # The following setting populates the page cache on memtable flush and compaction
 # WARNING: Enable this setting only when the whole node's data fits in memory.
@@ -111,6 +115,7 @@ partitioner: org.apache.cassandra.dht.Murmur3Partitioner
 # directories where Cassandra should store data on disk.
 data_file_directories:
 <<<<<<< HEAD
+<<<<<<< HEAD
     - build/embeddedCassandra/data
 
 # commit log
@@ -119,12 +124,19 @@ commitlog_directory: build/embeddedCassandra/commitlog
 cdc_raw_directory: build/embeddedCassandra/cdc
 =======
     - target/embeddedCassandra/data
+=======
+    - build/embeddedCassandra/data
+>>>>>>> a1b3408f5 ([CALCITE-2905] Drop pom.xml files)
 
 # commit log
-commitlog_directory: target/embeddedCassandra/commitlog
+commitlog_directory: build/embeddedCassandra/commitlog
 
+<<<<<<< HEAD
 cdc_raw_directory: target/embeddedCassandra/cdc
 >>>>>>> 6c2e00988 ([CALCITE-2419] Use embedded Cassandra for tests)
+=======
+cdc_raw_directory: build/embeddedCassandra/cdc
+>>>>>>> a1b3408f5 ([CALCITE-2905] Drop pom.xml files)
 
 # policy for data disk failures:
 # stop: shut down gossip and Thrift, leaving the node effectively dead, but
@@ -188,10 +200,14 @@ row_cache_save_period: 0
 
 # saved caches
 <<<<<<< HEAD
+<<<<<<< HEAD
 saved_caches_directory: build/embeddedCassandra/saved_caches
 =======
 saved_caches_directory: target/embeddedCassandra/saved_caches
 >>>>>>> 6c2e00988 ([CALCITE-2419] Use embedded Cassandra for tests)
+=======
+saved_caches_directory: build/embeddedCassandra/saved_caches
+>>>>>>> a1b3408f5 ([CALCITE-2905] Drop pom.xml files)
 
 # commitlog_sync may be either "periodic" or "batch."
 # When in batch mode, Cassandra won't ack writes until the commit log
