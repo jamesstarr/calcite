@@ -1178,6 +1178,7 @@ public class SqlDialect {
    * {@link #databaseProduct}; sub-classes may override. */
   @Nonnull public SqlConformance getConformance() {
     switch (databaseProduct) {
+    case UNKNOWN:
     case CALCITE:
       return SqlConformanceEnum.DEFAULT;
     case MYSQL:

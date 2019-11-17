@@ -113,9 +113,7 @@ class RelToSqlConverterTest {
   private static Planner getPlanner(List<RelTraitDef> traitDefs,
       SqlParser.Config parserConfig, SchemaPlus schema,
       SqlToRelConverter.Config sqlToRelConf, Program... programs) {
-    final MockSqlOperatorTable operatorTable =
-        new MockSqlOperatorTable(SqlStdOperatorTable.instance());
-    MockSqlOperatorTable.addRamp(operatorTable);
+>>>>>>> f46568d64 ([CALCITE-3486] In JDBC adapter, when generating ROW value expression, generates the ROW keyword only if the dialect allows it (quxiucheng))
     final FrameworkConfig config = Frameworks.newConfigBuilder()
         .parserConfig(parserConfig)
         .defaultSchema(schema)
@@ -479,7 +477,6 @@ class RelToSqlConverterTest {
     sql(query).ok(expected);
   }
 
->>>>>>> 989724d9a ([CALCITE-3066] RelToSqlConverter may incorrectly throw an AssertionError for some decimal literals)
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2713">[CALCITE-2713]
    * JDBC adapter may generate casts on PostgreSQL for VARCHAR type exceeding
@@ -5094,6 +5091,56 @@ class RelToSqlConverterTest {
     sql.ok(expected);
   }
 
+  @Test public void testRowValueExpression() {
+    final String expected0 = "INSERT INTO SCOTT.DEPT (DEPTNO, DNAME, LOC)\n"
+            + "VALUES  (1, 'Fred', 'San Francisco'),\n"
+            + " (2, 'Eric', 'Washington')";
+    String sql = "insert into \"DEPT\"\n"
+            + "values ROW(1,'Fred', 'San Francisco'), ROW(2, 'Eric', 'Washington')";
+    sql(sql)
+        .schema(CalciteAssert.SchemaSpec.JDBC_SCOTT)
+        .withHive()
+        .ok(expected0);
+
+    final String expected1 = "INSERT INTO `SCOTT`.`DEPT` (`DEPTNO`, `DNAME`, `LOC`)\n"
+            + "VALUES  (1, 'Fred', 'San Francisco'),\n"
+            + " (2, 'Eric', 'Washington')";
+    sql(sql)
+        .schema(CalciteAssert.SchemaSpec.JDBC_SCOTT)
+        .withMysql()
+        .ok(expected1);
+
+    final String expected2 = "INSERT INTO \"SCOTT\".\"DEPT\" (\"DEPTNO\", \"DNAME\", \"LOC\")\n"
+            + "VALUES  (1, 'Fred', 'San Francisco'),\n"
+            + " (2, 'Eric', 'Washington')";
+    sql(sql)
+        .schema(CalciteAssert.SchemaSpec.JDBC_SCOTT)
+        .withOracle()
+        .ok(expected2);
+
+    final String expected3 = "INSERT INTO [SCOTT].[DEPT] ([DEPTNO], [DNAME], [LOC])\n"
+            + "VALUES  (1, 'Fred', 'San Francisco'),\n"
+            + " (2, 'Eric', 'Washington')";
+    sql(sql)
+        .schema(CalciteAssert.SchemaSpec.JDBC_SCOTT)
+        .withMssql()
+        .ok(expected3);
+
+    final String expected4 = "INSERT INTO \"SCOTT\".\"DEPT\" (\"DEPTNO\", \"DNAME\", \"LOC\")\n"
+            + "VALUES  (1, 'Fred', 'San Francisco'),\n"
+            + " (2, 'Eric', 'Washington')";
+    sql(sql)
+        .schema(CalciteAssert.SchemaSpec.JDBC_SCOTT)
+        .ok(expected4);
+
+    final String expected5 = "INSERT INTO \"SCOTT\".\"DEPT\" (\"DEPTNO\", \"DNAME\", \"LOC\")\n"
+            + "VALUES  (1, 'Fred', 'San Francisco'),\n"
+            + " (2, 'Eric', 'Washington')";
+    sql(sql).withCalcite()
+            .schema(CalciteAssert.SchemaSpec.JDBC_SCOTT)
+            .ok(expected5);
+  }
+
   /** Fluid interface to run tests. */
   static class Sql {
     private final SchemaPlus schema;
@@ -5111,6 +5158,10 @@ class RelToSqlConverterTest {
       final SchemaPlus rootSchema = Frameworks.createRootSchema(true);
       this.schema = CalciteAssert.addSchema(rootSchema, schemaSpec);
       return new Sql(schema, sql, dialect, config, transforms);
+    }
+
+    Sql withCalcite() {
+      return dialect(SqlDialect.DatabaseProduct.CALCITE.getDialect());
     }
 
     Sql withDb2() {
