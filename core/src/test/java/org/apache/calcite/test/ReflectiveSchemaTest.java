@@ -820,7 +820,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3512">[CALCITE-3512]
    * Query fails when comparing Time/TimeStamp types</a>. */
-  @Test void testTimeCanCompare() {
+  @Test public void testTimeCanCompare() {
     final String sql = "select a.v\n"
         + "from (select \"sqlTime\" v\n"
         + "  from \"s\".\"everyTypes\" "
@@ -836,7 +836,7 @@ public class ReflectiveSchemaTest {
         .returnsUnordered("V=00:00:00");
   }
 
-  @Test void testTimestampCanCompare() {
+  @Test public void testTimestampCanCompare() {
     final String sql = "select a.v\n"
         + "from (select \"sqlTimestamp\" v\n"
         + "  from \"s\".\"everyTypes\" "
@@ -853,7 +853,7 @@ public class ReflectiveSchemaTest {
   }
 
   /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-1919">[CALCITE-1919]
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-281">[CALCITE-1919]
    * NPE when target in ReflectiveSchema belongs to the unnamed package</a>. */
   @Test void testReflectiveSchemaInUnnamedPackage() throws Exception {
     final Driver driver = new Driver();

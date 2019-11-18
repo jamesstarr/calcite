@@ -54,7 +54,7 @@ public abstract class StrictAggImplementor implements AggImplementor {
       Expression next) {
     add.currentBlock().add(
         Expressions.statement(
-            Expressions.assign(acc, RexToLixTranslator.convert(next, acc.type))));
+            Expressions.assign(acc, EnumUtils.convert(next, acc.type))));
   }
 
   public final List<Type> getStateType(AggContext info) {

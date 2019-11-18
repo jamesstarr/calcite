@@ -34,7 +34,8 @@ import org.apache.calcite.linq4j.tree.MethodCallExpression;
 import org.apache.calcite.linq4j.tree.MethodDeclaration;
 import org.apache.calcite.linq4j.tree.ParameterExpression;
 import org.apache.calcite.linq4j.tree.Primitive;
->>>>>>> 483a37eed ([CALCITE-3309] Refactor generatePredicate method from EnumerableNestedLoopJoin/EnumerableHashJoin/EnumerableBatchNestedLoopJoin into a single location)
+import org.apache.calcite.linq4j.tree.Types;
+import org.apache.calcite.linq4j.tree.UnaryExpression;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.type.RelDataType;
@@ -42,6 +43,7 @@ import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexProgramBuilder;
+import org.apache.calcite.runtime.SqlFunctions;
 import org.apache.calcite.runtime.Utilities;
 import org.apache.calcite.sql.SqlCollation;
 import org.apache.calcite.util.BuiltInMethod;
@@ -62,9 +64,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-<<<<<<< HEAD
-import java.util.Map;
-=======
 
 /**
  * Utilities for generating programs in the Enumerable (functional)
@@ -290,10 +289,12 @@ public class EnumUtils {
   }
 
   private static Type toInternal(RelDataType type) {
+<<<<<<< HEAD
     return toInternal(type, false);
   }
 
   static Type toInternal(RelDataType type, boolean forceNotNull) {
+=======
     switch (type.getSqlTypeName()) {
     case DATE:
     case TIME:
@@ -416,11 +417,8 @@ public class EnumUtils {
       if (operand instanceof UnaryExpression) {
         UnaryExpression una = (UnaryExpression) operand;
         if (una.nodeType == ExpressionType.Convert
-            && Primitive.of(una.getType()) == toBox) {
-          Primitive origin = Primitive.of(una.expression.type);
-          if (origin != null && toBox.assignableFrom(origin)) {
-            return Expressions.box(una.expression, toBox);
-          }
+            || Primitive.of(una.getType()) == toBox) {
+          return Expressions.box(una.expression, toBox);
         }
       }
       if (fromType == toBox.primitiveClass) {
@@ -469,7 +467,13 @@ public class EnumUtils {
       if (fromPrimitive != null) {
         // E.g. from "int" to "BigDecimal".
         // Generate "new BigDecimal(x)"
-        return Expressions.new_(BigDecimal.class, operand);
+        // Fix CALCITE-2325, we should decide null here for int type.
+        return Expressions.condition(
+            Expressions.equal(operand, RexImpTable.NULL_EXPR),
+            RexImpTable.NULL_EXPR,
+            Expressions.new_(
+                BigDecimal.class,
+                operand));
       }
       // E.g. from "Object" to "BigDecimal".
       // Generate "x == null ? null : SqlFunctions.toBigDecimal(x)"
@@ -512,14 +516,7 @@ public class EnumUtils {
       } else {
         Expression result;
         try {
-          // Avoid to generate code like:
-          // "null.toString()" or "(xxx) null.toString()"
-          if (operand instanceof ConstantExpression) {
-            ConstantExpression ce = (ConstantExpression) operand;
-            if (ce.value == null) {
-              return Expressions.convert_(operand, toType);
-            }
-          }
+>>>>>>> 46f71d242 ([CALCITE-3512] Query fails when comparing Time/TimeStamp types (DonnyZone))
           // Try to call "toString()" method
           // E.g. from "Integer" to "String"
           // Generate "x == null ? null : x.toString()"
@@ -548,6 +545,7 @@ public class EnumUtils {
     return type == java.sql.Date.class
         || type == java.sql.Time.class
         || type == java.sql.Timestamp.class;
+<<<<<<< HEAD
   }
 
   /**
@@ -1094,6 +1092,7 @@ public class EnumUtils {
         };
       }
     };
+=======
   }
 
   /** Transforms a JoinRelType to Linq4j JoinType. **/

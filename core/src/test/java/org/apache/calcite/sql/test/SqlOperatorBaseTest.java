@@ -316,11 +316,6 @@ public abstract class SqlOperatorBaseTest {
    * to be fixed especially cases where the query passes from the validation stage
    * and fails at runtime.
    * */
-<<<<<<< HEAD
-  @Disabled("Too slow and not really a unit test")
-  @Tag("slow")
-  @Test void testArgumentBounds() {
-=======
    * each type, with a set of tricky values. */
 =======
   @Test public void testArgumentBounds() {
@@ -354,7 +349,6 @@ public abstract class SqlOperatorBaseTest {
 <<<<<<< HEAD
 =======
       operatorsToSkip.add(SqlStdOperatorTable.JSON_VALUE_ANY);
->>>>>>> 4694048af ([CALCITE-3140] Multiple failures when executing slow tests)
       operatorsToSkip.add(SqlStdOperatorTable.JSON_QUERY);
     }
     // Skip since ClassCastException is raised in SqlOperator#unparse

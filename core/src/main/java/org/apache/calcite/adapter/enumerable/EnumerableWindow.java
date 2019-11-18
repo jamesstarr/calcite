@@ -600,7 +600,7 @@ public class EnumerableWindow extends Window implements EnumerableRel {
       public Expression getRow(Expression rowIndex) {
         return block.append(
             "jRow",
-            RexToLixTranslator.convert(
+            EnumUtils.convert(
                 Expressions.arrayIndex(rows_, rowIndex),
                 inputPhysType.getJavaRowType()));
       }
