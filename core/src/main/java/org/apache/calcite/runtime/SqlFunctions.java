@@ -1780,6 +1780,10 @@ public class SqlFunctions {
         : (Integer) cannotConvert(o, int.class);
   }
 
+  public static Integer toIntOptional(Object o) {
+    return o == null ? null : toInt(o);
+  }
+
   /** Converts the Java type used for UDF parameters of SQL TIMESTAMP type
    * ({@link java.sql.Timestamp}) to internal representation (long).
    *
@@ -1821,7 +1825,12 @@ public class SqlFunctions {
     return o instanceof Long ? (Long) o
         : o instanceof Number ? toLong((Number) o)
         : o instanceof String ? toLong((String) o)
+        : o instanceof java.util.Date ? toLong((java.util.Date) o)
         : (Long) cannotConvert(o, long.class);
+  }
+
+  public static Long toLongOptional(Object o) {
+    return o == null ? null : toLong(o);
   }
 
   public static float toFloat(String s) {

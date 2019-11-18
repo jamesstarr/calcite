@@ -1093,7 +1093,7 @@ public class RexImpTable {
       final Expression ifTrue;
       switch (nullAs) {
       case NULL:
-        ifTrue = RexToLixTranslator.convert(NULL_EXPR, box.getType());
+        ifTrue = EnumUtils.convert(NULL_EXPR, box.getType());
         break;
       case IS_NULL:
         ifTrue = TRUE_EXPR;
@@ -1243,7 +1243,7 @@ public class RexImpTable {
       case BOX:
         switch (this) {
         case NOT_POSSIBLE:
-          return RexToLixTranslator.convert(
+          return EnumUtils.convert(
               x,
               Primitive.ofBox(x.getType()).primitiveClass);
         }
@@ -1376,7 +1376,7 @@ public class RexImpTable {
         next = Expressions.call(acc, "add", add.arguments().get(0));
       } else {
         next = Expressions.add(acc,
-            RexToLixTranslator.convert(add.arguments().get(0), acc.type));
+            EnumUtils.convert(add.arguments().get(0), acc.type));
       }
       accAdvance(add, acc, next);
     }
@@ -1454,7 +1454,7 @@ public class RexImpTable {
 
     public Expression implementResult(AggContext info,
         AggResultContext result) {
-      return RexToLixTranslator.convert(result.accumulator().get(1),
+      return EnumUtils.convert(result.accumulator().get(1),
           info.returnType());
     }
   }
@@ -2210,8 +2210,8 @@ public class RexImpTable {
     private Expression call(Expression operand, Type type,
         TimeUnit timeUnit) {
       return Expressions.call(SqlFunctions.class, methodName,
-          RexToLixTranslator.convert(operand, type),
-          RexToLixTranslator.convert(
+          EnumUtils.convert(operand, type),
+          EnumUtils.convert(
               Expressions.constant(timeUnit.multiplier), type));
     }
   }
@@ -2238,7 +2238,7 @@ public class RexImpTable {
 
       final Type returnType =
           translator.typeFactory.getJavaClass(call.getType());
-      return RexToLixTranslator.convert(expression, returnType);
+      return EnumUtils.convert(expression, returnType);
     }
   }
 
@@ -2355,7 +2355,7 @@ public class RexImpTable {
 
       final Type returnType =
           translator.typeFactory.getJavaClass(call.getType());
-      return RexToLixTranslator.convert(
+      return EnumUtils.convert(
           Expressions.makeBinary(expressionType, expressions.get(0),
               expressions.get(1)),
           returnType);
@@ -2981,7 +2981,7 @@ public class RexImpTable {
     @Override public Expression implement(RexToLixTranslator translator, RexCall call,
         ParameterExpression row, ParameterExpression rows,
         ParameterExpression symbols, ParameterExpression i) {
-      return RexToLixTranslator.convert(
+      return EnumUtils.convert(
           Expressions.call(symbols, BuiltInMethod.LIST_GET.method, i),
           String.class);
     }
