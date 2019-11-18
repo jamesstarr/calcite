@@ -20,3 +20,8 @@
  * {@link org.apache.calcite.sql.parser Calcite SQL parser}.
  */
 package org.apache.calcite.sql.parser.impl;
+<<<<<<< HEAD
+=======
+
+// End package-info.java
+>>>>>>> 4d61893a7 ([CALCITE-2905] @PackageMaker is no longer needed)

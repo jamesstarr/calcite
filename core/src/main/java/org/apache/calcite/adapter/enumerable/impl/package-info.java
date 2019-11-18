@@ -19,3 +19,8 @@
  * Calcite-specific classes for implementation of regular and window aggregates.
  */
 package org.apache.calcite.adapter.enumerable.impl;
+<<<<<<< HEAD
+=======
+
+// End package-info.java
+>>>>>>> 4d61893a7 ([CALCITE-2905] @PackageMaker is no longer needed)

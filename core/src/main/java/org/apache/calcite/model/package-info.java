@@ -34,3 +34,8 @@
  * <a href="https://calcite.apache.org/docs/tutorial.html">tutorial</a>.
  */
 package org.apache.calcite.model;
+<<<<<<< HEAD
+=======
+
+// End package-info.java
+>>>>>>> 4d61893a7 ([CALCITE-2905] @PackageMaker is no longer needed)

@@ -22,5 +22,20 @@ import org.apache.calcite.sql.SqlNode;
  * Stub scope for table functions.
  */
 public class TableFunctionScope extends ListScope {
+<<<<<<< HEAD
+=======
+  private final SqlNode node;
+
+  protected TableFunctionScope(SqlNode node, SqlValidatorScope parent) {
+    super(parent);
+    this.node = node;
+  }
+
+  @Override public SqlNode getNode() {
+    return node;
+  }
+
+}
+>>>>>>> 4d61893a7 ([CALCITE-2905] @PackageMaker is no longer needed)
 
 // End TableFunctionScope.java

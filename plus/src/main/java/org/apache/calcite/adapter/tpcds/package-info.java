@@ -19,3 +19,8 @@
  * TPC-DS schema.
  */
 package org.apache.calcite.adapter.tpcds;
+<<<<<<< HEAD
+=======
+
+// End package-info.java
+>>>>>>> 4d61893a7 ([CALCITE-2905] @PackageMaker is no longer needed)

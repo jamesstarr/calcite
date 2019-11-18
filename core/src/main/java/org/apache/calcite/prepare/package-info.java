@@ -19,3 +19,8 @@
  * Preparation of queries (parsing, planning and implementation).
  */
 package org.apache.calcite.prepare;
+<<<<<<< HEAD
+=======
+
+// End package-info.java
+>>>>>>> 4d61893a7 ([CALCITE-2905] @PackageMaker is no longer needed)

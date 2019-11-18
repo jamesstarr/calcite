@@ -19,3 +19,8 @@
  * Graph-theoretic algorithms and data structures.
  */
 package org.apache.calcite.util.graph;
+<<<<<<< HEAD
+=======
+
+// End package-info.java
+>>>>>>> 4d61893a7 ([CALCITE-2905] @PackageMaker is no longer needed)

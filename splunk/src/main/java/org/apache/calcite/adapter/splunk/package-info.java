@@ -23,3 +23,8 @@
  * fields are held in a map field called "_others".</p>
  */
 package org.apache.calcite.adapter.splunk;
+<<<<<<< HEAD
+=======
+
+// End package-info.java
+>>>>>>> 4d61893a7 ([CALCITE-2905] @PackageMaker is no longer needed)

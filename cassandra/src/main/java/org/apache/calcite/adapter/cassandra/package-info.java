@@ -21,3 +21,8 @@
  * <p>There is one table for each Cassandra column family.</p>
  */
 package org.apache.calcite.adapter.cassandra;
+<<<<<<< HEAD
+=======
+
+// End package-info.java
+>>>>>>> 4d61893a7 ([CALCITE-2905] @PackageMaker is no longer needed)

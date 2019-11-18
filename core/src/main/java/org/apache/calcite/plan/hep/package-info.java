@@ -20,3 +20,8 @@
  * {@link org.apache.calcite.plan}.
  */
 package org.apache.calcite.plan.hep;
+<<<<<<< HEAD
+=======
+
+// End package-info.java
+>>>>>>> 4d61893a7 ([CALCITE-2905] @PackageMaker is no longer needed)

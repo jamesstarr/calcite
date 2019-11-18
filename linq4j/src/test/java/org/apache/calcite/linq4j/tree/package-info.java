@@ -19,3 +19,8 @@
  * Tests for expressions.
  */
 package org.apache.calcite.linq4j.tree;
+<<<<<<< HEAD
+=======
+
+// End package-info.java
+>>>>>>> 4d61893a7 ([CALCITE-2905] @PackageMaker is no longer needed)
