@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <!--
+<<<<<<< HEAD
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
   ~ this work for additional information regarding copyright ownership.
@@ -19,11 +20,36 @@
     <TestCase name="testNestedQueryHint">
         <Resource name="sql">
             <![CDATA[select /*+ resource(parallelism='3'), repartition(10) */ empno
+=======
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<Root>
+    <TestCase name="testNestedQueryHint">
+        <Resource name="sql">
+            <![CDATA[select /*+ resource(parallelism='3') */ empno
+>>>>>>> e81bf6d89 ([CALCITE-3519] Use List instead of BitSet to keep inheritPath in RelHint (Shuo Cheng))
 from (select /*+ resource(mem='20Mb')*/ empno, ename from emp)]]>
         </Resource>
         <Resource name="hints">
             <![CDATA[
+<<<<<<< HEAD
 Project:[[RESOURCE inheritPath:[] options:{PARALLELISM=3}], [REPARTITION inheritPath:[] options:[10]]]
+=======
+Project:[[RESOURCE inheritPath:[] options:{PARALLELISM=3}]]
+>>>>>>> e81bf6d89 ([CALCITE-3519] Use List instead of BitSet to keep inheritPath in RelHint (Shuo Cheng))
 ]]>
         </Resource>
     </TestCase>
@@ -45,6 +71,7 @@ TableScan:[[PROPERTIES inheritPath:[0, 1, 0] options:{K1=v1, K2=v2}], [INDEX inh
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testQueryHintWithLiteralOptions">
         <Resource name="sql">
             <![CDATA[select /*+ time_zone(1, 1.23, 'a bc', -1.0) */ *
@@ -140,6 +167,8 @@ Project:[[RESOURCE inheritPath:[0] options:{CPU=2}], [RESOURCE inheritPath:[0, 0
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> e81bf6d89 ([CALCITE-3519] Use List instead of BitSet to keep inheritPath in RelHint (Shuo Cheng))
     <TestCase name="testTwoLevelNestedQueryHint">
         <Resource name="sql">
             <![CDATA[select /*+ resource(parallelism='3'), no_hash_join */ empno
@@ -153,6 +182,7 @@ LogicalJoin:[[NO_HASH_JOIN inheritPath:[0]]]
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testThreeLevelNestedQueryHint">
         <Resource name="sql">
             <![CDATA[select /*+ index(idx1), no_hash_join */ * from emp /*+ index(empno) */
@@ -187,6 +217,8 @@ TableScan:[[INDEX inheritPath:[] options:[EMPNO]], [INDEX inheritPath:[0, 1, 0, 
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> e81bf6d89 ([CALCITE-3519] Use List instead of BitSet to keep inheritPath in RelHint (Shuo Cheng))
     <TestCase name="testTableHintsInJoin">
         <Resource name="sql">
             <![CDATA[select
@@ -202,6 +234,7 @@ TableScan:[[PROPERTIES inheritPath:[] options:{K1=v1, K2=v2}]]
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testSameHintsWithDifferentInheritPath">
         <Resource name="sql">
             <![CDATA[select /*+ properties(k1='v1', k2='v2') */
@@ -218,6 +251,8 @@ TableScan:[[PROPERTIES inheritPath:[] options:{K1=v1, K2=v2}], [PROPERTIES inher
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> e81bf6d89 ([CALCITE-3519] Use List instead of BitSet to keep inheritPath in RelHint (Shuo Cheng))
     <TestCase name="testTableHintsInSelect">
         <Resource name="sql">
             <![CDATA[select * from emp /*+ properties(k1='v1', k2='v2'), index(ename), no_hash_join */]]>
@@ -241,6 +276,7 @@ LogicalJoin:[[USE_HASH_JOIN inheritPath:[0] options:[EMP, DEPT]]]
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testUseMergeJoin">
         <Resource name="sql">
             <![CDATA[select /*+ use_merge_join(emp, dept) */
@@ -256,4 +292,6 @@ EnumerableProject(ENAME=[$1], JOB=[$2], SAL=[$5], NAME=[$10])
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> e81bf6d89 ([CALCITE-3519] Use List instead of BitSet to keep inheritPath in RelHint (Shuo Cheng))
 </Root>
