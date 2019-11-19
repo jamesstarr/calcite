@@ -214,6 +214,7 @@ $ ./gradlew build -x test # build the artifacts, verify code style, skip tests
 $ ./gradlew check # verify code style, execute tests
 $ ./gradlew test # execute tests
 <<<<<<< HEAD
+<<<<<<< HEAD
 $ ./gradlew style # update code formatting (for auto-correctable cases) and verify style
 $ ./gradlew autostyleCheck checkstyleAll # report code style violations
 $ ./gradlew -PenableErrorprone classes # verify Java code with Error Prone compiler, requires Java 11
@@ -224,6 +225,10 @@ $ ./mvnw test
 =======
 $ ./gradlew checkstyleMain checkstyleTest # verify code style
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+$ ./gradlew style # update code formatting (for auto-correctable cases) and verify style
+$ ./gradlew spotlessCheck checkstyleAll # report code style violations
+>>>>>>> 31352ef75 (Add './gradlew style' task to apply code format and report violations)
 {% endhighlight %}
 
 You can use `./gradlew assemble` to build the artifacts and skip all tests and verifications.

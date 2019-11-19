@@ -480,11 +480,17 @@ allprojects {
             )
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
         tasks.register("checkstyleAll") {
             dependsOn(tasks.withType<Checkstyle>())
         }
         tasks.configureEach<Checkstyle> {
 =======
+=======
+        tasks.register("checkstyleAll") {
+            dependsOn(tasks.withType<Checkstyle>())
+        }
+>>>>>>> 31352ef75 (Add './gradlew style' task to apply code format and report violations)
         tasks.withType<Checkstyle>().configureEach {
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
             // Excludes here are faster than in suppressions.xml
@@ -509,21 +515,33 @@ allprojects {
         }
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     if (!skipAutostyle || !skipCheckstyle) {
         tasks.register("style") {
             group = LifecycleBasePlugin.VERIFICATION_GROUP
             description = "Formats code (license header, import order, whitespace at end of line, ...) and executes Checkstyle verifications"
             if (!skipAutostyle) {
                 dependsOn("autostyleApply")
+=======
+    if (!skipSpotless || !skipCheckstyle) {
+        tasks.register("style") {
+            group = LifecycleBasePlugin.VERIFICATION_GROUP
+            description = "Formats code (license header, import order, whitespace at end of line, ...) and executes Checkstyle verifications"
+            if (!skipSpotless) {
+                dependsOn("spotlessApply")
+>>>>>>> 31352ef75 (Add './gradlew style' task to apply code format and report violations)
             }
             if (!skipCheckstyle) {
                 dependsOn("checkstyleAll")
             }
         }
     }
+<<<<<<< HEAD
 
     tasks.configureEach<AbstractArchiveTask> {
 =======
+=======
+>>>>>>> 31352ef75 (Add './gradlew style' task to apply code format and report violations)
 
     tasks.withType<AbstractArchiveTask>().configureEach {
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
