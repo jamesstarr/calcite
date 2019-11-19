@@ -86,6 +86,10 @@ If you have already installed Maven and it is on your path, then you
 can use `mvn` rather than `./mvnw` in commands. You need Maven version
 3.5.2 or later.
 
+For more information about Gradle, check the following links:
+[Gradle five things](https://docs.gradle.org/current/userguide/what_is_gradle.html#five_things);
+[Gradle multi-project builds](https://docs.gradle.org/current/userguide/intro_multi_project_builds.html).
+
 ## Running tests
 
 The test suite will run by default when you build, unless you specify
