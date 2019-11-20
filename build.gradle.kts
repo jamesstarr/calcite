@@ -217,6 +217,9 @@ val javadocAggregate by tasks.registering(Javadoc::class) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> da83d51a7 (Add gradle task 'aggregateJavadocIncludingTests' that builds javadoc for both main and test)
 /** Similar to {@link #javadocAggregate} but includes tests.
  * CI uses this target to validate javadoc (e.g. checking for broken links). */
 val javadocAggregateIncludingTests by tasks.registering(Javadoc::class) {
@@ -231,6 +234,7 @@ val javadocAggregateIncludingTests by tasks.registering(Javadoc::class) {
     setDestinationDir(file("$buildDir/docs/javadocAggregateIncludingTests"))
 }
 
+<<<<<<< HEAD
 val adaptersForSqlline = listOf(
     ":babel", ":cassandra", ":druid", ":elasticsearch", ":file", ":geode", ":kafka", ":mongodb",
     ":pig", ":piglet", ":plus", ":redis", ":spark", ":splunk"
@@ -241,6 +245,8 @@ val dataSetsForSqlline = listOf(
     "net.hydromatic:scott-data-hsqldb",
     "net.hydromatic:chinook-data-hsqldb"
 =======
+=======
+>>>>>>> da83d51a7 (Add gradle task 'aggregateJavadocIncludingTests' that builds javadoc for both main and test)
 val adaptersForSqlline = listOf(
     ":babel", ":cassandra", ":druid", ":elasticsearch", ":file", ":geode", ":kafka", ":mongodb",
     ":pig", ":piglet", ":plus", ":spark", ":splunk"
