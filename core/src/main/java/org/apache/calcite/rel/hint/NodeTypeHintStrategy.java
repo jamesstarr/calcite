@@ -69,7 +69,7 @@ public class NodeTypeHintStrategy implements HintStrategy {
     /** Relational expression clazz that the hint can apply to. */
     private Class<?> relClazz;
 
-    NodeType(Class relClazz) {
+    NodeType(Class<?> relClazz) {
       this.relClazz = relClazz;
     }
   }
