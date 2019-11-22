@@ -14250,12 +14250,16 @@ LogicalProject(JOB=[$1])
     </TestCase>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> d4cd3f783 ([CALCITE-3531] AggregateProjectPullUpConstantsRule should not remove deterministic function group key if the function is dynamic)
     <TestCase name="testAggregateDynamicFunction">
         <Resource name="sql">
             <![CDATA[select hiredate
 from sales.emp
 where sal is null and hiredate = current_timestamp
 group by sal, hiredate
+<<<<<<< HEAD
 =======
     <TestCase name="testAggregateConstantKeyRuleWithRemoveAll">
         <Resource name="sql">
@@ -14292,16 +14296,22 @@ from sales.emp
 where deptno = 10 and job = 'Clerk'
 group by deptno, job
 >>>>>>> 95f801cb4 ([CALCITE-4634] Improve AggregateProjectPullUpConstantsRule to remove all constant keys)
+=======
+>>>>>>> d4cd3f783 ([CALCITE-3531] AggregateProjectPullUpConstantsRule should not remove deterministic function group key if the function is dynamic)
 having count(*) > 3]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> d4cd3f783 ([CALCITE-3531] AggregateProjectPullUpConstantsRule should not remove deterministic function group key if the function is dynamic)
 LogicalProject(HIREDATE=[$1])
   LogicalFilter(condition=[>($2, 3)])
     LogicalAggregate(group=[{0, 1}], agg#0=[COUNT()])
       LogicalProject(SAL=[$5], HIREDATE=[$4])
         LogicalFilter(condition=[AND(IS NULL($5), =($4, CURRENT_TIMESTAMP))])
+<<<<<<< HEAD
 =======
 LogicalProject(JOB=[$1])
   LogicalFilter(condition=[>($2, 3)])
@@ -14309,11 +14319,14 @@ LogicalProject(JOB=[$1])
       LogicalProject(DEPTNO=[$7], JOB=[$2])
         LogicalFilter(condition=[AND(=($7, 10), =($2, 'Clerk'))])
 >>>>>>> 95f801cb4 ([CALCITE-4634] Improve AggregateProjectPullUpConstantsRule to remove all constant keys)
+=======
+>>>>>>> d4cd3f783 ([CALCITE-3531] AggregateProjectPullUpConstantsRule should not remove deterministic function group key if the function is dynamic)
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
+<<<<<<< HEAD
 <<<<<<< HEAD
 LogicalProject(HIREDATE=[$1])
   LogicalFilter(condition=[>($2, 3)])
@@ -14364,6 +14377,17 @@ LogicalProject(EXPR$0=[$0], EXPR$1=[$2])
     </TestCase>
 =======
 >>>>>>> 0689d8785 (Revert "[CALCITE-4634] Improve AggregateProjectPullUpConstantsRule to remove all constant keys")
+=======
+LogicalProject(HIREDATE=[$1])
+  LogicalFilter(condition=[>($2, 3)])
+    LogicalAggregate(group=[{0, 1}], agg#0=[COUNT()])
+      LogicalProject(SAL=[$5], HIREDATE=[$4])
+        LogicalFilter(condition=[AND(IS NULL($5), =($4, CURRENT_TIMESTAMP))])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+>>>>>>> d4cd3f783 ([CALCITE-3531] AggregateProjectPullUpConstantsRule should not remove deterministic function group key if the function is dynamic)
     <TestCase name="testExpandProjectInNullable">
         <Resource name="sql">
             <![CDATA[with e2 as (
