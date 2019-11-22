@@ -16,7 +16,7 @@
  */
 package org.apache.calcite.test;
 
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -69,29 +69,11 @@ public class FoodMartQuerySet {
   }
 
   /** JSON query element. */
-<<<<<<< HEAD
+=======
   @JsonIgnoreProperties(value = {"columns", "rows"})
   public static class FoodmartQuery {
     public int id;
     public String sql;
-
-    @Override public String toString() {
-      return "id=" + id;
-    }
-  }
-}
-=======
-  public static class FoodmartQuery {
-    public int id;
-    public String sql;
-    public final List<FoodmartColumn> columns = new ArrayList<>();
-    public final List<List> rows = new ArrayList<>();
-  }
-
-  /** JSON column element. */
-  public static class FoodmartColumn {
-    public String name;
-    public String type;
   }
 }
 
