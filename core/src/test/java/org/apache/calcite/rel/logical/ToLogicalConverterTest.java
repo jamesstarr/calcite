@@ -341,10 +341,10 @@ class ToLogicalConverterTest {
         + "    EnumerableTableScan(table=[[scott, EMP]])\n";
     String expectedLogical = ""
         + "LogicalUnion(all=[true])\n"
-        + "  LogicalProject(DEPTNO=[$0])\n"
-        + "    LogicalTableScan(table=[[scott, DEPT]])\n"
-        + "  LogicalProject(DEPTNO=[$7])\n"
-        + "    LogicalTableScan(table=[[scott, EMP]])\n";
+            + "  LogicalProject(DEPTNO=[$0])\n"
+            + "    LogicalTableScan(table=[[scott, DEPT]])\n"
+            + "  LogicalProject(DEPTNO=[$7])\n"
+            + "    LogicalTableScan(table=[[scott, EMP]])\n";
     verify(rel, expectedPhysical, expectedLogical);
   }
 
