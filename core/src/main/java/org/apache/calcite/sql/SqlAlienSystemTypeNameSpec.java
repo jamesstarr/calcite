@@ -89,3 +89,8 @@ public class SqlAlienSystemTypeNameSpec extends SqlBasicTypeNameSpec {
     return super.equalsDeep(node, litmus);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlAlienSystemTypeNameSpec.java
+>>>>>>> cd74e4e9d ([CALCITE-3534] Support parse(unparse) alien system non-standard data type)
