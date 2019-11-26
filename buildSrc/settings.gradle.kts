@@ -19,12 +19,13 @@
 pluginManagement {
     plugins {
         fun PluginDependenciesSpec.idv(id: String) = id(id) version extra["$id.version"].toString()
-        idv("com.diffplug.gradle.spotless")
+        idv("com.github.autostyle")
     }
 }
 
 include("javacc")
 include("fmpp")
+include("buildext")
 
 val upperCaseLetters = "\\p{Upper}".toRegex()
 
