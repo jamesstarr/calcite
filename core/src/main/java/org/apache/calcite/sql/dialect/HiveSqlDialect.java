@@ -146,6 +146,14 @@ public class HiveSqlDialect extends SqlDialect {
 <<<<<<< HEAD
 =======
 
+  @Override public boolean supportsGroupByWithRollup() {
+    return true;
+  }
+
+  @Override public boolean supportsGroupByWithCube() {
+    return true;
+  }
+
   @Override public SqlNode getCastSpec(final RelDataType type) {
     if (type instanceof BasicSqlType) {
       switch (type.getSqlTypeName()) {
