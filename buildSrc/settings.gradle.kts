@@ -25,17 +25,25 @@ pluginManagement {
         idv("com.github.vlsi.gradle-extensions", "com.github.vlsi.vlsi-release-plugins")
 =======
         fun PluginDependenciesSpec.idv(id: String) = id(id) version extra["$id.version"].toString()
+<<<<<<< HEAD
         idv("com.diffplug.gradle.spotless")
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+        idv("com.github.autostyle")
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
     }
 }
 
 include("javacc")
 include("fmpp")
 <<<<<<< HEAD
+<<<<<<< HEAD
 include("buildext")
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+include("buildext")
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 
 val upperCaseLetters = "\\p{Upper}".toRegex()
 

@@ -1,7 +1,10 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 # Configuration file for Appveyor continuous integration.
 >>>>>>> 931e0f674 ([CALCITE-2412] Add Windows CI via AppVeyor (Sergey Nuyanzin))
+=======
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with

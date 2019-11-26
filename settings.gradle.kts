@@ -34,10 +34,14 @@ pluginManagement {
         fun PluginDependenciesSpec.idv(id: String, key: String = id) = id(id) version key.v()
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         idv("com.github.autostyle")
 =======
         idv("com.diffplug.gradle.spotless")
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+        idv("com.github.autostyle")
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
         idv("com.github.johnrengelman.shadow")
         idv("com.github.spotbugs")
         idv("com.github.vlsi.crlf", "com.github.vlsi.vlsi-release-plugins")
@@ -118,11 +122,17 @@ property("localAvatica")?.ifBlank { "../calcite-avatica" }?.let {
     includeBuild(it)
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 
 // This enables to try local Autostyle
 property("localAutostyle")?.ifBlank { "../autostyle" }?.let {
     println("Importing project '$it'")
     includeBuild("../autostyle")
 }
+<<<<<<< HEAD
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)

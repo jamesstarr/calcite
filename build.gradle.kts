@@ -46,10 +46,13 @@ import com.github.vlsi.gradle.test.dsl.printTestResults
 import de.thetaphi.forbiddenapis.gradle.CheckForbiddenApis
 import de.thetaphi.forbiddenapis.gradle.CheckForbiddenApisExtension
 import org.apache.calcite.buildtools.buildext.dsl.ParenthesisBalancer
+<<<<<<< HEAD
 =======
 import de.thetaphi.forbiddenapis.gradle.CheckForbiddenApis
 import de.thetaphi.forbiddenapis.gradle.CheckForbiddenApisExtension
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
@@ -57,11 +60,16 @@ plugins {
     // Verification
     checkstyle
 <<<<<<< HEAD
+<<<<<<< HEAD
     calcite.buildext
     id("com.github.autostyle")
 =======
     id("com.diffplug.gradle.spotless")
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    calcite.buildext
+    id("com.github.autostyle")
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
     id("org.nosphere.apache.rat")
     id("com.github.spotbugs")
     id("de.thetaphi.forbiddenapis") apply false
@@ -90,10 +98,14 @@ val lastEditYear by extra(lastEditYear())
 val enableSpotBugs = props.bool("spotbugs", default = false)
 val skipCheckstyle by props()
 <<<<<<< HEAD
+<<<<<<< HEAD
 val skipAutostyle by props()
 =======
 val skipSpotless by props()
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+val skipAutostyle by props()
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 val skipJavadoc by props()
 val enableMavenLocal by props()
 val enableGradleMetadata by props()
@@ -142,10 +154,14 @@ gradle.projectsEvaluated {
     val ratTask = tasks.getByName("rat")
     allprojects.forEach { project ->
 <<<<<<< HEAD
+<<<<<<< HEAD
         project.tasks.withType<com.github.autostyle.gradle.AutostyleTask>().configureEach {
 =======
         project.tasks.withType<com.diffplug.gradle.spotless.SpotlessTask>().configureEach {
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
+=======
+        project.tasks.withType<com.github.autostyle.gradle.AutostyleTask>().configureEach {
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
             ratTask.mustRunAfter(this)
         }
     }
@@ -336,6 +352,9 @@ fun PatternFilterable.excludeJavaCcGenerated() {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 fun com.github.autostyle.gradle.BaseFormatExtension.license() {
     licenseHeader(rootProject.ide.licenseHeader) {
         copyrightStyle("bat", com.github.autostyle.generic.DefaultCopyrightStyle.PAAMAYIM_NEKUDOTAYIM)
@@ -345,14 +364,20 @@ fun com.github.autostyle.gradle.BaseFormatExtension.license() {
     endWithNewline()
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 allprojects {
     group = "org.apache.calcite"
     version = buildVersion
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
     repositories {
         // RAT and Autostyle dependencies
         mavenCentral()
@@ -448,20 +473,36 @@ allprojects {
         }
     }
 
-    if (!skipSpotless) {
-        apply(plugin = "com.diffplug.gradle.spotless")
-        spotless {
+    if (!skipAutostyle) {
+        apply(plugin = "com.github.autostyle")
+        autostyle {
             kotlinGradle {
+                license()
                 ktlint()
+<<<<<<< HEAD
                 trimTrailingWhitespace()
                 endWithNewline()
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+            }
+            format("configs") {
+                filter {
+                    include("**/*.sh", "**/*.bsh", "**/*.cmd", "**/*.bat")
+                    include("**/*.properties", "**/*.yml")
+                    include("**/*.xsd", "**/*.xsl", "**/*.xml")
+                    // Autostyle does not support gitignore yet https://github.com/autostyle/autostyle/issues/13
+                    exclude("bin/**", "out/**", "target/**", "gradlew*")
+                    exclude(rootDir.resolve(".ratignore").readLines())
+                }
+                license()
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
             }
             if (project == rootProject) {
                 // Spotless does not exclude subprojects when using target(...)
                 // So **/*.md is enough to scan all the md files in the codebase
                 // See https://github.com/diffplug/spotless/issues/468
                 format("markdown") {
+<<<<<<< HEAD
 <<<<<<< HEAD
                     filter.include("**/*.md")
                     // Flot is known to have trailing whitespace, so the files
@@ -482,6 +523,22 @@ allprojects {
                     // Flot is known to have trailing whitespace, so the files
                     // are kept in their original format (e.g. to simplify diff on library upgrade)
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+                    filter.include("**/*.md")
+                    // Flot is known to have trailing whitespace, so the files
+                    // are kept in their original format (e.g. to simplify diff on library upgrade)
+                    endWithNewline()
+                }
+            }
+        }
+        plugins.withId("org.jetbrains.kotlin.jvm") {
+            autostyle {
+                kotlin {
+                    licenseHeader(rootProject.ide.licenseHeader)
+                    ktlint {
+                        userData(mapOf("disabled_rules" to "import-ordering"))
+                    }
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
                     trimTrailingWhitespace()
                     endWithNewline()
                 }
@@ -554,6 +611,7 @@ allprojects {
     }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     if (!skipAutostyle || !skipCheckstyle) {
         tasks.register("style") {
             group = LifecycleBasePlugin.VERIFICATION_GROUP
@@ -568,6 +626,14 @@ allprojects {
             if (!skipSpotless) {
                 dependsOn("spotlessApply")
 >>>>>>> 31352ef75 (Add './gradlew style' task to apply code format and report violations)
+=======
+    if (!skipAutostyle || !skipCheckstyle) {
+        tasks.register("style") {
+            group = LifecycleBasePlugin.VERIFICATION_GROUP
+            description = "Formats code (license header, import order, whitespace at end of line, ...) and executes Checkstyle verifications"
+            if (!skipAutostyle) {
+                dependsOn("autostyleApply")
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
             }
             if (!skipCheckstyle) {
                 dependsOn("checkstyleAll")
@@ -741,6 +807,7 @@ allprojects {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         if (!skipAutostyle) {
             autostyle {
                 java {
@@ -786,6 +853,14 @@ allprojects {
 =======
                     if (!project.props.bool("junit4", default = false)) {
 >>>>>>> 3ab086683 ([CALCITE-2457] Migrate core parameterized to JUnit5, and make core junit5-only)
+=======
+        if (!skipAutostyle) {
+            autostyle {
+                java {
+                    filter.exclude(*javaccGeneratedPatterns + "**/test/java/*.java")
+                    license()
+                    if (!project.props.bool("junit4", default = false)) {
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
                         replace("junit5: Test", "org.junit.Test", "org.junit.jupiter.api.Test")
                         replaceRegex("junit5: Before", "org.junit.Before\\b", "org.junit.jupiter.api.BeforeEach")
                         replace("junit5: BeforeClass", "org.junit.BeforeClass", "org.junit.jupiter.api.BeforeAll")
@@ -800,11 +875,15 @@ allprojects {
                         replace("junit5: Assert.assertThat", "org.junit.Assert.assertThat", "org.hamcrest.MatcherAssert.assertThat")
                         replace("junit5: Assert.fail", "org.junit.Assert.fail", "org.junit.jupiter.api.Assertions.fail")
                     }
+<<<<<<< HEAD
 >>>>>>> 733879945 ([CALCITE-2457] Configure build to automatically replace common JUnit4 classes with JUnit5)
 =======
                     targetExclude(*javaccGeneratedPatterns + "**/test/java/*.java")
                     licenseHeaderFile(licenseHeaderFile)
 >>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
+=======
+                    replaceRegex("side by side comments", "(\n\\s*+[*]*+/\n)(/[/*])", "\$1\n\$2")
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
                     importOrder(
                         "org.apache.calcite.",
                         "org.apache.",
@@ -826,6 +905,9 @@ allprojects {
                     )
                     removeUnusedImports()
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
                     indentWithSpaces(2)
                     replaceRegex("@Override should not be on its own line", "(@Override)\\s{2,}", "\$1 ")
                     replaceRegex("@Test should not be on its own line", "(@Test)\\s{2,}", "\$1 ")
@@ -840,11 +922,14 @@ allprojects {
                     custom("((() preventer", 1) { contents: String ->
                         ParenthesisBalancer.apply(contents)
                     }
+<<<<<<< HEAD
 =======
                     trimTrailingWhitespace()
                     indentWithSpaces(4)
                     endWithNewline()
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
                 }
             }
         }

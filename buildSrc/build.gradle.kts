@@ -26,11 +26,15 @@ plugins {
     java
     `kotlin-dsl` apply false
 <<<<<<< HEAD
+<<<<<<< HEAD
     id("com.github.autostyle")
     id("com.github.vlsi.gradle-extensions")
 =======
     id("com.diffplug.gradle.spotless")
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    id("com.github.autostyle")
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 }
 
 repositories {
@@ -92,6 +96,7 @@ fun Project.applyKotlinProjectConventions() {
         }
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     if (!skipAutostyle) {
         apply(plugin = "com.github.autostyle")
         autostyle {
@@ -110,6 +115,10 @@ fun Project.applyKotlinProjectConventions() {
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
     apply(plugin = "com.diffplug.gradle.spotless")
     spotless {
+=======
+    apply(plugin = "com.github.autostyle")
+    autostyle {
+>>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
         kotlin {
             ktlint()
             trimTrailingWhitespace()
