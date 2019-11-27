@@ -25,6 +25,7 @@ import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.RelNodes;
 import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
@@ -97,7 +98,7 @@ public class EnumerableNestedLoopJoin extends Join implements EnumerableRel {
       rowCount = RelMdUtil.addEpsilon(rowCount);
       break;
     default:
-      if (left.getId() > right.getId()) {
+      if (RelNodes.COMPARATOR.compare(left, right) > 0) {
         rowCount = RelMdUtil.addEpsilon(rowCount);
       }
     }
