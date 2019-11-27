@@ -289,12 +289,6 @@ public class EnumUtils {
   }
 
   private static Type toInternal(RelDataType type) {
-<<<<<<< HEAD
-    return toInternal(type, false);
-  }
-
-  static Type toInternal(RelDataType type, boolean forceNotNull) {
-=======
     switch (type.getSqlTypeName()) {
     case DATE:
     case TIME:
@@ -516,7 +510,6 @@ public class EnumUtils {
       } else {
         Expression result;
         try {
->>>>>>> 46f71d242 ([CALCITE-3512] Query fails when comparing Time/TimeStamp types (DonnyZone))
           // Try to call "toString()" method
           // E.g. from "Integer" to "String"
           // Generate "x == null ? null : x.toString()"
