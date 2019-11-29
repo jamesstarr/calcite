@@ -78,6 +78,7 @@ import org.apache.calcite.sql.validate.SqlValidatorScope;
 import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.test.RelBuilderTest;
 import org.apache.calcite.util.Optionality;
+import org.apache.calcite.util.Smalls;
 import org.apache.calcite.util.Util;
 
 import com.google.common.base.Throwables;
@@ -242,7 +243,7 @@ public class PlannerTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3547">[CALCITE-3547]
    * SqlValidatorException because Planner cannot find UDFs added to schema</a>. */
-  @Test void testValidateUserDefinedFunctionInSchema() throws Exception {
+  @Test public void testValidateUserDefinedFunctionInSchema() throws Exception {
     SchemaPlus rootSchema = Frameworks.createRootSchema(true);
     rootSchema.add("my_plus",
         ScalarFunctionImpl.create(Smalls.MyPlusFunction.class, "eval"));
