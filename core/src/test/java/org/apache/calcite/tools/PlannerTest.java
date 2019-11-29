@@ -929,15 +929,10 @@ public class PlannerTest {
 
   private void checkJoinNWay(int n) throws Exception {
     final StringBuilder buf = new StringBuilder();
-    buf.append("select *");
-    for (int i = 0; i < n; i++) {
-      buf.append(i == 0 ? "\nfrom " : ",\n ")
-          .append("\"depts\" as d").append(i);
-    }
+    buf.append("select * from \"depts\" as d0");
     for (int i = 1; i < n; i++) {
-      buf.append(i == 1 ? "\nwhere" : "\nand").append(" d")
-          .append(i).append(".\"deptno\" = d")
-          .append(i - 1).append(".\"deptno\"");
+      buf.append("\njoin \"depts\" as d").append(i);
+      buf.append("\non d").append(i).append(".\"deptno\" = d").append(i - 1).append(".\"deptno\"");
     }
     Planner planner = getPlanner(null,
         Programs.heuristicJoinOrder(Programs.RULE_SET, false, 6));
