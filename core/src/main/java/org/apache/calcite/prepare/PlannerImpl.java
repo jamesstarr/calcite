@@ -48,6 +48,7 @@ import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.util.ChainedSqlOperatorTable;
+import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.RelDecorrelator;
 import org.apache.calcite.sql2rel.SqlRexConvertletTable;
@@ -212,9 +213,7 @@ public class PlannerImpl implements Planner, ViewExpander {
 
   public SqlNode validate(SqlNode sqlNode) throws ValidationException {
     ensure(State.STATE_3_PARSED);
-    final CalciteCatalogReader catalogReader = createCatalogReader();
     this.validator = createSqlValidator(createCatalogReader());
-    this.validator.setIdentifierExpansion(true);
     try {
       validatedSqlNode = validator.validate(sqlNode);
     } catch (RuntimeException e) {
@@ -222,6 +221,10 @@ public class PlannerImpl implements Planner, ViewExpander {
     }
     state = State.STATE_4_VALIDATED;
     return validatedSqlNode;
+  }
+
+  private SqlConformance conformance() {
+    return connectionConfig.conformance();
   }
 
   public Pair<SqlNode, RelDataType> validateAndGetType(SqlNode sqlNode)
@@ -291,7 +294,6 @@ public class PlannerImpl implements Planner, ViewExpander {
     final CalciteCatalogReader catalogReader =
         createCatalogReader().withSchemaPath(schemaPath);
     final SqlValidator validator = createSqlValidator(catalogReader);
-    validator.setIdentifierExpansion(true);
 
     final RexBuilder rexBuilder = createRexBuilder();
     final RelOptCluster cluster = RelOptCluster.create(planner, rexBuilder);
