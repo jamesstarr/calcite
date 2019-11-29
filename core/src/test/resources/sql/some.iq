@@ -139,6 +139,7 @@ from "scott".emp;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..10=[{inputs}], expr#11=[0], expr#12=[=($t9, $t11)], expr#13=[>($t9, $t10)], expr#14=[null:BOOLEAN], expr#15=[<>($t9, $t11)], expr#16=[<=($t5, $t8)], expr#17=[IS NOT TRUE($t16)], expr#18=[AND($t13, $t14, $t15, $t17)], expr#19=[>($t5, $t8)], expr#20=[<=($t9, $t10)], expr#21=[AND($t19, $t15, $t17, $t20)], expr#22=[OR($t12, $t18, $t21)], proj#0..7=[{exprs}], X=[$t22])
   EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
     EnumerableTableScan(table=[[scott, EMP]])
@@ -161,6 +162,11 @@ EnumerableCalc(expr#0..10=[{inputs}], expr#11=[0], expr#12=[=($t1, $t11)], expr#
 >>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
   EnumerableHashJoin(condition=[true], joinType=[inner])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+EnumerableCalc(expr#0..10=[{inputs}], expr#11=[0], expr#12=[=($t9, $t11)], expr#13=[>($t9, $t10)], expr#14=[null:BOOLEAN], expr#15=[<>($t9, $t11)], expr#16=[<=($t5, $t8)], expr#17=[IS NOT TRUE($t16)], expr#18=[AND($t13, $t14, $t15, $t17)], expr#19=[>($t5, $t8)], expr#20=[<=($t9, $t10)], expr#21=[AND($t19, $t15, $t17, $t20)], expr#22=[OR($t12, $t18, $t21)], proj#0..7=[{exprs}], X=[$t22])
+  EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
+    EnumerableTableScan(table=[[scott, EMP]])
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableAggregate(group=[{}], m=[MAX($6)], c=[COUNT()], d=[COUNT($6)])
       EnumerableTableScan(table=[[scott, EMP]])
 !plan

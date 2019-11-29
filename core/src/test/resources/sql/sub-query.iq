@@ -41,6 +41,7 @@ where t1.x not in (select t2.x from t2);
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[0], expr#6=[=($t1, $t5)], expr#7=[IS NULL($t4)], expr#8=[>=($t2, $t1)], expr#9=[IS NOT NULL($t0)], expr#10=[AND($t7, $t8, $t9)], expr#11=[OR($t6, $t10)], X=[$t0], $condition=[$t11])
   EnumerableHashJoin(condition=[=($0, $3)], joinType=[left])
     EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[0], expr#6=[=($t1, $t5)], expr#7=[false], expr#8=[IS NULL($t0)], expr#9=[null], expr#10=[IS NOT NULL($t4)], expr#11=[true], expr#12=[<($t2, $t1)], expr#13=[CASE($t6, $t7, $t8, $t9, $t10, $t11, $t12, $t11, $t7)], expr#14=[NOT($t13)], EXPR$0=[$t0], $condition=[$t14])
 <<<<<<< HEAD
@@ -87,6 +88,8 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[0], expr#6=[=($t1, $t5)], expr#7=[I
 >>>>>>> b7f1c317c ([CALCITE-2886] Simplification of AND expressions should push negations earlier)
   EnumerableHashJoin(condition=[=($0, $3)], joinType=[left])
     EnumerableHashJoin(condition=[true], joinType=[inner])
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
       EnumerableUnion(all=[true])
         EnumerableCalc(expr#0=[{inputs}], expr#1=[1], EXPR$0=[$t1])
           EnumerableValues(tuples=[[{ 0 }]])
@@ -415,10 +418,14 @@ EnumerableCalc(expr#0..5=[{inputs}], EMPNO=[$t0])
           EnumerableAggregate(group=[{0, 2}])
             EnumerableCalc(expr#0..3=[{inputs}], expr#4=[>($t3, $t0)], proj#0..3=[{exprs}], $condition=[$t4])
 <<<<<<< HEAD
+<<<<<<< HEAD
               EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
 =======
               EnumerableHashJoin(condition=[true], joinType=[inner])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+              EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
                 EnumerableAggregate(group=[{7}])
                   EnumerableTableScan(table=[[scott, EMP]])
                 EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], JOB=[$t2], DEPTNO=[$t7])
@@ -911,6 +918,7 @@ from "scott".emp;
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL($t3)], expr#6=[AND($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], SAL=[$t1], EXPR$1=[$t12])
 <<<<<<< HEAD
@@ -984,6 +992,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL($t3)], expr#6=[AND($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
   EnumerableHashJoin(condition=[true], joinType=[left])
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -1032,6 +1042,7 @@ from "scott".emp;
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL($t3)], expr#6=[AND($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], SAL=[$t1], EXPR$1=[$t12])
 <<<<<<< HEAD
@@ -1049,6 +1060,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL(
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -1105,6 +1118,7 @@ from "scott".emp;
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL($t3)], expr#6=[AND($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], SAL=[$t1], EXPR$1=[$t12])
 <<<<<<< HEAD
@@ -1122,6 +1136,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL(
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -1178,6 +1194,7 @@ from "scott".emp;
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL($t3)], expr#6=[AND($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], SAL=[$t1], EXPR$1=[$t12])
 <<<<<<< HEAD
@@ -1195,6 +1212,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL(
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -1256,6 +1275,7 @@ from "scott".emp;
 EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NOT NULL($t2)], SAL=[$t1], EXPR$1=[$t3])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
   EnumerableJoin(condition=[true], joinType=[left])
@@ -1263,6 +1283,9 @@ EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NOT NULL($t2)], SAL=[$t1], EXPR$
 =======
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableAggregate(group=[{0}])
@@ -1302,6 +1325,7 @@ from "scott".emp;
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[NOT($t2)], expr#5=[IS TRUE($t4)], expr#6=[null:BOOLEAN], expr#7=[IS NOT NULL($t3)], expr#8=[AND($t5, $t6, $t7)], expr#9=[IS NOT NULL($t2)], expr#10=[IS NOT FALSE($t2)], expr#11=[AND($t9, $t7, $t10)], expr#12=[OR($t8, $t11)], SAL=[$t1], EXPR$1=[$t12])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[IS NOT NULL($t2)], expr#9=[true], expr#10=[CASE($t4, $t5, $t6, $t7, $t8, $t9, $t5)], SAL=[$t1], EXPR$1=[$t10])
 <<<<<<< HEAD
@@ -1322,6 +1346,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[NOT($t2)], expr#5=[IS TRUE($t4)], e
 >>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -1385,6 +1411,7 @@ from "scott".emp;
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[NOT($t12)], SAL=[$t1], EXPR$1=[$t13])
 <<<<<<< HEAD
@@ -1467,6 +1494,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
 >>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
   EnumerableHashJoin(condition=[true], joinType=[left])
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -1518,6 +1547,7 @@ from "scott".emp;
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[NOT($t12)], SAL=[$t1], EXPR$1=[$t13])
 <<<<<<< HEAD
@@ -1544,6 +1574,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN
 >>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -1603,6 +1635,7 @@ from "scott".emp;
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[NOT($t12)], SAL=[$t1], EXPR$1=[$t13])
 <<<<<<< HEAD
@@ -1629,6 +1662,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN
 >>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -1688,6 +1723,7 @@ from "scott".emp;
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[NOT($t12)], SAL=[$t1], EXPR$1=[$t13])
 <<<<<<< HEAD
@@ -1714,6 +1750,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN
 >>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -1778,6 +1816,7 @@ from "scott".emp;
 <<<<<<< HEAD
 EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NULL($t2)], SAL=[$t1], EXPR$1=[$t3])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NOT NULL($t2)], expr#4=[true], expr#5=[false], expr#6=[CASE($t3, $t4, $t5)], expr#7=[NOT($t6)], SAL=[$t1], EXPR$1=[$t7])
 <<<<<<< HEAD
@@ -1795,6 +1834,8 @@ EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NULL($t2)], SAL=[$t1], EXPR$1=[$
 >>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableAggregate(group=[{0}])
@@ -1837,6 +1878,7 @@ from "scott".emp;
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], expr#6=[IS TRUE($t5)], expr#7=[null:BOOLEAN], expr#8=[AND($t6, $t7)], expr#9=[IS NOT FALSE($t2)], expr#10=[IS NULL($t2)], expr#11=[AND($t9, $t10)], expr#12=[OR($t4, $t8, $t11)], SAL=[$t1], EXPR$1=[$t12])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[IS NOT NULL($t2)], expr#9=[true], expr#10=[CASE($t4, $t5, $t6, $t7, $t8, $t9, $t5)], expr#11=[NOT($t10)], SAL=[$t1], EXPR$1=[$t11])
 <<<<<<< HEAD
@@ -1866,6 +1908,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], e
 >>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -1926,6 +1970,7 @@ from "scott".emp;
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL($t3)], expr#6=[AND($t4, $t5)], expr#7=[IS NULL($t6)], SAL=[$t1], EXPR$1=[$t7])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[IS NULL($t12)], SAL=[$t1], EXPR$1=[$t13])
 <<<<<<< HEAD
@@ -1943,6 +1988,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL(
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -2138,10 +2185,14 @@ select sal from "scott".emp
 
 !ok
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
 EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t1])
   EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
+<<<<<<< HEAD
     EnumerableAggregate(group=[{0}])
       EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[=($t4, $t0)], cs=[$t3], $condition=[$t5])
         EnumerableTableScan(table=[[scott, DEPT]])
@@ -2154,6 +2205,11 @@ EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
+=======
+    EnumerableAggregate(group=[{0}])
+      EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[=($t4, $t0)], cs=[$t3], $condition=[$t5])
+        EnumerableTableScan(table=[[scott, DEPT]])
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
 !plan
 
 # Test filter literal IN nullable
@@ -2181,10 +2237,14 @@ select sal from "scott".emp
 
 !ok
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
 EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t1])
   EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
+<<<<<<< HEAD
     EnumerableAggregate(group=[{0}])
       EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[=($t4, $t0)], cs=[$t3], $condition=[$t5])
         EnumerableTableScan(table=[[scott, DEPT]])
@@ -2197,6 +2257,11 @@ EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
+=======
+    EnumerableAggregate(group=[{0}])
+      EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[=($t4, $t0)], cs=[$t3], $condition=[$t5])
+        EnumerableTableScan(table=[[scott, DEPT]])
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
 !plan
 
 # Test filter null NOT IN null non-correlated
@@ -2218,6 +2283,7 @@ select sal from "scott".emp
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $condition=[$t4])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[null], expr#11=[IS NOT NULL($t2)], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
 <<<<<<< HEAD
@@ -2244,6 +2310,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $conditio
 >>>>>>> b7f1c317c ([CALCITE-2886] Simplification of AND expressions should push negations earlier)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -2285,6 +2353,7 @@ select sal from "scott".emp
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], expr#6=[IS NOT NULL($t2)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], expr#9=[OR($t4, $t8)], SAL=[$t1], $condition=[$t9])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[IS NOT NULL($t2)], expr#9=[CASE($t4, $t5, $t6, $t7, $t8, $t7, $t5)], expr#10=[NOT($t9)], SAL=[$t1], $condition=[$t10])
 <<<<<<< HEAD
@@ -2302,6 +2371,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], e
 >>>>>>> b7f1c317c ([CALCITE-2886] Simplification of AND expressions should push negations earlier)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -2342,6 +2413,7 @@ select sal from "scott".emp
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $condition=[$t4])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[null], expr#11=[IS NOT NULL($t2)], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
 <<<<<<< HEAD
@@ -2368,6 +2440,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $conditio
 >>>>>>> b7f1c317c ([CALCITE-2886] Simplification of AND expressions should push negations earlier)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -2412,6 +2486,7 @@ select sal from "scott".emp
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $condition=[$t4])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[null], expr#11=[IS NOT NULL($t2)], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
 <<<<<<< HEAD
@@ -2438,6 +2513,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $conditio
 >>>>>>> b7f1c317c ([CALCITE-2886] Simplification of AND expressions should push negations earlier)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -2482,6 +2559,7 @@ select sal from "scott".emp
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $condition=[$t4])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[null], expr#11=[IS NOT NULL($t2)], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
 <<<<<<< HEAD
@@ -2508,6 +2586,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $conditio
 >>>>>>> b7f1c317c ([CALCITE-2886] Simplification of AND expressions should push negations earlier)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -2561,6 +2641,7 @@ select sal from "scott".emp
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], expr#6=[IS NOT NULL($t2)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], expr#9=[OR($t4, $t8)], SAL=[$t1], $condition=[$t9])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[IS NOT NULL($t2)], expr#9=[CASE($t4, $t5, $t6, $t7, $t8, $t7, $t5)], expr#10=[NOT($t9)], SAL=[$t1], $condition=[$t10])
 <<<<<<< HEAD
@@ -2578,6 +2659,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], e
 >>>>>>> b7f1c317c ([CALCITE-2886] Simplification of AND expressions should push negations earlier)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -2603,6 +2686,7 @@ select sal from "scott".emp
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], expr#6=[IS NOT NULL($t2)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], expr#9=[OR($t4, $t8)], SAL=[$t1], $condition=[$t9])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[IS NOT NULL($t2)], expr#9=[CASE($t4, $t5, $t6, $t7, $t8, $t7, $t5)], expr#10=[NOT($t9)], SAL=[$t1], $condition=[$t10])
 <<<<<<< HEAD
@@ -2620,6 +2704,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], e
 >>>>>>> b7f1c317c ([CALCITE-2886] Simplification of AND expressions should push negations earlier)
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -2675,6 +2761,7 @@ select sal from "scott".emp
 <<<<<<< HEAD
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL($t3)], expr#6=[AND($t4, $t5)], expr#7=[IS NULL($t6)], SAL=[$t1], $condition=[$t7])
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+<<<<<<< HEAD
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[IS NULL($t12)], SAL=[$t1], $condition=[$t13])
 <<<<<<< HEAD
@@ -2692,6 +2779,8 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL(
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableLimit(fetch=[1])
@@ -3477,10 +3566,14 @@ select * from emp where deptno IN (select (select max(deptno) from "scott".emp t
 EnumerableHashJoin(condition=[=($7, $9)], joinType=[semi])
   EnumerableTableScan(table=[[scott, EMP]])
 <<<<<<< HEAD
+<<<<<<< HEAD
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> c52133959 ([CALCITE-1726] Subquery in FILTER is left untransformed (Vineet Garg))
+=======
+  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableAggregate(group=[{}], EXPR$0=[MAX($7)])
@@ -3518,10 +3611,14 @@ select (select max(deptno) from "scott".emp where deptno IN (select deptno from 
 !ok
 EnumerableCalc(expr#0..1=[{inputs}], EXPR$0=[$t1])
 <<<<<<< HEAD
+<<<<<<< HEAD
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> c52133959 ([CALCITE-1726] Subquery in FILTER is left untransformed (Vineet Garg))
+=======
+  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableAggregate(group=[{}], EXPR$0=[MAX($1)])
@@ -3559,6 +3656,7 @@ EnumerableAggregate(group=[{}], C=[COUNT()])
         EnumerableCalc(expr#0..2=[{inputs}], expr#3=[1:BIGINT], expr#4=[IS NOT NULL($t1)], DNAME=[$t1], $f1=[$t3], $f2=[$t3], $condition=[$t4])
           EnumerableTableScan(table=[[scott, DEPT]])
 <<<<<<< HEAD
+<<<<<<< HEAD
       EnumerableCalc(expr#0..4=[{inputs}], DEPTNO=[$t2], i=[$t3], DNAME=[$t4], SAL=[$t0])
         EnumerableHashJoin(condition=[=($1, $2)], joinType=[inner])
           EnumerableCalc(expr#0=[{inputs}], expr#1=[100], expr#2=[+($t0, $t1)], SAL=[$t0], $f1=[$t2])
@@ -3566,6 +3664,13 @@ EnumerableAggregate(group=[{}], C=[COUNT()])
               EnumerableTableScan(table=[[scott, EMP]])
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[IS NOT NULL($t1)], DEPTNO=[$t0], i=[$t3], DNAME=[$t1], $condition=[$t4])
             EnumerableTableScan(table=[[scott, DEPT]])
+=======
+      EnumerableNestedLoopJoin(condition=[=(+($3, 100), $0)], joinType=[inner])
+        EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[IS NOT NULL($t1)], DEPTNO=[$t0], i=[$t3], DNAME=[$t1], $condition=[$t4])
+          EnumerableTableScan(table=[[scott, DEPT]])
+        EnumerableAggregate(group=[{5}])
+          EnumerableTableScan(table=[[scott, EMP]])
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
 !plan
 
 # Correlated ANY sub-query

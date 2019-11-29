@@ -450,6 +450,7 @@ and e."name" <> d."name";
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..4=[{inputs}], empid=[$t0], name=[$t4], name0=[$t2])
   EnumerableHashJoin(condition=[AND(=($1, $3), <>(CAST($2):VARCHAR, CAST($4):VARCHAR))], joinType=[inner])
 =======
@@ -466,6 +467,10 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[CAST($t2):VARCHAR], expr#6=[CAST($t
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+EnumerableCalc(expr#0..4=[{inputs}], empid=[$t0], name=[$t4], name0=[$t2])
+  EnumerableHashJoin(condition=[AND(=($1, $3), <>(CAST($2):VARCHAR, CAST($4):VARCHAR))], joinType=[inner])
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..4=[{inputs}], proj#0..2=[{exprs}])
       EnumerableTableScan(table=[[hr, emps]])
     EnumerableCalc(expr#0..3=[{inputs}], proj#0..1=[{exprs}])
@@ -491,6 +496,7 @@ and e."name" <> d."name";
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..4=[{inputs}], empid=[$t0], name=[$t4], name0=[$t2])
   EnumerableHashJoin(condition=[AND(=($1, $3), <>(CAST($2):VARCHAR, CAST($4):VARCHAR))], joinType=[inner])
 =======
@@ -507,6 +513,10 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[CAST($t2):VARCHAR], expr#6=[CAST($t
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+EnumerableCalc(expr#0..4=[{inputs}], empid=[$t0], name=[$t4], name0=[$t2])
+  EnumerableHashJoin(condition=[AND(=($1, $3), <>(CAST($2):VARCHAR, CAST($4):VARCHAR))], joinType=[inner])
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..4=[{inputs}], proj#0..2=[{exprs}])
       EnumerableTableScan(table=[[hr, emps]])
     EnumerableCalc(expr#0..3=[{inputs}], proj#0..1=[{exprs}])
@@ -527,15 +537,23 @@ where exists (select 1 from "hr"."emps");
 
 !ok
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..1=[{inputs}], deptno=[$t0])
   EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
 =======
 EnumerableCalc(expr#0..1=[{inputs}], deptno=[$t1])
   EnumerableHashJoin(condition=[true], joinType=[inner])
+=======
+EnumerableCalc(expr#0..1=[{inputs}], deptno=[$t0])
+  EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
+    EnumerableCalc(expr#0..3=[{inputs}], deptno=[$t0])
+      EnumerableTableScan(table=[[hr, depts]])
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0=[{inputs}], expr#1=[IS NOT NULL($t0)], $f0=[$t0], $condition=[$t1])
       EnumerableAggregate(group=[{}], agg#0=[MIN($0)])
         EnumerableCalc(expr#0..4=[{inputs}], expr#5=[1:BIGINT], $f0=[$t5])
           EnumerableTableScan(table=[[hr, emps]])
+<<<<<<< HEAD
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
     EnumerableCalc(expr#0..3=[{inputs}], deptno=[$t0])
       EnumerableTableScan(table=[[hr, depts]])
@@ -543,6 +561,8 @@ EnumerableCalc(expr#0..1=[{inputs}], deptno=[$t1])
       EnumerableAggregate(group=[{}], agg#0=[MIN($0)])
         EnumerableCalc(expr#0..4=[{inputs}], expr#5=[1:BIGINT], $f0=[$t5])
           EnumerableTableScan(table=[[hr, emps]])
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
 !plan
 
 # Un-correlated NOT EXISTS
@@ -558,6 +578,7 @@ where not exists (select 1 from "hr"."emps");
 EnumerableCalc(expr#0..1=[{inputs}], expr#2=[IS NULL($t1)], deptno=[$t0], $condition=[$t2])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
   EnumerableJoin(condition=[true], joinType=[left])
@@ -565,6 +586,9 @@ EnumerableCalc(expr#0..1=[{inputs}], expr#2=[IS NULL($t1)], deptno=[$t0], $condi
 =======
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..3=[{inputs}], deptno=[$t0])
       EnumerableTableScan(table=[[hr, depts]])
     EnumerableAggregate(group=[{}], agg#0=[MIN($0)])
@@ -591,15 +615,23 @@ where exists (select 1 from "hr"."emps" where "empid" < 0);
 
 !ok
 <<<<<<< HEAD
+<<<<<<< HEAD
 EnumerableCalc(expr#0..1=[{inputs}], deptno=[$t0])
   EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
 =======
 EnumerableCalc(expr#0..1=[{inputs}], deptno=[$t1])
   EnumerableHashJoin(condition=[true], joinType=[inner])
+=======
+EnumerableCalc(expr#0..1=[{inputs}], deptno=[$t0])
+  EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
+    EnumerableCalc(expr#0..3=[{inputs}], deptno=[$t0])
+      EnumerableTableScan(table=[[hr, depts]])
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0=[{inputs}], expr#1=[IS NOT NULL($t0)], $f0=[$t0], $condition=[$t1])
       EnumerableAggregate(group=[{}], agg#0=[MIN($0)])
         EnumerableCalc(expr#0..4=[{inputs}], expr#5=[1:BIGINT], expr#6=[0], expr#7=[<($t0, $t6)], $f0=[$t5], $condition=[$t7])
           EnumerableTableScan(table=[[hr, emps]])
+<<<<<<< HEAD
 >>>>>>> 4153b5a07 ([] DX-3137:  TRUE or MIN(BOOLEAN) are not allowed in many RDBMS, change createExistsPlan() to avoid this)
     EnumerableCalc(expr#0..3=[{inputs}], deptno=[$t0])
       EnumerableTableScan(table=[[hr, depts]])
@@ -607,6 +639,8 @@ EnumerableCalc(expr#0..1=[{inputs}], deptno=[$t1])
       EnumerableAggregate(group=[{}], agg#0=[MIN($0)])
         EnumerableCalc(expr#0..4=[{inputs}], expr#5=[1:BIGINT], expr#6=[0], expr#7=[<($t0, $t6)], $f0=[$t5], $condition=[$t7])
           EnumerableTableScan(table=[[hr, emps]])
+=======
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
 !plan
 
 # Un-correlated NOT EXISTS (table empty)
@@ -625,6 +659,7 @@ where not exists (select 1 from "hr"."emps" where "empid" < 0);
 EnumerableCalc(expr#0..1=[{inputs}], expr#2=[IS NULL($t1)], deptno=[$t0], $condition=[$t2])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 =======
   EnumerableJoin(condition=[true], joinType=[left])
@@ -632,6 +667,9 @@ EnumerableCalc(expr#0..1=[{inputs}], expr#2=[IS NULL($t1)], deptno=[$t0], $condi
 =======
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..3=[{inputs}], deptno=[$t0])
       EnumerableTableScan(table=[[hr, depts]])
     EnumerableAggregate(group=[{}], agg#0=[MIN($0)])
@@ -840,9 +878,13 @@ select count(*) as c from "hr"."emps", "hr"."depts";
 !ok
 EnumerableAggregate(group=[{}], C=[COUNT()])
 <<<<<<< HEAD
+<<<<<<< HEAD
   EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
 =======
   EnumerableHashJoin(condition=[true], joinType=[inner])
+=======
+  EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
+>>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..3=[{inputs}], expr#4=[0], DUMMY=[$t4])
       EnumerableTableScan(table=[[hr, depts]])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
