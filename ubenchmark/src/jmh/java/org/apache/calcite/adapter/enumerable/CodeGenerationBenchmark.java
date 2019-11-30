@@ -281,3 +281,8 @@ public class CodeGenerationBenchmark {
     new Runner(opt).run();
   }
 }
+<<<<<<< HEAD
+=======
+
+// End CodeGenerationBenchmark.java
+>>>>>>> 3ea9370a0 ([CALCITE-3548] unlock ./gradlew :ubenchmark:jmh to run benchmarks)
