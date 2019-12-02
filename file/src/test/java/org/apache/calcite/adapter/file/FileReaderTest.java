@@ -22,8 +22,8 @@ import org.apache.calcite.util.TestUtil;
 
 import org.jsoup.select.Elements;
 import org.junit.Assume;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.sql.Connection;
@@ -35,10 +35,11 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit tests for FileReader.
@@ -61,7 +62,7 @@ public class FileReaderTest {
   }
 
   /** Tests {@link FileReader} URL instantiation - no path. */
-  @Ignore("[CALCITE-3800] FileReaderTest#testFileReaderUrlNoPath() timeout for AppVeyor test")
+  @Disabled("[CALCITE-3800] FileReaderTest#testFileReaderUrlNoPath() timeout for AppVeyor test")
   @Test public void testFileReaderUrlNoPath() throws FileReaderException {
     Assume.assumeTrue(FileSuite.hazNetwork());
 
@@ -82,7 +83,7 @@ public class FileReaderTest {
   }
 
   /** Tests {@link FileReader} URL instantiation - with path. */
-  @Ignore("[CALCITE-1789] Wikipedia format change breaks file adapter test")
+  @Disabled("[CALCITE-1789] Wikipedia format change breaks file adapter test")
   @Test public void testFileReaderUrlWithPath() throws FileReaderException {
     Assume.assumeTrue(FileSuite.hazNetwork());
     FileReader t =
@@ -92,7 +93,7 @@ public class FileReaderTest {
   }
 
   /** Tests {@link FileReader} URL fetch. */
-  @Ignore("[CALCITE-1789] Wikipedia format change breaks file adapter test")
+  @Disabled("[CALCITE-1789] Wikipedia format change breaks file adapter test")
   @Test public void testFileReaderUrlFetch() throws FileReaderException {
     Assume.assumeTrue(FileSuite.hazNetwork());
     FileReader t =
@@ -117,20 +118,24 @@ public class FileReaderTest {
   }
 
   /** Tests failed {@link FileReader} instantiation - bad URL. */
-  @Test(expected = FileReaderException.class)
-  public void testFileReaderBadUrl() throws FileReaderException {
-    final String uri =
-        "http://ex.wikipedia.org/wiki/List_of_United_States_cities_by_population";
-    FileReader t = new FileReader(Sources.url(uri), "table:eq(4)");
-    t.refresh();
+  @Test
+  public void testFileReaderBadUrl() {
+    assertThrows(FileReaderException.class, () -> {
+      final String uri =
+          "http://ex.wikipedia.org/wiki/List_of_United_States_cities_by_population";
+      FileReader t = new FileReader(Sources.url(uri), "table:eq(4)");
+      t.refresh();
+    });
   }
 
   /** Tests failed {@link FileReader} instantiation - bad selector. */
-  @Test(expected = FileReaderException.class)
-  public void testFileReaderBadSelector() throws FileReaderException {
-    final Source source = resource("tableOK.html");
-    FileReader t = new FileReader(source, "table:eq(1)");
-    t.refresh();
+  @Test
+  public void testFileReaderBadSelector() {
+    assertThrows(FileReaderException.class, () -> {
+      final Source source = resource("tableOK.html");
+      FileReader t = new FileReader(source, "table:eq(1)");
+      t.refresh();
+    });
   }
 
   /** Test {@link FileReader} with static file - headings. */

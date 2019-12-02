@@ -57,9 +57,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -71,19 +71,19 @@ import java.util.TreeMap;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit tests for {@link RexProgram} and
  * {@link org.apache.calcite.rex.RexProgramBuilder}.
  */
 public class RexProgramTest extends RexProgramBuilderBase {
-  @Before public void setUp() {
+  @BeforeEach public void setUp() {
     super.setUp();
   }
 
@@ -122,7 +122,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
     } else {
       actual = node + ":" + node.getType() + (node.getType().isNullable() ? "" : " NOT NULL");
     }
-    assertEquals(message, expected, actual);
+    assertEquals(expected, actual, message);
   }
 
   /** Simplifies an expression and checks that the result is as expected. */
@@ -791,7 +791,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplifyUnchanged(cast(cast(vVarchar(), tInt()), tVarchar()));
   }
 
-  @Ignore("CALCITE-3457: AssertionError in RexSimplify.validateStrongPolicy:843")
+  @Disabled("CALCITE-3457: AssertionError in RexSimplify.validateStrongPolicy:843")
   @Test public void reproducerFor3457() {
     // Identified with RexProgramFuzzyTest#testFuzzy, seed=4887662474363391810L
     checkSimplify(
@@ -1558,10 +1558,10 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
   @Test public void fieldAccessEqualsHashCode() {
-    assertEquals("vBool() instances should be equal", vBool(), vBool());
-    assertEquals("vBool().hashCode()", vBool().hashCode(), vBool().hashCode());
-    assertNotSame("vBool() is expected to produce new RexFieldAccess", vBool(), vBool());
-    assertNotEquals("vBool(0) != vBool(1)", vBool(0), vBool(1));
+    assertEquals(vBool(), vBool(), "vBool() instances should be equal");
+    assertEquals(vBool().hashCode(), vBool().hashCode(), "vBool().hashCode()");
+    assertNotSame(vBool(), vBool(), "vBool() is expected to produce new RexFieldAccess");
+    assertNotEquals(vBool(0), vBool(1), "vBool(0) != vBool(1)");
   }
 
   @Test public void testSimplifyDynamicParam() {
@@ -2476,8 +2476,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
   private void assertTypeAndToString(
       RexNode rexNode, String representation, String type) {
     assertEquals(representation, rexNode.toString());
-    assertEquals("type of " + rexNode, type, rexNode.getType().toString()
-        + (rexNode.getType().isNullable() ? "" : " NOT NULL"));
+    assertEquals(type, rexNode.getType().toString()
+        + (rexNode.getType().isNullable() ? "" : " NOT NULL"), "type of " + rexNode);
   }
 
   @Test public void testIsDeterministic() {

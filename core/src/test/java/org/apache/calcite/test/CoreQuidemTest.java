@@ -19,6 +19,7 @@ package org.apache.calcite.test;
 import org.apache.calcite.prepare.Prepare;
 import org.apache.calcite.util.TryThreadLocal;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -27,6 +28,7 @@ import java.util.Collection;
 /**
  * Test that runs every Quidem file in the "core" module as a test.
  */
+@Disabled("JUnit 4 parameterized test - disable JUnit 5 detection")
 @RunWith(Parameterized.class)
 public class CoreQuidemTest extends QuidemTest {
   public CoreQuidemTest(String path) {

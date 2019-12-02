@@ -119,11 +119,11 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Fluid DSL for testing Calcite connections and queries.
@@ -243,41 +243,35 @@ public class CalciteAssert {
   static Function<RelNode, Void> checkRel(final String expected,
       final AtomicInteger counter) {
     return relNode -> {
-
       if (counter != null) {
         counter.incrementAndGet();
       }
       String s = RelOptUtil.toString(relNode);
       assertThat(s, containsStringLinux(expected));
       return null;
-
     };
   }
 
   static Consumer<Throwable> checkException(final String expected) {
     return p0 -> {
-
-      assertNotNull(
-          "expected exception but none was thrown", p0);
+      assertNotNull(p0, "expected exception but none was thrown");
       String stack = TestUtil.printStackTrace(p0);
-      assertTrue(stack, stack.contains(expected));
-
+      assertThat(stack, containsString(expected));
     };
   }
 
   static Consumer<Throwable> checkValidationException(final String expected) {
     return new Consumer<Throwable>() {
       @Override public void accept(@Nullable Throwable throwable) {
-        assertNotNull("Nothing was thrown", throwable);
+        assertNotNull(throwable, "Nothing was thrown");
 
         Exception exception = containsCorrectException(throwable);
 
-        assertTrue("Expected to fail at validation, but did not", exception != null);
+        assertNotNull(exception, "Expected to fail at validation, but did not");
         if (expected != null) {
           String stack = TestUtil.printStackTrace(exception);
-          assertTrue(stack, stack.contains(expected));
+          assertThat(stack, containsString(expected));
         }
-
       }
 
       private boolean isCorrectException(Throwable throwable) {
@@ -463,10 +457,8 @@ public class CalciteAssert {
 
       try {
         final String actual = Util.toLinux(toString(s));
-        assertTrue(
-            actual + " should have " + count + " occurrence of " + expected,
-            StringUtils.countMatches(actual, expected) == count);
-
+        assertEquals(count, StringUtils.countMatches(actual, expected),
+            () -> actual + " should have " + count + " occurrence of " + expected);
       } catch (SQLException e) {
         throw TestUtil.rethrow(e);
       }
@@ -1018,8 +1010,7 @@ public class CalciteAssert {
    */
   public static void assertArrayEqual(
       String message, Object[] expected, Object[] actual) {
-    assertEquals(message, str(expected), str(actual));
-
+    assertEquals(str(expected), str(actual), message);
   }
 
   private static String str(Object[] objects) {
@@ -1655,10 +1646,10 @@ public class CalciteAssert {
     public AssertQuery planContains(String expected) {
       ensurePlan(null);
       assertTrue(
-          "Plan [" + plan + "] contains [" + expected + "]",
           Util.toLinux(plan)
               .replaceAll("\\\\r\\\\n", "\\\\n")
-              .contains(expected));
+              .contains(expected),
+          "Plan [" + plan + "] contains [" + expected + "]");
       return this;
     }
 
@@ -1670,10 +1661,10 @@ public class CalciteAssert {
           .replaceAll("\n", "\\\\n")
           + "\"";
       assertTrue(
-          "Plan [" + plan + "] contains [" + expected + "]",
           Util.toLinux(plan)
               .replaceAll("\\\\r\\\\n", "\\\\n")
-              .contains(expected));
+              .contains(expected),
+          "Plan [" + plan + "] contains [" + expected + "]");
       return this;
     }
 

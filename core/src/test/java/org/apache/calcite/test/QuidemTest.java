@@ -56,7 +56,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test that runs every Quidem file as a test.

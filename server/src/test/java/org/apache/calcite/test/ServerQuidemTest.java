@@ -21,6 +21,7 @@ import org.apache.calcite.materialize.MaterializationService;
 import net.hydromatic.quidem.Quidem;
 
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -30,6 +31,7 @@ import java.util.Collection;
 /**
  * Unit tests for server and DDL.
  */
+@Disabled("JUnit 4 parameterized test - disable JUnit 5 detection")
 @RunWith(Parameterized.class)
 public class ServerQuidemTest extends QuidemTest {
   /** Creates a ServerQuidemTest. Public per {@link Parameterized}. */

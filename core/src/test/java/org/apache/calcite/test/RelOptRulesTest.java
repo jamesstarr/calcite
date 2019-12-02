@@ -138,9 +138,8 @@ import org.apache.calcite.util.ImmutableBitSet;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -157,7 +156,8 @@ import static org.apache.calcite.plan.RelOptRule.operandJ;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EQUALS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_NOT_DISTINCT_FROM;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Unit test for rules in {@code org.apache.calcite.rel} and subpackages.
@@ -231,7 +231,7 @@ public class RelOptRulesTest extends RelOptTestBase {
    * Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-6746">[CALCITE-6746]
    * Optimization rule ProjectWindowTranspose is unsound</a>. */
-  @Ignore @Test public void testConstantWindow() {
+  @Disabled @Test public void testConstantWindow() {
     final String sql = "with empsalary(dept, empno, salary, enroll_date) as "
         + "(VALUES ('x', 10, 5200, DATE '2007-08-01'), (NULL, NULL, NULL, NULL))\n"
         + "select sum(salary) "
@@ -330,12 +330,12 @@ public class RelOptRulesTest extends RelOptTestBase {
       // Verify LogicalFilter traitSet (must be [3 DESC])
       RelNode filter = result.getInput(0);
       RelCollation collation = filter.getTraitSet().getTrait(RelCollationTraitDef.INSTANCE);
-      Assert.assertNotNull(collation);
+      assertNotNull(collation);
       List<RelFieldCollation> fieldCollations = collation.getFieldCollations();
-      Assert.assertEquals(1, fieldCollations.size());
+      assertEquals(1, fieldCollations.size());
       RelFieldCollation fieldCollation = fieldCollations.get(0);
-      Assert.assertEquals(3, fieldCollation.getFieldIndex());
-      Assert.assertEquals(RelFieldCollation.Direction.DESCENDING, fieldCollation.getDirection());
+      assertEquals(3, fieldCollation.getFieldIndex());
+      assertEquals(RelFieldCollation.Direction.DESCENDING, fieldCollation.getDirection());
     }
   }
 
@@ -6145,7 +6145,7 @@ public class RelOptRulesTest extends RelOptTestBase {
     SqlToRelTestBase.assertValid(output);
   }
 
-  @Ignore("[CALCITE-1045]")
+  @Disabled("[CALCITE-1045]")
   @Test public void testExpandJoinIn() throws Exception {
     final String sql = "select empno\n"
         + "from sales.emp left join sales.dept\n"
@@ -6153,7 +6153,7 @@ public class RelOptRulesTest extends RelOptTestBase {
     checkSubQuery(sql).check();
   }
 
-  @Ignore("[CALCITE-1045]")
+  @Disabled("[CALCITE-1045]")
   @Test public void testExpandJoinInComposite() throws Exception {
     final String sql = "select empno\n"
         + "from sales.emp left join sales.dept\n"
@@ -6219,7 +6219,7 @@ public class RelOptRulesTest extends RelOptTestBase {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1045">[CALCITE-1045]
    * Decorrelate sub-queries in Project and Join</a>, with the added
    * complication that there are two sub-queries. */
-  @Ignore("[CALCITE-1045]")
+  @Disabled("[CALCITE-1045]")
   @Test public void testDecorrelateTwoScalar() throws Exception {
     final String sql = "select deptno,\n"
         + "  (select min(1) from emp where empno > d.deptno) as i0,\n"
@@ -6338,7 +6338,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   /** Test case for CALCITE-2744 for aggregate decorrelate with multi-param agg call
    * but without group key. */
-  @Ignore
+  @Disabled
   @Test public void testDecorrelateAggWithMultiParamsAggCall() {
     final String sql = "SELECT * FROM (SELECT MY_AVG(sal, 1) AS c FROM emp) as m,\n"
                        + " LATERAL TABLE(ramp(m.c)) AS T(s)";
@@ -6351,7 +6351,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   /** Same as {@link #testDecorrelateAggWithMultiParamsAggCall}
    * but with constant grouping key. */
-  @Ignore
+  @Disabled
   @Test public void testDecorrelateAggWithMultiParamsAggCall2() {
     final String sql = "SELECT * FROM "
         + "(SELECT MY_AVG(sal, 1) AS c FROM emp group by empno, 'abc') as m,\n"
@@ -6444,7 +6444,7 @@ public class RelOptRulesTest extends RelOptTestBase {
   /**
    * Test case to push custom Filter past custom union.
    */
-  @Ignore
+  @Disabled
   @Test public void testFilterSetOpTranspose() {
 
     final HepProgram preProgram = new HepProgramBuilder()

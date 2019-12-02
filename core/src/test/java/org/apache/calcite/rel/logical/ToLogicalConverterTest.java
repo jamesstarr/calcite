@@ -44,11 +44,11 @@ import org.apache.calcite.util.TestUtil;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.calcite.test.Matchers.hasTree;
 
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Tests for {@link ToLogicalConverter}.
@@ -308,7 +308,7 @@ class ToLogicalConverterTest {
             ImmutableSet.of(v.get().id))
         .build();
     String expectedPhysical = ""
-        + "EnumerableCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{}])\n"
+        + "EnumerableCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{5}])\n"
         + "  EnumerableTableScan(table=[[scott, EMP]])\n"
         + "  EnumerableFilter(condition=[=($cor0.SAL, 1000)])\n"
         + "    EnumerableTableScan(table=[[scott, DEPT]])\n";

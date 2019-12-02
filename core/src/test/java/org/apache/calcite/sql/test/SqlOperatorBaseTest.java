@@ -66,9 +66,9 @@ import org.apache.calcite.util.trace.CalciteTrace;
 
 import com.google.common.base.Throwables;
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 
 import java.math.BigDecimal;
@@ -91,11 +91,14 @@ import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.PI;
+
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Contains unit tests for all operators. Each of the methods is named after an
@@ -312,7 +315,7 @@ public abstract class SqlOperatorBaseTest {
     this.strictTester = tester.enableTypeCoercion(false);
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     tester.setFor(null);
   }
@@ -5749,10 +5752,8 @@ public abstract class SqlOperatorBaseTest {
         "No match found for function signature PI\\(\\)", false);
 
     // assert that PI function is not dynamic [CALCITE-2750]
-    assertEquals(
-        "PI operator should not be identified as dynamic function",
-        SqlStdOperatorTable.PI.isDynamicFunction(),
-        false);
+    assertFalse(PI.isDynamicFunction(),
+        "PI operator should not be identified as dynamic function");
   }
 
   @Test public void testRadiansFunc() {

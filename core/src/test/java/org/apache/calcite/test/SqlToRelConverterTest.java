@@ -62,8 +62,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -77,9 +77,9 @@ import java.util.function.Function;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link org.apache.calcite.sql2rel.SqlToRelConverter}.
@@ -2570,21 +2570,21 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
-  @Ignore("CALCITE-1708")
+  @Disabled("CALCITE-1708")
   @Test public void testUpdateBindExtendedColumn() {
     final String sql = "update emp(test INT)"
         + " set test = ?, sal = sal + 5000 where slacker = false";
     sql(sql).ok();
   }
 
-  @Ignore("CALCITE-1708")
+  @Disabled("CALCITE-1708")
   @Test public void testUpdateBindExtendedColumnModifiableView() {
     final String sql = "update EMP_MODIFIABLEVIEW2(test INT)"
         + " set test = ?, sal = sal + 5000 where slacker = false";
     sql(sql).ok();
   }
 
-  @Ignore("CALCITE-985")
+  @Disabled("CALCITE-985")
   @Test public void testMerge() {
     final String sql = "merge into emp as target\n"
         + "using (select * from emp where deptno = 30) as source\n"
@@ -3792,7 +3792,7 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     };
 
     root.accept(visitor);
-    assertTrue("The column index on a CorrelationId must be non-empty.", hasValidCorrelationId[0]);
+    assertTrue(hasValidCorrelationId[0], "The column index on a CorrelationId must be non-empty.");
   }
 
   @Test public void testJoinDecorrelationWithCorrelatedVariablesFromBothSideOfTheJoin() {
@@ -4117,7 +4117,7 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
   }
 
   // Not supported yet.
-  @Ignore
+  @Disabled
   @Test public void testQualifyWithDerivedColumnWithReference() {
     sql("SELECT empno, ename, deptno, "
             + "   SUBSTRING(ename,1,1) as DERIVED_COLUMN, "
