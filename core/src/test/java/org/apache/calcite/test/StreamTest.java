@@ -41,6 +41,7 @@ import org.apache.calcite.util.TestUtil;
 
 import com.google.common.collect.ImmutableList;
 
+import org.hamcrest.comparator.ComparatorMatcherBuilder;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -55,7 +56,6 @@ import java.util.function.Consumer;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -267,7 +267,8 @@ public class StreamTest {
           }
           // With a 3 millisecond delay, typically n is between 200 - 400
           // before cancel takes effect.
-          assertTrue(n > 5, "n is " + n);
+          assertThat(n,
+              ComparatorMatcherBuilder.<Integer>usingNaturalOrdering().greaterThan(5));
         });
   }
 

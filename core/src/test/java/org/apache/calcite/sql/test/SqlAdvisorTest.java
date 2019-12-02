@@ -589,7 +589,7 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
     if (missingReplacemenets.isEmpty()) {
       return;
     }
-    Assertions.fail("Sql " + sql + " did not produce replacement hints " + missingReplacemenets);
+    fail("Sql " + sql + " did not produce replacement hints " + missingReplacemenets);
 
   }
 

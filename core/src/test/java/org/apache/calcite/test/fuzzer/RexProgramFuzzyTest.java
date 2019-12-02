@@ -257,13 +257,13 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
     if (node.isAlwaysTrue()) {
       if (!trueLiteral.equals(opt)) {
         assertEquals(trueLiteral, opt,
-            nodeToString(node) + " isAlwaysTrue, so it should simplify to TRUE " + uaf);
+            () -> nodeToString(node) + " isAlwaysTrue, so it should simplify to TRUE " + uaf);
       }
     }
     if (node.isAlwaysFalse()) {
       if (!falseLiteral.equals(opt)) {
         assertEquals(falseLiteral, opt,
-            nodeToString(node) + " isAlwaysFalse, so it should simplify to FALSE " + uaf);
+            () -> nodeToString(node) + " isAlwaysFalse, so it should simplify to FALSE " + uaf);
       }
     }
     if (STRONG.isNull(node)) {
@@ -271,12 +271,14 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
       case FALSE:
         if (node.getType().getSqlTypeName() == SqlTypeName.BOOLEAN) {
           if (!falseLiteral.equals(opt)) {
-            assertEquals(falseLiteral, opt, nodeToString(node)
+            assertEquals(falseLiteral, opt,
+                () -> nodeToString(node)
                     + " is always null boolean, so it should simplify to FALSE " + uaf);
           }
         } else {
           if (!RexLiteral.isNullLiteral(opt)) {
-            assertEquals(rexBuilder.makeNullLiteral(node.getType()), opt, nodeToString(node)
+            assertEquals(rexBuilder.makeNullLiteral(node.getType()), opt,
+                () -> nodeToString(node)
                     + " is always null (non boolean), so it should simplify to NULL " + uaf);
           }
         }
@@ -284,20 +286,22 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
       case TRUE:
         if (node.getType().getSqlTypeName() == SqlTypeName.BOOLEAN) {
           if (!trueLiteral.equals(opt)) {
-            assertEquals(trueLiteral, opt, nodeToString(node)
+            assertEquals(trueLiteral, opt,
+                () -> nodeToString(node)
                     + " is always null boolean, so it should simplify to TRUE " + uaf);
           }
         } else {
           if (!RexLiteral.isNullLiteral(opt)) {
-            assertEquals(rexBuilder.makeNullLiteral(node.getType()), opt, nodeToString(node)
+            assertEquals(rexBuilder.makeNullLiteral(node.getType()), opt,
+                () -> nodeToString(node)
                     + " is always null (non boolean), so it should simplify to NULL " + uaf);
           }
         }
         break;
       case UNKNOWN:
         if (!RexUtil.isNull(opt)) {
-          assertEquals(nullBool, opt, nodeToString(node)
-                  + " is always null, so it should simplify to NULL " + uaf);
+          assertEquals(nullBool, opt,
+              () -> nodeToString(node) + " is always null, so it should simplify to NULL " + uaf);
         }
       }
     }
@@ -310,7 +314,8 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
     }
     if (!SqlTypeUtil.equalSansNullability(typeFactory, node.getType(), opt.getType())) {
       assertEquals(node.getType(), opt.getType(),
-          nodeToString(node) + " has different type after simplification to " + nodeToString(opt));
+          () -> nodeToString(node)
+              + " has different type after simplification to " + nodeToString(opt));
     }
   }
 

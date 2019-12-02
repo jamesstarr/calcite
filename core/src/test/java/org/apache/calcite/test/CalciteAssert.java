@@ -68,7 +68,6 @@ import org.apache.calcite.util.Util;
 
 import org.apache.commons.dbcp2.PoolableConnectionFactory;
 import org.apache.commons.dbcp2.PoolingDataSource;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 
 import com.google.common.collect.ImmutableList;
@@ -114,6 +113,9 @@ import javax.sql.DataSource;
 
 import static org.apache.calcite.test.Matchers.containsStringLinux;
 import static org.apache.calcite.test.Matchers.isLinux;
+import static org.apache.calcite.util.Util.toLinux;
+
+import static org.apache.commons.lang3.StringUtils.countMatches;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -457,7 +459,7 @@ public class CalciteAssert {
 
       try {
         final String actual = Util.toLinux(toString(s));
-        assertEquals(count, StringUtils.countMatches(actual, expected),
+        assertEquals(count, countMatches(actual, expected),
             () -> actual + " should have " + count + " occurrence of " + expected);
       } catch (SQLException e) {
         throw TestUtil.rethrow(e);
@@ -1001,7 +1003,7 @@ public class CalciteAssert {
    * they are considered equal.
    *
    * <p>This method produces more user-friendly error messages than
-   * {@link org.junit.Assert#assertArrayEquals(String, Object[], Object[])}
+   * {@link org.junit.jupiter.api.Assertions#assertArrayEquals(Object[], Object[], String)}
    *
    * @param message the identifying message for the {@link AssertionError} (<code>null</code>
    * okay)
@@ -1645,11 +1647,9 @@ public class CalciteAssert {
 
     public AssertQuery planContains(String expected) {
       ensurePlan(null);
-      assertTrue(
-          Util.toLinux(plan)
+      assertTrue(toLinux(plan)
               .replaceAll("\\\\r\\\\n", "\\\\n")
-              .contains(expected),
-          "Plan [" + plan + "] contains [" + expected + "]");
+              .contains(expected), "Plan [" + plan + "] contains [" + expected + "]");
       return this;
     }
 
@@ -1660,11 +1660,9 @@ public class CalciteAssert {
           .replace("\"", "\\\"")
           .replaceAll("\n", "\\\\n")
           + "\"";
-      assertTrue(
-          Util.toLinux(plan)
+      assertTrue(toLinux(plan)
               .replaceAll("\\\\r\\\\n", "\\\\n")
-              .contains(expected),
-          "Plan [" + plan + "] contains [" + expected + "]");
+              .contains(expected), "Plan [" + plan + "] contains [" + expected + "]");
       return this;
     }
 
