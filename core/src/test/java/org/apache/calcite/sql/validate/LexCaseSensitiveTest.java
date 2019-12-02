@@ -92,11 +92,13 @@ class LexCaseSensitiveTest {
     runProjectQueryWithLex(Lex.ORACLE, sql);
   }
 
-  @Test void testCalciteCaseOracleException() {
+  @Test
+  public void testCalciteCaseOracleException()
+      throws SqlParseException, RelConversionException {
+    // Oracle is case sensitive, so EMPID should not be found.
+    String sql = "select EMPID, \"empid\" from\n"
+        + " (select \"empid\" from \"emps\" order by \"emps\".\"deptno\")";
     assertThrows(ValidationException.class, () -> {
-      // Oracle is case sensitive, so EMPID should not be found.
-      String sql = "select EMPID, \"empid\" from\n"
-          + " (select \"empid\" from \"emps\" order by \"emps\".\"deptno\")";
       runProjectQueryWithLex(Lex.ORACLE, sql);
     });
   }
@@ -150,11 +152,13 @@ class LexCaseSensitiveTest {
     runProjectQueryWithLex(Lex.JAVA, sql);
   }
 
-  @Test void testCalciteCaseJavaException() {
+  @Test
+  public void testCalciteCaseJavaException()
+      throws SqlParseException, RelConversionException {
+    // JAVA is case sensitive, so EMPID should not be found.
+    String sql = "select EMPID, empid from\n"
+        + " (select empid from emps order by emps.deptno)";
     assertThrows(ValidationException.class, () -> {
-      // JAVA is case sensitive, so EMPID should not be found.
-      String sql = "select EMPID, empid from\n"
-          + " (select empid from emps order by emps.deptno)";
       runProjectQueryWithLex(Lex.JAVA, sql);
     });
   }

@@ -37,9 +37,9 @@ import com.google.common.collect.ImmutableList;
 import net.jcip.annotations.NotThreadSafe;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -462,20 +462,24 @@ public class CalciteRemoteDriverTest {
     }
   }
 
-  @Test(expected = SQLException.class)
+  @Test
   public void testAvaticaConnectionException() throws Exception {
-    try (Connection remoteConnection = getRemoteConnection()) {
-      remoteConnection.isValid(-1);
-    }
+    assertThrows(SQLException.class, () -> {
+      try (Connection remoteConnection = getRemoteConnection()) {
+        remoteConnection.isValid(-1);
+      }
+    });
   }
 
-  @Test(expected = SQLException.class)
+  @Test
   public void testAvaticaStatementException() throws Exception {
-    try (Connection remoteConnection = getRemoteConnection()) {
-      try (Statement statement = remoteConnection.createStatement()) {
-        statement.setCursorName("foo");
+    assertThrows(SQLException.class, () -> {
+      try (Connection remoteConnection = getRemoteConnection()) {
+        try (Statement statement = remoteConnection.createStatement()) {
+          statement.setCursorName("foo");
+        }
       }
-    }
+    });
   }
 
   @Test public void testAvaticaStatementGetMoreResults() throws Exception {

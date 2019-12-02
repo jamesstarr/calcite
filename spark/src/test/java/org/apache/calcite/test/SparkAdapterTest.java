@@ -700,7 +700,7 @@ class SparkAdapterTest {
   // Tests involving sub-queries (both correlated and non correlated)
 
   @Disabled("[CALCITE-2184] ClassCastException: RexSubQuery cannot be cast to RexLocalRef")
-  @Test void testFilterExists() {
+  @Test public void testFilterExists() {
     final String sql = "select *\n"
         + "from " + VALUES4 + "\n"
         + "where exists (\n"
@@ -721,7 +721,7 @@ class SparkAdapterTest {
   }
 
   @Disabled("[CALCITE-2184] ClassCastException: RexSubQuery cannot be cast to RexLocalRef")
-  @Test void testFilterNotExists() {
+  @Test public void testFilterNotExists() {
     final String sql = "select *\n"
         + "from " + VALUES4 + "\n"
         + "where not exists (\n"
@@ -739,7 +739,7 @@ class SparkAdapterTest {
   }
 
   @Disabled("[CALCITE-2184] ClassCastException: RexSubQuery cannot be cast to RexLocalRef")
-  @Test void testSubQueryAny() {
+  @Test public void testSubQueryAny() {
     final String sql = "select x\n"
         + "from " + VALUES1 + "\n"
         + "where x <= any (\n"
@@ -757,7 +757,7 @@ class SparkAdapterTest {
   }
 
   @Disabled("[CALCITE-2184] ClassCastException: RexSubQuery cannot be cast to RexLocalRef")
-  @Test void testSubQueryAll() {
+  @Test public void testSubQueryAll() {
     final String sql = "select x\n"
         + "from " + VALUES1 + "\n"
         + "where x <= all (\n"

@@ -27,7 +27,8 @@ import org.apache.calcite.sql.pretty.SqlPrettyWriter;
 import org.apache.calcite.test.DiffRepository;
 import org.apache.calcite.util.Litmus;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -251,6 +252,102 @@ public class SqlPrettyWriterTest {
             .withLineFolding(SqlWriterConfig.LineFolding.TALL)
             .withFoldLength(45))
         .check();
+<<<<<<< HEAD
+=======
+  }
+
+  @Test public void testClauseEndsLineFold() {
+    simple()
+        .withWriter(w -> w.withClauseEndsLine(true)
+            .withLineFolding(SqlWriterConfig.LineFolding.FOLD)
+            .withFoldLength(45))
+        .check();
+  }
+
+  /** Tests formatting a query with Looker's preferences. */
+  @Test public void testLooker() {
+    simple()
+        .withWriter(w -> w.withFoldLength(60)
+            .withLineFolding(SqlWriterConfig.LineFolding.STEP)
+            .withSelectFolding(SqlWriterConfig.LineFolding.TALL)
+            .withFromFolding(SqlWriterConfig.LineFolding.TALL)
+            .withWhereFolding(SqlWriterConfig.LineFolding.TALL)
+            .withHavingFolding(SqlWriterConfig.LineFolding.TALL)
+            .withClauseEndsLine(true))
+        .check();
+  }
+
+  @Test public void testKeywordsLowerCase() {
+    simple()
+        .withWriter(w -> w.withKeywordsLowerCase(true))
+        .check();
+  }
+
+  @Test public void testParenthesizeAllExprs() {
+    simple()
+        .withWriter(w -> w.withAlwaysUseParentheses(true))
+        .check();
+  }
+
+  @Test public void testOnlyQuoteIdentifiersWhichNeedIt() {
+    simple()
+        .withWriter(w -> w.withQuoteAllIdentifiers(false))
+        .check();
+  }
+
+  @Test public void testBlackSubQueryStyleIndent0() {
+    simple()
+        .withWriter(w -> w.withSubQueryStyle(SqlWriter.SubQueryStyle.BLACK)
+            .withIndentation(0))
+        .check();
+  }
+
+  @Test public void testValuesNewline() {
+    sql("select * from (values (1, 2), (3, 4)) as t")
+        .withWriter(w -> w.withValuesListNewline(true))
+        .check();
+  }
+
+  @Test public void testValuesLeadingCommas() {
+    sql("select * from (values (1, 2), (3, 4)) as t")
+        .withWriter(w -> w.withValuesListNewline(true)
+            .withLeadingComma(true))
+        .check();
+  }
+
+  @Disabled("default SQL parser cannot parse DDL")
+  @Test public void testExplain() {
+    sql("explain select * from t")
+        .check();
+  }
+
+  @Test public void testCase() {
+    // Note that CASE is rewritten to the searched form. Wish it weren't
+    // so, but that's beyond the control of the pretty-printer.
+    // todo: indent should be 4 not 8
+    final String sql = "case 1\n"
+        + " when 2 + 3 then 4\n"
+        + " when case a when b then c else d end then 6\n"
+        + " else 7\n"
+        + "end";
+    final String formatted = "CASE\n"
+        + "WHEN 1 = 2 + 3\n"
+        + "THEN 4\n"
+        + "WHEN 1 = CASE\n"
+        + "        WHEN `A` = `B`\n" // todo: indent should be 4 not 8
+        + "        THEN `C`\n"
+        + "        ELSE `D`\n"
+        + "        END\n"
+        + "THEN 6\n"
+        + "ELSE 7\n"
+        + "END";
+    expr(sql)
+        .withWriter(w -> w.withCaseClausesOnNewLines(true))
+        .expectingFormatted(formatted)
+        .check();
+  }
+
+>>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
   @Test public void testCase2() {
     final String sql = "case 1"
             + " when 2 + 3 then 4"

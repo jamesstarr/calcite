@@ -58,7 +58,10 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+<<<<<<< HEAD
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+=======
+>>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
 
 /**
  * Unit test for lattices.

@@ -46,8 +46,8 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -112,7 +112,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Unit test for {@link Util} and other classes in this package.
  */
 public class UtilTest {
-  @BeforeClass public static void setUSLocale() {
+  @BeforeAll public static void setUSLocale() {
     // This ensures numbers in exceptions are printed as in asserts.
     // For example, 1,000 vs 1 000
     Locale.setDefault(Locale.US);
@@ -1181,12 +1181,12 @@ public class UtilTest {
     final List<String> anb0 = Arrays.asList("A", null, "B");
     assertEquals(anb, anb0);
     assertEquals(anb.hashCode(), anb0.hashCode());
-    assertEquals(anb + ".indexOf(null)", 1, anb.indexOf(null));
-    assertEquals(anb + ".lastIndexOf(null)", 1, anb.lastIndexOf(null));
-    assertEquals(anb + ".indexOf(B)", 2, anb.indexOf("B"));
-    assertEquals(anb + ".lastIndexOf(A)", 0, anb.lastIndexOf("A"));
-    assertEquals(anb + ".indexOf(Z)", -1, anb.indexOf("Z"));
-    assertEquals(anb + ".lastIndexOf(Z)", -1, anb.lastIndexOf("Z"));
+    assertEquals(1, anb.indexOf(null), anb + ".indexOf(null)");
+    assertEquals(1, anb.lastIndexOf(null), anb + ".lastIndexOf(null)");
+    assertEquals(2, anb.indexOf("B"), anb + ".indexOf(B)");
+    assertEquals(0, anb.lastIndexOf("A"), anb + ".lastIndexOf(A)");
+    assertEquals(-1, anb.indexOf("Z"), anb + ".indexOf(Z)");
+    assertEquals(-1, anb.lastIndexOf("Z"), anb + ".lastIndexOf(Z)");
 
     // Comparisons
     assertThat(emp, instanceOf(Comparable.class));

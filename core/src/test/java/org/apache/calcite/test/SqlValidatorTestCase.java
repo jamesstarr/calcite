@@ -27,6 +27,195 @@ import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.test.AbstractSqlTester;
 import org.apache.calcite.sql.test.SqlTestFactory;
 import org.apache.calcite.sql.test.SqlTester;
+<<<<<<< HEAD
+=======
+import org.apache.calcite.sql.test.SqlValidatorTester;
+import org.apache.calcite.sql.validate.SqlConformance;
+import org.apache.calcite.sql.validate.SqlConformanceEnum;
+import org.apache.calcite.sql.validate.SqlMonotonicity;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.test.catalog.MockCatalogReaderExtended;
+
+import com.google.common.base.Preconditions;
+
+import org.junit.rules.MethodRule;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.Statement;
+
+import java.nio.charset.Charset;
+import java.util.Objects;
+import java.util.function.UnaryOperator;
+import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+/**
+ * An abstract base class for implementing tests against {@link SqlValidator}.
+ *
+ * <p>A derived class can refine this test in two ways. First, it can add <code>
+ * testXxx()</code> methods, to test more functionality.
+ *
+ * <p>Second, it can override the {@link #getTester} method to return a
+ * different implementation of the {@link Tester} object. This encapsulates the
+ * differences between test environments, for example, which SQL parser or
+ * validator to use.</p>
+ */
+public class SqlValidatorTestCase {
+  private static final Pattern LINE_COL_PATTERN =
+      Pattern.compile("At line ([0-9]+), column ([0-9]+)");
+
+  private static final Pattern LINE_COL_TWICE_PATTERN =
+      Pattern.compile(
+          "(?s)From line ([0-9]+), column ([0-9]+) to line ([0-9]+), column ([0-9]+): (.*)");
+
+  private static final SqlTestFactory EXTENDED_TEST_FACTORY =
+      SqlTestFactory.INSTANCE.withCatalogReader(MockCatalogReaderExtended::new);
+
+  static final SqlTester EXTENDED_CATALOG_TESTER =
+      new SqlValidatorTester(EXTENDED_TEST_FACTORY);
+
+  static final SqlTester EXTENDED_CATALOG_TESTER_2003 =
+      new SqlValidatorTester(EXTENDED_TEST_FACTORY)
+          .withConformance(SqlConformanceEnum.PRAGMATIC_2003);
+
+  static final SqlTester EXTENDED_CATALOG_TESTER_LENIENT =
+      new SqlValidatorTester(EXTENDED_TEST_FACTORY)
+          .withConformance(SqlConformanceEnum.LENIENT);
+
+  public static final MethodRule TESTER_CONFIGURATION_RULE = new TesterConfigurationRule();
+
+  protected SqlTester tester;
+
+  /**
+   * Creates a test case.
+   */
+  public SqlValidatorTestCase() {
+    this.tester = getTester();
+  }
+
+  //~ Methods ----------------------------------------------------------------
+
+  /**
+   * Returns a tester. Derived classes should override this method to run the
+   * same set of tests in a different testing environment.
+   */
+  public SqlTester getTester() {
+    return new SqlValidatorTester(SqlTestFactory.INSTANCE);
+  }
+
+  /** Creates a test context with a SQL query. */
+  public final Sql sql(String sql) {
+    return new Sql(tester, sql, true, false);
+  }
+
+  /** Creates a test context with a SQL expression. */
+  public final Sql expr(String sql) {
+    return new Sql(tester, sql, false, false);
+  }
+
+  /** Creates a test context with a SQL expression.
+   * If an error occurs, the error is expected to span the entire expression. */
+  public final Sql wholeExpr(String sql) {
+    return expr(sql).withWhole(true);
+  }
+
+  public final Sql winSql(String sql) {
+    return sql(sql);
+  }
+
+  public final Sql win(String sql) {
+    return sql("select * from emp " + sql);
+  }
+
+  public Sql winExp(String sql) {
+    return winSql("select " + sql + " from emp window w as (order by deptno)");
+  }
+
+  public Sql winExp2(String sql) {
+    return winSql("select " + sql + " from emp");
+  }
+
+  @Deprecated // to be removed before 1.23
+  public void check(String sql) {
+    sql(sql).ok();
+  }
+
+  @Deprecated // to be removed before 1.23
+  public void checkExp(String sql) {
+    expr(sql).ok();
+  }
+
+  @Deprecated // to be removed before 1.23
+  public final void checkFails(
+      String sql,
+      String expected) {
+    sql(sql).fails(expected);
+  }
+
+  @Deprecated // to be removed before 1.23
+  public final void checkExpFails(
+      String sql,
+      String expected) {
+    expr(sql).fails(expected);
+  }
+
+  @Deprecated // to be removed before 1.23
+  public final void checkWholeExpFails(
+      String sql,
+      String expected) {
+    wholeExpr(sql).fails(expected);
+  }
+
+  @Deprecated // to be removed before 1.23
+  public final void checkExpType(
+      String sql,
+      String expected) {
+    expr(sql).columnType(expected);
+  }
+
+  @Deprecated // to be removed before 1.23
+  public final void checkColumnType(
+      String sql,
+      String expected) {
+    sql(sql).columnType(expected);
+  }
+
+  @Deprecated // to be removed before 1.23
+  public final void checkResultType(
+      String sql,
+      String expected) {
+    sql(sql).type(expected);
+  }
+
+  @Deprecated // to be removed before 1.23
+  public final void checkIntervalConv(
+      String sql,
+      String expected) {
+    expr(sql).intervalConv(expected);
+  }
+
+  @Deprecated // to be removed before 1.23
+  protected final void assertExceptionIsThrown(
+      String sql,
+      String expectedMsgPattern) {
+    sql(sql).fails(expectedMsgPattern);
+  }
+
+  @Deprecated // to be removed before 1.23
+  public void checkCharset(
+      String sql,
+      Charset expectedCharset) {
+    sql(sql).charset(expectedCharset);
+  }
+
+  @Deprecated // to be removed before 1.23
+  public void checkCollation(
+      String sql,
+      String expectedCollationName,
+      SqlCollation.Coercibility expectedCoercibility) {
+>>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
     sql(sql).collation(expectedCollationName, expectedCoercibility);
   }
 

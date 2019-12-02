@@ -45,18 +45,8 @@ import org.apache.pig.pigunit.PigTest;
 import org.apache.pig.pigunit.pig.PigServer;
 import org.apache.pig.test.Util;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
-import java.io.File;
-
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EQUALS;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.GREATER_THAN;
-
+import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Tests for the {@code org.apache.calcite.adapter.pig} package that tests the
@@ -86,7 +76,8 @@ class PigRelBuilderStyleTest extends AbstractPigTest {
         new String[] { "(b,2)", "(c,3)" });
   }
 
-  @Test @Disabled("CALCITE-1751")
+  @Test
+  @Disabled("CALCITE-1751")
   public void testImplWithMultipleFilters() {
     final SchemaPlus schema = createTestSchema();
     final RelBuilder builder = createRelBuilder(schema);
@@ -103,7 +94,8 @@ class PigRelBuilderStyleTest extends AbstractPigTest {
         new String[] { "(c,3)" });
   }
 
-  @Test @Disabled("CALCITE-1751")
+  @Test
+  @Disabled("CALCITE-1751")
   public void testImplWithGroupByAndCount() {
     final SchemaPlus schema = createTestSchema();
     final RelBuilder builder = createRelBuilder(schema);
@@ -137,7 +129,8 @@ class PigRelBuilderStyleTest extends AbstractPigTest {
         new String[] { "(3)" });
   }
 
-  @Test @Disabled("CALCITE-1751")
+  @Test
+  @Disabled("CALCITE-1751")
   public void testImplWithGroupByMultipleFields() {
     final SchemaPlus schema = createTestSchema();
     final RelBuilder builder = createRelBuilder(schema);
@@ -193,7 +186,8 @@ class PigRelBuilderStyleTest extends AbstractPigTest {
         new String[] { "(b,2,2,label2)" });
   }
 
-  @Test @Disabled("CALCITE-1751")
+  @Test
+  @Disabled("CALCITE-1751")
   public void testImplWithJoinAndGroupBy() throws Exception {
     final SchemaPlus schema = createTestSchema();
     final RelBuilder builder = createRelBuilder(schema);

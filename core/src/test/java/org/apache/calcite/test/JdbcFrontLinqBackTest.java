@@ -31,8 +31,8 @@ import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.calcite.schema.impl.AbstractTableQueryable;
 import org.apache.calcite.util.TestUtil;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Type;
 import java.sql.Connection;
@@ -173,7 +173,7 @@ public class JdbcFrontLinqBackTest {
    * Tests EXCEPT.
    */
   @Disabled
-  @Test void testExcept() {
+  @Test public void testExcept() {
     hr()
         .query("select substring(\"name\" from 1 for 1) as x\n"
             + "from \"hr\".\"emps\" as e\n"

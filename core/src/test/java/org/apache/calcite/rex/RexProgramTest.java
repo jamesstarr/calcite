@@ -72,6 +72,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 =======
@@ -79,6 +80,11 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 >>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+>>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -91,12 +97,16 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+=======
+>>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.fail;
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 =======
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -108,6 +118,8 @@ import static org.junit.Assert.assertThat;
 =======
 import static org.junit.Assert.fail;
 >>>>>>> eb8659c29 ([CALCITE-2688] Improve diagnosability when validator cannot infer a return type (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+>>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
 /**
  * Unit tests for {@link RexProgram} and
@@ -132,6 +144,7 @@ public class RexProgramTest {
 =======
 public class RexProgramTest extends RexProgramBuilderBase {
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 >>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   /**
    * Creates a RexProgramTest.
@@ -143,6 +156,9 @@ public class RexProgramTest extends RexProgramBuilderBase {
 =======
 >>>>>>> 96c501189 (Remove trivial default constructors from test code):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   @Before public void setUp() {
+=======
+  @BeforeEach public void setUp() {
+>>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     super.setUp();
   }
 
@@ -181,7 +197,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
     } else {
       actual = node + ":" + node.getType() + (node.getType().isNullable() ? "" : " NOT NULL");
     }
-    assertEquals(message, expected, actual);
+    assertEquals(expected, actual, message);
   }
 
   /** Simplifies an expression and checks that the result is as expected. */
@@ -1027,8 +1043,13 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Disabled("CALCITE-3457: AssertionError in RexSimplify.validateStrongPolicy")
   @Test void reproducerFor3457() {
+=======
+  @Disabled("CALCITE-3457: AssertionError in RexSimplify.validateStrongPolicy:843")
+  @Test public void reproducerFor3457() {
+>>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // Identified with RexProgramFuzzyTest#testFuzzy, seed=4887662474363391810L
     checkSimplify(
         eq(
@@ -2341,10 +2362,10 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
   @Test public void fieldAccessEqualsHashCode() {
-    assertEquals("vBool() instances should be equal", vBool(), vBool());
-    assertEquals("vBool().hashCode()", vBool().hashCode(), vBool().hashCode());
-    assertNotSame("vBool() is expected to produce new RexFieldAccess", vBool(), vBool());
-    assertNotEquals("vBool(0) != vBool(1)", vBool(0), vBool(1));
+    assertEquals(vBool(), vBool(), "vBool() instances should be equal");
+    assertEquals(vBool().hashCode(), vBool().hashCode(), "vBool().hashCode()");
+    assertNotSame(vBool(), vBool(), "vBool() is expected to produce new RexFieldAccess");
+    assertNotEquals(vBool(0), vBool(1), "vBool(0) != vBool(1)");
   }
 
   @Test public void testSimplifyDynamicParam() {
@@ -3545,8 +3566,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
   @Test void testIsDeterministic() {
 =======
     assertEquals(representation, rexNode.toString());
-    assertEquals("type of " + rexNode, type, rexNode.getType().toString()
-        + (rexNode.getType().isNullable() ? "" : " NOT NULL"));
+    assertEquals(type, rexNode.getType().toString()
+        + (rexNode.getType().isNullable() ? "" : " NOT NULL"), "type of " + rexNode);
   }
 
   @Test public void testIsDeterministic() {

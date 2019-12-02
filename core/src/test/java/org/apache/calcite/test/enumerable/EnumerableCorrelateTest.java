@@ -30,8 +30,7 @@ import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.test.JdbcTest;
 
 import org.junit.jupiter.api.Test;
-
-import java.util.function.Consumer;
+>>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
 
 import java.util.function.Consumer;
 
@@ -282,7 +281,6 @@ public class EnumerableCorrelateTest {
 
 <<<<<<< HEAD
 =======
->>>>>>> 7feb6b7bd ([CALCITE-2596] When translating correlated variables in enumerable convention, convert not-null boxed primitive values to primitive (Stamatis Zampetakis))
 =======
 >>>>>>> c8ecee92a ([CALCITE-2920] In RelBuilder, add antiJoin method (Ruben Quesada Lopez))
   private CalciteAssert.AssertThat tester(boolean forceDecorrelate,

@@ -22,7 +22,7 @@ import org.apache.calcite.test.CalciteAssert.DatabaseInstance;
 import org.apache.calcite.util.TestUtil;
 
 import org.hsqldb.jdbcDriver;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

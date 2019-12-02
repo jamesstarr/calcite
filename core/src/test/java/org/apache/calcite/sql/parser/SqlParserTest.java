@@ -50,8 +50,8 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.CustomTypeSafeMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -74,10 +74,10 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * A <code>SqlParserTest</code> is a unit-test for
@@ -803,19 +803,19 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Ignore
+  @Disabled
   @Test public void testDerivedColumnListNoAs() {
     sql("select * from emp e (empno, gender) where true").ok("foo");
   }
 
   // jdbc syntax
-  @Ignore
+  @Disabled
   @Test public void testEmbeddedCall() {
     expr("{call foo(?, ?)}")
         .ok("foo");
   }
 
-  @Ignore
+  @Disabled
   @Test public void testEmbeddedFunction() {
     expr("{? = call bar (?, ?)}")
         .ok("foo");
@@ -2654,7 +2654,7 @@ public class SqlParserTest {
   }
 
   @Disabled
-  @Test void testJoinAssociativity() {
+  @Test public void testJoinAssociativity() {
     // joins are left-associative
     // 1. no parens needed
     sql("select * from (a natural left join b) left join c on b.c1 = c.c1")

@@ -34,7 +34,10 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+<<<<<<< HEAD
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+=======
+>>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
 
 /** Unit test for {@link org.apache.calcite.adapter.tpch.TpchSchema}.
  *

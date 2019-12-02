@@ -114,7 +114,7 @@ class JdbcFrontJdbcBackLinqMiddleTest {
    * cartesian product).</p>
    */
   @Disabled("non-deterministic on JDK 1.7 vs 1.8")
-  @Test void testJoinTheta() {
+  @Test public void testJoinTheta() {
     that()
         .with(CalciteAssert.Config.FOODMART_CLONE)
         .query("select count(*) from (\n"
@@ -190,7 +190,7 @@ class JdbcFrontJdbcBackLinqMiddleTest {
   }
 
   @Disabled
-  @Test void testDistinctCount() {
+  @Test public void testDistinctCount() {
     // Complicating factors:
     // Composite GROUP BY key
     // Order by select item, referenced by ordinal
@@ -218,7 +218,7 @@ class JdbcFrontJdbcBackLinqMiddleTest {
   }
 
   @Disabled
-  @Test void testPlan() {
+  @Test public void testPlan() {
     that()
         .with(CalciteAssert.Config.JDBC_FOODMART)
         .query("select c.\"state_province\"\n"
@@ -236,7 +236,7 @@ class JdbcFrontJdbcBackLinqMiddleTest {
   }
 
   @Disabled
-  @Test void testPlan2() {
+  @Test public void testPlan2() {
     that()
         .with(CalciteAssert.Config.JDBC_FOODMART)
         .withDefaultSchema("foodmart")

@@ -52,9 +52,6 @@ import org.apache.calcite.schema.impl.TableFunctionImpl;
 import org.apache.calcite.schema.impl.ViewTable;
 import org.apache.calcite.schema.impl.ViewTableMacro;
 import org.apache.calcite.sql.SqlDialect;
-<<<<<<< HEAD
-import org.apache.calcite.sql.SqlExplainLevel;
-=======
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.sql.validate.SqlValidatorException;
@@ -86,9 +83,493 @@ import net.hydromatic.scott.data.hsqldb.ScottHsqldb;
 import org.apiguardian.api.API;
 import org.hamcrest.Matcher;
 
+<<<<<<< HEAD
       } catch (Error | RuntimeException e) {
         // It is better to have AssertionError
         // at the very top level of the exception stack.
+=======
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.TimeZone;
+import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+import javax.sql.DataSource;
+
+import static org.apache.calcite.test.Matchers.containsStringLinux;
+import static org.apache.calcite.test.Matchers.isLinux;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+/**
+ * Fluid DSL for testing Calcite connections and queries.
+ */
+public class CalciteAssert {
+  private CalciteAssert() {}
+
+  /**
+   * Which database to use for tests that require a JDBC data source.
+   *
+   * @see CalciteSystemProperty#TEST_DB
+   **/
+  public static final DatabaseInstance DB =
+      DatabaseInstance.valueOf(CalciteSystemProperty.TEST_DB.value());
+
+  private static final DateFormat UTC_DATE_FORMAT;
+  private static final DateFormat UTC_TIME_FORMAT;
+  private static final DateFormat UTC_TIMESTAMP_FORMAT;
+  static {
+    final TimeZone utc = DateTimeUtils.UTC_ZONE;
+    UTC_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
+    UTC_DATE_FORMAT.setTimeZone(utc);
+    UTC_TIME_FORMAT = new SimpleDateFormat("HH:mm:ss", Locale.ROOT);
+    UTC_TIME_FORMAT.setTimeZone(utc);
+    UTC_TIMESTAMP_FORMAT =
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ROOT);
+    UTC_TIMESTAMP_FORMAT.setTimeZone(utc);
+  }
+
+  public static final ConnectionFactory EMPTY_CONNECTION_FACTORY =
+      new MapConnectionFactory(ImmutableMap.of(), ImmutableList.of());
+
+
+  /** Implementation of {@link AssertThat} that does nothing. */
+  private static final AssertThat DISABLED =
+      new AssertThat(EMPTY_CONNECTION_FACTORY) {
+        @Override public AssertThat with(Config config) {
+          return this;
+        }
+
+        @Override public AssertThat with(ConnectionFactory connectionFactory) {
+          return this;
+        }
+
+        @Override public AssertThat with(String property, Object value) {
+          return this;
+        }
+
+        @Override public AssertThat withSchema(String name, Schema schema) {
+          return this;
+        }
+
+        @Override public AssertQuery query(String sql) {
+          return NopAssertQuery.of(sql);
+        }
+
+        @Override public AssertThat connectThrows(
+            Consumer<Throwable> exceptionChecker) {
+          return this;
+        }
+
+        @Override public <T> AssertThat doWithConnection(
+            Function<CalciteConnection, T> fn)
+            throws Exception {
+          return this;
+        }
+
+        @Override public AssertThat withDefaultSchema(String schema) {
+          return this;
+        }
+
+        @Override public AssertThat with(SchemaSpec... specs) {
+          return this;
+        }
+
+        @Override public AssertThat with(Lex lex) {
+          return this;
+        }
+
+        @Override public AssertThat with(
+            ConnectionPostProcessor postProcessor) {
+          return this;
+        }
+
+        @Override public AssertThat enable(boolean enabled) {
+          return this;
+        }
+
+        @Override public AssertThat pooled() {
+          return this;
+        }
+      };
+
+  /** Creates an instance of {@code CalciteAssert} with the empty
+   * configuration. */
+  public static AssertThat that() {
+    return AssertThat.EMPTY;
+  }
+
+  /** Creates an instance of {@code CalciteAssert} with a given
+   * configuration. */
+  public static AssertThat that(Config config) {
+    return that().with(config);
+  }
+
+  /** Short-hand for
+   *  {@code CalciteAssert.that().with(Config.EMPTY).withModel(model)}. */
+  public static AssertThat model(String model) {
+    return that().withModel(model);
+  }
+
+  /** Short-hand for {@code CalciteAssert.that().with(Config.REGULAR)}. */
+  public static AssertThat hr() {
+    return that(Config.REGULAR);
+  }
+
+  static Function<RelNode, Void> checkRel(final String expected,
+      final AtomicInteger counter) {
+    return relNode -> {
+      if (counter != null) {
+        counter.incrementAndGet();
+      }
+      String s = RelOptUtil.toString(relNode);
+      assertThat(s, containsStringLinux(expected));
+      return null;
+    };
+  }
+
+  static Consumer<Throwable> checkException(final String expected) {
+    return p0 -> {
+      assertNotNull(p0, "expected exception but none was thrown");
+      String stack = TestUtil.printStackTrace(p0);
+      assertThat(stack, containsString(expected));
+    };
+  }
+
+  static Consumer<Throwable> checkValidationException(final String expected) {
+    return new Consumer<Throwable>() {
+      @Override public void accept(@Nullable Throwable throwable) {
+        assertNotNull(throwable, "Nothing was thrown");
+
+        Exception exception = containsCorrectException(throwable);
+
+        assertNotNull(exception, "Expected to fail at validation, but did not");
+        if (expected != null) {
+          String stack = TestUtil.printStackTrace(exception);
+          assertThat(stack, containsString(expected));
+        }
+      }
+
+      private boolean isCorrectException(Throwable throwable) {
+        return throwable instanceof SqlValidatorException
+                || throwable instanceof CalciteException;
+      }
+
+      private Exception containsCorrectException(Throwable root) {
+        Throwable currentCause = root;
+        while (currentCause != null) {
+          if (isCorrectException(currentCause)) {
+            return (Exception) currentCause;
+          }
+          currentCause = currentCause.getCause();
+        }
+        return null;
+      }
+    };
+  }
+
+  static Consumer<ResultSet> checkResult(final String expected) {
+    return checkResult(expected, new ResultSetFormatter());
+  }
+
+  static Consumer<ResultSet> checkResult(final String expected,
+      final ResultSetFormatter resultSetFormatter) {
+    return resultSet -> {
+
+      try {
+        resultSetFormatter.resultSet(resultSet);
+        assertThat(resultSetFormatter.string(), isLinux(expected));
+
+      } catch (SQLException e) {
+        TestUtil.rethrow(e);
+      }
+
+    };
+  }
+
+  static Consumer<ResultSet> checkResultValue(final String expected) {
+    return resultSet -> {
+
+      try {
+        if (!resultSet.next()) {
+          throw new AssertionError("too few rows");
+        }
+        if (resultSet.getMetaData().getColumnCount() != 1) {
+          throw new AssertionError("expected 1 column");
+        }
+        final String resultString = resultSet.getString(1);
+        assertThat(resultString,
+            expected == null ? nullValue(String.class) : isLinux(expected));
+
+      } catch (SQLException e) {
+        throw TestUtil.rethrow(e);
+      }
+
+    };
+  }
+
+  public static Consumer<ResultSet> checkResultCount(
+      final Matcher<Integer> expected) {
+    return resultSet -> {
+
+      try {
+        final int count = CalciteAssert.countRows(resultSet);
+        assertThat(count, expected);
+
+      } catch (SQLException e) {
+        throw TestUtil.rethrow(e);
+      }
+
+    };
+  }
+
+  public static Consumer<Integer> checkUpdateCount(final int expected) {
+    return updateCount -> {
+
+      assertThat(updateCount, is(expected));
+
+    };
+  }
+
+  /** Checks that the result of the second and subsequent executions is the same
+   * as the first.
+   *
+   * @param ordered Whether order should be the same both times
+   */
+  static Consumer<ResultSet> consistentResult(final boolean ordered) {
+    return new Consumer<ResultSet>() {
+      int executeCount = 0;
+      Collection expected;
+
+      public void accept(ResultSet resultSet) {
+        ++executeCount;
+        try {
+          final Collection result =
+              CalciteAssert.toStringList(resultSet,
+                  ordered ? new ArrayList<String>() : new TreeSet<String>());
+          if (executeCount == 1) {
+            expected = result;
+          } else {
+            if (!expected.equals(result)) {
+              // compare strings to get better error message
+              assertThat(newlineList(result), equalTo(newlineList(expected)));
+              fail("oops");
+            }
+          }
+
+        } catch (SQLException e) {
+          throw TestUtil.rethrow(e);
+        }
+      }
+    };
+  }
+
+  static String newlineList(Collection collection) {
+    final StringBuilder buf = new StringBuilder();
+    for (Object o : collection) {
+      buf.append(o).append('\n');
+    }
+    return buf.toString();
+  }
+
+  /** @see Matchers#returnsUnordered(String...) */
+  static Consumer<ResultSet> checkResultUnordered(final String... lines) {
+    return checkResult(true, false, lines);
+  }
+
+  /** @see Matchers#returnsUnordered(String...) */
+  static Consumer<ResultSet> checkResult(final boolean sort,
+      final boolean head, final String... lines) {
+    return resultSet -> {
+
+      try {
+        final List<String> expectedList = Lists.newArrayList(lines);
+        if (sort) {
+          Collections.sort(expectedList);
+        }
+        final List<String> actualList = new ArrayList<>();
+        CalciteAssert.toStringList(resultSet, actualList);
+        if (sort) {
+          Collections.sort(actualList);
+        }
+        final List<String> trimmedActualList;
+        if (head && actualList.size() > expectedList.size()) {
+          trimmedActualList = actualList.subList(0, expectedList.size());
+        } else {
+          trimmedActualList = actualList;
+        }
+        if (!trimmedActualList.equals(expectedList)) {
+          assertThat(Util.lines(trimmedActualList),
+              equalTo(Util.lines(expectedList)));
+        }
+
+      } catch (SQLException e) {
+        throw TestUtil.rethrow(e);
+      }
+
+    };
+  }
+
+  public static Consumer<ResultSet> checkResultContains(
+      final String... expected) {
+    return s -> {
+
+      try {
+        final String actual = toString(s);
+        for (String st : expected) {
+          assertThat(actual, containsStringLinux(st));
+        }
+
+      } catch (SQLException e) {
+        throw TestUtil.rethrow(e);
+      }
+
+    };
+  }
+
+  public static Consumer<ResultSet> checkResultContains(
+      final String expected, final int count) {
+    return s -> {
+
+      try {
+        final String actual = Util.toLinux(toString(s));
+        assertEquals(count, StringUtils.countMatches(actual, expected),
+            () -> actual + " should have " + count + " occurrence of " + expected);
+      } catch (SQLException e) {
+        throw TestUtil.rethrow(e);
+      }
+
+    };
+  }
+
+  public static Consumer<ResultSet> checkMaskedResultContains(
+      final String expected) {
+    return s -> {
+
+      try {
+        final String actual = Util.toLinux(toString(s));
+        final String maskedActual =
+            actual.replaceAll(", id = [0-9]+", "");
+        assertThat(maskedActual, containsString(expected));
+
+      } catch (SQLException e) {
+        throw TestUtil.rethrow(e);
+      }
+
+    };
+  }
+
+  public static Consumer<ResultSet> checkResultType(final String expected) {
+    return s -> {
+
+      try {
+        final String actual = typeString(s.getMetaData());
+        assertEquals(expected, actual);
+
+      } catch (SQLException e) {
+        throw TestUtil.rethrow(e);
+      }
+
+    };
+  }
+
+  private static String typeString(ResultSetMetaData metaData)
+      throws SQLException {
+    final List<String> list = new ArrayList<>();
+    for (int i = 0; i < metaData.getColumnCount(); i++) {
+      list.add(
+          metaData.getColumnName(i + 1)
+              + " "
+              + metaData.getColumnTypeName(i + 1)
+              + (metaData.isNullable(i + 1) == ResultSetMetaData.columnNoNulls
+              ? " NOT NULL"
+              : ""));
+    }
+    return list.toString();
+  }
+
+  static void assertQuery(
+      Connection connection,
+      String sql,
+      int limit,
+      boolean materializationsEnabled,
+      List<Pair<Hook, Consumer>> hooks,
+      Consumer<ResultSet> resultChecker,
+      Consumer<Integer> updateChecker,
+      Consumer<Throwable> exceptionChecker) {
+    try (Closer closer = new Closer()) {
+      if (connection.isWrapperFor(CalciteConnection.class)) {
+        final CalciteConnection calciteConnection =
+            connection.unwrap(CalciteConnection.class);
+        final Properties properties = calciteConnection.getProperties();
+        properties.setProperty(
+            CalciteConnectionProperty.MATERIALIZATIONS_ENABLED.camelName(),
+            Boolean.toString(materializationsEnabled));
+        properties.setProperty(
+            CalciteConnectionProperty.CREATE_MATERIALIZATIONS.camelName(),
+            Boolean.toString(materializationsEnabled));
+        if (!properties
+            .containsKey(CalciteConnectionProperty.TIME_ZONE.camelName())) {
+          // Do not override id some test has already set this property.
+          properties.setProperty(
+              CalciteConnectionProperty.TIME_ZONE.camelName(),
+              DateTimeUtils.UTC_ZONE.getID());
+        }
+      }
+      for (Pair<Hook, Consumer> hook : hooks) {
+        //noinspection unchecked
+        closer.add(hook.left.addThread(hook.right));
+      }
+      Statement statement = connection.createStatement();
+      statement.setMaxRows(limit <= 0 ? limit : Math.max(limit, 1));
+      ResultSet resultSet = null;
+      Integer updateCount = null;
+      try {
+        if (updateChecker == null) {
+          resultSet = statement.executeQuery(sql);
+        } else {
+          updateCount = statement.executeUpdate(sql);
+        }
+        if (exceptionChecker != null) {
+          exceptionChecker.accept(null);
+          return;
+        }
+      } catch (Exception | Error e) {
+        if (exceptionChecker != null) {
+          exceptionChecker.accept(e);
+          return;
+        }
         throw e;
       }
       if (resultChecker != null) {
@@ -536,8 +1017,7 @@ import org.hamcrest.Matcher;
    */
   public static void assertArrayEqual(
       String message, Object[] expected, Object[] actual) {
-    assertEquals(message, str(expected), str(actual));
-
+    assertEquals(str(expected), str(actual), message);
   }
 
   private static String str(Object[] objects) {
@@ -1173,10 +1653,10 @@ import org.hamcrest.Matcher;
     public AssertQuery planContains(String expected) {
       ensurePlan(null);
       assertTrue(
-          "Plan [" + plan + "] contains [" + expected + "]",
           Util.toLinux(plan)
               .replaceAll("\\\\r\\\\n", "\\\\n")
-              .contains(expected));
+              .contains(expected),
+          "Plan [" + plan + "] contains [" + expected + "]");
       return this;
     }
 
@@ -1188,10 +1668,10 @@ import org.hamcrest.Matcher;
           .replaceAll("\n", "\\\\n")
           + "\"";
       assertTrue(
-          "Plan [" + plan + "] contains [" + expected + "]",
           Util.toLinux(plan)
               .replaceAll("\\\\r\\\\n", "\\\\n")
-              .contains(expected));
+              .contains(expected),
+          "Plan [" + plan + "] contains [" + expected + "]");
       return this;
     }
 

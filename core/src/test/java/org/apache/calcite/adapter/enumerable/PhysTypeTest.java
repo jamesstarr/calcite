@@ -26,14 +26,11 @@ import org.apache.calcite.sql.type.SqlTypeName;
 
 import com.google.common.collect.ImmutableList;
 
-<<<<<<< HEAD
+import org.junit.Test;
+=======
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-=======
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Test for {@link org.apache.calcite.adapter.enumerable.PhysTypeImpl}.

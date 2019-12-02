@@ -60,7 +60,7 @@ import java.util.TreeSet;
 import static org.apache.calcite.linq4j.test.BlockBuilderBase.ONE;
 import static org.apache.calcite.linq4j.test.BlockBuilderBase.TWO;
 
->>>>>>> da1ff4734 ([CALCITE-3260] Add Expressions.evaluate(Node), a public API for evaluating linq4j expressions (Wang Yanlin))
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

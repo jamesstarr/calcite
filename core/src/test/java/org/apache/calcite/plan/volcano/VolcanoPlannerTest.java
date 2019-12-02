@@ -38,8 +38,8 @@ import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.tools.RelBuilder;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,10 +62,10 @@ import static org.apache.calcite.plan.volcano.PlannerTests.newCluster;
 import static org.apache.calcite.test.Matchers.isLinux;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link VolcanoPlanner the optimizer}.
@@ -239,12 +239,6 @@ class VolcanoPlannerTest {
     assertThat(sort(buf),
         equalTo(
             sort(
-<<<<<<< HEAD
-<<<<<<< HEAD
-                "NoneSingleRel:Subset#0.NONE.[]",
-                "PhysSingleRel:Subset#0.PHYS.[0]",
-                "PhysSingleRel:Subset#0.PHYS.[]")));
-=======
                 "NoneSingleRel:Subset#0.NONE",
                 "PhysSingleRel:Subset#0.PHYS")));
 =======
@@ -298,7 +292,10 @@ class VolcanoPlannerTest {
    * this one didn't work due to the definition of ReformedSingleRule.
    */
   @Disabled // broken, because ReformedSingleRule matches child traits strictly
+<<<<<<< HEAD
   @Test void testTransformSingleReformed() {
+=======
+  @Test public void testTransformSingleReformed() {
     VolcanoPlanner planner = new VolcanoPlanner();
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
 
@@ -389,7 +386,7 @@ class VolcanoPlannerTest {
    * pattern which spans calling conventions.
    */
   @Disabled // broken, because ReformedSingleRule matches child traits strictly
-  @Test void testRemoveSingleReformed() {
+  @Test public void testRemoveSingleReformed() {
     VolcanoPlanner planner = new VolcanoPlanner();
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
 
@@ -453,7 +450,7 @@ class VolcanoPlannerTest {
         resultLeaf.label);
   }
 
-  @Ignore("CALCITE-2592 EnumerableMergeJoin is never taken")
+  @Disabled("CALCITE-2592 EnumerableMergeJoin is never taken")
   @Test public void testMergeJoin() {
     VolcanoPlanner planner = new VolcanoPlanner();
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
@@ -495,7 +492,7 @@ class VolcanoPlannerTest {
    * Tests whether planner correctly notifies listeners of events.
    */
   @Disabled
-  @Test void testListener() {
+  @Test public void testListener() {
     TestListener listener = new TestListener();
 
     VolcanoPlanner planner = new VolcanoPlanner();

@@ -129,7 +129,7 @@ class CsvTest {
    * Tests the vanity driver.
    */
   @Disabled
-  @Test void testVanityDriver() throws SQLException {
+  @Test public void testVanityDriver() throws SQLException {
     Properties info = new Properties();
     Connection connection =
         DriverManager.getConnection("jdbc:csv:", info);
@@ -140,7 +140,7 @@ class CsvTest {
    * Tests the vanity driver with properties in the URL.
    */
   @Disabled
-  @Test void testVanityDriverArgsInUrl() throws SQLException {
+  @Test public void testVanityDriverArgsInUrl() throws SQLException {
     Connection connection =
         DriverManager.getConnection("jdbc:csv:"
             + "directory='foo'");
@@ -361,7 +361,7 @@ class CsvTest {
       try {
         final List<String> lines = new ArrayList<>();
         CsvTest.collect(lines, resultSet);
-        Assert.assertEquals(Arrays.asList(expected), lines);
+        assertEquals(Arrays.asList(expected), lines);
       } catch (SQLException e) {
         throw TestUtil.rethrow(e);
       }
@@ -378,7 +378,7 @@ class CsvTest {
         final List<String> lines = new ArrayList<>();
         CsvTest.collect(lines, resultSet);
         Collections.sort(lines);
-        Assert.assertEquals(expectedLines, lines);
+        assertEquals(expectedLines, lines);
       } catch (SQLException e) {
         throw TestUtil.rethrow(e);
       }
@@ -517,11 +517,9 @@ class CsvTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-824">[CALCITE-824]
    * Type inference when converting IN clause to semijoin</a>. */
-<<<<<<< HEAD
-  @Disabled("No longer rewriting this to a join and no execution for in subquery rexnode")
-  @Test void testInToSemiJoinWithCast() throws SQLException {
-=======
   @Ignore("No longer rewriting this to a join and no execution for in subquery rexnode")
+=======
+  @Disabled("No longer rewriting this to a join and no execution for in subquery rexnode")
   @Test public void testInToSemiJoinWithCast() throws SQLException {
     // Note that the IN list needs at least 20 values to trigger the rewrite
     // to a semijoin. Try it both ways.

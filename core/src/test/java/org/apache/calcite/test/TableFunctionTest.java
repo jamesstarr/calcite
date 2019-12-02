@@ -28,8 +28,8 @@ import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.util.Smalls;
 import org.apache.calcite.util.TestUtil;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -244,7 +244,7 @@ class TableFunctionTest {
    * as literals.
    */
   @Disabled("SQLException does not include message from nested exception")
-  @Test void testTableFunctionNonNullableMustBeLiterals()
+  @Test public void testTableFunctionNonNullableMustBeLiterals()
       throws SQLException, ClassNotFoundException {
     Connection connection = getConnectionWithMultiplyFunction();
     try {

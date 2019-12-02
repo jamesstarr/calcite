@@ -168,11 +168,10 @@ class PigAdapterTest extends AbstractPigTest {
           actual == null || actual.isEmpty()
               ? null
               : (String) actual.get(0);
-<<<<<<< HEAD
-      assertEquals(strings[0], actualArray, "expected Pig script not found");
-=======
       assertEquals("expected Pig script not found",
           strings[0], actualArray);
+=======
+      assertEquals(strings[0], actualArray, "expected Pig script not found");
     };
   }
 }

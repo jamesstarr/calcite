@@ -27,9 +27,8 @@ import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -45,13 +44,15 @@ import java.util.function.Consumer;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.startsWith;
+>>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
+<<<<<<< HEAD
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+=======
 
 /**
  * Unit tests for the OS (operating system) adapter.
@@ -101,9 +102,9 @@ class OsAdapterTest {
   private static boolean checkProcessExists(String command) {
     try {
       Process process = new ProcessBuilder().command(command).start();
-      Assert.assertNotNull(process);
+      assertNotNull(process);
       int errCode = process.waitFor();
-      Assert.assertEquals(0, errCode);
+      assertEquals(0, errCode);
       return true;
     } catch (AssertionError | IOException | InterruptedException e) {
       return false;

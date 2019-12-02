@@ -21,15 +21,12 @@ import org.apache.calcite.test.QuidemTest;
 import net.hydromatic.quidem.Quidem;
 
 import org.junit.jupiter.api.Disabled;
+@RunWith(Parameterized.class)
+public class EndToEndTest extends QuidemTest {
+  public EndToEndTest(String path) {
+    super(path);
+  }
 
-import java.util.Collection;
-
-/**
- * Entry point for all end-to-end tests based on Chinook data in HSQLDB wrapped
- * by Calcite schema.
- */
-@Disabled("JUnit 4 parameterized test - disable JUnit 5 detection")
-class EndToEndTest extends QuidemTest {
   /** Runs a test from the command line.
    *
    * <p>For example:

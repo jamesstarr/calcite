@@ -41,7 +41,7 @@ import org.apache.calcite.util.TestUtil;
 
 import com.google.common.collect.ImmutableList;
 
-import org.hamcrest.comparator.ComparatorMatcherBuilder;
+>>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -56,6 +56,9 @@ import java.util.function.Consumer;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+<<<<<<< HEAD
+=======
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -193,7 +196,7 @@ public class StreamTest {
   }
 
   @Disabled
-  @Test void testStreamUnionAllOrderBy() {
+  @Test public void testStreamUnionAllOrderBy() {
     CalciteAssert.model(STREAM_MODEL)
         .withDefaultSchema("STREAMS")
         .query("select stream *\n"
@@ -267,7 +270,7 @@ public class StreamTest {
           }
           // With a 3 millisecond delay, typically n is between 200 - 400
           // before cancel takes effect.
-          assertTrue("n is " + n, n > 5);
+          assertTrue(n > 5, "n is " + n);
         });
   }
 
@@ -297,7 +300,7 @@ public class StreamTest {
   }
 
   @Disabled
-  @Test void testTumbleViaOver() {
+  @Test public void testTumbleViaOver() {
     String sql = "WITH HourlyOrderTotals (rowtime, productId, c, su) AS (\n"
         + "  SELECT FLOOR(rowtime TO HOUR),\n"
         + "    productId,\n"

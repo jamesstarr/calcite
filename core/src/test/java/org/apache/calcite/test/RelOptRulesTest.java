@@ -138,9 +138,8 @@ import org.apache.calcite.util.ImmutableBitSet;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -157,7 +156,8 @@ import static org.apache.calcite.plan.RelOptRule.operandJ;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EQUALS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_NOT_DISTINCT_FROM;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Unit test for rules in {@code org.apache.calcite.rel} and subpackages.
@@ -244,7 +244,7 @@ class RelOptRulesTest extends RelOptTestBase {
    * Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-6746">[CALCITE-6746]
    * Optimization rule ProjectWindowTranspose is unsound</a>. */
-  @Ignore @Test public void testConstantWindow() {
+  @Disabled @Test public void testConstantWindow() {
     final String sql = "with empsalary(dept, empno, salary, enroll_date) as "
         + "(VALUES ('x', 10, 5200, DATE '2007-08-01'), (NULL, NULL, NULL, NULL))\n"
         + "select sum(salary) "
@@ -344,12 +344,12 @@ class RelOptRulesTest extends RelOptTestBase {
       // Verify LogicalFilter traitSet (must be [3 DESC])
       RelNode filter = result.getInput(0);
       RelCollation collation = filter.getTraitSet().getTrait(RelCollationTraitDef.INSTANCE);
-      Assert.assertNotNull(collation);
+      assertNotNull(collation);
       List<RelFieldCollation> fieldCollations = collation.getFieldCollations();
-      Assert.assertEquals(1, fieldCollations.size());
+      assertEquals(1, fieldCollations.size());
       RelFieldCollation fieldCollation = fieldCollations.get(0);
-      Assert.assertEquals(3, fieldCollation.getFieldIndex());
-      Assert.assertEquals(RelFieldCollation.Direction.DESCENDING, fieldCollation.getDirection());
+      assertEquals(3, fieldCollation.getFieldIndex());
+      assertEquals(RelFieldCollation.Direction.DESCENDING, fieldCollation.getDirection());
     }
   }
 
@@ -4018,353 +4018,6 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).withPre(preProgram)
         .with(program)
         .checkUnchanged();
-<<<<<<< HEAD
-=======
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-1507">[CALCITE-1507]
-   * OFFSET cannot be pushed through a JOIN if the non-preserved side of outer
-   * join is not count-preserving</a>. */
-  @Test public void testSortJoinTranspose6() {
-    final HepProgram preProgram = new HepProgramBuilder()
-        .addRuleInstance(CoreRules.SORT_PROJECT_TRANSPOSE)
-        .build();
-    // This one can be pushed down even if it has an OFFSET, since the dept
-    // table is count-preserving against the join condition.
-    final String sql = "select d.deptno, empno from sales.dept d\n"
-        + "right join sales.emp e using (deptno) limit 10 offset 2";
-    sql(sql)
-        .withPre(preProgram)
-        .withRule(CoreRules.SORT_JOIN_TRANSPOSE)
-        .check();
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-1507">[CALCITE-1507]
-   * OFFSET cannot be pushed through a JOIN if the non-preserved side of outer
-   * join is not count-preserving</a>. */
-  @Test void testSortJoinTranspose6() {
-    final HepProgram preProgram = new HepProgramBuilder()
-        .addRuleInstance(CoreRules.SORT_PROJECT_TRANSPOSE)
-        .build();
-    // This one cannot be pushed down
-    final String sql = "select d.deptno, empno from sales.dept d\n"
-        + "left join sales.emp e using (deptno) order by d.deptno offset 1";
-    sql(sql)
-        .withPre(preProgram)
-        .withRule(CoreRules.SORT_JOIN_TRANSPOSE)
-        .checkUnchanged();
-  }
-
-  @Test public void testSortProjectTranspose1() {
-    // This one can be pushed down
-    final String sql = "select d.deptno from sales.dept d\n"
-        + "order by cast(d.deptno as integer) offset 1";
-    sql(sql).withRule(CoreRules.SORT_PROJECT_TRANSPOSE)
-        .check();
-  }
-
-  @Test public void testSortProjectTranspose2() {
-    // This one can be pushed down
-    final String sql = "select d.deptno from sales.dept d\n"
-        + "order by cast(d.deptno as double) offset 1";
-    sql(sql).withRule(CoreRules.SORT_PROJECT_TRANSPOSE)
-        .check();
-  }
-
-  @Test public void testSortProjectTranspose3() {
-    // This one cannot be pushed down
-    final String sql = "select d.deptno from sales.dept d\n"
-        + "order by cast(d.deptno as varchar(10)) offset 1";
-    sql(sql).withRule(CoreRules.SORT_JOIN_TRANSPOSE)
-        .checkUnchanged();
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-1023">[CALCITE-1023]
-   * Planner rule that removes Aggregate keys that are constant</a>. */
-  @Test public void testAggregateConstantKeyRule() {
-    final String sql = "select count(*) as c\n"
-        + "from sales.emp\n"
-        + "where deptno = 10\n"
-        + "group by deptno, sal";
-    sql(sql).withRule(AggregateProjectPullUpConstantsRule.INSTANCE2)
-        .check();
-  }
-
-  /** Tests {@link AggregateProjectPullUpConstantsRule} where reduction is not
-   * possible because "deptno" is the only key. */
-  @Test public void testAggregateConstantKeyRule2() {
-    final String sql = "select count(*) as c\n"
-        + "from sales.emp\n"
-        + "where deptno = 10\n"
-        + "group by deptno";
-    sql(sql).withRule(AggregateProjectPullUpConstantsRule.INSTANCE2)
-        .checkUnchanged();
-  }
-
-  /** Tests {@link AggregateProjectPullUpConstantsRule} where both keys are
-   * constants but only one can be removed. */
-  @Test public void testAggregateConstantKeyRule3() {
-    final String sql = "select job\n"
-        + "from sales.emp\n"
-        + "where sal is null and job = 'Clerk'\n"
-        + "group by sal, job\n"
-        + "having count(*) > 3";
-    sql(sql).withRule(AggregateProjectPullUpConstantsRule.INSTANCE2)
-        .check();
-  }
-
-  /** Tests {@link AggregateProjectPullUpConstantsRule} where
-   * there are group keys of type
-   * {@link org.apache.calcite.sql.fun.SqlAbstractTimeFunction}
-   * that can not be removed. */
-  @Test public void testAggregateDynamicFunction() {
-    final String sql = "select hiredate\n"
-        + "from sales.emp\n"
-        + "where sal is null and hiredate = current_timestamp\n"
-        + "group by sal, hiredate\n"
-        + "having count(*) > 3";
-    sql(sql).withRule(AggregateProjectPullUpConstantsRule.INSTANCE2)
-        .check();
-  }
-
-  @Test public void testReduceExpressionsNot() {
-    final String sql = "select * from (values (false),(true)) as q (col1) where not(col1)";
-    sql(sql).withRule(CoreRules.FILTER_REDUCE_EXPRESSIONS)
-        .checkUnchanged();
-  }
-
-  private Sql checkSubQuery(String sql) {
-    return sql(sql).withRule(CoreRules.PROJECT_SUB_QUERY_TO_CORRELATE,
-            CoreRules.FILTER_SUB_QUERY_TO_CORRELATE,
-            CoreRules.JOIN_SUB_QUERY_TO_CORRELATE)
-        .expand(false);
-  }
-
-  /** Tests expanding a sub-query, specifically an uncorrelated scalar
-   * sub-query in a project (SELECT clause). */
-  @Test void testExpandProjectScalar() throws Exception {
-    final String sql = "select empno,\n"
-        + "  (select deptno from sales.emp where empno < 20) as d\n"
-        + "from sales.emp";
-    checkSubQuery(sql).check();
-  }
-
-  @Test public void testSelectNotInCorrelated() {
-    final String sql = "select sal,\n"
-        + " empno NOT IN (\n"
-        + " select deptno from dept\n"
-        + "   where emp.job=dept.name)\n"
-        + " from emp";
-    checkSubQuery(sql).withLateDecorrelation(true).check();
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-1493">[CALCITE-1493]
-   * Wrong plan for NOT IN correlated queries</a>. */
-  @Test void testWhereNotInCorrelated() {
-    final String sql = "select sal from emp\n"
-        + "where empno NOT IN (\n"
-        + "  select deptno from dept\n"
-        + "  where emp.job = dept.name)";
-    checkSubQuery(sql).withLateDecorrelation(true).check();
-  }
-
-  @Test void testWhereNotInCorrelated2() {
-    final String sql = "select * from emp e1\n"
-        + "  where e1.empno NOT IN\n"
-        + "   (select empno from (select ename, empno, sal as r from emp) e2\n"
-        + "    where r > 2 and e1.ename= e2.ename)";
-    checkSubQuery(sql).withLateDecorrelation(true).check();
-  }
-
-  @Test void testAll() {
-    final String sql = "select * from emp e1\n"
-        + "  where e1.empno > ALL (select deptno from dept)";
-    checkSubQuery(sql).withLateDecorrelation(true).check();
-  }
-
-  @Test void testSome() {
-    final String sql = "select * from emp e1\n"
-        + "  where e1.empno > SOME (select deptno from dept)";
-    checkSubQuery(sql).withLateDecorrelation(true).check();
-  }
-
-  /** Test case for testing type created by SubQueryRemoveRule: an
-   * ANY sub-query is non-nullable therefore plan should have cast. */
-  @Test public void testAnyInProjectNonNullable() {
-    final String sql = "select name, deptno > ANY (\n"
-        + "  select deptno from emp)\n"
-        + "from dept";
-    checkSubQuery(sql).withLateDecorrelation(true).check();
-  }
-
-  /** Test case for testing type created by SubQueryRemoveRule; an
-   * ANY sub-query is nullable therefore plan should not have cast. */
-  @Test public void testAnyInProjectNullable() {
-    final String sql = "select deptno, name = ANY (\n"
-        + "  select mgr from emp)\n"
-        + "from dept";
-    checkSubQuery(sql).withLateDecorrelation(true).check();
-  }
-
-  @Test public void testSelectAnyCorrelated() {
-    final String sql = "select empno > ANY (\n"
-        + "  select deptno from dept where emp.job = dept.name)\n"
-        + "from emp\n";
-    checkSubQuery(sql).withLateDecorrelation(true).check();
-  }
-
-  @Test public void testWhereAnyCorrelatedInSelect() {
-    final String sql =
-        "select * from emp where empno > ANY (\n"
-            + "  select deptno from dept where emp.job = dept.name)\n";
-    checkSubQuery(sql).withLateDecorrelation(true).check();
-  }
-
-  @Test public void testSomeWithEquality() {
-    final String sql = "select * from emp e1\n"
-        + "  where e1.deptno = SOME (select deptno from dept)";
-    checkSubQuery(sql).withLateDecorrelation(true).check();
-  }
-
-  @Test public void testSomeWithEquality2() {
-    final String sql = "select * from emp e1\n"
-        + "  where e1.ename= SOME (select name from dept)";
-    checkSubQuery(sql).withLateDecorrelation(true).check();
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-1546">[CALCITE-1546]
-   * Sub-queries connected by OR</a>. */
-  @Test void testWhereOrSubQuery() {
-    final String sql = "select * from emp\n"
-        + "where sal = 4\n"
-        + "or empno NOT IN (select deptno from dept)";
-    checkSubQuery(sql).withLateDecorrelation(true).check();
-  }
-
-  @Test void testExpandProjectIn() throws Exception {
-    final String sql = "select empno,\n"
-        + "  deptno in (select deptno from sales.emp where empno < 20) as d\n"
-        + "from sales.emp";
-    checkSubQuery(sql)
-        .withProperty(Hook.REL_BUILDER_SIMPLIFY, false)
-        .check();
-  }
-
-  @Test void testExpandProjectInNullable() throws Exception {
-    final String sql = "with e2 as (\n"
-        + "  select empno, case when true then deptno else null end as deptno\n"
-        + "  from sales.emp)\n"
-        + "select empno,\n"
-        + "  deptno in (select deptno from e2 where empno < 20) as d\n"
-        + "from e2";
-    checkSubQuery(sql)
-        .withProperty(Hook.REL_BUILDER_SIMPLIFY, false)
-        .check();
-  }
-
-  @Test void testExpandProjectInComposite() throws Exception {
-    final String sql = "select empno, (empno, deptno) in (\n"
-        + "    select empno, deptno from sales.emp where empno < 20) as d\n"
-        + "from sales.emp";
-    checkSubQuery(sql)
-        .withProperty(Hook.REL_BUILDER_SIMPLIFY, false)
-        .check();
-  }
-
-  @Test void testExpandProjectExists() throws Exception {
-    final String sql = "select empno,\n"
-        + "  exists (select deptno from sales.emp where empno < 20) as d\n"
-        + "from sales.emp";
-    checkSubQuery(sql)
-        .withProperty(Hook.REL_BUILDER_SIMPLIFY, false)
-        .check();
-  }
-
-  @Test void testExpandFilterScalar() throws Exception {
-    final String sql = "select empno\n"
-        + "from sales.emp\n"
-        + "where (select deptno from sales.emp where empno < 20)\n"
-        + " < (select deptno from sales.emp where empno > 100)\n"
-        + "or emp.sal < 100";
-    checkSubQuery(sql).check();
-  }
-
-  @Test void testExpandFilterIn() throws Exception {
-    final String sql = "select empno\n"
-        + "from sales.emp\n"
-        + "where deptno in (select deptno from sales.emp where empno < 20)\n"
-        + "or emp.sal < 100";
-    checkSubQuery(sql).check();
-  }
-
-  @Test void testExpandFilterInComposite() throws Exception {
-    final String sql = "select empno\n"
-        + "from sales.emp\n"
-        + "where (empno, deptno) in (\n"
-        + "  select empno, deptno from sales.emp where empno < 20)\n"
-        + "or emp.sal < 100";
-    checkSubQuery(sql).check();
-  }
-
-  /** An IN filter that requires full 3-value logic (true, false, unknown). */
-  @Test void testExpandFilterIn3Value() throws Exception {
-    final String sql = "select empno\n"
-        + "from sales.emp\n"
-        + "where empno\n"
-        + " < case deptno in (select case when true then deptno else null end\n"
-        + "                   from sales.emp where empno < 20)\n"
-        + "   when true then 10\n"
-        + "   when false then 20\n"
-        + "   else 30\n"
-        + "   end";
-    checkSubQuery(sql)
-        .withProperty(Hook.REL_BUILDER_SIMPLIFY, false)
-        .check();
-  }
-
-  /** An EXISTS filter that can be converted into true/false. */
-  @Test void testExpandFilterExists() throws Exception {
-    final String sql = "select empno\n"
-        + "from sales.emp\n"
-        + "where exists (select deptno from sales.emp where empno < 20)\n"
-        + "or emp.sal < 100";
-    checkSubQuery(sql).check();
-  }
-
-  /** An EXISTS filter that can be converted into a semi-join. */
-  @Test void testExpandFilterExistsSimple() throws Exception {
-    final String sql = "select empno\n"
-        + "from sales.emp\n"
-        + "where exists (select deptno from sales.emp where empno < 20)";
-    checkSubQuery(sql).check();
-  }
-
-  /** An EXISTS filter that can be converted into a semi-join. */
-  @Test void testExpandFilterExistsSimpleAnd() throws Exception {
-    final String sql = "select empno\n"
-        + "from sales.emp\n"
-        + "where exists (select deptno from sales.emp where empno < 20)\n"
-        + "and emp.sal < 100";
-    checkSubQuery(sql).check();
-  }
-
-  @Test void testExpandJoinScalar() throws Exception {
-    final String sql = "select empno\n"
-        + "from sales.emp left join sales.dept\n"
-        + "on (select deptno from sales.emp where empno < 20)\n"
-        + " < (select deptno from sales.emp where empno > 100)";
-    checkSubQuery(sql).check();
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3121">[CALCITE-3121]
-   * VolcanoPlanner hangs due to subquery with dynamic star</a>. */
-=======
    * VolcanoPlanner hangs due to sub-query with dynamic star</a>. */
   @Test public void testSubQueryWithDynamicStarHang() {
     String sql = "select n.n_regionkey from (select * from "
@@ -4446,7 +4099,7 @@ class RelOptRulesTest extends RelOptTestBase {
     SqlToRelTestBase.assertValid(output);
   }
 
-  @Ignore("[CALCITE-1045]")
+  @Disabled("[CALCITE-1045]")
   @Test public void testExpandJoinIn() throws Exception {
     final String sql = "select empno\n"
         + "from sales.emp left join sales.dept\n"
@@ -4455,7 +4108,10 @@ class RelOptRulesTest extends RelOptTestBase {
   }
 
   @Disabled("[CALCITE-1045]")
+<<<<<<< HEAD
   @Test void testExpandJoinInComposite() throws Exception {
+=======
+  @Test public void testExpandJoinInComposite() throws Exception {
     final String sql = "select empno\n"
         + "from sales.emp left join sales.dept\n"
         + "on (emp.empno, dept.deptno) in (\n"
@@ -4521,7 +4177,7 @@ class RelOptRulesTest extends RelOptTestBase {
    * Decorrelate sub-queries in Project and Join</a>, with the added
    * complication that there are two sub-queries. */
   @Disabled("[CALCITE-1045]")
-  @Test void testDecorrelateTwoScalar() throws Exception {
+  @Test public void testDecorrelateTwoScalar() throws Exception {
     final String sql = "select deptno,\n"
         + "  (select min(1) from emp where empno > d.deptno) as i0,\n"
         + "  (select min(0) from emp\n"
@@ -4639,7 +4295,7 @@ class RelOptRulesTest extends RelOptTestBase {
 
   /** Test case for CALCITE-2744 for aggregate decorrelate with multi-param agg call
    * but without group key. */
-  @Ignore
+  @Disabled
   @Test public void testDecorrelateAggWithMultiParamsAggCall() {
     final String sql = "SELECT * FROM (SELECT MY_AVG(sal, 1) AS c FROM emp) as m,\n"
                        + " LATERAL TABLE(ramp(m.c)) AS T(s)";
@@ -4652,7 +4308,7 @@ class RelOptRulesTest extends RelOptTestBase {
 
   /** Same as {@link #testDecorrelateAggWithMultiParamsAggCall}
    * but with constant grouping key. */
-  @Ignore
+  @Disabled
   @Test public void testDecorrelateAggWithMultiParamsAggCall2() {
     final String sql = "SELECT * FROM "
         + "(SELECT MY_AVG(sal, 1) AS c FROM emp group by empno, 'abc') as m,\n"
@@ -5718,7 +5374,7 @@ class RelOptRulesTest extends RelOptTestBase {
   /**
    * Test case to push custom Filter past custom union.
    */
-  @Ignore
+  @Disabled
   @Test public void testFilterSetOpTranspose() {
 
     final HepProgram preProgram = new HepProgramBuilder()

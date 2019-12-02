@@ -246,7 +246,7 @@ class SplunkAdapterTest {
   }
 
   @Disabled("cannot plan due to CAST in ON clause")
-  @Test void testJoinToJdbc() throws SQLException {
+  @Test public void testJoinToJdbc() throws SQLException {
     checkSql(
         "select p.\"product_name\", /*s.\"product_id\",*/ s.\"action\"\n"
             + "from \"splunk\".\"splunk\" as s\n"

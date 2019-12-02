@@ -24,8 +24,11 @@ import org.apache.calcite.util.mapping.Mappings;
 import com.google.common.collect.ImmutableList;
 
 import org.junit.jupiter.api.Test;
+<<<<<<< HEAD
 
 import static org.apache.calcite.rel.RelDistributions.ANY;
+=======
+>>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

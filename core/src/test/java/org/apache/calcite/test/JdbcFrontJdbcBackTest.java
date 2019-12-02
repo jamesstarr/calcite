@@ -51,7 +51,7 @@ class JdbcFrontJdbcBackTest {
   }
 
   @Disabled
-  @Test void testTables() throws Exception {
+  @Test public void testTables() throws Exception {
     that()
         .with(CalciteAssert.Config.JDBC_FOODMART)
         .doWithConnection(connection -> {

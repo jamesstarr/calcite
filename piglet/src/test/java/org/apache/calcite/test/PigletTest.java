@@ -118,7 +118,7 @@ class PigletTest {
   }
 
   @Disabled // foreach nested not implemented yet
-  @Test void testForeachNested() throws ParseException {
+  @Test public void testForeachNested() throws ParseException {
     final String s = "A = LOAD 'EMP';\n"
         + "B = GROUP A BY DEPTNO;\n"
         + "C = FOREACH B {\n"

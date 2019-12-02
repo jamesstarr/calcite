@@ -26,8 +26,8 @@ import org.apache.calcite.linq4j.function.Predicate2;
 
 import com.google.common.collect.Lists;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -286,7 +286,7 @@ class EnumerablesTest {
   }
 
   @Test
-  @Ignore // TODO fix this
+  @Disabled // TODO fix this
   public void testMatch() {
     final Enumerable<Emp> emps = Linq4j.asEnumerable(
         Arrays.asList(

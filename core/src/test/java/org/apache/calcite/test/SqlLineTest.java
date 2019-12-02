@@ -21,7 +21,7 @@ import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
 import org.hamcrest.Matcher;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

@@ -52,8 +52,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,9 +61,9 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit test for {@link RelOptUtil} and other classes in this package.
@@ -88,27 +88,10 @@ class RelOptUtilTest {
 
   private List<RelDataTypeField> empDeptJoinRelFields;
 
-<<<<<<< HEAD
-  //~ Constructors -----------------------------------------------------------
-
-  @BeforeEach public void setUp() {
-    relBuilder = RelBuilder.create(config().build());
-
-    empScan = relBuilder.scan("EMP").build();
-    deptScan = relBuilder.scan("DEPT").build();
-
-    empRow = empScan.getRowType();
-    deptRow = deptScan.getRowType();
-
-    empDeptJoinRelFields =
-        Lists.newArrayList(Iterables.concat(empRow.getFieldList(), deptRow.getFieldList()));
-  }
-
-  //~ Methods ----------------------------------------------------------------
-
-=======
 >>>>>>> 96c501189 (Remove trivial default constructors from test code)
   @Before public void setUp() {
+=======
+  @BeforeEach public void setUp() {
     relBuilder = RelBuilder.create(config().build());
 
     empScan = relBuilder.scan("EMP").build();

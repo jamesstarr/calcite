@@ -96,7 +96,7 @@ public class VolcanoPlannerTraitTest {
    */
   private static int altTraitOrdinal = 0;
 
-  @Ignore
+  @Disabled
   @Test public void testDoubleConversion() {
     VolcanoPlanner planner = new VolcanoPlanner();
 
@@ -185,7 +185,7 @@ public class VolcanoPlannerTraitTest {
   }
 
   @Disabled
-  @Test void testTraitPropagation() {
+  @Test public void testTraitPropagation() {
     VolcanoPlanner planner = new VolcanoPlanner();
 
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);

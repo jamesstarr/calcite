@@ -29,7 +29,7 @@ import org.apache.calcite.test.DiffTestCase;
 import org.apache.calcite.util.Sources;
 import org.apache.calcite.util.Util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,22 +37,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
-<<<<<<< HEAD
-=======
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.CoreMatchers.is;
->>>>>>> 263e93488 (Improve folder detection logic in DocumentationTest)
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /** Various automated checks on the documentation. */
 public class DocumentationTest {

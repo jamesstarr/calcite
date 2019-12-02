@@ -165,7 +165,7 @@ public class ReflectiveSchemaTest {
    * The function returns a {@link org.apache.calcite.linq4j.Queryable}.
    */
   @Disabled
-  @Test void testOperator() throws SQLException, ClassNotFoundException {
+  @Test public void testOperator() throws SQLException, ClassNotFoundException {
     Connection connection =
         DriverManager.getConnection("jdbc:calcite:");
     CalciteConnection calciteConnection =
@@ -517,7 +517,7 @@ public class ReflectiveSchemaTest {
         return;
       }
     }
-    Assert.fail("column not found: " + columnName);
+    fail("column not found: " + columnName);
   }
 
   @Test public void testJavaBoolean() throws Exception {
@@ -743,7 +743,7 @@ public class ReflectiveSchemaTest {
    * {@link ViewTable}.{@code ViewTableMacro}, then it
    * should be expanded. */
   @Disabled
-  @Test void testTableMacroIsView() throws Exception {
+  @Test public void testTableMacroIsView() throws Exception {
     CalciteAssert.that()
         .withSchema("s", new ReflectiveSchema(new JdbcTest.HrSchema()))
         .query("select * from table(\"s\".\"view\"('abc'))")
@@ -754,7 +754,7 @@ public class ReflectiveSchemaTest {
 
   /** Finds a table-macro using reflection. */
   @Disabled
-  @Test void testTableMacro() throws Exception {
+  @Test public void testTableMacro() throws Exception {
     CalciteAssert.that()
         .withSchema("s", new ReflectiveSchema(new JdbcTest.HrSchema()))
         .query("select * from table(\"s\".\"foo\"(3))")
