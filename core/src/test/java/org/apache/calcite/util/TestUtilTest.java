@@ -86,7 +86,8 @@ public class TestUtilTest {
 
   private void testJavaVersion(int expectedMajorVersion, String versionString) {
     assertEquals(expectedMajorVersion,
-        TestUtil.majorVersionFromString(versionString), versionString);
+        TestUtil.majorVersionFromString(versionString),
+        versionString);
   }
 
 }

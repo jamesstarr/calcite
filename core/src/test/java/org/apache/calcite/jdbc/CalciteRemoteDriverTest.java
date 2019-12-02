@@ -462,8 +462,7 @@ public class CalciteRemoteDriverTest {
     }
   }
 
-  @Test
-  public void testAvaticaConnectionException() throws Exception {
+  @Test public void testAvaticaConnectionException() {
     assertThrows(SQLException.class, () -> {
       try (Connection remoteConnection = getRemoteConnection()) {
         remoteConnection.isValid(-1);
@@ -471,8 +470,7 @@ public class CalciteRemoteDriverTest {
     });
   }
 
-  @Test
-  public void testAvaticaStatementException() throws Exception {
+  @Test public void testAvaticaStatementException() {
     assertThrows(SQLException.class, () -> {
       try (Connection remoteConnection = getRemoteConnection()) {
         try (Statement statement = remoteConnection.createStatement()) {

@@ -49,10 +49,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
-<<<<<<< HEAD
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-=======
 
 /**
  * Unit tests for the OS (operating system) adapter.
@@ -76,7 +72,6 @@ class OsAdapterTest {
   /** Returns whether there is a ".git" directory in this directory or in a
    * directory between this directory and root. */
   private static boolean hasGit() {
->>>>>>> d6c0815c2 ([CALCITE-2495] Support encoded URLs in calcite.util.Source, and use it for URL->File conversion in tests)
 =======
     assumeToolExists("git");
     final String path = Sources.of(OsAdapterTest.class.getResource("/"))

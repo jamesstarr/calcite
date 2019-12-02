@@ -123,8 +123,7 @@ class BlockBuilderTest {
             + "  x = 1;\n"
             + "  int x0 = 8;\n"
             + "  x0 = 42;\n"
-            + "}\n",
-        Expressions.toString(outer.toBlock()),
+            + "}\n", Expressions.toString(outer.toBlock()),
         "x in the second block should be renamed to avoid name clash");
   }
 

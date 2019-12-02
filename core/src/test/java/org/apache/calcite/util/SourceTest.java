@@ -118,7 +118,7 @@ public class SourceTest {
     final Source foo = url(url);
     assertEquals(new File(ROOT_PREFIX + "dir name/test file.json").getAbsolutePath(),
         foo.file().getAbsolutePath(),
-        url + " .file().getAbsolutePath()");
+        () -> url + " .file().getAbsolutePath()");
   }
 
   @Test public void testSpaceInRelativeUrl() {
@@ -126,7 +126,7 @@ public class SourceTest {
     final Source foo = url(url);
     assertEquals("dir name/test file.json",
         foo.file().getPath().replace('\\', '/'),
-        url + " .file().getAbsolutePath()");
+        () -> url + " .file().getAbsolutePath()");
   }
 
   @Test public void testRelative() {
