@@ -80,8 +80,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * SqlToRelTestBase is an abstract base for tests which involve conversion from
@@ -791,7 +791,7 @@ public abstract class SqlToRelTestBase {
       String sql2 = getDiffRepos().expand("sql", sql);
       RelNode rel = convertSqlToRel(sql2).project();
 
-      assertNotNull(rel);
+      assertTrue(rel != null);
       assertValid(rel);
 
       if (trim) {
@@ -799,7 +799,7 @@ public abstract class SqlToRelTestBase {
             RelFactories.LOGICAL_BUILDER.create(rel.getCluster(), null);
         final RelFieldTrimmer trimmer = createFieldTrimmer(relBuilder);
         rel = trimmer.trim(rel);
-        assertNotNull(rel);
+        assertTrue(rel != null);
         assertValid(rel);
       }
 

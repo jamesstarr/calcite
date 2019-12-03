@@ -45,7 +45,6 @@ import org.apache.pig.pigunit.PigTest;
 import org.apache.pig.pigunit.pig.PigServer;
 import org.apache.pig.test.Util;
 
-import org.junit.Assume;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -56,8 +55,8 @@ import java.io.File;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EQUALS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.GREATER_THAN;
 
-import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Tests for the {@code org.apache.calcite.adapter.pig} package that tests the
@@ -67,7 +66,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class PigRelBuilderStyleTest extends AbstractPigTest {
 
   public PigRelBuilderStyleTest() {
-    Assume.assumeThat("Pigs don't like Windows", File.separatorChar, is('/'));
+    assumeTrue(File.separatorChar == '/',
+        () -> "Pig tests expects File.separatorChar to be /, actual one is "
+          + File.separatorChar);
   }
 
   @Test

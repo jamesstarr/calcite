@@ -23,7 +23,7 @@ import org.apache.calcite.util.Litmus;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test case for
@@ -45,8 +45,8 @@ public class SqlEqualsDeepTest {
     SqlNode sqlNode0 = parseExpression(expr0);
     SqlNode sqlNode1 = parseExpression(expr1);
 
-    assertEquals(expr0 + " equalsDeep " + expr1,
-            expected, sqlNode0.equalsDeep(sqlNode1, Litmus.IGNORE));
+    assertEquals(expected, sqlNode0.equalsDeep(sqlNode1, Litmus.IGNORE),
+        () -> expr0 + " equalsDeep " + expr1);
   }
 
   private static SqlNode parseExpression(String sql) throws SqlParseException {

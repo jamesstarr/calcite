@@ -58,8 +58,8 @@ import org.apache.calcite.util.mapping.IntPair;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 
-import org.junit.experimental.categories.Category;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -85,7 +85,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * query and one or more materializations (what Oracle calls materialized views)
  * and checks that the materialization is used.
  */
-@Category(SlowTests.class)
+@Tag("slow")
 public class MaterializationTest {
   private static final Consumer<ResultSet> CONTAINS_M0 =
       CalciteAssert.checkResultContains(
