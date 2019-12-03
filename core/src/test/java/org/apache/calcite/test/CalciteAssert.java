@@ -66,6 +66,7 @@ import org.apache.calcite.util.Sources;
 import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
 
+import org.apache.commons.dbcp2.PoolableConnection;
 import org.apache.commons.dbcp2.PoolableConnectionFactory;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.commons.pool2.impl.GenericObjectPool;
@@ -1383,8 +1384,15 @@ public class CalciteAssert {
       final PoolableConnectionFactory connectionFactory =
           new PoolableConnectionFactory(factory::createConnection, null);
       connectionFactory.setRollbackOnReturn(false);
-      this.dataSource = new PoolingDataSource<>(
-          new GenericObjectPool<>(connectionFactory));
+
+      // Create the object pool with the connection factory
+      final GenericObjectPool<PoolableConnection> connectionPool =
+          new GenericObjectPool<>(connectionFactory);
+
+      // IMPORTANT: Link the factory to the pool to avoid the warning
+      connectionFactory.setPool(connectionPool);
+
+      this.dataSource = new PoolingDataSource<>(connectionPool);
     }
 
     public Connection createConnection() throws SQLException {

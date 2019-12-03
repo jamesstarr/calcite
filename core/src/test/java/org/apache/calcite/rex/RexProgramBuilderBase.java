@@ -26,7 +26,7 @@ import org.apache.calcite.sql.type.SqlTypeName;
 
 import com.google.common.collect.ImmutableList;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -77,7 +77,7 @@ public abstract class RexProgramBuilderBase {
   // It maps non-nullable type to struct of (10 nullable, 10 non-nullable) fields
   private Map<RelDataType, RexDynamicParam> dynamicParams;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     rexBuilder = new RexBuilder(typeFactory);

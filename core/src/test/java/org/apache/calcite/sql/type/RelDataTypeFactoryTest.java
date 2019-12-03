@@ -24,7 +24,7 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import com.google.common.collect.Lists;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests return type inference using RelDataTypeFactory

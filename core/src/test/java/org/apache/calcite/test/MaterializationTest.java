@@ -58,9 +58,9 @@ import org.apache.calcite.util.mapping.IntPair;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 
-import org.junit.Ignore;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -1082,33 +1082,33 @@ public class MaterializationTest {
         CalciteAssert.checkResultContains("EnumerableTableScan(table=[[mat, m0]])"));
   }
 
-  @Ignore
+  @Disabled
   @Test public void testOrderByQueryOnProjectView() {
     checkMaterialize(
         "select \"deptno\", \"empid\" from \"emps\"",
         "select \"empid\" from \"emps\" order by \"deptno\"");
   }
 
-  @Ignore
+  @Disabled
   @Test public void testOrderByQueryOnOrderByView() {
     checkMaterialize(
         "select \"deptno\", \"empid\" from \"emps\" order by \"deptno\"",
         "select \"empid\" from \"emps\" order by \"deptno\"");
   }
 
-  @Ignore
+  @Disabled
   @Test public void testDifferentColumnNames() {}
 
-  @Ignore
+  @Disabled
   @Test public void testDifferentType() {}
 
-  @Ignore
+  @Disabled
   @Test public void testPartialUnion() {}
 
-  @Ignore
+  @Disabled
   @Test public void testNonDisjointUnion() {}
 
-  @Ignore
+  @Disabled
   @Test public void testMaterializationReferencesTableInOtherSchema() {}
 
   /** Unit test for logic functions
@@ -1431,7 +1431,7 @@ public class MaterializationTest {
    * <li>query has a condition on one of the materialization's grouping columns.
    * </ol>
    */
-  @Ignore
+  @Disabled
   @Test public void testFilterGroupQueryOnStar() {
     checkMaterialize("select p.\"product_name\", t.\"the_year\",\n"
             + "  sum(f.\"unit_sales\") as \"sum_unit_sales\", count(*) as \"c\"\n"
@@ -1464,7 +1464,7 @@ public class MaterializationTest {
 
   /** Simpler than {@link #testFilterGroupQueryOnStar()}, tests a query on a
    * materialization that is just a join. */
-  @Ignore
+  @Disabled
   @Test public void testQueryOnStar() {
     String q = "select *\n"
         + "from \"foodmart\".\"sales_fact_1997\" as f\n"
@@ -1479,7 +1479,7 @@ public class MaterializationTest {
   /** A materialization that is a join of a union cannot at present be converted
    * to a star table and therefore cannot be recognized. This test checks that
    * nothing unpleasant happens. */
-  @Ignore
+  @Disabled
   @Test public void testJoinOnUnionMaterialization() {
     String q = "select *\n"
         + "from (select * from \"emps\" union all select * from \"emps\")\n"
@@ -1693,7 +1693,7 @@ public class MaterializationTest {
                 + "      EnumerableTableScan(table=[[hr, m0]])"));
   }
 
-  @Ignore
+  @Disabled
   @Test public void testAggregateMaterializationAggregateFuncs8() {
     // TODO: It should work, but top project in the query is not matched by the planner.
     // It needs further checking.
@@ -2054,7 +2054,7 @@ public class MaterializationTest {
                 + "      EnumerableTableScan(table=[[hr, m0]])"));
   }
 
-  @Ignore
+  @Disabled
   @Test public void testJoinAggregateMaterializationAggregateFuncs6() {
     // This rewriting would be possible if planner generates a pre-aggregation,
     // since the materialized view would match the sub-query.
@@ -2628,7 +2628,7 @@ public class MaterializationTest {
     }
   }
 
-  @Ignore("Creating mv for depts considering all its column throws exception")
+  @Disabled("Creating mv for depts considering all its column throws exception")
   @Test public void testMultiMaterializationOnJoinQuery() {
     final String q = "select *\n"
         + "from \"emps\"\n"

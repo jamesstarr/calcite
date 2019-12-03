@@ -34,9 +34,9 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 
 import org.hamcrest.Matcher;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -261,7 +261,7 @@ public class ProfilerTest {
   }
 
   /** As {@link #testProfileScott3()}, but uses the breadth-first profiler. */
-  @Ignore
+  @Disabled
   @Test public void testProfileScott5() throws Exception {
     scott().factory(Fluid.PROFILER_FACTORY).unordered(
         "{type:distribution,columns:[COMM],values:[0.00,300.00,500.00,1400.00],cardinality:5,nullCount:10,expectedCardinality:14.0,surprise:0.473}",
@@ -285,7 +285,7 @@ public class ProfilerTest {
 
   /** Profiles a star-join query on the Foodmart schema using the breadth-first
    * profiler. */
-  @Ignore
+  @Disabled
   @Test public void testProfileFoodmart() throws Exception {
     foodmart().factory(Fluid.PROFILER_FACTORY).unordered(
         "{type:distribution,columns:[brand_name],cardinality:111,expectedCardinality:86837.0,surprise:0.997}",

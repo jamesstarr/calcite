@@ -25,8 +25,8 @@ import org.apache.calcite.util.TestUtil;
 import com.google.common.collect.ImmutableList;
 
 import org.junit.Assume;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -781,7 +781,7 @@ public class TpchTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1543">[CALCITE-1543]
    * Correlated scalar sub-query with multiple aggregates gives
    * AssertionError</a>. */
-  @Ignore("planning succeeds, but gives OutOfMemoryError during execution")
+  @Disabled("planning succeeds, but gives OutOfMemoryError during execution")
   @Test public void testDecorrelateScalarAggregate() {
     final String sql = "select sum(l_extendedprice)\n"
         + "from lineitem, part\n"
@@ -818,12 +818,12 @@ public class TpchTest {
     checkQuery(1);
   }
 
-  @Ignore("Infinite planning")
+  @Disabled("Infinite planning")
   @Test public void testQuery02() {
     checkQuery(2);
   }
 
-  @Ignore("Infinite planning")
+  @Disabled("Infinite planning")
   @Test public void testQuery02Conversion() {
     query(2)
         .convertMatches(relNode -> {
@@ -837,12 +837,12 @@ public class TpchTest {
     checkQuery(3);
   }
 
-  @Ignore("NoSuchMethodException: SqlFunctions.lt(Date, Date)")
+  @Disabled("NoSuchMethodException: SqlFunctions.lt(Date, Date)")
   @Test public void testQuery04() {
     checkQuery(4);
   }
 
-  @Ignore("OutOfMemoryError")
+  @Disabled("OutOfMemoryError")
   @Test public void testQuery05() {
     checkQuery(5);
   }
@@ -851,18 +851,18 @@ public class TpchTest {
     checkQuery(6);
   }
 
-  @Ignore("slow")
+  @Disabled("slow")
   @Test public void testQuery07() {
     Assume.assumeTrue(Bug.CALCITE_2223_FIXED);
     checkQuery(7);
   }
 
-  @Ignore("slow")
+  @Disabled("slow")
   @Test public void testQuery08() {
     checkQuery(8);
   }
 
-  @Ignore("no method found")
+  @Disabled("no method found")
   @Test public void testQuery09() {
     checkQuery(9);
   }
@@ -871,17 +871,17 @@ public class TpchTest {
     checkQuery(10);
   }
 
-  @Ignore("CannotPlanException")
+  @Disabled("CannotPlanException")
   @Test public void testQuery11() {
     checkQuery(11);
   }
 
-  @Ignore("NoSuchMethodException: SqlFunctions.lt(Date, Date)")
+  @Disabled("NoSuchMethodException: SqlFunctions.lt(Date, Date)")
   @Test public void testQuery12() {
     checkQuery(12);
   }
 
-  @Ignore("CannotPlanException")
+  @Disabled("CannotPlanException")
   @Test public void testQuery13() {
     checkQuery(13);
   }
@@ -890,7 +890,7 @@ public class TpchTest {
     checkQuery(14);
   }
 
-  @Ignore("AssertionError")
+  @Disabled("AssertionError")
   @Test public void testQuery15() {
     checkQuery(15);
   }
@@ -899,7 +899,7 @@ public class TpchTest {
     checkQuery(16);
   }
 
-  @Ignore("slow")
+  @Disabled("slow")
   @Test public void testQuery17() {
     checkQuery(17);
   }
@@ -917,12 +917,12 @@ public class TpchTest {
     checkQuery(20);
   }
 
-  @Ignore("slow")
+  @Disabled("slow")
   @Test public void testQuery21() {
     checkQuery(21);
   }
 
-  @Ignore("IllegalArgumentException during decorrelation")
+  @Disabled("IllegalArgumentException during decorrelation")
   @Test public void testQuery22() {
     checkQuery(22);
   }

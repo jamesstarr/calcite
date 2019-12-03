@@ -20,8 +20,6 @@ import org.apache.calcite.prepare.Prepare;
 import org.apache.calcite.util.TryThreadLocal;
 
 import org.junit.jupiter.api.Disabled;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import java.util.Collection;
 
@@ -29,12 +27,7 @@ import java.util.Collection;
  * Test that runs every Quidem file in the "core" module as a test.
  */
 @Disabled("JUnit 4 parameterized test - disable JUnit 5 detection")
-@RunWith(Parameterized.class)
 public class CoreQuidemTest extends QuidemTest {
-  public CoreQuidemTest(String path) {
-    super(path);
-  }
-
   /** Runs a test from the command line.
    *
    * <p>For example:
@@ -44,12 +37,11 @@ public class CoreQuidemTest extends QuidemTest {
    * </blockquote> */
   public static void main(String[] args) throws Exception {
     for (String arg : args) {
-      new CoreQuidemTest(arg).test();
+      new CoreQuidemTest().test(arg);
     }
   }
 
-  /** For {@link Parameterized} runner. */
-  @Parameterized.Parameters(name = "{index}: quidem({0})")
+  /** For {@link QuidemTest#test(String)} parameters. */
   public static Collection<Object[]> data() {
     // Start with a test file we know exists, then find the directory and list
     // its files.
@@ -58,7 +50,7 @@ public class CoreQuidemTest extends QuidemTest {
   }
 
   /** Override settings for "sql/misc.iq". */
-  public void testSqlMisc() throws Exception {
+  public void testSqlMisc(String path) throws Exception {
     switch (CalciteAssert.DB) {
     case ORACLE:
       // There are formatting differences (e.g. "4.000" vs "4") when using
@@ -71,7 +63,7 @@ public class CoreQuidemTest extends QuidemTest {
   }
 
   /** Override settings for "sql/scalar.iq". */
-  public void testSqlScalar() throws Exception {
+  public void testSqlScalar(String path) throws Exception {
     try (TryThreadLocal.Memo ignored = Prepare.THREAD_EXPAND.push(true)) {
       checkRun(path);
     }
@@ -81,7 +73,7 @@ public class CoreQuidemTest extends QuidemTest {
    * which you may use as scratch space during development. */
 
   // Do not disable this test; just remember not to commit changes to dummy.iq
-  public void testSqlDummy() throws Exception {
+  public void testSqlDummy(String path) throws Exception {
     try (TryThreadLocal.Memo ignored = Prepare.THREAD_EXPAND.push(true)) {
       checkRun(path);
     }
