@@ -25,8 +25,8 @@ import org.apache.calcite.util.TestUtil;
 import com.google.common.collect.ImmutableList;
 
 import org.junit.Assume;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -34,9 +34,6 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-<<<<<<< HEAD
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-=======
 >>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
 
 /** Unit test for {@link org.apache.calcite.adapter.tpch.TpchSchema}.
@@ -790,7 +787,10 @@ public class TpchTest {
    * Correlated scalar sub-query with multiple aggregates gives
    * AssertionError</a>. */
   @Disabled("planning succeeds, but gives OutOfMemoryError during execution")
+<<<<<<< HEAD
   @Test void testDecorrelateScalarAggregate() {
+=======
+  @Test public void testDecorrelateScalarAggregate() {
     final String sql = "select sum(l_extendedprice)\n"
         + "from lineitem, part\n"
         + "where\n"
@@ -812,12 +812,27 @@ public class TpchTest {
 
   private CalciteAssert.AssertThat with() {
     // Only run on JDK 1.7 or higher. The io.airlift.tpch library requires it.
-  @Ignore("Infinite planning")
+    // Only run if slow tests are enabled; the library uses lots of memory.
+    return CalciteAssert.model(TPCH_MODEL).enable(ENABLE);
+  }
+
+  /** Tests the customer table with scale factor 5. */
+  @Test public void testCustomer5() {
+    with()
+        .query("select * from tpch_5.customer")
+        .returnsCount(750000);
+  }
+
+  @Test public void testQuery01() {
+    checkQuery(1);
+  }
+
+  @Disabled("Infinite planning")
   @Test public void testQuery02() {
     checkQuery(2);
   }
 
-  @Ignore("Infinite planning")
+  @Disabled("Infinite planning")
   @Test public void testQuery02Conversion() {
     query(2)
         .convertMatches(relNode -> {
@@ -832,12 +847,12 @@ public class TpchTest {
   }
 
   @Disabled("NoSuchMethodException: SqlFunctions.lt(Date, Date)")
-  @Test void testQuery04() {
+  @Test public void testQuery04() {
     checkQuery(4);
   }
 
   @Disabled("OutOfMemoryError")
-  @Test void testQuery05() {
+  @Test public void testQuery05() {
     checkQuery(5);
   }
 
@@ -845,19 +860,19 @@ public class TpchTest {
     checkQuery(6);
   }
 
-  @Ignore("slow")
+  @Disabled("slow")
   @Test public void testQuery07() {
     Assume.assumeTrue(Bug.CALCITE_2223_FIXED);
     checkQuery(7);
   }
 
   @Disabled("slow")
-  @Test void testQuery08() {
+  @Test public void testQuery08() {
     checkQuery(8);
   }
 
   @Disabled("no method found")
-  @Test void testQuery09() {
+  @Test public void testQuery09() {
     checkQuery(9);
   }
 
@@ -866,17 +881,17 @@ public class TpchTest {
   }
 
   @Disabled("CannotPlanException")
-  @Test void testQuery11() {
+  @Test public void testQuery11() {
     checkQuery(11);
   }
 
   @Disabled("NoSuchMethodException: SqlFunctions.lt(Date, Date)")
-  @Test void testQuery12() {
+  @Test public void testQuery12() {
     checkQuery(12);
   }
 
   @Disabled("CannotPlanException")
-  @Test void testQuery13() {
+  @Test public void testQuery13() {
     checkQuery(13);
   }
 
@@ -885,7 +900,7 @@ public class TpchTest {
   }
 
   @Disabled("AssertionError")
-  @Test void testQuery15() {
+  @Test public void testQuery15() {
     checkQuery(15);
   }
 
@@ -894,7 +909,7 @@ public class TpchTest {
   }
 
   @Disabled("slow")
-  @Test void testQuery17() {
+  @Test public void testQuery17() {
     checkQuery(17);
   }
 
@@ -914,12 +929,12 @@ public class TpchTest {
   }
 
   @Disabled("slow")
-  @Test void testQuery21() {
+  @Test public void testQuery21() {
     checkQuery(21);
   }
 
   @Disabled("IllegalArgumentException during decorrelation")
-  @Test void testQuery22() {
+  @Test public void testQuery22() {
     checkQuery(22);
   }
 

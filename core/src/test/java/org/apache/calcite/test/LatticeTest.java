@@ -33,9 +33,9 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 
 import org.junit.Assume;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -58,9 +58,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-<<<<<<< HEAD
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-=======
 >>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
 
 /**
@@ -689,7 +686,10 @@ public class LatticeTest {
    *
    * <p>Disabled for normal runs, because it is slow. */
   @Disabled
+<<<<<<< HEAD
   @Test void testAllFoodmartQueries() throws IOException {
+=======
+  @Test public void testAllFoodmartQueries() throws IOException {
     // Test ids that had bugs in them until recently. Useful for a sanity check.
     final List<Integer> fixed = ImmutableList.of(13, 24, 28, 30, 61, 76, 79, 81,
         85, 98, 101, 107, 128, 129, 130, 131);
@@ -891,7 +891,7 @@ public class LatticeTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-760">[CALCITE-760]
    * Aggregate recommender blows up if row count estimate is too high</a>. */
   @Disabled
-  @Test void testLatticeWithBadRowCountEstimate() {
+  @Test public void testLatticeWithBadRowCountEstimate() {
     final String lattice =
         INVENTORY_LATTICE.replace("rowCountEstimate: 4070,",
             "rowCountEstimate: 4074070,");

@@ -35,7 +35,7 @@ import org.apache.calcite.util.Holder;
 import net.hydromatic.tpcds.query.Query;
 
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
+>>>>>>> 3ab086683 ([CALCITE-2457] Migrate core parameterized to JUnit5, and make core junit5-only)
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -203,13 +203,16 @@ public class TpcdsTest {
 
   /** Tests the customer table with scale factor 5. */
   @Disabled("add tests like this that count each table")
+<<<<<<< HEAD
   @Test void testCustomer5() {
+=======
+  @Test public void testCustomer5() {
     with()
         .query("select * from tpcds_5.customer")
         .returnsCount(750000);
   }
 
-  @Ignore("throws 'RuntimeException: Cannot convert null to long'")
+  @Disabled("throws 'RuntimeException: Cannot convert null to long'")
   @Test public void testQuery01() {
     checkQuery(1).runs();
   }
@@ -248,29 +251,29 @@ public class TpcdsTest {
                 + "                EnumerableTableScan(table=[[TPCDS, DATE_DIM]]): rowcount = 73049.0, cumulative cost = {73049.0 rows, 73050.0 cpu, 0.0 io}\n"));
   }
 
-  @Ignore("throws 'RuntimeException: Cannot convert null to long'")
+  @Disabled("throws 'RuntimeException: Cannot convert null to long'")
   @Test public void testQuery27() {
     checkQuery(27).runs();
   }
 
-  @Ignore("throws 'RuntimeException: Cannot convert null to long'")
+  @Disabled("throws 'RuntimeException: Cannot convert null to long'")
   @Test public void testQuery58() {
     checkQuery(58).explainContains("PLAN").runs();
   }
 
   @Disabled("takes too long to optimize")
-  @Test void testQuery72() {
+  @Test public void testQuery72() {
     checkQuery(72).runs();
   }
 
   @Disabled("work in progress")
-  @Test void testQuery72Plan() {
+  @Test public void testQuery72Plan() {
     checkQuery(72)
         .withHook(Hook.PROGRAM, handler(true, 2))
         .planContains("xx");
   }
 
-  @Ignore("throws 'java.lang.AssertionError: type mismatch'")
+  @Disabled("throws 'java.lang.AssertionError: type mismatch'")
   @Test public void testQuery95() {
     checkQuery(95)
         .withHook(Hook.PROGRAM, handler(false, 6))

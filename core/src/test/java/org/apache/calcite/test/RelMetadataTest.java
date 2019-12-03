@@ -113,8 +113,9 @@ import com.google.common.collect.Sets;
 
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
+import org.hamcrest.core.Is;
+import org.junit.Assume;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
@@ -235,14 +236,14 @@ public class RelMetadataTest extends SqlToRelTestBase {
   }
 
   @Disabled
-  @Test void testPercentageOriginalRowsOneFilter() {
+  @Test public void testPercentageOriginalRowsOneFilter() {
     checkPercentageOriginalRows(
         "select * from dept where deptno = 20",
         DEFAULT_EQUAL_SELECTIVITY);
   }
 
   @Disabled
-  @Test void testPercentageOriginalRowsTwoFilters() {
+  @Test public void testPercentageOriginalRowsTwoFilters() {
     checkPercentageOriginalRows("select * from (\n"
         + "  select * from dept where name='X')\n"
         + "where deptno = 20",
@@ -250,7 +251,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
   }
 
   @Disabled
-  @Test void testPercentageOriginalRowsRedundantFilter() {
+  @Test public void testPercentageOriginalRowsRedundantFilter() {
     checkPercentageOriginalRows("select * from (\n"
         + "  select * from dept where deptno=20)\n"
         + "where deptno = 20",
@@ -264,7 +265,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
   }
 
   @Disabled
-  @Test void testPercentageOriginalRowsJoinTwoFilters() {
+  @Test public void testPercentageOriginalRowsJoinTwoFilters() {
     checkPercentageOriginalRows("select * from (\n"
         + "  select * from emp where deptno=10) e\n"
         + "inner join (select * from dept where deptno=10) d\n"
@@ -279,7 +280,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
   }
 
   @Disabled
-  @Test void testPercentageOriginalRowsUnionLittleFilter() {
+  @Test public void testPercentageOriginalRowsUnionLittleFilter() {
     checkPercentageOriginalRows(
         "select name from dept where deptno=20"
             + " union all select ename from emp",
@@ -288,7 +289,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
   }
 
   @Disabled
-  @Test void testPercentageOriginalRowsUnionBigFilter() {
+  @Test public void testPercentageOriginalRowsUnionBigFilter() {
     checkPercentageOriginalRows(
         "select name from dept"
             + " union all select ename from emp where deptno=20",
@@ -1977,7 +1978,11 @@ public class RelMetadataTest extends SqlToRelTestBase {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2205">[CALCITE-2205]</a>.
    * Since this is a performance problem, the test result does not
    * change, but takes over 15 minutes before the fix and 6 seconds after. */
-  @Test void testPullUpPredicatesForExprsItr() {
+  @Test public void testPullUpPredicatesForExprsItr() {
+    // If we're running Windows, we are probably in a VM and the test may
+    // exceed timeout by a small margin.
+    Assume.assumeThat("Too slow to run on Windows",
+        File.separatorChar, Is.is('/'));
     final String sql = "select a.EMPNO, a.ENAME\n"
         + "from (select * from sales.emp ) a\n"
         + "join (select * from sales.emp  ) b\n"

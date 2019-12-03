@@ -22,8 +22,6 @@ import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.util.TryThreadLocal;
 
 import org.junit.jupiter.api.Disabled;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import org.junit.jupiter.api.Disabled;
 
@@ -34,12 +32,7 @@ import java.util.Collection;
  * Test that runs every Quidem file in the "core" module as a test.
  */
 @Disabled("JUnit 4 parameterized test - disable JUnit 5 detection")
-@RunWith(Parameterized.class)
 public class CoreQuidemTest extends QuidemTest {
-  public CoreQuidemTest(String path) {
-    super(path);
-  }
-
   /** Runs a test from the command line.
    *
    * <p>For example:
@@ -75,7 +68,7 @@ public class CoreQuidemTest extends QuidemTest {
   }
 
   /** Override settings for "sql/scalar.iq". */
-  public void testSqlScalar() throws Exception {
+  public void testSqlScalar(String path) throws Exception {
     try (TryThreadLocal.Memo ignored = Prepare.THREAD_EXPAND.push(true)) {
       checkRun(path);
     }
@@ -85,7 +78,7 @@ public class CoreQuidemTest extends QuidemTest {
    * which you may use as scratch space during development. */
 
   // Do not disable this test; just remember not to commit changes to dummy.iq
-  public void testSqlDummy() throws Exception {
+  public void testSqlDummy(String path) throws Exception {
     try (TryThreadLocal.Memo ignored = Prepare.THREAD_EXPAND.push(true)) {
       checkRun(path);
     }

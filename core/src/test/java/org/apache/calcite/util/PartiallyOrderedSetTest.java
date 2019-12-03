@@ -20,8 +20,8 @@ import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.test.SlowTests;
 
 import org.junit.Assume;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Test;
 
 import java.util.AbstractList;
 import java.util.ArrayList;

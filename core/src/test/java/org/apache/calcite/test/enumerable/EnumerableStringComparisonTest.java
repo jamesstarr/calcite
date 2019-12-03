@@ -31,7 +31,7 @@ import org.apache.calcite.test.JdbcTest;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.util.Util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.text.Collator;
 import java.util.Collections;

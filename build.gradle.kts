@@ -778,9 +778,13 @@ allprojects {
                     targetExclude(*javaccGeneratedPatterns + "**/test/java/*.java")
                     licenseHeaderFile(licenseHeaderFile)
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
                     if (!project.props.bool("junit4", default = true)) {
+=======
+                    if (!project.props.bool("junit4", default = false)) {
+>>>>>>> 3ab086683 ([CALCITE-2457] Migrate core parameterized to JUnit5, and make core junit5-only)
                         replace("junit5: Test", "org.junit.Test", "org.junit.jupiter.api.Test")
                         replaceRegex("junit5: Before", "org.junit.Before\\b", "org.junit.jupiter.api.BeforeEach")
                         replace("junit5: BeforeClass", "org.junit.BeforeClass", "org.junit.jupiter.api.BeforeAll")
