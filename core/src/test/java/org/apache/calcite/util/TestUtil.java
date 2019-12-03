@@ -17,11 +17,7 @@
 package org.apache.calcite.util;
 
 import com.google.common.annotations.VisibleForTesting;
-<<<<<<< HEAD
-=======
-
-import org.junit.ComparisonFailure;
->>>>>>> 66076440e ([CALCITE-2428] Cassandra unit test fails to parse JDK version string (Andrei Sereda))
+import org.junit.jupiter.api.Assertions;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

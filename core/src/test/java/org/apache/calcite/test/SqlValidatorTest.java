@@ -54,7 +54,6 @@ import org.apache.calcite.util.ImmutableBitSet;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 
-import org.junit.Assume;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -84,6 +83,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Concrete child class of {@link SqlValidatorTestCase}, containing lots of unit
@@ -1480,8 +1480,8 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     wholeExpr("mod(123)")
         .fails("Invalid number of arguments to function 'MOD'. "
             + "Was expecting 2 arguments");
-    Assume.assumeTrue("test case for [CALCITE-3326], disabled til it is fixed",
-        false);
+    assumeTrue(false,
+        "test case for [CALCITE-3326], disabled til it is fixed");
     sql("select foo()")
         .withTypeCoercion(false)
         .fails("No match found for function signature FOO..");

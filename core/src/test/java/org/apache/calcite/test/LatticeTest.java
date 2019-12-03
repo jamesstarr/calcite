@@ -32,9 +32,8 @@ import org.apache.calcite.util.TestUtil;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 
-import org.junit.Assume;
-import org.junit.experimental.categories.Category;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -58,12 +57,12 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
->>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Unit test for lattices.
  */
-@Category(SlowTests.class)
+@Tag("slow")
 public class LatticeTest {
   private static final String SALES_LATTICE = "{\n"
       + "  name: 'star',\n"
@@ -492,8 +491,8 @@ public class LatticeTest {
   /** As {@link #testTileAlgorithm()}, but uses the
    * {@link Lattices#PROFILER} statistics provider. */
   @Test public void testTileAlgorithm3() {
-    Assume.assumeTrue("Yahoo sketches requires JDK 8 or higher",
-        TestUtil.getJavaMajorVersion() >= 8);
+    assumeTrue(TestUtil.getJavaMajorVersion() >= 8,
+        "Yahoo sketches requires JDK 8 or higher");
     final String explain = "EnumerableAggregate(group=[{4, 5}])\n"
         + "  EnumerableTableScan(table=[[adhoc, m{16, 17, 27, 31, 32, 36, 37}]";
     checkTileAlgorithm(Lattices.class.getCanonicalName() + "#PROFILER",

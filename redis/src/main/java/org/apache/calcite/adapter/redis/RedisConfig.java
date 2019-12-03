@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+<<<<<<<< HEAD:redis/src/main/java/org/apache/calcite/adapter/redis/RedisConfig.java
 package org.apache.calcite.adapter.redis;
 
 /**
@@ -48,3 +49,24 @@ public class RedisConfig {
     return password;
   }
 }
+========
+package org.apache.calcite.adapter.file;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Enables to activate test conditionally if the specified host is reachable.
+ * Note: it is recommended to avoid creating tests that depend on external servers.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface RequiresNetwork {
+  String host() default  "en.wikipedia.org";
+  int port() default 80;
+}
+
+// End RequiresNetwork.java
+>>>>>>>> a9d30ce58 ([CALCITE-2457] JUnit 4 -> 5: migrate Assume -> Assumptions, drop suites, remove junit4 from core classpath):file/src/test/java/org/apache/calcite/adapter/file/RequiresNetwork.java

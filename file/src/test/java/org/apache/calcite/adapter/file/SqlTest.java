@@ -22,9 +22,9 @@ import org.apache.calcite.util.Util;
 
 import com.google.common.collect.Ordering;
 
-import org.junit.Assume;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * HTML tables over HTTP.
  */
 @ExtendWith(RequiresNetworkExtension.class)
-class SqlTest {
+public class SqlTest {
   // helper functions
 
   private Fluent sql(String model, String sql) {
@@ -190,8 +190,7 @@ class SqlTest {
 
   /** Reads from a URL and checks the result. */
   @Disabled("[CALCITE-1789] Wikipedia format change breaks file adapter test")
-  @Test public void testUrlSelect() throws SQLException {
-    Assume.assumeTrue(FileSuite.hazNetwork());
+  @Test @RequiresNetwork public void testUrlSelect() throws SQLException {
     final String sql = "select \"State\", \"Statehood\" from \"States_as_of\"\n"
         + "where \"State\" = 'California'";
     sql("wiki", sql).returns("State=California; Statehood=1850-09-09").ok();

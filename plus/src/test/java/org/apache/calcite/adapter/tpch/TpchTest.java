@@ -24,7 +24,6 @@ import org.apache.calcite.util.TestUtil;
 
 import com.google.common.collect.ImmutableList;
 
-import org.junit.Assume;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
->>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /** Unit test for {@link org.apache.calcite.adapter.tpch.TpchSchema}.
  *
@@ -862,7 +861,7 @@ public class TpchTest {
 
   @Disabled("slow")
   @Test public void testQuery07() {
-    Assume.assumeTrue(Bug.CALCITE_2223_FIXED);
+    assumeTrue(Bug.CALCITE_2223_FIXED);
     checkQuery(7);
   }
 

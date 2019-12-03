@@ -75,9 +75,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * A <code>SqlParserTest</code> is a unit-test for
@@ -7473,7 +7473,7 @@ public class SqlParserTest {
    * the {@link #RESERVED_KEYWORDS} list. If not, add the keyword to the
    * non-reserved keyword list in the parser.
    */
-  @Test void testNoUnintendedNewReservedKeywords() {
+  @Test public void testNoUnintendedNewReservedKeywords() {
     assumeTrue(isNotSubclass(), "don't run this test for sub-classes");
     final SqlAbstractParserImpl.Metadata metadata =
         getSqlParser("").getMetadata();
