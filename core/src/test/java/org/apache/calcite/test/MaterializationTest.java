@@ -592,6 +592,24 @@ public class MaterializationTest {
     checkMaterialize(mv, query);
   }
 
+  @Test public void testAggregate7() {
+    try (TryThreadLocal.Memo ignored = Prepare.THREAD_TRIM.push(true)) {
+      MaterializationService.setThreadLocal();
+      CalciteAssert.that()
+          .withMaterializations(
+              HR_FKUK_MODEL,
+              "m0",
+              "select 11 as \"empno\", 22 as \"sal\", count(*) from \"emps\" group by 11, 22")
+          .query(
+              "select * from\n"
+                  + "(select 11 as \"empno\", 22 as \"sal\", count(*)\n"
+                  + "from \"emps\" group by 11, 22) tmp\n"
+                  + "where \"sal\" = 33")
+          .enableMaterializations(true)
+          .explainContains("EnumerableValues(tuples=[[]])");
+    }
+  }
+
   /** Aggregation query at same level of aggregation as aggregation
    * materialization with grouping sets. */
   @Test public void testAggregateGroupSets1() {
