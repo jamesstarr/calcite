@@ -26,7 +26,7 @@ import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.SetOp;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableScan;
->>>>>>> aa6a1fa65 ([CALCITE-3407] Implement MINUS and INTERSECT in interpreter (Wang Yanlin))
+import org.apache.calcite.rel.core.Uncollect;
 import org.apache.calcite.rel.core.Values;
 import org.apache.calcite.rel.core.Window;
 import org.apache.calcite.rex.RexNode;
@@ -95,6 +95,9 @@ public class Nodes {
     public void visit(Collect collect) {
       node = new CollectNode(this, collect);
     }
-=======
+
+    public void visit(Uncollect uncollect) {
+      node = new UncollectNode(this, uncollect);
+    }
   }
 }

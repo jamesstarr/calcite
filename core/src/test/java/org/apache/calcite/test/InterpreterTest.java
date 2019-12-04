@@ -675,4 +675,58 @@ class InterpreterTest {
         + "group by x";
     sql(sql).returnsRows("[a, -1.2, 15.0, 16.1, 5.366666666666667]");
   }
+
+  @Test public void testInterpretUnnest1() throws Exception {
+    sql("select * from unnest(array[1, 2])").returnsRows("[1]", "[2]");
+  }
+
+  @Test public void testInterpretUnnest2() throws Exception {
+    sql("select * from unnest(multiset[1, 2])").returnsRowsUnordered("[1]", "[2]");
+  }
+
+  @Test public void testInterpretUnnest3() throws Exception {
+    sql("select * from unnest(map['a', 12])").returnsRows("[a, 12]");
+  }
+
+  @Test public void testInterpretUnnest4() throws Exception {
+    sql("select * from unnest(\n"
+        + "select * from (values array[10, 20], array[30, 40]))\n"
+        + "with ordinality as t(i, o)")
+        .returnsRows("[10, 1]", "[20, 2]", "[30, 1]", "[40, 2]");
+  }
+
+  @Test public void testInterpretUnnest5() throws Exception {
+    sql("select * from unnest(map['a', 12, 'b', 13]) with ordinality as t(a, b, o)")
+        .returnsRows("[a, 12, 1]", "[b, 13, 2]");
+  }
+
+  @Test public void testInterpretUnnest6() throws Exception {
+    sql("select * from unnest(\n"
+        + "select * from (values multiset[10, 20], multiset[30, 40]))\n"
+        + "with ordinality as t(i, o)")
+        .returnsRows("[10, 1]", "[20, 2]", "[30, 1]", "[40, 2]");
+  }
+
+  @Test public void testInterpretUnnest7() throws Exception {
+    sql("select * from unnest(array[cast(null as integer), 10])")
+        .returnsRows("[null]", "[10]");
+  }
+
+  @Test public void testInterpretUnnest8() throws Exception {
+    sql("select * from unnest(map[cast(null as integer), 10, 10, cast(null as integer)])")
+        .returnsRowsUnordered("[null, 10]", "[10, null]");
+  }
+
+  @Test public void testInterpretUnnest9() throws Exception {
+    sql("select * from unnest(multiset[cast(null as integer), 10])")
+        .returnsRowsUnordered("[null]", "[10]");
+  }
+
+  @Test public void testInterpretUnnest10() throws Exception {
+    try {
+      sql("select * from unnest(cast(null as int array))").returnsRows("");
+    } catch (NullPointerException e) {
+      assertThat(e.getMessage(), equalTo("NULL value for unnest."));
+    }
+  }
 }
