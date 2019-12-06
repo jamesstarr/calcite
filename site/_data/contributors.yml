@@ -295,7 +295,11 @@
 =======
   org: TIBCO
   role: PMC
+<<<<<<< HEAD
 >>>>>>> a1e8602dc (Site: Add new committers and PMC (Chunwei Lei, Ruben Quesada Lopez, Zhiwei Peng and Stamatis Zampetakis))
+=======
+  homepage: https://people.apache.org/~zabetak/
+>>>>>>> 5358a4d6d (Site: Update homepage of Stamatis Zampetakis)
 - name: Steven Noels
   apacheId: stevenn
   githubId: stevenn
