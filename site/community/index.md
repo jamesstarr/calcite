@@ -28,6 +28,7 @@ limitations under the License.
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 There are no upcoming talks at the moment. Stay tuned!
 =======
 * September 8th-12th, 2019
@@ -51,6 +52,9 @@ At [ApacheCon Europe 2019](https://aceu19.apachecon.com/), Berlin, Germany, Octo
 [[summary](https://aceu19.apachecon.com/session/fast-federated-sql-apache-calcite)].
 
 >>>>>>> 1ef81f97e (Site: Update upcoming talks section for ApacheCon Europe 2019)
+=======
+There are no upcoming talks at the moment. Stay tuned!
+>>>>>>> a66b85e96 (Site: Move "Fast federated SQL with Apache Calcite" in talks section and add video link)
 
 # Project Members
 
@@ -128,6 +132,9 @@ Watch some presentations and read through some slide decks about
 Calcite, or attend one of the [upcoming talks](#upcoming-talks).
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a66b85e96 (Site: Move "Fast federated SQL with Apache Calcite" in talks section and add video link)
 ## Fast federated SQL with Apache Calcite
 
 At [ApacheCon Europe 2019](https://aceu19.apachecon.com/), Berlin, Germany, October 24, 2019;
@@ -135,8 +142,11 @@ At [ApacheCon Europe 2019](https://aceu19.apachecon.com/), Berlin, Germany, Octo
 [[video](https://youtu.be/4JAOkLKrcYE)].
 
 
+<<<<<<< HEAD
 =======
 >>>>>>> 0074fe110 (Site: Add upcoming talks at ApacheCon NA 2019)
+=======
+>>>>>>> a66b85e96 (Site: Move "Fast federated SQL with Apache Calcite" in talks section and add video link)
 ## One SQL to Rule Them All - an Efficient and Syntactically Idiomatic Approach to Management of Streams and Tables
 
 At [SIGMOD/PODS 2019](https://sigmod2019.org/sigmod_industry_list), Amsterdam, Netherlands, 2019
