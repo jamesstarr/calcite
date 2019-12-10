@@ -213,6 +213,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
         RelNode restructured = relBuilder.push(flattened)
             .project(structuringExps, resultFieldNames, true)
             .build();
+        restructured = RelOptUtil.copyRelHints(flattened, restructured);
         // REVIEW jvs 23-Mar-2005:  How do we make sure that this
         // implementation stays in Java?  Fennel can't handle
         // structured types.
@@ -750,22 +751,28 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
   public void rewriteRel(TableScan rel) {
     RelNode newRel = rel.getTable().toRel(toRelContext);
     if (!SqlTypeUtil.isFlat(rel.getRowType())) {
-      final List<Pair<RexNode, String>> flattenedExpList = new ArrayList<>();
-      RexNode newRowRef = rexBuilder.makeRangeReference(newRel);
-      List<RelDataTypeField> inputRowFields = rel.getRowType().getFieldList();
-      flattenInputs(inputRowFields, newRowRef, flattenedExpList);
-      // cover new scan with flattening projection
-      List<RexNode> projects = Pair.left(flattenedExpList);
-      List<String> fieldNames = Pair.right(flattenedExpList);
-      newRel = relBuilder.push(newRel)
-          .projectNamed(projects, fieldNames, true)
-          .build();
+      newRel = coverNewRelByFlatteningProjection(rel, newRel);
+    } else {
+      newRel = RelOptUtil.copyRelHints(rel, newRel);
     }
-    newRel = RelOptUtil.copyRelHints(rel, newRel);
     setNewForOldRel(rel, newRel);
   }
 
->>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
+  private RelNode coverNewRelByFlatteningProjection(RelNode rel, RelNode newRel) {
+    final List<Pair<RexNode, String>> flattenedExpList = new ArrayList<>();
+    RexNode newRowRef = rexBuilder.makeRangeReference(newRel);
+    List<RelDataTypeField> inputRowFields = rel.getRowType().getFieldList();
+    flattenInputs(inputRowFields, newRowRef, flattenedExpList);
+    // cover new scan with flattening projection
+    List<RexNode> projects = Pair.left(flattenedExpList);
+    List<String> fieldNames = Pair.right(flattenedExpList);
+    newRel = relBuilder.push(newRel)
+        .projectNamed(projects, fieldNames, true)
+        .build();
+    newRel = RelOptUtil.copyRelHints(rel, newRel);
+    return newRel;
+  }
+
   public void rewriteRel(LogicalSnapshot rel) {
     RelNode newRel =
         rel.copy(rel.getTraitSet(),
