@@ -222,6 +222,9 @@ public class RelDecorrelator implements ReflectiveVisitor {
       newRootRel = decorrelator.decorrelate(newRootRel);
     }
 
+    // Re-propagate the hints.
+    newRootRel = RelOptUtil.propagateRelHints(newRootRel, true);
+
     return newRootRel;
   }
 
@@ -549,6 +552,8 @@ public class RelDecorrelator implements ReflectiveVisitor {
         .projectNamed(Pair.left(projects), Pair.right(projects), true)
         .build();
 
+    newProject = RelOptUtil.copyRelHints(newInput, newProject);
+
     // update mappings:
     // oldInput ----> newInput
     //
@@ -642,10 +647,11 @@ public class RelDecorrelator implements ReflectiveVisitor {
 
   /**
    * Shift the mapping to fixed offset from the {@code startIndex}.
-   * @param mapping    the original mapping
-   * @param startIndex any output whose index equals with or bigger than the starting index
+   *
+   * @param mapping    The original mapping
+   * @param startIndex Any output whose index equals with or bigger than the starting index
    *                   would be shift
-   * @param offset     shift offset
+   * @param offset     Shift offset
    */
   private static void shiftMapping(Map<Integer, Integer> mapping, int startIndex, int offset) {
     for (Map.Entry<Integer, Integer> entry : mapping.entrySet()) {
@@ -744,6 +750,8 @@ public class RelDecorrelator implements ReflectiveVisitor {
     RelNode newProject = relBuilder.push(frame.r)
         .projectNamed(Pair.left(projects), Pair.right(projects), true)
         .build();
+
+    newProject = RelOptUtil.copyRelHints(rel, newProject);
 
     return register(rel, newProject, mapOldToNewOutputs, corDefOutputs);
   }
@@ -1237,7 +1245,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
       return null;
     }
 
-    final RelNode newJoin = relBuilder
+    RelNode newJoin = relBuilder
         .push(leftFrame.r)
         .push(rightFrame.r)
         .join(rel.getJoinType(),
@@ -1245,6 +1253,8 @@ public class RelDecorrelator implements ReflectiveVisitor {
             ImmutableSet.of())
         .hints(rel.getHints())
         .build();
+
+    newJoin = RelOptUtil.copyRelHints(rel, newJoin);
 
     // Create the mapping between the output of the old correlation rel
     // and the new join rel
