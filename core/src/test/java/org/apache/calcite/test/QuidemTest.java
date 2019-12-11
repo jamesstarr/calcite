@@ -285,6 +285,10 @@ public abstract class QuidemTest {
             .with(CalciteConnectionProperty.FUN, "oracle")
             .with(CalciteAssert.Config.REGULAR)
             .connect();
+      case "mysqlfunc":
+        return CalciteAssert.that()
+            .with(CalciteConnectionProperty.FUN, "mysql")
+            .connect();
       case "catchall":
         return CalciteAssert.that()
             .withSchema("s",
