@@ -247,7 +247,7 @@ public class SqlToRelConverter {
   protected final Prepare.CatalogReader catalogReader;
   protected final RelOptCluster cluster;
   private SubQueryConverter subQueryConverter;
-  protected final List<RelNode> leaves = new ArrayList<>();
+  protected final Map<RelNode, Integer> leaves = new HashMap<>();
   private final List<SqlDynamicParam> dynamicParamSqlNodes = new ArrayList<>();
   protected final RelDataTypeFactory typeFactory;
   private final SqlNodeToRexConverter exprConverter;
@@ -5092,7 +5092,7 @@ public class SqlToRelConverter {
       setRoot(
           Collections.singletonList(root), root, root instanceof LogicalJoin);
       if (leaf) {
-        leaves.add(root);
+        leaves.put(root, root.getRowType().getFieldCount());
       }
       this.columnMonotonicities.clear();
     }
@@ -5258,7 +5258,11 @@ public class SqlToRelConverter {
         int[] start,
         List<Pair<RelNode, Integer>> relOffsetList) {
       for (RelNode rel : rels) {
-        if (leaves.contains(rel) || rel instanceof LogicalMatch) {
+        if (leaves.containsKey(rel)) {
+          relOffsetList.add(
+              Pair.of(rel, start[0]));
+          start[0] += leaves.get(rel);
+        } else if (rel instanceof LogicalMatch) {
           relOffsetList.add(
               Pair.of(rel, start[0]));
           start[0] += rel.getRowType().getFieldCount();

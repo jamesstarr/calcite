@@ -9543,5 +9543,27 @@ LogicalProject(ANYEMPNO=[$1])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 >>>>>>> 40961f7ad ([CALCITE-2366] Add support for ANY_VALUE aggregate function (Gautam Parai))
+=======
+    <TestCase name="testPushDownJoinConditionWithProjectMerge">
+        <Resource name="sql">
+            <![CDATA[select * from
+ (select empno, deptno from emp) a
+ join dept b
+on a.deptno + 20 = b.deptno]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EMPNO=[$0], DEPTNO=[$1], DEPTNO0=[$2], NAME=[$3])
+  LogicalProject(EMPNO=[$0], DEPTNO=[$1], DEPTNO0=[$3], NAME=[$4])
+    LogicalJoin(condition=[=($2, $3)], joinType=[inner])
+      LogicalProject(EMPNO=[$0], DEPTNO=[$1], $f2=[+($1, 20)])
+        LogicalProject(EMPNO=[$0], DEPTNO=[$7])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+>>>>>>> da82907fb ([CALCITE-3575] IndexOutOfBoundsException when converting sql to rel)
 </Root>

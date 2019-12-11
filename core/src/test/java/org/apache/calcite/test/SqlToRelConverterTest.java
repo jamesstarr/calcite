@@ -4059,6 +4059,14 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
+  @Test public void testPushDownJoinConditionWithProjectMerge() {
+    final String sql = "select * from\n"
+        + " (select empno, deptno from emp) a\n"
+        + " join dept b\n"
+        + "on a.deptno + 20 = b.deptno";
+    sql(sql).ok();
+  }
+
   /**
    * Visitor that checks that every {@link RelNode} in a tree is valid.
    *
