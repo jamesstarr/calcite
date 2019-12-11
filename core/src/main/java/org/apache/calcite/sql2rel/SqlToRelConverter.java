@@ -246,7 +246,7 @@ public class SqlToRelConverter {
   protected final Prepare.CatalogReader catalogReader;
   protected final RelOptCluster cluster;
   private SubQueryConverter subQueryConverter;
-  protected final List<RelNode> leaves = new ArrayList<>();
+  protected final Map<RelNode, Integer> leaves = new HashMap<>();
   private final List<SqlDynamicParam> dynamicParamSqlNodes = new ArrayList<>();
   protected final RelDataTypeFactory typeFactory;
   private final SqlNodeToRexConverter exprConverter;
@@ -1707,7 +1707,7 @@ public class SqlToRelConverter {
       }
       resultRel = LogicalUnion.create(unionInputs, true);
     }
-    leaves.add(resultRel);
+    leaves.put(resultRel, resultRel.getRowType().getFieldCount());
     return resultRel;
   }
 
@@ -2663,7 +2663,18 @@ public class SqlToRelConverter {
         (Join) RelFactories.DEFAULT_JOIN_FACTORY.createJoin(leftRel, rightRel,
             ImmutableList.of(), joinCond, correlationIdSet, joinType, false);
 
-    return RelOptUtil.pushDownJoinConditions(originalJoin, relBuilder);
+    RelNode node = RelOptUtil.pushDownJoinConditions(originalJoin, relBuilder);
+    // If join conditions are pushed down, update the leaves.
+    if (node instanceof Project) {
+      final Join newJoin = (Join) node.getInputs().get(0);
+      if (leaves.containsKey(leftRel)) {
+        leaves.put(newJoin.getLeft(), leaves.get(leftRel));
+      }
+      if (leaves.containsKey(rightRel)) {
+        leaves.put(newJoin.getRight(), leaves.get(rightRel));
+      }
+    }
+    return node;
   }
 
   private CorrelationUse getCorrelationUse(Blackboard bb, final RelNode r0) {
@@ -2777,7 +2788,7 @@ public class SqlToRelConverter {
       r = DeduplicateCorrelateVariables.go(rexBuilder, correlNames.get(0),
           Util.skip(correlNames), r0);
       // Add new node to leaves.
-      leaves.add(r);
+      leaves.put(r, r.getRowType().getFieldCount());
     }
 
     ImmutableBitSet bitSet = requiredColumns.build();
@@ -4839,7 +4850,7 @@ public class SqlToRelConverter {
       setRoot(
           Collections.singletonList(root), root, root instanceof LogicalJoin);
       if (leaf) {
-        leaves.add(root);
+        leaves.put(root, root.getRowType().getFieldCount());
       }
       this.columnMonotonicities.clear();
     }
@@ -5005,7 +5016,11 @@ public class SqlToRelConverter {
         int[] start,
         List<Pair<RelNode, Integer>> relOffsetList) {
       for (RelNode rel : rels) {
-        if (leaves.contains(rel) || rel instanceof LogicalMatch) {
+        if (leaves.containsKey(rel)) {
+          relOffsetList.add(
+              Pair.of(rel, start[0]));
+          start[0] += leaves.get(rel);
+        } else if (rel instanceof LogicalMatch) {
           relOffsetList.add(
               Pair.of(rel, start[0]));
           start[0] += rel.getRowType().getFieldCount();
