@@ -1951,10 +1951,7 @@ public class MaterializationTest {
                 + "      EnumerableTableScan(table=[[hr, dependents]])"));
   }
 
-  @Ignore
   @Test public void testJoinMaterialization8() {
-    // TODO: fails with java.lang.ClassCastException:
-    //  java.lang.String$CaseInsensitiveComparator cannot be cast to java.lang.String
     checkMaterialize(
         "select \"depts\".\"name\"\n"
             + "from \"emps\"\n"
@@ -1971,10 +1968,7 @@ public class MaterializationTest {
                 + "    EnumerableTableScan(table=[[hr, m0]])"));
   }
 
-  @Ignore
   @Test public void testJoinMaterialization9() {
-    // TODO: fails with java.lang.ClassCastException:
-    //  java.lang.String$CaseInsensitiveComparator cannot be cast to java.lang.String
     checkMaterialize(
         "select \"depts\".\"name\"\n"
             + "from \"emps\"\n"
