@@ -44,15 +44,6 @@ import java.util.Locale;
  * Unit test for SQL limits.
  */
 public class SqlLimitsTest {
-  //~ Static fields/initializers ---------------------------------------------
-
-  //~ Constructors -----------------------------------------------------------
-
-  public SqlLimitsTest() {
-  }
-
-  //~ Methods ----------------------------------------------------------------
-
   protected DiffRepository getDiffRepos() {
     return DiffRepository.lookup(SqlLimitsTest.class);
   }

@@ -59,8 +59,6 @@ import static org.junit.Assert.fail;
  * validator to use.</p>
  */
 public class SqlValidatorTestCase {
-  //~ Static fields/initializers ---------------------------------------------
-
   private static final Pattern LINE_COL_PATTERN =
       Pattern.compile("At line ([0-9]+), column ([0-9]+)");
 
@@ -84,11 +82,7 @@ public class SqlValidatorTestCase {
 
   public static final MethodRule TESTER_CONFIGURATION_RULE = new TesterConfigurationRule();
 
-  //~ Instance fields --------------------------------------------------------
-
   protected SqlTester tester;
-
-  //~ Constructors -----------------------------------------------------------
 
   /**
    * Creates a test case.
@@ -490,8 +484,6 @@ public class SqlValidatorTestCase {
           + "];\nsql [" + sqlWithCarets + "]");
     }
   }
-
-  //~ Inner Interfaces -------------------------------------------------------
 
   /**
    * Encapsulates differences between test environments, for example, which

@@ -83,13 +83,6 @@ import static org.junit.Assert.fail;
  * {@link org.apache.calcite.rex.RexProgramBuilder}.
  */
 public class RexProgramTest extends RexProgramBuilderBase {
-  /**
-   * Creates a RexProgramTest.
-   */
-  public RexProgramTest() {
-    super();
-  }
-
   @Before public void setUp() {
     super.setUp();
   }

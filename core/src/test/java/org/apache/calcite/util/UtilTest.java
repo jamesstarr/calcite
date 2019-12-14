@@ -112,13 +112,6 @@ import static org.junit.Assert.fail;
  * Unit test for {@link Util} and other classes in this package.
  */
 public class UtilTest {
-  //~ Constructors -----------------------------------------------------------
-
-  public UtilTest() {
-  }
-
-  //~ Methods ----------------------------------------------------------------
-
   @BeforeClass public static void setUSLocale() {
     // This ensures numbers in exceptions are printed as in asserts.
     // For example, 1,000 vs 1 000

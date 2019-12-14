@@ -30,13 +30,6 @@ import static org.junit.Assert.fail;
  * them.
  */
 public class ReflectVisitorTest {
-  //~ Constructors -----------------------------------------------------------
-
-  public ReflectVisitorTest() {
-  }
-
-  //~ Methods ----------------------------------------------------------------
-
   /**
    * Tests CarelessNumberNegater.
    */
