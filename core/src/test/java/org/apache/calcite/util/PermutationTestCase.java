@@ -38,8 +38,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Unit test for {@link Permutation}.
  */
-class PermutationTestCase {
-  @Test void testOne() {
+public class PermutationTestCase {
+  @Test public void testOne() {
     final Permutation perm = new Permutation(4);
     assertEquals(
         "[0, 1, 2, 3]",

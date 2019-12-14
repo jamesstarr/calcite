@@ -30,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * {@link org.apache.calcite.runtime.CalciteResource} (mostly a sanity check for
  * the resource-generation infrastructure).
  */
-class CalciteResourceTest {
+public class CalciteResourceTest {
   /**
    * Verifies that resource properties such as SQLSTATE are available at
    * runtime.

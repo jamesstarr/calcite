@@ -83,7 +83,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Unit test for {@link org.apache.calcite.sql2rel.SqlToRelConverter}.
  */
-class SqlToRelConverterTest extends SqlToRelTestBase {
+public class SqlToRelConverterTest extends SqlToRelTestBase {
   protected DiffRepository getDiffRepos() {
     return DiffRepository.lookup(SqlToRelConverterTest.class);
   }

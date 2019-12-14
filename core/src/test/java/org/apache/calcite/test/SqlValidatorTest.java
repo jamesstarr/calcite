@@ -144,14 +144,6 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
   private static final String ROW_RANGE_NOT_ALLOWED_WITH_RANK =
       "ROW/RANGE not allowed with RANK, DENSE_RANK or ROW_NUMBER functions";
 
-  //~ Constructors -----------------------------------------------------------
-
-  public SqlValidatorTest() {
-    super();
-  }
-
-  //~ Methods ----------------------------------------------------------------
-
   @BeforeClass public static void setUSLocale() {
     // This ensures numbers in exceptions are printed as in asserts.
     // For example, 1,000 vs 1 000

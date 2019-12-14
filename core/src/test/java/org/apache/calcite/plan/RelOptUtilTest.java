@@ -88,6 +88,7 @@ class RelOptUtilTest {
 
   private List<RelDataTypeField> empDeptJoinRelFields;
 
+<<<<<<< HEAD
   //~ Constructors -----------------------------------------------------------
 
   @BeforeEach public void setUp() {
@@ -105,6 +106,8 @@ class RelOptUtilTest {
 
   //~ Methods ----------------------------------------------------------------
 
+=======
+>>>>>>> 96c501189 (Remove trivial default constructors from test code)
   @Before public void setUp() {
     relBuilder = RelBuilder.create(config().build());
 

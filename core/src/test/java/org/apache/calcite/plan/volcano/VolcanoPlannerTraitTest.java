@@ -57,7 +57,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Unit test for handling of traits by {@link VolcanoPlanner}.
  */
-class VolcanoPlannerTraitTest {
+public class VolcanoPlannerTraitTest {
   /**
    * Private calling convention representing a generic "physical" calling
    * convention.
@@ -96,8 +96,8 @@ class VolcanoPlannerTraitTest {
    */
   private static int altTraitOrdinal = 0;
 
-  @Disabled
-  @Test void testDoubleConversion() {
+  @Ignore
+  @Test public void testDoubleConversion() {
     VolcanoPlanner planner = new VolcanoPlanner();
 
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);

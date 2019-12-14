@@ -105,12 +105,6 @@ public abstract class SqlToRelTestBase {
   // Same as tester but without implicit type coercion.
   protected final Tester strictTester = tester.enableTypeCoercion(false);
 
-  //~ Methods ----------------------------------------------------------------
-
-  public SqlToRelTestBase() {
-    super();
-  }
-
   protected Tester createTester() {
     return new TesterImpl(getDiffRepos(), false, false, true, false,
         true, null, null, MockRelOptPlanner::new, SqlToRelConverter.Config.DEFAULT,

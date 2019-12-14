@@ -131,6 +131,7 @@ public class RexProgramTest {
 
 =======
 public class RexProgramTest extends RexProgramBuilderBase {
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 >>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   /**
    * Creates a RexProgramTest.
@@ -139,6 +140,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
     super();
   }
 
+=======
+>>>>>>> 96c501189 (Remove trivial default constructors from test code):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   @Before public void setUp() {
     super.setUp();
   }

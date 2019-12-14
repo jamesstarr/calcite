@@ -111,8 +111,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Unit test for {@link Util} and other classes in this package.
  */
-class UtilTest {
-  @BeforeAll public static void setUSLocale() {
+public class UtilTest {
+  @BeforeClass public static void setUSLocale() {
     // This ensures numbers in exceptions are printed as in asserts.
     // For example, 1,000 vs 1 000
     Locale.setDefault(Locale.US);

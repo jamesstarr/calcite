@@ -50,7 +50,7 @@ class SqlOperatorBindingTest {
   private RelDataType integerDataType;
   private SqlDataTypeSpec integerType;
 
-  @BeforeEach
+  @Before
   public void setUp() {
     JavaTypeFactory typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     integerDataType = typeFactory.createSqlType(SqlTypeName.INTEGER);
