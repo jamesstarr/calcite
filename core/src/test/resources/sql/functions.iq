@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+
 !set outputformat mysql
 
 
@@ -48,9 +49,51 @@ select cosh(1);
 +-------------------+
 | 1.543080634815244 |
 +-------------------+
+
+!use mysqlfunc
+!set outputformat mysql
+
+# XML Functions
+
+SELECT ExtractValue('<a>c</a>', '//a');
++--------+
+| EXPR$0 |
++--------+
+| c      |
++--------+
 (1 row)
 
 !ok
+
+!use oraclefunc
+
+SELECT XMLTRANSFORM(
+                   '<?xml version="1.0"?>
+                    <Article>
+                      <Title>My Article</Title>
+                      <Authors>
+                        <Author>Mr. Foo</Author>
+                        <Author>Mr. Bar</Author>
+                      </Authors>
+                      <Body>This is my article text.</Body>
+                    </Article>'
+                   ,
+                   '<?xml version="1.0"?><xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+                      <xsl:output method="text"/><xsl:template match="/">Article - <xsl:value-of select="/Article/Title"/>Authors: <xsl:apply-templates select="/Article/Authors/Author"/>
+                      </xsl:template>
+                      <xsl:template match="Author">- <xsl:value-of select="." /></xsl:template>
+                    </xsl:stylesheet>'
+                   );
++-------------------------------------------------+
+| EXPR$0                                          |
++-------------------------------------------------+
+| Article - My ArticleAuthors: - Mr. Foo- Mr. Bar |
++-------------------------------------------------+
+
+(1 row)
+
+!ok
+
 
 # TANH
 select tanh(1);
@@ -62,5 +105,6 @@ select tanh(1);
 (1 row)
 
 !ok
+
 
 # End functions.iq
