@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 *~
+<<<<<<< HEAD
 .gradle
 /target
 .DS_Store
@@ -34,6 +35,11 @@
 # Icon for JetBrains Toolbox
 !/.idea/icon.png
 !/.idea/vcs.xml
+=======
+target
+.DS_Store
+.idea
+>>>>>>> 9b10f38e2 (Add .DS_Store into .gitignore)
 *.iml
 
 settings.xml
