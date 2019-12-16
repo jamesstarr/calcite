@@ -17,6 +17,9 @@
 #
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6c8821c46 ([CALCITE-3579] Oracle XMLTRANSFORM Function Support (ritesh-kapoor))
 
 !set outputformat mysql
 
@@ -91,10 +94,23 @@ select cosh(1);
 +-------------------+
 | 1.543080634815244 |
 +-------------------+
+
+!use mysqlfunc
+!set outputformat mysql
+
+# XML Functions
+
+SELECT ExtractValue('<a>c</a>', '//a');
++--------+
+| EXPR$0 |
++--------+
+| c      |
++--------+
 (1 row)
 
 !ok
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 # COSH
@@ -170,6 +186,10 @@ select concat('a', 'b');
 
 !ok
 
+=======
+!use oraclefunc
+
+>>>>>>> 6c8821c46 ([CALCITE-3579] Oracle XMLTRANSFORM Function Support (ritesh-kapoor))
 SELECT XMLTRANSFORM(
                    '<?xml version="1.0"?>
                     <Article>
@@ -198,8 +218,11 @@ SELECT XMLTRANSFORM(
 !ok
 
 
+<<<<<<< HEAD
 =======
 >>>>>>> 82a3d04d6 ([CALCITE-3695] Implement TANH function (#96))
+=======
+>>>>>>> 6c8821c46 ([CALCITE-3579] Oracle XMLTRANSFORM Function Support (ritesh-kapoor))
 # TANH
 select tanh(1);
 +--------------------+
@@ -211,6 +234,7 @@ select tanh(1);
 
 !ok
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 SELECT "EXTRACT"(
@@ -266,4 +290,7 @@ select replace('ciAao', 'A', 'ciao');
 >>>>>>> 4176d20cc ([CALCITE-4875] Preserve Operand Nullability in NVL rewrite)
 =======
 >>>>>>> 82a3d04d6 ([CALCITE-3695] Implement TANH function (#96))
+=======
+
+>>>>>>> 6c8821c46 ([CALCITE-3579] Oracle XMLTRANSFORM Function Support (ritesh-kapoor))
 # End functions.iq
