@@ -3661,6 +3661,9 @@ EnumerableAggregate(group=[{}], C=[COUNT()])
           EnumerableTableScan(table=[[scott, DEPT]])
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 02619ecaf ([CALCITE-3576] Remove enumerable convention check in FilterIntoJoinRule)
       EnumerableCalc(expr#0..4=[{inputs}], DEPTNO=[$t2], i=[$t3], DNAME=[$t4], SAL=[$t0])
         EnumerableHashJoin(condition=[=($1, $2)], joinType=[inner])
           EnumerableCalc(expr#0=[{inputs}], expr#1=[100], expr#2=[+($t0, $t1)], SAL=[$t0], $f1=[$t2])
@@ -3668,6 +3671,7 @@ EnumerableAggregate(group=[{}], C=[COUNT()])
               EnumerableTableScan(table=[[scott, EMP]])
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[IS NOT NULL($t1)], DEPTNO=[$t0], i=[$t3], DNAME=[$t1], $condition=[$t4])
             EnumerableTableScan(table=[[scott, DEPT]])
+<<<<<<< HEAD
 =======
       EnumerableNestedLoopJoin(condition=[=(+($3, 100), $0)], joinType=[inner])
         EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[IS NOT NULL($t1)], DEPTNO=[$t0], i=[$t3], DNAME=[$t1], $condition=[$t4])
@@ -3675,6 +3679,8 @@ EnumerableAggregate(group=[{}], C=[COUNT()])
         EnumerableAggregate(group=[{5}])
           EnumerableTableScan(table=[[scott, EMP]])
 >>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
+=======
+>>>>>>> 02619ecaf ([CALCITE-3576] Remove enumerable convention check in FilterIntoJoinRule)
 !plan
 
 # Correlated ANY sub-query
