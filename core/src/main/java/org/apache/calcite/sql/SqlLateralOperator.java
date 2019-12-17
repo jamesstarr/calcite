@@ -40,16 +40,19 @@ public class SqlLateralOperator extends SqlSpecialOperator {
       int rightPrec) {
     final Set<SqlKind> specialOperandKinds = ImmutableSet.of(
         SqlKind.COLLECTION_TABLE,
+<<<<<<< HEAD
+=======
+        SqlKind.SNAPSHOT,
+>>>>>>> a9e685ea3 ([CALCITE-3603] SqlLateralOperator's unparse add additional keyword 'LATERAL' when the inner operator is SqlSnapshot)
         SqlKind.SELECT,
         SqlKind.AS);
     if (call.operandCount() == 1
-        && (call.getOperandList().get(0).getKind() == SqlKind.COLLECTION_TABLE
-            || call.getOperandList().get(0).getKind() == SqlKind.SNAPSHOT
-            || call.getOperandList().get(0).getKind() == SqlKind.SELECT
-            || call.getOperandList().get(0).getKind() == SqlKind.AS)) {
-
-      // do not create ( ) around the following TABLE clause
-      writer.keyword(getName());
+        && specialOperandKinds.contains(call.operand(0).getKind())) {
+      if (call.operand(0).getKind() != SqlKind.SNAPSHOT) {
+        // 1. Do not create ( ) around the following TABLE clause.
+        // 2. Do not print LATERAL keyword for snapshot table.
+        writer.keyword(getName());
+      }
       call.operand(0).unparse(writer, 0, 0);
     } else {
       SqlUtil.unparseFunctionSyntax(this, writer, call);

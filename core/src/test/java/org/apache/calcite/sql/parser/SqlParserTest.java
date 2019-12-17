@@ -3755,7 +3755,7 @@ public class SqlParserTest {
         .ok(expected2 + " AS `T` (`X`)");
   }
 
-  @Test void testTemporalTable() {
+  @Test public void testTemporalTable() {
     final String sql0 = "select stream * from orders, products\n"
         + "for system_time as of TIMESTAMP '2011-01-02 00:00:00'";
     final String expected0 = "SELECT STREAM *\n"
@@ -3766,8 +3766,8 @@ public class SqlParserTest {
     // Can not use explicit LATERAL keyword.
     final String sql1 = "select stream * from orders, LATERAL ^products_temporal^\n"
         + "for system_time as of TIMESTAMP '2011-01-02 00:00:00'";
-    final String error = "(?s)Encountered \"products_temporal\" at line .*";
-    sql(sql1).fails(error);
+    final String expected1 = "(?s)Encountered \"products_temporal\" at line .*";
+    sql(sql1).fails(expected1);
 
     // Inner join with a specific timestamp
     final String sql2 = "select stream * from orders join products_temporal\n"
@@ -3780,7 +3780,7 @@ public class SqlParserTest {
         + "ON (`ORDERS`.`PRODUCTID` = `PRODUCTS_TEMPORAL`.`PRODUCTID`)";
     sql(sql2).ok(expected2);
 
-    // Left join with a timestamp field
+    // Left join with a timestamp expression
     final String sql3 = "select stream * from orders left join products_temporal\n"
         + "for system_time as of orders.rowtime "
         + "on orders.productid = products_temporal.productid";
@@ -3790,20 +3790,9 @@ public class SqlParserTest {
         + "FOR SYSTEM_TIME AS OF `ORDERS`.`ROWTIME` "
         + "ON (`ORDERS`.`PRODUCTID` = `PRODUCTS_TEMPORAL`.`PRODUCTID`)";
     sql(sql3).ok(expected3);
-
-    // Left join with a timestamp expression
-    final String sql4 = "select stream * from orders left join products_temporal\n"
-        + "for system_time as of orders.rowtime - INTERVAL '3' DAY "
-        + "on orders.productid = products_temporal.productid";
-    final String expected4 = "SELECT STREAM *\n"
-        + "FROM `ORDERS`\n"
-        + "LEFT JOIN `PRODUCTS_TEMPORAL` "
-        + "FOR SYSTEM_TIME AS OF (`ORDERS`.`ROWTIME` - INTERVAL '3' DAY) "
-        + "ON (`ORDERS`.`PRODUCTID` = `PRODUCTS_TEMPORAL`.`PRODUCTID`)";
-    sql(sql4).ok(expected4);
   }
 
-  @Test void testCollectionTableWithLateral() {
+  @Test public void testCollectionTableWithLateral() {
     final String sql = "select * from dept, lateral table(ramp(dept.deptno))";
     final String expected = "SELECT *\n"
         + "FROM `DEPT`,\n"
