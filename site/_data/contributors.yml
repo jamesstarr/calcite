@@ -102,10 +102,14 @@
   githubId: F21
   org: Boostport
 <<<<<<< HEAD
+<<<<<<< HEAD
   role: PMC
 =======
   role: PMC Chair
 >>>>>>> 79c4f0e43 (Site: Update PMC chair)
+=======
+  role: PMC
+>>>>>>> 720a25162 (Site: Switch PMC Chair to Stamatis Zampetakis)
 - name: Gian Merlino
   apacheId: gian
   githubId: gianm
@@ -294,10 +298,14 @@
 >>>>>>> 5d2e4f09c (Site: Add new committers (Haisheng Yuan, Hongze Zhang and Stamatis Zampetakis))
 =======
   org: TIBCO
+<<<<<<< HEAD
   role: PMC
 <<<<<<< HEAD
 >>>>>>> a1e8602dc (Site: Add new committers and PMC (Chunwei Lei, Ruben Quesada Lopez, Zhiwei Peng and Stamatis Zampetakis))
 =======
+=======
+  role: PMC Chair
+>>>>>>> 720a25162 (Site: Switch PMC Chair to Stamatis Zampetakis)
   homepage: https://people.apache.org/~zabetak/
 >>>>>>> 5358a4d6d (Site: Update homepage of Stamatis Zampetakis)
 - name: Steven Noels
