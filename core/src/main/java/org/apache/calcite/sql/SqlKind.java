@@ -980,6 +980,9 @@ public enum SqlKind {
   /** The {@code BIT_OR} aggregate function. */
   BIT_OR,
 
+  /** The {@code BIT_XOR} aggregate function. */
+  BIT_XOR,
+
   /** The {@code ROW_NUMBER} window function. */
   ROW_NUMBER,
 
@@ -1159,8 +1162,8 @@ public enum SqlKind {
           LAST_VALUE, COVAR_POP, COVAR_SAMP, REGR_SXX, REGR_SYY,
           AVG, STDDEV_POP, STDDEV_SAMP, VAR_POP, VAR_SAMP, NTILE, COLLECT,
           FUSION, SINGLE_VALUE, ROW_NUMBER, RANK, PERCENT_RANK, DENSE_RANK,
-          CUME_DIST, PERCENTILE_CONT, PERCENTILE_DISC, LISTAGG,
-          CUME_DIST, JSON_ARRAYAGG, JSON_OBJECTAGG, BIT_AND, BIT_OR);
+          CUME_DIST, JSON_ARRAYAGG, JSON_OBJECTAGG, BIT_AND, BIT_OR, BIT_XOR, LISTAGG,
+          PERCENTILE_CONT, PERCENTILE_DISC);
 
   /**
    * Category consisting of all DML operators.
