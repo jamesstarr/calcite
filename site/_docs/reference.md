@@ -2247,12 +2247,15 @@ and `LISTAGG`).
 | BIT_AND( [ ALL &#124; DISTINCT ] value)       | Returns the bitwise AND of all non-null input values, or null if none
 | BIT_OR( [ ALL &#124; DISTINCT ] value)        | Returns the bitwise OR of all non-null input values, or null if none
 | BIT_XOR( [ ALL &#124; DISTINCT ] value)       | Returns the bitwise XOR of all non-null input values, or null if none
+<<<<<<< HEAD
 =======
 >>>>>>> 40961f7ad ([CALCITE-2366] Add support for ANY_VALUE aggregate function (Gautam Parai))
 =======
 | BIT_AND( [ ALL &#124; DISTINCT ] value)       | Returns the bitwise AND of all non-null input values, or null if none
 | BIT_OR( [ ALL &#124; DISTINCT ] value)        | Returns the bitwise OR of all non-null input values, or null if none
 >>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
+=======
+>>>>>>> 3d63e022b ([CALCITE-3591] Add bit_xor aggregate operator (wangxlong))
 | STDDEV_POP( [ ALL &#124; DISTINCT ] numeric)  | Returns the population standard deviation of *numeric* across all input values
 | STDDEV_SAMP( [ ALL &#124; DISTINCT ] numeric) | Returns the sample standard deviation of *numeric* across all input values
 | STDDEV( [ ALL &#124; DISTINCT ] numeric)      | Synonym for `STDDEV_SAMP`

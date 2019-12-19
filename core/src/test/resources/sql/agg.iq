@@ -2590,6 +2590,9 @@ EnumerableCalc(expr#0..1=[{inputs}], ANYEMPNO=[$t1])
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3d63e022b ([CALCITE-3591] Add bit_xor aggregate operator (wangxlong))
 
 # BIT_AND, BIT_OR, BIT_XOR aggregate functions
 select bit_and(deptno), bit_or(deptno), bit_xor(deptno) from "scott".emp;
@@ -2599,6 +2602,7 @@ select bit_and(deptno), bit_or(deptno), bit_xor(deptno) from "scott".emp;
 +--------+--------+--------+
 |      0 |     30 |     30 |
 +--------+--------+--------+
+<<<<<<< HEAD
 =======
 # BIT_AND, BIT_OR aggregate functions
 select bit_and(deptno), bit_or(deptno) from "scott".emp;
@@ -2608,11 +2612,16 @@ select bit_and(deptno), bit_or(deptno) from "scott".emp;
 |      0 |     30 |
 +--------+--------+
 >>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
+=======
+>>>>>>> 3d63e022b ([CALCITE-3591] Add bit_xor aggregate operator (wangxlong))
 (1 row)
 
 !ok
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3d63e022b ([CALCITE-3591] Add bit_xor aggregate operator (wangxlong))
 select deptno, bit_and(empno), bit_or(empno), bit_xor(empno) from "scott".emp group by deptno;
 
 +--------+--------+--------+--------+
@@ -2622,6 +2631,7 @@ select deptno, bit_and(empno), bit_or(empno), bit_xor(empno) from "scott".emp gr
 |     20 |   7168 |   8191 |   7985 |
 |     30 |   7168 |   8191 |    934 |
 +--------+--------+--------+--------+
+<<<<<<< HEAD
 =======
 select deptno, bit_and(empno), bit_or(empno) from "scott".emp group by deptno;
 +--------+--------+--------+
@@ -2632,6 +2642,8 @@ select deptno, bit_and(empno), bit_or(empno) from "scott".emp group by deptno;
 |     30 |   7168 |   8191 |
 +--------+--------+--------+
 >>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
+=======
+>>>>>>> 3d63e022b ([CALCITE-3591] Add bit_xor aggregate operator (wangxlong))
 (3 rows)
 
 !ok
