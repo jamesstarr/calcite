@@ -8792,9 +8792,19 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         + "for system_time as of timestamp '2011-01-02 00:00:00' "
         + "on orders.productid = products_temporal.productid");
 
-    // verify left join with a timestamp expression
+    // verify left join with a timestamp field
     check("select stream * from orders left join products_temporal "
         + "for system_time as of orders.rowtime "
+        + "on orders.productid = products_temporal.productid");
+
+    // verify left join with a timestamp expression
+    check("select stream * from orders left join products_temporal\n"
+        + "for system_time as of orders.rowtime - INTERVAL '3' DAY\n"
+        + "on orders.productid = products_temporal.productid");
+
+    // verify left join with a datetime value function
+    check("select stream * from orders left join products_temporal\n"
+        + "for system_time as of CURRENT_TIMESTAMP\n"
         + "on orders.productid = products_temporal.productid");
   }
 

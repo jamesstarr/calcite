@@ -40,19 +40,15 @@ public class SqlLateralOperator extends SqlSpecialOperator {
       int rightPrec) {
     final Set<SqlKind> specialOperandKinds = ImmutableSet.of(
         SqlKind.COLLECTION_TABLE,
-<<<<<<< HEAD
-=======
         SqlKind.SNAPSHOT,
->>>>>>> a9e685ea3 ([CALCITE-3603] SqlLateralOperator's unparse add additional keyword 'LATERAL' when the inner operator is SqlSnapshot)
+=======
+>>>>>>> a506dd01c ([CALCITE-3620] Remove implicit lateral operator for temporal table join)
         SqlKind.SELECT,
         SqlKind.AS);
     if (call.operandCount() == 1
         && specialOperandKinds.contains(call.operand(0).getKind())) {
-      if (call.operand(0).getKind() != SqlKind.SNAPSHOT) {
-        // 1. Do not create ( ) around the following TABLE clause.
-        // 2. Do not print LATERAL keyword for snapshot table.
-        writer.keyword(getName());
-      }
+      // Do not create ( ) around the following TABLE clause.
+      writer.keyword(getName());
       call.operand(0).unparse(writer, 0, 0);
     } else {
       SqlUtil.unparseFunctionSyntax(this, writer, call);
