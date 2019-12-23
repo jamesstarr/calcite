@@ -29,9 +29,9 @@ import org.apache.geode.cache.query.QueryService;
 import org.apache.geode.cache.query.SelectResults;
 import org.apache.geode.cache.query.internal.StructImpl;
 
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -53,7 +53,7 @@ class GeodeZipsTest extends AbstractGeodeTest {
 =======
 public class GeodeZipsTest extends AbstractGeodeTest {
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() throws Exception {
     Cache cache = POLICY.cache();
     Region<?, ?> region =  cache.<String, Object>createRegionFactory().create("zips");
@@ -98,8 +98,7 @@ public class GeodeZipsTest extends AbstractGeodeTest {
                 + "SUM(pop) AS EXPR$1 FROM /zips GROUP BY state"));
   }
 
-  @Test
-  @Ignore("Currently fails")
+  @Test @Disabled("Currently fails")
   public void testGroupByViewWithAliases() {
     calciteAssert()
         .query("SELECT state as st, SUM(pop) po "
@@ -144,8 +143,7 @@ public class GeodeZipsTest extends AbstractGeodeTest {
         .queryContains(GeodeAssertions.query("SELECT MAX(pop) AS EXPR$0 FROM /zips"));
   }
 
-  @Test
-  @Ignore("Currently fails")
+  @Test @Disabled("Currently fails")
   public void testJoin() {
     calciteAssert()
         .query("SELECT r._id FROM geode.zips AS v "
@@ -284,8 +282,7 @@ public class GeodeZipsTest extends AbstractGeodeTest {
             GeodeAssertions.query(expectedQuery));
   }
 
-  @Test
-  @Ignore("Currently fails")
+  @Test @Disabled("Currently fails")
   public void testWhereWithOrWithEmptyResult() {
     String expectedQuery = "SELECT state AS state FROM /zips "
         + "WHERE state = '' OR state = true OR state = false "
