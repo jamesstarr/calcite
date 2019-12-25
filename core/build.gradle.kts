@@ -148,7 +148,21 @@ publishing {
     testRuntimeOnly("org.slf4j:slf4j-log4j12")
 }
 
+<<<<<<< HEAD
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+// There are users that reuse/extend test code (e.g. Apache Felix)
+// So publish test jar to Nexus repository
+// TODO: remove when calcite-test-framework is extracted to a standalone artifact
+publishing {
+    publications {
+        named<MavenPublication>(project.name) {
+            artifact(tasks.testJar.get())
+        }
+    }
+}
+
+>>>>>>> 9bfd54c63 ([CALCITE-2905] Publish calcite-core-...tests.jar to Nexus)
 tasks.jar {
     CrLfSpec(LineEndings.LF).run {
         into("codegen") {
