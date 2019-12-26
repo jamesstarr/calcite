@@ -27,6 +27,7 @@ import org.apache.calcite.rel.RelDistributionTraitDef;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Calc;
 import org.apache.calcite.rel.core.CorrelationId;
+import org.apache.calcite.rel.hint.RelHint;
 import org.apache.calcite.rel.metadata.RelMdCollation;
 import org.apache.calcite.rel.metadata.RelMdDistribution;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
@@ -38,6 +39,9 @@ import org.apache.calcite.util.Util;
 
 import com.google.common.base.Supplier;
 
+import com.google.common.collect.ImmutableList;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -72,9 +76,19 @@ public final class LogicalCalc extends Calc {
   public LogicalCalc(
       RelOptCluster cluster,
       RelTraitSet traitSet,
+      List<RelHint> hints,
       RelNode child,
       RexProgram program) {
-    super(cluster, traitSet, child, program);
+    super(cluster, traitSet, hints, child, program);
+  }
+
+  /** Creates a LogicalCalc. */
+  public LogicalCalc(
+      RelOptCluster cluster,
+      RelTraitSet traitSet,
+      RelNode child,
+      RexProgram program) {
+    this(cluster, traitSet, Collections.emptyList(), child, program);
   }
 
   @Deprecated // to be removed before 2.0
@@ -113,7 +127,7 @@ public final class LogicalCalc extends Calc {
 
   @Override public LogicalCalc copy(RelTraitSet traitSet, RelNode child,
       RexProgram program) {
-    return new LogicalCalc(getCluster(), traitSet, child, program);
+    return new LogicalCalc(getCluster(), traitSet, hints, child, program);
   }
 
   @Override public void collectVariablesUsed(Set<CorrelationId> variableSet) {
@@ -123,6 +137,11 @@ public final class LogicalCalc extends Calc {
       expr.accept(vuv);
     }
     variableSet.addAll(vuv.variables);
+  }
+
+  @Override public RelNode withHints(List<RelHint> hintList) {
+    return new LogicalCalc(getCluster(), traitSet,
+        ImmutableList.copyOf(hintList), input, program);
   }
 }
 
