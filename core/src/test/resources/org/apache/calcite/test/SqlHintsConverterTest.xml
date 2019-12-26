@@ -39,17 +39,25 @@ limitations under the License.
 <Root>
     <TestCase name="testNestedQueryHint">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[select /*+ resource(parallelism='3') */ empno
 >>>>>>> e81bf6d89 ([CALCITE-3519] Use List instead of BitSet to keep inheritPath in RelHint (Shuo Cheng))
+=======
+            <![CDATA[select /*+ resource(parallelism='3'), repartition(10) */ empno
+>>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
 from (select /*+ resource(mem='20Mb')*/ empno, ename from emp)]]>
         </Resource>
         <Resource name="hints">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 Project:[[RESOURCE inheritPath:[] options:{PARALLELISM=3}], [REPARTITION inheritPath:[] options:[10]]]
 =======
 Project:[[RESOURCE inheritPath:[] options:{PARALLELISM=3}]]
 >>>>>>> e81bf6d89 ([CALCITE-3519] Use List instead of BitSet to keep inheritPath in RelHint (Shuo Cheng))
+=======
+Project:[[RESOURCE inheritPath:[] options:{PARALLELISM=3}], [REPARTITION inheritPath:[] options:[10]]]
+>>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
 ]]>
         </Resource>
     </TestCase>
@@ -73,6 +81,9 @@ TableScan:[[PROPERTIES inheritPath:[0, 1, 0] options:{K1=v1, K2=v2}], [INDEX inh
     </TestCase>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
     <TestCase name="testQueryHintWithLiteralOptions">
         <Resource name="sql">
             <![CDATA[select /*+ time_zone(1, 1.23, 'a bc', -1.0) */ *
@@ -84,10 +95,13 @@ Project:[[TIME_ZONE inheritPath:[] options:[1, 1.23, a bc, -1.0]]]
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testHintsInSubQueryWithDecorrelation">
         <Resource name="sql">
             <![CDATA[select /*+ resource(parallelism='3'), AGG_STRATEGY(TWO_PHASE) */
 =======
+=======
+>>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
     <TestCase name="testHintsInSubQueryWithDecorrelation">
         <Resource name="sql">
             <![CDATA[select /*+ resource(parallelism='3') */

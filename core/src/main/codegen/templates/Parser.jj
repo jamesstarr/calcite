@@ -1242,6 +1242,7 @@ SqlNodeList ParenthesizedKeyValueOptionCommaList() :
     { s = span(); }
     <LPAREN>
 <<<<<<< HEAD
+<<<<<<< HEAD
     KeyValueOption(list)
     (
         <COMMA>
@@ -1256,6 +1257,13 @@ SqlNodeList ParenthesizedKeyValueOptionCommaList() :
         )*
     ]
 >>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
+=======
+    KeyValueOption(list)
+    (
+        <COMMA>
+        KeyValueOption(list)
+    )*
+>>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
     <RPAREN> {
         return new SqlNodeList(list, s.end(this));
     }
@@ -1299,6 +1307,9 @@ void KeyValueOption(List<SqlNode> list) :
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
 /**
 * Parses an option value, it's either a string or a numeric.
 */
@@ -1345,21 +1356,29 @@ SqlNodeList ParenthesizedLiteralOptionCommaList() :
     }
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
+=======
+>>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
 void CommaSepatatedSqlHints(List<SqlNode> hints) :
 {
     SqlIdentifier hintName;
     SqlNodeList hintOptions;
 <<<<<<< HEAD
+<<<<<<< HEAD
     SqlNode optionVal;
     SqlHint.HintOptionFormat optionFormat;
 =======
 >>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
+=======
+    SqlNode optionVal;
+>>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
 }
 {
     hintName = SimpleIdentifier()
     (   LOOKAHEAD(5)
+<<<<<<< HEAD
         hintOptions = ParenthesizedKeyValueOptionCommaList() {
 <<<<<<< HEAD
             optionFormat = SqlHint.HintOptionFormat.KV_LIST;
@@ -1388,22 +1407,35 @@ void CommaSepatatedSqlHints(List<SqlNode> hints) :
 =======
             hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
         }
+=======
+        hintOptions = ParenthesizedKeyValueOptionCommaList()
+>>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
     |
-        hintOptions = ParenthesizedSimpleIdentifierList() {
-            hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
-        }
+        LOOKAHEAD(3)
+        hintOptions = ParenthesizedSimpleIdentifierList()
     |
+        LOOKAHEAD(3)
+        hintOptions = ParenthesizedLiteralOptionCommaList()
+    |
+        LOOKAHEAD(2)
+        [<LPAREN> <RPAREN>]
         {
             hintOptions = SqlNodeList.EMPTY;
-            hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
         }
     )
+<<<<<<< HEAD
 >>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
+=======
+    {
+        hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
+    }
+>>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
     (
         <COMMA>
         hintName = SimpleIdentifier()
         (
             LOOKAHEAD(5)
+<<<<<<< HEAD
             hintOptions = ParenthesizedKeyValueOptionCommaList() {
 <<<<<<< HEAD
                 optionFormat = SqlHint.HintOptionFormat.KV_LIST;
@@ -1432,17 +1464,29 @@ void CommaSepatatedSqlHints(List<SqlNode> hints) :
 =======
                 hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
             }
+=======
+            hintOptions = ParenthesizedKeyValueOptionCommaList()
+>>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
         |
-            hintOptions = ParenthesizedSimpleIdentifierList() {
-                hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
-            }
+            LOOKAHEAD(3)
+            hintOptions = ParenthesizedSimpleIdentifierList()
         |
+            LOOKAHEAD(3)
+            hintOptions = ParenthesizedLiteralOptionCommaList()
+        |
+            LOOKAHEAD(2)
+            [<LPAREN> <RPAREN>]
             {
                 hintOptions = SqlNodeList.EMPTY;
-                hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
             }
         )
+<<<<<<< HEAD
 >>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
+=======
+        {
+            hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
+        }
+>>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
     )*
 }
 
