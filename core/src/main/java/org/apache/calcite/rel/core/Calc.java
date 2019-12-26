@@ -43,6 +43,7 @@ import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,6 +52,8 @@ import java.util.List;
  */
 public abstract class Calc extends SingleRel implements Hintable {
   //~ Instance fields --------------------------------------------------------
+
+  protected final ImmutableList<RelHint> hints;
 
   protected final RexProgram program;
 
@@ -73,16 +76,24 @@ public abstract class Calc extends SingleRel implements Hintable {
     super(cluster, traits, child);
     this.rowType = program.getOutputRowType();
     this.program = program;
+    this.hints = ImmutableList.copyOf(hints);
     assert isValid(Litmus.THROW, null);
   }
 
-  @Deprecated // to be removed before 2.0
+  /**
+   * Creates a Calc.
+   *
+   * @param cluster Cluster
+   * @param traits Traits
+   * @param child Input relation
+   * @param program Calc program
+   */
   protected Calc(
       RelOptCluster cluster,
       RelTraitSet traits,
       RelNode child,
       RexProgram program) {
-    this(cluster, traits, ImmutableList.of(), child, program);
+    this(cluster, traits, Collections.emptyList(), child, program);
   }
 
   @Deprecated // to be removed before 2.0
@@ -155,7 +166,7 @@ public abstract class Calc extends SingleRel implements Hintable {
   }
 
   @Override public ImmutableList<RelHint> getHints() {
-    return ImmutableList.of();
+    return hints;
   }
 
   @Override public double estimateRowCount(RelMetadataQuery mq) {
