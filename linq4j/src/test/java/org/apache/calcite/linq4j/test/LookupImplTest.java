@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Unit tests for LookupImpl.java
  *
  */
-class LookupImplTest {
+public class LookupImplTest {
 
   private Lookup<Integer, String> impl;
 
