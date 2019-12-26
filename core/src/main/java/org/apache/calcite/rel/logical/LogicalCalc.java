@@ -37,12 +37,12 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexProgram;
 import org.apache.calcite.util.Util;
 
-<<<<<<< HEAD
-=======
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+=======
+>>>>>>> 69e6272d1 (DX-94848: Cherry-pick [CALCITE-3631] Support SQL hints for Calc)
 import com.google.common.collect.ImmutableList;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -89,7 +89,7 @@ public final class LogicalCalc extends Calc {
       RelTraitSet traitSet,
       RelNode child,
       RexProgram program) {
-    this(cluster, traitSet, ImmutableList.of(), child, program);
+    this(cluster, traitSet, Collections.emptyList(), child, program);
   }
 
   /**
@@ -130,7 +130,7 @@ public final class LogicalCalc extends Calc {
 
   @Override public LogicalCalc copy(RelTraitSet traitSet, RelNode child,
       RexProgram program) {
-    return new LogicalCalc(getCluster(), traitSet, ImmutableList.of(), child, program);
+    return new LogicalCalc(getCluster(), traitSet, hints, child, program);
   }
 
   @Override public void collectVariablesUsed(Set<CorrelationId> variableSet) {
