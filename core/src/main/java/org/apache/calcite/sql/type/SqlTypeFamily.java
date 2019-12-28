@@ -248,5 +248,3 @@ public enum SqlTypeFamily implements RelDataTypeFamily {
     return SqlTypeUtil.isOfSameTypeName(getTypeNames(), type);
   }
 }
-
-// End SqlTypeFamily.java

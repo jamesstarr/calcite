@@ -140,5 +140,3 @@ public class CorrelationId implements Cloneable, Comparable<CorrelationId> {
     return builder.build();
   }
 }
-
-// End CorrelationId.java

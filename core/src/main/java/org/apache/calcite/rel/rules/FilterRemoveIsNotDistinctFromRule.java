@@ -123,5 +123,3 @@ public final class FilterRemoveIsNotDistinctFromRule
     }
   }
 }
-
-// End FilterRemoveIsNotDistinctFromRule.java

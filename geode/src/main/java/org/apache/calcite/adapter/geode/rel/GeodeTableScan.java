@@ -78,5 +78,3 @@ public class GeodeTableScan extends TableScan implements GeodeRel {
     geodeImplementContext.table = table;
   }
 }
-
-// End GeodeTableScan.java

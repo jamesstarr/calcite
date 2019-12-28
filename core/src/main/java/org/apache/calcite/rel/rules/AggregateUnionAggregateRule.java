@@ -176,5 +176,3 @@ public class AggregateUnionAggregateRule
     }
   }
 }
-
-// End AggregateUnionAggregateRule.java

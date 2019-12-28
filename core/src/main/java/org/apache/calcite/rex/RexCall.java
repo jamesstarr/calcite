@@ -300,5 +300,3 @@ public class RexCall extends RexNode {
     return hash;
   }
 }
-
-// End RexCall.java

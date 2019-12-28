@@ -79,5 +79,3 @@ public interface RexVisitor<R> {
     }
   }
 }
-
-// End RexVisitor.java

@@ -83,5 +83,3 @@ public class UnionEliminatorRule
     }
   }
 }
-
-// End UnionEliminatorRule.java

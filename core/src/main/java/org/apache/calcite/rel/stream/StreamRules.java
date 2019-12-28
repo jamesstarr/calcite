@@ -346,5 +346,3 @@ public class StreamRules {
     }
   }
 }
-
-// End StreamRules.java

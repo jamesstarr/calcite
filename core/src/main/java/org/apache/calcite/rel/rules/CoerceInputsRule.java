@@ -131,5 +131,3 @@ public class CoerceInputsRule
     }
   }
 }
-
-// End CoerceInputsRule.java

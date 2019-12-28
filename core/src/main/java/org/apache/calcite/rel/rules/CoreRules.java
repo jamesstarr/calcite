@@ -663,4 +663,3 @@ public class CoreRules {
       ReduceExpressionsRule.WindowReduceExpressionsRule.Config
           .DEFAULT.toRule();
 }
-// End CoreRules.java

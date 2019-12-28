@@ -454,5 +454,3 @@ public final class CalciteSystemProperty<T> {
     return value;
   }
 }
-
-// End CalciteSystemProperty.java

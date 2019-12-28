@@ -33,5 +33,3 @@ public abstract class AbstractGeodeTest {
   public static final GeodeEmbeddedPolicy POLICY = GeodeEmbeddedPolicy.create().share();
 
 }
-
-// End AbstractGeodeTest.java

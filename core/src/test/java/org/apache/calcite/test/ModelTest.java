@@ -378,5 +378,3 @@ public class ModelTest {
         .doWithConnection(calciteConnection -> null);
   }
 }
-
-// End ModelTest.java

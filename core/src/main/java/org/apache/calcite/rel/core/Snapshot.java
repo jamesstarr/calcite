@@ -107,5 +107,3 @@ public abstract class Snapshot extends SingleRel  {
     return litmus.succeed();
   }
 }
-
-// End Snapshot.java

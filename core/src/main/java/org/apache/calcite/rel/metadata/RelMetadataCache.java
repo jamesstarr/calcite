@@ -37,5 +37,3 @@ public interface RelMetadataCache {
   @Nullable Object get(RelNode relNode, Object args);
   @Nullable Object put(RelNode relNode, Object args, Object value);
 }
-
-// End RelMetadataCache.java

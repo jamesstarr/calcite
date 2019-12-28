@@ -421,5 +421,3 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
     Config withPredicate(Predicate predicate);
   }
 }
-
-// End FilterJoinRule.java

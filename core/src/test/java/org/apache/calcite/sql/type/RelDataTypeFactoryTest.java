@@ -64,8 +64,7 @@ public class RelDataTypeFactoryTest {
   private static final SqlTypeFactoryImpl CUSTOM_FACTORY = new SqlTypeFactoryImpl(new
           CustomTypeSystem());
 
-  @Test
-  public void testDecimalAdditionReturnTypeInference() {
+  @Test public void testDecimalAdditionReturnTypeInference() {
     RelDataType operand1 = TYPE_FACTORY.createSqlType(SqlTypeName.DECIMAL, 10, 1);
     RelDataType operand2 = TYPE_FACTORY.createSqlType(SqlTypeName.DECIMAL, 10, 2);
 
@@ -75,8 +74,7 @@ public class RelDataTypeFactoryTest {
     assertEquals(2, dataType.getScale());
   }
 
-  @Test
-  public void testDecimalModReturnTypeInference() {
+  @Test public void testDecimalModReturnTypeInference() {
     RelDataType operand1 = TYPE_FACTORY.createSqlType(SqlTypeName.DECIMAL, 10, 1);
     RelDataType operand2 = TYPE_FACTORY.createSqlType(SqlTypeName.DECIMAL, 10, 2);
 
@@ -86,8 +84,7 @@ public class RelDataTypeFactoryTest {
     assertEquals(2, dataType.getScale());
   }
 
-  @Test
-  public void testDoubleModReturnTypeInference() {
+  @Test public void testDoubleModReturnTypeInference() {
     RelDataType operand1 = TYPE_FACTORY.createSqlType(SqlTypeName.DOUBLE);
     RelDataType operand2 = TYPE_FACTORY.createSqlType(SqlTypeName.DOUBLE);
 
@@ -96,8 +93,7 @@ public class RelDataTypeFactoryTest {
     assertEquals(SqlTypeName.DOUBLE, dataType.getSqlTypeName());
   }
 
-  @Test
-  public void testCustomDecimalPlusReturnTypeInference() {
+  @Test public void testCustomDecimalPlusReturnTypeInference() {
     RelDataType operand1 = CUSTOM_FACTORY.createSqlType(SqlTypeName.DECIMAL, 38, 10);
     RelDataType operand2 = CUSTOM_FACTORY.createSqlType(SqlTypeName.DECIMAL, 38, 20);
 
@@ -108,4 +104,3 @@ public class RelDataTypeFactoryTest {
     assertEquals(9, dataType.getScale());
   }
 }
-// End RelDataTypeFactoryTest.java

@@ -125,5 +125,3 @@ public class MaterializedViewFilterScanRule
     }
   }
 }
-
-// End MaterializedViewFilterScanRule.java

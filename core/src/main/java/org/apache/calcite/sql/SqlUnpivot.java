@@ -175,5 +175,3 @@ public class SqlUnpivot extends SqlCall {
     }
   }
 }
-
-// End SqlUnpivot.java

@@ -193,5 +193,3 @@ public class ProjectFilterTransposeRule
     }
   }
 }
-
-// End ProjectFilterTransposeRule.java

@@ -32,5 +32,3 @@ public class SqlMapQueryConstructor extends SqlMultisetQueryConstructor {
     super("MAP", SqlKind.MAP_QUERY_CONSTRUCTOR, SqlTypeTransforms.TO_MAP);
   }
 }
-
-// End SqlMapQueryConstructor.java

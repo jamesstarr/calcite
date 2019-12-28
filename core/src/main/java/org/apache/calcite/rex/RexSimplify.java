@@ -2456,5 +2456,3 @@ public class RexSimplify {
   }
 
 }
-
-// End RexSimplify.java

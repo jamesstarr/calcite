@@ -428,5 +428,3 @@ public class JoinProjectTransposeRule
     Config withIncludeOuter(boolean includeOuter);
   }
 }
-
-// End JoinProjectTransposeRule.java

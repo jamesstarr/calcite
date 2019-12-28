@@ -56,5 +56,3 @@ public class JaninoRelMetadataHandlerProvider implements RelMetadataHandlerProvi
     return new TableRelMetadataCache();
   }
 }
-
-// End JaninoRelMetadataHandlerProvider.java

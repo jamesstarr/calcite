@@ -186,5 +186,3 @@ public class AggregateFilterTransposeRule
     }
   }
 }
-
-// End AggregateFilterTransposeRule.java

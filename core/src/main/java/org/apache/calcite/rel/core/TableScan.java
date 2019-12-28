@@ -178,5 +178,3 @@ public abstract class TableScan
     return hints;
   }
 }
-
-// End TableScan.java

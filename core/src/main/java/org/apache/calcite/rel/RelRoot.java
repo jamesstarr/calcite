@@ -193,5 +193,3 @@ public class RelRoot {
         && collations.get(0).equals(collation);
   }
 }
-
-// End RelRoot.java

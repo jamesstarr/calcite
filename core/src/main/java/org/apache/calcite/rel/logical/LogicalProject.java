@@ -137,5 +137,3 @@ public final class LogicalProject extends Project {
         input, getProjects(), rowType);
   }
 }
-
-// End LogicalProject.java

@@ -366,5 +366,3 @@ class RelSet {
     }
   }
 }
-
-// End RelSet.java

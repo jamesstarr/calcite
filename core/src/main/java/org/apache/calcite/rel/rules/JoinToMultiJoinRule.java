@@ -597,5 +597,3 @@ public class JoinToMultiJoinRule
     }
   }
 }
-
-// End JoinToMultiJoinRule.java

@@ -91,5 +91,3 @@ public class UnionToDistinctRule
     }
   }
 }
-
-// End UnionToDistinctRule.java

@@ -221,5 +221,3 @@ public abstract class SqlTypeTransforms {
         return fields.get(0).getType();
       };
 }
-
-// End SqlTypeTransforms.java

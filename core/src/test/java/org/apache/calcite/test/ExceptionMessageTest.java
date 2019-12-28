@@ -142,8 +142,7 @@ public class ExceptionMessageTest {
     }
   }
 
-  @Test
-  public void testLikeAnySyntaxError() {
+  @Test public void testLikeAnySyntaxError() {
     try {
       runQuery("select 'a' LIKE ANY()");
     } catch (SQLException e) {
@@ -153,8 +152,7 @@ public class ExceptionMessageTest {
     }
   }
 
-  @Test
-  public void testLikeAllSyntaxError() {
+  @Test public void testLikeAllSyntaxError() {
     try {
       runQuery("select 'a' LIKE ALL(1)");
     } catch (SQLException e) {
@@ -164,8 +162,7 @@ public class ExceptionMessageTest {
     }
   }
 
-  @Test
-  public void testLikeSomeSyntaxError() {
+  @Test public void testLikeSomeSyntaxError() {
     try {
       runQuery("select 1 LIKE SOME('a')");
     } catch (SQLException e) {
@@ -175,5 +172,3 @@ public class ExceptionMessageTest {
     }
   }
 }
-
-// End ExceptionMessageTest.java

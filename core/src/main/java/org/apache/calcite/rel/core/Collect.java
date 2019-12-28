@@ -269,5 +269,3 @@ public class Collect extends SingleRel {
         typeFactory.builder().add(fieldName, type1).build(), false);
   }
 }
-
-// End Collect.java

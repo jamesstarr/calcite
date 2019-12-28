@@ -106,5 +106,3 @@ public class MongoAssertions {
     assumeTrue(useMongo(), "Expect mongo instance");
   }
 }
-
-// End MongoAssertions.java

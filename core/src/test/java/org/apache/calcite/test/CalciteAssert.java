@@ -2074,5 +2074,3 @@ public class CalciteAssert {
     void accept(PreparedStatement statement) throws SQLException;
   }
 }
-
-// End CalciteAssert.java

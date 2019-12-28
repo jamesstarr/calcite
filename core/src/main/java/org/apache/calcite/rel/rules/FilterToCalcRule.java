@@ -89,5 +89,3 @@ public class FilterToCalcRule
     }
   }
 }
-
-// End FilterToCalcRule.java

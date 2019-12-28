@@ -131,8 +131,7 @@ public class PlannerTest {
         + "    EnumerableTableScan(table=[[hr, emps]])\n");
   }
 
-  @Test
-  public void testParseIdentiferMaxLengthWithDefault() {
+  @Test public void testParseIdentiferMaxLengthWithDefault() {
     Assertions.assertThrows(SqlParseException.class, () -> {
       Planner planner = getPlanner(null, SqlParser.configBuilder().build());
       planner.parse("select name as "
@@ -140,8 +139,7 @@ public class PlannerTest {
     });
   }
 
-  @Test
-  public void testParseIdentiferMaxLengthWithIncreased() throws Exception {
+  @Test public void testParseIdentiferMaxLengthWithIncreased() throws Exception {
     Planner planner = getPlanner(null,
         SqlParser.configBuilder().setIdentifierMaxLength(512).build());
     planner.parse("select name as "
@@ -1476,5 +1474,3 @@ public class PlannerTest {
     assertThat(toString(root.rel), matcher);
   }
 }
-
-// End PlannerTest.java

@@ -163,5 +163,3 @@ public class MultiJoinProjectTransposeRule extends JoinProjectTransposeRule {
     }
   }
 }
-
-// End MultiJoinProjectTransposeRule.java

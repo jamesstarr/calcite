@@ -136,5 +136,3 @@ public class RelShuttleImpl implements RelShuttle {
     return visitChildren(other);
   }
 }
-
-// End RelShuttleImpl.java

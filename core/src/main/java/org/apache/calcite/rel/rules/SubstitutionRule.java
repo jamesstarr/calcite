@@ -35,4 +35,3 @@ public interface SubstitutionRule extends TransformationRule {
     return false;
   }
 }
-// End SubstitutionRule.java

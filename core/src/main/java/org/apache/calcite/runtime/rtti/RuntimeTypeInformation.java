@@ -263,4 +263,3 @@ public abstract class RuntimeTypeInformation {
     }
   }
 }
-// End RuntimeTypeInformation.java

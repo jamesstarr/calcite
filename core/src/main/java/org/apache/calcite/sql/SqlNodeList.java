@@ -219,5 +219,3 @@ public class SqlNodeList extends SqlNode implements Iterable<SqlNode> {
     }
   }
 }
-
-// End SqlNodeList.java

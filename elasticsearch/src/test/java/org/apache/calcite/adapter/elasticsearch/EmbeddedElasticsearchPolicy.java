@@ -217,5 +217,3 @@ class EmbeddedElasticsearchPolicy implements BeforeAllCallback, AfterAllCallback
     return node.httpAddress();
   }
 }
-
-// End EmbeddedElasticsearchPolicy.java

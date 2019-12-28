@@ -441,5 +441,3 @@ public class SplunkPushDownRule
     return row.getFieldNames().toString();
   }
 }
-
-// End SplunkPushDownRule.java

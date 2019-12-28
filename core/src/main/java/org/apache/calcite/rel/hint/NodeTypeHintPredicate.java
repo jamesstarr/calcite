@@ -89,5 +89,3 @@ public class NodeTypeHintPredicate implements HintPredicate {
     }
   }
 }
-
-// End NodeTypeHintPredicate.java

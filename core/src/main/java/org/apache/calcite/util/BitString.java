@@ -216,5 +216,3 @@ public class BitString {
     return new BitString(sb.toString(), bitCount);
   }
 }
-
-// End BitString.java

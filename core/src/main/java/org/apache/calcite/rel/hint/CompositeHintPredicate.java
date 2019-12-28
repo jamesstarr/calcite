@@ -82,5 +82,3 @@ public class CompositeHintPredicate implements HintPredicate {
     }
   }
 }
-
-// End CompositeHintPredicate.java

@@ -920,5 +920,3 @@ public final class AggregateExpandDistinctAggregatesRule
     Config withUsingGroupingSets(boolean usingGroupingSets);
   }
 }
-
-// End AggregateExpandDistinctAggregatesRule.java

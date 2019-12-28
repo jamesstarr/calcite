@@ -149,5 +149,3 @@ public class HintStrategy {
     }
   }
 }
-
-// End HintStrategy.java

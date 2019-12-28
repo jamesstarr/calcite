@@ -217,5 +217,3 @@ public class RelHint {
     }
   }
 }
-
-// End RelHint.java

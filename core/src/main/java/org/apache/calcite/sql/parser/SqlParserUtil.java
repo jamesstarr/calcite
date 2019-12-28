@@ -928,5 +928,3 @@ public final class SqlParserUtil {
         new SimpleDateFormat(DateTimeUtils.DATE_FORMAT_STRING, Locale.ROOT);
   }
 }
-
-// End SqlParserUtil.java

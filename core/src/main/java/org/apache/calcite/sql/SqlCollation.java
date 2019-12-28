@@ -309,5 +309,3 @@ public class SqlCollation implements Serializable {
     return null;
   }
 }
-
-// End SqlCollation.java

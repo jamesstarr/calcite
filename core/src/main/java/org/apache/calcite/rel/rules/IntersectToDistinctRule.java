@@ -145,5 +145,3 @@ public class IntersectToDistinctRule
     }
   }
 }
-
-// End IntersectToDistinctRule.java

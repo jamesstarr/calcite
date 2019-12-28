@@ -951,5 +951,3 @@ public interface CalciteResource {
   @BaseMessage("Invalid input for EXISTSNODE xpath: ''{0}'', namespace: ''{1}''")
   ExInst<CalciteException> invalidInputForExistsNode(String xpath, @Nullable String namespace);
 }
-
-// End CalciteResource.java

@@ -289,5 +289,3 @@ public class ValuesReduceRule
   }
 
 }
-
-// End ValuesReduceRule.java

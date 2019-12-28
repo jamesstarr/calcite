@@ -75,5 +75,3 @@ public class SemiJoinRemoveRule
     }
   }
 }
-
-// End SemiJoinRemoveRule.java

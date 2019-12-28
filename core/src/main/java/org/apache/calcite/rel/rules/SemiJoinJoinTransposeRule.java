@@ -246,5 +246,3 @@ public class SemiJoinJoinTransposeRule
     }
   }
 }
-
-// End SemiJoinJoinTransposeRule.java

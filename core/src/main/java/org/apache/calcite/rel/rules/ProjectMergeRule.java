@@ -172,5 +172,3 @@ public class ProjectMergeRule
     }
   }
 }
-
-// End ProjectMergeRule.java

@@ -37,4 +37,3 @@ import org.apache.calcite.plan.volcano.VolcanoPlanner;
  */
 public interface TransformationRule {
 }
-// End TransformationRule.java

@@ -1311,5 +1311,3 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
     }
   }
 }
-
-// End ReduceExpressionsRule.java

@@ -80,5 +80,3 @@ public interface CalciteConnectionConfig extends ConnectionConfig {
   /** @see CalciteConnectionProperty#LENIENT_OPERATOR_LOOKUP */
   boolean lenientOperatorLookup();
 }
-
-// End CalciteConnectionConfig.java

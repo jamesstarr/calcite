@@ -75,5 +75,3 @@ public class CalcSplitRule extends RelRule<CalcSplitRule.Config>
     }
   }
 }
-
-// End CalcSplitRule.java

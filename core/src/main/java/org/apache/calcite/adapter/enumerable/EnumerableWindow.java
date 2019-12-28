@@ -741,7 +741,8 @@ public class EnumerableWindow extends Window implements EnumerableRel {
   private Pair<Expression, Expression> getRowCollationKey(
       BlockBuilder builder, PhysType inputPhysType,
       Group group, int windowIdx) {
-    if (!(group.isRows || (group.upperBound.isUnbounded()
+    if (!(
+        group.isRows || (group.upperBound.isUnbounded()
         && group.lowerBound.isUnbounded()))) {
       Pair<Expression, Expression> pair =
           inputPhysType.generateCollationKey(
@@ -977,5 +978,3 @@ public class EnumerableWindow extends Window implements EnumerableRel {
         rows_, val, searchLower, searchUpper, keySelector, keyComparator);
   }
 }
-
-// End EnumerableWindow.java

@@ -300,5 +300,3 @@ class ElasticsearchRules {
     }
   }
 }
-
-// End ElasticsearchRules.java

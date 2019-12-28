@@ -324,5 +324,3 @@ public class SqlParserPos implements Serializable {
     }
   }
 }
-
-// End SqlParserPos.java

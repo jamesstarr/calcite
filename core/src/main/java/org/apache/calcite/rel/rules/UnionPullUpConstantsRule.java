@@ -163,5 +163,3 @@ public class UnionPullUpConstantsRule
     }
   }
 }
-
-// End UnionPullUpConstantsRule.java

@@ -762,5 +762,3 @@ class QueryableRelBuilder<T> implements QueryableFactory<T> {
     throw new UnsupportedOperationException();
   }
 }
-
-// End QueryableRelBuilder.java

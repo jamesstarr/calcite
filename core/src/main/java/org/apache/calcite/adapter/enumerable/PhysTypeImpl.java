@@ -675,5 +675,3 @@ public class PhysTypeImpl implements PhysType {
     return format.field(expression, field, fieldType, storageType);
   }
 }
-
-// End PhysTypeImpl.java

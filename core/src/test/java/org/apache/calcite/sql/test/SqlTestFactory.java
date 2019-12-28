@@ -221,5 +221,3 @@ public class SqlTestFactory {
     MockCatalogReader create(RelDataTypeFactory typeFactory, boolean caseSensitive);
   }
 }
-
-// End SqlTestFactory.java

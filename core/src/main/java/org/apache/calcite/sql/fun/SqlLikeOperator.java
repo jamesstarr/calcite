@@ -198,5 +198,3 @@ public class SqlLikeOperator extends SqlSpecialOperator {
     return new ReduceResult(opOrdinal - 1, end, call);
   }
 }
-
-// End SqlLikeOperator.java

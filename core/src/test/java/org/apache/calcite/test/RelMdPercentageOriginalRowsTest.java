@@ -41,5 +41,3 @@ public class RelMdPercentageOriginalRowsTest {
                     CalciteAssert.checkResultContains("EnumerableHashJoin"));
   }
 }
-
-// End RelMdPercentageOriginalRowsTest.java

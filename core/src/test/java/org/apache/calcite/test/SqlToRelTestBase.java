@@ -991,5 +991,3 @@ public abstract class SqlToRelTestBase {
     }
   }
 }
-
-// End SqlToRelTestBase.java

@@ -163,5 +163,3 @@ public class SqlTypeFactoryTest {
   }
 
 }
-
-// End SqlTypeFactoryTest.java

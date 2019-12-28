@@ -34,5 +34,3 @@ public class TableFunctionScope extends ListScope {
   }
 
 }
-
-// End TableFunctionScope.java

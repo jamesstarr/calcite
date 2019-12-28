@@ -487,5 +487,3 @@ public class RelMdExpressionLineage
     return inputFinder.build();
   }
 }
-
-// End RelMdExpressionLineage.java

@@ -54,5 +54,3 @@ public interface HintPredicate {
    */
   boolean apply(RelHint hint, RelNode rel);
 }
-
-// End HintPredicate.java

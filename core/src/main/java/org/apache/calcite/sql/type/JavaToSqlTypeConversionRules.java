@@ -108,5 +108,3 @@ public class JavaToSqlTypeConversionRules {
   private interface ColumnList extends List {
   }
 }
-
-// End JavaToSqlTypeConversionRules.java

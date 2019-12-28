@@ -694,5 +694,3 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
   }
 
 }
-
-// End AbstractSqlTester.java

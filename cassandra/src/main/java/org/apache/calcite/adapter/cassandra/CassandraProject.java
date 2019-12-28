@@ -72,5 +72,3 @@ public class CassandraProject extends Project implements CassandraRel {
     implementor.add(fields, null);
   }
 }
-
-// End CassandraProject.java

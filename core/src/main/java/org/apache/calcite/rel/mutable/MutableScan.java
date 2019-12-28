@@ -53,5 +53,3 @@ public class MutableScan extends MutableLeafRel {
     return MutableScan.of((TableScan) rel);
   }
 }
-
-// End MutableScan.java

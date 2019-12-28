@@ -90,5 +90,3 @@ public class StringAndPos {
         pos.getEndLineNum(), pos.getEndColumnNum() + 1);
   }
 }
-
-// End StringAndPos.java

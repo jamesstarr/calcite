@@ -248,5 +248,3 @@ public class SqlSelectOperator extends SqlOperator {
     return ordinal == SqlSelect.WHERE_OPERAND;
   }
 }
-
-// End SqlSelectOperator.java

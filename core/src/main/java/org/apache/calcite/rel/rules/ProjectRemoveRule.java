@@ -108,5 +108,3 @@ public class ProjectRemoveRule
     }
   }
 }
-
-// End ProjectRemoveRule.java

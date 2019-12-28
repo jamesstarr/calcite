@@ -108,5 +108,3 @@ public class FilterSetOpTransposeRule
     }
   }
 }
-
-// End FilterSetOpTransposeRule.java

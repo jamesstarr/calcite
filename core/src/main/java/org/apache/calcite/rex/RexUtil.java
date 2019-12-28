@@ -2864,7 +2864,8 @@ public class RexUtil {
       if (call.getOperator() != SqlStdOperatorTable.DATETIME_PLUS
           && ((call.getOperator() != SqlStdOperatorTable.MINUS_DATE)
               || (call.getOperands().size() != 2)
-              || !(INTERVAL_TYPES.contains(
+              || !(
+                  INTERVAL_TYPES.contains(
                       call.getOperands().get(1).getType().getSqlTypeName())))) {
         return super.visitCall(call);
       }
@@ -2928,4 +2929,3 @@ public class RexUtil {
     }
   }
 }
-// End RexUtil.java

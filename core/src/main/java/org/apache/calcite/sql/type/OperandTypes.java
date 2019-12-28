@@ -810,5 +810,3 @@ public abstract class OperandTypes {
     }
   }
 }
-
-// End OperandTypes.java

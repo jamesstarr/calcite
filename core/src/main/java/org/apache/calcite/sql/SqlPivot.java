@@ -213,5 +213,3 @@ public class SqlPivot extends SqlCall {
     }
   }
 }
-
-// End SqlPivot.java

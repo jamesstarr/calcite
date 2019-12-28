@@ -52,5 +52,3 @@ public class SqlLateralOperator extends SqlSpecialOperator {
     }
   }
 }
-
-// End SqlLateralOperator.java

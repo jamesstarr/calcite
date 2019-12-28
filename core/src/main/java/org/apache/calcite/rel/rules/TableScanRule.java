@@ -74,5 +74,3 @@ public class TableScanRule extends RelRule<RelRule.Config>
     }
   }
 }
-
-// End TableScanRule.java

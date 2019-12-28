@@ -215,5 +215,3 @@ class CalciteMaterializer extends CalcitePrepareImpl.CalcitePreparingStmt {
     }
   }
 }
-
-// End CalciteMaterializer.java

@@ -72,5 +72,3 @@ public class SimpleNamespaceContext implements NamespaceContext {
     prefixes.add(prefix);
   }
 }
-
-// End SimpleNamespaceContext.java

@@ -531,5 +531,3 @@ public class SqlPrettyWriterTest {
     System.out.println(new SqlPrettyWriter(config).format(node));
   }
 }
-
-// End SqlPrettyWriterTest.java

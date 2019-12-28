@@ -528,5 +528,3 @@ public class TypeCoercionImpl extends AbstractTypeCoercion {
     return coerced;
   }
 }
-
-// End TypeCoercionImpl.java

@@ -169,5 +169,3 @@ public class SplunkTableScan
             }));
   }
 }
-
-// End SplunkTableScan.java

@@ -192,5 +192,3 @@ public class ToLogicalConverter extends RelShuttleImpl {
         + relNode.getClass().getName());
   }
 }
-
-// End ToLogicalConverter.java

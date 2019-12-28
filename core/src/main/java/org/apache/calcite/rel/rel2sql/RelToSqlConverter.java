@@ -956,5 +956,3 @@ public class RelToSqlConverter extends SqlImplementor
     }
   }
 }
-
-// End RelToSqlConverter.java

@@ -67,4 +67,3 @@ class WithScope extends ListScope {
     super.resolveTable(names, nameMatcher, path, resolved);
   }
 }
-// End WithScope.java

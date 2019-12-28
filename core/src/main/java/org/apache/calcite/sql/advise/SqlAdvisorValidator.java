@@ -206,5 +206,3 @@ public class SqlAdvisorValidator extends SqlValidatorImpl {
     return true; // no reason not to be lenient
   }
 }
-
-// End SqlAdvisorValidator.java

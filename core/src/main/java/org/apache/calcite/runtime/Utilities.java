@@ -255,5 +255,3 @@ public class Utilities {
     return Pattern.builder();
   }
 }
-
-// End Utilities.java

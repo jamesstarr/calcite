@@ -107,4 +107,3 @@ public class BasicSqlTypeRtti extends RuntimeTypeInformation {
     return "new BasicSqlTypeRtti(" + this.getTypeString() + ")";
   }
 }
-// End BasicSqlTypeRtti.java

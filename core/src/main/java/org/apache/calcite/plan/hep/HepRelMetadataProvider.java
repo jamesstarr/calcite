@@ -66,5 +66,3 @@ class HepRelMetadataProvider implements RelMetadataProvider {
     return ImmutableMultimap.of();
   }
 }
-
-// End HepRelMetadataProvider.java

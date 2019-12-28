@@ -622,5 +622,3 @@ public abstract class Aggregate extends SingleRel implements Hintable {
     }
   }
 }
-
-// End Aggregate.java

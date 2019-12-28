@@ -135,5 +135,3 @@ public final class LogicalFilter extends Filter {
         .itemIf("variablesSet", variablesSet, !variablesSet.isEmpty());
   }
 }
-
-// End LogicalFilter.java

@@ -19,4 +19,3 @@
  * Support for runtime type information.
  */
 package org.apache.calcite.runtime.rtti;
-// End package-info.java

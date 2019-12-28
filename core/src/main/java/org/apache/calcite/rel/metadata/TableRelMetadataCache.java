@@ -58,5 +58,3 @@ public class TableRelMetadataCache implements RelMetadataCache {
     return map.put(relNode, args, value);
   }
 }
-
-// End TableRelMetadataCache.java

@@ -62,4 +62,3 @@ public class VariantNull extends VariantValue {
     return "null";
   }
 }
-// End VariantNull.java

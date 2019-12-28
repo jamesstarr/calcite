@@ -219,5 +219,3 @@ public class SqlCastFunction extends SqlFunction {
     }
   }
 }
-
-// End SqlCastFunction.java

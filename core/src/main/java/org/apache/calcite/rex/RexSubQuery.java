@@ -206,5 +206,3 @@ public class RexSubQuery extends RexCall {
   }
 
 }
-
-// End RexSubQuery.java

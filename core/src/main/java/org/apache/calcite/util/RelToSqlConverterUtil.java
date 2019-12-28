@@ -136,4 +136,3 @@ public abstract class RelToSqlConverterUtil {
     return inputString;
   }
 }
-// End RelToSqlConverterUtil.java

@@ -242,5 +242,3 @@ public class HintStrategyTable {
     }
   }
 }
-
-// End HintStrategyTable.java

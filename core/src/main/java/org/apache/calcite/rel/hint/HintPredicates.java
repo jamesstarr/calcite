@@ -74,5 +74,3 @@ public abstract class HintPredicates {
     return new CompositeHintPredicate(CompositeHintPredicate.Composition.OR, hintPredicates);
   }
 }
-
-// End HintPredicates.java

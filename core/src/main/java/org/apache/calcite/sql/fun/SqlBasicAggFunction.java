@@ -165,4 +165,3 @@ public final class SqlBasicAggFunction extends SqlAggFunction {
         allowsNullTreatment, percentile);
   }
 }
-// End SqlBasicAggFunction.java

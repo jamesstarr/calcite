@@ -78,5 +78,3 @@ public class Fixture {
           ImmutableList.of("i", "j")
       ), true);
 }
-
-// End Fixture.java

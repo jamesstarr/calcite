@@ -4424,5 +4424,3 @@ public abstract class RelOptUtil {
     }
   }
 }
-
-// End RelOptUtil.java

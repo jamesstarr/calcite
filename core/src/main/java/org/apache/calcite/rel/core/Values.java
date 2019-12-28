@@ -208,5 +208,3 @@ public abstract class Values extends AbstractRelNode {
     return relWriter;
   }
 }
-
-// End Values.java

@@ -595,5 +595,3 @@ public class SqlTypeFactoryImpl extends RelDataTypeFactoryImpl {
     }
   }
 }
-
-// End SqlTypeFactoryImpl.java

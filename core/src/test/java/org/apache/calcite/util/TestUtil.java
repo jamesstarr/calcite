@@ -261,5 +261,3 @@ public abstract class TestUtil {
     return sw.toString();
   }
 }
-
-// End TestUtil.java

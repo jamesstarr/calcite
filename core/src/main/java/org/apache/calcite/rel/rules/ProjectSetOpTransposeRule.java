@@ -131,5 +131,3 @@ public class ProjectSetOpTransposeRule
     Config withPreserveExprCondition(PushProjector.ExprCondition condition);
   }
 }
-
-// End ProjectSetOpTransposeRule.java

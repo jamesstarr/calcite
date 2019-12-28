@@ -198,5 +198,3 @@ public class SemiJoinProjectTransposeRule
     }
   }
 }
-
-// End SemiJoinProjectTransposeRule.java

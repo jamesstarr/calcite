@@ -52,5 +52,3 @@ public class RedshiftSqlDialect extends SqlDialect {
     return false;
   }
 }
-
-// End RedshiftSqlDialect.java

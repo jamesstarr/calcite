@@ -328,5 +328,3 @@ public class SqlCaseOperator extends SqlOperator {
     writer.endList(frame);
   }
 }
-
-// End SqlCaseOperator.java

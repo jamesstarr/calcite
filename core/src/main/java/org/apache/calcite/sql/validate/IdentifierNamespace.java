@@ -289,5 +289,3 @@ public class IdentifierNamespace extends AbstractNamespace {
     return table.supportsModality(modality);
   }
 }
-
-// End IdentifierNamespace.java

@@ -1211,5 +1211,3 @@ public class RexToLixTranslator {
     private AlwaysNull() {}
   }
 }
-
-// End RexToLixTranslator.java

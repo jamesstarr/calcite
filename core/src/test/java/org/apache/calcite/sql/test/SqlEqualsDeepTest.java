@@ -32,8 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class SqlEqualsDeepTest {
 
-  @Test
-  public void testCountEqualsDeep() throws SqlParseException {
+  @Test public void testCountEqualsDeep() throws SqlParseException {
     assertEqualsDeep("count(a)", "count(a)", true);
     assertEqualsDeep("count(distinct a)", "count(distinct a)", true);
     assertEqualsDeep("count(distinct a)", "count(a)", false);
@@ -53,5 +52,3 @@ public class SqlEqualsDeepTest {
     return SqlParser.create(sql).parseExpression();
   }
 }
-
-// End SqlEqualsDeepTest.java

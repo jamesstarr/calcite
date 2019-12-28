@@ -272,5 +272,3 @@ public class RelMdUniqueKeys
     return null;
   }
 }
-
-// End RelMdUniqueKeys.java

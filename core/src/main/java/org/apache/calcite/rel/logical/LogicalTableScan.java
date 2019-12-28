@@ -120,5 +120,3 @@ public final class LogicalTableScan extends TableScan {
     return new LogicalTableScan(getCluster(), traitSet, hintList, table);
   }
 }
-
-// End LogicalTableScan.java

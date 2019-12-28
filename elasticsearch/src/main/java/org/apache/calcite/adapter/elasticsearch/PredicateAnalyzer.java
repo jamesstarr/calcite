@@ -997,5 +997,3 @@ class PredicateAnalyzer {
     }
   }
 }
-
-// End PredicateAnalyzer.java

@@ -85,5 +85,3 @@ public class ProjectToCalcRule extends RelRule<ProjectToCalcRule.Config>
     }
   }
 }
-
-// End ProjectToCalcRule.java

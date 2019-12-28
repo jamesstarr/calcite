@@ -1956,5 +1956,3 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     }
   }
 }
-
-// End VolcanoPlanner.java

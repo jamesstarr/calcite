@@ -204,5 +204,3 @@ public final class LogicalJoin extends Join {
         left, right, condition, variablesSet, joinType, semiJoinDone, systemFieldList);
   }
 }
-
-// End LogicalJoin.java

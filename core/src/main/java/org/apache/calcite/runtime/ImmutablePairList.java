@@ -112,5 +112,3 @@ public interface ImmutablePairList<T, U> extends PairList<T, U> {
 
   @Override ImmutablePairList<T, U> subList(int fromIndex, int toIndex);
 }
-
-// End ImmutablePairList.java

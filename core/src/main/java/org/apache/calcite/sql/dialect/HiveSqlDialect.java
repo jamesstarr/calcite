@@ -141,5 +141,3 @@ public class HiveSqlDialect extends SqlDialect {
     return super.getCastSpec(type);
   }
 }
-
-// End HiveSqlDialect.java

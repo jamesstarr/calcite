@@ -42,4 +42,3 @@ public abstract class VariantValue {
   // Implementation of the array index operator for VARIANT values
   public abstract @Nullable Object item(Object index);
 }
-// End VariantValue.java

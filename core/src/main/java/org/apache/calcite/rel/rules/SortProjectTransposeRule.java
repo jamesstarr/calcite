@@ -196,5 +196,3 @@ public class SortProjectTransposeRule
     }
   }
 }
-
-// End SortProjectTransposeRule.java

@@ -998,5 +998,3 @@ public interface SqlValidator {
     Config withAmbiguousColumnAllowed(boolean allowed);
   }
 }
-
-// End SqlValidator.java

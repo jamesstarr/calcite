@@ -15,7 +15,6 @@
  * limitations under the License.
  *
  */
-
 plugins {
     kotlin("jvm")
     id("com.github.vlsi.ide")

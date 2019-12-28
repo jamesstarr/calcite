@@ -175,5 +175,3 @@ public class FoodmartTest {
     });
   }
 }
-
-// End FoodmartTest.java

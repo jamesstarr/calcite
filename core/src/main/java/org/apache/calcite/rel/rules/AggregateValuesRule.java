@@ -81,7 +81,8 @@ public class AggregateValuesRule
       switch (aggregateCall.getAggregation().getKind()) {
       case COUNT:
       case SUM0:
-        literals.add((RexLiteral) rexBuilder.makeLiteral(
+        literals.add(
+            (RexLiteral) rexBuilder.makeLiteral(
             BigDecimal.ZERO, aggregateCall.getType(), false));
         break;
 
@@ -128,5 +129,3 @@ public class AggregateValuesRule
     }
   }
 }
-
-// End AggregateValuesRule.java

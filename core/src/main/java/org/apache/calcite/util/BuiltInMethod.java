@@ -645,5 +645,3 @@ public enum BuiltInMethod {
     return method.getName();
   }
 }
-
-// End BuiltInMethod.java

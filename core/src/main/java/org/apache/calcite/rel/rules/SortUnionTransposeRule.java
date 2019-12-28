@@ -132,5 +132,3 @@ public class SortUnionTransposeRule
     }
   }
 }
-
-// End SortUnionTransposeRule.java

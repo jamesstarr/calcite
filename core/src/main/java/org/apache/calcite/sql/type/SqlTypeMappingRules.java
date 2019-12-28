@@ -95,5 +95,3 @@ public abstract class SqlTypeMappingRules {
     }
   }
 }
-
-// End SqlTypeMappingRules.java

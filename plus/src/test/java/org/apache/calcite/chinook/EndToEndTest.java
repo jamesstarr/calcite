@@ -55,5 +55,3 @@ public class EndToEndTest extends QuidemTest {
     return new ConnectionFactory();
   }
 }
-
-// End EndToEndTest.java

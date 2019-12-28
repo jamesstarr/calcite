@@ -285,5 +285,3 @@ public class EnumerableCorrelateTest {
         .withSchema("s", new ReflectiveSchema(schema));
   }
 }
-
-// End EnumerableCorrelateTest.java

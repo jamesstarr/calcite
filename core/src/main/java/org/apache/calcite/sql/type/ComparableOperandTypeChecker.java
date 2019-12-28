@@ -120,5 +120,3 @@ public class ComparableOperandTypeChecker extends SameOperandTypeChecker {
     return consistency;
   }
 }
-
-// End ComparableOperandTypeChecker.java

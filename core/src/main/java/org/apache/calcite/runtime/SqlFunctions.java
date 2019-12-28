@@ -2861,5 +2861,3 @@ public class SqlFunctions {
   }
 
 }
-
-// End SqlFunctions.java

@@ -59,5 +59,3 @@ public class SqlRandFunction extends SqlFunction {
     return false;
   }
 }
-
-// End SqlRandFunction.java

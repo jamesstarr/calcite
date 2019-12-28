@@ -592,5 +592,3 @@ public abstract class DelegatingScope implements SqlValidatorScope {
     return parent;
   }
 }
-
-// End DelegatingScope.java

@@ -74,5 +74,3 @@ public class SqlTableRef extends SqlCall {
     }
   }
 }
-
-// End SqlTableRef.java

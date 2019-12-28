@@ -215,5 +215,3 @@ public class ProjectJoinTransposeRule
     }
   }
 }
-
-// End ProjectJoinTransposeRule.java

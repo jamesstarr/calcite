@@ -265,5 +265,3 @@ public class ProjectWindowTransposeRule
     }
   }
 }
-
-// End ProjectWindowTransposeRule.java

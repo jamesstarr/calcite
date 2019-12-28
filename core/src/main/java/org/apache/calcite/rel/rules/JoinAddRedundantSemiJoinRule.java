@@ -114,5 +114,3 @@ public class JoinAddRedundantSemiJoinRule
     }
   }
 }
-
-// End JoinAddRedundantSemiJoinRule.java

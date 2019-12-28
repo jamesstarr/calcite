@@ -58,4 +58,3 @@ public class VariantSqlNull extends VariantSqlValue {
     return runtimeType == variant.runtimeType;
   }
 }
-// End VariantSqlNull.java

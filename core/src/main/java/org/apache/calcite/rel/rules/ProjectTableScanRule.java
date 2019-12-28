@@ -170,5 +170,3 @@ public class ProjectTableScanRule
     }
   }
 }
-
-// End ProjectTableScanRule.java

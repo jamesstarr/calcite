@@ -1797,5 +1797,3 @@ public class DruidQuery extends AbstractRelNode implements BindableRel {
 
   }
 }
-
-// End DruidQuery.java

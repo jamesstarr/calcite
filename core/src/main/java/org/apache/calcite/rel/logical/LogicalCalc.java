@@ -144,5 +144,3 @@ public final class LogicalCalc extends Calc {
         ImmutableList.copyOf(hintList), input, program);
   }
 }
-
-// End LogicalCalc.java

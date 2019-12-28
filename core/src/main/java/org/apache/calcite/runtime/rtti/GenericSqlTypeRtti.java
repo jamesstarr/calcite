@@ -81,4 +81,3 @@ public class GenericSqlTypeRtti extends RuntimeTypeInformation {
     return typeArguments.length;
   }
 }
-// End GenericSqlTypeRtti.java

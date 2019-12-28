@@ -236,5 +236,3 @@ public abstract class SemiJoinRule
     @Override SemiJoinRule toRule();
   }
 }
-
-// End SemiJoinRule.java

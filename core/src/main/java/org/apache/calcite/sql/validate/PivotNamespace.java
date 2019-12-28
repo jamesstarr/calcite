@@ -42,5 +42,3 @@ public class PivotNamespace extends AbstractNamespace {
     return pivot;
   }
 }
-
-// End PivotNamespace.java

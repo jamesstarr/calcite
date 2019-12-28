@@ -96,5 +96,3 @@ public final class PhysTypeTest {
     assertEquals(Expressions.toString(e), expected);
   }
 }
-
-// End PhysTypeTest.java

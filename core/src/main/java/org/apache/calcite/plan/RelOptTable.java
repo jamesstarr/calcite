@@ -177,5 +177,3 @@ public interface RelOptTable extends Wrapper {
         RelOptCluster cluster, List<RelHint> hints);
   }
 }
-
-// End RelOptTable.java

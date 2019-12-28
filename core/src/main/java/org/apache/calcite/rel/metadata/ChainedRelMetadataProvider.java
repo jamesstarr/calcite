@@ -150,5 +150,3 @@ public class ChainedRelMetadataProvider implements RelMetadataProvider {
     }
   }
 }
-
-// End ChainedRelMetadataProvider.java

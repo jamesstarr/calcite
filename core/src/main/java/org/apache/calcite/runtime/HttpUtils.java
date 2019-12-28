@@ -123,5 +123,3 @@ public class HttpUtils {
     }
   }
 }
-
-// End HttpUtils.java

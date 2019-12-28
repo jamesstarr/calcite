@@ -148,5 +148,3 @@ public class GeodeEmbeddedPolicy implements BeforeAllCallback, AfterAllCallback 
     }
   }
 }
-
-// End GeodeEmbeddedPolicy.java

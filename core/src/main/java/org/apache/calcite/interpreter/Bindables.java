@@ -845,5 +845,3 @@ public class Bindables {
   }
 
 }
-
-// End Bindables.java
