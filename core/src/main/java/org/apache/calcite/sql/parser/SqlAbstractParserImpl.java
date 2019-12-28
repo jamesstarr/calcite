@@ -454,7 +454,9 @@ public abstract class SqlAbstractParserImpl {
       final List<SqlOperator> list = new ArrayList<>();
       getOperatorTable().lookupOperatorOverloads(funName, funcType, SqlSyntax.FUNCTION, list,
           SqlNameMatchers.withCaseSensitive(funName.isComponentQuoted(0)));
-      if (list.size() == 1) {
+      // Don't immediately resolve EXTRACT functions due to potential overloading
+      // between datetime EXTRACT and library-specific EXTRACT functions
+      if (list.size() == 1 && !"EXTRACT".equals(funName.getSimple())) {
         fun = list.get(0);
       }
     }
