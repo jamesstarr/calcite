@@ -6630,6 +6630,9 @@ SqlNode BuiltinFunctionCall() :
         (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 423726151 ([CALCITE-3580] Oracle EXTRACT(XML) Function Support (ritesh-kapoor))
             <NANOSECOND> { unit = TimeUnit.NANOSECOND; }
         |   <MICROSECOND> { unit = TimeUnit.MICROSECOND; }
 =======

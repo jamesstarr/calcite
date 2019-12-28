@@ -250,6 +250,7 @@ SELECT "EXTRACT"(
 
 !ok
 
+<<<<<<< HEAD
 SELECT EXISTSNODE(
             '<Article><Title>Article1</Title><Authors><Author>Foo</Author><Author>Bar</Author></Authors><Body>article text</Body></Article>'
             , '/Article/Title'
@@ -293,4 +294,7 @@ select replace('ciAao', 'A', 'ciao');
 =======
 
 >>>>>>> 6c8821c46 ([CALCITE-3579] Oracle XMLTRANSFORM Function Support (ritesh-kapoor))
+=======
+
+>>>>>>> 423726151 ([CALCITE-3580] Oracle EXTRACT(XML) Function Support (ritesh-kapoor))
 # End functions.iq

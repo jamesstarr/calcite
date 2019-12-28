@@ -18,6 +18,7 @@ package org.apache.calcite.sql.test;
 
 import org.apache.calcite.avatica.util.DateTimeUtils;
 import org.apache.calcite.config.CalciteConnectionProperty;
+import org.apache.calcite.config.Lex;
 import org.apache.calcite.linq4j.Linq4j;
 import org.apache.calcite.plan.Strong;
 import org.apache.calcite.rel.type.RelDataType;
@@ -365,7 +366,7 @@ public abstract class SqlOperatorBaseTest {
 
   /** Creates a tester with special sql library. */
   protected SqlTester tester(SqlLibrary library) {
-    return tester.withOperatorTable(
+    SqlTester result = tester.withOperatorTable(
         SqlLibraryOperatorTableFactory.INSTANCE
             .getOperatorTable(SqlLibrary.STANDARD, library))
         .withConnectionFactory(
@@ -373,6 +374,13 @@ public abstract class SqlOperatorBaseTest {
                 .with(new CalciteAssert
                     .AddSchemaSpecPostProcessor(CalciteAssert.SchemaSpec.HR))
                 .with("fun", library.name()));
+
+    // Set appropriate lexical policy for the library
+    if (library == SqlLibrary.ORACLE) {
+      result = result.withLex(Lex.ORACLE);
+    }
+
+    return result;
   }
 
   //--- Tests -----------------------------------------------------------
@@ -5352,6 +5360,42 @@ public abstract class SqlOperatorBaseTest {
             + "  </xsl:template>"
             + "</xsl:stylesheet>')",
         "    Article - My Article    Authors:     - Mr. Foo    - Mr. Bar",
+        "VARCHAR(2000)");
+  }
+
+  @Test public void testExtractXml() {
+    SqlTester sqlTester = tester(SqlLibrary.ORACLE);
+
+    sqlTester.checkFails("\"EXTRACT\"('', '<','a')",
+        "Invalid input for EXTRACT xpath: '.*", true);
+    sqlTester.checkFails("\"EXTRACT\"('', '<')",
+        "Invalid input for EXTRACT xpath: '.*", true);
+    sqlTester.checkNull("\"EXTRACT\"('', NULL)");
+    sqlTester.checkNull("\"EXTRACT\"(NULL,'')");
+
+    sqlTester.checkString(
+        "\"EXTRACT\"('<Article><Title>Article1</Title><Authors><Author>Foo</Author><Author>Bar"
+            + "</Author></Authors><Body>article text"
+            + ".</Body></Article>', '/Article/Title')",
+        "<Title>Article1</Title>",
+        "VARCHAR(2000)");
+
+    sqlTester.checkString(
+        "\"EXTRACT\"('<Article><Title>Article1</Title><Title>Article2</Title><Authors><Author>Foo"
+            + "</Author><Author>Bar</Author></Authors><Body>article text"
+            + ".</Body></Article>', '/Article/Title')",
+        "<Title>Article1</Title><Title>Article2</Title>",
+        "VARCHAR(2000)");
+
+    sqlTester.checkString(
+        "\"EXTRACT\"(\n"
+            + "'<books xmlns=\"http://www.contoso"
+            + ".com/books\"><book><title>Title</title><author>Author Name</author><price>5"
+            + ".50</price></book></books>'"
+            + ", '/books:books/books:book', 'books=\"http://www.contoso.com/books\"'"
+            + ")",
+        "<book xmlns=\"http://www.contoso.com/books\"><title>Title</title><author>Author "
+            + "Name</author><price>5.50</price></book>",
         "VARCHAR(2000)");
   }
 
