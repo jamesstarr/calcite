@@ -312,6 +312,7 @@ public class BigQuerySqlDialect extends SqlDialect {
       new SqlSetOperator("INTERSECT DISTINCT", SqlKind.INTERSECT, 18, false);
 
 }
+<<<<<<< HEAD
 
   @Override protected boolean identifierNeedsQuote(String val) {
     return !IDENTIFIER_REGEX.matcher(val).matches()
@@ -523,3 +524,5 @@ public class BigQuerySqlDialect extends SqlDialect {
       new SqlSetOperator("INTERSECT DISTINCT", SqlKind.INTERSECT, 18, false);
 
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

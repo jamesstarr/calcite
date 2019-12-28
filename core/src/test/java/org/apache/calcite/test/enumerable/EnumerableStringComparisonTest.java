@@ -247,8 +247,7 @@ class EnumerableStringComparisonTest {
         .withSchema("s", new ReflectiveSchema(new JdbcTest.HrSchema()));
   }
 }
-<<<<<<< HEAD
-=======
 
 // End EnumerableStringComparisonTest.java
->>>>>>> 02d8ed362 ([CALCITE-3951] Support different string comparison based on SqlCollation)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

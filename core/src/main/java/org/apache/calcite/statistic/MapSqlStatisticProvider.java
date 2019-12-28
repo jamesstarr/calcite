@@ -164,8 +164,7 @@ public enum MapSqlStatisticProvider implements SqlStatisticProvider {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End MapSqlStatisticProvider.java
->>>>>>> 0a6ba20d6 ([CALCITE-2914] Add a new statistic provider, to improve how LatticeSuggester deduces foreign keys)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

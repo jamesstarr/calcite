@@ -1312,6 +1312,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
     }
   }
 }
+<<<<<<< HEAD
 
   /**
    * An immutable object capturing the set of options to be used for reducing
@@ -1389,3 +1390,5 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

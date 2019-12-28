@@ -175,8 +175,7 @@ public class SqlUnpivot extends SqlCall {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SqlUnpivot.java
->>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

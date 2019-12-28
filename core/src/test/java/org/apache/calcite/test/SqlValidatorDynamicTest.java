@@ -146,8 +146,7 @@ public class SqlValidatorDynamicTest extends SqlValidatorTestCase {
   }
 
 }
-<<<<<<< HEAD
-=======
 
 // End SqlValidatorDynamicTest.java
->>>>>>> 954dccdd1 ([CALCITE-2535] Enable SqlTester.checkFails (previously it was a no-op) (Hongze Zhang))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

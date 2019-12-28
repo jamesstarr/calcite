@@ -199,8 +199,7 @@ public class EnumerableHashJoinTest {
         .withSchema("s", new ReflectiveSchema(schema));
   }
 }
-<<<<<<< HEAD
-=======
 
 // End EnumerableHashJoinTest.java
->>>>>>> dad1a9684 ([CALCITE-2973],[CALCITE-3284] Allow joins(hash,semi,anti) that have equi conditions to be executed using a hash join algorithm)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

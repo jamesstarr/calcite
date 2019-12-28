@@ -154,8 +154,7 @@ public class AggregateJoinJoinRemoveRule extends RelOptRule {
     call.transformTo(newAggregate);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End AggregateJoinJoinRemoveRule.java
->>>>>>> 79d8735c6 ([CALCITE-2712] Add rule to remove null-generating side of a Join)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

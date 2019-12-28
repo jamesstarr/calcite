@@ -163,7 +163,6 @@ public class SortJoinCopyRule extends RelOptRule {
     call.transformTo(sortCopy);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SortJoinCopyRule.java
+=======

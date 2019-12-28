@@ -50,8 +50,7 @@ public class JsonScannableTable extends JsonTable
     };
   }
 }
-<<<<<<< HEAD
-=======
 
 // End JsonScannableTable.java
->>>>>>> 9addb8c46 ([CALCITE-3176] File adapter for parsing JSON files)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

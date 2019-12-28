@@ -65,6 +65,7 @@ public class UnionEliminatorRule
     }
   }
 }
+<<<<<<< HEAD
 
   @Override public boolean autoPruneOld() {
     return true;
@@ -86,3 +87,5 @@ public class UnionEliminatorRule
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

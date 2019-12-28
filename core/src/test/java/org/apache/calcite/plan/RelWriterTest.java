@@ -531,6 +531,7 @@ class RelWriterTest {
     return rel;
   }
 }
+<<<<<<< HEAD
 
   @Test void testTrim() {
     final FrameworkConfig config = RelBuilderTest.config().build();
@@ -876,3 +877,5 @@ class RelWriterTest {
             .build();
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

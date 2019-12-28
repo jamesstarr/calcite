@@ -135,7 +135,6 @@ public class SqlRowTypeNameSpec extends SqlTypeNameSpec {
             .collect(Collectors.toList()));
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SqlRowTypeNameSpec.java
+=======

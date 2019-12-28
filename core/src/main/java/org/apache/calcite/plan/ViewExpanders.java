@@ -86,8 +86,7 @@ public abstract class ViewExpanders {
     };
   }
 }
-<<<<<<< HEAD
-=======
 
 // End ViewExpanders.java
->>>>>>> ca65868f2 ([CALCITE-2441] RelBuilder.scan should expand TranslatableTable and views)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

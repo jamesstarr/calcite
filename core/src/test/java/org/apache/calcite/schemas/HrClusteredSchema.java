@@ -127,6 +127,9 @@ public final class HrClusteredSchema extends AbstractSchema {
 
   }
 }
+<<<<<<< HEAD
 >>>>>>> 96c501189 (Remove trivial default constructors from test code)
 
 // End HrClusteredSchema.java
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -307,6 +307,7 @@ public class RexCall extends RexNode {
     return hash;
   }
 }
+<<<<<<< HEAD
 
   private Pair<SqlOperator, List<RexNode>> getNormalized() {
     if (this.normalized == null) {
@@ -337,3 +338,5 @@ public class RexCall extends RexNode {
     return hash;
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

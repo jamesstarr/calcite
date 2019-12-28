@@ -181,108 +181,6 @@ public class Enumerables {
         Consumer<TResult> consumer);
   }
 }
-
-          // State of each partition.
-          final Map<TKey, Matcher.PartitionState<E>> partitionStates =
-              new HashMap<>();
-
-          int inputRow = -1;
-
-          final Deque<TResult> emitRows = new ArrayDeque<>();
-
-          /** Current result row. Null if no row is ready. */
-          TResult resultRow;
-
-          /** Match counter is 1 based in Oracle */
-          final AtomicInteger matchCounter = new AtomicInteger(1);
-
-          public TResult current() {
-            Objects.requireNonNull(resultRow);
-            return resultRow;
-          }
-
-          public boolean moveNext() {
-            for (;;) {
-              resultRow = emitRows.pollFirst();
-              if (resultRow != null) {
-                return true;
-              }
-              // No rows are currently read to emit. Read the next input row,
-              // see whether it completes a match (or matches), and if so, add
-              // the resulting rows to the buffer.
-              if (!inputEnumerator.moveNext()) {
-                return false;
-              }
-              ++inputRow;
-              final E row = inputEnumerator.current();
-              final TKey key = keySelector.apply(row);
-              final Matcher.PartitionState<E> partitionState =
-                  partitionStates.computeIfAbsent(key,
-                      k -> matcher.createPartitionState(history, future));
-
-              partitionState.getMemoryFactory().add(row);
-
-
-              matcher.matchOne(partitionState.getRows(), partitionState,
-                  // TODO 26.12.18 jf: add row states (whatever this is?)
-                  matches -> emitter.emit(matches.rows, null, matches.symbols,
-                      matchCounter.getAndIncrement(), emitRows::add));
-/*
-              recentRows.add(e);
-              int earliestRetainedRow = Integer.MAX_VALUE;
-              for (int i = 0; i < partitionState.incompleteMatches.size(); i++) {
-                MatchState match = partitionState.incompleteMatches.get(i);
-                earliestRetainedRow = Math.min(earliestRetainedRow, match.firstRow);
-                final int state = automaton.nextState(match.state, e);
-                switch (state) {
-                case Automaton.ACCEPT:
-                  final List<E> matchedRows =
-                      recentRows.subList(0, 0); // TODO:
-                  final List<Integer> rowStates = ImmutableList.of(); // TODO:
-                  emitRows.addAll(
-                      emitter.emit(matchedRows, rowStates,
-                          partitionState.matchCount++));
-                  // fall through
-                case Automaton.FAIL:
-                  partitionState.incompleteMatches.remove(i--);
-                  break;
-                default:
-                  match.state = state;
-                }
-              }
-              // Try to start a match based on the current row
-              final int state = automaton.nextState(Automaton.START_STATE, e);
-              switch (state) {
-              case Automaton.ACCEPT:
-                final List<E> matchedRows = ImmutableList.of(e);
-                final List<Integer> rowStates = ImmutableList.of(state);
-                emitRows.addAll(
-                    emitter.emit(matchedRows, rowStates,
-                        partitionState.matchCount++));
-                // fall through
-              case Automaton.FAIL:
-                // since it immediately succeeded or failed, don't add
-                // it to the queue
-                break;
-              default:
-                partitionState.incompleteMatches.add(
-                    new MatchState(inputRow, state));
-              }
-*/
-            }
-          }
-
-          public void reset() {
-            throw new UnsupportedOperationException();
-          }
-
-          public void close() {
-            inputEnumerator.close();
-          }
-        };
-      }
-    };
-=======
   }
 
   /** Given a match (a list of rows, and their states) produces a list
@@ -295,3 +193,4 @@ public class Enumerables {
         Consumer<TResult> consumer);
   }
 }
+=======

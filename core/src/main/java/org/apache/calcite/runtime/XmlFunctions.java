@@ -283,6 +283,9 @@ public class XmlFunctions {
     }
   }
 }
+<<<<<<< HEAD
 
 // End XmlFunctions.java
 >>>>>>> 6cb2a0367 ([CALCITE-3552] Support MySQL ExtractValue function)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

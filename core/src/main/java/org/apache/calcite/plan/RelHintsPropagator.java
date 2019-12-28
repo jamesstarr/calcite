@@ -38,7 +38,6 @@ public interface RelHintsPropagator {
    */
   RelNode propagate(RelNode oriNode, RelNode equiv);
 }
-<<<<<<< HEAD
-=======
 // End RelHintsPropagator.java
->>>>>>> 5f758785e ([CALCITE-3736] Add an interface in RelOptRuleCall to customize the propagation of hints before registering into planner rule)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

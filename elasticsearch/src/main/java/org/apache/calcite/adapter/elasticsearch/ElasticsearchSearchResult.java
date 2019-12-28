@@ -169,8 +169,7 @@ public class ElasticsearchSearchResult {
   }
 
 }
-<<<<<<< HEAD
-=======
 
 // End ElasticsearchSearchResult.java
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

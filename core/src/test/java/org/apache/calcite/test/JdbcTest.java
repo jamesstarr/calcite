@@ -6150,8 +6150,7 @@ public class JdbcTest {
   }
 
   /** Tests accessing a column in a JDBC source whose type is DATE. */
-  @Test
-  public void testGetDate() throws Exception {
+  @Test public void testGetDate() throws Exception {
     CalciteAssert.that()
         .with(CalciteAssert.Config.JDBC_FOODMART)
         .doWithConnection(connection -> {
@@ -7316,8 +7315,7 @@ public class JdbcTest {
         .returns("C1=1; C2=2; C3=1; C4=1\n");
   }
 
-  @Test
-  public void testJsonPretty() {
+  @Test public void testJsonPretty() {
     CalciteAssert.that()
         .query("SELECT JSON_PRETTY(v) AS c1\n"
             + "FROM (VALUES ('{\"a\": [10, true],\"b\": [10, true]}')) as t(v)\n"
@@ -7976,12 +7974,6 @@ public class JdbcTest {
     FR("fr", "mercredi", "dimanche", "janvier", "f\u00e9vrier", 6),
     FR_FR("fr_FR", "mercredi", "dimanche", "janvier", "f\u00e9vrier", 6),
     FR_CA("fr_CA", "mercredi", "dimanche", "janvier", "f\u00e9vrier", 6),
-<<<<<<< HEAD
-    ZH_CN("zh_CN", "\u661f\u671f\u4e09", "\u661f\u671f\u65e5", "\u4e00\u6708",
-        "\u4e8c\u6708", 6),
-    ZH("zh", "\u661f\u671f\u4e09", "\u661f\u671f\u65e5", "\u4e00\u6708",
-        "\u4e8c\u6708", 6);
-=======
         shorten("January"), shorten("February")),
     EN("en", "Wednesday", "Sunday", "January", "February"),
     FR("fr", "mercredi", "dimanche", "janvier", "f\u00e9vrier"),
@@ -8018,6 +8010,7 @@ public class JdbcTest {
     }
   }
 }
+<<<<<<< HEAD
 
     private static String shorten(String name) {
       // In root locale, for Java versions 9 and higher, day and month names
@@ -8044,3 +8037,4 @@ public class JdbcTest {
     }
   }
 }
+=======

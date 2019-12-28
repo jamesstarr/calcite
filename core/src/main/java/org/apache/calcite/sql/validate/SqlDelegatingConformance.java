@@ -80,6 +80,9 @@ public class SqlDelegatingConformance extends SqlAbstractConformance {
 =======
 
 }
+<<<<<<< HEAD
 >>>>>>> 6147b92cd ([CALCITE-3789] Supports Presto style unnest with items alias (Will Yu))
 
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

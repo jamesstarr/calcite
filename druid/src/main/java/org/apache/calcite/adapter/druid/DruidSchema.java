@@ -94,6 +94,7 @@ public class DruidSchema extends AbstractSchema {
         complexMetrics);
   }
 }
+<<<<<<< HEAD
 >>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
   private Table table(String tableName, DruidConnectionImpl connection) {
@@ -109,3 +110,5 @@ public class DruidSchema extends AbstractSchema {
         complexMetrics);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

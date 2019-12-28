@@ -1163,6 +1163,7 @@ public abstract class RelOptUtil {
     }
   }
 }
+<<<<<<< HEAD
 
   /**
    * A {@code RelShuttle} which propagates the given hints to the sub-tree from the root node.
@@ -1285,3 +1286,5 @@ public abstract class RelOptUtil {
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

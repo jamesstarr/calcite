@@ -37,41 +37,11 @@ import org.apache.calcite.rel.metadata.RelMdUtil;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rex.RexNode;
   }
-<<<<<<< HEAD
-
-  Expression generatePredicate(EnumerableRelImplementor implementor,
-      PhysType leftPhysType, PhysType rightPhysType,
-      RexNode condition) {
-    BlockBuilder builder = new BlockBuilder();
-    final ParameterExpression left_ =
-        Expressions.parameter(leftPhysType.getJavaRowType(), "left");
-    final ParameterExpression right_ =
-        Expressions.parameter(rightPhysType.getJavaRowType(), "right");
-    final RexProgramBuilder program =
-        new RexProgramBuilder(
-            implementor.getTypeFactory().builder()
-                .addAll(left.getRowType().getFieldList())
-                .addAll(right.getRowType().getFieldList())
-                .build(),
-            getCluster().getRexBuilder());
-    program.addCondition(condition);
-    builder.add(
-        Expressions.return_(null,
-            RexToLixTranslator.translateCondition(program.getProgram(),
-                implementor.getTypeFactory(),
-                builder,
-                new RexToLixTranslator.InputGetterImpl(
-                    ImmutableList.of(Pair.of(left_, leftPhysType),
-                        Pair.of(right_, rightPhysType))),
-                implementor.allCorrelateVariables,
-                implementor.getConformance())));
-    return Expressions.lambda(Predicate2.class, builder.toBlock(), left_,
-        right_);
-  }
-=======
 >>>>>>> 483a37eed ([CALCITE-3309] Refactor generatePredicate method from EnumerableNestedLoopJoin/EnumerableHashJoin/EnumerableBatchNestedLoopJoin into a single location)
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 
 // End EnumerableHashJoin.java
+=======

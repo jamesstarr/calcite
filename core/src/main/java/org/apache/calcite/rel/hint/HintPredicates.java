@@ -74,8 +74,7 @@ public abstract class HintPredicates {
     return new CompositeHintPredicate(CompositeHintPredicate.Composition.OR, hintPredicates);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End HintPredicates.java
->>>>>>> 79de2ff8b ([CALCITE-3812] Refactor HintStrategy to HintPredicate (#158))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -83,7 +83,6 @@ public class SortRemoveConstantKeysRule extends RelOptRule {
     call.getPlanner().setImportance(sort, 0.0);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SortRemoveConstantKeysRule.java
+=======

@@ -77,5 +77,3 @@ class SqlTypeFixture {
           ImmutableList.of(sqlInt, sqlInt),
           ImmutableList.of("i", "j")), true);
 }
-
-// End SqlTypeFixture.java

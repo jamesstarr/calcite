@@ -84,6 +84,7 @@ public interface InitializerContext {
    */
   RexNode convertExpression(SqlNode expr);
 }
+<<<<<<< HEAD
 
   /**
    * Validate the expression with a base table row type. The expression may reference the fields
@@ -108,3 +109,5 @@ public interface InitializerContext {
    */
   RexNode convertExpression(SqlNode expr);
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

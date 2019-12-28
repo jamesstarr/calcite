@@ -116,6 +116,7 @@ public class JoinAddRedundantSemiJoinRule
     }
   }
 }
+<<<<<<< HEAD
 >>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
@@ -134,3 +135,5 @@ public class JoinAddRedundantSemiJoinRule
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

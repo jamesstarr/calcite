@@ -742,6 +742,7 @@ public class SubQueryRemoveRule
     Config withMatchHandler(MatchHandler<SubQueryRemoveRule> matchHandler);
   }
 }
+<<<<<<< HEAD
 
     Config FILTER = EMPTY
         .withOperandSupplier(b ->
@@ -772,3 +773,5 @@ public class SubQueryRemoveRule
     Config withMatchHandler(MatchHandler<SubQueryRemoveRule> matchHandler);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -1612,6 +1612,9 @@ public class PigRelOpTest extends PigRelTestBase {
         .assertSql(is(sql));
   }
 }
+<<<<<<< HEAD
 >>>>>>> 3c72df38c ([CALCITE-3416] SQL Dialects DEFAULTs should be more extensible)
 
 // End PigRelOpTest.java
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

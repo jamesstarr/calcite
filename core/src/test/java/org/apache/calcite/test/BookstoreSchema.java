@@ -141,8 +141,7 @@ public final class BookstoreSchema {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End BookstoreSchema.java
->>>>>>> d52497861 ([CALCITE-2404] Implement access to structured-types in enumerable runtime (Stamatis Zampetakis))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -32,8 +32,7 @@ public class JsonTypeAttribute {
    */
   public String type;
 }
-<<<<<<< HEAD
-=======
 
 // End JsonTypeAttribute.java
->>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

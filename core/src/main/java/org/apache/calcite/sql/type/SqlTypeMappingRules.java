@@ -95,8 +95,7 @@ public abstract class SqlTypeMappingRules {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SqlTypeMappingRules.java
->>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

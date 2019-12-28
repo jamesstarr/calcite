@@ -144,6 +144,7 @@ public class HiveSqlDialect extends SqlDialect {
     return super.getCastSpec(type);
   }
 }
+<<<<<<< HEAD
 >>>>>>> 6fad66702 ([CALCITE-3282] In JDBC adapter, when generating SQL for Hive, generate INTEGER type as INT (huangfeng))
 
   @Override public boolean supportsGroupByWithRollup() {
@@ -170,3 +171,5 @@ public class HiveSqlDialect extends SqlDialect {
     return super.getCastSpec(type);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

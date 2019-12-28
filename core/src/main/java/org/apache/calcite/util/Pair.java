@@ -532,6 +532,7 @@ public class Pair<T1 extends Object, T2 extends Object>
     }
   }
 }
+<<<<<<< HEAD
 >>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 
   /** Iterator that returns the first element of a collection paired with every
@@ -692,3 +693,5 @@ public class Pair<T1 extends Object, T2 extends Object>
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

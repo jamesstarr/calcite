@@ -161,5 +161,8 @@ public class AggregateProjectMergeRule
     }
   }
 }
+<<<<<<< HEAD
 >>>>>>> 79d8735c6 ([CALCITE-2712] Add rule to remove null-generating side of a Join)
 // End AggregateProjectMergeRule.java
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

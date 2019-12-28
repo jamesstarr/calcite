@@ -90,5 +90,3 @@ class MongoDatabasePolicy implements AfterAllCallback {
     return database;
   }
 }
-
-// End MongoDatabasePolicy.java

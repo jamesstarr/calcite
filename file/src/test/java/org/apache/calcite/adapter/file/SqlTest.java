@@ -418,6 +418,7 @@ public class SqlTest {
         .ok();
   }
 }
+<<<<<<< HEAD
 
   /** Reads the DEPTS table from the JSON schema. */
   @Test void testJsonSalesDepts() throws SQLException {
@@ -492,3 +493,5 @@ public class SqlTest {
         .ok();
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

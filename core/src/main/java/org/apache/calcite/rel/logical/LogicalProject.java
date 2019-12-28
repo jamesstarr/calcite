@@ -139,6 +139,7 @@ public final class LogicalProject extends Project {
         input, getProjects(), rowType);
   }
 }
+<<<<<<< HEAD
 >>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
 
   @Override public RelNode withHints(List<RelHint> hintList) {
@@ -146,3 +147,5 @@ public final class LogicalProject extends Project {
         input, getProjects(), rowType);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

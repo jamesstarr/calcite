@@ -1797,6 +1797,9 @@ public class DruidQuery extends AbstractRelNode implements BindableRel {
 
   }
 }
+<<<<<<< HEAD
 
 // End DruidQuery.java
 >>>>>>> 41f568a78 ([CALCITE-2286] Support timestamp type for Druid adapter)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

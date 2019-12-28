@@ -145,5 +145,3 @@ public class EnumerableRepeatUnionTest {
   }
 
 }
-
-// End EnumerableRepeatUnionTest.java

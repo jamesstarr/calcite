@@ -207,9 +207,12 @@ public final class LogicalJoin extends Join {
         left, right, condition, variablesSet, joinType, semiJoinDone, systemFieldList);
   }
 }
+<<<<<<< HEAD
 
   @Override public RelNode withHints(List<RelHint> hintList) {
     return new LogicalJoin(getCluster(), traitSet, hintList,
         left, right, condition, variablesSet, joinType, semiJoinDone, systemFieldList);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -326,6 +326,7 @@ public class SqlParserPos implements Serializable {
     }
   }
 }
+<<<<<<< HEAD
 >>>>>>> 7bbe08b5b ([CALCITE-2674] Column name with escape character should not be verified as a function when the column name is same with it (Danny Chan))
 
   /** Parser position for an identifier segment that is quoted. */
@@ -341,3 +342,5 @@ public class SqlParserPos implements Serializable {
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

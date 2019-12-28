@@ -828,9 +828,6 @@ public class RexSimplify {
     // "(CASE WHEN FALSE THEN 1 ELSE 2) IS NOT NULL" we first simplify the
     // argument to "2", and only then we can simplify "2 IS NOT NULL" to "TRUE".
     a = simplify(a, UNKNOWN);
-<<<<<<< HEAD
-=======
-=======
     if (!a.getType().isNullable() && isSafeExpression(a)) {
       return rexBuilder.makeLiteral(true);
     }
@@ -2551,6 +2548,7 @@ public class RexSimplify {
   }
 
 }
+<<<<<<< HEAD
 
   /**
    * Replaces the last occurrence of one specified value in a list with
@@ -2597,3 +2595,4 @@ public class RexSimplify {
   }
 
 }
+=======

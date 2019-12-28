@@ -823,6 +823,7 @@ public class DiffRepository {
     }
   }
 }
+<<<<<<< HEAD
 >>>>>>> c5f531781 (In DiffRepository, replace a synchronized Map with a Guava cache (#54))
 
   /** Cache key. */
@@ -859,3 +860,5 @@ public class DiffRepository {
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

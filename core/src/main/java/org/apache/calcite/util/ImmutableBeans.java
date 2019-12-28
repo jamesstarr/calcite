@@ -489,4 +489,3 @@ public class ImmutableBeans {
     }
   }
 }
-// End ImmutableBeans.java

@@ -76,6 +76,7 @@ public class RexDynamicParam extends RexVariable {
     return Objects.hash(digest, type, index);
   }
 }
+<<<<<<< HEAD
 >>>>>>> 232030fd4 ([CALCITE-2632]: Add hashCode and equals implementations to RexNode)
 
   @Override public boolean equals(Object obj) {
@@ -90,3 +91,5 @@ public class RexDynamicParam extends RexVariable {
     return Objects.hash(digest, type, index);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -103,6 +103,7 @@ public class CalcMergeRule extends RelRule<CalcMergeRule.Config>
     }
   }
 }
+<<<<<<< HEAD
 >>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
     @Override default CalcMergeRule toRule() {
@@ -110,3 +111,5 @@ public class CalcMergeRule extends RelRule<CalcMergeRule.Config>
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -37,8 +37,7 @@ public interface RelMetadataCache {
   @Nullable Object get(RelNode relNode, Object args);
   @Nullable Object put(RelNode relNode, Object args, Object value);
 }
-<<<<<<< HEAD
-=======
 
 // End RelMetadataCache.java
->>>>>>> 7a4f0f872 (DX-35420 Adding RelMetadataHandlerProvider and RelMetadataCache)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

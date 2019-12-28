@@ -68,8 +68,7 @@ public @interface RequiresNetwork {
   String host() default  "en.wikipedia.org";
   int port() default 80;
 }
-<<<<<<< HEAD
-=======
 
 // End RequiresNetwork.java
 >>>>>>>> a9d30ce58 ([CALCITE-2457] JUnit 4 -> 5: migrate Assume -> Assumptions, drop suites, remove junit4 from core classpath):file/src/test/java/org/apache/calcite/adapter/file/RequiresNetwork.java
+=======

@@ -160,6 +160,7 @@ public class MockSqlOperatorTable extends ChainedSqlOperatorTable {
     }
   }
 }
+<<<<<<< HEAD
 
   /** "MY_AVG" user-defined aggregate function, with two arguments. */
   public static class MyAvgAggFunction extends SqlAggFunction {
@@ -214,3 +215,5 @@ public class MockSqlOperatorTable extends ChainedSqlOperatorTable {
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

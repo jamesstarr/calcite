@@ -511,6 +511,7 @@ public class RelMdCollation
     return ImmutableList.of();
   }
 }
+<<<<<<< HEAD
 
   /**
    * Returns the collation of {@link EnumerableHashJoin} based on its inputs and the join type.
@@ -574,3 +575,5 @@ public class RelMdCollation
     return ImmutableList.of();
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

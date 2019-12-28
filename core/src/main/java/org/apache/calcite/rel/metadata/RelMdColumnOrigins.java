@@ -37,9 +37,6 @@ import org.apache.calcite.rex.RexVisitor;
 import org.apache.calcite.rex.RexVisitorImpl;
 import org.apache.calcite.util.BuiltInMethod;
 
-<<<<<<< HEAD
-import java.util.ArrayList;
-=======
 >>>>>>> 392abe9db ([CALCITE-2944] Deprecate Aggregate indicator and remove fields where possible)
 import java.util.HashSet;
 import java.util.List;
@@ -269,6 +266,7 @@ public class RelMdColumnOrigins
     }
     return set;
   }
+<<<<<<< HEAD
 
   private Set<RelColumnOrigin> getMultipleColumns(RexNode rexNode, RelNode input,
       final RelMetadataQuery mq) {
@@ -287,4 +285,5 @@ public class RelMdColumnOrigins
     rexNode.accept(visitor);
     return set;
   }
+=======
 }

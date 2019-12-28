@@ -471,8 +471,7 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
     generateRexAndCheckTrueFalse(fuzzer, r);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End RexProgramFuzzyTest.java
->>>>>>> 2640ba45b ([CALCITE-2504] Add randomized test for better code coverage of rex node create and simplification)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

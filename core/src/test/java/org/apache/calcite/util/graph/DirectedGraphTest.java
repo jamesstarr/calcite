@@ -380,6 +380,7 @@ class DirectedGraphTest {
     }
   }
 }
+<<<<<<< HEAD
 
     assertThat(Iterables.size(g.getEdges("A", "B")), is(1));
     assertThat(g.addEdge("A", "B", 1), nullValue());
@@ -424,3 +425,5 @@ class DirectedGraphTest {
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -425,7 +425,6 @@ public class MockCatalogReaderSimple extends MockCatalogReader {
 
   }
 }
-<<<<<<< HEAD
-=======
 
 // End MockCatalogReaderSimple.java
+=======

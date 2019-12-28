@@ -30,7 +30,6 @@ public enum CharLiteralStyle {
    * Example: {@code "Won\'t"}. */
   BQ_DOUBLE
 }
-<<<<<<< HEAD
-=======
 // End CharLiteralStyle.java
->>>>>>> ee1ef8208 (DX-36442: Clean up trivial method signatures)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

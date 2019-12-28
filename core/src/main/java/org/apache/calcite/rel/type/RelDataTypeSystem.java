@@ -407,6 +407,7 @@ public interface RelDataTypeSystem {
     return null;
   }
 }
+<<<<<<< HEAD
 >>>>>>> 06c1d66b8 (DX-17294: Make calcite rules pluggable.)
 
   /** Whether the least restrictive type of a number of CHAR types of different
@@ -713,3 +714,5 @@ public interface RelDataTypeSystem {
     return null;
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

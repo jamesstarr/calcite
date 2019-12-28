@@ -166,7 +166,6 @@ public class EnumerableJoinTest {
         .withSchema("s", new ReflectiveSchema(schema));
   }
 }
-<<<<<<< HEAD
-=======
 
 // End EnumerableJoinTest.java
+=======

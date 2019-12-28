@@ -814,7 +814,6 @@ public class LatticeSuggester {
   }
 
 }
-<<<<<<< HEAD
-=======
 
 // End LatticeSuggester.java
+=======

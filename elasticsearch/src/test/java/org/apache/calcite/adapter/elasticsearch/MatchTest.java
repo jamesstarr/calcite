@@ -150,8 +150,7 @@ public class MatchTest {
    *
    * @throws Exception
    */
-  @Test
-  public void testMatchQuery() throws Exception {
+  @Test public void testMatchQuery() throws Exception {
 
     CalciteConnection con = (CalciteConnection) newConnectionFactory()
         .createConnection();
@@ -217,6 +216,9 @@ public class MatchTest {
     }
   }
 }
+<<<<<<< HEAD
 >>>>>>> 45f849e54 ([CALCITE-3601] Update elasticsearch tests upgrade from junit4 to junit5 (Qianjin Xu))
 
 // End MatchTest.java
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

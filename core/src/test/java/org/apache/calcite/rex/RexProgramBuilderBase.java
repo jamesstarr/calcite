@@ -753,6 +753,5 @@ public abstract class RexProgramBuilderBase {
     return rexBuilder.makeFieldAccess(getDynamicParam(nonNullableType, name), arg + MAX_FIELDS);
   }
 }
-<<<<<<< HEAD
-=======
 // End RexProgramBuilderBase.java
+=======

@@ -138,8 +138,7 @@ public class EnumerableBatchNestedLoopJoinRule extends RelOptRule {
             joinType));
   }
 }
-<<<<<<< HEAD
-=======
 
 // End EnumerableBatchNestedLoopJoinRule.java
->>>>>>> dbe207164 ([CALCITE-2979] Add a block-based nested loop join algorithm (Khawla Mouhoubi))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

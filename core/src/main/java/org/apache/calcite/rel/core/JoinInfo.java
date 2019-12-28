@@ -107,40 +107,5 @@ public class JoinInfo {
     return FlatLists.of(leftKeys, rightKeys);
   }
 
-  /** JoinInfo that represents an equi-join. */
-  private static class EquiJoinInfo extends JoinInfo {
-    protected EquiJoinInfo(ImmutableIntList leftKeys,
-        ImmutableIntList rightKeys) {
-      super(leftKeys, rightKeys);
-    }
-
-    @Override public boolean isEqui() {
-      return true;
-    }
-
-    @Override public RexNode getRemaining(RexBuilder rexBuilder) {
-      return rexBuilder.makeLiteral(true);
-    }
-  }
-
-  /** JoinInfo that represents a non equi-join. */
-  private static class NonEquiJoinInfo extends JoinInfo {
-    public final RexNode remaining;
-
-    protected NonEquiJoinInfo(ImmutableIntList leftKeys,
-        ImmutableIntList rightKeys, RexNode remaining) {
-      super(leftKeys, rightKeys);
-      this.remaining = Objects.requireNonNull(remaining);
-      assert !remaining.isAlwaysTrue();
-    }
-
-    @Override public boolean isEqui() {
-      return false;
-    }
-
-    @Override public RexNode getRemaining(RexBuilder rexBuilder) {
-      return remaining;
-    }
-  }
 =======
 }

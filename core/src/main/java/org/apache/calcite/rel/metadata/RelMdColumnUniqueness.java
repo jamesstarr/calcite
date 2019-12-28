@@ -497,6 +497,7 @@ public class RelMdColumnUniqueness
     return checkingColumns;
   }
 }
+<<<<<<< HEAD
 
   /**
    * Deduce constant columns from predicates of rel and return the union
@@ -520,3 +521,5 @@ public class RelMdColumnUniqueness
     return checkingColumns;
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

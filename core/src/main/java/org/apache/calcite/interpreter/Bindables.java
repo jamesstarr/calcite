@@ -588,58 +588,6 @@ public class Bindables {
 
     public Node implement(InterpreterImplementor implementor) {
       return new SetOpNode(implementor.compiler, this);
-<<<<<<< HEAD
-    }
-  }
-
-  /** Implementation of {@link org.apache.calcite.rel.core.Intersect} in
-   * bindable calling convention. */
-  public static class BindableIntersect extends Intersect implements BindableRel {
-    public BindableIntersect(RelOptCluster cluster, RelTraitSet traitSet,
-        List<RelNode> inputs, boolean all) {
-      super(cluster, traitSet, inputs, all);
-    }
-
-    public BindableIntersect copy(RelTraitSet traitSet, List<RelNode> inputs, boolean all) {
-      return new BindableIntersect(getCluster(), traitSet, inputs, all);
-    }
-
-    public Class<Object[]> getElementType() {
-      return Object[].class;
-    }
-
-    public Enumerable<Object[]> bind(DataContext dataContext) {
-      return help(dataContext, this);
-    }
-
-    public Node implement(InterpreterImplementor implementor) {
-      return new SetOpNode(implementor.compiler, this);
-    }
-  }
-
-  /** Implementation of {@link org.apache.calcite.rel.core.Minus} in
-   * bindable calling convention. */
-  public static class BindableMinus extends Minus implements BindableRel {
-    public BindableMinus(RelOptCluster cluster, RelTraitSet traitSet,
-        List<RelNode> inputs, boolean all) {
-      super(cluster, traitSet, inputs, all);
-    }
-
-    public BindableMinus copy(RelTraitSet traitSet, List<RelNode> inputs, boolean all) {
-      return new BindableMinus(getCluster(), traitSet, inputs, all);
-    }
-
-    public Class<Object[]> getElementType() {
-      return Object[].class;
-    }
-
-    public Enumerable<Object[]> bind(DataContext dataContext) {
-      return help(dataContext, this);
-    }
-
-    public Node implement(InterpreterImplementor implementor) {
-      return new SetOpNode(implementor.compiler, this);
-=======
 >>>>>>> aa6a1fa65 ([CALCITE-3407] Implement MINUS and INTERSECT in interpreter (Wang Yanlin))
     }
   }
@@ -920,6 +868,7 @@ public class Bindables {
   }
 
 }
+<<<<<<< HEAD
 
   /** Implementation of {@link org.apache.calcite.rel.core.Match}
    * in bindable convention. */
@@ -991,3 +940,4 @@ public class Bindables {
   }
 
 }
+=======

@@ -41,8 +41,7 @@ public @interface LibraryOperator {
    * Must not be null or empty. */
   SqlLibrary[] libraries();
 }
-<<<<<<< HEAD
-=======
 
 // End LibraryOperator.java
->>>>>>> 1d2fb0f01 ([CALCITE-3017] Re-organize how we represent built-in operators that are not in the standard operator table)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

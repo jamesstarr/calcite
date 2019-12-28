@@ -80,5 +80,3 @@ public class FoodMartQuerySet {
     }
   }
 }
-
-// End FoodMartQuerySet.java

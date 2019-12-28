@@ -168,6 +168,7 @@ public class UnionMergeRule
     }
   }
 }
+<<<<<<< HEAD
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -197,3 +198,5 @@ public class UnionMergeRule
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

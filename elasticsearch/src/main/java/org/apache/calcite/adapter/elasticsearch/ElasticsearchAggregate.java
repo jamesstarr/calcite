@@ -187,7 +187,6 @@ public class ElasticsearchAggregate extends Aggregate implements ElasticsearchRe
   }
 
 }
-<<<<<<< HEAD
-=======
 
 // End ElasticsearchAggregate.java
+=======

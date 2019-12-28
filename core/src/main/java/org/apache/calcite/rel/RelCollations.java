@@ -212,6 +212,7 @@ public class RelCollations {
             fc -> fc.withFieldIndex(mapping.getTarget(fc.getFieldIndex()))));
   }
 }
+<<<<<<< HEAD
 >>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
 
   /** Creates a copy of this collation that changes the ordinals of input
@@ -232,3 +233,5 @@ public class RelCollations {
             fc -> fc.withFieldIndex(mapping.getTarget(fc.getFieldIndex()))));
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

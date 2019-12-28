@@ -212,8 +212,11 @@ public interface PhysType {
    * the <code>targetFormat</code> for representing its rows. */
   Expression convertTo(Expression expression, JavaRowFormat targetFormat);
 }
+<<<<<<< HEAD
 
   /** Converts an enumerable of this physical type to an enumerable that uses
    * the <code>targetFormat</code> for representing its rows. */
   Expression convertTo(Expression expression, JavaRowFormat targetFormat);
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

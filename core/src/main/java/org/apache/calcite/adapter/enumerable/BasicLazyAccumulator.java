@@ -41,8 +41,7 @@ public class BasicLazyAccumulator<TAccumulate, TSource>
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End BasicLazyAccumulator.java
->>>>>>> 4a20ea9ee ([CALCITE-2785] In EnumerableAggregate, wrong result produced if there are sorted aggregates and non-sorted aggregates at the same time)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -204,5 +204,3 @@ class EmbeddedElasticsearchPolicy implements BeforeAllCallback, AfterAllCallback
 
 =======
 }
-
-// End EmbeddedElasticsearchPolicy.java

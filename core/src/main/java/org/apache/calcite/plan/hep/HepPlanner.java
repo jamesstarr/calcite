@@ -1060,6 +1060,7 @@ public class HepPlanner extends AbstractRelOptPlanner {
     materializations.add(materialization);
   }
 }
+<<<<<<< HEAD
 
   @Override public ImmutableList<RelOptMaterialization> getMaterializations() {
     return ImmutableList.copyOf(materializations);
@@ -1069,3 +1070,5 @@ public class HepPlanner extends AbstractRelOptPlanner {
     materializations.add(materialization);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

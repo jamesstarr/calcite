@@ -107,9 +107,12 @@ public interface SqlVisitor<R> {
     selectList.forEach(e -> e.accept(this));
   }
 }
+<<<<<<< HEAD
 >>>>>>> 970b01de2 ( DX-97766: Query with QUALIFY fails with AssertionError (#36))
 
   default void visitAll(List<SqlNode> selectList) {
     selectList.forEach(e -> e.accept(this));
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

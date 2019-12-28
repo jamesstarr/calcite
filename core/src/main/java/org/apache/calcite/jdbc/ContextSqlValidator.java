@@ -59,8 +59,7 @@ public class ContextSqlValidator extends SqlValidatorImpl {
         new CalciteConnectionConfigImpl(new Properties()));
   }
 }
-<<<<<<< HEAD
-=======
 
 // End ContextSqlValidator.java
->>>>>>> 4d120eff7 ([CALCITE-3267] Remove method SqlDataTypeSpec#deriveType(RelDataTypefactory))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

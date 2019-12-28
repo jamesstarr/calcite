@@ -2726,6 +2726,7 @@ public class Util {
     }
   }
 }
+<<<<<<< HEAD
 >>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 
   /** List that returns the same number of elements as a backing list,
@@ -2882,3 +2883,5 @@ public class Util {
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

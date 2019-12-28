@@ -74,8 +74,7 @@ class CaseInsensitiveComparator implements Comparator {
     return s1.compareTo(s2);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End CaseInsensitiveComparator.java
->>>>>>> 84a6add37 ([CALCITE-2491] Refactor NameSet, NameMap, and NameMultimap)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

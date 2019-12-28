@@ -442,6 +442,7 @@ public class JoinProjectTransposeRule
     Config withIncludeOuter(boolean includeOuter);
   }
 }
+<<<<<<< HEAD
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -499,3 +500,5 @@ public class JoinProjectTransposeRule
     Config withIncludeOuter(boolean includeOuter);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

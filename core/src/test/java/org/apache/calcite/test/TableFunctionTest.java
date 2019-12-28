@@ -502,6 +502,7 @@ class TableFunctionTest {
     }
   }
 }
+<<<<<<< HEAD
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3364">[CALCITE-3364]
@@ -579,3 +580,5 @@ class TableFunctionTest {
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

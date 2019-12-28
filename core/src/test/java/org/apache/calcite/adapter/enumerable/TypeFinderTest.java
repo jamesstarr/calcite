@@ -129,8 +129,7 @@ public class TypeFinderTest {
     });
   }
 }
-<<<<<<< HEAD
-=======
 
 // End TypeFinderTest.java
->>>>>>> f3616e9a4 ([CALCITE-3046] CompileException when inserting casted value of composited user defined type into table)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

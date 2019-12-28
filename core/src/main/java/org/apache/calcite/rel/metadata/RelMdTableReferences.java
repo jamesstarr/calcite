@@ -246,6 +246,7 @@ public class RelMdTableReferences
   }
 
 }
+<<<<<<< HEAD
 >>>>>>> 7ddb4b7ee ([CALCITE-3454] Support Exchange, SetOp and TableModify for builtin)
 
   /**
@@ -263,3 +264,5 @@ public class RelMdTableReferences
   }
 
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -146,8 +146,7 @@ public class ListTransientTable extends AbstractQueryableTable
     return TYPE;
   }
 }
-<<<<<<< HEAD
-=======
 
 // End ListTransientTable.java
->>>>>>> e323a2a7b ([CALCITE-2812] Add algebraic operators to allow expressing recursive queries)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

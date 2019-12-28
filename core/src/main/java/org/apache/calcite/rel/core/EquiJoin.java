@@ -92,6 +92,5 @@ public abstract class EquiJoin extends Join {
     return rightKeys;
   }
 }
-<<<<<<< HEAD
-=======
 // End EquiJoin.java
+=======

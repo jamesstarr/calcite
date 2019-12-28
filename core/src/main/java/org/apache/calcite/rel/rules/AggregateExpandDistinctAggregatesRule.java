@@ -923,6 +923,7 @@ public final class AggregateExpandDistinctAggregatesRule
     Config withUsingGroupingSets(boolean usingGroupingSets);
   }
 }
+<<<<<<< HEAD
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -946,3 +947,5 @@ public final class AggregateExpandDistinctAggregatesRule
     Config withUsingGroupingSets(boolean usingGroupingSets);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -285,6 +285,5 @@ public class SqlTypeCoercionRule implements SqlTypeMappingRule {
     return this.map;
   }
 }
-<<<<<<< HEAD
-=======
 // End SqlTypeCoercionRule.java
+=======

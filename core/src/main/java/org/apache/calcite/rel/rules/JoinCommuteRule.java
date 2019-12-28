@@ -260,6 +260,7 @@ public class JoinCommuteRule
     Config withAllowAlwaysTrueCondition(boolean allowAlwaysTrueCondition);
   }
 }
+<<<<<<< HEAD
 >>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
     @Override default JoinCommuteRule toRule() {
@@ -296,3 +297,5 @@ public class JoinCommuteRule
     Config withAllowAlwaysTrueCondition(boolean allowAlwaysTrueCondition);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

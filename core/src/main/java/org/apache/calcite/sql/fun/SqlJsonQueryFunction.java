@@ -116,8 +116,7 @@ public class SqlJsonQueryFunction extends SqlFunction {
     return (E) ((SqlLiteral) operand).getValue();
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SqlJsonQueryFunction.java
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

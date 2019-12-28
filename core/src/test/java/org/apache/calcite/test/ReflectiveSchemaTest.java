@@ -1067,8 +1067,7 @@ public class ReflectiveSchemaTest {
 =======
 
   /** CALCITE-2611 unknown on one side of an or may lead to uncompilable code */
-  @Test
-  public void testUnknownInOr() {
+  @Test public void testUnknownInOr() {
     CalciteAssert.that()
         .withSchema("s", CATCHALL)
         .query("select (\"value\" = 3 and unknown) or ( \"value\"  = 3 ) "
@@ -1076,6 +1075,7 @@ public class ReflectiveSchemaTest {
         .returnsUnordered("EXPR$0=false\nEXPR$0=false\nEXPR$0=true");
   }
 }
+<<<<<<< HEAD
 
   /** CALCITE-2611 unknown on one side of an or may lead to uncompilable code */
   @Test void testUnknownInOr() {
@@ -1086,3 +1086,5 @@ public class ReflectiveSchemaTest {
         .returnsUnordered("EXPR$0=false\nEXPR$0=false\nEXPR$0=true");
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

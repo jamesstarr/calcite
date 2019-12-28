@@ -2979,6 +2979,7 @@ public class MaterializationTest {
       return Smalls.strView("noname");
     }
   }
+<<<<<<< HEAD
 
   /** Fluent class that contains information necessary to run a test. */
   private interface Sql {
@@ -3036,4 +3037,6 @@ public class MaterializationTest {
     String getViewName();
     Sql withViewName(String viewName);
   }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 }

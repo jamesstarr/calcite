@@ -36,8 +36,7 @@ public class SnowflakeSqlDialect extends SqlDialect {
     super(context);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SnowflakeSqlDialect.java
->>>>>>> b3be0b9f7 ([CALCITE-3050] Integrate SqlDialect and SqlParser.Config)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

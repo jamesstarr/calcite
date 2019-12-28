@@ -35,8 +35,7 @@ public class SqlDropFunction extends SqlDropObject {
     super(OPERATOR, pos, ifExists, name);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SqlDropFunction.java
->>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

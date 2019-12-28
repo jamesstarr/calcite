@@ -19,39 +19,6 @@ package org.apache.calcite.tools;
 import org.apache.calcite.adapter.enumerable.EnumerableRules;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteSystemProperty;
-<<<<<<< HEAD
-=======
-import org.apache.calcite.plan.RelOptCostImpl;
-import org.apache.calcite.plan.RelOptLattice;
-import org.apache.calcite.plan.RelOptMaterialization;
-import org.apache.calcite.plan.RelOptPlanner;
-import org.apache.calcite.plan.RelOptRule;
-import org.apache.calcite.plan.RelOptRules;
-import org.apache.calcite.plan.RelOptUtil;
-import org.apache.calcite.plan.RelTraitSet;
-import org.apache.calcite.plan.hep.HepMatchOrder;
-import org.apache.calcite.plan.hep.HepPlanner;
-import org.apache.calcite.plan.hep.HepProgram;
-import org.apache.calcite.plan.hep.HepProgramBuilder;
-import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.rel.core.Calc;
-import org.apache.calcite.rel.core.RelFactories;
-import org.apache.calcite.rel.metadata.ChainedRelMetadataProvider;
-import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
-import org.apache.calcite.rel.metadata.RelMetadataProvider;
-import org.apache.calcite.rel.rules.CoreRules;
-import org.apache.calcite.rel.rules.JoinPushThroughJoinRule;
-import org.apache.calcite.rel.rules.LoptOptimizeJoinRule;
-import org.apache.calcite.rel.rules.MatchRule;
-import org.apache.calcite.rel.rules.TableScanRule;
-import org.apache.calcite.sql2rel.RelDecorrelator;
-import org.apache.calcite.sql2rel.RelFieldTrimmer;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
-
-<<<<<<< HEAD
->>>>>>> 1b15d3443 ([CALCITE-3095] Add several system properties to control enabling/disabling of rules and traits)
-
-=======
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -380,5 +347,7 @@ public class Programs {
   }
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 // End Programs.java
+=======

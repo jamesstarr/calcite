@@ -381,6 +381,7 @@ public abstract class RelDataTypeSystemImpl implements RelDataTypeSystem {
   }
 
 }
+<<<<<<< HEAD
 
   @Override public RelDataType deriveDecimalPlusType(RelDataTypeFactory typeFactory,
       RelDataType type1, RelDataType type2) {
@@ -514,3 +515,5 @@ public abstract class RelDataTypeSystemImpl implements RelDataTypeSystem {
   }
 
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

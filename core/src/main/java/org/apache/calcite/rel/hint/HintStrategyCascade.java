@@ -82,5 +82,3 @@ public class HintStrategyCascade implements HintPredicate {
     }
   }
 }
-
-// End HintStrategyCascade.java

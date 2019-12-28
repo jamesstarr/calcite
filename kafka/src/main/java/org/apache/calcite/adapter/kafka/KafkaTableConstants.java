@@ -26,7 +26,10 @@ interface KafkaTableConstants {
   String SCHEMA_CUST_CONSUMER = "consumer.cust";
   String SCHEMA_CONSUMER_PARAMS = "consumer.params";
 }
+<<<<<<< HEAD
 =======
 
 // End KafkaTableConstants.java
 >>>>>>> 59490ebac ([CALCITE-2913] Adapter for Apache Kafka (Mingmin Xu))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

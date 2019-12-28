@@ -42,8 +42,7 @@ public class SourceStringReader extends StringReader {
     return s;
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SourceStringReader.java
->>>>>>> a74d3bb1d ([CALCITE-2662] In Planner, allow parsing a stream (Reader) instead of a String (Enrico Olivelli))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

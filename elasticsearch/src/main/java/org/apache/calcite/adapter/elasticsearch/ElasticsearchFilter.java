@@ -91,5 +91,3 @@ public class ElasticsearchFilter extends Filter implements ElasticsearchRel {
   }
 
 }
-
-// End ElasticsearchFilter.java

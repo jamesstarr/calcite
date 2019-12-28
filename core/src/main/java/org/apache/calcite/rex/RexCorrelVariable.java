@@ -70,6 +70,7 @@ public class RexCorrelVariable extends RexVariable {
     return Objects.hash(digest, type, id);
   }
 }
+<<<<<<< HEAD
 
   @Override public boolean equals(Object obj) {
     return this == obj
@@ -83,3 +84,5 @@ public class RexCorrelVariable extends RexVariable {
     return Objects.hash(digest, type, id);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

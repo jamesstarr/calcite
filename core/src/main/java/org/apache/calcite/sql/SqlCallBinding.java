@@ -305,6 +305,7 @@ public class SqlCallBinding extends SqlOperatorBinding {
     return validator.config().typeCoercionEnabled();
   }
 }
+<<<<<<< HEAD
 >>>>>>> e62a96083 ([CALCITE-3900] Add Config for SqlValidator)
 
   /**
@@ -315,3 +316,5 @@ public class SqlCallBinding extends SqlOperatorBinding {
     return validator.config().typeCoercionEnabled();
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -225,8 +225,7 @@ public class EnumerableBatchNestedLoopJoinTest {
         .withSchema("s", new ReflectiveSchema(schema));
   }
 }
-<<<<<<< HEAD
-=======
 
 // End EnumerableBatchNestedLoopJoinTest.java
->>>>>>> dbe207164 ([CALCITE-2979] Add a block-based nested loop join algorithm (Khawla Mouhoubi))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

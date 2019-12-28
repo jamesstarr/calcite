@@ -380,6 +380,7 @@ class ModelTest {
         .doWithConnection(calciteConnection -> null);
   }
 }
+<<<<<<< HEAD
 >>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
 
   @Test void testYamlInlineDetection() throws Exception {
@@ -409,3 +410,5 @@ class ModelTest {
         .doWithConnection(calciteConnection -> null);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

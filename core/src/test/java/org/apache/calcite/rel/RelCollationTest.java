@@ -141,8 +141,11 @@ class RelCollationTest {
     }
     return RelCollations.of(list);
   }
+<<<<<<< HEAD
 
   private static Mapping mapping(int sourceCount, int... sources) {
     return Mappings.target(ImmutableIntList.of(sources), sourceCount);
   }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 }

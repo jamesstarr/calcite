@@ -65,7 +65,10 @@ public class KafkaRowConverterImpl implements KafkaRowConverter<byte[], byte[]> 
     return fields;
   }
 }
+<<<<<<< HEAD
 =======
 
 // End KafkaRowConverterImpl.java
 >>>>>>> 59490ebac ([CALCITE-2913] Adapter for Apache Kafka (Mingmin Xu))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

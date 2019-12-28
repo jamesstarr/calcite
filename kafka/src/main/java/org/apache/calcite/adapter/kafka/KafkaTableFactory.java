@@ -68,7 +68,8 @@ public class KafkaTableFactory implements TableFactory<KafkaStreamTable> {
     tableOptionBuilder.setRowConverter(rowConverter);
 
     if (operand.containsKey(KafkaTableConstants.SCHEMA_CONSUMER_PARAMS)) {
-      tableOptionBuilder.setConsumerParams((Map<String, String>) operand.get(
+      tableOptionBuilder.setConsumerParams(
+          (Map<String, String>) operand.get(
           KafkaTableConstants.SCHEMA_CONSUMER_PARAMS));
     }
     if (operand.containsKey(KafkaTableConstants.SCHEMA_CUST_CONSUMER)) {
@@ -93,7 +94,10 @@ public class KafkaTableFactory implements TableFactory<KafkaStreamTable> {
     return new KafkaStreamTable(tableOptionBuilder);
   }
 }
+<<<<<<< HEAD
 =======
 
 // End KafkaTableFactory.java
 >>>>>>> 59490ebac ([CALCITE-2913] Adapter for Apache Kafka (Mingmin Xu))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

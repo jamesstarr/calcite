@@ -24,10 +24,6 @@ import org.apache.calcite.util.mapping.Mappings;
 import com.google.common.collect.ImmutableList;
 
 import org.junit.jupiter.api.Test;
-<<<<<<< HEAD
-
-import static org.apache.calcite.rel.RelDistributions.ANY;
-=======
 >>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
 
 import static org.hamcrest.CoreMatchers.is;
@@ -56,6 +52,7 @@ class RelDistributionTest {
     //noinspection EqualsWithItself
     assertThat(distribution2.compareTo(distribution2), is(0));
   }
+<<<<<<< HEAD
 
   @Test void testRelDistributionMapping() {
     final int n = 10; // Mapping source count.
@@ -97,4 +94,5 @@ class RelDistributionTest {
   private static RelDistribution hash(int... keys) {
     return RelDistributions.hash(ImmutableIntList.of(keys));
   }
+=======
 }

@@ -158,5 +158,3 @@ class Step extends DefaultEdge {
     }
   }
 }
-
-// End Step.java

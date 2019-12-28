@@ -50,8 +50,7 @@ public class SqlAnyValueAggFunction extends SqlAggFunction {
 
   //~ Methods ----------------------------------------------------------------
 }
-<<<<<<< HEAD
-=======
 
 // End SqlAnyValueAggFunction.java
->>>>>>> 40961f7ad ([CALCITE-2366] Add support for ANY_VALUE aggregate function (Gautam Parai))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

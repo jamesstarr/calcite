@@ -221,6 +221,7 @@ public abstract class SqlAggFunction extends SqlFunction implements Context {
     return false;
   }
 }
+<<<<<<< HEAD
 >>>>>>> 1677deb9e ([CALCITE-4644] Added validation for PERCENTILE functions)
 
   /** Returns whether this aggregate function is a PERCENTILE function.
@@ -239,3 +240,5 @@ public abstract class SqlAggFunction extends SqlFunction implements Context {
     return false;
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

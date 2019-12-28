@@ -207,5 +207,3 @@ public class SqlHint extends SqlCall {
     return ((SqlLiteral) node).getValueAs(String.class);
   }
 }
-
-// End SqlHint.java

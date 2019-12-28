@@ -180,6 +180,7 @@ public class AggregateUnionAggregateRule
     }
   }
 }
+<<<<<<< HEAD
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -221,3 +222,5 @@ public class AggregateUnionAggregateRule
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

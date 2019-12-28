@@ -158,6 +158,7 @@ public class UnionPullUpConstantsRule
     }
   }
 }
+<<<<<<< HEAD
 
     @Override default UnionPullUpConstantsRule toRule() {
       return new UnionPullUpConstantsRule(this);
@@ -173,3 +174,5 @@ public class UnionPullUpConstantsRule
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

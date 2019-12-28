@@ -939,6 +939,7 @@ public class SqlFunctionsTest {
     }
   }
 }
+<<<<<<< HEAD
 >>>>>>> d227dc1be ([CALCITE-3263] Add MD5, SHA1 SQL functions (Shuming Li))
 
   @Test void testMd5() {
@@ -969,3 +970,5 @@ public class SqlFunctionsTest {
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

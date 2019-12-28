@@ -24,5 +24,3 @@
 >>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda)):elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/package-info.java
  */
 package org.apache.calcite.adapter.elasticsearch;
-
-// End package-info.java

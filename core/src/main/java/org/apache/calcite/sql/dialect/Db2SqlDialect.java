@@ -120,6 +120,7 @@ public class Db2SqlDialect extends SqlDialect {
   }
 
 }
+<<<<<<< HEAD
 >>>>>>> ef578f572 ([CALCITE-2188] JDBC adapter generates invalid SQL for DATE/INTERVAL arithmetic)
 
   @Override public void unparseSqlIntervalQualifier(SqlWriter writer,
@@ -194,3 +195,5 @@ public class Db2SqlDialect extends SqlDialect {
   }
 
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

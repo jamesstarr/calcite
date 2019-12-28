@@ -533,5 +533,3 @@ public class TypeCoercionImpl extends AbstractTypeCoercion {
   }
 >>>>>>> a720fa3ec ([CALCITE-3423] Support using CAST operation and BOOLEAN type value in table macro (Wang Yanlin))
 }
-
-// End TypeCoercionImpl.java

@@ -171,6 +171,9 @@ class Scrolling {
     }
   }
 }
+<<<<<<< HEAD
 >>>>>>> 85c9d2fa6 (Cosmetic changes)
 
 // End Scrolling.java
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

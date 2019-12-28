@@ -40,6 +40,5 @@ public interface TypeCoercionFactory {
    */
   TypeCoercion create(RelDataTypeFactory typeFactory, SqlValidator validator);
 }
-<<<<<<< HEAD
-=======
 // End TypeCoercionFactory.java
+=======

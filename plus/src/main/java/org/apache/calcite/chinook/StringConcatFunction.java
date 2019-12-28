@@ -26,8 +26,7 @@ public class StringConcatFunction {
   }
 
 }
-<<<<<<< HEAD
-=======
 
 // End StringConcatFunction.java
->>>>>>> afcde0bfa ([CALCITE-2264] In JDBC adapter, do not push down a call to a user-defined function (UDF) (Piotr Bojko))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

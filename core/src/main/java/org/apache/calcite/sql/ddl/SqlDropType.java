@@ -33,8 +33,7 @@ public class SqlDropType extends SqlDropObject {
     super(OPERATOR, pos, ifExists, name);
   }
 }
-<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlDropType.java
-=======
 
 // End SqlDropType.java
->>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen)):server/src/main/java/org/apache/calcite/sql/ddl/SqlDropType.java
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

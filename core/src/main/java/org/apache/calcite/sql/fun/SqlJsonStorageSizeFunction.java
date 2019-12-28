@@ -38,8 +38,7 @@ public class SqlJsonStorageSizeFunction extends SqlFunction {
         SqlFunctionCategory.SYSTEM);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SqlJsonStorageSizeFunction.java
->>>>>>> 251eb6c07 ([CALCITE-2985] Implement JSON_STORAGE_SIZE function (xuqianjin))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

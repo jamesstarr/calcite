@@ -144,8 +144,7 @@ public class ExceptionMessageTest {
 <<<<<<< HEAD
 =======
 
-  @Test
-  public void testLikeAnySyntaxError() {
+  @Test public void testLikeAnySyntaxError() {
     try {
       runQuery("select 'a' LIKE ANY()");
     } catch (SQLException e) {
@@ -155,8 +154,7 @@ public class ExceptionMessageTest {
     }
   }
 
-  @Test
-  public void testLikeAllSyntaxError() {
+  @Test public void testLikeAllSyntaxError() {
     try {
       runQuery("select 'a' LIKE ALL(1)");
     } catch (SQLException e) {
@@ -166,8 +164,7 @@ public class ExceptionMessageTest {
     }
   }
 
-  @Test
-  public void testLikeSomeSyntaxError() {
+  @Test public void testLikeSomeSyntaxError() {
     try {
       runQuery("select 1 LIKE SOME('a')");
     } catch (SQLException e) {
@@ -177,6 +174,7 @@ public class ExceptionMessageTest {
     }
   }
 }
+<<<<<<< HEAD
 >>>>>>> 3e1f10548 (DX-57689: add like any some all unit tests)
 
   @Test public void testLikeAnySyntaxError() {
@@ -209,3 +207,5 @@ public class ExceptionMessageTest {
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -69,6 +69,7 @@ public interface SqlNameMatcher {
   /** Creates a set that has the same case-sensitivity as this matcher. */
   Set<String> createSet();
 }
+<<<<<<< HEAD
 >>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 
   /** Returns how many times a string occurs in a collection.
@@ -79,3 +80,5 @@ public interface SqlNameMatcher {
   /** Creates a set that has the same case-sensitivity as this matcher. */
   Set<String> createSet();
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

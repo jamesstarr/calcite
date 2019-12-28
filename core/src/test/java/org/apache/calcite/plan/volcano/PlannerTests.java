@@ -269,6 +269,7 @@ class PlannerTests {
     }
   }
 }
+<<<<<<< HEAD
 >>>>>>> 9e40b5a40 ([CALCITE-3118] VolcanoRuleCall should look at RelSubset rather than RelSet when checking child ordinal of a parent operand (Botong Huang))
 
   /**
@@ -291,3 +292,5 @@ class PlannerTests {
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

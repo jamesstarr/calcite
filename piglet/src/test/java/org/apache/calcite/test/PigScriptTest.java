@@ -56,8 +56,7 @@ public class PigScriptTest extends PigRelTestBase {
     Files.delete(Paths.get(dataFile));
   }
 
-  @Test
-  public void testReadScript() throws IOException {
+  @Test public void testReadScript() throws IOException {
     Map<String, String> params = new HashMap<>();
     params.put("input", dataFile);
     params.put("output", "outputFile");
@@ -75,8 +74,7 @@ public class PigScriptTest extends PigRelTestBase {
     assertThat(rel, hasTree(expectedPlan));
   }
 }
-<<<<<<< HEAD
-=======
 
 // End PigScriptTest.java
->>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

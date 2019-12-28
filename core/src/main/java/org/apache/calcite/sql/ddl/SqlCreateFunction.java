@@ -100,7 +100,6 @@ public class SqlCreateFunction extends SqlCreate
     return Arrays.asList(name, className, usingList);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SqlCreateFunction.java
+=======

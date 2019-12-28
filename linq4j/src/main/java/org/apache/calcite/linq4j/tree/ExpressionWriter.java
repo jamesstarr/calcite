@@ -194,31 +194,6 @@ class ExpressionWriter {
       indentPending = false;
     }
   }
-
-  /** Helps generate strings of spaces, to indent text. */
-  private static class Indent extends ArrayList<String> {
-    Indent(int initialCapacity) {
-      super(initialCapacity);
-      ensureSize(initialCapacity);
-    }
-
-    public synchronized String of(int index) {
-      ensureSize(index + 1);
-      return get(index);
-    }
-
-    private void ensureSize(int targetSize) {
-      if (targetSize < size()) {
-        return;
-      }
-      char[] chars = new char[2 * targetSize];
-      Arrays.fill(chars, ' ');
-      clear();
-      for (int i = 0; i < targetSize; i++) {
-        add(String.valueOf(chars, 0, i * 2));
-      }
-    }
-  }
-=======
 >>>>>>> 19d567a58 ([CALCITE-3237] IndexOutOfBoundsException when generating deeply nested Java code from linq4j (Sahith Nallapareddy))
+=======
 }

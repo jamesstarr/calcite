@@ -148,8 +148,7 @@ public class GeodeEmbeddedPolicy implements BeforeAllCallback, AfterAllCallback 
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End GeodeEmbeddedPolicy.java
->>>>>>> 1b41ebada ([CALCITE-2588] Run Geode Adapter tests with an Embedded Instance)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

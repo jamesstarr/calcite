@@ -51,6 +51,7 @@ import static org.junit.Assume.assumeTrue;
  * <a href="https://issues.apache.org/jira/browse/CASSANDRA-9608">CASSANDRA-9608</a>.
  *
  */
+
 // force tests to run sequentially (maven surefire and failsafe are running them in parallel)
 // seems like some of our code is sharing static variables (like Hooks) which causes tests
 // to fail non-deterministically (flaky tests).
@@ -227,8 +228,7 @@ public class CassandraAdapterTest {
         .explainContains("CassandraTableScan(table=[[twissandra, Tweets_By_User]])");
   }
 }
-<<<<<<< HEAD
-=======
 
 // End CassandraAdapterTest.java
->>>>>>> 6c2e00988 ([CALCITE-2419] Use embedded Cassandra for tests)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

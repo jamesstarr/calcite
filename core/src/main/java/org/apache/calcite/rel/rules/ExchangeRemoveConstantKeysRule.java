@@ -198,7 +198,6 @@ public class ExchangeRemoveConstantKeysRule extends RelOptRule {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End ExchangeRemoveConstantKeysRule.java
+=======

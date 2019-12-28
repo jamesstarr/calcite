@@ -209,6 +209,7 @@ public class RexSubQuery extends RexCall {
   }
 
 }
+<<<<<<< HEAD
 
   @Override public boolean equals(Object obj) {
     if (this == obj) {
@@ -228,3 +229,5 @@ public class RexSubQuery extends RexCall {
   }
 
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

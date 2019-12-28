@@ -664,7 +664,6 @@ public class PigRelBuilder extends RelBuilder {
     final Map<String, FuncSpec> pigUdfs = new HashMap<>();
   }
 }
-<<<<<<< HEAD
-=======
 
 // End PigRelBuilder.java
+=======

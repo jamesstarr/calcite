@@ -44,8 +44,7 @@ public class RequiresNetworkExtension implements ExecutionCondition {
         .orElseGet(() -> enabled("@RequiresNetwork is not found"));
   }
 }
-<<<<<<< HEAD
-=======
 
 // End RequiresNetworkExtension.java
->>>>>>> a9d30ce58 ([CALCITE-2457] JUnit 4 -> 5: migrate Assume -> Assumptions, drop suites, remove junit4 from core classpath)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

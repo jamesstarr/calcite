@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
   ~ this work for additional information regarding copyright ownership.
@@ -16,6 +19,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+<<<<<<< HEAD
 =======
 Licensed to the Apache Software Foundation (ASF) under one or more
 contributor license agreements.  See the NOTICE file distributed with
@@ -33,6 +37,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 >>>>>>> 6c2e00988 ([CALCITE-2419] Use embedded Cassandra for tests)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 
 <!-- Cassandra Unit uses logback API for logging -->
 <configuration>

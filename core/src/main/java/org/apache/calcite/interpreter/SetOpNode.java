@@ -83,8 +83,7 @@ public class SetOpNode implements Node {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SetOpNode.java
->>>>>>> aa6a1fa65 ([CALCITE-3407] Implement MINUS and INTERSECT in interpreter (Wang Yanlin))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

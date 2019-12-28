@@ -225,6 +225,7 @@ class InlinerTest {
         builder.toBlock().toString());
   }
 }
+<<<<<<< HEAD
 >>>>>>> 426dc8abb ([CALCITE-3195] Handle a UDF that throws checked exceptions in the Enumerable code generator (DonnyZone))
 
   @Test void testInlineInTryCatchStatement() {
@@ -253,3 +254,5 @@ class InlinerTest {
         builder.toBlock().toString());
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

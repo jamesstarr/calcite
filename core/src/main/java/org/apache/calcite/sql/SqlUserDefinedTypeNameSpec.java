@@ -64,8 +64,7 @@ public class SqlUserDefinedTypeNameSpec extends SqlTypeNameSpec {
     return litmus.succeed();
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SqlUserDefinedTypeNameSpec.java
->>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

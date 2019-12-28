@@ -98,7 +98,6 @@ class JsonLoader {
   }
 
 }
-<<<<<<< HEAD
-=======
 
 // End JsonLoader.java
+=======

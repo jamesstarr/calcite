@@ -143,8 +143,7 @@ public class JdbcCatalogSchema extends AbstractSchema {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End JdbcCatalogSchema.java
->>>>>>> c238c3d8f ([CALCITE-3047] In JDBC adapter, expose multiple schemas of the back-end database)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

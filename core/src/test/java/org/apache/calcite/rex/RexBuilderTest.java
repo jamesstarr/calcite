@@ -43,14 +43,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-<<<<<<< HEAD
-=======
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-=======
 
 /**
  * Test for {@link RexBuilder}.
@@ -108,7 +100,10 @@ class RexBuilderTest {
   /**
    * Test RexBuilder.ensureType()
    */
+<<<<<<< HEAD
   @Test void testEnsureTypeWithAny() {
+=======
+  @Test public void testEnsureTypeWithAny() {
     final RelDataTypeFactory typeFactory = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     RexBuilder builder = new RexBuilder(typeFactory);
 
@@ -123,7 +118,7 @@ class RexBuilderTest {
   /**
    * Test RexBuilder.ensureType()
    */
-  @Test void testEnsureTypeWithItself() {
+  @Test public void testEnsureTypeWithItself() {
     final RelDataTypeFactory typeFactory = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     RexBuilder builder = new RexBuilder(typeFactory);
 
@@ -138,7 +133,7 @@ class RexBuilderTest {
   /**
    * Test RexBuilder.ensureType()
    */
-  @Test void testEnsureTypeWithDifference() {
+  @Test public void testEnsureTypeWithDifference() {
     final RelDataTypeFactory typeFactory = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     RexBuilder builder = new RexBuilder(typeFactory);
 
@@ -738,8 +733,7 @@ class RexBuilderTest {
         literal.getValueAs(BigDecimal.class).toString(), is(val));
   }
 
-  @Test
-  public void timestampDefaultPrecision() {
+  @Test public void timestampDefaultPrecision() {
     for (final int i : new int[]{0, 1, 3, 6, 9}) {
       final RelDataTypeFactory typeFactory = new SqlTypeFactoryImpl(
               new TestRelDataTypeSystemImpl(i));
@@ -776,6 +770,7 @@ class RexBuilderTest {
     }
   }
 }
+<<<<<<< HEAD
 
     final NlsString latin1 = new NlsString("foobar", "LATIN1", SqlCollation.IMPLICIT);
     final NlsString utf8 = new NlsString("foobar", "UTF8", SqlCollation.IMPLICIT);
@@ -960,3 +955,5 @@ class RexBuilderTest {
         literal.getValueAs(BigDecimal.class).toString(), is(val));
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -123,8 +123,7 @@ public class SqlCreateType extends SqlCreate
     }
   }
 }
-<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
-=======
 
 // End SqlCreateType.java
->>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen)):server/src/main/java/org/apache/calcite/sql/ddl/SqlCreateType.java
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

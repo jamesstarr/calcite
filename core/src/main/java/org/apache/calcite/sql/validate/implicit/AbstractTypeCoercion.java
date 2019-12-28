@@ -663,5 +663,3 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
     return null;
   }
 }
-
-// End AbstractTypeCoercion.java

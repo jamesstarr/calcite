@@ -109,8 +109,7 @@ public class LazyAggregateLambdaFactory<TSource, TKey, TOrigAccumulate, TResult>
     void accumulate(Iterable<TSource> sourceIterable, TOrigAccumulate accumulator);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End LazyAggregateLambdaFactory.java
->>>>>>> 4a20ea9ee ([CALCITE-2785] In EnumerableAggregate, wrong result produced if there are sorted aggregates and non-sorted aggregates at the same time)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

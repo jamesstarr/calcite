@@ -271,6 +271,7 @@ public class AggregateStarTableRule
     }
   }
 }
+<<<<<<< HEAD
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -293,3 +294,5 @@ public class AggregateStarTableRule
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

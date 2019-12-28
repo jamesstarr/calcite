@@ -148,6 +148,7 @@ public interface FrameworkConfig {
    */
   RelOptTable.ViewExpander getViewExpander();
 }
+<<<<<<< HEAD
 >>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
 
   /**
@@ -169,3 +170,5 @@ public interface FrameworkConfig {
    */
   RelOptTable.ViewExpander getViewExpander();
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -51,5 +51,3 @@ class ExpressionNotAnalyzableException extends Exception {
   NULL_ON_NULL, ABSENT_ON_NULL
 =======
 }
-
-// End SqlJsonConstructorNullClause.java

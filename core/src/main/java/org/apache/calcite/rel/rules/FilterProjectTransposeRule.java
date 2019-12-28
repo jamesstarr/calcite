@@ -285,6 +285,7 @@ public class FilterProjectTransposeRule
     }
   }
 }
+<<<<<<< HEAD
 
   /**
    * Simplifies the filter condition using a simplifier created by the
@@ -371,3 +372,5 @@ public class FilterProjectTransposeRule
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

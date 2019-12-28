@@ -149,9 +149,12 @@ public final class LogicalCalc extends Calc {
         ImmutableList.copyOf(hintList), input, program);
   }
 }
+<<<<<<< HEAD
 
   @Override public RelNode withHints(List<RelHint> hintList) {
     return new LogicalCalc(getCluster(), traitSet,
         ImmutableList.copyOf(hintList), input, program);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

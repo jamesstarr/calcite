@@ -220,6 +220,7 @@ public class ProjectJoinTransposeRule
     }
   }
 }
+<<<<<<< HEAD
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -248,3 +249,5 @@ public class ProjectJoinTransposeRule
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -107,7 +107,6 @@ public class BasicSqlTypeRtti extends RuntimeTypeInformation {
     return "new BasicSqlTypeRtti(" + this.getTypeString() + ")";
   }
 }
-<<<<<<< HEAD
-=======
 // End BasicSqlTypeRtti.java
->>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

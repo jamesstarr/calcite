@@ -966,6 +966,7 @@ public interface CalciteResource {
   @BaseMessage("Invalid input for EXISTSNODE xpath: ''{0}'', namespace: ''{1}''")
   ExInst<CalciteException> invalidInputForExistsNode(String xpath, @Nullable String namespace);
 }
+<<<<<<< HEAD
 
   @BaseMessage("Substring error: negative substring length not allowed")
   ExInst<CalciteException> illegalNegativeSubstringLength();
@@ -1086,3 +1087,5 @@ public interface CalciteResource {
   @BaseMessage("Invalid input for EXTRACTVALUE: xml: ''{0}'', xpath expression: ''{1}''")
   ExInst<CalciteException> invalidInputForExtractValue(String xml, String xpath);
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

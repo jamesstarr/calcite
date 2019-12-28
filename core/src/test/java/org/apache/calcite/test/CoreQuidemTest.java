@@ -84,6 +84,7 @@ public class CoreQuidemTest extends QuidemTest {
     }
   }
 
+<<<<<<< HEAD
   @Override protected Quidem.ConnectionFactory createConnectionFactory() {
     return new QuidemConnectionFactory() {
       @Override public Connection connect(String name, boolean reference)
@@ -103,4 +104,6 @@ public class CoreQuidemTest extends QuidemTest {
     };
   }
 
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 }

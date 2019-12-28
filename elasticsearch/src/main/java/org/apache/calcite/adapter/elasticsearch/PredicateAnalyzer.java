@@ -997,7 +997,6 @@ class PredicateAnalyzer {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End PredicateAnalyzer.java
+=======

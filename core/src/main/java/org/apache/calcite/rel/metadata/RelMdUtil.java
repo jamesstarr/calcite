@@ -968,6 +968,7 @@ public class RelMdUtil {
     return result;
   }
 
+<<<<<<< HEAD
   private static boolean isPercentage(Double result, boolean fail) {
     if (result != null) {
       final double d = result;
@@ -1029,4 +1030,6 @@ public class RelMdUtil {
   public static boolean clearCache(RelNode rel) {
     return rel.getCluster().getMetadataQuery().clearCache(rel);
   }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 }

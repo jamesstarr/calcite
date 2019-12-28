@@ -375,7 +375,6 @@ public class RexInterpreter implements RexVisitor<Comparable> {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End RexInterpreter.java
+=======

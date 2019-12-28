@@ -51,8 +51,7 @@ public interface RelMetadataHandlerProvider {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End RelMetadataHandlerProvider.java
->>>>>>> 7a4f0f872 (DX-35420 Adding RelMetadataHandlerProvider and RelMetadataCache)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -244,8 +244,7 @@ public interface PairList<T, U> extends List<Map.Entry<T, U>> {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End PairList.java
->>>>>>> 970b01de2 ( DX-97766: Query with QUALIFY fails with AssertionError (#36))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

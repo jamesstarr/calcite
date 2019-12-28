@@ -115,5 +115,3 @@ import java.math.BigDecimal;
     }
   }
 }
-
-// End RexAnalyzer.java

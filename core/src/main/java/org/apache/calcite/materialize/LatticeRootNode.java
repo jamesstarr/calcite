@@ -82,8 +82,7 @@ public class LatticeRootNode extends LatticeNode {
   }
 
 }
-<<<<<<< HEAD
-=======
 
 // End LatticeRootNode.java
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -719,8 +719,7 @@ class PigRelOpVisitor extends PigRelOpWalker.PlanPreVisitor {
     return builder.checkMap(root);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End PigRelOpVisitor.java
->>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

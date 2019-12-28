@@ -57,6 +57,7 @@ public interface SqlReturnTypeInference {
     return ReturnTypes.chain(this, transform);
   }
 }
+<<<<<<< HEAD
 >>>>>>> 06bb6f836 ([CALCITE-4946] Add method RelBuilder.size())
 
   /** Returns a return-type inference that applies this rule then a
@@ -71,3 +72,5 @@ public interface SqlReturnTypeInference {
     return ReturnTypes.chain(this, transform);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

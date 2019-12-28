@@ -30,12 +30,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 <<<<<<< HEAD
+<<<<<<< HEAD
  */
 =======
  *
  */
 
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+ */
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 val sqllineClasspath by configurations.creating {
     isCanBeConsumed = false
     extendsFrom(configurations.testRuntimeClasspath.get())

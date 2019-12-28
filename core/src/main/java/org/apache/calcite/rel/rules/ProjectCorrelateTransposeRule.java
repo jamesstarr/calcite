@@ -208,7 +208,6 @@ public class ProjectCorrelateTransposeRule extends RelOptRule {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End ProjectCorrelateTransposeRule.java
+=======

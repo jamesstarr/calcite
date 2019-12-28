@@ -181,6 +181,7 @@ public class Driver extends UnregisteredDriver {
             rootSchema, typeFactory);
   }
 }
+<<<<<<< HEAD
 >>>>>>> 9a0eb7222 ([CALCITE-2321] A union of CHAR columns of different lengths can now (based on a conformance setting) yield a VARCHAR column (Hequn Cheng))
 
   /** Creates an internal connection. */
@@ -191,3 +192,5 @@ public class Driver extends UnregisteredDriver {
             rootSchema, typeFactory);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -50,8 +50,7 @@ public interface HintOptionChecker {
    */
   boolean checkOptions(RelHint hint, Litmus errorHandler);
 }
-<<<<<<< HEAD
-=======
 
 // End HintOptionChecker.java
->>>>>>> fc5b46f76 ([CALCITE-3719] Add hint option checker to customize the option (#147))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

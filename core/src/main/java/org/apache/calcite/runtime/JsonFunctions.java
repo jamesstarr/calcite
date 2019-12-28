@@ -792,7 +792,6 @@ public class JsonFunctions {
     NONE
   }
 }
-<<<<<<< HEAD
-=======
 
 // End JsonFunctions.java
+=======

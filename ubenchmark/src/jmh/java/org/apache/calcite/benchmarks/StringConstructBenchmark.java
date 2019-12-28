@@ -208,8 +208,7 @@ public class StringConstructBenchmark {
     new Runner(opt).run();
   }
 }
-<<<<<<< HEAD:ubenchmark/src/jmh/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
-=======
 
 // End StringConstructBenchmark.java
->>>>>>> 279918c82 ([CALCITE-2887] Improve performance of RexLiteral#toJavaString):ubenchmark/src/main/java/org/apache/calcite/benchmarks/StringConstructBenchmark.java
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

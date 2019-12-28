@@ -72,8 +72,7 @@ public class RemotePreparedStatementParametersTest {
     server.stop();
   }
 }
-<<<<<<< HEAD
-=======
 
 // End RemotePreparedStatementParametersTest.java
->>>>>>> 643817238 ([CALCITE-563] In JDBC adapter, push bindable parameters down to the underlying JDBC data source (Vladimir Sitnikov, Piotr Bojko))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

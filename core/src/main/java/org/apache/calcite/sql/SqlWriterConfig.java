@@ -432,7 +432,6 @@ public interface SqlWriterConfig {
     TALL
   }
 }
-<<<<<<< HEAD
-=======
 // End SqlWriterConfig.java
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

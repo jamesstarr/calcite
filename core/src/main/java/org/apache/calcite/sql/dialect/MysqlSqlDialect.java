@@ -308,6 +308,7 @@ public class MysqlSqlDialect extends SqlDialect {
     }
   }
 }
+<<<<<<< HEAD
 
 
   @Override public void unparseSqlIntervalQualifier(SqlWriter writer,
@@ -371,3 +372,5 @@ public class MysqlSqlDialect extends SqlDialect {
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -149,6 +149,7 @@ public class EnumerableRules {
     return ENUMERABLE_RULES;
   }
 }
+<<<<<<< HEAD
 
   public static final EnumerableMatchRule ENUMERABLE_MATCH_RULE =
       new EnumerableMatchRule();
@@ -181,3 +182,5 @@ public class EnumerableRules {
     return ENUMERABLE_RULES;
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

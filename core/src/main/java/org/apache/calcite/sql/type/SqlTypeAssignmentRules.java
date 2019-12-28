@@ -465,5 +465,3 @@ public class SqlTypeAssignmentRules {
     }
   }
 }
-
-// End SqlTypeAssignmentRules.java

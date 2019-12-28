@@ -49,6 +49,7 @@ public enum ColumnStrategy {
     return this != STORED && this != VIRTUAL;
   }
 }
+<<<<<<< HEAD
 >>>>>>> e564f3b87 ([CALCITE-3201] SqlValidator throws exception for sql insert target table with virtual columns)
 
   /**
@@ -60,3 +61,5 @@ public enum ColumnStrategy {
     return this != STORED && this != VIRTUAL;
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

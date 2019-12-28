@@ -112,8 +112,7 @@ final class BlackholeMap<K, V> extends AbstractMap<K, V> {
     return (Map<K, V>) INSTANCE;
   }
 }
-<<<<<<< HEAD
-=======
 
 // End BlackholeMap.java
->>>>>>> e2dae0f25 ([CALCITE-3062] Do not populate provenanceMap if not debug)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

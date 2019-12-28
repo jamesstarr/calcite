@@ -94,6 +94,7 @@ public class RexRangeRef extends RexNode {
     return "offset(" + offset + ")";
   }
 }
+<<<<<<< HEAD
 >>>>>>> 232030fd4 ([CALCITE-2632]: Add hashCode and equals implementations to RexNode)
 
   @Override public boolean equals(Object obj) {
@@ -111,3 +112,5 @@ public class RexRangeRef extends RexNode {
     return "offset(" + offset + ")";
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

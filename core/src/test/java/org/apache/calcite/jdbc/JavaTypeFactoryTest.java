@@ -106,8 +106,7 @@ public final class JavaTypeFactoryTest {
     public String strField;
   }
 }
-<<<<<<< HEAD
-=======
 
 // End JavaTypeFactoryTest.java
->>>>>>> 66594a820 ([CALCITE-2677] Struct types with one field are not mapped correctly to Java Classes)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

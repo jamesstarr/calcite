@@ -1000,6 +1000,7 @@ public interface SqlValidator {
     Config withAmbiguousColumnAllowed(boolean allowed);
   }
 }
+<<<<<<< HEAD
 
   /**
    * Sets whether this validator should be lenient upon encountering an unknown
@@ -1240,3 +1241,5 @@ public interface SqlValidator {
     Config withAmbiguousColumnAllowed(boolean allowed);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

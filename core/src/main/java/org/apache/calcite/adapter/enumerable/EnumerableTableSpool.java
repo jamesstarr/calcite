@@ -113,5 +113,3 @@ public class EnumerableTableSpool extends TableSpool implements EnumerableRel {
         readType, writeType, table);
   }
 }
-
-// End EnumerableTableSpool.java

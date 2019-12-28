@@ -486,9 +486,6 @@ public enum BuiltInMethod {
       "monthNameWithTimestamp", long.class, Locale.class),
   MONTHNAME_WITH_DATE(SqlFunctions.class,
       "monthNameWithDate", int.class, Locale.class),
-<<<<<<< HEAD
-=======
-=======
   CURRENT_TIMESTAMP(SqlFunctions.class, "currentTimestamp", DataContext.class),
   CURRENT_TIME(SqlFunctions.class, "currentTime", DataContext.class),
   CURRENT_DATE(SqlFunctions.class, "currentDate", DataContext.class),
@@ -656,8 +653,10 @@ public enum BuiltInMethod {
     return method.getName();
   }
 }
+<<<<<<< HEAD
 
   public String getMethodName() {
     return method.getName();
   }
 }
+=======

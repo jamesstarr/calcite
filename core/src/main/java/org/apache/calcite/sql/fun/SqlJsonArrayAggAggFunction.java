@@ -99,5 +99,3 @@ public class SqlJsonArrayAggAggFunction extends SqlAggFunction {
     return nullClause;
   }
 }
-
-// End SqlJsonArrayAggAggFunction.java

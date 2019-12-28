@@ -68,8 +68,7 @@ public class UncollectNode extends AbstractSingleNode<Uncollect> {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End UncollectNode.java
->>>>>>> e1bbf3077 ([CALCITE-3561] Support using unnest in Interpreter (Wang Yanlin))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

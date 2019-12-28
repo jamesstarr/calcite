@@ -61,5 +61,3 @@ public class LateralTableScope extends ListScope {
         || super.isWithin(scope2);
   }
 }
-
-// End LateralTableScope.java

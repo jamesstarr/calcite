@@ -87,8 +87,7 @@ public class ProjectionTest {
     };
   }
 
-  @Test
-  public void projection() {
+  @Test public void projection() {
     CalciteAssert.that()
             .with(newConnectionFactory())
             .query("select * from view")
@@ -122,5 +121,3 @@ public class ProjectionTest {
   }
 
 }
-
-// End ProjectionTest.java

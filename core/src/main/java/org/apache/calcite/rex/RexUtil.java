@@ -2602,41 +2602,6 @@ public class RexUtil {
     private RexNode or(Iterable<? extends RexNode> nodes) {
       return composeDisjunction(rexBuilder, nodes);
     }
-<<<<<<< HEAD
-=======
-
-    private void incrementAndCheck() {
-      if (maxNodeCount >= 0 && ++currentCount > maxNodeCount) {
-        throw DnfHelper.OverflowError.INSTANCE;
-      }
-    }
-
-    /** Exception to catch when we pass the limit. */
-    @SuppressWarnings("serial")
-    private static class OverflowError extends ControlFlowException {
-      @SuppressWarnings("ThrowableInstanceNeverThrown")
-      protected static final DnfHelper.OverflowError INSTANCE = new DnfHelper.OverflowError();
-      private OverflowError() {}
-    }
-  }
-
-<<<<<<< HEAD
-    private void incrementAndCheck() {
-      if (maxNodeCount >= 0 && ++currentCount > maxNodeCount) {
-        throw DnfHelper.OverflowError.INSTANCE;
-      }
-    }
-
-    /** Exception to catch when we pass the limit. */
-    @SuppressWarnings("serial")
-    private static class OverflowError extends ControlFlowException {
-      @SuppressWarnings("ThrowableInstanceNeverThrown")
-      protected static final DnfHelper.OverflowError INSTANCE = new DnfHelper.OverflowError();
-      private OverflowError() {}
-    }
-  }
-
-=======
   /** Shuttle that adds {@code offset} to each {@link RexInputRef} in an
    * expression. */
   private static class RexShiftShuttle extends RexShuttle {
@@ -2829,4 +2794,126 @@ public class RexUtil {
       return simplify.rexBuilder.makeCast(call.getType(), simplifiedNode, matchNullability);
     }
   }
+<<<<<<< HEAD
 // End RexUtil.java
+=======
+
+  /**
+   * Visitor class which transforms datetime_plus operators to timestamp_add operators.
+   */
+  private static class DateTimePlusToTsAddVisitor extends RexShuttle {
+    private final RexBuilder builder;
+
+    DateTimePlusToTsAddVisitor(RexBuilder builder) {
+      this.builder = builder;
+    }
+
+    private static TimeUnit getTimeUnitFromIntervalLiteral(RexNode intervalLiteral) {
+      final IntervalSqlType intervalType = (IntervalSqlType) intervalLiteral.getType();
+      return intervalType.getIntervalQualifier().getUnit();
+    }
+
+    private RexNode convertIntervalLiteralToInteger(TimeUnit unit,
+        RexNode intervalLiteral, RexNode coefficient, boolean negate) {
+      final RexLiteral intervalAsInt = builder.makeExactLiteral(((RexLiteral) intervalLiteral)
+          .getValueAs(BigDecimal.class).divide(unit.multiplier, 0, RoundingMode.HALF_DOWN));
+
+      // No co-efficient. Just return the original literal.
+      if (null == coefficient) {
+        if (!negate)  {
+          return intervalAsInt;
+        }
+        // Make the negation part of the integer literal.
+        return builder.makeExactLiteral(((RexLiteral) intervalLiteral)
+            .getValueAs(BigDecimal.class)
+            .divide(unit.multiplier, 0, RoundingMode.HALF_DOWN)
+            .negate());
+      }
+
+      RexNode result;
+      // Unit literal. Omit.
+      if (intervalAsInt.getValueAs(BigDecimal.class).equals(BigDecimal.ONE)) {
+        result = coefficient;
+      } else {
+        // Multiply the interval-as-int by the coefficient.
+        result = builder.makeCall(SqlStdOperatorTable.MULTIPLY, intervalAsInt, coefficient);
+      }
+
+      if (negate) {
+        result = builder.makeCall(SqlStdOperatorTable.UNARY_MINUS, result);
+      }
+
+      return result;
+    }
+
+    @Override public RexNode visitCall(RexCall call) {
+      // Only transform DATETIME_PLUS calls that are applied to a
+      // datetime <op> single-field interval.
+      if (call.getOperator() != SqlStdOperatorTable.DATETIME_PLUS
+          && ((call.getOperator() != SqlStdOperatorTable.MINUS_DATE)
+              || (call.getOperands().size() != 2)
+              || !(
+                  INTERVAL_TYPES.contains(
+                      call.getOperands().get(1).getType().getSqlTypeName())))) {
+        return super.visitCall(call);
+      }
+
+      RexNode datetime = call.getOperands().get(0);
+      final SqlTypeName datetimeType = datetime.getType().getSqlTypeName();
+      if (datetimeType != SqlTypeName.DATE
+          && datetimeType != SqlTypeName.TIME
+          && datetimeType != SqlTypeName.TIMESTAMP) {
+        return super.visitCall(call);
+      }
+
+      // The datetime argument might be another call to DATETIME_PLUS.
+      // Recursively transform this as well.
+      datetime = datetime.accept(this);
+
+      // Check the type of the interval parameter.
+      if (!isInterval(call.getOperands().get(1))) {
+        throw new Util.FoundOne(call);
+      }
+
+      final boolean negate = call.getOperator() == SqlStdOperatorTable.MINUS_DATE;
+
+      // TODO DX-13313: Support more types of interval expressions.
+
+      // Note that while we can CAST the interval argument to an integer, we wouldn't be able
+      // to represent this in a SQL dialect that doesn't support intervals (since there's no way
+      // to cast an interval). We will only try to do this conversion if the interval is either
+      // a literal, or a literal multiplied by an expression.
+      final RexNode interval = call.getOperands().get(1);
+      final RexNode intervalAsInt;
+      final TimeUnit unit;
+      if (interval instanceof RexLiteral) {
+        unit = getTimeUnitFromIntervalLiteral(interval);
+        intervalAsInt = convertIntervalLiteralToInteger(unit, interval, null, negate);
+      } else if (interval instanceof RexCall
+          && ((RexCall) interval).getOperator() == SqlStdOperatorTable.MULTIPLY) {
+        // Identify which, if any operand is an interval literal.
+        final RexCall multiplyOp = (RexCall) interval;
+        final RexNode leftOp = multiplyOp.getOperands().get(0);
+        final RexNode rightOp = multiplyOp.getOperands().get(1);
+
+        if (isIntervalLiteral(leftOp)) {
+          unit = getTimeUnitFromIntervalLiteral(leftOp);
+          intervalAsInt = convertIntervalLiteralToInteger(unit, leftOp, rightOp, negate);
+        } else if (isIntervalLiteral(rightOp)) {
+          unit = getTimeUnitFromIntervalLiteral(rightOp);
+          intervalAsInt = convertIntervalLiteralToInteger(unit, rightOp, leftOp, negate);
+        } else {
+          // Neither are single field interval literals. Don't convert.
+          // We could do a deeper search if these are multiply functions but this wouldn't
+          // be very common.
+          throw new Util.FoundOne(call);
+        }
+      } else {
+        throw new Util.FoundOne(call);
+      }
+
+      return builder.makeCall(SqlStdOperatorTable.TIMESTAMP_ADD,
+          builder.makeFlag(unit), intervalAsInt, datetime);
+    }
+  }
+}

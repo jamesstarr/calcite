@@ -111,6 +111,7 @@ public class RexFieldCollation extends Pair<RexNode, ImmutableSet<SqlKind>> {
     }
   }
 }
+<<<<<<< HEAD
 >>>>>>> 7990c0eab (Following [CALCITE-2622] intern sets of SqlKind)
 
   /** Helper, used during initialization, that builds a canonizing map from
@@ -137,3 +138,5 @@ public class RexFieldCollation extends Pair<RexNode, ImmutableSet<SqlKind>> {
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

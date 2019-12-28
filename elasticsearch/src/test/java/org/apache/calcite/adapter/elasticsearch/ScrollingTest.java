@@ -79,8 +79,7 @@ public class ScrollingTest {
     };
   }
 
-  @Test
-  public void scrolling() throws Exception {
+  @Test public void scrolling() throws Exception {
     final String[] expected = IntStream.range(0, SIZE).mapToObj(i -> "V=" + i)
         .toArray(String[]::new);
     final String query = String.format(Locale.ROOT, "select _MAP['value'] as v from "
@@ -123,6 +122,9 @@ public class ScrollingTest {
 
 
 }
+<<<<<<< HEAD
 >>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
 
 // End ScrollingTest.java
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

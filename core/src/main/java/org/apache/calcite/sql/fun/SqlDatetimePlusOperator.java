@@ -73,6 +73,9 @@ public class SqlDatetimePlusOperator extends SqlSpecialOperator {
     return SqlStdOperatorTable.PLUS.getMonotonicity(call);
   }
 }
+<<<<<<< HEAD
 >>>>>>> 0630a3332 ([CALCITE-2281] Return type of the TIMESTAMPADD function has wrong precision (Sudheesh Katkam))
 
 // End SqlDatetimePlusOperator.java
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

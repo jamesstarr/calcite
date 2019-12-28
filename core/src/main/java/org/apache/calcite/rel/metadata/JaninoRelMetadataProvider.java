@@ -394,7 +394,8 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
         new ReflectiveRelMetadataProvider.Space((Multimap) map);
     for (MetadataHandler provider : space.providerMap.values()) {
       if (providerSet.add(provider)) {
-        providerList.add(Pair.of("provider" + (providerSet.size() - 1),
+        providerList.add(
+            Pair.of("provider" + (providerSet.size() - 1),
             provider));
       }
     }
@@ -740,6 +741,9 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
     }
   }
 }
+<<<<<<< HEAD
 >>>>>>> 609a4b7fe ([CALCITE-4546] Change MD dispatch)
 
 // End JaninoRelMetadataProvider.java
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

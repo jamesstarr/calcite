@@ -71,25 +71,6 @@ public class EnumerableRepeatUnion extends RepeatUnion implements EnumerableRel 
     Expression seedExp = builder.append("seed", seedResult.block);
     Expression iterativeExp = builder.append("iteration", iterationResult.block);
 
-<<<<<<< HEAD
-=======
-    Expression unionExp = Expressions.call(
-        BuiltInMethod.REPEAT_UNION_ALL.method,
-        seedExp,
-        iterativeExp,
-        Expressions.constant(iterationLimit, int.class));
-    builder.add(unionExp);
-
-    PhysType physType = PhysTypeImpl.of(
-        implementor.getTypeFactory(),
-        getRowType(),
-        pref.prefer(seedResult.format));
->>>>>>> a73d1ff04 ([CALCITE-3109] Improvements on algebraic operators to express recursive queries (RepeatUnion & TableSpool))
-    return implementor.result(physType, builder.toBlock());
-  }
-
-}
-<<<<<<< HEAD
-=======
 
 // End EnumerableRepeatUnion.java
+=======

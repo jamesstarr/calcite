@@ -770,7 +770,7 @@ public class TypeCoercionTest extends SqlValidatorTestCase {
   }
 
   /** Test case for {@link AbstractTypeCoercion#implicitCast}. */
-  @Test  public void testBuiltinFunctionCoercion() {
+  @Test public void testBuiltinFunctionCoercion() {
     // concat
     expr("'ab'||'cde'")
         .columnType("CHAR(5) NOT NULL");
@@ -847,7 +847,6 @@ public class TypeCoercionTest extends SqlValidatorTestCase {
   }
 
 }
-<<<<<<< HEAD
-=======
 
 // End TypeCoercionTest.java
+=======

@@ -269,6 +269,7 @@ public class SqlDdlNodes {
     ARCHIVE
   }
 }
+<<<<<<< HEAD
 >>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
 
   /** File type for CREATE FUNCTION. */
@@ -278,3 +279,5 @@ public class SqlDdlNodes {
     ARCHIVE
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

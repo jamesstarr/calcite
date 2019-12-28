@@ -45,8 +45,7 @@ public class JsonType {
     handler.visit(this);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End JsonType.java
->>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

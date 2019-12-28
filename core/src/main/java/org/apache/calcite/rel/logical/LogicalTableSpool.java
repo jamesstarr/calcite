@@ -67,5 +67,3 @@ public class LogicalTableSpool extends TableSpool {
         readType, writeType, table);
   }
 }
-
-// End LogicalTableSpool.java

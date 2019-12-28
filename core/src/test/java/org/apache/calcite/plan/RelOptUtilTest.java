@@ -655,6 +655,7 @@ class RelOptUtilTest {
     assertThat(RelOptUtil.toString(castNode2), is(RelOptUtil.toString(expectNode2)));
   }
 }
+<<<<<<< HEAD
 
   /**
    * Test {@link RelOptUtil#pushDownJoinConditions(org.apache.calcite.rel.core.Join, RelBuilder)}
@@ -956,3 +957,5 @@ class RelOptUtilTest {
     assertThat(RelOptUtil.toString(castNode2), is(RelOptUtil.toString(expectNode2)));
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

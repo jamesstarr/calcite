@@ -1980,8 +1980,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2205">[CALCITE-2205]</a>.
    * Since this is a performance problem, the test result does not
    * change, but takes over 15 minutes before the fix and 6 seconds after. */
-  @Test
-  public void testPullUpPredicatesForExprsItr() {
+  @Test public void testPullUpPredicatesForExprsItr() {
     final String sql = "select a.EMPNO, a.ENAME\n"
         + "from (select * from sales.emp ) a\n"
         + "join (select * from sales.emp  ) b\n"
@@ -2125,9 +2124,6 @@ public class RelMetadataTest extends SqlToRelTestBase {
         sortsAs("[=($0, 1), =($1, 2)]"));
   }
 
-<<<<<<< HEAD
-  @Test void testDistributionSimple() {
-=======
   @Test public void testDistributionSimple() {
     RelNode rel = convertSql("select * from emp where deptno = 10");
     final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
@@ -3278,6 +3274,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     }
   }
 }
+<<<<<<< HEAD
 
   /**
    * Dummy rel node used for testing.
@@ -3316,3 +3313,4 @@ public class RelMetadataTest extends SqlToRelTestBase {
     }
   }
 }
+=======

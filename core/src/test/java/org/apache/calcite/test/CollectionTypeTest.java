@@ -106,7 +106,7 @@ class CollectionTypeTest {
     assertThat(resultStrings.size(), is(0));
   }
 
-  @Test void testInvalidAccessUseStringForIndexOnArray() throws Exception {
+  @Test public void testInvalidAccessUseStringForIndexOnArray() throws Exception {
     Connection connection = setupConnectionWithNestedTable();
 
     final Statement statement = connection.createStatement();
@@ -125,7 +125,7 @@ class CollectionTypeTest {
     }
   }
 
-  @Test void testNestedArrayOutOfBoundAccess() throws Exception {
+  @Test public void testNestedArrayOutOfBoundAccess() throws Exception {
     Connection connection = setupConnectionWithNestedTable();
 
     final Statement statement = connection.createStatement();
@@ -247,7 +247,7 @@ class CollectionTypeTest {
     assertThat(resultStrings.size(), is(0));
   }
 
-  @Test void testInvalidAccessUseStringForIndexOnArrayWithAnyType() throws Exception {
+  @Test public void testInvalidAccessUseStringForIndexOnArrayWithAnyType() throws Exception {
     Connection connection = setupConnectionWithNestedTable();
 
     final Statement statement = connection.createStatement();
@@ -266,7 +266,7 @@ class CollectionTypeTest {
     }
   }
 
-  @Test void testNestedArrayOutOfBoundAccessWithAnyType() throws Exception {
+  @Test public void testNestedArrayOutOfBoundAccessWithAnyType() throws Exception {
     Connection connection = setupConnectionWithNestedTable();
 
     final Statement statement = connection.createStatement();

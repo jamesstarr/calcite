@@ -950,33 +950,6 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
             targetType,
             input,
             true);
-<<<<<<< HEAD
-      }
-
-      if (rexCall.op == SqlStdOperatorTable.ITEM
-          && rexCall.operands.get(0).getType().isStruct()
-          && rexCall.operands.get(1).isA(SqlKind.LITERAL)
-          && SqlTypeUtil.inCharFamily(rexCall.operands.get(1).getType())) {
-        RexNode firstOp = rexCall.operands.get(0);
-        final String literalString = ((RexLiteral) rexCall.operands.get(1))
-            .getValueAs(String.class);
-        if (firstOp instanceof RexInputRef) {
-          int oldOrdinal = ((RexInputRef) firstOp).getIndex();
-          int newInnerOrdinal = getNewInnerOrdinal(firstOp, literalString);
-          Ord<RelDataType> newField = getNewFieldForOldInput(oldOrdinal, newInnerOrdinal);
-          RexInputRef newRef = rexBuilder.makeInputRef(newField.e, newField.i);
-          return newRef;
-        } else {
-          RexNode newFirstOp = firstOp.accept(this);
-          if (newFirstOp instanceof RexInputRef) {
-            int newRefOrdinal = ((RexInputRef) newFirstOp).getIndex()
-                + getNewInnerOrdinal(firstOp, literalString);
-            RelDataTypeField newField = getNewInputFieldByNewOrdinal(newRefOrdinal);
-            RexInputRef newRef = rexBuilder.makeInputRef(newField.getType(), newRefOrdinal);
-            return newRef;
-          }
-        }
-=======
       }
 
       if (rexCall.op == SqlStdOperatorTable.ITEM
@@ -1090,6 +1063,7 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
   }
 
 }
+<<<<<<< HEAD
 
   }
 
@@ -1106,3 +1080,4 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
   }
 
 }
+=======

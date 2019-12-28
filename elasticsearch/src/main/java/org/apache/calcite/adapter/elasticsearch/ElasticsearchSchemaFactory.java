@@ -116,5 +116,3 @@ public class ElasticsearchSchemaFactory implements SchemaFactory {
   }
 
 }
-
-// End ElasticsearchSchemaFactory.java

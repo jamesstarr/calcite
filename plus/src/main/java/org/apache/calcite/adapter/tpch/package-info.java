@@ -19,8 +19,7 @@
  * TPC-H schema.
  */
 package org.apache.calcite.adapter.tpch;
-<<<<<<< HEAD
-=======
 
 // End package-info.java
->>>>>>> 4d61893a7 ([CALCITE-2905] @PackageMaker is no longer needed)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

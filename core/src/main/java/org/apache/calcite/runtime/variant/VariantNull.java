@@ -62,7 +62,6 @@ public class VariantNull extends VariantValue {
     return "null";
   }
 }
-<<<<<<< HEAD
-=======
 // End VariantNull.java
->>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

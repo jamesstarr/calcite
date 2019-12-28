@@ -406,7 +406,6 @@ public class PigToSqlAggregateRule extends RelOptRule {
     return rexCall.getOperator().getName().equals(MULTISET_PROJECTION);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End PigToSqlAggregateRule.java
+=======

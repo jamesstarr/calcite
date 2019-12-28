@@ -100,7 +100,6 @@ public class RowSqlTypeRtti extends RuntimeTypeInformation {
     return null;
   }
 }
-<<<<<<< HEAD
-=======
 // End RowSqlTypeRtti.java
->>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

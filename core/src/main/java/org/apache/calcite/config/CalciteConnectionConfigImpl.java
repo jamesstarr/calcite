@@ -206,6 +206,7 @@ public class CalciteConnectionConfigImpl extends ConnectionConfigImpl
         .getBoolean();
   }
 }
+<<<<<<< HEAD
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 
   @Override public String timeZone() {
@@ -228,3 +229,5 @@ public class CalciteConnectionConfigImpl extends ConnectionConfigImpl
         .getBoolean();
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

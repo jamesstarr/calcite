@@ -133,9 +133,7 @@ public class SqlXmlFunctionsTest {
     }
   }
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 =======
 
 // End SqlXmlFunctionsTest.java
+=======

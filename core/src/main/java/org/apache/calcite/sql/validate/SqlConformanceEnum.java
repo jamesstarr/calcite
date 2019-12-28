@@ -346,6 +346,7 @@ public enum SqlConformanceEnum implements SqlConformance {
   }
 
 }
+<<<<<<< HEAD
 
   @Override public boolean allowPluralTimeUnits() {
     switch (this) {
@@ -381,3 +382,5 @@ public enum SqlConformanceEnum implements SqlConformance {
   }
 
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

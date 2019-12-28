@@ -530,7 +530,6 @@ public class EnumerableMatch extends Match implements EnumerableRel {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End EnumerableMatch.java
+=======

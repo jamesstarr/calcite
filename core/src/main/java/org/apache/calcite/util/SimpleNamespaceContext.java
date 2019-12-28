@@ -75,6 +75,4 @@ public class SimpleNamespaceContext implements NamespaceContext {
 
 // End SimpleNamespaceContext.java
 =======
-
-// End SimpleNamespaceContext.java
->>>>>>> cb6ae4e4b (DX-60250: [CALCITE-5263] Improve XmlFunctions by using an XML DocumentBuilder (Manual change for fixing CVE-2022-39135))
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

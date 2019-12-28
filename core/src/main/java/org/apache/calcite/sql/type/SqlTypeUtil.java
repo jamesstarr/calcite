@@ -1724,6 +1724,7 @@ public abstract class SqlTypeUtil {
     return factory.createSqlType(SqlTypeName.DECIMAL, maxPrecision, maxScale);
   }
 }
+<<<<<<< HEAD
 
   public static RelDataType consistentType(RelDataTypeFactory typeFactory,
       SqlOperandTypeChecker.Consistency consistency, List<RelDataType> types) {
@@ -1905,3 +1906,5 @@ public abstract class SqlTypeUtil {
         type.getFieldList().subList(fieldsCnt - numToKeep, fieldsCnt));
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

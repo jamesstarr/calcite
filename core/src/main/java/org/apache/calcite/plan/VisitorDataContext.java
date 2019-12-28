@@ -219,4 +219,3 @@ public class VisitorDataContext implements DataContext {
     return RexUtil.removeCast(literal);
   }
 }
-// End VisitorDataContext.java

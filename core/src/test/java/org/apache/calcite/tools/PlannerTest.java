@@ -86,8 +86,52 @@ import com.google.common.collect.ImmutableList;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
-  @Test
-  public void testParseIdentiferMaxLengthWithDefault() {
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.calcite.plan.RelOptRule.operand;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
+
+/**
+ * Unit tests for {@link Planner}.
+ */
+public class PlannerTest {
+  private void checkParseAndConvert(String query,
+      String queryFromParseTree, String expectedRelExpr) throws Exception {
+    Planner planner = getPlanner(null);
+    SqlNode parse = planner.parse(query);
+    assertThat(Util.toLinux(parse.toString()), equalTo(queryFromParseTree));
+
+    SqlNode validate = planner.validate(parse);
+    RelNode rel = planner.rel(validate).project();
+    assertThat(toString(rel), equalTo(expectedRelExpr));
+  }
+
+  @Test public void testParseAndConvert() throws Exception {
+    checkParseAndConvert(
+        "select * from \"emps\" where \"name\" like '%e%'",
+
+        "SELECT *\n"
+            + "FROM `emps`\n"
+            + "WHERE `name` LIKE '%e%'",
+
+        "LogicalProject(empid=[$0], deptno=[$1], name=[$2], salary=[$3], commission=[$4])\n"
+        + "  LogicalFilter(condition=[LIKE($2, '%e%')])\n"
+        + "    EnumerableTableScan(table=[[hr, emps]])\n");
+  }
+
+  @Test public void testParseIdentiferMaxLengthWithDefault() {
     Assertions.assertThrows(SqlParseException.class, () -> {
       Planner planner = getPlanner(null, SqlParser.configBuilder().build());
       planner.parse("select name as "
@@ -95,7 +139,7 @@ import org.junit.jupiter.api.Disabled;
     });
   }
 
-  @Test void testParseIdentiferMaxLengthWithIncreased() throws Exception {
+  @Test public void testParseIdentiferMaxLengthWithIncreased() throws Exception {
     Planner planner = getPlanner(null,
         SqlParser.configBuilder().setIdentifierMaxLength(512).build());
     planner.parse("select name as "
@@ -642,9 +686,6 @@ import org.junit.jupiter.api.Disabled;
             + "  MockJdbcTableScan(table=[[hr, emps]])\n"));
   }
 
-<<<<<<< HEAD
-  @Test void testPlan5WayJoin()
-=======
   @Test public void testPlan5WayJoin()
       throws Exception {
     checkJoinNWay(5); // LoptOptimizeJoinRule disabled; takes about .4s
@@ -1232,6 +1273,7 @@ import org.junit.jupiter.api.Disabled;
     assertThat(toString(root.rel), matcher);
   }
 }
+<<<<<<< HEAD
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3376">[CALCITE-3376]
@@ -1322,3 +1364,4 @@ import org.junit.jupiter.api.Disabled;
     assertThat(toString(root.rel), matcher);
   }
 }
+=======

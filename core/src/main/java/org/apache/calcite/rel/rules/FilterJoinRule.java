@@ -423,6 +423,7 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
     Config withPredicate(Predicate predicate);
   }
 }
+<<<<<<< HEAD
 >>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
@@ -445,3 +446,5 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
     Config withPredicate(Predicate predicate);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

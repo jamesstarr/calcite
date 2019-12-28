@@ -166,6 +166,7 @@ public class IntPair {
     return Lists.transform(pairs, RIGHT);
   }
 }
+<<<<<<< HEAD
 >>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
 
   /** Returns the left side of a list of pairs. */
@@ -178,3 +179,5 @@ public class IntPair {
     return Lists.transform(pairs, RIGHT);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

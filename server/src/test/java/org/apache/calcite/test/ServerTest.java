@@ -231,10 +231,6 @@ class ServerTest {
     }
   }
 
-<<<<<<< HEAD
-=======
-  @Ignore
-=======
   @Disabled
   @Test public void testInsertCastedValueOfCompositeUdt() throws Exception {
     try (Connection c = connect();
@@ -462,6 +458,7 @@ class ServerTest {
     }
   }
 }
+<<<<<<< HEAD
 
   @Test void testVirtualColumnWithFunctions() throws Exception {
     try (Connection c = connect();
@@ -501,3 +498,4 @@ class ServerTest {
     }
   }
 }
+=======

@@ -143,7 +143,6 @@ public class SqlJsonObjectFunction extends SqlFunction {
     return (E) ((SqlLiteral) operand).getValue();
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SqlJsonObjectFunction.java
+=======

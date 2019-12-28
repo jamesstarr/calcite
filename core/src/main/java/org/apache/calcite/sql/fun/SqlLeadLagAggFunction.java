@@ -101,6 +101,9 @@ public class SqlLeadLagAggFunction extends SqlAggFunction {
 =======
 
 }
+<<<<<<< HEAD
 >>>>>>> cf7bf148e ([CALCITE-883] Support RESPECT NULLS, IGNORE NULLS option for LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE functions (Chunwei Lei))
 
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

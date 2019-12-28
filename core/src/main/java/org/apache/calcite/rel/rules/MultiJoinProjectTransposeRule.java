@@ -166,6 +166,7 @@ public class MultiJoinProjectTransposeRule extends JoinProjectTransposeRule {
     }
   }
 }
+<<<<<<< HEAD
 
   /** Rule configuration. */
   public interface Config extends JoinProjectTransposeRule.Config {
@@ -204,3 +205,5 @@ public class MultiJoinProjectTransposeRule extends JoinProjectTransposeRule {
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

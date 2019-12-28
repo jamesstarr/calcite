@@ -1,6 +1,9 @@
 <?xml version="1.0" ?>
 <!--
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
   ~ this work for additional information regarding copyright ownership.
@@ -16,6 +19,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+<<<<<<< HEAD
 <Root>
     <TestCase name="testNestedQueryHint">
         <Resource name="sql">
@@ -36,6 +40,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 <Root>
     <TestCase name="testNestedQueryHint">
         <Resource name="sql">

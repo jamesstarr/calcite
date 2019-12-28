@@ -155,20 +155,6 @@ class SqlValidatorUtilTest {
     assertThat(sensitiveMatcher.frequency(beatles, "Ringo"), is(0));
   }
 }
-
-  @Test void testNameMatcher() {
-    final ImmutableList<String> beatles =
-        ImmutableList.of("john", "paul", "ringo", "rinGo");
-    final SqlNameMatcher insensitiveMatcher =
-        SqlNameMatchers.withCaseSensitive(false);
-    assertThat(insensitiveMatcher.frequency(beatles, "ringo"), is(2));
-    assertThat(insensitiveMatcher.frequency(beatles, "rinGo"), is(2));
-    final SqlNameMatcher sensitiveMatcher =
-        SqlNameMatchers.withCaseSensitive(true);
-    assertThat(sensitiveMatcher.frequency(beatles, "ringo"), is(1));
-    assertThat(sensitiveMatcher.frequency(beatles, "rinGo"), is(1));
-    assertThat(sensitiveMatcher.frequency(beatles, "Ringo"), is(0));
-  }
-=======
 >>>>>>> 0c5880c91 (Revert "Reapply "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING""")
 }
+=======

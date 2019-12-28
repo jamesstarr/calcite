@@ -90,5 +90,3 @@ public class SqlJsonObjectAggAggFunction extends SqlAggFunction {
     return nullClause;
   }
 }
-
-// End SqlJsonObjectAggAggFunction.java

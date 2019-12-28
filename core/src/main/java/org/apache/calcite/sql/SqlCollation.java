@@ -311,6 +311,7 @@ public class SqlCollation implements Serializable {
     return null;
   }
 }
+<<<<<<< HEAD
 >>>>>>> 02d8ed362 ([CALCITE-3951] Support different string comparison based on SqlCollation)
 
   public final Locale getLocale() {
@@ -326,3 +327,5 @@ public class SqlCollation implements Serializable {
     return null;
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

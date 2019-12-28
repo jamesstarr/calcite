@@ -872,7 +872,6 @@ public class RelMetadataQuery extends RelMetadataQueryBase {
   }
 >>>>>>> a320d6088 ([CALCITE-3446] Make RelMetadataQuery extensible)
 }
-
-=======
 >>>>>>> acbf6771f (DX-12806: Remove JaninoRelMetadataProvider)
 }
+=======

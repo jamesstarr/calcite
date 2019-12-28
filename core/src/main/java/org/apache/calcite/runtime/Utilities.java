@@ -257,6 +257,7 @@ public class Utilities {
     return Pattern.builder();
   }
 }
+<<<<<<< HEAD
 
   public static Collator generateCollator(Locale locale, int strength) {
     final Collator collator = Collator.getInstance(locale);
@@ -269,3 +270,5 @@ public class Utilities {
     return Pattern.builder();
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

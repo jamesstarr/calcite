@@ -117,7 +117,6 @@ public class RexShrinker extends RexShuttle {
     return super.visitCall(call);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End RexShrinker.java
+=======

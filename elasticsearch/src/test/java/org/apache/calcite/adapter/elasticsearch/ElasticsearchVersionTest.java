@@ -28,8 +28,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public class ElasticsearchVersionTest {
 
-  @Test
-  public void versions() {
+  @Test public void versions() {
     assertEquals(ElasticsearchVersion.fromString("2.3.4"), ElasticsearchVersion.ES2);
     assertEquals(ElasticsearchVersion.fromString("2.0.0"), ElasticsearchVersion.ES2);
     assertEquals(ElasticsearchVersion.fromString("5.6.1"), ElasticsearchVersion.ES5);
@@ -62,8 +61,7 @@ public class ElasticsearchVersionTest {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End ElasticsearchVersionTest.java
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

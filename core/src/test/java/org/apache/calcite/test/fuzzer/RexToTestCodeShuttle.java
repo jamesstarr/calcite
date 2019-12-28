@@ -165,5 +165,3 @@ public class RexToTestCodeShuttle extends RexVisitorImpl<String> {
     }
   }
 }
-
-// End RexToTestCodeShuttle.java

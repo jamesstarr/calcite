@@ -41,6 +41,9 @@ interface ElasticsearchConstants {
   Set<String> META_COLUMNS = ImmutableSet.of(UID, ID, TYPE, INDEX);
 
 }
+<<<<<<< HEAD
 
 // End ElasticsearchConstants.java
 >>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda)):elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchConstants.java
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

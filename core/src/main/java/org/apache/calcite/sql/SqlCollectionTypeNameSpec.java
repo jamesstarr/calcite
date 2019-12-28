@@ -126,6 +126,9 @@ public class SqlCollectionTypeNameSpec extends SqlTypeNameSpec {
     }
   }
 }
+<<<<<<< HEAD
 >>>>>>> 7dff01713 (Cosmetic changes)
 
 // End SqlCollectionTypeNameSpec.java
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

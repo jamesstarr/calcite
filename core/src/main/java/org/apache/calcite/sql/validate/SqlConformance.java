@@ -479,6 +479,7 @@ public interface SqlConformance {
   boolean allowQualifyingCommonColumn();
 
 }
+<<<<<<< HEAD
 
   /**
    * Whether interval literals should allow plural time units
@@ -521,3 +522,5 @@ public interface SqlConformance {
   boolean allowQualifyingCommonColumn();
 
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

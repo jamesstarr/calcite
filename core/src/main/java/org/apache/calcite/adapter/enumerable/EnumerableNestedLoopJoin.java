@@ -150,7 +150,6 @@ public class EnumerableNestedLoopJoin extends Join implements EnumerableRel {
             .toBlock());
   }
 }
-<<<<<<< HEAD
-=======
 
 // End EnumerableNestedLoopJoin.java
+=======

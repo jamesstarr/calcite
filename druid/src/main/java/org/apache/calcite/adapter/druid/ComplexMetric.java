@@ -82,8 +82,7 @@ public class ComplexMetric {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End ComplexMetric.java
->>>>>>> 9d2c4bca7 (Revert "Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)"")
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

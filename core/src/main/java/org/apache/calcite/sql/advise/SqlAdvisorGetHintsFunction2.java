@@ -116,8 +116,7 @@ public class SqlAdvisorGetHintsFunction2
     return Linq4j.asEnumerable(res).asQueryable();
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SqlAdvisorGetHintsFunction2.java
->>>>>>> bc2544869 ([CALCITE-2434] SqlAdvisor: support hints for nested tables/schemas)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

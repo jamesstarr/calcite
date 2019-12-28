@@ -2624,5 +2624,3 @@ public abstract class AbstractMaterializedViewRule extends RelOptRule {
   }
 
 }
-
-// End AbstractMaterializedViewRule.java

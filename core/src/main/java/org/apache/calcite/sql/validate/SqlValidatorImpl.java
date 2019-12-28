@@ -7125,16 +7125,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
      */
     VALID
   }
-<<<<<<< HEAD
-
-  /**
-<<<<<<< HEAD
-   * Used for implementing the dot operator.
-   */
-  public SqlQualified ensureQualified(
-      DelegatingScope scope, SqlIdentifier identifier) {
-    return null;
-=======
    * Visitor to determine if a SqlNode contains a certain identifier.
    */
   private static final class ContainsIdentifierVisitor implements SqlVisitor<Boolean> {
@@ -7173,5 +7163,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       return false;
     }
   }
+=======
 =======
 }

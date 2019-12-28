@@ -218,6 +218,5 @@ public class SqlTypeAssignmentRule implements SqlTypeMappingRule {
     return this.map;
   }
 }
-<<<<<<< HEAD
-=======
 // End SqlTypeAssignmentRule.java
+=======

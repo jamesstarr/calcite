@@ -117,5 +117,3 @@ public class SparkSqlDialect extends SqlDialect {
   }
 =======
 }
-
-// End SparkSqlDialect.java

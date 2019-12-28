@@ -577,8 +577,7 @@ public class Linq4jTest {
     }
   }
 
-  @Test
-  public void testSingleOrDefaultPredicate1() {
+  @Test public void testSingleOrDefaultPredicate1() {
     Predicate1<String> startWithS = s -> s != null && Character.toString(s.charAt(0)).equals("S");
 
     Predicate1<Integer> numberGT15 = i -> i > 15;
@@ -1708,6 +1707,302 @@ public class Linq4jTest {
     } catch (Exception ignored) {
       // ok
     }
+<<<<<<< HEAD
+=======
+  }
+
+  @Test public void testLastOrDefaultWithPredicate() {
+    final Enumerable<String> enumerable =
+        Linq4j.asEnumerable(Arrays.asList("jimi", "mitch", "ming"));
+    assertEquals("mitch", enumerable.lastOrDefault(x -> x.startsWith("mit")));
+    assertNull(enumerable.lastOrDefault(x -> false));
+
+    @SuppressWarnings("unchecked")
+    final Enumerable<String> emptyEnumerable = Linq4j.asEnumerable(Collections.EMPTY_LIST);
+    assertNull(
+        emptyEnumerable.lastOrDefault(x -> {
+          fail();
+          return false;
+        }));
+  }
+
+  @Test public void testSelectManyWithIndexableSelector() {
+    final int[] indexRef = {0};
+    final List<String> nameSeqs =
+        Linq4j.asEnumerable(depts)
+            .selectMany((element, index) -> {
+              assertEquals(indexRef[0], index.longValue());
+              indexRef[0] = index + 1;
+              return Linq4j.asEnumerable(element.employees);
+            })
+            .select((v1, v2) -> "#" + v2 + ": " + v1.name)
+            .toList();
+    assertEquals(
+        "[#0: Fred, #1: Eric, #2: Janet, #3: Bill]", nameSeqs.toString());
+  }
+
+  @Test public void testSelectManyWithResultSelector() {
+    final List<String> nameSeqs =
+        Linq4j.asEnumerable(depts)
+            .selectMany(DEPT_EMPLOYEES_SELECTOR,
+                (element, subElement) -> subElement.name + "@" + element.name)
+            .select((v0, v1) -> "#" + v1 + ": " + v0)
+            .toList();
+    assertEquals(
+        "[#0: Fred@Sales, #1: Eric@Sales, #2: Janet@Sales, #3: Bill@Marketing]",
+        nameSeqs.toString());
+  }
+
+  @Test public void testSelectManyWithIndexableSelectorAndResultSelector() {
+    final int[] indexRef = {0};
+    final List<String> nameSeqs =
+        Linq4j.asEnumerable(depts)
+            .selectMany((element, index) -> {
+              assertEquals(indexRef[0], index.longValue());
+              indexRef[0] = index + 1;
+              return Linq4j.asEnumerable(element.employees);
+            }, (element, subElement) -> subElement.name + "@" + element.name)
+            .select((v0, v1) -> "#" + v1 + ": " + v0)
+            .toList();
+    assertEquals(
+        "[#0: Fred@Sales, #1: Eric@Sales, #2: Janet@Sales, #3: Bill@Marketing]",
+        nameSeqs.toString());
+  }
+
+  @Test public void testSequenceEqual() {
+    final Enumerable<String> enumerable1 = Linq4j.asEnumerable(
+        Collections.unmodifiableCollection(Arrays.asList("ming", "foo", "bar")));
+    final Enumerable<String> enumerable2 = Linq4j.asEnumerable(
+        Collections.unmodifiableCollection(Arrays.asList("ming", "foo", "bar")));
+    assertTrue(enumerable1.sequenceEqual(enumerable2));
+    assertFalse(enumerable1.sequenceEqual(Linq4j.asEnumerable(new String[]{"ming", "foo", "far"})));
+
+    try {
+      EnumerableDefaults.sequenceEqual(null, enumerable2);
+      fail();
+    } catch (NullPointerException ignored) {
+      // ok
+    }
+    try {
+      EnumerableDefaults.sequenceEqual(enumerable1, null);
+      fail();
+    } catch (NullPointerException ignored) {
+      // ok
+    }
+
+    assertFalse(Linq4j.asEnumerable(enumerable1.skip(1).toList()) // Keep as collection
+        .sequenceEqual(enumerable2));
+    assertFalse(enumerable1
+        .sequenceEqual(Linq4j.asEnumerable(enumerable2.skip(1).toList()))); // Keep as collection
+  }
+
+  @Test public void testSequenceEqualWithoutCollection() {
+    final Enumerable<String> enumerable1 = Linq4j.asEnumerable(
+        () -> Arrays.asList("ming", "foo", "bar").iterator());
+    final Enumerable<String> enumerable2 = Linq4j.asEnumerable(
+        () -> Arrays.asList("ming", "foo", "bar").iterator());
+    assertTrue(enumerable1.sequenceEqual(enumerable2));
+    assertFalse(
+        enumerable1.sequenceEqual(
+            Linq4j.asEnumerable(() -> Arrays.asList("ming", "foo", "far").iterator())));
+
+    try {
+      EnumerableDefaults.sequenceEqual(null, enumerable2);
+      fail();
+    } catch (NullPointerException ignored) {
+      // ok
+    }
+    try {
+      EnumerableDefaults.sequenceEqual(enumerable1, null);
+      fail();
+    } catch (NullPointerException ignored) {
+      // ok
+    }
+
+    assertFalse(enumerable1.skip(1).sequenceEqual(enumerable2));
+    assertFalse(enumerable1.sequenceEqual(enumerable2.skip(1)));
+  }
+
+  @Test public void testSequenceEqualWithComparer() {
+    final Enumerable<String> enumerable1 = Linq4j.asEnumerable(
+        Collections.unmodifiableCollection(Arrays.asList("ming", "foo", "bar")));
+    final Enumerable<String> enumerable2 = Linq4j.asEnumerable(
+        Collections.unmodifiableCollection(Arrays.asList("ming", "foo", "bar")));
+    final EqualityComparer<String> equalityComparer = new EqualityComparer<String>() {
+      public boolean equal(String v1, String v2) {
+        return !Objects.equals(v1, v2); // reverse the equality.
+      }
+
+      public int hashCode(String s) {
+        return Objects.hashCode(s);
+      }
+    };
+    assertFalse(enumerable1.sequenceEqual(enumerable2, equalityComparer));
+    assertTrue(enumerable1
+        .sequenceEqual(Linq4j.asEnumerable(Arrays.asList("fun", "lol", "far")), equalityComparer));
+
+    try {
+      EnumerableDefaults.sequenceEqual(null, enumerable2);
+      fail();
+    } catch (NullPointerException ignored) {
+      // ok
+    }
+    try {
+      EnumerableDefaults.sequenceEqual(enumerable1, null);
+      fail();
+    } catch (NullPointerException ignored) {
+      // ok
+    }
+
+    assertFalse(Linq4j.asEnumerable(enumerable1.skip(1).toList()) // Keep as collection
+        .sequenceEqual(enumerable2));
+    assertFalse(enumerable1
+        .sequenceEqual(Linq4j.asEnumerable(enumerable2.skip(1).toList()))); // Keep as collection
+  }
+
+  @Test public void testSequenceEqualWithComparerWithoutCollection() {
+    final Enumerable<String> enumerable1 = Linq4j.asEnumerable(
+        () -> Arrays.asList("ming", "foo", "bar").iterator());
+    final Enumerable<String> enumerable2 = Linq4j.asEnumerable(
+        () -> Arrays.asList("ming", "foo", "bar").iterator());
+    final EqualityComparer<String> equalityComparer = new EqualityComparer<String>() {
+      public boolean equal(String v1, String v2) {
+        return !Objects.equals(v1, v2); // reverse the equality.
+      }
+      public int hashCode(String s) {
+        return Objects.hashCode(s);
+      }
+    };
+    assertFalse(enumerable1.sequenceEqual(enumerable2, equalityComparer));
+    final Enumerable<String> enumerable3 = Linq4j.asEnumerable(
+        () -> Arrays.asList("fun", "lol", "far").iterator());
+    assertTrue(
+        enumerable1.sequenceEqual(enumerable3, equalityComparer));
+
+    try {
+      EnumerableDefaults.sequenceEqual(null, enumerable2);
+      fail();
+    } catch (NullPointerException ignored) {
+      // ok
+    }
+    try {
+      EnumerableDefaults.sequenceEqual(enumerable1, null);
+      fail();
+    } catch (NullPointerException ignored) {
+      // ok
+    }
+
+    assertFalse(enumerable1.skip(1).sequenceEqual(enumerable2));
+    assertFalse(enumerable1.sequenceEqual(enumerable2.skip(1)));
+  }
+
+  @Test public void testGroupByWithKeySelector() {
+    String s =
+        Linq4j.asEnumerable(emps)
+            .groupBy(EMP_DEPTNO_SELECTOR)
+            .select(group ->
+                String.format(Locale.ROOT, "%s: %s", group.getKey(),
+                    stringJoin("+", group.select(element -> element.name))))
+            .toList()
+            .toString();
+    assertThat(s, is("[10: Fred+Eric+Janet, 30: Bill]"));
+  }
+
+  @Test public void testGroupByWithKeySelectorAndComparer() {
+    String s =
+        Linq4j.asEnumerable(emps)
+            .groupBy(EMP_DEPTNO_SELECTOR, new EqualityComparer<Integer>() {
+              public boolean equal(Integer v1, Integer v2) {
+                return true;
+              }
+              public int hashCode(Integer integer) {
+                return 0;
+              }
+            })
+            .select(group ->
+                String.format(Locale.ROOT, "%s: %s", group.getKey(),
+                    stringJoin("+", group.select(element -> element.name))))
+            .toList()
+            .toString();
+    assertThat(s, is("[10: Fred+Bill+Eric+Janet]"));
+  }
+
+  @Test public void testGroupByWithKeySelectorAndElementSelector() {
+    String s =
+        Linq4j.asEnumerable(emps)
+            .groupBy(EMP_DEPTNO_SELECTOR, EMP_NAME_SELECTOR)
+            .select(group ->
+                String.format(Locale.ROOT, "%s: %s", group.getKey(),
+                    stringJoin("+", group)))
+            .toList()
+            .toString();
+    assertThat(s, is("[10: Fred+Eric+Janet, 30: Bill]"));
+  }
+
+  /** Equivalent to {@link String}.join, but that method is only in JDK 1.8 and
+   * higher. */
+  private static String stringJoin(String delimiter, Iterable<String> group) {
+    final StringBuilder sb = new StringBuilder();
+    final Iterator<String> iterator = group.iterator();
+    if (iterator.hasNext()) {
+      sb.append(iterator.next());
+      while (iterator.hasNext()) {
+        sb.append(delimiter).append(iterator.next());
+      }
+    }
+    return sb.toString();
+  }
+
+  @Test public void testGroupByWithKeySelectorAndElementSelectorAndComparer() {
+    String s =
+        Linq4j.asEnumerable(emps)
+            .groupBy(EMP_DEPTNO_SELECTOR, EMP_NAME_SELECTOR,
+                new EqualityComparer<Integer>() {
+                  public boolean equal(Integer v1, Integer v2) {
+                    return true;
+                  }
+                  public int hashCode(Integer integer) {
+                    return 0;
+                  }
+                })
+            .select(group ->
+                String.format(Locale.ROOT, "%s: %s", group.getKey(),
+                    stringJoin("+", group)))
+            .toList()
+            .toString();
+    assertEquals(
+        "[10: Fred+Bill+Eric+Janet]",
+        s);
+  }
+
+  @Test public void testGroupByWithKeySelectorAndResultSelector() {
+    String s =
+        Linq4j.asEnumerable(emps)
+            .groupBy(
+                EMP_DEPTNO_SELECTOR, (key, group) -> String.format(Locale.ROOT, "%s: %s", key,
+                stringJoin("+", group.select(element -> element.name))))
+            .toList()
+            .toString();
+    assertEquals(
+        "[10: Fred+Eric+Janet, 30: Bill]",
+        s);
+  }
+
+  @Test public void testGroupByWithKeySelectorAndResultSelectorAndComparer() {
+    String s =
+        Linq4j.asEnumerable(emps)
+            .groupBy(EMP_DEPTNO_SELECTOR,
+                (key, group) -> String.format(Locale.ROOT, "%s: %s", key,
+                    stringJoin("+", group.select(element -> element.name))),
+                new EqualityComparer<Integer>() {
+                  public boolean equal(Integer v1, Integer v2) {
+                    return true;
+                  }
+                  public int hashCode(Integer integer) {
+                    return 0;
+                  }
+                })
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
             .toList()
             .toString();
     assertEquals(

@@ -935,8 +935,7 @@ class RelOptRulesTest extends RelOptTestBase {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3353">[CALCITE-3353]
    * ProjectJoinTransposeRule caused AssertionError when creating a new Join</a>.
    */
-  @Test
-  public void testProjectJoinTransposeWithMergeJoin() {
+  @Test public void testProjectJoinTransposeWithMergeJoin() {
     ProjectJoinTransposeRule testRule = new ProjectJoinTransposeRule(
              Project.class, Join.class, expr -> !(expr instanceof RexOver),
              RelFactories.LOGICAL_BUILDER);
@@ -2048,7 +2047,7 @@ class RelOptRulesTest extends RelOptTestBase {
   }
 
   /** Tests to see if the final branch of union is missed */
-  @Test void testUnionMergeRule() throws Exception {
+  @Test public void testUnionMergeRule() throws Exception {
     HepProgram program = new HepProgramBuilder()
             .addRuleInstance(CoreRules.PROJECT_SET_OP_TRANSPOSE)
             .addRuleInstance(CoreRules.PROJECT_REMOVE)
@@ -2072,7 +2071,7 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).with(program).check();
   }
 
-  @Test void testMinusMergeRule() throws Exception {
+  @Test public void testMinusMergeRule() throws Exception {
     HepProgram program = new HepProgramBuilder()
             .addRuleInstance(CoreRules.PROJECT_SET_OP_TRANSPOSE)
             .addRuleInstance(CoreRules.PROJECT_REMOVE)
@@ -2651,8 +2650,7 @@ class RelOptRulesTest extends RelOptTestBase {
         .check();
   }
 
-  @Test
-  public void testSkipReduceConstantsCaseEquals() throws Exception {
+  @Test public void testSkipReduceConstantsCaseEquals() throws Exception {
     final String sql = "select * from emp e1, emp e2\n"
         + "where coalesce(e1.mgr, -1) = coalesce(e2.mgr, -1)";
     sql(sql).withRule(CoreRules.PROJECT_REDUCE_EXPRESSIONS,
@@ -4108,9 +4106,6 @@ class RelOptRulesTest extends RelOptTestBase {
   }
 
   @Disabled("[CALCITE-1045]")
-<<<<<<< HEAD
-  @Test void testExpandJoinInComposite() throws Exception {
-=======
   @Test public void testExpandJoinInComposite() throws Exception {
     final String sql = "select empno\n"
         + "from sales.emp left join sales.dept\n"
@@ -6215,6 +6210,8 @@ class RelOptRulesTest extends RelOptTestBase {
 
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 // End RelOptRulesTest.java
+=======

@@ -1344,6 +1344,7 @@ public class SqlValidatorUtil {
     }
   }
 }
+<<<<<<< HEAD
 
   /**
    * A {@link AbstractTable} that can specify the row type explicitly.
@@ -1375,3 +1376,5 @@ public class SqlValidatorUtil {
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

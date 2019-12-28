@@ -449,6 +449,7 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
     void enrich(PreparedStatement statement) throws SQLException;
   }
 }
+<<<<<<< HEAD
 
   /**
    * Consumer for decorating a {@link PreparedStatement}, that is, setting
@@ -458,3 +459,5 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
     void enrich(PreparedStatement statement) throws SQLException;
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

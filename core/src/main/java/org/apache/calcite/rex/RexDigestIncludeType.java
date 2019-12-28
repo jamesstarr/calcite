@@ -24,8 +24,7 @@ public enum RexDigestIncludeType {
   OPTIONAL,
   NO_TYPE;
 }
-<<<<<<< HEAD
-=======
 
 // End RexDigestIncludeType.java
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

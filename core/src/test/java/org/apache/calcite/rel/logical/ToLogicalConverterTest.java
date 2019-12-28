@@ -453,8 +453,7 @@ class ToLogicalConverterTest {
   }
 
 }
-<<<<<<< HEAD
-=======
 
 // End ToLogicalConverterTest.java
->>>>>>> e62a96083 ([CALCITE-3900] Add Config for SqlValidator)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

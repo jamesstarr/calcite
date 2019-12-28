@@ -81,8 +81,7 @@ public class SqlWithinGroupOperator extends SqlBinaryOperator {
     return validateOperands(validator, scope, call);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SqlWithinGroupOperator.java
->>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

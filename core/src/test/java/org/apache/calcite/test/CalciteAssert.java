@@ -83,11 +83,6 @@ import net.hydromatic.scott.data.hsqldb.ScottHsqldb;
 import org.apiguardian.api.API;
 import org.hamcrest.Matcher;
 
-<<<<<<< HEAD
-      } catch (Error | RuntimeException e) {
-        // It is better to have AssertionError
-        // at the very top level of the exception stack.
-=======
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -2084,6 +2079,7 @@ public class CalciteAssert {
     void accept(PreparedStatement statement) throws SQLException;
   }
 }
+<<<<<<< HEAD
 
   /**
    * We want a consumer which can throw SqlException
@@ -2165,3 +2161,4 @@ public class CalciteAssert {
     }
   }
 }
+=======

@@ -102,8 +102,7 @@ public abstract class RelEnumTypes {
     return (E) ENUM_BY_NAME.get(name);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End RelEnumTypes.java
->>>>>>> 6061fc471 ([CALCITE-3175] AssertionError while serializing to JSON a RexLiteral with Enum type (Wang Yanlin))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

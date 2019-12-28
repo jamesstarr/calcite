@@ -316,6 +316,7 @@ class ServerParserTest extends SqlParserTest {
   }
 
 }
+<<<<<<< HEAD
 >>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
 
   @Test void testDropFunctionIfExists() {
@@ -325,3 +326,5 @@ class ServerParserTest extends SqlParserTest {
   }
 
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

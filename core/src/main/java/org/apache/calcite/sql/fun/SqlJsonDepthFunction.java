@@ -54,5 +54,3 @@ public class SqlJsonDepthFunction extends SqlFunction {
     return super.createCall(functionQualifier, pos, operands);
   }
 }
-
-// End SqlJsonDepthFunction.java

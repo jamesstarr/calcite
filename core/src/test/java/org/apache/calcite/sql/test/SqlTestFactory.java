@@ -223,6 +223,7 @@ public class SqlTestFactory {
     MockCatalogReader create(RelDataTypeFactory typeFactory, boolean caseSensitive);
   }
 }
+<<<<<<< HEAD
 
   public static final SqlTestFactory INSTANCE =
       new SqlTestFactory();
@@ -374,3 +375,5 @@ public class SqlTestFactory {
     MockCatalogReader create(RelDataTypeFactory typeFactory, boolean caseSensitive);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

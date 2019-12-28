@@ -229,6 +229,7 @@ public class RelMdRowCount
     return mq.getRowCount(rel.getInput());
   }
 }
+<<<<<<< HEAD
 >>>>>>> 211582e05 ([CALCITE-3454] Support Exchange in RelMdMaxRowCount,RelMdMinRowCount,RelMdRowCount (xy2953396112))
 
   public Double getRowCount(Exchange rel, RelMetadataQuery mq) {
@@ -239,3 +240,5 @@ public class RelMdRowCount
     return mq.getRowCount(rel.getInput());
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

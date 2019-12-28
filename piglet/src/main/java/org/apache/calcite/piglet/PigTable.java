@@ -72,8 +72,7 @@ public class PigTable extends AbstractTable implements ScannableTable {
     return null;
   }
 }
-<<<<<<< HEAD
-=======
 
 // End PigTable.java
->>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

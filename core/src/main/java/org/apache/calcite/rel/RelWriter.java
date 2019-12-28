@@ -91,6 +91,7 @@ public interface RelWriter {
 <<<<<<< HEAD
 =======
 }
+<<<<<<< HEAD
 >>>>>>> 0994ded7e ([CALCITE-2902] Improve performance of AbstractRelNode#computeDigest)
 
   /**
@@ -105,3 +106,5 @@ public interface RelWriter {
     return RexNode.withNormalize(needNormalize);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -112,8 +112,7 @@ public interface ImmutablePairList<T, U> extends PairList<T, U> {
 
   @Override ImmutablePairList<T, U> subList(int fromIndex, int toIndex);
 }
-<<<<<<< HEAD
-=======
 
 // End ImmutablePairList.java
->>>>>>> 970b01de2 ( DX-97766: Query with QUALIFY fails with AssertionError (#36))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

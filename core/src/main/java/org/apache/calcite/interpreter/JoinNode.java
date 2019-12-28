@@ -76,21 +76,6 @@ public class JoinNode implements Node {
         Row innerRow = null;
         while ((innerRow = innerSource.receive()) != null) {
           innerRows.add(innerRow);
-<<<<<<< HEAD
-=======
-    List<Row> rightList = null;
-    final int leftCount = rel.getLeft().getRowType().getFieldCount();
-    final int rightCount = rel.getRight().getRowType().getFieldCount();
-    context.values = new Object[rel.getRowType().getFieldCount()];
-    Row left;
-    Row right;
-    while ((left = leftSource.receive()) != null) {
-      System.arraycopy(left.getValues(), 0, context.values, 0, leftCount);
-      if (rightList == null) {
-        rightList = new ArrayList<>();
-        while ((right = rightSource.receive()) != null) {
-          rightList.add(right);
-=======
         }
       }
       matchRowSet.addAll(doJoin(outerRow, innerRows, rel.getJoinType()));
@@ -183,6 +168,7 @@ public class JoinNode implements Node {
           context.values.length - values.length, values.length);
     }
   }
+<<<<<<< HEAD
 
   /**
    * Execution of the join action, returns the matched rows for the outer source row.
@@ -260,4 +246,5 @@ public class JoinNode implements Node {
           context.values.length - values.length, values.length);
     }
   }
+=======
 }

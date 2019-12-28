@@ -16,9 +16,12 @@
  *
  */
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 plugins {
     kotlin("jvm")
     id("com.github.vlsi.ide")

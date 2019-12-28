@@ -81,6 +81,7 @@ public interface RexVisitor<R> {
     }
   }
 }
+<<<<<<< HEAD
 >>>>>>> eac65607d (Partially cherry-pick [CALCITE-4038] Refactor RexVisitor)
 
   /** Visits a list and writes the results to another list. */
@@ -105,3 +106,5 @@ public interface RexVisitor<R> {
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -103,6 +103,7 @@ public class JoinScope extends ListScope {
     return usingScope.isWithin(scope2);
   }
 }
+<<<<<<< HEAD
 >>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 
   @Override public boolean isWithin(SqlValidatorScope scope2) {
@@ -113,3 +114,5 @@ public class JoinScope extends ListScope {
     return usingScope.isWithin(scope2);
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

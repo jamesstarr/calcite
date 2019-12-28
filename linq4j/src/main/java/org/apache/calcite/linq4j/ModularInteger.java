@@ -71,8 +71,7 @@ class ModularInteger {
     return value + " mod " + modulus;
   }
 }
-<<<<<<< HEAD
-=======
 
 // End ModularInteger.java
->>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

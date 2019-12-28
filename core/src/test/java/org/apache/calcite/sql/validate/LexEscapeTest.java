@@ -129,8 +129,7 @@ public class LexEscapeTest {
     runProjectQueryWithLex(Lex.JAVA, sql);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End LexEscapeTest.java
->>>>>>> 7bbe08b5b ([CALCITE-2674] Column name with escape character should not be verified as a function when the column name is same with it (Danny Chan))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

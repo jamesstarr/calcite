@@ -640,6 +640,7 @@ abstract class DruidJsonFilter implements DruidJson {
     return dateFormatter;
   }
 }
+<<<<<<< HEAD
 >>>>>>> 41f568a78 ([CALCITE-2286] Support timestamp type for Druid adapter)
 
   private static SimpleDateFormat getDateFormatter() {
@@ -650,3 +651,5 @@ abstract class DruidJsonFilter implements DruidJson {
     return dateFormatter;
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

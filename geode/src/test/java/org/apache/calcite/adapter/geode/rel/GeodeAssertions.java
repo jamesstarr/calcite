@@ -41,5 +41,3 @@ class GeodeAssertions {
 
 >>>>>>>> 1b41ebada ([CALCITE-2588] Run Geode Adapter tests with an Embedded Instance):geode/src/test/java/org/apache/calcite/adapter/geode/rel/GeodeAssertions.java
 }
-
-// End GeodeAssertions.java

@@ -58,7 +58,6 @@ public enum SqlJsonEncoding {
     return getStandardName();
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SqlJsonEncoding.java
+=======

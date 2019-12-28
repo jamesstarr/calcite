@@ -91,8 +91,7 @@ public class BooleanLogicTest {
     };
   }
 
-  @Test
-  public void expressions() {
+  @Test public void expressions() {
     assertSingle("select * from view");
     assertSingle("select * from view where a = 'a'");
     assertEmpty("select * from view where a <> 'a'");
@@ -140,8 +139,7 @@ public class BooleanLogicTest {
   /**
    * Tests negations ({@code NOT} operator).
    */
-  @Test
-  public void notExpression() {
+  @Test public void notExpression() {
     assertEmpty("select * from view where not a = 'a'");
     assertSingle("select * from view where not not a = 'a'");
     assertEmpty("select * from view where not not not a = 'a'");
@@ -183,6 +181,9 @@ public class BooleanLogicTest {
   }
 
 }
+<<<<<<< HEAD
 >>>>>>> ca1b4e02e ([CALCITE-2528] Support Aggregates in ElasticSearch adapter (Andrei Sereda))
 
 // End BooleanLogicTest.java
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

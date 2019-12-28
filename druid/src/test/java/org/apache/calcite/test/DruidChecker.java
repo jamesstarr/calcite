@@ -51,8 +51,7 @@ class DruidChecker implements Consumer<List> {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End DruidChecker.java
->>>>>>> 0d3a563a6 ([CALCITE-3315] Multiple failures in Druid IT tests due to implicit casts)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

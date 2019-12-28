@@ -80,6 +80,7 @@ public class CalcRemoveRule extends RelRule<CalcRemoveRule.Config>
     }
   }
 }
+<<<<<<< HEAD
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -95,3 +96,5 @@ public class CalcRemoveRule extends RelRule<CalcRemoveRule.Config>
     }
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

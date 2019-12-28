@@ -94,8 +94,7 @@ public class SqlRuntimeTester extends AbstractSqlTester {
     SqlTests.checkEx(thrown, expectedMsgPattern, sap, stage);
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SqlRuntimeTester.java
->>>>>>> 954dccdd1 ([CALCITE-2535] Enable SqlTester.checkFails (previously it was a no-op) (Hongze Zhang))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

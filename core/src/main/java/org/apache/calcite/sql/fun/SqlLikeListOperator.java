@@ -218,8 +218,7 @@ public final class SqlLikeListOperator extends SqlSpecialOperator {
   }
 
 }
-<<<<<<< HEAD
-=======
 
 // End SqlLikeListOperator.java
->>>>>>> d192c11b0 (Implement [NOT] LIKE ANY/ALL/SOME as logical rewrites)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -70,7 +70,6 @@ class WithScope extends ListScope {
     super.resolveTable(names, nameMatcher, path, resolved);
   }
 }
-<<<<<<< HEAD
-=======
 // End WithScope.java
->>>>>>> f2a236196 ([CALCITE-4092] NPE using WITH clause without a corresponding SELECT FROM (James Kim))
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

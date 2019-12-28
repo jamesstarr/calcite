@@ -1061,6 +1061,9 @@ public abstract class SqlOperator {
 =======
 
 }
+<<<<<<< HEAD
 >>>>>>> e93a6fdc9 (DX-58856: Improving RexCall's equals method)
 
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

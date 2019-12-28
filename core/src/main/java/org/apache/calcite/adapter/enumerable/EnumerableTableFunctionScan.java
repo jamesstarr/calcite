@@ -100,6 +100,7 @@ public class EnumerableTableFunctionScan extends TableFunctionScan
     final Method method = tableFunction.method;
     return QueryableTable.class.isAssignableFrom(method.getReturnType());
   }
+<<<<<<< HEAD
 
   private Result defaultTableFunctionImplement(
       EnumerableRelImplementor implementor, Prefer pref) {
@@ -157,4 +158,6 @@ public class EnumerableTableFunctionScan extends TableFunctionScan
 
     return implementor.result(physType, builder.toBlock());
   }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 }

@@ -154,7 +154,6 @@ public abstract class InferTypes {
     return new ExplicitOperandTypeInference(ImmutableList.copyOf(types));
   }
 }
-<<<<<<< HEAD
-=======
 // End InferTypes.java
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

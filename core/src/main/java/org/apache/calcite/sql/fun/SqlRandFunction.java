@@ -61,9 +61,12 @@ public class SqlRandFunction extends SqlFunction {
     return false;
   }
 }
+<<<<<<< HEAD
 >>>>>>> 5f686d042 (DX-9204: Set rand() function as non-deterministic.)
 
   @Override public boolean isDeterministic() {
     return false;
   }
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

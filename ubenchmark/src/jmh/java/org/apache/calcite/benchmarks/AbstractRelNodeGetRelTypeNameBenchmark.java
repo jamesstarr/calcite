@@ -256,8 +256,7 @@ public class AbstractRelNodeGetRelTypeNameBenchmark {
     new Runner(opt).run();
   }
 }
-<<<<<<< HEAD:ubenchmark/src/jmh/java/org/apache/calcite/benchmarks/AbstractRelNodeGetRelTypeNameBenchmark.java
-=======
 
 // End AbstractRelNodeGetRelTypeNameBenchmark.java
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions):ubenchmark/src/main/java/org/apache/calcite/benchmarks/AbstractRelNodeGetRelTypeNameBenchmark.java
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

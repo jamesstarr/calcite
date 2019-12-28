@@ -209,8 +209,7 @@ public final class SortRemoveRuleTest {
             SqlExplainLevel.DIGEST_ATTRIBUTES));
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SortRemoveRuleTest.java
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -296,7 +296,6 @@ final class ElasticsearchTransport {
     }
   }
 }
-<<<<<<< HEAD
-=======
 
 // End ElasticsearchTransport.java
+=======

@@ -264,6 +264,5 @@ public abstract class RuntimeTypeInformation {
     }
   }
 }
-<<<<<<< HEAD
-=======
 // End RuntimeTypeInformation.java
+=======

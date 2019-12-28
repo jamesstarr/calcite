@@ -1437,5 +1437,8 @@ public class SqlPrettyWriter implements SqlWriter {
 =======
 
 }
+<<<<<<< HEAD
 
 }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

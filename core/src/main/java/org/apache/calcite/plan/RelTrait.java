@@ -89,6 +89,7 @@ public interface RelTrait {
    * @param planner Planner
    */
   void register(RelOptPlanner planner);
+<<<<<<< HEAD
 
   /**
    * Applies a mapping to this trait.
@@ -110,4 +111,6 @@ public interface RelTrait {
   default <T extends RelTrait> T apply(Mappings.TargetMapping mapping) {
     return (T) this;
   }
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 }

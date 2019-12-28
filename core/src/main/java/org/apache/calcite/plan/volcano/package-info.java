@@ -269,8 +269,7 @@
  *     (1993)</a>.</p>
  */
 package org.apache.calcite.plan.volcano;
-<<<<<<< HEAD
-=======
 
 // End package-info.java
->>>>>>> 4d61893a7 ([CALCITE-2905] @PackageMaker is no longer needed)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

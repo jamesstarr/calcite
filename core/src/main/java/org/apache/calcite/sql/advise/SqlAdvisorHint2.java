@@ -36,8 +36,7 @@ public class SqlAdvisorHint2 extends SqlAdvisorHint {
     this.replacement = replacement;
   }
 }
-<<<<<<< HEAD
-=======
 
 // End SqlAdvisorHint2.java
->>>>>>> bc2544869 ([CALCITE-2434] SqlAdvisor: support hints for nested tables/schemas)
+=======
+>>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
