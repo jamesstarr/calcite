@@ -1845,6 +1845,15 @@ public class RelBuilder {
     return aggregate(groupKey, ImmutableList.copyOf(aggCalls));
   }
 
+  /** Creates an {@link Aggregate} with an array of
+   * {@link AggregateCall}s. */
+  public RelBuilder aggregate(GroupKey groupKey, List<AggregateCall> aggregateCalls) {
+    return aggregate(groupKey,
+        aggregateCalls.stream()
+            .map(AggCallImpl2::new)
+            .collect(Collectors.toList()));
+  }
+
   /** Creates an {@link Aggregate} with a list of
    * calls. */
   public RelBuilder aggregate(GroupKey groupKey, Iterable<AggCall> aggCalls) {
@@ -2823,6 +2832,7 @@ public class RelBuilder {
     return project(exprList);
   }
 
+<<<<<<< HEAD
 =======
   public RelBuilder aggregate(GroupKey groupKey,
       List<AggregateCall> aggregateCalls) {
@@ -2831,6 +2841,8 @@ public class RelBuilder {
 
   }
 
+=======
+>>>>>>> b7cfaee8f ([CALCITE-3649] Hints should be propagated correctly in planner rules if original node is transformed to different kind)
   /** Creates a {@link Match}. */
   public RelBuilder match(RexNode pattern, boolean strictStart,
       boolean strictEnd, Map<String, RexNode> patternDefinitions,

@@ -37,6 +37,7 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelShuttleImpl;
 import org.apache.calcite.rel.RelVisitor;
 import org.apache.calcite.rel.convert.ConverterRule;
+import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.Calc;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinInfo;
@@ -107,8 +108,8 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
   }
 
   @Test public void testQueryHintWithLiteralOptions() {
-    final String sql = HintTools.withHint("select /*+ time_zone(1, 1.23, 'a bc', -1.0) */ *\n"
-        + "from emp");
+    final String sql = "select /*+ time_zone(1, 1.23, 'a bc', -1.0) */ *\n"
+        + "from emp";
     sql(sql).ok();
   }
 
@@ -426,6 +427,26 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
 
     String planAfter = NL + RelOptUtil.toString(relAfter);
     getDiffRepos().assertEquals("planAfter", "${planAfter}", planAfter);
+  }
+
+  @Test public void testHintsPropagateWithDifferentKindOfRels() {
+    final String sql = "select /*+ AGG_STRATEGY(TWO_PHASE) */\n"
+        + "ename, avg(sal)\n"
+        + "from emp group by ename";
+    final RelNode rel = tester.convertSqlToRel(sql).rel;
+    final RelHint hint = RelHint.builder("AGG_STRATEGY")
+        .inheritPath(0)
+        .hintOption("TWO_PHASE")
+        .build();
+    // AggregateReduceFunctionsRule does the transformation:
+    // AGG -> PROJECT + AGG
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.AGGREGATE_REDUCE_FUNCTIONS)
+        .build();
+    HepPlanner planner = new HepPlanner(program);
+    planner.setRoot(rel);
+    RelNode newRel = planner.findBestExp();
+    new ValidateHintVisitor(hint, Aggregate.class).go(newRel);
   }
 
   //~ Methods ----------------------------------------------------------------
