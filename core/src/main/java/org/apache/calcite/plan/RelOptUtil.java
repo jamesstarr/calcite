@@ -394,7 +394,24 @@ public abstract class RelOptUtil {
    * Copy the {@link org.apache.calcite.rel.hint.RelHint}s from {@code originalRel}
    * to {@code newRel} if both of them are {@link Hintable}.
    *
-   * <p>The hints are filtered by the hint strategies when attaching to the {@code newRel}.
+   * <p>The two relational expressions are assumed as semantically equivalent,
+   * that means the hints should be attached to the relational expression
+   * that expects to have them.
+   *
+   * <p>Try to propagate the hints to the first relational expression that matches,
+   * this is needed because many planner rules would generate a sub-tree whose
+   * root rel type is different with the original matched rel.
+   *
+   * <p>For the worst case, there is no relational expression that can apply these hints,
+   * and the whole sub-tree would be visited. We add a protection here:
+   * if the visiting depth is over than 3, just returns, because there are rare cases
+   * the new created sub-tree has layers bigger than that.
+   *
+   * <p>This is a best effort, we do not know exactly how the nodes are transformed
+   * in all kinds of planner rules, so for some complex relational expressions,
+   * the hints would very probably lost.
+   *
+   * <p>This function is experimental and would change without any notes.
    *
    * @param originalRel Original relational expression
    * @param equiv       New equivalent relational expression
@@ -425,7 +442,7 @@ public abstract class RelOptUtil {
    * or {@code newRel} directly if one of them are not {@link Hintable}
    */
   public static RelNode copyRelHints(RelNode originalRel, RelNode newRel) {
-    return copyRelHints(originalRel, newRel, true);
+    return copyRelHints(originalRel, newRel, false);
   }
 
   /**

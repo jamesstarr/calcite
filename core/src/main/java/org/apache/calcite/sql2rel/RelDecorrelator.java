@@ -655,9 +655,11 @@ public class RelDecorrelator implements ReflectiveVisitor {
       relBuilder.project(postProjects);
     }
 
+    RelNode newRel = RelOptUtil.copyRelHints(rel, relBuilder.build());
+
     // Aggregate does not change input ordering so corVars will be
     // located at the same position as the input newProject.
-    return register(rel, relBuilder.build(), outputMap, corDefOutputs);
+    return register(rel, newRel, outputMap, corDefOutputs);
   }
 
   /**
