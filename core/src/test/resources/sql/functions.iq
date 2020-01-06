@@ -81,6 +81,17 @@ SELECT ExtractValue('<a>c</a>', '//a');
 
 !use oraclefunc
 
+# SINH
+select sinh(1);
++--------------------+
+| EXPR$0             |
++--------------------+
+| 1.1752011936438014 |
++--------------------+
+(1 row)
+
+!ok
+
 SELECT XMLTRANSFORM(
                    '<?xml version="1.0"?>
                     <Article>
