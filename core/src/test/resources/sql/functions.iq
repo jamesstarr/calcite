@@ -181,6 +181,7 @@ select sinh(1);
 
 !ok
 
+<<<<<<< HEAD
 #CONCAT
 select concat('a', 'b');
 +--------+
@@ -196,6 +197,8 @@ select concat('a', 'b');
 !use oraclefunc
 
 >>>>>>> 6c8821c46 ([CALCITE-3579] Oracle XMLTRANSFORM Function Support (ritesh-kapoor))
+=======
+>>>>>>> e9a230e80 ([CALCITE-3694] Implement SINH function)
 SELECT XMLTRANSFORM(
                    '<?xml version="1.0"?>
                     <Article>

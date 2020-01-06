@@ -1634,14 +1634,20 @@ EXPR$0
 !ok
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e9a230e80 ([CALCITE-3694] Implement SINH function)
 # SINH
 select sinh(1);
 EXPR$0
 1.1752011936438014
 !ok
 
+<<<<<<< HEAD
 =======
 >>>>>>> 35df78c18 ([CALCITE-3361] Add 'lenientOperatorLookup' connection property)
+=======
+>>>>>>> e9a230e80 ([CALCITE-3694] Implement SINH function)
 # SIGN
 select sign(23);
 EXPR$0
