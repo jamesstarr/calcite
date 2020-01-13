@@ -30,7 +30,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
->>>>>>> 422e13704 ([CALCITE-3349] Add CREATE FUNCTION and DROP FUNCTION ddl (Zhenqiu Huang))
+import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +40,10 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
->>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -242,6 +245,26 @@ class ServerTest {
       int x = s.executeUpdate("insert into w "
           + "values (1, cast((select j from w limit 1) as mytype))");
       assertThat(x, is(1));
+    }
+  }
+
+  @Test public void testInsertCreateNewCompositeUdt() throws Exception {
+    try (Connection c = connect();
+        Statement s = c.createStatement()) {
+      boolean b = s.execute("create type mytype as (i int, j int)");
+      assertFalse(b);
+      b = s.execute("create table w (i int not null, j mytype)");
+      assertFalse(b);
+      int x = s.executeUpdate("insert into w "
+          + "values (1, mytype(1, 1))");
+      assertEquals(x, 1);
+
+      try (ResultSet r = s.executeQuery("select * from w")) {
+        assertTrue(r.next());
+        assertEquals(r.getInt("i"), 1);
+        assertArrayEquals(r.getObject("j", Struct.class).getAttributes(), new Object[] {1, 1});
+        assertFalse(r.next());
+      }
     }
   }
 

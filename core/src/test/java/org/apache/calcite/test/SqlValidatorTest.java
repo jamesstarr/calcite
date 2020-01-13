@@ -1622,7 +1622,7 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
   @Test public void testInvalidMemberFunction() {
     expr("myCol.^func()^")
         .fails("(?s).*No match found for function signature FUNC().*");
-    expr("myCol.mySubschema.^memberFunc()^")
+    expr("customer.mySubschema.^memberFunc()^")
         .fails("(?s).*No match found for function signature MEMBERFUNC().*");
   }
 
