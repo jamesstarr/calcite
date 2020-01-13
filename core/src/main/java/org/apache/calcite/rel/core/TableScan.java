@@ -72,9 +72,10 @@ public abstract class TableScan
     this.hints = ImmutableList.copyOf(hints);
   }
 
+  @Deprecated // to be removed before 2.0
   protected TableScan(RelOptCluster cluster, RelTraitSet traitSet,
       RelOptTable table) {
-    this(cluster, traitSet, new ArrayList<>(), table);
+    this(cluster, traitSet, ImmutableList.of(), table);
   }
 
   /**

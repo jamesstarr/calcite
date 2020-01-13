@@ -29,6 +29,10 @@ import org.apache.calcite.rel.type.RelDataTypeField;
 
 import org.apache.pig.data.DataType;
 
+<<<<<<< HEAD
+=======
+import com.google.common.base.Joiner;
+>>>>>>> 6435df1c4 ([CALCITE-3723] Following the change to add hints to RelNode, deprecate the old constructors)
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;

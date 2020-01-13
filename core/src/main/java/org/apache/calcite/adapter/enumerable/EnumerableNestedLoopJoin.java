@@ -46,7 +46,8 @@ public class EnumerableNestedLoopJoin extends Join implements EnumerableRel {
   /** Creates an EnumerableNestedLoopJoin. */
   protected EnumerableNestedLoopJoin(RelOptCluster cluster, RelTraitSet traits,
       RelNode left, RelNode right, RexNode condition,
-      Set<CorrelationId> variablesSet, JoinRelType joinType) {
+      Set<CorrelationId> variablesSet, JoinRelType joinType)
+      throws InvalidRelException {
     super(cluster, traits, ImmutableList.of(), left, right, condition, variablesSet, joinType);
   }
 

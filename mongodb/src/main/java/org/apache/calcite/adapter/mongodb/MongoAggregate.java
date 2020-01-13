@@ -51,7 +51,7 @@ public class MongoAggregate
       List<ImmutableBitSet> groupSets,
       List<AggregateCall> aggCalls)
       throws InvalidRelException {
-    super(cluster, traitSet, input, groupSet, groupSets, aggCalls);
+    super(cluster, traitSet, ImmutableList.of(), input, groupSet, groupSets, aggCalls);
     assert getConvention() == MongoRel.CONVENTION;
     assert getConvention() == input.getConvention();
 

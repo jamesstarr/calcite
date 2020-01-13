@@ -186,8 +186,8 @@ public class Bindables {
         RelOptTable table, ImmutableList<RexNode> filters,
         ImmutableIntList projects) {
       super(cluster, traitSet, ImmutableList.of(), table);
-      this.filters = Objects.requireNonNull(filters);
-      this.projects = Objects.requireNonNull(projects);
+      this.filters = Preconditions.checkNotNull(filters);
+      this.projects = Preconditions.checkNotNull(projects);
       Preconditions.checkArgument(canHandle(table));
     }
 
@@ -710,7 +710,7 @@ public class Bindables {
         List<ImmutableBitSet> groupSets,
         List<AggregateCall> aggCalls)
         throws InvalidRelException {
-      super(cluster, traitSet, input, groupSet, groupSets, aggCalls);
+      super(cluster, traitSet, ImmutableList.of(), input, groupSet, groupSets, aggCalls);
       assert getConvention() instanceof BindableConvention;
 
       for (AggregateCall aggCall : aggCalls) {

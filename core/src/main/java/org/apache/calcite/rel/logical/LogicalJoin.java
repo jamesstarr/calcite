@@ -118,7 +118,7 @@ public final class LogicalJoin extends Join {
       RelNode left, RelNode right, RexNode condition, Set<CorrelationId> variablesSet,
       JoinRelType joinType, boolean semiJoinDone,
       ImmutableList<RelDataTypeField> systemFieldList) {
-    this(cluster, traitSet, new ArrayList<>(), left, right, condition,
+    this(cluster, traitSet, ImmutableList.of(), left, right, condition,
         variablesSet, joinType, semiJoinDone, systemFieldList);
   }
 

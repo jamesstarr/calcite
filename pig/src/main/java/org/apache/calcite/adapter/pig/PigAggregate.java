@@ -27,6 +27,10 @@ import org.apache.calcite.util.ImmutableBitSet;
 
 import org.apache.pig.scripting.Pig;
 
+<<<<<<< HEAD
+=======
+import com.google.common.base.Joiner;
+>>>>>>> 6435df1c4 ([CALCITE-3723] Following the change to add hints to RelNode, deprecate the old constructors)
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
@@ -44,7 +48,7 @@ public class PigAggregate extends Aggregate implements PigRel {
   public PigAggregate(RelOptCluster cluster, RelTraitSet traitSet,
       RelNode input, ImmutableBitSet groupSet,
       List<ImmutableBitSet> groupSets, List<AggregateCall> aggCalls) {
-    super(cluster, traitSet, input, groupSet, groupSets, aggCalls);
+    super(cluster, traitSet, ImmutableList.of(), input, groupSet, groupSets, aggCalls);
     assert getConvention() == PigRel.CONVENTION;
   }
 

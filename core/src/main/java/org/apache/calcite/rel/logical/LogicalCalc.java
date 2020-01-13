@@ -39,14 +39,53 @@ import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
 
+import java.util.List;
+import java.util.Set;
+
+/**
+ * A relational expression which computes project expressions and also filters.
+ *
+ * <p>This relational expression combines the functionality of
+ * {@link LogicalProject} and {@link LogicalFilter}.
+ * It should be created in the later
+ * stages of optimization, by merging consecutive {@link LogicalProject} and
+ * {@link LogicalFilter} nodes together.
+ *
+ * <p>The following rules relate to <code>LogicalCalc</code>:</p>
+ *
+ * <ul>
+ * <li>{@link FilterToCalcRule} creates this from a {@link LogicalFilter}
+ * <li>{@link ProjectToCalcRule} creates this from a {@link LogicalFilter}
+ * <li>{@link org.apache.calcite.rel.rules.FilterCalcMergeRule}
+ *     merges this with a {@link LogicalFilter}
+ * <li>{@link org.apache.calcite.rel.rules.ProjectCalcMergeRule}
+ *     merges this with a {@link LogicalProject}
+ * <li>{@link org.apache.calcite.rel.rules.CalcMergeRule}
+ *     merges two {@code LogicalCalc}s
+ * </ul>
+ */
+public final class LogicalCalc extends Calc {
+  //~ Static fields/initializers ---------------------------------------------
+
+  //~ Constructors -----------------------------------------------------------
+
   /** Creates a LogicalCalc. */
+  public LogicalCalc(
+      RelOptCluster cluster,
+      RelTraitSet traitSet,
+      List<RelHint> hints,
+      RelNode child,
+      RexProgram program) {
+    super(cluster, traitSet, hints, child, program);
+  }
+
+  @Deprecated // to be removed before 2.0
   public LogicalCalc(
       RelOptCluster cluster,
       RelTraitSet traitSet,
       RelNode child,
       RexProgram program) {
-    this(cluster, traitSet, Collections.emptyList(), child, program);
->>>>>>> eebe28c2e ([CALCITE-3631] Support SQL hints for Calc)
+    this(cluster, traitSet, ImmutableList.of(), child, program);
   }
 
   @Deprecated // to be removed before 2.0
@@ -69,7 +108,11 @@ import com.google.common.collect.ImmutableList;
         .replaceIfs(RelCollationTraitDef.INSTANCE,
             () -> RelMdCollation.calc(mq, input, program))
         .replaceIf(RelDistributionTraitDef.INSTANCE,
-            () -> RelMdDistribution.calc(mq, input, program));
+            new Supplier<RelDistribution>() {
+              public RelDistribution get() {
+                return RelMdDistribution.calc(mq, input, program);
+              }
+            });
     return new LogicalCalc(cluster, traitSet, ImmutableList.of(), input, program);
   }
 

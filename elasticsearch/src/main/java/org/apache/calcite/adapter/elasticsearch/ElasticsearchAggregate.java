@@ -33,7 +33,7 @@ import org.apache.calcite.util.ImmutableBitSet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
->>>>>>> a5ef91d2f (Following [CALCITE-2944] remove internal uses of Aggregate.indicator)
+import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -59,7 +59,7 @@ public class ElasticsearchAggregate extends Aggregate implements ElasticsearchRe
       ImmutableBitSet groupSet,
       List<ImmutableBitSet> groupSets,
       List<AggregateCall> aggCalls) throws InvalidRelException  {
-    super(cluster, traitSet, input, groupSet, groupSets, aggCalls);
+    super(cluster, traitSet, ImmutableList.of(), input, groupSet, groupSets, aggCalls);
 
     if (getConvention() != input.getConvention()) {
       String message = String.format(Locale.ROOT, "%s != %s", getConvention(),
