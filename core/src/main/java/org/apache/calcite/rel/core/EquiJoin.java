@@ -23,6 +23,7 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.util.ImmutableIntList;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 
 import java.util.Objects;
 import java.util.Set;
@@ -48,7 +49,7 @@ public abstract class EquiJoin extends Join {
   public EquiJoin(RelOptCluster cluster, RelTraitSet traits, RelNode left,
       RelNode right, RexNode condition, Set<CorrelationId> variablesSet,
       JoinRelType joinType) {
-    super(cluster, traits, left, right, condition, variablesSet, joinType);
+    super(cluster, traits, ImmutableList.of(), left, right, condition, variablesSet, joinType);
     this.leftKeys = Objects.requireNonNull(joinInfo.leftKeys);
     this.rightKeys = Objects.requireNonNull(joinInfo.rightKeys);
     assert joinInfo.isEqui() : "Create EquiJoin with non-equi join condition.";
@@ -60,7 +61,7 @@ public abstract class EquiJoin extends Join {
       RelNode right, RexNode condition, ImmutableIntList leftKeys,
       ImmutableIntList rightKeys, Set<CorrelationId> variablesSet,
       JoinRelType joinType) {
-    super(cluster, traits, left, right, condition, variablesSet, joinType);
+    super(cluster, traits, ImmutableList.of(), left, right, condition, variablesSet, joinType);
     this.leftKeys = Preconditions.checkNotNull(leftKeys);
     this.rightKeys = Preconditions.checkNotNull(rightKeys);
   }

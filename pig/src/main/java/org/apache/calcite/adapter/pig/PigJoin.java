@@ -28,6 +28,8 @@ import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.sql.SqlKind;
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -39,7 +41,8 @@ public class PigJoin extends Join implements PigRel {
   /** Creates a PigJoin. */
   public PigJoin(RelOptCluster cluster, RelTraitSet traitSet, RelNode left, RelNode right,
       RexNode condition, JoinRelType joinType) {
-    super(cluster, traitSet, left, right, condition, new HashSet<CorrelationId>(0), joinType);
+    super(cluster, traitSet, ImmutableList.of(), left, right, condition,
+            new HashSet<CorrelationId>(0), joinType);
     assert getConvention() == PigRel.CONVENTION;
   }
 

@@ -40,7 +40,6 @@ import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -77,20 +76,13 @@ public abstract class Calc extends SingleRel implements Hintable {
     assert isValid(Litmus.THROW, null);
   }
 
-  /**
-   * Creates a Calc.
-   *
-   * @param cluster Cluster
-   * @param traits Traits
-   * @param child Input relation
-   * @param program Calc program
-   */
+  @Deprecated // to be removed before 2.0
   protected Calc(
       RelOptCluster cluster,
       RelTraitSet traits,
       RelNode child,
       RexProgram program) {
-    this(cluster, traits, Collections.emptyList(), child, program);
+    this(cluster, traits, ImmutableList.of(), child, program);
   }
 
   @Deprecated // to be removed before 2.0
@@ -100,7 +92,7 @@ public abstract class Calc extends SingleRel implements Hintable {
       RelNode child,
       RexProgram program,
       List<RelCollation> collationList) {
-    this(cluster, traits, child, program);
+    this(cluster, traits, ImmutableList.of(), child, program);
     Util.discard(collationList);
   }
 

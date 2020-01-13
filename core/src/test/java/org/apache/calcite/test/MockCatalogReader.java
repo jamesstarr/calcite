@@ -1250,7 +1250,7 @@ public class MockCatalogReader extends CalciteCatalogReader {
               return mapping.size();
             }
           };
-      return LogicalProject.create(rel, Pair.left(projects),
+      return LogicalProject.create(rel, ImmutableList.of(), Pair.left(projects),
           Pair.right(projects));
     }
 
