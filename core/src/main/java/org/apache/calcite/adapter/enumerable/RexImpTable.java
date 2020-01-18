@@ -122,6 +122,7 @@ import static org.apache.calcite.sql.fun.SqlLibraryOperators.REVERSE;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.SHA1;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.SOUNDEX;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.SPACE;
+import static org.apache.calcite.sql.fun.SqlLibraryOperators.STRCMP;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.TANH;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.TIMESTAMP_MICROS;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.TIMESTAMP_MILLIS;
@@ -347,6 +348,7 @@ public class RexImpTable {
     defineMethod(ASCII, BuiltInMethod.ASCII.method, NullPolicy.STRICT);
     defineMethod(REPEAT, BuiltInMethod.REPEAT.method, NullPolicy.STRICT);
     defineMethod(SPACE, BuiltInMethod.SPACE.method, NullPolicy.STRICT);
+    defineMethod(STRCMP, BuiltInMethod.STRCMP.method, NullPolicy.STRICT);
     defineMethod(SOUNDEX, BuiltInMethod.SOUNDEX.method, NullPolicy.STRICT);
     defineMethod(DIFFERENCE, BuiltInMethod.DIFFERENCE.method, NullPolicy.STRICT);
     defineMethod(REVERSE, BuiltInMethod.REVERSE.method, NullPolicy.STRICT);

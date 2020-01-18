@@ -37,6 +37,9 @@ select cbrt(-8);
 !ok
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 23475ce5b ([CALCITE-3704] Implement STRCMP function)
 # STRCMP
 select strcmp('mytesttext', 'mytesttext');
 +--------+
