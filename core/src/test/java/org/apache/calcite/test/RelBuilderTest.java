@@ -16,9 +16,7 @@
  */
 package org.apache.calcite.test;
 
-import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.plan.Contexts;
-import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelTraitDef;
 import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelDistributions;
@@ -68,21 +66,7 @@ import com.google.common.collect.Lists;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.NoSuchElementException;
-import java.util.TreeSet;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
-
+>>>>>>> 36d7c8a76 (Switch RelBuilder.Config to an interface, and deprecate RelBuilder.ConfigBuilder)
 import static org.apache.calcite.test.Matchers.hasTree;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -92,6 +76,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import java.sql.PreparedStatement;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.function.UnaryOperator;
 
 /**
  * Unit test for {@link RelBuilder}.
@@ -137,6 +128,7 @@ public class RelBuilderTest {
         .programs(Programs.heuristicJoinOrder(Programs.RULE_SET, true, 2));
   }
 
+<<<<<<< HEAD
   /** Creates a RelBuilder with default config. */
   static RelBuilder createBuilder() {
     return createBuilder(c -> c);
@@ -166,6 +158,7 @@ public class RelBuilderTest {
     return Frameworks.newConfigBuilder().defaultSchema(root);
   }
 
+=======
   static RelBuilder createBuilder(UnaryOperator<RelBuilder.Config> transform) {
     final Frameworks.ConfigBuilder configBuilder = config();
     configBuilder.context(
@@ -173,7 +166,7 @@ public class RelBuilderTest {
     return RelBuilder.create(configBuilder.build());
   }
 
-  @Test void testScan() {
+  @Test public void testScan() {
     // Equivalent SQL:
     //   SELECT *
     //   FROM emp

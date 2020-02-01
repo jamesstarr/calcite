@@ -128,6 +128,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 import static org.apache.calcite.util.Static.RESOURCE;
 
 /**
@@ -200,6 +202,18 @@ public class RelBuilder {
   private RelOptTable.ViewExpander getViewExpander(RelOptCluster cluster, Context context) {
     return Util.first(context.unwrap(RelOptTable.ViewExpander.class),
         ViewExpanders.simpleContext(cluster));
+  }
+
+  /** Derives the Config to be used for this RelBuilder.
+   *
+   * <p>Overrides {@link RelBuilder.Config#simplify} if
+   * {@link Hook#REL_BUILDER_SIMPLIFY} is set.
+   */
+  private Config getConfig(Context context) {
+    final Config config =
+        Util.first(context.unwrap(Config.class), Config.DEFAULT);
+    boolean simplify = Hook.REL_BUILDER_SIMPLIFY.get(config.simplify());
+    return config.withSimplify(simplify);
   }
 
   /** Derives the Config to be used for this RelBuilder.
@@ -3282,24 +3296,19 @@ public class RelBuilder {
       this.filter = filter;
     }
 
-    AggCallImpl(SqlAggFunction aggFunction, boolean distinct,
-        boolean approximate, RexNode filter,
-        String alias, ImmutableList<RexNode> operands) {
-      this.aggFunction = Objects.requireNonNull(aggFunction);
-      this.distinct = distinct;
-      this.approximate = approximate;
-      this.alias = alias;
-      this.operands = Objects.requireNonNull(operands);
-      this.orderKeys = ImmutableList.of();
-      if (filter != null) {
-        if (filter.getType().getSqlTypeName() != SqlTypeName.BOOLEAN) {
-          throw RESOURCE.filterMustBeBoolean().ex();
-        }
-        if (filter.getType().isNullable()) {
-          filter = call(SqlStdOperatorTable.IS_TRUE, filter);
-        }
+    @Override public String toString() {
+      final StringBuilder b = new StringBuilder();
+      b.append(aggFunction.getName())
+          .append('(');
+      if (distinct) {
+        b.append("DISTINCT ");
       }
-      this.filter = filter;
+      b.append(operands)
+          .append(')');
+      if (filter != null) {
+        b.append(" FILTER (WHERE" + filter + ")");
+      }
+      return b.toString();
     }
 
     public AggCall sort(Iterable<RexNode> orderKeys) {
@@ -3345,15 +3354,6 @@ public class RelBuilder {
 
     public AggCall distinct() {
       return distinct(true);
-<<<<<<< HEAD
-    }
-
-    public AggCall ignoreNulls(boolean ignoreNulls) {
-      return ignoreNulls == this.ignoreNulls
-          ? this
-          : new AggCallImpl(aggFunction, distinct, approximate, ignoreNulls,
-              filter, alias, operands, orderKeys);
-=======
     }
   }
 
@@ -3421,6 +3421,10 @@ public class RelBuilder {
 
     public AggCall ignoreNulls(boolean ignoreNulls) {
       throw new UnsupportedOperationException();
+    }
+
+    @Override public String toString() {
+      return aggregateCall.toString();
     }
 
     public AggCall sort(Iterable<RexNode> orderKeys) {
@@ -3607,6 +3611,79 @@ public class RelBuilder {
       }
     }
   }
+<<<<<<< HEAD
+=======
+
+  /** Configuration of RelBuilder.
+   *
+   * <p>It is immutable, and all fields are public.
+   *
+   * <p>Start with the {@link #DEFAULT} instance,
+   * and call {@code withXxx} methods to set its properties. */
+  public interface Config {
+    /** Default configuration. */
+    Config DEFAULT = ImmutableBeans.create(Config.class);
+
+    @Deprecated // to be removed before 2.0
+    static ConfigBuilder builder() {
+      return DEFAULT.toBuilder();
+    }
+
+    @Deprecated // to be removed before 2.0
+    default ConfigBuilder toBuilder() {
+      return new ConfigBuilder(this);
+    }
+
+    /** Whether {@link RelBuilder#aggregate} should eliminate duplicate
+     * aggregate calls; default true. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(true)
+    boolean dedupAggregateCalls();
+
+    /** Sets {@link #dedupAggregateCalls}. */
+    Config withDedupAggregateCalls(boolean dedupAggregateCalls);
+
+    /** Whether to simplify expressions; default true. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(true)
+    boolean simplify();
+
+    /** Sets {@link #simplify}. */
+    Config withSimplify(boolean simplify);
+  }
+
+  /** Creates a {@link RelBuilder.Config}.
+   *
+   * @deprecated Use the {@code withXxx} methods in
+   * {@link RelBuilder.Config}. */
+  @Deprecated // to be removed before 2.0
+  public static class ConfigBuilder {
+    private Config config;
+
+    private ConfigBuilder(@Nonnull Config config) {
+      this.config = config;
+    }
+
+    /** Creates a {@link RelBuilder.Config}. */
+    public Config build() {
+      return config;
+    }
+
+    /** Sets the value that will become
+     * {@link org.apache.calcite.tools.RelBuilder.Config#dedupAggregateCalls}. */
+    public ConfigBuilder withDedupAggregateCalls(boolean dedupAggregateCalls) {
+      config = config.withDedupAggregateCalls(dedupAggregateCalls);
+      return this;
+    }
+
+    /** Sets the value that will become
+     * {@link org.apache.calcite.tools.RelBuilder.Config#simplify}. */
+    public ConfigBuilder withSimplify(boolean simplify) {
+      config = config.withSimplify(simplify);
+      return this;
+    }
+  }
+}
 
   /** Configuration of RelBuilder.
    *

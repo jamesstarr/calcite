@@ -32,65 +32,6 @@ import java.lang.reflect.Proxy;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-<<<<<<< HEAD
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.concurrent.ExecutionException;
-
-/** Utilities for creating immutable beans. */
-public class ImmutableBeans {
-  /** Cache of method handlers of each known class, because building a set of
-   * handlers is too expensive to do each time we create a bean.
-   *
-   * <p>The cache uses weak keys so that if a class is unloaded, the cache
-   * entry will be removed. */
-  private static final LoadingCache<Class, Def> CACHE =
-      CacheBuilder.newBuilder()
-          .weakKeys()
-          .softValues()
-          .build(new CacheLoader<Class, Def>() {
-            @Override public Def load(Class key) {
-              //noinspection unchecked
-              return makeDef(key);
-            }
-          });
-
-  private ImmutableBeans() {}
-
-  /** Creates an immutable bean that implements a given interface. */
-  public static <T extends Object> T create(Class<T> beanClass) {
-    return create_(beanClass, ImmutableMap.of());
-  }
-
-  /** Creates a bean of a given class whose contents are the same as this bean.
-   *
-   * <p>You typically use this to downcast a bean to a sub-class. */
-  public static <T extends Object> T copy(Class<T> beanClass, Object o) {
-    final BeanImpl<?> bean = (BeanImpl) Proxy.getInvocationHandler(o);
-    return create_(beanClass, bean.map);
-  }
-
-  private static <T extends Object> T create_(Class<T> beanClass,
-      ImmutableMap<String, Object> valueMap) {
-    if (!beanClass.isInterface()) {
-      throw new IllegalArgumentException("must be interface");
-    }
-    try {
-      @SuppressWarnings("unchecked")
-      final Def<T> def =
-          (Def) CACHE.get(beanClass);
-      return def.makeBean(valueMap);
-    } catch (ExecutionException | UncheckedExecutionException e) {
-      if (e.getCause() instanceof RuntimeException) {
-        throw (RuntimeException) e.getCause();
-      }
-      throw new RuntimeException(e);
-    }
-  }
-
-  private static <T extends Object> Def<T> makeDef(Class<T> beanClass) {
-=======
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -108,7 +49,6 @@ public class ImmutableBeans {
     final ImmutableMap.Builder<Method, Handler<T>> handlers =
         ImmutableMap.builder();
     final Set<String> requiredPropertyNames = new HashSet<>();
->>>>>>> b894a59ed ([CALCITE-3328] Immutable beans, powered by reflection)
 
     // First pass, add "get" methods and build a list of properties.
     for (Method method : beanClass.getMethods()) {
@@ -142,9 +82,6 @@ public class ImmutableBeans {
         throw new IllegalArgumentException("method '" + methodName
             + "' has too many parameters");
       }
-<<<<<<< HEAD
-      final boolean required = propertyType.isPrimitive()
-=======
       final boolean required = property.required()
           || propertyType.isPrimitive()
           || hasNonnull;
@@ -186,7 +123,6 @@ public class ImmutableBeans {
         continue;
       } else if (methodName.startsWith("is")) {
         continue;
->>>>>>> b894a59ed ([CALCITE-3328] Immutable beans, powered by reflection)
       } else if (methodName.startsWith("with")) {
         propertyName = methodName.substring("with".length());
         mode = Mode.WITH;
@@ -204,10 +140,6 @@ public class ImmutableBeans {
       }
       switch (mode) {
       case WITH:
-<<<<<<< HEAD
-        if (method.getReturnType() != beanClass
-            && method.getReturnType() != method.getDeclaringClass()) {
-=======
         if (method.getReturnType() != beanClass) {
           throw new IllegalArgumentException("method '" + methodName
               + "' should return the bean class '" + beanClass
@@ -220,7 +152,6 @@ public class ImmutableBeans {
               + "' should return void, actually returns '"
               + method.getReturnType() + "'");
         }
->>>>>>> b894a59ed ([CALCITE-3328] Immutable beans, powered by reflection)
       }
       if (method.getParameterCount() != 1) {
         throw new IllegalArgumentException("method '" + methodName
@@ -234,9 +165,6 @@ public class ImmutableBeans {
             + ", actually has " + method.getParameterTypes()[0]);
       }
       final boolean required = requiredPropertyNames.contains(propertyName);
-<<<<<<< HEAD
-      final boolean copy = copyPropertyNames.contains(propertyName);
-=======
       handlers.put(method, (bean, args) -> {
         switch (mode) {
         case WITH:
@@ -275,7 +203,6 @@ public class ImmutableBeans {
       });
     }
 
->>>>>>> b894a59ed ([CALCITE-3328] Immutable beans, powered by reflection)
     handlers.put(getMethod(Object.class, "toString"),
         (bean, args) -> new TreeMap<>(bean.map).toString());
     handlers.put(getMethod(Object.class, "hashCode"),

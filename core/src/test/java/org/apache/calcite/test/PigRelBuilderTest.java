@@ -29,6 +29,8 @@ import org.junit.jupiter.api.Test;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+import java.util.function.UnaryOperator;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
