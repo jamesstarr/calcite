@@ -63,6 +63,7 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.util.Holder;
+import org.apache.calcite.util.ImmutableBeans;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.ImmutableNullableList;
@@ -100,6 +101,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 
 import static org.apache.calcite.util.Static.RESOURCE;
 
@@ -194,6 +197,18 @@ public class RelBuilder {
         new RexSimplify(cluster.getRexBuilder(), predicates, false, executor);
     this.simplifierUnknownAsFalse =
         new RexSimplify(cluster.getRexBuilder(), predicates, true, executor);
+  }
+
+  /** Derives the Config to be used for this RelBuilder.
+   *
+   * <p>Overrides {@link RelBuilder.Config#simplify} if
+   * {@link Hook#REL_BUILDER_SIMPLIFY} is set.
+   */
+  private Config getConfig(Context context) {
+    final Config config =
+        Util.first(context.unwrap(Config.class), Config.DEFAULT);
+    boolean simplify = Hook.REL_BUILDER_SIMPLIFY.get(config.simplify());
+    return config.withSimplify(simplify);
   }
 
   /** Creates a RelBuilder. */
@@ -2178,24 +2193,19 @@ public class RelBuilder {
       this.filter = filter;
     }
 
-    AggCallImpl(SqlAggFunction aggFunction, boolean distinct,
-        boolean approximate, RexNode filter,
-        String alias, ImmutableList<RexNode> operands) {
-      this.aggFunction = Objects.requireNonNull(aggFunction);
-      this.distinct = distinct;
-      this.approximate = approximate;
-      this.alias = alias;
-      this.operands = Objects.requireNonNull(operands);
-      this.orderKeys = ImmutableList.of();
-      if (filter != null) {
-        if (filter.getType().getSqlTypeName() != SqlTypeName.BOOLEAN) {
-          throw RESOURCE.filterMustBeBoolean().ex();
-        }
-        if (filter.getType().isNullable()) {
-          filter = call(SqlStdOperatorTable.IS_TRUE, filter);
-        }
+    @Override public String toString() {
+      final StringBuilder b = new StringBuilder();
+      b.append(aggFunction.getName())
+          .append('(');
+      if (distinct) {
+        b.append("DISTINCT ");
       }
-      this.filter = filter;
+      b.append(operands)
+          .append(')');
+      if (filter != null) {
+        b.append(" FILTER (WHERE" + filter + ")");
+      }
+      return b.toString();
     }
 
     public AggCall sort(Iterable<RexNode> orderKeys) {
@@ -2251,6 +2261,10 @@ public class RelBuilder {
 
     AggCallImpl2(AggregateCall aggregateCall) {
       this.aggregateCall = Preconditions.checkNotNull(aggregateCall);
+    }
+
+    @Override public String toString() {
+      return aggregateCall.toString();
     }
 
     public AggCall sort(Iterable<RexNode> orderKeys) {
@@ -2390,6 +2404,76 @@ public class RelBuilder {
       } else {
         return rexBuilder.makeInputRef(right, inputRef.getIndex() - leftCount);
       }
+    }
+  }
+
+  /** Configuration of RelBuilder.
+   *
+   * <p>It is immutable, and all fields are public.
+   *
+   * <p>Start with the {@link #DEFAULT} instance,
+   * and call {@code withXxx} methods to set its properties. */
+  public interface Config {
+    /** Default configuration. */
+    Config DEFAULT = ImmutableBeans.create(Config.class);
+
+    @Deprecated // to be removed before 2.0
+    static ConfigBuilder builder() {
+      return DEFAULT.toBuilder();
+    }
+
+    @Deprecated // to be removed before 2.0
+    default ConfigBuilder toBuilder() {
+      return new ConfigBuilder(this);
+    }
+
+    /** Whether {@link RelBuilder#aggregate} should eliminate duplicate
+     * aggregate calls; default true. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(true)
+    boolean dedupAggregateCalls();
+
+    /** Sets {@link #dedupAggregateCalls}. */
+    Config withDedupAggregateCalls(boolean dedupAggregateCalls);
+
+    /** Whether to simplify expressions; default true. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(true)
+    boolean simplify();
+
+    /** Sets {@link #simplify}. */
+    Config withSimplify(boolean simplify);
+  }
+
+  /** Creates a {@link RelBuilder.Config}.
+   *
+   * @deprecated Use the {@code withXxx} methods in
+   * {@link RelBuilder.Config}. */
+  @Deprecated // to be removed before 2.0
+  public static class ConfigBuilder {
+    private Config config;
+
+    private ConfigBuilder(@Nonnull Config config) {
+      this.config = config;
+    }
+
+    /** Creates a {@link RelBuilder.Config}. */
+    public Config build() {
+      return config;
+    }
+
+    /** Sets the value that will become
+     * {@link org.apache.calcite.tools.RelBuilder.Config#dedupAggregateCalls}. */
+    public ConfigBuilder withDedupAggregateCalls(boolean dedupAggregateCalls) {
+      config = config.withDedupAggregateCalls(dedupAggregateCalls);
+      return this;
+    }
+
+    /** Sets the value that will become
+     * {@link org.apache.calcite.tools.RelBuilder.Config#simplify}. */
+    public ConfigBuilder withSimplify(boolean simplify) {
+      config = config.withSimplify(simplify);
+      return this;
     }
   }
 }

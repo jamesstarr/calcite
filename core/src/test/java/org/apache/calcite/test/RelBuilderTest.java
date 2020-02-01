@@ -16,6 +16,7 @@
  */
 package org.apache.calcite.test;
 
+import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.RelTraitDef;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.AggregateCall;
@@ -53,18 +54,19 @@ import com.google.common.collect.Lists;
 
 import org.junit.Test;
 
-import java.sql.PreparedStatement;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeSet;
-
 import static org.apache.calcite.test.Matchers.hasTree;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+
+import java.sql.PreparedStatement;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.function.UnaryOperator;
 
 /**
  * Unit test for {@link RelBuilder}.
@@ -109,6 +111,13 @@ public class RelBuilderTest {
             CalciteAssert.addSchema(rootSchema, CalciteAssert.SchemaSpec.SCOTT))
         .traitDefs((List<RelTraitDef>) null)
         .programs(Programs.heuristicJoinOrder(Programs.RULE_SET, true, 2));
+  }
+
+  static RelBuilder createBuilder(UnaryOperator<RelBuilder.Config> transform) {
+    final Frameworks.ConfigBuilder configBuilder = config();
+    configBuilder.context(
+        Contexts.of(transform.apply(RelBuilder.Config.DEFAULT)));
+    return RelBuilder.create(configBuilder.build());
   }
 
   @Test public void testScan() {
