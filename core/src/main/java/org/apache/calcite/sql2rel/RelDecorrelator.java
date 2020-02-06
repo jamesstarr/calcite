@@ -350,9 +350,6 @@ import org.apache.calcite.tools.RelBuilderFactory;
     return register(rel, newSort, frame.oldToNewOutputs, frame.corDefOutputs);
   }
 
-<<<<<<< HEAD
-  public Frame decorrelateRel(Values rel, boolean isCorVarDefined) {
-=======
   public Frame decorrelateRel(Values rel) {
     // There are no inputs, so rel does not need to be changed.
     return null;
@@ -454,7 +451,6 @@ import org.apache.calcite.tools.RelBuilderFactory;
     RelNode newProject = relBuilder.push(newInput)
         .projectNamed(Pair.left(projects), Pair.right(projects), true)
         .build();
->>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
 
     // update mappings:
     // oldInput ----> newInput

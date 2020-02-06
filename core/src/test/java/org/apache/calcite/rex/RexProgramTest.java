@@ -1733,6 +1733,7 @@ class RexProgramTest extends RexProgramTestBase {
     assertThat(result.getOperands().get(0), is(condition));
   }
 
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testConsistentTypeForSimpleFilter() {
     // Create a condition with TIMESTAMP input and CHAR literal
     final NlsString nlsString = new NlsString("2018-01-01 01:23:45", null, null);
@@ -1742,6 +1743,39 @@ class RexProgramTest extends RexProgramTestBase {
         0);
     RexNode charLiteral = rexBuilder.makeCharLiteral(nlsString);
     RexNode condition = eq(timestampRef, charLiteral);
+=======
+  @Test public void testConsistentTypeForSimpleFilter() {
+    // Create a condition with TIMESTAMP input and VARCHAR literal
+    final NlsString nlsString = new NlsString("2018-01-01 01:23:45", null, null);
+    RexNode condition = eq(
+        rexBuilder.makeInputRef(
+            typeFactory.createTypeWithNullability(
+                typeFactory.createSqlType(SqlTypeName.TIMESTAMP), true),
+            0), rexBuilder.makeVarCharLiteral(nlsString));
+    RexLiteral consistentTypeLiteral =
+        RexSimplify.Comparison.of(condition).getConsistentTypeLiteral(simplify);
+
+    // Get consistent type for condition and make sure new data type for the literal is TIMESTAMP
+    SqlTypeName consistentType = consistentTypeLiteral.getType().getSqlTypeName();
+    assertThat(consistentType, is(SqlTypeName.TIMESTAMP));
+
+    // Run simplify for the condition
+    RexCall result = (RexCall) simplify.simplify(condition);
+
+    // Ensure simplified filter still has VARCHAR type, which means consistent type is not applied
+    RexNode literal = result.getOperands().get(1);
+    assertThat(literal.getType().getSqlTypeName(), is(SqlTypeName.VARCHAR));
+  }
+
+  @Test public void testSimplifyCaseNullableBoolean() {
+    RexNode condition = eq(
+        rexBuilder.makeInputRef(
+            typeFactory.createTypeWithNullability(
+                typeFactory.createSqlType(SqlTypeName.VARCHAR), false),
+            0),
+        rexBuilder.makeLiteral("S"));
+    RexCall caseNode = (RexCall) case_(condition, trueLiteral, falseLiteral);
+>>>>>>> 4d6cc46fe (DX-20400: Fix long pre-logical time):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
     // Verify that consistent type would be TIMESTAMP (using public API)
     List<RelDataType> types = RexUtil.types(Arrays.asList(timestampRef, charLiteral));
