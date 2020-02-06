@@ -42,6 +42,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -608,8 +609,7 @@ public class RexSimplify {
     }
     // Try to simplify the expression
     final Multimap<String, Pair<String, RexNode>> equalityTerms = ArrayListMultimap.create();
-    final Map<String, Pair<Range<C>, List<RexNode>>> rangeTerms =
-        new HashMap<>();
+    final RangeTerms rangeTerms = new RangeTerms();
     final Map<String, String> equalityConstantTerms = new HashMap<>();
     final Set<String> negatedTerms = new HashSet<>();
     final Set<String> nullOperands = new HashSet<>();
@@ -618,13 +618,13 @@ public class RexSimplify {
 
     // Add the predicates from the source to the range terms.
     for (RexNode predicate : predicates.pulledUpPredicates) {
-      final Comparison comparison = Comparison.of(this, predicate);
+      final Comparison comparison = Comparison.of(predicate);
       if (comparison != null
           && comparison.kind != SqlKind.NOT_EQUALS) { // not supported yet
         final C v0 = comparison.literal.getValueAs(clazz);
         if (v0 != null) {
           final RexNode result = processRange(rexBuilder, terms, rangeTerms,
-              predicate, comparison.ref, v0, comparison.kind);
+              predicate, comparison, this, clazz);
           if (result != null) {
             // Not satisfiable
             return result;
@@ -674,7 +674,7 @@ public class RexSimplify {
           RexCall rightCast = (RexCall) right;
           comparedOperands.add(rightCast.getOperands().get(0).toString());
         }
-        final Comparison comparison = Comparison.of(this, term);
+        final Comparison comparison = Comparison.of(term);
         // Check for comparison with null values
         if (comparison != null
             && comparison.literal.getValue() == null) {
@@ -722,7 +722,7 @@ public class RexSimplify {
             && comparison.kind != SqlKind.NOT_EQUALS) { // not supported yet
           final C constant = comparison.literal.getValueAs(clazz);
           final RexNode result = processRange(rexBuilder, terms, rangeTerms,
-              term, comparison.ref, constant, comparison.kind);
+              term, comparison, this, clazz);
           if (result != null) {
             // Not satisfiable
             return result;
@@ -817,7 +817,7 @@ public class RexSimplify {
 
   private <C extends Comparable<C>> RexNode simplifyUsingPredicates(RexNode e,
       Class<C> clazz) {
-    final Comparison comparison = Comparison.of(this, e);
+    final Comparison comparison = Comparison.of(e);
     // Check for comparison with null values
     if (comparison == null
         || comparison.kind == SqlKind.NOT_EQUALS
@@ -1060,27 +1060,28 @@ public class RexSimplify {
 
   private static <C extends Comparable<C>> RexNode processRange(
       RexBuilder rexBuilder, List<RexNode> terms,
-      Map<String, Pair<Range<C>, List<RexNode>>> rangeTerms, RexNode term,
-      RexNode ref, C v0, SqlKind comparison) {
-    Pair<Range<C>, List<RexNode>> p = rangeTerms.get(ref.toString());
+      RangeTerms rangeTerms, RexNode term,
+      Comparison comparison, RexSimplify simplify, Class<C> clazz) {
+    Pair<Range<C>, List<RexNode>> p = rangeTerms.get(comparison.ref.toString());
+    SqlKind sqlKind = comparison.kind;
+    final C v0 = comparison.literal.getValueAs(clazz);
     if (p == null) {
-      rangeTerms.put(ref.toString(),
-          Pair.of(range(comparison, v0),
-              (List<RexNode>) ImmutableList.of(term)));
+      rangeTerms.put(comparison.ref.toString(),
+          (List<RexNode>) ImmutableList.of(term),
+              comparison.kind, comparison, simplify, clazz);
     } else {
       // Exists
       boolean removeUpperBound = false;
       boolean removeLowerBound = false;
       Range<C> r = p.left;
-      switch (comparison) {
+      switch (sqlKind) {
       case EQUALS:
         if (!r.contains(v0)) {
           // Range is empty, not satisfiable
           return rexBuilder.makeLiteral(false);
         }
-        rangeTerms.put(ref.toString(),
-            Pair.of(Range.singleton(v0),
-                (List<RexNode>) ImmutableList.of(term)));
+        rangeTerms.put(comparison.ref.toString(),
+            Range.singleton(v0), (List<RexNode>) ImmutableList.of(term));
         // remove
         for (RexNode e : p.right) {
           Collections.replaceAll(terms, e, rexBuilder.makeLiteral(true));
@@ -1249,8 +1250,7 @@ public class RexSimplify {
           }
         }
         newBounds.add(term);
-        rangeTerms.put(ref.toString(),
-            Pair.of(r, (List<RexNode>) newBounds.build()));
+        rangeTerms.put(comparison.ref.toString(), r, (List<RexNode>) newBounds.build());
       } else if (removeLowerBound) {
         ImmutableList.Builder<RexNode> newBounds = ImmutableList.builder();
         for (RexNode e : p.right) {
@@ -1261,8 +1261,7 @@ public class RexSimplify {
           }
         }
         newBounds.add(term);
-        rangeTerms.put(ref.toString(),
-            Pair.of(r, (List<RexNode>) newBounds.build()));
+        rangeTerms.put(comparison.ref.toString(), r, (List<RexNode>) newBounds.build());
       }
     }
     // Default
@@ -1289,7 +1288,7 @@ public class RexSimplify {
 
   /** Comparison between a {@link RexInputRef} or {@link RexFieldAccess} and a
    * literal. Literal may be on left or right side, and may be null. */
-  private static class Comparison {
+  public static class Comparison {
     final RexNode ref;
     final SqlKind kind;
     final RexLiteral literal;
@@ -1301,7 +1300,7 @@ public class RexSimplify {
     }
 
     /** Creates a comparison, or returns null. */
-    static Comparison of(RexSimplify simplify, RexNode e) {
+    public static Comparison of(RexNode e) {
       switch (e.getKind()) {
       case EQUALS:
       case NOT_EQUALS:
@@ -1309,28 +1308,10 @@ public class RexSimplify {
       case GREATER_THAN:
       case LESS_THAN_OR_EQUAL:
       case GREATER_THAN_OR_EQUAL:
-        final RexBuilder rexBuilder = simplify.rexBuilder;
         final RexCall call = (RexCall) e;
         final List<RexNode> operands = call.getOperands();
-        final RexNode left;
-        final RexNode right;
-
-        // check if operands are comparable and convert if necessary
-        List<RelDataType> types = RexUtil.types(operands);
-        RelDataType type = SqlTypeUtil.consistentType(rexBuilder.getTypeFactory(),
-            SqlOperandTypeChecker.Consistency.COMPARE, types);
-        if (type != null) {
-          left = simplify.simplify(rexBuilder.ensureType(type, operands.get(0), true));
-          right = simplify.simplify(rexBuilder.ensureType(type, operands.get(1), true));
-
-          if (!(left instanceof RexLiteral || right instanceof RexLiteral)) {
-            return null;
-          }
-        } else {
-          left = operands.get(0);
-          right = operands.get(1);
-        }
-
+        final RexNode left = operands.get(0);
+        final RexNode right = operands.get(1);
 
         switch (right.getKind()) {
         case LITERAL:
@@ -1347,6 +1328,77 @@ public class RexSimplify {
         }
       }
       return null;
+    }
+
+    public RexLiteral getConsistentTypeLiteral(RexSimplify simplify) {
+      if (literal != null) {
+        final RexBuilder rexBuilder = simplify.rexBuilder;
+        List<RelDataType> types = RexUtil.types(Arrays.asList(ref, literal));
+        RelDataType type = SqlTypeUtil.consistentType(rexBuilder.getTypeFactory(),
+            SqlOperandTypeChecker.Consistency.COMPARE, types);
+        if ((type != null) && !(types.stream().allMatch(type::equals))) {
+          return (RexLiteral) simplify.simplify(
+              rexBuilder.ensureType(type, (RexLiteral) literal, true));
+        }
+      }
+      return literal;
+    }
+  }
+
+  /** Holds a map between an input and a RangeTerm.
+   * @param <C> */
+  private static class RangeTerms<C extends Comparable<C>> {
+    Map<String, RangeTerm> rangeTerms;
+
+    /** Gives a range that ensures consistent type,
+     * which is done in a lazy manner.
+     * @param <C> */
+    private static class RangeTerm<C extends Comparable<C>> {
+      List<RexNode> rexNodes;
+      Range<C> range;
+      SqlKind sqlKind;
+      Comparison comparison;
+      RexSimplify simplify;
+      Class<C> clazz;
+
+      private RangeTerm(List<RexNode> rexNodes, SqlKind sqlKind,
+          Comparison comparison, RexSimplify simplify, Class<C> clazz) {
+        this.rexNodes = rexNodes;
+        this.comparison = comparison;
+        this.simplify = simplify;
+        this.clazz = clazz;
+        this.sqlKind = sqlKind;
+        this.range = null;
+      }
+
+      private RangeTerm(Range<C> range, List<RexNode> rexNodes) {
+        this.range = range;
+        this.rexNodes = rexNodes;
+      }
+
+      public Pair<Range<C>, List<RexNode>> getPair() {
+        if (range == null) {
+          range = range(sqlKind, comparison.getConsistentTypeLiteral(simplify).getValueAs(clazz));
+        }
+        return Pair.of(range, rexNodes);
+      }
+    }
+
+    RangeTerms() {
+      rangeTerms = new HashMap<>();
+    }
+
+    public void put(String key, List<RexNode> rexNodes, SqlKind sqlKind,
+        Comparison comparison, RexSimplify simplify, Class<C> clazz) {
+      rangeTerms.put(key, new RangeTerm(rexNodes, sqlKind, comparison, simplify, clazz));
+    }
+
+    public void put(String key, Range<C> range, List<RexNode> rexNodes) {
+      rangeTerms.put(key, new RangeTerm(range, rexNodes));
+    }
+    public Pair<Range<C>, List<RexNode>> get(String key) {
+      RangeTerm term = rangeTerms.get(key);
+      return term == null ? null : rangeTerms.get(key).getPair();
     }
   }
 
