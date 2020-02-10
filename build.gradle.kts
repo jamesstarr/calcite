@@ -211,6 +211,8 @@ allprojects {
     group = "org.apache.calcite"
     version = buildVersion
 
+    apply(plugin = "com.github.vlsi.gradle-extensions")
+
     val javaUsed = file("src/main/java").isDirectory
     if (javaUsed) {
         apply(plugin = "java-library")
