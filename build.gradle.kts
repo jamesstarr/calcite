@@ -329,6 +329,7 @@ allprojects {
     version = buildVersion
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     repositories {
         // RAT and Autostyle dependencies
         mavenCentral()
@@ -338,6 +339,10 @@ allprojects {
 
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    apply(plugin = "com.github.vlsi.gradle-extensions")
+
+>>>>>>> 3cb91cab5 (Update Gradle test output formatting)
     val javaUsed = file("src/main/java").isDirectory
     if (javaUsed) {
         apply(plugin = "java-library")
