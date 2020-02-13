@@ -127,7 +127,7 @@ public abstract class Sources {
 
     @Override public InputStream openStream() throws IOException {
       // use charSource.asByteSource() once calcite can use guava v21+
-      return new ReaderInputStream(reader(), StandardCharsets.UTF_8.name());
+      return new ReaderInputStream(reader(), StandardCharsets.UTF_8);
     }
 
     @Override public String protocol() {
@@ -174,11 +174,13 @@ public abstract class Sources {
       }
 =======
       this.file = urlToFile(url);
+      this.urlGenerated = false;
     }
 
     private FileSource(File file) {
       this.file = Objects.requireNonNull(file);
-      this.url = null;
+      this.url = fileToUrl(file);
+      this.urlGenerated = true;
     }
 
     private static File urlToFile(URL url) {
@@ -200,12 +202,94 @@ public abstract class Sources {
       return Paths.get(uri).toFile();
     }
 
+    private static URL fileToUrl(File file) {
+      String filePath = file.getPath();
+      if (!file.isAbsolute()) {
+        // convert relative file paths
+        filePath = filePath.replace(File.separatorChar, '/');
+        if (file.isDirectory() && !filePath.endsWith("/")) {
+          filePath += "/";
+        }
+        try {
+          // We need to encode path. For instance, " " should become "%20"
+          // That is why java.net.URLEncoder.encode(java.lang.String, java.lang.String) is not
+          // suitable because it replaces " " with "+".
+          String encodedPath = new URI(null, null, filePath, null).getRawPath();
+          return new URL("file", null, 0, encodedPath);
+        } catch (MalformedURLException | URISyntaxException e) {
+          throw new IllegalArgumentException("Unable to create URL for file " + filePath, e);
+        }
+      }
+
+      URI uri = null;
+      try {
+        // convert absolute file paths
+        uri = file.toURI();
+        return uri.toURL();
+      } catch (SecurityException e) {
+        throw new IllegalArgumentException("No access to the underlying file " + filePath, e);
+      } catch (MalformedURLException e) {
+        throw new IllegalArgumentException("Unable to convert URI " + uri + " to URL", e);
+      }
+    }
+
     @Override public String toString() {
       return (urlGenerated ? file : url).toString();
     }
 
     @Override public URL url() {
-      if (url != null) {
+      return url;
+    }
+
+    public File file() {
+      if (file == null) {
+        throw new UnsupportedOperationException();
+      }
+      return file;
+    }
+
+    @Override public String protocol() {
+      return file != null ? "file" : url.getProtocol();
+    }
+
+    @Override public String path() {
+      if (file != null) {
+        return file.getPath();
+      }
+      try {
+        // Decode %20 and friends
+        return url.toURI().getSchemeSpecificPart();
+      } catch (URISyntaxException e) {
+        throw new IllegalArgumentException("Unable to convert URL " + url + " to URI", e);
+      }
+    }
+
+    @Override public Reader reader() throws IOException {
+      final InputStream is;
+      if (path().endsWith(".gz")) {
+        final InputStream fis = openStream();
+        is = new GZIPInputStream(fis);
+      } else {
+        is = openStream();
+      }
+      return new InputStreamReader(is, StandardCharsets.UTF_8);
+    }
+
+    @Override public InputStream openStream() throws IOException {
+      if (file != null) {
+        return new FileInputStream(file);
+      } else {
+        return url.openStream();
+      }
+    }
+
+    @Override public Source trim(String suffix) {
+      Source x = trimOrNull(suffix);
+      return x == null ? this : x;
+    }
+
+    @Override public Source trimOrNull(String suffix) {
+      if (!urlGenerated) {
         final String s = Sources.trimOrNull(url.toExternalForm(), suffix);
         return s == null ? null : Sources.url(s);
       } else {
@@ -231,7 +315,7 @@ public abstract class Sources {
         }
       }
       String path = child.path();
-      if (url != null) {
+      if (!urlGenerated) {
         String encodedPath = new File(".").toURI().relativize(new File(path).toURI())
             .getRawSchemeSpecificPart();
         return Sources.url(url + "/" + encodedPath);
