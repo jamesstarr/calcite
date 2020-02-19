@@ -470,11 +470,16 @@ public abstract class SqlImplementor {
   public Result result(SqlNode join, Result leftResult, Result rightResult) {
     final ImmutableMap.Builder<String, RelDataType> builder =
         ImmutableMap.builder();
-    collectAliases(builder, join,
-        Iterables.concat(leftResult.aliases.values(),
-            rightResult.aliases.values()).iterator());
-    return new Result(join, Expressions.list(Clause.FROM), null, null,
-        builder.build());
+    if (join.getKind() == SqlKind.JOIN) {
+      collectAliases(builder, join,
+          Iterables.concat(leftResult.aliases.values(),
+              rightResult.aliases.values()).iterator());
+      return new Result(join, Expressions.list(Clause.FROM), null, null,
+          builder.build());
+    } else {
+      return new Result(join, Expressions.list(Clause.FROM), null, null,
+          leftResult.aliases);
+    }
   }
 
   private void collectAliases(ImmutableMap.Builder<String, RelDataType> builder,
