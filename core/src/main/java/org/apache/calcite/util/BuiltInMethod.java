@@ -92,12 +92,11 @@ import org.apache.calcite.runtime.SortedMultiMap;
 import org.apache.calcite.runtime.SqlFunctions;
 import org.apache.calcite.runtime.SqlFunctions.FlatProductInputType;
 import org.apache.calcite.runtime.Utilities;
-=======
+import org.apache.calcite.runtime.XmlFunctions;
 import org.apache.calcite.runtime.rtti.RuntimeTypeInformation;
 import org.apache.calcite.runtime.variant.VariantNull;
 import org.apache.calcite.runtime.variant.VariantSqlValue;
 import org.apache.calcite.runtime.variant.VariantValue;
-import org.apache.calcite.runtime.XmlFunctions;
 import org.apache.calcite.schema.FilterableTable;
 import org.apache.calcite.schema.ModifiableTable;
 import org.apache.calcite.schema.ProjectableFilterableTable;
