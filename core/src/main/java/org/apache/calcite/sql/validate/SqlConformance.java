@@ -73,6 +73,7 @@ public interface SqlConformance {
    *
    * <p>Among the built-in conformance levels, true in
    * {@link SqlConformanceEnum#BABEL},
+   * {@link SqlConformanceEnum#BIG_QUERY},
    * {@link SqlConformanceEnum#LENIENT},
    * {@link SqlConformanceEnum#MYSQL_5};
    * false otherwise.
@@ -98,6 +99,7 @@ public interface SqlConformance {
    *
    * <p>Among the built-in conformance levels, true in
    * {@link SqlConformanceEnum#BABEL},
+   * {@link SqlConformanceEnum#BIG_QUERY},
    * {@link SqlConformanceEnum#LENIENT},
    * {@link SqlConformanceEnum#MYSQL_5};
    * false otherwise.
@@ -311,7 +313,8 @@ public interface SqlConformance {
    *
    * <p>Among the built-in conformance levels, true in
    * {@link SqlConformanceEnum#DEFAULT},
-   * {@link SqlConformanceEnum#LENIENT};
+   * {@link SqlConformanceEnum#LENIENT},
+   * {@link SqlConformanceEnum#PRESTO};
    * false otherwise.
    */
   boolean allowExplicitRowValueConstructor();
@@ -381,6 +384,7 @@ public interface SqlConformance {
    * {@link SqlConformanceEnum#BABEL},
    * {@link SqlConformanceEnum#LENIENT},
    * {@link SqlConformanceEnum#MYSQL_5},
+   * {@link SqlConformanceEnum#PRESTO},
    * {@link SqlConformanceEnum#SQL_SERVER_2008};
    * false otherwise.
    */
@@ -435,6 +439,47 @@ public interface SqlConformance {
    * false otherwise.
    */
   boolean allowExtendedTrim();
+
+  /**
+   * Whether interval literals should allow plural time units
+   * such as "YEARS" and "DAYS" in interval literals.
+   *
+   * <p>Under strict behavior, {@code INTERVAL '2' DAY} is valid
+   * and {@code INTERVAL '2' DAYS} is invalid;
+   * PostgreSQL allows both; Oracle only allows singular time units.
+   *
+   * <p>Among the built-in conformance levels, true in
+   * {@link SqlConformanceEnum#BABEL},
+   * {@link SqlConformanceEnum#LENIENT};
+   * false otherwise.
+   */
+  boolean allowPluralTimeUnits();
+
+  /**
+   * Whether to allow a qualified common column in a query that has a
+   * NATURAL join or a join with a USING clause.
+   *
+   * <p>For example, in the query
+   *
+   * <blockquote><pre>SELECT emp.deptno
+   * FROM emp
+   * JOIN dept USING (deptno)</pre></blockquote>
+   *
+   * <p>{@code deptno} is the common column. A qualified common column
+   * such as {@code emp.deptno} is not allowed in Oracle, but is allowed
+   * in PostgreSQL.
+   *
+   * <p>Among the built-in conformance levels, false in
+   * {@link SqlConformanceEnum#ORACLE_10},
+   * {@link SqlConformanceEnum#ORACLE_12},
+   * {@link SqlConformanceEnum#PRESTO},
+   * {@link SqlConformanceEnum#STRICT_92},
+   * {@link SqlConformanceEnum#STRICT_99},
+   * {@link SqlConformanceEnum#STRICT_2003};
+   * true otherwise.
+   */
+  boolean allowQualifyingCommonColumn();
+
 }
 
   /**

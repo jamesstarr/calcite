@@ -49,7 +49,7 @@ import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.Spool;
 import org.apache.calcite.rel.core.TableFunctionScan;
 import org.apache.calcite.rel.core.TableScan;
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import org.apache.calcite.rel.core.Uncollect;
 import org.apache.calcite.rel.core.Union;
 import org.apache.calcite.rel.core.Values;
 import org.apache.calcite.rel.hint.Hintable;
@@ -1631,6 +1631,26 @@ public class RelBuilder {
     } else {
       project(nodeList, rowType.getFieldNames(), force);
     }
+    return this;
+  }
+
+  /**
+   * Creates an {@link Uncollect} with given item aliases.
+   *
+   * @param itemAliases   Operand item aliases, never null
+   * @param withOrdinality If {@code withOrdinality}, the output contains an extra
+   * {@code ORDINALITY} column
+   */
+  public RelBuilder uncollect(List<String> itemAliases, boolean withOrdinality) {
+    Frame frame = stack.pop();
+    stack.push(
+        new Frame(
+          new Uncollect(
+            cluster,
+            cluster.traitSetOf(Convention.NONE),
+            frame.rel,
+            withOrdinality,
+            Objects.requireNonNull(itemAliases))));
     return this;
   }
 

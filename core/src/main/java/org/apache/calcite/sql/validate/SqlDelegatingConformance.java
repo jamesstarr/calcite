@@ -76,5 +76,10 @@ public class SqlDelegatingConformance extends SqlAbstractConformance {
   @Override public boolean allowAliasUnnestItems() {
     return delegate.allowAliasUnnestItems();
   }
+<<<<<<< HEAD
+=======
+
+}
+>>>>>>> 6147b92cd ([CALCITE-3789] Supports Presto style unnest with items alias (Will Yu))
 
 }

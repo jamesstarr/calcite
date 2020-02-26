@@ -49,8 +49,6 @@ import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.core.Sample;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableScan;
-import org.apache.calcite.rel.core.Uncollect;
-import org.apache.calcite.rel.core.Values;
 import org.apache.calcite.rel.hint.HintStrategyTable;
 import org.apache.calcite.rel.hint.Hintable;
 import org.apache.calcite.rel.hint.RelHint;
@@ -2110,28 +2108,16 @@ public class SqlToRelConverter {
     switch (from.getKind()) {
     case AS:
       call = (SqlCall) from;
-      convertFrom(bb, call.operand(0));
-      if (call.operandCount() > 2
-          && (bb.root instanceof Values || bb.root instanceof Uncollect)) {
-        final List<String> fieldNames = new ArrayList<>();
+      SqlNode firstOperand = call.operand(0);
+      final List<String> fieldNameList = new ArrayList<>();
+      if (call.operandCount() > 2) {
         for (SqlNode node : Util.skip(call.getOperandList(), 2)) {
           fieldNameList.add(((SqlIdentifier) node).getSimple());
         }
 
       }
       convertFrom(bb, firstOperand, fieldNameList);
-      return;
-
-    case MATCH_RECOGNIZE:
-      convertMatchRecognize(bb, (SqlMatchRecognize) from);
-      return;
-
-    case PIVOT:
-      convertPivot(bb, (SqlPivot) from);
-      return;
-
-    case UNPIVOT:
-      convertUnpivot(bb, (SqlUnpivot) from);
+>>>>>>> 6147b92cd ([CALCITE-3789] Supports Presto style unnest with items alias (Will Yu))
       return;
 
     case MATCH_RECOGNIZE:
@@ -2187,7 +2173,6 @@ public class SqlToRelConverter {
 
     case IDENTIFIER:
       convertIdentifier(bb, (SqlIdentifier) from, null, null);
->>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
       return;
 
     case EXTEND:
@@ -2216,29 +2201,13 @@ public class SqlToRelConverter {
 
     case VALUES:
       convertValuesImpl(bb, (SqlCall) from, null);
+      if (fieldNames.size() > 0) {
+        bb.setRoot(relBuilder.push(bb.root).rename(fieldNames).build(), true);
+      }
       return;
 
     case UNNEST:
-      call = (SqlCall) from;
-      final List<SqlNode> nodes = call.getOperandList();
-      final SqlUnnestOperator operator = (SqlUnnestOperator) call.getOperator();
-      for (SqlNode node : nodes) {
-        replaceSubQueries(bb, node, RelOptUtil.Logic.TRUE_FALSE_UNKNOWN);
-      }
-      final List<RexNode> exprs = new ArrayList<>();
-      final List<String> fieldNames = new ArrayList<>();
-      for (Ord<SqlNode> node : Ord.zip(nodes)) {
-        exprs.add(bb.convertExpression(node.e));
-        fieldNames.add(validator.deriveAlias(node.e, node.i));
-      }
-      RelNode child =
-          (null != bb.root) ? bb.root : LogicalValues.createOneRow(cluster);
-      relBuilder.push(child).projectNamed(exprs, fieldNames, false);
-
-      Uncollect uncollect =
-          new Uncollect(cluster, cluster.traitSetOf(Convention.NONE),
-              relBuilder.build(), operator.withOrdinality);
-      bb.setRoot(uncollect, true);
+      convertUnnest(bb, (SqlCall) from, fieldNames);
       return;
 
     case COLLECTION_TABLE:
@@ -2253,6 +2222,38 @@ public class SqlToRelConverter {
     default:
       throw new AssertionError("not a join operator " + from);
     }
+  }
+
+  private void convertUnnest(Blackboard bb, SqlCall call, List<String> fieldNames) {
+    final List<SqlNode> nodes = call.getOperandList();
+    final SqlUnnestOperator operator = (SqlUnnestOperator) call.getOperator();
+    for (SqlNode node : nodes) {
+      replaceSubQueries(bb, node, RelOptUtil.Logic.TRUE_FALSE_UNKNOWN);
+    }
+    final List<RexNode> exprs = new ArrayList<>();
+    for (Ord<SqlNode> node : Ord.zip(nodes)) {
+      exprs.add(
+          relBuilder.alias(bb.convertExpression(node.e), validator.deriveAlias(node.e, node.i)));
+    }
+    RelNode child =
+        (null != bb.root) ? bb.root : LogicalValues.createOneRow(cluster);
+    RelNode uncollect;
+    if (validator.config().sqlConformance().allowAliasUnnestItems()) {
+      uncollect = relBuilder
+          .push(child)
+          .project(exprs)
+          .uncollect(fieldNames, operator.withOrdinality)
+          .build();
+    } else {
+      // REVIEW danny 2020-04-26: should we unify the normal field aliases and the item aliases ?
+      uncollect = relBuilder
+          .push(child)
+          .project(exprs)
+          .uncollect(Collections.emptyList(), operator.withOrdinality)
+          .rename(fieldNames)
+          .build();
+    }
+    bb.setRoot(uncollect, true);
   }
 
   protected void convertMatchRecognize(Blackboard bb,

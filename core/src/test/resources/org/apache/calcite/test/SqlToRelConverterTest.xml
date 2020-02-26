@@ -7058,10 +7058,14 @@ LogicalProject(DEPTNO=[$0], EMPNO_AVG=[$7])
         LogicalProject(EMPNO=[$0])
           Uncollect
 <<<<<<< HEAD
+<<<<<<< HEAD
             LogicalProject(EMPLOYEES=[$cor0.EMPLOYEES])
 =======
             LogicalProject(EMPLOYEES=[$cor0.EMPLOYEES_6])
 >>>>>>> 192f9096c ([CALCITE-2159] Support dynamic row type in UNNEST (Chunhui Shi))
+=======
+            LogicalProject(EMPLOYEES=[$cor0.EMPLOYEES])
+>>>>>>> 6147b92cd ([CALCITE-3789] Supports Presto style unnest with items alias (Will Yu))
               LogicalValues(tuples=[[{ 0 }]])
 ]]>
         </Resource>
@@ -7080,10 +7084,14 @@ LogicalProject(DEPTNO=[$0], EMPNO=[$7])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
     Uncollect
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject(EMPLOYEES=[$cor0.EMPLOYEES])
 =======
       LogicalProject(EMPLOYEES=[$cor0.EMPLOYEES_6])
 >>>>>>> 192f9096c ([CALCITE-2159] Support dynamic row type in UNNEST (Chunhui Shi))
+=======
+      LogicalProject(EMPLOYEES=[$cor0.EMPLOYEES])
+>>>>>>> 6147b92cd ([CALCITE-3789] Supports Presto style unnest with items alias (Will Yu))
         LogicalValues(tuples=[[{ 0 }]])
 ]]>
         </Resource>
@@ -7137,9 +7145,33 @@ LogicalProject(DEPTNO=[$0], E=[$5], EMPNO=[$6.EMPNO])
 =======
     LogicalProject(EMPNO=[$0], Y=[$1], Z=[$2])
       Uncollect
-        LogicalProject(EMPLOYEES=[$cor0.EMPLOYEES_6])
+        LogicalProject(EMPLOYEES=[$cor0.EMPLOYEES])
           LogicalValues(tuples=[[{ 0 }]])
 >>>>>>> 0630a3332 ([CALCITE-2281] Return type of the TIMESTAMPADD function has wrong precision (Sudheesh Katkam))
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testAliasUnnestArrayPlanWithSingleColumn">
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(DEPTNO=[$0], EMPNO=[$5.EMPNO])
+  LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{2}])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED_EXPANDED]])
+    Uncollect
+      LogicalProject(EMPLOYEES=[$cor0.EMPLOYEES])
+        LogicalValues(tuples=[[{ 0 }]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testAliasUnnestArrayPlanWithDoubleColumn">
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(DEPTNO=[$0], E=[$5], EMPNO=[$6.EMPNO])
+  LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{2, 3}])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED_EXPANDED]])
+    Uncollect
+      LogicalProject(ADMINS=[$cor0.ADMINS], EMPLOYEES=[$cor0.EMPLOYEES])
+        LogicalValues(tuples=[[{ 0 }]])
 ]]>
         </Resource>
     </TestCase>

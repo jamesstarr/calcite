@@ -47,6 +47,7 @@ final class Fixture extends AbstractFixture {
   final RelDataType booleanTypeNull;
   final RelDataType rectilinearCoordType;
   final RelDataType rectilinearPeekCoordType;
+  final RelDataType rectilinearPeekCoordMultisetType;
   final RelDataType rectilinearPeekNoExpandCoordType;
   final RelDataType abRecordType;
   final RelDataType skillRecordType;
@@ -64,6 +65,7 @@ final class Fixture extends AbstractFixture {
   // Row(f0 varchar not null, f1 timestamp null) multiset
   final RelDataType recordType5;
   final RelDataType bigintType = sqlType(SqlTypeName.BIGINT);
+  final RelDataType varchar5ArrayType;
 
   Fixture(RelDataTypeFactory typeFactory) {
     super(typeFactory);
@@ -93,8 +95,11 @@ final class Fixture extends AbstractFixture {
         typeFactory.builder()
             .add("X", intType)
             .add("Y", intType)
+            .add("unit", varchar20Type)
             .kind(StructKind.PEEK_FIELDS)
             .build();
+    rectilinearPeekCoordMultisetType =
+            typeFactory.createMultisetType(rectilinearPeekCoordType, -1);
     rectilinearPeekNoExpandCoordType =
         typeFactory.builder()
             .add("M", intType)
@@ -124,6 +129,7 @@ final class Fixture extends AbstractFixture {
             .add("DETAIL",
                 typeFactory.builder().add("SKILLS",
                     typeFactory.createArrayType(skillRecordType, -1)).build())
+            .kind(StructKind.PEEK_FIELDS)
             .build();
     empListType =
         typeFactory.createArrayType(empRecordType, -1);
@@ -167,7 +173,9 @@ final class Fixture extends AbstractFixture {
             Arrays.asList(varcharType, nullable(typeFactory, timestampType)),
             Arrays.asList("f0", "f1")),
         -1);
-
+    varchar5ArrayType = typeFactory.createArrayType(
+            typeFactory.createSqlType(SqlTypeName.VARCHAR, 5),
+            -1);
   }
 
   private static RelDataType nullable(RelDataTypeFactory typeFactory, RelDataType type) {

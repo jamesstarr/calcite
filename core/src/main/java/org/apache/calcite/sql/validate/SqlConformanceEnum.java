@@ -255,7 +255,7 @@ public enum SqlConformanceEnum implements SqlConformance {
     switch (this) {
     case DEFAULT:
     case LENIENT:
->>>>>>> a73a101e3 ([CALCITE-2276] Allow explicit ROW value constructor in SELECT clause and elsewhere (Danny Chan))
+    case PRESTO:
       return true;
     default:
       return false;
@@ -289,6 +289,7 @@ public enum SqlConformanceEnum implements SqlConformance {
     case LENIENT:
     case MYSQL_5:
     case SQL_SERVER_2008:
+    case PRESTO:
       return true;
     default:
       return false;
@@ -305,6 +306,7 @@ public enum SqlConformanceEnum implements SqlConformance {
     case ORACLE_10:
     case ORACLE_12:
     case SQL_SERVER_2008:
+    case PRESTO:
       return true;
     default:
       return false;
@@ -317,6 +319,39 @@ public enum SqlConformanceEnum implements SqlConformance {
     case LENIENT:
     case MYSQL_5:
     case SQL_SERVER_2008:
+      return true;
+    default:
+      return false;
+    }
+  }
+
+  @Override public boolean allowPluralTimeUnits() {
+    switch (this) {
+    case BABEL:
+    case LENIENT:
+      return true;
+    default:
+      return false;
+    }
+  }
+
+  @Override public boolean allowQualifyingCommonColumn() {
+    switch (this) {
+    case ORACLE_10:
+    case ORACLE_12:
+    case STRICT_92:
+    case STRICT_99:
+    case STRICT_2003:
+    case PRESTO:
+      return false;
+    default:
+      return true;
+    }
+  }
+
+  @Override public boolean allowAliasUnnestItems() {
+    switch (this) {
+    case PRESTO:
       return true;
     default:
       return false;

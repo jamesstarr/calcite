@@ -155,12 +155,13 @@ public class Uncollect extends SingleRel {
       // Component type is unknown to Uncollect, build a row type with input column name
       // and Any type.
       return builder
-          .add(fields.get(0).getName(), SqlTypeName.ANY)
+          .add(requireAlias ? itemAliases.get(0) : fields.get(0).getName(), SqlTypeName.ANY)
           .nullable(true)
           .build();
     }
 
-    for (RelDataTypeField field : fields) {
+    for (int i = 0; i < fields.size(); i++) {
+      RelDataTypeField field = fields.get(i);
       if (field.getType() instanceof MapSqlType) {
         builder.add(SqlUnnestOperator.MAP_KEY_COLUMN_NAME, field.getType().getKeyType());
         builder.add(SqlUnnestOperator.MAP_VALUE_COLUMN_NAME, field.getType().getValueType());
