@@ -68,6 +68,10 @@ public enum SqlConformanceEnum implements SqlConformance {
   PRAGMATIC_2003,
 
   /** Conformance value that instructs Calcite to use SQL semantics
+   * consistent with Presto. */
+  PRESTO,
+
+  /** Conformance value that instructs Calcite to use SQL semantics
    * consistent with Microsoft SQL Server version 2008. */
   SQL_SERVER_2008;
 
@@ -96,6 +100,7 @@ public enum SqlConformanceEnum implements SqlConformance {
     case BABEL:
     case LENIENT:
     case MYSQL_5:
+    case PRESTO:
       return true;
     default:
       return false;
@@ -125,6 +130,7 @@ public enum SqlConformanceEnum implements SqlConformance {
     case PRAGMATIC_99:
     case PRAGMATIC_2003:
     case SQL_SERVER_2008:
+    case PRESTO:
       return true;
     default:
       return false;
@@ -171,6 +177,7 @@ public enum SqlConformanceEnum implements SqlConformance {
     case MYSQL_5:
     case ORACLE_10:
     case ORACLE_12:
+    case PRESTO:
       return true;
     default:
       return false;
@@ -194,6 +201,7 @@ public enum SqlConformanceEnum implements SqlConformance {
     case BABEL:
     case LENIENT:
     case MYSQL_5:
+    case PRESTO:
       return true;
     default:
       return false;
@@ -239,6 +247,7 @@ public enum SqlConformanceEnum implements SqlConformance {
     switch (this) {
     case DEFAULT:
     case LENIENT:
+    case PRESTO:
       return true;
     default:
       return false;
@@ -272,6 +281,7 @@ public enum SqlConformanceEnum implements SqlConformance {
     case LENIENT:
     case MYSQL_5:
     case SQL_SERVER_2008:
+    case PRESTO:
       return true;
     default:
       return false;
@@ -286,6 +296,7 @@ public enum SqlConformanceEnum implements SqlConformance {
     case ORACLE_10:
     case ORACLE_12:
     case SQL_SERVER_2008:
+    case PRESTO:
       return true;
     default:
       return false;
@@ -298,6 +309,39 @@ public enum SqlConformanceEnum implements SqlConformance {
     case LENIENT:
     case MYSQL_5:
     case SQL_SERVER_2008:
+      return true;
+    default:
+      return false;
+    }
+  }
+
+  @Override public boolean allowPluralTimeUnits() {
+    switch (this) {
+    case BABEL:
+    case LENIENT:
+      return true;
+    default:
+      return false;
+    }
+  }
+
+  @Override public boolean allowQualifyingCommonColumn() {
+    switch (this) {
+    case ORACLE_10:
+    case ORACLE_12:
+    case STRICT_92:
+    case STRICT_99:
+    case STRICT_2003:
+    case PRESTO:
+      return false;
+    default:
+      return true;
+    }
+  }
+
+  @Override public boolean allowAliasUnnestItems() {
+    switch (this) {
+    case PRESTO:
       return true;
     default:
       return false;

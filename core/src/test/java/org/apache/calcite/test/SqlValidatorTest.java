@@ -7916,37 +7916,71 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkColumnType("select*from unnest(array[1])", "INTEGER NOT NULL");
     checkColumnType("select*from unnest(array[1, 2])", "INTEGER NOT NULL");
     checkColumnType(
-        "select*from unnest(array[321.3, 2.33])",
-        "DECIMAL(5, 2) NOT NULL");
+            "select*from unnest(array[321.3, 2.33])",
+            "DECIMAL(5, 2) NOT NULL");
     checkColumnType(
-        "select*from unnest(array[321.3, 4.23e0])",
-        "DOUBLE NOT NULL");
+            "select*from unnest(array[321.3, 4.23e0])",
+            "DOUBLE NOT NULL");
     checkColumnType(
-        "select*from unnest(array[43.2e1, cast(null as decimal(4,2))])",
-        "DOUBLE");
+            "select*from unnest(array[43.2e1, cast(null as decimal(4,2))])",
+            "DOUBLE");
     checkColumnType(
-        "select*from unnest(array[1, 2.3, 1])",
-        "DECIMAL(11, 1) NOT NULL");
+            "select*from unnest(array[1, 2.3, 1])",
+            "DECIMAL(11, 1) NOT NULL");
     checkColumnType(
-        "select*from unnest(array['1','22','333'])",
-        "CHAR(3) NOT NULL");
+            "select*from unnest(array['1','22','333'])",
+            "CHAR(3) NOT NULL");
     checkColumnType(
-        "select*from unnest(array['1','22','333','22'])",
-        "CHAR(3) NOT NULL");
+            "select*from unnest(array['1','22','333','22'])",
+            "CHAR(3) NOT NULL");
     checkColumnType(
-        "select*from unnest(array['1','22',null,'22'])",
-        "CHAR(2)");
+            "select*from unnest(array['1','22',null,'22'])",
+            "CHAR(2)");
     checkFails(
-        "select*from ^unnest(1)^",
-        "(?s).*Cannot apply 'UNNEST' to arguments of type 'UNNEST.<INTEGER>.'.*");
+            "select*from ^unnest(1)^",
+            "(?s).*Cannot apply 'UNNEST' to arguments of type 'UNNEST.<INTEGER>.'.*");
     check("select*from unnest(array(select*from dept))");
     check("select*from unnest(array[1,null])");
     check("select c from unnest(array(select deptno from dept)) as t(c)");
     checkFails("select c from unnest(array(select * from dept)) as t(^c^)",
-        "List of column aliases must have same degree as table; table has 2 columns \\('DEPTNO', 'NAME'\\), whereas alias list has 1 columns");
+            "List of column aliases must have same degree as table; table has 2 columns \\('DEPTNO', 'NAME'\\), whereas alias list has 1 columns");
     checkFails(
-        "select ^c1^ from unnest(array(select name from dept)) as t(c)",
-        "Column 'C1' not found in any table");
+            "select ^c1^ from unnest(array(select name from dept)) as t(c)",
+            "Column 'C1' not found in any table");
+  }
+
+  /**
+   * Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3789">[CALCITE-3789]
+   * Support validation of UNNEST multiple array columns like Presto</a>.
+   */
+  @Test public void testAliasUnnestMultipleArrays() {
+    final SqlTester presto = tester.withConformance(SqlConformanceEnum.PRESTO);
+    // for accessing a field in STRUCT type unnested from array
+    sql("select e.ENAME\n"
+        + "from dept_nested_expanded as d CROSS JOIN\n"
+        + " UNNEST(d.employees) as t(e)")
+        .tester(presto).columnType("VARCHAR(10) NOT NULL");
+
+    // for unnesting multiple arrays at the same time
+    sql("select d.deptno, e, k.empno, l.\"unit\", l.\"X\" * l.\"Y\"\n"
+        + "from dept_nested_expanded as d CROSS JOIN\n"
+        + " UNNEST(d.admins, d.employees, d.offices) as t(e, k, l)")
+        .tester(presto).ok();
+
+    // Make sure validation fails properly given illegal select items
+    sql("select d.deptno, ^e^.some_column, k.empno\n"
+        + "from dept_nested_expanded as d CROSS JOIN\n"
+        + " UNNEST(d.admins, d.employees) as t(e, k)")
+        .tester(presto)
+        .fails("Table 'E' not found");
+
+    // Make sure validation fails without PRESTO conformance
+    sql("select e.ENAME\n"
+        + "from dept_nested_expanded as d CROSS JOIN\n"
+        + " UNNEST(d.employees) as t(^e^)")
+        .fails("List of column aliases must have same degree as table; table has 3 columns "
+            + "\\('EMPNO', 'ENAME', 'DETAIL'\\), whereas alias list has 1 columns");
   }
 
   @Test public void testArrayConstructor() {
@@ -8488,7 +8522,7 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     sql("SELECT * FROM customer.contact_peek as c")
         .type("RecordType(INTEGER NOT NULL CONTACTNO, VARCHAR(10) NOT NULL FNAME, "
             + "VARCHAR(10) NOT NULL LNAME, VARCHAR(20) NOT NULL EMAIL, INTEGER NOT NULL X, "
-            + "INTEGER NOT NULL Y, RecordType:peek_no_expand(INTEGER NOT NULL M, "
+            + "INTEGER NOT NULL Y, VARCHAR(20) NOT NULL unit, RecordType:peek_no_expand(INTEGER NOT NULL M, "
             + "RecordType:peek_no_expand(INTEGER NOT NULL A, INTEGER NOT NULL B) "
             + "NOT NULL SUB) NOT NULL COORD_NE) NOT NULL");
 
