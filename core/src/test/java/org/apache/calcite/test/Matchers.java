@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
 /**
@@ -269,7 +270,7 @@ public class Matchers {
   }
 
   public static String trimNodeIds(String s) {
-    return s.replaceAll(", id = [0-9]+", "");
+    return PATTERN.matcher(s).replaceAll("");
   }
 
   /**

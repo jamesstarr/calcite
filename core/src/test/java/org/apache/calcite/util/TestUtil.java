@@ -177,19 +177,19 @@ public abstract class TestUtil {
    * Quotes a pattern.
    */
   public static String quotePattern(String s) {
-    return s.replaceAll("\\\\", "\\\\")
-        .replaceAll("\\.", "\\\\.")
-        .replaceAll("\\+", "\\\\+")
-        .replaceAll("\\{", "\\\\{")
-        .replaceAll("\\}", "\\\\}")
-        .replaceAll("\\|", "\\\\||")
-        .replaceAll("[$]", "\\\\\\$")
-        .replaceAll("\\?", "\\\\?")
-        .replaceAll("\\*", "\\\\*")
-        .replaceAll("\\(", "\\\\(")
-        .replaceAll("\\)", "\\\\)")
-        .replaceAll("\\[", "\\\\[")
-        .replaceAll("\\]", "\\\\]")
+    return s.replace("\\", "\\\\")
+        .replace(".", "\\.")
+        .replace("+", "\\+")
+        .replace("{", "\\{")
+        .replace("}", "\\}")
+        .replace("|", "\\||")
+        .replace("$", "\\$")
+        .replace("?", "\\?")
+        .replace("*", "\\*")
+        .replace("(", "\\(")
+        .replace(")", "\\)")
+        .replace("[", "\\[")
+        .replace("]", "\\]")
         .replace("\n", "\\n");
   }
 

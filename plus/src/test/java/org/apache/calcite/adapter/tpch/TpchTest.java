@@ -943,6 +943,6 @@ public class TpchTest {
    */
   private CalciteAssert.AssertQuery query(int i) {
     return with()
-      .query(QUERIES.get(i - 1).replaceAll("tpch\\.", "tpch_01."));
+        .query(QUERIES.get(i - 1).replace("tpch.", "tpch_01."));
   }
 }

@@ -1351,7 +1351,7 @@ class RelToSqlConverterTest {
         + " 4 AS \"fo$ur\", 5 AS \"ignore\"\n"
         + "FROM \"foodmart\".\"days\") AS \"t\"\n"
         + "WHERE \"one\" < \"tWo\" AND \"THREE\" < \"fo$ur\"";
-    final String expectedOracle = expectedPostgresql.replaceAll(" AS ", " ");
+    final String expectedOracle = expectedPostgresql.replace(" AS ", " ");
     sql(query)
         .withBigQuery().ok(expectedBigQuery)
         .withMysql().ok(expectedMysql)

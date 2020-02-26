@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -60,34 +61,11 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Test that runs every Quidem file as a test.
  */
 public abstract class QuidemTest {
-<<<<<<< HEAD
+>>>>>>> 3ab086683 ([CALCITE-2457] Migrate core parameterized to JUnit5, and make core junit5-only)
+=======
 
   private static final Pattern PATTERN = Pattern.compile("\\.iq$");
 
-  private static Object getEnv(String varName) {
-    switch (varName) {
-    case "jdk18":
-      return System.getProperty("java.version").startsWith("1.8");
-    case "fixed":
-      // Quidem requires a Java 8 function
-      return (Function<String, Object>) v -> {
-        switch (v) {
-        case "calcite1045":
-          return Bug.CALCITE_1045_FIXED;
-        case "calcite1048":
-          return Bug.CALCITE_1048_FIXED;
-        case "calcite2776":
-          return Bug.CALCITE_2776_FIXED;
-        }
-        return null;
-      };
-    default:
-      return null;
-    }
-  }
-
-=======
->>>>>>> 3ab086683 ([CALCITE-2457] Migrate core parameterized to JUnit5, and make core junit5-only)
   private static Object getEnv(String varName) {
     switch (varName) {
     case "jdk18":

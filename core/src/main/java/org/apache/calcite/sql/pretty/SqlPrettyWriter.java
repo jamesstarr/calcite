@@ -998,12 +998,10 @@ public class SqlPrettyWriter implements SqlWriter {
     maybeWhitespace(name);
     if (isQuoteAllIdentifiers()
         || dialect.identifierNeedsToBeQuoted(name)) {
-      dialect.quoteIdentifier(buf, name);
+      dialect.quoteIdentifier(name);
     } else {
       buf.append(name);
     }
-    maybeWhitespace(qName);
-    buf.append(qName);
     setNeedWhitespace(true);
   }
 
