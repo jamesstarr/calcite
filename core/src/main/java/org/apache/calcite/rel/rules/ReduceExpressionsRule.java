@@ -308,6 +308,8 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
           Lists.newArrayList(project.getProjects());
       if (reduceExpressions(project, expList, predicates, false,
               config.matchNullability(), config.treatDynamicCallsAsConstant())) {
+        assert !project.getProjects().equals(expList)
+            : "Reduced expressions should be different from original expressions";
         call.transformTo(
             call.builder()
                 .push(project.getInput())
@@ -691,6 +693,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
       boolean matchNullability, boolean treatDynamicCallsAsConstant) {
     final RelOptCluster cluster = rel.getCluster();
     final RexBuilder rexBuilder = cluster.getRexBuilder();
+    final List<RexNode> originExpList = Lists.newArrayList(expList);
     final RexExecutor executor =
         Util.first(cluster.getPlanner().getExecutor(), RexUtil.EXECUTOR);
     final RexSimplify simplify =
@@ -710,6 +713,10 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
         expList.set(i, expr2);
         simplified = true;
       }
+    }
+
+    if (reduced && simplified) {
+      return !originExpList.equals(expList);
     }
 
     return reduced || simplified;

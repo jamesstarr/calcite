@@ -10243,6 +10243,9 @@ LogicalTableModify(table=[[CATALOG, SALES, DEPT]], operation=[INSERT], flattened
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 5c7a21e65 ([CALCITE-3845] CASE WHEN expression with nullability CAST is considered as reduced wrongly in ReduceExpressionsRule)
     <TestCase name="testReduceCaseWhenWithCast">
         <Resource name="planBefore">
             <![CDATA[
@@ -10257,10 +10260,13 @@ LogicalProject($f0=[CAST(CASE(=(MOD($0, 2:BIGINT), 1), <($0, 2:BIGINT), =(MOD($0
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 >>>>>>> a609b49b6 ([CALCITE-2687] Is distinct from could lead to Exceptions in ReduceExpressionRule (Zoltan Haindrich))
 =======
 >>>>>>> d5492d7cf ([CALCITE-3346] Re-enable some ignored tests in RelOptRuleTests (Wang Yanlin))
+=======
+>>>>>>> 5c7a21e65 ([CALCITE-3845] CASE WHEN expression with nullability CAST is considered as reduced wrongly in ReduceExpressionsRule)
     <TestCase name="testReduceConstants3">
         <Resource name="sql">
             <![CDATA[select e.mgr is not distinct from f.mgr from emp e join emp f on (e.mgr=f.mgr) where e.mgr is null]]>
