@@ -116,6 +116,7 @@ SELECT ExtractValue('<a>c</a>', '//a');
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # COSH
 select cosh(1);
 +-------------------+
@@ -152,6 +153,8 @@ SELECT CONCAT('c', 'h', 'a', 'r');
 
 !ok
 
+=======
+>>>>>>> 688b6a192 ([CALCITE-3647] MySQL COMPRESS function support (ritesh-kapoor))
 # Compression Functions
 
 SELECT COMPRESS('sample');
