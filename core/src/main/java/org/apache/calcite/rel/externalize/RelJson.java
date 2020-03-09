@@ -75,6 +75,8 @@ import java.util.Map;
 import java.util.Set;
 >>>>>>> 6102b7372 ([CALCITE-2858] Improvements in JSON writer and reader for plans)
 
+import static org.apache.calcite.rel.RelDistributions.EMPTY;
+
 /**
  * Utilities for converting {@link org.apache.calcite.rel.RelNode}
  * into JSON format.

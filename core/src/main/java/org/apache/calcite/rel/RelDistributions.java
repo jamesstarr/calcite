@@ -87,6 +87,10 @@ public class RelDistributions {
     return list;
   }
 
+  public static RelDistribution of(RelDistribution.Type type, ImmutableIntList keys) {
+    return new RelDistributionImpl(type, keys);
+  }
+
   /** Implementation of {@link org.apache.calcite.rel.RelDistribution}. */
   private static class RelDistributionImpl implements RelDistribution {
     private static final Ordering<Iterable<Integer>> ORDERING =
