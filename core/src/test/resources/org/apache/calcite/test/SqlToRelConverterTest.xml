@@ -733,6 +733,22 @@ LogicalProject(DEPTNO=[$0], NUM=[$2])
 >>>>>>> 06bb6f836 ([CALCITE-4946] Add method RelBuilder.size())
     </Resource>
   </TestCase>
+  <TestCase name="testJoinLateralTableWithConditionCorrelated">
+    <Resource name="sql">
+      <![CDATA[select deptno, r.num from dept join
+lateral table(ramp(dept.deptno)) as r(num)
+on deptno=num]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalProject(DEPTNO=[$0], NUM=[$2])
+  LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{0}])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalFilter(condition=[=($cor0.DEPTNO, $0)])
+      LogicalTableFunctionScan(invocation=[RAMP($cor0.DEPTNO)], rowType=[RecordType(INTEGER I)])
+]]>
+    </Resource>
+  </TestCase>
   <TestCase name="testCorrelatedArraySubQuery">
     <Resource name="sql">
       <![CDATA[select *,

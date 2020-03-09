@@ -1078,6 +1078,13 @@ public class RelDecorrelator implements ReflectiveVisitor {
     return decorrelateRel((RelNode) rel, isCorVarDefined);
   }
 
+  public Frame decorrelateRel(LogicalTableFunctionScan rel, boolean isCorVarDefined) {
+    if (RexUtil.containsCorrelation(rel.getCall())) {
+      return null;
+    }
+    return decorrelateRel((RelNode) rel, isCorVarDefined);
+  }
+
   public Frame decorrelateRel(LogicalFilter rel, boolean isCorVarDefined) {
     return decorrelateRel((Filter) rel, isCorVarDefined);
   }
