@@ -20,7 +20,6 @@ import org.apache.calcite.plan.Context;
 import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable;
-import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.hint.RelHint;
@@ -127,12 +126,6 @@ public class RelFactories {
      */
     RelNode createProject(RelNode input, List<RelHint> hints,
         List<? extends RexNode> childExprs, List<String> fieldNames);
-
-    @Deprecated // to be removed before 1.23
-    default RelNode createProject(RelNode input,
-        List<? extends RexNode> childExprs, List<String> fieldNames) {
-      return createProject(input, ImmutableList.of(), childExprs, fieldNames);
-    }
   }
 
   /**
@@ -154,10 +147,6 @@ public class RelFactories {
     /** Creates a sort. */
     RelNode createSort(RelNode input, RelCollation collation, RexNode offset,
         RexNode fetch);
-
-    @Deprecated // to be removed before 2.0
-    RelNode createSort(RelTraitSet traits, RelNode input,
-        RelCollation collation, RexNode offset, RexNode fetch);
   }
 
   /**
@@ -168,12 +157,6 @@ public class RelFactories {
     public RelNode createSort(RelNode input, RelCollation collation,
         RexNode offset, RexNode fetch) {
       return LogicalSort.create(input, collation, offset, fetch);
-    }
-
-    @Deprecated // to be removed before 2.0
-    public RelNode createSort(RelTraitSet traits, RelNode input,
-        RelCollation collation, RexNode offset, RexNode fetch) {
-      return createSort(input, collation, offset, fetch);
     }
   }
 
@@ -216,20 +199,6 @@ public class RelFactories {
     /** Creates an aggregate. */
     RelNode createAggregate(RelNode input, List<RelHint> hints, ImmutableBitSet groupSet,
         ImmutableList<ImmutableBitSet> groupSets, List<AggregateCall> aggCalls);
-
-    @Deprecated // to be removed before 1.23
-    default RelNode createAggregate(RelNode input, ImmutableBitSet groupSet,
-        ImmutableList<ImmutableBitSet> groupSets, List<AggregateCall> aggCalls) {
-      return createAggregate(input, ImmutableList.of(), groupSet, groupSets, aggCalls);
-    }
-
-    @Deprecated // to be removed before 1.23
-    default RelNode createAggregate(RelNode input, boolean indicator,
-        ImmutableBitSet groupSet, ImmutableList<ImmutableBitSet> groupSets,
-        List<AggregateCall> aggCalls) {
-      Aggregate.checkIndicator(indicator);
-      return createAggregate(input, ImmutableList.of(), groupSet, groupSets, aggCalls);
-    }
   }
 
   /**
@@ -293,22 +262,6 @@ public class RelFactories {
     RelNode createJoin(RelNode left, RelNode right, List<RelHint> hints,
         RexNode condition, Set<CorrelationId> variablesSet, JoinRelType joinType,
         boolean semiJoinDone);
-
-    @Deprecated // to be removed before 1.23
-    default RelNode createJoin(RelNode left, RelNode right, RexNode condition,
-        Set<CorrelationId> variablesSet, JoinRelType joinType,
-        boolean semiJoinDone) {
-      return createJoin(left, right, ImmutableList.of(), condition, variablesSet,
-          joinType, semiJoinDone);
-    }
-
-    @Deprecated // to be removed before 1.23
-    default RelNode createJoin(RelNode left, RelNode right, RexNode condition,
-        JoinRelType joinType, Set<String> variablesStopped,
-        boolean semiJoinDone) {
-      return createJoin(left, right, ImmutableList.of(), condition,
-          CorrelationId.setOf(variablesStopped), joinType, semiJoinDone);
-    }
   }
 
   /**
@@ -384,22 +337,6 @@ public class RelFactories {
   }
 
   /**
-   * Implementation of {@link SemiJoinFactory} that returns a vanilla
-   * {@link SemiJoin}.
-   *
-   * @deprecated Use {@link JoinFactoryImpl} instead.
-   */
-  @Deprecated  // to be removed before 2.0
-  private static class SemiJoinFactoryImpl implements SemiJoinFactory {
-    public RelNode createSemiJoin(RelNode left, RelNode right,
-        RexNode condition) {
-      final JoinInfo joinInfo = JoinInfo.of(left, right, condition);
-      return SemiJoin.create(left, right,
-        condition, joinInfo.leftKeys, joinInfo.rightKeys);
-    }
-  }
-
-  /**
    * Can create a {@link Values} of the appropriate type for a rule's calling
    * convention.
    */
@@ -432,11 +369,6 @@ public class RelFactories {
      * Creates a {@link TableScan}.
      */
     RelNode createScan(RelOptCluster cluster, RelOptTable table, List<RelHint> hints);
-
-    @Deprecated // to be removed before 1.23
-    default RelNode createScan(RelOptCluster cluster, RelOptTable table) {
-      return createScan(cluster, table, ImmutableList.of());
-    }
   }
 
   /**

@@ -120,7 +120,7 @@ public final class LogicalProject extends Project {
         cluster.traitSet().replace(Convention.NONE)
             .replaceIfs(RelCollationTraitDef.INSTANCE,
                 () -> RelMdCollation.project(mq, input, projects));
-    return new LogicalProject(cluster, traitSet, ImmutableList.of(), input, projects, rowType);
+    return new LogicalProject(cluster, traitSet, hints, input, projects, rowType);
   }
 
   @Override public LogicalProject copy(RelTraitSet traitSet, RelNode input,

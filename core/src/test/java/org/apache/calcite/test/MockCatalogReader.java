@@ -922,7 +922,7 @@ public class MockCatalogReader extends CalciteCatalogReader {
     }
 
     public RelNode toRel(ToRelContext context) {
-      return LogicalTableScan.create(context.getCluster(), this);
+      return LogicalTableScan.create(context.getCluster(), this, ImmutableList.of());
     }
 
     public List<RelCollation> getCollationList() {
@@ -1234,7 +1234,7 @@ public class MockCatalogReader extends CalciteCatalogReader {
     }
 
     @Override public RelNode toRel(ToRelContext context) {
-      RelNode rel = LogicalTableScan.create(context.getCluster(), fromTable);
+      RelNode rel = LogicalTableScan.create(context.getCluster(), fromTable, ImmutableList.of());
       final RexBuilder rexBuilder = context.getCluster().getRexBuilder();
       rel = LogicalFilter.create(
           rel, getConstraint(rexBuilder, rel.getRowType()));
