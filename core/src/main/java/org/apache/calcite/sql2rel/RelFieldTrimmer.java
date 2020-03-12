@@ -21,7 +21,7 @@ import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelCollations;
->>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
+import org.apache.calcite.rel.RelDistribution;
 import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
@@ -551,6 +551,7 @@ public class RelFieldTrimmer implements ReflectiveVisitor {
   }
 
   public TrimResult trimFields(
+<<<<<<< HEAD
       Exchange exchange,
       ImmutableBitSet fieldsUsed,
       Set<RelDataTypeField> extraFields) {
@@ -589,6 +590,8 @@ public class RelFieldTrimmer implements ReflectiveVisitor {
   }
 
   public TrimResult trimFields(
+=======
+>>>>>>> fd8a63b3e ([CALCITE-3880] Add SortExchange support to RelFieldTrimmer (Krisztian Kasa))
       SortExchange sortExchange,
       ImmutableBitSet fieldsUsed,
       Set<RelDataTypeField> extraFields) {

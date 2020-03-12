@@ -145,14 +145,10 @@ public class RelDistributions {
       if (keys.isEmpty()) {
         return this;
       }
-      for (int key : keys) {
-        if (mapping.getTargetOpt(key) == -1) {
-          return ANY; // Some distribution keys are not mapped => any.
-        }
-      }
-      List<Integer> mappedKeys0 = Mappings.apply2((Mapping) mapping, keys);
-      ImmutableIntList mappedKeys = normalizeKeys(mappedKeys0);
-      return of(type, mappedKeys);
+      return getTraitDef().canonize(
+          new RelDistributionImpl(type,
+              ImmutableIntList.copyOf(
+                  Mappings.apply2((Mapping) mapping, keys))));
     }
 
     public boolean satisfies(RelTrait trait) {

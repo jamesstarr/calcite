@@ -125,6 +125,7 @@ class RelFieldTrimmerTest {
         + "    LogicalTableScan(table=[[scott, EMP]])\n";
     assertThat(trimmed, hasTree(expected));
   }
+<<<<<<< HEAD
 
   @Test public void testExchangeFieldTrimmer() {
     final RelBuilder builder = RelBuilder.create(config().build());
@@ -184,4 +185,6 @@ class RelFieldTrimmerTest {
     assertThat(trimmed, hasTree(expected));
   }
 
+=======
+>>>>>>> fd8a63b3e ([CALCITE-3880] Add SortExchange support to RelFieldTrimmer (Krisztian Kasa))
 }
