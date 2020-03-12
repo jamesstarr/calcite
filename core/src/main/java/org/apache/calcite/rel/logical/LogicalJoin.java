@@ -186,6 +186,37 @@ public final class LogicalJoin extends Join {
         variablesSet, joinType, semiJoinDone, systemFieldList);
   }
 
+<<<<<<< HEAD
+=======
+  //~ Methods ----------------------------------------------------------------
+
+  @Override public LogicalJoin copy(RelTraitSet traitSet, RexNode conditionExpr,
+      RelNode left, RelNode right, JoinRelType joinType, boolean semiJoinDone) {
+    assert traitSet.containsIfApplicable(Convention.NONE);
+    return new LogicalJoin(getCluster(),
+        getCluster().traitSetOf(Convention.NONE), hints, left, right, conditionExpr,
+        variablesSet, joinType, semiJoinDone, systemFieldList);
+  }
+
+  @Override public RelNode accept(RelShuttle shuttle) {
+    return shuttle.visit(this);
+  }
+
+  public RelWriter explainTerms(RelWriter pw) {
+    // Don't ever print semiJoinDone=false. This way, we
+    // don't clutter things up in optimizers that don't use semi-joins.
+    return super.explainTerms(pw)
+        .itemIf("semiJoinDone", semiJoinDone, semiJoinDone);
+  }
+
+  @Override public boolean isSemiJoinDone() {
+    return semiJoinDone;
+  }
+
+  public List<RelDataTypeField> getSystemFieldList() {
+    return systemFieldList;
+  }
+>>>>>>> c07d23e83 ([CALCITE-3856] Remove code to be removed before 1.23)
 
   @Override public RelNode withHints(List<RelHint> hintList) {
     return new LogicalJoin(getCluster(), traitSet, hintList,

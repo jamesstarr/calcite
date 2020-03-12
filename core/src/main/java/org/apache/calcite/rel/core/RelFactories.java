@@ -21,8 +21,7 @@ import org.apache.calcite.plan.Context;
 import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable;
-import org.apache.calcite.plan.RelTraitSet;
-import org.apache.calcite.plan.ViewExpanders;
+>>>>>>> c07d23e83 ([CALCITE-3856] Remove code to be removed before 1.23)
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelDistribution;
 import org.apache.calcite.rel.RelNode;
@@ -49,7 +48,6 @@ import org.apache.calcite.rel.metadata.RelColumnMapping;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
@@ -144,22 +142,142 @@ public class RelFactories {
      */
     RelNode createProject(RelNode input, List<RelHint> hints,
         List<? extends RexNode> childExprs, List<String> fieldNames);
+  }
 
-    @Deprecated // to be removed before 1.23
-    default RelNode createJoin(RelNode left, RelNode right, RexNode condition,
-        Set<CorrelationId> variablesSet, JoinRelType joinType,
-        boolean semiJoinDone) {
-      return createJoin(left, right, ImmutableList.of(), condition, variablesSet,
-          joinType, semiJoinDone);
+  /**
+   * Implementation of {@link ProjectFactory} that returns a vanilla
+   * {@link org.apache.calcite.rel.logical.LogicalProject}.
+   */
+  private static class ProjectFactoryImpl implements ProjectFactory {
+    public RelNode createProject(RelNode input, List<RelHint> hints,
+        List<? extends RexNode> childExprs, List<String> fieldNames) {
+      return LogicalProject.create(input, hints, childExprs, fieldNames);
     }
+  }
 
-    @Deprecated // to be removed before 1.23
-    default RelNode createJoin(RelNode left, RelNode right, RexNode condition,
-        JoinRelType joinType, Set<String> variablesStopped,
-        boolean semiJoinDone) {
-      return createJoin(left, right, ImmutableList.of(), condition,
-          CorrelationId.setOf(variablesStopped), joinType, semiJoinDone);
+  /**
+   * Can create a {@link Sort} of the appropriate type
+   * for this rule's calling convention.
+   */
+  public interface SortFactory {
+    /** Creates a sort. */
+    RelNode createSort(RelNode input, RelCollation collation, RexNode offset,
+        RexNode fetch);
+  }
+
+  /**
+   * Implementation of {@link RelFactories.SortFactory} that
+   * returns a vanilla {@link Sort}.
+   */
+  private static class SortFactoryImpl implements SortFactory {
+    public RelNode createSort(RelNode input, RelCollation collation,
+        RexNode offset, RexNode fetch) {
+      return LogicalSort.create(input, collation, offset, fetch);
     }
+  }
+
+  /**
+   * Can create a {@link SetOp} for a particular kind of
+   * set operation (UNION, EXCEPT, INTERSECT) and of the appropriate type
+   * for this rule's calling convention.
+   */
+  public interface SetOpFactory {
+    /** Creates a set operation. */
+    RelNode createSetOp(SqlKind kind, List<RelNode> inputs, boolean all);
+  }
+
+  /**
+   * Implementation of {@link RelFactories.SetOpFactory} that
+   * returns a vanilla {@link SetOp} for the particular kind of set
+   * operation (UNION, EXCEPT, INTERSECT).
+   */
+  private static class SetOpFactoryImpl implements SetOpFactory {
+    public RelNode createSetOp(SqlKind kind, List<RelNode> inputs,
+        boolean all) {
+      switch (kind) {
+      case UNION:
+        return LogicalUnion.create(inputs, all);
+      case EXCEPT:
+        return LogicalMinus.create(inputs, all);
+      case INTERSECT:
+        return LogicalIntersect.create(inputs, all);
+      default:
+        throw new AssertionError("not a set op: " + kind);
+      }
+    }
+  }
+
+  /**
+   * Can create a {@link LogicalAggregate} of the appropriate type
+   * for this rule's calling convention.
+   */
+  public interface AggregateFactory {
+    /** Creates an aggregate. */
+    RelNode createAggregate(RelNode input, List<RelHint> hints, ImmutableBitSet groupSet,
+        ImmutableList<ImmutableBitSet> groupSets, List<AggregateCall> aggCalls);
+  }
+
+  /**
+   * Implementation of {@link RelFactories.AggregateFactory}
+   * that returns a vanilla {@link LogicalAggregate}.
+   */
+  private static class AggregateFactoryImpl implements AggregateFactory {
+    public RelNode createAggregate(RelNode input, List<RelHint> hints,
+        ImmutableBitSet groupSet, ImmutableList<ImmutableBitSet> groupSets,
+        List<AggregateCall> aggCalls) {
+      return LogicalAggregate.create(input, hints, groupSet, groupSets, aggCalls);
+    }
+  }
+
+  /**
+   * Can create a {@link LogicalFilter} of the appropriate type
+   * for this rule's calling convention.
+   */
+  public interface FilterFactory {
+    /** Creates a filter. */
+    RelNode createFilter(RelNode input, RexNode condition,
+        Set<CorrelationId> correlVariables);
+
+    @Deprecated // to be removed before 2.0
+    default RelNode createFilter(RelNode input, RexNode condition) {
+      return createFilter(input, condition, ImmutableSet.of());
+    }
+  }
+
+  /**
+   * Implementation of {@link RelFactories.FilterFactory} that
+   * returns a vanilla {@link LogicalFilter}.
+   */
+  private static class FilterFactoryImpl implements FilterFactory {
+    public RelNode createFilter(RelNode input, RexNode condition,
+        Set<CorrelationId> correlVariables) {
+      return LogicalFilter.create(input, condition, ImmutableSet.copyOf(correlVariables));
+    }
+  }
+
+  /**
+   * Can create a join of the appropriate type for a rule's calling convention.
+   *
+   * <p>The result is typically a {@link Join}.
+   */
+  public interface JoinFactory {
+    /**
+     * Creates a join.
+     *
+     * @param left             Left input
+     * @param right            Right input
+     * @param hints            Hints
+     * @param condition        Join condition
+     * @param variablesSet     Set of variables that are set by the
+     *                         LHS and used by the RHS and are not available to
+     *                         nodes above this LogicalJoin in the tree
+     * @param joinType         Join type
+     * @param semiJoinDone     Whether this join has been translated to a
+     *                         semi-join
+     */
+    RelNode createJoin(RelNode left, RelNode right, List<RelHint> hints,
+        RexNode condition, Set<CorrelationId> variablesSet, JoinRelType joinType,
+        boolean semiJoinDone);
   }
 
   /**
@@ -235,12 +353,41 @@ public class RelFactories {
   }
 
   /**
-    RelNode createScan(RelOptCluster cluster, RelOptTable table, List<RelHint> hints);
+<<<<<<< HEAD
+=======
+   * Can create a {@link Values} of the appropriate type for a rule's calling
+   * convention.
+   */
+  public interface ValuesFactory {
+    /**
+     * Creates a Values.
+     */
+    RelNode createValues(RelOptCluster cluster, RelDataType rowType,
+        List<ImmutableList<RexLiteral>> tuples);
+  }
 
-    @Deprecated // to be removed before 1.23
-    default RelNode createScan(RelOptCluster cluster, RelOptTable table) {
-      return createScan(cluster, table, ImmutableList.of());
+  /**
+   * Implementation of {@link ValuesFactory} that returns a
+   * {@link LogicalValues}.
+   */
+  private static class ValuesFactoryImpl implements ValuesFactory {
+    public RelNode createValues(RelOptCluster cluster, RelDataType rowType,
+        List<ImmutableList<RexLiteral>> tuples) {
+      return LogicalValues.create(cluster, rowType,
+          ImmutableList.copyOf(tuples));
     }
+  }
+
+  /**
+   * Can create a {@link TableScan} of the appropriate type for a rule's calling
+   * convention.
+   */
+  public interface TableScanFactory {
+    /**
+     * Creates a {@link TableScan}.
+     */
+>>>>>>> c07d23e83 ([CALCITE-3856] Remove code to be removed before 1.23)
+    RelNode createScan(RelOptCluster cluster, RelOptTable table, List<RelHint> hints);
   }
 
   /**

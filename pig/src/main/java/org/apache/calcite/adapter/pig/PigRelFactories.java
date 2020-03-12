@@ -117,6 +117,7 @@ public class PigRelFactories {
 =======
       return new PigJoin(left.getCluster(), left.getTraitSet(), left, right, condition, joinType);
     }
+<<<<<<< HEAD
 
     @SuppressWarnings("deprecation")
     @Override public RelNode createJoin(RelNode left, RelNode right, RexNode condition,
@@ -124,5 +125,7 @@ public class PigRelFactories {
 >>>>>>> a532c10f9 ([CALCITE-3730] Add hints to RelBuilder)
       return new PigJoin(left.getCluster(), left.getTraitSet(), left, right, condition, joinType);
     }
+=======
+>>>>>>> c07d23e83 ([CALCITE-3856] Remove code to be removed before 1.23)
   }
 }
