@@ -393,6 +393,9 @@ LogicalProject(DEPTNO=[$0], NAME=[$1], I=[$2])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a85c83519 ([CALCITE-3855] Supports snapshot on table with virtual columns during sql-to-rel conversion)
     <TestCase name="testSnapshotOnTemporalTable1">
         <Resource name="sql">
             <![CDATA[select * from products_temporal for system_time as of TIMESTAMP '2011-01-02 00:00:00']]>
@@ -416,6 +419,9 @@ LogicalProject(PRODUCTID=[$0], NAME=[$1], SUPPLIERID=[$2], SYS_START=[$3], SYS_E
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a85c83519 ([CALCITE-3855] Supports snapshot on table with virtual columns during sql-to-rel conversion)
     <TestCase name="testSnapshotOnTemporalTable2">
         <Resource name="sql">
             <![CDATA[select * from VIRTUALCOLUMNS.VC_T1 for system_time as of TIMESTAMP '2011-01-02 00:00:00']]>
@@ -461,6 +467,9 @@ LogicalDelta
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a85c83519 ([CALCITE-3855] Supports snapshot on table with virtual columns during sql-to-rel conversion)
     <TestCase name="testJoinTemporalTableOnSpecificTime2">
         <Resource name="sql">
             <![CDATA[select stream *
@@ -513,6 +522,9 @@ LogicalDelta
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a85c83519 ([CALCITE-3855] Supports snapshot on table with virtual columns during sql-to-rel conversion)
     <TestCase name="testJoinTemporalTableOnColumnReference2">
         <Resource name="sql">
             <![CDATA[select stream *
