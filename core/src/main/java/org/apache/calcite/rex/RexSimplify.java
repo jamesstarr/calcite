@@ -1432,14 +1432,6 @@ public class RexSimplify {
       return simplify(terms.get(0), FALSE);
     }
     // Try to simplify the expression
-<<<<<<< HEAD
-    final Multimap<RexNode, Pair<RexNode, RexNode>> equalityTerms =
-        ArrayListMultimap.create();
-    final RangeTerms rangeTerms = new RangeTerms();
-    final Map<RexNode, RexLiteral> equalityConstantTerms = new HashMap<>();
-    final Set<RexNode> negatedTerms = new HashSet<>();
-    final Set<RexNode> nullOperands = new HashSet<>();
-=======
     final Multimap<String, Pair<String, RexNode>> equalityTerms = ArrayListMultimap.create();
     final RangeTerms rangeTerms = new RangeTerms();
     final Map<String, String> equalityConstantTerms = new HashMap<>();
@@ -2151,7 +2143,6 @@ public class RexSimplify {
       boolean removeUpperBound = false;
       boolean removeLowerBound = false;
       Range<C> r = p.left;
->>>>>>> 4d6cc46fe (DX-20400: Fix long pre-logical time)
       switch (sqlKind) {
       case EQUALS:
         if (!r.contains(v0)) {
