@@ -362,6 +362,26 @@ public abstract class RelDataTypeSystemImpl implements RelDataTypeSystem {
     return null;
   }
 
+  @Override public RelDataType deriveDecimalTruncateType(RelDataTypeFactory typeFactory,
+      RelDataType type1, Integer scale2) {
+    if (SqlTypeUtil.isExactNumeric(type1)) {
+      if (SqlTypeUtil.isDecimal(type1)) {
+        return type1;
+      }
+    }
+    return null;
+  }
+
+  @Override public RelDataType deriveDecimalRoundType(RelDataTypeFactory typeFactory,
+      RelDataType type1, Integer scale2) {
+    if (SqlTypeUtil.isExactNumeric(type1)) {
+      if (SqlTypeUtil.isDecimal(type1)) {
+        return type1;
+      }
+    }
+    return null;
+  }
+
 }
 
 // End RelDataTypeSystemImpl.java

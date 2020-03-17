@@ -203,6 +203,35 @@ public interface RelDataTypeSystem {
   RelDataType deriveDecimalModType(RelDataTypeFactory typeFactory,
        RelDataType type1, RelDataType type2);
 
+  /**
+   * Infers the return type of a decimal truncate operation. Decimal truncate
+   * involves at least one decimal operand.
+   *
+   * The result type is a decimal with precision as that of the first argument
+   * and scale as scale2
+   *
+   * @param typeFactory TypeFactory used to create output type
+   * @param type1       Type of the first operand
+   * @param scale2      Scale value to truncate to
+   * @return Result type for a decimal truncate
+   */
+  RelDataType deriveDecimalTruncateType(RelDataTypeFactory typeFactory,
+      RelDataType type1, Integer scale2);
+
+  /**
+   * Infers the return type of a decimal round operation. Decimal round involves at least one
+   * decimal operand.
+   *
+   * The result type is a decimal with precision as that of the first argument
+   * and scale as scale2
+   *
+   * @param typeFactory TypeFactory used to create output type
+   * @param type1       Type of the first operand
+   * @param scale2      Scale value to round to
+   * @return Result type for a decimal round
+   */
+  RelDataType deriveDecimalRoundType(
+      RelDataTypeFactory typeFactory, RelDataType type1, Integer scale2);
 }
 
 // End RelDataTypeSystem.java

@@ -27,6 +27,8 @@ import org.apache.calcite.sql.ExplicitOperatorBinding;
 import org.apache.calcite.sql.SqlCallBinding;
 import org.apache.calcite.sql.SqlCollation;
 import org.apache.calcite.sql.SqlIntervalQualifier;
+import org.apache.calcite.sql.SqlLiteral;
+import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperatorBinding;
 import org.apache.calcite.sql.SqlUtil;
 import org.apache.calcite.sql.parser.SqlParserPos;
@@ -546,6 +548,77 @@ public abstract class ReturnTypes {
    */
   public static final SqlReturnTypeInference NULLABLE_MOD =
           chain(DECIMAL_MOD_NULLABLE, ARG1_NULLABLE);
+
+  public static final SqlReturnTypeInference DECIMAL_TRUNCATE = opBinding -> {
+    RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+    RelDataType type1 = opBinding.getOperandType(0);
+    Integer scale2 = 0;
+
+    if (opBinding.getOperandCount() > 1 && opBinding instanceof SqlCallBinding) {
+      SqlCallBinding callBinding = (SqlCallBinding) opBinding;
+      SqlNode operand1 = callBinding.operand(1);
+
+      if (!(operand1 instanceof SqlLiteral)) {
+        return type1;
+      } else {
+        scale2 = opBinding.getIntLiteralOperand(1);
+      }
+    }
+
+    return typeFactory.getTypeSystem().deriveDecimalTruncateType(typeFactory, type1, scale2);
+  };
+
+  /**
+   * Type-inference strategy whereby the result type of a call is the decimal
+   * truncate of two exact numeric operands where at least one of the operands is a
+   * decimal.
+   */
+  public static final SqlReturnTypeInference DECIMAL_TRUNCATE_NULLABLE =
+      cascade(DECIMAL_TRUNCATE, SqlTypeTransforms.TO_NULLABLE);
+
+  /**
+   * Type-inference strategy whereby the result type of a call is
+   * {@link #DECIMAL_TRUNCATE_NULLABLE} with a fallback to {@link #ARG0_NULLABLE}
+   * These rules are used for truncate.
+   */
+  public static final SqlReturnTypeInference NULLABLE_TRUNCATE =
+      chain(DECIMAL_TRUNCATE_NULLABLE, ARG0_NULLABLE);
+
+
+  public static final SqlReturnTypeInference DECIMAL_ROUND = opBinding -> {
+    RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+    RelDataType type1 = opBinding.getOperandType(0);
+    Integer scale2 = 0;
+
+    if (opBinding.getOperandCount() > 1 && opBinding instanceof SqlCallBinding) {
+      SqlCallBinding callBinding = (SqlCallBinding) opBinding;
+      SqlNode operand1 = callBinding.operand(1);
+
+      if (!(operand1 instanceof SqlLiteral)) {
+        return type1;
+      } else {
+        scale2 = opBinding.getIntLiteralOperand(1);
+      }
+    }
+
+    return typeFactory.getTypeSystem().deriveDecimalRoundType(typeFactory, type1, scale2);
+  };
+
+  /**
+   * Type-inference strategy whereby the result type of a call is the decimal
+   * round of two exact numeric operands where at least one of the operands is a
+   * decimal.
+   */
+  public static final SqlReturnTypeInference DECIMAL_ROUND_NULLABLE =
+      cascade(DECIMAL_ROUND, SqlTypeTransforms.TO_NULLABLE);
+
+  /**
+   * Type-inference strategy whereby the result type of a call is
+   * {@link #DECIMAL_ROUND_NULLABLE} with a fallback to {@link #ARG0_NULLABLE}
+   * These rules are used for round.
+   */
+  public static final SqlReturnTypeInference NULLABLE_ROUND =
+      chain(DECIMAL_ROUND_NULLABLE, ARG0_NULLABLE);
 
   /**
    * Type-inference strategy for DATE - DATE.
