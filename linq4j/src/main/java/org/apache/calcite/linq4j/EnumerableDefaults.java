@@ -1983,9 +1983,8 @@ public abstract class EnumerableDefaults {
     }
     return new AbstractEnumerable<TResult>() {
       public Enumerator<TResult> enumerator() {
-        return new MergeJoinEnumerator<>(outer.enumerator(),
-            inner.enumerator(), outerKeySelector, innerKeySelector,
-            resultSelector);
+        return new MergeJoinEnumerator<>(outer, inner, outerKeySelector, innerKeySelector,
+             resultSelector);
       }
     };
   }
@@ -3798,32 +3797,48 @@ public abstract class EnumerableDefaults {
    * @param <TInner> right input record type */
   private static class MergeJoinEnumerator<TResult, TSource, TInner, TKey extends Comparable<TKey>>
       implements Enumerator<TResult> {
-    final List<TSource> lefts = new ArrayList<>();
-    final List<TInner> rights = new ArrayList<>();
-    private final Enumerator<TSource> leftEnumerator;
-    private final Enumerator<TInner> rightEnumerator;
+    private final List<TSource> lefts = new ArrayList<>();
+    private final List<TInner> rights = new ArrayList<>();
+    private final Enumerable<TSource> leftEnumerable;
+    private final Enumerable<TInner> rightEnumerable;
+    private Enumerator<TSource> leftEnumerator = null;
+    private Enumerator<TInner> rightEnumerator = null;
     private final Function1<TSource, TKey> outerKeySelector;
     private final Function1<TInner, TKey> innerKeySelector;
     private final Function2<TSource, TInner, TResult> resultSelector;
     boolean done;
     Enumerator<List<Object>> cartesians;
 
-    MergeJoinEnumerator(Enumerator<TSource> leftEnumerator,
-        Enumerator<TInner> rightEnumerator,
+    MergeJoinEnumerator(Enumerable<TSource> leftEnumerable,
+        Enumerable<TInner> rightEnumerable,
         Function1<TSource, TKey> outerKeySelector,
         Function1<TInner, TKey> innerKeySelector,
         Function2<TSource, TInner, TResult> resultSelector) {
-      this.leftEnumerator = leftEnumerator;
-      this.rightEnumerator = rightEnumerator;
+      this.leftEnumerable = leftEnumerable;
+      this.rightEnumerable = rightEnumerable;
       this.outerKeySelector = outerKeySelector;
       this.innerKeySelector = innerKeySelector;
       this.resultSelector = resultSelector;
       start();
     }
 
+    private Enumerator<TSource> startLeftEnumerator() {
+      if (leftEnumerator == null) {
+        leftEnumerator = leftEnumerable.enumerator();
+      }
+      return leftEnumerator;
+    }
+
+    private Enumerator<TInner> startRightEnumerator() {
+      if (rightEnumerator == null) {
+        rightEnumerator = rightEnumerable.enumerator();
+      }
+      return rightEnumerator;
+    }
+
     private void start() {
-      if (!leftEnumerator.moveNext()
-          || !rightEnumerator.moveNext()
+      if (!startLeftEnumerator().moveNext()
+          || !startRightEnumerator().moveNext()
           || !advance()) {
         done = true;
         cartesians = Linq4j.emptyEnumerator();
@@ -3945,11 +3960,17 @@ public abstract class EnumerableDefaults {
     public void reset() {
       done = false;
       leftEnumerator.reset();
-      rightEnumerator.reset();
+      if (rightEnumerator != null) {
+        rightEnumerator.reset();
+      }
       start();
     }
 
     public void close() {
+      leftEnumerator.close();
+      if (rightEnumerator != null) {
+        rightEnumerator.close();
+      }
     }
   }
 >>>>>>> 54484f846 ([CALCITE-3820] EnumerableDefaults#orderBy should be lazily computed + support enumerator re-initialization)
