@@ -3977,6 +3977,9 @@ generated column, `VIRTUAL` is the default.
 In *createFunctionStatement* and *usingFile*, *classNameLiteral*
 and *filePathLiteral* are character literals.
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e31c8f7a5 ([CALCITE-3726] Documentation for Declaring Objects For Types Defined In Schema (ritesh-kapoor))
 
 
 #### Declaring Objects For Types Defined In Schema
@@ -4013,5 +4016,8 @@ employee_typ(315, 'Francis', 'Logan', 'FLOGAN',
         '555.777.2222', '01-MAY-04', 'SA_MAN', 11000, .15, 101, 110,
          address_typ('376 Mission', 'San Francisco', 'CA', '94222'))
 ```
+<<<<<<< HEAD
 =======
 >>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
+=======
+>>>>>>> e31c8f7a5 ([CALCITE-3726] Documentation for Declaring Objects For Types Defined In Schema (ritesh-kapoor))
