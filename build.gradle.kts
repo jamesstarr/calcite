@@ -36,6 +36,7 @@ import com.github.spotbugs.SpotBugsTask
 import com.github.vlsi.gradle.crlf.CrLfSpec
 import com.github.vlsi.gradle.crlf.LineEndings
 import com.github.vlsi.gradle.dsl.configureEach
+<<<<<<< HEAD
 =======
  *
 =======
@@ -45,6 +46,8 @@ import com.github.spotbugs.SpotBugsTask
 import com.github.vlsi.gradle.crlf.CrLfSpec
 import com.github.vlsi.gradle.crlf.LineEndings
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> b06469413 (Bump release-plugins: 1.61 -> 1.65)
 import com.github.vlsi.gradle.git.FindGitAttributes
 import com.github.vlsi.gradle.git.dsl.gitignore
 import com.github.vlsi.gradle.properties.dsl.lastEditYear
@@ -604,6 +607,7 @@ allprojects {
             dependsOn(tasks.withType<Checkstyle>())
         }
         tasks.configureEach<Checkstyle> {
+<<<<<<< HEAD
 =======
 =======
         tasks.register("checkstyleAll") {
@@ -612,6 +616,8 @@ allprojects {
 >>>>>>> 31352ef75 (Add './gradlew style' task to apply code format and report violations)
         tasks.withType<Checkstyle>().configureEach {
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> b06469413 (Bump release-plugins: 1.61 -> 1.65)
             // Excludes here are faster than in suppressions.xml
             // Since here we can completely remove file from the analysis.
             // On the other hand, supporessions.xml still analyzes the file, and
@@ -676,8 +682,12 @@ allprojects {
 =======
 >>>>>>> 31352ef75 (Add './gradlew style' task to apply code format and report violations)
 
+<<<<<<< HEAD
     tasks.withType<AbstractArchiveTask>().configureEach {
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    tasks.configureEach<AbstractArchiveTask> {
+>>>>>>> b06469413 (Bump release-plugins: 1.61 -> 1.65)
         // Ensure builds are reproducible
         isPreserveFileTimestamps = false
         isReproducibleFileOrder = true
@@ -765,10 +775,14 @@ allprojects {
 
     tasks {
 <<<<<<< HEAD
+<<<<<<< HEAD
         configureEach<Javadoc> {
 =======
         withType<Javadoc>().configureEach {
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+        configureEach<Javadoc> {
+>>>>>>> b06469413 (Bump release-plugins: 1.61 -> 1.65)
             excludeJavaCcGenerated()
             (options as StandardJavadocDocletOptions).apply {
                 // Please refrain from using non-ASCII chars below since the options are passed as
@@ -1007,10 +1021,14 @@ allprojects {
 
         tasks {
 <<<<<<< HEAD
+<<<<<<< HEAD
             configureEach<Jar> {
 =======
             withType<Jar>().configureEach {
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+            configureEach<Jar> {
+>>>>>>> b06469413 (Bump release-plugins: 1.61 -> 1.65)
                 manifest {
                     attributes["Bundle-License"] = "Apache-2.0"
                     attributes["Implementation-Title"] = "Apache Calcite"
@@ -1024,10 +1042,14 @@ allprojects {
             }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
             configureEach<CheckForbiddenApis> {
 =======
             withType<CheckForbiddenApis>().configureEach {
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+            configureEach<CheckForbiddenApis> {
+>>>>>>> b06469413 (Bump release-plugins: 1.61 -> 1.65)
                 excludeJavaCcGenerated()
                 exclude(
                     "**/org/apache/calcite/adapter/os/Processes${'$'}ProcessFactory.class",
@@ -1040,6 +1062,7 @@ allprojects {
             }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
             configureEach<JavaCompile> {
                 options.encoding = "UTF-8"
             }
@@ -1050,6 +1073,12 @@ allprojects {
             }
             withType<Test>().configureEach {
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+            configureEach<JavaCompile> {
+                options.encoding = "UTF-8"
+            }
+            configureEach<Test> {
+>>>>>>> b06469413 (Bump release-plugins: 1.61 -> 1.65)
                 useJUnitPlatform {
                     if (includeTestTags.isNotBlank()) {
                         includeTags.add(includeTestTags)
@@ -1106,6 +1135,7 @@ allprojects {
                 printTestResults()
             }
             configureEach<SpotBugsTask> {
+<<<<<<< HEAD
 =======
 =======
                 // https://github.com/junit-team/junit5/issues/2041
@@ -1161,6 +1191,8 @@ allprojects {
             }
             withType<SpotBugsTask>().configureEach {
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> b06469413 (Bump release-plugins: 1.61 -> 1.65)
                 group = LifecycleBasePlugin.VERIFICATION_GROUP
                 if (enableSpotBugs) {
                     description = "$description (skipped by default, to enable it add -Dspotbugs)"
@@ -1175,10 +1207,14 @@ allprojects {
             afterEvaluate {
                 // Add default license/notice when missing
 <<<<<<< HEAD
+<<<<<<< HEAD
                 configureEach<Jar> {
 =======
                 withType<Jar>().configureEach {
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+                configureEach<Jar> {
+>>>>>>> b06469413 (Bump release-plugins: 1.61 -> 1.65)
                     CrLfSpec(LineEndings.LF).run {
                         into("META-INF") {
                             filteringCharset = "UTF-8"
