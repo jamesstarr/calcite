@@ -72,6 +72,7 @@ class PigRelBuilderStyleTest extends AbstractPigTest {
           + File.separatorChar);
   }
 
+  @Disabled("CALCITE-3660")
   @Test public void testScanAndFilter() throws Exception {
     final SchemaPlus schema = createTestSchema();
     final RelBuilder builder = createRelBuilder(schema);
