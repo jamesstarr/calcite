@@ -69,12 +69,15 @@ dependencies {
     api("org.apache.calcite.avatica:avatica-core")
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     api("org.apiguardian:apiguardian-api")
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
     api("org.apiguardian:apiguardian-api")
 >>>>>>> 361fe0e95 (Use concurrent test execution by default (#177))
+=======
+>>>>>>> d4dded518 ([CALCITE-3871] Remove dependency of org.apiguardian:apiguardian-api)
 
     implementation("com.esri.geometry:esri-geometry-api")
     implementation("com.fasterxml.jackson.core:jackson-core")

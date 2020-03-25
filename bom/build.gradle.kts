@@ -160,6 +160,7 @@ dependencies {
         apiv("org.apache.pig:pig")
         apiv("org.apache.pig:pigunit", "pig")
         apiv("org.apache.spark:spark-core_2.10", "spark")
+<<<<<<< HEAD
         apiv("org.apiguardian:apiguardian-api")
 =======
         apiv("org.apache.logging.log4j:log4j-api", "log4j")
@@ -177,6 +178,8 @@ dependencies {
 =======
         apiv("org.apiguardian:apiguardian-api")
 >>>>>>> 20c78195c ([CALCITE-3652] Add org.apiguardian:apiguardian-api to specify API status (#165))
+=======
+>>>>>>> d4dded518 ([CALCITE-3871] Remove dependency of org.apiguardian:apiguardian-api)
         apiv("org.bouncycastle:bcpkix-jdk15on", "bouncycastle")
         apiv("org.bouncycastle:bcprov-jdk15on", "bouncycastle")
         apiv("org.cassandraunit:cassandra-unit")
