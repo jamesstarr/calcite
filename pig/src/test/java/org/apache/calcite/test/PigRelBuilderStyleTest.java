@@ -64,7 +64,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * associated factories in {@link PigRelFactories}.
  */
 @Disabled
-class PigRelBuilderStyleTest extends AbstractPigTest {
+public class PigRelBuilderStyleTest extends AbstractPigTest {
 
   public PigRelBuilderStyleTest() {
     assumeTrue(File.separatorChar == '/',
@@ -155,6 +155,7 @@ class PigRelBuilderStyleTest extends AbstractPigTest {
         new String[] { "(a,1,1)", "(b,2,1)", "(c,3,1)" });
   }
 
+  @Disabled("CALCITE-3660")
   @Test public void testImplWithGroupByCountDistinct() {
     final SchemaPlus schema = createTestSchema();
     final RelBuilder builder = createRelBuilder(schema);
