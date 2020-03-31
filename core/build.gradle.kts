@@ -75,11 +75,14 @@ dependencies {
     implementation("commons-codec:commons-codec")
     implementation("net.hydromatic:aggdesigner-algorithm")
 <<<<<<< HEAD
+<<<<<<< HEAD
     implementation("org.apache.commons:commons-dbcp2")
     implementation("org.apache.commons:commons-lang3")
     implementation("commons-io:commons-io")
 =======
     implementation("org.apache.calcite.avatica:avatica-server")
+=======
+>>>>>>> 87623995c ([CALCITE-3888] Switch avatica-server to be test dependency for core)
     implementation("org.apache.commons:commons-dbcp2")
     implementation("org.apache.commons:commons-lang3")
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
@@ -101,6 +104,9 @@ dependencies {
     testImplementation("net.hydromatic:quidem")
     testImplementation("net.hydromatic:scott-data-hsqldb")
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 87623995c ([CALCITE-3888] Switch avatica-server to be test dependency for core)
     testImplementation("org.apache.calcite.avatica:avatica-server")
     testImplementation("org.apache.commons:commons-pool2")
     testImplementation("log4j:log4j") {
