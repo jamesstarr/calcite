@@ -21,7 +21,10 @@ import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelDistribution;
 import org.apache.calcite.rel.RelDistributionTraitDef;
 import org.apache.calcite.runtime.FlatLists;
+<<<<<<< HEAD
 import org.apache.calcite.util.mapping.Mappings;
+=======
+>>>>>>> 95301caba ([CALCITE-3891] Remove use of Pair.zip in RelTraitSet)
 
 import com.google.common.collect.ImmutableList;
 
