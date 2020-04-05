@@ -203,6 +203,8 @@ public interface RelDataTypeSystem {
   RelDataType deriveDecimalModType(RelDataTypeFactory typeFactory,
        RelDataType type1, RelDataType type2);
 
+  // TODO both deriveDecimalTruncateType and deriveDecimalRoundType would require refactoring
+  //  post calcite 1.16 (to use operator table instead)
   /**
    * Infers the return type of a decimal truncate operation. Decimal truncate
    * involves at least one decimal operand.
