@@ -92,11 +92,14 @@
   githubId: DonnyZone
   org: Tencent
   role: Committer
+<<<<<<< HEAD
 - name: Forward Xu
   apacheId: forwardxu
   githubId: XuQianJin-Stars
   org: Tencent
   role: Committer
+=======
+>>>>>>> 63b97ebbe (Site: Add Feng Zhu as committer)
 - name: Francis Chuang
   apacheId: francischuang
   githubId: F21
