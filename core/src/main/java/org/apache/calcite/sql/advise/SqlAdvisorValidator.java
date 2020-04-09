@@ -27,7 +27,10 @@ import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.sql.validate.OverScope;
+<<<<<<< HEAD
 import org.apache.calcite.sql.validate.SelectScope;
+=======
+>>>>>>> e62a96083 ([CALCITE-3900] Add Config for SqlValidator)
 import org.apache.calcite.sql.validate.SqlModality;
 import org.apache.calcite.sql.validate.SqlValidatorCatalogReader;
 import org.apache.calcite.sql.validate.SqlValidatorImpl;

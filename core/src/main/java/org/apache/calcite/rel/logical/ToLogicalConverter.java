@@ -42,8 +42,7 @@ import org.apache.calcite.rel.core.Window;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.util.ImmutableBitSet;
 
-import java.util.Collections;
-
+>>>>>>> e62a96083 ([CALCITE-3900] Add Config for SqlValidator)
 /**
  * Shuttle to convert any rel plan to a plan with all logical nodes.
  */
@@ -184,11 +183,20 @@ public class ToLogicalConverter extends RelShuttleImpl {
     if (relNode instanceof Uncollect) {
       final Uncollect uncollect = (Uncollect) relNode;
       final RelNode input = visit(uncollect.getInput());
+<<<<<<< HEAD
       return Uncollect.create(input.getTraitSet(), input,
           uncollect.withOrdinality, Collections.emptyList());
+=======
+      return new Uncollect(input.getCluster(), input.getTraitSet(), input,
+          uncollect.withOrdinality);
     }
 
     throw new AssertionError("Need to implement logical converter for "
         + relNode.getClass().getName());
   }
 }
+<<<<<<< HEAD
+=======
+
+// End ToLogicalConverter.java
+>>>>>>> e62a96083 ([CALCITE-3900] Add Config for SqlValidator)

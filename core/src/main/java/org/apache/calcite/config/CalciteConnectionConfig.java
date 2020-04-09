@@ -73,4 +73,6 @@ public interface CalciteConnectionConfig extends ConnectionConfig {
 
   /** @see CalciteConnectionProperty#TYPE_COERCION */
   boolean typeCoercion();
+  /** @see CalciteConnectionProperty#LENIENT_OPERATOR_LOOKUP */
+  boolean lenientOperatorLookup();
 }

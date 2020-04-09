@@ -949,13 +949,10 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkExp("round(null,1)");
     checkExp("sign(null) + 1");
     checkExp("truncate(null,1) + 1");
-
     check("select null as a from emp");
     check("select avg(null) from emp");
-
     checkExp("substring(null from 1) + 1");
     checkExpFails("substring(^NULL^ from 1)", "(?s).*Illegal use of .NULL.*", false);
-
     checkExpFails("values 1.0 + ^NULL^", "(?s).*Illegal use of .NULL.*", false);
     checkExpType("values 1.0 + NULL", "DECIMAL(2, 1)");
     checkExpFails("1.0 + ^NULL^", "(?s).*Illegal use of .NULL.*", false);
@@ -1033,7 +1030,6 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     // It's a runtime error that 'TRUE' cannot fit into CHAR(3), but at
     // validate time this expression is OK.
     checkExpType("cast(true as char(3))", "CHAR(3) NOT NULL");
-
   }
 
   @Test public void testCastRegisteredType() {

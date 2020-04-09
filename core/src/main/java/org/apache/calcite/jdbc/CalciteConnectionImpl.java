@@ -57,7 +57,7 @@ import org.apache.calcite.server.CalciteServerStatement;
 import org.apache.calcite.sql.advise.SqlAdvisor;
 import org.apache.calcite.sql.advise.SqlAdvisorValidator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
-import org.apache.calcite.sql.parser.SqlParser;
+>>>>>>> e62a96083 ([CALCITE-3900] Add Config for SqlValidator)
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorWithHints;
 import org.apache.calcite.tools.RelRunner;
@@ -415,7 +415,6 @@ abstract class CalciteConnectionImpl
       final long currentOffset = localOffset;
       final String user = "sa";
       final String systemUser = System.getProperty("user.name");
->>>>>>> 2ae7b774d ([CALCITE-2742] Read values of USER and SYSTEM_USER variables from DataContext (Siddharth Teotia, Jacques Nadeau))
 
       // Give a hook chance to alter standard input, output, error streams.
       final Holder<Object[]> streamHolder =
@@ -472,7 +471,7 @@ abstract class CalciteConnectionImpl
           new SqlAdvisorValidator(SqlStdOperatorTable.instance(),
           new CalciteCatalogReader(rootSchema,
               schemaPath, typeFactory, con.config()),
-          typeFactory, SqlConformanceEnum.DEFAULT);
+              typeFactory, SqlValidator.Config.DEFAULT);
       return new SqlAdvisor(validator);
     }
 

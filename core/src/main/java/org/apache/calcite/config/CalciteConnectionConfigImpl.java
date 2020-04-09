@@ -191,6 +191,11 @@ public class CalciteConnectionConfigImpl extends ConnectionConfigImpl
     return CalciteConnectionProperty.TYPE_COERCION.wrap(properties)
         .getBoolean();
   }
+
+  public boolean lenientOperatorLookup() {
+    return CalciteConnectionProperty.LENIENT_OPERATOR_LOOKUP.wrap(properties)
+            .getBoolean();
+  }
 }
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 

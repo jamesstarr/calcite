@@ -218,16 +218,16 @@ public class Frameworks {
     private ImmutableList<Program> programs;
     private Context context;
     private ImmutableList<RelTraitDef> traitDefs;
-    private SqlParser.Config parserConfig;
+    private SqlParser.Config parserConfig =
+        SqlParser.Config.DEFAULT;
     private SqlValidator.Config sqlValidatorConfig;
-    private SqlToRelConverter.Config sqlToRelConverterConfig;
+    private SqlToRelConverter.Config sqlToRelConverterConfig =
+        SqlToRelConverter.Config.DEFAULT;
     private SchemaPlus defaultSchema;
     private RexExecutor executor;
     private RelOptCostFactory costFactory;
-    private RelDataTypeSystem typeSystem;
+    private RelDataTypeSystem typeSystem = RelDataTypeSystem.DEFAULT;
     private boolean evolveLattice;
-    private SqlStatisticProvider statisticProvider;
-    private RelOptTable.ViewExpander viewExpander;
 
     /** Creates a ConfigBuilder, initializing to defaults. */
     private ConfigBuilder() {
@@ -240,7 +240,7 @@ public class Frameworks {
       sqlToRelConverterConfig = SqlToRelConverter.Config.DEFAULT;
       typeSystem = RelDataTypeSystem.DEFAULT;
       evolveLattice = false;
-      statisticProvider = QuerySqlStatisticProvider.SILENT_CACHING_INSTANCE;
+>>>>>>> e62a96083 ([CALCITE-3900] Add Config for SqlValidator)
     }
 
     /** Creates a ConfigBuilder, initializing from an existing config. */
@@ -257,15 +257,16 @@ public class Frameworks {
       executor = config.getExecutor();
       costFactory = config.getCostFactory();
       typeSystem = config.getTypeSystem();
+<<<<<<< HEAD
       evolveLattice = config.isEvolveLattice();
       statisticProvider = config.getStatisticProvider();
+=======
     }
 
     public FrameworkConfig build() {
       return new StdFrameworkConfig(context, convertletTable, operatorTable,
           programs, traitDefs, parserConfig, sqlValidatorConfig, sqlToRelConverterConfig,
-          defaultSchema, costFactory, typeSystem, executor, evolveLattice,
-          statisticProvider, viewExpander);
+          defaultSchema, costFactory, typeSystem, executor);
     }
 
     public ConfigBuilder context(Context c) {
@@ -310,6 +311,11 @@ public class Frameworks {
 
     public ConfigBuilder sqlValidatorConfig(SqlValidator.Config sqlValidatorConfig) {
       this.sqlValidatorConfig = Objects.requireNonNull(sqlValidatorConfig, "sqlValidatorConfig");
+      return this;
+    }
+
+    public ConfigBuilder sqlValidatorConfig(SqlValidator.Config sqlValidatorConfig) {
+      this.sqlValidatorConfig = Preconditions.checkNotNull(sqlValidatorConfig);
       return this;
     }
 

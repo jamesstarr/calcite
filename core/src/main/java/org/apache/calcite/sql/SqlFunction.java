@@ -273,13 +273,15 @@ public class SqlFunction extends SqlOperator {
         return validator.deriveConstructorType(scope, call, this, function,
             argTypes);
       }
-      if (function == null && validator.isTypeCoercionEnabled()) {
+
+      if (function == null && validator.config().typeCoercionEnabled()) {
+
         // try again if implicit type coercion is allowed.
         boolean changed = false;
         function = (SqlFunction) SqlUtil.lookupRoutine(validator.getOperatorTable(),
-            getNameAsId(), argTypes, argNames, getFunctionType(), SqlSyntax.FUNCTION, getKind(),
-            validator.getCatalogReader().nameMatcher(),
-            true);
+                getNameAsId(), argTypes, argNames, getFunctionType(), SqlSyntax.FUNCTION, getKind(),
+                validator.getCatalogReader().nameMatcher(),
+                true);
         // try to coerce the function arguments to the declared sql type name.
         // if we succeed, the arguments would be wrapped with CAST operator.
         if (function != null) {
@@ -288,7 +290,7 @@ public class SqlFunction extends SqlOperator {
         }
         if (!changed) {
           throw validator.handleUnresolvedFunction(call, this, argTypes,
-              argNames);
+                  argNames);
         }
       }
 

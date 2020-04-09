@@ -44,7 +44,7 @@ import org.apache.calcite.util.TestUtil;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import static org.apache.calcite.test.Matchers.hasTree;
 
@@ -308,7 +308,7 @@ class ToLogicalConverterTest {
             ImmutableSet.of(v.get().id))
         .build();
     String expectedPhysical = ""
-        + "EnumerableCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{5}])\n"
+        + "EnumerableCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{}])\n"
         + "  EnumerableTableScan(table=[[scott, EMP]])\n"
         + "  EnumerableFilter(condition=[=($cor0.SAL, 1000)])\n"
         + "    EnumerableTableScan(table=[[scott, DEPT]])\n";
@@ -427,14 +427,12 @@ class ToLogicalConverterTest {
     String sql = "SELECT rank() over (order by \"hire_date\") FROM \"employee\"";
     String expectedPhysical = ""
         + "EnumerableProject($0=[$17])\n"
-        + "  EnumerableWindow(window#0=[window(partition {} order by [9] range between "
-        + "UNBOUNDED PRECEDING and CURRENT ROW aggs [RANK()])])\n"
+        + "  EnumerableWindow(window#0=[window(order by [9] aggs [RANK()])])\n"
         + "    JdbcToEnumerableConverter\n"
         + "      JdbcTableScan(table=[[foodmart, employee]])\n";
     String expectedLogical = ""
         + "LogicalProject($0=[$17])\n"
-        + "  LogicalWindow(window#0=[window(partition {} order by [9] range between UNBOUNDED"
-        + " PRECEDING and CURRENT ROW aggs [RANK()])])\n"
+        + "  LogicalWindow(window#0=[window(order by [9] aggs [RANK()])])\n"
         + "    LogicalTableScan(table=[[foodmart, employee]])\n";
     verify(rel(sql), expectedPhysical, expectedLogical);
   }
@@ -453,3 +451,8 @@ class ToLogicalConverterTest {
   }
 
 }
+<<<<<<< HEAD
+=======
+
+// End ToLogicalConverterTest.java
+>>>>>>> e62a96083 ([CALCITE-3900] Add Config for SqlValidator)

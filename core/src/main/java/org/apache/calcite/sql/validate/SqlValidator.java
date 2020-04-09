@@ -44,11 +44,12 @@ import org.apache.calcite.sql.SqlWindow;
 import org.apache.calcite.sql.SqlWith;
 import org.apache.calcite.sql.SqlWithItem;
 import org.apache.calcite.sql.validate.implicit.TypeCoercion;
+import org.apache.calcite.util.ImmutableBeans;
 import org.apache.calcite.util.Util;
 
 import java.util.List;
 import java.util.Map;
->>>>>>> 8782d9063 ([CALCITE-2928] When resolving user-defined functions (UDFs), use the case-sensitivity of the current connection (Danny Chan))
+import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
 
 /**
@@ -816,9 +817,15 @@ public interface SqlValidator {
    * See {@link org.apache.calcite.sql.validate.implicit.TypeCoercionImpl} for the details.
    * @param enabled default as true.
    */
+  @Deprecated // to be removed before 1.24
   SqlValidator setEnableTypeCoercion(boolean enabled);
 
-  /** Get if this validator supports implicit type coercion. */
+  /**
+   * Returns if this validator supports implicit type coercion.
+   *
+   * @deprecated Use {@link Config#typeCoercionEnabled}
+   */
+  @Deprecated // to be removed before 1.24
   boolean isTypeCoercionEnabled();
 
   /**
@@ -831,6 +838,129 @@ public interface SqlValidator {
 
   /** Get the type coercion instance. */
   TypeCoercion getTypeCoercion();
+
+  /** Returns the config of the validator. */
+  Config config();
+
+  /**
+   * Returns this SqlValidator, with the same state, applying
+   * a transform to the config.
+   *
+   * <p>This is mainly used for tests, otherwise constructs a {@link Config} directly
+   * through the constructor.
+   */
+  SqlValidator transform(UnaryOperator<SqlValidator.Config> transform);
+
+  //~ Inner Class ------------------------------------------------------------
+
+  /**
+   * Interface to define the configuration for a SqlValidator.
+   * Provides methods to set each configuration option.
+   */
+  public interface Config {
+    /** Default configuration. */
+    SqlValidator.Config DEFAULT = ImmutableBeans.create(Config.class);
+
+    /**
+     * Returns whether to enable rewrite of "macro-like" calls such as COALESCE.
+     */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(true)
+    boolean callRewrite();
+
+    /**
+     * Sets whether to enable rewrite of "macro-like" calls such as COALESCE.
+     */
+    Config withCallRewrite(boolean rewrite);
+
+    /** Returns how NULL values should be collated if an ORDER BY item does not
+     * contain NULLS FIRST or NULLS LAST. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.EnumDefault("HIGH")
+    NullCollation defaultNullCollation();
+
+    /** Sets how NULL values should be collated if an ORDER BY item does not
+     * contain NULLS FIRST or NULLS LAST. */
+    Config withDefaultNullCollation(NullCollation nullCollation);
+
+    /**
+     * Returns whether column reference expansion is enabled
+     */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(true)
+    boolean columnReferenceExpansion();
+
+    /**
+     * Sets whether to enable expansion of column references. (Currently this does
+     * not apply to the ORDER BY clause; may be fixed in the future.)
+     */
+    Config withColumnReferenceExpansion(boolean expand);
+
+    /**
+     * Returns whether to expand identifiers other than column
+     * references.
+     *
+     * <p>REVIEW jvs 30-June-2006: subclasses may override shouldExpandIdentifiers
+     * in a way that ignores this; we should probably get rid of the protected
+     * method and always use this variable (or better, move preferences like
+     * this to a separate "parameter" class).
+     */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(false)
+    boolean identifierExpansion();
+
+    /**
+     * Sets whether to enable expansion of identifiers other than column
+     * references.
+     */
+    Config withIdentifierExpansion(boolean expand);
+
+    /**
+     * Returns whether this validator should be lenient upon encountering an
+     * unknown function, default false.
+     *
+     * <p>If true, if a statement contains a call to a function that is not
+     * present in the operator table, or if the call does not have the required
+     * number or types of operands, the validator nevertheless regards the
+     * statement as valid. The type of the function call will be
+     * {@link #getUnknownType() UNKNOWN}.
+     *
+     * <p>If false (the default behavior), an unknown function call causes a
+     * validation error to be thrown.
+     */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(false)
+    boolean lenientOperatorLookup();
+
+    /**
+     * Sets whether this validator should be lenient upon encountering an unknown
+     * function.
+     *
+     * @param lenient Whether to be lenient when encountering an unknown function
+     */
+    Config withLenientOperatorLookup(boolean lenient);
+
+    /** Returns whether the validator supports implicit type coercion. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(true)
+    boolean typeCoercionEnabled();
+
+    /**
+     * Sets whether to enable implicit type coercion for validation, default true.
+     *
+     * @see org.apache.calcite.sql.validate.implicit.TypeCoercionImpl TypeCoercionImpl
+     */
+    Config withTypeCoercionEnabled(boolean enabled);
+
+    /** Returns the dialect of SQL (SQL:2003, etc.) this validator recognizes.
+     * Default is {@link SqlConformanceEnum#DEFAULT}. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.EnumDefault("DEFAULT")
+    SqlConformance sqlConformance();
+
+    /** Sets up the sql conformance of the validator. */
+    Config withSqlConformance(SqlConformance conformance);
+  }
 }
 
   /**

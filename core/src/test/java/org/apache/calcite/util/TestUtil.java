@@ -18,13 +18,9 @@ package org.apache.calcite.util;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import org.junit.jupiter.api.Assertions;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -236,6 +232,30 @@ public abstract class TestUtil {
       t = t.getCause();
     }
     return false;
+  }
+
+  /** Rethrows given exception keeping stacktraces clean and compact. */
+  public static <E extends Throwable> RuntimeException rethrow(Throwable e) throws E {
+    if (e instanceof InvocationTargetException) {
+      e = e.getCause();
+    }
+    throw (E) e;
+  }
+
+  /** Rethrows given exception keeping stacktraces clean and compact. */
+  public static <E extends Throwable> RuntimeException rethrow(Throwable e,
+      String message) throws E {
+    e.addSuppressed(new ExtraInformation(message));
+    throw (E) e;
+  }
+
+  /** Returns string representation of the given {@link Throwable}. */
+  public static String printStackTrace(Throwable t) {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    t.printStackTrace(pw);
+    pw.flush();
+    return sw.toString();
   }
 
   /** Rethrows given exception keeping stacktraces clean and compact. */
