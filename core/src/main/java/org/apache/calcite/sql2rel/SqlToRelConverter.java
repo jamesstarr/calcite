@@ -2151,7 +2151,7 @@ public class SqlToRelConverter {
         break;
       }
       final RelFieldCollation.NullDirection nullDirection =
-          validator.getDefaultNullCollation().last(desc(direction))
+          validator.config().defaultNullCollation().last(desc(direction))
               ? RelFieldCollation.NullDirection.LAST
               : RelFieldCollation.NullDirection.FIRST;
       RexNode e = matchBb.convertExpression(order);
@@ -3219,7 +3219,7 @@ public class SqlToRelConverter {
 
     switch (nullDirection) {
     case UNSPECIFIED:
-      nullDirection = validator.getDefaultNullCollation().last(desc(direction))
+      nullDirection = validator.config().defaultNullCollation().last(desc(direction))
           ? RelFieldCollation.NullDirection.LAST
           : RelFieldCollation.NullDirection.FIRST;
     }
@@ -3655,7 +3655,7 @@ public class SqlToRelConverter {
     final RelDataType tableRowType = targetTable.getRowType();
     SqlNodeList targetColumnList = call.getTargetColumnList();
     if (targetColumnList == null) {
-      if (validator.getConformance().isInsertSubsetColumnsAllowed()) {
+      if (validator.config().sqlConformance().isInsertSubsetColumnsAllowed()) {
         final RelDataType targetRowType =
             typeFactory.createStructType(
                 tableRowType.getFieldList()

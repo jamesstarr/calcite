@@ -16,17 +16,13 @@
  */
 package org.apache.calcite.sql.test;
 
-
 import org.apache.calcite.sql.advise.SqlAdvisor;
 import org.apache.calcite.sql.advise.SqlAdvisorValidator;
 import org.apache.calcite.sql.advise.SqlSimpleParser;
-
 import org.apache.calcite.sql.parser.SqlParserUtil;
 import org.apache.calcite.sql.parser.StringAndPos;
-
 import org.apache.calcite.sql.validate.SqlMoniker;
 import org.apache.calcite.sql.validate.SqlMonikerType;
-
 import org.apache.calcite.test.SqlValidatorTestCase;
 
 import org.junit.Assert;
@@ -49,8 +45,9 @@ import static org.junit.Assert.fail;
  * for SqlAdvisor.
  */
 public class SqlAdvisorTest extends SqlValidatorTestCase {
-  public static final SqlTestFactory ADVISOR_TEST_FACTORY = SqlTestFactory.INSTANCE.withValidator(
-      SqlAdvisorValidator::new);
+
+  public static final SqlTestFactory ADVISOR_TEST_FACTORY =
+      SqlTestFactory.INSTANCE.withValidator(SqlAdvisorValidator::new);
 
   //~ Static fields/initializers ---------------------------------------------
 
@@ -194,7 +191,6 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
           "KEYWORD(NULLIF)",
           "KEYWORD(OCTET_LENGTH)",
           "KEYWORD(OVERLAY)",
-
           "KEYWORD(PERCENTILE_CONT)",
           "KEYWORD(PERCENTILE_DISC)",
           "KEYWORD(PERCENT_RANK)",
@@ -431,7 +427,6 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
       String expectedResults) throws Exception {
     SqlAdvisor advisor = tester.getFactory().createAdvisor();
 
-
     StringAndPos sap = SqlParserUtil.findPos(sql);
 
     List<SqlMoniker> results =
@@ -452,7 +447,6 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
    */
   protected void assertSimplify(String sql, String expected) {
     SqlAdvisor advisor = tester.getFactory().createAdvisor();
-
 
     StringAndPos sap = SqlParserUtil.findPos(sql);
     String actual = advisor.simplifySql(sap.sql, sap.cursor);
@@ -481,8 +475,8 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
       String sql,
       String expectedResults,
       String expectedWord) {
-    SqlAdvisor advisor = tester.getFactory().createAdvisor();
 
+    SqlAdvisor advisor = tester.getFactory().createAdvisor();
 
     StringAndPos sap = SqlParserUtil.findPos(sql);
     final String[] replaced = {null};

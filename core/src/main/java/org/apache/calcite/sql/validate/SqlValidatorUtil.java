@@ -337,9 +337,9 @@ public class SqlValidatorUtil {
       SqlOperatorTable opTab,
       SqlValidatorCatalogReader catalogReader,
       RelDataTypeFactory typeFactory,
-      SqlConformance conformance) {
+      SqlValidator.Config config) {
     return new SqlValidatorImpl(opTab, catalogReader, typeFactory,
-        conformance);
+        config);
   }
 
   /**
@@ -351,7 +351,7 @@ public class SqlValidatorUtil {
       SqlValidatorCatalogReader catalogReader,
       RelDataTypeFactory typeFactory) {
     return newValidator(opTab, catalogReader, typeFactory,
-        SqlConformanceEnum.DEFAULT);
+        SqlValidator.Config.DEFAULT);
   }
 
   /**

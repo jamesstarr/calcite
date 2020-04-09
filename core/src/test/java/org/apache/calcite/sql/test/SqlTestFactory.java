@@ -59,6 +59,7 @@ public class SqlTestFactory {
           .put("quotedCasing", Casing.UNCHANGED)
           .put("unquotedCasing", Casing.TO_UPPER)
           .put("caseSensitive", true)
+          .put("lenientOperatorLookup", false)
           .put("enableTypeCoercion", true)
           .put("conformance", SqlConformanceEnum.DEFAULT)
           .put("operatorTable", SqlStdOperatorTable.instance())
@@ -135,12 +136,17 @@ public class SqlTestFactory {
   public SqlValidator getValidator() {
     final SqlConformance conformance =
         (SqlConformance) options.get("conformance");
+    final boolean lenientOperatorLookup =
+            (boolean) options.get("lenientOperatorLookup");
     final boolean enableTypeCoercion = (boolean) options.get("enableTypeCoercion");
+    final SqlValidator.Config config = SqlValidator.Config.DEFAULT
+        .withSqlConformance(conformance)
+        .withTypeCoercionEnabled(enableTypeCoercion)
+        .withLenientOperatorLookup(lenientOperatorLookup);
     return validatorFactory.create(operatorTable.get(),
         catalogReader.get(),
         typeFactory.get(),
-        conformance)
-        .setEnableTypeCoercion(enableTypeCoercion);
+        config);
   }
 
   public SqlAdvisor createAdvisor() {
@@ -200,7 +206,7 @@ public class SqlTestFactory {
         SqlOperatorTable opTab,
         SqlValidatorCatalogReader catalogReader,
         RelDataTypeFactory typeFactory,
-        SqlConformance conformance);
+        SqlValidator.Config config);
   }
 
   /**

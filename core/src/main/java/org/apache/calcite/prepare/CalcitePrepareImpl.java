@@ -108,7 +108,6 @@ import org.apache.calcite.sql.parser.SqlParserImplFactory;
 import org.apache.calcite.sql.type.ExtraSqlTypes;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.util.SqlOperatorTables;
-import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlRexConvertletTable;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
@@ -755,8 +754,6 @@ public class CalcitePrepareImpl implements CalcitePrepare {
 
       final SqlValidator validator =
           createSqlValidator(context, catalogReader);
-      validator.setIdentifierExpansion(true);
-      validator.setDefaultNullCollation(config.defaultNullCollation());
 
       preparedResult = preparingStmt.prepareSql(
           sqlNode, Object.class, validator, true);
@@ -838,9 +835,14 @@ public class CalcitePrepareImpl implements CalcitePrepare {
     list.add(catalogReader);
     final SqlOperatorTable opTab = SqlOperatorTables.chain(list);
     final JavaTypeFactory typeFactory = context.getTypeFactory();
-    final SqlConformance conformance = context.config().conformance();
+    final CalciteConnectionConfig connectionConfig = context.config();
+    final SqlValidator.Config config = SqlValidator.Config.DEFAULT
+        .withLenientOperatorLookup(connectionConfig.lenientOperatorLookup())
+        .withSqlConformance(connectionConfig.conformance())
+        .withDefaultNullCollation(connectionConfig.defaultNullCollation())
+        .withIdentifierExpansion(true);
     return new CalciteSqlValidator(opTab, catalogReader, typeFactory,
-        conformance);
+        config);
   }
 
   private List<ColumnMetaData> getColumnMetaDataList(

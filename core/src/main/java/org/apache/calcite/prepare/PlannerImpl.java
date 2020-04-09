@@ -41,7 +41,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
-import org.apache.calcite.sql.validate.SqlConformance;
+import org.apache.calcite.sql.util.ChainedSqlOperatorTable;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.RelDecorrelator;
 import org.apache.calcite.sql2rel.SqlRexConvertletTable;
@@ -51,7 +51,6 @@ import org.apache.calcite.tools.Frameworks;
 import org.apache.calcite.tools.Planner;
 import org.apache.calcite.tools.Program;
 import org.apache.calcite.tools.RelBuilder;
-import org.apache.calcite.tools.RelConversionException;
 import org.apache.calcite.tools.ValidationException;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
@@ -65,12 +64,15 @@ import java.util.Properties;
 public class PlannerImpl implements Planner {
   private final SqlOperatorTable operatorTable;
   private final ImmutableList<Program> programs;
+  private final Context context;
+  private final CalciteConnectionConfig connectionConfig;
   private final FrameworkConfig config;
 
   /** Holds the trait definitions to be registered with planner. May be null. */
   private final ImmutableList<RelTraitDef> traitDefs;
 
   private final SqlParser.Config parserConfig;
+  private final SqlValidator.Config sqlValidatorConfig;
   private final SqlToRelConverter.Config sqlToRelConverterConfig;
   private final SqlRexConvertletTable convertletTable;
 
@@ -86,7 +88,7 @@ public class PlannerImpl implements Planner {
   private RexExecutor executor;
 
   // set in STATE_4_VALIDATE
-  private CalciteSqlValidator validator;
+  private SqlValidator validator;
   private SqlNode validatedSqlNode;
 
   // set in STATE_5_CONVERT
@@ -100,12 +102,33 @@ public class PlannerImpl implements Planner {
     this.operatorTable = config.getOperatorTable();
     this.programs = config.getPrograms();
     this.parserConfig = config.getParserConfig();
+    this.sqlValidatorConfig = config.getSqlValidatorConfig();
     this.sqlToRelConverterConfig = config.getSqlToRelConverterConfig();
     this.state = State.STATE_0_CLOSED;
     this.traitDefs = config.getTraitDefs();
     this.convertletTable = config.getConvertletTable();
     this.executor = config.getExecutor();
+    this.context = config.getContext();
+    this.connectionConfig = connConfig();
     reset();
+  }
+
+  /** Gets a user defined config and appends default connection values */
+  private CalciteConnectionConfig connConfig() {
+    CalciteConnectionConfigImpl config =
+            context.unwrap(CalciteConnectionConfigImpl.class);
+    if (config == null) {
+      config = new CalciteConnectionConfigImpl(new Properties());
+    }
+    if (!config.isSet(CalciteConnectionProperty.CASE_SENSITIVE)) {
+      config = config.set(CalciteConnectionProperty.CASE_SENSITIVE,
+              String.valueOf(parserConfig.caseSensitive()));
+    }
+    if (!config.isSet(CalciteConnectionProperty.CONFORMANCE)) {
+      config = config.set(CalciteConnectionProperty.CONFORMANCE,
+              String.valueOf(parserConfig.conformance()));
+    }
+    return config;
   }
 
   /** Makes sure that the state is at least the given state. */
@@ -183,11 +206,8 @@ public class PlannerImpl implements Planner {
 
   public SqlNode validate(SqlNode sqlNode) throws ValidationException {
     ensure(State.STATE_3_PARSED);
-    final SqlConformance conformance = conformance();
     final CalciteCatalogReader catalogReader = createCatalogReader();
-    this.validator =
-        new CalciteSqlValidator(operatorTable, catalogReader, typeFactory,
-            conformance);
+    this.validator = createSqlValidator(createCatalogReader());
     this.validator.setIdentifierExpansion(true);
     try {
       validatedSqlNode = validator.validate(sqlNode);
@@ -196,18 +216,6 @@ public class PlannerImpl implements Planner {
     }
     state = State.STATE_4_VALIDATED;
     return validatedSqlNode;
-  }
-
-  private SqlConformance conformance() {
-    final Context context = config.getContext();
-    if (context != null) {
-      final CalciteConnectionConfig connectionConfig =
-          context.unwrap(CalciteConnectionConfig.class);
-      if (connectionConfig != null) {
-        return connectionConfig.conformance();
-      }
-    }
-    return config.getParserConfig().conformance();
   }
 
   public Pair<SqlNode, RelDataType> validateAndGetType(SqlNode sqlNode)
@@ -219,11 +227,11 @@ public class PlannerImpl implements Planner {
   }
 
   @SuppressWarnings("deprecation")
-  public final RelNode convert(SqlNode sql) throws RelConversionException {
+  public final RelNode convert(SqlNode sql) {
     return rel(sql).rel;
   }
 
-  public RelRoot rel(SqlNode sql) throws RelConversionException {
+  public RelRoot rel(SqlNode sql) {
     ensure(State.STATE_4_VALIDATED);
     assert validatedSqlNode != null;
     final RexBuilder rexBuilder = createRexBuilder();
@@ -260,12 +268,9 @@ public class PlannerImpl implements Planner {
         throw new RuntimeException("parse failed", e);
       }
 
-      final SqlConformance conformance = conformance();
       final CalciteCatalogReader catalogReader =
           createCatalogReader().withSchemaPath(schemaPath);
-      final SqlValidator validator =
-          new CalciteSqlValidator(operatorTable, catalogReader, typeFactory,
-              conformance);
+      final SqlValidator validator = createSqlValidator(catalogReader);
       validator.setIdentifierExpansion(true);
       final SqlNode validatedSqlNode = validator.validate(sqlNode);
 
@@ -294,23 +299,25 @@ public class PlannerImpl implements Planner {
 
   // CalciteCatalogReader is stateless; no need to store one
   private CalciteCatalogReader createCatalogReader() {
-    SchemaPlus rootSchema = rootSchema(defaultSchema);
-    Context context = config.getContext();
-    CalciteConnectionConfig connectionConfig = null;
-
-    if (context != null) {
-      connectionConfig = context.unwrap(CalciteConnectionConfig.class);
-    } else {
-      Properties properties = new Properties();
-      properties.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(),
-              String.valueOf(parserConfig.caseSensitive()));
-      connectionConfig = new CalciteConnectionConfigImpl(properties);
-    }
+    final SchemaPlus rootSchema = rootSchema(defaultSchema);
 
     return new CalciteCatalogReader(
         CalciteSchema.from(rootSchema),
         CalciteSchema.from(defaultSchema).path(null),
         typeFactory, connectionConfig);
+  }
+
+  private SqlValidator createSqlValidator(CalciteCatalogReader catalogReader) {
+    final SqlOperatorTable opTab =
+        ChainedSqlOperatorTable.of(operatorTable, catalogReader);
+    return new CalciteSqlValidator(opTab,
+        catalogReader,
+        typeFactory,
+        sqlValidatorConfig
+            .withDefaultNullCollation(connectionConfig.defaultNullCollation())
+            .withLenientOperatorLookup(connectionConfig.lenientOperatorLookup())
+            .withSqlConformance(connectionConfig.conformance())
+            .withIdentifierExpansion(true));
   }
 
   private static SchemaPlus rootSchema(SchemaPlus schema) {
@@ -333,7 +340,7 @@ public class PlannerImpl implements Planner {
 
   @SuppressWarnings("deprecation")
   public RelNode transform(int ruleSetIndex, RelTraitSet requiredOutputTraits,
-      RelNode rel) throws RelConversionException {
+      RelNode rel) {
     ensure(State.STATE_5_CONVERTED);
     //Remove this when CachingRelMetadataProvider is removed.
     rel.getCluster().setMetadataProvider(

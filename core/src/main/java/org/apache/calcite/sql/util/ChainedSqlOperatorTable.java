@@ -51,6 +51,11 @@ public class ChainedSqlOperatorTable implements SqlOperatorTable {
     this.tableList = ImmutableList.copyOf(tableList);
   }
 
+  /** Creates a {@code ChainedSqlOperatorTable}. */
+  public static SqlOperatorTable of(SqlOperatorTable... tables) {
+    return new ChainedSqlOperatorTable(ImmutableList.copyOf(tables));
+  }
+
   //~ Methods ----------------------------------------------------------------
 
   @Deprecated // to be removed before 2.0

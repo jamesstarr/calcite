@@ -656,7 +656,7 @@ public class RelBuilder {
 
   /** Creates an empty group key. */
   public GroupKey groupKey() {
-    return groupKey(ImmutableList.<RexNode>of());
+    return groupKey(ImmutableList.of());
   }
 
   /** Creates a group key. */
@@ -670,9 +670,23 @@ public class RelBuilder {
   }
 
   /** Creates a group key with grouping sets. */
+  public GroupKey groupKey(Iterable<? extends RexNode> nodes,
+      Iterable<? extends Iterable<? extends RexNode>> nodeLists) {
+    return groupKey_(nodes, nodeLists);
+  }
+
+  /** @deprecated Now that indicator is deprecated, use
+   * {@link #groupKey(Iterable, Iterable)}, which has the same behavior as
+   * calling this method with {@code indicator = false}. */
+  @Deprecated // to be removed before 2.0
   public GroupKey groupKey(Iterable<? extends RexNode> nodes, boolean indicator,
       Iterable<? extends Iterable<? extends RexNode>> nodeLists) {
     Aggregate.checkIndicator(indicator);
+    return groupKey_(nodes, nodeLists);
+  }
+
+  private GroupKey groupKey_(Iterable<? extends RexNode> nodes,
+      Iterable<? extends Iterable<? extends RexNode>> nodeLists) {
     final ImmutableList.Builder<ImmutableList<RexNode>> builder =
         ImmutableList.builder();
     for (Iterable<? extends RexNode> nodeList : nodeLists) {
@@ -697,8 +711,8 @@ public class RelBuilder {
    * <p>This method of creating a group key does not allow you to group on new
    * expressions, only column projections, but is efficient, especially when you
    * are coming from an existing {@link Aggregate}. */
-  public GroupKey groupKey(ImmutableBitSet groupSet) {
-    return groupKey(groupSet, ImmutableList.of(groupSet));
+  public GroupKey groupKey(@Nonnull ImmutableBitSet groupSet) {
+    return groupKey_(groupSet, ImmutableList.of(groupSet));
   }
 
   /** Creates a group key with grouping sets, both identified by field positions
@@ -708,36 +722,36 @@ public class RelBuilder {
    * expressions, only column projections, but is efficient, especially when you
    * are coming from an existing {@link Aggregate}. */
   public GroupKey groupKey(ImmutableBitSet groupSet,
-      ImmutableList<ImmutableBitSet> groupSets) {
-    return groupKey_(groupSet, groupSets);
+      @Nonnull Iterable<? extends ImmutableBitSet> groupSets) {
+    return groupKey_(groupSet, ImmutableList.copyOf(groupSets));
   }
 
-  /** @deprecated Use {@link #groupKey(ImmutableBitSet, ImmutableList)}. */
+  /** @deprecated Use {@link #groupKey(ImmutableBitSet)}
+   * or {@link #groupKey(ImmutableBitSet, Iterable)}. */
+  @Deprecated // to be removed before 2.0
+  public GroupKey groupKey(ImmutableBitSet groupSet,
+      ImmutableList<ImmutableBitSet> groupSets) {
+    return groupKey_(groupSet, groupSets == null
+        ? ImmutableList.of(groupSet) : ImmutableList.copyOf(groupSets));
+  }
+
+  /** @deprecated Use {@link #groupKey(ImmutableBitSet, Iterable)}. */
   @Deprecated // to be removed before 2.0
   public GroupKey groupKey(ImmutableBitSet groupSet, boolean indicator,
       ImmutableList<ImmutableBitSet> groupSets) {
     Aggregate.checkIndicator(indicator);
-    return groupKey_(groupSet, groupSets);
+    return groupKey_(groupSet, groupSets == null
+        ? ImmutableList.of(groupSet) : ImmutableList.copyOf(groupSets));
   }
 
   private GroupKey groupKey_(ImmutableBitSet groupSet,
-      ImmutableList<ImmutableBitSet> groupSets) {
+      @Nonnull ImmutableList<ImmutableBitSet> groupSets) {
     if (groupSet.length() > peek().getRowType().getFieldCount()) {
       throw new IllegalArgumentException("out of bounds: " + groupSet);
     }
-    if (groupSets == null) {
-      groupSets = ImmutableList.of(groupSet);
-    }
-    final ImmutableList<RexNode> nodes =
-        fields(ImmutableIntList.of(groupSet.toArray()));
-    final List<ImmutableList<RexNode>> nodeLists =
-        Lists.transform(groupSets,
-            new Function<ImmutableBitSet, ImmutableList<RexNode>>() {
-              public ImmutableList<RexNode> apply(ImmutableBitSet input) {
-                return fields(ImmutableIntList.of(input.toArray()));
-              }
-            });
-    return groupKey(nodes, false, nodeLists);
+    Objects.requireNonNull(groupSets);
+    final ImmutableList<RexNode> nodes = fields(groupSet);
+    return groupKey_(nodes, Util.transform(groupSets, bitSet -> fields(bitSet)));
   }
 
   @Deprecated // to be removed before 2.0

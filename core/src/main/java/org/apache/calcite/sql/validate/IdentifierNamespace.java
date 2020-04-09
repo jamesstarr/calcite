@@ -177,7 +177,7 @@ public class IdentifierNamespace extends AbstractNamespace {
     resolvedNamespace = Preconditions.checkNotNull(resolveImpl(id));
     if (resolvedNamespace instanceof TableNamespace) {
       SqlValidatorTable table = resolvedNamespace.getTable();
-      if (validator.shouldExpandIdentifiers()) {
+      if (validator.config().identifierExpansion()) {
         // TODO:  expand qualifiers for column references also
         List<String> qualifiedNames = table.getQualifiedName();
         if (qualifiedNames != null) {

@@ -24,6 +24,7 @@ import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Calc;
 import org.apache.calcite.rel.core.Project;
+import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalCalc;
 import org.apache.calcite.rel.logical.LogicalWindow;
 import org.apache.calcite.rex.RexCall;
@@ -74,6 +75,12 @@ import java.util.Set;
 public abstract class ProjectToWindowRule
         extends RelRule<ProjectToWindowRule.Config>
         implements TransformationRule {
+
+  public static final ProjectToWindowRule INSTANCE =
+      new CalcToWindowRule(RelFactories.LOGICAL_BUILDER);
+
+  public static final ProjectToWindowRule PROJECT =
+      new ProjectToLogicalProjectAndWindowRule(RelFactories.LOGICAL_BUILDER);
 
   /** Creates a ProjectToWindowRule. */
   protected ProjectToWindowRule(Config config) {
