@@ -25,13 +25,13 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.mutable.MutableRel;
 import org.apache.calcite.rel.mutable.MutableRels;
-<<<<<<< HEAD
-import org.apache.calcite.rel.mutable.MutableScan;
-=======
 >>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
+=======
+import org.apache.calcite.rel.mutable.MutableScan;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql2rel.RelDecorrelator;
+import org.apache.calcite.tools.FrameworkConfig;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.util.Litmus;
 
@@ -42,15 +42,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.apache.calcite.plan.RelOptUtil.equal;
-import static org.apache.calcite.util.Litmus.IGNORE;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link MutableRel} sub-classes.
@@ -184,6 +178,7 @@ class MutableRelTest {
         + "intersect select * from emp where ename like 'John%'");
   }
 
+<<<<<<< HEAD
   @Test void testUpdateInputOfUnion() {
     MutableRel mutableRel = createMutableRel(
         "select sal from emp where deptno = 10"
@@ -224,6 +219,8 @@ class MutableRelTest {
     assertEquals(mutableRel1, mutableRel2);
   }
 
+=======
+>>>>>>> 67fdf4c16 ([CALCITE-3447] MutableScans with the same qualified name are not equivalent (Dai Min, Jin Xing))
   /** Verifies equivalence of {@link MutableScan} */
   @Test public void testMutableScanEquivalence() {
     final FrameworkConfig config = RelBuilderTest.config().build();
@@ -318,5 +315,10 @@ class MutableRelTest {
     };
     RelNode rel = test.createTester().convertSqlToRel(sql).rel;
     return MutableRels.toMutable(rel);
+  }
+
+  private MutableScan mutableScanOf(RelBuilder builder, String... tableNames) {
+    final RelNode scan = builder.scan(tableNames).build();
+    return (MutableScan) MutableRels.toMutable(scan);
   }
 }
