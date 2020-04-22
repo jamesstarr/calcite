@@ -295,6 +295,23 @@ public class SqlCollation implements Serializable {
   public final SqlCollation.Coercibility getCoercibility() {
     return coercibility;
   }
+<<<<<<< HEAD
+=======
+
+  public final Locale getLocale() {
+    return locale;
+  }
+
+  /**
+   * @return the {@link Collator} to compare values having the current collation,
+   * or {@code null} if no specific {@link Collator} is needed, in which case
+   * {@link String#compareTo} will be used.
+   */
+  public Collator getCollator() {
+    return null;
+  }
+}
+>>>>>>> 02d8ed362 ([CALCITE-3951] Support different string comparison based on SqlCollation)
 
   public final Locale getLocale() {
     return locale;

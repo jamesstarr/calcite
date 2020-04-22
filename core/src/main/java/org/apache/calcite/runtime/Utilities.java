@@ -21,7 +21,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
+>>>>>>> 02d8ed362 ([CALCITE-3951] Support different string comparison based on SqlCollation)
 
 /**
  * Utility methods called by generated code.
@@ -243,6 +243,15 @@ public class Utilities {
             : v1 == null ? -1
                 : FlatLists.ComparableListImpl.compare(v0, v1);
   }
+<<<<<<< HEAD
+=======
+
+  public static Collator generateCollator(Locale locale, int strength) {
+    final Collator collator = Collator.getInstance(locale);
+    collator.setStrength(strength);
+    return collator;
+  }
+}
 
   public static Collator generateCollator(Locale locale, int strength) {
     final Collator collator = Collator.getInstance(locale);

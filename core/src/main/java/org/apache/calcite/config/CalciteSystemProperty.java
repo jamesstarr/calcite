@@ -22,96 +22,7 @@ import com.google.common.collect.ImmutableSet;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.function.IntPredicate;
-import java.util.stream.Stream;
-
-/**
- * A Calcite specific system property that is used to configure various aspects of the framework.
- *
- * <p>Calcite system properties must always be in the "calcite" root namespace.</p>
- *
- * @param <T> the type of the property value
- */
-public final class CalciteSystemProperty<T> {
-  /**
-   * Holds all system properties related with the Calcite.
-   *
-   * <p>Deprecated <code>"saffron.properties"</code> (in namespaces"saffron" and "net.sf.saffron")
-   * are also kept here but under "calcite" namespace.</p>
-   */
-  private static final Properties PROPERTIES = loadProperties();
-
-  /**
-   * Whether to run Calcite in debug mode.
-   *
-   * <p>When debug mode is activated significantly more information is gathered and printed to
-   * STDOUT. It is most commonly used to print and identify problems in generated java code. Debug
-   * mode is also used to perform more verifications at runtime, which are not performed during
-   * normal execution.</p>
-   */
-  public static final CalciteSystemProperty<Boolean> DEBUG =
-      booleanProperty("calcite.debug", false);
-
-  /**
-   * Whether to exploit join commutative property.
-   */
-  // TODO review zabetak:
-  // Does the property control join commutativity or rather join associativity? The property is
-  // associated with {@link org.apache.calcite.rel.rules.JoinAssociateRule} and not with
-  // {@link org.apache.calcite.rel.rules.JoinCommuteRule}.
-  public static final CalciteSystemProperty<Boolean> COMMUTE =
-      booleanProperty("calcite.enable.join.commute", false);
-
-  /** Whether to enable the collation trait in the default planner configuration.
-   *
-   * <p>Some extra optimizations are possible if enabled, but queries should
-   * work either way. At some point this will become a preference, or we will
-   * run multiple phases: first disabled, then enabled. */
-  public static final CalciteSystemProperty<Boolean> ENABLE_COLLATION_TRAIT =
-      booleanProperty("calcite.enable.collation.trait", true);
-
-  /** Whether the enumerable convention is enabled in the default planner configuration. */
-  public static final CalciteSystemProperty<Boolean> ENABLE_ENUMERABLE =
-      booleanProperty("calcite.enable.enumerable", true);
-
-  /** Whether the EnumerableTableScan should support ARRAY fields. */
-  public static final CalciteSystemProperty<Boolean> ENUMERABLE_ENABLE_TABLESCAN_ARRAY =
-      booleanProperty("calcite.enable.enumerable.tablescan.array", false);
-
-  /** Whether the EnumerableTableScan should support MAP fields. */
-  public static final CalciteSystemProperty<Boolean> ENUMERABLE_ENABLE_TABLESCAN_MAP =
-      booleanProperty("calcite.enable.enumerable.tablescan.map", false);
-
-  /** Whether the EnumerableTableScan should support MULTISET fields. */
-  public static final CalciteSystemProperty<Boolean> ENUMERABLE_ENABLE_TABLESCAN_MULTISET =
-      booleanProperty("calcite.enable.enumerable.tablescan.multiset", false);
-
-  /** Whether streaming is enabled in the default planner configuration. */
-  public static final CalciteSystemProperty<Boolean> ENABLE_STREAM =
-      booleanProperty("calcite.enable.stream", true);
-
-  /**
-   * Whether RexNode digest should be normalized (e.g. call operands ordered).
-   * <p>Normalization helps to treat $0=$1 and $1=$0 expressions equal, thus it saves efforts
-   * on planning.</p> */
-  public static final CalciteSystemProperty<Boolean> ENABLE_REX_DIGEST_NORMALIZE =
-      booleanProperty("calcite.enable.rexnode.digest.normalize", true);
-
-  /**
-   *  Whether to follow the SQL standard strictly.
-   */
-  public static final CalciteSystemProperty<Boolean> STRICT =
-      booleanProperty("calcite.strict.sql", false);
-
-  /**
-   * Whether to include a GraphViz representation when dumping the state of the Volcano planner.
-   */
-  public static final CalciteSystemProperty<Boolean> DUMP_GRAPHVIZ =
-      booleanProperty("calcite.volcano.dump.graphviz", false);
+      booleanProperty("calcite.volcano.dump.graphviz", true);
 
   /**
    * Whether to include <code>RelSet</code> information when dumping the state of the Volcano
@@ -121,7 +32,8 @@ public final class CalciteSystemProperty<T> {
       booleanProperty("calcite.volcano.dump.sets", true);
 
   /**
-   * Whether to enable top-down optimization.
+   * Whether to enable top-down optimization. This config can be overridden
+   * by {@link CalciteConnectionProperty#TOPDOWN_OPT}.
    *
    * <p>Note: Enabling top-down optimization will automatically disable
    * the use of AbstractConverter and related rules.</p>
@@ -199,12 +111,7 @@ public final class CalciteSystemProperty<T> {
       });
 
   /**
-   * Whether to run slow tests.
-   */
-  public static final CalciteSystemProperty<Boolean> TEST_SLOW =
-      booleanProperty("calcite.test.slow", false);
-
-  /**
+>>>>>>> 02d8ed362 ([CALCITE-3951] Support different string comparison based on SqlCollation)
    * Whether to run MongoDB tests.
    */
   public static final CalciteSystemProperty<Boolean> TEST_MONGODB =
@@ -235,7 +142,10 @@ public final class CalciteSystemProperty<T> {
    * Whether to run Redis tests.
    */
   public static final CalciteSystemProperty<Boolean> TEST_REDIS =
+<<<<<<< HEAD
       booleanProperty("calcite.test.redis", false);
+=======
+      booleanProperty("calcite.test.redis", true);
 
   /**
    * A list of ids designating the queries
@@ -414,10 +324,8 @@ public final class CalciteSystemProperty<T> {
       }
     } catch (IOException e) {
       throw new RuntimeException("while reading from saffron.properties file", e);
-    } catch (RuntimeException e) {
-      if (!"java.security.AccessControlException".equals(e.getClass().getName())) {
-        throw e;
-      }
+    } catch (AccessControlException e) {
+      // we're in a sandbox
     }
 
     // Merge system and saffron properties, mapping deprecated saffron
@@ -454,3 +362,8 @@ public final class CalciteSystemProperty<T> {
     return value;
   }
 }
+<<<<<<< HEAD
+=======
+
+// End CalciteSystemProperty.java
+>>>>>>> 02d8ed362 ([CALCITE-3951] Support different string comparison based on SqlCollation)

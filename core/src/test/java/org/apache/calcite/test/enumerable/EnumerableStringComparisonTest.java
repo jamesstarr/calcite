@@ -31,7 +31,7 @@ import org.apache.calcite.test.JdbcTest;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.util.Util;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.text.Collator;
 import java.util.Collections;
@@ -247,3 +247,8 @@ class EnumerableStringComparisonTest {
         .withSchema("s", new ReflectiveSchema(new JdbcTest.HrSchema()));
   }
 }
+<<<<<<< HEAD
+=======
+
+// End EnumerableStringComparisonTest.java
+>>>>>>> 02d8ed362 ([CALCITE-3951] Support different string comparison based on SqlCollation)

@@ -5946,9 +5946,6 @@ public class JdbcTest {
   @Test void testCurrentTimestamp() throws Exception {
     CalciteAssert.that()
         .with(CalciteConnectionProperty.TIME_ZONE, "GMT+1:00")
-<<<<<<< HEAD
-        .doWithConnection(connection -> {
-=======
         .doWithConnection(
             new Function<CalciteConnection, Void>() {
               public Void apply(CalciteConnection connection) {
@@ -6292,7 +6289,6 @@ public class JdbcTest {
         "select * from \"employee\" where \"full_name\" = _UTF16'\u82f1\u56fd'")
         .throws_(
             "Cannot apply = to the two different charsets ISO-8859-1 and UTF-16LE");
->>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
 
     // The CONVERT function (what SQL:2011 calls "character transliteration") is
     // not implemented yet. See

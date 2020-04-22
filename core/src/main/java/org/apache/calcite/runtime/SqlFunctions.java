@@ -55,8 +55,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+<<<<<<< HEAD
 import java.util.Base64;
 import java.util.Collection;
+=======
+>>>>>>> 02d8ed362 ([CALCITE-3951] Support different string comparison based on SqlCollation)
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;

@@ -63,3 +63,8 @@ public class JavaCollation extends SqlCollation {
     return collator;
   }
 }
+<<<<<<< HEAD
+=======
+
+// End JavaCollation.java
+>>>>>>> 02d8ed362 ([CALCITE-3951] Support different string comparison based on SqlCollation)

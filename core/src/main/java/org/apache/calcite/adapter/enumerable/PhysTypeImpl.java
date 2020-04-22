@@ -48,6 +48,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import static org.apache.calcite.adapter.enumerable.EnumUtils.generateCollatorExpression;
+<<<<<<< HEAD
+=======
+import static org.apache.calcite.adapter.enumerable.EnumUtils.javaRowClass;
+>>>>>>> 02d8ed362 ([CALCITE-3951] Support different string comparison based on SqlCollation)
 import static org.apache.calcite.adapter.enumerable.EnumUtils.overridingMethodDecl;
 
 /** Implementation of {@link PhysType}. */

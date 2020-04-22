@@ -341,45 +341,6 @@ public abstract class SqlOperatorBaseTest {
             CalciteAssert.EMPTY_CONNECTION_FACTORY
                 .with(new CalciteAssert
                     .AddSchemaSpecPostProcessor(CalciteAssert.SchemaSpec.HR))
-<<<<<<< HEAD
-                .with(CalciteConnectionProperty.FUN, library.fun));
-  }
-
-  protected SqlTester oracleTester(SqlConformance conformance) {
-    if (conformance == null) {
-      conformance = SqlConformanceEnum.DEFAULT;
-    }
-    return tester
-        .withConformance(conformance)
-        .withOperatorTable(
-            SqlLibraryOperatorTableFactory.INSTANCE
-                .getOperatorTable(SqlLibrary.STANDARD, SqlLibrary.ORACLE))
-        .withConnectionFactory(
-            CalciteAssert.EMPTY_CONNECTION_FACTORY
-                .with(new CalciteAssert
-                    .AddSchemaSpecPostProcessor(CalciteAssert.SchemaSpec.HR))
-                .with("fun", "oracle")
-                .with("conformance", conformance));
-  }
-
-  /** Creates a tester with special sql library. */
-  protected SqlTester tester(SqlLibrary library) {
-    SqlTester result = tester.withOperatorTable(
-        SqlLibraryOperatorTableFactory.INSTANCE
-            .getOperatorTable(SqlLibrary.STANDARD, library))
-        .withConnectionFactory(
-            CalciteAssert.EMPTY_CONNECTION_FACTORY
-                .with(new CalciteAssert
-                    .AddSchemaSpecPostProcessor(CalciteAssert.SchemaSpec.HR))
-                .with("fun", library.name()));
-
-    // Set appropriate lexical policy for the library
-    if (library == SqlLibrary.ORACLE) {
-      result = result.withLex(Lex.ORACLE);
-    }
-
-    return result;
-=======
                 .with(CalciteConnectionProperty.FUN, "oracle"));
   }
 
@@ -7692,7 +7653,6 @@ public abstract class SqlOperatorBaseTest {
         "0",
         "BIGINT NOT NULL");
 =======
->>>>>>> cd02afaed (DX-11253: Fix EXTRACT(SECOND FROM <DATE>))
 
     tester.checkScalar(
         "extract(minute from date '2008-2-23')",
