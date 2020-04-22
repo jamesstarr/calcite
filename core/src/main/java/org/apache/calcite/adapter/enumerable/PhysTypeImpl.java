@@ -41,7 +41,6 @@ import org.apache.calcite.util.Util;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.AbstractList;
@@ -50,6 +49,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static org.apache.calcite.adapter.enumerable.EnumUtils.generateCollatorExpression;
 import static org.apache.calcite.adapter.enumerable.EnumUtils.javaRowClass;
 import static org.apache.calcite.adapter.enumerable.EnumUtils.overridingMethodDecl;
 
@@ -255,6 +255,10 @@ public class PhysTypeImpl implements PhysType {
     final Expression selector;
     if (collations.size() == 1) {
       RelFieldCollation collation = collations.get(0);
+      RelDataType fieldType = rowType.getFieldList() == null || rowType.getFieldList().isEmpty()
+          ? rowType
+          : rowType.getFieldList().get(collation.getFieldIndex()).getType();
+      Expression fieldComparator = generateCollatorExpression(fieldType.getCollation());
       ParameterExpression parameter =
           Expressions.parameter(javaRowClass, "v");
       selector =
@@ -265,13 +269,16 @@ public class PhysTypeImpl implements PhysType {
       return Pair.<Expression, Expression>of(
           selector,
           Expressions.call(
-              BuiltInMethod.NULLS_COMPARATOR.method,
-              Expressions.constant(
-                  collation.nullDirection
-                      == RelFieldCollation.NullDirection.FIRST),
-              Expressions.constant(
-                  collation.getDirection()
-                      == RelFieldCollation.Direction.DESCENDING)));
+              fieldComparator == null ? BuiltInMethod.NULLS_COMPARATOR.method
+                  : BuiltInMethod.NULLS_COMPARATOR2.method,
+              Expressions.list(
+                  (Expression) Expressions.constant(
+                      collation.nullDirection
+                          == RelFieldCollation.NullDirection.FIRST),
+                  Expressions.constant(
+                      collation.direction
+                          == RelFieldCollation.Direction.DESCENDING))
+                  .appendIfNotNull(fieldComparator)));
     }
     selector =
         Expressions.call(BuiltInMethod.IDENTITY_SELECTOR.method);
@@ -292,6 +299,8 @@ public class PhysTypeImpl implements PhysType {
     body.add(Expressions.declare(mod, parameterC, null));
     for (RelFieldCollation collation : collations) {
       final int index = collation.getFieldIndex();
+      final RelDataType fieldType = rowType.getFieldList().get(index).getType();
+      final Expression fieldComparator = generateCollatorExpression(fieldType.getCollation());
       Expression arg0 = fieldReference(parameterV0, index);
       Expression arg1 = fieldReference(parameterV1, index);
       switch (Primitive.flavor(fieldClass(index))) {
@@ -305,19 +314,21 @@ public class PhysTypeImpl implements PhysType {
       final boolean descending =
           collation.getDirection()
               == RelFieldCollation.Direction.DESCENDING;
-      final Method method = (fieldNullable(index)
-          ? (nullsFirst ^ descending
-              ? BuiltInMethod.COMPARE_NULLS_FIRST
-              : BuiltInMethod.COMPARE_NULLS_LAST)
-          : BuiltInMethod.COMPARE).method;
       body.add(
           Expressions.statement(
               Expressions.assign(
                   parameterC,
-                  Expressions.call(method.getDeclaringClass(),
-                      method.getName(),
-                      arg0,
-                      arg1))));
+                  Expressions.call(
+                      Utilities.class,
+                      fieldNullable(index)
+                          ? (nullsFirst != descending
+                          ? "compareNullsFirst"
+                          : "compareNullsLast")
+                          : "compare",
+                      Expressions.list(
+                          arg0,
+                          arg1)
+                          .appendIfNotNull(fieldComparator)))));
       body.add(
           Expressions.ifThen(
               Expressions.notEqual(
@@ -393,6 +404,8 @@ public class PhysTypeImpl implements PhysType {
     body.add(Expressions.declare(mod, parameterC, null));
     for (RelFieldCollation fieldCollation : collation.getFieldCollations()) {
       final int index = fieldCollation.getFieldIndex();
+      final RelDataType fieldType = rowType.getFieldList().get(index).getType();
+      final Expression fieldComparator = generateCollatorExpression(fieldType.getCollation());
       Expression arg0 = fieldReference(parameterV0, index);
       Expression arg1 = fieldReference(parameterV1, index);
       switch (Primitive.flavor(fieldClass(index))) {
@@ -417,8 +430,10 @@ public class PhysTypeImpl implements PhysType {
                           ? "compareNullsFirst"
                           : "compareNullsLast")
                           : "compare",
-                      arg0,
-                      arg1))));
+                      Expressions.list(
+                          arg0,
+                          arg1)
+                          .appendIfNotNull(fieldComparator)))));
       body.add(
           Expressions.ifThen(
               Expressions.notEqual(

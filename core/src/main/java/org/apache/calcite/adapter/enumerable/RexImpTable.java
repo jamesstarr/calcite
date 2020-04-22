@@ -75,6 +75,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.calcite.adapter.enumerable.EnumUtils.generateCollatorExpression;
 import static org.apache.calcite.linq4j.tree.ExpressionType.Add;
 import static org.apache.calcite.linq4j.tree.ExpressionType.AndAlso;
 import static org.apache.calcite.linq4j.tree.ExpressionType.Divide;
@@ -1845,6 +1846,11 @@ public class RexImpTable {
         final Type type0 = expressions.get(0).getType();
         final Type type1 = expressions.get(1).getType();
         final SqlBinaryOperator op = (SqlBinaryOperator) call.getOperator();
+        final RelDataType relDataType0 = call.getOperands().get(0).getType();
+        final Expression fieldComparator = generateCollatorExpression(relDataType0.getCollation());
+        if (fieldComparator != null) {
+          expressions.add(fieldComparator);
+        }
         final Primitive primitive = Primitive.ofBoxOr(type0);
         if (primitive == null
             || type1 == BigDecimal.class

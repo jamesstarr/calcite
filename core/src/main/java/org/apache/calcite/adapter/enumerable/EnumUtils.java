@@ -30,6 +30,8 @@ import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.runtime.Utilities;
+import org.apache.calcite.sql.SqlCollation;
 import org.apache.calcite.util.BuiltInMethod;
 
 import com.google.common.base.Function;
@@ -42,6 +44,7 @@ import java.lang.reflect.Type;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Utilities for generating programs in the Enumerable (functional)
@@ -263,6 +266,30 @@ public class EnumUtils {
       }
     }
     return e;
+  }
+
+  public static Expression generateCollatorExpression(SqlCollation collation) {
+    if (collation == null || collation.getCollator() == null) {
+      return null;
+    }
+
+    // Utilities.generateCollator(
+    //      new Locale(
+    //          collation.getLocale().getLanguage(),
+    //          collation.getLocale().getCountry(),
+    //          collation.getLocale().getVariant()),
+    //      collation.getCollator().getStrength());
+    final Locale locale = collation.getLocale();
+    final int strength = collation.getCollator().getStrength();
+    return Expressions.call(
+        Utilities.class,
+        "generateCollator",
+        Expressions.new_(
+            Locale.class,
+            Expressions.constant(locale.getLanguage()),
+            Expressions.constant(locale.getCountry()),
+            Expressions.constant(locale.getVariant())),
+        Expressions.constant(strength));
   }
 }
 

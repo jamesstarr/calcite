@@ -554,7 +554,7 @@ public final class SqlParserUtil {
           SaffronProperties.INSTANCE.defaultCollationStrength().get();
     }
 
-    Charset charset = Charset.forName(charsetStr);
+    Charset charset = SqlUtil.getCharset(charsetStr);
     String[] localeParts = localeStr.split("_");
     Locale locale;
     if (1 == localeParts.length) {

@@ -47,6 +47,7 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -353,6 +354,11 @@ public class SqlFunctions {
     return b0.equals(b1);
   }
 
+  /** SQL <code>=</code> operator applied to String values with a certain Comparator. */
+  public static boolean eq(String s0, String s1, Comparator<String> comparator) {
+    return comparator.compare(s0, s1) == 0;
+  }
+
   /** SQL <code>=</code> operator applied to Object values (at least one operand
    * has ANY type; neither may be null). */
   public static boolean eqAny(Object b0, Object b1) {
@@ -392,6 +398,11 @@ public class SqlFunctions {
     return !eq(b0, b1);
   }
 
+  /** SQL <code>&lt;gt;</code> operator applied to OString values with a certain Comparator. */
+  public static boolean ne(String s0, String s1, Comparator<String> comparator) {
+    return !eq(s0, s1, comparator);
+  }
+
   /** SQL <code>&lt;gt;</code> operator applied to Object values (at least one
    *  operand has ANY type, including String; neither may be null). */
   public static boolean neAny(Object b0, Object b1) {
@@ -408,6 +419,11 @@ public class SqlFunctions {
   /** SQL <code>&lt;</code> operator applied to String values. */
   public static boolean lt(String b0, String b1) {
     return b0.compareTo(b1) < 0;
+  }
+
+  /** SQL <code>&lt;</code> operator applied to String values. */
+  public static boolean lt(String b0, String b1, Comparator<String> comparator) {
+    return comparator.compare(b0, b1) < 0;
   }
 
   /** SQL <code>&lt;</code> operator applied to ByteString values. */
@@ -443,6 +459,11 @@ public class SqlFunctions {
   /** SQL <code>&le;</code> operator applied to String values. */
   public static boolean le(String b0, String b1) {
     return b0.compareTo(b1) <= 0;
+  }
+
+  /** SQL <code>&le;</code> operator applied to String values. */
+  public static boolean le(String b0, String b1, Comparator<String> comparator) {
+    return comparator.compare(b0, b1) <= 0;
   }
 
   /** SQL <code>&le;</code> operator applied to ByteString values. */
@@ -481,6 +502,11 @@ public class SqlFunctions {
     return b0.compareTo(b1) > 0;
   }
 
+  /** SQL <code>&gt;</code> operator applied to String values. */
+  public static boolean gt(String b0, String b1, Comparator<String> comparator) {
+    return comparator.compare(b0, b1) > 0;
+  }
+
   /** SQL <code>&gt;</code> operator applied to ByteString values. */
   public static boolean gt(ByteString b0, ByteString b1) {
     return b0.compareTo(b1) > 0;
@@ -515,6 +541,11 @@ public class SqlFunctions {
   /** SQL <code>&ge;</code> operator applied to String values. */
   public static boolean ge(String b0, String b1) {
     return b0.compareTo(b1) >= 0;
+  }
+
+  /** SQL <code>&ge;</code> operator applied to String values. */
+  public static boolean ge(String b0, String b1, Comparator<String> comparator) {
+    return comparator.compare(b0, b1) >= 0;
   }
 
   /** SQL <code>&ge;</code> operator applied to ByteString values. */

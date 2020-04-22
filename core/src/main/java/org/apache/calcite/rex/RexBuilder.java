@@ -875,11 +875,12 @@ public class RexBuilder {
       // from the type if necessary.
       assert o instanceof NlsString;
       NlsString nlsString = (NlsString) o;
-      if ((nlsString.getCollation() == null)
-          || (nlsString.getCharset() == null)) {
-
-        assert type.getSqlTypeName() == SqlTypeName.CHAR;
-        assert type.getCharset().name() != null;
+      if (nlsString.getCollation() == null
+          || nlsString.getCharset() == null
+          || !nlsString.getCharset().equals(type.getCharset())
+          || !nlsString.getCollation().equals(type.getCollation())) {
+        assert type.getSqlTypeName() == SqlTypeName.CHAR
+            || type.getSqlTypeName() == SqlTypeName.VARCHAR;
         assert type.getCollation() != null;
         o = new NlsString(
             nlsString.getValue(),
@@ -1051,10 +1052,7 @@ public class RexBuilder {
    */
   protected RexLiteral makePreciseStringLiteral(ByteString value,
       String charsetName, SqlCollation collation) {
-    return makeLiteral(
-        new NlsString(value, charsetName, collation),
-        typeFactory.createSqlType(SqlTypeName.CHAR),
-        SqlTypeName.CHAR);
+    return makeCharLiteral(new NlsString(value, charsetName, collation));
   }
 
   /**
