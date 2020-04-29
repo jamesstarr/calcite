@@ -549,23 +549,25 @@ public abstract class ReturnTypes {
   public static final SqlReturnTypeInference NULLABLE_MOD =
           chain(DECIMAL_MOD_NULLABLE, ARG1_NULLABLE);
 
-  public static final SqlReturnTypeInference DECIMAL_TRUNCATE = opBinding -> {
-    RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-    RelDataType type1 = opBinding.getOperandType(0);
-    Integer scale2 = 0;
+  public static final SqlReturnTypeInference DECIMAL_TRUNCATE = new SqlReturnTypeInference() {
+    public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
+      RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+      RelDataType type1 = opBinding.getOperandType(0);
+      Integer scale2 = 0;
 
-    if (opBinding.getOperandCount() > 1 && opBinding instanceof SqlCallBinding) {
-      SqlCallBinding callBinding = (SqlCallBinding) opBinding;
-      SqlNode operand1 = callBinding.operand(1);
+      if (opBinding.getOperandCount() > 1 && opBinding instanceof SqlCallBinding) {
+        SqlCallBinding callBinding = (SqlCallBinding) opBinding;
+        SqlNode operand1 = callBinding.operand(1);
 
-      if (!(operand1 instanceof SqlLiteral)) {
-        return type1;
-      } else {
-        scale2 = opBinding.getIntLiteralOperand(1);
+        if (!(operand1 instanceof SqlLiteral)) {
+          return type1;
+        } else {
+          scale2 = opBinding.getIntLiteralOperand(1);
+        }
       }
-    }
 
-    return typeFactory.getTypeSystem().deriveDecimalTruncateType(typeFactory, type1, scale2);
+      return typeFactory.getTypeSystem().deriveDecimalTruncateType(typeFactory, type1, scale2);
+    }
   };
 
   /**
@@ -585,23 +587,25 @@ public abstract class ReturnTypes {
       chain(DECIMAL_TRUNCATE_NULLABLE, ARG0_NULLABLE);
 
 
-  public static final SqlReturnTypeInference DECIMAL_ROUND = opBinding -> {
-    RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-    RelDataType type1 = opBinding.getOperandType(0);
-    Integer scale2 = 0;
+  public static final SqlReturnTypeInference DECIMAL_ROUND = new SqlReturnTypeInference() {
+    public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
+      RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+      RelDataType type1 = opBinding.getOperandType(0);
+      Integer scale2 = 0;
 
-    if (opBinding.getOperandCount() > 1 && opBinding instanceof SqlCallBinding) {
-      SqlCallBinding callBinding = (SqlCallBinding) opBinding;
-      SqlNode operand1 = callBinding.operand(1);
+      if (opBinding.getOperandCount() > 1 && opBinding instanceof SqlCallBinding) {
+        SqlCallBinding callBinding = (SqlCallBinding) opBinding;
+        SqlNode operand1 = callBinding.operand(1);
 
-      if (!(operand1 instanceof SqlLiteral)) {
-        return type1;
-      } else {
-        scale2 = opBinding.getIntLiteralOperand(1);
+        if (!(operand1 instanceof SqlLiteral)) {
+          return type1;
+        } else {
+          scale2 = opBinding.getIntLiteralOperand(1);
+        }
       }
-    }
 
-    return typeFactory.getTypeSystem().deriveDecimalRoundType(typeFactory, type1, scale2);
+      return typeFactory.getTypeSystem().deriveDecimalRoundType(typeFactory, type1, scale2);
+    }
   };
 
   /**
