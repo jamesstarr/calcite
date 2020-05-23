@@ -39,9 +39,9 @@ Unpack the source distribution `.tar.gz` file,
 then build using Gradle:
 
 {% highlight bash %}
-$ tar xvfz apache-calcite-1.22.0-src.tar.gz
-$ cd apache-calcite-1.22.0-src
-$ gradle build
+$ tar xvfz apache-calcite-1.23.0-src.tar.gz
+$ cd apache-calcite-1.23.0-src
+$ ./gradlew build
 {% endhighlight %}
 
 [Running tests](#running-tests) describes how to run more or fewer
