@@ -36,6 +36,9 @@ Downloads are available on the
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1581e33f8 (Improve 1.23.0 release note and document)
 ## <a href="https://github.com/apache/calcite/releases/tag/calcite-1.23.0">1.23.0</a> / 2020-05-23
 {: #v1-23-0}
 
@@ -359,8 +362,11 @@ gradle.properties.
 * Site: Add Vineet Garg as committer
 * Site: Add Feng Zhu as committer
 
+<<<<<<< HEAD
 =======
 >>>>>>> f3df0243a (Improve 1.22.0 release note and document (#121))
+=======
+>>>>>>> 1581e33f8 (Improve 1.23.0 release note and document)
 ## <a href="https://github.com/apache/calcite/releases/tag/calcite-1.22.0">1.22.0</a> / 2020-03-05
 {: #v1-22-0}
 

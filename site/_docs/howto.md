@@ -45,6 +45,7 @@ then build using Gradle:
 
 {% highlight bash %}
 <<<<<<< HEAD
+<<<<<<< HEAD
 $ tar xvfz apache-calcite-1.23.0-src.tar.gz
 $ cd apache-calcite-1.23.0-src
 $ ./gradlew build
@@ -87,6 +88,11 @@ $ cd apache-calcite-1.22.0-src
 >>>>>>> 55e2e46c7 ([CALCITE-3808] Release Calcite 1.22.0 (#120))
 $ gradle build
 >>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
+=======
+$ tar xvfz apache-calcite-1.23.0-src.tar.gz
+$ cd apache-calcite-1.23.0-src
+$ ./gradlew build
+>>>>>>> 1581e33f8 (Improve 1.23.0 release note and document)
 {% endhighlight %}
 
 [Running tests](#running-tests) describes how to run more or fewer
