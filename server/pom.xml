@@ -51,10 +51,6 @@ limitations under the License.
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.calcite</groupId>
-      <artifactId>calcite-linq4j</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>com.google.guava</groupId>
