@@ -153,18 +153,106 @@ class OsAdapterTest {
     assumeFalse(isWindows(), "Skip: the 'ps' table does not work on Windows");
     assumeToolExists("ps");
     sql("select * from ps")
-        .returns(r -> {
-          try {
-            assertThat(r.next(), is(true));
-            final StringBuilder b = new StringBuilder();
-            final int c = r.getMetaData().getColumnCount();
-            for (int i = 0; i < c; i++) {
-              b.append(r.getString(i + 1)).append(';');
-              assertThat(r.wasNull(), is(false));
-            }
-            assertThat(b.toString(), notNullValue());
-          } catch (SQLException e) {
-            throw rethrow(e);
+        .returns(
+            new Function<ResultSet, Void>() {
+              public Void apply(ResultSet r) {
+                try {
+                  assertThat(r.next(), is(true));
+                  final StringBuilder b = new StringBuilder();
+                  final int c = r.getMetaData().getColumnCount();
+                  for (int i = 0; i < c; i++) {
+                    b.append(r.getString(i + 1)).append(';');
+                    assertThat(r.wasNull(), is(false));
+                  }
+                  assertThat(b.toString(), notNullValue());
+                  return null;
+                } catch (SQLException e) {
+                  throw new RuntimeException(e);
+                }
+              }
+            });
+  }
+
+  @Test public void testPsDistinct() {
+    Assume.assumeFalse("Skip: the 'ps' table does not work on Windows",
+        isWindows());
+    sql("select distinct `user` from ps")
+        .returns(
+            new Function<ResultSet, Void>() {
+              public Void apply(ResultSet r) {
+                try {
+                  assertThat(r.next(), is(true));
+                  assertThat(r.getString(1), notNullValue());
+                  assertThat(r.wasNull(), is(false));
+                  return null;
+                } catch (SQLException e) {
+                  throw new RuntimeException(e);
+                }
+              }
+            });
+  }
+
+  @Test public void testGitCommits() {
+    Assume.assumeTrue("no git", hasGit());
+    sql("select count(*) from git_commits")
+        .returns(
+            new Function<ResultSet, Void>() {
+              public Void apply(ResultSet r) {
+                try {
+                  assertThat(r.next(), is(true));
+                  assertThat(r.getString(1), notNullValue());
+                  assertThat(r.wasNull(), is(false));
+                  return null;
+                } catch (SQLException e) {
+                  throw new RuntimeException(e);
+                }
+              }
+            });
+  }
+
+  @Test public void testGitCommitsTop() {
+    Assume.assumeTrue("no git", hasGit());
+    final String q = "select author from git_commits\n"
+        + "group by 1 order by count(*) desc limit 1";
+    sql(q).returnsUnordered("author=Julian Hyde <jhyde@apache.org>");
+  }
+
+  @Test public void testVmstat() {
+    Assume.assumeFalse("Skip: the 'files' table does not work on Windows",
+        isWindows());
+    sql("select * from vmstat")
+        .returns(
+            new Function<ResultSet, Void>() {
+              public Void apply(ResultSet r) {
+                try {
+                  assertThat(r.next(), is(true));
+                  final int c = r.getMetaData().getColumnCount();
+                  for (int i = 0; i < c; i++) {
+                    assertThat(r.getLong(i + 1), notNullValue());
+                    assertThat(r.wasNull(), is(false));
+                  }
+                  return null;
+                } catch (SQLException e) {
+                  throw new RuntimeException(e);
+                }
+              }
+            });
+  }
+
+  @Test public void testStdin() throws SQLException {
+    try (Hook.Closeable ignore = Hook.STANDARD_STREAMS.addThread(
+        new Function<Holder<Object[]>, Void>() {
+          public Void apply(Holder<Object[]> o) {
+            final Object[] values = o.get();
+            final InputStream in = (InputStream) values[0];
+            final String s = "First line\n"
+                + "Second line";
+            final ByteArrayInputStream in2 =
+                new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
+            final OutputStream out = (OutputStream) values[1];
+            final OutputStream err = (OutputStream) values[2];
+            o.set(new Object[] {in2, out, err});
+            return null;
           }
         });
   }

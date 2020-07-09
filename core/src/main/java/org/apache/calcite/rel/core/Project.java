@@ -160,10 +160,13 @@ public abstract class Project extends SingleRel implements Hintable {
     return true;
   }
 
+<<<<<<< HEAD
   public List<RexNode> getChildExps() {
     return exps;
   }
 
+=======
+>>>>>>> fa076d987 ([CALCITE-4079] Dialect constants in SqlDialect can cause class initialization deadlock)
   public RelNode accept(RexShuttle shuttle) {
     List<RexNode> exps = shuttle.apply(this.exps);
     if (this.exps == exps) {

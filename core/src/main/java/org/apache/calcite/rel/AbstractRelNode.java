@@ -30,7 +30,6 @@ import org.apache.calcite.rel.metadata.Metadata;
 import org.apache.calcite.rel.metadata.MetadataFactory;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexShuttle;
 import org.apache.calcite.sql.SqlExplainLevel;
 import org.apache.calcite.util.Litmus;
@@ -38,7 +37,6 @@ import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 import org.apache.calcite.util.trace.CalciteTrace;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import org.slf4j.Logger;
@@ -125,11 +123,6 @@ public abstract class AbstractRelNode implements RelNode {
     return collection.get(0);
   }
 
-  @SuppressWarnings("deprecation")
-  public List<RexNode> getChildExps() {
-    return ImmutableList.of();
-  }
-
   public final RelOptCluster getCluster() {
     return cluster;
   }
@@ -146,9 +139,56 @@ public abstract class AbstractRelNode implements RelNode {
     return null;
   }
 
-  @SuppressWarnings("deprecation")
-  public final double getRows() {
-    return estimateRowCount(getCluster().getMetadataQuery());
+  public int getId() {
+    return id;
+  }
+
+  public RelNode getInput(int i) {
+    List<RelNode> inputs = getInputs();
+    return inputs.get(i);
+  }
+
+  public void register(RelOptPlanner planner) {
+    Util.discard(planner);
+  }
+
+  public final String getRelTypeName() {
+    String className = getClass().getName();
+    int i = className.lastIndexOf("$");
+    if (i >= 0) {
+      return className.substring(i + 1);
+    }
+    i = className.lastIndexOf(".");
+    if (i >= 0) {
+      return className.substring(i + 1);
+    }
+    return className;
+  }
+
+  public boolean isValid(Litmus litmus, Context context) {
+    return litmus.succeed();
+  }
+
+  public final RelDataType getRowType() {
+    if (rowType == null) {
+      rowType = deriveRowType();
+      assert rowType != null : this;
+    }
+    return rowType;
+  }
+
+  protected RelDataType deriveRowType() {
+    // This method is only called if rowType is null, so you don't NEED to
+    // implement it if rowType is always set.
+    throw new UnsupportedOperationException();
+  }
+
+  public RelDataType getExpectedInputRowType(int ordinalInParent) {
+    return getRowType();
+  }
+
+  public List<RelNode> getInputs() {
+    return Collections.emptyList();
   }
 
   public double estimateRowCount(RelMetadataQuery mq) {
@@ -183,13 +223,12 @@ public abstract class AbstractRelNode implements RelNode {
     return this;
   }
 
-<<<<<<< HEAD
-=======
   @SuppressWarnings("deprecation")
   public final RelOptCost computeSelfCost(RelOptPlanner planner) {
     return computeSelfCost(planner, getCluster().getMetadataQuery());
   }
 
+=======
   public RelOptCost computeSelfCost(RelOptPlanner planner,
       RelMetadataQuery mq) {
     // by default, assume cost is proportional to number of rows

@@ -165,12 +165,10 @@ public abstract class Sort extends SingleRel {
 
   /** Returns the sort expressions. */
   public List<RexNode> getSortExps() {
-    return fieldExps;
-  }
-
-  @SuppressWarnings("deprecation")
-  @Override public List<RelCollation> getCollationList() {
-    return Collections.singletonList(getCollation());
+    //noinspection StaticPseudoFunctionalStyleMethod
+    return Lists.transform(collation.getFieldCollations(), field ->
+        getCluster().getRexBuilder().makeInputRef(input,
+            Objects.requireNonNull(field).getFieldIndex()));
   }
 
   public RelWriter explainTerms(RelWriter pw) {

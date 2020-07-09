@@ -24,10 +24,7 @@ import org.apache.calcite.config.NullCollation;
 import org.apache.calcite.linq4j.function.Experimental;
 import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeSystem;
-import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
-import org.apache.calcite.rex.RexCall;
-import org.apache.calcite.rex.RexNode;
+>>>>>>> fa076d987 ([CALCITE-4079] Dialect constants in SqlDialect can cause class initialization deadlock)
 import org.apache.calcite.sql.dialect.JethroDataSqlDialect;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParser;
@@ -82,6 +79,7 @@ public class SqlDialect {
   /** Empty context. */
   public static final Context EMPTY_CONTEXT = emptyContext();
 
+<<<<<<< HEAD
   /** Built-in scalar functions and operators common for every dialect. */
   protected static final Set<SqlOperator> BUILT_IN_OPERATORS_LIST =
       ImmutableSet.<SqlOperator>builder()
@@ -134,6 +132,7 @@ public class SqlDialect {
           .build();
 
 
+=======
   //~ Instance fields --------------------------------------------------------
 
   protected final String identifierQuoteString;

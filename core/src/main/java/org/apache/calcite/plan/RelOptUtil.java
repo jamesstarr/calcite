@@ -3324,23 +3324,6 @@ public abstract class RelOptUtil {
       exprList.add(rexBuilder.makeInputRef(rel, source));
     }
     return projectFactory.createProject(rel, ImmutableList.of(), exprList, outputNameList);
-<<<<<<< HEAD
-  }
-
-  /** Predicate for if a {@link Calc} does not contain windowed aggregates. */
-  public static boolean notContainsWindowedAgg(Calc calc) {
-    return !calc.getProgram().containsAggs();
-  }
-
-  /** Predicate for if a {@link Filter} does not windowed aggregates. */
-  public static boolean notContainsWindowedAgg(Filter filter) {
-    return !RexOver.containsOver(filter.getCondition());
-  }
-
-  /** Predicate for if a {@link Project} does not contain windowed aggregates. */
-  public static boolean notContainsWindowedAgg(Project project) {
-    return !RexOver.containsOver(project.getProjects(), null);
-=======
 >>>>>>> a532c10f9 ([CALCITE-3730] Add hints to RelBuilder)
   }
 
@@ -3990,7 +3973,16 @@ public abstract class RelOptUtil {
    * Visitor which builds a bitmap of the inputs used by an expression.
    */
   public static class InputFinder extends RexVisitorImpl<Void> {
+<<<<<<< HEAD
       this.inputBitSet = bitBuilder; // deprecated field mirrors private field
+=======
+    private final ImmutableBitSet.Builder bitBuilder;
+    private final Set<RelDataTypeField> extraFields;
+
+    private InputFinder(Set<RelDataTypeField> extraFields,
+        ImmutableBitSet.Builder bitBuilder) {
+      super(true);
+      this.bitBuilder = bitBuilder;
       this.extraFields = extraFields;
     }
 

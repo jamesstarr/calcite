@@ -343,7 +343,7 @@ public class RelToSqlConverter extends SqlImplementor
     final Builder builder =
         x.builder(e, Clause.SELECT);
     final List<SqlNode> selectList = new ArrayList<>();
-    for (RexNode ref : e.getChildExps()) {
+    for (RexNode ref : e.getProjects()) {
       SqlNode sqlExpr = builder.context.toSql(null,
           simplifyDatetimePlus(ref, e.getCluster().getRexBuilder()));
       addSelect(selectList, sqlExpr, e.getRowType());

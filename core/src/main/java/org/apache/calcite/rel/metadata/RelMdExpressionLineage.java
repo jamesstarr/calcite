@@ -118,7 +118,10 @@ public class RelMdExpressionLineage
     final RexBuilder rexBuilder = rel.getCluster().getRexBuilder();
 
     // Extract input fields referenced by expression
-    final ImmutableBitSet inputFieldsUsed = extractInputRefs(outputExpression);
+    final Set<RelDataTypeField> inputExtraFields = new LinkedHashSet<>();
+    final RelOptUtil.InputFinder inputFinder = new RelOptUtil.InputFinder(inputExtraFields);
+    outputExpression.accept(inputFinder);
+    final ImmutableBitSet inputFieldsUsed = inputFinder.build();
 
     // Infer column origin expressions for given references
     final Map<RexInputRef, Set<RexNode>> mapping = new LinkedHashMap<>();
@@ -146,7 +149,10 @@ public class RelMdExpressionLineage
     final RexBuilder rexBuilder = rel.getCluster().getRexBuilder();
 
     // Extract input fields referenced by expression
-    final ImmutableBitSet inputFieldsUsed = extractInputRefs(outputExpression);
+    final Set<RelDataTypeField> inputExtraFields = new LinkedHashSet<>();
+    final RelOptUtil.InputFinder inputFinder = new RelOptUtil.InputFinder(inputExtraFields);
+    outputExpression.accept(inputFinder);
+    final ImmutableBitSet inputFieldsUsed = inputFinder.build();
 
     for (int idx : inputFieldsUsed) {
       if (idx >= rel.getGroupCount()) {
@@ -293,7 +299,10 @@ public class RelMdExpressionLineage
     final RexBuilder rexBuilder = rel.getCluster().getRexBuilder();
 
     // Extract input fields referenced by expression
-    final ImmutableBitSet inputFieldsUsed = extractInputRefs(outputExpression);
+    final Set<RelDataTypeField> inputExtraFields = new LinkedHashSet<>();
+    final RelOptUtil.InputFinder inputFinder = new RelOptUtil.InputFinder(inputExtraFields);
+    outputExpression.accept(inputFinder);
+    final ImmutableBitSet inputFieldsUsed = inputFinder.build();
 
     // Infer column origin expressions for given references
     final Map<RexInputRef, Set<RexNode>> mapping = new LinkedHashMap<>();
@@ -357,7 +366,10 @@ public class RelMdExpressionLineage
   @Nullable protected static Set<RexNode> createAllPossibleExpressions(RexBuilder rexBuilder,
       RexNode expr, Map<RexInputRef, Set<RexNode>> mapping) {
     // Extract input fields referenced by expression
-    final ImmutableBitSet predFieldsUsed = extractInputRefs(expr);
+    final Set<RelDataTypeField> inputExtraFields = new LinkedHashSet<>();
+    final RelOptUtil.InputFinder inputFinder = new RelOptUtil.InputFinder(inputExtraFields);
+    expr.accept(inputFinder);
+    final ImmutableBitSet predFieldsUsed = inputFinder.build();
 
     if (predFieldsUsed.isEmpty()) {
       // The unique expression is the input expression
