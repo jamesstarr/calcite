@@ -21,7 +21,6 @@ import org.apache.calcite.plan.ConventionTraitDef;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptCost;
 import org.apache.calcite.plan.RelOptPlanner;
-import org.apache.calcite.plan.RelOptQuery;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelTrait;
@@ -32,16 +31,13 @@ import org.apache.calcite.rel.metadata.Metadata;
 import org.apache.calcite.rel.metadata.MetadataFactory;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexShuttle;
 import org.apache.calcite.sql.SqlExplainLevel;
-import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 import org.apache.calcite.util.trace.CalciteTrace;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import org.slf4j.Logger;
@@ -140,11 +136,6 @@ public abstract class AbstractRelNode implements RelNode {
     return collection.get(0);
   }
 
-  @SuppressWarnings("deprecation")
-  public List<RexNode> getChildExps() {
-    return ImmutableList.of();
-  }
-
   public final RelOptCluster getCluster() {
     return cluster;
   }
@@ -161,18 +152,6 @@ public abstract class AbstractRelNode implements RelNode {
     return null;
   }
 
-  @SuppressWarnings("deprecation")
-  public boolean isDistinct() {
-    final RelMetadataQuery mq = this.getCluster().getMetadataQuery();
-    return Boolean.TRUE.equals(mq.areRowsUnique(this));
-  }
-
-  @SuppressWarnings("deprecation")
-  public boolean isKey(ImmutableBitSet columns) {
-    final RelMetadataQuery mq = this.getCluster().getMetadataQuery();
-    return Boolean.TRUE.equals(mq.areColumnsUnique(this, columns));
-  }
-
   public int getId() {
     return id;
   }
@@ -180,11 +159,6 @@ public abstract class AbstractRelNode implements RelNode {
   public RelNode getInput(int i) {
     List<RelNode> inputs = getInputs();
     return inputs.get(i);
-  }
-
-  @SuppressWarnings("deprecation")
-  public final RelOptQuery getQuery() {
-    return getCluster().getQuery();
   }
 
   public void register(RelOptPlanner planner) {
@@ -206,17 +180,6 @@ public abstract class AbstractRelNode implements RelNode {
 
   public boolean isValid(Litmus litmus, Context context) {
     return litmus.succeed();
-  }
-
-  @SuppressWarnings("deprecation")
-  public boolean isValid(boolean fail) {
-    return isValid(Litmus.THROW, null);
-  }
-
-  /** @deprecated Use {@link RelMetadataQuery#collations(RelNode)} */
-  @Deprecated // to be removed before 2.0
-  public List<RelCollation> getCollationList() {
-    return ImmutableList.of();
   }
 
   public final RelDataType getRowType() {
@@ -241,18 +204,8 @@ public abstract class AbstractRelNode implements RelNode {
     return Collections.emptyList();
   }
 
-  @SuppressWarnings("deprecation")
-  public final double getRows() {
-    return estimateRowCount(getCluster().getMetadataQuery());
-  }
-
   public double estimateRowCount(RelMetadataQuery mq) {
     return 1.0;
-  }
-
-  @SuppressWarnings("deprecation")
-  public final Set<String> getVariablesStopped() {
-    return CorrelationId.names(getVariablesSet());
   }
 
   public Set<CorrelationId> getVariablesSet() {
@@ -281,11 +234,6 @@ public abstract class AbstractRelNode implements RelNode {
 
   public RelNode accept(RexShuttle shuttle) {
     return this;
-  }
-
-  @SuppressWarnings("deprecation")
-  public final RelOptCost computeSelfCost(RelOptPlanner planner) {
-    return computeSelfCost(planner, getCluster().getMetadataQuery());
   }
 
   public RelOptCost computeSelfCost(RelOptPlanner planner,

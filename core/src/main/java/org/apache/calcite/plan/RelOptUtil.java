@@ -3741,11 +3741,6 @@ public abstract class RelOptUtil {
    * Visitor which builds a bitmap of the inputs used by an expression.
    */
   public static class InputFinder extends RexVisitorImpl<Void> {
-    /** @deprecated Being replaced by private field {@link #bitBuilder}.
-     * Use {@link #build}. */
-    @Deprecated // to be removed before 1.25
-    public final ImmutableBitSet.Builder inputBitSet;
-
     private final ImmutableBitSet.Builder bitBuilder;
     private final Set<RelDataTypeField> extraFields;
 
@@ -3753,7 +3748,6 @@ public abstract class RelOptUtil {
         ImmutableBitSet.Builder bitBuilder) {
       super(true);
       this.bitBuilder = bitBuilder;
-      this.inputBitSet = bitBuilder; // deprecated field mirrors private field
       this.extraFields = extraFields;
     }
 

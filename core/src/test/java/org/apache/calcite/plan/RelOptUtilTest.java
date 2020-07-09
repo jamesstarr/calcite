@@ -315,7 +315,7 @@ public class RelOptUtilTest {
             .toString()));
     assertThat(newJoin.getLeft(), is(instanceOf(Project.class)));
     Project leftInput = (Project) newJoin.getLeft();
-    assertThat(leftInput.getChildExps().get(EMP_ROW.getFieldCount()).toString(),
+    assertThat(leftInput.getProjects().get(EMP_ROW.getFieldCount()).toString(),
         is(relBuilder.call(SqlStdOperatorTable.PLUS, leftKeyInputRef, relBuilder.literal(1))
             .toString()));
   }
@@ -360,7 +360,7 @@ public class RelOptUtilTest {
             .toString()));
     assertThat(newJoin.getLeft(), is(instanceOf(Project.class)));
     Project leftInput = (Project) newJoin.getLeft();
-    assertThat(leftInput.getChildExps().get(EMP_ROW.getFieldCount()).toString(),
+    assertThat(leftInput.getProjects().get(EMP_ROW.getFieldCount()).toString(),
         is(relBuilder.call(SqlStdOperatorTable.PLUS, leftKeyInputRef, relBuilder.literal(1))
             .toString()));
 
@@ -412,7 +412,7 @@ public class RelOptUtilTest {
                 .toString()));
     assertThat(newJoin.getLeft(), is(instanceOf(Project.class)));
     Project leftInput = (Project) newJoin.getLeft();
-    assertThat(leftInput.getChildExps().get(EMP_ROW.getFieldCount()).toString(),
+    assertThat(leftInput.getProjects().get(EMP_ROW.getFieldCount()).toString(),
         is(relBuilder.call(SqlStdOperatorTable.PLUS, leftKeyInputRef, relBuilder.literal(1))
             .toString()));
   }
@@ -464,7 +464,7 @@ public class RelOptUtilTest {
               .toString()));
     assertThat(newJoin.getLeft(), is(instanceOf(Project.class)));
     Project leftInput = (Project) newJoin.getLeft();
-    assertThat(leftInput.getChildExps().get(EMP_ROW.getFieldCount()).toString(),
+    assertThat(leftInput.getProjects().get(EMP_ROW.getFieldCount()).toString(),
         is(relBuilder.call(SqlStdOperatorTable.PLUS, leftKeyInputRef, relBuilder.literal(1))
             .toString()));
   }

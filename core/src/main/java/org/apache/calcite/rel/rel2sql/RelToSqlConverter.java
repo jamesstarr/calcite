@@ -185,13 +185,13 @@ public class RelToSqlConverter extends SqlImplementor
   public Result visit(Project e) {
     Result x = visitChild(0, e.getInput());
     parseCorrelTable(e, x);
-    if (isStar(e.getChildExps(), e.getInput().getRowType(), e.getRowType())) {
+    if (isStar(e.getProjects(), e.getInput().getRowType(), e.getRowType())) {
       return x;
     }
     final Builder builder =
         x.builder(e, Clause.SELECT);
     final List<SqlNode> selectList = new ArrayList<>();
-    for (RexNode ref : e.getChildExps()) {
+    for (RexNode ref : e.getProjects()) {
       SqlNode sqlExpr = builder.context.toSql(null,
           simplifyDatetimePlus(ref, e.getCluster().getRexBuilder()));
       addSelect(selectList, sqlExpr, e.getRowType());

@@ -121,7 +121,7 @@ public class RelMdExpressionLineage
     final Set<RelDataTypeField> inputExtraFields = new LinkedHashSet<>();
     final RelOptUtil.InputFinder inputFinder = new RelOptUtil.InputFinder(inputExtraFields);
     outputExpression.accept(inputFinder);
-    final ImmutableBitSet inputFieldsUsed = inputFinder.inputBitSet.build();
+    final ImmutableBitSet inputFieldsUsed = inputFinder.build();
 
     // Infer column origin expressions for given references
     final Map<RexInputRef, Set<RexNode>> mapping = new LinkedHashMap<>();
@@ -153,7 +153,7 @@ public class RelMdExpressionLineage
     final Set<RelDataTypeField> inputExtraFields = new LinkedHashSet<>();
     final RelOptUtil.InputFinder inputFinder = new RelOptUtil.InputFinder(inputExtraFields);
     outputExpression.accept(inputFinder);
-    final ImmutableBitSet inputFieldsUsed = inputFinder.inputBitSet.build();
+    final ImmutableBitSet inputFieldsUsed = inputFinder.build();
 
     for (int idx : inputFieldsUsed) {
       if (idx >= rel.getGroupCount()) {
@@ -338,12 +338,12 @@ public class RelMdExpressionLineage
     final Set<RelDataTypeField> inputExtraFields = new LinkedHashSet<>();
     final RelOptUtil.InputFinder inputFinder = new RelOptUtil.InputFinder(inputExtraFields);
     outputExpression.accept(inputFinder);
-    final ImmutableBitSet inputFieldsUsed = inputFinder.inputBitSet.build();
+    final ImmutableBitSet inputFieldsUsed = inputFinder.build();
 
     // Infer column origin expressions for given references
     final Map<RexInputRef, Set<RexNode>> mapping = new LinkedHashMap<>();
     for (int idx : inputFieldsUsed) {
-      final RexNode inputExpr = rel.getChildExps().get(idx);
+      final RexNode inputExpr = rel.getProjects().get(idx);
       final Set<RexNode> originalExprs = mq.getExpressionLineage(input, inputExpr);
       if (originalExprs == null) {
         // Bail out
@@ -397,7 +397,7 @@ public class RelMdExpressionLineage
     final Set<RelDataTypeField> inputExtraFields = new LinkedHashSet<>();
     final RelOptUtil.InputFinder inputFinder = new RelOptUtil.InputFinder(inputExtraFields);
     expr.accept(inputFinder);
-    final ImmutableBitSet predFieldsUsed = inputFinder.inputBitSet.build();
+    final ImmutableBitSet predFieldsUsed = inputFinder.build();
 
     if (predFieldsUsed.isEmpty()) {
       // The unique expression is the input expression

@@ -20,7 +20,6 @@ import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptCost;
 import org.apache.calcite.plan.RelOptNode;
 import org.apache.calcite.plan.RelOptPlanner;
-import org.apache.calcite.plan.RelOptQuery;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.core.CorrelationId;
@@ -29,7 +28,6 @@ import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexShuttle;
-import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.Litmus;
 
 import java.util.List;
@@ -80,22 +78,6 @@ public interface RelNode extends RelOptNode, Cloneable {
   //~ Methods ----------------------------------------------------------------
 
   /**
-   * Returns a list of this relational expression's child expressions.
-   * (These are scalar expressions, and so do not include the relational
-   * inputs that are returned by {@link #getInputs}.
-   *
-   * <p>The caller should treat the list as unmodifiable; typical
-   * implementations will return an immutable list. If there are no
-   * child expressions, returns an empty list, not <code>null</code>.
-   *
-   * @deprecated use #accept(org.apache.calcite.rex.RexShuttle)
-   * @return List of this relational expression's child expressions
-   * @see #accept(org.apache.calcite.rex.RexShuttle)
-   */
-  @Deprecated // to be removed before 2.0
-  List<RexNode> getChildExps();
-
-  /**
    * Return the CallingConvention trait from this RelNode's
    * {@link #getTraitSet() trait set}.
    *
@@ -113,31 +95,12 @@ public interface RelNode extends RelOptNode, Cloneable {
   String getCorrelVariable();
 
   /**
-   * Returns whether the same value will not come out twice. Default value is
-   * <code>false</code>, derived classes should override.
-   *
-   * @return Whether the same value will not come out twice
-   *
-   * @deprecated Use {@link RelMetadataQuery#areRowsUnique(RelNode)}
-   */
-  @Deprecated // to be removed before 2.0
-  boolean isDistinct();
-
-  /**
    * Returns the <code>i</code><sup>th</sup> input relational expression.
    *
    * @param i Ordinal of input
    * @return <code>i</code><sup>th</sup> input
    */
   RelNode getInput(int i);
-
-  /**
-   * Returns the sub-query this relational expression belongs to.
-   *
-   * @return Sub-query
-   */
-  @Deprecated // to be removed before 2.0
-  RelOptQuery getQuery();
 
   /**
    * Returns the type of the rows returned by this relational expression.
@@ -175,35 +138,6 @@ public interface RelNode extends RelOptNode, Cloneable {
    *   return
    */
   double estimateRowCount(RelMetadataQuery mq);
-
-  /**
-   * @deprecated Call {@link RelMetadataQuery#getRowCount(RelNode)};
-   * if you wish to override the default row count formula, override the
-   * {@link #estimateRowCount(RelMetadataQuery)} method.
-   */
-  @Deprecated // to be removed before 2.0
-  double getRows();
-
-  /**
-   * Returns the names of variables that are set in this relational
-   * expression but also used and therefore not available to parents of this
-   * relational expression.
-   *
-   * <p>Note: only {@link org.apache.calcite.rel.core.Correlate} should set
-   * variables.
-   *
-   * <p>Note: {@link #getVariablesSet()} is equivalent but returns
-   * {@link CorrelationId} rather than their names. It is preferable except for
-   * calling old methods that require a set of strings.
-   *
-   * @return Names of variables which are set in this relational
-   *   expression
-   *
-   * @deprecated Use {@link #getVariablesSet()}
-   * and {@link CorrelationId#names(Set)}
-   */
-  @Deprecated // to be removed before 2.0
-  Set<String> getVariablesStopped();
 
   /**
    * Returns the variables that are set in this relational
@@ -259,14 +193,6 @@ public interface RelNode extends RelOptNode, Cloneable {
    * @return Cost of this plan (not including children)
    */
   RelOptCost computeSelfCost(RelOptPlanner planner, RelMetadataQuery mq);
-
-  /**
-   * @deprecated Call {@link RelMetadataQuery#getNonCumulativeCost(RelNode)};
-   * if you wish to override the default cost formula, override the
-   * {@link #computeSelfCost(RelOptPlanner, RelMetadataQuery)} method.
-   */
-  @Deprecated // to be removed before 2.0
-  RelOptCost computeSelfCost(RelOptPlanner planner);
 
   /**
    * Returns a metadata interface.
@@ -366,27 +292,12 @@ public interface RelNode extends RelOptNode, Cloneable {
    */
   boolean isValid(Litmus litmus, Context context);
 
-  @Deprecated // to be removed before 2.0
-  boolean isValid(boolean fail);
-
-  /**
-   * Returns a description of the physical ordering (or orderings) of this
-   * relational expression. Never null.
-   *
-   * @return Description of the physical ordering (or orderings) of this
-   *   relational expression. Never null
-   *
-   * @deprecated Use {@link RelMetadataQuery#distribution(RelNode)}
-   */
-  @Deprecated // to be removed before 2.0
-  List<RelCollation> getCollationList();
-
   /**
    * Creates a copy of this relational expression, perhaps changing traits and
    * inputs.
    *
    * <p>Sub-classes with other important attributes are encouraged to create
-   * variants of this method with more parameters.</p>
+   * variants of this method with more parameters.
    *
    * @param traitSet Trait set
    * @param inputs   Inputs
@@ -410,22 +321,6 @@ public interface RelNode extends RelOptNode, Cloneable {
    *                expressions
    */
   void register(RelOptPlanner planner);
-
-  /**
-   * Returns whether the result of this relational expression is uniquely
-   * identified by this columns with the given ordinals.
-   *
-   * <p>For example, if this relational expression is a LogicalTableScan to
-   * T(A, B, C, D) whose key is (A, B), then isKey([0, 1]) yields true,
-   * and isKey([0]) and isKey([0, 2]) yields false.</p>
-   *
-   * @param columns Ordinals of key columns
-   * @return Whether the given columns are a key or a superset of a key
-   *
-   * @deprecated Use {@link RelMetadataQuery#areColumnsUnique(RelNode, ImmutableBitSet)}
-   */
-  @Deprecated // to be removed before 2.0
-  boolean isKey(ImmutableBitSet columns);
 
   /**
    * Accepts a visit from a shuttle.
