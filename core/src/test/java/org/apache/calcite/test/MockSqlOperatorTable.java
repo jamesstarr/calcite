@@ -29,7 +29,45 @@ import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
->>>>>>> 2a57079b4 ([CALCITE-2744] RelDecorrelator use wrong output map for LogicalAggregate decorrelate (godfreyhe and Danny Chan))
+import org.apache.calcite.sql.type.SqlTypeFamily;
+import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.sql.util.ChainedSqlOperatorTable;
+import org.apache.calcite.sql.util.ListSqlOperatorTable;
+
+import com.google.common.collect.ImmutableList;
+
+/**
+ * Mock operator table for testing purposes. Contains the standard SQL operator
+ * table, plus a list of operators.
+ */
+public class MockSqlOperatorTable extends ChainedSqlOperatorTable {
+  //~ Instance fields --------------------------------------------------------
+
+  private final ListSqlOperatorTable listOpTab;
+
+  //~ Constructors -----------------------------------------------------------
+
+  public MockSqlOperatorTable(SqlOperatorTable parentTable) {
+    super(ImmutableList.of(parentTable, new ListSqlOperatorTable()));
+    listOpTab = (ListSqlOperatorTable) tableList.get(1);
+  }
+
+  //~ Methods ----------------------------------------------------------------
+
+  /**
+   * Adds an operator to this table.
+   */
+  public void addOperator(SqlOperator op) {
+    listOpTab.add(op);
+  }
+
+  public static void addRamp(MockSqlOperatorTable opTab) {
+    // Don't use anonymous inner classes. They can't be instantiated
+    // using reflection when we are deserializing from JSON.
+    opTab.addOperator(new RampFunction());
+    opTab.addOperator(new DedupFunction());
+    opTab.addOperator(new MyAvgAggFunction());
+    opTab.addOperator(new StructuredFunction());
   }
 
   /** "RAMP" user-defined function. */
@@ -90,6 +128,27 @@ import org.apache.calcite.sql.type.ReturnTypes;
 
     @Override public boolean isDeterministic() {
       return false;
+    }
+  }
+
+  /** "STRUCTURED_FUNC" user-defined function whose return type is structured type. */
+  public static class StructuredFunction extends SqlFunction {
+    StructuredFunction() {
+      super("STRUCTURED_FUNC", new SqlIdentifier("STRUCTURED_FUNC", SqlParserPos.ZERO),
+          SqlKind.OTHER_FUNCTION, null, null, OperandTypes.NILADIC, null,
+          SqlFunctionCategory.USER_DEFINED_FUNCTION);
+    }
+
+    @Override public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
+      final RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+      final RelDataType bigintType =
+          typeFactory.createSqlType(SqlTypeName.BIGINT);
+      final RelDataType varcharType =
+          typeFactory.createSqlType(SqlTypeName.VARCHAR, 20);
+      return typeFactory.builder()
+          .add("F0", bigintType)
+          .add("F1", varcharType)
+          .build();
     }
   }
 }
