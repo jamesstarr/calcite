@@ -21,10 +21,12 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlFunctionCategory;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlOperatorBinding;
 import org.apache.calcite.sql.SqlOperatorTable;
+import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
 import org.apache.calcite.sql.type.SqlTypeFamily;
@@ -65,6 +67,7 @@ public class MockSqlOperatorTable extends ChainedSqlOperatorTable {
     opTab.addOperator(new RampFunction());
     opTab.addOperator(new DedupFunction());
     opTab.addOperator(new MyAvgAggFunction());
+    opTab.addOperator(new StructuredFunction());
   }
 
   /** "RAMP" user-defined function. */
@@ -87,7 +90,7 @@ public class MockSqlOperatorTable extends ChainedSqlOperatorTable {
     }
   }
 
-  /** "DEDUP" user-defined function. */
+  /** "DEDUP" user-defined table function. */
   public static class DedupFunction extends SqlFunction {
     public DedupFunction() {
       super("DEDUP",
@@ -123,6 +126,27 @@ public class MockSqlOperatorTable extends ChainedSqlOperatorTable {
 
     @Override public boolean isDeterministic() {
       return false;
+    }
+  }
+
+  /** "STRUCTURED_FUNC" user-defined function whose return type is structured type. */
+  public static class StructuredFunction extends SqlFunction {
+    StructuredFunction() {
+      super("STRUCTURED_FUNC", new SqlIdentifier("STRUCTURED_FUNC", SqlParserPos.ZERO),
+          SqlKind.OTHER_FUNCTION, null, null, OperandTypes.NILADIC, null,
+          SqlFunctionCategory.USER_DEFINED_FUNCTION);
+    }
+
+    @Override public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
+      final RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
+      final RelDataType bigintType =
+          typeFactory.createSqlType(SqlTypeName.BIGINT);
+      final RelDataType varcharType =
+          typeFactory.createSqlType(SqlTypeName.VARCHAR, 20);
+      return typeFactory.builder()
+          .add("F0", bigintType)
+          .add("F1", varcharType)
+          .build();
     }
   }
 }

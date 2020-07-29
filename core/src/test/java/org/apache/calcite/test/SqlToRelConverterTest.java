@@ -36,10 +36,12 @@ import org.apache.calcite.rel.externalize.RelXmlWriter;
 import org.apache.calcite.rel.logical.LogicalCorrelate;
 import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.logical.LogicalSort;
+import org.apache.calcite.rel.logical.LogicalTableModify;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
 import org.apache.calcite.rex.RexExecutor;
+import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.sql.SqlExplainLevel;
 import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
 import org.apache.calcite.sql.type.SqlTypeName;
@@ -2858,6 +2860,31 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
         + "            END\n"
         + ") AS T";
     sql(sql).ok();
+  }
+
+  /**
+   * Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-4145">[CALCITE-4145]
+   * Exception when query from UDF field with structured type</a>.
+   */
+  @Test public void testUdfWithStructuredReturnType() {
+    final String sql = "SELECT deptno, tmp.r.f0, tmp.r.f1 FROM\n"
+        + "(SELECT deptno, STRUCTURED_FUNC() AS r from dept)tmp";
+    sql(sql).ok();
+  }
+
+  /**
+   * Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3826">[CALCITE-3826]
+   * UPDATE assigns wrong type to bind variables</a>.
+   */
+  @Test public void testDynamicParamTypesInUpdate() {
+    RelNode rel = tester.convertSqlToRel("update emp set sal = ?, ename = ? where empno = ?").rel;
+    LogicalTableModify modify = (LogicalTableModify) rel;
+    List<RexNode> parameters = modify.getSourceExpressionList();
+    assertThat(parameters.size(), is(2));
+    assertThat(parameters.get(0).getType().getSqlTypeName(), is(SqlTypeName.INTEGER));
+    assertThat(parameters.get(1).getType().getSqlTypeName(), is(SqlTypeName.VARCHAR));
   }
 
   @Test public void testCaseFlatten() {
