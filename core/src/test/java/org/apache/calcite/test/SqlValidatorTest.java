@@ -7337,7 +7337,7 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     sql("select * from emp where deptno = ? and sal < 100000").ok();
     sql("select case when deptno = ? then 1 else 2 end from emp").ok();
     // It is not possible to infer type of ?, because SUBSTRING is overloaded
-    sql("select deptno from emp group by substring(name from ^?^ for ?)")
+    sql("select deptno from emp group by substring(ename from ^?^ for ?)")
         .fails("Illegal use of dynamic parameter");
     // In principle we could infer that ? should be a VARCHAR
     sql("select count(*) from emp group by position(^?^ in ename)")

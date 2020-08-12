@@ -90,7 +90,7 @@ public class DefaultSqlTestFactory implements SqlTestFactory {
   public static final DefaultSqlTestFactory INSTANCE =
       new DefaultSqlTestFactory();
 
-  private DefaultSqlTestFactory() {
+  public DefaultSqlTestFactory() {
   }
 
   public MockCatalogReader createCatalogReader(SqlTestFactory testFactory,
