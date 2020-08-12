@@ -44,9 +44,6 @@ import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
 import org.apache.calcite.rel.core.Aggregate;
-<<<<<<< HEAD
-import org.apache.calcite.rel.core.CorrelationId;
-=======
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Intersect;
 import org.apache.calcite.rel.core.Join;
@@ -139,7 +136,6 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.function.Predicate;
 =======
->>>>>>> 66e82b280 (DX-23932: Infinite planning loop due to FilterSetOpTransposeRule)
 
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
