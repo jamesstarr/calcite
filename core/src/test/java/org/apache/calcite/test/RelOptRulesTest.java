@@ -20,8 +20,10 @@ import org.apache.calcite.DataContext;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.plan.Context;
 import org.apache.calcite.plan.Contexts;
+import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptRule;
+import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelTraitDef;
 import org.apache.calcite.plan.RelTraitSet;
@@ -34,14 +36,17 @@ import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
 import org.apache.calcite.rel.core.Aggregate;
+import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Intersect;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.core.Minus;
 import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.RelFactories;
+import org.apache.calcite.rel.core.SetOp;
 import org.apache.calcite.rel.core.Union;
 import org.apache.calcite.rel.logical.LogicalCorrelate;
+import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.logical.LogicalTableModify;
 import org.apache.calcite.rel.logical.LogicalTableScan;
@@ -112,12 +117,14 @@ import org.apache.calcite.rex.RexExecutorTest;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.runtime.Hook;
 import org.apache.calcite.runtime.PredicateImpl;
+import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.RelDecorrelator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.tools.RelBuilder;
+import org.apache.calcite.tools.RelBuilderFactory;
 
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
@@ -4036,6 +4043,130 @@ public class RelOptRulesTest extends RelOptTestBase {
     sql(sql).with(program).withContext(context).check();
   }
 
+  /**
+   * Custom implementation of {@link Filter} for use
+   * in test case to verify that {@link FilterMultiJoinMergeRule}
+   * can be created with any {@link Filter} and not limited to
+   * {@link org.apache.calcite.rel.logical.LogicalFilter}
+   */
+  private static class MyFilter extends Filter {
+
+    MyFilter(
+        RelOptCluster cluster,
+        RelTraitSet traitSet,
+        RelNode child,
+        RexNode condition) {
+      super(cluster, traitSet, child, condition);
+    }
+
+    public MyFilter copy(RelTraitSet traitSet, RelNode input,
+        RexNode condition) {
+      return new MyFilter(getCluster(), traitSet, input, condition);
+    }
+
+  }
+
+  /**
+   * Rule to transform {@link LogicalFilter} into
+   * custom MyFilter
+   */
+  private static class MyFilterRule extends RelOptRule {
+    static final MyFilterRule INSTANCE =
+        new MyFilterRule(LogicalFilter.class, RelFactories.LOGICAL_BUILDER);
+
+    private MyFilterRule(Class<? extends Filter> clazz,
+        RelBuilderFactory relBuilderFactory) {
+      super(RelOptRule.operand(clazz, RelOptRule.any()), relBuilderFactory, null);
+    }
+
+    @Override public void onMatch(RelOptRuleCall call) {
+      final LogicalFilter logicalFilter = call.rel(0);
+      final RelNode input = logicalFilter.getInput();
+      final MyFilter myFilter = new MyFilter(input.getCluster(), input.getTraitSet(), input,
+          logicalFilter.getCondition());
+      call.transformTo(myFilter);
+    }
+  }
+
+
+  /**
+   * Custom implementation of {@link SetOp} for use
+   * in test case to verify that {@link FilterSetOpTransposeRule}
+   * can be created with any {@link SetOp} and not limited to
+   * {@link org.apache.calcite.rel.core.SetOp}
+   */
+  private static class MySetOp extends SetOp {
+
+    MySetOp(
+        RelOptCluster cluster,
+        RelTraitSet traitSet,
+        List<RelNode> inputs,
+        SqlKind k,
+        boolean all) {
+      super(cluster, traitSet, inputs, k, all);
+    }
+
+    public MySetOp copy(RelTraitSet traitSet, List<RelNode> inputs,
+                        boolean all) {
+      return new MySetOp(getCluster(), traitSet, inputs, SqlKind.UNION, all);
+    }
+  }
+
+  /**
+   * Rule to transform {@link SetOp} into custom
+   * MySetOp
+   */
+  private static class MySetOpRule extends RelOptRule {
+    static final MySetOpRule INSTANCE =
+        new MySetOpRule(SetOp.class, RelFactories.LOGICAL_BUILDER);
+
+    private MySetOpRule(Class<? extends SetOp> clazz,
+                          RelBuilderFactory relBuilderFactory) {
+      super(RelOptRule.operand(clazz, RelOptRule.any()), relBuilderFactory, null);
+    }
+
+    @Override public void onMatch(RelOptRuleCall call) {
+      final SetOp setOp = call.rel(0);
+      final List<RelNode> inputs = setOp.getInputs();
+      final MySetOp newMySetOp =
+          new MySetOp(inputs.get(0).getCluster(), setOp.getTraitSet(), inputs, SqlKind.UNION, true);
+      call.transformTo(newMySetOp);
+    }
+  }
+
+  /**
+   * Test case to push custom Filter past custom union.
+   */
+  @Test public void testFilterSetOpTranspose() {
+
+    final HepProgram preProgram = new HepProgramBuilder()
+        .addRuleCollection(Arrays.asList(MyFilterRule.INSTANCE, MySetOpRule.INSTANCE))
+        .build();
+
+    List<RelOptRule> rules = Arrays.asList(
+        FilterSetOpTransposeRule.INSTANCE, // default
+        new FilterSetOpTransposeRule(MyFilter.class, MySetOp.class, RelFactories.LOGICAL_BUILDER));
+
+    HepProgram program = new HepProgramBuilder()
+        .addRuleCollection(rules)
+        .build();
+
+    final String sql = "SELECT e3.empno AS \"$C0\",\n"
+        + "MIN(e3.sal) AS \"$C1\",\n"
+        + "e3.slacker AS \"$C2\"\n"
+        + "FROM ("
+        + "   SELECT empno,\n"
+        + "          sal,\n"
+        + "          slacker\n"
+        + "     FROM emp as e1\n"
+        + "   UNION ALL\n"
+        + "     (SELECT empno, deptno, slacker\n"
+        + "          FROM emp as e2)) AS e3\n"
+        + "WHERE empno > 40\n"
+        + "GROUP BY empno, slacker\n";
+
+    sql(sql).withPre(preProgram).with(program).check();
+  }
   @Test public void testPartialExpressionReduction() {
     final String sql = "select "
         + "EXTRACT(SECOND FROM CAST(CASE WHEN TRUE THEN {ts '2018-01-01 01:23:45'} ELSE NULL END AS TIMESTAMP)) = "

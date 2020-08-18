@@ -46,6 +46,22 @@ public class FilterSetOpTransposeRule extends RelOptRule {
   /**
    * Creates a FilterSetOpTransposeRule.
    */
+  /**
+   * Creates a FilterSetOpTransposeRule that uses a generic
+   * {@link Filter} and {@link SetOp}
+   * @param filterClass filter class
+   * @param setOpClass setOp class
+   * @param relBuilderFactory builder factory for relational expressions
+   */
+  public FilterSetOpTransposeRule(Class<? extends Filter> filterClass,
+                                  Class<? extends SetOp> setOpClass,
+                                  RelBuilderFactory relBuilderFactory) {
+    super(
+        operand(filterClass,
+            operand(setOpClass, any())),
+        relBuilderFactory, null);
+  }
+
   public FilterSetOpTransposeRule(RelBuilderFactory relBuilderFactory) {
     super(
         operand(Filter.class,
