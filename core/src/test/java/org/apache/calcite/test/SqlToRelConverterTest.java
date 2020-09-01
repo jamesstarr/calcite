@@ -1087,6 +1087,23 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql("select * from dept, lateral table(DEDUP(dept.deptno, dept.name))").ok();
   }
 
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-4206">[CALCITE-4206]
+   * RelDecorrelator outputs wrong plan for correlate sort with fetch limit</a>. */
+  @Test public void testCorrelateSortWithLimit() {
+    final String sql = "SELECT deptno, ename \n"
+        + "FROM\n"
+        + "  (SELECT DISTINCT deptno FROM emp) t1,\n"
+        + "  LATERAL (\n"
+        + "    SELECT ename, sal\n"
+        + "    FROM emp\n"
+        + "    WHERE deptno = t1.deptno\n"
+        + "    ORDER BY sal\n"
+        + "    DESC LIMIT 3\n"
+        + "  )";
+    sql(sql).ok();
+  }
+
   @Test public void testSample() {
     final String sql =
         "select * from emp tablesample substitute('DATASET1') where empno > 5";
