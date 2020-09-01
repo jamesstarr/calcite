@@ -3569,6 +3569,14 @@ public class RelBuilder {
     /** Sets {@link #dedupAggregateCalls}. */
     Config withDedupAggregateCalls(boolean dedupAggregateCalls);
 
+    /** Whether to push down join conditions; default true. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(true)
+    boolean pushJoinCondition();
+
+    /** Sets {@link #pushJoinCondition()}. */
+    Config withPushJoinCondition(boolean pushJoinCondition);
+
     /** Whether to simplify expressions; default true. */
     @ImmutableBeans.Property
     @ImmutableBeans.BooleanDefault(true)
