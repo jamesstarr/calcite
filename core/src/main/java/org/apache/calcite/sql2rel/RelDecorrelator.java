@@ -328,6 +328,13 @@ import org.apache.calcite.tools.RelBuilderFactory;
       // If input has not been rewritten, do not rewrite this rel.
       return null;
     }
+    // Can not decorrelate if the sort has per-correlate-key attributes like
+    // offset or fetch limit, because these attributes scope would change to
+    // global after decorrelation. They should take effect within the scope
+    // of the correlation key actually.
+    if (rel.offset != null || rel.fetch != null) {
+      return null;
+    }
     final RelNode newInput = frame.r;
 
     Mappings.TargetMapping mapping =
@@ -338,12 +345,9 @@ import org.apache.calcite.tools.RelBuilderFactory;
     RelCollation oldCollation = rel.getCollation();
     RelCollation newCollation = RexUtil.apply(mapping, oldCollation);
 
-    final int offset = rel.offset == null ? -1 : RexLiteral.intValue(rel.offset);
-    final int fetch = rel.fetch == null ? -1 : RexLiteral.intValue(rel.fetch);
-
     final RelNode newSort = relBuilder
             .push(newInput)
-            .sortLimit(offset, fetch, relBuilder.fields(newCollation))
+            .sortLimit(-1, -1, relBuilder.fields(newCollation))
             .build();
 
     // Sort does not change input ordering
