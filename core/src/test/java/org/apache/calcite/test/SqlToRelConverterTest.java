@@ -4430,6 +4430,13 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     assertThat(parameters.get(1).getType().getSqlTypeName(), is(SqlTypeName.VARCHAR));
   }
 
+  @Test public void testSortInSubQuery() {
+    final String sql = "select * from (select empno from emp order by empno)";
+    sql(sql).convertsTo("${planRemoveSort}");
+    sql(sql).withConfig(SqlToRelConverter.configBuilder()
+        .withRemoveSortInSubQuery(false).build()).convertsTo("${planKeepSort}");
+  }
+
   /**
    * Visitor that checks that every {@link RelNode} in a tree is valid.
    *

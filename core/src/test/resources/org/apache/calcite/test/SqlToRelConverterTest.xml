@@ -9625,6 +9625,7 @@ LogicalProject(EMPNO=[$0])
 ]]>
     </Resource>
   </TestCase>
+<<<<<<< HEAD
 =======
     <TestCase name="testCaseFlatten">
         <Resource name="sql">
@@ -10653,4 +10654,6 @@ LogicalProject(EXPR$0=[JSON_TYPE(ROW($2.TYPE, $2.DESC, ROW($2.OTHERS.A, $2.OTHER
         </Resource>
     </TestCase>
 >>>>>>> 66fb66503 ([CALCITE-3393] RelStructuredTypeFlattener: improve support for functions with struct input (Igor Guzenko))
+=======
+>>>>>>> 06ccbe852 ([CALCITE-4160] Add configuration(SqlToRelConverter.Config) to retain ORDER BY in sub-query (Jiatao Tao))
 </Root>

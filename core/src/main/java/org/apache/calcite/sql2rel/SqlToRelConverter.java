@@ -210,6 +210,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -340,7 +341,8 @@ public class SqlToRelConverter {
     this.exprConverter = new SqlNodeToRexConverterImpl(convertletTable);
     this.explainParamCount = 0;
     this.config = new ConfigBuilder().withConfig(config).build();
-    this.relBuilder = config.getRelBuilderFactory().create(cluster, null);
+    this.relBuilder = config.getRelBuilderFactory().create(cluster, null)
+        .transform(config.getRelBuilderConfigTransform());
     this.hintStrategies = config.getHintStrategyTable();
 
     cluster.setHintStrategies(this.hintStrategies);
@@ -847,10 +849,10 @@ public class SqlToRelConverter {
       List<SqlNode> orderExprList,
       SqlNode offset,
       SqlNode fetch) {
-    if (!bb.top
+    if (removeSortInSubquery(bb.top)
         || select.getOrderList() == null
         || select.getOrderList().getList().isEmpty()) {
-      assert !bb.top || collation.getFieldCollations().isEmpty();
+      assert removeSortInSubquery(bb.top) || collation.getFieldCollations().isEmpty();
       if ((offset == null
           || (offset instanceof SqlLiteral
           && ((SqlLiteral) offset).bigDecimalValue().equals(BigDecimal.ZERO)))
@@ -891,10 +893,10 @@ public class SqlToRelConverter {
   /**
    * Returns whether we should remove the sort for the subsequent query conversion.
    *
-   * @param top Whether the rel to convert is the root of the query
+   * @param topQuery Whether the query is in the top level.
    */
-  private boolean removeSortInSubQuery(boolean top) {
-    return config.isRemoveSortInSubQuery() && !top;
+  private boolean removeSortInSubquery(boolean topQuery) {
+    return config.isRemoveSortInSubquery() && !topQuery;
   }
 
   /**
@@ -2347,106 +2349,6 @@ public class SqlToRelConverter {
     selectList.forEach(e ->
         bb.columnMonotonicities.add(
             bb.scope.getMonotonicity(e)));
-<<<<<<< HEAD
-  }
-
-  /**
-   * The {@code GROUP_ID()} function is used to distinguish duplicate groups.
-   * However, as Aggregate normalizes group sets to canonical form (i.e.,
-   * flatten, sorting, redundancy removal), this information is lost in RelNode.
-   * Therefore, it is impossible to implement the function in runtime.
-   *
-   * To fill this gap, an aggregation query that contains {@code GROUP_ID()} function
-   * will generally be rewritten into UNION when converting to RelNode.
-   *
-   * Also see the discussion in JIRA
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-1824">[CALCITE-1824]
-   * GROUP_ID returns wrong result</a>.
-   */
-  private RelNode rewriteAggregateWithGroupId(Blackboard bb,
-      AggregatingSelectScope.Resolved r, AggConverter converter) {
-    final List<AggregateCall> aggregateCalls = converter.getAggCalls();
-    final ImmutableBitSet groupSet = r.groupSet;
-    final Map<ImmutableBitSet, Integer> groupSetCount = r.groupSetCount;
-
-    final List<String> fieldNamesIfNoRewrite = createAggregate(bb, groupSet,
-        r.groupSets, aggregateCalls).getRowType().getFieldNames();
-
-    // If n duplicates exist for a particular grouping, the {@code GROUP_ID()}
-    // function produces values in the range 0 to n-1. For each value,
-    // we need to figure out the corresponding group sets.
-    //
-    // For example, "... GROUPING SETS (a, a, b, c, c, c, c)"
-    // (i) The max value of the GROUP_ID() function returns is 3
-    // (ii) GROUPING SETS (a, b, c) produces value 0,
-    //      GROUPING SETS (a, c) produces value 1,
-    //      GROUPING SETS (c) produces value 2
-    //      GROUPING SETS (c) produces value 3
-    final Map<Integer, Set<ImmutableBitSet>> groupIdToGroupSets = new HashMap<>();
-    int maxGroupId = 0;
-    for (Map.Entry<ImmutableBitSet, Integer> entry: groupSetCount.entrySet()) {
-      int groupId = entry.getValue() - 1;
-      if (groupId > maxGroupId) {
-        maxGroupId = groupId;
-      }
-      for (int i = 0; i <= groupId; i++) {
-        groupIdToGroupSets.computeIfAbsent(i,
-            k -> Sets.newTreeSet(ImmutableBitSet.COMPARATOR))
-            .add(entry.getKey());
-      }
-    }
-
-    // AggregateCall list without GROUP_ID function
-    final List<AggregateCall> aggregateCallsWithoutGroupId = new ArrayList<>();
-    for (AggregateCall aggregateCall : aggregateCalls) {
-      if (aggregateCall.getAggregation().kind != SqlKind.GROUP_ID) {
-        aggregateCallsWithoutGroupId.add(aggregateCall);
-      }
-    }
-    final List<RelNode> projects = new ArrayList<>();
-    // For each group id value , we first construct an Aggregate without
-    // GROUP_ID() function call, and then create a Project node on top of it.
-    // The Project adds literal value for group id in right position.
-    for (int groupId = 0; groupId <= maxGroupId; groupId++) {
-      // Create the Aggregate node without GROUP_ID() call
-      final ImmutableList<ImmutableBitSet> groupSets =
-          ImmutableList.copyOf(groupIdToGroupSets.get(groupId));
-      final RelNode aggregate = createAggregate(bb, groupSet,
-          groupSets, aggregateCallsWithoutGroupId);
-
-      // RexLiteral for each GROUP_ID, note the type should be BIGINT
-      final RelDataType groupIdType = typeFactory.createSqlType(SqlTypeName.BIGINT);
-      final RexNode groupIdLiteral = rexBuilder.makeExactLiteral(
-          BigDecimal.valueOf(groupId), groupIdType);
-
-      relBuilder.push(aggregate);
-      final List<RexNode> selectList = new ArrayList<>();
-      final int groupExprLength = r.groupExprList.size();
-      // Project fields in group by expressions
-      for (int i = 0; i < groupExprLength; i++) {
-        selectList.add(relBuilder.field(i));
-      }
-      // Project fields in aggregate calls
-      int groupIdCount = 0;
-      for (int i = 0; i < aggregateCalls.size(); i++) {
-        if (aggregateCalls.get(i).getAggregation().kind == SqlKind.GROUP_ID) {
-          selectList.add(groupIdLiteral);
-          groupIdCount++;
-        } else {
-          int ordinal = groupExprLength + i - groupIdCount;
-          selectList.add(relBuilder.field(ordinal));
-        }
-      }
-      final RelNode project = relBuilder.project(
-          selectList, fieldNamesIfNoRewrite).build();
-      projects.add(project);
-    }
-    // Skip to create Union when there is only one child, i.e., no duplicate group set.
-    if (projects.size() == 1) {
-      return projects.get(0);
-    }
-    return LogicalUnion.create(projects, true);
-=======
   }
 
   /**
@@ -2615,7 +2517,7 @@ public class SqlToRelConverter {
       return;
     }
 
-    if (!bb.top) {
+    if (removeSortInSubquery(bb.top)) {
       SqlNode offset = select.getOffset();
       if ((offset == null
           || (offset instanceof SqlLiteral
@@ -5602,11 +5504,16 @@ public class SqlToRelConverter {
      * {@link RelFactories#LOGICAL_BUILDER}. */
     RelBuilderFactory getRelBuilderFactory();
 
+    /** Returns the transform to apply to {@link RelBuilder.Config}. */
+    UnaryOperator<RelBuilder.Config> getRelBuilderConfigTransform();
+
     /** Returns the hint strategies used to decide how the hints are propagated to
      * the relational expressions. Default is
      * {@link HintStrategyTable#EMPTY}. */
     HintStrategyTable getHintStrategyTable();
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
 
     /**
      * Returns whether to remove sort operator for a sub-query
@@ -5615,8 +5522,8 @@ public class SqlToRelConverter {
      *
      * <p> Default is true.
      */
-    boolean isRemoveSortInSubQuery();
 =======
+    boolean isRemoveSortInSubquery();
   }
 
   /** Builder for a {@link Config}. */
@@ -5626,8 +5533,9 @@ public class SqlToRelConverter {
     private boolean createValuesRel = true;
     private boolean explain;
     private boolean expand = true;
-    private boolean removeSortInSubQuery = true;
+    private boolean removeSortInSubquery = true;
     private int inSubQueryThreshold = DEFAULT_IN_SUB_QUERY_THRESHOLD;
+    private UnaryOperator<RelBuilder.Config> relBuilderConfigTransform = UnaryOperator.identity();
     private RelBuilderFactory relBuilderFactory = RelFactories.LOGICAL_BUILDER;
     private HintStrategyTable hintStrategyTable = HintStrategyTable.EMPTY;
 
@@ -5640,8 +5548,9 @@ public class SqlToRelConverter {
       this.createValuesRel = config.isCreateValuesRel();
       this.explain = config.isExplain();
       this.expand = config.isExpand();
-      this.removeSortInSubQuery = config.isRemoveSortInSubQuery();
+      this.removeSortInSubquery = config.isRemoveSortInSubquery();
       this.inSubQueryThreshold = config.getInSubQueryThreshold();
+      this.relBuilderConfigTransform = config.getRelBuilderConfigTransform();
       this.relBuilderFactory = config.getRelBuilderFactory();
       this.hintStrategyTable = config.getHintStrategyTable();
       return this;
@@ -5677,8 +5586,21 @@ public class SqlToRelConverter {
       return this;
     }
 
-    public ConfigBuilder withRemoveSortInSubQuery(boolean removeSortInSubQuery) {
-      this.removeSortInSubQuery = removeSortInSubQuery;
+    public ConfigBuilder withRemoveSortInSubQuery(boolean removeSortInSubquery) {
+      this.removeSortInSubquery = removeSortInSubquery;
+      return this;
+    }
+
+    /** Whether to push down join conditions; default true. */
+    public ConfigBuilder withPushJoinCondition(boolean pushJoinCondition) {
+      return withRelBuilderConfigTransform(
+          Util.andThen(relBuilderConfigTransform,
+              c -> c.withPushJoinCondition(pushJoinCondition)));
+    }
+
+    public ConfigBuilder withRelBuilderConfigTransform(
+        UnaryOperator<RelBuilder.Config> relBuilderConfigTransform) {
+      this.relBuilderConfigTransform = relBuilderConfigTransform;
       return this;
     }
 
@@ -5707,8 +5629,9 @@ public class SqlToRelConverter {
     /** Builds a {@link Config}. */
     public Config build() {
       return new ConfigImpl(convertTableAccess, decorrelationEnabled,
-          trimUnusedFields, createValuesRel, explain, expand,
-          inSubQueryThreshold, relBuilderFactory, hintStrategyTable);
+          trimUnusedFields, createValuesRel, explain, expand, removeSortInSubquery,
+          inSubQueryThreshold, relBuilderConfigTransform, relBuilderFactory,
+          hintStrategyTable);
     }
   }
 
@@ -5720,14 +5643,16 @@ public class SqlToRelConverter {
     private final boolean createValuesRel;
     private final boolean explain;
     private final boolean expand;
-    private final boolean removeSortInSubQuery;
+    private final boolean removeSortInSubquery;
     private final int inSubQueryThreshold;
+    private final UnaryOperator<RelBuilder.Config> relBuilderConfigTransform;
     private final RelBuilderFactory relBuilderFactory;
     private final HintStrategyTable hintStrategyTable;
 
     private ConfigImpl(boolean decorrelationEnabled,
         boolean trimUnusedFields, boolean createValuesRel, boolean explain,
-        boolean expand, int inSubQueryThreshold,
+        boolean expand, boolean removeSortInSubquery, int inSubQueryThreshold,
+        UnaryOperator<RelBuilder.Config> relBuilderConfigTransform,
         RelBuilderFactory relBuilderFactory,
         HintStrategyTable hintStrategyTable) {
       this.convertTableAccess = convertTableAccess;
@@ -5736,8 +5661,9 @@ public class SqlToRelConverter {
       this.createValuesRel = createValuesRel;
       this.explain = explain;
       this.expand = expand;
-      this.removeSortInSubQuery = removeSortInSubQuery;
+      this.removeSortInSubquery = removeSortInSubquery;
       this.inSubQueryThreshold = inSubQueryThreshold;
+      this.relBuilderConfigTransform = relBuilderConfigTransform;
       this.relBuilderFactory = relBuilderFactory;
       this.hintStrategyTable = hintStrategyTable;
     }
@@ -5766,12 +5692,16 @@ public class SqlToRelConverter {
       return expand;
     }
 
-    public boolean isRemoveSortInSubQuery() {
-      return removeSortInSubQuery;
+    public boolean isRemoveSortInSubquery() {
+      return removeSortInSubquery;
     }
 
     public int getInSubQueryThreshold() {
       return inSubQueryThreshold;
+    }
+
+    public UnaryOperator<RelBuilder.Config> getRelBuilderConfigTransform() {
+      return relBuilderConfigTransform;
     }
 
     public RelBuilderFactory getRelBuilderFactory() {
