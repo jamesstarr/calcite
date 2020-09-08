@@ -47,6 +47,9 @@ data: {
     ]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
     # List of non-reserved keywords to add;
     # items in this list become non-reserved
     nonReservedKeywordsToAdd: [
@@ -59,6 +62,7 @@ data: {
       "FILE"
       "ARCHIVE"
     ]
+<<<<<<< HEAD
 =======
       # List of keywords from "keywords" section that are not reserved.
       nonReservedKeywords: [
@@ -414,6 +418,30 @@ data: {
     extraBinaryExpressions: [
     ]
 
+=======
+
+    # List of methods for parsing extensions to "CREATE [OR REPLACE]" calls.
+    # Each must accept arguments "(SqlParserPos pos, boolean replace)".
+    # Example: "SqlCreateForeignSchema".
+    createStatementParserMethods: [
+      "SqlCreateForeignSchema"
+      "SqlCreateMaterializedView"
+      "SqlCreateSchema"
+      "SqlCreateTable"
+      "SqlCreateView"
+    ]
+
+    # List of methods for parsing extensions to "DROP" calls.
+    # Each must accept arguments "(SqlParserPos pos)".
+    # Example: "SqlDropSchema".
+    dropStatementParserMethods: [
+      "SqlDropMaterializedView"
+      "SqlDropSchema"
+      "SqlDropTable"
+      "SqlDropView"
+    ]
+
+>>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
     # List of files in @includes directory that have parser method
     # implementations for parsing custom SQL statements, literals or types
     # given as part of "statementParserMethods", "literalParserMethods" or
@@ -422,7 +450,10 @@ data: {
     implementationFiles: [
       "parserImpls.ftl"
     ]
+<<<<<<< HEAD
     includePosixOperators: false
+=======
+>>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
   }
 }
 
