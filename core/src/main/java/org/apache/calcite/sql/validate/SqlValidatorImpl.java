@@ -67,6 +67,7 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.SqlOrderBy;
+import org.apache.calcite.sql.SqlPivot;
 import org.apache.calcite.sql.SqlSampleSpec;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.SqlSelectKeyword;
@@ -82,7 +83,9 @@ import org.apache.calcite.sql.fun.SqlDotOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.AssignableOperandTypeChecker;
+import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
+import org.apache.calcite.sql.type.SqlOperandTypeChecker;
 import org.apache.calcite.sql.type.SqlOperandTypeInference;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
@@ -1905,8 +1908,8 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
 
     // parse input query
     SqlNode expr = call.getTableRef();
-    SqlNode newExpr = registerFrom(usingScope, matchRecognizeScope, expr,
-        expr, null, null, forceNullable);
+    SqlNode newExpr = registerFrom(usingScope, matchRecognizeScope, true, expr,
+        expr, null, null, forceNullable, false);
     if (expr != newExpr) {
       call.setOperand(0, newExpr);
     }
@@ -1916,6 +1919,35 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       SqlMatchRecognize call,
       SqlNode enclosingNode) {
     return new MatchRecognizeNamespace(this, call, enclosingNode);
+  }
+
+  private void registerPivot(
+      SqlValidatorScope parentScope,
+      SqlValidatorScope usingScope,
+      SqlPivot call,
+      SqlNode enclosingNode,
+      String alias,
+      boolean forceNullable) {
+    final PivotNamespace namespace =
+        createPivotNameSpace(call, enclosingNode);
+    registerNamespace(usingScope, alias, namespace, forceNullable);
+
+    final SqlValidatorScope scope =
+        new PivotScope(parentScope, call);
+    scopes.put(call, scope);
+
+    // parse input query
+    SqlNode expr = call.query;
+    SqlNode newExpr = registerFrom(scope, scope, true, expr,
+        expr, null, null, forceNullable, false);
+    if (expr != newExpr) {
+      call.setOperand(0, newExpr);
+    }
+  }
+
+  protected PivotNamespace createPivotNameSpace(SqlPivot call,
+      SqlNode enclosingNode) {
+    return new PivotNamespace(this, call, enclosingNode);
   }
 
   /**
@@ -1957,6 +1989,8 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
    * @param parentScope   Parent scope which this scope turns to in order to
    *                      resolve objects
    * @param usingScope    Scope whose child list this scope should add itself to
+   * @param register      Whether to register this scope as a child of
+   *                      {@code usingScope}
    * @param node          Node which namespace is based on
    * @param enclosingNode Outermost node for namespace, including decorations
    *                      such as alias and sample clause
@@ -1964,16 +1998,21 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
    * @param extendList    Definitions of extended columns
    * @param forceNullable Whether to force the type of namespace to be
    *                      nullable because it is in an outer join
+   * @param lateral       Whether LATERAL is specified, so that items to the
+   *                      left of this in the JOIN tree are visible in the
+   *                      scope
    * @return registered node, usually the same as {@code node}
    */
   private SqlNode registerFrom(
       SqlValidatorScope parentScope,
       SqlValidatorScope usingScope,
+      boolean register,
       final SqlNode node,
       SqlNode enclosingNode,
       String alias,
       SqlNodeList extendList,
-      boolean forceNullable) {
+      boolean forceNullable,
+      final boolean lateral) {
     final SqlKind kind = node.getKind();
 
     SqlNode expr;
@@ -2002,6 +2041,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       case UNNEST:
       case OTHER_FUNCTION:
       case COLLECTION_TABLE:
+      case PIVOT:
       case MATCH_RECOGNIZE:
 
         // give this anonymous construct a name since later
@@ -2018,6 +2058,21 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       }
     }
 
+    if (lateral) {
+      SqlValidatorScope s = usingScope;
+      while (s instanceof JoinScope) {
+        s = ((JoinScope) s).getUsingScope();
+      }
+      final SqlNode node2 = s != null ? s.getNode() : node;
+      final TableScope tableScope = new TableScope(parentScope, node2);
+      if (usingScope instanceof ListScope) {
+        for (ScopeChild child : ((ListScope) usingScope).children) {
+          tableScope.addChild(child.namespace, child.name, child.nullable);
+        }
+      }
+      parentScope = tableScope;
+    }
+
     SqlCall call;
     SqlNode operand;
     SqlNode newOperand;
@@ -2028,27 +2083,26 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       if (alias == null) {
         alias = call.operand(1).toString();
       }
-      SqlValidatorScope usingScope2 = usingScope;
-      if (call.operandCount() > 2) {
-        usingScope2 = null;
-      }
+      final boolean needAlias = call.operandCount() > 2;
       expr = call.operand(0);
       newExpr =
           registerFrom(
               parentScope,
-              usingScope2,
+              usingScope,
+              !needAlias,
               expr,
               enclosingNode,
               alias,
               extendList,
-              forceNullable);
+              forceNullable,
+              lateral);
       if (newExpr != expr) {
         call.setOperand(0, newExpr);
       }
 
       // If alias has a column list, introduce a namespace to translate
-      // column names.
-      if (call.operandCount() > 2) {
+      // column names. We skipped registering it just now.
+      if (needAlias) {
         registerNamespace(
             usingScope,
             alias,
@@ -2056,10 +2110,17 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
             forceNullable);
       }
       return node;
+
     case MATCH_RECOGNIZE:
       registerMatchRecognize(parentScope, usingScope,
           (SqlMatchRecognize) node, enclosingNode, alias, forceNullable);
       return node;
+
+    case PIVOT:
+      registerPivot(parentScope, usingScope, (SqlPivot) node, enclosingNode,
+          alias, forceNullable);
+      return node;
+
     case TABLESAMPLE:
       call = (SqlCall) node;
       expr = call.operand(0);
@@ -2067,11 +2128,13 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
           registerFrom(
               parentScope,
               usingScope,
+              true,
               expr,
               enclosingNode,
               alias,
               extendList,
-              forceNullable);
+              forceNullable,
+              lateral);
       if (newExpr != expr) {
         call.setOperand(0, newExpr);
       }
@@ -2103,29 +2166,27 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
           registerFrom(
               parentScope,
               joinScope,
+              true,
               left,
               left,
               null,
               null,
-              forceLeftNullable);
+              forceLeftNullable,
+              lateral);
       if (newLeft != left) {
         join.setLeft(newLeft);
       }
-      final SqlValidatorScope rightParentScope;
-      if (rightIsLateral) {
-        rightParentScope = joinScope;
-      } else {
-        rightParentScope = parentScope;
-      }
       final SqlNode newRight =
           registerFrom(
-              rightParentScope,
+              parentScope,
               joinScope,
+              true,
               right,
               right,
               null,
               null,
-              forceRightNullable);
+              forceRightNullable,
+              lateral);
       if (newRight != right) {
         join.setRight(newRight);
       }
@@ -2140,7 +2201,8 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
           new IdentifierNamespace(
               this, id, extendList, enclosingNode,
               parentScope);
-      registerNamespace(usingScope, alias, newNs, forceNullable);
+      registerNamespace(register ? usingScope : null, alias, newNs,
+          forceNullable);
       if (tableScope == null) {
         tableScope = new TableScope(parentScope, node);
       }
@@ -2151,50 +2213,55 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       return newNode;
 
     case LATERAL:
-      if (tableScope != null) {
-        tableScope.meetLateral();
-      }
       return registerFrom(
           parentScope,
           usingScope,
+          true,
           ((SqlCall) node).operand(0),
           enclosingNode,
           alias,
           extendList,
-          forceNullable);
+          forceNullable,
+          true);
 
     case COLLECTION_TABLE:
       call = (SqlCall) node;
       operand = call.operand(0);
       newOperand =
           registerFrom(
-              tableScope == null ? parentScope : tableScope,
+              parentScope,
               usingScope,
+              register,
               operand,
               enclosingNode,
               alias,
               extendList,
-              forceNullable);
+              forceNullable, lateral);
       if (newOperand != operand) {
         call.setOperand(0, newOperand);
       }
       scopes.put(node, parentScope);
       return newNode;
 
+    case UNNEST:
+      if (!lateral) {
+        return registerFrom(parentScope, usingScope, register, node,
+            enclosingNode, alias, extendList, forceNullable, true);
+      }
+      // fall through
     case SELECT:
     case UNION:
     case INTERSECT:
     case EXCEPT:
     case VALUES:
     case WITH:
-    case UNNEST:
     case OTHER_FUNCTION:
       if (alias == null) {
         alias = deriveAlias(node, nextGeneratedId++);
       }
       registerQuery(
           parentScope,
-          usingScope,
+          register ? usingScope : null,
           node,
           enclosingNode,
           alias,
@@ -2213,18 +2280,20 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
           registerFrom(
               parentScope,
               overScope,
+              true,
               operand,
               enclosingNode,
               alias,
               extendList,
-              forceNullable);
+              forceNullable,
+              lateral);
       if (newOperand != operand) {
         call.setOperand(0, newOperand);
       }
 
       for (ScopeChild child : overScope.children) {
-        registerNamespace(usingScope, child.name, child.namespace,
-            forceNullable);
+        registerNamespace(register ? usingScope : null, child.name,
+            child.namespace, forceNullable);
       }
 
       return newNode;
@@ -2233,11 +2302,13 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       final SqlCall extend = (SqlCall) node;
       return registerFrom(parentScope,
           usingScope,
+          true,
           extend.getOperandList().get(0),
           extend,
           alias,
           (SqlNodeList) extend.getOperandList().get(1),
-          forceNullable);
+          forceNullable,
+          lateral);
 
     default:
       throw Util.unexpected(kind);
@@ -2372,10 +2443,12 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
             registerFrom(
                 parentScope,
                 selectScope,
+                true,
                 from,
                 from,
                 null,
                 null,
+                false,
                 false);
         if (newFrom != from) {
           select.setFrom(newFrom);
@@ -5052,6 +5125,82 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       validateExpr(node, scope);
     }
     mr.setOperand(SqlMatchRecognize.OPERAND_PATTERN_DEFINES, list);
+  }
+
+  public void validatePivot(SqlPivot pivot) {
+    final PivotScope scope = (PivotScope) getJoinScope(pivot);
+
+    final PivotNamespace ns =
+        getNamespace(pivot).unwrap(PivotNamespace.class);
+    assert ns.rowType == null;
+
+    // Given
+    //   query PIVOT (agg1 AS a, agg2 AS b, ...
+    //   FOR (axis1, ..., axisN)
+    //   IN ((v11, ..., v1N) AS label1,
+    //       (v21, ..., v2N) AS label2, ...))
+    // the type is
+    //   k1, ... kN, a_label1, b_label1, ..., a_label2, b_label2, ...
+    // where k1, ... kN are columns that are not referenced as an argument to
+    // an aggregate or as an axis.
+
+    // Aggregates, e.g. "PIVOT (sum(x) AS sum_x, count(*) AS c)"
+    final List<Pair<String, RelDataType>> aggNames = new ArrayList<>();
+    pivot.forEachAgg((alias, call) -> {
+      call.validate(this, scope);
+      final RelDataType type = deriveType(scope, call);
+      aggNames.add(Pair.of(alias, type));
+      if (!(call instanceof SqlCall)
+          || !(((SqlCall) call).getOperator() instanceof SqlAggFunction)) {
+        throw newValidationError(call, RESOURCE.pivotAggMalformed());
+      }
+    });
+
+    // Axes, e.g. "FOR (JOB, DEPTNO)"
+    final List<RelDataType> axisTypes = new ArrayList<>();
+    final List<SqlIdentifier> axisIdentifiers = new ArrayList<>();
+    for (SqlNode axis : pivot.axisList) {
+      SqlIdentifier identifier = (SqlIdentifier) axis;
+      identifier.validate(this, scope);
+      final RelDataType type = deriveType(scope, identifier);
+      axisTypes.add(type);
+      axisIdentifiers.add(identifier);
+    }
+
+    // Columns that have been seen as arguments to aggregates or as axes
+    // do not appear in the output.
+    final Set<String> columnNames = pivot.usedColumnNames();
+    final RelDataTypeFactory.Builder typeBuilder = typeFactory.builder();
+    scope.getChild().getRowType().getFieldList().forEach(field -> {
+      if (!columnNames.contains(field.getName())) {
+        typeBuilder.add(field);
+      }
+    });
+
+    // Values, e.g. "IN (('CLERK', 10) AS c10, ('MANAGER, 20) AS m20)"
+    pivot.forEachNameValues((alias, nodeList) -> {
+      if (nodeList.size() != axisTypes.size()) {
+        throw newValidationError(nodeList,
+            RESOURCE.pivotValueArityMismatch(nodeList.size(),
+                axisTypes.size()));
+      }
+      final SqlOperandTypeChecker typeChecker =
+          OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED;
+      Pair.forEach(axisIdentifiers, nodeList, (identifier, subNode) -> {
+        subNode.validate(this, scope);
+        typeChecker.checkOperandTypes(
+            new SqlCallBinding(this, scope,
+                SqlStdOperatorTable.EQUALS.createCall(
+                    subNode.getParserPosition(), identifier, subNode)),
+            true);
+      });
+      Pair.forEach(aggNames, (aggAlias, aggType) ->
+          typeBuilder.add(aggAlias == null ? alias : alias + "_" + aggAlias,
+              aggType));
+    });
+
+    final RelDataType rowType = typeBuilder.build();
+    ns.setType(rowType);
   }
 
   /** Returns the alias of a "expr AS alias" expression. */

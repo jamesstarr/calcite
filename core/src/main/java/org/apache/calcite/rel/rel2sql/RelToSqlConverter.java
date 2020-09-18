@@ -320,7 +320,33 @@ public class RelToSqlConverter extends SqlImplementor
                 new SqlIdentifier("DUAL", POS), null, null,
                 null, null, null, null, null, null));
       }
-      if (list.size() == 1) {
+      if (list.isEmpty()) {
+        // In this case we need to construct the following query:
+        // SELECT NULL as C0, NULL as C1, NULL as C2 ... FROM DUAL WHERE FALSE
+        // This would return an empty result set with the same number of columns as the field names.
+        final List<SqlNode> nullColumnNames = new ArrayList<>();
+        for (String fieldName : fieldNames) {
+          SqlCall nullColumnName = as(SqlLiteral.createNull(POS), fieldName);
+          nullColumnNames.add(nullColumnName);
+        }
+        final SqlIdentifier dual = getDual();
+        if (dual == null) {
+          query = new SqlSelect(POS, null,
+              new SqlNodeList(nullColumnNames, POS), null, null, null, null,
+              null, null, null, null, null);
+
+          // Wrap "SELECT 1 AS x"
+          // as "SELECT * FROM (SELECT 1 AS x) AS t WHERE false"
+          query = new SqlSelect(POS, null, SqlNodeList.SINGLETON_STAR,
+              as(query, "t"), createAlwaysFalseCondition(), null, null,
+              null, null, null, null, null);
+        } else {
+          query = new SqlSelect(POS, null,
+              new SqlNodeList(nullColumnNames, POS),
+              dual, createAlwaysFalseCondition(), null,
+              null, null, null, null, null, null);
+        }
+      } else if (list.size() == 1) {
         query = list.get(0);
       } else {
         query = SqlStdOperatorTable.UNION_ALL.createCall(
@@ -347,6 +373,24 @@ public class RelToSqlConverter extends SqlImplementor
       }
     }
     return result(query, clauses, e, null);
+  }
+
+  private SqlIdentifier getDual() {
+    final List<String> names = dialect.getSingleRowTableName();
+    if (names == null) {
+      return null;
+    }
+    return new SqlIdentifier(names, POS);
+  }
+
+  private static SqlNode createAlwaysFalseCondition() {
+    // Building the select query in the form:
+    // select * from VALUES(NULL,NULL ...) where 1=0
+    // Use condition 1=0 since "where false" does not seem to be supported
+    // on some DB vendors.
+    return SqlStdOperatorTable.EQUALS.createCall(POS,
+            ImmutableList.of(SqlLiteral.createExactNumeric("1", POS),
+                    SqlLiteral.createExactNumeric("0", POS)));
   }
 
   /** @see #dispatch */

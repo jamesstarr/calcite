@@ -242,6 +242,9 @@ public enum SqlKind {
    */
   TABLESAMPLE,
 
+  /** PIVOT clause. */
+  PIVOT,
+
   /**
    * MATCH_RECOGNIZE clause
    */

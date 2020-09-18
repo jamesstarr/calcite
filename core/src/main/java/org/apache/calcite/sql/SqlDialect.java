@@ -620,6 +620,21 @@ public class SqlDialect {
     unparseFetchUsingAnsi(writer, offset, fetch);
   }
 
+  /**
+   * Converts a fetch into a "SELECT TOP(fetch)".
+   *
+   * <p>A dialect that uses "TOP" syntax should override this method to print
+   * "TOP(fetch)", and override {@link #unparseOffsetFetch} to no-op.
+   *
+   * <p>The default implementation of this method is no-op.
+   *
+   * @param writer Writer
+   * @param offset Number of rows to skip before emitting, or null
+   * @param fetch Number of rows to fetch, or null
+   */
+  public void unparseTopN(SqlWriter writer, SqlNode offset, SqlNode fetch) {
+  }
+
   /** Unparses offset/fetch using ANSI standard "OFFSET offset ROWS FETCH NEXT
    * fetch ROWS ONLY" syntax. */
   protected final void unparseFetchUsingAnsi(SqlWriter writer, SqlNode offset,
@@ -713,6 +728,19 @@ public class SqlDialect {
   @Experimental
   public boolean supportsAliasedValues() {
     return true;
+  }
+
+  /** Returns the name of the system table that has precisely one row.
+   * If there is no such table, returns null, and we will generate SELECT with
+   * no FROM clause.
+   *
+   * <p>For {@code VALUES 1},
+   * Oracle returns ["DUAL"] and we generate "SELECT 1 FROM DUAL";
+   * MySQL returns null and we generate "SELECT 1".
+   */
+  @Experimental
+  public List<String> getSingleRowTableName() {
+    return null;
   }
 
   /**

@@ -182,6 +182,7 @@ parser: {
     "PASSTHROUGH"
     "PAST"
     "PATH"
+    "PIVOT"
     "PLACING"
     "PLAN"
     "PLI"

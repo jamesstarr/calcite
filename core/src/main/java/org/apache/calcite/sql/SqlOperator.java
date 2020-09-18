@@ -334,25 +334,40 @@ public abstract class SqlOperator {
     getSyntax().unparse(writer, this, call, leftPrec, rightPrec);
   }
 
-  // REVIEW jvs 9-June-2006: See http://issues.eigenbase.org/browse/FRG-149
-  // for why this method exists.
+  @Deprecated // to be removed before 2.0
   protected void unparseListClause(SqlWriter writer, SqlNode clause) {
-    unparseListClause(writer, clause, null);
+    final SqlNodeList nodeList =
+        clause instanceof SqlNodeList
+            ? (SqlNodeList) clause
+            : SqlNodeList.of(clause);
+    writer.list(SqlWriter.FrameTypeEnum.SIMPLE, SqlWriter.COMMA, nodeList);
   }
 
+  @Deprecated // to be removed before 2.0
   protected void unparseListClause(
       SqlWriter writer,
       SqlNode clause,
       SqlKind sepKind) {
-    if (clause instanceof SqlNodeList) {
-      if (sepKind != null) {
-        ((SqlNodeList) clause).andOrList(writer, sepKind);
-      } else {
-        ((SqlNodeList) clause).commaList(writer);
-      }
+    final SqlNodeList nodeList =
+        clause instanceof SqlNodeList
+            ? (SqlNodeList) clause
+            : SqlNodeList.of(clause);
+    final SqlBinaryOperator sepOp;
+    if (sepKind == null) {
+      sepOp = SqlWriter.COMMA;
     } else {
-      clause.unparse(writer, 0, 0);
+      switch (sepKind) {
+      case AND:
+        sepOp = SqlStdOperatorTable.AND;
+        break;
+      case OR:
+        sepOp = SqlStdOperatorTable.OR;
+        break;
+      default:
+        throw new AssertionError();
+      }
     }
+    writer.list(SqlWriter.FrameTypeEnum.SIMPLE, sepOp, nodeList);
   }
 
   // override Object

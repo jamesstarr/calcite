@@ -16,12 +16,14 @@
  */
 package org.apache.calcite.test;
 
+import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.ScannableTable;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.TableFunction;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.calcite.schema.impl.TableFunctionImpl;
+import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.util.Smalls;
 
 import com.google.common.base.Function;
@@ -408,6 +410,29 @@ public class TableFunctionTest {
     final String q = "select count(*) as c\n"
         + "from table(\"s\".\"fibonacci2\"(20))";
     with().query(q).returnsUnordered("C=7");
+  }
+
+  @Test public void testCrossApply() {
+    final String q1 = "select *\n"
+        + "from (values 2, 5) as t (c)\n"
+        + "cross apply table(\"s\".\"fibonacci2\"(c))";
+    final String q2 = "select *\n"
+        + "from (values 2, 5) as t (c)\n"
+        + "cross apply table(\"s\".\"fibonacci2\"(t.c))";
+    for (String q : new String[] {q1, q2}) {
+      with()
+          .with(CalciteConnectionProperty.CONFORMANCE,
+              SqlConformanceEnum.LENIENT)
+          .query(q)
+          .returnsUnordered("C=2; N=1",
+              "C=2; N=1",
+              "C=2; N=2",
+              "C=5; N=1",
+              "C=5; N=1",
+              "C=5; N=2",
+              "C=5; N=3",
+              "C=5; N=5");
+    }
   }
 }
 

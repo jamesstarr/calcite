@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collector;
 import javax.annotation.Nonnull;
 
 /**
@@ -253,6 +254,12 @@ public class ImmutableBitSet
    */
   private static int wordIndex(int bitIndex) {
     return bitIndex >> ADDRESS_BITS_PER_WORD;
+  }
+
+  /** Creates a Collector. */
+  public static Collector<Integer, Builder, ImmutableBitSet> toImmutableBitSet() {
+    return Collector.of(ImmutableBitSet::builder, Builder::set,
+            Builder::combine, Builder::build);
   }
 
   /** Computes the power set (set of all sets) of this bit set. */
@@ -1042,6 +1049,32 @@ public class ImmutableBitSet
         throw new IllegalArgumentException("can only use builder once");
       }
       return countBits(words);
+    }
+
+    /** Merges another builder. Does not modify the other builder. */
+    public Builder combine(Builder builder) {
+      if (words == null) {
+        throw new IllegalArgumentException("can only use builder once");
+      }
+      long[] otherWords = builder.words;
+      if (otherWords == null) {
+        throw new IllegalArgumentException("Given builder is empty");
+      }
+      if (this.words.length < otherWords.length) {
+        // Right has more bits. Copy the right and OR in the words of the
+        // previous left.
+        final long[] newWords = otherWords.clone();
+        for (int i = 0; i < this.words.length; i++) {
+          newWords[i] |= this.words[i];
+        }
+        this.words = newWords;
+      } else {
+        // Left has same or more bits. OR in the words of the right.
+        for (int i = 0; i < otherWords.length; i++) {
+          this.words[i] |= otherWords[i];
+        }
+      }
+      return this;
     }
 
     /** Sets all bits in a given bit set. */

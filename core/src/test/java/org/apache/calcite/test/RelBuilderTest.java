@@ -65,6 +65,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /**
@@ -91,7 +92,7 @@ import java.util.function.UnaryOperator;
  *      {@link RelBuilder#alias(RexNode, String)} is removed if not a top-level
  *      project</li>
  *   <li>{@link RelBuilder#aggregate} with grouping sets</li>
- *   <li>{@link RelBuilder#aggregateCall} with filter</li>
+ *   <li> with filter</li>
  *   <li>Add call to create {@link TableFunctionScan}</li>
  *   <li>Add call to create {@link Window}</li>
  *   <li>Add call to create {@link TableModify}</li>
@@ -112,6 +113,12 @@ public class RelBuilderTest {
         .programs(Programs.heuristicJoinOrder(Programs.RULE_SET, true, 2));
   }
 
+  /** Creates a RelBuilder with default config. */
+  static RelBuilder createBuilder() {
+    return createBuilder(c -> c);
+  }
+
+  /** Creates a RelBuilder with transformed config. */
   static RelBuilder createBuilder(UnaryOperator<RelBuilder.Config> transform) {
     final Frameworks.ConfigBuilder configBuilder = config();
     configBuilder.context(
@@ -2009,6 +2016,54 @@ public class RelBuilderTest {
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(), containsString("cannot derive type"));
     }
+  }
+
+  @Test public void testPivot() {
+    // Equivalent SQL:
+    //   SELECT *
+    //   FROM (SELECT mgr, deptno, job, sal FROM emp)
+    //   PIVOT (SUM(sal) AS ss, COUNT(*) AS c
+    //       FOR (job, deptno)
+    //       IN (('CLERK', 10) AS c10, ('MANAGER', 20) AS m20))
+    //
+    // translates to
+    //   SELECT mgr,
+    //     SUM(sal) FILTER (WHERE job = 'CLERK' AND deptno = 10) AS c10_ss,
+    //     COUNT(*) FILTER (WHERE job = 'CLERK' AND deptno = 10) AS c10_c,
+    //     SUM(sal) FILTER (WHERE job = 'MANAGER' AND deptno = 20) AS m20_ss,
+    //     COUNT(*) FILTER (WHERE job = 'MANAGER' AND deptno = 20) AS m20_c
+    //   FROM emp
+    //   GROUP BY mgr
+    //
+    final Function<RelBuilder, RelNode> f = b ->
+        b.scan("EMP")
+            .pivot(b.groupKey("MGR"),
+                Arrays.asList(
+                    b.sum(b.field("SAL")).as("SS"),
+                    b.count().as("C")),
+                b.fields(Arrays.asList("JOB", "DEPTNO")),
+                ImmutableMap.<String, List<RexNode>>builder()
+                    .put("C10",
+                        Arrays.asList(b.literal("CLERK"), b.literal(10)))
+                    .put("M20",
+                        Arrays.asList(b.literal("MANAGER"), b.literal(20)))
+                    .build()
+                    .entrySet())
+            .build();
+    final String expected = ""
+        + "LogicalAggregate("
+            + "group=[{3}], "
+            + "C10_SS=[SUM($5) FILTER $8], "
+            + "C10_C=[COUNT() FILTER $8], "
+            + "M20_SS=[SUM($5) FILTER $9], "
+            + "M20_C=[COUNT() FILTER $9])\n"
+            + "  LogicalProject("
+            +     "EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], "
+            +     "SAL=[$5], COMM=[$6], DEPTNO=[$7], "
+            +     "$f8=[IS TRUE(AND(=($2, 'CLERK'), =($7, 10)))], "
+            +     "$f9=[IS TRUE(AND(=($2, 'MANAGER'), =($7, 20)))])\n"
+            + "    LogicalTableScan(table=[[scott, EMP]])\n";
+    assertThat(f.apply(createBuilder()), hasTree(expected));
   }
 
   @Test public void testMatchRecognize() {

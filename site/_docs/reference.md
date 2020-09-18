@@ -197,6 +197,7 @@ joinCondition:
 
 tableReference:
       tablePrimary
+      [ pivot ]
       [ matchRecognize ]
       [ [ AS ] alias [ '(' columnAlias [, columnAlias ]* ')' ] ]
 
@@ -210,6 +211,27 @@ tablePrimary:
 
 columnDecl:
       column type [ NOT NULL ]
+
+pivot:
+      PIVOT '('
+      pivotAgg [, pivotAgg ]*
+      FOR pivotList
+      IN '(' pivotExpr [, pivotExpr ]* ')'
+      ')'
+
+pivotAgg:
+      agg '(' [ ALL | DISTINCT ] value [, value ]* ')'
+      [ [ AS ] alias ]
+
+pivotList:
+      column
+   |  '(' column [, column ]* ')'
+
+pivotExpr:
+      { expr
+      | '(' expr [, expr ]* ')'
+      }
+      [ [ AS ] alias ]
 
 values:
       VALUES expression [, expression ]*
@@ -683,6 +705,7 @@ PATH,
 **PERCENT_RANK**,
 **PERIOD**,
 **PERMUTE**,
+PIVOT,
 PLACING,
 PLAN,
 PLI,

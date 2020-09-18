@@ -97,6 +97,7 @@ import java.util.TimeZone;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -120,9 +121,6 @@ public class Util {
   public static final String LINE_SEPARATOR =
       System.getProperty("line.separator");
 
-  /**
-   * System-dependent file separator, for example, "/" or "\."
-   */
   public static final String FILE_SEPARATOR =
       System.getProperty("file.separator");
 
@@ -2344,6 +2342,44 @@ public class Util {
     Calendar calendar = calendar();
     calendar.setTimeInMillis(millis);
     return calendar;
+  }
+
+  /**
+   * Returns a {@code Collector} that accumulates the input elements into a
+   * Guava {@link ImmutableList} via a {@link ImmutableList.Builder}.
+   *
+   * <p>It will be obsolete when we move to {@link Bug#upgrade Guava 28.0-jre}.
+   * Guava 21.0 introduced {@code ImmutableList.toImmutableList()}, but it had
+   * a {@link com.google.common.annotations.Beta} tag until 28.0-jre.
+   *
+   * <p>In {@link Bug#upgrade Guava 21.0}, change this method to call
+   * {@code ImmutableList.toImmutableList()}, ignoring the {@code @Beta} tag.
+   *
+   * @param <T> Type of the input elements
+   *
+   * @return a {@code Collector} that collects all the input elements into an
+   * {@link ImmutableList}, in encounter order
+   */
+  public static <T> Collector<T, ImmutableList.Builder<T>, ImmutableList<T>> toImmutableList() {
+    return Collector.of(
+        ImmutableList::builder,
+        ImmutableList.Builder::add,
+        Util::combine,
+        ImmutableList.Builder::build);
+  }
+
+  /** Combines a second immutable list builder into a first. */
+  public static <E> ImmutableList.Builder<E> combine(
+          ImmutableList.Builder<E> b0, ImmutableList.Builder<E> b1) {
+    b0.addAll(b1.build());
+    return b0;
+  }
+
+  /** Combines a second array list into a first. */
+  public static <E> ArrayList<E> combine(ArrayList<E> list0,
+                                         ArrayList<E> list1) {
+    list0.addAll(list1);
+    return list0;
   }
 
   //~ Inner Classes ----------------------------------------------------------
