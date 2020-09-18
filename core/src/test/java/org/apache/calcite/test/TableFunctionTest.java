@@ -440,6 +440,33 @@ class TableFunctionTest {
         + "from table(\"s\".\"fibonacci2\"(20))";
     with().query(q).returnsUnordered("C=7");
   }
+<<<<<<< HEAD
+=======
+
+  @Test public void testCrossApply() {
+    final String q1 = "select *\n"
+        + "from (values 2, 5) as t (c)\n"
+        + "cross apply table(\"s\".\"fibonacci2\"(c))";
+    final String q2 = "select *\n"
+        + "from (values 2, 5) as t (c)\n"
+        + "cross apply table(\"s\".\"fibonacci2\"(t.c))";
+    for (String q : new String[] {q1, q2}) {
+      with()
+          .with(CalciteConnectionProperty.CONFORMANCE,
+              SqlConformanceEnum.LENIENT)
+          .query(q)
+          .returnsUnordered("C=2; N=1",
+              "C=2; N=1",
+              "C=2; N=2",
+              "C=5; N=1",
+              "C=5; N=1",
+              "C=5; N=2",
+              "C=5; N=3",
+              "C=5; N=5");
+    }
+  }
+}
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3364">[CALCITE-3364]

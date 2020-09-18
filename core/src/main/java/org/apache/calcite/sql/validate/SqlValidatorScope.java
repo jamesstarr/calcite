@@ -22,6 +22,7 @@ import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
+import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.SqlWindow;
 import org.apache.calcite.util.Pair;
 
@@ -288,9 +289,8 @@ public interface SqlValidatorScope {
 
     public void found(SqlValidatorNamespace namespace, boolean nullable,
         SqlValidatorScope scope, Path path, List<String> remainingNames) {
-      if (scope instanceof AggregatingSelectScope) {
-        scope = ((AggregatingSelectScope) scope).parent;
-        assert scope instanceof SelectScope;
+      if (scope instanceof TableScope) {
+        scope = scope.getValidator().getSelectScope((SqlSelect) scope.getNode());
       }
       resolves.add(
           new Resolve(namespace, nullable, scope, path, remainingNames));
@@ -325,8 +325,9 @@ public interface SqlValidatorScope {
       this.namespace = Objects.requireNonNull(namespace);
       this.nullable = nullable;
       this.scope = scope;
-      this.path = Objects.requireNonNull(path);
-      this.remainingNames = remainingNames == null ? ImmutableList.of()
+      assert !(scope instanceof TableScope);
+      this.path = Preconditions.checkNotNull(path);
+      this.remainingNames = remainingNames == null ? ImmutableList.<String>of()
           : ImmutableList.copyOf(remainingNames);
     }
 

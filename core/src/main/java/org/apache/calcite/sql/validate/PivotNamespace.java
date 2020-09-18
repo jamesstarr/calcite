@@ -42,3 +42,8 @@ public class PivotNamespace extends AbstractNamespace {
     return pivot;
   }
 }
+<<<<<<< HEAD
+=======
+
+// End PivotNamespace.java
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)

@@ -1058,6 +1058,19 @@ public class SqlDialect {
     return true;
   }
 
+  /** Returns the name of the system table that has precisely one row.
+   * If there is no such table, returns null, and we will generate SELECT with
+   * no FROM clause.
+   *
+   * <p>For {@code VALUES 1},
+   * Oracle returns ["DUAL"] and we generate "SELECT 1 FROM DUAL";
+   * MySQL returns null and we generate "SELECT 1".
+   */
+  @Experimental
+  public List<String> getSingleRowTableName() {
+    return null;
+  }
+
   /**
    * Returns whether the dialect supports implicit type coercion.
    *

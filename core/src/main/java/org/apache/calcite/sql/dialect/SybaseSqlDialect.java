@@ -33,6 +33,28 @@ public class SybaseSqlDialect extends SqlDialect {
   public SybaseSqlDialect(Context context) {
     super(context);
   }
+<<<<<<< HEAD
+=======
+
+  @Override public void unparseOffsetFetch(SqlWriter writer, SqlNode offset,
+      SqlNode fetch) {
+    // No-op; see unparseTopN.
+    // Sybase uses "SELECT TOP (n)" rather than "FETCH NEXT n ROWS".
+  }
+
+  @Override public void unparseTopN(SqlWriter writer, SqlNode offset,
+      SqlNode fetch) {
+    // Parentheses are not required, but we use them to be consistent with
+    // Microsoft SQL Server, which recommends them but does not require them.
+    //
+    // Note that "fetch" is ignored.
+    writer.keyword("TOP");
+    writer.keyword("(");
+    fetch.unparse(writer, -1, -1);
+    writer.keyword(")");
+  }
+}
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 
   @Override public void unparseOffsetFetch(SqlWriter writer, SqlNode offset,
       SqlNode fetch) {

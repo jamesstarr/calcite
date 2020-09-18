@@ -2235,6 +2235,7 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
     )
     [
 <<<<<<< HEAD
+<<<<<<< HEAD
         LOOKAHEAD(2)
         tableRef = Pivot(tableRef)
     ]
@@ -2245,6 +2246,11 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
     [
 =======
 >>>>>>> 7bbe08b5b ([CALCITE-2674] Column name with escape character should not be verified as a function when the column name is same with it (Danny Chan))
+=======
+        tableRef = Pivot(tableRef)
+    ]
+    [
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
         [ <AS> ] alias = SimpleIdentifier()
         [ columnAliasList = ParenthesizedSimpleIdentifierList() ]
         {
@@ -2905,7 +2911,11 @@ SqlNode Pivot(SqlNode tableRef) :
     final SqlNodeList inList;
 }
 {
+<<<<<<< HEAD
     <PIVOT> { s = span(); checkNotJoin(tableRef); }
+=======
+    <PIVOT> { s = span(); }
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
     <LPAREN>
     PivotAgg(aggList) ( <COMMA> PivotAgg(aggList) )*
     <FOR> axisList = SimpleIdentifierOrList()
@@ -2959,6 +2969,7 @@ void PivotValue(List<SqlNode> list) :
     )
 }
 
+<<<<<<< HEAD
 /** Parses an UNPIVOT clause following a table expression. */
 SqlNode Unpivot(SqlNode tableRef) :
 {
@@ -3034,6 +3045,8 @@ SqlSnapshot Snapshot(SqlNode tableRef) :
     }
 }
 
+=======
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 /**
  * Parses a MATCH_RECOGNIZE clause following a table expression.
  */
@@ -5076,6 +5089,9 @@ SqlNodeList ParenthesizedSimpleIdentifierList() :
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 /** List of simple identifiers in parentheses or one simple identifier.
  *
  * <ul>Examples:
@@ -5098,8 +5114,11 @@ SqlNodeList SimpleIdentifierOrList() :
     }
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 <#if (parser.includeCompoundIdentifier!default.parser.includeCompoundIdentifier) >
 =======
 <#if parser.includeCompoundIdentifier >

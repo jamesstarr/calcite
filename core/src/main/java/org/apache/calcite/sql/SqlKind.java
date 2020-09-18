@@ -268,10 +268,9 @@ public enum SqlKind {
   /** PIVOT clause. */
   PIVOT,
 
-  /** UNPIVOT clause. */
-  UNPIVOT,
-
-  /** MATCH_RECOGNIZE clause. */
+  /**
+   * MATCH_RECOGNIZE clause
+   */
   MATCH_RECOGNIZE,
 
   /**

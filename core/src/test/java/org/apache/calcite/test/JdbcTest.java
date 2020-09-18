@@ -2193,7 +2193,7 @@ public class JdbcTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-531">[CALCITE-531]
    * Window function does not work in LATERAL</a>. */
-  @Test void testLateralWithOver() {
+  @Test public void testLateralWithOver() {
     final String sql = "select \"emps\".\"name\", d.\"deptno\", d.m\n"
         + "from \"hr\".\"emps\",\n"
         + "  LATERAL (\n"

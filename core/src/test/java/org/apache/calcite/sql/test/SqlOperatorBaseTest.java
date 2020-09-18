@@ -37,10 +37,9 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperandCountRange;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.dialect.AnsiSqlDialect;
-<<<<<<< HEAD
-=======
 import org.apache.calcite.sql.dialect.CalciteSqlDialect;
->>>>>>> 1d2fb0f01 ([CALCITE-3017] Re-organize how we represent built-in operators that are not in the standard operator table)
+=======
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.fun.SqlLibraryOperatorTableFactory;
 import org.apache.calcite.sql.fun.SqlLibraryOperators;

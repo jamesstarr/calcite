@@ -104,6 +104,10 @@ import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
+<<<<<<< HEAD
+=======
+import javax.annotation.Nullable;
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 
 
 /**
@@ -125,9 +129,6 @@ public class Util {
   public static final String LINE_SEPARATOR =
       System.getProperty("line.separator");
 
-  /**
-   * System-dependent file separator, for example, "/" or "\."
-   */
   public static final String FILE_SEPARATOR =
       System.getProperty("file.separator");
 
@@ -2465,6 +2466,7 @@ public class Util {
     return list0;
   }
 
+<<<<<<< HEAD
   /** Transforms a list, applying a function to each element. */
   public static <F, T> List<T> transform(List<? extends F> list,
       java.util.function.Function<? super F, ? extends T> function) {
@@ -2534,6 +2536,8 @@ public class Util {
     return BlackholeMap.of();
   }
 
+=======
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
   //~ Inner Classes ----------------------------------------------------------
 
   /**

@@ -2103,7 +2103,7 @@ class RelToSqlConverterTest {
     sql(query).ok(expected);
   }
 
-  @Test void testSelectQueryWithFetchClause() {
+  @Test public void testSelectQueryWithFetchClause() {
     String query = "select \"product_id\"\n"
         + "from \"product\"\n"
         + "order by \"product_id\" fetch next 100 rows only";
@@ -2113,10 +2113,10 @@ class RelToSqlConverterTest {
         + "FETCH NEXT 100 ROWS ONLY";
     final String expectedMssql10 = "SELECT TOP (100) [product_id]\n"
         + "FROM [foodmart].[product]\n"
-        + "ORDER BY CASE WHEN [product_id] IS NULL THEN 1 ELSE 0 END, [product_id]";
+        + "ORDER BY [product_id]";
     final String expectedMssql = "SELECT [product_id]\n"
         + "FROM [foodmart].[product]\n"
-        + "ORDER BY CASE WHEN [product_id] IS NULL THEN 1 ELSE 0 END, [product_id]\n"
+        + "ORDER BY [product_id]\n"
         + "FETCH NEXT 100 ROWS ONLY";
     final String expectedSybase = "SELECT TOP (100) product_id\n"
         + "FROM foodmart.product\n"
@@ -2128,7 +2128,7 @@ class RelToSqlConverterTest {
         .withSybase().ok(expectedSybase);
   }
 
-  @Test void testSelectQueryComplex() {
+  @Test public void testSelectQueryComplex() {
     String query =
         "select count(*), \"units_per_case\" from \"product\" where \"cases_per_pallet\" > 100 "
             + "group by \"product_id\", \"units_per_case\" order by \"units_per_case\" desc";
@@ -2536,464 +2536,6 @@ class RelToSqlConverterTest {
         + "SELECT \"product_class_id\" AS \"PRODUCT_ID\"\n"
         + "FROM \"foodmart\".\"product_class\"";
 
-<<<<<<< HEAD
-=======
-    final HepProgram program =
-        new HepProgramBuilder().addRuleClass(UnionMergeRule.class).build();
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-    final RuleSet rules = RuleSets.ofList(CoreRules.UNION_MERGE);
-    sql(query)
-        .optimize(rules, null)
-        .ok(expected);
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-1800">[CALCITE-1800]
-   * JDBC adapter fails to SELECT FROM a UNION query</a>. */
-  @Test void testUnionWrappedInASelect() {
-    final String query = "select sum(\n"
-        + "  case when \"product_id\"=0 then \"net_weight\" else 0 end)"
-        + " as net_weight\n"
-        + "from (\n"
-        + "  select \"product_id\", \"net_weight\"\n"
-        + "  from \"product\"\n"
-        + "  union all\n"
-        + "  select \"product_id\", 0 as \"net_weight\"\n"
-        + "  from \"sales_fact_1997\") t0";
-    final String expected = "SELECT SUM(CASE WHEN \"product_id\" = 0"
-        + " THEN \"net_weight\" ELSE 0 END) AS \"NET_WEIGHT\"\n"
-        + "FROM (SELECT \"product_id\", \"net_weight\"\n"
-        + "FROM \"foodmart\".\"product\"\n"
-        + "UNION ALL\n"
-        + "SELECT \"product_id\", 0 AS \"net_weight\"\n"
-        + "FROM \"foodmart\".\"sales_fact_1997\") AS \"t1\"";
-    sql(query).ok(expected);
-  }
-
-  @Test public void testSelectUnicodeLike() {
-    String query = "select \"product_name\" from \"product\" a "
-            + "where \"product_name\" like '上海'";
-    sql(query)
-       .withMssql()
-       .throws_("while converting `A`.`product_name` LIKE '上海'");
-    sql(query)
-       .withPostgresql()
-       .throws_("while converting `A`.`product_name` LIKE '上海'");
-    sql(query)
-       .throws_("while converting `A`.`product_name` LIKE '上海'");
-  }
-
-  @Test public void testSelectUnicodeEqual() {
-    String query1 = "select \"product_name\" from \"product\" a "
-            + "where \"product_name\" = '上海'";
-    String query2 = "select '€'";
-    String query3 = "values '\u82f1\u56fd'";
-    sql(query1)
-       .withMssql()
-       .throws_("Failed to encode '上海' in character set 'ISO-8859-1'");
-    sql(query1)
-       .withPostgresql()
-       .throws_("Failed to encode '上海' in character set 'ISO-8859-1'");
-    sql(query1)
-       .throws_("Failed to encode '上海' in character set 'ISO-8859-1'");
-    sql(query2)
-       .withMssql()
-       .throws_("Failed to encode '€' in character set 'ISO-8859-1'");
-    sql(query2)
-       .withPostgresql()
-       .throws_("Failed to encode '€' in character set 'ISO-8859-1'");
-    sql(query2)
-       .throws_("Failed to encode '€' in character set 'ISO-8859-1'");
-    sql(query3)
-       .throws_("Failed to encode '英国' in character set 'ISO-8859-1'");
-  }
-
-  @Test public void testLiteral() {
-    checkLiteral("DATE '1978-05-02'");
-    checkLiteral2("DATE '1978-5-2'", "DATE '1978-05-02'");
-    checkLiteral("TIME '12:34:56'");
-    checkLiteral("TIME '12:34:56.78'");
-    checkLiteral2("TIME '1:4:6.080'", "TIME '01:04:06.080'");
-    checkLiteral("TIMESTAMP '1978-05-02 12:34:56.78'");
-    checkLiteral2("TIMESTAMP '1978-5-2 2:4:6.80'",
-        "TIMESTAMP '1978-05-02 02:04:06.80'");
-    checkLiteral("'I can''t explain'");
-    checkLiteral("''");
-    checkLiteral("TRUE");
-    checkLiteral("123");
-    checkLiteral("123.45");
-    checkLiteral("-123.45");
-    checkLiteral("INTERVAL '1-2' YEAR TO MONTH");
-    checkLiteral("INTERVAL -'1-2' YEAR TO MONTH");
-    checkLiteral("INTERVAL '12-11' YEAR TO MONTH");
-    checkLiteral("INTERVAL '1' YEAR");
-    checkLiteral("INTERVAL '1' MONTH");
-    checkLiteral("INTERVAL '12' DAY");
-    checkLiteral("INTERVAL -'12' DAY");
-    checkLiteral2("INTERVAL '1 2' DAY TO HOUR",
-        "INTERVAL '1 02' DAY TO HOUR");
-    checkLiteral2("INTERVAL '1 2:10' DAY TO MINUTE",
-        "INTERVAL '1 02:10' DAY TO MINUTE");
-    checkLiteral2("INTERVAL '1 2:00' DAY TO MINUTE",
-        "INTERVAL '1 02:00' DAY TO MINUTE");
-    checkLiteral2("INTERVAL '1 2:34:56' DAY TO SECOND",
-        "INTERVAL '1 02:34:56' DAY TO SECOND");
-    checkLiteral2("INTERVAL '1 2:34:56.789' DAY TO SECOND",
-        "INTERVAL '1 02:34:56.789' DAY TO SECOND");
-    checkLiteral2("INTERVAL '1 2:34:56.78' DAY TO SECOND",
-        "INTERVAL '1 02:34:56.78' DAY TO SECOND");
-    checkLiteral2("INTERVAL '1 2:34:56.078' DAY TO SECOND",
-        "INTERVAL '1 02:34:56.078' DAY TO SECOND");
-    checkLiteral2("INTERVAL -'1 2:34:56.078' DAY TO SECOND",
-        "INTERVAL -'1 02:34:56.078' DAY TO SECOND");
-    checkLiteral2("INTERVAL '1 2:3:5.070' DAY TO SECOND",
-        "INTERVAL '1 02:03:05.07' DAY TO SECOND");
-    checkLiteral("INTERVAL '1:23' HOUR TO MINUTE");
-    checkLiteral("INTERVAL '1:02' HOUR TO MINUTE");
-    checkLiteral("INTERVAL -'1:02' HOUR TO MINUTE");
-    checkLiteral("INTERVAL '1:23:45' HOUR TO SECOND");
-    checkLiteral("INTERVAL '1:03:05' HOUR TO SECOND");
-    checkLiteral("INTERVAL '1:23:45.678' HOUR TO SECOND");
-    checkLiteral("INTERVAL '1:03:05.06' HOUR TO SECOND");
-    checkLiteral("INTERVAL '12' MINUTE");
-    checkLiteral("INTERVAL '12:34' MINUTE TO SECOND");
-    checkLiteral("INTERVAL '12:34.567' MINUTE TO SECOND");
-    checkLiteral("INTERVAL '12' SECOND");
-    checkLiteral("INTERVAL '12.345' SECOND");
-  }
-
-  private void checkLiteral(String expression) {
-    checkLiteral2(expression, expression);
-  }
-
-  private void checkLiteral2(String expression, String expected) {
-    sql("VALUES " + expression)
-        .withHsqldb()
-        .ok("SELECT *\n"
-            + "FROM (VALUES  (" + expected + ")) AS t (EXPR$0)");
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2339">[CALCITE-2339]
-   * Conversion of datetime_plus to timestampadd for dialects that only
-   * support timestampadd</a>. */
-  @Test public void testTimestampAddToTimestampAddMssql() {
-    String query = "SELECT TIMESTAMPADD(MONTH, 10, \"hire_date\") FROM \"employee\"";
-    String expected = "SELECT DATEADD(MONTH, 10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(YEAR, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(YEAR, -10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(YEAR, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(YEAR, 10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(YEAR, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(YEAR, -10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(DAY, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(DAY, 10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(DAY, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(DAY, -10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(HOUR, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(HOUR, 10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(HOUR, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(HOUR, -10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(MINUTE, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(MINUTE, 10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(MINUTE, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(MINUTE, -10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(SECOND, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(SECOND, 10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(SECOND, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(SECOND, -10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(QUARTER, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(QUARTER, 10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(QUARTER, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(QUARTER, -10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(WEEK, 10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(WEEK, 10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(WEEK, -10, \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(WEEK, -10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(WEEK, \"employee_id\", \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(WEEK, [employee_id], [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(QUARTER, \"employee_id\", \"hire_date\") FROM \"employee\"";
-    expected = "SELECT DATEADD(QUARTER, [employee_id], [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(QUARTER, \"employee_id\", TIMESTAMPADD(QUARTER, \"employee_id\","
-        + " \"hire_date\"))  FROM \"employee\"";
-
-    expected = "SELECT DATEADD(QUARTER, [employee_id], DATEADD(QUARTER, [employee_id],"
-        + " [hire_date]))\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-  }
-
-  @Test public void testDatetimePlusToTimestampAddMssql() {
-    String query = "SELECT \"hire_date\" + INTERVAL '10' MONTH FROM \"employee\"";
-    String expected = "SELECT DATEADD(MONTH, 10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" - INTERVAL '10' MONTH FROM \"employee\"";
-    expected = "SELECT DATEADD(MONTH, -10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL '-10' MONTH FROM \"employee\"";
-    expected = "SELECT DATEADD(MONTH, -10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL -'10' MONTH FROM \"employee\"";
-    expected = "SELECT DATEADD(MONTH, -10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL '10' SECOND FROM \"employee\"";
-    expected = "SELECT DATEADD(SECOND, 10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" - INTERVAL '10' SECOND FROM \"employee\"";
-    expected = "SELECT DATEADD(SECOND, -10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL '-10' SECOND FROM \"employee\"";
-    expected = "SELECT DATEADD(SECOND, -10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL -'10' SECOND FROM \"employee\"";
-    expected = "SELECT DATEADD(SECOND, -10, [hire_date])\nFROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + \"employee_id\" * INTERVAL -'10' SECOND FROM \"employee\"";
-    expected = "SELECT DATEADD(SECOND, -10 * [employee_id], [hire_date])\n"
-        + "FROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL -'10' SECOND * \"employee_id\" FROM \"employee\"";
-    expected = "SELECT DATEADD(SECOND, -10 * [employee_id], [hire_date])\n"
-        + "FROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL -'10' SECOND * \"employee_id\" FROM \"employee\"";
-    expected = "SELECT DATEADD(SECOND, -10 * [employee_id], [hire_date])\n"
-            + "FROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL '10' MONTH + INTERVAL '10' MONTH FROM \"employee\"";
-    expected = "SELECT DATEADD(MONTH, 10, DATEADD(MONTH, 10, [hire_date]))\n"
-            + "FROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT cast(cast(\"hire_date\" AS VARCHAR) as DATE) + "
-            + "INTERVAL -'10' SECOND * \"employee_id\" FROM \"employee\"";
-    expected = "SELECT DATEADD(SECOND, -10 * [employee_id], "
-            + "CAST(CAST([hire_date] AS VARCHAR) AS DATE))\n"
-            + "FROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-
-    query = "SELECT cast((\"hire_date\" + INTERVAL '10' MONTH + INTERVAL '10' MONTH) as varchar) "
-            + "FROM \"employee\"";
-    expected = "SELECT CAST(DATEADD(MONTH, 10, DATEADD(MONTH, 10, [hire_date])) AS VARCHAR)\n"
-            + "FROM [foodmart].[employee]";
-    sql(query)
-            .withMssql()
-            .ok(expected);
-  }
-
-  @Test public void testDatetimePlusToDatetimePlusDb2() {
-    String query = "SELECT \"hire_date\" + INTERVAL '10' MONTH FROM \"employee\"";
-    String expected = "SELECT (employee.hire_date + 10 MONTH)\nFROM foodmart.employee AS employee";
-    sql(query)
-            .withDb2()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" - INTERVAL '10' MONTH FROM \"employee\"";
-    expected = "SELECT (employee.hire_date - 10 MONTH)\nFROM foodmart.employee AS employee";
-    sql(query)
-            .withDb2()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL '-10' MONTH FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + -10 MONTH)\nFROM foodmart.employee AS employee";
-    sql(query)
-            .withDb2()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL -'10' MONTH FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + -10 MONTH)\nFROM foodmart.employee AS employee";
-    sql(query)
-            .withDb2()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL '10' YEAR FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + 10 YEAR)\nFROM foodmart.employee AS employee";
-    sql(query)
-            .withDb2()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL '-10' YEAR FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + -10 YEAR)\nFROM foodmart.employee AS employee";
-    sql(query)
-            .withDb2()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL -'10' YEAR FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + -10 YEAR)\nFROM foodmart.employee AS employee";
-    sql(query)
-            .withDb2()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" - INTERVAL '10' YEAR FROM \"employee\"";
-    expected = "SELECT (employee.hire_date - 10 YEAR)\nFROM foodmart.employee AS employee";
-    sql(query)
-            .withDb2()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL '10' HOUR FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + 10 HOUR)\nFROM foodmart.employee AS employee";
-    sql(query)
-            .withDb2()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL '-10' HOUR FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + -10 HOUR)\nFROM foodmart.employee AS employee";
-    sql(query)
-            .withDb2()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL -'10' HOUR FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + -10 HOUR)\nFROM foodmart.employee AS employee";
-    sql(query)
-            .withDb2()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" - INTERVAL '10' HOUR FROM \"employee\"";
-    expected = "SELECT (employee.hire_date - 10 HOUR)\nFROM foodmart.employee AS employee";
-    sql(query)
-            .withDb2()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + \"employee_id\" * INTERVAL -'10' SECOND FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + employee.employee_id * -10 SECOND)\n"
-        + "FROM foodmart.employee AS employee";
-
-    sql(query)
-            .withDb2()
-            .ok(expected);
-
-    query = "SELECT \"hire_date\" + INTERVAL -'10' SECOND * \"employee_id\" FROM \"employee\"";
-    expected = "SELECT (employee.hire_date + -10 SECOND * employee.employee_id)\n"
-        + "FROM foodmart.employee AS employee";
-
-    sql(query)
-            .withDb2()
-            .ok(expected);
-  }
-
-  @Test public void testTimestampAddToDatetimePlusDb2() {
-    String query = "SELECT TIMESTAMPADD(MONTH, 10, \"hire_date\") FROM \"employee\"";
-    String expected = "SELECT (employee.hire_date + 1 MONTH * 10)\n"
-        + "FROM foodmart.employee AS employee";
-    sql(query)
-            .withDb2()
-            .ok(expected);
-
-    query = "SELECT TIMESTAMPADD(MONTH, -10, \"hire_date\") FROM \"employee\"";
-<<<<<<< HEAD
-    expected = "SELECT (employee.hire_date + 1 MONTH * -10)\n"
-            + "FROM foodmart.employee AS employee";
-=======
     expected = "SELECT (employee.hire_date + 1 MONTH * -10)\nFROM foodmart.employee AS employee";
     sql(query)
             .withDb2()
@@ -4895,7 +4437,11 @@ class RelToSqlConverterTest {
     Sql withMssql(int majorVersion) {
       final SqlDialect mssqlDialect = SqlDialect.DatabaseProduct.MSSQL.getDialect();
       return dialect(
+<<<<<<< HEAD
           new MssqlSqlDialect(MssqlSqlDialect.DEFAULT_CONTEXT
+=======
+          new MssqlSqlDialect(SqlDialect.EMPTY_CONTEXT
+              .withDatabaseProduct(SqlDialect.DatabaseProduct.MSSQL)
               .withDatabaseMajorVersion(majorVersion)
               .withIdentifierQuoteString(mssqlDialect.quoteIdentifier("")
                   .substring(0, 1))
@@ -4928,6 +4474,7 @@ class RelToSqlConverterTest {
       return dialect(SqlDialect.DatabaseProduct.SYBASE.getDialect());
     }
 
+<<<<<<< HEAD
     Sql withRedshift() {
       return dialect(DatabaseProduct.REDSHIFT.getDialect());
     }
@@ -4936,6 +4483,8 @@ class RelToSqlConverterTest {
       return dialect(DatabaseProduct.SNOWFLAKE.getDialect());
     }
 
+=======
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
     Sql withVertica() {
       return dialect(SqlDialect.DatabaseProduct.VERTICA.getDialect());
     }

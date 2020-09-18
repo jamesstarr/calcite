@@ -48,6 +48,10 @@ import org.apache.calcite.util.Util;
 import org.apache.calcite.util.trace.CalciteTrace;
 
 import com.google.common.base.Preconditions;
+<<<<<<< HEAD
+=======
+import com.google.common.base.Predicate;
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 import com.google.common.collect.ImmutableList;
 
 import org.slf4j.Logger;

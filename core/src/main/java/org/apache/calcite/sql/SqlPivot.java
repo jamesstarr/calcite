@@ -26,8 +26,7 @@ import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -36,8 +35,10 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
+<<<<<<< HEAD
 import static java.util.Objects.requireNonNull;
 
+=======
 /**
  * Parse tree node that represents a PIVOT applied to a table reference
  * (or sub-query).
@@ -104,11 +105,8 @@ public class SqlPivot extends SqlCall {
     writer.endList(frame);
   }
 
-  static SqlNodeList stripList(SqlNodeList list) {
-    return list
-        .getList()
-        .stream()
-        .map(SqlPivot::strip)
+  private static SqlNodeList stripList(SqlNodeList list) {
+    return list.getList().stream().map(SqlPivot::strip)
         .collect(SqlNode.toList(list.pos));
   }
 
@@ -157,7 +155,7 @@ public class SqlPivot extends SqlCall {
     }
   }
 
-  static String pivotAlias(SqlNode node) {
+  private static String pivotAlias(SqlNode node) {
     if (node instanceof SqlNodeList) {
       return ((SqlNodeList) node).getList().stream()
           .map(SqlPivot::pivotAlias).collect(Collectors.joining("_"));
@@ -166,7 +164,7 @@ public class SqlPivot extends SqlCall {
   }
 
   /** Converts a SqlNodeList to a list, and other nodes to a singleton list. */
-  static SqlNodeList toNodes(SqlNode node) {
+  private static SqlNodeList toNodes(SqlNode node) {
     if (node instanceof SqlNodeList) {
       return (SqlNodeList) node;
     } else {
@@ -200,16 +198,7 @@ public class SqlPivot extends SqlCall {
     Operator(SqlKind kind) {
       super(kind.name(), kind);
     }
-
-    @Override public SqlCall createCall(
-        @Nullable SqlLiteral functionQualifier,
-        SqlParserPos pos,
-        @Nullable SqlNode... operands) {
-      assert operands.length == 4;
-      return new SqlPivot(pos, requireNonNull(operands[0], "query"),
-          requireNonNull((SqlNodeList) operands[1], "aggList"),
-          requireNonNull((SqlNodeList) operands[2], "axisList"),
-          requireNonNull((SqlNodeList) operands[3], "inList"));
-    }
   }
 }
+
+// End SqlPivot.java

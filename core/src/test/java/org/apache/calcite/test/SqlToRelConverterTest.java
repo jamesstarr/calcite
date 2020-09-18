@@ -3571,7 +3571,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
-  @Test void testPivot() {
+  @Test public void testPivot() {
     final String sql = "SELECT *\n"
         + "FROM (SELECT mgr, deptno, job, sal FROM emp)\n"
         + "PIVOT (SUM(sal) AS ss, COUNT(*)\n"
@@ -3580,7 +3580,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
-  @Test void testPivot2() {
+  @Test public void testPivot2() {
     final String sql = "SELECT *\n"
         + "FROM   (SELECT deptno, job, sal\n"
         + "        FROM   emp)\n"
@@ -3590,15 +3590,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
-  @Test void testUnpivot() {
-    final String sql = "SELECT * FROM emp\n"
-        + "UNPIVOT INCLUDE NULLS (remuneration\n"
-        + "  FOR remuneration_type IN (comm AS 'commission',\n"
-        + "                            sal as 'salary'))";
-    sql(sql).ok();
-  }
-
-  @Test void testMatchRecognize1() {
+  @Test public void testMatchRecognize1() {
     final String sql = "select *\n"
         + "  from emp match_recognize\n"
         + "  (\n"

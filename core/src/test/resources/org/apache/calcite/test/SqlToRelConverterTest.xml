@@ -5702,9 +5702,17 @@ PIVOT (SUM(sal) AS ss, COUNT(*)
         <Resource name="plan">
             <![CDATA[
 LogicalProject(MGR=[$0], C10_SS=[$1], C10=[$2], M20_SS=[$3], M20=[$4])
+<<<<<<< HEAD
   LogicalAggregate(group=[{0}], C10_SS=[SUM($1) FILTER $2], C10_null=[COUNT() FILTER $2], M20_SS=[SUM($1) FILTER $3], M20_null=[COUNT() FILTER $3])
     LogicalProject(MGR=[$3], SAL=[$5], $f4=[AND(=($2, 'CLERK'), =($7, 10))], $f5=[AND(=($2, 'MANAGER'), =($7, 20))])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+=======
+  LogicalAggregate(group=[{0}], C10_SS=[SUM($3) FILTER $4], C10_null=[COUNT() FILTER $4], M20_SS=[SUM($3) FILTER $5], M20_null=[COUNT() FILTER $5])
+    LogicalProject(MGR=[$0], JOB=[$1], DEPTNO=[$2], SAL=[$3], $f4=[AND(=($1, 'CLERK'), =($2, 10))], $f5=[AND(=($1, 'MANAGER'), =($2, 20))])
+      LogicalProject(MGR=[$0], JOB=[$2], DEPTNO=[$1], SAL=[$3])
+        LogicalProject(MGR=[$3], DEPTNO=[$7], JOB=[$2], SAL=[$5])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 ]]>
         </Resource>
     </TestCase>
@@ -5721,9 +5729,16 @@ ORDER BY deptno]]>
             <![CDATA[
 LogicalSort(sort0=[$0], dir0=[ASC])
   LogicalProject(DEPTNO=[$0], 'CLERK'_SUM_SAL=[$1], 'CLERK'_COUNT=[$2], MGR_SUM_SAL=[$3], MGR_COUNT=[$4], a_SUM_SAL=[$5], a_COUNT=[$6])
+<<<<<<< HEAD
     LogicalAggregate(group=[{0}], 'CLERK'_SUM_SAL=[SUM($1) FILTER $2], 'CLERK'_COUNT=[COUNT() FILTER $2], MGR_SUM_SAL=[SUM($1) FILTER $3], MGR_COUNT=[COUNT() FILTER $3], a_SUM_SAL=[SUM($1) FILTER $4], a_COUNT=[COUNT() FILTER $4])
       LogicalProject(DEPTNO=[$7], SAL=[$5], $f3=[=($2, 'CLERK')], $f4=[=($2, 'MANAGER')], $f5=[=($2, 'ANALYST')])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+=======
+    LogicalAggregate(group=[{0}], 'CLERK'_SUM_SAL=[SUM($2) FILTER $3], 'CLERK'_COUNT=[COUNT() FILTER $3], MGR_SUM_SAL=[SUM($2) FILTER $4], MGR_COUNT=[COUNT() FILTER $4], a_SUM_SAL=[SUM($2) FILTER $5], a_COUNT=[COUNT() FILTER $5])
+      LogicalProject(DEPTNO=[$0], JOB=[$1], SAL=[$2], $f3=[=($1, 'CLERK')], $f4=[=($1, 'MANAGER')], $f5=[=($1, 'ANALYST')])
+        LogicalProject(DEPTNO=[$7], JOB=[$2], SAL=[$5])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 ]]>
         </Resource>
     </TestCase>
@@ -8355,7 +8370,7 @@ LogicalProject(EMPNO=[$0])
 =======
     <TestCase name="testCaseFlatten">
         <Resource name="sql">
-            <![CDATA[SELECT (res1 = 'qwe') res2 
+            <![CDATA[SELECT (res1 = 'qwe') res2
 FROM (
   SELECT (
     CASE WHEN (FALSE)

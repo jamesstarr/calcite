@@ -612,10 +612,6 @@ public class RelToSqlConverter extends SqlImplementor
         list.add(
             new SqlSelect(POS, null,
                 new SqlNodeList(values2, POS),
-<<<<<<< HEAD
-                getDual(), null, null,
-                null, null, null, null, null, null, null));
-=======
                 new SqlIdentifier("DUAL", POS), null, null,
                 null, null, null, null, null, null));
       }
@@ -623,7 +619,10 @@ public class RelToSqlConverter extends SqlImplementor
         // In this case we need to construct the following query:
         // SELECT NULL as C0, NULL as C1, NULL as C2 ... FROM DUAL WHERE FALSE
         // This would return an empty result set with the same number of columns as the field names.
+<<<<<<< HEAD
         final List<SqlNode> nullColumnNames = new ArrayList<>(fieldNames.size());
+=======
+        final List<SqlNode> nullColumnNames = new ArrayList<>();
         for (String fieldName : fieldNames) {
           SqlCall nullColumnName = as(SqlLiteral.createNull(POS), fieldName);
           nullColumnNames.add(nullColumnName);
@@ -632,18 +631,18 @@ public class RelToSqlConverter extends SqlImplementor
         if (dual == null) {
           query = new SqlSelect(POS, null,
               new SqlNodeList(nullColumnNames, POS), null, null, null, null,
-              null, null, null, null, null, null);
+              null, null, null, null, null);
 
           // Wrap "SELECT 1 AS x"
           // as "SELECT * FROM (SELECT 1 AS x) AS t WHERE false"
           query = new SqlSelect(POS, null, SqlNodeList.SINGLETON_STAR,
               as(query, "t"), createAlwaysFalseCondition(), null, null,
-              null, null, null, null, null, null);
+              null, null, null, null, null);
         } else {
           query = new SqlSelect(POS, null,
               new SqlNodeList(nullColumnNames, POS),
               dual, createAlwaysFalseCondition(), null,
-              null, null, null, null, null, null, null);
+              null, null, null, null, null, null);
         }
       } else if (list.size() == 1) {
         query = list.get(0);

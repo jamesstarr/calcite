@@ -57,7 +57,10 @@ import com.google.common.collect.ImmutableMap;
 
 import org.slf4j.Logger;
 
+<<<<<<< HEAD
 import java.net.InetSocketAddress;
+=======
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

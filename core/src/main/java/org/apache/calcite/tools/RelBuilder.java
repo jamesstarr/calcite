@@ -969,8 +969,8 @@ public class RelBuilder {
    * <p>This method of creating a group key does not allow you to group on new
    * expressions, only column projections, but is efficient, especially when you
    * are coming from an existing {@link Aggregate}. */
-  public GroupKey groupKey(@Nonnull ImmutableBitSet groupSet) {
-    return groupKey_(groupSet, ImmutableList.of(groupSet));
+  public GroupKey groupKey(ImmutableBitSet groupSet) {
+    return groupKey(groupSet, ImmutableList.of(groupSet));
   }
 
   /** Creates a group key with grouping sets, both identified by field positions
@@ -1061,6 +1061,14 @@ public class RelBuilder {
                                Iterable<? extends RexNode> operands) {
     return aggregateCall(aggFunction, false, false, null, ImmutableList.of(),
         null, ImmutableList.copyOf(operands));
+  }
+
+  /** Creates a call to an aggregate function as a copy of an
+   * {@link AggregateCall}. */
+  public AggCall aggregateCall(AggregateCall a) {
+    return aggregateCall(a.getAggregation(), a.isDistinct(), a.isApproximate(),
+            a.filterArg < 0 ? null : field(a.filterArg),
+            fields(a.collation), a.name, fields(a.getArgList()));
   }
 
   /** Creates a call to an aggregate function.
@@ -2781,7 +2789,7 @@ public class RelBuilder {
     return this;
   }
 
-<<<<<<< HEAD
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
   /** Creates a Pivot.
    *
    * <p>To achieve the same effect as the SQL
@@ -2864,6 +2872,7 @@ public class RelBuilder {
     return aggregate(groupKey, multipliedAggCalls);
   }
 
+<<<<<<< HEAD
   /**
    * Creates an Unpivot.
    *
@@ -3008,6 +3017,7 @@ public class RelBuilder {
   }
 
 =======
+=======
   /** Clears the stack.
    *
    * <p>The builder's state is now the same as when it was created. */
@@ -3047,6 +3057,27 @@ public class RelBuilder {
     AggCall distinct();
   }
 
+  /** Internal methods shared by all implementations of {@link AggCall}. */
+  private interface AggCallPlus extends AggCall {
+    /** Returns the aggregate function. */
+    SqlAggFunction op();
+
+    /** Returns the alias. */
+    String alias();
+
+    /** Returns an {@link AggregateCall} that is approximately equivalent
+     * to this {@code AggCall} and is good for certain things, such as deriving
+     * field names. */
+    AggregateCall aggregateCall();
+
+    /** Converts this {@code AggCall} to a good {@link AggregateCall}. */
+    AggregateCall aggregateCall(Registrar registrar, ImmutableBitSet groupSet,
+        RelNode r);
+
+    /** Registers expressions in operands and filters. */
+    void register(Registrar registrar);
+  }
+
   /** Information necessary to create the GROUP BY clause of an Aggregate.
    *
    * @see RelBuilder#groupKey */
@@ -3082,7 +3113,7 @@ public class RelBuilder {
   }
 
   /** Implementation of {@link RelBuilder.AggCall}. */
-  private class AggCallImpl implements AggCall {
+  private class AggCallImpl implements AggCallPlus {
     private final SqlAggFunction aggFunction;
     private final boolean distinct;
     private final boolean approximate;
@@ -3125,6 +3156,32 @@ public class RelBuilder {
         b.append(" FILTER (WHERE" + filter + ")");
       }
       return b.toString();
+    }
+
+    @Override public SqlAggFunction op() {
+      return aggFunction;
+    }
+
+    @Override public String alias() {
+      return alias;
+    }
+
+    @Override public AggregateCall aggregateCall() {
+      return null;
+    }
+
+    @Override public AggregateCall aggregateCall(
+        Registrar registrar,
+        ImmutableBitSet groupSet,
+        RelNode r) {
+      return null;
+    }
+
+    @Override public void register(Registrar registrar) {
+      registrar.registerExpressions(operands);
+      if (filter != null) {
+        registrar.registerExpression(filter);
+      }
     }
 
     public AggCall sort(Iterable<RexNode> orderKeys) {
@@ -3241,6 +3298,27 @@ public class RelBuilder {
 
     @Override public String toString() {
       return aggregateCall.toString();
+    }
+
+    @Override public SqlAggFunction op() {
+      return aggregateCall.getAggregation();
+    }
+
+    @Override public String alias() {
+      return aggregateCall.name;
+    }
+
+    @Override public AggregateCall aggregateCall() {
+      return aggregateCall;
+    }
+
+    @Override public AggregateCall aggregateCall(Registrar registrar,
+        ImmutableBitSet groupSet, RelNode r) {
+      return aggregateCall;
+    }
+
+    @Override public void register(Registrar registrar) {
+      // nothing to do
     }
 
     public AggCall sort(Iterable<RexNode> orderKeys) {

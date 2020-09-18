@@ -92,6 +92,18 @@ public class JoinScope extends ListScope {
   public SqlValidatorScope getUsingScope() {
     return usingScope;
   }
+<<<<<<< HEAD
+=======
+
+  @Override public boolean isWithin(SqlValidatorScope scope2) {
+    if (this == scope2) {
+      return true;
+    }
+    // go from the JOIN to the enclosing SELECT
+    return usingScope.isWithin(scope2);
+  }
+}
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 
   @Override public boolean isWithin(SqlValidatorScope scope2) {
     if (this == scope2) {

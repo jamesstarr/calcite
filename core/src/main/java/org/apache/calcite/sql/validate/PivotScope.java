@@ -43,3 +43,7 @@ public class PivotScope extends ListScope {
     return pivot;
   }
 }
+<<<<<<< HEAD
+=======
+// End PivotScope.java
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)

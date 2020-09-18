@@ -224,13 +224,17 @@ public class SqlJoin extends SqlCall {
         break;
       case LEFT:
         writer.sep(join.isNatural() ? "NATURAL LEFT JOIN" : "LEFT JOIN");
+<<<<<<< HEAD
         break;
       case LEFT_SEMI_JOIN:
         writer.sep(join.isNatural() ? "NATURAL LEFT SEMI JOIN"
             : "LEFT SEMI JOIN");
+=======
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
         break;
       case LEFT_SEMI_JOIN:
-        writer.sep(natural + "LEFT SEMI JOIN");
+        writer.sep(join.isNatural() ? "NATURAL LEFT SEMI JOIN"
+            : "LEFT SEMI JOIN");
         break;
       case RIGHT:
         writer.sep(join.isNatural() ? "NATURAL RIGHT JOIN" : "RIGHT JOIN");

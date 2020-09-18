@@ -276,6 +276,7 @@ parser: {
     "PAST"
     "PATH"
     "PIVOT"
+<<<<<<< HEAD
 =======
     "PASSTHROUGH"
     "PAST"
@@ -286,6 +287,8 @@ parser: {
     "PAST"
     "PATH"
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
+=======
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
     "PLACING"
     "PLAN"
     "PLI"

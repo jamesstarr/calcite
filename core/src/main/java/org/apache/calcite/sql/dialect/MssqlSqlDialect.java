@@ -29,7 +29,7 @@ import org.apache.calcite.sql.SqlIntervalQualifier;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlNodeList;
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 import org.apache.calcite.sql.SqlUtil;
 import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
@@ -55,12 +55,13 @@ public class MssqlSqlDialect extends SqlDialect {
           SqlFunctionCategory.STRING);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
   /** Whether to generate "SELECT TOP(fetch)" rather than
    * "SELECT ... FETCH NEXT fetch ROWS ONLY". */
   private final boolean top;
 
-=======
->>>>>>> d2b0f0597 ([CALCITE-2339] Add utility to convert datetime_plus to timestampadd (James Duong))
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
   private static final SqlFunction MSSQL_DATEADD =
       new SqlFunction("DATEADD", SqlStdOperatorTable.TIMESTAMP_ADD.getKind(),
           SqlStdOperatorTable.TIMESTAMP_ADD.getReturnTypeInference(),
@@ -76,6 +77,7 @@ public class MssqlSqlDialect extends SqlDialect {
     top = context.databaseMajorVersion() < 11;
   }
 
+<<<<<<< HEAD
   /** {@inheritDoc}
    *
    * <p>MSSQL does not support NULLS FIRST, so we emulate using CASE
@@ -120,6 +122,7 @@ public class MssqlSqlDialect extends SqlDialect {
     }
   }
 
+=======
   @Override public void unparseOffsetFetch(SqlWriter writer, SqlNode offset,
       SqlNode fetch) {
     if (!top) {
@@ -142,6 +145,7 @@ public class MssqlSqlDialect extends SqlDialect {
       fetch.unparse(writer, -1, -1);
       writer.keyword(")");
     }
+<<<<<<< HEAD
   }
 
   @Override public boolean useTimestampAddInsteadOfDatetimePlus() {
@@ -150,6 +154,8 @@ public class MssqlSqlDialect extends SqlDialect {
 
   @Override public boolean supportsOrderByNullOrdering() {
     return false;
+=======
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
   }
 
   @Override public boolean useTimestampAddInsteadOfDatetimePlus() {

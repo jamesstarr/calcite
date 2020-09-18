@@ -717,22 +717,7 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
             + "'CARDINALITY\\(<MAP>\\)'");
   }
 
-  @Test void testMatchRecognizeWithDistinctAggregation() {
-    final String sql = "SELECT *\n"
-        + "FROM emp\n"
-        + "MATCH_RECOGNIZE (\n"
-        + "  ORDER BY ename\n"
-        + "  MEASURES\n"
-        + "    ^COUNT(DISTINCT A.deptno)^ AS deptno\n"
-        + "  PATTERN (A B)\n"
-        + "  DEFINE\n"
-        + "    A AS A.empno = 123\n"
-        + ") AS T";
-    sql(sql).fails("DISTINCT/ALL not allowed with "
-        + "COUNT\\(DISTINCT `A`\\.`DEPTNO`\\) function");
-  }
-
-  @Test void testPivot() {
+  @Test public void testPivot() {
     final String sql = "SELECT * FROM emp\n"
         + "PIVOT (sum(sal) AS ss FOR job in ('CLERK' AS c, 'MANAGER' AS m))";
     sql(sql).type("RecordType(INTEGER NOT NULL EMPNO,"
@@ -742,7 +727,7 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
         + " INTEGER C_SS, INTEGER M_SS) NOT NULL");
   }
 
-  @Test void testPivot2() {
+  @Test public void testPivot2() {
     final String sql = "SELECT *\n"
         + "FROM   (SELECT deptno, job, sal\n"
         + "        FROM   emp)\n"
@@ -756,7 +741,7 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
     sql(sql).type(type);
   }
 
-  @Test void testPivotAliases() {
+  @Test public void testPivotAliases() {
     final String sql = "SELECT *\n"
         + "FROM (\n"
         + "    SELECT deptno, job, sal FROM   emp)\n"
@@ -773,7 +758,7 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
     sql(sql).type(type);
   }
 
-  @Test void testPivotAggAliases() {
+  @Test public void testPivotAggAliases() {
     final String sql = "SELECT *\n"
         + "FROM (SELECT deptno, job, sal FROM emp)\n"
         + "PIVOT (SUM(sal) AS ss, MIN(job)\n"
@@ -783,7 +768,7 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
     sql(sql).type(type);
   }
 
-  @Test void testPivotNoValues() {
+  @Test public void testPivotNoValues() {
     final String sql = "SELECT *\n"
         + "FROM (SELECT deptno, sal, job FROM emp)\n"
         + "PIVOT (sum(sal) AS sum_sal FOR job in ())";
@@ -791,7 +776,7 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
   }
 
   /** Output only includes columns not referenced in an aggregate or axis. */
-  @Test void testPivotRemoveColumns() {
+  @Test public void testPivotRemoveColumns() {
     final String sql = "SELECT * FROM emp\n"
         + "PIVOT (sum(sal) AS sum_sal, count(comm) AS count_comm,\n"
         + "      min(hiredate) AS min_hiredate, max(hiredate) AS max_hiredate\n"
@@ -803,19 +788,19 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
         + " TIMESTAMP(0) C10_MAX_HIREDATE) NOT NULL");
   }
 
-  @Test void testPivotInvalidCol() {
+  @Test public void testPivotInvalidCol() {
     final String sql = "SELECT * FROM emp\n"
         + "PIVOT (sum(^invalid^) AS sal FOR job in ('CLERK' AS c, 'MANAGER'))";
     sql(sql).fails("Column 'INVALID' not found in any table");
   }
 
-  @Test void testPivotInvalidCol2() {
+  @Test public void testPivotInvalidCol2() {
     final String sql = "SELECT * FROM emp\n"
         + "PIVOT (sum(sal) AS sal FOR (job, ^invalid^) in (('CLERK', 'x') AS c))";
     sql(sql).fails("Column 'INVALID' not found in any table");
   }
 
-  @Test void testPivotMeasureMustBeAgg() {
+  @Test public void testPivotMeasureMustBeAgg() {
     final String sql = "SELECT * FROM emp\n"
         + "PIVOT (sal ^+^ 1 AS sal1 FOR job in ('CLERK' AS c, 'MANAGER'))";
     sql(sql).fails("(?s).*Encountered \"\\+\" at .*");
@@ -832,14 +817,14 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
   /** Tests an expression as argument to an aggregate function in a PIVOT.
    * Both of the columns referenced ({@code sum} and {@code deptno}) are removed
    * from the implicit GROUP BY. */
-  @Test void testPivotAggExpression() {
+  @Test public void testPivotAggExpression() {
     final String sql = "SELECT * FROM (SELECT sal, deptno, job, mgr FROM Emp)\n"
         + "PIVOT (sum(sal + deptno + 1)\n"
         + "   FOR job in ('CLERK' AS c, 'ANALYST' AS a))";
     sql(sql).type("RecordType(INTEGER MGR, INTEGER C, INTEGER A) NOT NULL");
   }
 
-  @Test void testPivotValueMismatch() {
+  @Test public void testPivotValueMismatch() {
     final String sql = "SELECT * FROM Emp\n"
         + "PIVOT (SUM(sal) FOR job IN (^('A', 'B')^, ('C', 'D')))";
     sql(sql).fails("Value count in PIVOT \\(2\\) must match number of "
@@ -861,101 +846,7 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
         + "FOR columns \\(2\\)");
   }
 
-  @Test void testUnpivot() {
-    final String sql = "SELECT * FROM emp\n"
-        + "UNPIVOT (remuneration\n"
-        + "  FOR remuneration_type IN (comm AS 'commission',\n"
-        + "                            sal as 'salary'))";
-    sql(sql).type("RecordType(INTEGER NOT NULL EMPNO,"
-        + " VARCHAR(20) NOT NULL ENAME, VARCHAR(10) NOT NULL JOB, INTEGER MGR,"
-        + " TIMESTAMP(0) NOT NULL HIREDATE, INTEGER NOT NULL DEPTNO,"
-        + " BOOLEAN NOT NULL SLACKER, CHAR(10) NOT NULL REMUNERATION_TYPE,"
-        + " INTEGER NOT NULL REMUNERATION) NOT NULL");
-  }
-
-  @Test void testUnpivotInvalidColumn() {
-    final String sql = "SELECT * FROM emp\n"
-        + "UNPIVOT (remuneration\n"
-        + "  FOR remuneration_type IN (comm AS 'commission',\n"
-        + "                            ^unknownCol^ as 'salary'))";
-    sql(sql).fails("Column 'UNKNOWNCOL' not found in any table");
-  }
-
-  @Test void testUnpivotCannotDeriveMeasureType() {
-    final String sql = "SELECT * FROM emp\n"
-        + "UNPIVOT (remuneration\n"
-        + "  FOR remuneration_type IN (^comm^ AS 'commission',\n"
-        + "                            ename as 'salary'))";
-    sql(sql).fails("In UNPIVOT, cannot derive type for measure 'REMUNERATION'"
-        + " because source columns have different data types");
-  }
-
-  @Test void testUnpivotValueMismatch() {
-    final String sql = "SELECT * FROM emp\n"
-        + "UNPIVOT (remuneration\n"
-        + "  FOR remuneration_type IN (comm AS 'commission',\n"
-        + "                            sal AS ^('salary', 1)^))";
-    String expected = "Value count in UNPIVOT \\(2\\) must match "
-        + "number of FOR columns \\(1\\)";
-    sql(sql).fails(expected);
-  }
-
-  @Test void testUnpivotDuplicateName() {
-    final String sql = "SELECT * FROM emp\n"
-        + "UNPIVOT ((remuneration, ^remuneration^)\n"
-        + "  FOR remuneration_type\n"
-        + "  IN ((comm, comm) AS 'commission',\n"
-        + "      (sal, sal) AS 'salary'))";
-    sql(sql).fails("Duplicate column name 'REMUNERATION' in UNPIVOT");
-  }
-
-  @Test void testUnpivotDuplicateName2() {
-    final String sql = "SELECT * FROM emp\n"
-        + "UNPIVOT (remuneration\n"
-        + "  FOR ^remuneration^ IN (comm AS 'commission',\n"
-        + "                         sal AS 'salary'))";
-    sql(sql).fails("Duplicate column name 'REMUNERATION' in UNPIVOT");
-  }
-
-  @Test void testUnpivotDuplicateName3() {
-    final String sql = "SELECT * FROM emp\n"
-        + "UNPIVOT (remuneration\n"
-        + "  FOR ^deptno^ IN (comm AS 'commission',\n"
-        + "                         sal AS 'salary'))";
-    sql(sql).fails("Duplicate column name 'DEPTNO' in UNPIVOT");
-  }
-
-  @Test void testUnpivotMissingAs() {
-    final String sql = "SELECT *\n"
-        + "FROM (\n"
-        + "  SELECT *\n"
-        + "  FROM (VALUES (0, 1, 2, 3, 4),\n"
-        + "               (10, 11, 12, 13, 14))\n"
-        + "      AS t (c0, c1, c2, c3, c4))\n"
-        + "UNPIVOT ((m0, m1, m2)\n"
-        + "    FOR (a0, a1)\n"
-        + "     IN ((c1, c2, c3) AS ('col1','col2'),\n"
-        + "         (c2, c3, c4)))";
-    sql(sql).type("RecordType(INTEGER NOT NULL C0, VARCHAR(8) NOT NULL A0,"
-        + " VARCHAR(8) NOT NULL A1, INTEGER M0, INTEGER M1,"
-        + " INTEGER M2) NOT NULL");
-  }
-
-  @Test void testUnpivotMissingAs2() {
-    final String sql = "SELECT *\n"
-        + "FROM (\n"
-        + "  SELECT *\n"
-        + "  FROM (VALUES (0, 1, 2, 3, 4),\n"
-        + "               (10, 11, 12, 13, 14))\n"
-        + "      AS t (c0, c1, c2, c3, c4))\n"
-        + "UNPIVOT ((m0, m1, m2)\n"
-        + "    FOR (^a0^, a1)\n"
-        + "     IN ((c1, c2, c3) AS (6, true),\n"
-        + "         (c2, c3, c4)))";
-    sql(sql).fails("In UNPIVOT, cannot derive type for axis 'A0'");
-  }
-
-  @Test void testIntervalTimeUnitEnumeration() {
+  @Test public void testIntervalTimeUnitEnumeration() {
     // Since there is validation code relaying on the fact that the
     // enumerated time unit ordinals in SqlIntervalQualifier starts with 0
     // and ends with 5, this test is here to make sure that if someone
@@ -4008,7 +3899,7 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
         "RecordType(CHAR(2) NOT NULL A, INTEGER NOT NULL B) NOT NULL");
   }
 
-  @Test void testAmbiguousColumnInIn() {
+  @Test public void testAmbiguousColumnInIn() {
     // ok: cyclic reference
     sql("select * from emp as e\n"
         + "where e.deptno in (\n"
@@ -6479,6 +6370,576 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
         + "from emp\n"
         + "group by deptno")
         .fails("WITHIN GROUP must not contain aggregate expression");
+<<<<<<< HEAD
+=======
+  }
+
+  @Test public void testCorrelatingVariables() {
+    // reference to unqualified correlating column
+    check("select * from emp where exists (\n"
+        + "select * from dept where deptno = sal)");
+
+    // reference to qualified correlating column
+    check("select * from emp where exists (\n"
+        + "select * from dept where deptno = emp.sal)");
+  }
+
+  @Test public void testIntervalCompare() {
+    checkExpType(
+        "interval '1' hour = interval '1' day",
+        "BOOLEAN NOT NULL");
+    checkExpType(
+        "interval '1' hour <> interval '1' hour",
+        "BOOLEAN NOT NULL");
+    checkExpType(
+        "interval '1' hour < interval '1' second",
+        "BOOLEAN NOT NULL");
+    checkExpType(
+        "interval '1' hour <= interval '1' minute",
+        "BOOLEAN NOT NULL");
+    checkExpType(
+        "interval '1' minute > interval '1' second",
+        "BOOLEAN NOT NULL");
+    checkExpType(
+        "interval '1' second >= interval '1' day",
+        "BOOLEAN NOT NULL");
+    checkExpType(
+        "interval '1' year >= interval '1' year",
+        "BOOLEAN NOT NULL");
+    checkExpType(
+        "interval '1' month = interval '1' year",
+        "BOOLEAN NOT NULL");
+    checkExpType(
+        "interval '1' month <> interval '1' month",
+        "BOOLEAN NOT NULL");
+    checkExpType(
+        "interval '1' year >= interval '1' month",
+        "BOOLEAN NOT NULL");
+
+    checkWholeExpFails(
+        "interval '1' second >= interval '1' year",
+        "(?s).*Cannot apply '>=' to arguments of type '<INTERVAL SECOND> >= <INTERVAL YEAR>'.*");
+    checkWholeExpFails("interval '1' month = interval '1' day",
+        "(?s).*Cannot apply '=' to arguments of type '<INTERVAL MONTH> = <INTERVAL DAY>'.*");
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-613">[CALCITE-613]
+   * Implicitly convert strings in comparisons</a>. */
+  @Test public void testDateCompare() {
+    // can convert character value to date, time, timestamp, interval
+    // provided it is on one side of a comparison operator (=, <, >, BETWEEN)
+    checkExpType("date '2015-03-17' < '2015-03-18'", "BOOLEAN NOT NULL");
+    checkExpType("date '2015-03-17' > '2015-03-18'", "BOOLEAN NOT NULL");
+    checkExpType("date '2015-03-17' = '2015-03-18'", "BOOLEAN NOT NULL");
+    checkExpType("'2015-03-17' < date '2015-03-18'", "BOOLEAN NOT NULL");
+    checkExpType("date '2015-03-17' between '2015-03-16' and '2015-03-19'",
+        "BOOLEAN NOT NULL");
+    checkExpType("date '2015-03-17' between '2015-03-16' and '2015-03'||'-19'",
+        "BOOLEAN NOT NULL");
+    checkExpType("'2015-03-17' between date '2015-03-16' and date '2015-03-19'",
+        "BOOLEAN NOT NULL");
+    checkExpType("date '2015-03-17' between date '2015-03-16' and '2015-03-19'",
+        "BOOLEAN NOT NULL");
+    checkExpType("date '2015-03-17' between '2015-03-16' and date '2015-03-19'",
+        "BOOLEAN NOT NULL");
+    checkExpType("time '12:34:56' < '12:34:57'", "BOOLEAN NOT NULL");
+    checkExpType("timestamp '2015-03-17 12:34:56' < '2015-03-17 12:34:57'",
+        "BOOLEAN NOT NULL");
+    checkExpType("interval '2' hour < '2:30'", "BOOLEAN NOT NULL");
+
+    // can convert to exact and approximate numeric
+    checkExpType("123 > '72'", "BOOLEAN NOT NULL");
+    checkExpType("12.3 > '7.2'", "BOOLEAN NOT NULL");
+
+    // can convert to boolean
+    checkExpType("true = 'true'", "BOOLEAN NOT NULL");
+    checkExpFails("^true and 'true'^",
+        "Cannot apply 'AND' to arguments of type '<BOOLEAN> AND <CHAR\\(4\\)>'\\..*");
+  }
+
+  @Test public void testOverlaps() {
+    checkExpType("(date '1-2-3', date '1-2-3')\n"
+            + " overlaps (date '1-2-3', date '1-2-3')",
+        "BOOLEAN NOT NULL");
+    checkExpType("period (date '1-2-3', date '1-2-3')\n"
+            + " overlaps period (date '1-2-3', date '1-2-3')",
+        "BOOLEAN NOT NULL");
+    checkExp(
+        "(date '1-2-3', date '1-2-3') overlaps (date '1-2-3', interval '1' year)");
+    checkExp(
+        "(time '1:2:3', interval '1' second) overlaps (time '23:59:59', time '1:2:3')");
+    checkExp(
+        "(timestamp '1-2-3 4:5:6', timestamp '1-2-3 4:5:6' ) overlaps (timestamp '1-2-3 4:5:6', interval '1 2:3:4.5' day to second)");
+
+    checkWholeExpFails(
+        "(timestamp '1-2-3 4:5:6', timestamp '1-2-3 4:5:6' ) overlaps (time '4:5:6', interval '1 2:3:4.5' day to second)",
+        "(?s).*Cannot apply 'OVERLAPS' to arguments of type .*");
+    checkWholeExpFails(
+        "(time '4:5:6', timestamp '1-2-3 4:5:6' ) overlaps (time '4:5:6', interval '1 2:3:4.5' day to second)",
+        "(?s).*Cannot apply 'OVERLAPS' to arguments of type .*");
+    checkWholeExpFails(
+        "(time '4:5:6', time '4:5:6' ) overlaps (time '4:5:6', date '1-2-3')",
+        "(?s).*Cannot apply 'OVERLAPS' to arguments of type .*");
+    checkWholeExpFails("1 overlaps 2",
+        "(?s).*Cannot apply 'OVERLAPS' to arguments of type "
+            + "'<INTEGER> OVERLAPS <INTEGER>'\\. Supported form.*");
+
+    checkExpType("true\n"
+            + "or (date '1-2-3', date '1-2-3')\n"
+            + "   overlaps (date '1-2-3', date '1-2-3')\n"
+            + "or false",
+        "BOOLEAN NOT NULL");
+    // row with 3 arguments as left argument to overlaps
+    checkExpFails("true\n"
+            + "or ^(date '1-2-3', date '1-2-3', date '1-2-3')\n"
+            + "   overlaps (date '1-2-3', date '1-2-3')^\n"
+            + "or false",
+        "(?s).*Cannot apply 'OVERLAPS' to arguments of type .*");
+    // row with 3 arguments as right argument to overlaps
+    checkExpFails("true\n"
+            + "or ^(date '1-2-3', date '1-2-3')\n"
+            + "  overlaps (date '1-2-3', date '1-2-3', date '1-2-3')^\n"
+            + "or false",
+        "(?s).*Cannot apply 'OVERLAPS' to arguments of type .*");
+    checkExpFails("^period (date '1-2-3', date '1-2-3')\n"
+            + "   overlaps (date '1-2-3', date '1-2-3', date '1-2-3')^",
+        "(?s).*Cannot apply 'OVERLAPS' to arguments of type .*");
+    checkExpFails("true\n"
+            + "or ^(1, 2) overlaps (2, 3)^\n"
+            + "or false",
+        "(?s).*Cannot apply 'OVERLAPS' to arguments of type .*");
+
+    // Other operators with similar syntax
+    String[] ops = {
+        "overlaps", "contains", "equals", "precedes", "succeeds",
+        "immediately precedes", "immediately succeeds"
+    };
+    for (String op : ops) {
+      checkExpType("period (date '1-2-3', date '1-2-3')\n"
+              + " " + op + " period (date '1-2-3', date '1-2-3')",
+          "BOOLEAN NOT NULL");
+      checkExpType("(date '1-2-3', date '1-2-3')\n"
+              + " " + op + " (date '1-2-3', date '1-2-3')",
+          "BOOLEAN NOT NULL");
+    }
+  }
+
+  @Test public void testContains() {
+    final String cannotApply =
+        "(?s).*Cannot apply 'CONTAINS' to arguments of type .*";
+
+    checkExpType("(date '1-2-3', date '1-2-3')\n"
+            + " contains (date '1-2-3', date '1-2-3')",
+        "BOOLEAN NOT NULL");
+    checkExpType("period (date '1-2-3', date '1-2-3')\n"
+            + " contains period (date '1-2-3', date '1-2-3')",
+        "BOOLEAN NOT NULL");
+    checkExp("(date '1-2-3', date '1-2-3')\n"
+        + "  contains (date '1-2-3', interval '1' year)");
+    checkExp("(time '1:2:3', interval '1' second)\n"
+        + " contains (time '23:59:59', time '1:2:3')");
+    checkExp("(timestamp '1-2-3 4:5:6', timestamp '1-2-3 4:5:6')\n"
+        + " contains (timestamp '1-2-3 4:5:6', interval '1 2:3:4.5' day to second)");
+
+    // period contains point
+    checkExp("(date '1-2-3', date '1-2-3')\n"
+        + "  contains date '1-2-3'");
+    // same, with "period" keyword
+    checkExp("period (date '1-2-3', date '1-2-3')\n"
+        + "  contains date '1-2-3'");
+    // point contains period
+    checkWholeExpFails("date '1-2-3'\n"
+            + "  contains (date '1-2-3', date '1-2-3')",
+        cannotApply);
+    // same, with "period" keyword
+    checkWholeExpFails("date '1-2-3'\n"
+            + "  contains period (date '1-2-3', date '1-2-3')",
+        cannotApply);
+    // point contains point
+    checkWholeExpFails("date '1-2-3' contains date '1-2-3'",
+        cannotApply);
+
+    checkWholeExpFails("(timestamp '1-2-3 4:5:6', timestamp '1-2-3 4:5:6' )\n"
+            + " contains (time '4:5:6', interval '1 2:3:4.5' day to second)",
+        cannotApply);
+    checkWholeExpFails("(time '4:5:6', timestamp '1-2-3 4:5:6' )\n"
+            + " contains (time '4:5:6', interval '1 2:3:4.5' day to second)",
+        cannotApply);
+    checkWholeExpFails("(time '4:5:6', time '4:5:6' )\n"
+            + "  contains (time '4:5:6', date '1-2-3')",
+        cannotApply);
+    checkWholeExpFails("1 contains 2",
+        cannotApply);
+    // row with 3 arguments
+    checkExpFails("true\n"
+            + "or ^(date '1-2-3', date '1-2-3', date '1-2-3')\n"
+            + "  contains (date '1-2-3', date '1-2-3')^\n"
+            + "or false",
+        cannotApply);
+
+    checkExpType("true\n"
+            + "or (date '1-2-3', date '1-2-3')\n"
+            + "  contains (date '1-2-3', date '1-2-3')\n"
+            + "or false",
+        "BOOLEAN NOT NULL");
+    // second argument is a point
+    checkExpType("true\n"
+            + "or (date '1-2-3', date '1-2-3')\n"
+            + "  contains date '1-2-3'\n"
+            + "or false",
+        "BOOLEAN NOT NULL");
+    // first argument may be null, so result may be null
+    checkExpType("true\n"
+            + "or (date '1-2-3',\n"
+            + "     case 1 when 2 then date '1-2-3' else null end)\n"
+            + "  contains date '1-2-3'\n"
+            + "or false",
+        "BOOLEAN");
+    // second argument may be null, so result may be null
+    checkExpType("true\n"
+            + "or (date '1-2-3', date '1-2-3')\n"
+            + "  contains case 1 when 1 then date '1-2-3' else null end\n"
+            + "or false",
+        "BOOLEAN");
+    checkExpFails("true\n"
+            + "or ^period (date '1-2-3', date '1-2-3')\n"
+            + "  contains period (date '1-2-3', time '4:5:6')^\n"
+            + "or false",
+        cannotApply);
+    checkExpFails("true\n"
+            + "or ^(1, 2) contains (2, 3)^\n"
+            + "or false",
+        cannotApply);
+  }
+
+  @Test public void testExtract() {
+    // TODO: Need to have extract return decimal type for seconds
+    // so we can have seconds fractions
+    checkExpType("extract(year from interval '1-2' year to month)",
+        "BIGINT NOT NULL");
+    checkExp("extract(minute from interval '1.1' second)");
+    checkExp("extract(year from DATE '2008-2-2')");
+
+    checkWholeExpFails(
+        "extract(minute from interval '11' month)",
+        "(?s).*Cannot apply.*");
+    checkWholeExpFails(
+        "extract(year from interval '11' second)",
+        "(?s).*Cannot apply.*");
+  }
+
+  @Test public void testCastToInterval() {
+    checkExpType(
+        "cast(interval '1' hour as varchar(20))",
+        "VARCHAR(20) NOT NULL");
+    checkExpType("cast(interval '1' hour as bigint)", "BIGINT NOT NULL");
+    checkExpType("cast(1000 as interval hour)", "INTERVAL HOUR NOT NULL");
+
+    checkExpType(
+        "cast(interval '1' month as interval year)",
+        "INTERVAL YEAR NOT NULL");
+    checkExpType(
+        "cast(interval '1-1' year to month as interval month)",
+        "INTERVAL MONTH NOT NULL");
+    checkExpType("cast(interval '1:1' hour to minute as interval day)",
+        "INTERVAL DAY NOT NULL");
+    checkExpType(
+        "cast(interval '1:1' hour to minute as interval minute to second)",
+        "INTERVAL MINUTE TO SECOND NOT NULL");
+
+    checkWholeExpFails(
+        "cast(interval '1:1' hour to minute as interval month)",
+        "Cast function cannot convert value of type INTERVAL HOUR TO MINUTE to type INTERVAL MONTH");
+    checkWholeExpFails(
+        "cast(interval '1-1' year to month as interval second)",
+        "Cast function cannot convert value of type INTERVAL YEAR TO MONTH to type INTERVAL SECOND");
+  }
+
+  @Test public void testMinusDateOperator() {
+    checkExpType(
+        "(CURRENT_DATE - CURRENT_DATE) HOUR",
+        "INTERVAL HOUR NOT NULL");
+    checkExpType("(CURRENT_DATE - CURRENT_DATE) YEAR TO MONTH",
+        "INTERVAL YEAR TO MONTH NOT NULL");
+    checkWholeExpFails(
+        "(CURRENT_DATE - LOCALTIME) YEAR TO MONTH",
+        "(?s).*Parameters must be of the same type.*");
+  }
+
+  @Test public void testBind() {
+    sql("select * from emp where deptno = ?").ok();
+    sql("select * from emp where deptno = ? and sal < 100000").ok();
+    sql("select case when deptno = ? then 1 else 2 end from emp").ok();
+    // It is not possible to infer type of ?, because SUBSTRING is overloaded
+    sql("select deptno from emp group by substring(name from ^?^ for ?)")
+        .fails("Illegal use of dynamic parameter");
+    // In principle we could infer that ? should be a VARCHAR
+    sql("select count(*) from emp group by position(^?^ in ename)")
+        .fails("Illegal use of dynamic parameter");
+    sql("select ^deptno^ from emp\n"
+        + "group by case when deptno = ? then 1 else 2 end")
+        .fails("Expression 'DEPTNO' is not being grouped");
+    sql("select deptno from emp\n"
+        + "group by deptno, case when deptno = ? then 1 else 2 end").ok();
+    sql("select 1 from emp having sum(sal) < ?").ok();
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-1310">[CALCITE-1310]
+   * Infer type of arguments to BETWEEN operator</a>. */
+  @Test public void testBindBetween() {
+    sql("select * from emp where ename between ? and ?").ok();
+    sql("select * from emp where deptno between ? and ?").ok();
+    sql("select * from emp where ? between deptno and ?").ok();
+    sql("select * from emp where ? between ? and deptno").ok();
+    sql("select * from emp where ^?^ between ? and ?")
+        .fails("Illegal use of dynamic parameter");
+  }
+
+  @Test public void testUnnest() {
+    checkColumnType("select*from unnest(multiset[1])", "INTEGER NOT NULL");
+    checkColumnType("select*from unnest(multiset[1, 2])", "INTEGER NOT NULL");
+    checkColumnType(
+        "select*from unnest(multiset[321.3, 2.33])",
+        "DECIMAL(5, 2) NOT NULL");
+    checkColumnType(
+        "select*from unnest(multiset[321.3, 4.23e0])",
+        "DOUBLE NOT NULL");
+    checkColumnType(
+        "select*from unnest(multiset[43.2e1, cast(null as decimal(4,2))])",
+        "DOUBLE");
+    checkColumnType(
+        "select*from unnest(multiset[1, 2.3, 1])",
+        "DECIMAL(11, 1) NOT NULL");
+    checkColumnType(
+        "select*from unnest(multiset['1','22','333'])",
+        "CHAR(3) NOT NULL");
+    checkColumnType(
+        "select*from unnest(multiset['1','22','333','22'])",
+        "CHAR(3) NOT NULL");
+    checkFails(
+        "select*from ^unnest(1)^",
+        "(?s).*Cannot apply 'UNNEST' to arguments of type 'UNNEST.<INTEGER>.'.*");
+    check("select*from unnest(multiset(select*from dept))");
+    check("select c from unnest(multiset(select deptno from dept)) as t(c)");
+    checkFails("select c from unnest(multiset(select * from dept)) as t(^c^)",
+        "List of column aliases must have same degree as table; table has 2 columns \\('DEPTNO', 'NAME'\\), whereas alias list has 1 columns");
+    checkFails(
+        "select ^c1^ from unnest(multiset(select name from dept)) as t(c)",
+        "Column 'C1' not found in any table");
+  }
+
+  @Test public void testUnnestArray() {
+    checkColumnType("select*from unnest(array[1])", "INTEGER NOT NULL");
+    checkColumnType("select*from unnest(array[1, 2])", "INTEGER NOT NULL");
+    checkColumnType(
+        "select*from unnest(array[321.3, 2.33])",
+        "DECIMAL(5, 2) NOT NULL");
+    checkColumnType(
+        "select*from unnest(array[321.3, 4.23e0])",
+        "DOUBLE NOT NULL");
+    checkColumnType(
+        "select*from unnest(array[43.2e1, cast(null as decimal(4,2))])",
+        "DOUBLE");
+    checkColumnType(
+        "select*from unnest(array[1, 2.3, 1])",
+        "DECIMAL(11, 1) NOT NULL");
+    checkColumnType(
+        "select*from unnest(array['1','22','333'])",
+        "CHAR(3) NOT NULL");
+    checkColumnType(
+        "select*from unnest(array['1','22','333','22'])",
+        "CHAR(3) NOT NULL");
+    checkColumnType(
+        "select*from unnest(array['1','22',null,'22'])",
+        "CHAR(2)");
+    checkFails(
+        "select*from ^unnest(1)^",
+        "(?s).*Cannot apply 'UNNEST' to arguments of type 'UNNEST.<INTEGER>.'.*");
+    check("select*from unnest(array(select*from dept))");
+    check("select*from unnest(array[1,null])");
+    check("select c from unnest(array(select deptno from dept)) as t(c)");
+    checkFails("select c from unnest(array(select * from dept)) as t(^c^)",
+        "List of column aliases must have same degree as table; table has 2 columns \\('DEPTNO', 'NAME'\\), whereas alias list has 1 columns");
+    checkFails(
+        "select ^c1^ from unnest(array(select name from dept)) as t(c)",
+        "Column 'C1' not found in any table");
+  }
+
+  @Test public void testArrayConstructor() {
+    sql("select array[1,2] as a from (values (1))")
+        .columnType("INTEGER NOT NULL ARRAY NOT NULL");
+    sql("select array[1,cast(null as integer), 2] as a\n"
+            + "from (values (1))")
+        .columnType("INTEGER ARRAY NOT NULL");
+    sql("select array[1,null,2] as a from (values (1))")
+        .columnType("INTEGER ARRAY NOT NULL");
+    sql("select array['1',null,'234',''] as a from (values (1))")
+        .columnType("CHAR(3) ARRAY NOT NULL");
+  }
+
+  @Test public void testMultisetConstructor() {
+    sql("select multiset[1,null,2] as a from (values (1))")
+        .columnType("INTEGER MULTISET NOT NULL");
+  }
+
+  @Test public void testUnnestArrayColumn() {
+    final String sql1 = "select d.deptno, e.*\n"
+        + "from dept_nested as d,\n"
+        + " UNNEST(d.employees) as e";
+    final String type = "RecordType(INTEGER NOT NULL DEPTNO,"
+        + " INTEGER NOT NULL EMPNO,"
+        + " VARCHAR(10) NOT NULL ENAME,"
+        + " RecordType(RecordType(VARCHAR(10) NOT NULL TYPE, VARCHAR(20) NOT NULL DESC,"
+        + " RecordType(VARCHAR(10) NOT NULL A, VARCHAR(10) NOT NULL B) NOT NULL OTHERS)"
+        + " NOT NULL ARRAY NOT NULL SKILLS) NOT NULL DETAIL) NOT NULL";
+    sql(sql1).type(type);
+
+    // equivalent query without table alias
+    final String sql1b = "select d.deptno, e.*\n"
+        + "from dept_nested as d,\n"
+        + " UNNEST(employees) as e";
+    sql(sql1b).type(type);
+
+    // equivalent query using CROSS JOIN
+    final String sql2 = "select d.deptno, e.*\n"
+        + "from dept_nested as d CROSS JOIN\n"
+        + " UNNEST(d.employees) as e";
+    sql(sql2).type(type);
+
+    // equivalent query using CROSS JOIN, without table alias
+    final String sql2b = "select d.deptno, e.*\n"
+        + "from dept_nested as d CROSS JOIN\n"
+        + " UNNEST(employees) as e";
+    sql(sql2b).type(type);
+
+    // LATERAL works left-to-right
+    final String sql3 = "select d.deptno, e.*\n"
+        + "from UNNEST(^d^.employees) as e, dept_nested as d";
+    sql(sql3).fails("Table 'D' not found");
+  }
+
+  @Test public void testUnnestWithOrdinality() {
+    checkResultType("select*from unnest(array[1, 2]) with ordinality",
+        "RecordType(INTEGER NOT NULL EXPR$0, INTEGER NOT NULL ORDINALITY) NOT NULL");
+    checkResultType(
+        "select*from unnest(array[43.2e1, cast(null as decimal(4,2))]) with ordinality",
+        "RecordType(DOUBLE EXPR$0, INTEGER NOT NULL ORDINALITY) NOT NULL");
+    checkFails(
+        "select*from ^unnest(1) with ordinality^",
+        "(?s).*Cannot apply 'UNNEST' to arguments of type 'UNNEST.<INTEGER>.'.*");
+    check("select deptno\n"
+        + "from unnest(array(select*from dept)) with ordinality\n"
+        + "where ordinality < 5");
+    checkFails("select c from unnest(\n"
+        + "  array(select deptno from dept)) with ordinality as t(^c^)",
+        "List of column aliases must have same degree as table; table has 2 "
+        + "columns \\('DEPTNO', 'ORDINALITY'\\), "
+        + "whereas alias list has 1 columns");
+    check("select c from unnest(\n"
+        + "  array(select deptno from dept)) with ordinality as t(c, d)");
+    checkFails("select c from unnest(\n"
+        + "  array(select deptno from dept)) with ordinality as t(^c, d, e^)",
+        "List of column aliases must have same degree as table; table has 2 "
+        + "columns \\('DEPTNO', 'ORDINALITY'\\), "
+        + "whereas alias list has 3 columns");
+    checkFails("select c\n"
+        + "from unnest(array(select * from dept)) with ordinality as t(^c, d, e, f^)",
+        "List of column aliases must have same degree as table; table has 3 "
+        + "columns \\('DEPTNO', 'NAME', 'ORDINALITY'\\), "
+        + "whereas alias list has 4 columns");
+    checkFails(
+        "select ^name^ from unnest(array(select name from dept)) with ordinality as t(c, o)",
+        "Column 'NAME' not found in any table");
+    checkFails(
+        "select ^ordinality^ from unnest(array(select name from dept)) with ordinality as t(c, o)",
+        "Column 'ORDINALITY' not found in any table");
+  }
+
+  @Test public void unnestMapMustNameColumnsKeyAndValueWhenNotAliased() {
+    checkResultType("select * from unnest(map[1, 12, 2, 22])",
+        "RecordType(INTEGER NOT NULL KEY, INTEGER NOT NULL VALUE) NOT NULL");
+  }
+
+  @Test public void testCorrelationJoin() {
+    check("select *,"
+        + "         multiset(select * from emp where deptno=dept.deptno) "
+        + "               as empset"
+        + "      from dept");
+    check("select*from unnest(select multiset[8] from dept)");
+    check("select*from unnest(select multiset[deptno] from dept)");
+  }
+
+  @Test public void testStructuredTypes() {
+    checkColumnType(
+        "values new address()",
+        "ObjectSqlType(ADDRESS) NOT NULL");
+    checkColumnType("select home_address from emp_address",
+        "ObjectSqlType(ADDRESS) NOT NULL");
+    checkColumnType("select ea.home_address.zip from emp_address ea",
+        "INTEGER NOT NULL");
+    checkColumnType("select ea.mailing_address.city from emp_address ea",
+        "VARCHAR(20) NOT NULL");
+  }
+
+  @Test public void testLateral() {
+    checkFails(
+        "select * from emp, (select * from dept where ^emp^.deptno=dept.deptno)",
+        "Table 'EMP' not found");
+
+    check("select * from emp,\n"
+        + "  LATERAL (select * from dept where emp.deptno=dept.deptno)");
+    check("select * from emp,\n"
+        + "  LATERAL (select * from dept where emp.deptno=dept.deptno) as ldt");
+    check("select * from emp,\n"
+        + "  LATERAL (select * from dept where emp.deptno=dept.deptno) ldt");
+  }
+
+  @Test public void testCollect() {
+    check("select collect(deptno) from emp");
+    check("select collect(multiset[3]) from emp");
+    sql("select collect(multiset[3]), ^deptno^ from emp")
+        .fails("Expression 'DEPTNO' is not being grouped");
+  }
+
+  @Test public void testFusion() {
+    checkFails("select ^fusion(deptno)^ from emp",
+        "(?s).*Cannot apply 'FUSION' to arguments of type 'FUSION.<INTEGER>.'.*");
+    check("select fusion(multiset[3]) from emp");
+    // todo. FUSION is an aggregate function. test that validator can only
+    // take set operators in its select list once aggregation support is
+    // complete
+  }
+
+  @Test public void testCountFunction() {
+    check("select count(*) from emp");
+    check("select count(ename) from emp");
+    check("select count(sal) from emp");
+    check("select count(1) from emp");
+    checkFails(
+        "select ^count()^ from emp",
+        "Invalid number of arguments to function 'COUNT'. Was expecting 1 arguments");
+  }
+
+  @Test public void testCountCompositeFunction() {
+    check("select count(ename, deptno) from emp");
+    checkFails("select count(ename, deptno, ^gender^) from emp",
+        "Column 'GENDER' not found in any table");
+    check("select count(ename, 1, deptno) from emp");
+    check("select count(distinct ename, 1, deptno) from emp");
+    checkFails("select count(deptno, *) from emp",
+        "(?s).*Encountered \", \\*\" at .*");
+    checkFails(
+        "select count(*, deptno) from emp",
+        "(?s).*Encountered \",\" at .*");
+  }
+
+  @Test public void testLastFunction() {
+    check("select LAST_VALUE(sal) over (order by empno) from emp");
+    check("select LAST_VALUE(ename) over (order by empno) from emp");
+
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
     check("select FIRST_VALUE(sal) over (order by empno) from emp");
     check("select FIRST_VALUE(ename) over (order by empno) from emp");
 

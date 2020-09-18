@@ -28,14 +28,7 @@ import org.apache.calcite.sql.validate.SqlValidatorScope;
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.Util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.UnaryOperator;
-import java.util.stream.Collector;
-import javax.annotation.Nonnull;
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 
 /**
  * A <code>SqlNode</code> is a SQL parse tree.
@@ -130,6 +123,30 @@ public abstract class SqlNode implements Cloneable {
         .withSelectListItemsOnSeparateLines(false)
         .withUpdateSetListNewline(false)
         .withIndentation(0)).getSql();
+<<<<<<< HEAD
+=======
+  }
+
+  /**
+   * Returns the SQL text of the tree of which this <code>SqlNode</code> is
+   * the root.
+   *
+   * <p>Typical return values are:
+   *
+   * <ul>
+   * <li>'It''s a bird!'
+   * <li>NULL
+   * <li>12.3
+   * <li>DATE '1969-04-29'
+   * </ul>
+   *
+   * @param transform   Transform that sets desired writer configuration
+   */
+  public SqlString toSqlString(UnaryOperator<SqlWriterConfig> transform) {
+    final SqlWriterConfig config = transform.apply(SqlPrettyWriter.config());
+    SqlPrettyWriter writer = new SqlPrettyWriter(config);
+    unparse(writer, 0, 0);
+    return writer.toSqlString();
   }
 
   /**
@@ -178,7 +195,7 @@ public abstract class SqlNode implements Cloneable {
             .withSelectListItemsOnSeparateLines(false)
             .withUpdateSetListNewline(false)
             .withIndentation(0));
-
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
   }
 
   public SqlString toSqlString(SqlDialect dialect) {
@@ -341,6 +358,38 @@ public abstract class SqlNode implements Cloneable {
     }
     return litmus.succeed();
   }
+<<<<<<< HEAD
+=======
+
+  /**
+   * Returns a {@code Collector} that accumulates the input elements into a
+   * {@link SqlNodeList}, with zero position.
+   *
+   * @param <T> Type of the input elements
+   *
+   * @return a {@code Collector} that collects all the input elements into a
+   * {@link SqlNodeList}, in encounter order
+   */
+  public static <T extends SqlNode> Collector<T, ArrayList<T>, SqlNodeList>
+      toList() {
+    return toList(SqlParserPos.ZERO);
+  }
+
+  /**
+   * Returns a {@code Collector} that accumulates the input elements into a
+   * {@link SqlNodeList}.
+   *
+   * @param <T> Type of the input elements
+   *
+   * @return a {@code Collector} that collects all the input elements into a
+   * {@link SqlNodeList}, in encounter order
+   */
+  public static <T extends SqlNode> Collector<T, ArrayList<T>, SqlNodeList>
+      toList(SqlParserPos pos) {
+    return Collector.of(ArrayList::new, ArrayList::add, Util::combine,
+        list -> new SqlNodeList(list, pos));
+  }
+}
 
   /**
    * Returns a {@code Collector} that accumulates the input elements into a

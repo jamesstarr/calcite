@@ -229,10 +229,13 @@ public class SqlSelectOperator extends SqlOperator {
       writer.sep("WINDOW");
       writer.list(SqlWriter.FrameTypeEnum.WINDOW_DECL_LIST, SqlWriter.COMMA,
           select.windowDecls);
+<<<<<<< HEAD
     }
     if (select.qualify != null) {
       writer.sep("QUALIFY");
       select.qualify.unparse(writer, 0, 0);
+=======
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
     }
     if (select.orderBy != null && select.orderBy.size() > 0) {
       writer.sep("ORDER BY");

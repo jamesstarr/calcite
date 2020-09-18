@@ -88,8 +88,7 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.ObjIntConsumer;
+import javax.annotation.Nullable;
 
 import static org.apache.calcite.test.Matchers.isLinux;
 
@@ -930,7 +929,7 @@ class UtilTest {
   /**
    * Unit test for {@link Pair#forEach(Iterable, Iterable, BiConsumer)}.
    */
-  @Test void testPairForEach() {
+  @Test public void testPairForEach() {
     List<String> strings = Arrays.asList("paul", "george", "john", "ringo");
     List<Integer> integers = Arrays.asList(1942, 1943, 1940);
 

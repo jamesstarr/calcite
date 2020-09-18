@@ -121,6 +121,7 @@ import org.apache.calcite.sql.SqlNumericLiteral;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.SqlOrderBy;
+import org.apache.calcite.sql.SqlPivot;
 import org.apache.calcite.sql.SqlSampleSpec;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.SqlSelectKeyword;
@@ -2098,6 +2099,14 @@ public class SqlToRelConverter {
       convertUnpivot(bb, (SqlUnpivot) from);
       return;
 
+    case MATCH_RECOGNIZE:
+      convertMatchRecognize(bb, (SqlMatchRecognize) from);
+      return;
+
+    case PIVOT:
+      convertPivot(bb, (SqlPivot) from);
+      return;
+
     case WITH_ITEM:
       convertFrom(bb, ((SqlWithItem) from).query);
       return;
@@ -2215,38 +2224,7 @@ public class SqlToRelConverter {
     }
   }
 
-  private void convertUnnest(Blackboard bb, SqlCall call, List<String> fieldNames) {
-    final List<SqlNode> nodes = call.getOperandList();
-    final SqlUnnestOperator operator = (SqlUnnestOperator) call.getOperator();
-    for (SqlNode node : nodes) {
-      replaceSubQueries(bb, node, RelOptUtil.Logic.TRUE_FALSE_UNKNOWN);
-    }
-    final List<RexNode> exprs = new ArrayList<>();
-    for (Ord<SqlNode> node : Ord.zip(nodes)) {
-      exprs.add(
-          relBuilder.alias(bb.convertExpression(node.e), validator.deriveAlias(node.e, node.i)));
-    }
-    RelNode child =
-        (null != bb.root) ? bb.root : LogicalValues.createOneRow(cluster);
-    RelNode uncollect;
-    if (validator.config().sqlConformance().allowAliasUnnestItems()) {
-      uncollect = relBuilder
-          .push(child)
-          .project(exprs)
-          .uncollect(fieldNames, operator.withOrdinality)
-          .build();
-    } else {
-      // REVIEW danny 2020-04-26: should we unify the normal field aliases and the item aliases ?
-      uncollect = relBuilder
-          .push(child)
-          .project(exprs)
-          .uncollect(Collections.emptyList(), operator.withOrdinality)
-          .rename(fieldNames)
-          .build();
-    }
-    bb.setRoot(uncollect, true);
-  }
-
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
   protected void convertMatchRecognize(Blackboard bb,
       SqlMatchRecognize matchRecognize) {
     final SqlValidatorNamespace ns = validator.getNamespace(matchRecognize);
@@ -2495,6 +2473,7 @@ public class SqlToRelConverter {
     bb.setRoot(rel, true);
   }
 
+<<<<<<< HEAD
   protected void convertUnpivot(Blackboard bb, SqlUnpivot unpivot) {
     final SqlValidatorScope scope = validator().getJoinScope(unpivot);
 
@@ -2546,6 +2525,7 @@ public class SqlToRelConverter {
         true);
   }
 
+=======
   private void convertIdentifier(Blackboard bb, SqlIdentifier id,
       SqlNodeList extendedColumns, SqlNodeList tableHints) {
     final SqlValidatorNamespace fromNamespace =
@@ -2799,19 +2779,19 @@ public class SqlToRelConverter {
         String originalRelName = lookup.getOriginalRelName();
         String originalFieldName = fieldAccess.getField().getName();
 
-        final SqlNameMatcher nameMatcher =
-            bb.getValidator().getCatalogReader().nameMatcher();
-        final SqlValidatorScope.ResolvedImpl resolved =
-            new SqlValidatorScope.ResolvedImpl();
-        lookup.bb.scope.resolve(ImmutableList.of(originalRelName),
-            nameMatcher, false, resolved);
-        assert resolved.count() == 1;
-        final SqlValidatorScope.Resolve resolve = resolved.only();
-        final SqlValidatorNamespace foundNs = resolve.namespace;
-        final RelDataType rowType = resolve.rowType();
-        final int childNamespaceIndex = resolve.path.steps().get(0).i;
-        final SqlValidatorScope ancestorScope = resolve.scope;
-        boolean correlInCurrentScope = ancestorScope.isWithin(bb.scope);
+      final SqlNameMatcher nameMatcher =
+          bb.getValidator().getCatalogReader().nameMatcher();
+      final SqlValidatorScope.ResolvedImpl resolved =
+          new SqlValidatorScope.ResolvedImpl();
+      lookup.bb.scope.resolve(ImmutableList.of(originalRelName),
+          nameMatcher, false, resolved);
+      assert resolved.count() == 1;
+      final SqlValidatorScope.Resolve resolve = resolved.only();
+      final SqlValidatorNamespace foundNs = resolve.namespace;
+      final RelDataType rowType = resolve.rowType();
+      final int childNamespaceIndex = resolve.path.steps().get(0).i;
+      final SqlValidatorScope ancestorScope = resolve.scope;
+      boolean correlInCurrentScope = bb.scope.isWithin(ancestorScope);
 
         if (!correlInCurrentScope) {
           continue;

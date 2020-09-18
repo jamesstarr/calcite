@@ -227,9 +227,13 @@ joinCondition:
 
 tableReference:
       tablePrimary
+<<<<<<< HEAD
       [ FOR SYSTEM_TIME AS OF expression ]
       [ pivot ]
       [ unpivot ]
+=======
+      [ pivot ]
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
       [ matchRecognize ]
       [ [ AS ] alias [ '(' columnAlias [, columnAlias ]* ')' ] ]
 
@@ -244,6 +248,7 @@ tablePrimary:
 columnDecl:
       column type [ NOT NULL ]
 
+<<<<<<< HEAD
 hint:
       hintName
   |   hintName '(' hintOptions ')'
@@ -261,6 +266,8 @@ optionValue:
       stringLiteral
   |   numericLiteral
 
+=======
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 pivot:
       PIVOT '('
       pivotAgg [, pivotAgg ]*
@@ -282,6 +289,7 @@ pivotExpr:
       }
       [ [ AS ] alias ]
 
+<<<<<<< HEAD
 unpivot:
       UNPIVOT [ INCLUDING NULLS | EXCLUDING NULLS ] '('
       unpivotMeasureList
@@ -299,6 +307,8 @@ unpivotValue:
       column [ AS literal ]
   |   '(' column [, column ]* ')' [ AS '(' literal [, literal ]* ')' ]
 
+=======
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 values:
       VALUES expression [, expression ]*
 
@@ -803,7 +813,11 @@ PATH,
 **PERCENT_RANK**,
 **PERIOD**,
 **PERMUTE**,
+<<<<<<< HEAD
 **PIVOT**,
+=======
+PIVOT,
+>>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 PLACING,
 PLAN,
 PLI,
