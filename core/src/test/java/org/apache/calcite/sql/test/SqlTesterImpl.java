@@ -98,7 +98,7 @@ public class SqlTesterImpl implements SqlTester, AutoCloseable {
     return (SqlConformance) factory.get("conformance");
   }
 
-  public SqlValidator getValidator() {
+  public final SqlValidator getValidator() {
     return factory.getValidator(factory);
   }
 
