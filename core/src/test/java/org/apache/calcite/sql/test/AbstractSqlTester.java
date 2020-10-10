@@ -107,10 +107,14 @@ public abstract class AbstractSqlTester implements SqlTester, AutoCloseable {
   }
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/sql/test/AbstractSqlTester.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/sql/test/AbstractSqlTester.java
   public final SqlValidator getValidator() {
     return factory.getValidator();
 =======
   public SqlValidator getValidator() {
+=======
+  public final SqlValidator getValidator() {
+>>>>>>> 796f37225 (Revert "[CALCITE-4172] Expand columnar identifiers before resolving (James Starr)"):core/src/test/java/org/apache/calcite/sql/test/SqlTesterImpl.java
     return factory.getValidator(factory);
 >>>>>>> 08c2dc4de ([CALCITE-4172] Expand columnar identifiers before resolving (James Starr)):core/src/test/java/org/apache/calcite/sql/test/SqlTesterImpl.java
   }
