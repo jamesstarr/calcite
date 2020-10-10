@@ -107,15 +107,19 @@ public class RexSimplify {
    * <p>This is useful if you are simplifying expressions in a
    * {@link Project}. */
   public RexNode simplifyPreservingType(RexNode e) {
-    final RexNode e2 = simplify(e);
-    if (e2.getType() == e.getType()) {
-      return e2;
-    }
-    final RexNode e3 = rexBuilder.makeCast(e.getType(), e2, true);
-    if (e3.equals(e)) {
+    try {
+      final RexNode e2 = simplify(e);
+      if (e2.getType() == e.getType()) {
+        return e2;
+      }
+      final RexNode e3 = rexBuilder.makeCast(e.getType(), e2, true);
+      if (e3.equals(e)) {
+        return e;
+      }
+      return e3;
+    } catch (ClassCastException ex) {
       return e;
     }
-    return e3;
   }
 
   /**
@@ -137,36 +141,40 @@ public class RexSimplify {
    * @param e Expression to simplify
    */
   public RexNode simplify(RexNode e) {
-    switch (e.getKind()) {
-    case AND:
-      return simplifyAnd((RexCall) e);
-    case OR:
-      return simplifyOr((RexCall) e);
-    case NOT:
-      return simplifyNot((RexCall) e);
-    case CASE:
-      return simplifyCase((RexCall) e);
-    case CAST:
-      return simplifyCast((RexCall) e);
-    case CEIL:
-    case FLOOR:
-      return simplifyCeilFloor((RexCall) e);
-    case IS_NULL:
-    case IS_NOT_NULL:
-    case IS_TRUE:
-    case IS_NOT_TRUE:
-    case IS_FALSE:
-    case IS_NOT_FALSE:
-      assert e instanceof RexCall;
-      return simplifyIs((RexCall) e);
-    case EQUALS:
-    case GREATER_THAN:
-    case GREATER_THAN_OR_EQUAL:
-    case LESS_THAN:
-    case LESS_THAN_OR_EQUAL:
-    case NOT_EQUALS:
-      return simplifyComparison((RexCall) e);
-    default:
+    try {
+      switch (e.getKind()) {
+      case AND:
+        return simplifyAnd((RexCall) e);
+      case OR:
+        return simplifyOr((RexCall) e);
+      case NOT:
+        return simplifyNot((RexCall) e);
+      case CASE:
+        return simplifyCase((RexCall) e);
+      case CAST:
+        return simplifyCast((RexCall) e);
+      case CEIL:
+      case FLOOR:
+        return simplifyCeilFloor((RexCall) e);
+      case IS_NULL:
+      case IS_NOT_NULL:
+      case IS_TRUE:
+      case IS_NOT_TRUE:
+      case IS_FALSE:
+      case IS_NOT_FALSE:
+        assert e instanceof RexCall;
+        return simplifyIs((RexCall) e);
+      case EQUALS:
+      case GREATER_THAN:
+      case GREATER_THAN_OR_EQUAL:
+      case LESS_THAN:
+      case LESS_THAN_OR_EQUAL:
+      case NOT_EQUALS:
+        return simplifyComparison((RexCall) e);
+      default:
+        return e;
+      }
+    } catch (ClassCastException ex) {
       return e;
     }
   }
@@ -252,18 +260,22 @@ public class RexSimplify {
    * Simplifies a conjunction of boolean expressions.
    */
   public RexNode simplifyAnds(Iterable<? extends RexNode> nodes) {
-    final List<RexNode> terms = new ArrayList<>();
-    final List<RexNode> notTerms = new ArrayList<>();
-    for (RexNode e : nodes) {
-      RelOptUtil.decomposeConjunction(e, terms, notTerms);
-    }
+    try {
+      final List<RexNode> terms = new ArrayList<>();
+      final List<RexNode> notTerms = new ArrayList<>();
+      for (RexNode e : nodes) {
+        RelOptUtil.decomposeConjunction(e, terms, notTerms);
+      }
 
-    simplifyList(terms);
-    simplifyList(notTerms);
-    if (unknownAsFalse) {
-      return simplifyAnd2ForUnknownAsFalse(terms, notTerms);
+      simplifyList(terms);
+      simplifyList(notTerms);
+      if (unknownAsFalse) {
+        return simplifyAnd2ForUnknownAsFalse(terms, notTerms);
+      }
+      return simplifyAnd2(terms, notTerms);
+    } catch (ClassCastException e) {
+      return RexUtil.composeConjunction(rexBuilder, nodes, false);
     }
-    return simplifyAnd2(terms, notTerms);
   }
 
   private void simplifyList(List<RexNode> terms) {
@@ -540,15 +552,19 @@ public class RexSimplify {
   }
 
   public RexNode simplifyAnd(RexCall e) {
-    final List<RexNode> terms = new ArrayList<>();
-    final List<RexNode> notTerms = new ArrayList<>();
-    RelOptUtil.decomposeConjunction(e, terms, notTerms);
-    simplifyList(terms);
-    simplifyList(notTerms);
-    if (unknownAsFalse) {
-      return simplifyAnd2ForUnknownAsFalse(terms, notTerms);
+    try {
+      final List<RexNode> terms = new ArrayList<>();
+      final List<RexNode> notTerms = new ArrayList<>();
+      RelOptUtil.decomposeConjunction(e, terms, notTerms);
+      simplifyList(terms);
+      simplifyList(notTerms);
+      if (unknownAsFalse) {
+        return simplifyAnd2ForUnknownAsFalse(terms, notTerms);
+      }
+      return simplifyAnd2(terms, notTerms);
+    } catch (ClassCastException ex) {
+      return e;
     }
-    return simplifyAnd2(terms, notTerms);
   }
 
   RexNode simplifyAnd2(List<RexNode> terms, List<RexNode> notTerms) {
@@ -901,31 +917,40 @@ public class RexSimplify {
 
   /** Simplifies OR(x, x) into x, and similar. */
   public RexNode simplifyOr(RexCall call) {
-    assert call.getKind() == SqlKind.OR;
-    final List<RexNode> terms = RelOptUtil.disjunctions(call);
-    return simplifyOrs(terms);
+    try {
+      assert call.getKind() == SqlKind.OR;
+      final List<RexNode> terms = RelOptUtil.disjunctions(call);
+      return simplifyOrs(terms);
+    } catch (ClassCastException ex) {
+      return call;
+    }
   }
 
   /** Simplifies a list of terms and combines them into an OR.
    * Modifies the list in place. */
   public RexNode simplifyOrs(List<RexNode> terms) {
-    for (int i = 0; i < terms.size(); i++) {
-      final RexNode term = simplify(terms.get(i));
-      switch (term.getKind()) {
-      case LITERAL:
-        if (!RexLiteral.isNullLiteral(term)) {
-          if (RexLiteral.booleanValue(term)) {
-            return term; // true
-          } else {
-            terms.remove(i);
-            --i;
-            continue;
+    final List<RexNode> originalTerms = new ArrayList<>(terms);
+    try {
+      for (int i = 0; i < terms.size(); i++) {
+        final RexNode term = simplify(terms.get(i));
+        switch (term.getKind()) {
+        case LITERAL:
+          if (!RexLiteral.isNullLiteral(term)) {
+            if (RexLiteral.booleanValue(term)) {
+              return term; // true
+            } else {
+              terms.remove(i);
+              --i;
+              continue;
+            }
           }
         }
+        terms.set(i, term);
       }
-      terms.set(i, term);
+      return RexUtil.composeDisjunction(rexBuilder, terms);
+    } catch (ClassCastException ex) {
+      return RexUtil.composeDisjunction(rexBuilder, originalTerms);
     }
-    return RexUtil.composeDisjunction(rexBuilder, terms);
   }
 
   private RexNode simplifyCast(RexCall e) {
