@@ -258,6 +258,9 @@ public abstract class SqlToRelTestBase {
 
     /** Returns a tester that uses a given context. */
     Tester withContext(Context context);
+
+    /** Trims a RelNode. */
+    RelNode trimRelNode(RelNode relNode);
   }
 
   //~ Inner Classes ----------------------------------------------------------
@@ -616,6 +619,32 @@ public abstract class SqlToRelTestBase {
         root = root.withRel(converter.trimUnusedFields(true, root.rel));
       }
       return root;
+    }
+
+    public RelNode trimRelNode(RelNode relNode) {
+      final RelDataTypeFactory typeFactory = getTypeFactory();
+      final Prepare.CatalogReader catalogReader =
+          createCatalogReader(typeFactory);
+      final SqlValidator validator =
+          createValidator(
+              catalogReader, typeFactory);
+      final SqlToRelConverter.Config localConfig;
+      if (config == SqlToRelConverter.Config.DEFAULT) {
+        localConfig = SqlToRelConverter.configBuilder()
+                .withTrimUnusedFields(true).withExpand(enableExpand).build();
+      } else {
+        localConfig = config;
+      }
+
+      final SqlToRelConverter converter =
+          createSqlToRelConverter(
+              validator,
+              catalogReader,
+              typeFactory,
+              localConfig);
+      relNode = converter.flattenTypes(relNode, true);
+      relNode = converter.trimUnusedFields(true, relNode);
+      return relNode;
     }
 
     protected SqlToRelConverter createSqlToRelConverter(

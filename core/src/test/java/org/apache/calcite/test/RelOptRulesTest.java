@@ -20,6 +20,7 @@ import org.apache.calcite.DataContext;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.plan.Context;
 import org.apache.calcite.plan.Contexts;
+import org.apache.calcite.plan.ConventionTraitDef;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptRule;
@@ -31,8 +32,10 @@ import org.apache.calcite.plan.hep.HepMatchOrder;
 import org.apache.calcite.plan.hep.HepPlanner;
 import org.apache.calcite.plan.hep.HepProgram;
 import org.apache.calcite.plan.hep.HepProgramBuilder;
+import org.apache.calcite.plan.volcano.VolcanoPlanner;
 import org.apache.calcite.prepare.Prepare;
 import org.apache.calcite.rel.RelCollationTraitDef;
+import org.apache.calcite.rel.RelDistributionTraitDef;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
 import org.apache.calcite.rel.core.Aggregate;
@@ -134,6 +137,7 @@ import com.google.common.collect.Lists;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -4265,6 +4269,64 @@ public class RelOptRulesTest extends RelOptTestBase {
         .withTrim(true)
         .with(HepProgram.builder().build())
         .check();
+  }
+
+  /**
+   * Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-4317">[CALCITE-4317]
+   * RelFieldTrimmer after trimming all the fields in an aggregate
+   * should not return a zero field Aggregate</a>.
+   */
+  @Test public void testProjectJoinTransposeRuleOnAggWithNoFieldsWithTrimmer() {
+    final RelBuilder relBuilder = RelBuilder.create(RelBuilderTest.config().build());
+    // Build a rel equivalent to sql:
+    // SELECT name FROM (SELECT count(*) cnt_star, count(empno) cnt_en FROM sales.emp)
+    // cross join sales.dept
+    // limit 10
+
+    RelNode left = relBuilder.scan("DEPT").build();
+    RelNode right = relBuilder.scan("EMP")
+        .project(
+          ImmutableList.of(relBuilder.getRexBuilder().makeExactLiteral(BigDecimal.ZERO)),
+          ImmutableList.of("DUMMY"))
+        .aggregate(
+          relBuilder.groupKey(),
+          relBuilder.count(false, "DUMMY_COUNT", relBuilder.field(0)))
+        .build();
+
+    RelNode plan = relBuilder.push(left)
+        .push(right)
+        .join(JoinRelType.INNER,
+          relBuilder.getRexBuilder().makeLiteral(true))
+        .project(relBuilder.field("DEPTNO"))
+        .build();
+
+    final String planBeforeTrimming = NL + RelOptUtil.toString(plan);
+    getDiffRepos().assertEquals("planBeforeTrimming",
+        "${planBeforeTrimming}", planBeforeTrimming);
+
+    VolcanoPlanner planner = new VolcanoPlanner(null, null);
+    planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
+    planner.addRelTraitDef(RelDistributionTraitDef.INSTANCE);
+    Tester tester = new TesterImpl(getDiffRepos(), false, true, false, false,
+            null, null)
+            .withClusterFactory(
+              relOptCluster -> RelOptCluster.create(planner, relOptCluster.getRexBuilder()));
+
+    plan = tester.trimRelNode(plan);
+
+    final String planAfterTrimming = NL + RelOptUtil.toString(plan);
+    getDiffRepos().assertEquals("planAfterTrimming", "${planAfterTrimming}", planAfterTrimming);
+
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(ProjectJoinTransposeRule.INSTANCE)
+        .build();
+
+    HepPlanner hepPlanner = new HepPlanner(program);
+    hepPlanner.setRoot(plan);
+    RelNode output = hepPlanner.findBestExp();
+    final String finalPlan = NL + RelOptUtil.toString(output);
+    getDiffRepos().assertEquals("finalPlan", "${finalPlan}", finalPlan);
   }
 }
 
