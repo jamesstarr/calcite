@@ -77,6 +77,7 @@ import org.apache.calcite.sql.SqlWindow;
 import org.apache.calcite.sql.SqlWith;
 import org.apache.calcite.sql.SqlWithItem;
 import org.apache.calcite.sql.fun.SqlCase;
+import org.apache.calcite.sql.fun.SqlDotOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.AssignableOperandTypeChecker;
@@ -5474,6 +5475,12 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       // these yet.
       if (call instanceof SqlSelect) {
         return call;
+      }
+      if (call.getOperator() instanceof SqlDotOperator) {
+        ArgHandler<SqlNode> argHandler =
+            new CallCopyingArgHandler(call, false);
+        call.getOperator().acceptCall(this, call, true, argHandler);
+        return argHandler.result();
       }
       return super.visitScoped(call);
     }

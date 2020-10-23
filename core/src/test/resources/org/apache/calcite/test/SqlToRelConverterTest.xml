@@ -370,6 +370,18 @@ LogicalProject(EXPR$0=[DOT(ITEM(DOT(DOT(ITEM($2, 1), 'DETAIL'), 'SKILLS'), +(2, 
 ]]>
         </Resource>
     </TestCase>
+    <TestCase name="testArrayOfRecordInOrderBy">
+        <Resource name="sql">
+            <![CDATA[select employees[1].detail.skills[2+3].desc from dept_nested order by employees[1].detail.skills[2+3].desc]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalSort(sort0=[$0], dir0=[ASC])
+  LogicalProject(EXPR$0=[DOT(ITEM(DOT(DOT(ITEM($2, 1), 'DETAIL'), 'SKILLS'), +(2, 3)), 'DESC')])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT_NESTED]])
+]]>
+        </Resource>
+    </TestCase>
     <TestCase name="testUnnestArray">
         <Resource name="sql">
             <![CDATA[select*from unnest(array(select*from dept))]]>

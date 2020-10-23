@@ -1152,6 +1152,12 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql("select employees[1].detail.skills[2+3].desc from dept_nested").ok();
   }
 
+  @Test public void testArrayOfRecordInOrderBy() {
+    sql("select employees[1].detail.skills[2+3].desc"
+        + " from dept_nested"
+        + " order by employees[1].detail.skills[2+3].desc").ok();
+  }
+
   @Test public void testUnnestArray() {
     sql("select*from unnest(array(select*from dept))").ok();
   }
