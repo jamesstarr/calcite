@@ -177,6 +177,8 @@ public class SqlTypeFactoryImpl extends RelDataTypeFactoryImpl {
 
       if (SqlTypeUtil.canCastFrom(type, resultType, false)) {
         resultType = type;
+      } else if ((resultType.getSqlTypeName() == SqlTypeName.NULL) && type.isNullable()) {
+        resultType = type;
       } else {
         if (!SqlTypeUtil.canCastFrom(resultType, type, false)) {
           return null;
