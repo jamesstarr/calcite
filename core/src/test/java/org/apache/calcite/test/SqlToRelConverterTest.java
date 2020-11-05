@@ -1629,25 +1629,25 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).expand(false).ok();
   }
 
-  @Test void testNotCaseInThreeClause() {
+  @Test public void testNotCaseInThreeClause() {
     final String sql = "select empno from emp where not case when "
         + "true then deptno in (10,20) else true end";
     sql(sql).expand(false).ok();
   }
 
-  @Test void testNotCaseInMoreClause() {
+  @Test public void testNotCaseInMoreClause() {
     final String sql = "select empno from emp where not case when "
         + "true then deptno in (10,20) when false then false else deptno in (30,40) end";
     sql(sql).expand(false).ok();
   }
 
-  @Test void testNotCaseInWithoutElse() {
+  @Test public void testNotCaseInWithoutElse() {
     final String sql = "select empno from emp where not case when "
         + "true then deptno in (10,20)  end";
     sql(sql).expand(false).ok();
   }
 
-  @Test void testWhereInCorrelated() {
+  @Test public void testWhereInCorrelated() {
     final String sql = "select empno from emp as e\n"
         + "join dept as d using (deptno)\n"
         + "where e.sal in (\n"

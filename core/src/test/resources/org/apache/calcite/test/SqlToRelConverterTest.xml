@@ -6226,7 +6226,12 @@ LogicalProject(DEPTNO=[$0])
     </TestCase>
     <TestCase name="testNotCaseInThreeClause">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[select empno from emp where not case when true then deptno in (10,20) else true end]]>
+=======
+            <![CDATA[select empno from emp where not case when
+            true then deptno in (10,20) else false end]]>
+>>>>>>> f4a500e3d ([CALCITE-2551] SqlToRelConverter gives ClassCastException while handling 'IN' inside 'WHERE NOT CASE' (pengzhiwei))
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -6238,7 +6243,12 @@ LogicalProject(EMPNO=[$0])
     </TestCase>
     <TestCase name="testNotCaseInMoreClause">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[select empno from emp where not case when true then deptno in (10,20) when false then false else deptno in (30,40) end]]>
+=======
+            <![CDATA[select empno from emp where not case when
+             true then deptno in (10,20) when false then false else deptno in (30,40) end]]>
+>>>>>>> f4a500e3d ([CALCITE-2551] SqlToRelConverter gives ClassCastException while handling 'IN' inside 'WHERE NOT CASE' (pengzhiwei))
         </Resource>
         <Resource name="plan">
             <![CDATA[
@@ -6250,12 +6260,21 @@ LogicalProject(EMPNO=[$0])
     </TestCase>
     <TestCase name="testNotCaseInWithoutElse">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[select empno from emp where not case when true then deptno in (10,20)  end]]>
+=======
+            <![CDATA[select empno from emp where not case when
+            true then deptno in (10,20) end]]>
+>>>>>>> f4a500e3d ([CALCITE-2551] SqlToRelConverter gives ClassCastException while handling 'IN' inside 'WHERE NOT CASE' (pengzhiwei))
         </Resource>
         <Resource name="plan">
             <![CDATA[
 LogicalProject(EMPNO=[$0])
+<<<<<<< HEAD
   LogicalFilter(condition=[CASE(true, CAST(NOT(OR(=($7, 10), =($7, 20)))):BOOLEAN, null:BOOLEAN)])
+=======
+  LogicalFilter(condition=[CASE(true, CAST(NOT(OR(=($7, 10), =($7, 20)))):BOOLEAN, null)])
+>>>>>>> f4a500e3d ([CALCITE-2551] SqlToRelConverter gives ClassCastException while handling 'IN' inside 'WHERE NOT CASE' (pengzhiwei))
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
