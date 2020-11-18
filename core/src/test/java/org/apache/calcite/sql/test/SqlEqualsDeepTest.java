@@ -21,9 +21,9 @@ import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.util.Litmus;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test case for
@@ -32,7 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class SqlEqualsDeepTest {
 
-  @Test public void testCountEqualsDeep() throws SqlParseException {
+  @Test
+  public void testCountEqualsDeep() throws SqlParseException {
     assertEqualsDeep("count(a)", "count(a)", true);
     assertEqualsDeep("count(distinct a)", "count(distinct a)", true);
     assertEqualsDeep("count(distinct a)", "count(a)", false);
@@ -44,11 +45,16 @@ public class SqlEqualsDeepTest {
     SqlNode sqlNode0 = parseExpression(expr0);
     SqlNode sqlNode1 = parseExpression(expr1);
 
-    assertEquals(expected, sqlNode0.equalsDeep(sqlNode1, Litmus.IGNORE),
-        () -> expr0 + " equalsDeep " + expr1);
+    assertEquals(expr0 + " equalsDeep " + expr1,
+            expected, sqlNode0.equalsDeep(sqlNode1, Litmus.IGNORE));
   }
 
   private static SqlNode parseExpression(String sql) throws SqlParseException {
     return SqlParser.create(sql).parseExpression();
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlEqualsDeepTest.java
+>>>>>>> 3153e4b1b ([CALCITE-4402] SqlCall#equalsDeep does not take into account the function quantifier (Huang Qixiang))
