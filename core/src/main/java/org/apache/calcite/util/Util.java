@@ -36,6 +36,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
@@ -91,9 +92,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.RandomAccess;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+import java.util.function.BiFunction;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -2382,6 +2385,44 @@ public class Util {
     return list0;
   }
 
+  /** Transforms a list, applying a function to each element. */
+  public static <F, T> List<T> transform(List<? extends F> list,
+      java.util.function.Function<? super F, ? extends T> function) {
+    if (list instanceof RandomAccess) {
+      return new RandomAccessTransformingList<>(list, function);
+    } else {
+      return new TransformingList<>(list, function);
+    }
+  }
+
+  /** Transforms a list, applying a function to each element, also passing in
+   * the element's index in the list. */
+  public static <F, T> List<T> transformIndexed(List<? extends F> list,
+      BiFunction<? super F, Integer, ? extends T> function) {
+    if (list instanceof RandomAccess) {
+      return new RandomAccessTransformingIndexedList<>(list, function);
+    } else {
+      return new TransformingIndexedList<>(list, function);
+    }
+  }
+
+  /** Transforms an iterable, applying a function to each element. */
+  public static <F, T> Iterable<T> transform(Iterable<? extends F> iterable,
+      java.util.function.Function<? super F, ? extends T> function) {
+    // FluentIterable provides toString
+    return new FluentIterable<T>() {
+      @Override public Iterator<T> iterator() {
+        return Util.transform(iterable.iterator(), function);
+      }
+    };
+  }
+
+  /** Transforms an iterator. */
+  public static <F, T> Iterator<T> transform(Iterator<? extends F> iterator,
+      java.util.function.Function<? super F, ? extends T> function) {
+    return new TransformingIterator<>(iterator, function);
+  }
+
   //~ Inner Classes ----------------------------------------------------------
 
   /**
@@ -2415,6 +2456,121 @@ public class Util {
         throw FoundOne.NULL;
       }
       return super.visit(call);
+    }
+  }
+
+  /** List that returns the same number of elements as a backing list,
+   * applying a transformation function to each one.
+   *
+   * @param <F> Element type of backing list
+   * @param <T> Element type of this list
+   */
+  private static class TransformingList<F, T> extends AbstractList<T> {
+    private final java.util.function.Function<? super F, ? extends T> function;
+    private final List<? extends F> list;
+
+    TransformingList(List<? extends F> list,
+                     java.util.function.Function<? super F, ? extends T> function) {
+      this.function = function;
+      this.list = list;
+    }
+
+    @Override public T get(int i) {
+      return function.apply(list.get(i));
+    }
+
+    @Override public int size() {
+      return list.size();
+    }
+
+    @Override public Iterator<T> iterator() {
+      return listIterator();
+    }
+  }
+
+  /** Extension to {@link TransformingList} that implements
+   * {@link RandomAccess}.
+   *
+   * @param <F> Element type of backing list
+   * @param <T> Element type of this list
+   */
+  private static class RandomAccessTransformingList<F, T>
+          extends TransformingList<F, T> implements RandomAccess {
+    RandomAccessTransformingList(List<? extends F> list,
+                                 java.util.function.Function<? super F, ? extends T> function) {
+      super(list, function);
+    }
+  }
+
+  /** List that returns the same number of elements as a backing list,
+   * applying a transformation function to each one.
+   *
+   * @param <F> Element type of backing list
+   * @param <T> Element type of this list
+   */
+  private static class TransformingIndexedList<F, T> extends AbstractList<T> {
+    private final BiFunction<? super F, Integer, ? extends T> function;
+    private final List<? extends F> list;
+
+    TransformingIndexedList(List<? extends F> list,
+        BiFunction<? super F, Integer, ? extends T> function) {
+      this.function = function;
+      this.list = list;
+    }
+
+    @Override public T get(int i) {
+      return function.apply(list.get(i), i);
+    }
+
+    @Override public int size() {
+      return list.size();
+    }
+
+    @Override public Iterator<T> iterator() {
+      return listIterator();
+    }
+  }
+
+  /** Extension to {@link TransformingIndexedList} that implements
+   * {@link RandomAccess}.
+   *
+   * @param <F> Element type of backing list
+   * @param <T> Element type of this list
+   */
+  private static class RandomAccessTransformingIndexedList<F, T>
+      extends TransformingIndexedList<F, T> implements RandomAccess {
+    RandomAccessTransformingIndexedList(List<? extends F> list,
+        BiFunction<? super F, Integer, ? extends T> function) {
+      super(list, function);
+    }
+  }
+
+  /**
+   * An {@link java.util.Iterator} that transforms its elements on-the-fly.
+   *
+   * @param <F> The element type of the delegate iterator
+   * @param <T> The element type of this iterator
+   */
+  private static class TransformingIterator<F, T> implements Iterator<T> {
+    private final Iterator<? extends F> delegate;
+    private final java.util.function.Function<? super F, ? extends T> function;
+
+    TransformingIterator(Iterator<? extends F> delegate,
+                         java.util.function.Function<? super F, ? extends T> function) {
+      this.delegate = delegate;
+      this.function = function;
+    }
+
+    @Override public boolean hasNext() {
+      return delegate.hasNext();
+    }
+
+    @Override public final T next() {
+      return function.apply(delegate.next());
+    }
+
+    @Override public void remove() {
+      delegate.remove();
     }
   }
 }

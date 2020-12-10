@@ -204,6 +204,14 @@ public class ImmutableBitSet
   }
 
   /**
+   * Returns a new immutable bit set containing all the bits in the given
+   * {@link BitSet}.
+   */
+  public static ImmutableBitSet fromBitSet(BitSet input) {
+    return ImmutableBitSet.of(BitSets.toIter(input));
+  }
+
+  /**
    * Creates an ImmutableBitSet with bits from {@code fromIndex} (inclusive) to
    * specified {@code toIndex} (exclusive) set to {@code true}.
    *

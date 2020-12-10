@@ -198,6 +198,7 @@ joinCondition:
 tableReference:
       tablePrimary
       [ pivot ]
+      [ unpivot ]
       [ matchRecognize ]
       [ [ AS ] alias [ '(' columnAlias [, columnAlias ]* ')' ] ]
 
@@ -232,6 +233,23 @@ pivotExpr:
       | '(' expr [, expr ]* ')'
       }
       [ [ AS ] alias ]
+
+unpivot:
+      UNPIVOT [ INCLUDING NULLS | EXCLUDING NULLS ] '('
+      unpivotMeasureList
+      FOR unpivotAxisList
+      IN '(' unpivotValue [, unpivotValue ]* ')'
+      ')'
+
+unpivotMeasureList:
+      columnOrList
+
+unpivotAxisList:
+      columnOrList
+
+unpivotValue:
+      column [ AS literal ]
+  |   '(' column [, column ]* ')' [ AS '(' literal [, literal ]* ')' ]
 
 values:
       VALUES expression [, expression ]*
@@ -555,6 +573,7 @@ IMMEDIATELY,
 IMPLEMENTATION,
 **IMPORT**,
 **IN**,
+INCLUDE,
 INCLUDING,
 INCREMENT,
 **INDICATOR**,
@@ -927,6 +946,7 @@ UNDER,
 **UNKNOWN**,
 UNNAMED,
 **UNNEST**,
+UNPIVOT,
 **UPDATE**,
 **UPPER**,
 **UPSERT**,

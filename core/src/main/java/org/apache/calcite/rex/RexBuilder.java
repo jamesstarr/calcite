@@ -1266,6 +1266,181 @@ public class RexBuilder {
   }
 
   /**
+   * Creates a literal of a given type, padding values of constant-width
+   * types to match their type, not allowing casts.
+   *
+   * @param value     Value
+   * @param type      Type
+   * @return Simple literal
+   */
+  public RexLiteral makeLiteral(Object value, RelDataType type) {
+    return (RexLiteral) makeLiteral(value, type, false, false);
+  }
+
+  /**
+   * Creates a literal of a given type. The value is assumed to be
+   * compatible with the type.
+   *
+   * <p>The {@code trim} parameter controls whether to trim values of
+   * constant-width types such as {@code CHAR}. Consider a call to
+   * {@code makeLiteral("foo ", CHAR(5)}, and note that the value is too short
+   * for its type. If {@code trim} is true, the value is converted to "foo"
+   * and the type to {@code CHAR(3)}; if {@code trim} is false, the value is
+   * right-padded with spaces to {@code "foo  "}, to match the type
+   * {@code CHAR(5)}.
+   *
+   * @param value     Value
+   * @param type      Type
+   * @param allowCast Whether to allow a cast. If false, value is always a
+   *                  {@link RexLiteral} but may not be the exact type
+   * @param trim      Whether to trim values and type to the shortest equivalent
+   *                  value; for example whether to convert CHAR(4) 'foo '
+   *                  to CHAR(3) 'foo'
+   * @return Simple literal, or cast simple literal
+   */
+  public RexNode makeLiteral(Object value, RelDataType type,
+                             boolean allowCast, boolean trim) {
+    if (value == null) {
+      return makeCast(type, constantNull);
+    }
+    if (type.isNullable()) {
+      final RelDataType typeNotNull =
+              typeFactory.createTypeWithNullability(type, false);
+      if (allowCast) {
+        RexNode literalNotNull = makeLiteral(value, typeNotNull, allowCast);
+        return makeAbstractCast(type, literalNotNull);
+      }
+      type = typeNotNull;
+    }
+    value = clean(value, type);
+    RexLiteral literal;
+    final List<RexNode> operands;
+    final SqlTypeName sqlTypeName = type.getSqlTypeName();
+    switch (sqlTypeName) {
+    case CHAR:
+      final NlsString nlsString = (NlsString) value;
+      if (trim) {
+        return makeCharLiteral(nlsString.rtrim());
+      } else {
+        return makeCharLiteral(padRight(nlsString, type.getPrecision()));
+      }
+    case VARCHAR:
+      literal = makeCharLiteral((NlsString) value);
+      if (allowCast) {
+        return makeCast(type, literal);
+      } else {
+        return literal;
+      }
+    case BINARY:
+      return makeBinaryLiteral(
+              padRight((ByteString) value, type.getPrecision()));
+    case VARBINARY:
+      literal = makeBinaryLiteral((ByteString) value);
+      if (allowCast) {
+        return makeCast(type, literal);
+      } else {
+        return literal;
+      }
+    case TINYINT:
+    case SMALLINT:
+    case INTEGER:
+    case BIGINT:
+    case DECIMAL:
+      return makeExactLiteral((BigDecimal) value, type);
+    case FLOAT:
+    case REAL:
+    case DOUBLE:
+      return makeApproxLiteral((BigDecimal) value, type);
+    case BOOLEAN:
+      return (Boolean) value ? booleanTrue : booleanFalse;
+    case TIME:
+      return makeTimeLiteral((TimeString) value, type.getPrecision());
+    case TIME_WITH_LOCAL_TIME_ZONE:
+      return makeTimeWithLocalTimeZoneLiteral((TimeString) value, type.getPrecision());
+    case DATE:
+      return makeDateLiteral((DateString) value);
+    case TIMESTAMP:
+      return makeTimestampLiteral((TimestampString) value, type.getPrecision());
+    case TIMESTAMP_WITH_LOCAL_TIME_ZONE:
+      return makeTimestampWithLocalTimeZoneLiteral((TimestampString) value, type.getPrecision());
+    case INTERVAL_YEAR:
+    case INTERVAL_YEAR_MONTH:
+    case INTERVAL_MONTH:
+    case INTERVAL_DAY:
+    case INTERVAL_DAY_HOUR:
+    case INTERVAL_DAY_MINUTE:
+    case INTERVAL_DAY_SECOND:
+    case INTERVAL_HOUR:
+    case INTERVAL_HOUR_MINUTE:
+    case INTERVAL_HOUR_SECOND:
+    case INTERVAL_MINUTE:
+    case INTERVAL_MINUTE_SECOND:
+    case INTERVAL_SECOND:
+      return makeIntervalLiteral((BigDecimal) value,
+              type.getIntervalQualifier());
+    case SYMBOL:
+      return makeFlag((Enum) value);
+    case MAP:
+      final MapSqlType mapType = (MapSqlType) type;
+      @SuppressWarnings("unchecked")
+      final Map<Object, Object> map = (Map) value;
+      operands = new ArrayList<>();
+      for (Map.Entry<Object, Object> entry : map.entrySet()) {
+        operands.add(
+                makeLiteral(entry.getKey(), mapType.getKeyType(), allowCast));
+        operands.add(
+                makeLiteral(entry.getValue(), mapType.getValueType(), allowCast));
+      }
+      return makeCall(SqlStdOperatorTable.MAP_VALUE_CONSTRUCTOR, operands);
+    case ARRAY:
+      final ArraySqlType arrayType = (ArraySqlType) type;
+      @SuppressWarnings("unchecked")
+      final List<Object> listValue = (List) value;
+      operands = new ArrayList<>();
+      for (Object entry : listValue) {
+        operands.add(
+                makeLiteral(entry, arrayType.getComponentType(), allowCast));
+      }
+      return makeCall(SqlStdOperatorTable.ARRAY_VALUE_CONSTRUCTOR, operands);
+    case MULTISET:
+      final MultisetSqlType multisetType = (MultisetSqlType) type;
+      operands = new ArrayList<>();
+      for (Object entry : (List) value) {
+        final RexNode e = entry instanceof RexLiteral
+                ? (RexNode) entry
+                : makeLiteral(entry, multisetType.getComponentType(), allowCast);
+        operands.add(e);
+      }
+      if (allowCast) {
+        return makeCall(SqlStdOperatorTable.MULTISET_VALUE, operands);
+      } else {
+        return new RexLiteral((Comparable) FlatLists.of(operands), type,
+                sqlTypeName);
+      }
+    case ROW:
+      operands = new ArrayList<>();
+      //noinspection unchecked
+      for (Pair<RelDataTypeField, Object> pair
+              : Pair.zip(type.getFieldList(), (List<Object>) value)) {
+        final RexNode e = pair.right instanceof RexLiteral
+                ? (RexNode) pair.right
+                : makeLiteral(pair.right, pair.left.getType(), allowCast);
+        operands.add(e);
+      }
+      return new RexLiteral((Comparable) FlatLists.of(operands), type,
+              sqlTypeName);
+    case GEOMETRY:
+      return new RexLiteral((Comparable) value, guessType(value),
+              SqlTypeName.GEOMETRY);
+    case ANY:
+      return makeLiteral(value, guessType(value), allowCast);
+    default:
+      throw new IllegalArgumentException(
+              "Cannot create literal for type '" + sqlTypeName + "'");
+    }
+  }
+
+  /**
    * Creates a copy of an expression, which may have been created using a
    * different RexBuilder and/or {@link RelDataTypeFactory}, using this
    * RexBuilder.
