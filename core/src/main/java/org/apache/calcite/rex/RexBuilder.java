@@ -1464,6 +1464,7 @@ public class RexBuilder {
               SqlTypeName.GEOMETRY);
     case ANY:
       return makeLiteral(value, guessType(value), allowCast);
+<<<<<<< HEAD
     case UUID:
       if (value instanceof String) {
         return makeUuidLiteral((String) value);
@@ -1471,6 +1472,8 @@ public class RexBuilder {
         throw new IllegalArgumentException(
             "Cannot create UUID literal, value must be of String type, got: " + value.getClass());
       }
+=======
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
     default:
       throw new IllegalArgumentException(
               "Cannot create literal for type '" + sqlTypeName + "'");

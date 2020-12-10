@@ -18,8 +18,7 @@ package org.apache.calcite.sql.validate;
 
 import org.apache.calcite.config.NullCollation;
 import org.apache.calcite.linq4j.Ord;
-import org.apache.calcite.linq4j.function.Function2;
-import org.apache.calcite.linq4j.function.Functions;
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.prepare.Prepare;
@@ -134,9 +133,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+<<<<<<< HEAD
 import java.util.Optional;
+=======
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.BiFunction;
 import javax.annotation.Nullable;
 
 import static org.apache.calcite.sql.SqlUtil.stripAs;
@@ -2155,10 +2157,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
 
     // parse input query
     SqlNode expr = call.getTableRef();
-<<<<<<< HEAD
-    SqlNode newExpr = registerFrom(usingScope, matchRecognizeScope, lateralScope, true, expr,
-        expr, null, null, forceNullable);
-=======
     SqlNode newExpr = registerFrom(usingScope, matchRecognizeScope, true, expr,
         expr, null, null, forceNullable, false);
     if (expr != newExpr) {
@@ -2175,24 +2173,24 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
   private void registerPivot(
       SqlValidatorScope parentScope,
       SqlValidatorScope usingScope,
-      SqlPivot call,
+      SqlPivot pivot,
       SqlNode enclosingNode,
       String alias,
       boolean forceNullable) {
     final PivotNamespace namespace =
-        createPivotNameSpace(call, enclosingNode);
+        createPivotNameSpace(pivot, enclosingNode);
     registerNamespace(usingScope, alias, namespace, forceNullable);
 
     final SqlValidatorScope scope =
-        new PivotScope(parentScope, call);
-    scopes.put(call, scope);
+        new PivotScope(parentScope, pivot);
+    scopes.put(pivot, scope);
 
     // parse input query
-    SqlNode expr = call.query;
-    SqlNode newExpr = registerFrom(scope, scope, true, expr,
+    SqlNode expr = pivot.query;
+    SqlNode newExpr = registerFrom(parentScope, scope, true, expr,
         expr, null, null, forceNullable, false);
     if (expr != newExpr) {
-      call.setOperand(0, newExpr);
+      pivot.setOperand(0, newExpr);
     }
   }
 
@@ -2201,7 +2199,38 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     return new PivotNamespace(this, call, enclosingNode);
   }
 
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+<<<<<<< HEAD
+=======
+  private void registerUnpivot(
+      SqlValidatorScope parentScope,
+      SqlValidatorScope usingScope,
+      SqlUnpivot call,
+      SqlNode enclosingNode,
+      String alias,
+      boolean forceNullable) {
+    final UnpivotNamespace namespace =
+        createUnpivotNameSpace(call, enclosingNode);
+    registerNamespace(usingScope, alias, namespace, forceNullable);
+
+    final SqlValidatorScope scope =
+        new UnpivotScope(parentScope, call);
+    scopes.put(call, scope);
+
+    // parse input query
+    SqlNode expr = call.query;
+    SqlNode newExpr = registerFrom(parentScope, scope, true, expr,
+        expr, null, null, forceNullable, false);
+    if (expr != newExpr) {
+      call.setOperand(0, newExpr);
+    }
+  }
+
+  protected UnpivotNamespace createUnpivotNameSpace(SqlUnpivot call,
+      SqlNode enclosingNode) {
+    return new UnpivotNamespace(this, call, enclosingNode);
+  }
+
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
   /**
    * Registers a new namespace, and adds it as a child of its parent scope.
    * Derived class can override this method to tinker with namespaces as they
@@ -2241,9 +2270,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
    * @param parentScope   Parent scope which this scope turns to in order to
    *                      resolve objects
    * @param usingScope    Scope whose child list this scope should add itself to
-<<<<<<< HEAD
-   * @param lateralScope  Scope for resovling lateral varaibles
-=======
    * @param register      Whether to register this scope as a child of
    *                      {@code usingScope}
    * @param node          Node which namespace is based on
@@ -2297,7 +2323,10 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       case OTHER_FUNCTION:
       case COLLECTION_TABLE:
       case PIVOT:
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+<<<<<<< HEAD
+=======
+      case UNPIVOT:
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
       case MATCH_RECOGNIZE:
 
         // give this anonymous construct a name since later
@@ -2345,9 +2374,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
           registerFrom(
               parentScope,
               usingScope,
-<<<<<<< HEAD
-              lateralScope,
-=======
               !needAlias,
               expr,
               enclosingNode,
@@ -2377,6 +2403,11 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
 
     case PIVOT:
       registerPivot(parentScope, usingScope, (SqlPivot) node, enclosingNode,
+          alias, forceNullable);
+      return node;
+
+    case UNPIVOT:
+      registerUnpivot(parentScope, usingScope, (SqlUnpivot) node, enclosingNode,
           alias, forceNullable);
       return node;
 
@@ -2425,7 +2456,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
           registerFrom(
               parentScope,
               joinScope,
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
               true,
               left,
               left,
@@ -2436,17 +2466,10 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       if (newLeft != left) {
         join.setLeft(newLeft);
       }
-<<<<<<< HEAD
-      LateralTableScope rigthLateralTableScope =
-          new LateralTableScope(lateralScope, join);
-      rigthLateralTableScope.children.addAll(joinScope.children);
-      lateralScopes.put(join, rigthLateralTableScope);
-=======
       final SqlNode newRight =
           registerFrom(
               parentScope,
               joinScope,
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
               true,
               right,
               right,
@@ -2470,57 +2493,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
               parentScope);
       registerNamespace(register ? usingScope : null, alias, newNs,
           forceNullable);
-<<<<<<< HEAD
-=======
-      if (tableScope == null) {
-        tableScope = new TableScope(parentScope, node);
-      }
-      tableScope.addChild(newNs, alias, forceNullable);
-      if (extendList != null && extendList.size() != 0) {
-        return enclosingNode;
-      }
-      return newNode;
-
-    case LATERAL:
-      return registerFrom(
-          lateralScope,
-          usingScope,
-          true,
-          ((SqlCall) node).operand(0),
-          enclosingNode,
-          alias,
-          extendList,
-          forceNullable,
-          true);
-
-    case COLLECTION_TABLE:
-      call = (SqlCall) node;
-      operand = call.operand(0);
-      newOperand =
-          registerFrom(
-              parentScope,
-              usingScope,
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
-              register,
-              operand,
-              enclosingNode,
-              alias,
-              extendList,
-              forceNullable, lateral);
-      if (newOperand != operand) {
-        call.setOperand(0, newOperand);
-      }
-      // Put the usingScope which can be a JoinScope
-      // or a SelectScope, in order to see the left items
-      // of the JOIN tree.
-      scopes.put(node, lateralScope);
-      return newNode;
-
-    case UNNEST:
-<<<<<<< HEAD
-      parentScope = lateralScope;
-    // fall through
-=======
       if (!lateral) {
         return registerFrom(parentScope, usingScope, register, node,
             enclosingNode, alias, extendList, forceNullable, true);
@@ -2539,7 +2511,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       registerQuery(
           parentScope,
           register ? usingScope : null,
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
           node,
           enclosingNode,
           alias,
@@ -2558,9 +2529,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
           registerFrom(
               parentScope,
               overScope,
-<<<<<<< HEAD
-              lateralScope,
-=======
               true,
               operand,
               enclosingNode,
@@ -2599,7 +2567,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       final SqlCall extend = (SqlCall) node;
       return registerFrom(parentScope,
           usingScope,
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
           true,
           extend.getOperandList().get(0),
           extend,
@@ -5310,8 +5277,8 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
    * The exception is determined when the function is applied.
    */
   class ValidationErrorFunction
-      implements Function2<SqlNode, Resources.ExInst<SqlValidatorException>,
-            CalciteContextException> {
+      implements BiFunction<SqlNode, Resources.ExInst<SqlValidatorException>,
+                  CalciteContextException> {
     @Override public CalciteContextException apply(
         SqlNode v0, Resources.ExInst<SqlValidatorException> v1) {
       return newValidationError(v0, v1);
@@ -5675,6 +5642,14 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     mr.setOperand(SqlMatchRecognize.OPERAND_PATTERN_DEFINES, list);
   }
 
+  /** Returns the alias of a "expr AS alias" expression. */
+  private static String alias(SqlNode item) {
+    assert item instanceof SqlCall;
+    assert item.getKind() == SqlKind.AS;
+    final SqlIdentifier identifier = ((SqlCall) item).operand(1);
+    return identifier.getSimple();
+  }
+
   public void validatePivot(SqlPivot pivot) {
     final PivotScope scope = (PivotScope) getJoinScope(pivot);
 
@@ -5751,12 +5726,132 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     ns.setType(rowType);
   }
 
-  /** Returns the alias of a "expr AS alias" expression. */
-  private static String alias(SqlNode item) {
-    assert item instanceof SqlCall;
-    assert item.getKind() == SqlKind.AS;
-    final SqlIdentifier identifier = ((SqlCall) item).operand(1);
-    return identifier.getSimple();
+  public void validateUnpivot(SqlUnpivot unpivot) {
+    final UnpivotScope scope = (UnpivotScope) getJoinScope(unpivot);
+    final UnpivotNamespace ns =
+        getNamespace(unpivot).unwrap(UnpivotNamespace.class);
+    assert ns.rowType == null;
+
+    // Given
+    //   query UNPIVOT ((measure1, ..., measureM)
+    //   FOR (axis1, ..., axisN)
+    //   IN ((c11, ..., c1M) AS (value11, ..., value1N),
+    //       (c21, ..., c2M) AS (value21, ..., value2N), ...)
+    // the type is
+    //   k1, ... kN, axis1, ..., axisN, measure1, ..., measureM
+    // where k1, ... kN are columns that are not referenced as an argument to
+    // an aggregate or as an axis.
+
+    // First, And make sure that each
+    final int measureCount = unpivot.measureList.size();
+    final int axisCount = unpivot.axisList.size();
+    unpivot.forEachNameValues((nodeList, valueList) -> {
+      // Make sure that each (ci1, ... ciM) list has the same arity as
+      // (measure1, ..., measureM).
+      if (nodeList.size() != measureCount) {
+        throw newValidationError(nodeList,
+            RESOURCE.unpivotValueArityMismatch(nodeList.size(),
+                measureCount));
+      }
+
+      // Make sure that each (vi1, ... viN) list has the same arity as
+      // (axis1, ..., axisN).
+      if (valueList != null && valueList.size() != axisCount) {
+        throw newValidationError(valueList,
+            RESOURCE.unpivotValueArityMismatch(valueList.size(),
+                axisCount));
+      }
+
+      // Make sure that each IN expression is a valid column from the input.
+      nodeList.forEach(node -> deriveType(scope, node));
+    });
+
+    // What columns from the input are not referenced by a column in the IN
+    // list?
+    final SqlValidatorNamespace inputNs =
+        Objects.requireNonNull(getNamespace(unpivot.query));
+    final Set<String> unusedColumnNames =
+        catalogReader.nameMatcher().createSet();
+    unusedColumnNames.addAll(inputNs.getRowType().getFieldNames());
+    unusedColumnNames.removeAll(unpivot.usedColumnNames());
+
+    // What columns will be present in the output row type?
+    final Set<String> columnNames = catalogReader.nameMatcher().createSet();
+    columnNames.addAll(unusedColumnNames);
+
+    // Gather the name and type of each measure.
+    final List<Pair<String, RelDataType>> measureNameTypes = new ArrayList<>();
+    Ord.forEach(unpivot.measureList, (measure, i) -> {
+      final String measureName = ((SqlIdentifier) measure).getSimple();
+      final List<RelDataType> types = new ArrayList<>();
+      final List<SqlNode> nodes = new ArrayList<>();
+      unpivot.forEachNameValues((nodeList, valueList) -> {
+        final SqlNode alias = nodeList.get(i);
+        nodes.add(alias);
+        types.add(deriveType(scope, alias));
+      });
+      final RelDataType type0 = typeFactory.leastRestrictive(types);
+      if (type0 == null) {
+        throw newValidationError(nodes.get(0),
+            RESOURCE.unpivotCannotDeriveMeasureType(measureName));
+      }
+      final RelDataType type =
+          typeFactory.createTypeWithNullability(type0,
+              unpivot.includeNulls || unpivot.measureList.size() > 1);
+      setValidatedNodeType(measure, type);
+      if (!columnNames.add(measureName)) {
+        throw newValidationError(measure,
+            RESOURCE.unpivotDuplicate(measureName));
+      }
+      measureNameTypes.add(Pair.of(measureName, type));
+    });
+
+    // Gather the name and type of each axis.
+    // Consider
+    //   FOR (job, deptno)
+    //   IN (a AS ('CLERK', 10),
+    //       b AS ('ANALYST', 20))
+    // There are two axes, (job, deptno), and so each value list ('CLERK', 10),
+    // ('ANALYST', 20) must have arity two.
+    //
+    // The type of 'job' is derived as the least restrictive type of the values
+    // ('CLERK', 'ANALYST'), namely VARCHAR(7). The derived type of 'deptno' is
+    // the type of values (10, 20), namely INTEGER.
+    final List<Pair<String, RelDataType>> axisNameTypes = new ArrayList<>();
+    Ord.forEach(unpivot.axisList, (axis, i) -> {
+      final String axisName = ((SqlIdentifier) axis).getSimple();
+      final List<RelDataType> types = new ArrayList<>();
+      unpivot.forEachNameValues((aliasList, valueList) ->
+          types.add(
+              valueList == null
+                  ? typeFactory.createSqlType(SqlTypeName.VARCHAR,
+                        SqlUnpivot.aliasValue(aliasList).length())
+                  : deriveType(scope, valueList.get(i))));
+      final RelDataType type = typeFactory.leastRestrictive(types);
+      if (type == null) {
+        throw newValidationError(axis,
+            RESOURCE.unpivotCannotDeriveAxisType(axisName));
+      }
+      setValidatedNodeType(axis, type);
+      if (!columnNames.add(axisName)) {
+        throw newValidationError(axis, RESOURCE.unpivotDuplicate(axisName));
+      }
+      axisNameTypes.add(Pair.of(axisName, type));
+    });
+
+    // Columns that have been seen as arguments to aggregates or as axes
+    // do not appear in the output.
+    final RelDataTypeFactory.Builder typeBuilder = typeFactory.builder();
+    scope.getChild().getRowType().getFieldList().forEach(field -> {
+      if (unusedColumnNames.contains(field.getName())) {
+        typeBuilder.add(field);
+      }
+    });
+    typeBuilder.addAll(axisNameTypes);
+    typeBuilder.addAll(measureNameTypes);
+
+    final RelDataType rowType = typeBuilder.build();
+    ns.setType(rowType);
   }
 
   public void validatePivot(SqlPivot pivot) {

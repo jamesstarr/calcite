@@ -734,7 +734,7 @@ public interface CalciteResource {
   @BaseMessage("Value count in PIVOT ({0,number,#}) must match number of FOR columns ({1,number,#})")
   ExInst<SqlValidatorException> pivotValueArityMismatch(int valueCount, int forCount);
 
-<<<<<<< HEAD
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
   @BaseMessage("Duplicate column name ''{0}'' in UNPIVOT")
   ExInst<SqlValidatorException> unpivotDuplicate(String columnName);
 
@@ -747,8 +747,10 @@ public interface CalciteResource {
   @BaseMessage("In UNPIVOT, cannot derive type for axis ''{0}''")
   ExInst<SqlValidatorException> unpivotCannotDeriveAxisType(String axisName);
 
+<<<<<<< HEAD
 =======
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+=======
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
   @BaseMessage("Pattern variable ''{0}'' has already been defined")
   ExInst<SqlValidatorException> patternVarAlreadyDefined(String varName);
 

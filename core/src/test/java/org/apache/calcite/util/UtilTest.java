@@ -2583,10 +2583,10 @@ class UtilTest {
     m.describeMismatch(item, d);
     return d.toString();
   }
-
   static String describe(Matcher m) {
     final StringDescription d = new StringDescription();
     m.describeTo(d);
     return d.toString();
   }
+
 }

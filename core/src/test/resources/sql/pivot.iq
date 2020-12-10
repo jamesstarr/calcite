@@ -372,6 +372,9 @@ PIVOT (sum(sal + deptno + 1)
 !ok
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 # Sample PIVOT query
 SELECT *
 FROM (
@@ -707,6 +710,9 @@ UNPIVOT ((m0, m1, m2)
 
 !ok
 
+<<<<<<< HEAD
 =======
 >>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+=======
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 # End pivot.iq

@@ -98,8 +98,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -107,7 +106,6 @@ import java.util.stream.Collector;
 <<<<<<< HEAD
 =======
 import javax.annotation.Nullable;
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 
 
 /**
@@ -2466,7 +2464,7 @@ public class Util {
     return list0;
   }
 
-<<<<<<< HEAD
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
   /** Transforms a list, applying a function to each element. */
   public static <F, T> List<T> transform(List<? extends F> list,
       java.util.function.Function<? super F, ? extends T> function) {
@@ -2505,6 +2503,7 @@ public class Util {
     return new TransformingIterator<>(iterator, function);
   }
 
+<<<<<<< HEAD
   /** Filters an iterable. */
   public static <E> Iterable<E> filter(Iterable<E> iterable,
       Predicate<E> predicate) {
@@ -2537,7 +2536,8 @@ public class Util {
   }
 
 =======
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+=======
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
   //~ Inner Classes ----------------------------------------------------------
 
   /**
@@ -2573,6 +2573,125 @@ public class Util {
       return super.visit(call);
     }
   }
+<<<<<<< HEAD
+=======
+
+  /** List that returns the same number of elements as a backing list,
+   * applying a transformation function to each one.
+   *
+   * @param <F> Element type of backing list
+   * @param <T> Element type of this list
+   */
+  private static class TransformingList<F, T> extends AbstractList<T> {
+    private final java.util.function.Function<? super F, ? extends T> function;
+    private final List<? extends F> list;
+
+    TransformingList(List<? extends F> list,
+                     java.util.function.Function<? super F, ? extends T> function) {
+      this.function = function;
+      this.list = list;
+    }
+
+    @Override public T get(int i) {
+      return function.apply(list.get(i));
+    }
+
+    @Override public int size() {
+      return list.size();
+    }
+
+    @Override public Iterator<T> iterator() {
+      return listIterator();
+    }
+  }
+
+  /** Extension to {@link TransformingList} that implements
+   * {@link RandomAccess}.
+   *
+   * @param <F> Element type of backing list
+   * @param <T> Element type of this list
+   */
+  private static class RandomAccessTransformingList<F, T>
+          extends TransformingList<F, T> implements RandomAccess {
+    RandomAccessTransformingList(List<? extends F> list,
+                                 java.util.function.Function<? super F, ? extends T> function) {
+      super(list, function);
+    }
+  }
+
+  /** List that returns the same number of elements as a backing list,
+   * applying a transformation function to each one.
+   *
+   * @param <F> Element type of backing list
+   * @param <T> Element type of this list
+   */
+  private static class TransformingIndexedList<F, T> extends AbstractList<T> {
+    private final BiFunction<? super F, Integer, ? extends T> function;
+    private final List<? extends F> list;
+
+    TransformingIndexedList(List<? extends F> list,
+        BiFunction<? super F, Integer, ? extends T> function) {
+      this.function = function;
+      this.list = list;
+    }
+
+    @Override public T get(int i) {
+      return function.apply(list.get(i), i);
+    }
+
+    @Override public int size() {
+      return list.size();
+    }
+
+    @Override public Iterator<T> iterator() {
+      return listIterator();
+    }
+  }
+
+  /** Extension to {@link TransformingIndexedList} that implements
+   * {@link RandomAccess}.
+   *
+   * @param <F> Element type of backing list
+   * @param <T> Element type of this list
+   */
+  private static class RandomAccessTransformingIndexedList<F, T>
+      extends TransformingIndexedList<F, T> implements RandomAccess {
+    RandomAccessTransformingIndexedList(List<? extends F> list,
+        BiFunction<? super F, Integer, ? extends T> function) {
+      super(list, function);
+    }
+  }
+
+  /**
+   * An {@link java.util.Iterator} that transforms its elements on-the-fly.
+   *
+   * @param <F> The element type of the delegate iterator
+   * @param <T> The element type of this iterator
+   */
+  private static class TransformingIterator<F, T> implements Iterator<T> {
+    private final Iterator<? extends F> delegate;
+    private final java.util.function.Function<? super F, ? extends T> function;
+
+    TransformingIterator(Iterator<? extends F> delegate,
+                         java.util.function.Function<? super F, ? extends T> function) {
+      this.delegate = delegate;
+      this.function = function;
+    }
+
+    @Override public boolean hasNext() {
+      return delegate.hasNext();
+    }
+
+    @Override public final T next() {
+      return function.apply(delegate.next());
+    }
+
+    @Override public void remove() {
+      delegate.remove();
+    }
+  }
+}
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 
   /** List that returns the same number of elements as a backing list,
    * applying a transformation function to each one.

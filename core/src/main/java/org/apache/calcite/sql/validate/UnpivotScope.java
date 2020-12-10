@@ -47,3 +47,8 @@ public class UnpivotScope extends ListScope {
     return unpivot;
   }
 }
+<<<<<<< HEAD
+=======
+
+// End UnpivotScope.java
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)

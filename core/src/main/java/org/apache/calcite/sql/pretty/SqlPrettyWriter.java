@@ -591,17 +591,6 @@ import org.apache.calcite.sql.dialect.CalciteSqlDialect;
     } else {
       buf.append(name);
     }
-<<<<<<< HEAD
-    setNeedWhitespace(true);
-  }
-
-  @Override public void dynamicParam(int index) {
-    if (dynamicParameters == null) {
-      dynamicParameters = ImmutableList.builder();
-    }
-    dynamicParameters.add(index);
-    print("?");
-=======
     maybeWhitespace(qName);
     buf.append(qName);
     setNeedWhitespace(true);
@@ -1028,6 +1017,5 @@ import org.apache.calcite.sql.dialect.CalciteSqlDialect;
 =======
 
 }
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 
 }

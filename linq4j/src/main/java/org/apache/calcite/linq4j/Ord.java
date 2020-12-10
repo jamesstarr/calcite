@@ -151,7 +151,7 @@ public class Ord<E> implements Map.Entry<Integer, E> {
    * @param <T> Element type
    */
   public static <T> void forEach(Iterable<T> iterable,
-      ObjIntConsumer<? super T> action) {
+                                 ObjIntConsumer<? super T> action) {
     int i = 0;
     for (T t : iterable) {
       action.accept(t, i++);
@@ -169,7 +169,7 @@ public class Ord<E> implements Map.Entry<Integer, E> {
    * @param <T> Element type
    */
   public static <T> void forEach(T[] ts,
-      ObjIntConsumer<? super T> action) {
+                                 ObjIntConsumer<? super T> action) {
     for (int i = 0; i < ts.length; i++) {
       action.accept(ts[i], i);
     }

@@ -127,6 +127,7 @@ import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.SqlSetOperator;
 import org.apache.calcite.sql.SqlUnnestOperator;
+import org.apache.calcite.sql.SqlUnpivot;
 import org.apache.calcite.sql.SqlUpdate;
 import org.apache.calcite.sql.SqlUtil;
 import org.apache.calcite.sql.SqlValuesOperator;
@@ -207,8 +208,6 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
-
-import static org.apache.calcite.sql.SqlUtil.stripAs;
 
 /**
  * Converts a SQL parse tree (consisting of
@@ -333,6 +332,20 @@ public class SqlToRelConverter {
   }
 
   //~ Methods ----------------------------------------------------------------
+
+  private SqlValidator validator() {
+    return validator;
+  }
+
+  private <T extends SqlValidatorNamespace> T getNamespace(SqlNode node) {
+    //noinspection unchecked
+    return (T) getNamespaceOrNull(node);
+  }
+
+  @SuppressWarnings("unchecked")
+  private <T extends SqlValidatorNamespace> T getNamespaceOrNull(SqlNode node) {
+    return (T) validator().getNamespace(node);
+  }
 
   /**
    * @return the RelOptCluster in use.
@@ -2107,6 +2120,10 @@ public class SqlToRelConverter {
       convertPivot(bb, (SqlPivot) from);
       return;
 
+    case UNPIVOT:
+      convertUnpivot(bb, (SqlUnpivot) from);
+      return;
+
     case WITH_ITEM:
       convertFrom(bb, ((SqlWithItem) from).query);
       return;
@@ -2473,7 +2490,7 @@ public class SqlToRelConverter {
     bb.setRoot(rel, true);
   }
 
-<<<<<<< HEAD
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
   protected void convertUnpivot(Blackboard bb, SqlUnpivot unpivot) {
     final SqlValidatorScope scope = validator().getJoinScope(unpivot);
 
@@ -2487,7 +2504,10 @@ public class SqlToRelConverter {
     final List<String> measureNames = unpivot.measureList.getList().stream()
         .map(node -> ((SqlIdentifier) node).getSimple())
         .collect(Util.toImmutableList());
+<<<<<<< HEAD
     final List<String> axisNames = unpivot.axisList.getList().stream()
+=======
+    final List<String> axisNames =  unpivot.axisList.getList().stream()
         .map(node -> ((SqlIdentifier) node).getSimple())
         .collect(Util.toImmutableList());
     final ImmutableList.Builder<Pair<List<RexLiteral>, List<RexNode>>> axisMap =
@@ -2515,14 +2535,6 @@ public class SqlToRelConverter {
     relBuilder.convert(getNamespace(unpivot).getRowType(), false);
 
     bb.setRoot(relBuilder.build(), true);
-  }
-
-  private void convertTransientScan(Blackboard bb, SqlWithItem withItem) {
-    final SqlValidatorNamespace fromNamespace = getNamespace(withItem).resolve();
-    bb.setRoot(
-        relBuilder.transientScan(withItem.name.getSimple(),
-            fromNamespace.getRowType()).build(),
-        true);
   }
 
 =======

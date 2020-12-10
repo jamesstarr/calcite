@@ -58,6 +58,13 @@ public interface SqlNameMatcher {
    * @return Field, or null if not found
    */
   RelDataTypeField field(RelDataType rowType, String fieldName);
+<<<<<<< HEAD
+=======
+
+  /** Creates a set that has the same case-sensitivity as this matcher. */
+  Set<String> createSet();
+}
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 
   /** Returns how many times a string occurs in a collection.
    *

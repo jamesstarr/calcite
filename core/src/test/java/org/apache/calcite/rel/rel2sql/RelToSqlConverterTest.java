@@ -4437,9 +4437,6 @@ class RelToSqlConverterTest {
     Sql withMssql(int majorVersion) {
       final SqlDialect mssqlDialect = SqlDialect.DatabaseProduct.MSSQL.getDialect();
       return dialect(
-<<<<<<< HEAD
-          new MssqlSqlDialect(MssqlSqlDialect.DEFAULT_CONTEXT
-=======
           new MssqlSqlDialect(SqlDialect.EMPTY_CONTEXT
               .withDatabaseProduct(SqlDialect.DatabaseProduct.MSSQL)
               .withDatabaseMajorVersion(majorVersion)
@@ -4484,7 +4481,6 @@ class RelToSqlConverterTest {
     }
 
 =======
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
     Sql withVertica() {
       return dialect(SqlDialect.DatabaseProduct.VERTICA.getDialect());
     }

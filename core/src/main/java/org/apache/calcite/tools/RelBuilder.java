@@ -112,6 +112,7 @@ import java.util.AbstractList;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -126,6 +127,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.Nonnull;
 
@@ -2872,7 +2874,7 @@ public class RelBuilder {
     return aggregate(groupKey, multipliedAggCalls);
   }
 
-<<<<<<< HEAD
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
   /**
    * Creates an Unpivot.
    *
@@ -3016,6 +3018,8 @@ public class RelBuilder {
     return this;
   }
 
+<<<<<<< HEAD
+=======
 =======
 =======
   /** Clears the stack.

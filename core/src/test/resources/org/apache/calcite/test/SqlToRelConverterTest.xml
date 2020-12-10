@@ -8529,8 +8529,28 @@ LogicalProject(DEPTNO=[$0], F0=[$1], F1=[$2])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 266ccd670 ([CALCITE-4145] Exception when query from UDF field with structured type)
 =======
+=======
+    <TestCase name="testUnpivot">
+        <Resource name="sql">
+            <![CDATA[SELECT * FROM emp
+UNPIVOT INCLUDE NULLS (remuneration
+  FOR remuneration_type IN (comm AS 'commission',
+                            sal as 'salary'))]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], DEPTNO=[$5], SLACKER=[$6], REMUNERATION_TYPE=[$7], REMUNERATION=[$8])
+  LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], DEPTNO=[$7], SLACKER=[$8], REMUNERATION_TYPE=[$9], REMUNERATION=[CASE(=($9, 'commission'), $6, =($9, 'salary    '), $5, null)])
+    LogicalJoin(condition=[true], joinType=[inner])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalValues(tuples=[[{ 'commission' }, { 'salary    ' }]])
+]]>
+        </Resource>
+    </TestCase>
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
     <TestCase name="testWithinGroup1">
         <Resource name="sql">
             <![CDATA[select deptno, collect(empno) within group (order by deptno, hiredate desc) from emp group by deptno]]>

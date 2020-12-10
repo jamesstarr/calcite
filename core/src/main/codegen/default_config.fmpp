@@ -165,6 +165,7 @@ parser: {
     "IMMEDIATELY"
     "IMPLEMENTATION"
     "INCLUDE"
+<<<<<<< HEAD
 =======
     "IMMEDIATE"
     "IMMEDIATELY"
@@ -175,6 +176,8 @@ parser: {
     "IMMEDIATELY"
     "IMPLEMENTATION"
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
+=======
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
     "INCLUDING"
     "INCREMENT"
     "INITIALLY"
@@ -440,12 +443,15 @@ parser: {
     "UNCONDITIONAL"
     "UNDER"
     "UNPIVOT"
+<<<<<<< HEAD
 =======
     "UNDER"
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
     "UNDER"
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
+=======
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
     "UNNAMED"
     "USAGE"
     "USER_DEFINED_TYPE_CATALOG"

@@ -54,14 +54,10 @@ public class MssqlSqlDialect extends SqlDialect {
           ReturnTypes.ARG0_NULLABLE_VARYING, null, null,
           SqlFunctionCategory.STRING);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   /** Whether to generate "SELECT TOP(fetch)" rather than
    * "SELECT ... FETCH NEXT fetch ROWS ONLY". */
   private final boolean top;
 
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
   private static final SqlFunction MSSQL_DATEADD =
       new SqlFunction("DATEADD", SqlStdOperatorTable.TIMESTAMP_ADD.getKind(),
           SqlStdOperatorTable.TIMESTAMP_ADD.getReturnTypeInference(),
@@ -77,52 +73,6 @@ public class MssqlSqlDialect extends SqlDialect {
     top = context.databaseMajorVersion() < 11;
   }
 
-<<<<<<< HEAD
-  /** {@inheritDoc}
-   *
-   * <p>MSSQL does not support NULLS FIRST, so we emulate using CASE
-   * expressions. For example,
-   *
-   * <blockquote>{@code ORDER BY x NULLS FIRST}</blockquote>
-   *
-   * <p>becomes
-   *
-   * <blockquote>
-   *   {@code ORDER BY CASE WHEN x IS NULL THEN 0 ELSE 1 END, x}
-   * </blockquote>
-   */
-  @Override public SqlNode emulateNullDirection(SqlNode node,
-      boolean nullsFirst, boolean desc) {
-    // Default ordering preserved
-    if (nullCollation.isDefaultOrder(nullsFirst, desc)) {
-      return null;
-    }
-
-    // Grouping node should preserve grouping, no emulation needed
-    if (node.getKind() == SqlKind.GROUPING) {
-      return node;
-    }
-
-    // Emulate nulls first/last with case ordering
-    final SqlParserPos pos = SqlParserPos.ZERO;
-    final SqlNodeList whenList =
-        SqlNodeList.of(SqlStdOperatorTable.IS_NULL.createCall(pos, node));
-
-    final SqlNode oneLiteral = SqlLiteral.createExactNumeric("1", pos);
-    final SqlNode zeroLiteral = SqlLiteral.createExactNumeric("0", pos);
-
-    if (nullsFirst) {
-      // IS NULL THEN 0 ELSE 1 END
-      return SqlStdOperatorTable.CASE.createCall(null, pos,
-          null, whenList, SqlNodeList.of(zeroLiteral), oneLiteral);
-    } else {
-      // IS NULL THEN 1 ELSE 0 END
-      return SqlStdOperatorTable.CASE.createCall(null, pos,
-          null, whenList, SqlNodeList.of(oneLiteral), zeroLiteral);
-    }
-  }
-
-=======
   @Override public void unparseOffsetFetch(SqlWriter writer, SqlNode offset,
       SqlNode fetch) {
     if (!top) {
@@ -155,7 +105,6 @@ public class MssqlSqlDialect extends SqlDialect {
   @Override public boolean supportsOrderByNullOrdering() {
     return false;
 =======
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
   }
 
   @Override public boolean useTimestampAddInsteadOfDatetimePlus() {

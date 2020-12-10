@@ -44,3 +44,8 @@ public class UnpivotNamespace extends AbstractNamespace {
     return unpivot;
   }
 }
+<<<<<<< HEAD
+=======
+
+// End UnpivotNamespace.java
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)

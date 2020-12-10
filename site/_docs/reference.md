@@ -231,9 +231,12 @@ tableReference:
       [ FOR SYSTEM_TIME AS OF expression ]
       [ pivot ]
       [ unpivot ]
+<<<<<<< HEAD
 =======
       [ pivot ]
 >>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+=======
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
       [ matchRecognize ]
       [ [ AS ] alias [ '(' columnAlias [, columnAlias ]* ')' ] ]
 
@@ -290,6 +293,9 @@ pivotExpr:
       [ [ AS ] alias ]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 unpivot:
       UNPIVOT [ INCLUDING NULLS | EXCLUDING NULLS ] '('
       unpivotMeasureList
@@ -307,8 +313,11 @@ unpivotValue:
       column [ AS literal ]
   |   '(' column [, column ]* ')' [ AS '(' literal [, literal ]* ')' ]
 
+<<<<<<< HEAD
 =======
 >>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+=======
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 values:
       VALUES expression [, expression ]*
 
@@ -643,7 +652,11 @@ IMMEDIATELY,
 IMPLEMENTATION,
 **IMPORT**,
 **IN**,
+<<<<<<< HEAD
 **INCLUDE**,
+=======
+INCLUDE,
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 INCLUDING,
 INCREMENT,
 **INDICATOR**,
@@ -1046,7 +1059,11 @@ UNDER,
 **UNKNOWN**,
 UNNAMED,
 **UNNEST**,
+<<<<<<< HEAD
 **UNPIVOT**,
+=======
+UNPIVOT,
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 **UPDATE**,
 **UPPER**,
 **UPSERT**,

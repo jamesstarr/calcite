@@ -2236,6 +2236,9 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
     [
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
         LOOKAHEAD(2)
         tableRef = Pivot(tableRef)
     ]
@@ -2244,6 +2247,7 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
         tableRef = Unpivot(tableRef)
     ]
     [
+<<<<<<< HEAD
 =======
 >>>>>>> 7bbe08b5b ([CALCITE-2674] Column name with escape character should not be verified as a function when the column name is same with it (Danny Chan))
 =======
@@ -2251,6 +2255,8 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
     ]
     [
 >>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+=======
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
         [ <AS> ] alias = SimpleIdentifier()
         [ columnAliasList = ParenthesizedSimpleIdentifierList() ]
         {
@@ -2970,6 +2976,9 @@ void PivotValue(List<SqlNode> list) :
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 /** Parses an UNPIVOT clause following a table expression. */
 SqlNode Unpivot(SqlNode tableRef) :
 {
@@ -2982,7 +2991,11 @@ SqlNode Unpivot(SqlNode tableRef) :
     final SqlNodeList inList;
 }
 {
+<<<<<<< HEAD
     <UNPIVOT> { s = span(); checkNotJoin(tableRef); }
+=======
+    <UNPIVOT> { s = span(); }
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
     (
         <INCLUDE> <NULLS> { includeNulls = true; }
     |   <EXCLUDE> <NULLS> { includeNulls = false; }
@@ -3021,6 +3034,7 @@ void UnpivotValue(List<SqlNode> list) :
     )
 }
 
+<<<<<<< HEAD
 /**
  * Parses a FOR SYSTEM_TIME clause following a table expression.
  */
@@ -3047,6 +3061,8 @@ SqlSnapshot Snapshot(SqlNode tableRef) :
 
 =======
 >>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+=======
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 /**
  * Parses a MATCH_RECOGNIZE clause following a table expression.
  */

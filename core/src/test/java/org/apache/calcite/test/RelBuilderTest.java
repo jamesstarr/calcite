@@ -53,8 +53,7 @@ import org.apache.calcite.tools.RelRunners;
 import org.apache.calcite.util.Holder;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.Pair;
-import org.apache.calcite.util.TimestampString;
-import org.apache.calcite.util.Util;
+>>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 import org.apache.calcite.util.mapping.Mappings;
 
 import com.google.common.collect.ImmutableList;
@@ -65,7 +64,6 @@ import com.google.common.collect.Lists;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
 
->>>>>>> 36d7c8a76 (Switch RelBuilder.Config to an interface, and deprecate RelBuilder.ConfigBuilder)
 import static org.apache.calcite.test.Matchers.hasTree;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -81,6 +79,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
@@ -154,6 +153,52 @@ import java.util.function.UnaryOperator;
             +     "$f9=[IS TRUE(AND(=($2, 'MANAGER'), =($7, 20)))])\n"
             + "    LogicalTableScan(table=[[scott, EMP]])\n";
     assertThat(f.apply(createBuilder()), hasTree(expected));
+  }
+
+  @Test public void testUnpivot() {
+    // Equivalent SQL:
+    //   SELECT *
+    //   FROM (SELECT deptno, job, sal, comm FROM emp)
+    //   UNPIVOT INCLUDE NULLS (remuneration
+    //     FOR remuneration_type IN (comm AS 'commission',
+    //                               sal AS 'salary'))
+    //
+    // translates to
+    //   SELECT e.deptno, e.job,
+    //     CASE t.remuneration_type
+    //     WHEN 'commission' THEN comm
+    //     ELSE sal
+    //     END AS remuneration
+    //   FROM emp
+    //   CROSS JOIN VALUES ('commission', 'salary') AS t (remuneration_type)
+    //
+    final BiFunction<RelBuilder, Boolean, RelNode> f = (b, includeNulls) ->
+        b.scan("EMP")
+            .unpivot(includeNulls,
+                ImmutableList.of("REMUNERATION"),
+                ImmutableList.of("REMUNERATION_TYPE"),
+                Pair.zip(
+                    Arrays.asList(ImmutableList.of(b.literal("commission")),
+                        ImmutableList.of(b.literal("salary"))),
+                    Arrays.asList(ImmutableList.of(b.field("COMM")),
+                        ImmutableList.of(b.field("SAL")))))
+            .build();
+    final String expectedIncludeNulls = ""
+        + "LogicalProject("
+            + "EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], "
+            + "DEPTNO=[$7], REMUNERATION_TYPE=[$8], REMUNERATION=[CASE(=($8, 'commission'), "
+            + "$6, =($8, 'salary'), $5, null)])\n"
+            + "  LogicalJoin(condition=[true], joinType=[inner])\n"
+            + "    LogicalTableScan(table=[[scott, EMP]])\n"
+            + "    LogicalValues(tuples=[[{ 'commission' }, { 'salary' }]])\n";
+    final String expectedExcludeNulls = ""
+        + "LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], "
+        + "HIREDATE=[$4], DEPTNO=[$5], REMUNERATION_TYPE=[$6], "
+        + "REMUNERATION=[CAST($7):DECIMAL(7, 2) NOT NULL])\n"
+        + "  LogicalFilter(condition=[IS NOT NULL($7)])\n"
+        + "    " + expectedIncludeNulls.replace("\n  ", "\n      ");
+    assertThat(f.apply(createBuilder(), true), hasTree(expectedIncludeNulls));
+    assertThat(f.apply(createBuilder(), false), hasTree(expectedExcludeNulls));
   }
 
   @Test public void testMatchRecognize() {
