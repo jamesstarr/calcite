@@ -81,506 +81,7 @@ import org.apache.calcite.sql.fun.SqlSingleValueAggFunction;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
-  public static RelNode decorrelateQuery(RelNode rootRel,
-      RelBuilder relBuilder, boolean forceValueGenerator) {
-    final CorelMap corelMap = new CorelMapBuilder().build(rootRel);
-    if (!corelMap.hasCorrelation()) {
-      return rootRel;
-    }
-
-    final RelOptCluster cluster = rootRel.getCluster();
-    final RelDecorrelator decorrelator =
-        new RelDecorrelator(corelMap,
-            cluster.getPlanner().getContext(), relBuilder, forceValueGenerator);
-
-    RelNode newRootRel = decorrelator.removeCorrelationViaRule(rootRel);
-
-    if (SQL2REL_LOGGER.isDebugEnabled()) {
-      SQL2REL_LOGGER.debug(
-          RelOptUtil.dumpPlan("Plan after removing Correlator", newRootRel,
-              SqlExplainFormat.TEXT, SqlExplainLevel.EXPPLAN_ATTRIBUTES));
-    }
-
-    if (!decorrelator.cm.mapCorToCorRel.isEmpty()) {
-      newRootRel = decorrelator.decorrelate(newRootRel);
-    }
-
-    // Re-propagate the hints.
-    newRootRel = RelOptUtil.propagateRelHints(newRootRel, true);
-
-    return newRootRel;
-  }
-
-  private void setCurrent(RelNode root, Correlate corRel) {
-    currentRel = corRel;
-    if (corRel != null) {
-      cm = new CorelMapBuilder().build(Util.first(root, corRel));
-    }
-  }
-
-  protected RelBuilderFactory relBuilderFactory() {
-    return RelBuilder.proto(relBuilder);
-  }
-
-  protected RelNode decorrelate(RelNode root) {
-    // first adjust count() expression if any
-    final RelBuilderFactory f = relBuilderFactory();
-    HepProgram program = HepProgram.builder()
-        .addRuleInstance(new AdjustProjectForCountAggregateRule(false, f))
-        .addRuleInstance(new AdjustProjectForCountAggregateRule(true, f))
-        .addRuleInstance(
-            new FilterJoinRule.FilterIntoJoinRule(true, f,
-                FilterJoinRule.TRUE_PREDICATE))
-        .addRuleInstance(
-            new FilterProjectTransposeRule(Filter.class, Project.class, true,
-                true, f))
-        .addRuleInstance(new FilterCorrelateRule(f))
-        .build();
-
-    HepPlanner planner = createPlanner(program);
-
-    planner.setRoot(root);
-    root = planner.findBestExp();
-
-    // Perform decorrelation.
-    map.clear();
-
-    final Frame frame = getInvoke(root, false, null);
-    if (frame != null) {
-      // has been rewritten; apply rules post-decorrelation
-      final HepProgram program2 = HepProgram.builder()
-          .addRuleInstance(
-              new FilterJoinRule.FilterIntoJoinRule(
-                  true, f,
-                  FilterJoinRule.TRUE_PREDICATE))
-          .addRuleInstance(
-              new FilterJoinRule.JoinConditionPushRule(
-                  f,
-                  FilterJoinRule.TRUE_PREDICATE))
-          .build();
-
-      final HepPlanner planner2 = createPlanner(program2);
-      final RelNode newRoot = frame.r;
-      planner2.setRoot(newRoot);
-      return planner2.findBestExp();
-    }
-
-    return root;
-  }
-
-  private Function2<RelNode, RelNode, Void> createCopyHook() {
-    return new Function2<RelNode, RelNode, Void>() {
-      public Void apply(RelNode oldNode, RelNode newNode) {
-        if (cm.mapRefRelToCorRef.containsKey(oldNode)) {
-          cm.mapRefRelToCorRef.putAll(newNode,
-              cm.mapRefRelToCorRef.get(oldNode));
-        }
-        if (oldNode instanceof Correlate
-            && newNode instanceof Correlate) {
-          Correlate oldCor = (Correlate) oldNode;
-          CorrelationId c = oldCor.getCorrelationId();
-          if (cm.mapCorToCorRel.get(c) == oldNode) {
-            cm.mapCorToCorRel.put(c, newNode);
-          }
-
-          if (generatedCorRels.contains(oldNode)) {
-            generatedCorRels.add((Correlate) newNode);
-          }
-        }
-        return null;
-      }
-      if (oldNode instanceof Correlate
-          && newNode instanceof Correlate) {
-        Correlate oldCor = (Correlate) oldNode;
-        CorrelationId c = oldCor.getCorrelationId();
-        if (cm.mapCorToCorRel.get(c) == oldNode) {
-          cm.mapCorToCorRel.put(c, newNode);
-        }
-
-        if (generatedCorRels.contains(oldNode)) {
-          generatedCorRels.add((Correlate) newNode);
-        }
-      }
-      return null;
-
-    };
-  }
-
-  private HepPlanner createPlanner(HepProgram program) {
-    // Create a planner with a hook to update the mapping tables when a
-    // node is copied when it is registered.
-    return new HepPlanner(
-        program,
-        context,
-        true,
-        createCopyHook(),
-        RelOptCostImpl.FACTORY);
-  }
-
-  public RelNode removeCorrelationViaRule(RelNode root) {
-    final RelBuilderFactory f = relBuilderFactory();
-    HepProgram program = HepProgram.builder()
-        .addRuleInstance(new RemoveSingleAggregateRule(f))
-        .addRuleInstance(new RemoveCorrelationForScalarProjectRule(f))
-        .addRuleInstance(new RemoveCorrelationForScalarAggregateRule(f))
-        .build();
-
-    HepPlanner planner = createPlanner(program);
-
-    planner.setRoot(root);
-    return planner.findBestExp();
-  }
-
-  protected RexNode decorrelateExpr(RelNode currentRel,
-      Map<RelNode, Frame> map, CorelMap cm, RexNode exp) {
-    DecorrelateRexShuttle shuttle =
-        new DecorrelateRexShuttle(currentRel, map, cm);
-    return exp.accept(shuttle);
-  }
-
-  protected RexNode removeCorrelationExpr(
-      RexNode exp,
-      boolean projectPulledAboveLeftCorrelator) {
-    RemoveCorrelationRexShuttle shuttle =
-        new RemoveCorrelationRexShuttle(relBuilder.getRexBuilder(),
-            projectPulledAboveLeftCorrelator, null, ImmutableSet.<Integer>of());
-    return exp.accept(shuttle);
-  }
-
-  protected RexNode removeCorrelationExpr(
-      RexNode exp,
-      boolean projectPulledAboveLeftCorrelator,
-      RexInputRef nullIndicator) {
-    RemoveCorrelationRexShuttle shuttle =
-        new RemoveCorrelationRexShuttle(relBuilder.getRexBuilder(),
-            projectPulledAboveLeftCorrelator, nullIndicator,
-            ImmutableSet.of());
-    return exp.accept(shuttle);
-  }
-
-  protected RexNode removeCorrelationExpr(
-      RexNode exp,
-      boolean projectPulledAboveLeftCorrelator,
-      Set<Integer> isCount) {
-    RemoveCorrelationRexShuttle shuttle =
-        new RemoveCorrelationRexShuttle(relBuilder.getRexBuilder(),
-            projectPulledAboveLeftCorrelator, null, isCount);
-    return exp.accept(shuttle);
-  }
-
-  /** Fallback if none of the other {@code decorrelateRel} methods match. */
-  public Frame decorrelateRel(RelNode rel, boolean isCorVarDefined) {
-    RelNode newRel = rel.copy(rel.getTraitSet(), rel.getInputs());
-
-    if (rel.getInputs().size() > 0) {
-      List<RelNode> oldInputs = rel.getInputs();
-      List<RelNode> newInputs = new ArrayList<>();
-      for (int i = 0; i < oldInputs.size(); ++i) {
-        final Frame frame = getInvoke(oldInputs.get(i), isCorVarDefined, rel);
-        if (frame == null || !frame.corDefOutputs.isEmpty()) {
-          // if input is not rewritten, or if it produces correlated
-          // variables, terminate rewrite
-          return null;
-        }
-        newInputs.add(frame.r);
-        newRel.replaceInput(i, frame.r);
-      }
-
-      if (!Util.equalShallow(oldInputs, newInputs)) {
-        newRel = rel.copy(rel.getTraitSet(), newInputs);
-      }
-    }
-
-    // the output position should not change since there are no corVars
-    // coming from below.
-    return register(rel, newRel, identityMap(rel.getRowType().getFieldCount()),
-        ImmutableSortedMap.of());
-  }
-
-  /**
-   * Rewrite {@link LogicalSort}.
-   *
-   * @param rel Sort to be rewritten
-   */
-  public Frame decorrelateRel(LogicalSort rel) {
-    return decorrelateRel((Sort) rel);
-  }
-
-  public Frame decorrelateRel(Sort rel) {
-    //
-    // Rewrite logic:
-    //
-    // 1. change the collations field to reference the new input.
-    //
-
-    // Sort itself should not reference corVars.
-    assert !cm.mapRefRelToCorRef.containsKey(rel);
-
-    // Sort only references field positions in collations field.
-    // The collations field in the newRel now need to refer to the
-    // new output positions in its input.
-    // Its output does not change the input ordering, so there's no
-    // need to call propagateExpr.
-
-    final RelNode oldInput = rel.getInput();
-    final Frame frame = getInvoke(oldInput, rel);
-    if (frame == null) {
-      // If input has not been rewritten, do not rewrite this rel.
-      return null;
-    }
-    // Can not decorrelate if the sort has per-correlate-key attributes like
-    // offset or fetch limit, because these attributes scope would change to
-    // global after decorrelation. They should take effect within the scope
-    // of the correlation key actually.
-    if (rel.offset != null || rel.fetch != null) {
-      return null;
-    }
-    final RelNode newInput = frame.r;
-
-    Mappings.TargetMapping mapping =
-        Mappings.target(frame.oldToNewOutputs,
-            oldInput.getRowType().getFieldCount(),
-            newInput.getRowType().getFieldCount());
-
-    RelCollation oldCollation = rel.getCollation();
-    RelCollation newCollation = RexUtil.apply(mapping, oldCollation);
-
-    final RelNode newSort = relBuilder
-            .push(newInput)
-            .sortLimit(-1, -1, relBuilder.fields(newCollation))
-            .build();
-
-    // Sort does not change input ordering
-    return register(rel, newSort, frame.oldToNewOutputs, frame.corDefOutputs);
-  }
-
-  public Frame decorrelateRel(Values rel) {
-    // There are no inputs, so rel does not need to be changed.
-    return null;
-  }
-
-  public Frame decorrelateRel(LogicalAggregate rel) {
-    return decorrelateRel((Aggregate) rel);
-  }
-
-  public Frame decorrelateRel(Aggregate rel) {
-    //
-    // Rewrite logic:
-    //
-    // 1. Permute the group by keys to the front.
-    // 2. If the input of an aggregate produces correlated variables,
-    //    add them to the group list.
-    // 3. Change aggCalls to reference the new project.
-    //
-
-    // Aggregate itself should not reference corVars.
-    assert !cm.mapRefRelToCorRef.containsKey(rel);
-
-    final RelNode oldInput = rel.getInput();
-    final Frame frame = getInvoke(oldInput, isCorVarDefined, rel);
-    if (frame == null) {
-      // If input has not been rewritten, do not rewrite this rel.
-      return null;
-    }
-    final RelNode newInput = frame.r;
-
-    // aggregate outputs mapping: group keys and aggregates
-    final Map<Integer, Integer> outputMap = new HashMap<>();
-
-    // map from newInput
-    final Map<Integer, Integer> mapNewInputToProjOutputs = new HashMap<>();
-    final int oldGroupKeyCount = rel.getGroupSet().cardinality();
-
-    // Project projects the original expressions,
-    // plus any correlated variables the input wants to pass along.
-    final List<Pair<RexNode, String>> projects = new ArrayList<>();
-
-    List<RelDataTypeField> newInputOutput =
-        newInput.getRowType().getFieldList();
-
-    int newPos = 0;
-
-    // oldInput has the original group by keys in the front.
-    final NavigableMap<Integer, RexLiteral> omittedConstants = new TreeMap<>();
-    for (int i = 0; i < oldGroupKeyCount; i++) {
-      final RexLiteral constant = projectedLiteral(newInput, i);
-      if (constant != null) {
-        // Exclude constants. Aggregate({true}) occurs because Aggregate({})
-        // would generate 1 row even when applied to an empty table.
-        omittedConstants.put(i, constant);
-        continue;
-      }
-
-      // add mapping of group keys.
-      outputMap.put(i, newPos);
-      int newInputPos = frame.oldToNewOutputs.get(i);
-      projects.add(RexInputRef.of2(newInputPos, newInputOutput));
-      mapNewInputToProjOutputs.put(newInputPos, newPos);
-      newPos++;
-    }
-
-    final SortedMap<CorDef, Integer> corDefOutputs = new TreeMap<>();
-    if (!frame.corDefOutputs.isEmpty()) {
-      // If input produces correlated variables, move them to the front,
-      // right after any existing GROUP BY fields.
-
-      // Now add the corVars from the input, starting from
-      // position oldGroupKeyCount.
-      for (Map.Entry<CorDef, Integer> entry : frame.corDefOutputs.entrySet()) {
-        projects.add(RexInputRef.of2(entry.getValue(), newInputOutput));
-
-        corDefOutputs.put(entry.getKey(), newPos);
-        mapNewInputToProjOutputs.put(entry.getValue(), newPos);
-        newPos++;
-      }
-    }
-
-    // add the remaining fields
-    final int newGroupKeyCount = newPos;
-    for (int i = 0; i < newInputOutput.size(); i++) {
-      if (!mapNewInputToProjOutputs.containsKey(i)) {
-        projects.add(RexInputRef.of2(i, newInputOutput));
-        mapNewInputToProjOutputs.put(i, newPos);
-        newPos++;
-      }
-    }
-
-    assert newPos == newInputOutput.size();
-
-    // This Project will be what the old input maps to,
-    // replacing any previous mapping from old input).
-    RelNode newProject = relBuilder.push(newInput)
-        .projectNamed(Pair.left(projects), Pair.right(projects), true)
-        .build();
-
-    // update mappings:
-    // oldInput ----> newInput
-    //
-    //                newProject
-    //                   |
-    // oldInput ----> newInput
-    //
-    // is transformed to
-    //
-    // oldInput ----> newProject
-    //                   |
-    //                newInput
-    Map<Integer, Integer> combinedMap = new HashMap<>();
-
-    for (Integer oldInputPos : frame.oldToNewOutputs.keySet()) {
-      combinedMap.put(oldInputPos,
-          mapNewInputToProjOutputs.get(
-              frame.oldToNewOutputs.get(oldInputPos)));
-    }
-
-    register(oldInput, newProject, combinedMap, corDefOutputs);
-
-    // now it's time to rewrite the Aggregate
-    final ImmutableBitSet newGroupSet = ImmutableBitSet.range(newGroupKeyCount);
-    List<AggregateCall> newAggCalls = new ArrayList<>();
-    List<AggregateCall> oldAggCalls = rel.getAggCallList();
-
-    ImmutableList<ImmutableBitSet> newGroupSets = null;
-    if (rel.getGroupType() != Aggregate.Group.SIMPLE) {
-      final ImmutableBitSet addedGroupSet =
-          ImmutableBitSet.range(oldGroupKeyCount, newGroupKeyCount);
-      final Iterable<ImmutableBitSet> tmpGroupSets =
-          Iterables.transform(rel.getGroupSets(),
-              bitSet -> bitSet.union(addedGroupSet));
-      newGroupSets = ImmutableBitSet.ORDERING.immutableSortedCopy(tmpGroupSets);
-    }
-
-    int oldInputOutputFieldCount = rel.getGroupSet().cardinality();
-    int newInputOutputFieldCount = newGroupSet.cardinality();
-
-    int i = -1;
-    for (AggregateCall oldAggCall : oldAggCalls) {
-      ++i;
-      List<Integer> oldAggArgs = oldAggCall.getArgList();
-
-      List<Integer> aggArgs = new ArrayList<>();
-
-      // Adjust the Aggregate argument positions.
-      // Note Aggregate does not change input ordering, so the input
-      // output position mapping can be used to derive the new positions
-      // for the argument.
-      for (int oldPos : oldAggArgs) {
-        aggArgs.add(combinedMap.get(oldPos));
-      }
-      final int filterArg = oldAggCall.filterArg < 0 ? oldAggCall.filterArg
-          : combinedMap.get(oldAggCall.filterArg);
-
-      newAggCalls.add(
-          oldAggCall.adaptTo(newProject, aggArgs, filterArg,
-              oldGroupKeyCount, newGroupKeyCount));
-
-      // The old to new output position mapping will be the same as that
-      // of newProject, plus any aggregates that the oldAgg produces.
-      outputMap.put(
-          oldInputOutputFieldCount + i,
-          newInputOutputFieldCount + i);
-    }
-
-    relBuilder.push(newProject).aggregate(
-        relBuilder.groupKey(newGroupSet, newGroupSets), newAggCalls);
-
-    if (!omittedConstants.isEmpty()) {
-      final List<RexNode> postProjects = new ArrayList<>(relBuilder.fields());
-      for (Map.Entry<Integer, RexLiteral> entry
-          : omittedConstants.descendingMap().entrySet()) {
-        int index = entry.getKey() + frame.corDefOutputs.size();
-        postProjects.add(index, entry.getValue());
-        // Shift the outputs whose index equals with or bigger than the added index
-        // with 1 offset.
-        shiftMapping(outputMap, index, 1);
-        // Then add the constant key mapping.
-        outputMap.put(entry.getKey(), index);
-      }
-      relBuilder.project(postProjects);
-    }
-
-    RelNode newRel = RelOptUtil.copyRelHints(rel, relBuilder.build());
-
-    // Aggregate does not change input ordering so corVars will be
-    // located at the same position as the input newProject.
-    return register(rel, relBuilder.build(), outputMap, corDefOutputs);
-  }
-
-  /**
-   * Shift the mapping to fixed offset from the {@code startIndex}.
-   * @param mapping    the original mapping
-   * @param startIndex any output whose index equals with or bigger than the starting index
-   *                   would be shift
-   * @param offset     shift offset
-   */
-  private static void shiftMapping(Map<Integer, Integer> mapping, int startIndex, int offset) {
-    for (Map.Entry<Integer, Integer> entry : mapping.entrySet()) {
-      if (entry.getValue() >= startIndex) {
-        mapping.put(entry.getKey(), entry.getValue() + offset);
-      } else {
-        mapping.put(entry.getKey(), entry.getValue());
-      }
-    }
-  }
-
-  /**
-   * Shift the mapping to fixed offset from the {@code startIndex}.
-   *
-   * @param mapping    The original mapping
-   * @param startIndex Any output whose index equals with or bigger than the starting index
-   *                   would be shift
-   * @param offset     Shift offset
-   */
-  private static void shiftMapping(Map<Integer, Integer> mapping, int startIndex, int offset) {
-    for (Map.Entry<Integer, Integer> entry : mapping.entrySet()) {
-      if (entry.getValue() >= startIndex) {
-        mapping.put(entry.getKey(), entry.getValue() + offset);
-      } else {
-        mapping.put(entry.getKey(), entry.getValue());
-      }
-    }
-  }
-
+>>>>>>> 685938eb7 ([CALCITE-4437] The Sort rel should be decorrelated even though it has fetch or limit when it is not inside a Correlate (Thomas Rebele))
   public Frame getInvoke(RelNode r, boolean isCorVarDefined, RelNode parent) {
     final Frame frame = dispatcher.invoke(r, isCorVarDefined);
     currentRel = parent;
@@ -613,11 +114,11 @@ import org.apache.calcite.tools.RelBuilderFactory;
     return null;
   }
 
-  public Frame decorrelateRel(LogicalProject rel) {
-    return decorrelateRel((Project) rel);
+  public Frame decorrelateRel(LogicalProject rel, boolean isCorVarDefined) {
+    return decorrelateRel((Project) rel, isCorVarDefined);
   }
 
-  public Frame decorrelateRel(Project rel) {
+  public Frame decorrelateRel(Project rel, boolean isCorVarDefined) {
     //
     // Rewrite logic:
     //
@@ -963,6 +464,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
         && type.getPrecision() >= type1.getPrecision();
   }
 
+<<<<<<< HEAD
    * Rewrite LogicalFilter.
    *
    * @param rel the snapshot rel to rewrite
@@ -970,9 +472,12 @@ import org.apache.calcite.tools.RelBuilderFactory;
 =======
   public Frame decorrelateRel(LogicalFilter rel) {
     return decorrelateRel((Filter) rel);
+=======
+  public Frame decorrelateRel(LogicalFilter rel, boolean isCorVarDefined) {
+    return decorrelateRel((Filter) rel, isCorVarDefined);
   }
 
-  public Frame decorrelateRel(Filter rel) {
+  public Frame decorrelateRel(Filter rel, boolean isCorVarDefined) {
     //
     // Rewrite logic:
     //
@@ -1021,11 +526,11 @@ import org.apache.calcite.tools.RelBuilderFactory;
         frame.corDefOutputs);
   }
 
-  public Frame decorrelateRel(LogicalCorrelate rel) {
-    return decorrelateRel((Correlate) rel);
+  public Frame decorrelateRel(LogicalCorrelate rel, boolean isCorVarDefined) {
+    return decorrelateRel((Correlate) rel, isCorVarDefined);
   }
 
-  public Frame decorrelateRel(Correlate rel) {
+  public Frame decorrelateRel(Correlate rel, boolean isCorVarDefined) {
     //
     // Rewrite logic:
     //
@@ -1125,11 +630,11 @@ import org.apache.calcite.tools.RelBuilderFactory;
     return register(rel, newJoin, mapOldToNewOutputs, corDefOutputs);
   }
 
-  public Frame decorrelateRel(LogicalJoin rel) {
-    return decorrelateRel((Join) rel);
+  public Frame decorrelateRel(LogicalJoin rel, boolean isCorVarDefined) {
+    return decorrelateRel((Join) rel, isCorVarDefined);
   }
 
-  public Frame decorrelateRel(Join rel) {
+  public Frame decorrelateRel(Join rel, boolean isCorVarDefined) {
     //
     // Rewrite logic:
     //
@@ -1188,7 +693,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
     return register(rel, newJoin, mapOldToNewOutputs, corDefOutputs);
   }
 
-  public Frame decorrelateRel(Union rel) {
+  public Frame decorrelateRel(Union rel, boolean isCorVarDefined) {
     assert !cm.mapRefRelToCorRef.containsKey(rel);
 
     final List<RelNode> oldInputs = rel.getInputs();
@@ -1200,7 +705,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
     // the corDefOutputs from the frames. Note that the
     // corDefOutputs might be different among the frames.
     for (RelNode oldInput: oldInputs) {
-      final Frame frame = getInvoke(oldInput, rel);
+      final Frame frame = getInvoke(oldInput, isCorVarDefined, rel);
       if (frame == null) {
         return null;
       }
