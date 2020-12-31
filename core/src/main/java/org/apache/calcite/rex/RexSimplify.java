@@ -1199,7 +1199,7 @@ public class RexSimplify {
     // Try to simplify the expression
     final Multimap<String, Pair<String, RexNode>> equalityTerms = ArrayListMultimap.create();
     final RangeTerms rangeTerms = new RangeTerms();
-    final Map<String, String> equalityConstantTerms = new HashMap<>();
+    final Map<String, RexLiteral> equalityConstantTerms = new HashMap<>();
     final Set<String> negatedTerms = new HashSet<>();
     final Set<String> nullOperands = new HashSet<>();
     final Set<RexNode> notNullOperands = new LinkedHashSet<>();
@@ -1276,7 +1276,7 @@ public class RexSimplify {
           if (comparison != null) {
             final RexLiteral literal = comparison.literal;
             final RexLiteral prevLiteral =
-                equalityConstantTerms.put(comparison.ref, literal);
+                equalityConstantTerms.put(comparison.ref.toString(), literal);
             if (prevLiteral != null && !literal.toString().equals(prevLiteral.toString())
                 && prevLiteral.getValue().getClass().equals(literal.getValue().getClass())
                 && prevLiteral.getValue().compareTo(literal.getValue()) != 0) {
@@ -1344,13 +1344,13 @@ public class RexSimplify {
     // Check for equality of two refs wrt equality with constants
     // Example #1. x=5 AND y=5 AND x=y : x=5 AND y=5
     // Example #2. x=5 AND y=6 AND x=y - not satisfiable
-    for (RexNode ref1 : equalityTerms.keySet()) {
+    for (String ref1 : equalityTerms.keySet()) {
       final RexLiteral literal1 = equalityConstantTerms.get(ref1);
       if (literal1 == null) {
         continue;
       }
-      Collection<Pair<RexNode, RexNode>> references = equalityTerms.get(ref1);
-      for (Pair<RexNode, RexNode> ref2 : references) {
+      Collection<Pair<String, RexNode>> references = equalityTerms.get(ref1);
+      for (Pair<String, RexNode> ref2 : references) {
         final RexLiteral literal2 = equalityConstantTerms.get(ref2.left);
         if (literal2 == null) {
           continue;

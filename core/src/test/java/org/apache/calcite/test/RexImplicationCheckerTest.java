@@ -586,7 +586,7 @@ public class RexImplicationCheckerTest {
                       rootSchema)));
       simplify =
           new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false,
-              executor).withParanoid(true);
+              executor);
       simplifyUnknownFalse =
               new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, true,
                       executor);
