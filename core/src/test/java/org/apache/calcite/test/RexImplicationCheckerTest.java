@@ -438,6 +438,36 @@ public class RexImplicationCheckerTest {
     }
   }
 
+  @Test public void testRexSimplifyDateCharImplicitCast() {
+    Fixture f = new Fixture();
+    RexNode dateLiteral = f.dateLiteral(new DateString(2020, 12, 31));
+    RexNode stringLiteral = f.charLiteral("2020-12-31");
+    RexNode dateRef = f.d;
+    RexNode condition = f.and(f.eq(dateRef, dateLiteral), f.eq(dateRef, stringLiteral));
+    RexNode simp = f.simplifyUnknownFalse.simplify(condition);
+    assertThat(simp.isAlwaysFalse(), is(false));
+  }
+
+  @Test public void testRexSimplifyLongCharImplicitCast() {
+    Fixture f = new Fixture();
+    RexNode longLiteral = f.longLiteral(2020);
+    RexNode stringLiteral = f.charLiteral("2020");
+    RexNode longRef = f.lg;
+    RexNode condition = f.and(f.eq(longRef, longLiteral), f.eq(longRef, stringLiteral));
+    RexNode simp = f.simplifyUnknownFalse.simplify(condition);
+    assertThat(simp.isAlwaysFalse(), is(false));
+  }
+
+  @Test public void testRexSimplifyLongFloatImplicitCast() {
+    Fixture f = new Fixture();
+    RexNode longLiteral = f.longLiteral(2020);
+    RexNode floatLiteral = f.floatLiteral(2020D);
+    RexNode longRef = f.lg;
+    RexNode condition = f.and(f.eq(longRef, longLiteral), f.eq(longRef, floatLiteral));
+    RexNode simp = f.simplifyUnknownFalse.simplify(condition);
+    assertThat(simp.isAlwaysFalse(), is(false));
+  }
+
   /** Contains all the nourishment a test case could possibly need.
    *
    * <p>We put the data in here, rather than as fields in the test case, so that
@@ -477,6 +507,7 @@ public class RexImplicationCheckerTest {
     public final RelDataType rowType;
     public final RexExecutorImpl executor;
     public final RexSimplify simplify;
+    public final RexSimplify simplifyUnknownFalse;
 
     public Fixture() {
       typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
@@ -540,6 +571,9 @@ public class RexImplicationCheckerTest {
       simplify =
           new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, false,
               executor);
+      simplifyUnknownFalse =
+              new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, true,
+                      executor);
       checker = new RexImplicationChecker(rexBuilder, executor, rowType);
     }
 

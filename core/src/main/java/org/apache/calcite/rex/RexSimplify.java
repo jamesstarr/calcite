@@ -626,7 +626,7 @@ public class RexSimplify {
     // Try to simplify the expression
     final Multimap<String, Pair<String, RexNode>> equalityTerms = ArrayListMultimap.create();
     final RangeTerms rangeTerms = new RangeTerms();
-    final Map<String, String> equalityConstantTerms = new HashMap<>();
+    final Map<String, RexLiteral> equalityConstantTerms = new HashMap<>();
     final Set<String> negatedTerms = new HashSet<>();
     final Set<String> nullOperands = new HashSet<>();
     final Set<RexNode> notNullOperands = new LinkedHashSet<>();
@@ -701,10 +701,12 @@ public class RexSimplify {
         // and hence it can be evaluated to FALSE
         if (term.getKind() == SqlKind.EQUALS) {
           if (comparison != null) {
-            final String literal = comparison.literal.toString();
-            final String prevLiteral =
+            final RexLiteral literal = comparison.literal;
+            final RexLiteral prevLiteral =
                 equalityConstantTerms.put(comparison.ref.toString(), literal);
-            if (prevLiteral != null && !literal.equals(prevLiteral)) {
+            if (prevLiteral != null && !literal.toString().equals(prevLiteral.toString())
+                && prevLiteral.getValue().getClass().equals(literal.getValue().getClass())
+                && prevLiteral.getValue().compareTo(literal.getValue()) != 0) {
               return rexBuilder.makeLiteral(false);
             }
           } else if (RexUtil.isReferenceOrAccess(left, true)
@@ -770,17 +772,27 @@ public class RexSimplify {
     // Example #1. x=5 AND y=5 AND x=y : x=5 AND y=5
     // Example #2. x=5 AND y=6 AND x=y - not satisfiable
     for (String ref1 : equalityTerms.keySet()) {
-      final String literal1 = equalityConstantTerms.get(ref1);
+      final RexLiteral literal1 = equalityConstantTerms.get(ref1);
       if (literal1 == null) {
         continue;
       }
       Collection<Pair<String, RexNode>> references = equalityTerms.get(ref1);
       for (Pair<String, RexNode> ref2 : references) {
-        final String literal2 = equalityConstantTerms.get(ref2.left);
+        final RexLiteral literal2 = equalityConstantTerms.get(ref2.left);
         if (literal2 == null) {
           continue;
         }
-        if (!literal1.equals(literal2)) {
+        if (!literal1.toString().equals(literal2.toString())) {
+          // if the value is a different class, the different string value may not be significant
+          // don't simplify if that's the case
+          if (!literal1.getValue().getClass().equals(literal2.getValue().getClass())) {
+            continue;
+          }
+          // if they are the same class, but compareTo() returns 0, we should consider
+          // as equivalent, so don't simplify to false
+          if (literal1.getValue().compareTo(literal2.getValue()) == 0) {
+            continue;
+          }
           // If an expression is equal to two different constants,
           // it is not satisfiable
           return rexBuilder.makeLiteral(false);
