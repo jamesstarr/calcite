@@ -647,13 +647,19 @@ allprojects {
             targetCompatibility = JavaVersion.VERSION_1_8
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 994cab940 (Bump Gradle 6.7 -> 6.8.1)
         configure<JavaPluginExtension> {
             consistentResolution {
                 useCompileClasspathVersions()
             }
         }
+<<<<<<< HEAD
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> 994cab940 (Bump Gradle 6.7 -> 6.8.1)
 
         repositories {
             if (enableMavenLocal) {
