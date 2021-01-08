@@ -388,6 +388,11 @@ allprojects {
             sourceCompatibility = JavaVersion.VERSION_1_8
             targetCompatibility = JavaVersion.VERSION_1_8
         }
+        configure<JavaPluginExtension> {
+            consistentResolution {
+                useCompileClasspathVersions()
+            }
+        }
 
         repositories {
             if (enableMavenLocal) {
