@@ -16,6 +16,7 @@
  */
 package org.apache.calcite.sql.validate;
 
+import org.apache.calcite.rel.type.StructKind;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlWithItem;
 
@@ -54,6 +55,19 @@ class WithScope extends ListScope {
       return validator.getNamespace(withItem);
     }
     return super.getTableNamespace(names);
+  }
+
+  @Override public void resolveTable(List<String> names,
+      SqlNameMatcher nameMatcher, Path path, Resolved resolved) {
+    if (names.size() == 1
+        && names.equals(withItem.name.names)) {
+      final SqlValidatorNamespace ns = validator.getNamespace(withItem);
+      final Step path2 = path
+          .plus(ns.getRowType(), 0, names.get(0), StructKind.FULLY_QUALIFIED);
+      resolved.found(ns, false, null, path2, null);
+      return;
+    }
+    super.resolveTable(names, nameMatcher, path, resolved);
   }
 }
 <<<<<<< HEAD

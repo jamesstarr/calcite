@@ -33,7 +33,6 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.calcite.schema.impl.TableMacroImpl;
 import org.apache.calcite.schema.impl.ViewTable;
-import org.apache.calcite.test.JdbcTest.Employee;
 import org.apache.calcite.util.Smalls;
 import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
@@ -59,6 +58,8 @@ import java.util.BitSet;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+
+import static org.apache.calcite.test.JdbcTest.Employee;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -712,7 +713,7 @@ public class ReflectiveSchemaTest {
     // BitSet is not a valid relation type. It's as if "bitSet" field does
     // not exist.
     with.query("select * from \"s\".\"bitSet\"")
-        .throws_("Table 's.bitSet' not found");
+        .throws_("Object 'bitSet' not found within 's'");
     // Enumerable field returns 3 records with 0 fields
     with.query("select * from \"s\".\"enumerable\"")
         .returns("\n"

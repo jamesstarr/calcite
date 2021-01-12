@@ -176,16 +176,26 @@ public interface SqlValidatorScope {
    */
   void validateExpr(SqlNode expr);
 
+  /** @deprecated Use
+   * {@link #resolveTable(List, SqlNameMatcher, Path, Resolved)}. */
+  @Deprecated // to be removed before 2.0
+  SqlValidatorNamespace getTableNamespace(List<String> names);
+
   /**
-   * Looks up a table in this scope from its name. If found, returns the
+   * Looks up a table in this scope from its name. If found, calls
+   * {@link Resolved#resolve(List, SqlNameMatcher, boolean, Resolved)}.
    * {@link TableNamespace} that wraps it. If the "table" is defined in a
    * {@code WITH} clause it may be a query, not a table after all.
    *
+   * <p>The name matcher is not null, and one typically uses
+   * {@link SqlValidatorCatalogReader#nameMatcher()}.
+   *
    * @param names Name of table, may be qualified or fully-qualified
-   * @return Namespace of table
+   * @param nameMatcher Name matcher
+   * @param path List of names that we have traversed through so far
    */
-  SqlValidatorNamespace getTableNamespace(List<String> names);
-
+  void resolveTable(List<String> names, SqlNameMatcher nameMatcher, Path path,
+      Resolved resolved);
 
   /** Converts the type of an expression to nullable, if the context
    * warrants it. */

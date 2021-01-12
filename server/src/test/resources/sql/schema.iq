@@ -125,18 +125,18 @@ drop schema if exists s;
 !update
 
 select * from s.t;
-Table 'S.T' not found
+Object 'T' not found
 !error
 
 # Create again and objects are still gone
 create schema s;
 
 select * from s.t;
-Table 'S.T' not found
+Object 'T' not found
 !error
 
 select * from s.v;
-Table 'S.V' not found
+Object 'V' not found
 !error
 
 # Try to drop schema that does not exist
