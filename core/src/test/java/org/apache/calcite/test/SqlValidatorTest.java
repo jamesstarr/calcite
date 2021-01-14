@@ -1053,8 +1053,8 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
   }
 
   @Test public void testCastRegisteredType() {
-    checkExpFails("cast(123 as customBigInt)",
-        "class org.apache.calcite.sql.SqlIdentifier: CUSTOMBIGINT");
+    checkExpFails("cast(123 as ^customBigInt^)",
+        "Unknown identifier 'CUSTOMBIGINT'");
     checkExpType("cast(123 as sales.customBigInt)", "BIGINT NOT NULL");
     checkExpType("cast(123 as catalog.sales.customBigInt)", "BIGINT NOT NULL");
   }
@@ -1062,7 +1062,7 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
   @Test public void testCastFails() {
     checkExpFails(
         "cast('foo' as ^bar^)",
-        "class org.apache.calcite.sql.SqlIdentifier: BAR");
+        "Unknown identifier 'BAR'");
     checkWholeExpFails(
         "cast(multiset[1] as integer)",
         "(?s).*Cast function cannot convert value of type INTEGER MULTISET to type INTEGER");
@@ -1076,7 +1076,6 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkWholeExpFails(
         "cast(TIME '12:34:01' as DATE)",
         "(?s).*Cast function cannot convert value of type TIME\\(0\\) to type DATE.*");
-
   }
 
   @Test public void testCastBinaryLiteral() {
@@ -7927,6 +7926,13 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         .columnType("INTEGER ARRAY NOT NULL");
     sql("select array['1',null,'234',''] as a from (values (1))")
         .columnType("CHAR(3) ARRAY NOT NULL");
+  }
+
+  @Test public void testCastAsCollectionType() {
+    sql("select cast(array[1,null,2] as int array) from (values (1))")
+        .columnType("INTEGER NOT NULL ARRAY NOT NULL");
+    sql("select cast(array['1',null,'2'] as varchar(5) array) from (values (1))")
+        .columnType("VARCHAR(5) NOT NULL ARRAY NOT NULL");
   }
 
   @Test public void testCastAsRowType() {
