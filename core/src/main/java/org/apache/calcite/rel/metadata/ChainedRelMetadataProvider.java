@@ -114,6 +114,10 @@ public class ChainedRelMetadataProvider implements RelMetadataProvider {
     return builder.build();
   }
 
+  @Override public RelMetadataQuery getRelMetadataQuery() {
+    return new JaninoRelMetadataQuery(JaninoRelMetadataProvider.of(this));
+  }
+
   /** Creates a chain. */
   public static RelMetadataProvider of(List<RelMetadataProvider> list) {
     return new ChainedRelMetadataProvider(ImmutableList.copyOf(list));
