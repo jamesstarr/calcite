@@ -140,7 +140,6 @@ public class ReflectiveRelMetadataProvider
                   new InvocationHandler() {
                     public Object invoke(Object proxy, Method method,
                         Object[] args) throws Throwable {
-                      long tsInvoke = System.currentTimeMillis();
                       // Suppose we are an implementation of Selectivity
                       // that wraps "filter", a LogicalFilter. Then we
                       // implement
@@ -222,10 +221,6 @@ public class ReflectiveRelMetadataProvider
       }
     }
     return builder.build();
-  }
-
-  @Override public RelMetadataQuery getRelMetadataQuery() {
-    return new JaninoRelMetadataQuery(JaninoRelMetadataProvider.of(this));
   }
 
   private static boolean couldImplement(Method handlerMethod, Method method) {
