@@ -70,6 +70,4 @@ public interface RelMetadataProvider {
 
   <M extends Metadata> Multimap<Method, MetadataHandler<M>> handlers(
       MetadataDef<M> def);
-
-  RelMetadataQuery getRelMetadataQuery();
 }

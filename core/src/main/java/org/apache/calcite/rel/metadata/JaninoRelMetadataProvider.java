@@ -154,10 +154,6 @@ import java.util.concurrent.ExecutionException;
     return provider.handlers(def);
   }
 
-  @Override public RelMetadataQuery getRelMetadataQuery() {
-    return new JaninoRelMetadataQuery(this);
-  }
-
   private static <M extends Metadata> MetadataHandler<M> load3(
       MetadataDef<M> def, Multimap<Method, MetadataHandler<M>> map,
       ImmutableList<Class<? extends RelNode>> relClasses) {
