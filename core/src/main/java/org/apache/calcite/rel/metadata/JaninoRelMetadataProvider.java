@@ -18,39 +18,18 @@ package org.apache.calcite.rel.metadata;
 
 import org.apache.calcite.adapter.enumerable.EnumerableAggregate;
 import org.apache.calcite.adapter.enumerable.EnumerableFilter;
-import org.apache.calcite.adapter.enumerable.EnumerableHashJoin;
+import org.apache.calcite.adapter.enumerable.EnumerableJoin;
 import org.apache.calcite.adapter.enumerable.EnumerableProject;
 import org.apache.calcite.adapter.enumerable.EnumerableTableScan;
-import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.interpreter.JaninoRexCompiler;
 import org.apache.calcite.linq4j.Ord;
 import org.apache.calcite.linq4j.tree.Primitive;
 import org.apache.calcite.plan.hep.HepRelVertex;
 import org.apache.calcite.plan.volcano.AbstractConverter;
 import org.apache.calcite.plan.volcano.RelSubset;
-import org.apache.calcite.rel.AbstractRelNode;
-import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.rel.convert.ConverterImpl;
-import org.apache.calcite.rel.logical.LogicalAggregate;
-import org.apache.calcite.rel.logical.LogicalCalc;
-import org.apache.calcite.rel.logical.LogicalCorrelate;
-import org.apache.calcite.rel.logical.LogicalExchange;
-import org.apache.calcite.rel.logical.LogicalFilter;
-import org.apache.calcite.rel.logical.LogicalIntersect;
-import org.apache.calcite.rel.logical.LogicalJoin;
-import org.apache.calcite.rel.logical.LogicalMinus;
-import org.apache.calcite.rel.logical.LogicalProject;
-import org.apache.calcite.rel.logical.LogicalSort;
-import org.apache.calcite.rel.logical.LogicalTableFunctionScan;
-import org.apache.calcite.rel.logical.LogicalTableModify;
-import org.apache.calcite.rel.logical.LogicalTableScan;
-import org.apache.calcite.rel.logical.LogicalUnion;
-import org.apache.calcite.rel.logical.LogicalValues;
-import org.apache.calcite.rel.logical.LogicalWindow;
-import org.apache.calcite.rel.stream.LogicalChi;
-import org.apache.calcite.rel.stream.LogicalDelta;
-import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.util.ControlFlowException;
 import org.apache.calcite.util.Pair;
+import org.apache.calcite.util.SaffronProperties;
 import org.apache.calcite.util.Util;
 
 import com.google.common.cache.CacheBuilder;
@@ -80,33 +59,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutionException;
-
-/**
- * Implementation of the {@link RelMetadataProvider} interface that generates
- * a class that dispatches to the underlying providers.
- */
-public class JaninoRelMetadataProvider implements RelMetadataProvider {
-  private final RelMetadataProvider provider;
-
-  // Constants and static fields
-
-  public static final JaninoRelMetadataProvider DEFAULT =
-      JaninoRelMetadataProvider.of(DefaultRelMetadataProvider.INSTANCE);
-
-  private static final Set<Class<? extends RelNode>> ALL_RELS =
-      new CopyOnWriteArraySet<>();
-
-  /** Cache of pre-generated handlers by provider and kind of metadata.
-   * For the cache to be effective, providers should implement identity
-   * correctly. */
-  @SuppressWarnings("unchecked")
   private static final LoadingCache<Key, MetadataHandler> HANDLERS =
       maxSize(CacheBuilder.newBuilder(),
-          CalciteSystemProperty.METADATA_HANDLER_CACHE_MAXIMUM_SIZE.value())
+          SaffronProperties.INSTANCE.metadataHandlerCacheMaximumSize().get())
           .build(
-              CacheLoader.from(key ->
-                  load3(key.def, key.provider.handlers(key.def),
-                      key.relClasses)));
+              new CacheLoader<Key, MetadataHandler>() {
+                public MetadataHandler load(@Nonnull Key key) {
+                  //noinspection unchecked
+                  return load3(key.def, key.provider.handlers(key.def),
+                      key.relClasses);
+                }
+              });
 
   // Pre-register the most common relational operators, to reduce the number of
   // times we re-generate.
@@ -141,7 +104,7 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
             EnumerableAggregate.class,
             EnumerableFilter.class,
             EnumerableProject.class,
-            EnumerableHashJoin.class,
+            EnumerableJoin.class,
             EnumerableTableScan.class));
   }
 
@@ -180,7 +143,7 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
     return 109 + provider.hashCode();
   }
 
-  @Deprecated // to be removed before 2.0
+>>>>>>> bc938e435 (Revert "DX-12806: Remove JaninoRelMetadataProvider")
   public <M extends Metadata> UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass, Class<? extends M> metadataClass) {
     throw new UnsupportedOperationException();
@@ -208,8 +171,11 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
         new ReflectiveRelMetadataProvider.Space((Multimap) map);
     for (MetadataHandler provider : space.providerMap.values()) {
       if (providerSet.add(provider)) {
+<<<<<<< HEAD
         providerList.add(
             Pair.of("provider" + (providerSet.size() - 1),
+=======
+        providerList.add(Pair.of("provider" + (providerSet.size() - 1),
             provider));
       }
     }
@@ -270,16 +236,17 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
             .append(method.i)
             .append(")");
       }
+      buff.append(", r");
       safeArgList(buff, method.e)
           .append(");\n")
-          .append("    final Object v = mq.map.get(r, key);\n")
+          .append("    final Object v = mq.map.get(key);\n")
           .append("    if (v != null) {\n")
           .append("      if (v == ")
           .append(NullSentinel.class.getName())
           .append(".ACTIVE) {\n")
-          .append("        throw new ")
+          .append("        throw ")
           .append(CyclicMetadataException.class.getName())
-          .append("();\n")
+          .append(".INSTANCE;\n")
           .append("      }\n")
           .append("      if (v == ")
           .append(NullSentinel.class.getName())
@@ -290,7 +257,7 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
           .append(method.e.getReturnType().getName())
           .append(") v;\n")
           .append("    }\n")
-          .append("    mq.map.put(r, key,")
+          .append("    mq.map.put(key,")
           .append(NullSentinel.class.getName())
           .append(".ACTIVE);\n")
           .append("    try {\n")
@@ -301,14 +268,14 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
           .append("_(r, mq");
       argList(buff, method.e)
           .append(");\n")
-          .append("      mq.map.put(r, key, ")
+          .append("      mq.map.put(key, ")
           .append(NullSentinel.class.getName())
           .append(".mask(x));\n")
           .append("      return x;\n")
           .append("    } catch (")
           .append(Exception.class.getName())
           .append(" e) {\n")
-          .append("      mq.map.row(r).clear();\n")
+          .append("      mq.map.remove(key);\n")
           .append("      throw e;\n")
           .append("    }\n")
           .append("  }\n")
@@ -357,7 +324,7 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
         buf2.setLength(0);
       }
       buf2.append("      throw new ")
-          .append(RelMetadataHandlerProvider.NoHandler.class.getName())
+          .append(NoHandler.class.getName())
           .append("(r.getClass());\n")
           .append("    }\n")
           .append("  }\n");
@@ -373,7 +340,7 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
         buff.append(pair.getKey());
       }
     }
-    final List<Object> argList = new ArrayList<>(Pair.right(providerList));
+    final List<Object> argList = new ArrayList<Object>(Pair.right(providerList));
     argList.add(0, ImmutableList.copyOf(relClasses));
     try {
       return compile(name, buff.toString(), def, argList);
@@ -448,7 +415,7 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
         + "\n"
         + "}";
 
-    if (CalciteSystemProperty.DEBUG.value()) {
+    if (CalcitePrepareImpl.DEBUG) {
       // Add line numbers to the generated janino class
       compiler.setDebuggingInformation(true, true, true);
       System.out.println(s);
@@ -470,10 +437,10 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
     return def.handlerClass.cast(o);
   }
 
-  static synchronized <M extends Metadata, H extends MetadataHandler<M>> H create(
-      RelMetadataProvider relMetadataProvider, MetadataDef<M> def) {
+  synchronized <M extends Metadata, H extends MetadataHandler<M>> H create(
+      MetadataDef<M> def) {
     try {
-      final Key key = new Key(def, relMetadataProvider,
+      final Key key = new Key((MetadataDef) def, provider,
           ImmutableList.copyOf(ALL_RELS));
       //noinspection unchecked
       return (H) HANDLERS.get(key);
@@ -483,14 +450,13 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
     }
   }
 
-  static synchronized <M extends Metadata, H extends MetadataHandler<M>> H revise(
-      Class<? extends RelNode> rClass, RelMetadataProvider relMetadataProvider,
-      MetadataDef<M> def) {
+  synchronized <M extends Metadata, H extends MetadataHandler<M>> H revise(
+      Class<? extends RelNode> rClass, MetadataDef<M> def) {
     if (ALL_RELS.add(rClass)) {
       HANDLERS.invalidateAll();
     }
     //noinspection unchecked
-    return (H) create(relMetadataProvider, def);
+    return (H) create(def);
   }
 
   /** Registers some classes. Does not flush the providers, but next time we
@@ -515,31 +481,5 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
     }
   }
 
-  /** Key for the cache. */
-  private static class Key {
-    public final MetadataDef def;
-    public final RelMetadataProvider provider;
-    public final ImmutableList<Class<? extends RelNode>> relClasses;
 
-    private Key(MetadataDef def, RelMetadataProvider provider,
-        ImmutableList<Class<? extends RelNode>> relClassList) {
-      this.def = def;
-      this.provider = provider;
-      this.relClasses = relClassList;
-    }
-
-    @Override public int hashCode() {
-      return (def.hashCode() * 37
-          + provider.hashCode()) * 37
-          + relClasses.hashCode();
-    }
-
-    @Override public boolean equals(Object obj) {
-      return this == obj
-          || obj instanceof Key
-          && ((Key) obj).def.equals(def)
-          && ((Key) obj).provider.equals(provider)
-          && ((Key) obj).relClasses.equals(relClasses);
-    }
-  }
-}
+// End JaninoRelMetadataProvider.java

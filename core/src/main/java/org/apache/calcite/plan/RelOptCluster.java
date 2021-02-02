@@ -186,8 +186,11 @@ public class RelOptCluster {
     } else {
       return RelMetadataQuery.instance(this.metadataProvider);
     }
+<<<<<<< HEAD
 =======
     return RelMetadataQuery.instance();
+=======
+>>>>>>> bc938e435 (Revert "DX-12806: Remove JaninoRelMetadataProvider")
   }
 
   /**
