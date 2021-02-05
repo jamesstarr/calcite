@@ -1745,13 +1745,13 @@ class RexProgramTest extends RexProgramTestBase {
     RexNode condition = eq(timestampRef, charLiteral);
 =======
   @Test public void testConsistentTypeForSimpleFilter() {
-    // Create a condition with TIMESTAMP input and VARCHAR literal
+    // Create a condition with TIMESTAMP input and CHAR literal
     final NlsString nlsString = new NlsString("2018-01-01 01:23:45", null, null);
     RexNode condition = eq(
         rexBuilder.makeInputRef(
             typeFactory.createTypeWithNullability(
                 typeFactory.createSqlType(SqlTypeName.TIMESTAMP), true),
-            0), rexBuilder.makeVarCharLiteral(nlsString));
+            0), rexBuilder.makeCharLiteral(nlsString));
     RexLiteral consistentTypeLiteral =
         RexSimplify.Comparison.of(condition).getConsistentTypeLiteral(simplify);
 
@@ -1762,9 +1762,9 @@ class RexProgramTest extends RexProgramTestBase {
     // Run simplify for the condition
     RexCall result = (RexCall) simplify.simplify(condition);
 
-    // Ensure simplified filter still has VARCHAR type, which means consistent type is not applied
+    // Ensure simplified filter still has CHAR type, which means consistent type is not applied
     RexNode literal = result.getOperands().get(1);
-    assertThat(literal.getType().getSqlTypeName(), is(SqlTypeName.VARCHAR));
+    assertThat(literal.getType().getSqlTypeName(), is(SqlTypeName.CHAR));
   }
 
   @Test public void testSimplifyCaseNullableBoolean() {
