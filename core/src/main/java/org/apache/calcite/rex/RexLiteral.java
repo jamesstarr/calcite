@@ -285,7 +285,11 @@ public class RexLiteral extends RexNode {
       // fall through
     case BINARY:
       return value instanceof ByteString;
-    case VARCHAR:
+    case VARCHAR: // not allowed -- use Char
+      if (strict) {
+        throw Util.unexpected(typeName);
+      }
+      // fall through
     case CHAR:
       // A SqlLiteral's charset and collation are optional; not so a
       // RexLiteral.
@@ -442,7 +446,6 @@ public class RexLiteral extends RexNode {
       SqlTypeName typeName,
       boolean java) {
     switch (typeName) {
-    case VARCHAR:
     case CHAR:
       NlsString nlsString = (NlsString) value;
       if (java) {
@@ -730,7 +733,6 @@ public class RexLiteral extends RexNode {
     }
     switch (typeName) {
     case CHAR:
-    case VARCHAR:
       return getValueAs(String.class);
     case DECIMAL:
     case TIMESTAMP:

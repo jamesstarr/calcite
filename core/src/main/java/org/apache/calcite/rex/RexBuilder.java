@@ -57,7 +57,6 @@ import com.google.common.collect.Lists;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -871,21 +870,19 @@ public class RexBuilder {
     int p;
     switch (typeName) {
     case CHAR:
-    case VARCHAR:
       // Character literals must have a charset and collation. Populate
       // from the type if necessary.
       assert o instanceof NlsString;
       NlsString nlsString = (NlsString) o;
       if ((nlsString.getCollation() == null)
           || (nlsString.getCharset() == null)) {
-        assert type.getSqlTypeName() == SqlTypeName.CHAR
-                || type.getSqlTypeName() == SqlTypeName.VARCHAR;
-        Charset charset = type.getCharset();
-        assert charset != null : "type.getCharset() must not be null";
+
+        assert type.getSqlTypeName() == SqlTypeName.CHAR;
+        assert type.getCharset().name() != null;
         assert type.getCollation() != null;
         o = new NlsString(
             nlsString.getValue(),
-            charset.name(),
+            type.getCharset().name(),
             type.getCollation());
       }
       break;
@@ -1100,14 +1097,8 @@ public class RexBuilder {
    */
   public RexLiteral makeCharLiteral(NlsString str) {
     assert str != null;
-    RelDataType type = SqlUtil.createNlsStringType(typeFactory, str, SqlTypeName.CHAR);
+    RelDataType type = SqlUtil.createNlsStringType(typeFactory, str);
     return makeLiteral(str, type, SqlTypeName.CHAR);
-  }
-
-  public RexLiteral makeVarCharLiteral(NlsString str) {
-    assert str != null;
-    RelDataType type = SqlUtil.createNlsStringType(typeFactory, str, SqlTypeName.VARCHAR);
-    return makeLiteral(str, type, SqlTypeName.VARCHAR);
   }
 
   /** @deprecated Use {@link #makeDateLiteral(DateString)}. */

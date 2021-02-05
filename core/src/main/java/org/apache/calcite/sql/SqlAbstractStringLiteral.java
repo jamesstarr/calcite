@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Abstract base for character and binary string literals.
  */
-public abstract class SqlAbstractStringLiteral extends SqlLiteral {
+abstract class SqlAbstractStringLiteral extends SqlLiteral {
   //~ Constructors -----------------------------------------------------------
 
   protected SqlAbstractStringLiteral(

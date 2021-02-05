@@ -823,13 +823,11 @@ public abstract class SqlUtil {
    *
    * @param typeFactory Type factory
    * @param str         String
-   * @param typeName    the SqlTypeName to use (either Char or VarChar)
    * @return Type, including collation and charset
    */
   public static RelDataType createNlsStringType(
       RelDataTypeFactory typeFactory,
-      NlsString str,
-      SqlTypeName typeName) {
+      NlsString str) {
     Charset charset = str.getCharset();
     if (null == charset) {
       charset = typeFactory.getDefaultCharset();
@@ -840,7 +838,7 @@ public abstract class SqlUtil {
     }
     RelDataType type =
         typeFactory.createSqlType(
-            typeName,
+            SqlTypeName.CHAR,
             str.getValue().length());
     type =
         typeFactory.createTypeWithCharsetAndCollation(

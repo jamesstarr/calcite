@@ -220,7 +220,6 @@ public class SqlLiteral extends SqlNode {
     case BINARY:
       return value instanceof BitString;
     case CHAR:
-    case VARCHAR:
       return value instanceof NlsString;
     case SYMBOL:
       return (value instanceof Enum)
@@ -228,6 +227,7 @@ public class SqlLiteral extends SqlNode {
     case MULTISET:
       return true;
     case INTEGER: // not allowed -- use Decimal
+    case VARCHAR: // not allowed -- use Char
     case VARBINARY: // not allowed -- use Binary
     default:
       throw Util.unexpected(typeName);
@@ -516,7 +516,6 @@ public class SqlLiteral extends SqlNode {
     }
     switch (typeName) {
     case CHAR:
-    case VARCHAR:
 
       // We want 'It''s superman!', not _ISO-8859-1'It''s superman!'
       return ((NlsString) value).getValue();
@@ -735,7 +734,6 @@ public class SqlLiteral extends SqlNode {
       int bitCount = bitString.getBitCount();
       return typeFactory.createSqlType(SqlTypeName.BINARY, bitCount / 8);
     case CHAR:
-    case VARCHAR:
       NlsString string = (NlsString) value;
       Charset charset = string.getCharset();
       if (null == charset) {
@@ -747,7 +745,7 @@ public class SqlLiteral extends SqlNode {
       }
       RelDataType type =
           typeFactory.createSqlType(
-              typeName,
+              SqlTypeName.CHAR,
               string.getValue().length());
       type =
           typeFactory.createTypeWithCharsetAndCollation(
@@ -779,6 +777,7 @@ public class SqlLiteral extends SqlNode {
 
     case INTEGER: // handled in derived class
     case TIME: // handled in derived class
+    case VARCHAR: // should never happen
     case VARBINARY: // should never happen
 
     default:
