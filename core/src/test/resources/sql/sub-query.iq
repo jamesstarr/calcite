@@ -599,8 +599,13 @@ where empno IN (
 
 !ok
 EnumerableCalc(expr#0..4=[{inputs}], SAL=[$t4])
+<<<<<<< HEAD
   EnumerableHashJoin(condition=[AND(=($1, $3), =($0, $2))], joinType=[inner])
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NOT NULL($t1)], proj#0..1=[{exprs}], $condition=[$t3])
+=======
+  EnumerableJoin(condition=[AND(=($1, $3), =($0, $2))], joinType=[inner])
+    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t1):VARCHAR(14) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], expr#4=[=($t3, $t1)], proj#0..1=[{exprs}], $condition=[$t4])
+>>>>>>> f495333f2 ([DX-12070] Support for non-ISO-8859-1 literals)
       EnumerableTableScan(table=[[scott, DEPT]])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], JOB=[$t2], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])

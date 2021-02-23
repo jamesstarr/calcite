@@ -2574,48 +2574,56 @@ class RelToSqlConverterTest {
     sql(query).ok(expected);
   }
 
-  /** Note: This test came with CALCITE-3147. It is commented out
-   * because CALCITE-3147 turns nonascii characters into unicode when query is parsed,
-   * which might not be compatible to other JDBCs in ArpRelToSqlConverter.*/
-//  @Test void testSelectUnicodeLike() {
-//    String query = "select \"product_name\" from \"product\" a "
-//            + "where \"product_name\" like '上海'";
-//    sql(query)
-//       .withMssql()
-//       .throws_("while converting `A`.`product_name` LIKE u&'\\4e0a\\6d77'");
-//    sql(query)
-//       .withPostgresql()
-//       .throws_("while converting `A`.`product_name` LIKE u&'\\4e0a\\6d77'");
-//    sql(query)
-//       .throws_("while converting `A`.`product_name` LIKE u&'\\4e0a\\6d77'");
-//  }
-
-  @Test void testSelectUnicodeEqual() {
-    String query1 = "select \"product_name\" from \"product\" a "
-            + "where \"product_name\" = '上海'";
-    String query2 = "select '€'";
-    String query3 = "values '\u82f1\u56fd'";
-    sql(query1)
+  @Test public void testSelectUnicodeLike() {
+    String query = "select \"product_name\" from \"product\" a "
+            + "where \"product_name\" like '上海'";
+    final String expected = "SELECT \"product_name\"\n"
+        + "FROM \"foodmart\".\"product\"\n"
+        + "WHERE \"product_name\" LIKE '上海'";
+    final String mySqlExpected = "SELECT [product_name]\n"
+        + "FROM [foodmart].[product]\n"
+        + "WHERE [product_name] LIKE '上海'";
+    sql(query)
        .withMssql()
-       .throws_("Failed to encode '上海' in character set 'ISO-8859-1'");
-    sql(query1)
-       .withPostgresql()
-       .throws_("Failed to encode '上海' in character set 'ISO-8859-1'");
-    sql(query1)
-       .throws_("Failed to encode '上海' in character set 'ISO-8859-1'");
-    sql(query2)
-       .withMssql()
-       .throws_("Failed to encode '€' in character set 'ISO-8859-1'");
-    sql(query2)
-       .withPostgresql()
-       .throws_("Failed to encode '€' in character set 'ISO-8859-1'");
-    sql(query2)
-       .throws_("Failed to encode '€' in character set 'ISO-8859-1'");
-    sql(query3)
-       .throws_("Failed to encode '英国' in character set 'ISO-8859-1'");
+       .ok(mySqlExpected);
+    sql(query)
+        .withPostgresql()
+        .ok(expected);
+    sql(query).ok(expected);
   }
 
-  @Test void testLiteral() {
+  @Test public void testSelectUnicodeEqual() {
+    String query1 = "select \"product_name\" from \"product\" a "
+            + "where \"product_name\" = '上海'";
+    final String expected1 = "SELECT \"product_name\"\n"
+        + "FROM \"foodmart\".\"product\"\n"
+        + "WHERE \"product_name\" = '上海'";
+    final String mySqlExpected1 = "SELECT [product_name]\n"
+        + "FROM [foodmart].[product]\n"
+        + "WHERE [product_name] = '上海'";
+    String query2 = "select '€'";
+    final String mySqlExpected2 = "SELECT '€'\nFROM (VALUES  (0)) AS [t] ([ZERO])";
+    final String expected2 = "SELECT '€'\nFROM (VALUES  (0)) AS \"t\" (\"ZERO\")";
+    String query3 = "values '\u82f1\u56fd'";
+    final String expected3 = "SELECT *\nFROM (VALUES  ('英国')) AS \"t\" (\"EXPR$0\")";
+    sql(query1)
+            .withMssql()
+            .ok(mySqlExpected1);
+    sql(query1)
+            .withPostgresql()
+            .ok(expected1);
+    sql(query1).ok(expected1);
+    sql(query2)
+            .withMssql()
+            .ok(mySqlExpected2);
+    sql(query2)
+            .withPostgresql()
+            .ok(expected2);
+    sql(query2).ok(expected2);
+    sql(query3).ok(expected3);
+  }
+
+  @Test public void testLiteral() {
     checkLiteral("DATE '1978-05-02'");
     checkLiteral2("DATE '1978-5-2'", "DATE '1978-05-02'");
     checkLiteral("TIME '12:34:56'");

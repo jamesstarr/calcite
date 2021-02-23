@@ -121,8 +121,8 @@ class SqlValidatorTest extends SqlValidatorTestCase {
 
   private static final String EMP_RECORD_TYPE =
       "RecordType(INTEGER NOT NULL EMPNO,"
-          + " VARCHAR(20) NOT NULL ENAME,"
-          + " VARCHAR(10) NOT NULL JOB,"
+          + " VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL ENAME,"
+          + " VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL JOB,"
           + " INTEGER MGR,"
           + " TIMESTAMP(0) NOT NULL HIREDATE,"
           + " INTEGER NOT NULL SAL,"
@@ -364,26 +364,29 @@ class SqlValidatorTest extends SqlValidatorTestCase {
     sql("SELECT +'abc' from (values(true))").ok();
   }
 
-  @Test void testEqualNotEqual() {
-    expr("''=''").ok();
-    expr("'abc'=n''").ok();
-    expr("''=_latin1''").ok();
-    expr("n''=''").ok();
-    expr("n'abc'=n''").ok();
-    expr("n''=_latin1''").ok();
-    expr("_latin1''=''").ok();
-    expr("_latin1''=n''").ok();
-    expr("_latin1''=_latin1''").ok();
+  @Test public void testEqualNotEqual() {
+    checkExp("''=''");
+    checkExp("'abc'=n''");
+    checkExpFails(
+            "^''=_latin1''^",
+            "(?s).*Cannot apply = to the two different charsets UTF-8 and ISO-8859-1");
+    checkExp("''=_utf-8''");
+    checkExp("n''=''");
+    checkExp("n'abc'=n''");
+    checkExp("n''=_utf-8''");
+    checkExp("_utf-8''=''");
+    checkExp("_utf-8''=n''");
+    checkExp("_utf-8''=_utf-8''");
 
-    expr("''<>''").ok();
-    expr("'abc'<>n''").ok();
-    expr("''<>_latin1''").ok();
-    expr("n''<>''").ok();
-    expr("n'abc'<>n''").ok();
-    expr("n''<>_latin1''").ok();
-    expr("_latin1''<>''").ok();
-    expr("_latin1'abc'<>n''").ok();
-    expr("_latin1''<>_latin1''").ok();
+    checkExp("''<>''");
+    checkExp("'abc'<>n''");
+    checkExp("''<>_utf-8''");
+    checkExp("n''<>''");
+    checkExp("n'abc'<>n''");
+    checkExp("n''<>_utf-8''");
+    checkExp("_utf-8''<>''");
+    checkExp("_utf-8'abc'<>n''");
+    checkExp("_utf-8''<>_utf-8''");
 
     expr("true=false").ok();
     expr("unknown<>true").ok();
@@ -460,9 +463,11 @@ class SqlValidatorTest extends SqlValidatorTestCase {
             + "'<BINARY.0.> <> <DECIMAL.2, 1.>'.*");
   }
 
-  @Test void testStringLiteral() {
-    sql("select n''=_iso-8859-1'abc' from (values(true))").ok();
-    sql("select N'f'<>'''' from (values(true))").ok();
+  @Test public void testStringLiteral() {
+    checkExpFails("select ^n''=_iso-8859-1'abc'^ from (values(true))",
+            "(?s).*Cannot apply = to the two different charsets UTF-8 and ISO-8859-1");
+    check("select n''=_utf-8'abc' from (values(true))");
+    check("select N'f'<>'''' from (values(true))");
   }
 
   @Test void testStringLiteralBroken() {
@@ -702,58 +707,27 @@ class SqlValidatorTest extends SqlValidatorTestCase {
             + "'<STRING> \\|\\| <STRING>.*'");
   }
 
-  /** Tests the CONCAT function, which unlike the concat operator ('||') is not
-   * standard but only in the ORACLE and POSTGRESQL libraries. */
-  @Test void testConcatFunction() {
-    // CONCAT is not in the library operator table
-    final Sql s = sql("?")
-        .withOperatorTable(SqlLibraryOperatorTableFactory.INSTANCE
-            .getOperatorTable(SqlLibrary.STANDARD, SqlLibrary.POSTGRESQL));
-    s.expr("concat('a', 'b')").ok();
-    s.expr("concat(x'12', x'34')").ok();
-    s.expr("concat(_UTF16'a', _UTF16'b', _UTF16'c')").ok();
-    s.expr("concat('aabbcc', 'ab', '+-')")
-        .columnType("VARCHAR(10) NOT NULL");
-    s.expr("concat('aabbcc', CAST(NULL AS VARCHAR(20)), '+-')")
-        .columnType("VARCHAR(28)");
-    s.expr("concat('aabbcc', 2)").withWhole(true)
-        .fails("(?s)Cannot apply 'CONCAT' to arguments of type "
-            + "'CONCAT\\(<CHAR\\(6\\)>, <INTEGER>\\)'\\. .*");
-    s.expr("concat('abc', 'ab', 123)").withWhole(true)
-        .fails("(?s)Cannot apply 'CONCAT' to arguments of type "
-            + "'CONCAT\\(<CHAR\\(3\\)>, <CHAR\\(2\\)>, <INTEGER>\\)'\\. .*");
-    s.expr("concat(true, false)").withWhole(true)
-        .fails("(?s)Cannot apply 'CONCAT' to arguments of type "
-            + "'CONCAT\\(<BOOLEAN>, <BOOLEAN>\\)'\\. .*");
-  }
-
-  @Test void testBetween() {
-    expr("1 between 2 and 3").ok();
-    expr("'a' between 'b' and 'c'").ok();
-    // can implicitly convert CHAR to INTEGER
-    expr("'' between 2 and 3").ok();
-    wholeExpr("date '2012-02-03' between 2 and 3")
-        .fails("(?s).*Cannot apply 'BETWEEN ASYMMETRIC' to arguments of type.*");
-  }
-
-  @Test void testCharsetMismatch() {
-    wholeExpr("''=_UTF16''")
-        .fails("Cannot apply .* to the two different charsets ISO-8859-1 and "
-            + "UTF-16LE");
-    wholeExpr("''<>_UTF16''")
-        .fails("(?s).*Cannot apply .* to the two different charsets.*");
-    wholeExpr("''>_UTF16''")
-        .fails("(?s).*Cannot apply .* to the two different charsets.*");
-    wholeExpr("''<_UTF16''")
-        .fails("(?s).*Cannot apply .* to the two different charsets.*");
-    wholeExpr("''<=_UTF16''")
-        .fails("(?s).*Cannot apply .* to the two different charsets.*");
-    wholeExpr("''>=_UTF16''")
-        .fails("(?s).*Cannot apply .* to the two different charsets.*");
-    wholeExpr("''||_UTF16''")
-        .fails(ANY);
-    wholeExpr("'a'||'b'||_UTF16'c'")
-        .fails(ANY);
+  @Test public void testCharsetMismatch() {
+    checkWholeExpFails(
+        "''=_UTF16''",
+        "Cannot apply .* to the two different charsets UTF-8 and UTF-16LE");
+    checkWholeExpFails(
+        "''<>_UTF16''",
+        "(?s).*Cannot apply .* to the two different charsets.*");
+    checkWholeExpFails(
+        "''>_UTF16''",
+        "(?s).*Cannot apply .* to the two different charsets.*");
+    checkWholeExpFails(
+        "''<_UTF16''",
+        "(?s).*Cannot apply .* to the two different charsets.*");
+    checkWholeExpFails(
+        "''<=_UTF16''",
+        "(?s).*Cannot apply .* to the two different charsets.*");
+    checkWholeExpFails(
+        "''>=_UTF16''",
+        "(?s).*Cannot apply .* to the two different charsets.*");
+    checkWholeExpFails("''||_UTF16''", ANY);
+    checkWholeExpFails("'a'||'b'||_UTF16'c'", ANY);
   }
 
   // FIXME jvs 2-Feb-2005: all collation-related tests are disabled due to
@@ -944,19 +918,24 @@ class SqlValidatorTest extends SqlValidatorTestCase {
     expr("substring(x'10456b' FROM 1  FOR 2)")
         .columnType("VARBINARY(3) NOT NULL");
 
-    sql("substring('10' FROM 1  FOR 2)")
-        .charset(Charset.forName("latin1"));
-    sql("substring(_UTF16'10' FROM 1  FOR 2)")
-        .charset(Charset.forName("UTF-16LE"));
-    expr("substring('a', 1)").ok();
-    expr("substring('a', 1, 3)").ok();
-    // Implicit type coercion.
-    expr("substring(12345, '1')")
-        .columnType("VARCHAR NOT NULL");
-    expr("substring('a', '1')")
-        .columnType("VARCHAR(1) NOT NULL");
-    expr("substring('a', 1, '3')")
-        .columnType("VARCHAR(1) NOT NULL");
+    checkExpType("substring('10' FROM 1  FOR 2)", "VARCHAR(2) NOT NULL");
+    checkExpType("substring('1000' FROM 2)", "VARCHAR(4) NOT NULL");
+    checkExpType(
+        "substring('1000' FROM '1'  FOR 'w')",
+        "VARCHAR(4) NOT NULL");
+    checkExpType(
+        "substring(cast(' 100 ' as CHAR(99)) FROM '1'  FOR 'w')",
+        "VARCHAR(99) NOT NULL");
+    checkExpType(
+        "substring(x'10456b' FROM 1  FOR 2)",
+        "VARBINARY(3) NOT NULL");
+
+    checkCharset(
+        "substring('10' FROM 1  FOR 2)",
+        Charset.forName("UTF-8"));
+    checkCharset(
+        "substring(_UTF16'10' FROM 1  FOR 2)",
+        Charset.forName("UTF-16LE"));
   }
 
   @Test void testSubstringFails() {
@@ -1614,27 +1593,21 @@ class SqlValidatorTest extends SqlValidatorTestCase {
     }
   }
 
-  /**
-   * Not able to parse member function yet.
-   */
-  @Test void testInvalidMemberFunction() {
-    expr("myCol.^func()^")
-        .fails("(?s).*No match found for function signature FUNC().*");
-    expr("customer.mySubschema.^memberFunc()^")
-        .fails("(?s).*No match found for function signature MEMBERFUNC().*");
-  }
-
-  @Test void testRowtype() {
-    sql("values (1),(2),(1)").ok();
-    sql("values (1),(2),(1)")
-        .type("RecordType(INTEGER NOT NULL EXPR$0) NOT NULL");
-    sql("values (1,'1'),(2,'2')").ok();
-    sql("values (1,'1'),(2,'2')")
-        .type("RecordType(INTEGER NOT NULL EXPR$0, CHAR(1) NOT NULL EXPR$1) NOT NULL");
-    sql("values true")
-        .type("RecordType(BOOLEAN NOT NULL EXPR$0) NOT NULL");
-    sql("^values ('1'),(2)^")
-        .fails("Values passed to VALUES operator must have compatible types");
+  @Test public void testRowtype() {
+    check("values (1),(2),(1)");
+    checkResultType(
+        "values (1),(2),(1)",
+        "RecordType(INTEGER NOT NULL EXPR$0) NOT NULL");
+    check("values (1,'1'),(2,'2')");
+    checkResultType(
+        "values (1,'1'),(2,'2')",
+        "RecordType(INTEGER NOT NULL EXPR$0, CHAR(1) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL EXPR$1) NOT NULL");
+    checkResultType(
+        "values true",
+        "RecordType(BOOLEAN NOT NULL EXPR$0) NOT NULL");
+    checkFails(
+        "^values ('1'),(2)^",
+        "Values passed to VALUES operator must have compatible types");
     if (TODO) {
       sql("values (1),(2.0),(3)")
           .columnType("ROWTYPE(DOUBLE)");
@@ -1655,52 +1628,36 @@ class SqlValidatorTest extends SqlValidatorTestCase {
         .columnType("RecordType(INTEGER EXPR$0, VARCHAR(20) NOT NULL EXPR$1) NOT NULL");
   }
 
-  @Test void testRowWithValidDot() {
-    sql("select ((1,2),(3,4,5)).\"EXPR$1\".\"EXPR$2\"\n from dept")
-        .columnType("INTEGER NOT NULL");
-    sql("select row(1,2).\"EXPR$1\" from dept")
-        .columnType("INTEGER NOT NULL");
-    sql("select t.a.\"EXPR$1\" from (select row(1,2) as a from (values (1))) as t")
-        .columnType("INTEGER NOT NULL");
-  }
-
-  @Test void testRowWithInvalidDotOperation() {
-    final String sql = "select t.^s.\"EXPR$1\"^ from (\n"
-        + "  select 1 AS s from (values (1))) as t";
-    expr(sql)
-        .fails("(?s).*Column 'S\\.EXPR\\$1' not found in table 'T'.*");
-    expr("select ^array[1, 2, 3]^.\"EXPR$1\" from dept")
-        .fails("(?s).*Incompatible types.*");
-    expr("select ^'mystr'^.\"EXPR$1\" from dept")
-        .fails("(?s).*Incompatible types.*");
-  }
-
-  @Test void testMultiset() {
-    expr("multiset[1]")
-        .columnType("INTEGER NOT NULL MULTISET NOT NULL");
-    expr("multiset[1, CAST(null AS DOUBLE)]")
-        .columnType("DOUBLE MULTISET NOT NULL");
-    expr("multiset[1.3,2.3]")
-        .columnType("DECIMAL(2, 1) NOT NULL MULTISET NOT NULL");
-    expr("multiset[1,2.3, cast(4 as bigint)]")
-        .columnType("DECIMAL(19, 0) NOT NULL MULTISET NOT NULL");
-    expr("multiset['1','22', '333','22']")
-        .columnType("CHAR(3) NOT NULL MULTISET NOT NULL");
-    expr("^multiset[1, '2']^")
-        .fails("Parameters must be of the same type");
-    expr("multiset[ROW(1,2)]")
-        .columnType("RecordType(INTEGER NOT NULL EXPR$0,"
-            + " INTEGER NOT NULL EXPR$1) NOT NULL MULTISET NOT NULL");
-    expr("multiset[ROW(1,2),ROW(2,5)]")
-        .columnType("RecordType(INTEGER NOT NULL EXPR$0,"
-            + " INTEGER NOT NULL EXPR$1) NOT NULL MULTISET NOT NULL");
-    expr("multiset[ROW(1,2),ROW(3.4,5.4)]")
-        .columnType("RecordType(DECIMAL(11, 1) NOT NULL EXPR$0,"
-            + " DECIMAL(11, 1) NOT NULL EXPR$1) NOT NULL MULTISET NOT NULL");
-    expr("multiset(select*from emp)")
-        .columnType("RecordType(INTEGER NOT NULL EMPNO,"
-            + " VARCHAR(20) NOT NULL ENAME,"
-            + " VARCHAR(10) NOT NULL JOB,"
+  @Test public void testMultiset() {
+    checkExpType("multiset[1]", "INTEGER NOT NULL MULTISET NOT NULL");
+    checkExpType(
+        "multiset[1, CAST(null AS DOUBLE)]",
+        "DOUBLE MULTISET NOT NULL");
+    checkExpType(
+        "multiset[1.3,2.3]",
+        "DECIMAL(2, 1) NOT NULL MULTISET NOT NULL");
+    checkExpType(
+        "multiset[1,2.3, cast(4 as bigint)]",
+        "DECIMAL(19, 0) NOT NULL MULTISET NOT NULL");
+    checkExpType(
+        "multiset['1','22', '333','22']",
+        "CHAR(3) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL MULTISET NOT NULL");
+    checkExpFails(
+        "^multiset[1, '2']^",
+        "Parameters must be of the same type");
+    checkExpType(
+        "multiset[ROW(1,2)]",
+        "RecordType(INTEGER NOT NULL EXPR$0, INTEGER NOT NULL EXPR$1) NOT NULL MULTISET NOT NULL");
+    checkExpType(
+        "multiset[ROW(1,2),ROW(2,5)]",
+        "RecordType(INTEGER NOT NULL EXPR$0, INTEGER NOT NULL EXPR$1) NOT NULL MULTISET NOT NULL");
+    checkExpType(
+        "multiset[ROW(1,2),ROW(3.4,5.4)]",
+        "RecordType(DECIMAL(11, 1) NOT NULL EXPR$0, DECIMAL(11, 1) NOT NULL EXPR$1) NOT NULL MULTISET NOT NULL");
+    checkExpType("multiset(select*from emp)",
+        "RecordType(INTEGER NOT NULL EMPNO,"
+            + " VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL ENAME,"
+            + " VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL JOB,"
             + " INTEGER MGR,"
             + " TIMESTAMP(0) NOT NULL HIREDATE,"
             + " INTEGER NOT NULL SAL,"
@@ -5066,10 +5023,10 @@ class SqlValidatorTest extends SqlValidatorTestCase {
         .fails("(?s).*List of column aliases must have same degree as table; "
             + "table has 2 columns \\('DEPTNO', 'NAME'\\), "
             + "whereas alias list has 3 columns.*");
-    sql("select * from dept as d(a, b)")
-        .type("RecordType(INTEGER NOT NULL A, VARCHAR(10) NOT NULL B) NOT NULL");
-    sql("select * from (values ('a', 1), ('bc', 2)) t (a, b)")
-        .type("RecordType(CHAR(2) NOT NULL A, INTEGER NOT NULL B) NOT NULL");
+    checkResultType("select * from dept as d(a, b)",
+        "RecordType(INTEGER NOT NULL A, VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL B) NOT NULL");
+    checkResultType("select * from (values ('a', 1), ('bc', 2)) t (a, b)",
+        "RecordType(CHAR(2) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL A, INTEGER NOT NULL B) NOT NULL");
   }
 
   @Test void testAmbiguousColumnInIn() {
@@ -5259,7 +5216,7 @@ class SqlValidatorTest extends SqlValidatorTestCase {
         .fails("Unknown identifier 'SALES\\.E'");
     sql("select sales.dept.* from sales.dept")
         .type("RecordType(INTEGER NOT NULL DEPTNO,"
-            + " VARCHAR(10) NOT NULL NAME) NOT NULL");
+            + " VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL NAME) NOT NULL");
     sql("select sales.emp.* from emp").ok();
     sql("select sales.emp.* from emp as emp").ok();
     // MySQL gives: "Unknown table 'emp'"
@@ -6028,11 +5985,12 @@ class SqlValidatorTest extends SqlValidatorTestCase {
         .fails("Column name 'DEPTNO' in USING clause is not unique on one side of join");
   }
 
-  @Test void testJoinRowType() {
-    sql("select * from emp left join dept on emp.deptno = dept.deptno")
-        .type("RecordType(INTEGER NOT NULL EMPNO,"
-            + " VARCHAR(20) NOT NULL ENAME,"
-            + " VARCHAR(10) NOT NULL JOB,"
+  @Test public void testJoinRowType() {
+    checkResultType(
+        "select * from emp left join dept on emp.deptno = dept.deptno",
+        "RecordType(INTEGER NOT NULL EMPNO,"
+            + " VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL ENAME,"
+            + " VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL JOB,"
             + " INTEGER MGR,"
             + " TIMESTAMP(0) NOT NULL HIREDATE,"
             + " INTEGER NOT NULL SAL,"
@@ -6040,12 +5998,13 @@ class SqlValidatorTest extends SqlValidatorTestCase {
             + " INTEGER NOT NULL DEPTNO,"
             + " BOOLEAN NOT NULL SLACKER,"
             + " INTEGER DEPTNO0,"
-            + " VARCHAR(10) NAME) NOT NULL");
+            + " VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NAME) NOT NULL");
 
-    sql("select * from emp right join dept on emp.deptno = dept.deptno")
-        .type("RecordType(INTEGER EMPNO,"
-            + " VARCHAR(20) ENAME,"
-            + " VARCHAR(10) JOB,"
+    checkResultType(
+        "select * from emp right join dept on emp.deptno = dept.deptno",
+        "RecordType(INTEGER EMPNO,"
+            + " VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" ENAME,"
+            + " VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" JOB,"
             + " INTEGER MGR,"
             + " TIMESTAMP(0) HIREDATE,"
             + " INTEGER SAL,"
@@ -6053,12 +6012,13 @@ class SqlValidatorTest extends SqlValidatorTestCase {
             + " INTEGER DEPTNO,"
             + " BOOLEAN SLACKER,"
             + " INTEGER NOT NULL DEPTNO0,"
-            + " VARCHAR(10) NOT NULL NAME) NOT NULL");
+            + " VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL NAME) NOT NULL");
 
-    sql("select * from emp full join dept on emp.deptno = dept.deptno")
-        .type("RecordType(INTEGER EMPNO,"
-            + " VARCHAR(20) ENAME,"
-            + " VARCHAR(10) JOB,"
+    checkResultType(
+        "select * from emp full join dept on emp.deptno = dept.deptno",
+        "RecordType(INTEGER EMPNO,"
+            + " VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" ENAME,"
+            + " VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" JOB,"
             + " INTEGER MGR,"
             + " TIMESTAMP(0) HIREDATE,"
             + " INTEGER SAL,"
@@ -6066,7 +6026,7 @@ class SqlValidatorTest extends SqlValidatorTestCase {
             + " INTEGER DEPTNO,"
             + " BOOLEAN SLACKER,"
             + " INTEGER DEPTNO0,"
-            + " VARCHAR(10) NAME) NOT NULL");
+            + " VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NAME) NOT NULL");
   }
 
   @Test public void testJoinUsingWithParentheses() {
@@ -6353,20 +6313,23 @@ class SqlValidatorTest extends SqlValidatorTestCase {
   }
 
   /** Tests the {@code WITH} clause and column aliases. */
-  @Test void testWithColumnAlias() {
-    sql("with w(x, y) as (select * from dept)\n"
-        + "select * from w")
-        .type("RecordType(INTEGER NOT NULL X, VARCHAR(10) NOT NULL Y) NOT NULL");
-    sql("with w(x, y) as (select * from dept)\n"
-        + "select * from w, w as w2")
-        .type("RecordType(INTEGER NOT NULL X, VARCHAR(10) NOT NULL Y, "
-            + "INTEGER NOT NULL X0, VARCHAR(10) NOT NULL Y0) NOT NULL");
-    sql("with w(x, y) as (select * from dept)\n"
-        + "select ^deptno^ from w")
-        .fails("Column 'DEPTNO' not found in any table");
-    sql("with w(x, ^x^) as (select * from dept)\n"
-        + "select * from w")
-        .fails("Duplicate name 'X' in column list");
+  @Test public void testWithColumnAlias() {
+    checkResultType(
+        "with w(x, y) as (select * from dept)\n"
+            + "select * from w",
+        "RecordType(INTEGER NOT NULL X, VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL Y) NOT NULL");
+    checkResultType(
+        "with w(x, y) as (select * from dept)\n"
+            + "select * from w, w as w2",
+        "RecordType(INTEGER NOT NULL X, VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL Y, INTEGER NOT NULL X0, VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL Y0) NOT NULL");
+    checkFails(
+        "with w(x, y) as (select * from dept)\n"
+            + "select ^deptno^ from w",
+        "Column 'DEPTNO' not found in any table");
+    checkFails(
+        "with w(x, ^x^) as (select * from dept)\n"
+            + "select * from w",
+        "Duplicate name 'X' in column list");
   }
 
   /** Tests the {@code WITH} clause in sub-queries. */
@@ -7964,7 +7927,8 @@ class SqlValidatorTest extends SqlValidatorTestCase {
     sql("select array[1,null,2] as a from (values (1))")
         .columnType("INTEGER ARRAY NOT NULL");
     sql("select array['1',null,'234',''] as a from (values (1))")
-        .columnType("CHAR(3) ARRAY NOT NULL");
+        .columnType("CHAR(3) CHARACTER SET \"UTF-8\" "
+            + "COLLATE \"UTF-8$en_US$primary\" ARRAY NOT NULL");
   }
 
   @Test void testCastAsCollectionType() {
@@ -8084,9 +8048,9 @@ class SqlValidatorTest extends SqlValidatorTestCase {
         + " UNNEST(d.employees) as e";
     final String type = "RecordType(INTEGER NOT NULL DEPTNO,"
         + " INTEGER NOT NULL EMPNO,"
-        + " VARCHAR(10) NOT NULL ENAME,"
-        + " RecordType(RecordType(VARCHAR(10) NOT NULL TYPE, VARCHAR(20) NOT NULL DESC,"
-        + " RecordType(VARCHAR(10) NOT NULL A, VARCHAR(10) NOT NULL B) NOT NULL OTHERS)"
+        + " VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL ENAME,"
+        + " RecordType(RecordType(VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL TYPE, VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL DESC,"
+        + " RecordType(VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL A, VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL B) NOT NULL OTHERS)"
         + " NOT NULL ARRAY NOT NULL SKILLS) NOT NULL DETAIL) NOT NULL";
     sql(sql1).type(type);
 
@@ -8335,25 +8299,13 @@ class SqlValidatorTest extends SqlValidatorTestCase {
         .fails("SELECT must have a FROM clause");
   }
 
-  @Test void testSelectAmbiguousField() {
-    sql("select ^t0^ from (select 1 as t0, 2 as T0 from dept)")
-        .withCaseSensitive(false)
-        .withUnquotedCasing(Casing.UNCHANGED)
-        .fails("Column 't0' is ambiguous");
-    sql("select ^t0^ from (select 1 as t0, 2 as t0,3 as t1,4 as t1, 5 as t2 from dept)")
-        .withCaseSensitive(false)
-        .withUnquotedCasing(Casing.UNCHANGED)
-        .fails("Column 't0' is ambiguous");
-    // t0 is not referenced,so this case is allowed
-    sql("select 1 as t0, 2 as t0 from dept")
-        .withCaseSensitive(false)
-        .withUnquotedCasing(Casing.UNCHANGED)
-        .ok();
-
-    sql("select t0 from (select 1 as t0, 2 as T0 from DEPT)")
-        .withCaseSensitive(true)
-        .withUnquotedCasing(Casing.UNCHANGED)
-        .ok();
+  @Test public void testTableExtend() {
+    checkResultType("select * from dept extend (x int not null)",
+        "RecordType(INTEGER NOT NULL DEPTNO, VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL NAME, INTEGER NOT NULL X) NOT NULL");
+    checkResultType("select deptno + x as z\n"
+            + "from dept extend (x int not null) as x\n"
+            + "where x > 10",
+        "RecordType(INTEGER NOT NULL Z) NOT NULL");
   }
 
   @Test void testTableExtend() {
@@ -8369,8 +8321,8 @@ class SqlValidatorTest extends SqlValidatorTestCase {
   @Test void testExplicitTable() {
     final String empRecordType =
         "RecordType(INTEGER NOT NULL EMPNO,"
-            + " VARCHAR(20) NOT NULL ENAME,"
-            + " VARCHAR(10) NOT NULL JOB,"
+            + " VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL ENAME,"
+            + " VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL JOB,"
             + " INTEGER MGR,"
             + " TIMESTAMP(0) NOT NULL HIREDATE,"
             + " INTEGER NOT NULL SAL,"
@@ -8407,7 +8359,7 @@ class SqlValidatorTest extends SqlValidatorTestCase {
    * Support LATERAL TABLE</a>. */
   @Test void testCollectionTableWithLateral() {
     final String expectedType = "RecordType(INTEGER NOT NULL DEPTNO, "
-        + "VARCHAR(10) NOT NULL NAME, "
+        + "VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL NAME, "
         + "INTEGER NOT NULL I) NOT NULL";
     sql("select * from dept, lateral table(ramp(dept.deptno))")
         .type(expectedType);
@@ -8417,7 +8369,7 @@ class SqlValidatorTest extends SqlValidatorTestCase {
         .type(expectedType);
 
     final String expectedType2 = "RecordType(INTEGER NOT NULL DEPTNO, "
-        + "VARCHAR(10) NOT NULL NAME, "
+        + "VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL NAME, "
         + "INTEGER I) NOT NULL";
     sql("select * from dept left join lateral table(ramp(dept.deptno)) on true")
         .type(expectedType2);
@@ -8435,7 +8387,7 @@ class SqlValidatorTest extends SqlValidatorTestCase {
         .fails("Table 'DEPT' not found");
     final String expectedType3 = "RecordType(INTEGER NOT NULL I, "
         + "INTEGER NOT NULL DEPTNO, "
-        + "VARCHAR(10) NOT NULL NAME) NOT NULL";
+        + "VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL NAME) NOT NULL";
     sql("select * from lateral table(ramp(1234)), dept")
         .type(expectedType3);
   }
@@ -8454,7 +8406,7 @@ class SqlValidatorTest extends SqlValidatorTestCase {
   @Test public void testCollectionTableWithCursorParam() {
     checkResultType(
         "select * from table(dedup(cursor(select * from emp),'ename'))",
-        "RecordType(VARCHAR(1024) NOT NULL NAME) NOT NULL");
+        "RecordType(VARCHAR(1024) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL NAME) NOT NULL");
     checkFails(
         "select * from table(dedup(cursor(select * from ^bloop^),'ename'))",
         "Table 'BLOOP' not found");
@@ -8501,16 +8453,19 @@ class SqlValidatorTest extends SqlValidatorTestCase {
 
     // Note that X is a field (not a record) and is nullable even though
     // EMP.NAME is NOT NULL.
-    sql("SELECT  ename,(select name from dept where deptno=1) FROM emp")
-        .type("RecordType(VARCHAR(20) NOT NULL ENAME, VARCHAR(10) EXPR$1) NOT NULL");
+    checkResultType(
+        "SELECT  ename,(select name from dept where deptno=1) FROM emp",
+        "RecordType(VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL ENAME, VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" EXPR$1) NOT NULL");
 
     // scalar subqery inside AS operator
-    sql("SELECT  ename,(select name from dept where deptno=1) as X FROM emp")
-        .type("RecordType(VARCHAR(20) NOT NULL ENAME, VARCHAR(10) X) NOT NULL");
+    checkResultType(
+        "SELECT  ename,(select name from dept where deptno=1) as X FROM emp",
+        "RecordType(VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL ENAME, VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" X) NOT NULL");
 
     // scalar subqery inside + operator
-    sql("SELECT  ename, 1 + (select deptno from dept where deptno=1) as X FROM emp")
-        .type("RecordType(VARCHAR(20) NOT NULL ENAME, INTEGER X) NOT NULL");
+    checkResultType(
+        "SELECT  ename, 1 + (select deptno from dept where deptno=1) as X FROM emp",
+        "RecordType(VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL ENAME, INTEGER X) NOT NULL");
 
     // scalar sub-query inside WHERE
     sql("select * from emp where (select true from dept)").ok();
@@ -8534,24 +8489,28 @@ class SqlValidatorTest extends SqlValidatorTestCase {
         .type("RecordType(INTEGER NOT NULL X, INTEGER NOT NULL Y) NOT NULL");
 
     // Qualifying with schema is OK.
-    sql("SELECT customer.contact.coord.x, customer.contact.email,\n"
-        + "  contact.coord.y\n"
-        + "FROM customer.contact")
-        .type("RecordType(INTEGER NOT NULL X, VARCHAR(20) NOT NULL EMAIL, "
-            + "INTEGER NOT NULL Y) NOT NULL");
+    checkResultType(
+        "SELECT customer.contact.coord.x, customer.contact.email, contact.coord.y FROM customer.contact",
+        "RecordType(INTEGER NOT NULL X, VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" "
+            + "NOT NULL EMAIL, INTEGER NOT NULL Y) NOT NULL");
   }
 
   @Test void testArrayOfRecordType() {
     sql("SELECT name, dept_nested.employees[1].^ne^ as ne from dept_nested")
         .fails("Unknown field 'NE'");
     sql("SELECT name, dept_nested.employees[1].ename as ename from dept_nested")
-        .type("RecordType(VARCHAR(10) NOT NULL NAME, VARCHAR(10) ENAME) NOT NULL");
+        .type("RecordType(VARCHAR(10) CHARACTER SET "
+             + "\"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL NAME, "
+             + "VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" "
+             + "ENAME) NOT NULL");
     sql("SELECT dept_nested.employees[1].detail.skills[1].desc as DESCRIPTION\n"
         + "from dept_nested")
-        .type("RecordType(VARCHAR(20) DESCRIPTION) NOT NULL");
+        .type("RecordType(VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE "
+             + "\"UTF-8$en_US$primary\" DESCRIPTION) NOT NULL");
     sql("SELECT dept_nested.employees[1].detail.skills[1].others.a as oa\n"
         + "from dept_nested")
-        .type("RecordType(VARCHAR(10) OA) NOT NULL");
+        .type("RecordType(VARCHAR(10) CHARACTER SET \"UTF-8\" "
+             + "COLLATE \"UTF-8$en_US$primary\" OA) NOT NULL");
   }
 
   @Test void testItemOperatorException() {
@@ -8590,10 +8549,12 @@ class SqlValidatorTest extends SqlValidatorTestCase {
             + "RecordType:peek_no_expand(INTEGER NOT NULL A, INTEGER NOT NULL B) "
             + "NOT NULL SUB) NOT NULL");
     sql("SELECT * FROM customer.contact_peek as c")
-        .type("RecordType(INTEGER NOT NULL CONTACTNO, VARCHAR(10) NOT NULL FNAME, "
-            + "VARCHAR(10) NOT NULL LNAME, VARCHAR(20) NOT NULL EMAIL, INTEGER NOT NULL X, "
-            + "INTEGER NOT NULL Y, VARCHAR(20) NOT NULL unit, "
-            + "RecordType:peek_no_expand(INTEGER NOT NULL M, "
+        .type("RecordType(INTEGER NOT NULL CONTACTNO, VARCHAR(10) CHARACTER "
+            + "SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL FNAME, "
+            + "VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" "
+            + "NOT NULL LNAME, VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE "
+            + "\"UTF-8$en_US$primary\" NOT NULL EMAIL, INTEGER NOT NULL X, "
+            + "INTEGER NOT NULL Y, RecordType:peek_no_expand(INTEGER NOT NULL M, "
             + "RecordType:peek_no_expand(INTEGER NOT NULL A, INTEGER NOT NULL B) "
             + "NOT NULL SUB) NOT NULL COORD_NE) NOT NULL");
 
@@ -8601,7 +8562,8 @@ class SqlValidatorTest extends SqlValidatorTestCase {
     final String sql = "SELECT customer.contact_peek.x,\n"
         + " customer.contact_peek.email, contact_peek.coord.y\n"
         + "FROM customer.contact_peek";
-    sql(sql).type("RecordType(INTEGER NOT NULL X, VARCHAR(20) NOT NULL EMAIL,"
+    sql(sql).type("RecordType(INTEGER NOT NULL X, VARCHAR(20) CHARACTER "
+        + "SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL EMAIL,"
         + " INTEGER NOT NULL Y) NOT NULL");
   }
 
@@ -10362,7 +10324,8 @@ class SqlValidatorTest extends SqlValidatorTestCase {
 
     // Resolve K0 as top-level column K0.
     sql("select k0 from struct." + table)
-        .type("RecordType(VARCHAR(20) NOT NULL K0) NOT NULL");
+        .type("RecordType(VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE "
+            + "\"UTF-8$en_US$primary\" NOT NULL K0) NOT NULL");
 
     // Resolve C2 as secondary-level column F1.C2.
     sql("select c2 from struct." + table)
@@ -10374,7 +10337,8 @@ class SqlValidatorTest extends SqlValidatorTestCase {
 
     // Resolve C1 as top-level column C1 as opposed to F0.C1.
     sql("select c1 from struct." + table)
-        .type("RecordType(VARCHAR(20) NOT NULL C1) NOT NULL");
+        .type("RecordType(VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE "
+            + "\"UTF-8$en_US$primary\" NOT NULL C1) NOT NULL");
 
     // Resolve C0 as secondary-level column F0.C0 as opposed to F1.C0, since F0
     // has the default priority.
@@ -10398,7 +10362,8 @@ class SqlValidatorTest extends SqlValidatorTestCase {
     // Resolve T0.K0 as top-level column K0, since T0 is recognized as the table
     // alias.
     sql("select t0.k0 from struct." + table + " t0")
-        .type("RecordType(VARCHAR(20) NOT NULL K0) NOT NULL");
+        .type("RecordType(VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE "
+            + "\"UTF-8$en_US$primary\" NOT NULL K0) NOT NULL");
 
     // Resolve T0.C2 as secondary-level column F1.C2, since T0 is recognized as
     // the table alias here.
@@ -10413,7 +10378,8 @@ class SqlValidatorTest extends SqlValidatorTestCase {
     // Resolve F0.C1 as top-level column C1 as opposed to F0.C1, since F0 is
     // recognized as the table alias here.
     sql("select f0.c1 from struct." + table + " f0")
-        .type("RecordType(VARCHAR(20) NOT NULL C1) NOT NULL");
+        .type("RecordType(VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE "
+            + "\"UTF-8$en_US$primary\" NOT NULL C1) NOT NULL");
 
     // Resolve C1 as inner INTEGER column not top-level VARCHAR column.
     sql("select f0.f0.c1 from struct." + table + " f0")
@@ -10422,7 +10388,8 @@ class SqlValidatorTest extends SqlValidatorTestCase {
     // Resolve <table>.C1 as top-level column C1 as opposed to F0.C1, since <table> is
     // recognized as the table name.
     sql("select " + table + ".c1 from struct." + table)
-        .type("RecordType(VARCHAR(20) NOT NULL C1) NOT NULL");
+        .type("RecordType(VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE "
+            + "\"UTF-8$en_US$primary\" NOT NULL C1) NOT NULL");
 
     // Alias "f0" obscures table name "<table>"
     sql("select ^" + table + "^.c1 from struct." + table + " f0")
@@ -10431,7 +10398,8 @@ class SqlValidatorTest extends SqlValidatorTestCase {
     // Resolve STRUCT.<table>.C1 as top-level column C1 as opposed to F0.C1, since
     // STRUCT.<table> is recognized as the schema and table name.
     sql("select struct." + table + ".c1 from struct." + table)
-        .type("RecordType(VARCHAR(20) NOT NULL C1) NOT NULL");
+        .type("RecordType(VARCHAR(20) CHARACTER SET \"UTF-8\" COLLATE "
+            + "\"UTF-8$en_US$primary\" NOT NULL C1) NOT NULL");
 
     // Table alias "f0" obscures table name "STRUCT.<table>"
     sql("select ^struct." + table + "^.c1 from struct." + table + " f0")

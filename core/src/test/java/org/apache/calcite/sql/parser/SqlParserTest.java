@@ -2839,15 +2839,19 @@ public class SqlParserTest {
     expr("NULL").same();
   }
 
-  @Test void testContinuedLiteral() {
-    expr("'abba'\n'abba'")
-        .ok("'abba'\n'abba'");
-    expr("'abba'\n'0001'")
-        .ok("'abba'\n'0001'");
-    expr("N'yabba'\n'dabba'\n'doo'")
-        .ok("_ISO-8859-1'yabba'\n'dabba'\n'doo'");
-    expr("_iso-8859-1'yabba'\n'dabba'\n'don''t'")
-        .ok("_ISO-8859-1'yabba'\n'dabba'\n'don''t'");
+  @Test public void testContinuedLiteral() {
+    checkExp(
+        "'abba'\n'abba'",
+        "'abba'\n'abba'");
+    checkExp(
+        "'abba'\n'0001'",
+        "'abba'\n'0001'");
+    checkExp(
+        "N'yabba'\n'dabba'\n'doo'",
+        "_UTF-8'yabba'\n'dabba'\n'doo'");
+    checkExp(
+        "_iso-8859-1'yabba'\n'dabba'\n'don''t'",
+        "_ISO-8859-1'yabba'\n'dabba'\n'don''t'");
 
     expr("x'01aa'\n'03ff'")
         .ok("X'01AA'\n'03FF'");
@@ -4211,27 +4215,25 @@ public class SqlParserTest {
             + "FROM `T`");
   }
 
-  @Test void testStringLiteral() {
-    expr("_latin1'hi'")
-        .ok("_LATIN1'hi'");
-    expr("N'is it a plane? no it''s superman!'")
-        .ok("_ISO-8859-1'is it a plane? no it''s superman!'");
-    expr("n'lowercase n'")
-        .ok("_ISO-8859-1'lowercase n'");
-    expr("'boring string'")
-        .ok("'boring string'");
-    expr("_iSo-8859-1'bye'")
-        .ok("_ISO-8859-1'bye'");
-    expr("'three'\n' blind'\n' mice'")
-        .ok("'three'\n' blind'\n' mice'");
-    expr("'three' -- comment\n' blind'\n' mice'")
-        .ok("'three'\n' blind'\n' mice'");
-    expr("N'bye' \t\r\f\f\n' bye'")
-        .ok("_ISO-8859-1'bye'\n' bye'");
-    expr("_iso-8859-1'bye'\n\n--\n-- this is a comment\n' bye'")
-        .ok("_ISO-8859-1'bye'\n' bye'");
-    expr("_utf8'hi'")
-        .ok("_UTF8'hi'");
+  @Test public void testStringLiteral() {
+    checkExp("_latin1'hi'", "_LATIN1'hi'");
+    checkExp("N'is it a plane? no it''s superman!'",
+        "_UTF-8'is it a plane? no it''s superman!'");
+    checkExp("n'lowercase n'", "_UTF-8'lowercase n'");
+    checkExp("'boring string'", "'boring string'");
+    checkExp("_uTf-8'bye'", "_UTF-8'bye'");
+    checkExp(
+        "'three' \n ' blind'\n' mice'",
+        "'three'\n' blind'\n' mice'");
+    checkExp(
+        "'three' -- comment \n ' blind'\n' mice'",
+        "'three'\n' blind'\n' mice'");
+    checkExp(
+        "N'bye' \t\r\f\f\n' bye'",
+        "_UTF-8'bye'\n' bye'");
+    checkExp(
+        "_utf-8'bye' \n\n--\n-- this is a comment\n' bye'",
+        "_UTF-8'bye'\n' bye'");
 
     // newline in string literal
     expr("'foo\rbar'")
@@ -4259,8 +4261,9 @@ public class SqlParserTest {
         .fails("Unknown character set 'unknown-charset'");
 
     // valid syntax, but should give a validator error
-    sql("select N'1' '2' from t")
-        .ok("SELECT _ISO-8859-1'1'\n'2'\n"
+    check(
+        "select N'1' '2' from t",
+        "SELECT _UTF-8'1'\n'2'\n"
             + "FROM `T`");
   }
 

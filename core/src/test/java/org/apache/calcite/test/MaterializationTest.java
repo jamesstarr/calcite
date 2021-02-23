@@ -2059,29 +2059,30 @@ class MaterializationTest {
     sql(materialize, query).withResultContains(expecteds).ok();
   }
 
-  @Tag("slow")
-  @Test void testJoinAggregateMaterializationNoAggregateFuncs10() {
-    final String materialize = "select \"depts\".\"name\", \"dependents\".\"name\" as \"name2\", "
-        + "\"emps\".\"deptno\", \"depts\".\"deptno\" as \"deptno2\", "
-        + "\"dependents\".\"empid\"\n"
-        + "from \"depts\", \"dependents\", \"emps\"\n"
-        + "where \"depts\".\"deptno\" > 10\n"
-        + "group by \"depts\".\"name\", \"dependents\".\"name\", "
-        + "\"emps\".\"deptno\", \"depts\".\"deptno\", "
-        + "\"dependents\".\"empid\"";
-    final String query = "select \"dependents\".\"empid\"\n"
-        + "from \"depts\"\n"
-        + "join \"dependents\" on (\"depts\".\"name\" = \"dependents\".\"name\")\n"
-        + "join \"emps\" on (\"emps\".\"deptno\" = \"depts\".\"deptno\")\n"
-        + "where \"depts\".\"deptno\" > 10\n"
-        + "group by \"dependents\".\"empid\"";
-    final String expected = "EnumerableAggregate(group=[{4}])\n"
-        + "  EnumerableCalc(expr#0..4=[{inputs}], expr#5=[=($t2, $t3)], "
-        + "expr#6=[CAST($t1):VARCHAR], expr#7=[CAST($t0):VARCHAR], "
-        + "expr#8=[=($t6, $t7)], expr#9=[AND($t5, $t8)], proj#0..4=[{exprs}], "
-        + "$condition=[$t9])\n"
-        + "    EnumerableTableScan(table=[[hr, m0]])";
-    sql(materialize, query).withResultContains(expected).ok();
+  @Test public void testJoinAggregateMaterializationNoAggregateFuncs10() {
+    checkMaterialize(
+        "select \"depts\".\"name\", \"dependents\".\"name\" as \"name2\", "
+            + "\"emps\".\"deptno\", \"depts\".\"deptno\" as \"deptno2\", "
+            + "\"dependents\".\"empid\"\n"
+            + "from \"depts\", \"dependents\", \"emps\"\n"
+            + "where \"depts\".\"deptno\" > 10\n"
+            + "group by \"depts\".\"name\", \"dependents\".\"name\", "
+            + "\"emps\".\"deptno\", \"depts\".\"deptno\", "
+            + "\"dependents\".\"empid\"",
+        "select \"dependents\".\"empid\"\n"
+            + "from \"depts\"\n"
+            + "join \"dependents\" on (\"depts\".\"name\" = \"dependents\".\"name\")\n"
+            + "join \"emps\" on (\"emps\".\"deptno\" = \"depts\".\"deptno\")\n"
+            + "where \"depts\".\"deptno\" > 10\n"
+            + "group by \"dependents\".\"empid\"",
+        HR_FKUK_MODEL,
+        CalciteAssert.checkResultContains(
+            "EnumerableAggregate(group=[{4}])\n"
+                + "  EnumerableCalc(expr#0..4=[{inputs}], expr#5=[=($t2, $t3)], "
+                + "expr#6=[CAST($t1):VARCHAR CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\"], "
+                + "expr#7=[CAST($t0):VARCHAR CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\"], "
+                + "expr#8=[=($t6, $t7)], expr#9=[AND($t5, $t8)], proj#0..4=[{exprs}], $condition=[$t9])\n"
+                + "    EnumerableTableScan(table=[[hr, m0]])"));
   }
 
   @Test void testJoinAggregateMaterializationAggregateFuncs1() {
@@ -2367,15 +2368,17 @@ class MaterializationTest {
         "select \"dependents\".\"empid\"\n"
             + "from \"emps\"\n"
             + "join \"depts\" on (\"emps\".\"deptno\" = \"depts\".\"deptno\")\n"
-            + "join \"dependents\" on (\"depts\".\"name\" = \"dependents\".\"name\")")
-        .withResultContains(
-            "EnumerableCalc(expr#0..2=[{inputs}], empid=[$t1])\n"
-                + "  EnumerableHashJoin(condition=[=($0, $2)], joinType=[inner])\n"
-                + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR], name00=[$t1])\n"
+            + "join \"dependents\" on (\"depts\".\"name\" = \"dependents\".\"name\")",
+        HR_FKUK_MODEL,
+        CalciteAssert.checkResultContains(
+            "EnumerableCalc(expr#0..2=[{inputs}], empid0=[$t1])\n"
+                + "  EnumerableJoin(condition=[=($0, $2)], joinType=[inner])\n"
+                + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR CHARACTER SET \"UTF-8\" "
+                + "COLLATE \"UTF-8$en_US$primary\"], name=[$t1])\n"
                 + "      EnumerableTableScan(table=[[hr, m0]])\n"
-                + "    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t1):VARCHAR], empid=[$t0], name0=[$t2])\n"
-                + "      EnumerableTableScan(table=[[hr, dependents]])")
-        .ok();
+                + "    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t1):VARCHAR CHARACTER SET \"UTF-8\" "
+                + "COLLATE \"UTF-8$en_US$primary\"], empid=[$t0], name0=[$t2])\n"
+                + "      EnumerableTableScan(table=[[hr, dependents]])"));
   }
 
   @Test void testJoinMaterialization8() {
@@ -2388,12 +2391,13 @@ class MaterializationTest {
             + "join \"emps\" on (\"emps\".\"deptno\" = \"depts\".\"deptno\")")
         .withResultContains(
             "EnumerableCalc(expr#0..4=[{inputs}], empid=[$t2])\n"
-                + "  EnumerableHashJoin(condition=[=($1, $4)], joinType=[inner])\n"
-                + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR], proj#0..1=[{exprs}])\n"
+                + "  EnumerableJoin(condition=[=($1, $4)], joinType=[inner])\n"
+                + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR CHARACTER SET \"UTF-8\" "
+                + "COLLATE \"UTF-8$en_US$primary\"], proj#0..1=[{exprs}])\n"
                 + "      EnumerableTableScan(table=[[hr, m0]])\n"
-                + "    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t1):VARCHAR], proj#0..2=[{exprs}])\n"
-                + "      EnumerableTableScan(table=[[hr, dependents]])")
-        .ok();
+                + "    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t1):VARCHAR CHARACTER SET \"UTF-8\" "
+                + "COLLATE \"UTF-8$en_US$primary\"], proj#0..2=[{exprs}])\n"
+                + "      EnumerableTableScan(table=[[hr, dependents]])"));
   }
 
   @Test void testJoinMaterialization9() {

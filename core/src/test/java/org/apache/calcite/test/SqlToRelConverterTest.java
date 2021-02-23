@@ -2351,13 +2351,6 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3183">[CALCITE-3183]
    * Trimming method for Filter rel uses wrong traitSet </a> */
-<<<<<<< HEAD
-  @Test void testFilterAndSortWithTrim() {
-    // Create a customized test with RelCollation trait in the test cluster.
-    Tester tester = new TesterImpl(getDiffRepos(),
-        false, true,
-        true, false, true,
-=======
   @Test public void testFilterAndSortWithTrim() {
     // Create a customized test with RelCollation trait in the test cluster.
     Tester tester = new TesterImpl(getDiffRepos(),
@@ -2488,23 +2481,23 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
+<<<<<<< HEAD
   @Test void testInsertExtendedCharset() {
+=======
+  @Test public void testInsertExtendedCharset() {
     final String sql = "insert into empdefaults(updated TIMESTAMP)\n"
             + " (ename, deptno, empno, updated, sal)\n"
             + " values ('Freddie', 567, 40, timestamp '2017-03-12 13:03:05', 999999),\n"
             + "        ('上海', 456, 44, timestamp '2017-03-12 13:03:05', 999999)";
-    sql(sql)
-        .equals("Failed to encode '英国' in character set 'ISO-8859-1'");
+    sql(sql).ok();
   }
 
-  @Test void testSelectExtendedCharset() {
+  @Test public void testSelectExtendedCharset() {
     final String sql = "select * from empdefaults where ename = '上海'";
-    sql(sql)
-        .equals("Failed to encode '英国' in character set 'ISO-8859-1'");
-
+    sql(sql).ok();
   }
 
-  @Test void testInsertSubset() {
+  @Test public void testInsertSubset() {
     final String sql = "insert into empnullables\n"
         + "values (50, 'Fred')";
     sql(sql).conformance(SqlConformanceEnum.PRAGMATIC_2003).ok();

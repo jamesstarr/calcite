@@ -5920,7 +5920,7 @@ public class JdbcTest {
         .returns("PLAN=LogicalValues(tuples=[[{ 1, 'ab' }]])\n\n");
     with.query("explain plan with type for values (1, 'ab')")
         .returns("PLAN=EXPR$0 INTEGER NOT NULL,\n"
-            + "EXPR$1 CHAR(2) NOT NULL\n");
+            + "EXPR$1 CHAR(2) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL\n");
   }
 
   /** Test case for bug where if two tables have different element classes
@@ -6266,9 +6266,7 @@ public class JdbcTest {
         .returns("EXPR$0=\u82f1\u56fd\n");
     with.query("values u&'\\82f1\\56fd'")
         .returns("EXPR$0=\u82f1\u56fd\n");
-    with.query("values '\u82f1\u56fd'")
-        .throws_(
-            "Failed to encode '\u82f1\u56fd' in character set 'ISO-8859-1'");
+>>>>>>> f495333f2 ([DX-12070] Support for non-ISO-8859-1 literals)
     with.query("values _UTF8'\u82f1\u56fd'")
         .returns("EXPR$0=英国\n");
     with.query("values _LATIN1'\u82f1\u56fd'")
@@ -6277,12 +6275,15 @@ public class JdbcTest {
     // comparing a unicode string literal with a regular string literal
     with.query(
         "select * from \"employee\" where \"full_name\" = '\u82f1\u56fd'")
+<<<<<<< HEAD
         .throws_("Failed to encode '\u82f1\u56fd' in character set 'ISO-8859-1'");
 
     with.query(
         "select * from \"employee\" where \"full_name\" = _UTF16'\u82f1\u56fd'")
         .throws_(
             "Cannot apply = to the two different charsets ISO-8859-1 and UTF-16LE");
+=======
+        .returns("");
 
     // The CONVERT function (what SQL:2011 calls "character transliteration") is
     // not implemented yet. See

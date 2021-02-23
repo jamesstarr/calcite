@@ -881,6 +881,7 @@ public abstract class SqlUtil {
       return name;
     default:
       return null;
+<<<<<<< HEAD
     }
   }
 
@@ -918,6 +919,8 @@ public abstract class SqlUtil {
         final String string = new String(bytes, charset);
         throw RESOURCE.charsetEncoding(string, charset.name()).ex();
       }
+=======
+>>>>>>> f495333f2 ([DX-12070] Support for non-ISO-8859-1 literals)
     }
   }
 
