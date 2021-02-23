@@ -983,6 +983,55 @@ public class RelToSqlConverterTest {
     sql(query).ok(expected);
   }
 
+  @Test public void testSelectUnicodeLike() {
+    String query = "select \"product_name\" from \"product\" a "
+            + "where \"product_name\" like '上海'";
+    final String expected = "SELECT \"product_name\"\n"
+        + "FROM \"foodmart\".\"product\"\n"
+        + "WHERE \"product_name\" LIKE '上海'";
+    final String mySqlExpected = "SELECT [product_name]\n"
+        + "FROM [foodmart].[product]\n"
+        + "WHERE [product_name] LIKE '上海'";
+    sql(query)
+       .withMssql()
+       .ok(mySqlExpected);
+    sql(query)
+        .withPostgresql()
+        .ok(expected);
+    sql(query).ok(expected);
+  }
+
+  @Test public void testSelectUnicodeEqual() {
+    String query1 = "select \"product_name\" from \"product\" a "
+            + "where \"product_name\" = '上海'";
+    final String expected1 = "SELECT \"product_name\"\n"
+        + "FROM \"foodmart\".\"product\"\n"
+        + "WHERE \"product_name\" = '上海'";
+    final String mySqlExpected1 = "SELECT [product_name]\n"
+        + "FROM [foodmart].[product]\n"
+        + "WHERE [product_name] = '上海'";
+    String query2 = "select '€'";
+    final String mySqlExpected2 = "SELECT '€'\nFROM (VALUES  (0)) AS [t] ([ZERO])";
+    final String expected2 = "SELECT '€'\nFROM (VALUES  (0)) AS \"t\" (\"ZERO\")";
+    String query3 = "values '\u82f1\u56fd'";
+    final String expected3 = "SELECT *\nFROM (VALUES  ('英国')) AS \"t\" (\"EXPR$0\")";
+    sql(query1)
+            .withMssql()
+            .ok(mySqlExpected1);
+    sql(query1)
+            .withPostgresql()
+            .ok(expected1);
+    sql(query1).ok(expected1);
+    sql(query2)
+            .withMssql()
+            .ok(mySqlExpected2);
+    sql(query2)
+            .withPostgresql()
+            .ok(expected2);
+    sql(query2).ok(expected2);
+    sql(query3).ok(expected3);
+  }
+
   @Test public void testLiteral() {
     checkLiteral("DATE '1978-05-02'");
     checkLiteral2("DATE '1978-5-2'", "DATE '1978-05-02'");

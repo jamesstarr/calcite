@@ -3299,6 +3299,32 @@ LogicalTableModify(table=[[CATALOG, SALES, EMPNULLABLES]], operation=[INSERT], f
 ]]>
         </Resource>
     </TestCase>
+    <TestCase name="testInsertExtendedCharset">
+        <Resource name="sql">
+            <![CDATA[insert into empdefaults(updated TIMESTAMP)
+ (ename, deptno, empno, updated, sal)
+ values ('Freddie', 567, 40, 2017-03-12 13:03:05, 999999 }, {'上海', 456, 44, 2017-03-12 13:03:05, 999999)]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalTableModify(table=[[CATALOG, SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[true])
+  LogicalProject(EMPNO=[$2], ENAME=[$0], JOB=[null], MGR=[null], HIREDATE=[null], SAL=[$4], COMM=[null], DEPTNO=[$1], SLACKER=[null], UPDATED=[$3])
+    LogicalValues(tuples=[[{ 'Freddie', 567, 40, 2017-03-12 13:03:05, 999999 }, { '上海', 456, 44, 2017-03-12 13:03:05, 999999 }]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testSelectExtendedCharset">
+        <Resource name="sql">
+            <![CDATA[select * from empdefaults where ename = '上海']]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+  LogicalFilter(condition=[=($1, '上海')])
+    LogicalTableScan(table=[[CATALOG, SALES, EMPDEFAULTS]])
+]]>
+        </Resource>
+    </TestCase>
     <TestCase name="testInsertSubset">
         <Resource name="sql">
             <![CDATA[insert into empnullables
@@ -3375,7 +3401,7 @@ LogicalTableModify(table=[[SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[
             <![CDATA[
 LogicalTableModify(table=[[SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[true])
   LogicalFilter(condition=[=($7, 20)])
-    LogicalProject(EMPNO=[$1], ENAME=[CAST($0):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL], JOB=[$2], MGR=[$8], HIREDATE=[$7], SAL=[CAST($5):INTEGER], COMM=[$9], DEPTNO=[CAST($3):INTEGER], SLACKER=[$4], EXTRA=[$6], UPDATED=[$10])
+    LogicalProject(EMPNO=[$1], ENAME=[CAST($0):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL], JOB=[$2], MGR=[$8], HIREDATE=[$7], SAL=[CAST($5):INTEGER], COMM=[$9], DEPTNO=[CAST($3):INTEGER], SLACKER=[$4], EXTRA=[$6], UPDATED=[$10])
       LogicalProject(ENAME=[$0], EMPNO=[$2], JOB=[null], DEPTNO=[$1], SLACKER=[null], SAL=[$4], EXTRA=[null], HIREDATE=[null], MGR=[null], COMM=[null], UPDATED=[$3])
         LogicalProject(EXPR$0=['Fred'], EXPR$1=[20], EXPR$2=[44], EXPR$3=[?0], EXPR$4=[999999])
           LogicalValues(tuples=[[{ 0 }]])
@@ -3557,7 +3583,7 @@ LogicalTableModify(table=[[SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[
         <Resource name="plan">
             <![CDATA[
 LogicalTableModify(table=[[SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[true])
-  LogicalProject(EMPNO=[CAST($0):INTEGER NOT NULL], ENAME=[CAST($1):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[CAST($5):INTEGER], COMM=[$6], DEPTNO=[20], SLACKER=[$7])
+  LogicalProject(EMPNO=[CAST($0):INTEGER NOT NULL], ENAME=[CAST($1):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[CAST($5):INTEGER], COMM=[$6], DEPTNO=[20], SLACKER=[$7])
     LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[null], MGR=[null], HIREDATE=[null], SAL=[555], COMM=[null], SLACKER=[null])
       LogicalProject(EXPR$0=[?0], EXPR$1=[?1])
         LogicalValues(tuples=[[{ 0 }]])
@@ -3650,7 +3676,7 @@ values (?, ?, ?, ?, ?, ?, ?, ?)]]>
             <![CDATA[
 LogicalTableModify(table=[[CATALOG, STRUCT, T]], operation=[INSERT], flattened=[true])
   LogicalFilter(condition=[=($4, 10)])
-    LogicalProject("K0"=[CAST($0):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL], "C1"=[CAST($1):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL], "F1"."A0"=[CAST($2):INTEGER NOT NULL], "F2"."A0"=[CAST($3):BOOLEAN NOT NULL], "F0"."C0"=[CAST($4):INTEGER NOT NULL], "F1"."C0"=[$5], "F0"."C1"=[CAST($6):INTEGER NOT NULL], "F1"."C2"=[CAST($7):INTEGER NOT NULL], "F2"."C3"=[CAST($8):INTEGER NOT NULL])
+    LogicalProject("K0"=[CAST($0):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL], "C1"=[CAST($1):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL], "F1"."A0"=[CAST($2):INTEGER NOT NULL], "F2"."A0"=[CAST($3):BOOLEAN NOT NULL], "F0"."C0"=[CAST($4):INTEGER NOT NULL], "F1"."C0"=[$5], "F0"."C1"=[CAST($6):INTEGER NOT NULL], "F1"."C2"=[CAST($7):INTEGER NOT NULL], "F2"."C3"=[CAST($8):INTEGER NOT NULL])
       LogicalProject("K0"=[$3], "C1"=[$2], "F1"."A0"=[$4], "F2"."A0"=[$5], "F0"."C0"=[$0], "F1"."C0"=[null], "F0"."C1"=[$6], "F1"."C2"=[$1], "F2"."C3"=[$7])
         LogicalProject(EXPR$0=[?0], EXPR$1=[?1], EXPR$2=[?2], EXPR$3=[?3], EXPR$4=[?4], EXPR$5=[?5], EXPR$6=[?6], EXPR$7=[?7])
           LogicalValues(tuples=[[{ 0 }]])
@@ -5240,7 +5266,7 @@ FROM (
         <Resource name="plan">
             <![CDATA[
 LogicalProject(RES2=[=($0, 'qwe')])
-  LogicalProject(RES1=[CAST('qwe'):CHAR(3) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"])
+  LogicalProject(RES1=[CAST('qwe'):CHAR(3) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"])
     LogicalValues(tuples=[[{ 1 }]])
 ]]>
         </Resource>

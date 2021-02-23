@@ -59,32 +59,32 @@ public interface SaffronProperties {
 
   /**
    * The string property "saffron.default.charset" is the name of the default
-   * character set. The default is "ISO-8859-1". It is used in
+   * character set. The default is "UTF-8". It is used in
    * {@link org.apache.calcite.sql.validate.SqlValidator}.
    */
   @Resource("saffron.default.charset")
-  @Default("ISO-8859-1")
+  @Default("UTF-8")
   StringProp defaultCharset();
 
   /**
    * The string property "saffron.default.nationalcharset" is the name of the
    * default national character set which is used with the N'string' construct
    * which may or may not be different from the {@link #defaultCharset}. The
-   * default is "ISO-8859-1". It is used in
+   * default is "UTF-8". It is used in
    * {@link org.apache.calcite.sql.SqlLiteral#SqlLiteral}
    */
   @Resource("saffron.default.nationalcharset")
-  @Default("ISO-8859-1")
+  @Default("UTF-8")
   StringProp defaultNationalCharset();
 
   /**
    * The string property "saffron.default.collation.name" is the name of the
-   * default collation. The default is "ISO-8859-1$en_US". Used in
+   * default collation. The default is "UTF-8$en_US". Used in
    * {@link org.apache.calcite.sql.SqlCollation} and
    * {@link org.apache.calcite.sql.SqlLiteral#SqlLiteral}
    */
   @Resource("saffron.default.collation.name")
-  @Default("ISO-8859-1$en_US")
+  @Default("UTF-8$en_US")
   StringProp defaultCollation();
 
   /**

@@ -1164,7 +1164,7 @@ LogicalProject(EXPR$0=[1])
         <Resource name="planAfter">
             <![CDATA[
 LogicalProject(EXPR$0=[1])
-  LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5], HIREDATE=[$6], SAL=[$7], COMM=[$8], DEPTNO0=[$9], SLACKER=[$10])
+  LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5], HIREDATE=[$6], SAL=[$7], COMM=[$8], DEPTNO0=[$9], SLACKER=[$10])
     LogicalJoin(condition=[=($0, $9)], joinType=[left])
       LogicalFilter(condition=[=($1, 'Charlie')])
         LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -1188,7 +1188,7 @@ LogicalProject(EXPR$0=[1])
         <Resource name="planAfter">
             <![CDATA[
 LogicalProject(EXPR$0=[1])
-  LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], JOB=[CAST($4):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
+  LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], JOB=[CAST($4):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
     LogicalJoin(condition=[=($0, $9)], joinType=[right])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
       LogicalFilter(condition=[>($5, 100)])
@@ -1212,7 +1212,7 @@ LogicalProject(EXPR$0=[1])
         <Resource name="planAfter">
             <![CDATA[
 LogicalProject(EXPR$0=[1])
-  LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], JOB=[CAST($4):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
+  LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], JOB=[CAST($4):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
     LogicalJoin(condition=[=($0, $9)], joinType=[inner])
       LogicalFilter(condition=[=($1, 'Charlie')])
         LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -1237,7 +1237,7 @@ LogicalProject(EXPR$0=[1])
         <Resource name="planAfter">
             <![CDATA[
 LogicalProject(EXPR$0=[1])
-  LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], JOB=[CAST($4):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
+  LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], JOB=[CAST($4):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
     LogicalJoin(condition=[=($0, $9)], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
       LogicalFilter(condition=[>($5, 100)])
@@ -1261,7 +1261,7 @@ LogicalProject(EXPR$0=[1])
         <Resource name="planAfter">
             <![CDATA[
 LogicalProject(EXPR$0=[1])
-  LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5], HIREDATE=[$6], SAL=[$7], COMM=[$8], DEPTNO0=[$9], SLACKER=[$10])
+  LogicalProject(DEPTNO=[CAST($0):INTEGER], NAME=[CAST($1):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5], HIREDATE=[$6], SAL=[$7], COMM=[$8], DEPTNO0=[$9], SLACKER=[$10])
     LogicalJoin(condition=[=($0, $9)], joinType=[inner])
       LogicalFilter(condition=[=($1, 'Charlie')])
         LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
@@ -2222,8 +2222,8 @@ LogicalProject(X=[$0], Y=[$1])
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
-LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL], EXPR$1=[CAST($2):INTEGER NOT NULL])
-  LogicalFilter(condition=[=(CAST(CAST($4):VARCHAR(1) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL):VARCHAR(7) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL, 'Manager')])
+LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL], EXPR$1=[CAST($2):INTEGER NOT NULL])
+  LogicalFilter(condition=[=(CAST(CAST($4):VARCHAR(1) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL):VARCHAR(7) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL, 'Manager')])
     LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$3], ENAME=[$4], JOB=[$5], MGR=[$6], HIREDATE=[$7], SAL=[$8], COMM=[$9], DEPTNO1=[$10], SLACKER=[$11])
       LogicalJoin(condition=[=($2, $12)], joinType=[inner])
         LogicalProject(DEPTNO=[$0], NAME=[$1], DEPTNO0=[CAST($0):INTEGER NOT NULL])
@@ -2234,8 +2234,8 @@ LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) CHARACTER SET "ISO-8859-1" COLLATE 
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
-LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL], EXPR$1=[$2])
-  LogicalFilter(condition=[=(CAST(CAST($4):VARCHAR(1) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL):VARCHAR(7) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL, 'Manager')])
+LogicalProject(EXPR$0=[CAST($1):VARCHAR(128) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL], EXPR$1=[$2])
+  LogicalFilter(condition=[=(CAST(CAST($4):VARCHAR(1) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL):VARCHAR(7) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL, 'Manager')])
     LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$3], ENAME=[$4], JOB=[$5], MGR=[$6], HIREDATE=[$7], SAL=[$8], COMM=[$9], DEPTNO1=[$10], SLACKER=[$11])
       LogicalJoin(condition=[=($2, $12)], joinType=[inner])
         LogicalProject(DEPTNO=[$0], NAME=[$1], DEPTNO0=[$0])
@@ -5437,7 +5437,7 @@ LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5
         <Resource name="planAfter">
             <![CDATA[
 LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5], HIREDATE=[$6], SAL=[$7], COMM=[$8], DEPTNO0=[$9], SLACKER=[$10])
-  LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], JOB=[CAST($4):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
+  LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[CAST($2):INTEGER], ENAME=[CAST($3):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], JOB=[CAST($4):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], MGR=[$5], HIREDATE=[CAST($6):TIMESTAMP(0)], SAL=[CAST($7):INTEGER], COMM=[CAST($8):INTEGER], DEPTNO0=[CAST($9):INTEGER], SLACKER=[CAST($10):BOOLEAN])
     LogicalJoin(condition=[=($0, $9)], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
       LogicalFilter(condition=[>($5, 100)])
@@ -5959,7 +5959,7 @@ LogicalProject(NAME=[$1])
 LogicalProject(NAME=[$1])
   LogicalJoin(condition=[true], joinType=[right])
     LogicalProject(DEPTNO=[$0], NAME=[$1], DEPTNO0=[$2], NAME0=[$3], $f4=[>($2, 10)])
-      LogicalProject(DEPTNO=[$0], NAME=[$1], DEPTNO0=[CAST($2):INTEGER], NAME0=[CAST($3):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], $f2=[CAST($4):BOOLEAN])
+      LogicalProject(DEPTNO=[$0], NAME=[$1], DEPTNO0=[CAST($2):INTEGER], NAME0=[CAST($3):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], $f2=[CAST($4):BOOLEAN])
         LogicalJoin(condition=[true], joinType=[inner])
           LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
           LogicalProject(DEPTNO=[$0], NAME=[$1], $f2=[>($0, 10)])
@@ -6979,7 +6979,7 @@ LogicalProject(NAME=[$3], SUM_SAL=[$1], C=[$2])
         <Resource name="planBefore">
             <![CDATA[
 LogicalAggregate(group=[{0, 1, 2}])
-  LogicalProject(DEPTNO=[$7], ENAME=[$1], EXPR$2=[CASE(=(1, 2), CAST(SUBSTRING($1, 1, 2)):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary", null)])
+  LogicalProject(DEPTNO=[$7], ENAME=[$1], EXPR$2=[CASE(=(1, 2), CAST(SUBSTRING($1, 1, 2)):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary", null)])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -7443,14 +7443,14 @@ order by cast(d.deptno as varchar(10)) offset 1]]>
         <Resource name="planBefore">
             <![CDATA[
 LogicalSort(sort0=[$1], dir0=[ASC], offset=[1])
-  LogicalProject(DEPTNO=[$0], EXPR$1=[CAST($0):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL])
+  LogicalProject(DEPTNO=[$0], EXPR$1=[CAST($0):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 ]]>
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
 LogicalSort(sort0=[$1], dir0=[ASC], offset=[1])
-  LogicalProject(DEPTNO=[$0], EXPR$1=[CAST($0):VARCHAR(10) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL])
+  LogicalProject(DEPTNO=[$0], EXPR$1=[CAST($0):VARCHAR(10) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 ]]>
         </Resource>
@@ -8914,7 +8914,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
               LogicalFilter(condition=[=($0, $cor0.DEPTNO)])
                 LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
             LogicalProject(EXPR$0=[1])
-              LogicalFilter(condition=[=(CAST($1):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL, $cor0.ENAME)])
+              LogicalFilter(condition=[=(CAST($1):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL, $cor0.ENAME)])
                 LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 ]]>
         </Resource>
@@ -8931,7 +8931,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
               LogicalFilter(condition=[=($0, $cor0.DEPTNO)])
                 LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
             LogicalProject(EXPR$0=[1])
-              LogicalFilter(condition=[=(CAST($1):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL, $cor0.ENAME)])
+              LogicalFilter(condition=[=(CAST($1):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL, $cor0.ENAME)])
                 LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 ]]>
         </Resource>
@@ -8939,7 +8939,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], $f0=[$11])
-    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], ENAME0=[CAST($9):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], DEPTNO0=[CAST($10):INTEGER], $f2=[CAST($11):BIGINT])
+    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], ENAME0=[CAST($9):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], DEPTNO0=[CAST($10):INTEGER], $f2=[CAST($11):BIGINT])
       LogicalJoin(condition=[AND(=($1, $9), =($7, $10))], joinType=[inner])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
         LogicalAggregate(group=[{0, 1}], agg#0=[MIN($2)])
@@ -8955,8 +8955,8 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
                         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
                 LogicalJoin(condition=[true], joinType=[inner])
                   LogicalProject(EXPR$0=[1], NAME0=[$2])
-                    LogicalFilter(condition=[=(CAST($1):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL, $2)])
-                      LogicalProject(DEPTNO=[$0], NAME=[$1], NAME0=[CAST($1):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL])
+                    LogicalFilter(condition=[=(CAST($1):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL, $2)])
+                      LogicalProject(DEPTNO=[$0], NAME=[$1], NAME0=[CAST($1):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL])
                         LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
                   LogicalAggregate(group=[{0}])
                     LogicalProject(DEPTNO=[$7])
