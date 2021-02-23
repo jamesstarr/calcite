@@ -59,7 +59,7 @@ public class RelMdDistinctRowCount
 
   //~ Constructors -----------------------------------------------------------
 
-  protected RelMdDistinctRowCount() {}
+  public RelMdDistinctRowCount() {}
 
   //~ Methods ----------------------------------------------------------------
 

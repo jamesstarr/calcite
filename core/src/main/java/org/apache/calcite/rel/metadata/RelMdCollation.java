@@ -88,7 +88,7 @@ public class RelMdCollation
 
   //~ Constructors -----------------------------------------------------------
 
-  private RelMdCollation() {}
+  public RelMdCollation() {}
 
   //~ Methods ----------------------------------------------------------------
 

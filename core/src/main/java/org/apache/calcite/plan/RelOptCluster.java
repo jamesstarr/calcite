@@ -21,6 +21,7 @@ import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.hint.HintStrategyTable;
 import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
 import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
+import org.apache.calcite.rel.metadata.JanioRelMetadataQuery;
 import org.apache.calcite.rel.metadata.MetadataFactory;
 import org.apache.calcite.rel.metadata.MetadataFactoryImpl;
 import org.apache.calcite.rel.metadata.RelMetadataProvider;
@@ -95,7 +96,7 @@ public class RelOptCluster {
     // set up a default rel metadata provider,
     // giving the planner first crack at everything
     setMetadataProvider(DefaultRelMetadataProvider.INSTANCE);
-    setMetadataQuerySupplier(RelMetadataQuery::instance);
+    setMetadataQuerySupplier(JanioRelMetadataQuery::instance);
     this.emptyTraitSet = planner.emptyTraitSet();
     assert emptyTraitSet.size() == planner.getRelTraitDefs().size();
   }

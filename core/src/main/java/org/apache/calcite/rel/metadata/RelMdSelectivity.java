@@ -52,7 +52,7 @@ public class RelMdSelectivity
 
   //~ Constructors -----------------------------------------------------------
 
-  protected RelMdSelectivity() {
+  public RelMdSelectivity() {
   }
 
   //~ Methods ----------------------------------------------------------------

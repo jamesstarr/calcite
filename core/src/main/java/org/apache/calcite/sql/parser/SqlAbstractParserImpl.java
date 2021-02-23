@@ -652,7 +652,7 @@ public abstract class SqlAbstractParserImpl {
     private final String sql92ReservedWords;
 
     /**
-     * Creates a MetadataImpl.
+     * Creates a MetadataTypes.
      *
      * @param sqlParser Parser
      */

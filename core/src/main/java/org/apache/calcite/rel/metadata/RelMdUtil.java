@@ -999,6 +999,7 @@ public class RelMdUtil {
    * @return true if cache for the provided RelNode was not empty
    */
   public static boolean clearCache(RelNode rel) {
-    return rel.getCluster().getMetadataQuery().clearCache(rel);
+    return true;
+    //return rel.getCluster().getMetadataQuery().clearCache(rel);
   }
 }

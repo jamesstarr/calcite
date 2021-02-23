@@ -86,7 +86,7 @@ public class RelMetadataQueryBase {
         Proxy.newProxyInstance(RelMetadataQuery.class.getClassLoader(),
             new Class[] {handlerClass}, (proxy, method, args) -> {
               final RelNode r = requireNonNull((RelNode) args[0], "(RelNode) args[0]");
-              throw new JaninoRelMetadataProvider.NoHandler(r.getClass());
+              throw JaninoRelMetadataProvider.NoHandler.INSTANCE;
             }));
   }
 

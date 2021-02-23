@@ -68,6 +68,7 @@ import org.apache.calcite.rel.metadata.CachingRelMetadataProvider;
 import org.apache.calcite.rel.metadata.ChainedRelMetadataProvider;
 import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
 import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
+import org.apache.calcite.rel.metadata.JanioRelMetadataQuery;
 import org.apache.calcite.rel.metadata.Metadata;
 import org.apache.calcite.rel.metadata.MetadataDef;
 import org.apache.calcite.rel.metadata.MetadataHandler;
@@ -924,7 +925,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
         rel.getCluster().getMetadataProvider();
     final RelOptPlanner planner = rel.getCluster().getPlanner();
     for (int i = 0; i < iterationCount; i++) {
-      RelMetadataQuery.THREAD_PROVIDERS.set(
+      JanioRelMetadataQuery.THREAD_PROVIDERS.set(
           JaninoRelMetadataProvider.of(
               new CachingRelMetadataProvider(metadataProvider, planner)));
       final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
@@ -1564,7 +1565,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     assertThat(colType(mq1, input, 0), equalTo("DEPTNO-agg"));
     assertThat(buf.size(), equalTo(5));
     // Resets the RelMetadataQuery to default.
-    rel.getCluster().setMetadataQuerySupplier(RelMetadataQuery::instance);
+    rel.getCluster().setMetadataQuerySupplier(JanioRelMetadataQuery::instance);
   }
 
   /** Unit test for
@@ -3335,7 +3336,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
   /** Extension to {@link RelMetadataQuery} to support {@link ColType}.
    *
    * <p>Illustrates how you would package up a user-defined metadata type. */
-  private static class MyRelMetadataQuery extends RelMetadataQuery {
+  private static class MyRelMetadataQuery extends JanioRelMetadataQuery {
     private ColType.Handler colTypeHandler;
 
     MyRelMetadataQuery() {
@@ -3403,7 +3404,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     planner.setRoot(rel);
     final RelNode optimizedRel = planner.findBestExp();
 
-    Set<RelColumnOrigin> origins = RelMetadataQuery.instance()
+    Set<RelColumnOrigin> origins = JanioRelMetadataQuery.instance()
         .getColumnOrigins(optimizedRel, 1);
     assertThat(origins.size(), equalTo(1));
 

@@ -72,7 +72,7 @@ public class RelMdColumnUniqueness
 
   //~ Constructors -----------------------------------------------------------
 
-  private RelMdColumnUniqueness() {}
+  public RelMdColumnUniqueness() {}
 
   //~ Methods ----------------------------------------------------------------
 

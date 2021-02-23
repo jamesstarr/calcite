@@ -70,9 +70,13 @@ import org.codehaus.commons.compiler.ICompilerFactory;
 import org.codehaus.commons.compiler.ISimpleCompiler;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -82,6 +86,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the {@link RelMetadataProvider} interface that generates
@@ -192,6 +197,108 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
     return provider.handlers(def);
   }
 
+  private static <M extends Metadata> void writeGenX(MetadataDef<M> def,
+      Multimap<Method, MetadataHandler<M>> map,
+      ImmutableList<Class<? extends RelNode>> relClasses){
+    try {
+      Files.createDirectories(Paths.get("./target/tmp"));
+      try (Writer writer = Files.newBufferedWriter(Paths.get("./target/tmp", "Generated" + def.metadataClass.getSimpleName() + ".java"), StandardOpenOption.CREATE)) {
+        writer.write(genX(def, map, relClasses));
+      }
+    }catch (IOException e) {
+        e.printStackTrace();
+    }
+
+
+  }
+
+  private static <M extends Metadata> String genX(MetadataDef<M> def,
+      Multimap<Method, MetadataHandler<M>> map,
+      ImmutableList<Class<? extends RelNode>> relClasses) {
+
+    final ReflectiveRelMetadataProvider.Space space =
+        new ReflectiveRelMetadataProvider.Space((Multimap) map);
+    StringBuilder buff = new StringBuilder();
+    final String name =
+        "Generated_" + def.metadataClass.getSimpleName();
+    buff.append("/*\n"
+        + " * Licensed to the Apache Software Foundation (ASF) under one or more\n"
+        + " * contributor license agreements.  See the NOTICE file distributed with\n"
+        + " * this work for additional information regarding copyright ownership.\n"
+        + " * The ASF licenses this file to you under the Apache License, Version 2.0\n"
+        + " * (the \"License\"); you may not use this file except in compliance with\n"
+        + " * the License.  You may obtain a copy of the License at\n"
+        + " *\n"
+        + " * http://www.apache.org/licenses/LICENSE-2.0\n"
+        + " *\n"
+        + " * Unless required by applicable law or agreed to in writing, software\n"
+        + " * distributed under the License is distributed on an \"AS IS\" BASIS,\n"
+        + " * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n"
+        + " * See the License for the specific language governing permissions and\n"
+        + " * limitations under the License.\n"
+        + " */\n"
+        + "package org.apache.calcite.rel.metadata.nwo.gen;\n"
+        + "\n"
+        + "import org.apache.calcite.rel.RelNode;\n"
+        + "import org.apache.calcite.rel.metadata.RelMetadataQuery;\n"
+        + "import org.apache.calcite.rel.metadata.nwo.MetadataArguments;\n"
+        + "import org.apache.calcite.rel.metadata.nwo.MetadataCallSite;\n");
+
+    //START CLASS
+    buff.append("public class " + name + " {\n");
+    for(Method method : def.methods) {
+      Collection<MetadataHandler<M>> handlers = new HashSet<>(map.get(method));
+      String subClassName = method.getName();
+      String splatArgs = ", mq";
+      String callsiteType =
+          method.getParameterCount() == 0 ? ("NoArg" + method.getReturnType().getSimpleName())
+              :"";
+      buff.append("  public static class " + subClassName + " extends MetadataCallSite." + callsiteType+"{\n");
+      //Properties
+      for (MetadataHandler<M> handler : handlers) {
+        buff.append("    private final " + handler.getClass().getName()+" _" + handler.getClass().getSimpleName() + ";\n");
+      }
+
+      //START CONSTRUCTOR
+      buff.append("    public " + subClassName);
+      buff.append(
+          handlers.stream()
+              .map(handler ->  handler.getClass().getName() + " _" + handler.getClass().getSimpleName())
+              .collect(Collectors.joining(",\n      ", "(\n      ", ") {\n")));
+      for (MetadataHandler<M> handler : handlers) {
+        String handlerSN = handler.getClass().getSimpleName();
+        buff.append("      this._" + handlerSN + " = _" + handlerSN + ";\n");
+      }
+      buff.append("    }\n");
+      //END CONSTRUCTOR
+
+      //START OF METHODS
+      buff.append("    @Override public " + method.getReturnType().getName() + " extract(MetadataArguments.NoArg arg) {\n")
+          .append("      RelNode relNode = arg.relNode;\n")
+          .append("      RelMetadataQuery mq = relNode.getCluster().getMetadataQuery();\n");
+
+      buff.append(space.classes.stream()
+          .filter(c -> c.equals(RelNode.class))
+        .map(relClass -> {
+
+          final Method handlerMethod = space.find(relClass, method);
+          final String handlerProp = "_"+handlerMethod.getDeclaringClass().getSimpleName();
+          return "relNode instanceof " + relClass.getName()+") {\n"
+              + "        return " + handlerProp + "." + handlerMethod.getName()+ "(("+relClass.getName()+")relNode,"+ splatArgs+");";
+        }).collect(Collectors.joining("\n      } else if (","      if(", "      }\n")));
+      final Method handlerMethod = space.find(RelNode.class, method);
+      final String handlerProp = "_"+handlerMethod.getDeclaringClass().getSimpleName();
+      buff.append("      } else {\n")
+          .append("        return " + handlerProp + "." + handlerMethod.getName()+  "(relNode, "+ splatArgs + ");")
+          .append("      }");
+
+      buff.append("    }\n");
+      buff.append("  }\n\n");
+    }
+    buff.append("}\n");
+    return buff.toString();
+  }
+
   private static <M extends Metadata> MetadataHandler<M> load3(
       MetadataDef<M> def, Multimap<Method, MetadataHandler<M>> map,
       ImmutableList<Class<? extends RelNode>> relClasses) {
@@ -210,11 +317,14 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
       }
     }
 
+    //Properties
     buff.append("  private final java.util.List relClasses;\n");
     for (Pair<String, MetadataHandler> pair : providerList) {
       buff.append("  public final ").append(pair.right.getClass().getName())
           .append(' ').append(pair.left).append(";\n");
     }
+
+    //Constructor
     buff.append("  public ").append(name).append("(java.util.List relClasses");
     for (Pair<String, MetadataHandler> pair : providerList) {
       buff.append(",\n")
@@ -230,14 +340,19 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
       buff.append("    this.").append(pair.left).append(" = ").append(pair.left)
           .append(";\n");
     }
-    buff.append("  }\n")
-        .append("  public ")
+    buff.append("  }\n");
+    //Constructor End
+
+    // this.getDef()
+    buff.append("  public ")
         .append(MetadataDef.class.getName())
         .append(" getDef() {\n")
         .append("    return ")
         .append(def.metadataClass.getName())
         .append(".DEF;\n")
         .append("  }\n");
+
+    //metadata functions
     for (Ord<Method> method : Ord.zip(def.methods)) {
       buff.append("  public ")
           .append(method.e.getReturnType().getName())
@@ -268,7 +383,7 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
       }
       safeArgList(buff, method.e)
           .append(");\n")
-          .append("    final Object v = mq.map.get(r, key);\n")
+          .append("    final Object v = mq.map().get(r, key);\n")
           .append("    if (v != null) {\n")
           .append("      if (v == ")
           .append(NullSentinel.class.getName())
@@ -286,9 +401,8 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
           .append(method.e.getReturnType().getName())
           .append(") v;\n")
           .append("    }\n")
-          .append("    mq.map.put(r, key,")
-          .append(NullSentinel.class.getName())
-          .append(".ACTIVE);\n")
+          .append("    mq.map().put(r, key,")
+          .append(NullSentinel.class.getName()).append(".ACTIVE);\n")
           .append("    try {\n")
           .append("      final ")
           .append(method.e.getReturnType().getName())
@@ -297,14 +411,14 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
           .append("_(r, mq");
       argList(buff, method.e)
           .append(");\n")
-          .append("      mq.map.put(r, key, ")
+          .append("      mq.map().put(r, key, ")
           .append(NullSentinel.class.getName())
           .append(".mask(x));\n")
           .append("      return x;\n")
           .append("    } catch (")
           .append(Exception.class.getName())
           .append(" e) {\n")
-          .append("      mq.map.row(r).clear();\n")
+          .append("      mq.map().row(r).clear();\n")
           .append("      throw e;\n")
           .append("    }\n")
           .append("  }\n")
@@ -372,6 +486,7 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
     final List<Object> argList = new ArrayList<>(Pair.right(providerList));
     argList.add(0, ImmutableList.copyOf(relClasses));
     try {
+      writeGenX(def,map,relClasses);
       return compile(name, buff.toString(), def, argList);
     } catch (CompileException | IOException e) {
       throw new RuntimeException("Error compiling:\n"
@@ -508,10 +623,15 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
    * this class but there is not. The action is probably to
    * re-generate the handler class. */
   public static class NoHandler extends ControlFlowException {
+    public static final NoHandler INSTANCE = new NoHandler();
     public final Class<? extends RelNode> relClass;
 
     public NoHandler(Class<? extends RelNode> relClass) {
       this.relClass = relClass;
+    }
+
+    public NoHandler() {
+      this.relClass = RelNode.class;
     }
   }
 

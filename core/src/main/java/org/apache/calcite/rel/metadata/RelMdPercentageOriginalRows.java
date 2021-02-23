@@ -55,7 +55,7 @@ public class RelMdPercentageOriginalRows
 
   //~ Methods ----------------------------------------------------------------
 
-  private RelMdPercentageOriginalRows() {}
+  public RelMdPercentageOriginalRows() {}
 
   @Override public MetadataDef<BuiltInMetadata.PercentageOriginalRows> getDef() {
     return BuiltInMetadata.PercentageOriginalRows.DEF;

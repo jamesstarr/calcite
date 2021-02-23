@@ -35,7 +35,7 @@ public class RelMdExplainVisibility
 
   //~ Constructors -----------------------------------------------------------
 
-  private RelMdExplainVisibility() {}
+  public RelMdExplainVisibility() {}
 
   //~ Methods ----------------------------------------------------------------
 
