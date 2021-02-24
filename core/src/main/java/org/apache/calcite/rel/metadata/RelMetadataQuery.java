@@ -19,6 +19,7 @@ package org.apache.calcite.rel.metadata;
 import org.apache.calcite.plan.RelOptCost;
 import org.apache.calcite.plan.RelOptPredicateList;
 import org.apache.calcite.plan.RelOptTable;
+import org.apache.calcite.plan.volcano.RelSubset;
 import org.apache.calcite.plan.volcano.VolcanoPlanner;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelDistribution;
@@ -41,7 +42,7 @@ import java.util.Set;
  * Sentence with a period.
  */
 public interface RelMetadataQuery {
-  Table<RelNode, List, Object> map();
+  Table<RelNode, Object, Object> map();
 
   @Nullable Multimap<Class<? extends RelNode>, RelNode> getNodeTypes(RelNode rel);
 
@@ -119,4 +120,6 @@ public interface RelMetadataQuery {
   @Nullable RelDistribution getDistribution(RelNode rel);
 
   @Nullable RelOptCost getLowerBoundCost(RelNode rel, VolcanoPlanner planner);
+
+  boolean clearCache(RelNode subset);
 }

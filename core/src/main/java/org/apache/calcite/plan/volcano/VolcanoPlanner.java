@@ -1007,7 +1007,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
         //mq.clearCache(subset);
 
         for (RelNode parent : subset.getParents()) {
-          //mq.clearCache(parent);
+          mq.clearCache(parent);
           RelOptCost newCost = getCostOrInfinite(parent, mq);
           RelOptCost existingCost = propagateRels.get(parent);
           if (existingCost == null || newCost.isLt(existingCost)) {

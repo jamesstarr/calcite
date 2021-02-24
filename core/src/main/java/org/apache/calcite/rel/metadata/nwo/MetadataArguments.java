@@ -24,34 +24,38 @@ import org.apache.calcite.util.ImmutableBitSet;
 
 import java.util.Objects;
 
-public class MetadataArguments {
+public abstract class MetadataArguments {
   public final RelNode relNode;
   public final MetadataType<?, ?> metadataType;
+  protected final int hashCode;
 
-  public MetadataArguments(RelNode relNode, MetadataType<?, ?> metadataType) {
+  protected MetadataArguments(RelNode relNode, MetadataType<?, ?> metadataType, int hashCode) {
     this.relNode = relNode;
     this.metadataType = metadataType;
+    this.hashCode = hashCode;
   }
 
-  @Override public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    MetadataArguments that = (MetadataArguments) o;
-    return relNode.equals(that.relNode) && metadataType.equals(that.metadataType);
-  }
 
-  @Override public int hashCode() {
-    return Objects.hash(relNode, metadataType);
+
+  @Override public final int hashCode() {
+    return hashCode;
   }
 
   public final static class NoArg extends MetadataArguments {
 
-    public NoArg(RelNode relNode, MetadataType<?, NoArg> metadataType) {
-      super(relNode, metadataType);
+    public NoArg(RelNode relNode, MetadataType<?, ?> metadataType) {
+      super(relNode, metadataType, Objects.hash(relNode, metadataType));
+    }
+
+    @Override public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      MetadataArguments that = (MetadataArguments) o;
+      return relNode.equals(that.relNode) && metadataType.equals(that.metadataType);
     }
   }
 
@@ -60,7 +64,7 @@ public class MetadataArguments {
     private final int intValue;
 
     public IntArg(RelNode relNode, MetadataType<?, ?> metadataType, int intValue) {
-      super(relNode, metadataType);
+      super(relNode, metadataType, Objects.hash(relNode, metadataType, intValue));
       this.intValue = intValue;
     }
 
@@ -72,9 +76,6 @@ public class MetadataArguments {
       return intValue == intArg.intValue;
     }
 
-    @Override public int hashCode() {
-      return Objects.hash(super.hashCode(), intValue);
-    }
   }
 
   public final static class BooleanArg extends MetadataArguments {
@@ -82,7 +83,7 @@ public class MetadataArguments {
     private final boolean boolanValue;
 
     public BooleanArg(RelNode relNode, MetadataType<?, ?> metadataType, boolean boolanValue) {
-      super(relNode, metadataType);
+      super(relNode, metadataType, Objects.hash(relNode, metadataType, boolanValue));
       this.boolanValue = boolanValue;
     }
 
@@ -98,17 +99,22 @@ public class MetadataArguments {
       return boolanValue == that.boolanValue;
     }
 
-    @Override public int hashCode() {
-      return Objects.hash(super.hashCode(), boolanValue);
-    }
   }
 
   public static final class RexNodeArg extends MetadataArguments {
     public final RexNode rexNode;
 
     public RexNodeArg(RelNode relNode, MetadataType<?, ?> metadataType, RexNode rexNode) {
-      super(relNode, metadataType);
+      super(relNode, metadataType, Objects.hash(relNode, metadataType, relNode));
       this.rexNode = rexNode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      RexNodeArg that = (RexNodeArg) o;
+      return rexNode.equals(that.rexNode);
     }
   }
 
@@ -117,7 +123,7 @@ public class MetadataArguments {
 
     public ImmutableBitSetArg(RelNode relNode, MetadataType<?, ?> metadataType,
         ImmutableBitSet bitset) {
-      super(relNode, metadataType);
+      super(relNode, metadataType, Objects.hash(relNode, metadataType, bitset));
       this.bitset = bitset;
     }
 
@@ -132,10 +138,6 @@ public class MetadataArguments {
       ImmutableBitSetArg that = (ImmutableBitSetArg) o;
       return bitset.equals(that.bitset);
     }
-
-    @Override public int hashCode() {
-      return Objects.hash(super.hashCode(), bitset);
-    }
   }
 
   public static final class ImmutableBitSetBooleanArg extends MetadataArguments {
@@ -144,7 +146,7 @@ public class MetadataArguments {
 
     public ImmutableBitSetBooleanArg(RelNode relNode, MetadataType<?, ?> metadataType,
         ImmutableBitSet bitset, boolean booleanValue) {
-      super(relNode, metadataType);
+      super(relNode, metadataType, Objects.hash(relNode, metadataType, bitset, booleanValue));
       this.bitset = bitset;
       this.booleanValue = booleanValue;
     }
@@ -160,10 +162,6 @@ public class MetadataArguments {
       ImmutableBitSetBooleanArg that = (ImmutableBitSetBooleanArg) o;
       return booleanValue == that.booleanValue && bitset.equals(that.bitset);
     }
-
-    @Override public int hashCode() {
-      return Objects.hash(super.hashCode(), bitset, booleanValue);
-    }
   }
 
   public static final class ImmutableBitSetRexNodeArg extends MetadataArguments {
@@ -172,7 +170,7 @@ public class MetadataArguments {
 
     public ImmutableBitSetRexNodeArg(RelNode relNode, MetadataType<?, ?> metadataType,
         ImmutableBitSet bitset, RexNode rexNode) {
-      super(relNode, metadataType);
+      super(relNode, metadataType, Objects.hash(relNode, metadataType, bitset, rexNode));
       this.bitset = bitset;
       this.rexNode = rexNode;
     }
@@ -184,10 +182,6 @@ public class MetadataArguments {
       ImmutableBitSetRexNodeArg that = (ImmutableBitSetRexNodeArg) o;
       return bitset.equals(that.bitset) && rexNode.equals(that.rexNode);
     }
-
-    @Override public int hashCode() {
-      return Objects.hash(super.hashCode(), bitset, rexNode);
-    }
   }
 
   public static final class SqlExplainLevelArg extends MetadataArguments {
@@ -195,7 +189,7 @@ public class MetadataArguments {
 
     public SqlExplainLevelArg(RelNode relNode, MetadataType<?, ?> metadataType,
         SqlExplainLevel sqlExplainLevel) {
-      super(relNode, metadataType);
+      super(relNode, metadataType, Objects.hash(relNode, metadataType, sqlExplainLevel));
       this.sqlExplainLevel = sqlExplainLevel;
     }
 
@@ -206,10 +200,6 @@ public class MetadataArguments {
       SqlExplainLevelArg that = (SqlExplainLevelArg) o;
       return sqlExplainLevel == that.sqlExplainLevel;
     }
-
-    @Override public int hashCode() {
-      return Objects.hash(super.hashCode(), sqlExplainLevel);
-    }
   }
 
   public static final class VolcanoPlannerArg extends MetadataArguments {
@@ -217,7 +207,7 @@ public class MetadataArguments {
 
     public VolcanoPlannerArg(RelNode relNode, MetadataType<?, ?> metadataType,
         VolcanoPlanner volcanoPlanner) {
-      super(relNode, metadataType);
+      super(relNode, metadataType, Objects.hash(relNode, metadataType, volcanoPlanner));
       this.volcanoPlanner = volcanoPlanner;
     }
 
@@ -227,10 +217,6 @@ public class MetadataArguments {
       if (!super.equals(o)) return false;
       VolcanoPlannerArg that = (VolcanoPlannerArg) o;
       return volcanoPlanner.equals(that.volcanoPlanner);
-    }
-
-    @Override public int hashCode() {
-      return Objects.hash(super.hashCode(), volcanoPlanner);
     }
   }
 }

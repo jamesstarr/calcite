@@ -16,6 +16,8 @@
  */
 package org.apache.calcite.rel.metadata.nwo;
 
+import com.google.common.collect.HashBasedTable;
+
 import org.apache.calcite.plan.RelOptCost;
 import org.apache.calcite.plan.RelOptPredicateList;
 import org.apache.calcite.plan.RelOptTable;
@@ -37,45 +39,46 @@ import com.google.common.collect.Table;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * hello.
  */
 public class CallSiteMetaDataQuery implements RelMetadataQuery {
-  private final MetadataCallSite.NoArg<Multimap<Class<? extends RelNode>, RelNode>> nodeTypes;
-  private final MetadataCallSite.NoArg<Double> maxRowCount;
-  private final MetadataCallSite.NoArg<Double> minRowCount;
-  private final MetadataCallSite.NoArg<RelOptCost> cumulativeCost;
-  private final MetadataCallSite.NoArg<RelOptCost> nonCumulativeCost;
-  private final MetadataCallSite.NoArg<Double> percentageOriginalRows;
-  private final MetadataCallSite.NoArg<Set<RexTableInputRef.RelTableRef>> tableReferences;
-  private final MetadataCallSite.NoArg<RelOptTable> tableOrigin;
-  private final MetadataCallSite.NoArg<Set<ImmutableBitSet>> uniqueKeys;
-  private final MetadataCallSite.NoArg<Double> averageRowSize;
-  private final MetadataCallSite.NoArg<List<@Nullable Double>> averageColumnSizes;
-  private final MetadataCallSite.NoArg<RelOptPredicateList> allPredicates;
-  private final MetadataCallSite.NoArg<RelDistribution> distribution;
-  private final MetadataCallSite.NoArg<Boolean> isPhaseTransition;
-  private final MetadataCallSite.NoArg<Integer> splitCount;
-  private final MetadataCallSite.NoArg<Double> memory;
-  private final MetadataCallSite.NoArg<Double> cumulativeMemoryWithinPhase;
-  private final MetadataCallSite.NoArg<Double> cumulativeMemoryWithinPhaseSplit;
-  private final MetadataCallSite.NoArg<ImmutableList<RelCollation>> collations;
-  private final MetadataCallSite.NoArg<Boolean> areRowsUnique;
-  private final MetadataCallSite.NoArg<List<@Nullable Double>> averageColumnSizesNotNull;;
-  private final MetadataCallSite.NoArg<RelOptPredicateList> pulledUpPredicates;;
-  private final MetadataCallSite.NoArg<Double> rowCount;
-  private final MetadataCallSite.IntArg<Set<RelColumnOrigin>> columnOrigins;
-  private final MetadataCallSite.IntArg<RelColumnOrigin> columnOrigin;
-  private final MetadataCallSite.RexNodeArg<Set<RexNode>> expressionLineage;
-  private final MetadataCallSite.RexNodeArg<Double> selectivity;
-  private final MetadataCallSite.BooleanArg<Set<ImmutableBitSet>> uniqueKeysIgnoreNulls;
-  private final MetadataCallSite.ImmutableBitSetBooleanArg<Boolean> columnsUniqueIgnoreNulls;
-  private final MetadataCallSite.ImmutableBitSetArg<Double> populationSize;
-  private final MetadataCallSite.ImmutableBitSetRexNodeArg<Double> distinctRowCount;
-  private final MetadataCallSite.SqlExplainLevelArg<Boolean> isVisibleInExplain;
-  private final MetadataCallSite.VolcanoPlannerArg<RelOptCost> lowerBoundCost;
+  private final MetadataCallSite<Multimap<Class<? extends RelNode>, RelNode>, MetadataArguments.NoArg> nodeTypes;
+  private final MetadataCallSite<Double, MetadataArguments.NoArg> maxRowCount;
+  private final MetadataCallSite<Double, MetadataArguments.NoArg> minRowCount;
+  private final MetadataCallSite<RelOptCost, MetadataArguments.NoArg> cumulativeCost;
+  private final MetadataCallSite<RelOptCost, MetadataArguments.NoArg> nonCumulativeCost;
+  private final MetadataCallSite<Double, MetadataArguments.NoArg> percentageOriginalRows;
+  private final MetadataCallSite<Set<RexTableInputRef.RelTableRef>, MetadataArguments.NoArg> tableReferences;
+  private final MetadataCallSite<RelOptTable, MetadataArguments.NoArg> tableOrigin;
+  private final MetadataCallSite<Set<ImmutableBitSet>, MetadataArguments.NoArg> uniqueKeys;
+  private final MetadataCallSite<Double, MetadataArguments.NoArg> averageRowSize;
+  private final MetadataCallSite<List<@Nullable Double>, MetadataArguments.NoArg> averageColumnSizes;
+  private final MetadataCallSite<RelOptPredicateList, MetadataArguments.NoArg> allPredicates;
+  private final MetadataCallSite<RelDistribution, MetadataArguments.NoArg> distribution;
+  private final MetadataCallSite<Boolean, MetadataArguments.NoArg> isPhaseTransition;
+  private final MetadataCallSite<Integer, MetadataArguments.NoArg> splitCount;
+  private final MetadataCallSite<Double, MetadataArguments.NoArg> memory;
+  private final MetadataCallSite<Double, MetadataArguments.NoArg> cumulativeMemoryWithinPhase;
+  private final MetadataCallSite<Double, MetadataArguments.NoArg> cumulativeMemoryWithinPhaseSplit;
+  private final MetadataCallSite<ImmutableList<RelCollation>, MetadataArguments.NoArg> collations;
+  private final MetadataCallSite<Boolean, MetadataArguments.NoArg> areRowsUnique;
+  private final MetadataCallSite<List<@Nullable Double>, MetadataArguments.NoArg> averageColumnSizesNotNull;;
+  private final MetadataCallSite<RelOptPredicateList, MetadataArguments.NoArg> pulledUpPredicates;;
+  private final MetadataCallSite<Double, MetadataArguments.NoArg> rowCount;
+  private final MetadataCallSite<Set<RelColumnOrigin>, MetadataArguments.IntArg> columnOrigins;
+  private final MetadataCallSite<RelColumnOrigin, MetadataArguments.IntArg> columnOrigin;
+  private final MetadataCallSite<Set<RexNode>, MetadataArguments.RexNodeArg> expressionLineage;
+  private final MetadataCallSite<Double, MetadataArguments.RexNodeArg> selectivity;
+  private final MetadataCallSite<Set<ImmutableBitSet>, MetadataArguments.BooleanArg> uniqueKeysIgnoreNulls;
+  private final MetadataCallSite<Boolean, MetadataArguments.ImmutableBitSetBooleanArg> columnsUniqueIgnoreNulls;
+  private final MetadataCallSite<Double, MetadataArguments.ImmutableBitSetArg> populationSize;
+  private final MetadataCallSite<Double, MetadataArguments.ImmutableBitSetRexNodeArg> distinctRowCount;
+  private final MetadataCallSite<Boolean, MetadataArguments.SqlExplainLevelArg> isVisibleInExplain;
+  private final MetadataCallSite<RelOptCost, MetadataArguments.VolcanoPlannerArg> lowerBoundCost;
 
   public CallSiteMetaDataQuery(){
     this(new RegistryMetadataProvider());
@@ -146,15 +149,15 @@ public class CallSiteMetaDataQuery implements RelMetadataQuery {
   }
 
   @Override public @Nullable Set<RelColumnOrigin> getColumnOrigins(RelNode rel, int column) {
-    return columnOrigins.extract(rel,column);
+    return columnOrigins.extract(new MetadataArguments.IntArg(rel, MetadataTypes.ColumnOrigins, column));
   }
 
   @Override public @Nullable RelColumnOrigin getColumnOrigin(RelNode rel, int column) {
-    return columnOrigin.extract(rel,column);
+    return columnOrigin.extract(new MetadataArguments.IntArg(rel, MetadataTypes.ColumnOrigin, column));
   }
 
   @Override public @Nullable Set<RexNode> getExpressionLineage(RelNode rel, RexNode expression) {
-    return expressionLineage.extract(rel,expression);
+    return expressionLineage.extract(new MetadataArguments.RexNodeArg(rel, MetadataTypes.ExpressionLineage, expression));
   }
 
   @Override public @Nullable Set<RexTableInputRef.RelTableRef> getTableReferences(RelNode rel) {
@@ -166,7 +169,7 @@ public class CallSiteMetaDataQuery implements RelMetadataQuery {
   }
 
   @Override public @Nullable Double getSelectivity(RelNode rel, @Nullable RexNode predicate) {
-    return selectivity.extract(rel, predicate);
+    return selectivity.extract(new MetadataArguments.RexNodeArg(rel, MetadataTypes.Selectivity, predicate));
   }
 
   @Override public @Nullable Set<ImmutableBitSet> getUniqueKeys(RelNode rel) {
@@ -174,7 +177,7 @@ public class CallSiteMetaDataQuery implements RelMetadataQuery {
   }
 
   @Override public @Nullable Set<ImmutableBitSet> getUniqueKeys(RelNode rel, boolean ignoreNulls) {
-    return uniqueKeysIgnoreNulls.extract(rel, ignoreNulls);
+    return uniqueKeysIgnoreNulls.extract(new MetadataArguments.BooleanArg(rel, MetadataTypes.UniqueKeysIgnoreNulls, ignoreNulls));
   }
 
   @Override public @Nullable Boolean areRowsUnique(RelNode rel) {
@@ -187,7 +190,7 @@ public class CallSiteMetaDataQuery implements RelMetadataQuery {
 
   @Override public @Nullable Boolean areColumnsUnique(RelNode rel, ImmutableBitSet columns,
       boolean ignoreNulls) {
-    return columnsUniqueIgnoreNulls.extract(rel,columns,ignoreNulls);
+    return columnsUniqueIgnoreNulls.extract(new MetadataArguments.ImmutableBitSetBooleanArg(rel, MetadataTypes.AreColumnsUnique, columns,ignoreNulls));
   }
 
   @Override public @Nullable ImmutableList<RelCollation> collations(RelNode rel) {
@@ -199,7 +202,8 @@ public class CallSiteMetaDataQuery implements RelMetadataQuery {
   }
 
   @Override public @Nullable Double getPopulationSize(RelNode rel, ImmutableBitSet groupKey) {
-    return populationSize.extract(rel,groupKey);
+    return populationSize.extract(
+        new MetadataArguments.ImmutableBitSetArg(rel, MetadataTypes.PopulationSize, groupKey));
   }
 
   @Override public @Nullable Double getAverageRowSize(RelNode rel) {
@@ -236,7 +240,7 @@ public class CallSiteMetaDataQuery implements RelMetadataQuery {
 
   @Override public @Nullable Double getDistinctRowCount(RelNode rel, ImmutableBitSet groupKey,
       @Nullable RexNode predicate) {
-    return distinctRowCount.extract(rel,groupKey,predicate);
+    return distinctRowCount.extract(new MetadataArguments.ImmutableBitSetRexNodeArg(rel, MetadataTypes.DistinctRowCount, groupKey, predicate));
   }
 
   @Override public RelOptPredicateList getPulledUpPredicates(RelNode rel) {
@@ -251,7 +255,7 @@ public class CallSiteMetaDataQuery implements RelMetadataQuery {
   }
 
   @Override public Boolean isVisibleInExplain(RelNode rel, SqlExplainLevel explainLevel) {
-    Boolean b = isVisibleInExplain.extract(rel,explainLevel);
+    Boolean b = isVisibleInExplain.extract(new MetadataArguments.SqlExplainLevelArg(rel, MetadataTypes.ExpressionLineage,explainLevel));
     return b == null || b;
   }
 
@@ -260,10 +264,22 @@ public class CallSiteMetaDataQuery implements RelMetadataQuery {
   }
 
   @Override public @Nullable RelOptCost getLowerBoundCost(RelNode rel, VolcanoPlanner planner) {
-    return lowerBoundCost.extract(rel, planner);
+    return lowerBoundCost.extract(new MetadataArguments.VolcanoPlannerArg(rel, MetadataTypes.LowerBoundCost, planner));
   }
 
-  @Override public Table<RelNode, List, Object> map() {
-    throw new RuntimeException();
+  public final Table<RelNode, Object, Object> map = HashBasedTable.create();
+
+  @Override public Table<RelNode, Object, Object> map() {
+    return map;
+  }
+
+  @Override public boolean clearCache(RelNode rel) {
+    Map<Object, Object> row = map.row(rel);
+    if (row.isEmpty()) {
+      return false;
+    }
+
+    row.clear();
+    return true;
   }
 }

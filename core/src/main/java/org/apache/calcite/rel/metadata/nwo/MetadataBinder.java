@@ -43,6 +43,7 @@ import org.apache.calcite.rel.metadata.RelMdCollation;
 import org.apache.calcite.rel.metadata.RelMdColumnUniqueness;
 import org.apache.calcite.rel.metadata.RelMdDistinctRowCount;
 import org.apache.calcite.rel.metadata.RelMdExplainVisibility;
+import org.apache.calcite.rel.metadata.RelMdMaxRowCount;
 import org.apache.calcite.rel.metadata.RelMdNodeTypes;
 import org.apache.calcite.rel.metadata.RelMdPercentageOriginalRows;
 import org.apache.calcite.rel.metadata.RelMdPredicates;
@@ -53,6 +54,7 @@ import org.apache.calcite.rel.metadata.nwo.cleaned.GeneratedCollation;
 import org.apache.calcite.rel.metadata.nwo.cleaned.GeneratedColumnUniqueness;
 import org.apache.calcite.rel.metadata.nwo.cleaned.GeneratedDistinctRowCount;
 import org.apache.calcite.rel.metadata.nwo.cleaned.GeneratedExplainVisibility;
+import org.apache.calcite.rel.metadata.nwo.cleaned.GeneratedMaxRowCount;
 import org.apache.calcite.rel.metadata.nwo.cleaned.GeneratedNonCumulativeCost;
 import org.apache.calcite.rel.metadata.nwo.cleaned.GeneratedPredicates;
 import org.apache.calcite.rel.metadata.nwo.cleaned.GeneratedRowCount;
@@ -80,6 +82,9 @@ public class MetadataBinder {
     );
     registryMetadataProvider.register(
         new GeneratedNonCumulativeCost.getNonCumulativeCost(new RelMdPercentageOriginalRows())
+    );
+    registryMetadataProvider.register(
+        new GeneratedMaxRowCount.getMaxRowCount(new RelMdMaxRowCount())
     );
     registryMetadataProvider.register(
         new GeneratedPredicates.getPredicates(new RelMdPredicates())

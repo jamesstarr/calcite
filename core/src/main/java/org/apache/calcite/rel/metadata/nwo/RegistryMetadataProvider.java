@@ -37,14 +37,13 @@ public class RegistryMetadataProvider implements NWOMetadataProvider {
    * @param <ARGUMENTS> arguments for generating metadata
    * @return the call site
    */
-  @Override public <RESULT, ARGUMENTS extends MetadataArguments,
-      CALLSITE extends MetadataCallSite<RESULT, ARGUMENTS>>
-      CALLSITE callSite(MetadataType<RESULT, ARGUMENTS> metadataType) {
-    return (CALLSITE) registry.get(metadataType);
+  @Override public <RESULT, ARGUMENTS extends MetadataArguments>
+  MetadataCallSite<RESULT, ARGUMENTS> callSite(MetadataType<RESULT, ARGUMENTS> metadataType) {
+    return (MetadataCallSite<RESULT, ARGUMENTS>) registry.get(metadataType);
   }
 
-  public <RESULT, ARGUMENTS extends MetadataArguments,
-      CALLSITE extends MetadataCallSite<RESULT, ARGUMENTS>> void register(CALLSITE callsite) {
+  public <RESULT, ARGUMENTS extends MetadataArguments>
+  void register(MetadataCallSite<RESULT, ARGUMENTS> callsite) {
     registry.put(callsite.metadataType(), callsite);
   }
 }

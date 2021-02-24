@@ -278,19 +278,19 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
           .append("      RelMetadataQuery mq = relNode.getCluster().getMetadataQuery();\n");
 
       buff.append(space.classes.stream()
-          .filter(c -> c.equals(RelNode.class))
+          .filter(c -> !c.equals(RelNode.class))
         .map(relClass -> {
 
           final Method handlerMethod = space.find(relClass, method);
           final String handlerProp = "_"+handlerMethod.getDeclaringClass().getSimpleName();
           return "relNode instanceof " + relClass.getName()+") {\n"
-              + "        return " + handlerProp + "." + handlerMethod.getName()+ "(("+relClass.getName()+")relNode,"+ splatArgs+");";
+              + "        return " + handlerProp + "." + handlerMethod.getName()+ "(("+relClass.getName()+")relNode"+ splatArgs+");";
         }).collect(Collectors.joining("\n      } else if (","      if(", "      }\n")));
       final Method handlerMethod = space.find(RelNode.class, method);
       final String handlerProp = "_"+handlerMethod.getDeclaringClass().getSimpleName();
       buff.append("      } else {\n")
-          .append("        return " + handlerProp + "." + handlerMethod.getName()+  "(relNode, "+ splatArgs + ");")
-          .append("      }");
+          .append("        return " + handlerProp + "." + handlerMethod.getName()+  "(relNode, "+ splatArgs + ");\n")
+          .append("      }\n");
 
       buff.append("    }\n");
       buff.append("  }\n\n");

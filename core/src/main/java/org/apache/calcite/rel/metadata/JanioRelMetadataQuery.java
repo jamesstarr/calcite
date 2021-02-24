@@ -24,6 +24,7 @@ import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelDistribution;
 import org.apache.calcite.rel.RelDistributions;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.metadata.nwo.CachingMetadataProvider;
 import org.apache.calcite.rel.metadata.nwo.CallSiteMetaDataQuery;
 import org.apache.calcite.rel.metadata.nwo.MetadataBinder;
 import org.apache.calcite.rel.metadata.nwo.RegistryMetadataProvider;
@@ -187,8 +188,10 @@ public class JanioRelMetadataQuery extends RelMetadataQueryBase implements RelMe
   public static RelMetadataQuery instance() {
     RegistryMetadataProvider provider = new RegistryMetadataProvider();
     MetadataBinder.bind(provider);
+    CachingMetadataProvider cachedProvider = new CachingMetadataProvider(provider);
 
-    return new CallSiteMetaDataQuery(provider);
+    //return new JanioRelMetadataQuery();
+    return new CallSiteMetaDataQuery(cachedProvider);
   }
 
   /**
@@ -879,7 +882,7 @@ public class JanioRelMetadataQuery extends RelMetadataQueryBase implements RelMe
     }
   }
 
-  @Override public Table<RelNode, List, Object> map() {
+  @Override public Table<RelNode, Object, Object> map() {
     return map;
   }
 }

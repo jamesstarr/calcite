@@ -17,7 +17,6 @@
 package org.apache.calcite.rel.metadata.nwo;
 
 public interface NWOMetadataProvider {
-  <RESULT, ARGUMENTS extends MetadataArguments,
-      CALLSITE extends MetadataCallSite<RESULT, ARGUMENTS>>
-      CALLSITE callSite(MetadataType<RESULT, ARGUMENTS> metadataType);
+  <RESULT, ARGUMENTS extends MetadataArguments>
+  MetadataCallSite<RESULT, ARGUMENTS> callSite(MetadataType<RESULT, ARGUMENTS> metadataType);
 }

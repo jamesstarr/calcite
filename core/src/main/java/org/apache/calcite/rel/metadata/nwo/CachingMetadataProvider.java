@@ -16,6 +16,14 @@
  */
 package org.apache.calcite.rel.metadata.nwo;
 
+import com.google.common.collect.Table;
+
+import org.apache.calcite.rel.RelNode;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.List;
+
 public class CachingMetadataProvider implements NWOMetadataProvider{
   private final NWOMetadataProvider baseProvider;
 
@@ -23,21 +31,40 @@ public class CachingMetadataProvider implements NWOMetadataProvider{
     this.baseProvider = baseProvider;
   }
 
-  @Override public <RESULT, ARGUMENTS extends MetadataArguments,
-      CALLSITE extends MetadataCallSite<RESULT, ARGUMENTS>>
-    CALLSITE callSite(MetadataType<RESULT, ARGUMENTS> metadataType) {
-      return null;
-//    return new MetadataCallSite<RESULT, ARGUMENTS>(){
-//
-//      @Override
-//      public MetadataType<RESULT, ARGUMENTS> metadataType() {
-//        return null;
-//      }
-//
-//      @Override
-//      public RESULT extract(ARGUMENTS arg) {
-//        return null;
-//      }
-//    };
+  @Override public <RESULT, ARGUMENTS extends MetadataArguments>
+  MetadataCallSite<RESULT, ARGUMENTS> callSite(MetadataType<RESULT, ARGUMENTS> metadataType) {
+    MetadataCallSite<RESULT, ARGUMENTS> baseSite = baseProvider.callSite(metadataType);
+    return  new MetadataCallSite<RESULT, ARGUMENTS>() {
+
+      @Override
+      public MetadataType<RESULT, ARGUMENTS> metadataType() {
+        return metadataType;
+      }
+
+      @Override
+      public RESULT extract(ARGUMENTS arg) {
+        Table<RelNode, Object, Object> myMap = arg.relNode.getCluster().getMetadataQuery().map();
+        @Nullable Object v = arg.relNode.getCluster().getMetadataQuery().map()
+            .get(arg.relNode, arg);
+        if (v != null) {
+          if (v == org.apache.calcite.rel.metadata.NullSentinel.ACTIVE) {
+            throw new org.apache.calcite.rel.metadata.CyclicMetadataException();
+          } else if (v == org.apache.calcite.rel.metadata.NullSentinel.INSTANCE) {
+            return null;
+          } else {
+            return (RESULT) v;
+          }
+        }
+        myMap.put(arg.relNode, arg, org.apache.calcite.rel.metadata.NullSentinel.ACTIVE);
+        try {
+          RESULT r = baseSite.extract(arg);
+          myMap.put(arg.relNode, arg, org.apache.calcite.rel.metadata.NullSentinel.mask(r));
+          return r;
+        } catch (java.lang.Exception e) {
+          myMap.row(arg.relNode).clear();
+          throw e;
+        }
+      }
+    };
   }
 }

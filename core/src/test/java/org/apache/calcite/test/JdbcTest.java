@@ -193,6 +193,20 @@ public class JdbcTest {
     testJoinFiveWay();
   }
 
+  @Test void testJoinFiveWay6() {
+    testJoinFiveWay();
+  }
+  @Test void testJoinFiveWay7() {
+    testJoinFiveWay();
+  }
+
+  @Test void testJoinFiveWay8() {
+    testJoinFiveWay();
+  }
+  @Test void testJoinFiveWay9() {
+    testJoinFiveWay();
+  }
+
   /** Four-way join. Used to take 80 seconds. */
   @Test void testJoinFiveWay() {
     CalciteAssert.that()
@@ -206,8 +220,13 @@ public class JdbcTest {
             + " \"time_by_day\" as \"time_by_day\",\n"
             + " \"product_class\" as \"product_class\",\n"
             + " \"product\" as \"product\"\n"
+//            + "/ (SELECT \"store_country\" AS sc, count(*)\n"
+//            + "   FROM \"store\"\n"
+//            + "   GROUP BY \"store_country\"\n"
+//            + ") AS \"store_count\"\n"
             + "where \"sales_fact_1997\".\"store_id\" = \"store\".\"store_id\"\n"
             + "and \"store\".\"store_country\" = 'USA'\n"
+//            + "and \"store\".\"store_country\" = 'sc'\n"
             + "and \"sales_fact_1997\".\"time_id\" = \"time_by_day\".\"time_id\"\n"
             + "and \"time_by_day\".\"the_year\" = 1997\n"
             + "and \"sales_fact_1997\".\"product_id\" = \"product\".\"product_id\"\n"
