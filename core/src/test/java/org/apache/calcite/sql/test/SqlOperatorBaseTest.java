@@ -5152,6 +5152,14 @@ public abstract class SqlOperatorBaseTest {
         "nvl(CAST(NULL AS VARCHAR(6)), cast(NULL AS VARCHAR(4)))");
   }
 
+  @Test public void testNvlCharImplicitCastFunc() {
+    tester.setFor(OracleSqlOperatorTable.NVL);
+    final SqlTester tester1 = oracleTester();
+    tester1.checkFails("nvl(CAST(1 AS decimal(19, 9)), '3')",
+            "Operand types mismatch for: "
+                    + "NVL\\(CAST\\(1 AS DECIMAL\\(19, 9\\)\\), '3'\\)", false);
+  }
+
   @Test public void testDecodeFunc() {
     tester.setFor(OracleSqlOperatorTable.DECODE);
     final SqlTester tester1 = oracleTester();

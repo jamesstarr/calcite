@@ -1558,7 +1558,11 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
    */
   @SuppressWarnings("deprecation")
   public final void setValidatedNodeType(SqlNode node, RelDataType type) {
-    Preconditions.checkNotNull(type);
+    try {
+      Preconditions.checkNotNull(type);
+    } catch (NullPointerException e) {
+      throw new NullPointerException("Operand types mismatch for: " + node);
+    }
     Preconditions.checkNotNull(node);
     if (type.equals(unknownType)) {
       // don't set anything until we know what it is, and don't overwrite
