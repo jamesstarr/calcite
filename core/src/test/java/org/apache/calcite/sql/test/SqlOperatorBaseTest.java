@@ -6964,16 +6964,16 @@ public abstract class SqlOperatorBaseTest {
         "nvl(CAST(NULL AS VARCHAR(6)), cast(NULL AS VARCHAR(4)))");
   }
 
-  @Test void testNvlCharImplicitCastFunc() {
-    tester.setFor(SqlLibraryOperators.NVL);
+  @Test public void testNvlCharImplicitCastFunc() {
+    tester.setFor(OracleSqlOperatorTable.NVL);
     final SqlTester tester1 = oracleTester();
     tester1.checkFails("nvl(CAST(1 AS decimal(19, 9)), '3')",
-            "Cannot infer return type for NVL; operand types: "
-                    + "\\[DECIMAL\\(19, 9\\), CHAR\\(1\\)\\]",  false);
+            "Operand types mismatch for: "
+                    + "NVL\\(CAST\\(1 AS DECIMAL\\(19, 9\\)\\), '3'\\)", false);
   }
 
-  @Test void testDecodeFunc() {
-    tester.setFor(SqlLibraryOperators.DECODE);
+  @Test public void testDecodeFunc() {
+    tester.setFor(OracleSqlOperatorTable.DECODE);
     final SqlTester tester1 = oracleTester();
     tester1.checkScalar("decode(0, 0, 'a', 1, 'b', 2, 'c')", "a", "CHAR(1)");
     tester1.checkScalar("decode(1, 0, 'a', 1, 'b', 2, 'c')", "b", "CHAR(1)");
