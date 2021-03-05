@@ -3046,6 +3046,44 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     }
   }
 
+  @Test public void testJoinExpandAndDecorrelation() {
+    String sql = ""
+        + "SELECT emp.deptno, emp.sal\n"
+        + "FROM dept\n"
+        + "JOIN emp ON emp.deptno = dept.deptno AND emp.sal < (\n"
+        + "  SELECT AVG(emp.sal)\n"
+        + "  FROM emp\n"
+        + "  WHERE  emp.deptno = dept.deptno\n"
+        + ")";
+    sql(sql)
+            .decorrelate(true)
+            .expand(true)
+            .convertsTo("${plan_extended}");
+    sql(sql)
+            .decorrelate(false)
+            .expand(false)
+            .convertsTo("${plan_not_extended}");
+  }
+
+  @Test public void testImplicitJoinExpandAndDecorrelation() {
+    String sql = ""
+        + "SELECT emp.deptno, emp.sal\n"
+        + "FROM dept, emp "
+        + "WHERE emp.deptno = dept.deptno AND emp.sal < (\n"
+        + "  SELECT AVG(emp.sal)\n"
+        + "  FROM emp\n"
+        + "  WHERE  emp.deptno = dept.deptno\n"
+        + ")";
+    sql(sql)
+            .decorrelate(true)
+            .expand(true)
+            .convertsTo("${plan_extended}");
+    sql(sql)
+            .decorrelate(false)
+            .expand(false)
+            .convertsTo("${plan_not_extended}");
+  }
+
   /**
    * Visitor that checks that every {@link RelNode} in a tree is valid.
    *
