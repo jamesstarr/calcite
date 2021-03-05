@@ -42,6 +42,7 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
 import org.apache.calcite.rex.RexExecutor;
 import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.runtime.CalciteContextException;
 import org.apache.calcite.sql.SqlExplainLevel;
 import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
 import org.apache.calcite.sql.type.SqlTypeName;
@@ -69,6 +70,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Set;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -2999,6 +3001,92 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     assertTrue("The column index on a CorrelationId must be non-empty.", hasValidCorrelationId[0]);
   }
 
+  @Test public void testJoinDecorrelationWithCorrelatedVariablesFromBothSideOfTheJoin() {
+    try {
+      String sql = "\n"
+          + "SELECT outerEmp.deptno, outerEmp.sal\n"
+          + "FROM dept\n"
+          + "LEFT JOIN emp outerEmp ON outerEmp.sal < (\n"
+          + "  SELECT AVG(avg_emp.sal)\n"
+          + "  FROM emp avg_emp\n"
+          + "  WHERE avg_emp.deptno = dept.deptno\n"
+          + "    AND avg_emp.deptno = outerEmp.deptno\n"
+          + ")\n";
+      sql(sql).convertsTo("${plan}");
+    } catch (CalciteContextException exception) {
+      assertThat("Reason",
+          exception.getMessage(),
+          containsString("Correlated subqueries in on clauses are not supported."));
+    }
+  }
+
+  @Test public void testJoinDecorrelationWithCorrelatedVariablesFromTheRight() {
+    try {
+      String sql = "\n"
+          + "SELECT outerEmp.deptno, outerEmp.sal\n"
+          + "FROM dept\n"
+          + "LEFT JOIN emp outerEmp ON outerEmp.deptno = dept.deptno AND outerEmp.sal < (\n"
+          + "  SELECT AVG(avg_emp.sal)\n"
+          + "  FROM emp avg_emp\n"
+          + "  WHERE avg_emp.deptno = outerEmp.deptno\n"
+          + ")\n";
+      sql(sql).convertsTo("${plan}");
+    } catch (CalciteContextException exception) {
+      assertThat("Reason",
+          exception.getMessage(),
+          containsString("Correlated subqueries in on clauses are not supported."));
+    }
+  }
+
+  @Test public void testJoinDecorrelationWithCorrelatedVariablesFromTheLeft() {
+    try {
+      String sql = "\n"
+          + "SELECT outerEmp.deptno, outerEmp.sal\n"
+          + "FROM dept\n"
+          + "LEFT JOIN emp outerEmp ON outerEmp.deptno = dept.deptno AND outerEmp.sal < (\n"
+          + "  SELECT AVG(avg_emp.sal)\n"
+          + "  FROM emp avg_emp\n"
+          + "  WHERE avg_emp.deptno = dept.deptno\n"
+          + ")\n";
+      sql(sql).convertsTo("${plan}");
+    } catch (CalciteContextException exception) {
+      assertThat("Reason",
+          exception.getMessage(),
+          containsString("Correlated subqueries in on clauses are not supported."));
+    }
+  }
+
+  @Test public void testJoinExpandNestedQuery() {
+    //Three sub queries are used to ensure the internal state is maintained since the first
+    // 2 calls are special cases in code.
+    String sql = "\n"
+        + "SELECT emp.deptno, emp.sal\n"
+        + "FROM dept\n"
+        + "INNER JOIN emp ON emp.deptno = dept.deptno\n"
+        + "  AND emp.sal < (\n"
+        + "    SELECT AVG(avg_emp_sal.sal)\n"
+        + "    FROM emp avg_emp_sal)\n"
+        + "  AND emp.sal >= (\n"
+        + "    SELECT MIN(sal) * 2\n"
+        + "    FROM emp)\n"
+        + "  AND emp.sal > (\n"
+        + "    SELECT AVG(avg_emp_sal.sal) / 2\n"
+        + "    FROM emp avg_emp_sal)\n";
+    sql(sql).convertsTo("${plan}");
+  }
+
+  @Test public void testImplicitJoinExpandAndDecorrelation() {
+    String sql = ""
+        + "SELECT emp.deptno, emp.sal\n"
+        + "FROM dept, emp "
+        + "WHERE emp.deptno = dept.deptno AND emp.sal < (\n"
+        + "  SELECT AVG(emp.sal)\n"
+        + "  FROM emp\n"
+        + "  WHERE  emp.deptno = dept.deptno\n"
+        + ")";
+    sql(sql).convertsTo("${plan}");
+  }
+
   /**
    * A variant of {@code TesterImpl} with a different type factory always
    * returning DOUBLE as return type for aggregation functions.
@@ -3044,44 +3132,6 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
         }
       });
     }
-  }
-
-  @Test public void testJoinExpandAndDecorrelation() {
-    String sql = ""
-        + "SELECT emp.deptno, emp.sal\n"
-        + "FROM dept\n"
-        + "JOIN emp ON emp.deptno = dept.deptno AND emp.sal < (\n"
-        + "  SELECT AVG(emp.sal)\n"
-        + "  FROM emp\n"
-        + "  WHERE  emp.deptno = dept.deptno\n"
-        + ")";
-    sql(sql)
-            .decorrelate(true)
-            .expand(true)
-            .convertsTo("${plan_extended}");
-    sql(sql)
-            .decorrelate(false)
-            .expand(false)
-            .convertsTo("${plan_not_extended}");
-  }
-
-  @Test public void testImplicitJoinExpandAndDecorrelation() {
-    String sql = ""
-        + "SELECT emp.deptno, emp.sal\n"
-        + "FROM dept, emp "
-        + "WHERE emp.deptno = dept.deptno AND emp.sal < (\n"
-        + "  SELECT AVG(emp.sal)\n"
-        + "  FROM emp\n"
-        + "  WHERE  emp.deptno = dept.deptno\n"
-        + ")";
-    sql(sql)
-            .decorrelate(true)
-            .expand(true)
-            .convertsTo("${plan_extended}");
-    sql(sql)
-            .decorrelate(false)
-            .expand(false)
-            .convertsTo("${plan_not_extended}");
   }
 
   /**
