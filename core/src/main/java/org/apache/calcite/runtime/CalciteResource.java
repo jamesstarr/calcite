@@ -23,16 +23,6 @@ import org.apache.calcite.runtime.Resources.Inst;
 import org.apache.calcite.runtime.Resources.Property;
 import org.apache.calcite.sql.validate.SqlValidatorException;
 
-<<<<<<< HEAD
-import org.checkerframework.checker.nullness.qual.Nullable;
-
-import static org.apache.calcite.runtime.Resources.BaseMessage;
-import static org.apache.calcite.runtime.Resources.ExInst;
-import static org.apache.calcite.runtime.Resources.ExInstWithCause;
-import static org.apache.calcite.runtime.Resources.Inst;
-import static org.apache.calcite.runtime.Resources.Property;
-
-=======
 >>>>>>> 0b7d6d6d5 (Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)")
 /**
  * Compiler-checked resources for the Calcite project.
@@ -836,6 +826,12 @@ public interface CalciteResource {
 
   @BaseMessage("View ''{0}'' not found")
   ExInst<SqlValidatorException> viewNotFound(String name);
+<<<<<<< HEAD
+=======
+
+  @BaseMessage("Correlated subqueries in on clauses are not supported.")
+  ExInst<CalciteException> subqueryInOnClauses();
+}
 
   @BaseMessage("Type ''{0}'' not found")
   ExInst<SqlValidatorException> typeNotFound(String name);

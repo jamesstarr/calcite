@@ -39,6 +39,7 @@ import org.apache.calcite.rel.RelShuttleImpl;
 import org.apache.calcite.rel.SingleRel;
 import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.core.Collect;
+import org.apache.calcite.rel.core.Correlate;
 import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Join;
@@ -203,7 +204,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static org.apache.calcite.sql.SqlUtil.newContextException;
 import static org.apache.calcite.sql.SqlUtil.stripAs;
+import static org.apache.calcite.util.Static.RESOURCE;
 
 /**
  * Converts a SQL parse tree (consisting of
@@ -2821,13 +2824,9 @@ public class SqlToRelConverter {
               + ", new ns=" + foundNs;
         }
 
-        int namespaceOffset = 0;
-        if (childNamespaceIndex > 0) {
-          // If not the first child, need to figure out the width
-          // of output types from all the preceding namespaces
-          assert ancestorScope instanceof ListScope;
-          List<SqlValidatorNamespace> children =
-              ((ListScope) ancestorScope).getChildren();
+      assert  field.getType()
+          == topLevelFieldAccess.getField().getType()
+          : "field.type is the same as top level access type";
 
           for (int i = 0; i < childNamespaceIndex; i++) {
             SqlValidatorNamespace child = children.get(i);
@@ -3011,30 +3010,43 @@ public class SqlToRelConverter {
     replaceSubQueries(bb, condition, RelOptUtil.Logic.UNKNOWN_AS_FALSE);
     final RelNode newRightRel = bb.root == null || bb.registered.size() == 0
         ? rightRel
-        : bb.reRegister(rightRel);
+        : reRegisterEnsuringNoCorrelatedNodes(bb, join, rightRel);
     bb.setRoot(ImmutableList.of(leftRel, newRightRel));
     RexNode conditionExp =  bb.convertExpression(condition);
     return Pair.of(conditionExp, newRightRel);
-<<<<<<< HEAD
-=======
-    switch (conditionType) {
-    case ON:
-      bb.setRoot(ImmutableList.of(leftRel, rightRel));
-      return bb.convertExpression(condition);
-    case USING:
-      final SqlNodeList list = (SqlNodeList) condition;
-      final List<String> nameList = new ArrayList<>();
-      for (SqlNode columnName : list) {
-        final SqlIdentifier id = (SqlIdentifier) columnName;
-        String name = id.getSimple();
-        nameList.add(name);
-      }
-      return convertUsing(leftNamespace, rightNamespace, nameList);
-    default:
-      throw Util.unexpected(conditionType);
-    }
-=======
 >>>>>>> 40704db1d (Revert "Revert "[CALCITE-4210] Replaying subqueries in ON clauses (James Starr)"")
+  }
+
+  private RelNode reRegisterEnsuringNoCorrelatedNodes(
+      Blackboard bb,
+      SqlNode sqlCondition,
+      RelNode base) {
+    try {
+      final RelNode top = bb.reRegister(base);
+      RelNode mTop = top;
+      while (mTop != base) {
+        if (mTop instanceof Correlate) {
+          throw newContextException(
+              sqlCondition.getParserPosition(),
+              RESOURCE.subqueryInOnClauses());
+        }
+        mTop = mTop.getInput(0);
+      }
+      return top;
+    } catch (AssertionError assertionError) {
+      String message = assertionError.getMessage();
+      if (null == message) {
+        throw assertionError;
+      } else if (
+          message.contains("All correlation variables should resolve to the same namespace")
+          || message.contains("field.type is the same as top level access type")
+      ) {
+        throw newContextException(
+            sqlCondition.getParserPosition(),
+            RESOURCE.subqueryInOnClauses());
+      }
+      throw assertionError;
+    }
   }
 
   /**
@@ -4701,6 +4713,7 @@ public class SqlToRelConverter {
     private List<RegisterArgs> registered = new ArrayList<>();
 
     private boolean isPatternVarRef = false;
+    private int scopeOffset = 0;
 
     final List<RelNode> cursors = new ArrayList<>();
 
@@ -4786,7 +4799,9 @@ public class SqlToRelConverter {
         List<RexNode> leftKeys) {
       assert joinType != null;
       registered.add(new RegisterArgs(rel, joinType, leftKeys));
+      int localScopeOffset = scopeOffset;
       if (root == null) {
+<<<<<<< HEAD
         if (inputs != null) {
           int offset = inputs.stream()
               .map(RelNode::getRowType)
@@ -4808,6 +4823,14 @@ public class SqlToRelConverter {
               0,
               false);
         }
+=======
+        assert leftKeys == null;
+        setRoot(rel, false);
+        this.scopeOffset = localScopeOffset;
+        return rexBuilder.makeRangeReference(
+            root.getRowType(),
+            localScopeOffset,
+            false);
       }
 
       final RexNode joinCond;
@@ -4841,6 +4864,7 @@ public class SqlToRelConverter {
         }
 
         setRoot(newLeftInput, false);
+        this.scopeOffset = localScopeOffset;
 
         // right fields appear after the LHS fields.
         final List<Integer> rightKeys = Util.range(0, leftKeys.size());
@@ -4852,7 +4876,8 @@ public class SqlToRelConverter {
         joinCond = rexBuilder.makeLiteral(true);
       }
 
-      int leftFieldCount = root.getRowType().getFieldCount();
+      final int leftFieldCount = root.getRowType().getFieldCount();
+
       final RelNode join =
           createJoin(
               this,
@@ -4864,6 +4889,7 @@ public class SqlToRelConverter {
               ImmutableSet.of());
 
       setRoot(join, false);
+      this.scopeOffset = localScopeOffset;
 
       if (leftKeys != null
           && joinType == JoinRelType.LEFT) {
@@ -4885,15 +4911,14 @@ public class SqlToRelConverter {
                     return rexRangeRefLength;
                   }
                 });
-
         return rexBuilder.makeRangeReference(
             returnType,
-            origLeftInputCount,
+            origLeftInputCount + localScopeOffset,
             false);
       } else {
         return rexBuilder.makeRangeReference(
             rel.getRowType(),
-            leftFieldCount,
+            leftFieldCount + localScopeOffset,
             joinType.generatesNullsOnRight());
       }
     }
@@ -4946,6 +4971,14 @@ public class SqlToRelConverter {
       this.systemFieldList.clear();
       if (hasSystemFields) {
         this.systemFieldList.addAll(getSystemFields());
+      }
+
+      if (root == null) {
+        scopeOffset = inputs.stream()
+            .mapToInt(rn -> rn.getRowType().getFieldCount())
+            .sum();
+      } else {
+        scopeOffset = 0;
       }
     }
 
