@@ -2490,7 +2490,7 @@ public class SqlParserTest {
         "'abba'\n'0001'");
     checkExp(
         "N'yabba'\n'dabba'\n'doo'",
-        "_UTF-8'yabba'\n'dabba'\n'doo'");
+        "_ISO-8859-1'yabba'\n'dabba'\n'doo'");
     checkExp(
         "_iso-8859-1'yabba'\n'dabba'\n'don''t'",
         "_ISO-8859-1'yabba'\n'dabba'\n'don''t'");
@@ -3768,11 +3768,12 @@ public class SqlParserTest {
 
   @Test public void testStringLiteral() {
     checkExp("_latin1'hi'", "_LATIN1'hi'");
-    checkExp("N'is it a plane? no it''s superman!'",
-        "_UTF-8'is it a plane? no it''s superman!'");
-    checkExp("n'lowercase n'", "_UTF-8'lowercase n'");
+    checkExp(
+        "N'is it a plane? no it''s superman!'",
+        "_ISO-8859-1'is it a plane? no it''s superman!'");
+    checkExp("n'lowercase n'", "_ISO-8859-1'lowercase n'");
     checkExp("'boring string'", "'boring string'");
-    checkExp("_uTf-8'bye'", "_UTF-8'bye'");
+    checkExp("_iSo-8859-1'bye'", "_ISO-8859-1'bye'");
     checkExp(
         "'three' \n ' blind'\n' mice'",
         "'three'\n' blind'\n' mice'");
@@ -3781,10 +3782,10 @@ public class SqlParserTest {
         "'three'\n' blind'\n' mice'");
     checkExp(
         "N'bye' \t\r\f\f\n' bye'",
-        "_UTF-8'bye'\n' bye'");
+        "_ISO-8859-1'bye'\n' bye'");
     checkExp(
-        "_utf-8'bye' \n\n--\n-- this is a comment\n' bye'",
-        "_UTF-8'bye'\n' bye'");
+        "_iso-8859-1'bye' \n\n--\n-- this is a comment\n' bye'",
+        "_ISO-8859-1'bye'\n' bye'");
 
     // newline in string literal
     checkExp("'foo\rbar'", "'foo\rbar'");
@@ -3814,7 +3815,7 @@ public class SqlParserTest {
     // valid syntax, but should give a validator error
     check(
         "select N'1' '2' from t",
-        "SELECT _UTF-8'1'\n'2'\n"
+        "SELECT _ISO-8859-1'1'\n'2'\n"
             + "FROM `T`");
   }
 

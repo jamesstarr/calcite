@@ -102,7 +102,7 @@ public class RelOptUtilTest {
     TestUtil.assertEqualsVerbose(
         TestUtil.fold(
             "f0 DECIMAL(5, 2) NOT NULL,",
-            "f1 VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL"),
+            "f1 VARCHAR(10) CHARACTER SET \"ISO-8859-1\" COLLATE \"ISO-8859-1$en_US$primary\" NOT NULL"),
         Util.toLinux(RelOptUtil.dumpType(t1) + "\n"));
 
     RelDataType t2 =
@@ -114,10 +114,10 @@ public class RelOptUtilTest {
         TestUtil.fold(
             "f0 RECORD (",
             "  f0 DECIMAL(5, 2) NOT NULL,",
-            "  f1 VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL) NOT NULL,",
+            "  f1 VARCHAR(10) CHARACTER SET \"ISO-8859-1\" COLLATE \"ISO-8859-1$en_US$primary\" NOT NULL) NOT NULL,",
             "f1 RECORD (",
             "  f0 DECIMAL(5, 2) NOT NULL,",
-            "  f1 VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL) NOT NULL MULTISET NOT NULL"),
+            "  f1 VARCHAR(10) CHARACTER SET \"ISO-8859-1\" COLLATE \"ISO-8859-1$en_US$primary\" NOT NULL) NOT NULL MULTISET NOT NULL"),
         Util.toLinux(RelOptUtil.dumpType(t2) + "\n"));
   }
 

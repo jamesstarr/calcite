@@ -1976,19 +1976,6 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
-  @Test public void testInsertExtendedCharset() {
-    final String sql = "insert into empdefaults(updated TIMESTAMP)\n"
-            + " (ename, deptno, empno, updated, sal)\n"
-            + " values ('Freddie', 567, 40, timestamp '2017-03-12 13:03:05', 999999),\n"
-            + "        ('上海', 456, 44, timestamp '2017-03-12 13:03:05', 999999)";
-    sql(sql).ok();
-  }
-
-  @Test public void testSelectExtendedCharset() {
-    final String sql = "select * from empdefaults where ename = '上海'";
-    sql(sql).ok();
-  }
-
   @Test public void testInsertSubset() {
     final String sql = "insert into empnullables\n"
         + "values (50, 'Fred')";

@@ -590,7 +590,7 @@ public class RelBuilderTest {
             .convert(rowType, false)
             .build();
     final String expected = ""
-        + "LogicalProject(DEPTNO=[CAST($0):BIGINT NOT NULL], DNAME=[CAST($1):VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL], LOC=[CAST($2):VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL])\n"
+        + "LogicalProject(DEPTNO=[CAST($0):BIGINT NOT NULL], DNAME=[CAST($1):VARCHAR(10) CHARACTER SET \"ISO-8859-1\" COLLATE \"ISO-8859-1$en_US$primary\" NOT NULL], LOC=[CAST($2):VARCHAR(10) CHARACTER SET \"ISO-8859-1\" COLLATE \"ISO-8859-1$en_US$primary\" NOT NULL])\n"
         + "  LogicalTableScan(table=[[scott, DEPT]])\n";
     assertThat(root, hasTree(expected));
   }
@@ -608,9 +608,7 @@ public class RelBuilderTest {
             .convert(rowType, true)
             .build();
     final String expected = ""
-        + "LogicalProject(a=[CAST($0):BIGINT NOT NULL], b=[CAST($1):VARCHAR(10) CHARACTER "
-        + "SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL], c=[CAST($2):VARCHAR(10) CHARACTER "
-        + "SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL])\n"
+        + "LogicalProject(a=[CAST($0):BIGINT NOT NULL], b=[CAST($1):VARCHAR(10) CHARACTER SET \"ISO-8859-1\" COLLATE \"ISO-8859-1$en_US$primary\" NOT NULL], c=[CAST($2):VARCHAR(10) CHARACTER SET \"ISO-8859-1\" COLLATE \"ISO-8859-1$en_US$primary\" NOT NULL])\n"
         + "  LogicalTableScan(table=[[scott, DEPT]])\n";
     assertThat(root, hasTree(expected));
   }
@@ -1617,7 +1615,7 @@ public class RelBuilderTest {
         "LogicalValues(tuples=[[{ null, 1, 'abc' }, { false, null, 'longer string' }]])\n";
     assertThat(root, hasTree(expected));
     final String expectedType =
-        "RecordType(BOOLEAN a, INTEGER expr$1, CHAR(13) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL c) NOT NULL";
+        "RecordType(BOOLEAN a, INTEGER expr$1, CHAR(13) CHARACTER SET \"ISO-8859-1\" COLLATE \"ISO-8859-1$en_US$primary\" NOT NULL c) NOT NULL";
     assertThat(root.getRowType().getFullTypeString(), is(expectedType));
   }
 
@@ -1690,7 +1688,7 @@ public class RelBuilderTest {
         "LogicalValues(tuples=[[{ null, null }, { 1, null }]])\n";
     assertThat(root, hasTree(expected));
     final String expectedType =
-        "RecordType(BIGINT NOT NULL a, VARCHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL a) NOT NULL";
+        "RecordType(BIGINT NOT NULL a, VARCHAR(10) CHARACTER SET \"ISO-8859-1\" COLLATE \"ISO-8859-1$en_US$primary\" NOT NULL a) NOT NULL";
     assertThat(root.getRowType().getFullTypeString(), is(expectedType));
   }
 

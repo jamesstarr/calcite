@@ -57,7 +57,6 @@ import com.google.common.collect.Lists;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -880,13 +879,12 @@ public class RexBuilder {
           || (nlsString.getCharset() == null)) {
         assert type.getSqlTypeName() == SqlTypeName.CHAR
                 || type.getSqlTypeName() == SqlTypeName.VARCHAR;
-        Charset charset = type.getCharset();
-        assert charset != null : "type.getCharset() must not be null";
+        assert type.getCharset().name() != null;
         assert type.getCollation() != null;
         o = new NlsString(
-                nlsString.getValue(),
-                charset.name(),
-                type.getCollation());
+            nlsString.getValue(),
+            type.getCharset().name(),
+            type.getCollation());
       }
       break;
     case TIME:
