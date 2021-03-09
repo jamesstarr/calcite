@@ -151,19 +151,27 @@ LogicalIntersect(all=[false])
 LogicalIntersect(all=[false])
   LogicalUnion(all=[false])
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalProject(NAME=[CAST($0):VARCHAR(20) NOT NULL])
 =======
     LogicalProject(NAME=[CAST($0):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL])
 >>>>>>> f495333f2 ([DX-12070] Support for non-ISO-8859-1 literals)
+=======
+    LogicalProject(NAME=[CAST($0):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL])
+>>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
       LogicalProject(NAME=[$1])
         LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
     LogicalProject(ENAME=[$1])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalProject(FNAME=[CAST($0):VARCHAR(20) NOT NULL])
 =======
   LogicalProject(FNAME=[CAST($0):VARCHAR(20) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL])
 >>>>>>> f495333f2 ([DX-12070] Support for non-ISO-8859-1 literals)
+=======
+  LogicalProject(FNAME=[CAST($0):VARCHAR(20) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL])
+>>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
     LogicalProject(FNAME=[$1])
       LogicalTableScan(table=[[CATALOG, CUSTOMER, CONTACT]])
 ]]>

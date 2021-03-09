@@ -2136,7 +2136,7 @@ public abstract class SqlOperatorBaseTest {
         "corned beef on rye",
         "CHAR(18) NOT NULL");
     tester.checkString(
-        "_utf-8'Spaghetti'\n' all''Amatriciana'",
+        "_latin1'Spaghetti'\n' all''Amatriciana'",
         "Spaghetti all'Amatriciana",
         "CHAR(25) NOT NULL");
     tester.checkBoolean("x'1234'\n'abcd' = x'1234abcd'", Boolean.TRUE);
@@ -8085,7 +8085,7 @@ public abstract class SqlOperatorBaseTest {
     tester.checkScalar(
         "Array['foo', 'bar']",
         "[foo, bar]",
-        "CHAR(3) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL ARRAY NOT NULL");
+        "CHAR(3) NOT NULL ARRAY NOT NULL");
 
     // empty array is illegal per SQL spec. presumably because one can't
     // infer type
@@ -8144,7 +8144,7 @@ public abstract class SqlOperatorBaseTest {
         false);
     tester.checkScalarExact(
         "map['washington', 1, 'obama', 44]",
-        "(CHAR(10) CHARACTER SET \"UTF-8\" COLLATE \"UTF-8$en_US$primary\" NOT NULL, INTEGER NOT NULL) MAP NOT NULL",
+        "(CHAR(10) NOT NULL, INTEGER NOT NULL) MAP NOT NULL",
         "{washington=1, obama=44}");
 
     final SqlTester tester2 =

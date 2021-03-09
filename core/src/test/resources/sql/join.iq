@@ -133,7 +133,7 @@ EnumerableNestedLoopJoin(condition=[OR(=($1, $3), =(CAST($0):CHAR(11) NOT NULL, 
   EnumerableValues(tuples=[[{ 10, 'Sales      ' }, { 20, 'Marketing  ' }, { 30, 'Engineering' }, { 40, 'Empty      ' }]])
 =======
 # As an INNER join, it can be executed as an equi-join followed by a filter
-EnumerableCalc(expr#0..4=[{inputs}], expr#5=[=($t1, $t3)], expr#6=[CAST($t0):CHAR(11) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL], expr#7=[=($t6, $t4)], expr#8=[OR($t5, $t7)], proj#0..4=[{exprs}], $condition=[$t8])
+EnumerableCalc(expr#0..4=[{inputs}], expr#5=[=($t1, $t3)], expr#6=[CAST($t0):CHAR(11) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL], expr#7=[=($t6, $t4)], expr#8=[OR($t5, $t7)], proj#0..4=[{exprs}], $condition=[$t8])
   EnumerableJoin(condition=[true], joinType=[inner])
     EnumerableUnion(all=[true])
       EnumerableCalc(expr#0=[{inputs}], expr#1=['Jane'], expr#2=[10], expr#3=['F'], EXPR$0=[$t1], EXPR$1=[$t2], EXPR$2=[$t3])
@@ -185,8 +185,12 @@ on emp.deptno = dept.deptno or emp.ename = dept.dname;
 EnumerableNestedLoopJoin(condition=[OR(=($1, $3), =(CAST($0):CHAR(11) NOT NULL, $4))], joinType=[left])
 =======
 # Cannot be decomposed into an equi-join; plan uses EnumerableThetaJoin
+<<<<<<< HEAD
 EnumerableThetaJoin(condition=[OR(=($1, $3), =(CAST($0):CHAR(11) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary" NOT NULL, $4))], joinType=[left])
 >>>>>>> f495333f2 ([DX-12070] Support for non-ISO-8859-1 literals)
+=======
+EnumerableThetaJoin(condition=[OR(=($1, $3), =(CAST($0):CHAR(11) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL, $4))], joinType=[left])
+>>>>>>> df01d8132 (Revert "[DX-12070] Support for non-ISO-8859-1 literals")
   EnumerableUnion(all=[true])
     EnumerableCalc(expr#0=[{inputs}], expr#1=['Jane'], expr#2=[10], expr#3=['F'], EXPR$0=[$t1], EXPR$1=[$t2], EXPR$2=[$t3])
       EnumerableValues(tuples=[[{ 0 }]])

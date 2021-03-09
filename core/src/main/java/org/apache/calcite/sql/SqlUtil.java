@@ -861,67 +861,20 @@ public abstract class SqlUtil {
    * @return Java-level name, or null if SQL-level name is unknown
    */
   public static String translateCharacterSetName(String name) {
-    switch (name) {
-    case "BIG5":
-      return "Big5";
-    case "LATIN1":
+    if (name.equals("LATIN1")) {
       return "ISO-8859-1";
-    case "UTF8":
-      return "UTF-8";
-    case "UTF16":
-    case "UTF-16":
-    case "UTF_16":
+    } else if (name.equals("UTF16")) {
       return ConversionUtil.NATIVE_UTF16_CHARSET_NAME;
-    case "GB2312":
-    case "GBK":
-    case "UTF-16BE":
-    case "UTF-16LE":
-    case "ISO-8859-1":
-    case "UTF-8":
+    } else if (name.equals(ConversionUtil.NATIVE_UTF16_CHARSET_NAME)) {
+      // no translation needed
       return name;
-    default:
-      return null;
-<<<<<<< HEAD
-    }
-  }
-
-  /**
-   * Returns the Java-level {@link Charset} based on given SQL-level name.
-   *
-   * @param charsetName Sql charset name, must not be null.
-   * @return charset, or default charset if charsetName is null.
-   * @throws UnsupportedCharsetException If no support for the named charset
-   *     is available in this instance of the Java virtual machine
-   */
-  public static Charset getCharset(String charsetName) {
-    assert charsetName != null;
-    charsetName = charsetName.toUpperCase(Locale.ROOT);
-    String javaCharsetName = translateCharacterSetName(charsetName);
-    if (javaCharsetName == null) {
-      throw new UnsupportedCharsetException(charsetName);
-    }
-    return Charset.forName(javaCharsetName);
-  }
-
-  /**
-   * Validate if value can be decoded by given charset.
-   *
-   * @param value nls string in byte array
-   * @param charset charset
-   * @throws RuntimeException If the given value cannot be represented in the
-   *     given charset
-   */
-  public static void validateCharset(ByteString value, Charset charset) {
-    if (charset == StandardCharsets.UTF_8) {
-      final byte[] bytes = value.getBytes();
-      if (!Utf8.isWellFormed(bytes)) {
-        //CHECKSTYLE: IGNORE 1
-        final String string = new String(bytes, charset);
-        throw RESOURCE.charsetEncoding(string, charset.name()).ex();
-      }
-=======
+    } else if (name.equals("ISO-8859-1")) {
+      // no translation needed
+      return name;
 >>>>>>> f495333f2 ([DX-12070] Support for non-ISO-8859-1 literals)
+=======
     }
+    return null;
   }
 
   /** If a node is "AS", returns the underlying expression; otherwise returns

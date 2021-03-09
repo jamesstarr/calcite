@@ -2482,9 +2482,6 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
-<<<<<<< HEAD
-  @Test void testInsertExtendedCharset() {
-=======
   @Test public void testInsertExtendedCharset() {
     final String sql = "insert into empdefaults(updated TIMESTAMP)\n"
             + " (ename, deptno, empno, updated, sal)\n"
@@ -2498,6 +2495,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
+=======
   @Test public void testInsertSubset() {
     final String sql = "insert into empnullables\n"
         + "values (50, 'Fred')";
