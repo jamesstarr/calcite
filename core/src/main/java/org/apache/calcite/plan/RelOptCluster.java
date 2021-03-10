@@ -20,11 +20,9 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.hint.HintStrategyTable;
 import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
-import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
 import org.apache.calcite.rel.metadata.MetadataFactory;
 import org.apache.calcite.rel.metadata.RelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
-import org.apache.calcite.rel.metadata.RelMetadataQueryBase;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexNode;
@@ -140,7 +138,13 @@ public class RelOptCluster {
    * @param metadataProvider custom provider
    */
   @SuppressWarnings("deprecation")
->>>>>>> 889035685 ([CALCITE-4544] Deprecation of Java Reflection MD API)
+
+  public void setMetadataProvider(RelMetadataProvider metadataProvider) {
+    this.metadataProvider = metadataProvider;
+    this.metadataFactory =
+        new org.apache.calcite.rel.metadata.MetadataFactoryImpl(metadataProvider);
+  }
+
   @Deprecated // to be removed before 2.0
   public MetadataFactory getMetadataFactory() {
     return metadataFactory;

@@ -18,7 +18,6 @@ package org.apache.calcite.rel.metadata;
 
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.metadata.janino.JaninoMetadataHandlerCreator;
-import org.apache.calcite.util.ControlFlowException;
 import org.apache.calcite.util.SaffronProperties;
 import org.apache.calcite.util.Util;
 
@@ -309,8 +308,8 @@ import java.util.concurrent.ExecutionException;
         map);
   }
 
-  synchronized <M extends Metadata, H extends MetadataHandler<M>> H create(
-      MetadataDef<M> def) {
+  static synchronized <M extends Metadata, H extends MetadataHandler<M>> H create(
+      RelMetadataProvider provider, MetadataDef<M> def) {
     try {
       final Key key = new Key(def, provider);
       //noinspection unchecked
@@ -321,10 +320,10 @@ import java.util.concurrent.ExecutionException;
     }
   }
 
-  synchronized <M extends Metadata, H extends MetadataHandler<M>> H revise(
-      Class<? extends RelNode> rClass, MetadataDef<M> def) {
+  static synchronized <M extends Metadata, H extends MetadataHandler<M>> H revise(
+      RelMetadataProvider provider, MetadataDef<M> def) {
     //noinspection unchecked
-    return (H) create(def);
+    return (H) create(provider, def);
   }
 
   /** Registers some classes. Does not flush the providers, but next time we
@@ -338,12 +337,13 @@ import java.util.concurrent.ExecutionException;
 =======
   /** Exception that indicates there there should be a handler for
    * this class but there is not. The action is probably to
-   * re-generate the handler class. */
-  public static class NoHandler extends ControlFlowException {
-    public final Class<? extends RelNode> relClass;
+   * re-generate the handler class.
+   *
+   * Please use MetadataHandlerProvider.NoHandler.*/
+  @Deprecated
+  public static class NoHandler extends MetadataHandlerProvider.NoHandler {
 
     public NoHandler(Class<? extends RelNode> relClass) {
-      this.relClass = relClass;
     }
   }
 
