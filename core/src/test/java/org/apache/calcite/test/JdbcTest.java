@@ -5919,12 +5919,15 @@ public class JdbcTest {
     with.query("values '\u82f1\u56fd'")
         .throws_(
             "Failed to encode '\u82f1\u56fd' in character set 'ISO-8859-1'");
+    with.query("values _UTF8'\u82f1\u56fd'")
+        .returns("EXPR$0=英国\n");
+    with.query("values _LATIN1'\u82f1\u56fd'")
+        .throws_("Failed to encode '英国' in character set 'ISO-8859-1'");
 
     // comparing a unicode string literal with a regular string literal
     with.query(
         "select * from \"employee\" where \"full_name\" = '\u82f1\u56fd'")
-        .throws_(
-            "Failed to encode '\u82f1\u56fd' in character set 'ISO-8859-1'");
+        .throws_("Failed to encode '\u82f1\u56fd' in character set 'ISO-8859-1'");
     with.query(
         "select * from \"employee\" where \"full_name\" = _UTF16'\u82f1\u56fd'")
         .throws_(
@@ -5934,7 +5937,7 @@ public class JdbcTest {
     // not implemented yet. See
     // https://issues.apache.org/jira/browse/CALCITE-111.
     with.query("select * from \"employee\"\n"
-        + "where convert(\"full_name\" using UTF16) = _UTF16'\u82f1\u56fd'")
+        + "where convert(\"full_name\" using UTF16) = _UTF_16'\u82f1\u56fd'")
         .throws_("Column 'UTF16' not found in any table");
   }
 

@@ -983,6 +983,44 @@ public class RelToSqlConverterTest {
     sql(query).ok(expected);
   }
 
+  @Test public void testSelectUnicodeLike() {
+    String query = "select \"product_name\" from \"product\" a "
+            + "where \"product_name\" like '上海'";
+    sql(query)
+       .withMssql()
+       .throws_("while converting `A`.`product_name` LIKE '上海'");
+    sql(query)
+       .withPostgresql()
+       .throws_("while converting `A`.`product_name` LIKE '上海'");
+    sql(query)
+       .throws_("while converting `A`.`product_name` LIKE '上海'");
+  }
+
+  @Test public void testSelectUnicodeEqual() {
+    String query1 = "select \"product_name\" from \"product\" a "
+            + "where \"product_name\" = '上海'";
+    String query2 = "select '€'";
+    String query3 = "values '\u82f1\u56fd'";
+    sql(query1)
+       .withMssql()
+       .throws_("Failed to encode '上海' in character set 'ISO-8859-1'");
+    sql(query1)
+       .withPostgresql()
+       .throws_("Failed to encode '上海' in character set 'ISO-8859-1'");
+    sql(query1)
+       .throws_("Failed to encode '上海' in character set 'ISO-8859-1'");
+    sql(query2)
+       .withMssql()
+       .throws_("Failed to encode '€' in character set 'ISO-8859-1'");
+    sql(query2)
+       .withPostgresql()
+       .throws_("Failed to encode '€' in character set 'ISO-8859-1'");
+    sql(query2)
+       .throws_("Failed to encode '€' in character set 'ISO-8859-1'");
+    sql(query3)
+       .throws_("Failed to encode '英国' in character set 'ISO-8859-1'");
+  }
+
   @Test public void testLiteral() {
     checkLiteral("DATE '1978-05-02'");
     checkLiteral2("DATE '1978-5-2'", "DATE '1978-05-02'");

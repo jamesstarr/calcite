@@ -858,18 +858,27 @@ public abstract class SqlUtil {
    * @return Java-level name, or null if SQL-level name is unknown
    */
   public static String translateCharacterSetName(String name) {
-    if (name.equals("LATIN1")) {
+    switch (name) {
+    case "BIG5":
+      return "Big5";
+    case "LATIN1":
       return "ISO-8859-1";
-    } else if (name.equals("UTF16")) {
+    case "UTF8":
+      return "UTF-8";
+    case "UTF16":
+    case "UTF-16":
+    case "UTF_16":
       return ConversionUtil.NATIVE_UTF16_CHARSET_NAME;
-    } else if (name.equals(ConversionUtil.NATIVE_UTF16_CHARSET_NAME)) {
-      // no translation needed
+    case "GB2312":
+    case "GBK":
+    case "UTF-16BE":
+    case "UTF-16LE":
+    case "ISO-8859-1":
+    case "UTF-8":
       return name;
-    } else if (name.equals("ISO-8859-1")) {
-      // no translation needed
-      return name;
+    default:
+      return null;
     }
-    return null;
   }
 
   /** If a node is "AS", returns the underlying expression; otherwise returns

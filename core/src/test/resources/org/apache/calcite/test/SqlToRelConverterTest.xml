@@ -3299,6 +3299,32 @@ LogicalTableModify(table=[[CATALOG, SALES, EMPNULLABLES]], operation=[INSERT], f
 ]]>
         </Resource>
     </TestCase>
+    <TestCase name="testInsertExtendedCharset">
+        <Resource name="sql">
+            <![CDATA[insert into empdefaults(updated TIMESTAMP)
+ (ename, deptno, empno, updated, sal)
+ values ('Freddie', 567, 40, 2017-03-12 13:03:05, 999999 }, {'上海', 456, 44, 2017-03-12 13:03:05, 999999)]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalTableModify(table=[[CATALOG, SALES, EMPDEFAULTS]], operation=[INSERT], flattened=[true])
+  LogicalProject(EMPNO=[$2], ENAME=[$0], JOB=[null], MGR=[null], HIREDATE=[null], SAL=[$4], COMM=[null], DEPTNO=[$1], SLACKER=[null], UPDATED=[$3])
+    LogicalValues(tuples=[[{ 'Freddie', 567, 40, 2017-03-12 13:03:05, 999999 }, { '上海', 456, 44, 2017-03-12 13:03:05, 999999 }]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testSelectExtendedCharset">
+        <Resource name="sql">
+            <![CDATA[select * from empdefaults where ename = '上海']]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+  LogicalFilter(condition=[=($1, '上海')])
+    LogicalTableScan(table=[[CATALOG, SALES, EMPDEFAULTS]])
+]]>
+        </Resource>
+    </TestCase>
     <TestCase name="testInsertSubset">
         <Resource name="sql">
             <![CDATA[insert into empnullables
