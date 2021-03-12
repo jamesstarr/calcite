@@ -21,14 +21,26 @@ import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Intersect;
+import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.logical.LogicalIntersect;
+import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rex.RexBuilder;
+import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.rex.RexWindowBounds;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBitSet;
-import org.apache.calcite.util.Util;
+
+import com.google.common.collect.ImmutableList;
 
 import java.math.BigDecimal;
+import java.util.AbstractMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.calcite.rel.rules.ProjectToWindowRule.ProjectToLogicalProjectAndWindowRule.projectToWindow;
 
 /**
  * Planner rule that translates a distinct
@@ -87,18 +99,47 @@ public class IntersectToDistinctRule
 
   @Override public void onMatch(RelOptRuleCall call) {
     final Intersect intersect = call.rel(0);
-    if (intersect.all) {
-      return; // nothing we can do
-    }
     final RelOptCluster cluster = intersect.getCluster();
     final RexBuilder rexBuilder = cluster.getRexBuilder();
     final RelBuilder relBuilder = call.builder();
 
-    // 1st level GB: create a GB (col0, col1, count() as c) for each branch
+    final RelDataType intType = cluster.getTypeFactory().createSqlType(SqlTypeName.INTEGER);
+
+    RelDataType intersectRowType = intersect.getRowType();
+    List<RexNode> intersectFields = call.builder().push(intersect).fields();
+    RelDataType newRowType = cluster.getTypeFactory().createStructType(
+        ImmutableList.<Map.Entry<String, RelDataType>>builder()
+            .addAll(intersectRowType.getFieldList())
+            .add(new AbstractMap.SimpleEntry("helloWorld", intType))
+            .build()
+    );
+
+    final RexNode over = rexBuilder.makeOver(
+        intType,
+        SqlStdOperatorTable.ROW_NUMBER,
+        ImmutableList.of(),
+        intersectFields,
+        ImmutableList.of(),
+        RexWindowBounds.UNBOUNDED_PRECEDING,
+        RexWindowBounds.CURRENT_ROW,
+        true, true, false, false, false);
+
+
+        // 1st level GB: create a GB (col0, col1, count() as c) for each branch
     for (RelNode input : intersect.getInputs()) {
       relBuilder.push(input);
-      relBuilder.aggregate(relBuilder.groupKey(relBuilder.fields()),
-          relBuilder.countStar(null));
+      if (intersect.all) {
+        relBuilder.project(
+            ImmutableList.<RexNode>builder()
+              .addAll(intersectFields)
+              .add(relBuilder.alias(over, "helloworld"))
+              .build());
+        relBuilder.push(projectToWindow(call, (Project) relBuilder.build()));
+      } else {
+        relBuilder.aggregate(
+            relBuilder.groupKey(relBuilder.fields()),
+            relBuilder.countStar(null)); //HACK we have to have an aggergations?
+      }
     }
 
     // create a union above all the branches
@@ -108,20 +149,20 @@ public class IntersectToDistinctRule
 
     // 2nd level GB: create a GB (col0, col1, count(c)) for each branch
     // the index of c is union.getRowType().getFieldList().size() - 1
-    final int fieldCount = union.getRowType().getFieldCount();
+    final int unionFieldCount = union.getRowType().getFieldCount() - ((intersect.all) ? 0 : 1);
 
     final ImmutableBitSet groupSet =
-        ImmutableBitSet.range(fieldCount - 1);
+        ImmutableBitSet.range(unionFieldCount);
     relBuilder.aggregate(relBuilder.groupKey(groupSet),
         relBuilder.countStar(null));
 
     // add a filter count(c) = #branches
     relBuilder.filter(
-        relBuilder.equals(relBuilder.field(fieldCount - 1),
+        relBuilder.equals(relBuilder.field(relBuilder.fields().size() - 1),
             rexBuilder.makeBigintLiteral(new BigDecimal(branchCount))));
 
     // Project all but the last field
-    relBuilder.project(Util.skipLast(relBuilder.fields()));
+    relBuilder.project(intersectFields);
 
     // the schema for intersect distinct is like this
     // R3 on all attributes + count(c) as cnt

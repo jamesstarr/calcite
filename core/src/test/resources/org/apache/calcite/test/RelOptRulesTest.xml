@@ -3699,22 +3699,64 @@ LogicalIntersect(all=[true])
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+  LogicalFilter(condition=[=($10, 2)])
+    LogicalAggregate(group=[{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}], agg#0=[COUNT()])
+      LogicalUnion(all=[true])
+        LogicalWindow(window#0=[window(partition {0, 1, 2, 3, 4, 5, 6, 7, 8} rows between UNBOUNDED PRECEDING and CURRENT ROW aggs [ROW_NUMBER()])])
+          LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+            LogicalFilter(condition=[=($9, 2)])
+              LogicalAggregate(group=[{0, 1, 2, 3, 4, 5, 6, 7, 8}], agg#0=[COUNT()])
+                LogicalUnion(all=[true])
+                  LogicalAggregate(group=[{0, 1, 2, 3, 4, 5, 6, 7, 8}], agg#0=[COUNT()])
+                    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+                      LogicalFilter(condition=[=($7, 10)])
+                        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+                  LogicalAggregate(group=[{0, 1, 2, 3, 4, 5, 6, 7, 8}], agg#0=[COUNT()])
+                    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+                      LogicalFilter(condition=[=($7, 20)])
+                        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+        LogicalWindow(window#0=[window(partition {0, 1, 2, 3, 4, 5, 6, 7, 8} rows between UNBOUNDED PRECEDING and CURRENT ROW aggs [ROW_NUMBER()])])
+          LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+            LogicalFilter(condition=[=($7, 30)])
+              LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testSimpleIntersectAllToDistinctAll">
+        <Resource name="sql">
+            <![CDATA[select * from emp where deptno = 10
+intersect
+select * from emp where deptno = 20
+intersect all
+select * from emp where deptno = 30
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
 LogicalIntersect(all=[true])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
-    LogicalFilter(condition=[=($9, 2)])
-      LogicalAggregate(group=[{0, 1, 2, 3, 4, 5, 6, 7, 8}], agg#0=[COUNT()])
-        LogicalUnion(all=[true])
-          LogicalAggregate(group=[{0, 1, 2, 3, 4, 5, 6, 7, 8}], agg#0=[COUNT()])
-            LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
-              LogicalFilter(condition=[=($7, 10)])
-                LogicalTableScan(table=[[CATALOG, SALES, EMP]])
-          LogicalAggregate(group=[{0, 1, 2, 3, 4, 5, 6, 7, 8}], agg#0=[COUNT()])
-            LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
-              LogicalFilter(condition=[=($7, 20)])
-                LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalFilter(condition=[=($7, 20)])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
   LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
     LogicalFilter(condition=[=($7, 30)])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+  LogicalFilter(condition=[=($10, 2)])
+    LogicalAggregate(group=[{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}], agg#0=[COUNT()])
+      LogicalUnion(all=[true])
+        LogicalWindow(window#0=[window(partition {0, 1, 2, 3, 4, 5, 6, 7, 8} rows between UNBOUNDED PRECEDING and CURRENT ROW aggs [ROW_NUMBER()])])
+          LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+            LogicalFilter(condition=[=($7, 20)])
+              LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+        LogicalWindow(window#0=[window(partition {0, 1, 2, 3, 4, 5, 6, 7, 8} rows between UNBOUNDED PRECEDING and CURRENT ROW aggs [ROW_NUMBER()])])
+          LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+            LogicalFilter(condition=[=($7, 30)])
+              LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
     </TestCase>

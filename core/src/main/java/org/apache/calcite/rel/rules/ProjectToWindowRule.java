@@ -147,6 +147,11 @@ public abstract class ProjectToWindowRule
 
     @Override public void onMatch(RelOptRuleCall call) {
       Project project = call.rel(0);
+      RelNode newRel = projectToWindow(call, project);
+      call.transformTo(newRel);
+    }
+
+    public static RelNode projectToWindow(RelOptRuleCall call, Project project) {
       assert project.containsOver();
       final RelNode input = project.getInput();
       final RexProgram program =
@@ -180,8 +185,9 @@ public abstract class ProjectToWindowRule
         }
       };
       RelNode newRel = transform.execute();
-      call.transformTo(newRel);
+      return newRel;
     }
+
 
     /** Rule configuration. */
     public interface Config extends ProjectToWindowRule.Config {

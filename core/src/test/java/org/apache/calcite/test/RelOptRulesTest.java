@@ -2278,6 +2278,20 @@ class RelOptRulesTest extends RelOptTestBase {
         .check();
   }
 
+  /** Tests that {@link org.apache.calcite.rel.rules.IntersectToDistinctRule}
+   * correctly ignores an {@code INTERSECT ALL}. It can only handle
+   * {@code INTERSECT DISTINCT}. */
+  @Test void testSimpleIntersectAllToDistinctAll() {
+    final String sql = ""
+        + "select * from emp where deptno = 20\n"
+        + "intersect all\n"
+        + "select * from emp where deptno = 30\n";
+    sql(sql)
+        .withRule(
+            CoreRules.INTERSECT_TO_DISTINCT)
+        .check();
+  }
+
   /** Tests {@link CoreRules#MINUS_MERGE}, which merges 2
    * {@link Minus} operators into a single {@code Minus} with 3
    * inputs. */
