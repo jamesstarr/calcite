@@ -31,7 +31,7 @@ public interface MetadataHandlerProvider {
   /** Re-generates the handler for a given kind of metadata, adding support for
    * {@code class_} if it is not already present.*/
   <H extends MetadataHandler<M>, M extends Metadata> H revise(Class<? extends RelNode> rClass,
-      MetadataDef<M> def, RelMetadataProvider relMetadataProvider);
+      MetadataDef<M> def);
 
   /**
    * Creates a new cache.

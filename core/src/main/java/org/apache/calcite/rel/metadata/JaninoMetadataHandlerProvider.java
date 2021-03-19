@@ -29,6 +29,9 @@ public class JaninoMetadataHandlerProvider implements MetadataHandlerProvider {
 
   public static final JaninoMetadataHandlerProvider INSTANCE = new JaninoMetadataHandlerProvider();
 
+  private final ThreadLocal<RelMetadataProvider> relMetadataProviderThreadLocal =
+      new ThreadLocal<>();
+
   protected JaninoMetadataHandlerProvider() {
   }
 
@@ -37,13 +40,14 @@ public class JaninoMetadataHandlerProvider implements MetadataHandlerProvider {
         Proxy.newProxyInstance(RelMetadataQuery.class.getClassLoader(),
             new Class[] {handlerClass}, (proxy, method, args) -> {
               final RelNode r = requireNonNull((RelNode) args[0], "(RelNode) args[0]");
+              relMetadataProviderThreadLocal.set(r.getCluster().getMetadataProvider());
               throw new NoHandler(r.getClass());
             }));
   }
 
   @Override public <H extends MetadataHandler<M>, M extends Metadata> H revise(
-      Class<? extends RelNode> rClass, MetadataDef<M> def,
-      RelMetadataProvider relMetadataProvider) {
+      Class<? extends RelNode> rClass, MetadataDef<M> def) {
+    RelMetadataProvider relMetadataProvider = relMetadataProviderThreadLocal.get();
     return JaninoRelMetadataProvider.revise(relMetadataProvider, rClass, def);
   }
 

@@ -480,7 +480,7 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
     return revise(provider, rClass, def);
   }
 
-  static synchronized <M extends Metadata, H extends MetadataHandler<M>> H revise(
+  public static synchronized <M extends Metadata, H extends MetadataHandler<M>> H revise(
       RelMetadataProvider provider, Class<? extends RelNode> rClass, MetadataDef<M> def) {
     if (ALL_RELS.add(rClass)) {
       HANDLERS.invalidateAll();

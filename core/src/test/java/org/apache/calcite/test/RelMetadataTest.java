@@ -69,6 +69,7 @@ import org.apache.calcite.rel.metadata.CachingRelMetadataProvider;
 import org.apache.calcite.rel.metadata.ChainedRelMetadataProvider;
 import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
 import org.apache.calcite.rel.metadata.JaninoMetadataHandlerProvider;
+import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
 import org.apache.calcite.rel.metadata.Metadata;
 import org.apache.calcite.rel.metadata.MetadataCache;
 import org.apache.calcite.rel.metadata.MetadataDef;
@@ -141,8 +142,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.apache.calcite.test.Matchers.within;
 
@@ -1515,15 +1516,10 @@ public class RelMetadataTest extends SqlToRelTestBase {
   }
 
   @Test void testSupportLegacyCachingBehaviorViaMetadataQuery() {
-    final BiFunction<RelNode, List<?>, List<?>> toArgList = (relNode, list) ->
-        ImmutableList.builder().addAll(list)
-            .add(relNode.getCluster().getPlanner().getRelMetadataTimestamp(relNode))
-            .build();
-    RelMetadataQuery prototype = new CustomMq(new JaninoMetadataHandlerProvider() {
-      @Override public MetadataCache buildCache() {
-        return new LegacyInvalidationMetadataCache();
-      }
-    });
+    MetadataHandlerProvider customHandlerProvider = new CustomMetadataHandlerProvider(
+        LegacyInvalidationMetadataCache::new, ColTypeImpl.SOURCE);
+
+    RelMetadataQuery prototype = new CustomMq(customHandlerProvider);
 
     final List<String> buf = new ArrayList<>();
     ColTypeImpl.THREAD_LIST.set(buf);
@@ -1538,8 +1534,8 @@ public class RelMetadataTest extends SqlToRelTestBase {
         .convertSqlToRel(sql);
     final RelNode rel = root.rel;
     final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-    ColType.Handler colTypeHandler = JaninoMetadataHandlerProvider.INSTANCE.revise(
-        RelNode.class, ColType.DEF, ColTypeImpl.SOURCE
+    ColType.Handler colTypeHandler = customHandlerProvider.revise(
+        RelNode.class, ColType.DEF
     );
     // Top node is a filter. Its metadata uses getColType(RelNode, int).
     assertThat(rel, instanceOf(LogicalFilter.class));
@@ -3250,9 +3246,9 @@ public class RelMetadataTest extends SqlToRelTestBase {
   }
 
   /**
-   * Custom MetadataHandlerProvider for testing.
+   * Interceptor example of MetadataHandlerProvider.
    */
-  static class CustomMetadataHandlerProvider implements MetadataHandlerProvider {
+  static class RegenerationCheckHandlerProvider implements MetadataHandlerProvider {
     public static final List<Pair<String, String>>  REGENERATION_CAUSES = new ArrayList<>();
 
     @Override public <H> H initialHandler(Class<H> handlerClass) {
@@ -3261,16 +3257,44 @@ public class RelMetadataTest extends SqlToRelTestBase {
 
     @Override public <H extends MetadataHandler<M>, M extends Metadata> H revise(
         Class<? extends RelNode> rClass,
-        MetadataDef<M> def, RelMetadataProvider relMetadataProvider) {
+        MetadataDef<M> def) {
       if (rClass == CustomRel.class) {
         REGENERATION_CAUSES.add(
             Pair.of(def.metadataClass.getSimpleName(), rClass.getSimpleName()));
       }
-      return JaninoMetadataHandlerProvider.INSTANCE.revise(rClass, def, relMetadataProvider);
+      return JaninoMetadataHandlerProvider.INSTANCE.revise(rClass, def);
     }
 
     @Override public MetadataCache buildCache() {
       return new TableMetadataCache();
+    }
+  }
+
+  /**
+   * Custom MetadataHandlerProvider for testing.
+   */
+  static class CustomMetadataHandlerProvider implements MetadataHandlerProvider {
+    private final Supplier<MetadataCache> metadataCacheSupplier;
+    private final RelMetadataProvider relMetadataProvider;
+
+    CustomMetadataHandlerProvider(Supplier<MetadataCache> metadataCacheSupplier,
+        RelMetadataProvider relMetadataProvider) {
+      this.metadataCacheSupplier = metadataCacheSupplier;
+      this.relMetadataProvider = relMetadataProvider;
+    }
+
+    @Override public <H> H initialHandler(Class<H> handlerClass) {
+      return JaninoMetadataHandlerProvider.INSTANCE.initialHandler(handlerClass);
+    }
+
+    @Override public <H extends MetadataHandler<M>, M extends Metadata> H revise(
+        Class<? extends RelNode> rClass, MetadataDef<M> def) {
+      return JaninoRelMetadataProvider.revise(
+          relMetadataProvider, rClass, def);
+    }
+
+    @Override public MetadataCache buildCache() {
+      return metadataCacheSupplier.get();
     }
   }
 
@@ -3290,7 +3314,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
   @Test void testRegenerateHandler() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
-    final CustomMq prototype = new CustomMq(new CustomMetadataHandlerProvider());
+    final CustomMq prototype = new CustomMq(new RegenerationCheckHandlerProvider());
     final CustomMq mq = new CustomMq(prototype);
 
     RelNode filter = builder
@@ -3303,7 +3327,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
 
     // get metadata for the first time to make sure handler is generated.
     mq.getAverageRowSize(filter);
-    assertFalse(CustomMetadataHandlerProvider.REGENERATION_CAUSES.contains(cause));
+    assertFalse(RegenerationCheckHandlerProvider.REGENERATION_CAUSES.contains(cause));
 
     // get metadata for the second time, with a new node type,
     // and make sure regeneration happens.
@@ -3311,7 +3335,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     mq.getAverageRowSize(customRel);
 
     // make sure a regeneration log is produced
-    assertTrue(CustomMetadataHandlerProvider.REGENERATION_CAUSES.contains(cause));
+    assertTrue(RegenerationCheckHandlerProvider.REGENERATION_CAUSES.contains(cause));
   }
 
   private static final SqlOperator NONDETERMINISTIC_OP = new SqlSpecialOperator(
@@ -3519,8 +3543,8 @@ public class RelMetadataTest extends SqlToRelTestBase {
         try {
           return colTypeHandler.getColType(rel, this, column);
         } catch (MetadataHandlerProvider.NoHandler e) {
-          colTypeHandler = metadataHandlerProvider.revise(e.relClass, ColType.DEF,
-              rel.getCluster().getMetadataProvider());
+          colTypeHandler = metadataHandlerProvider.revise(e.relClass, ColType.DEF
+          );
         }
       }
     }
