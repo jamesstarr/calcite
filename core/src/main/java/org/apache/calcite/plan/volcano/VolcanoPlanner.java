@@ -1550,13 +1550,6 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     // not established. So, give the subset another chance to figure out
     // its cost.
     final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-<<<<<<< HEAD
-    try {
-      subset.propagateCostImprovements(this, mq, rel);
-    } catch (CyclicMetadataException e) {
-      // ignore
-    }
-=======
     subset.propagateCostImprovements(this, mq, rel);
 
     return subset;
@@ -1575,12 +1568,26 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
   }
 
   // implement RelOptPlanner
+<<<<<<< HEAD
   @Deprecated // to be removed before 2.0
   @Override public void registerMetadataProviders(List<RelMetadataProvider> list) {
+=======
+  public void addListener(RelOptListener newListener) {
+    // TODO jvs 6-Apr-2006:  new superclass AbstractRelOptPlanner
+    // now defines a multicast listener; just need to hook it in
+    if (listener != null) {
+      throw Util.needToImplement("multiple VolcanoPlanner listeners");
+    }
+    listener = newListener;
+  }
+
+  @Deprecated // to be removed before 2.0
+  public void registerMetadataProviders(List<RelMetadataProvider> list) {
     list.add(0, new VolcanoRelMetadataProvider());
   }
 
   // implement RelOptPlanner
+  @Deprecated
   public long getRelMetadataTimestamp(RelNode rel) {
     List<Long> inputSubsets = new ArrayList<>();
     for (RelNode input : rel.getInputs()) {

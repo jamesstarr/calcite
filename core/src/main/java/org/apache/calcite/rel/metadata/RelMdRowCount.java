@@ -53,6 +53,7 @@ public class RelMdRowCount
 
   //~ Methods ----------------------------------------------------------------
 
+  @Deprecated
   public MetadataDef<BuiltInMetadata.RowCount> getDef() {
     return BuiltInMetadata.RowCount.DEF;
   }

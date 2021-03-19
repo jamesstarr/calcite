@@ -42,6 +42,8 @@ public class RelMdMemory implements MetadataHandler<BuiltInMetadata.Memory> {
 
   //~ Methods ----------------------------------------------------------------
 
+
+  @Deprecated
   public MetadataDef<BuiltInMetadata.Memory> getDef() {
     return BuiltInMetadata.Memory.DEF;
   }

@@ -253,8 +253,7 @@ public class ReflectiveRelMetadataProvider
   }
 
   //~ Methods ----------------------------------------------------------------
-
-  @Deprecated // to be removed before 2.0
+  @Deprecated
   public <M extends Metadata> UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass, Class<? extends M> metadataClass) {
     if (metadataClass == metadataClass0) {
@@ -264,7 +263,7 @@ public class ReflectiveRelMetadataProvider
     }
   }
 
-  @SuppressWarnings({ "unchecked", "SuspiciousMethodCalls" })
+
   @Deprecated // to be removed before 2.0
   public <M extends Metadata> UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass) {

@@ -140,21 +140,7 @@ public class RelOptCluster {
    * @param metadataProvider custom provider
    */
   @SuppressWarnings("deprecation")
-  public void setMetadataProvider(RelMetadataProvider metadataProvider) {
-    this.metadataProvider = metadataProvider;
-    this.metadataFactory = new MetadataFactoryImpl(metadataProvider);
-    // Wrap the metadata provider as a JaninoRelMetadataProvider
-    // and set it to the ThreadLocal,
-    // JaninoRelMetadataProvider is required by the RelMetadataQuery.
-    RelMetadataQueryBase.THREAD_PROVIDERS
-        .set(JaninoRelMetadataProvider.of(metadataProvider));
-  }
-
-  /**
-   * Returns a {@link MetadataFactory}.
-   *
-   * @deprecated Use {@link #getMetadataQuery()}.
-   */
+>>>>>>> 889035685 ([CALCITE-4544] Deprecation of Java Reflection MD API)
   @Deprecated // to be removed before 2.0
   public MetadataFactory getMetadataFactory() {
     return metadataFactory;
@@ -193,7 +179,6 @@ public class RelOptCluster {
     return this.mqSupplier;
 =======
     return mq;
->>>>>>> a320d6088 ([CALCITE-3446] Make RelMetadataQuery extensible)
   }
 
   /**

@@ -876,6 +876,8 @@ public class RelMetadataTest extends SqlToRelTestBase {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1808">[CALCITE-1808]
    * JaninoRelMetadataProvider loading cache might cause
    * OutOfMemoryError</a>. */
+  @SuppressWarnings("deprecation")
+  @Deprecated
   @Test public void testMetadataHandlerCacheLimit() {
     Assume.assumeTrue("If cache size is too large, this test may fail and the "
             + "test won't be to blame",
@@ -889,8 +891,9 @@ public class RelMetadataTest extends SqlToRelTestBase {
     for (int i = 0; i < iterationCount; i++) {
       RelMetadataQuery.THREAD_PROVIDERS.set(
           JaninoRelMetadataProvider.of(
-              new CachingRelMetadataProvider(metadataProvider, planner)));
-      final RelMetadataQuery mq = RelMetadataQuery.instance();
+              new org.apache.calcite.rel.metadata.CachingRelMetadataProvider(
+                  metadataProvider, planner)));
+      final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
       final Double result = mq.getRowCount(rel);
       assertThat(result, within(14d, 0.1d));
     }
@@ -1108,6 +1111,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     }
   }
 
+  @Deprecated
   public String colType(RelMetadataQuery mq, RelNode rel, int column) {
     return rel.metadata(ColType.class, mq).getColType(column);
   }
@@ -1116,6 +1120,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     return myRelMetadataQuery.colType(rel, column);
   }
 
+  @Deprecated
   @Test public void testCustomProviderWithRelMetadataFactory() {
     final List<String> buf = new ArrayList<>();
     ColTypeImpl.THREAD_LIST.set(buf);

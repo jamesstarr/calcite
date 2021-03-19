@@ -55,6 +55,10 @@ public class CachingRelMetadataProvider implements RelMetadataProvider {
   }
 
   //~ Methods ----------------------------------------------------------------
+<<<<<<< HEAD
+=======
+
+>>>>>>> 889035685 ([CALCITE-4544] Deprecation of Java Reflection MD API)
   @Deprecated // to be removed before 2.0
   public <M extends Metadata> UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass,

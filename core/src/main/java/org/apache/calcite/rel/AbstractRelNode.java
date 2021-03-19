@@ -183,6 +183,81 @@ public abstract class AbstractRelNode implements RelNode {
     return this;
   }
 
+<<<<<<< HEAD
+=======
+  @SuppressWarnings("deprecation")
+  public final RelOptCost computeSelfCost(RelOptPlanner planner) {
+    return computeSelfCost(planner, getCluster().getMetadataQuery());
+  }
+
+  public RelOptCost computeSelfCost(RelOptPlanner planner,
+      RelMetadataQuery mq) {
+    // by default, assume cost is proportional to number of rows
+    double rowCount = mq.getRowCount(this);
+    double bytesPerRow = 1;
+    return planner.getCostFactory().makeCost(rowCount, rowCount, 0);
+  }
+
+  @Deprecated // to be removed before 2.0
+  public final <M extends Metadata> M metadata(Class<M> metadataClass,
+      RelMetadataQuery mq) {
+    final MetadataFactory factory = cluster.getMetadataFactory();
+    final M metadata = factory.query(this, mq, metadataClass);
+    assert metadata != null
+        : "no provider found (rel=" + this + ", m=" + metadataClass
+        + "); a backstop provider is recommended";
+    // Usually the metadata belongs to the rel that created it. RelSubset and
+    // HepRelVertex are notable exceptions, so disable the assert. It's not
+    // worth the performance hit to override this method for them.
+    //   assert metadata.rel() == this : "someone else's metadata";
+    return metadata;
+  }
+
+  public void explain(RelWriter pw) {
+    explainTerms(pw).done(this);
+  }
+
+  /**
+   * Describes the inputs and attributes of this relational expression.
+   * Each node should call {@code super.explainTerms}, then call the
+   * {@link org.apache.calcite.rel.externalize.RelWriterImpl#input(String, RelNode)}
+   * and
+   * {@link org.apache.calcite.rel.externalize.RelWriterImpl#item(String, Object)}
+   * methods for each input and attribute.
+   *
+   * @param pw Plan writer
+   * @return Plan writer for fluent-explain pattern
+   */
+  public RelWriter explainTerms(RelWriter pw) {
+    return pw;
+  }
+
+  public RelNode onRegister(RelOptPlanner planner) {
+    List<RelNode> oldInputs = getInputs();
+    List<RelNode> inputs = new ArrayList<>(oldInputs.size());
+    for (final RelNode input : oldInputs) {
+      RelNode e = planner.ensureRegistered(input, null);
+      if (e != input) {
+        // TODO: change 'equal' to 'eq', which is stronger.
+        assert RelOptUtil.equal(
+            "rowtype of rel before registration",
+            input.getRowType(),
+            "rowtype of rel after registration",
+            e.getRowType(),
+            Litmus.THROW);
+      }
+      inputs.add(e);
+    }
+    RelNode r = this;
+    if (!Util.equalShallow(oldInputs, inputs)) {
+      r = copy(getTraitSet(), inputs);
+    }
+    r.recomputeDigest();
+    assert r.isValid(Litmus.THROW, null);
+    return r;
+  }
+
+>>>>>>> 889035685 ([CALCITE-4544] Deprecation of Java Reflection MD API)
   public String recomputeDigest() {
     String tempDigest = computeDigest();
     assert tempDigest != null : "computeDigest() should be non-null";
