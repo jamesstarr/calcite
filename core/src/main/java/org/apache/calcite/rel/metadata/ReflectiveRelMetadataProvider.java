@@ -230,6 +230,7 @@ public class ReflectiveRelMetadataProvider
 
   //~ Methods ----------------------------------------------------------------
 
+  @Deprecated
   @Override public <@Nullable M extends @Nullable Metadata> @Nullable UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass, Class<? extends M> metadataClass) {
     if (metadataClass == metadataClass0) {
@@ -239,6 +240,7 @@ public class ReflectiveRelMetadataProvider
     }
   }
 
+  @Deprecated
   @SuppressWarnings({ "unchecked", "SuspiciousMethodCalls" })
   public <@Nullable M extends @Nullable Metadata> @Nullable UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass) {

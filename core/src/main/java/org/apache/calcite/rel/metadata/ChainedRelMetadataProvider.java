@@ -19,6 +19,7 @@ package org.apache.calcite.rel.metadata;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.util.Util;
 
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -31,6 +32,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of the {@link RelMetadataProvider}
@@ -45,6 +47,11 @@ public class ChainedRelMetadataProvider implements RelMetadataProvider {
   //~ Instance fields --------------------------------------------------------
 
   private final ImmutableList<RelMetadataProvider> providers;
+  private final Map<MetadataDef<?>, Multimap<Method, MetadataHandler<?>>> handlersCache =
+      CacheBuilder.newBuilder()
+          .<MetadataDef<?>, Multimap<Method, MetadataHandler<?>>>build()
+          .asMap();
+
 
   //~ Constructors -----------------------------------------------------------
 
@@ -70,6 +77,7 @@ public class ChainedRelMetadataProvider implements RelMetadataProvider {
     return providers.hashCode();
   }
 
+  @Deprecated
   @Override public <@Nullable M extends @Nullable Metadata> @Nullable UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass,
       final Class<? extends M> metadataClass) {
@@ -104,9 +112,15 @@ public class ChainedRelMetadataProvider implements RelMetadataProvider {
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override public <M extends Metadata> Multimap<Method, MetadataHandler<M>> handlers(
       MetadataDef<M> def) {
-    final ImmutableMultimap.Builder<Method, MetadataHandler<M>> builder =
+    Multimap mm = handlersCache.computeIfAbsent(def, this::computeHandlers);
+    return (Multimap<Method, MetadataHandler<M>>) mm;
+  }
+
+  private Multimap<Method, MetadataHandler<?>> computeHandlers(MetadataDef<?> def) {
+    final ImmutableMultimap.Builder<Method, MetadataHandler<?>> builder =
         ImmutableMultimap.builder();
     for (RelMetadataProvider provider : providers.reverse()) {
       builder.putAll(provider.handlers(def));

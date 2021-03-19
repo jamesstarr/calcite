@@ -47,6 +47,7 @@ class HepRelMetadataProvider implements RelMetadataProvider {
     return 107;
   }
 
+  @Deprecated
   @Override public <@Nullable M extends @Nullable Metadata> UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass,
       final Class<? extends M> metadataClass) {

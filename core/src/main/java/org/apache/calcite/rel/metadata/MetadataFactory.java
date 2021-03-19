@@ -30,6 +30,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * has a method. Some examples: {@link BuiltInMetadata.Selectivity},
  * {@link BuiltInMetadata.ColumnUniqueness}.</p>
  */
+@Deprecated
 public interface MetadataFactory {
   /** Returns a metadata interface to get a particular kind of metadata
    * from a particular relational expression. Returns null if that kind of
@@ -42,6 +43,7 @@ public interface MetadataFactory {
    * @param metadataClazz Metadata class
    * @return Metadata bound to {@code rel} and {@code query}
    */
+  @Deprecated
   <@Nullable M extends @Nullable Metadata> M query(RelNode rel, RelMetadataQuery mq,
       Class<M> metadataClazz);
 }

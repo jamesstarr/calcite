@@ -233,6 +233,7 @@ public abstract class AbstractRelNode implements RelNode {
     return planner.getCostFactory().makeCost(rowCount, rowCount, 0);
   }
 
+  @Deprecated
   @Override public final <@Nullable M extends @Nullable Metadata> M metadata(Class<M> metadataClass,
       RelMetadataQuery mq) {
     final MetadataFactory factory = cluster.getMetadataFactory();

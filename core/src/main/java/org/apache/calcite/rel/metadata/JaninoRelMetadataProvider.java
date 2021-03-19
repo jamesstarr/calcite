@@ -106,7 +106,7 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
           CalciteSystemProperty.METADATA_HANDLER_CACHE_MAXIMUM_SIZE.value())
           .build(
               CacheLoader.from(key ->
-                  load3(key.def, key.provider.handlers(key.def),
+                  load3(key.def, key.provider,
                       key.relClasses)));
 
   // Pre-register the most common relational operators, to reduce the number of
@@ -181,6 +181,7 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
     return 109 + provider.hashCode();
   }
 
+  @Deprecated
   @Override public <@Nullable M extends @Nullable Metadata> UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass, Class<? extends M> metadataClass) {
     throw new UnsupportedOperationException();
@@ -192,7 +193,7 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
   }
 
   private static <M extends Metadata> MetadataHandler<M> load3(
-      MetadataDef<M> def, Multimap<Method, MetadataHandler<M>> map,
+      MetadataDef<M> def, Multimap<Method, MetadataHandler<?>> map,
       ImmutableList<Class<? extends RelNode>> relClasses) {
     final StringBuilder buff = new StringBuilder();
     final String name =
@@ -463,7 +464,8 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
   static synchronized <M extends Metadata, H extends MetadataHandler<M>> H create(
       RelMetadataProvider provider, MetadataDef<M> def) {
     try {
-      final Key key = new Key(def, provider,
+      Multimap methodToHandlers = provider.handlers(def);
+      final Key key = new Key(def, methodToHandlers,
           ImmutableList.copyOf(ALL_RELS));
       //noinspection unchecked
       return (H) HANDLERS.get(key);
@@ -525,10 +527,10 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
   /** Key for the cache. */
   private static class Key {
     public final MetadataDef def;
-    public final RelMetadataProvider provider;
+    public final Multimap<Method, MetadataHandler<?>> provider;
     public final ImmutableList<Class<? extends RelNode>> relClasses;
 
-    private Key(MetadataDef def, RelMetadataProvider provider,
+    private Key(MetadataDef<?> def, Multimap<Method, MetadataHandler<?>> provider,
         ImmutableList<Class<? extends RelNode>> relClassList) {
       this.def = def;
       this.provider = provider;
