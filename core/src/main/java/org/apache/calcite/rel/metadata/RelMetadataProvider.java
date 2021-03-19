@@ -62,6 +62,7 @@ public interface RelMetadataProvider {
    * @return Function that will field a metadata instance; or null if this
    *     provider cannot supply metadata of this type
    */
+  @Deprecated // to be removed before 2.0
   <M extends Metadata> UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass, Class<? extends M> metadataClass);
 

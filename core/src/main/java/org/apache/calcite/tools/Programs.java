@@ -190,6 +190,7 @@ public class Programs {
   }
 
   /** Creates a program that executes a {@link HepProgram}. */
+  @SuppressWarnings("deprecation")
   public static Program of(final HepProgram hepProgram, final boolean noDag,
       final RelMetadataProvider metadataProvider) {
     return new Program() {

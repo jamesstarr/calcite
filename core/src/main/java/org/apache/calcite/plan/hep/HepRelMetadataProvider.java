@@ -33,6 +33,7 @@ import java.lang.reflect.Method;
  * HepRelMetadataProvider implements the {@link RelMetadataProvider} interface
  * by combining metadata from the rels inside of a {@link HepRelVertex}.
  */
+@Deprecated // to be removed before 2.0
 class HepRelMetadataProvider implements RelMetadataProvider {
   //~ Methods ----------------------------------------------------------------
 
@@ -44,6 +45,7 @@ class HepRelMetadataProvider implements RelMetadataProvider {
     return 107;
   }
 
+  @Deprecated // to be removed before 2.0
   public <M extends Metadata> UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass,
       final Class<? extends M> metadataClass) {

@@ -67,6 +67,7 @@ public class RelMdTableReferences
 
   //~ Methods ----------------------------------------------------------------
 
+  @Deprecated
   public MetadataDef<BuiltInMetadata.TableReferences> getDef() {
     return BuiltInMetadata.TableReferences.DEF;
   }

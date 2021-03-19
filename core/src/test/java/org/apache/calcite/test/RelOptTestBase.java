@@ -27,9 +27,6 @@ import org.apache.calcite.plan.hep.HepProgramBuilder;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
 import org.apache.calcite.rel.core.RelFactories;
-import org.apache.calcite.rel.metadata.ChainedRelMetadataProvider;
-import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
-import org.apache.calcite.rel.metadata.RelMetadataProvider;
 import org.apache.calcite.runtime.FlatLists;
 import org.apache.calcite.runtime.Hook;
 import org.apache.calcite.sql2rel.RelDecorrelator;
@@ -39,9 +36,7 @@ import org.apache.calcite.util.Closer;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -143,13 +138,7 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
 
     assertTrue(relInitial != null);
 
-    List<RelMetadataProvider> list = Lists.newArrayList();
-    list.add(DefaultRelMetadataProvider.INSTANCE);
-    planner.registerMetadataProviders(list);
-    RelMetadataProvider plannerChain =
-        ChainedRelMetadataProvider.of(list);
     final RelOptCluster cluster = relInitial.getCluster();
-    cluster.setMetadataProvider(plannerChain);
 
     RelNode relBefore;
     if (preProgram == null) {

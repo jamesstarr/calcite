@@ -45,6 +45,7 @@ public class RelMdParallelism
 
   //~ Methods ----------------------------------------------------------------
 
+  @Deprecated
   public MetadataDef<BuiltInMetadata.Parallelism> getDef() {
     return BuiltInMetadata.Parallelism.DEF;
   }

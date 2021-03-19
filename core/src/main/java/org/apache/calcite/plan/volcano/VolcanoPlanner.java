@@ -1703,12 +1703,13 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     listener = newListener;
   }
 
-  // implement RelOptPlanner
+  @Deprecated // to be removed before 2.0
   public void registerMetadataProviders(List<RelMetadataProvider> list) {
     list.add(0, new VolcanoRelMetadataProvider());
   }
 
   // implement RelOptPlanner
+  @Deprecated
   public long getRelMetadataTimestamp(RelNode rel) {
     List<Long> inputSubsets = new ArrayList<>();
     for (RelNode input : rel.getInputs()) {
