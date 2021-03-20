@@ -16,161 +16,20 @@
  */
 package org.apache.calcite.rel.metadata;
 
-import org.apache.calcite.adapter.enumerable.EnumerableAggregate;
-import org.apache.calcite.adapter.enumerable.EnumerableFilter;
-import org.apache.calcite.adapter.enumerable.EnumerableJoin;
-import org.apache.calcite.adapter.enumerable.EnumerableProject;
-import org.apache.calcite.adapter.enumerable.EnumerableTableScan;
-import org.apache.calcite.interpreter.JaninoRexCompiler;
-import org.apache.calcite.linq4j.Ord;
-import org.apache.calcite.linq4j.tree.Primitive;
-import org.apache.calcite.plan.hep.HepRelVertex;
-import org.apache.calcite.plan.volcano.AbstractConverter;
-import org.apache.calcite.plan.volcano.RelSubset;
+import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.metadata.janino.JaninoMetadataHandlerCreator;
 import org.apache.calcite.util.ControlFlowException;
-import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.SaffronProperties;
 import org.apache.calcite.util.Util;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
-import org.codehaus.commons.compiler.CompileException;
-import org.codehaus.commons.compiler.CompilerFactoryFactory;
-import org.codehaus.commons.compiler.ICompilerFactory;
-import org.codehaus.commons.compiler.ISimpleCompiler;
-
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutionException;
-  private static final LoadingCache<Key, MetadataHandler> HANDLERS =
-      maxSize(CacheBuilder.newBuilder(),
-          SaffronProperties.INSTANCE.metadataHandlerCacheMaximumSize().get())
-          .build(
-              new CacheLoader<Key, MetadataHandler>() {
-                public MetadataHandler load(@Nonnull Key key) {
-                  //noinspection unchecked
-                  return load3(key.def, key.provider.handlers(key.def),
-                      key.relClasses);
-                }
-              });
-
-  // Pre-register the most common relational operators, to reduce the number of
-  // times we re-generate.
-  static {
-    DEFAULT.register(
-        Arrays.asList(RelNode.class,
-            AbstractRelNode.class,
-            RelSubset.class,
-            HepRelVertex.class,
-            ConverterImpl.class,
-            AbstractConverter.class,
-
-            LogicalAggregate.class,
-            LogicalCalc.class,
-            LogicalCorrelate.class,
-            LogicalExchange.class,
-            LogicalFilter.class,
-            LogicalIntersect.class,
-            LogicalJoin.class,
-            LogicalMinus.class,
-            LogicalProject.class,
-            LogicalSort.class,
-            LogicalTableFunctionScan.class,
-            LogicalTableModify.class,
-            LogicalTableScan.class,
-            LogicalUnion.class,
-            LogicalValues.class,
-            LogicalWindow.class,
-            LogicalChi.class,
-            LogicalDelta.class,
-
-            EnumerableAggregate.class,
-            EnumerableFilter.class,
-            EnumerableProject.class,
-            EnumerableJoin.class,
-            EnumerableTableScan.class));
-  }
-
-  /** Private constructor; use {@link #of}. */
-  private JaninoRelMetadataProvider(RelMetadataProvider provider) {
-    this.provider = provider;
-  }
-
-  /** Creates a JaninoRelMetadataProvider.
-   *
-   * @param provider Underlying provider
-   */
-  public static JaninoRelMetadataProvider of(RelMetadataProvider provider) {
-    if (provider instanceof JaninoRelMetadataProvider) {
-      return (JaninoRelMetadataProvider) provider;
-    }
-    return new JaninoRelMetadataProvider(provider);
-  }
-
-  // helper for initialization
-  private static <K, V> CacheBuilder<K, V> maxSize(CacheBuilder<K, V> builder,
-      int size) {
-    if (size >= 0) {
-      builder.maximumSize(size);
-    }
-    return builder;
-  }
-
-  @Override public boolean equals(Object obj) {
-    return obj == this
-        || obj instanceof JaninoRelMetadataProvider
-        && ((JaninoRelMetadataProvider) obj).provider.equals(provider);
-  }
-
-  @Override public int hashCode() {
-    return 109 + provider.hashCode();
-  }
-
-  @Deprecated // to be removed before 2.0
-  public <M extends Metadata> UnboundMetadata<M> apply(
-      Class<? extends RelNode> relClass, Class<? extends M> metadataClass) {
-    throw new UnsupportedOperationException();
-  }
-
-  public <M extends Metadata> Multimap<Method, MetadataHandler<M>>
-      handlers(MetadataDef<M> def) {
-    return provider.handlers(def);
-  }
-
-  private static <M extends Metadata> MetadataHandler<M> load3(
-      MetadataDef<M> def, Multimap<Method, MetadataHandler<M>> map,
-      ImmutableList<Class<? extends RelNode>> relClasses) {
-    final StringBuilder buff = new StringBuilder();
-    final String name =
-        "GeneratedMetadata_" + simpleNameForHandler(def.handlerClass);
-    final Set<MetadataHandler> providerSet = new HashSet<>();
-    final List<Pair<String, MetadataHandler>> providerList = new ArrayList<>();
-    //noinspection unchecked
-    final ReflectiveRelMetadataProvider.Space space =
-        new ReflectiveRelMetadataProvider.Space((Multimap) map);
-    for (MetadataHandler provider : space.providerMap.values()) {
-      if (providerSet.add(provider)) {
-<<<<<<< HEAD
-        providerList.add(
-            Pair.of("provider" + (providerSet.size() - 1),
-=======
         providerList.add(Pair.of("provider" + (providerSet.size() - 1),
             provider));
       }
@@ -444,13 +303,16 @@ import java.util.concurrent.ExecutionException;
       throw new RuntimeException(e);
     }
     return def.handlerClass.cast(o);
+=======
+      MetadataDef<M> def, Multimap<Method, ? extends MetadataHandler<?>> map) {
+    return JaninoMetadataHandlerCreator.newInstance(def.handlerClass,
+        map);
   }
 
   synchronized <M extends Metadata, H extends MetadataHandler<M>> H create(
       MetadataDef<M> def) {
     try {
-      final Key key = new Key((MetadataDef) def, provider,
-          ImmutableList.copyOf(ALL_RELS));
+      final Key key = new Key(def, provider);
       //noinspection unchecked
       return (H) HANDLERS.get(key);
     } catch (UncheckedExecutionException | ExecutionException e) {
@@ -461,9 +323,6 @@ import java.util.concurrent.ExecutionException;
 
   synchronized <M extends Metadata, H extends MetadataHandler<M>> H revise(
       Class<? extends RelNode> rClass, MetadataDef<M> def) {
-    if (ALL_RELS.add(rClass)) {
-      HANDLERS.invalidateAll();
-    }
     //noinspection unchecked
     return (H) create(def);
   }
@@ -471,24 +330,46 @@ import java.util.concurrent.ExecutionException;
   /** Registers some classes. Does not flush the providers, but next time we
    * need to generate a provider, it will handle all of these classes. So,
    * calling this method reduces the number of times we need to re-generate. */
+  @Deprecated
   public void register(Iterable<Class<? extends RelNode>> classes) {
-    // Register the classes and their base classes up to RelNode. Don't bother
-    // to remove duplicates; addAll will do that.
-    final List<Class<? extends RelNode>> list = Lists.newArrayList(classes);
-    for (int i = 0; i < list.size(); i++) {
-      final Class<? extends RelNode> c = list.get(i);
-      final Class s = c.getSuperclass();
-      if (s != null && RelNode.class.isAssignableFrom(s)) {
-        //noinspection unchecked
-        list.add(s);
-      }
-    }
-    synchronized (this) {
-      if (ALL_RELS.addAll(list)) {
-        HANDLERS.invalidateAll();
-      }
+  }
+
+<<<<<<< HEAD
+=======
+  /** Exception that indicates there there should be a handler for
+   * this class but there is not. The action is probably to
+   * re-generate the handler class. */
+  public static class NoHandler extends ControlFlowException {
+    public final Class<? extends RelNode> relClass;
+
+    public NoHandler(Class<? extends RelNode> relClass) {
+      this.relClass = relClass;
     }
   }
 
+  /** Key for the cache. */
+  private static class Key {
+    public final MetadataDef def;
+    public final RelMetadataProvider provider;
+
+    private Key(MetadataDef def, RelMetadataProvider provider) {
+      this.def = def;
+      this.provider = provider;
+    }
+
+    @Override public int hashCode() {
+      return (def.hashCode() * 37
+          + provider.hashCode()) * 37;
+    }
+
+    @Override public boolean equals(Object obj) {
+      return this == obj
+          || obj instanceof Key
+          && ((Key) obj).def.equals(def)
+          && ((Key) obj).provider.equals(provider);
+    }
+  }
+}
+>>>>>>> 609a4b7fe ([CALCITE-4546] Change MD dispatch)
 
 // End JaninoRelMetadataProvider.java
