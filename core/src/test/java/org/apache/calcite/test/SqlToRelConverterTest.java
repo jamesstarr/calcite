@@ -3227,6 +3227,13 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
+  @Test public void testInWithConstantList() {
+    final String sql = "select deptno\n"
+        + "from emp\n"
+        + "where deptno in (1,2,3)";
+    sql(sql).ok();
+  }
+
   /**
    * Visitor that checks that every {@link RelNode} in a tree is valid.
    *

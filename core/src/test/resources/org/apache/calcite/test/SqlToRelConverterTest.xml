@@ -1286,6 +1286,19 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 ]]>
         </Resource>
     </TestCase>
+  <TestCase name="testInWithConstantList">
+    <Resource name="sql">
+      <![CDATA[select deptno from emp where deptno in (1,2,3)
+]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalProject(DEPTNO=[$7])
+  LogicalFilter(condition=[OR(=($7, 1), =($7, 2), =($7, 3))])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
     <TestCase name="testJoinUsingCompound">
         <Resource name="sql">
             <![CDATA[SELECT * FROM emp LEFT JOIN (SELECT *, deptno * 5 as empno FROM dept) USING (deptno,empno)]]>
