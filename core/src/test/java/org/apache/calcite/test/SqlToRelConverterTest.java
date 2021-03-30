@@ -42,7 +42,6 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
 import org.apache.calcite.rex.RexExecutor;
 import org.apache.calcite.rex.RexNode;
-import org.apache.calcite.runtime.CalciteContextException;
 import org.apache.calcite.sql.SqlExplainLevel;
 import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
 import org.apache.calcite.sql.type.SqlTypeName;
@@ -59,6 +58,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -70,7 +70,6 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -3016,10 +3015,11 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
           + "    AND avg_emp.deptno = outerEmp.deptno\n"
           + ")\n";
       sql(sql).convertsTo("${plan}");
-    } catch (CalciteContextException exception) {
-      assertThat("Reason",
-          exception.getMessage(),
-          containsString("Correlated subqueries in on clauses are not supported."));
+    } catch (AssertionError assertionError) {
+      assertThat(
+          assertionError.getMessage(),
+          CoreMatchers.containsString(
+              "Correlated sub-queries in ON clauses are not supported"));
     }
   }
 
@@ -3034,10 +3034,11 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
           + "  WHERE avg_emp.deptno = outerEmp.deptno\n"
           + ")\n";
       sql(sql).convertsTo("${plan}");
-    } catch (CalciteContextException exception) {
-      assertThat("Reason",
+    } catch (AssertionError exception) {
+      assertThat(
           exception.getMessage(),
-          containsString("Correlated subqueries in on clauses are not supported."));
+          CoreMatchers.containsString(
+              "Correlated sub-queries in ON clauses are not supported"));
     }
   }
 
@@ -3052,16 +3053,47 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
           + "  WHERE avg_emp.deptno = dept.deptno\n"
           + ")\n";
       sql(sql).convertsTo("${plan}");
-    } catch (CalciteContextException exception) {
-      assertThat("Reason",
+    } catch (AssertionError exception) {
+      assertThat(
           exception.getMessage(),
-          containsString("Correlated subqueries in on clauses are not supported."));
+          CoreMatchers.containsString(
+              "Correlated sub-queries in ON clauses are not supported"));
     }
   }
 
+  @Test public void testImplicitJoinExpandAndDecorrelation() {
+    String sql = ""
+        + "SELECT emp.deptno, emp.sal\n"
+        + "FROM dept, emp "
+        + "WHERE emp.deptno = dept.deptno AND emp.sal < (\n"
+        + "  SELECT AVG(emp.sal)\n"
+        + "  FROM emp\n"
+        + "  WHERE  emp.deptno = dept.deptno\n"
+        + ")";
+    sql(sql).convertsTo("${plan}");
+  }
+
+  @Test public void testJoinSubqueryWithKeyColumnOnTheRight() {
+    String sql = "\n"
+        + "SELECT outerEmp.deptno, outerEmp.sal\n"
+        + "FROM dept\n"
+        + "LEFT JOIN emp outerEmp ON outerEmp.deptno = dept.deptno AND outerEmp.sal IN (\n"
+        + "  SELECT emp_in.sal\n"
+        + "  FROM emp emp_in)\n";
+    sql(sql).convertsTo("${plan}");
+  }
+
+  @Test public void testJoinSubqueryWithKeyColumnOnTheLeft() {
+    String sql = "\n"
+        + "SELECT outerEmp.deptno, outerEmp.sal\n"
+        + "FROM dept\n"
+        + "LEFT JOIN emp outerEmp ON outerEmp.deptno = dept.deptno AND dept.deptno IN (\n"
+        + "  SELECT emp_in.deptno\n"
+        + "  FROM emp emp_in)\n";
+    sql(sql).convertsTo("${plan}");
+  }
+
   @Test public void testJoinExpandNestedQuery() {
-    //Three sub queries are used to ensure the internal state is maintained since the first
-    // 2 calls are special cases in code.
     String sql = "\n"
         + "SELECT emp.deptno, emp.sal\n"
         + "FROM dept\n"
@@ -3075,18 +3107,6 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
         + "  AND emp.sal > (\n"
         + "    SELECT AVG(avg_emp_sal.sal) / 2\n"
         + "    FROM emp avg_emp_sal)\n";
-    sql(sql).convertsTo("${plan}");
-  }
-
-  @Test public void testImplicitJoinExpandAndDecorrelation() {
-    String sql = ""
-        + "SELECT emp.deptno, emp.sal\n"
-        + "FROM dept, emp "
-        + "WHERE emp.deptno = dept.deptno AND emp.sal < (\n"
-        + "  SELECT AVG(emp.sal)\n"
-        + "  FROM emp\n"
-        + "  WHERE  emp.deptno = dept.deptno\n"
-        + ")";
     sql(sql).convertsTo("${plan}");
   }
 

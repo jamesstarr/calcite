@@ -5339,6 +5339,52 @@ LogicalProject(DEPTNO=[$9], SAL=[$7])
 ]]>
         </Resource>
     </TestCase>
+    <TestCase name="testJoinSubqueryWithKeyColumnOnTheRight">
+        <Resource name="sql">
+            <![CDATA[
+SELECT outerEmp.deptno, outerEmp.sal
+FROM dept
+LEFT JOIN emp outerEmp ON outerEmp.deptno = dept.deptno AND outerEmp.sal IN (
+  SELECT emp_in.sal
+  FROM emp emp_in)
+]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(DEPTNO=[$9], SAL=[$7])
+  LogicalJoin(condition=[AND(=($9, $0), =($7, $11))], joinType=[left])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalJoin(condition=[true], joinType=[inner])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalAggregate(group=[{0}])
+        LogicalProject(SAL=[$5])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testJoinSubqueryWithKeyColumnOnTheLeft">
+        <Resource name="sql">
+            <![CDATA[
+SELECT outerEmp.deptno, outerEmp.sal
+FROM dept
+LEFT JOIN emp outerEmp ON outerEmp.deptno = dept.deptno AND dept.deptno IN (
+  SELECT emp_in.deptno
+  FROM emp emp_in)
+]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(DEPTNO=[$9], SAL=[$7])
+  LogicalJoin(condition=[AND(=($9, $0), =($0, $11))], joinType=[left])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalJoin(condition=[true], joinType=[inner])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalAggregate(group=[{0}])
+        LogicalProject(DEPTNO=[$7])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
     <TestCase name="testCompositeOfCountRange">
         <Resource name="sql">
             <![CDATA[select COMPOSITE(deptno)
