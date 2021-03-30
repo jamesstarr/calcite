@@ -39,7 +39,6 @@ import org.apache.calcite.rel.RelShuttleImpl;
 import org.apache.calcite.rel.SingleRel;
 import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.core.Collect;
-import org.apache.calcite.rel.core.Correlate;
 import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Join;
@@ -204,9 +203,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static org.apache.calcite.sql.SqlUtil.newContextException;
 import static org.apache.calcite.sql.SqlUtil.stripAs;
-import static org.apache.calcite.util.Static.RESOURCE;
 
 /**
  * Converts a SQL parse tree (consisting of
@@ -2824,9 +2821,8 @@ public class SqlToRelConverter {
               + ", new ns=" + foundNs;
         }
 
-      assert  field.getType()
-          == topLevelFieldAccess.getField().getType()
-          : "field.type is the same as top level access type";
+      assert field.getType()
+          == topLevelFieldAccess.getField().getType();
 
           for (int i = 0; i < childNamespaceIndex; i++) {
             SqlValidatorNamespace child = children.get(i);
@@ -3008,45 +3004,17 @@ public class SqlToRelConverter {
 
     bb.setRoot(ImmutableList.of(leftRel, rightRel));
     replaceSubQueries(bb, condition, RelOptUtil.Logic.UNKNOWN_AS_FALSE);
-    final RelNode newRightRel = bb.root == null || bb.registered.size() == 0
-        ? rightRel
-        : reRegisterEnsuringNoCorrelatedNodes(bb, join, rightRel);
-    bb.setRoot(ImmutableList.of(leftRel, newRightRel));
+    final Pair<List<RexNode>, RelNode> newRightRel = bb.registered.size() == 0
+        ? Pair.of(ImmutableList.of(), rightRel)
+        : bb.reRegister(join, leftRel, rightRel);
+    bb.setRoot(ImmutableList.of(leftRel, newRightRel.right));
     RexNode conditionExp =  bb.convertExpression(condition);
-    return Pair.of(conditionExp, newRightRel);
->>>>>>> 40704db1d (Revert "Revert "[CALCITE-4210] Replaying subqueries in ON clauses (James Starr)"")
-  }
-
-  private RelNode reRegisterEnsuringNoCorrelatedNodes(
-      Blackboard bb,
-      SqlNode sqlCondition,
-      RelNode base) {
-    try {
-      final RelNode top = bb.reRegister(base);
-      RelNode mTop = top;
-      while (mTop != base) {
-        if (mTop instanceof Correlate) {
-          throw newContextException(
-              sqlCondition.getParserPosition(),
-              RESOURCE.subqueryInOnClauses());
-        }
-        mTop = mTop.getInput(0);
-      }
-      return top;
-    } catch (AssertionError assertionError) {
-      String message = assertionError.getMessage();
-      if (null == message) {
-        throw assertionError;
-      } else if (
-          message.contains("All correlation variables should resolve to the same namespace")
-          || message.contains("field.type is the same as top level access type")
-      ) {
-        throw newContextException(
-            sqlCondition.getParserPosition(),
-            RESOURCE.subqueryInOnClauses());
-      }
-      throw assertionError;
-    }
+    return Pair.of(
+        RexUtil.composeConjunction(rexBuilder, ImmutableList.<RexNode>builder()
+            .add(conditionExp)
+            .addAll(newRightRel.left)
+            .build(), false),
+        newRightRel.right);
   }
 
   /**
@@ -4713,7 +4681,6 @@ public class SqlToRelConverter {
     private List<RegisterArgs> registered = new ArrayList<>();
 
     private boolean isPatternVarRef = false;
-    private int scopeOffset = 0;
 
     final List<RelNode> cursors = new ArrayList<>();
 
@@ -4799,9 +4766,8 @@ public class SqlToRelConverter {
         List<RexNode> leftKeys) {
       assert joinType != null;
       registered.add(new RegisterArgs(rel, joinType, leftKeys));
-      int localScopeOffset = scopeOffset;
       if (root == null) {
-<<<<<<< HEAD
+>>>>>>> 10892d334 (DX-29855 Fixing in subqueries for ON clauses)
         if (inputs != null) {
           int offset = inputs.stream()
               .map(RelNode::getRowType)
@@ -4823,6 +4789,7 @@ public class SqlToRelConverter {
               0,
               false);
         }
+<<<<<<< HEAD
 =======
         assert leftKeys == null;
         setRoot(rel, false);
@@ -4831,6 +4798,7 @@ public class SqlToRelConverter {
             root.getRowType(),
             localScopeOffset,
             false);
+=======
       }
 
       final RexNode joinCond;
@@ -4864,7 +4832,6 @@ public class SqlToRelConverter {
         }
 
         setRoot(newLeftInput, false);
-        this.scopeOffset = localScopeOffset;
 
         // right fields appear after the LHS fields.
         final List<Integer> rightKeys = Util.range(0, leftKeys.size());
@@ -4876,8 +4843,7 @@ public class SqlToRelConverter {
         joinCond = rexBuilder.makeLiteral(true);
       }
 
-      final int leftFieldCount = root.getRowType().getFieldCount();
-
+      int leftFieldCount = root.getRowType().getFieldCount();
       final RelNode join =
           createJoin(
               this,
@@ -4889,7 +4855,6 @@ public class SqlToRelConverter {
               ImmutableSet.of());
 
       setRoot(join, false);
-      this.scopeOffset = localScopeOffset;
 
       if (leftKeys != null
           && joinType == JoinRelType.LEFT) {
@@ -4911,34 +4876,77 @@ public class SqlToRelConverter {
                     return rexRangeRefLength;
                   }
                 });
+
         return rexBuilder.makeRangeReference(
             returnType,
-            origLeftInputCount + localScopeOffset,
+            origLeftInputCount,
             false);
       } else {
         return rexBuilder.makeRangeReference(
             rel.getRowType(),
-            leftFieldCount + localScopeOffset,
+            leftFieldCount,
             joinType.generatesNullsOnRight());
       }
     }
 
     /**
-     * Re-register the {@code registered} with given root node and
-     * return the new root node.
+     * Re-register the {@code registered} subquery for a join replaying the
+     * sub-queries on the right side.
      *
-     * @param root The given root, never leaf
-     *
-     * @return new root after the registration
+     * @return Join condition and new right node after the registration
      */
-    public RelNode reRegister(RelNode root) {
-      setRoot(root, false);
+    public Pair<List<RexNode>, RelNode> reRegister(SqlJoin sqlJoin,
+        RelNode left, RelNode right) {
       List<RegisterArgs> registerCopy = registered;
       registered = new ArrayList<>();
+      List<RexNode> joinCondition = new ArrayList<>();
+      RelNode rightRewritten = right;
+      JoinRelType joinType = convertJoinType(sqlJoin.getJoinType());
+      assert joinType == JoinRelType.INNER || joinType == JoinRelType.LEFT
+          : "Sub-queries in ON clauses are only supported for inner and left joins";
       for (RegisterArgs reg: registerCopy) {
-        register(reg.rel, reg.joinType, reg.leftKeys);
+        assert RelOptUtil.getVariablesUsed(reg.rel).isEmpty()
+            : "Correlated sub-queries in ON clauses are not supported";
+        Pair<List<RexNode>, RelNode> temp = reRegister(left, rightRewritten, reg);
+        rightRewritten = temp.right;
+        joinCondition.addAll(temp.left);
       }
-      return this.root;
+      return Pair.of(joinCondition, rightRewritten);
+    }
+
+    private Pair<List<RexNode>, RelNode> reRegister(RelNode left,
+        RelNode right, RegisterArgs args) {
+
+      RelNode subQuery = args.rel;
+      JoinRelType joinType = args.joinType;
+      List<RexNode> keys = args.leftKeys;
+      if (keys == null) {
+        return Pair.of(ImmutableList.of(),
+            createJoin(this, right, subQuery,
+                rexBuilder.makeLiteral(true),
+                joinType));
+      }
+      List<RexNode> joinCond = createSubQueryJoinKeys(
+          left.getRowType().getFieldCount() + right.getRowType().getFieldCount(),
+          keys, subQuery);
+      return Pair.of(
+          joinCond, createJoin(this, right, subQuery,
+              rexBuilder.makeLiteral(true),
+              joinType));
+    }
+
+    private List<RexNode> createSubQueryJoinKeys(final int leftCount,
+        final List<RexNode> leftNodeList, final RelNode subQuery) {
+      final List<RelDataTypeField> fieldList = subQuery.getRowType().getFieldList();
+      ImmutableList.Builder<RexNode> joinConditions = ImmutableList.builder();
+      for (int i = 0; i < leftNodeList.size(); i++) {
+        RexNode left = leftNodeList.get(i);
+        RexInputRef right =
+            rexBuilder.makeInputRef(fieldList.get(i).getType(), i + leftCount);
+        joinConditions.add(
+            rexBuilder.makeCall(SqlStdOperatorTable.EQUALS, left, right));
+      }
+      return joinConditions.build();
     }
 
     /**
@@ -4971,14 +4979,6 @@ public class SqlToRelConverter {
       this.systemFieldList.clear();
       if (hasSystemFields) {
         this.systemFieldList.addAll(getSystemFields());
-      }
-
-      if (root == null) {
-        scopeOffset = inputs.stream()
-            .mapToInt(rn -> rn.getRowType().getFieldCount())
-            .sum();
-      } else {
-        scopeOffset = 0;
       }
     }
 

@@ -826,11 +826,10 @@ public interface CalciteResource {
 
   @BaseMessage("View ''{0}'' not found")
   ExInst<SqlValidatorException> viewNotFound(String name);
-<<<<<<< HEAD
-=======
 
   @BaseMessage("Correlated subqueries in on clauses are not supported.")
   ExInst<CalciteException> subqueryInOnClauses();
+=======
 }
 
   @BaseMessage("Type ''{0}'' not found")
