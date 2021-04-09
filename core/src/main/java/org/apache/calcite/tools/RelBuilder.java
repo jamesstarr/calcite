@@ -2375,9 +2375,8 @@ public class RelBuilder {
         throw new IllegalArgumentException("Correlated " + joinType + " join is not supported");
       }
       final ImmutableBitSet requiredColumns = RelOptUtil.correlationColumns(id, right.rel);
-      join =
-          struct.correlateFactory.createCorrelate(left.rel, right.rel, id,
-              requiredColumns, joinType);
+      join = correlateFactory.createCorrelate(left.rel, right.rel, id,
+          requiredColumns, SemiJoinType.of(joinType));
     } else {
       join =
           struct.joinFactory.createJoin(left.rel, right.rel,
