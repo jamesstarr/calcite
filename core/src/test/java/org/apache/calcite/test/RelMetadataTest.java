@@ -30,6 +30,7 @@ import org.apache.calcite.plan.hep.HepPlanner;
 import org.apache.calcite.plan.hep.HepProgram;
 import org.apache.calcite.plan.hep.HepProgramBuilder;
 import org.apache.calcite.plan.volcano.VolcanoPlanner;
+import org.apache.calcite.rel.AbstractRelNode;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelCollations;
@@ -66,13 +67,14 @@ import org.apache.calcite.rel.logical.LogicalTableScan;
 import org.apache.calcite.rel.logical.LogicalUnion;
 import org.apache.calcite.rel.logical.LogicalValues;
 import org.apache.calcite.rel.metadata.BuiltInMetadata;
-import org.apache.calcite.rel.metadata.CachingRelMetadataProvider;
 import org.apache.calcite.rel.metadata.ChainedRelMetadataProvider;
 import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
-import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
+import org.apache.calcite.rel.metadata.JaninoMetadataHandlerProvider;
 import org.apache.calcite.rel.metadata.Metadata;
+import org.apache.calcite.rel.metadata.MetadataCache;
 import org.apache.calcite.rel.metadata.MetadataDef;
 import org.apache.calcite.rel.metadata.MetadataHandler;
+import org.apache.calcite.rel.metadata.MetadataHandlerProvider;
 import org.apache.calcite.rel.metadata.ReflectiveRelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelColumnOrigin;
 import org.apache.calcite.rel.metadata.RelMdCollation;
@@ -80,6 +82,8 @@ import org.apache.calcite.rel.metadata.RelMdColumnUniqueness;
 import org.apache.calcite.rel.metadata.RelMdUtil;
 import org.apache.calcite.rel.metadata.RelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
+import org.apache.calcite.rel.metadata.TableMetadataCache;
+import org.apache.calcite.rel.metadata.janino.JaninoMetadataHandlerCreator;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -996,10 +1000,6 @@ public class RelMetadataTest extends SqlToRelTestBase {
     RelNode rel =
         convertSql("select deptno, count(*) from emp where deptno > 10 "
             + "group by deptno having count(*) = 0");
-    rel.getCluster().setMetadataProvider(
-        new CachingRelMetadataProvider(
-            rel.getCluster().getMetadataProvider(),
-            rel.getCluster().getPlanner()));
     final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
     Double result = mq.getSelectivity(rel, null);
     assertThat(result,
@@ -1012,7 +1012,9 @@ public class RelMetadataTest extends SqlToRelTestBase {
    * OutOfMemoryError</a>.
    *
    * Too slow to run every day, and it does not reproduce the issue. */
+  @SuppressWarnings("deprecation")
   @Tag("slow")
+  @Deprecated
   @Test void testMetadataHandlerCacheLimit() {
     assumeTrue(CalciteSystemProperty.METADATA_HANDLER_CACHE_MAXIMUM_SIZE.value() < 10_000,
         "If cache size is too large, this test may fail and the test won't be to blame");
@@ -1022,9 +1024,11 @@ public class RelMetadataTest extends SqlToRelTestBase {
         rel.getCluster().getMetadataProvider();
     final RelOptPlanner planner = rel.getCluster().getPlanner();
     for (int i = 0; i < iterationCount; i++) {
-      RelMetadataQuery.THREAD_PROVIDERS.set(
-          JaninoRelMetadataProvider.of(
-              new CachingRelMetadataProvider(metadataProvider, planner)));
+      RelOptCluster cluster = rel.getCluster();
+      cluster.setMetadataProvider(
+          new org.apache.calcite.rel.metadata.CachingRelMetadataProvider(
+              metadataProvider, planner));
+      cluster.invalidateMetadataQuery();
       final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
       final Double result = mq.getRowCount(rel);
       assertThat(result, within(14d, 0.1d));
@@ -1489,9 +1493,11 @@ public class RelMetadataTest extends SqlToRelTestBase {
       assertThat(colType(mq, rel, 0), equalTo("DEPTNO-rel"));
       fail("expected error");
     } catch (IllegalArgumentException e) {
-      final String value = "No handler for method [public abstract java.lang.String "
-          + "org.apache.calcite.test.RelMetadataTest$ColType.getColType(int)] "
-          + "applied to argument of type [interface org.apache.calcite.rel.RelNode]; "
+      final String value = "No handler for method ["
+          + "public abstract java.lang.String org.apache.calcite.test."
+          + "RelMetadataTest$ColType$Handler.getColType("
+          + "org.apache.calcite.rel.RelNode,org.apache.calcite.rel.metadata.RelMetadataQuery,int)] "
+          + "applied to argument of type [class org.apache.calcite.rel.logical.LogicalFilter]; "
           + "we recommend you create a catch-all (RelNode) handler";
       assertThat(e.getMessage(), is(value));
     }
@@ -1523,14 +1529,16 @@ public class RelMetadataTest extends SqlToRelTestBase {
       assertThat(colType(mq, rel, 0), equalTo("DEPTNO-rel"));
       fail("expected error");
     } catch (IllegalArgumentException e) {
-      final String value = "No handler for method [public abstract java.lang.String "
-          + "org.apache.calcite.test.RelMetadataTest$ColType.getColType(int)] "
-          + "applied to argument of type [interface org.apache.calcite.rel.RelNode]; "
+      final String value = "No handler for method [public abstract "
+          + "java.lang.String org.apache.calcite.test.RelMetadataTest$ColType$Handler.getColType("
+          + "org.apache.calcite.rel.RelNode,org.apache.calcite.rel.metadata.RelMetadataQuery,int)] "
+          + "applied to argument of type [class org.apache.calcite.rel.logical.LogicalFilter]; "
           + "we recommend you create a catch-all (RelNode) handler";
       assertThat(e.getMessage(), is(value));
     }
   }
 
+  @Deprecated
   public String colType(RelMetadataQuery mq, RelNode rel, int column) {
     return rel.metadata(ColType.class, mq).getColType(column);
   }
@@ -1539,6 +1547,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     return myRelMetadataQuery.colType(rel, column);
   }
 
+  @Deprecated
   @Test void testCustomProviderWithRelMetadataFactory() {
     final List<String> buf = new ArrayList<>();
     ColTypeImpl.THREAD_LIST.set(buf);
@@ -1581,7 +1590,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     // generates a new call to the provider.
     final RelOptPlanner planner = rel.getCluster().getPlanner();
     rel.getCluster().setMetadataProvider(
-        new CachingRelMetadataProvider(
+        new org.apache.calcite.rel.metadata.CachingRelMetadataProvider(
             rel.getCluster().getMetadataProvider(), planner));
     assertThat(colType(mq, input, 0), equalTo("DEPTNO-agg"));
     assertThat(buf.size(), equalTo(5));
@@ -1602,6 +1611,93 @@ public class RelMetadataTest extends SqlToRelTestBase {
     assertThat(buf.size(), equalTo(7));
     assertThat(colType(mq, input, 0), equalTo("DEPTNO-agg"));
     assertThat(buf.size(), equalTo(7));
+  }
+
+  /**
+   * Cache for testing supported legacy behavior.
+   *
+   * @see MetadataCache that adds @see RelOptPlanner.getRelMetadataTimestamp()
+   * to the key.
+   */
+  @Deprecated
+  static class LegacyInvalidationMetadataCache implements MetadataCache {
+    private final TableMetadataCache metadataCache = new TableMetadataCache();
+
+    @Deprecated
+    @Override public boolean clear(RelNode rel) {
+      return metadataCache.clear(rel);
+    }
+
+    @Deprecated
+    @Override public @Nullable Object remove(RelNode relNode, Object args) {
+      return metadataCache.remove(relNode, toArgList(relNode, args));
+    }
+
+    @Deprecated
+    @Override public @Nullable Object get(RelNode relNode, Object args) {
+      return metadataCache.get(relNode, toArgList(relNode, args));
+    }
+
+    @Deprecated
+    @Override public @Nullable Object put(RelNode relNode,
+        Object args, Object value) {
+      return metadataCache.put(relNode, toArgList(relNode, args), value);
+    }
+
+    @Deprecated
+    private List<?> toArgList(RelNode relNode, Object args) {
+      return ImmutableList.builder().add(args)
+          .add(relNode.getCluster().getPlanner().getRelMetadataTimestamp(relNode))
+          .build();
+    }
+  }
+
+  @Deprecated
+  @Test void testSupportLegacyCachingBehaviorViaMetadataQuery() {
+    RelMetadataQuery prototype = new CustomMq(new JaninoMetadataHandlerProvider() {
+      @Override public MetadataCache buildCache() {
+        return new LegacyInvalidationMetadataCache();
+      }
+    });
+
+    final List<String> buf = new ArrayList<>();
+    ColTypeImpl.THREAD_LIST.set(buf);
+
+    final String sql = "select deptno, count(*) from emp where deptno > 10 "
+        + "group by deptno having count(*) = 0";
+    final RelRoot root = tester.convertSqlToRel(sql);
+    final RelNode rel = root.rel;
+    final RelMetadataQuery mq = new CustomMq(prototype);
+    ColType.Handler colTypeHandler = JaninoMetadataHandlerCreator.newInstance(
+        ColType.Handler.class, ColTypeImpl.SOURCE.handlers(ColType.DEF));
+    // Top node is a filter. Its metadata uses getColType(RelNode, int).
+    assertThat(rel, instanceOf(LogicalFilter.class));
+
+    // Next node is an aggregate. Its metadata uses
+    // getColType(LogicalAggregate, int).
+    final RelNode input = rel.getInput(0);
+    assertThat(input, instanceOf(LogicalAggregate.class));
+
+    assertThat(colTypeHandler.getColType(input, mq, 0), equalTo("DEPTNO-agg"));
+    assertThat(buf.size(), equalTo(1));
+    assertThat(colTypeHandler.getColType(input, mq, 0), equalTo("DEPTNO-agg"));
+    assertThat(buf.size(), equalTo(1));
+    assertThat(colTypeHandler.getColType(input, mq, 1), equalTo("EXPR$1-agg"));
+    assertThat(buf.size(), equalTo(2));
+    assertThat(colTypeHandler.getColType(input, mq, 1), equalTo("EXPR$1-agg"));
+    assertThat(buf.size(), equalTo(2));
+    assertThat(colTypeHandler.getColType(input, mq, 0), equalTo("DEPTNO-agg"));
+    assertThat(buf.size(), equalTo(2));
+
+    // With a different timestamp, a metadata item is re-computed on first call.
+    final RelOptPlanner planner = rel.getCluster().getPlanner();
+    long timestamp = planner.getRelMetadataTimestamp(rel);
+    assertThat(timestamp, equalTo(0L));
+    ((MockRelOptPlanner) planner).setRelMetadataTimestamp(timestamp + 1);
+    assertThat(colTypeHandler.getColType(input, mq, 0), equalTo("DEPTNO-agg"));
+    assertThat(buf.size(), equalTo(3));
+    assertThat(colTypeHandler.getColType(input, mq, 0), equalTo("DEPTNO-agg"));
+    assertThat(buf.size(), equalTo(3));
   }
 
   @Test void testCustomProviderWithRelMetadataQuery() {
@@ -3240,6 +3336,19 @@ public class RelMetadataTest extends SqlToRelTestBase {
     checkNodeTypeCount(sql, expected);
   }
 
+  /**
+   * Custom Metadata Query for using a different MetadataHandlerProvider.
+   */
+  static class CustomMq extends RelMetadataQuery {
+    CustomMq(MetadataHandlerProvider metadataHandlerProvider) {
+      super(metadataHandlerProvider);
+    }
+
+    CustomMq(RelMetadataQuery prototype) {
+      super(prototype);
+    }
+  }
+
   private static final SqlOperator NONDETERMINISTIC_OP = new SqlSpecialOperator(
           "NDC",
           SqlKind.OTHER_FUNCTION,
@@ -3330,6 +3439,173 @@ public class RelMetadataTest extends SqlToRelTestBase {
     });
   }
 
+  /**RelNode for testing.*/
+  public class RelNodeA extends AbstractRelNode {
+    protected RelNodeA(RelOptCluster cluster) {
+      super(cluster, RelTraitSet.createEmpty());
+    }
+  }
+
+  /**RelNode for testing.*/
+  public class RelNodeB extends RelNodeA {
+    protected RelNodeB(RelOptCluster cluster) {
+      super(cluster);
+    }
+  }
+
+  /**RelNode for testing.*/
+  public class RelNodeC extends RelNodeB {
+    protected RelNodeC(RelOptCluster cluster) {
+      super(cluster);
+    }
+  }
+
+  /**RelNode for testing.*/
+  public class RelNodeD extends RelNodeB {
+    protected RelNodeD(RelOptCluster cluster) {
+      super(cluster);
+    }
+  }
+
+  /**Metadata that returns a string.*/
+  public interface MetadataString extends Metadata {
+    Method METHOD = Types.lookupMethod(MetadataString.class, "getString");
+    MetadataDef<MetadataString> DEF = MetadataDef.of(MetadataString.class,
+        MetadataString.Handler.class, METHOD);
+
+    String getString();
+
+    /**Handler for metadata that returns a string.*/
+    interface Handler extends MetadataHandler<MetadataString> {
+      String getString(RelNode relNode, RelMetadataQuery relMetadataQuery);
+    }
+  }
+
+  /**Handler for RelNodeA.*/
+  public class MetadataStringHandlerAImpl implements MetadataHandler<MetadataString> {
+    @Deprecated
+    @Override public MetadataDef<MetadataString> getDef() {
+      return MetadataString.DEF;
+    }
+
+    public String getString(RelNodeA relNode, RelMetadataQuery relMetadataQuery) {
+      return "A";
+    }
+  }
+
+  /**Handler for RelNodeB.*/
+  public class MetadataStringHandlerBImpl implements MetadataHandler<MetadataString> {
+    @Deprecated
+    @Override public MetadataDef<MetadataString> getDef() {
+      return MetadataString.DEF;
+    }
+
+    public String getString(RelNodeB relNode, RelMetadataQuery relMetadataQuery) {
+      return "B";
+    }
+  }
+
+  /**Handler for RelNodeC.*/
+  public class MetadataStringHandlerCImpl implements MetadataHandler<MetadataString> {
+    @Deprecated
+    @Override public MetadataDef<MetadataString> getDef() {
+      return MetadataString.DEF;
+    }
+
+    public String getString(RelNodeC relNode, RelMetadataQuery relMetadataQuery) {
+      return "C";
+    }
+  }
+
+  /**Handler for RelNodeD.*/
+  public class MetadataStringHandlerDImpl implements MetadataHandler<MetadataString> {
+    @Deprecated
+    @Override public MetadataDef<MetadataString> getDef() {
+      return MetadataString.DEF;
+    }
+
+    public String getString(RelNodeD relNode, RelMetadataQuery relMetadataQuery) {
+      return "D";
+    }
+  }
+
+  /**Handler for overriding RelNodeD.*/
+  public class MetadataStringHandlerDOverrideImpl implements MetadataHandler<MetadataString> {
+    @Deprecated
+    @Override public MetadataDef<MetadataString> getDef() {
+      return MetadataString.DEF;
+    }
+
+    public String getString(RelNodeD relNode, RelMetadataQuery relMetadataQuery) {
+      return "DD";
+    }
+  }
+
+  @Test void testMetadataOverride() {
+    final FrameworkConfig config = RelBuilderTest.config().build();
+    final RelBuilder builder = RelBuilder.create(config);
+    RelMetadataProvider provider = ChainedRelMetadataProvider.of(
+        ImmutableList.of(
+            ReflectiveRelMetadataProvider.reflectiveSource(MetadataString.METHOD,
+                new MetadataStringHandlerDOverrideImpl()),
+            ReflectiveRelMetadataProvider.reflectiveSource(MetadataString.METHOD,
+                new MetadataStringHandlerAImpl()),
+            ReflectiveRelMetadataProvider.reflectiveSource(MetadataString.METHOD,
+                new MetadataStringHandlerBImpl()),
+            ReflectiveRelMetadataProvider.reflectiveSource(MetadataString.METHOD,
+                new MetadataStringHandlerCImpl()),
+            ReflectiveRelMetadataProvider.reflectiveSource(MetadataString.METHOD,
+                new MetadataStringHandlerDImpl())));
+
+    MetadataString.Handler handler =
+        JaninoMetadataHandlerCreator.newInstance(MetadataString.Handler.class,
+            provider.handlers(MetadataString.DEF));
+    RelMetadataQuery query = RelMetadataQuery.instance();
+
+    assertEquals(
+        "A", handler.getString(
+        new RelNodeA(builder.getCluster()), query));
+    assertEquals(
+        "B", handler.getString(
+        new RelNodeB(builder.getCluster()), query));
+    assertEquals(
+        "C", handler.getString(
+        new RelNodeC(builder.getCluster()), query));
+    assertEquals(
+        "DD", handler.getString(
+        new RelNodeD(builder.getCluster()), query));
+
+    //Validate the first in the chain is used and it is not just random
+    provider = ChainedRelMetadataProvider.of(
+        ImmutableList.of(
+            ReflectiveRelMetadataProvider.reflectiveSource(MetadataString.METHOD,
+                new MetadataStringHandlerDImpl()),
+            ReflectiveRelMetadataProvider.reflectiveSource(MetadataString.METHOD,
+                new MetadataStringHandlerCImpl()),
+            ReflectiveRelMetadataProvider.reflectiveSource(MetadataString.METHOD,
+                new MetadataStringHandlerBImpl()),
+            ReflectiveRelMetadataProvider.reflectiveSource(MetadataString.METHOD,
+                new MetadataStringHandlerAImpl()),
+            ReflectiveRelMetadataProvider.reflectiveSource(MetadataString.METHOD,
+                new MetadataStringHandlerDOverrideImpl())));
+
+    handler = JaninoMetadataHandlerCreator.newInstance(MetadataString.Handler.class,
+            provider.handlers(MetadataString.DEF));
+
+    assertEquals(
+        "A", handler.getString(
+            new RelNodeA(builder.getCluster()), query));
+    assertEquals(
+        "B", handler.getString(
+            new RelNodeB(builder.getCluster()), query));
+    assertEquals(
+        "C", handler.getString(
+            new RelNodeC(builder.getCluster()), query));
+    assertEquals(
+        "D", handler.getString(
+            new RelNodeD(builder.getCluster()), query));
+  }
+
   private void checkInputForCollationAndLimit(RelOptCluster cluster, RelOptTable empTable,
       RelOptTable deptTable) {
     final RexBuilder rexBuilder = cluster.getRexBuilder();
@@ -3392,6 +3668,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
       implements MetadataHandler<ColType> {
     static final ThreadLocal<List<String>> THREAD_LIST = new ThreadLocal<>();
 
+    @Deprecated
     public MetadataDef<ColType> getDef() {
       return ColType.DEF;
     }
@@ -3439,15 +3716,15 @@ public class RelMetadataTest extends SqlToRelTestBase {
     private ColType.Handler colTypeHandler;
 
     MyRelMetadataQuery() {
-      colTypeHandler = initialHandler(ColType.Handler.class);
+      colTypeHandler = JaninoMetadataHandlerProvider.INSTANCE.initialHandler(ColType.DEF);
     }
 
     public String colType(RelNode rel, int column) {
       for (;;) {
         try {
           return colTypeHandler.getColType(rel, this, column);
-        } catch (JaninoRelMetadataProvider.NoHandler e) {
-          colTypeHandler = revise(e.relClass, ColType.DEF);
+        } catch (MetadataHandlerProvider.NoHandler e) {
+          colTypeHandler = metadataHandlerProvider.revise(ColType.DEF);
         }
       }
     }
