@@ -64,7 +64,9 @@ public class ReflectiveRelMetadataProvider
     implements RelMetadataProvider, ReflectiveVisitor {
 
   //~ Instance fields --------------------------------------------------------
+  @Deprecated // to be removed before 2.0
   private final ConcurrentMap<Class<RelNode>, UnboundMetadata> map;
+  @Deprecated // to be removed before 2.0
   private final Class<? extends Metadata> metadataClass0;
   private final ImmutableMultimap<Method, MetadataHandler> handlerMap;
 
@@ -182,7 +184,7 @@ public class ReflectiveRelMetadataProvider
                   }
                   key1 = FlatLists.copyOf(args2);
                 }
-                if (mq.map.put(rel, key1, NullSentinel.INSTANCE) != null) {
+                if (mq.cache.put(rel, key1, NullSentinel.INSTANCE) != null) {
                   throw new CyclicMetadataException();
                 }
                 try {
@@ -191,7 +193,7 @@ public class ReflectiveRelMetadataProvider
                     | UndeclaredThrowableException e) {
                   throw Util.throwAsRuntime(Util.causeOrSelf(e));
                 } finally {
-                  mq.map.remove(rel, key1);
+                  mq.cache.remove(rel, key1);
                 }
               });
       methodsMap.put(key, function);
@@ -229,7 +231,7 @@ public class ReflectiveRelMetadataProvider
   }
 
   //~ Methods ----------------------------------------------------------------
-
+  @Deprecated // to be removed before 2.0
   @Override public <@Nullable M extends @Nullable Metadata> @Nullable UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass, Class<? extends M> metadataClass) {
     if (metadataClass == metadataClass0) {
@@ -240,6 +242,7 @@ public class ReflectiveRelMetadataProvider
   }
 
   @SuppressWarnings({ "unchecked", "SuspiciousMethodCalls" })
+  @Deprecated // to be removed before 2.0
   public <@Nullable M extends @Nullable Metadata> @Nullable UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass) {
     List<Class<? extends RelNode>> newSources = new ArrayList<>();

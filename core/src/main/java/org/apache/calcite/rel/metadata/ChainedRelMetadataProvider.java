@@ -70,6 +70,7 @@ public class ChainedRelMetadataProvider implements RelMetadataProvider {
     return providers.hashCode();
   }
 
+  @Deprecated // to be removed before 2.0
   @Override public <@Nullable M extends @Nullable Metadata> @Nullable UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass,
       final Class<? extends M> metadataClass) {
@@ -108,7 +109,7 @@ public class ChainedRelMetadataProvider implements RelMetadataProvider {
       MetadataDef<M> def) {
     final ImmutableMultimap.Builder<Method, MetadataHandler<M>> builder =
         ImmutableMultimap.builder();
-    for (RelMetadataProvider provider : providers.reverse()) {
+    for (RelMetadataProvider provider : providers) {
       builder.putAll(provider.handlers(def));
     }
     return builder.build();
