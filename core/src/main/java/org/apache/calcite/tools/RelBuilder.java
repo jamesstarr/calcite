@@ -2362,7 +2362,7 @@ public class RelBuilder {
     Frame right = stack.pop();
     final Frame left = stack.pop();
     final RelNode join;
-    final boolean correlate = variablesSet.size() == 1;
+    final boolean correlate = isCorrelated(variablesSet, left.rel, right.rel);
     RexNode postCondition = literal(true);
     if (config.simplify()) {
       // Normalize expanded versions IS NOT DISTINCT FROM so that simplifier does not
@@ -2375,10 +2375,6 @@ public class RelBuilder {
     }
     if (correlate) {
       final CorrelationId id = Iterables.getOnlyElement(variablesSet);
-      if (!RelOptUtil.notContainsCorrelation(left.rel, id, Litmus.IGNORE)) {
-        throw new IllegalArgumentException("variable " + id
-            + " must not be used by left input to correlation");
-      }
       // Correlate does not have an ON clause.
       switch (joinType) {
       case LEFT:
@@ -2386,7 +2382,9 @@ public class RelBuilder {
       case ANTI:
         // For a LEFT/SEMI/ANTI, predicate must be evaluated first.
         stack.push(right);
-        filter(condition.accept(new Shifter(left.rel, id, right.rel)));
+        filter(
+            RelOptUtil.correlateLeftShiftRight(getRexBuilder(),
+                left.rel, id, right.rel, condition));
         right = stack.pop();
         break;
       case INNER:
@@ -3360,6 +3358,24 @@ public class RelBuilder {
     }
   }
 
+  /**Checks for {@link CorrelationId}, then validates the id is not used on left,
+   * and finally checks if id is actually used on right.*/
+  private static boolean isCorrelated(Set<CorrelationId> variablesSet,
+      RelNode leftNode, RelNode rightRel) {
+    if (variablesSet.size() != 1) {
+      return false;
+    }
+    CorrelationId id = Iterables.getOnlyElement(variablesSet);
+    if (!RelOptUtil.notContainsCorrelation(leftNode, id, Litmus.IGNORE)) {
+      throw new IllegalArgumentException("variable " + id
+          + " must not be used by left input to correlation");
+    }
+    return !RelOptUtil.correlationColumns(
+        Iterables.getOnlyElement(variablesSet),
+        rightRel).isEmpty();
+  }
+
+
   /** Implementation of {@link AggCall}. */
   private class AggCallImpl implements AggCallPlus {
     private final SqlAggFunction aggFunction;
@@ -3740,33 +3756,6 @@ public class RelBuilder {
       final ImmutableSet<String> aliasList =
           ImmutableSet.<String>builder().addAll(left).add(alias).build();
       return new Field(aliasList, right);
-    }
-  }
-
-  /** Shuttle that shifts a predicate's inputs to the left, replacing early
-   * ones with references to a
-   * {@link RexCorrelVariable}. */
-  private class Shifter extends RexShuttle {
-    private final RelNode left;
-    private final CorrelationId id;
-    private final RelNode right;
-
-    Shifter(RelNode left, CorrelationId id, RelNode right) {
-      this.left = left;
-      this.id = id;
-      this.right = right;
-    }
-
-    @Override public RexNode visitInputRef(RexInputRef inputRef) {
-      final RelDataType leftRowType = left.getRowType();
-      final RexBuilder rexBuilder = getRexBuilder();
-      final int leftCount = leftRowType.getFieldCount();
-      if (inputRef.getIndex() < leftCount) {
-        final RexNode v = rexBuilder.makeCorrel(leftRowType, id);
-        return rexBuilder.makeFieldAccess(v, inputRef.getIndex());
-      } else {
-        return rexBuilder.makeInputRef(right, inputRef.getIndex() - leftCount);
-      }
     }
   }
 
