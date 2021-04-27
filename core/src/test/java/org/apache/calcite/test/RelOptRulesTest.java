@@ -108,8 +108,8 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.sql.validate.SqlMonotonicity;
 import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql2rel.RelDecorrelator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.calcite.sql2rel.decorrelator.RelDecorrelator;
 import org.apache.calcite.test.catalog.MockCatalogReader;
 import org.apache.calcite.test.catalog.MockCatalogReaderExtended;
 import org.apache.calcite.tools.Program;
@@ -6010,10 +6010,67 @@ class RelOptRulesTest extends RelOptTestBase {
   }
 
   @Test void testDecorrelateExists() {
-    final String sql = "select * from sales.emp\n"
+    final String sql = ""
+        + "select * from sales.emp\n"
         + "where EXISTS (\n"
-        + "  select * from emp e where emp.deptno = e.deptno)";
+        + "  select e.deptno\n"
+        + "  from emp e\n"
+        + "  where  e.sal <= 4 AND emp.deptno = e.deptno\n"
+        + ")";
     checkSubQuery(sql).withLateDecorrelation(true).check();
+  }
+
+  @Test void testDecorrelateExists2VariablesOneRow() {
+    final String sql = ""
+        + "SELECT *\n"
+        + "FROM (VALUES ('HELLO WORLD', 1), ('HELLO WORLD', 2)) AS LHS(CODE_PDL, \"qX01\")\n"
+        + "WHERE EXISTS (\n"
+        + "      SELECT \"CODE_PDL\"\n"
+        + "      FROM (VALUES ('HELLO WORLD', 1)) AS RHS(CODE_PDL, \"qX01\")\n"
+        + "      WHERE  (\"qX01\" <= 1) AND (\"LHS\".\"CODE_PDL\" = \"RHS\".\"CODE_PDL\")\n"
+        + ")";
+    checkSubQuery(sql)
+        .withLateDecorrelation(true)
+        .check();
+  }
+
+  @Test void testDecorrelateExists2Variables() {
+    final String sql = ""
+        + "SELECT *\n"
+        + "FROM (VALUES ('HELLO WORLD')) AS \"LHS\"(\"CODE_PDL\")\n"
+        + "WHERE EXISTS (\n"
+        + "      SELECT \"CODE_PDL\", RANK() OVER (PARTITION BY CODE_PDL ORDER BY ord) AS \"qX01\"\n"
+        + "      FROM (VALUES ('HELLO WORLD', 1), ('HELLO WORLD', 2)) AS RHS(CODE_PDL, \"ord\")\n"
+        + "      WHERE  (\"qX01\" <= 1) AND (\"LHS\".\"CODE_PDL\" = \"RHS\".\"CODE_PDL\")\n"
+        + ")";
+    checkSubQuery(sql)
+        .withLateDecorrelation(true)
+        .check();
+  }
+
+
+  @Test void testDecorrelateExistsXVariables() {
+    final String sql = ""
+        + "SELECT *\n"
+        + "FROM (VALUES ('HELLO WORLD')) AS \"LHS\"(\"CODE_PDL\")\n"
+        + "WHERE EXISTS (\n"
+        + "  SELECT CODE_PDL\n"
+        + "  FROM ("
+        + "      SELECT \"CODE_PDL\"\n"
+        + "      FROM (VALUES ('HELLO WORLD', 1), ('HELLO WORLD', 1), ('HELLO WORLD', 1), ('HELLO WORLD', 2)) AS INNER_RHS(CODE_PDL, \"qX01\")\n"
+        + "      WHERE  (\"qX01\" <= 1)\n"
+        + "  ) AS RHS\n"
+        + "  WHERE (\"LHS\".\"CODE_PDL\" = \"RHS\".\"CODE_PDL\")\n"
+        + ")";
+    checkSubQuery(sql)
+        .withDecorrelation(true)
+        .withTrim(true)
+        .withRelBuilderConfig(b -> b.withPruneInputOfAggregate(true))
+        .withPreRule(CoreRules.FILTER_PROJECT_TRANSPOSE,
+            CoreRules.FILTER_INTO_JOIN,
+            CoreRules.PROJECT_MERGE)
+        .withRule(CoreRules.PROJECT_TO_SEMI_JOIN)
+        .check();
   }
 
   /** Test case for

@@ -791,7 +791,7 @@ where EXISTS (
             <![CDATA[
 LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
   LogicalFilter(condition=[EXISTS({
-LogicalFilter(condition=[=($cor0.DEPTNO, $7)])
+LogicalFilter(condition=[AND(<=($5, 4), =($cor0.DEPTNO, $7))])
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 })], variablesSet=[[$cor0]])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -805,7 +805,8 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
     LogicalProject(DEPTNO=[$0], $f1=[true])
       LogicalAggregate(group=[{0}])
         LogicalProject(DEPTNO=[$7])
-          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+          LogicalFilter(condition=[<=($5, 4)])
+            LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
         <Resource name="planMid">
@@ -816,7 +817,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalAggregate(group=[{0}])
         LogicalProject(i=[true])
-          LogicalFilter(condition=[=($cor0.DEPTNO, $7)])
+          LogicalFilter(condition=[AND(<=($5, 4), =($cor0.DEPTNO, $7))])
             LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -13181,6 +13182,80 @@ LogicalProject(DEPTNO=[$0], $f1=[CAST($1):INTEGER NOT NULL], $f2=[$2])
       LogicalAggregate(group=[{0, 2}], groups=[[{0, 2}, {0}]], agg#0=[$SUM0($1)], agg#1=[MIN($1)], agg#2=[MAX($1)], agg#3=[GROUPING($0, $2)])
         LogicalProject(DEPTNO=[$7], SAL=[$5], JOB=[$2])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testDecorrelateExists2Variables">
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(CODE_PDL=[$0])
+  LogicalFilter(condition=[EXISTS({
+LogicalFilter(condition=[AND(<=($1, 1), =($cor0.CODE_PDL, $0))])
+  LogicalValues(tuples=[[{ 'HELLO WORLD', 1 }, { 'HELLO WORLD', 2 }]])
+})], variablesSet=[[$cor0]])
+    LogicalValues(tuples=[[{ 'HELLO WORLD' }]])
+]]>
+        </Resource>
+        <Resource name="planMid">
+            <![CDATA[
+LogicalProject(CODE_PDL=[$0])
+  LogicalProject(CODE_PDL=[$0])
+    LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{0}])
+      LogicalValues(tuples=[[{ 'HELLO WORLD' }]])
+      LogicalAggregate(group=[{0}])
+        LogicalProject(i=[true])
+          LogicalFilter(condition=[AND(<=($1, 1), =($cor0.CODE_PDL, $0))])
+            LogicalValues(tuples=[[{ 'HELLO WORLD', 1 }, { 'HELLO WORLD', 2 }]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(CODE_PDL=[$0])
+  LogicalProject(CODE_PDL=[$0])
+    LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{0}])
+      LogicalValues(tuples=[[{ 'HELLO WORLD' }]])
+      LogicalAggregate(group=[{0}])
+        LogicalProject(i=[true])
+          LogicalFilter(condition=[AND(<=($1, 1), =($cor0.CODE_PDL, $0))])
+            LogicalValues(tuples=[[{ 'HELLO WORLD', 1 }, { 'HELLO WORLD', 2 }]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testDecorrelateExistsXVariables">
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(CODE_PDL=[$0])
+  LogicalFilter(condition=[EXISTS({
+LogicalFilter(condition=[=($cor0.CODE_PDL, $0)])
+  LogicalProject(CODE_PDL=[$0])
+    LogicalFilter(condition=[<=($1, 1)])
+      LogicalValues(tuples=[[{ 'HELLO WORLD', 1 }, { 'HELLO WORLD', 1 }, { 'HELLO WORLD', 1 }, { 'HELLO WORLD', 2 }]])
+})], variablesSet=[[$cor0]])
+    LogicalValues(tuples=[[{ 'HELLO WORLD' }]])
+]]>
+        </Resource>
+        <Resource name="planMid">
+            <![CDATA[
+LogicalProject(CODE_PDL=[$0])
+  LogicalProject(CODE_PDL=[$0])
+    LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{0}])
+      LogicalValues(tuples=[[{ 'HELLO WORLD' }]])
+      LogicalAggregate(group=[{0}])
+        LogicalProject(i=[true])
+          LogicalFilter(condition=[=($cor0.CODE_PDL, $0)])
+            LogicalProject(CODE_PDL=[$0])
+              LogicalFilter(condition=[<=($1, 1)])
+                LogicalValues(tuples=[[{ 'HELLO WORLD', 1 }, { 'HELLO WORLD', 1 }, { 'HELLO WORLD', 1 }, { 'HELLO WORLD', 2 }]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(CODE_PDL=[$0])
+  LogicalProject(CODE_PDL=[$0])
+    LogicalProject(CODE_PDL=[$0], i=[true])
+      LogicalJoin(condition=[AND(<=($2, 1), =($0, $1))], joinType=[inner])
+        LogicalValues(tuples=[[{ 'HELLO WORLD' }]])
+        LogicalValues(tuples=[[{ 'HELLO WORLD', 1 }, { 'HELLO WORLD', 1 }, { 'HELLO WORLD', 1 }, { 'HELLO WORLD', 2 }]])
 ]]>
         </Resource>
     </TestCase>

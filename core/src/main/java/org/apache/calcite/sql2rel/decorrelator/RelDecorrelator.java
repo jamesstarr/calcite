@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.calcite.sql2rel;
+package org.apache.calcite.sql2rel.decorrelator;
 
 import org.apache.calcite.linq4j.Ord;
 import org.apache.calcite.linq4j.function.Function2;
@@ -22,16 +22,12 @@ import org.apache.calcite.plan.Context;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptCostImpl;
 import org.apache.calcite.plan.RelOptRule;
-import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.plan.hep.HepPlanner;
 import org.apache.calcite.plan.hep.HepProgram;
 import org.apache.calcite.plan.hep.HepProgramBuilder;
-import org.apache.calcite.plan.hep.HepRelVertex;
-import org.apache.calcite.rel.BiRel;
 import org.apache.calcite.rel.RelCollation;
-import org.apache.calcite.rel.RelHomogeneousShuttle;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.AggregateCall;
@@ -51,8 +47,6 @@ import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.logical.LogicalSnapshot;
 import org.apache.calcite.rel.logical.LogicalTableFunctionScan;
-import org.apache.calcite.rel.metadata.RelMdUtil;
-import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.FilterCorrelateRule;
 import org.apache.calcite.rel.rules.FilterJoinRule;
@@ -60,7 +54,6 @@ import org.apache.calcite.rel.rules.FilterProjectTransposeRule;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeField;
-import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexCorrelVariable;
 import org.apache.calcite.rex.RexFieldAccess;
@@ -68,20 +61,12 @@ import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexShuttle;
-import org.apache.calcite.rex.RexSubQuery;
 import org.apache.calcite.rex.RexUtil;
-import org.apache.calcite.rex.RexVisitorImpl;
 import org.apache.calcite.sql.SqlExplainFormat;
 import org.apache.calcite.sql.SqlExplainLevel;
-import org.apache.calcite.sql.SqlFunction;
-import org.apache.calcite.sql.SqlKind;
-import org.apache.calcite.sql.SqlOperator;
-import org.apache.calcite.sql.fun.SqlCountAggFunction;
-import org.apache.calcite.sql.fun.SqlSingleValueAggFunction;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
-import org.apache.calcite.util.Holder;
 import org.apache.calcite.util.ImmutableBeans;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.Litmus;
@@ -92,21 +77,16 @@ import org.apache.calcite.util.Util;
 import org.apache.calcite.util.mapping.Mappings;
 import org.apache.calcite.util.trace.CalciteTrace;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.Sets;
-import com.google.common.collect.SortedSetMultimap;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -118,7 +98,6 @@ import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import static org.apache.calcite.linq4j.Nullness.castNonNull;
 
@@ -146,7 +125,7 @@ import static java.util.Objects.requireNonNull;
 public class RelDecorrelator implements ReflectiveVisitor {
   //~ Static fields/initializers ---------------------------------------------
 
-  private static final Logger SQL2REL_LOGGER =
+  static final Logger SQL2REL_LOGGER =
       CalciteTrace.getSqlToRelTracer();
 
   //~ Instance fields --------------------------------------------------------
@@ -154,7 +133,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
   protected final RelBuilder relBuilder;
 
   // map built during translation
-  protected CorelMap cm;
+  CorelMap cm;
 
   @SuppressWarnings("method.invocation.invalid")
   protected final ReflectUtil.MethodDispatcher<@Nullable Frame> dispatcher =
@@ -207,7 +186,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
    */
   public static RelNode decorrelateQuery(RelNode rootRel,
       RelBuilder relBuilder) {
-    final CorelMap corelMap = new CorelMapBuilder().build(rootRel);
+    final CorelMap corelMap = CorelMap.build(rootRel);
     if (!corelMap.hasCorrelation()) {
       return rootRel;
     }
@@ -235,10 +214,10 @@ public class RelDecorrelator implements ReflectiveVisitor {
     return newRootRel;
   }
 
-  private void setCurrent(@Nullable RelNode root, @Nullable Correlate corRel) {
+  void setCurrent(@Nullable RelNode root, @Nullable Correlate corRel) {
     currentRel = corRel;
     if (corRel != null) {
-      cm = new CorelMapBuilder().build(Util.first(root, corRel));
+      cm = CorelMap.build(Util.first(root, corRel));
     }
   }
 
@@ -371,36 +350,6 @@ public class RelDecorrelator implements ReflectiveVisitor {
     return exp.accept(shuttle);
   }
 
-  protected RexNode removeCorrelationExpr(
-      RexNode exp,
-      boolean projectPulledAboveLeftCorrelator) {
-    RemoveCorrelationRexShuttle shuttle =
-        new RemoveCorrelationRexShuttle(relBuilder.getRexBuilder(),
-            projectPulledAboveLeftCorrelator, null, ImmutableSet.of());
-    return exp.accept(shuttle);
-  }
-
-  protected RexNode removeCorrelationExpr(
-      RexNode exp,
-      boolean projectPulledAboveLeftCorrelator,
-      RexInputRef nullIndicator) {
-    RemoveCorrelationRexShuttle shuttle =
-        new RemoveCorrelationRexShuttle(relBuilder.getRexBuilder(),
-            projectPulledAboveLeftCorrelator, nullIndicator,
-            ImmutableSet.of());
-    return exp.accept(shuttle);
-  }
-
-  protected RexNode removeCorrelationExpr(
-      RexNode exp,
-      boolean projectPulledAboveLeftCorrelator,
-      Set<Integer> isCount) {
-    RemoveCorrelationRexShuttle shuttle =
-        new RemoveCorrelationRexShuttle(relBuilder.getRexBuilder(),
-            projectPulledAboveLeftCorrelator, null, isCount);
-    return exp.accept(shuttle);
-  }
-
   /** Fallback if none of the other {@code decorrelateRel} methods match. */
   public @Nullable Frame decorrelateRel(RelNode rel, boolean isCorVarDefined) {
     RelNode newRel = rel.copy(rel.getTraitSet(), rel.getInputs());
@@ -473,11 +422,6 @@ public class RelDecorrelator implements ReflectiveVisitor {
 
     // Sort does not change input ordering
     return register(rel, newSort, frame.oldToNewOutputs, frame.corDefOutputs);
-  }
-
-  public @Nullable Frame decorrelateRel(Values rel, boolean isCorVarDefined) {
-    // There are no inputs, so rel does not need to be changed.
-    return null;
   }
 
   public @Nullable Frame decorrelateRel(LogicalAggregate rel, boolean isCorVarDefined) {
@@ -927,7 +871,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
    * a relational expression, if those variables are not already provided by
    * its input. */
   private Frame maybeAddValueGenerator(RelNode rel, Frame frame) {
-    final CorelMap cm1 = new CorelMapBuilder().build(frame.r, rel);
+    final CorelMap cm1 = CorelMap.build(frame.r, rel);
     if (!cm1.mapRefRelToCorRef.containsKey(rel)) {
       return frame;
     }
@@ -1142,7 +1086,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
       frame = maybeAddValueGenerator(rel, frame);
     }
 
-    final CorelMap cm2 = new CorelMapBuilder().build(rel);
+    final CorelMap cm2 = CorelMap.build(rel);
 
     // Replace the filter expression to reference output of the join
     // Map filter to the new filter over join
@@ -1384,7 +1328,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
    * @param nullIndicatorPos Position of null indicator
    * @return the subtree with the new Project at the root
    */
-  private RelNode projectJoinOutputWithNullability(
+  RelNode projectJoinOutputWithNullability(
       Join join,
       Project project,
       int nullIndicatorPos) {
@@ -1420,7 +1364,8 @@ public class RelDecorrelator implements ReflectiveVisitor {
 
     for (Pair<RexNode, String> pair : project.getNamedProjects()) {
       RexNode newProjExpr =
-          removeCorrelationExpr(
+          DecorrelatorUtil.removeCorrelationExpr(
+              RelDecorrelator.this,
               pair.left,
               projectPulledAboveLeftCorrelator,
               nullIndicator);
@@ -1443,7 +1388,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
    *                aggregation function
    * @return the subtree with the new Project at the root
    */
-  private RelNode aggregateCorrelatorOutput(
+  RelNode aggregateCorrelatorOutput(
       Correlate correlate,
       Project project,
       Set<Integer> isCount) {
@@ -1470,7 +1415,8 @@ public class RelDecorrelator implements ReflectiveVisitor {
 
     for (Pair<RexNode, String> pair : project.getNamedProjects()) {
       RexNode newProjExpr =
-          removeCorrelationExpr(
+          DecorrelatorUtil.removeCorrelationExpr(
+              this,
               pair.left,
               projectPulledAboveLeftCorrelator,
               isCount);
@@ -1492,7 +1438,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
    * @param correlatedJoinKeys Correlated join keys
    * @return true if filter and proj only references corVar provided by corRel
    */
-  private boolean checkCorVars(
+  boolean checkCorVars(
       Correlate correlate,
       @Nullable Project project,
       @Nullable Filter filter,
@@ -1543,7 +1489,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
    *
    * @param correlate Correlate
    */
-  private void removeCorVarFromTree(Correlate correlate) {
+  void removeCorVarFromTree(Correlate correlate) {
     cm.mapCorToCorRel.remove(correlate.getCorrelationId(), correlate);
   }
 
@@ -1554,7 +1500,7 @@ public class RelDecorrelator implements ReflectiveVisitor {
    * @param additionalExprs Additional expressions and names
    * @return the new Project
    */
-  private RelNode createProjectWithAdditionalExprs(
+  RelNode createProjectWithAdditionalExprs(
       RelNode input,
       List<Pair<RexNode, String>> additionalExprs) {
     final List<RelDataTypeField> fieldList =
@@ -1599,13 +1545,6 @@ public class RelDecorrelator implements ReflectiveVisitor {
     return ret.succeed();
   }
 
-  private static RelNode stripHep(RelNode rel) {
-    if (rel instanceof HepRelVertex) {
-      HepRelVertex hepRelVertex = (HepRelVertex) rel;
-      rel = hepRelVertex.getCurrentRel();
-    }
-    return rel;
-  }
 
   //~ Inner Classes ----------------------------------------------------------
 
@@ -1661,1031 +1600,8 @@ public class RelDecorrelator implements ReflectiveVisitor {
     }
   }
 
-  /** Shuttle that removes correlations. */
-  private class RemoveCorrelationRexShuttle extends RexShuttle {
-    final RexBuilder rexBuilder;
-    final RelDataTypeFactory typeFactory;
-    final boolean projectPulledAboveLeftCorrelator;
-    final @Nullable RexInputRef nullIndicator;
-    final ImmutableSet<Integer> isCount;
-
-    RemoveCorrelationRexShuttle(
-        RexBuilder rexBuilder,
-        boolean projectPulledAboveLeftCorrelator,
-        @Nullable RexInputRef nullIndicator,
-        Set<Integer> isCount) {
-      this.projectPulledAboveLeftCorrelator =
-          projectPulledAboveLeftCorrelator;
-      this.nullIndicator = nullIndicator; // may be null
-      this.isCount = ImmutableSet.copyOf(isCount);
-      this.rexBuilder = rexBuilder;
-      this.typeFactory = rexBuilder.getTypeFactory();
-    }
-
-    private RexNode createCaseExpression(
-        RexInputRef nullInputRef,
-        @Nullable RexLiteral lit,
-        RexNode rexNode) {
-      RexNode[] caseOperands = new RexNode[3];
-
-      // Construct a CASE expression to handle the null indicator.
-      //
-      // This also covers the case where a left correlated sub-query
-      // projects fields from outer relation. Since LOJ cannot produce
-      // nulls on the LHS, the projection now need to make a nullable LHS
-      // reference using a nullability indicator. If this this indicator
-      // is null, it means the sub-query does not produce any value. As a
-      // result, any RHS ref by this sub-query needs to produce null value.
-
-      // WHEN indicator IS NULL
-      caseOperands[0] =
-          rexBuilder.makeCall(
-              SqlStdOperatorTable.IS_NULL,
-              new RexInputRef(
-                  nullInputRef.getIndex(),
-                  typeFactory.createTypeWithNullability(
-                      nullInputRef.getType(),
-                      true)));
-
-      // THEN CAST(NULL AS newInputTypeNullable)
-      caseOperands[1] =
-          lit == null
-              ? rexBuilder.makeNullLiteral(rexNode.getType())
-              : rexBuilder.makeCast(rexNode.getType(), lit);
-
-      // ELSE cast (newInput AS newInputTypeNullable) END
-      caseOperands[2] =
-          rexBuilder.makeCast(
-              typeFactory.createTypeWithNullability(
-                  rexNode.getType(),
-                  true),
-              rexNode);
-
-      return rexBuilder.makeCall(
-          SqlStdOperatorTable.CASE,
-          caseOperands);
-    }
-
-    @Override public RexNode visitFieldAccess(RexFieldAccess fieldAccess) {
-      if (cm.mapFieldAccessToCorRef.containsKey(fieldAccess)) {
-        // if it is a corVar, change it to be input ref.
-        CorRef corVar = cm.mapFieldAccessToCorRef.get(fieldAccess);
-
-        // corVar offset should point to the leftInput of currentRel,
-        // which is the Correlate.
-        RexNode newRexNode =
-            new RexInputRef(corVar.field, fieldAccess.getType());
-
-        if (projectPulledAboveLeftCorrelator
-            && (nullIndicator != null)) {
-          // need to enforce nullability by applying an additional
-          // cast operator over the transformed expression.
-          newRexNode =
-              createCaseExpression(nullIndicator, null, newRexNode);
-        }
-        return newRexNode;
-      }
-      return fieldAccess;
-    }
-
-    @Override public RexNode visitInputRef(RexInputRef inputRef) {
-      if (currentRel instanceof Correlate) {
-        // if this rel references corVar
-        // and now it needs to be rewritten
-        // it must have been pulled above the Correlate
-        // replace the input ref to account for the LHS of the
-        // Correlate
-        final int leftInputFieldCount =
-            ((Correlate) currentRel).getLeft().getRowType()
-                .getFieldCount();
-        RelDataType newType = inputRef.getType();
-
-        if (projectPulledAboveLeftCorrelator) {
-          newType =
-              typeFactory.createTypeWithNullability(newType, true);
-        }
-
-        int pos = inputRef.getIndex();
-        RexInputRef newInputRef =
-            new RexInputRef(leftInputFieldCount + pos, newType);
-
-        if (isCount.contains(pos)) {
-          return createCaseExpression(
-              newInputRef,
-              rexBuilder.makeExactLiteral(BigDecimal.ZERO),
-              newInputRef);
-        } else {
-          return newInputRef;
-        }
-      }
-      return inputRef;
-    }
-
-    @Override public RexNode visitLiteral(RexLiteral literal) {
-      // Use nullIndicator to decide whether to project null.
-      // Do nothing if the literal is null.
-      if (!RexUtil.isNull(literal)
-          && projectPulledAboveLeftCorrelator
-          && (nullIndicator != null)) {
-        return createCaseExpression(nullIndicator, null, literal);
-      }
-      return literal;
-    }
-
-    @Override public RexNode visitCall(final RexCall call) {
-      RexNode newCall;
-
-      boolean[] update = {false};
-      List<RexNode> clonedOperands = visitList(call.operands, update);
-      if (update[0]) {
-        SqlOperator operator = call.getOperator();
-
-        boolean isSpecialCast = false;
-        if (operator instanceof SqlFunction) {
-          SqlFunction function = (SqlFunction) operator;
-          if (function.getKind() == SqlKind.CAST) {
-            if (call.operands.size() < 2) {
-              isSpecialCast = true;
-            }
-          }
-        }
-
-        final RelDataType newType;
-        if (!isSpecialCast) {
-          // TODO: ideally this only needs to be called if the result
-          // type will also change. However, since that requires
-          // support from type inference rules to tell whether a rule
-          // decides return type based on input types, for now all
-          // operators will be recreated with new type if any operand
-          // changed, unless the operator has "built-in" type.
-          newType = rexBuilder.deriveReturnType(operator, clonedOperands);
-        } else {
-          // Use the current return type when creating a new call, for
-          // operators with return type built into the operator
-          // definition, and with no type inference rules, such as
-          // cast function with less than 2 operands.
-
-          // TODO: Comments in RexShuttle.visitCall() mention other
-          // types in this category. Need to resolve those together
-          // and preferably in the base class RexShuttle.
-          newType = call.getType();
-        }
-        newCall =
-            rexBuilder.makeCall(
-                newType,
-                operator,
-                clonedOperands);
-      } else {
-        newCall = call;
-      }
-
-      if (projectPulledAboveLeftCorrelator && (nullIndicator != null)) {
-        return createCaseExpression(nullIndicator, null, newCall);
-      }
-      return newCall;
-    }
-  }
-
-  /**
-   * Rule to remove single_value rel. For cases like
-   *
-   * <blockquote>AggRel single_value proj/filter/agg/ join on unique LHS key
-   * AggRel single group</blockquote>
-   */
-  public static final class RemoveSingleAggregateRule
-      extends RelRule<RemoveSingleAggregateRule.Config> {
-    static Config config(RelBuilderFactory f) {
-      return Config.EMPTY.withRelBuilderFactory(f)
-          .withOperandSupplier(b0 ->
-              b0.operand(Aggregate.class).oneInput(b1 ->
-                  b1.operand(Project.class).oneInput(b2 ->
-                      b2.operand(Aggregate.class).anyInputs())))
-          .as(Config.class);
-    }
-
-    /** Creates a RemoveSingleAggregateRule. */
-    RemoveSingleAggregateRule(Config config) {
-      super(config);
-    }
-
-    @Override public void onMatch(RelOptRuleCall call) {
-      Aggregate singleAggregate = call.rel(0);
-      Project project = call.rel(1);
-      Aggregate aggregate = call.rel(2);
-
-      // check singleAggRel is single_value agg
-      if (!singleAggregate.getGroupSet().isEmpty()
-          || (singleAggregate.getAggCallList().size() != 1)
-          || !(singleAggregate.getAggCallList().get(0).getAggregation()
-          instanceof SqlSingleValueAggFunction)) {
-        return;
-      }
-
-      // check projRel only projects one expression
-      // check this project only projects one expression, i.e. scalar
-      // sub-queries.
-      List<RexNode> projExprs = project.getProjects();
-      if (projExprs.size() != 1) {
-        return;
-      }
-
-      // check the input to project is an aggregate on the entire input
-      if (!aggregate.getGroupSet().isEmpty()) {
-        return;
-      }
-
-      // singleAggRel produces a nullable type, so create the new
-      // projection that casts proj expr to a nullable type.
-      final RelBuilder relBuilder = call.builder();
-      final RelDataType type =
-          relBuilder.getTypeFactory()
-              .createTypeWithNullability(projExprs.get(0).getType(), true);
-      final RexNode cast =
-          relBuilder.getRexBuilder().makeCast(type, projExprs.get(0));
-      relBuilder.push(aggregate)
-          .project(cast);
-      call.transformTo(relBuilder.build());
-    }
-
-    /** Rule configuration. */
-    public interface Config extends RelRule.Config {
-      @Override default RemoveSingleAggregateRule toRule() {
-        return new RemoveSingleAggregateRule(this);
-      }
-    }
-  }
-
-  /** Planner rule that removes correlations for scalar projects. */
-  public static final class RemoveCorrelationForScalarProjectRule
-      extends RelRule<RemoveCorrelationForScalarProjectRule.Config> {
-    private final RelDecorrelator d;
-
-    static Config config(RelDecorrelator decorrelator,
-        RelBuilderFactory relBuilderFactory) {
-      return Config.EMPTY.withRelBuilderFactory(relBuilderFactory)
-          .withOperandSupplier(b0 ->
-                  b0.operand(Correlate.class).inputs(
-                      b1 -> b1.operand(RelNode.class).anyInputs(),
-                      b2 -> b2.operand(Aggregate.class).oneInput(b3 ->
-                          b3.operand(Project.class).oneInput(b4 ->
-                              b4.operand(RelNode.class).anyInputs()))))
-          .as(Config.class)
-          .withDecorrelator(decorrelator)
-          .as(Config.class);
-    }
-
-    /** Creates a RemoveCorrelationForScalarProjectRule. */
-    RemoveCorrelationForScalarProjectRule(Config config) {
-      super(config);
-      this.d = requireNonNull(config.decorrelator());
-    }
-
-    @Override public void onMatch(RelOptRuleCall call) {
-      final Correlate correlate = call.rel(0);
-      final RelNode left = call.rel(1);
-      final Aggregate aggregate = call.rel(2);
-      final Project project = call.rel(3);
-      RelNode right = call.rel(4);
-      final RelOptCluster cluster = correlate.getCluster();
-
-      d.setCurrent(call.getPlanner().getRoot(), correlate);
-
-      // Check for this pattern.
-      // The pattern matching could be simplified if rules can be applied
-      // during decorrelation.
-      //
-      // Correlate(left correlation, condition = true)
-      //   leftInput
-      //   Aggregate (groupby (0) single_value())
-      //     Project-A (may reference corVar)
-      //       rightInput
-      final JoinRelType joinType = correlate.getJoinType();
-
-      // corRel.getCondition was here, however Correlate was updated so it
-      // never includes a join condition. The code was not modified for brevity.
-      RexNode joinCond = d.relBuilder.literal(true);
-      if ((joinType != JoinRelType.LEFT)
-          || (joinCond != d.relBuilder.literal(true))) {
-        return;
-      }
-
-      // check that the agg is of the following type:
-      // doing a single_value() on the entire input
-      if (!aggregate.getGroupSet().isEmpty()
-          || (aggregate.getAggCallList().size() != 1)
-          || !(aggregate.getAggCallList().get(0).getAggregation()
-          instanceof SqlSingleValueAggFunction)) {
-        return;
-      }
-
-      // check this project only projects one expression, i.e. scalar
-      // sub-queries.
-      if (project.getProjects().size() != 1) {
-        return;
-      }
-
-      int nullIndicatorPos;
-
-      if ((right instanceof Filter)
-          && d.cm.mapRefRelToCorRef.containsKey(right)) {
-        // rightInput has this shape:
-        //
-        //       Filter (references corVar)
-        //         filterInput
-
-        // If rightInput is a filter and contains correlated
-        // reference, make sure the correlated keys in the filter
-        // condition forms a unique key of the RHS.
-
-        Filter filter = (Filter) right;
-        right = filter.getInput();
-
-        assert right instanceof HepRelVertex;
-        right = ((HepRelVertex) right).getCurrentRel();
-
-        // check filter input contains no correlation
-        if (RelOptUtil.getVariablesUsed(right).size() > 0) {
-          return;
-        }
-
-        // extract the correlation out of the filter
-
-        // First breaking up the filter conditions into equality
-        // comparisons between rightJoinKeys (from the original
-        // filterInput) and correlatedJoinKeys. correlatedJoinKeys
-        // can be expressions, while rightJoinKeys need to be input
-        // refs. These comparisons are AND'ed together.
-        List<RexNode> tmpRightJoinKeys = new ArrayList<>();
-        List<RexNode> correlatedJoinKeys = new ArrayList<>();
-        RelOptUtil.splitCorrelatedFilterCondition(
-            filter,
-            tmpRightJoinKeys,
-            correlatedJoinKeys,
-            false);
-
-        // check that the columns referenced in these comparisons form
-        // an unique key of the filterInput
-        final List<RexInputRef> rightJoinKeys = new ArrayList<>();
-        for (RexNode key : tmpRightJoinKeys) {
-          assert key instanceof RexInputRef;
-          rightJoinKeys.add((RexInputRef) key);
-        }
-
-        // check that the columns referenced in rightJoinKeys form an
-        // unique key of the filterInput
-        if (rightJoinKeys.isEmpty()) {
-          return;
-        }
-
-        // The join filters out the nulls.  So, it's ok if there are
-        // nulls in the join keys.
-        final RelMetadataQuery mq = call.getMetadataQuery();
-        if (!RelMdUtil.areColumnsDefinitelyUniqueWhenNullsFiltered(mq, right,
-            rightJoinKeys)) {
-          SQL2REL_LOGGER.debug("{} are not unique keys for {}",
-              rightJoinKeys, right);
-          return;
-        }
-
-        RexUtil.FieldAccessFinder visitor =
-            new RexUtil.FieldAccessFinder();
-        RexUtil.apply(visitor, correlatedJoinKeys, null);
-        List<RexFieldAccess> correlatedKeyList =
-            visitor.getFieldAccessList();
-
-        if (!d.checkCorVars(correlate, project, filter, correlatedKeyList)) {
-          return;
-        }
-
-        // Change the plan to this structure.
-        // Note that the Aggregate is removed.
-        //
-        // Project-A' (replace corVar to input ref from the Join)
-        //   Join (replace corVar to input ref from leftInput)
-        //     leftInput
-        //     rightInput (previously filterInput)
-
-        // Change the filter condition into a join condition
-        joinCond =
-            d.removeCorrelationExpr(filter.getCondition(), false);
-
-        nullIndicatorPos =
-            left.getRowType().getFieldCount()
-                + rightJoinKeys.get(0).getIndex();
-      } else if (d.cm.mapRefRelToCorRef.containsKey(project)) {
-        // check filter input contains no correlation
-        if (RelOptUtil.getVariablesUsed(right).size() > 0) {
-          return;
-        }
-
-        if (!d.checkCorVars(correlate, project, null, null)) {
-          return;
-        }
-
-        // Change the plan to this structure.
-        //
-        // Project-A' (replace corVar to input ref from Join)
-        //   Join (left, condition = true)
-        //     leftInput
-        //     Aggregate(groupby(0), single_value(0), s_v(1)....)
-        //       Project-B (everything from input plus literal true)
-        //         projectInput
-
-        // make the new Project to provide a null indicator
-        right =
-            d.createProjectWithAdditionalExprs(right,
-                ImmutableList.of(
-                    Pair.of(d.relBuilder.literal(true), "nullIndicator")));
-
-        // make the new aggRel
-        right =
-            RelOptUtil.createSingleValueAggRel(cluster, right);
-
-        // The last field:
-        //     single_value(true)
-        // is the nullIndicator
-        nullIndicatorPos =
-            left.getRowType().getFieldCount()
-                + right.getRowType().getFieldCount() - 1;
-      } else {
-        return;
-      }
-
-      // make the new join rel
-      final Join join = (Join) d.relBuilder.push(left).push(right)
-          .join(joinType, joinCond).build();
-
-      RelNode newProject =
-          d.projectJoinOutputWithNullability(join, project, nullIndicatorPos);
-
-      call.transformTo(newProject);
-
-      d.removeCorVarFromTree(correlate);
-    }
-
-    /** Rule configuration.
-     *
-     * <p>Extends {@link RelDecorrelator.Config} because rule needs a
-     * decorrelator instance. */
-    public interface Config extends RelDecorrelator.Config {
-      @Override default RemoveCorrelationForScalarProjectRule toRule() {
-        return new RemoveCorrelationForScalarProjectRule(this);
-      }
-    }
-  }
-
-  /** Planner rule that removes correlations for scalar aggregates. */
-  public static final class RemoveCorrelationForScalarAggregateRule
-      extends RelRule<RemoveCorrelationForScalarAggregateRule.Config> {
-    private final RelDecorrelator d;
-
-    static Config config(RelDecorrelator d,
-        RelBuilderFactory relBuilderFactory) {
-      return Config.EMPTY
-          .withRelBuilderFactory(relBuilderFactory)
-          .withOperandSupplier(b0 ->
-              b0.operand(Correlate.class).inputs(
-                  b1 -> b1.operand(RelNode.class).anyInputs(),
-                  b2 -> b2.operand(Project.class).oneInput(b3 ->
-                      b3.operand(Aggregate.class)
-                          .predicate(Aggregate::isSimple).oneInput(b4 ->
-                          b4.operand(Project.class).oneInput(b5 ->
-                              b5.operand(RelNode.class).anyInputs())))))
-          .as(Config.class)
-          .withDecorrelator(d)
-          .as(Config.class);
-    }
-
-    /** Creates a RemoveCorrelationForScalarAggregateRule. */
-    RemoveCorrelationForScalarAggregateRule(Config config) {
-      super(config);
-      d = requireNonNull(config.decorrelator());
-    }
-
-    @Override public void onMatch(RelOptRuleCall call) {
-      final Correlate correlate = call.rel(0);
-      final RelNode left = call.rel(1);
-      final Project aggOutputProject = call.rel(2);
-      final Aggregate aggregate = call.rel(3);
-      final Project aggInputProject = call.rel(4);
-      RelNode right = call.rel(5);
-      final RelBuilder builder = call.builder();
-      final RexBuilder rexBuilder = builder.getRexBuilder();
-      final RelOptCluster cluster = correlate.getCluster();
-
-      d.setCurrent(call.getPlanner().getRoot(), correlate);
-
-      // check for this pattern
-      // The pattern matching could be simplified if rules can be applied
-      // during decorrelation,
-      //
-      // CorrelateRel(left correlation, condition = true)
-      //   leftInput
-      //   Project-A (a RexNode)
-      //     Aggregate (groupby (0), agg0(), agg1()...)
-      //       Project-B (references coVar)
-      //         rightInput
-
-      // check aggOutputProject projects only one expression
-      final List<RexNode> aggOutputProjects = aggOutputProject.getProjects();
-      if (aggOutputProjects.size() != 1) {
-        return;
-      }
-
-      final JoinRelType joinType = correlate.getJoinType();
-      // corRel.getCondition was here, however Correlate was updated so it
-      // never includes a join condition. The code was not modified for brevity.
-      RexNode joinCond = rexBuilder.makeLiteral(true);
-      if ((joinType != JoinRelType.LEFT)
-          || (joinCond != rexBuilder.makeLiteral(true))) {
-        return;
-      }
-
-      // check that the agg is on the entire input
-      if (!aggregate.getGroupSet().isEmpty()) {
-        return;
-      }
-
-      final List<RexNode> aggInputProjects = aggInputProject.getProjects();
-
-      final List<AggregateCall> aggCalls = aggregate.getAggCallList();
-      final Set<Integer> isCountStar = new HashSet<>();
-
-      // mark if agg produces count(*) which needs to reference the
-      // nullIndicator after the transformation.
-      int k = -1;
-      for (AggregateCall aggCall : aggCalls) {
-        ++k;
-        if ((aggCall.getAggregation() instanceof SqlCountAggFunction)
-            && (aggCall.getArgList().size() == 0)) {
-          isCountStar.add(k);
-        }
-      }
-
-      if ((right instanceof Filter)
-          && d.cm.mapRefRelToCorRef.containsKey(right)) {
-        // rightInput has this shape:
-        //
-        //       Filter (references corVar)
-        //         filterInput
-        Filter filter = (Filter) right;
-        right = filter.getInput();
-
-        assert right instanceof HepRelVertex;
-        right = ((HepRelVertex) right).getCurrentRel();
-
-        // check filter input contains no correlation
-        if (RelOptUtil.getVariablesUsed(right).size() > 0) {
-          return;
-        }
-
-        // check filter condition type First extract the correlation out
-        // of the filter
-
-        // First breaking up the filter conditions into equality
-        // comparisons between rightJoinKeys(from the original
-        // filterInput) and correlatedJoinKeys. correlatedJoinKeys
-        // can only be RexFieldAccess, while rightJoinKeys can be
-        // expressions. These comparisons are AND'ed together.
-        List<RexNode> rightJoinKeys = new ArrayList<>();
-        List<RexNode> tmpCorrelatedJoinKeys = new ArrayList<>();
-        RelOptUtil.splitCorrelatedFilterCondition(
-            filter,
-            rightJoinKeys,
-            tmpCorrelatedJoinKeys,
-            true);
-
-        // make sure the correlated reference forms a unique key check
-        // that the columns referenced in these comparisons form an
-        // unique key of the leftInput
-        List<RexFieldAccess> correlatedJoinKeys = new ArrayList<>();
-        List<RexInputRef> correlatedInputRefJoinKeys = new ArrayList<>();
-        for (RexNode joinKey : tmpCorrelatedJoinKeys) {
-          assert joinKey instanceof RexFieldAccess;
-          correlatedJoinKeys.add((RexFieldAccess) joinKey);
-          RexNode correlatedInputRef =
-              d.removeCorrelationExpr(joinKey, false);
-          assert correlatedInputRef instanceof RexInputRef;
-          correlatedInputRefJoinKeys.add(
-              (RexInputRef) correlatedInputRef);
-        }
-
-        // check that the columns referenced in rightJoinKeys form an
-        // unique key of the filterInput
-        if (correlatedInputRefJoinKeys.isEmpty()) {
-          return;
-        }
-
-        // The join filters out the nulls.  So, it's ok if there are
-        // nulls in the join keys.
-        final RelMetadataQuery mq = call.getMetadataQuery();
-        if (!RelMdUtil.areColumnsDefinitelyUniqueWhenNullsFiltered(mq, left,
-            correlatedInputRefJoinKeys)) {
-          SQL2REL_LOGGER.debug("{} are not unique keys for {}",
-              correlatedJoinKeys, left);
-          return;
-        }
-
-        // check corVar references are valid
-        if (!d.checkCorVars(correlate, aggInputProject, filter,
-            correlatedJoinKeys)) {
-          return;
-        }
-
-        // Rewrite the above plan:
-        //
-        // Correlate(left correlation, condition = true)
-        //   leftInput
-        //   Project-A (a RexNode)
-        //     Aggregate (groupby(0), agg0(),agg1()...)
-        //       Project-B (may reference corVar)
-        //         Filter (references corVar)
-        //           rightInput (no correlated reference)
-        //
-
-        // to this plan:
-        //
-        // Project-A' (all gby keys + rewritten nullable ProjExpr)
-        //   Aggregate (groupby(all left input refs)
-        //                 agg0(rewritten expression),
-        //                 agg1()...)
-        //     Project-B' (rewritten original projected exprs)
-        //       Join(replace corVar w/ input ref from leftInput)
-        //         leftInput
-        //         rightInput
-        //
-
-        // In the case where agg is count(*) or count($corVar), it is
-        // changed to count(nullIndicator).
-        // Note:  any non-nullable field from the RHS can be used as
-        // the indicator however a "true" field is added to the
-        // projection list from the RHS for simplicity to avoid
-        // searching for non-null fields.
-        //
-        // Project-A' (all gby keys + rewritten nullable ProjExpr)
-        //   Aggregate (groupby(all left input refs),
-        //                 count(nullIndicator), other aggs...)
-        //     Project-B' (all left input refs plus
-        //                    the rewritten original projected exprs)
-        //       Join(replace corVar to input ref from leftInput)
-        //         leftInput
-        //         Project (everything from rightInput plus
-        //                     the nullIndicator "true")
-        //           rightInput
-        //
-
-        // first change the filter condition into a join condition
-        joinCond = d.removeCorrelationExpr(filter.getCondition(), false);
-      } else if (d.cm.mapRefRelToCorRef.containsKey(aggInputProject)) {
-        // check rightInput contains no correlation
-        if (RelOptUtil.getVariablesUsed(right).size() > 0) {
-          return;
-        }
-
-        // check corVar references are valid
-        if (!d.checkCorVars(correlate, aggInputProject, null, null)) {
-          return;
-        }
-
-        int nFields = left.getRowType().getFieldCount();
-        ImmutableBitSet allCols = ImmutableBitSet.range(nFields);
-
-        // leftInput contains unique keys
-        // i.e. each row is distinct and can group by on all the left
-        // fields
-        final RelMetadataQuery mq = call.getMetadataQuery();
-        if (!RelMdUtil.areColumnsDefinitelyUnique(mq, left, allCols)) {
-          SQL2REL_LOGGER.debug("There are no unique keys for {}", left);
-          return;
-        }
-        //
-        // Rewrite the above plan:
-        //
-        // CorrelateRel(left correlation, condition = true)
-        //   leftInput
-        //   Project-A (a RexNode)
-        //     Aggregate (groupby(0), agg0(), agg1()...)
-        //       Project-B (references coVar)
-        //         rightInput (no correlated reference)
-        //
-
-        // to this plan:
-        //
-        // Project-A' (all gby keys + rewritten nullable ProjExpr)
-        //   Aggregate (groupby(all left input refs)
-        //                 agg0(rewritten expression),
-        //                 agg1()...)
-        //     Project-B' (rewritten original projected exprs)
-        //       Join (LOJ cond = true)
-        //         leftInput
-        //         rightInput
-        //
-
-        // In the case where agg is count($corVar), it is changed to
-        // count(nullIndicator).
-        // Note:  any non-nullable field from the RHS can be used as
-        // the indicator however a "true" field is added to the
-        // projection list from the RHS for simplicity to avoid
-        // searching for non-null fields.
-        //
-        // Project-A' (all gby keys + rewritten nullable ProjExpr)
-        //   Aggregate (groupby(all left input refs),
-        //                 count(nullIndicator), other aggs...)
-        //     Project-B' (all left input refs plus
-        //                    the rewritten original projected exprs)
-        //       Join (replace corVar to input ref from leftInput)
-        //         leftInput
-        //         Project (everything from rightInput plus
-        //                     the nullIndicator "true")
-        //           rightInput
-      } else {
-        return;
-      }
-
-      RelDataType leftInputFieldType = left.getRowType();
-      int leftInputFieldCount = leftInputFieldType.getFieldCount();
-      int joinOutputProjExprCount =
-          leftInputFieldCount + aggInputProjects.size() + 1;
-
-      right = d.createProjectWithAdditionalExprs(right,
-          ImmutableList.of(
-              Pair.of(rexBuilder.makeLiteral(true), "nullIndicator")));
-
-      Join join = (Join) d.relBuilder.push(left).push(right)
-          .join(joinType, joinCond).build();
-
-      // To the consumer of joinOutputProjRel, nullIndicator is located
-      // at the end
-      int nullIndicatorPos = join.getRowType().getFieldCount() - 1;
-
-      RexInputRef nullIndicator =
-          new RexInputRef(
-              nullIndicatorPos,
-              cluster.getTypeFactory().createTypeWithNullability(
-                  join.getRowType().getFieldList()
-                      .get(nullIndicatorPos).getType(),
-                  true));
-
-      // first project all group-by keys plus the transformed agg input
-      List<RexNode> joinOutputProjects = new ArrayList<>();
-
-      // LOJ Join preserves LHS types
-      for (int i = 0; i < leftInputFieldCount; i++) {
-        joinOutputProjects.add(
-            rexBuilder.makeInputRef(
-                leftInputFieldType.getFieldList().get(i).getType(), i));
-      }
-
-      for (RexNode aggInputProjExpr : aggInputProjects) {
-        joinOutputProjects.add(
-            d.removeCorrelationExpr(aggInputProjExpr,
-                joinType.generatesNullsOnRight(),
-                nullIndicator));
-      }
-
-      joinOutputProjects.add(
-          rexBuilder.makeInputRef(join, nullIndicatorPos));
-
-      final RelNode joinOutputProject = builder.push(join)
-          .project(joinOutputProjects)
-          .build();
-
-      // nullIndicator is now at a different location in the output of
-      // the join
-      nullIndicatorPos = joinOutputProjExprCount - 1;
-
-      final int groupCount = leftInputFieldCount;
-
-      List<AggregateCall> newAggCalls = new ArrayList<>();
-      k = -1;
-      for (AggregateCall aggCall : aggCalls) {
-        ++k;
-        final List<Integer> argList;
-
-        if (isCountStar.contains(k)) {
-          // this is a count(*), transform it to count(nullIndicator)
-          // the null indicator is located at the end
-          argList = Collections.singletonList(nullIndicatorPos);
-        } else {
-          argList = new ArrayList<>();
-
-          for (int aggArg : aggCall.getArgList()) {
-            argList.add(aggArg + groupCount);
-          }
-        }
-
-        int filterArg = aggCall.filterArg < 0 ? aggCall.filterArg
-            : aggCall.filterArg + groupCount;
-        newAggCalls.add(
-            aggCall.adaptTo(joinOutputProject, argList, filterArg,
-                aggregate.getGroupCount(), groupCount));
-      }
-
-      ImmutableBitSet groupSet =
-          ImmutableBitSet.range(groupCount);
-      builder.push(joinOutputProject)
-          .aggregate(builder.groupKey(groupSet), newAggCalls);
-      List<RexNode> newAggOutputProjectList = new ArrayList<>();
-      for (int i : groupSet) {
-        newAggOutputProjectList.add(
-            rexBuilder.makeInputRef(builder.peek(), i));
-      }
-
-      RexNode newAggOutputProjects =
-          d.removeCorrelationExpr(aggOutputProjects.get(0), false);
-      newAggOutputProjectList.add(
-          rexBuilder.makeCast(
-              cluster.getTypeFactory().createTypeWithNullability(
-                  newAggOutputProjects.getType(),
-                  true),
-              newAggOutputProjects));
-
-      builder.project(newAggOutputProjectList);
-      call.transformTo(builder.build());
-
-      d.removeCorVarFromTree(correlate);
-    }
-
-    /** Rule configuration.
-     *
-     * <p>Extends {@link RelDecorrelator.Config} because rule needs a
-     * decorrelator instance. */
-    public interface Config extends RelDecorrelator.Config {
-      @Override default RemoveCorrelationForScalarAggregateRule toRule() {
-        return new RemoveCorrelationForScalarAggregateRule(this);
-      }
-    }
-  }
-
-  // REVIEW jhyde 29-Oct-2007: This rule is non-static, depends on the state
-  // of members in RelDecorrelator, and has side-effects in the decorrelator.
-  // This breaks the contract of a planner rule, and the rule will not be
-  // reusable in other planners.
-
   // REVIEW jvs 29-Oct-2007:  Shouldn't it also be incorporating
   // the flavor attribute into the description?
-
-  /** Planner rule that adjusts projects when counts are added. */
-  public static final class AdjustProjectForCountAggregateRule
-      extends RelRule<AdjustProjectForCountAggregateRule.Config> {
-    final RelDecorrelator d;
-
-    static Config config(boolean flavor, RelDecorrelator decorrelator,
-        RelBuilderFactory relBuilderFactory) {
-      return Config.EMPTY.withRelBuilderFactory(relBuilderFactory)
-          .withOperandSupplier(b0 ->
-              b0.operand(Correlate.class).inputs(
-                  b1 -> b1.operand(RelNode.class).anyInputs(),
-                  b2 -> flavor
-                      ? b2.operand(Project.class).oneInput(b3 ->
-                      b3.operand(Aggregate.class).anyInputs())
-                      : b2.operand(Aggregate.class).anyInputs()))
-          .as(Config.class)
-          .withFlavor(flavor)
-          .withDecorrelator(decorrelator)
-          .as(Config.class);
-    }
-
-    /** Creates an AdjustProjectForCountAggregateRule. */
-    AdjustProjectForCountAggregateRule(Config config) {
-      super(config);
-      this.d = requireNonNull(config.decorrelator());
-    }
-
-    @Override public void onMatch(RelOptRuleCall call) {
-      final Correlate correlate = call.rel(0);
-      final RelNode left = call.rel(1);
-      final Project aggOutputProject;
-      final Aggregate aggregate;
-      if (config.flavor()) {
-        aggOutputProject = call.rel(2);
-        aggregate = call.rel(3);
-      } else {
-        aggregate = call.rel(2);
-
-        // Create identity projection
-        final List<Pair<RexNode, String>> projects = new ArrayList<>();
-        final List<RelDataTypeField> fields =
-            aggregate.getRowType().getFieldList();
-        for (int i = 0; i < fields.size(); i++) {
-          projects.add(RexInputRef.of2(projects.size(), fields));
-        }
-        final RelBuilder relBuilder = call.builder();
-        relBuilder.push(aggregate)
-            .projectNamed(Pair.left(projects), Pair.right(projects), true);
-        aggOutputProject = (Project) relBuilder.build();
-      }
-      onMatch2(call, correlate, left, aggOutputProject, aggregate);
-    }
-
-    private void onMatch2(
-        RelOptRuleCall call,
-        Correlate correlate,
-        RelNode leftInput,
-        Project aggOutputProject,
-        Aggregate aggregate) {
-      if (d.generatedCorRels.contains(correlate)) {
-        // This Correlate was generated by a previous invocation of
-        // this rule. No further work to do.
-        return;
-      }
-
-      d.setCurrent(call.getPlanner().getRoot(), correlate);
-
-      // check for this pattern
-      // The pattern matching could be simplified if rules can be applied
-      // during decorrelation,
-      //
-      // CorrelateRel(left correlation, condition = true)
-      //   leftInput
-      //   Project-A (a RexNode)
-      //     Aggregate (groupby (0), agg0(), agg1()...)
-
-      // check aggOutputProj projects only one expression
-      List<RexNode> aggOutputProjExprs = aggOutputProject.getProjects();
-      if (aggOutputProjExprs.size() != 1) {
-        return;
-      }
-
-      JoinRelType joinType = correlate.getJoinType();
-      // corRel.getCondition was here, however Correlate was updated so it
-      // never includes a join condition. The code was not modified for brevity.
-      RexNode joinCond = d.relBuilder.literal(true);
-      if ((joinType != JoinRelType.LEFT)
-          || (joinCond != d.relBuilder.literal(true))) {
-        return;
-      }
-
-      // check that the agg is on the entire input
-      if (!aggregate.getGroupSet().isEmpty()) {
-        return;
-      }
-
-      List<AggregateCall> aggCalls = aggregate.getAggCallList();
-      Set<Integer> isCount = new HashSet<>();
-
-      // remember the count() positions
-      int i = -1;
-      for (AggregateCall aggCall : aggCalls) {
-        ++i;
-        if (aggCall.getAggregation() instanceof SqlCountAggFunction) {
-          isCount.add(i);
-        }
-      }
-
-      // now rewrite the plan to
-      //
-      // Project-A' (all LHS plus transformed original projections,
-      //             replacing references to count() with case statement)
-      //   Correlate(left correlation, condition = true)
-      //     leftInput
-      //     Aggregate(groupby (0), agg0(), agg1()...)
-      //
-      final RexBuilder rexBuilder = d.relBuilder.getRexBuilder();
-      List<RexNode> requiredNodes =
-          correlate.getRequiredColumns().asList().stream()
-              .map(ord -> rexBuilder.makeInputRef(correlate, ord))
-              .collect(Collectors.toList());
-      Correlate newCorrelate = (Correlate) d.relBuilder.push(leftInput)
-          .push(aggregate).correlate(correlate.getJoinType(),
-              correlate.getCorrelationId(),
-              requiredNodes).build();
-
-
-      // remember this rel so we don't fire rule on it again
-      // REVIEW jhyde 29-Oct-2007: rules should not save state; rule
-      // should recognize patterns where it does or does not need to do
-      // work
-      d.generatedCorRels.add(newCorrelate);
-
-      // need to update the mapCorToCorRel Update the output position
-      // for the corVars: only pass on the corVars that are not used in
-      // the join key.
-      if (d.cm.mapCorToCorRel.get(correlate.getCorrelationId()) == correlate) {
-        d.cm.mapCorToCorRel.put(correlate.getCorrelationId(), newCorrelate);
-      }
-
-      RelNode newOutput =
-          d.aggregateCorrelatorOutput(newCorrelate, aggOutputProject, isCount);
-
-      call.transformTo(newOutput);
-    }
-
-    /** Rule configuration. */
-    public interface Config extends RelDecorrelator.Config {
-      @Override default AdjustProjectForCountAggregateRule toRule() {
-        return new AdjustProjectForCountAggregateRule(this);
-      }
-
-      /** Returns the flavor of the rule (true for 4 operands, false for 3
-       * operands). */
-      @ImmutableBeans.Property
-      boolean flavor();
-
-      /** Sets {@link #flavor}. */
-      Config withFlavor(boolean flavor);
-    }
-  }
 
   /**
    * A unique reference to a correlation field.
@@ -2769,193 +1685,6 @@ public class RelDecorrelator implements ReflectiveVisitor {
         return c;
       }
       return Integer.compare(field, o.field);
-    }
-  }
-
-  /** A map of the locations of
-   * {@link org.apache.calcite.rel.core.Correlate}
-   * in a tree of {@link RelNode}s.
-   *
-   * <p>It is used to drive the decorrelation process.
-   * Treat it as immutable; rebuild if you modify the tree.
-   *
-   * <p>There are three maps:<ol>
-   *
-   * <li>{@link #mapRefRelToCorRef} maps a {@link RelNode} to the correlated
-   * variables it references;
-   *
-   * <li>{@link #mapCorToCorRel} maps a correlated variable to the
-   * {@link Correlate} providing it;
-   *
-   * <li>{@link #mapFieldAccessToCorRef} maps a rex field access to
-   * the corVar it represents. Because typeFlattener does not clone or
-   * modify a correlated field access this map does not need to be
-   * updated.
-   *
-   * </ol> */
-  protected static class CorelMap {
-    private final Multimap<RelNode, CorRef> mapRefRelToCorRef;
-    private final NavigableMap<CorrelationId, RelNode> mapCorToCorRel;
-    private final Map<RexFieldAccess, CorRef> mapFieldAccessToCorRef;
-
-    // TODO: create immutable copies of all maps
-    private CorelMap(Multimap<RelNode, CorRef> mapRefRelToCorRef,
-        NavigableMap<CorrelationId, RelNode> mapCorToCorRel,
-        Map<RexFieldAccess, CorRef> mapFieldAccessToCorRef) {
-      this.mapRefRelToCorRef = mapRefRelToCorRef;
-      this.mapCorToCorRel = mapCorToCorRel;
-      this.mapFieldAccessToCorRef = ImmutableMap.copyOf(mapFieldAccessToCorRef);
-    }
-
-    @Override public String toString() {
-      return "mapRefRelToCorRef=" + mapRefRelToCorRef
-          + "\nmapCorToCorRel=" + mapCorToCorRel
-          + "\nmapFieldAccessToCorRef=" + mapFieldAccessToCorRef
-          + "\n";
-    }
-
-    @SuppressWarnings("UndefinedEquals")
-    @Override public boolean equals(@Nullable Object obj) {
-      return obj == this
-          || obj instanceof CorelMap
-          // TODO: Multimap does not have well-defined equals behavior
-          && mapRefRelToCorRef.equals(((CorelMap) obj).mapRefRelToCorRef)
-          && mapCorToCorRel.equals(((CorelMap) obj).mapCorToCorRel)
-          && mapFieldAccessToCorRef.equals(
-              ((CorelMap) obj).mapFieldAccessToCorRef);
-    }
-
-    @Override public int hashCode() {
-      return Objects.hash(mapRefRelToCorRef, mapCorToCorRel,
-          mapFieldAccessToCorRef);
-    }
-
-    /** Creates a CorelMap with given contents. */
-    public static CorelMap of(
-        SortedSetMultimap<RelNode, CorRef> mapRefRelToCorVar,
-        NavigableMap<CorrelationId, RelNode> mapCorToCorRel,
-        Map<RexFieldAccess, CorRef> mapFieldAccessToCorVar) {
-      return new CorelMap(mapRefRelToCorVar, mapCorToCorRel,
-          mapFieldAccessToCorVar);
-    }
-
-    public NavigableMap<CorrelationId, RelNode> getMapCorToCorRel() {
-      return mapCorToCorRel;
-    }
-
-    /**
-     * Returns whether there are any correlating variables in this statement.
-     *
-     * @return whether there are any correlating variables
-     */
-    public boolean hasCorrelation() {
-      return !mapCorToCorRel.isEmpty();
-    }
-  }
-
-  /** Builds a {@link org.apache.calcite.sql2rel.RelDecorrelator.CorelMap}. */
-  public static class CorelMapBuilder extends RelHomogeneousShuttle {
-    final NavigableMap<CorrelationId, RelNode> mapCorToCorRel =
-        new TreeMap<>();
-
-    final SortedSetMultimap<RelNode, CorRef> mapRefRelToCorRef =
-        MultimapBuilder.SortedSetMultimapBuilder.hashKeys()
-            .treeSetValues()
-            .build();
-
-    final Map<RexFieldAccess, CorRef> mapFieldAccessToCorVar = new HashMap<>();
-
-    final Holder<Integer> offset = Holder.of(0);
-    int corrIdGenerator = 0;
-
-    /** Creates a CorelMap by iterating over a {@link RelNode} tree. */
-    public CorelMap build(RelNode... rels) {
-      for (RelNode rel : rels) {
-        stripHep(rel).accept(this);
-      }
-      return new CorelMap(mapRefRelToCorRef, mapCorToCorRel,
-          mapFieldAccessToCorVar);
-    }
-
-    @Override public RelNode visit(RelNode other) {
-      if (other instanceof Join) {
-        Join join = (Join) other;
-        try {
-          stack.push(join);
-          join.getCondition().accept(rexVisitor(join));
-        } finally {
-          stack.pop();
-        }
-        return visitJoin(join);
-      } else if (other instanceof Correlate) {
-        Correlate correlate = (Correlate) other;
-        mapCorToCorRel.put(correlate.getCorrelationId(), correlate);
-        return visitJoin(correlate);
-      } else if (other instanceof Filter) {
-        Filter filter = (Filter) other;
-        try {
-          stack.push(filter);
-          filter.getCondition().accept(rexVisitor(filter));
-        } finally {
-          stack.pop();
-        }
-      } else if (other instanceof Project) {
-        Project project = (Project) other;
-        try {
-          stack.push(project);
-          for (RexNode node : project.getProjects()) {
-            node.accept(rexVisitor(project));
-          }
-        } finally {
-          stack.pop();
-        }
-      }
-      return super.visit(other);
-    }
-
-    @Override protected RelNode visitChild(RelNode parent, int i,
-        RelNode input) {
-      return super.visitChild(parent, i, stripHep(input));
-    }
-
-    private RelNode visitJoin(BiRel join) {
-      final int x = offset.get();
-      visitChild(join, 0, join.getLeft());
-      offset.set(x + join.getLeft().getRowType().getFieldCount());
-      visitChild(join, 1, join.getRight());
-      offset.set(x);
-      return join;
-    }
-
-    private RexVisitorImpl<Void> rexVisitor(final RelNode rel) {
-      return new RexVisitorImpl<Void>(true) {
-        @Override public Void visitFieldAccess(RexFieldAccess fieldAccess) {
-          final RexNode ref = fieldAccess.getReferenceExpr();
-          if (ref instanceof RexCorrelVariable) {
-            final RexCorrelVariable var = (RexCorrelVariable) ref;
-            if (mapFieldAccessToCorVar.containsKey(fieldAccess)) {
-              // for cases where different Rel nodes are referring to
-              // same correlation var (e.g. in case of NOT IN)
-              // avoid generating another correlation var
-              // and record the 'rel' is using the same correlation
-              mapRefRelToCorRef.put(rel,
-                  mapFieldAccessToCorVar.get(fieldAccess));
-            } else {
-              final CorRef correlation =
-                  new CorRef(var.id, fieldAccess.getField().getIndex(),
-                      corrIdGenerator++);
-              mapFieldAccessToCorVar.put(fieldAccess, correlation);
-              mapRefRelToCorRef.put(rel, correlation);
-            }
-          }
-          return super.visitFieldAccess(fieldAccess);
-        }
-
-        @Override public Void visitSubQuery(RexSubQuery subQuery) {
-          subQuery.rel.accept(CorelMapBuilder.this);
-          return super.visitSubQuery(subQuery);
-        }
-      };
     }
   }
 

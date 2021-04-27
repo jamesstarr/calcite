@@ -4150,6 +4150,35 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
         .convertsTo("${plan_not_extended}");
   }
 
+  @Test void testX() {
+    String sql = ""
+        + "SELECT *\n"
+        + "FROM (VALUES ('HELLO WORLD')) AS \"LHS\"(\"CODE_PDL\")\n"
+        + "WHERE EXISTS (\n"
+        + "      SELECT \"CODE_PDL\"\n"
+        + "      FROM (VALUES ('HELLO WORLD', 1)) AS RHS(CODE_PDL, \"qX01\")\n"
+        + "      WHERE  (\"qX01\" <= 1) AND (\"LHS\".\"CODE_PDL\" = \"RHS\".\"CODE_PDL\")\n"
+        + ")";
+    sql(sql)
+        .withConfig(configBuilder -> configBuilder
+            .withExpand(true)
+            .withDecorrelationEnabled(true))
+        .convertsTo("${plan}");
+  }
+
+  @Test void testDecorrelateExistsXVariables() {
+    final String sql = ""
+        + "SELECT *\n"
+        + "FROM (VALUES ('HELLO WORLD')) AS \"LHS\"(\"CODE_PDL\")\n"
+        + "WHERE EXISTS (\n"
+        + "      SELECT \"CODE_PDL\"\n"
+        + "      FROM (VALUES ('HELLO WORLD', 1), ('HELLO WORLD', 1), ('HELLO WORLD', 1), ('HELLO WORLD', 2)) AS RHS(CODE_PDL, \"qX01\")\n"
+        + "      WHERE  (\"qX01\" <= 1) AND (\"LHS\".\"CODE_PDL\" = \"RHS\".\"CODE_PDL\")\n"
+        + ")";
+    sql(sql).convertsTo("${plan}");
+
+  }
+
   @Test void testImplicitJoinExpandAndDecorrelation() {
     String sql = ""
         + "SELECT emp.deptno, emp.sal\n"
