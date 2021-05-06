@@ -181,9 +181,6 @@ public class DruidTable extends AbstractTable implements TranslatableTable {
   }
 
   @Override public boolean rolledUpColumnValidInsideAgg(String column, SqlCall call,
-<<<<<<< HEAD
-      SqlNode parent, CalciteConnectionConfig config) {
-=======
                                                         SqlNode parent,
                                                         CalciteConnectionConfig config) {
     assert isRolledUp(column);
@@ -241,7 +238,6 @@ public class DruidTable extends AbstractTable implements TranslatableTable {
 =======
   @Override public RelDataType getRowType(RelDataTypeFactory typeFactory) {
 =======
->>>>>>> 9d2c4bca7 (Revert "Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)"")
     final RelDataType rowType = protoRowType.apply(typeFactory);
     final List<String> fieldNames = rowType.getFieldNames();
     Preconditions.checkArgument(fieldNames.contains(timestampFieldName));

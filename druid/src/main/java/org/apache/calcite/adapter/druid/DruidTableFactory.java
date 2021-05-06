@@ -100,18 +100,11 @@ public class DruidTableFactory implements TableFactory {
       // noinspection unchecked
       final List<String> complexMetricList = (List<String>) complexMetricsRaw;
       for (String metric : complexMetricList) {
-<<<<<<< HEAD
-        complexMetrics.put(metric, new ArrayList<>());
-      }
-    }
-
-=======
 =======
         complexMetrics.put(metric, new ArrayList<ComplexMetric>());
       }
     }
 
->>>>>>> 9d2c4bca7 (Revert "Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)"")
     final Object metricsRaw = operand.get("metrics");
     if (metricsRaw instanceof List) {
       final List metrics = (List) metricsRaw;

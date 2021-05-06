@@ -16,7 +16,7 @@
  */
 package org.apache.calcite.sql.validate;
 
->>>>>>> 2ac395fd9 (Revert "[CALCITE-2084] SqlValidatorImpl.findTable() method incorrectly handles table schema with few schema levels (Volodymyr Vysotskyi)")
+import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.linq4j.Linq4j;
 import org.apache.calcite.linq4j.Ord;
 import org.apache.calcite.plan.RelOptSchemaWithSampling;
@@ -54,6 +54,7 @@ import org.apache.calcite.util.Util;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import java.nio.charset.Charset;
@@ -979,38 +980,7 @@ public class SqlValidatorUtil {
   }
 
   /**
-<<<<<<< HEAD
-   * Finds a {@link org.apache.calcite.jdbc.CalciteSchema.TypeEntry} in a
-   * given schema whose type has the given name, possibly qualified.
-   *
-   * @param rootSchema root schema
-   * @param typeName name of the type, may be qualified or fully-qualified
-   *
-   * @return TypeEntry with a table with the given name, or null
-   */
-  public static CalciteSchema.TypeEntry getTypeEntry(
-      CalciteSchema rootSchema, SqlIdentifier typeName) {
-    final String name;
-    final List<String> path;
-    if (typeName.isSimple()) {
-      path = ImmutableList.of();
-      name = typeName.getSimple();
-    } else {
-      path = Util.skipLast(typeName.names);
-      name = Util.last(typeName.names);
-    }
-    CalciteSchema schema = rootSchema;
-    for (String p : path) {
-      if (schema == rootSchema
-          && SqlNameMatchers.withCaseSensitive(true).matches(p, schema.getName())) {
-        continue;
-      }
-      schema = schema.getSubSchema(p, true);
-    }
-    return schema == null ? null : schema.getType(name, false);
-  }
-
-  /**
+>>>>>>> 297d2bff6 (Revert "Revert "[CALCITE-2084] SqlValidatorImpl.findTable() method incorrectly handles table schema with few schema levels (Volodymyr Vysotskyi)"")
    * Finds a {@link org.apache.calcite.jdbc.CalciteSchema.TableEntry} in a
    * given catalog reader whose table has the given name, possibly qualified.
    *
@@ -1088,6 +1058,8 @@ public class SqlValidatorUtil {
   }
 
   /**
+<<<<<<< HEAD
+=======
 =======
    * Returns whether there are any input columns that are sorted.
    *
