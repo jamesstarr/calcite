@@ -281,7 +281,7 @@ public class DruidQuery extends AbstractRelNode implements BindableRel {
         // unknown Granularity
         return Pair.of(null, null);
       }
-      if (!TimeExtractionFunction.isValidTimeExtract(rexNode)) {
+      if (!TimeExtractionFunction.isValidTimeExtract((RexCall) rexNode)) {
         return Pair.of(null, null);
       }
       RexNode extractValueNode = ((RexCall) rexNode).getOperands().get(1);
@@ -310,7 +310,7 @@ public class DruidQuery extends AbstractRelNode implements BindableRel {
         // unknown Granularity
         return Pair.of(null, null);
       }
-      if (!TimeExtractionFunction.isValidTimeFloor(rexNode)) {
+      if (!TimeExtractionFunction.isValidTimeFloor((RexCall) rexNode)) {
         return Pair.of(null, null);
       }
       RexNode floorValueNode = ((RexCall) rexNode).getOperands().get(0);
@@ -1399,12 +1399,20 @@ public class DruidQuery extends AbstractRelNode implements BindableRel {
       return null;
     }
 
+    // Convert from a complex metric
+    ComplexMetric complexMetric = druidQuery.druidTable.resolveComplexMetric(fieldName, aggCall);
+
     switch (aggCall.getAggregation().getKind()) {
     case COUNT:
       if (aggCall.isDistinct()) {
         if (aggCall.isApproximate() || config.approximateDistinctCount()) {
-          aggregation = new JsonCardinalityAggregation("cardinality", name,
-              ImmutableList.of(fieldName));
+          if (complexMetric == null) {
+            aggregation = new JsonCardinalityAggregation("cardinality", name,
+                ImmutableList.of(fieldName));
+          } else {
+            aggregation = new JsonAggregation(complexMetric.getMetricType(), name,
+                    complexMetric.getMetricName(), null);
+          }
           break;
         } else {
           // when approximate results were not told be acceptable.
@@ -1582,7 +1590,7 @@ public class DruidQuery extends AbstractRelNode implements BindableRel {
       Hook.QUERY_PLAN.run(querySpec);
     }
 
-    @Override public void run() throws InterruptedException {
+    public void run() throws InterruptedException {
       final List<ColumnMetaData.Rep> fieldTypes = new ArrayList<>();
       for (RelDataTypeField field : query.getRowType().getFieldList()) {
         fieldTypes.add(getPrimitive(field));
@@ -1645,7 +1653,7 @@ public class DruidQuery extends AbstractRelNode implements BindableRel {
       this.expression = expression;
     }
 
-    @Override public void write(JsonGenerator generator) throws IOException {
+    public void write(JsonGenerator generator) throws IOException {
       generator.writeStartObject();
       generator.writeStringField("type", type);
       generator.writeStringField("name", name);
@@ -1688,7 +1696,7 @@ public class DruidQuery extends AbstractRelNode implements BindableRel {
       this.collations = collations;
     }
 
-    @Override public void write(JsonGenerator generator) throws IOException {
+    public void write(JsonGenerator generator) throws IOException {
       generator.writeStartObject();
       generator.writeStringField("type", type);
       writeFieldIf(generator, "limit", limit);
@@ -1709,7 +1717,7 @@ public class DruidQuery extends AbstractRelNode implements BindableRel {
       this.dimensionOrder = dimensionOrder;
     }
 
-    @Override public void write(JsonGenerator generator) throws IOException {
+    public void write(JsonGenerator generator) throws IOException {
       generator.writeStartObject();
       generator.writeStringField("dimension", dimension);
       writeFieldIf(generator, "direction", direction);
@@ -1728,7 +1736,7 @@ public class DruidQuery extends AbstractRelNode implements BindableRel {
       this.fieldNames = fieldNames;
     }
 
-    @Override public void write(JsonGenerator generator) throws IOException {
+    public void write(JsonGenerator generator) throws IOException {
       generator.writeStartObject();
       generator.writeStringField("type", type);
       generator.writeStringField("name", name);
@@ -1770,7 +1778,7 @@ public class DruidQuery extends AbstractRelNode implements BindableRel {
     }
 
     // Expects all subclasses to write the EndObject item
-    @Override public void write(JsonGenerator generator) throws IOException {
+    public void write(JsonGenerator generator) throws IOException {
       generator.writeStartObject();
       generator.writeStringField("type", type);
       generator.writeStringField("name", name);

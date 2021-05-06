@@ -923,10 +923,10 @@ public abstract class SqlUtil {
   /** If a node is "AS", returns the underlying expression; otherwise returns
    * the node. */
   public static SqlNode stripAs(SqlNode node) {
-    if (node == null || node.getKind() != SqlKind.AS) {
-      return node;
+    if (node != null && node.getKind() == SqlKind.AS) {
+      return ((SqlCall) node).operand(0);
     }
-    return ((SqlCall) node).operand(0);
+    return node;
   }
 
   /** Modifies a list of nodes, removing AS from each if present.

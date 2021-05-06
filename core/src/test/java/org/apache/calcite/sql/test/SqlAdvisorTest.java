@@ -88,7 +88,9 @@ class SqlAdvisorTest extends SqlValidatorTestCase {
           "TABLE(CATALOG.SALES.SALGRADE)",
           "TABLE(CATALOG.SALES.SHIPMENTS)",
           "TABLE(CATALOG.SALES.PRODUCTS)",
-          "TABLE(CATALOG.SALES.SUPPLIERS)");
+          "TABLE(CATALOG.SALES.SUPPLIERS)",
+          "TABLE(CATALOG.SALES.EMP_R)",
+          "TABLE(CATALOG.SALES.DEPT_R)");
 
   protected static final List<String> SALES_E_TABLES =
       Arrays.asList(
@@ -98,7 +100,8 @@ class SqlAdvisorTest extends SqlValidatorTestCase {
           "TABLE(CATALOG.SALES.EMPNULLABLES_20)",
           "TABLE(CATALOG.SALES.EMP_20)",
           "TABLE(CATALOG.SALES.EMP_ADDRESS)",
-          "TABLE(CATALOG.SALES.EMP_B)");
+          "TABLE(CATALOG.SALES.EMP_B)",
+          "TABLE(CATALOG.SALES.EMP_R)");
 
   private static final List<String> SCHEMAS =
       Arrays.asList(

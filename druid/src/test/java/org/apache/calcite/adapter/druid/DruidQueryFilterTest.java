@@ -59,7 +59,8 @@ class DruidQueryFilterTest {
     Mockito.when(druidQuery.getDruidTable())
         .thenReturn(
             new DruidTable(Mockito.mock(DruidSchema.class), "dataSource", null,
-                ImmutableSet.<String>of(), "timestamp", null
+                ImmutableSet.<String>of(), "timestamp", null, null,
+                null
             ));
   }
   @Test void testInFilter() throws IOException {
@@ -118,7 +119,8 @@ class DruidQueryFilterTest {
     final RexBuilder rexBuilder = new RexBuilder(typeFactory);
     final DruidTable druidTable =
         new DruidTable(Mockito.mock(DruidSchema.class), "dataSource", null,
-            ImmutableSet.<String>of(), "timestamp", null);
+            ImmutableSet.<String>of(), "timestamp", null, null,
+                null);
     final RelDataType varcharType =
         typeFactory.createSqlType(SqlTypeName.VARCHAR);
     final RelDataType varcharRowType = typeFactory.builder()

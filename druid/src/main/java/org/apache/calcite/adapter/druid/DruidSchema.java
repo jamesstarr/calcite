@@ -26,11 +26,52 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+<<<<<<< HEAD
+=======
+import javax.annotation.Nonnull;
+
+/**
+ * Schema mapped onto a Druid instance.
+ */
+public class DruidSchema extends AbstractSchema {
+  final String url;
+  final String coordinatorUrl;
+  private final boolean discoverTables;
+  private Map<String, Table> tableMap = null;
+
+  /**
+   * Creates a Druid schema.
+   *
+   * @param url URL of query REST service, e.g. "http://localhost:8082"
+   * @param coordinatorUrl URL of coordinator REST service,
+   *                       e.g. "http://localhost:8081"
+   * @param discoverTables If true, ask Druid what tables exist;
+   *                       if false, only create tables explicitly in the model
+   */
+  public DruidSchema(String url, String coordinatorUrl,
+      boolean discoverTables) {
+    this.url = Preconditions.checkNotNull(url);
+    this.coordinatorUrl = Preconditions.checkNotNull(coordinatorUrl);
+    this.discoverTables = discoverTables;
+  }
+
+  @Override protected Map<String, Table> getTableMap() {
+    if (!discoverTables) {
+      return ImmutableMap.of();
+    }
+
+    if (tableMap == null) {
+      final DruidConnectionImpl connection = new DruidConnectionImpl(url, coordinatorUrl);
+      Set<String> tableNames = connection.tableNames();
+
+>>>>>>> 9d2c4bca7 (Revert "Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)"")
       tableMap = Compatible.INSTANCE.asMap(
               ImmutableSet.copyOf(tableNames),
               CacheBuilder.newBuilder()
@@ -38,12 +79,14 @@ import java.util.Set;
                   @Override public Table load(@Nonnull String tableName) throws Exception {
                     final Map<String, SqlTypeName> fieldMap = new LinkedHashMap<>();
                     final Set<String> metricNameSet = new LinkedHashSet<>();
+                    final Map<String, List<ComplexMetric>> complexMetrics = new HashMap<>();
 
                     connection.metadata(tableName, DruidTable.DEFAULT_TIMESTAMP_COLUMN,
-                            null, fieldMap, metricNameSet);
+                            null, fieldMap, metricNameSet, complexMetrics);
 
                     return DruidTable.create(DruidSchema.this, tableName, null,
-                            fieldMap, metricNameSet, DruidTable.DEFAULT_TIMESTAMP_COLUMN);
+                            fieldMap, metricNameSet, DruidTable.DEFAULT_TIMESTAMP_COLUMN,
+                            complexMetrics);
                   }
                 }));
     }

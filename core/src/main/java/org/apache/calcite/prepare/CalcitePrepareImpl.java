@@ -185,9 +185,9 @@ public class CalcitePrepareImpl implements CalcitePrepare {
     CalciteCatalogReader catalogReader =
         new CalciteCatalogReader(
             context.getRootSchema(),
-            context.config().caseSensitive(),
             context.getDefaultSchemaPath(),
-            typeFactory);
+            typeFactory,
+            context.config());
     SqlParser parser = createParser(sql);
     SqlNode sqlNode;
     try {
@@ -480,9 +480,9 @@ public class CalcitePrepareImpl implements CalcitePrepare {
     CalciteCatalogReader catalogReader =
         new CalciteCatalogReader(
             context.getRootSchema(),
-            context.config().caseSensitive(),
             context.getDefaultSchemaPath(),
-            typeFactory);
+            typeFactory,
+            context.config());
     final List<Function1<Context, RelOptPlanner>> plannerFactories =
         createPlannerFactories();
     if (plannerFactories.isEmpty()) {
@@ -866,9 +866,9 @@ public class CalcitePrepareImpl implements CalcitePrepare {
       CalciteCatalogReader catalogReader =
           new CalciteCatalogReader(
               schema.root(),
-              context.config().caseSensitive(),
               materialization.viewSchemaPath,
-              context.getTypeFactory());
+              context.getTypeFactory(),
+              context.config());
       final CalciteMaterializer materializer =
           new CalciteMaterializer(this, context, catalogReader, schema,
               createConvertletTable(), cluster);
@@ -906,9 +906,9 @@ public class CalcitePrepareImpl implements CalcitePrepare {
             : prepareContext.getRootSchema();
     CalciteCatalogReader catalogReader =
         new CalciteCatalogReader(schema.root(),
-            prepareContext.config().caseSensitive(),
             schema.path(null),
-            typeFactory);
+            typeFactory,
+            prepareContext.config());
     final RexBuilder rexBuilder = new RexBuilder(typeFactory);
     final RelOptPlanner planner =
         createPlanner(prepareContext,

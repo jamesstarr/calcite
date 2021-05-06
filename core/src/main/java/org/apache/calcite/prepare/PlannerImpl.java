@@ -18,7 +18,8 @@ package org.apache.calcite.prepare;
 
 import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.config.CalciteConnectionConfig;
->>>>>>> 0b7d6d6d5 (Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)")
+import org.apache.calcite.config.CalciteConnectionConfigImpl;
+import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.plan.Context;
@@ -55,6 +56,175 @@ import org.apache.calcite.tools.FrameworkConfig;
 import org.apache.calcite.tools.Planner;
 import org.apache.calcite.tools.Program;
 import org.apache.calcite.tools.RelBuilder;
+<<<<<<< HEAD
+=======
+import org.apache.calcite.tools.RelConversionException;
+import org.apache.calcite.tools.ValidationException;
+import org.apache.calcite.util.Pair;
+import org.apache.calcite.util.Util;
+
+import com.google.common.collect.ImmutableList;
+
+import java.util.List;
+import java.util.Properties;
+
+/** Implementation of {@link org.apache.calcite.tools.Planner}. */
+public class PlannerImpl implements Planner {
+  private final SqlOperatorTable operatorTable;
+  private final ImmutableList<Program> programs;
+  private final FrameworkConfig config;
+
+  /** Holds the trait definitions to be registered with planner. May be null. */
+  private final ImmutableList<RelTraitDef> traitDefs;
+
+  private final SqlParser.Config parserConfig;
+  private final SqlToRelConverter.Config sqlToRelConverterConfig;
+  private final SqlRexConvertletTable convertletTable;
+
+  private State state;
+
+  // set in STATE_1_RESET
+  private boolean open;
+
+  // set in STATE_2_READY
+  private SchemaPlus defaultSchema;
+  private JavaTypeFactory typeFactory;
+  private RelOptPlanner planner;
+  private RexExecutor executor;
+
+  // set in STATE_4_VALIDATE
+  private CalciteSqlValidator validator;
+  private SqlNode validatedSqlNode;
+
+  // set in STATE_5_CONVERT
+  private RelRoot root;
+
+  /** Creates a planner. Not a public API; call
+   * {@link org.apache.calcite.tools.Frameworks#getPlanner} instead. */
+  public PlannerImpl(FrameworkConfig config) {
+    this.config = config;
+    this.defaultSchema = config.getDefaultSchema();
+    this.operatorTable = config.getOperatorTable();
+    this.programs = config.getPrograms();
+    this.parserConfig = config.getParserConfig();
+    this.sqlToRelConverterConfig = config.getSqlToRelConverterConfig();
+    this.state = State.STATE_0_CLOSED;
+    this.traitDefs = config.getTraitDefs();
+    this.convertletTable = config.getConvertletTable();
+    this.executor = config.getExecutor();
+    reset();
+  }
+
+  /** Makes sure that the state is at least the given state. */
+  private void ensure(State state) {
+    if (state == this.state) {
+      return;
+    }
+    if (state.ordinal() < this.state.ordinal()) {
+      throw new IllegalArgumentException("cannot move to " + state + " from "
+          + this.state);
+    }
+    state.from(this);
+  }
+
+  public RelTraitSet getEmptyTraitSet() {
+    return planner.emptyTraitSet();
+  }
+
+  public void close() {
+    open = false;
+    typeFactory = null;
+    state = State.STATE_0_CLOSED;
+  }
+
+  public void reset() {
+    ensure(State.STATE_0_CLOSED);
+    open = true;
+    state = State.STATE_1_RESET;
+  }
+
+  private void ready() {
+    switch (state) {
+    case STATE_0_CLOSED:
+      reset();
+    }
+    ensure(State.STATE_1_RESET);
+    Frameworks.withPlanner(
+        new Frameworks.PlannerAction<Void>() {
+          public Void apply(RelOptCluster cluster, RelOptSchema relOptSchema,
+              SchemaPlus rootSchema) {
+            Util.discard(rootSchema); // use our own defaultSchema
+            typeFactory = (JavaTypeFactory) cluster.getTypeFactory();
+            planner = cluster.getPlanner();
+            planner.setExecutor(executor);
+            return null;
+          }
+        },
+        config);
+
+    state = State.STATE_2_READY;
+
+    // If user specify own traitDef, instead of default default trait,
+    // first, clear the default trait def registered with planner
+    // then, register the trait def specified in traitDefs.
+    if (this.traitDefs != null) {
+      planner.clearRelTraitDefs();
+      for (RelTraitDef def : this.traitDefs) {
+        planner.addRelTraitDef(def);
+      }
+    }
+  }
+
+  public SqlNode parse(final String sql) throws SqlParseException {
+    switch (state) {
+    case STATE_0_CLOSED:
+    case STATE_1_RESET:
+      ready();
+    }
+    ensure(State.STATE_2_READY);
+    SqlParser parser = SqlParser.create(sql, parserConfig);
+    SqlNode sqlNode = parser.parseStmt();
+    state = State.STATE_3_PARSED;
+    return sqlNode;
+  }
+
+  public SqlNode validate(SqlNode sqlNode) throws ValidationException {
+    ensure(State.STATE_3_PARSED);
+    final SqlConformance conformance = conformance();
+    final CalciteCatalogReader catalogReader = createCatalogReader();
+    this.validator =
+        new CalciteSqlValidator(operatorTable, catalogReader, typeFactory,
+            conformance);
+    this.validator.setIdentifierExpansion(true);
+    try {
+      validatedSqlNode = validator.validate(sqlNode);
+    } catch (RuntimeException e) {
+      throw new ValidationException(e);
+    }
+    state = State.STATE_4_VALIDATED;
+    return validatedSqlNode;
+  }
+
+  private SqlConformance conformance() {
+    final Context context = config.getContext();
+    if (context != null) {
+      final CalciteConnectionConfig connectionConfig =
+          context.unwrap(CalciteConnectionConfig.class);
+      if (connectionConfig != null) {
+        return connectionConfig.conformance();
+      }
+    }
+    return config.getParserConfig().conformance();
+  }
+
+  public Pair<SqlNode, RelDataType> validateAndGetType(SqlNode sqlNode)
+      throws ValidationException {
+    final SqlNode validatedNode = this.validate(sqlNode);
+    final RelDataType type =
+        this.validator.getValidatedNodeType(validatedNode);
+    return Pair.of(validatedNode, type);
+  }
+>>>>>>> 9d2c4bca7 (Revert "Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)"")
 
   @SuppressWarnings("deprecation")
   public final RelNode convert(SqlNode sql) throws RelConversionException {
@@ -133,11 +303,22 @@ import org.apache.calcite.tools.RelBuilder;
   // CalciteCatalogReader is stateless; no need to store one
   private CalciteCatalogReader createCatalogReader() {
     SchemaPlus rootSchema = rootSchema(defaultSchema);
+    Context context = config.getContext();
+    CalciteConnectionConfig connectionConfig = null;
+
+    if (context != null) {
+      connectionConfig = context.unwrap(CalciteConnectionConfig.class);
+    } else {
+      Properties properties = new Properties();
+      properties.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(),
+              String.valueOf(parserConfig.caseSensitive()));
+      connectionConfig = new CalciteConnectionConfigImpl(properties);
+    }
+
     return new CalciteCatalogReader(
         CalciteSchema.from(rootSchema),
-        parserConfig.caseSensitive(),
         CalciteSchema.from(defaultSchema).path(null),
-        typeFactory);
+        typeFactory, connectionConfig);
   }
 
   private static SchemaPlus rootSchema(SchemaPlus schema) {

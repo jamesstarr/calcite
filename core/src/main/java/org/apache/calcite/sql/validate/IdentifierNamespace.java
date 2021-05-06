@@ -148,9 +148,6 @@ public class IdentifierNamespace extends AbstractNamespace {
       // If we're case sensitive, we'll shortly try again and give an error
       // then.
       if (!nameMatcher.isCaseSensitive()) {
-<<<<<<< HEAD
-        notFoundWithinError(id, names, resolve);
-=======
         throw validator.newValidationError(id,
             RESOURCE.objectNotFoundWithin(resolve.remainingNames.get(0),
                 SqlIdentifier.getString(resolve.path.stepNames())));
@@ -197,7 +194,6 @@ public class IdentifierNamespace extends AbstractNamespace {
       }
     }
     throw validator.newValidationError(id,
->>>>>>> ca38362df (Partial revert of CALCITE-1549)
 =======
         RESOURCE.objectNotFound(id.getComponent(0).toString()));
   }

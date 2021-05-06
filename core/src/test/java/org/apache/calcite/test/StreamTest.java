@@ -18,6 +18,7 @@ package org.apache.calcite.test;
 
 import org.apache.calcite.DataContext;
 import org.apache.calcite.avatica.util.DateTimeUtils;
+import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Linq4j;
 import org.apache.calcite.rel.RelCollations;
@@ -32,7 +33,8 @@ import org.apache.calcite.schema.Statistics;
 import org.apache.calcite.schema.StreamableTable;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.TableFactory;
->>>>>>> 0b7d6d6d5 (Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)")
+import org.apache.calcite.sql.SqlCall;
+import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.TestUtil;
 
@@ -367,6 +369,16 @@ public class StreamTest {
     public Schema.TableType getJdbcTableType() {
       return Schema.TableType.TABLE;
     }
+
+    @Override public boolean isRolledUp(String column) {
+      return false;
+    }
+
+    @Override public boolean rolledUpColumnValidInsideAgg(String column,
+                                                          SqlCall call, SqlNode parent,
+                                                          CalciteConnectionConfig config) {
+      return false;
+    }
   }
 
   /** Mock table that returns a stream of orders from a fixed array. */
@@ -412,6 +424,16 @@ public class StreamTest {
 
     @Override public Table stream() {
       return new OrdersTable(rows);
+    }
+
+    @Override public boolean isRolledUp(String column) {
+      return false;
+    }
+
+    @Override public boolean rolledUpColumnValidInsideAgg(String column,
+                                                          SqlCall call, SqlNode parent,
+                                                          CalciteConnectionConfig config) {
+      return false;
     }
   }
 
@@ -519,13 +541,14 @@ public class StreamTest {
     public Schema.TableType getJdbcTableType() {
       return Schema.TableType.TABLE;
     }
-<<<<<<< HEAD
+>>>>>>> 9d2c4bca7 (Revert "Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)"")
 
     @Override public boolean isRolledUp(String column) {
       return false;
     }
 
     @Override public boolean rolledUpColumnValidInsideAgg(String column,
+<<<<<<< HEAD
         SqlCall call, SqlNode parent, CalciteConnectionConfig config) {
       return false;
     }
@@ -572,5 +595,10 @@ public class StreamTest {
       return false;
     }
 =======
+=======
+                                                          SqlCall call, SqlNode parent,
+                                                          CalciteConnectionConfig config) {
+      return false;
+    }
   }
 }

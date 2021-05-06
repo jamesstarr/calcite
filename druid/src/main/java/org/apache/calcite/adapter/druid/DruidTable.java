@@ -16,10 +16,12 @@
  */
 package org.apache.calcite.adapter.druid;
 
+import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.interpreter.BindableConvention;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.logical.LogicalTableScan;
 import org.apache.calcite.rel.type.RelDataType;
@@ -28,6 +30,11 @@ import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.TranslatableTable;
 import org.apache.calcite.schema.impl.AbstractTable;
+import org.apache.calcite.sql.SqlCall;
+import org.apache.calcite.sql.SqlKind;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlSelectKeyword;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
 
 import com.google.common.base.Preconditions;
@@ -39,6 +46,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.chrono.ISOChronology;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -60,6 +68,8 @@ public class DruidTable extends AbstractTable implements TranslatableTable {
   final ImmutableSet<String> metricFieldNames;
   final ImmutableList<Interval> intervals;
   final String timestampFieldName;
+  final ImmutableMap<String, List<ComplexMetric>> complexMetrics;
+  final ImmutableMap<String, SqlTypeName> allFields;
 
   /**
    * Creates a Druid table.
@@ -73,7 +83,8 @@ public class DruidTable extends AbstractTable implements TranslatableTable {
    */
   public DruidTable(DruidSchema schema, String dataSource,
       RelProtoDataType protoRowType, Set<String> metricFieldNames,
-      String timestampFieldName, List<Interval> intervals) {
+      String timestampFieldName, List<Interval> intervals,
+      Map<String, List<ComplexMetric>> complexMetrics, Map<String, SqlTypeName> allFields) {
     this.timestampFieldName = Preconditions.checkNotNull(timestampFieldName);
     this.schema = Preconditions.checkNotNull(schema);
     this.dataSource = Preconditions.checkNotNull(dataSource);
@@ -81,7 +92,10 @@ public class DruidTable extends AbstractTable implements TranslatableTable {
     this.metricFieldNames = ImmutableSet.copyOf(metricFieldNames);
     this.intervals = intervals != null ? ImmutableList.copyOf(intervals)
         : ImmutableList.of(DEFAULT_INTERVAL);
->>>>>>> 0b7d6d6d5 (Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)")
+    this.complexMetrics = complexMetrics == null ? ImmutableMap.<String, List<ComplexMetric>>of()
+            : ImmutableMap.copyOf(complexMetrics);
+    this.allFields = allFields == null ? ImmutableMap.<String, SqlTypeName>of()
+            : ImmutableMap.copyOf(allFields);
   }
 
   /** Creates a {@link DruidTable} by using the given {@link DruidConnectionImpl}
@@ -101,14 +115,14 @@ public class DruidTable extends AbstractTable implements TranslatableTable {
   static Table create(DruidSchema druidSchema, String dataSourceName,
       List<Interval> intervals, Map<String, SqlTypeName> fieldMap,
       Set<String> metricNameSet, String timestampColumnName,
-      DruidConnectionImpl connection) {
+      DruidConnectionImpl connection, Map<String, List<ComplexMetric>> complexMetrics) {
     assert connection != null;
 
     connection.metadata(dataSourceName, timestampColumnName, intervals,
-            fieldMap, metricNameSet);
+            fieldMap, metricNameSet, complexMetrics);
 
     return DruidTable.create(druidSchema, dataSourceName, intervals, fieldMap,
-            metricNameSet, timestampColumnName);
+            metricNameSet, timestampColumnName, complexMetrics);
   }
 
   /** Creates a {@link DruidTable} by copying the given parameters.
@@ -119,12 +133,14 @@ public class DruidTable extends AbstractTable implements TranslatableTable {
    * @param fieldMap Fully populated map of fields (dimensions plus metrics)
    * @param metricNameSet Fully populated set of metric names
    * @param timestampColumnName Name of timestamp column, or null
+   * @param complexMetrics List of complex metrics in Druid (thetaSketch, hyperUnique)
    *
    * @return A table
    */
   static Table create(DruidSchema druidSchema, String dataSourceName,
                       List<Interval> intervals, Map<String, SqlTypeName> fieldMap,
-                      Set<String> metricNameSet, String timestampColumnName) {
+                      Set<String> metricNameSet, String timestampColumnName,
+                      Map<String, List<ComplexMetric>> complexMetrics) {
     final ImmutableMap<String, SqlTypeName> fields =
             ImmutableMap.copyOf(fieldMap);
     return new DruidTable(druidSchema,
@@ -132,10 +148,12 @@ public class DruidTable extends AbstractTable implements TranslatableTable {
         new MapRelProtoDataType(fields, timestampColumnName),
         ImmutableSet.copyOf(metricNameSet),
         timestampColumnName,
-        intervals);
+        intervals,
+        complexMetrics,
+        fieldMap);
   }
 
-<<<<<<< HEAD
+>>>>>>> 9d2c4bca7 (Revert "Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)"")
   /**
    * Returns the appropriate {@link ComplexMetric} that is mapped from the given <code>alias</code>
    * if it exists, and is used in the expected context with the given {@link AggregateCall}.
@@ -163,7 +181,11 @@ public class DruidTable extends AbstractTable implements TranslatableTable {
   }
 
   @Override public boolean rolledUpColumnValidInsideAgg(String column, SqlCall call,
+<<<<<<< HEAD
       SqlNode parent, CalciteConnectionConfig config) {
+=======
+                                                        SqlNode parent,
+                                                        CalciteConnectionConfig config) {
     assert isRolledUp(column);
     // Our rolled up columns are only allowed in COUNT(DISTINCT ...) aggregate functions.
     // We only allow this when approximate results are acceptable.
@@ -203,7 +225,7 @@ public class DruidTable extends AbstractTable implements TranslatableTable {
   public List<ComplexMetric> getComplexMetricsFrom(String alias) {
     return complexMetrics.containsKey(alias)
             ? complexMetrics.get(alias)
-            : new ArrayList<>();
+            : new ArrayList<ComplexMetric>();
   }
 
   /**
@@ -215,8 +237,11 @@ public class DruidTable extends AbstractTable implements TranslatableTable {
   }
 
   public RelDataType getRowType(RelDataTypeFactory typeFactory) {
+<<<<<<< HEAD
 =======
   @Override public RelDataType getRowType(RelDataTypeFactory typeFactory) {
+=======
+>>>>>>> 9d2c4bca7 (Revert "Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)"")
     final RelDataType rowType = protoRowType.apply(typeFactory);
     final List<String> fieldNames = rowType.getFieldNames();
     Preconditions.checkArgument(fieldNames.contains(timestampFieldName));
@@ -224,7 +249,7 @@ public class DruidTable extends AbstractTable implements TranslatableTable {
     return rowType;
   }
 
-  @Override public RelNode toRel(RelOptTable.ToRelContext context,
+  public RelNode toRel(RelOptTable.ToRelContext context,
       RelOptTable relOptTable) {
     final RelOptCluster cluster = context.getCluster();
     final TableScan scan = LogicalTableScan.create(cluster, relOptTable, ImmutableList.of());
@@ -253,7 +278,7 @@ public class DruidTable extends AbstractTable implements TranslatableTable {
       this.timestampColumn = timestampColumn;
     }
 
-    @Override public RelDataType apply(RelDataTypeFactory typeFactory) {
+    public RelDataType apply(RelDataTypeFactory typeFactory) {
       final RelDataTypeFactory.Builder builder = typeFactory.builder();
       for (Map.Entry<String, SqlTypeName> field : fields.entrySet()) {
         final String key = field.getKey();
