@@ -1935,6 +1935,39 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
       };
 
   /**
+   * The PERCENTILE_CONT operator. The inverse distribution aggregator function.
+   * The argument must be numeric literal in range 0.0 - 1.0.
+   * The return type is a double.
+   */
+  public static final SqlAggFunction PERCENTILE_CONT =
+      new SqlAggFunction("PERCENTILE_CONT",
+          null,
+          SqlKind.PERCENTILE_CONT,
+          ReturnTypes.DOUBLE,
+          null,
+          OperandTypes.POSITIVE_NUMERIC_LITERAL,
+          SqlFunctionCategory.SYSTEM, false, false,
+          Optionality.MANDATORY) {
+      };
+
+  /**
+   * The PERCENTILE_DISC operator. The inverse distribution aggregator function.
+   * The argument must be numeric literal in range 0.0 - 1.0.
+   * The return type is determined by the type of order by expression which
+   * cannot be determined by the function itself, so using double instead.
+   */
+  public static final SqlAggFunction PERCENTILE_DISC =
+      new SqlAggFunction("PERCENTILE_DISC",
+          null,
+          SqlKind.PERCENTILE_DISC,
+          ReturnTypes.DOUBLE,
+          null,
+          OperandTypes.POSITIVE_NUMERIC_LITERAL,
+          SqlFunctionCategory.SYSTEM, false, false,
+          Optionality.MANDATORY) {
+      };
+
+  /**
    * The FUSION operator. Multiset aggregator function.
    */
   public static final SqlFunction FUSION =

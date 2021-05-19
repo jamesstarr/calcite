@@ -170,6 +170,8 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.NOT_SIMILAR_TO;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.NTILE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.OR;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.OVERLAY;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.PERCENTILE_CONT;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.PERCENTILE_DISC;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.PI;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.PLUS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.POSITION;
@@ -419,6 +421,8 @@ public class RexImpTable {
     aggMap.put(MAX, minMax);
     aggMap.put(SINGLE_VALUE, constructorSupplier(SingleValueImplementor.class));
     aggMap.put(COLLECT, constructorSupplier(CollectImplementor.class));
+    aggMap.put(PERCENTILE_CONT, constructorSupplier(PercentileContImplementor.class));
+    aggMap.put(PERCENTILE_DISC, constructorSupplier(PercentileDiscImplementor.class));
     final Supplier<GroupingImplementor> grouping =
         constructorSupplier(GroupingImplementor.class);
     aggMap.put(GROUPING, grouping);
@@ -1258,6 +1262,20 @@ public class RexImpTable {
               Expressions.call(add.accumulator().get(0),
                   BuiltInMethod.COLLECTION_ADD.method,
                   add.arguments().get(0))));
+    }
+  }
+
+  /** Implementor for the {@code PERCENTILE_CONT} aggregate function. */
+  static class PercentileContImplementor extends StrictAggImplementor {
+
+    @Override protected void implementNotNullAdd(AggContext info, AggAddContext add) {
+    }
+  }
+
+  /** Implementor for the {@code PERCENTILE_DISC} aggregate function. */
+  static class PercentileDiscImplementor extends StrictAggImplementor {
+
+    @Override protected void implementNotNullAdd(AggContext info, AggAddContext add) {
     }
   }
 
