@@ -3215,29 +3215,6 @@ public class RelBuilder {
 
     /** Returns a copy of this AggCall that is distinct. */
     AggCall distinct();
-<<<<<<< HEAD
-  }
-
-  /** Internal methods shared by all implementations of {@link AggCall}. */
-  private interface AggCallPlus extends AggCall {
-    /** Returns the aggregate function. */
-    SqlAggFunction op();
-
-    /** Returns the alias. */
-    String alias();
-
-    /** Returns an {@link AggregateCall} that is approximately equivalent
-     * to this {@code AggCall} and is good for certain things, such as deriving
-     * field names. */
-    AggregateCall aggregateCall();
-
-    /** Converts this {@code AggCall} to a good {@link AggregateCall}. */
-    AggregateCall aggregateCall(Registrar registrar, ImmutableBitSet groupSet,
-        RelNode r);
-
-    /** Registers expressions in operands and filters. */
-    void register(Registrar registrar);
-=======
   }
 
   /** Information necessary to create the GROUP BY clause of an Aggregate.
@@ -3325,16 +3302,11 @@ public class RelBuilder {
       this.filter = filter;
     }
 
->>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
     public AggCall sort(Iterable<RexNode> orderKeys) {
       final ImmutableList<RexNode> orderKeyList =
               ImmutableList.copyOf(orderKeys);
       return orderKeyList.equals(this.orderKeys)
         ? this
-<<<<<<< HEAD
-          : new AggCallImpl(aggFunction, distinct, approximate, ignoreNulls,
-              filter, alias, operands, orderKeyList);
-=======
         : new AggCallImpl(aggFunction, distinct, approximate, filter,
         alias, operands, orderKeyList);
     }
@@ -3382,7 +3354,6 @@ public class RelBuilder {
           : new AggCallImpl(aggFunction, distinct, approximate, ignoreNulls,
               filter, alias, operands, orderKeys);
 =======
->>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
     }
   }
 

@@ -202,11 +202,6 @@ public abstract class OperandTypes {
   public static final SqlSingleOperandTypeChecker NUMERIC =
       family(SqlTypeFamily.NUMERIC);
 
-<<<<<<< HEAD
-  public static final SqlSingleOperandTypeChecker INTEGER =
-      family(SqlTypeFamily.INTEGER);
-
-=======
 >>>>>>> 76947f753 (DX-4549:  allow =(BOOLEAN, INTEGER) and <>(BOOLEAN, INTEGER))
   public static final SqlOperandTypeChecker BOOLEAN_INTEGER =
       family(SqlTypeFamily.BOOLEAN, SqlTypeFamily.INTEGER);
@@ -365,12 +360,20 @@ public abstract class OperandTypes {
       };
 
   /**
+<<<<<<< HEAD
    * Operand type-checking strategy type must be a numeric non-NULL
    * literal in the range 0 and 1 inclusive.
    */
   public static final SqlSingleOperandTypeChecker UNIT_INTERVAL_NUMERIC_LITERAL =
       new FamilyOperandTypeChecker(ImmutableList.of(SqlTypeFamily.NUMERIC),
           i -> false) {
+=======
+   * Operand type-checking strategy type must be a positive numeric non-NULL
+   * literal in the range 0 - 1.
+   */
+  public static final SqlSingleOperandTypeChecker POSITIVE_NUMERIC_LITERAL =
+      new FamilyOperandTypeChecker(ImmutableList.of(SqlTypeFamily.NUMERIC),
+              Predicates.<Integer>alwaysFalse()) {
         public boolean checkSingleOperandType(
             SqlCallBinding callBinding,
             SqlNode node,
@@ -393,13 +396,13 @@ public abstract class OperandTypes {
           }
 
           final SqlLiteral arg = (SqlLiteral) node;
-          final BigDecimal value = arg.getValueAs(BigDecimal.class);
-          if (value.compareTo(BigDecimal.ZERO) < 0
-              || value.compareTo(BigDecimal.ONE) > 0) {
+          final BigDecimal value = (BigDecimal) arg.getValue();
+          if (value.compareTo(BigDecimal.ZERO) < 0 || value.compareTo(BigDecimal.ONE) > 0) {
             if (throwOnFailure) {
               throw callBinding.newError(
-                  RESOURCE.argumentMustBeNumericLiteralInRange(
-                      callBinding.getOperator().getName(), 0, 1));
+                  RESOURCE.argumentMustBePositiveLiteralInRange(
+                      callBinding.getOperator().getName(),
+                      0, 1));
             }
             return false;
           }

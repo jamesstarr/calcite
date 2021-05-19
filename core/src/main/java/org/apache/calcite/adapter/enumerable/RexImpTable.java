@@ -675,9 +675,7 @@ public class RexImpTable {
     aggMap.put(COLLECT, constructorSupplier(CollectImplementor.class));
     aggMap.put(PERCENTILE_CONT, constructorSupplier(PercentileContImplementor.class));
     aggMap.put(PERCENTILE_DISC, constructorSupplier(PercentileDiscImplementor.class));
-    aggMap.put(LISTAGG, constructorSupplier(ListaggImplementor.class));
-    aggMap.put(FUSION, constructorSupplier(FusionImplementor.class));
-    aggMap.put(INTERSECTION, constructorSupplier(IntersectionImplementor.class));
+>>>>>>> bc9190d8d (Added PERCENTILE_CONT and PERCENTILE_DISC functions in the operator table list.)
     final Supplier<GroupingImplementor> grouping =
         constructorSupplier(GroupingImplementor.class);
     aggMap.put(GROUPING, grouping);
@@ -1580,6 +1578,7 @@ public class RexImpTable {
     }
   }
 
+<<<<<<< HEAD
   /** Implementor for the {@code INTERSECTION} aggregate function. */
   static class IntersectionImplementor extends StrictAggImplementor {
     @Override protected void implementNotNullReset(AggContext info, AggResetContext reset) {
@@ -1705,6 +1704,7 @@ public class RexImpTable {
     }
   }
 
+=======
   /** Implementor for the {@code GROUPING} aggregate function. */
   static class GroupingImplementor implements AggImplementor {
     public List<Type> getStateType(AggContext info) {

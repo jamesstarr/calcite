@@ -953,9 +953,6 @@ public abstract class RelOptUtil {
     for (int i = 0; i < aggCallCnt; i++) {
       aggCalls.add(
           AggregateCall.create(SqlStdOperatorTable.SINGLE_VALUE, false, false,
-<<<<<<< HEAD
-              false, ImmutableList.of(i), -1, RelCollations.EMPTY, 0, rel, null,
-=======
               ImmutableList.of(i), -1, RelCollations.EMPTY, 0, rel, null,
               null));
     }
@@ -3712,7 +3709,6 @@ public abstract class RelOptUtil {
     switch (node.getKind()) {
     case EQUALS:
     case IS_NOT_DISTINCT_FROM:
->>>>>>> ca4a48d63 ([CALCITE-2807] RelOptUtil#pushDownJoinConditions and INDF)
       final RexCall call = (RexCall) node;
       final List<RexNode> list = new ArrayList<>();
       List<RexNode> operands = Lists.newArrayList(call.getOperands());

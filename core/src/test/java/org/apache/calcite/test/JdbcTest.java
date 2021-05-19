@@ -7144,59 +7144,6 @@ public class JdbcTest {
     connection.close();
   }
 
-<<<<<<< HEAD
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3039">[CALCITE-3039]
-   * In Interpreter, min() incorrectly returns maximum double value</a>. */
-  @Test void testMinAggWithDouble() {
-    try (Hook.Closeable ignored = Hook.ENABLE_BINDABLE.addThread(Hook.propertyJ(true))) {
-      CalciteAssert.hr()
-          .query(
-              "select min(div) as _min from ("
-                  + "select \"empid\", \"deptno\", CAST(\"empid\" AS DOUBLE)/\"deptno\" as div from \"hr\".\"emps\")")
-          .explainContains("BindableAggregate(group=[{}], _MIN=[MIN($0)])\n"
-              + "  BindableProject(DIV=[/(CAST($0):DOUBLE NOT NULL, $1)])\n"
-              + "    BindableTableScan(table=[[hr, emps]])")
-          .returns("_MIN=10.0\n");
-    }
-  }
-
-  @Test public void testBindableIntersect() {
-    try (Hook.Closeable ignored = Hook.ENABLE_BINDABLE.addThread(Hook.propertyJ(true))) {
-      final String sql0 = "select \"empid\", \"deptno\" from \"hr\".\"emps\"";
-      final String sql = sql0 + " intersect all " + sql0;
-      CalciteAssert.hr()
-          .query(sql)
-          .explainContains(""
-              + "PLAN=BindableIntersect(all=[true])\n"
-              + "  BindableProject(empid=[$0], deptno=[$1])\n"
-              + "    BindableTableScan(table=[[hr, emps]])\n"
-              + "  BindableProject(empid=[$0], deptno=[$1])\n"
-              + "    BindableTableScan(table=[[hr, emps]])")
-          .returns(""
-              + "empid=150; deptno=10\n"
-              + "empid=100; deptno=10\n"
-              + "empid=200; deptno=20\n"
-              + "empid=110; deptno=10\n");
-    }
-  }
-
-  @Test public void testBindableMinus() {
-    try (Hook.Closeable ignored = Hook.ENABLE_BINDABLE.addThread(Hook.propertyJ(true))) {
-      final String sql0 = "select \"empid\", \"deptno\" from \"hr\".\"emps\"";
-      final String sql = sql0 + " except all " + sql0;
-      CalciteAssert.hr()
-          .query(sql)
-          .explainContains(""
-              + "PLAN=BindableMinus(all=[true])\n"
-              + "  BindableProject(empid=[$0], deptno=[$1])\n"
-              + "    BindableTableScan(table=[[hr, emps]])\n"
-              + "  BindableProject(empid=[$0], deptno=[$1])\n"
-              + "    BindableTableScan(table=[[hr, emps]])")
-          .returns("");
-    }
-  }
-=======
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2224">[CALCITE-2224]
@@ -7514,7 +7461,6 @@ public class JdbcTest {
   }
 
 =======
->>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
   private static String sums(int n, boolean c) {
     final StringBuilder b = new StringBuilder();
     for (int i = 0; i < n; i++) {
