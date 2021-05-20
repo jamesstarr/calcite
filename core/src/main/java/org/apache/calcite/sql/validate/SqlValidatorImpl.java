@@ -3740,7 +3740,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     }
   }
 
-  private void checkRollUpInWindow(SqlWindow window, SqlValidatorScope scope) {
+  protected void checkRollUpInWindow(SqlWindow window, SqlValidatorScope scope) {
     if (window != null) {
       for (SqlNode node : window.getPartitionList()) {
         checkRollUp(null, window, node, scope, "PARTITION BY");
@@ -3765,7 +3765,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     return node;
   }
 
-  private void checkRollUp(SqlNode grandParent, SqlNode parent,
+  protected void checkRollUp(SqlNode grandParent, SqlNode parent,
                            SqlNode current, SqlValidatorScope scope, String optionalClause) {
     current = stripAs(current);
     if (current instanceof SqlCall && !(current instanceof SqlSelect)) {
@@ -3795,7 +3795,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     checkRollUp(grandParent, parent, current, scope, null);
   }
 
-  private SqlWindow getWindowInOver(SqlNode over) {
+  protected SqlWindow getWindowInOver(SqlNode over) {
     if (over.getKind() == SqlKind.OVER) {
       SqlNode window = ((SqlCall) over).getOperandList().get(1);
       if (window instanceof SqlWindow) {
@@ -3807,7 +3807,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     return null;
   }
 
-  private static SqlNode stripOver(SqlNode node) {
+  protected static SqlNode stripOver(SqlNode node) {
     switch (node.getKind()) {
     case OVER:
       return ((SqlCall) node).getOperandList().get(0);
@@ -3833,7 +3833,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
   }
 
   // Returns true iff the given column is valid inside the given aggCall.
-  private boolean isRolledUpColumnAllowedInAgg(SqlIdentifier identifier, SqlValidatorScope scope,
+  protected boolean isRolledUpColumnAllowedInAgg(SqlIdentifier identifier, SqlValidatorScope scope,
                                                SqlCall aggCall, SqlNode parent) {
     Pair<String, String> pair = findTableColumnPair(identifier, scope);
 
@@ -3855,7 +3855,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
 
 
   // Returns true iff the given column is actually rolled up.
-  private boolean isRolledUpColumn(SqlIdentifier identifier, SqlValidatorScope scope) {
+  protected boolean isRolledUpColumn(SqlIdentifier identifier, SqlValidatorScope scope) {
     Pair<String, String> pair = findTableColumnPair(identifier, scope);
 
     if (pair == null) {
