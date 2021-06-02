@@ -240,7 +240,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.LOG10;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.LOWER;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MAP_VALUE_CONSTRUCTOR;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MAX;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MEMBER_OF;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MEDIAN;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MIN;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MINUS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MINUS_DATE;
@@ -664,13 +664,7 @@ public class RexImpTable {
         constructorSupplier(MinMaxImplementor.class);
     aggMap.put(MIN, minMax);
     aggMap.put(MAX, minMax);
-    aggMap.put(ANY_VALUE, minMax);
-    aggMap.put(SOME, minMax);
-    aggMap.put(EVERY, minMax);
-    final Supplier<BitOpImplementor> bitop = constructorSupplier(BitOpImplementor.class);
-    aggMap.put(BIT_AND, bitop);
-    aggMap.put(BIT_OR, bitop);
-    aggMap.put(BIT_XOR, bitop);
+    aggMap.put(MEDIAN, constructorSupplier(MedianImplementor.class));
     aggMap.put(SINGLE_VALUE, constructorSupplier(SingleValueImplementor.class));
     aggMap.put(COLLECT, constructorSupplier(CollectImplementor.class));
     aggMap.put(PERCENTILE_CONT, constructorSupplier(PercentileContImplementor.class));
@@ -1561,6 +1555,12 @@ public class RexImpTable {
               Expressions.call(add.accumulator().get(0),
                   BuiltInMethod.COLLECTION_ADD.method,
                   add.arguments().get(0))));
+    }
+  }
+
+  /** Implementor for the {@code MEDIAN} aggregate function. */
+  static class MedianImplementor extends StrictAggImplementor {
+    @Override protected void implementNotNullAdd(AggContext info, AggAddContext add) {
     }
   }
 

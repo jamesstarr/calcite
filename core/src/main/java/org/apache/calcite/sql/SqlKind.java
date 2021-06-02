@@ -970,6 +970,9 @@ public enum SqlKind {
   /** The {@code COLLECT} aggregate function. */
   COLLECT,
 
+  /** The {@code MEDIAN} aggregate function. */
+  MEDIAN,
+
   /** The {@code PERCENTILE_CONT} aggregate function. */
   PERCENTILE_CONT,
 
@@ -1177,7 +1180,7 @@ public enum SqlKind {
           LAST_VALUE, COVAR_POP, COVAR_SAMP, REGR_SXX, REGR_SYY,
           AVG, STDDEV_POP, STDDEV_SAMP, VAR_POP, VAR_SAMP, NTILE, COLLECT,
           FUSION, SINGLE_VALUE, ROW_NUMBER, RANK, PERCENT_RANK, DENSE_RANK,
-          CUME_DIST, PERCENTILE_CONT, PERCENTILE_DISC);
+          CUME_DIST, PERCENTILE_CONT, PERCENTILE_DISC, MEDIAN);
 
   /**
    * Category consisting of all DML operators.
