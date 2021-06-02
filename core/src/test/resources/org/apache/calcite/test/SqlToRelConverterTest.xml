@@ -5488,7 +5488,7 @@ LogicalProject(DEPTNO=[$0], F0=[$1], F1=[$2])
         </Resource>
         <Resource name="plan">
             <![CDATA[
-LogicalAggregate(group=[{0}], EXPR$1=[COLLECT($1) WITHIN GROUP ([1, 2 DESC])])
+LogicalAggregate(group=[{0}], EXPR$1=[COLLECT($1) WITHIN GROUP ([0, 2 DESC])])
   LogicalProject(DEPTNO=[$7], EMPNO=[$0], HIREDATE=[$4])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
