@@ -1104,6 +1104,9 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       for (int i = 0; i < operands.size(); i++) {
         SqlNode operand = operands.get(i);
         boolean childUnderFrom;
+        if (kind == SqlKind.WITHIN_GROUP) {
+          validatePercentileFunctions(call);
+        }
         if (kind == SqlKind.SELECT) {
           childUnderFrom = i == SqlSelect.FROM_OPERAND;
         } else if (kind == SqlKind.AS && (i == 0)) {
@@ -1270,6 +1273,33 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     }
     }
     return node;
+  }
+
+  private void validatePercentileFunctions(SqlCall call) {
+    if (call.getOperandList().size() == 2) {
+      SqlBasicCall sqlBasicCall = null;
+      SqlNodeList list = null;
+      SqlNode node1 = call.getOperandList().get(0);
+      SqlNode node2 = call.getOperandList().get(1);
+      if (node1 instanceof SqlBasicCall) {
+        sqlBasicCall = (SqlBasicCall) node1;
+      } else if (node2 instanceof SqlBasicCall) {
+        sqlBasicCall = (SqlBasicCall) node2;
+      }
+      if (node1 instanceof SqlNodeList) {
+        list = (SqlNodeList) node1;
+      } else if (node2 instanceof SqlNodeList) {
+        list = (SqlNodeList) node2;
+      }
+
+      if (sqlBasicCall != null && list != null
+          && (sqlBasicCall.getOperator().getKind() == SqlKind.PERCENTILE_CONT
+              || sqlBasicCall.getOperator().getKind() == SqlKind.PERCENTILE_DISC)
+          && (list.getList().size() != 1)) {
+        throw newValidationError(call,
+                RESOURCE.invalidArgCount(sqlBasicCall.getOperator().getName(), 1));
+      }
+    }
   }
 
   private SqlSelect getInnerSelect(SqlNode node) {
