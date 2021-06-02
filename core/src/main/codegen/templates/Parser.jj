@@ -5188,6 +5188,7 @@ SqlIdentifier ReservedFunctionName() :
     |   <LOCALTIMESTAMP>
     |   <LOWER>
     |   <MAX>
+    |   <MEDIAN>
     |   <MIN>
     |   <MINUTE>
     |   <MOD>
@@ -5775,6 +5776,7 @@ SqlPostfixOperator PostfixRowOperator() :
 |   < MAX: "MAX" >
 |   < MAXVALUE: "MAXVALUE" >
 |   < MEASURES: "MEASURES" >
+|   < MEDIAN: "MEDIAN" >
 |   < MEMBER: "MEMBER" >
 |   < MERGE: "MERGE" >
 |   < MESSAGE_LENGTH: "MESSAGE_LENGTH" >

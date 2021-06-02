@@ -1935,6 +1935,22 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
       };
 
   /**
+   * The MEDIAN operator. Takes the median / PERCENTILE_CONT(.5) of a dataset.
+   * The argument must be a numeric expression.
+   * The return type is a double.
+   */
+  public static final SqlAggFunction MEDIAN =
+      new SqlAggFunction("MEDIAN",
+          null,
+          SqlKind.MEDIAN,
+          ReturnTypes.DOUBLE,
+          null,
+          OperandTypes.NUMERIC,
+          SqlFunctionCategory.SYSTEM, false, false,
+          Optionality.FORBIDDEN) {
+      };
+
+  /**
    * The PERCENTILE_CONT operator. The inverse distribution aggregator function.
    * The argument must be numeric literal in range 0.0 - 1.0.
    * The return type is a double.
