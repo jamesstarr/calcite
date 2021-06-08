@@ -19,6 +19,7 @@ package org.apache.calcite.rel.rules;
 import org.apache.calcite.plan.RelOptPredicateList;
 import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
+import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.AggregateCall;
@@ -27,13 +28,17 @@ import org.apache.calcite.rel.logical.LogicalAggregate;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBitSet;
+import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.Pair;
 
 import java.util.ArrayList;
@@ -49,8 +54,12 @@ import java.util.TreeMap;
  * {@link RelMetadataQuery#getPulledUpPredicates(RelNode)}; the input does not
  * need to be a {@link org.apache.calcite.rel.core.Project}.
  *
- * <p>This rule never removes the last column, because {@code Aggregate([])}
+ * <p>By default, this rules never removes the last column, because {@code Aggregate([])}
  * returns 1 row even if its input is empty.
+ *
+ * <p>When {@code this.removeAll} is set to true this rule will force removing the last column.
+ * A filter will be added in this case to ensure {@code Aggregate([])} returns 0 row when
+ * its input is empty.
  *
  * <p>Since the transformed relational expression has to match the original
  * relational expression, the constants are placed in a projection above the
@@ -72,6 +81,29 @@ public class AggregateProjectPullUpConstantsRule extends RelOptRule {
           RelNode.class, RelFactories.LOGICAL_BUILDER,
           "AggregatePullUpConstantsRule");
 
+  /**
+   * Instance that matches aggregate on top of a project.
+   * Removes all constant keys.
+   */
+  public static final AggregateProjectPullUpConstantsRule INSTANCE_REMOVE_ALL =
+          new AggregateProjectPullUpConstantsRule(LogicalAggregate.class,
+                  LogicalProject.class, RelFactories.LOGICAL_BUILDER,
+                  "AggregateProjectPullUpAllConstantsRule",
+                  true);
+
+  /**
+   * More general instance that matches any relational expression.
+   * Removes all constant keys.
+   */
+  public static final AggregateProjectPullUpConstantsRule INSTANCE2_REMOVE_ALL =
+          new AggregateProjectPullUpConstantsRule(LogicalAggregate.class,
+                  RelNode.class, RelFactories.LOGICAL_BUILDER,
+                  "AggregatePullUpAllConstantsRule",
+                  true);
+
+  /**  Whether to remove the last column. */
+  private final boolean removeAll;
+
   //~ Constructors -----------------------------------------------------------
 
   /**
@@ -86,10 +118,28 @@ public class AggregateProjectPullUpConstantsRule extends RelOptRule {
       Class<? extends Aggregate> aggregateClass,
       Class<? extends RelNode> inputClass,
       RelBuilderFactory relBuilderFactory, String description) {
+    this(aggregateClass, inputClass, relBuilderFactory, description, false);
+  }
+
+  /**
+   * Creates an AggregateProjectPullUpConstantsRule that removes all constant keys.
+   *
+   * @param aggregateClass Aggregate class
+   * @param inputClass Input class, such as {@link LogicalProject}
+   * @param relBuilderFactory Builder for relational expressions
+   * @param description Description, or null to guess description
+   * @param removeAll option for whether to force removing the last column
+   */
+  public AggregateProjectPullUpConstantsRule(
+          Class<? extends Aggregate> aggregateClass,
+          Class<? extends RelNode> inputClass,
+          RelBuilderFactory relBuilderFactory, String description,
+          boolean removeAll) {
     super(
-        operandJ(aggregateClass, null, Aggregate::isSimple,
-            operand(inputClass, any())),
-        relBuilderFactory, description);
+            operand(aggregateClass, null, Aggregate.IS_SIMPLE,
+                    operand(inputClass, any())),
+            relBuilderFactory, description);
+    this.removeAll = removeAll;
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -99,9 +149,10 @@ public class AggregateProjectPullUpConstantsRule extends RelOptRule {
     final RelNode input = call.rel(1);
 
     final int groupCount = aggregate.getGroupCount();
-    if (groupCount == 1) {
-      // No room for optimization since we cannot convert from non-empty
-      // GROUP BY list to the empty one.
+    if (groupCount == 1 && !removeAll) {
+      // Default behavior:
+      //   No room for optimization since we cannot convert from non-empty
+      //   GROUP BY list to the empty one.
       return;
     }
 
@@ -126,12 +177,13 @@ public class AggregateProjectPullUpConstantsRule extends RelOptRule {
       return;
     }
 
-    if (groupCount == map.size()) {
-      // At least a single item in group by is required.
-      // Otherwise "GROUP BY 1, 2" might be altered to "GROUP BY ()".
-      // Removing of the first element is not optimal here,
-      // however it will allow us to use fast path below (just trim
-      // groupCount).
+    if (groupCount == map.size() && !removeAll) {
+      // Default behavior:
+      //   At least a single item in group by is required.
+      //   Otherwise "GROUP BY 1, 2" might be altered to "GROUP BY ()".
+      //   Removing of the first element is not optimal here,
+      //   however it will allow us to use fast path below (just trim
+      //   groupCount).
       map.remove(map.navigableKeySet().first());
     }
 
@@ -153,7 +205,27 @@ public class AggregateProjectPullUpConstantsRule extends RelOptRule {
           aggCall.adaptTo(input, aggCall.getArgList(), aggCall.filterArg,
               groupCount, newGroupCount));
     }
-    relBuilder.aggregate(relBuilder.groupKey(newGroupSet), newAggCalls);
+
+    // If all GROUP BY keys have been removed, add "HAVING COUNT(*) > 0" to ensure
+    // "GROUP BY ()" returns 0 row when its input is empty.
+    if (newGroupCount == 0) {
+      // Add "COUNT(*)" aggregate function
+      final RelDataTypeFactory typeFactory = rexBuilder.getTypeFactory();
+      newAggCalls.add(
+              AggregateCall.create(SqlStdOperatorTable.COUNT, false,
+                      false, ImmutableIntList.of(), -1, RelCollations.EMPTY,
+                      typeFactory.createSqlType(SqlTypeName.BIGINT), null));
+    }
+
+    relBuilder.aggregate(relBuilder.groupKey(newGroupSet, null), newAggCalls);
+
+    if (newGroupCount == 0) {
+      // Add filter "> 0" on aggregate function "COUNT(*)"
+      relBuilder.filter(
+              relBuilder.call(SqlStdOperatorTable.GREATER_THAN,
+                      relBuilder.field(newAggCalls.size() - 1),
+                      relBuilder.literal(0)));
+    }
 
     // Create a projection back again.
     List<Pair<RexNode, String>> projects = new ArrayList<>();

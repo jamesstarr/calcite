@@ -6127,24 +6127,62 @@ class RelOptRulesTest extends RelOptTestBase {
         .check();
   }
 
-  /** Tests {@link AggregateProjectPullUpConstantsRule} where
-   * there are group keys of type
-   * {@link org.apache.calcite.sql.fun.SqlAbstractTimeFunction}
-   * that can not be removed. */
-  @Test void testAggregateDynamicFunction() {
-    final String sql = "select hiredate\n"
-        + "from sales.emp\n"
-        + "where sal is null and hiredate = current_timestamp\n"
-        + "group by sal, hiredate\n"
-        + "having count(*) > 3";
-    sql(sql).withRule(AggregateProjectPullUpConstantsRule.INSTANCE2)
-        .check();
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-4634">[CALCITE-4634]
+   * Improve AggregateProjectPullUpConstantsRule to remove all constant keys</a>
+   * Tests with {@code removeAll == TRUE} constant key is removed even if "deptno"
+   * is the only key. */
+  @Test public void testAggregateConstantKeyRuleWithRemoveAll() {
+    final HepProgram program = new HepProgramBuilder()
+            .addRuleInstance(AggregateProjectPullUpConstantsRule.INSTANCE2_REMOVE_ALL)
+            .build();
+
+    final String sql = "select count(*) as c\n"
+            + "from sales.emp\n"
+            + "where deptno = 10\n"
+            + "group by deptno";
+    checkPlanning(new HepPlanner(program), sql);
   }
 
-  @Test void testReduceExpressionsNot() {
-    final String sql = "select * from (values (false),(true)) as q (col1) where not(col1)";
-    sql(sql).withRule(CoreRules.FILTER_REDUCE_EXPRESSIONS)
-        .checkUnchanged();
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-4634">[CALCITE-4634]
+   * Improve AggregateProjectPullUpConstantsRule to remove all constant keys</a>
+   * Tests with {@code removeAll == TRUE} both keys are constant and both can be removed. */
+  @Test public void testAggregateConstantKeyRuleWithRemoveAll1() {
+    final HepProgram program = new HepProgramBuilder()
+            .addRuleInstance(AggregateProjectPullUpConstantsRule.INSTANCE2_REMOVE_ALL)
+            .build();
+
+    final String sql = "select job\n"
+            + "from sales.emp\n"
+            + "where deptno = 10 and job = 'Clerk'\n"
+            + "group by deptno, job\n"
+            + "having count(*) > 3";
+    checkPlanning(new HepPlanner(program), sql);
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-4634">[CALCITE-4634]
+   * Improve AggregateProjectPullUpConstantsRule to remove all constant keys</a>
+   * Tests with {@code removeAll == TRUE} both keys are constant and both can be removed. */
+  @Test public void testAggregateConstantKeyRuleWithRemoveAll2() {
+    final HepProgram program = new HepProgramBuilder()
+            .addRuleInstance(AggregateProjectPullUpConstantsRule.INSTANCE_REMOVE_ALL)
+            .build();
+
+    final String sql = "select 'abc', count('def')\n"
+            + "from sales.emp\n"
+            + "group by ('abc', 'def')\n"
+            + "having count('def') > 3 or count('abc') > 5";
+    checkPlanning(new HepPlanner(program), sql);
+  }
+
+  @Test public void testReduceExpressionsNot() {
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .build();
+    checkPlanUnchanged(new HepPlanner(program),
+        "select * from (values (false),(true)) as q (col1) where not(col1)");
   }
 
   private Sql checkSubQuery(String sql) {
