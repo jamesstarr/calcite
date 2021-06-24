@@ -6869,11 +6869,15 @@ SqlIdentifier ReservedFunctionName() :
     |   <NTILE>
     |   <NULLIF>
     |   <OCTET_LENGTH>
-    |   <PERCENTILE_CONT>
-    |   <PERCENTILE_DISC>
     |   <PERCENT_RANK>
     |   <PERCENTILE_CONT>
     |   <PERCENTILE_DISC>
+<<<<<<< HEAD
+    |   <PERCENT_RANK>
+    |   <PERCENTILE_CONT>
+    |   <PERCENTILE_DISC>
+=======
+>>>>>>> 1677deb9e ([CALCITE-4644] Added validation for PERCENTILE functions)
     |   <POWER>
     |   <RANK>
     |   <REGR_SXX>

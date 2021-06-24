@@ -202,6 +202,20 @@ public abstract class SqlAggFunction extends SqlFunction implements Context {
   public boolean allowsFilter() {
     return true;
   }
+<<<<<<< HEAD
+=======
+
+  /** Returns whether this aggregate function is a PERCENTILE function.
+   * Such functions require a {@code WITHIN GROUP} clause that has precisely
+   * one sort key.
+   *
+   * <p>NOTE: This API is experimental and subject to change without notice. */
+  @Experimental
+  public boolean isPercentile() {
+    return false;
+  }
+}
+>>>>>>> 1677deb9e ([CALCITE-4644] Added validation for PERCENTILE functions)
 
   /** Returns whether this aggregate function is a PERCENTILE function.
    * Such functions require a {@code WITHIN GROUP} clause that has precisely
