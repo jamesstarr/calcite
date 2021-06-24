@@ -1924,15 +1924,10 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
    * The COLLECT operator. Multiset aggregator function.
    */
   public static final SqlAggFunction COLLECT =
-      new SqlAggFunction("COLLECT",
-          null,
-          SqlKind.COLLECT,
-          ReturnTypes.TO_MULTISET,
-          null,
-          OperandTypes.ANY,
-          SqlFunctionCategory.SYSTEM, false, false,
-          Optionality.OPTIONAL) {
-      };
+      SqlBasicAggFunction
+          .create(SqlKind.COLLECT, ReturnTypes.TO_MULTISET, OperandTypes.ANY)
+          .withFunctionType(SqlFunctionCategory.SYSTEM)
+          .withGroupOrder(Optionality.OPTIONAL);
 
   /**
    * The MEDIAN operator. Takes the median / PERCENTILE_CONT(.5) of a dataset.
@@ -1940,61 +1935,48 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
    * The return type is a double.
    */
   public static final SqlAggFunction MEDIAN =
-      new SqlAggFunction("MEDIAN",
-          null,
-          SqlKind.MEDIAN,
-          ReturnTypes.DOUBLE,
-          null,
-          OperandTypes.NUMERIC,
-          SqlFunctionCategory.SYSTEM, false, false,
-          Optionality.FORBIDDEN) {
-      };
+      SqlBasicAggFunction
+          .create(SqlKind.MEDIAN, ReturnTypes.DOUBLE,
+              OperandTypes.NUMERIC)
+          .withFunctionType(SqlFunctionCategory.SYSTEM);
 
   /**
-   * The PERCENTILE_CONT operator. The inverse distribution aggregator function.
-   * The argument must be numeric literal in range 0.0 - 1.0.
-   * The return type is a double.
+   * {@code PERCENTILE_CONT} inverse distribution aggregate function.
+   *
+   * <p>The argument must be a numeric literal in the range 0 to 1 inclusive
+   * (representing a percentage), and the return type is {@code DOUBLE}.
    */
   public static final SqlAggFunction PERCENTILE_CONT =
-      new SqlAggFunction("PERCENTILE_CONT",
-          null,
-          SqlKind.PERCENTILE_CONT,
-          ReturnTypes.DOUBLE,
-          null,
-          OperandTypes.POSITIVE_NUMERIC_LITERAL,
-          SqlFunctionCategory.SYSTEM, false, false,
-          Optionality.MANDATORY) {
-      };
+      SqlBasicAggFunction
+          .create(SqlKind.PERCENTILE_CONT, ReturnTypes.DOUBLE,
+              OperandTypes.UNIT_INTERVAL_NUMERIC_LITERAL)
+          .withFunctionType(SqlFunctionCategory.SYSTEM)
+          .withGroupOrder(Optionality.MANDATORY)
+          .withPercentile(true);
 
   /**
-   * The PERCENTILE_DISC operator. The inverse distribution aggregator function.
-   * The argument must be numeric literal in range 0.0 - 1.0.
-   * The return type is determined by the type of order by expression which
-   * cannot be determined by the function itself, so using double instead.
+   * {@code PERCENTILE_DISC} inverse distribution aggregate function.
+   *
+   * <p>The argument must be a numeric literal in the range 0 to 1 inclusive
+   * (representing a percentage), and the return type is {@code DOUBLE}.
+   * (The return type should determined by the type of the {@code ORDER BY}
+   * expression, but this cannot be determined by the function itself.)
    */
   public static final SqlAggFunction PERCENTILE_DISC =
-      new SqlAggFunction("PERCENTILE_DISC",
-          null,
-          SqlKind.PERCENTILE_DISC,
-          ReturnTypes.DOUBLE,
-          null,
-          OperandTypes.POSITIVE_NUMERIC_LITERAL,
-          SqlFunctionCategory.SYSTEM, false, false,
-          Optionality.MANDATORY) {
-      };
+      SqlBasicAggFunction
+          .create(SqlKind.PERCENTILE_DISC, ReturnTypes.DOUBLE,
+              OperandTypes.UNIT_INTERVAL_NUMERIC_LITERAL)
+          .withFunctionType(SqlFunctionCategory.SYSTEM)
+          .withGroupOrder(Optionality.MANDATORY)
+          .withPercentile(true);
 
   /**
    * The FUSION operator. Multiset aggregator function.
    */
-  public static final SqlFunction FUSION =
-      new SqlAggFunction("FUSION", null,
-          SqlKind.FUSION,
-          ReturnTypes.ARG0,
-          null,
-          OperandTypes.MULTISET,
-          SqlFunctionCategory.SYSTEM, false, false,
-          Optionality.FORBIDDEN) {
-      };
+  public static final SqlAggFunction FUSION =
+      SqlBasicAggFunction
+          .create(SqlKind.FUSION, ReturnTypes.ARG0, OperandTypes.MULTISET)
+          .withFunctionType(SqlFunctionCategory.SYSTEM);
 
   /**
    * The sequence next value function: <code>NEXT VALUE FOR sequence</code>

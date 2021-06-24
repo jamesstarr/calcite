@@ -157,7 +157,6 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.LOG10;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.LOWER;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MAP_VALUE_CONSTRUCTOR;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MAX;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MEDIAN;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MIN;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MINUS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.MINUS_DATE;
@@ -171,8 +170,6 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.NOT_SIMILAR_TO;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.NTILE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.OR;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.OVERLAY;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.PERCENTILE_CONT;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.PERCENTILE_DISC;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.PI;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.PLUS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.POSITION;
@@ -420,11 +417,8 @@ public class RexImpTable {
         constructorSupplier(MinMaxImplementor.class);
     aggMap.put(MIN, minMax);
     aggMap.put(MAX, minMax);
-    aggMap.put(MEDIAN, constructorSupplier(MedianImplementor.class));
     aggMap.put(SINGLE_VALUE, constructorSupplier(SingleValueImplementor.class));
     aggMap.put(COLLECT, constructorSupplier(CollectImplementor.class));
-    aggMap.put(PERCENTILE_CONT, constructorSupplier(PercentileContImplementor.class));
-    aggMap.put(PERCENTILE_DISC, constructorSupplier(PercentileDiscImplementor.class));
     final Supplier<GroupingImplementor> grouping =
         constructorSupplier(GroupingImplementor.class);
     aggMap.put(GROUPING, grouping);
@@ -1264,26 +1258,6 @@ public class RexImpTable {
               Expressions.call(add.accumulator().get(0),
                   BuiltInMethod.COLLECTION_ADD.method,
                   add.arguments().get(0))));
-    }
-  }
-
-  /** Implementor for the {@code MEDIAN} aggregate function. */
-  static class MedianImplementor extends StrictAggImplementor {
-    @Override protected void implementNotNullAdd(AggContext info, AggAddContext add) {
-    }
-  }
-
-  /** Implementor for the {@code PERCENTILE_CONT} aggregate function. */
-  static class PercentileContImplementor extends StrictAggImplementor {
-
-    @Override protected void implementNotNullAdd(AggContext info, AggAddContext add) {
-    }
-  }
-
-  /** Implementor for the {@code PERCENTILE_DISC} aggregate function. */
-  static class PercentileDiscImplementor extends StrictAggImplementor {
-
-    @Override protected void implementNotNullAdd(AggContext info, AggAddContext add) {
     }
   }
 

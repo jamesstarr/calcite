@@ -16,9 +16,11 @@
  */
 package org.apache.calcite.sql;
 
+import org.apache.calcite.linq4j.function.Experimental;
 import org.apache.calcite.plan.Context;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.sql.fun.SqlBasicAggFunction;
 import org.apache.calcite.sql.type.SqlOperandTypeChecker;
 import org.apache.calcite.sql.type.SqlOperandTypeInference;
 import org.apache.calcite.sql.type.SqlReturnTypeInference;
@@ -33,6 +35,8 @@ import javax.annotation.Nonnull;
 /**
  * Abstract base class for the definition of an aggregate function: an operator
  * which aggregates sets of values into a result.
+ *
+ * @see SqlBasicAggFunction
  */
 public abstract class SqlAggFunction extends SqlFunction implements Context {
   private final boolean requiresOrder;
@@ -181,6 +185,16 @@ public abstract class SqlAggFunction extends SqlFunction implements Context {
    * clause. */
   public boolean allowsFilter() {
     return true;
+  }
+
+  /** Returns whether this aggregate function is a PERCENTILE function.
+   * Such functions require a {@code WITHIN GROUP} clause that has precisely
+   * one sort key.
+   *
+   * <p>NOTE: This API is experimental and subject to change without notice. */
+  @Experimental
+  public boolean isPercentile() {
+    return false;
   }
 }
 

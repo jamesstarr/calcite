@@ -441,6 +441,9 @@ public interface CalciteResource {
   @BaseMessage("Type ''{0}'' is not supported")
   ExInst<SqlValidatorException> typeNotSupported(String a0);
 
+  @BaseMessage("Invalid type: ''{0}''. Only NUMERIC types are supported")
+  ExInst<SqlValidatorException> typeMustBeNumeric(String a0);
+
   @BaseMessage("DISTINCT/ALL not allowed with {0} function")
   ExInst<SqlValidatorException> functionQuantifierNotAllowed(String a0);
 
@@ -506,8 +509,8 @@ public interface CalciteResource {
   @BaseMessage("Argument to function ''{0}'' must be a positive integer literal")
   ExInst<SqlValidatorException> argumentMustBePositiveInteger(String a0);
 
-  @BaseMessage("Argument to function ''{0}'' must be a positive literal in range [{1,number,#}, {2,number,#}]")
-  ExInst<SqlValidatorException> argumentMustBePositiveLiteralInRange(String a0, int min, int max);
+  @BaseMessage("Argument to function ''{0}'' must be a numeric literal between {1,number,#} and {2,number,#}")
+  ExInst<SqlValidatorException> argumentMustBeNumericLiteralInRange(String a0, int min, int max);
 
   @BaseMessage("Validation Error: {0}")
   ExInst<CalciteException> validationError(String a0);
