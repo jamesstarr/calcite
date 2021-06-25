@@ -1609,11 +1609,7 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
-EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
-  EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
-    EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
-      EnumerableTableScan(table=[[scott, EMP]])
-    EnumerableValues(tuples=[[]])
+EnumerableValues(tuples=[[]])
 !plan
 
 # Test filter literal IN null correlated
@@ -1639,11 +1635,7 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
-EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
-  EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
-    EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
-      EnumerableTableScan(table=[[scott, EMP]])
-    EnumerableValues(tuples=[[]])
+EnumerableValues(tuples=[[]])
 !plan
 
 # Test filter null IN required correlated
@@ -1656,11 +1648,7 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
-EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
-  EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
-    EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
-      EnumerableTableScan(table=[[scott, EMP]])
-    EnumerableValues(tuples=[[]])
+EnumerableValues(tuples=[[]])
 !plan
 
 # Test filter null IN nullable correlated
@@ -1673,11 +1661,7 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
-EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
-  EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
-    EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
-      EnumerableTableScan(table=[[scott, EMP]])
-    EnumerableValues(tuples=[[]])
+EnumerableValues(tuples=[[]])
 !plan
 
 # Test filter literal IN required correlated
@@ -2121,13 +2105,13 @@ EnumerableCalc(expr#0..6=[{inputs}], expr#7=[>($t1, $t2)], expr#8=[IS TRUE($t7)]
 !ok
 
 # [CALCITE-4560] Wrong plan when decorrelating EXISTS subquery with COALESCE in the predicate
-# The employee KING has no manager (NULL) so before the fix the following query was missing 
-# this employee from the result set. 
+# The employee KING has no manager (NULL) so before the fix the following query was missing
+# this employee from the result set.
 select ename
 from "scott".emp as e1
-where exists 
+where exists
     (select 1 from "scott".emp as e2 where coalesce(e1.mgr,0)=coalesce(e2.mgr,0));
-# The plan before the fix was wrong but also inefficient since it required the generation of 
+# The plan before the fix was wrong but also inefficient since it required the generation of
 # a value generator (see RelDecorrelator code). The value generator is not present in the
 # following plan (two scans of EMP table instead of three).
 EnumerableCalc(expr#0..2=[{inputs}], ENAME=[$t1])
