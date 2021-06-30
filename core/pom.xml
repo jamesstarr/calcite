@@ -156,7 +156,6 @@ limitations under the License.
       <artifactId>sqlline</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -463,55 +462,30 @@ limitations under the License.
       <build>
         <plugins>
           <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <dependencies>
-              <dependency>
-                <groupId>org.freemarker</groupId>
-                <artifactId>freemarker</artifactId>
-                <version>2.3.29</version>
-              </dependency>
-              <dependency>
-                <groupId>net.sourceforge.fmpp</groupId>
-                <artifactId>fmpp</artifactId>
-                <version>0.9.16</version>
-              </dependency>
-            </dependencies>
+            <groupId>com.googlecode.fmpp-maven-plugin</groupId>
+            <artifactId>fmpp-maven-plugin</artifactId>
             <executions>
               <execution>
+                <configuration>
+                  <cfgFile>src/main/codegen/config.fmpp</cfgFile>
+                  <templateDirectory>src/main/codegen/templates</templateDirectory>
+                </configuration>
                 <id>generate-fmpp-sources</id>
                 <phase>validate</phase>
-                <configuration>
-
-                  <target>
-                    <taskdef name="fmpp" classname="fmpp.tools.AntTask"/>
-                    <fmpp
-                            configuration="${project.basedir}/src/main/codegen/config.fmpp"
-                            sourceRoot="${project.basedir}/src/main/codegen/templates"
-                            outputRoot="${project.build.directory}/generated-sources/fmpp"
-                            data="tdd(${project.basedir}/src/main/codegen/config.fmpp), default:tdd(${project.basedir}/src/main/codegen/default_config.fmpp)"
-                    />
-                  </target>
-                </configuration>
                 <goals>
-                  <goal>run</goal>
+                  <goal>generate</goal>
                 </goals>
               </execution>
               <execution>
                 <configuration>
-                  <target>
-                    <taskdef name="fmpp" classname="fmpp.tools.AntTask"/>
-                    <fmpp
-                            configuration="${project.basedir}/src/test/codegen/config.fmpp"
-                            sourceRoot="${project.basedir}/src/main/codegen/templates"
-                            outputRoot="${project.build.directory}/generated-test-sources/fmpp"
-                            data="tdd(${project.basedir}/src/test/codegen/config.fmpp), default:tdd(${project.basedir}/src/main/codegen/default_config.fmpp)"
-                    />
-                  </target>
+                  <cfgFile>src/test/codegen/config.fmpp</cfgFile>
+                  <templateDirectory>src/main/codegen/templates</templateDirectory>
+                  <outputDirectory>${project.build.directory}/generated-test-sources/fmpp</outputDirectory>
                 </configuration>
                 <id>generate-fmpp-test-sources</id>
                 <phase>validate</phase>
                 <goals>
-                  <goal>run</goal>
+                  <goal>generate</goal>
                 </goals>
               </execution>
             </executions>
