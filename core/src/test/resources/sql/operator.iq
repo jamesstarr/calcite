@@ -67,6 +67,7 @@ select * from "scott".emp where not sal > 1300 and not sal < 1200;
 !ok
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # MULTISET EXCEPT
 <<<<<<< HEAD
 # TODO reactive when multiset changes are cherry picked
@@ -313,6 +314,9 @@ order by 1,2;
 +----------+-------+----------+----------+----------+----------+----------+----------+----------+----------+
 (2 rows)
 =======
+=======
+# MULTISET EXCEPT
+>>>>>>> 999c7aa89 (Revert "Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)"")
 values multiset ['a', 'c', 'a'] multiset except multiset ['a'];
 +--------+
 | EXPR$0 |
@@ -408,10 +412,16 @@ values multiset ['a', 'c', 'a', 'a'] multiset intersect distinct multiset ['a', 
 | [a]    |
 +--------+
 (1 row)
+<<<<<<< HEAD
 >>>>>>> f6e656f5b ([CALCITE-2355] Implement multiset operations (Sergey Nuyanzin))
 
 !ok
 
 =======
 >>>>>>> 53857d63a (Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)")
+=======
+
+!ok
+
+>>>>>>> 999c7aa89 (Revert "Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)"")
 # End operator.iq

@@ -113,39 +113,39 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
       new SqlSetOperator("INTERSECT ALL", SqlKind.INTERSECT, 18, true);
 
   /**
-   * The "MULTISET UNION" operator.
+   * The {@code MULTISET UNION DISTINCT} operator.
    */
-  public static final SqlMultisetSetOperator MULTISET_UNION =
-      new SqlMultisetSetOperator("MULTISET UNION", 14, false);
+  public static final SqlMultisetSetOperator MULTISET_UNION_DISTINCT =
+      new SqlMultisetSetOperator("MULTISET UNION DISTINCT", 14, false);
 
   /**
-   * The "MULTISET UNION ALL" operator.
+   * The {@code MULTISET UNION [ALL]} operator.
    */
-  public static final SqlMultisetSetOperator MULTISET_UNION_ALL =
+  public static final SqlMultisetSetOperator MULTISET_UNION =
       new SqlMultisetSetOperator("MULTISET UNION ALL", 14, true);
 
   /**
-   * The "MULTISET EXCEPT" operator.
+   * The {@code MULTISET EXCEPT DISTINCT} operator.
    */
-  public static final SqlMultisetSetOperator MULTISET_EXCEPT =
-      new SqlMultisetSetOperator("MULTISET EXCEPT", 14, false);
+  public static final SqlMultisetSetOperator MULTISET_EXCEPT_DISTINCT =
+      new SqlMultisetSetOperator("MULTISET EXCEPT DISTINCT", 14, false);
 
   /**
-   * The "MULTISET EXCEPT ALL" operator.
+   * The {@code MULTISET EXCEPT [ALL]} operator.
    */
-  public static final SqlMultisetSetOperator MULTISET_EXCEPT_ALL =
+  public static final SqlMultisetSetOperator MULTISET_EXCEPT =
       new SqlMultisetSetOperator("MULTISET EXCEPT ALL", 14, true);
 
   /**
-   * The "MULTISET INTERSECT" operator.
+   * The {@code MULTISET INTERSECT DISTINCT} operator.
    */
-  public static final SqlMultisetSetOperator MULTISET_INTERSECT =
-      new SqlMultisetSetOperator("MULTISET INTERSECT", 18, false);
+  public static final SqlMultisetSetOperator MULTISET_INTERSECT_DISTINCT =
+      new SqlMultisetSetOperator("MULTISET INTERSECT DISTINCT", 18, false);
 
   /**
-   * The "MULTISET INTERSECT ALL" operator.
+   * The {@code MULTISET INTERSECT [ALL]} operator.
    */
-  public static final SqlMultisetSetOperator MULTISET_INTERSECT_ALL =
+  public static final SqlMultisetSetOperator MULTISET_INTERSECT =
       new SqlMultisetSetOperator("MULTISET INTERSECT ALL", 18, true);
 
   //-------------------------------------------------------------
@@ -601,6 +601,18 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           null,
           OperandTypes.MULTISET_MULTISET);
 
+  public static final SqlBinaryOperator NOT_SUBMULTISET_OF =
+
+      // TODO: check if precedence is correct
+      new SqlBinaryOperator(
+          "NOT SUBMULTISET OF",
+          SqlKind.OTHER,
+          30,
+          true,
+          ReturnTypes.BOOLEAN_NULLABLE,
+          null,
+          OperandTypes.MULTISET_MULTISET);
+
   //-------------------------------------------------------------
   //                   POSTFIX OPERATORS
   //-------------------------------------------------------------
@@ -712,7 +724,33 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           null,
           OperandTypes.MULTISET);
 
->>>>>>> 53857d63a (Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)")
+  public static final SqlPostfixOperator IS_NOT_A_SET =
+      new SqlPostfixOperator(
+          "IS NOT A SET",
+          SqlKind.OTHER,
+          28,
+          ReturnTypes.BOOLEAN,
+          null,
+          OperandTypes.MULTISET);
+
+  public static final SqlPostfixOperator IS_EMPTY =
+      new SqlPostfixOperator(
+          "IS EMPTY",
+          SqlKind.OTHER,
+          28,
+          ReturnTypes.BOOLEAN,
+          null,
+          OperandTypes.COLLECTION_OR_MAP);
+
+  public static final SqlPostfixOperator IS_NOT_EMPTY =
+      new SqlPostfixOperator(
+          "IS NOT EMPTY",
+          SqlKind.OTHER,
+          28,
+          ReturnTypes.BOOLEAN,
+          null,
+          OperandTypes.COLLECTION_OR_MAP);
+
   //-------------------------------------------------------------
   //                   PREFIX OPERATORS
   //-------------------------------------------------------------

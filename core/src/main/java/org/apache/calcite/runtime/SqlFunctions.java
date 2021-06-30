@@ -56,15 +56,20 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-=======
+>>>>>>> 999c7aa89 (Revert "Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)"")
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
->>>>>>> 53857d63a (Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)")
+<<<<<<< HEAD
+=======
+import java.util.Set;
+>>>>>>> 999c7aa89 (Revert "Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)"")
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
@@ -1299,7 +1304,7 @@ public class SqlFunctions {
     }
   }
 
-<<<<<<< HEAD
+>>>>>>> 999c7aa89 (Revert "Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)"")
   /** Support the MEMBER OF function. */
   public static boolean memberOf(Object object, Collection collection) {
     return collection.contains(object);
@@ -1309,9 +1314,11 @@ public class SqlFunctions {
   public static <E> Collection<E> multisetIntersectDistinct(Collection<E> c1,
       Collection<E> c2) {
 <<<<<<< HEAD
+<<<<<<< HEAD
     final Set<E> result = new HashSet<>(c1);
     result.retainAll(c2);
     return new ArrayList<>(result);
+=======
 =======
     final Set<E> result = new HashSet<E>(c1);
     result.retainAll(c2);
@@ -1400,7 +1407,10 @@ public class SqlFunctions {
     return resultCollection;
   }
 
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 999c7aa89 (Revert "Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)"")
   public static Function1<Object, Enumerable<ComparableList<Comparable>>> flatProduct(
       final int[] fieldCounts, final boolean withOrdinality,
       final FlatProductInputType[] inputTypes) {
