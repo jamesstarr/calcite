@@ -238,18 +238,9 @@ public abstract class QuidemTest {
         return CalciteAssert.that()
             .with(CalciteAssert.Config.REGULAR)
             .with(CalciteAssert.SchemaSpec.POST)
-<<<<<<< HEAD
-            .connect();
-      case "oraclefunc":
-        return CalciteAssert.that()
-            .with(CalciteConnectionProperty.FUN, "oracle")
-            .with(CalciteAssert.Config.REGULAR)
-            .connect();
-      case "mysqlfunc":
-        return CalciteAssert.that()
-            .with(CalciteConnectionProperty.FUN, "mysql")
-=======
 >>>>>>> 669a7299e ([CALCITE-2280] Babel SQL parser)
+=======
+            .withDefaultSchema("POST")
             .connect();
       case "catchall":
         return CalciteAssert.that()
@@ -260,6 +251,7 @@ public abstract class QuidemTest {
       case "orinoco":
         return CalciteAssert.that()
             .with(CalciteAssert.SchemaSpec.ORINOCO)
+            .withDefaultSchema("ORINOCO")
             .connect();
       case "blank":
         return CalciteAssert.that()
@@ -267,6 +259,7 @@ public abstract class QuidemTest {
                 "org.apache.calcite.sql.parser.parserextensiontesting"
                     + ".ExtensionSqlParserImpl#FACTORY")
             .with(CalciteAssert.SchemaSpec.BLANK)
+            .withDefaultSchema("BLANK")
             .connect();
       case "seq":
         final Connection connection = CalciteAssert.that()

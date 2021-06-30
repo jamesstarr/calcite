@@ -139,6 +139,7 @@ class JdbcFrontJdbcBackTest {
   @Test void testCase() {
     that()
         .with(CalciteAssert.Config.JDBC_FOODMART)
+        .withDefaultSchema("foodmart")
         .query("select\n"
             + "  case when \"sales_fact_1997\".\"promotion_id\" = 1 then 0\n"
             + "  else \"sales_fact_1997\".\"store_sales\" end as \"c0\"\n"

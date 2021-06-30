@@ -772,32 +772,35 @@ public class CalciteAssert {
   }
 
   public static SchemaPlus addSchema(SchemaPlus rootSchema, SchemaSpec schema) {
-    final SchemaPlus foodmart;
-    final SchemaPlus jdbcScott;
->>>>>>> 669a7299e ([CALCITE-2280] Babel SQL parser)
+    SchemaPlus foodmart;
+    SchemaPlus jdbcScott;
     final ConnectionSpec cs;
     final DataSource dataSource;
     switch (schema) {
     case REFLECTIVE_FOODMART:
-      return rootSchema.add(schema.schemaName,
+      return rootSchema.add("foodmart",
           new ReflectiveSchema(new JdbcTest.FoodmartSchema()));
     case JDBC_SCOTT:
       cs = DatabaseInstance.HSQLDB.scott;
       dataSource = JdbcSchema.dataSource(cs.url, cs.driver, cs.username,
           cs.password);
-      return rootSchema.add(schema.schemaName,
-          JdbcSchema.create(rootSchema, schema.schemaName, dataSource,
-              cs.catalog, cs.schema));
+      return rootSchema.add("JDBC_SCOTT",
+          JdbcSchema.create(rootSchema, "JDBC_SCOTT", dataSource, cs.catalog,
+              cs.schema));
     case JDBC_FOODMART:
       cs = DB.foodmart;
       dataSource =
           JdbcSchema.dataSource(cs.url, cs.driver, cs.username, cs.password);
-      return rootSchema.add(schema.schemaName,
-          JdbcSchema.create(rootSchema, schema.schemaName, dataSource,
-              cs.catalog, cs.schema));
+      return rootSchema.add("foodmart",
+          JdbcSchema.create(rootSchema, "foodmart", dataSource, cs.catalog,
+              cs.schema));
     case JDBC_FOODMART_WITH_LATTICE:
-      foodmart = addSchemaIfNotExists(rootSchema, SchemaSpec.JDBC_FOODMART);
-      foodmart.add(schema.schemaName,
+      foodmart = rootSchema.getSubSchema("foodmart");
+      if (foodmart == null) {
+        foodmart =
+            CalciteAssert.addSchema(rootSchema, SchemaSpec.JDBC_FOODMART);
+      }
+      foodmart.add("lattice",
           Lattice.create(foodmart.unwrap(CalciteSchema.class),
               "select 1 from \"foodmart\".\"sales_fact_1997\" as s\n"
                   + "join \"foodmart\".\"time_by_day\" as t using (\"time_id\")\n"
@@ -807,17 +810,24 @@ public class CalciteAssert {
               true));
       return foodmart;
     case SCOTT:
-      jdbcScott = addSchemaIfNotExists(rootSchema, SchemaSpec.JDBC_SCOTT);
-      return rootSchema.add(schema.schemaName, new CloneSchema(jdbcScott));
+      jdbcScott = rootSchema.getSubSchema("jdbc_scott");
+      if (jdbcScott == null) {
+        jdbcScott =
+            CalciteAssert.addSchema(rootSchema, SchemaSpec.JDBC_SCOTT);
+      }
+      return rootSchema.add("scott", new CloneSchema(jdbcScott));
     case CLONE_FOODMART:
-      foodmart = addSchemaIfNotExists(rootSchema, SchemaSpec.JDBC_FOODMART);
+      foodmart = rootSchema.getSubSchema("foodmart");
+      if (foodmart == null) {
+        foodmart =
+            CalciteAssert.addSchema(rootSchema, SchemaSpec.JDBC_FOODMART);
+      }
       return rootSchema.add("foodmart2", new CloneSchema(foodmart));
     case GEO:
       ModelHandler.addFunctions(rootSchema, null, ImmutableList.of(),
           GeoFunctions.class.getName(), "*", true);
-      final SchemaPlus s =
-          rootSchema.add(schema.schemaName, new AbstractSchema());
-      ModelHandler.addFunctions(s, "countries", ImmutableList.of(),
+      final SchemaPlus s = rootSchema.add("GEO", new AbstractSchema());
+      ModelHandler.addFunctions(s, "countries", ImmutableList.<String>of(),
           CountriesTableFunction.class.getName(), null, false);
       final String sql = "select * from table(\"countries\"(true))";
       final ViewTableMacro viewMacro = ViewTable.viewMacro(rootSchema, sql,
@@ -825,23 +835,21 @@ public class CalciteAssert {
       s.add("countries", viewMacro);
       return s;
     case HR:
-      return rootSchema.add(schema.schemaName,
+      return rootSchema.add("hr",
           new ReflectiveSchema(new JdbcTest.HrSchema()));
     case LINGUAL:
-      return rootSchema.add(schema.schemaName,
+      return rootSchema.add("SALES",
           new ReflectiveSchema(new JdbcTest.LingualSchema()));
     case BLANK:
-      return rootSchema.add(schema.schemaName, new AbstractSchema());
+      return rootSchema.add("BLANK", new AbstractSchema());
     case ORINOCO:
-      final SchemaPlus orinoco =
-          rootSchema.add(schema.schemaName, new AbstractSchema());
+      final SchemaPlus orinoco = rootSchema.add("ORINOCO", new AbstractSchema());
       orinoco.add("ORDERS",
           new StreamTest.OrdersHistoryTable(
               StreamTest.OrdersStreamTableFactory.getRowList()));
       return orinoco;
     case POST:
-      final SchemaPlus post =
-          rootSchema.add(schema.schemaName, new AbstractSchema());
+      final SchemaPlus post = rootSchema.add("POST", new AbstractSchema());
       post.add("EMP",
           ViewTable.viewMacro(post,
               "select * from (values\n"
@@ -981,15 +989,6 @@ public class CalciteAssert {
     }
   }
 
-  private static SchemaPlus addSchemaIfNotExists(SchemaPlus rootSchema,
-        SchemaSpec schemaSpec) {
-    final SchemaPlus schema = rootSchema.getSubSchema(schemaSpec.schemaName);
-    if (schema != null) {
-      return schema;
-    }
-    return addSchema(rootSchema, schemaSpec);
-  }
-
   /**
    * Asserts that two objects are equal. If they are not, an
    * {@link AssertionError} is thrown with the given message. If
@@ -1108,12 +1107,6 @@ public class CalciteAssert {
     public AssertThat withSchema(String name, Schema schema) {
       return new AssertThat(
           connectionFactory.with(new AddSchemaPostProcessor(name, schema)));
-    }
-
-    /** Sets the default schema of the connection. Schema name may be null. */
-    public AssertThat withDefaultSchema(String schema) {
-      return new AssertThat(
-          connectionFactory.with(new DefaultSchemaPostProcessor(schema)));
     }
 
     public AssertThat with(ConnectionPostProcessor postProcessor) {
@@ -1242,6 +1235,12 @@ public class CalciteAssert {
       }
     }
 
+    public AssertThat withDefaultSchema(String schema) {
+      return new AssertThat(
+          connectionFactory.with(
+              new AddSchemaPostProcessor(schema, null)));
+    }
+
     /** Use sparingly. Does not close the connection. */
     public Connection connect() throws SQLException {
       return connectionFactory.createConnection();
@@ -1304,8 +1303,8 @@ public class CalciteAssert {
     private final Schema schema;
 
     public AddSchemaPostProcessor(String name, Schema schema) {
-      this.name = Objects.requireNonNull(name);
-      this.schema = Objects.requireNonNull(schema);
+      this.name = name;
+      this.schema = schema;
     }
 
     public Connection apply(Connection connection) throws SQLException {
@@ -1314,21 +1313,6 @@ public class CalciteAssert {
         SchemaPlus rootSchema = con.getRootSchema();
         rootSchema.add(name, schema);
       }
-      connection.setSchema(name);
-      return connection;
-    }
-  }
-
-  /** Sets a default schema name. */
-  public static class DefaultSchemaPostProcessor
-      implements ConnectionPostProcessor {
-    private final String name;
-
-    public DefaultSchemaPostProcessor(String name) {
-      this.name = name;
-    }
-
-    public Connection apply(Connection connection) throws SQLException {
       connection.setSchema(name);
       return connection;
     }
@@ -1354,7 +1338,9 @@ public class CalciteAssert {
       default:
         addSchema(rootSchema, schemaSpec);
       }
-      con.setSchema(schemaSpec.schemaName);
+      if (schemaSpec == SchemaSpec.CLONE_FOODMART) {
+        con.setSchema("foodmart2");
+      }
       return connection;
     }
   }
@@ -2067,10 +2053,6 @@ public class CalciteAssert {
 
   /** Specification for common test schemas. */
   public enum SchemaSpec {
-    REFLECTIVE_FOODMART("foodmart"),
-<<<<<<< HEAD
-    FAKE_FOODMART("foodmart"),
-=======
     JDBC_FOODMART("foodmart"),
     CLONE_FOODMART("foodmart2"),
     JDBC_FOODMART_WITH_LATTICE("lattice"),
@@ -2090,6 +2072,19 @@ public class CalciteAssert {
     SchemaSpec(String schemaName) {
       this.schemaName = schemaName;
     }
+=======
+    REFLECTIVE_FOODMART,
+    JDBC_FOODMART,
+    CLONE_FOODMART,
+    JDBC_FOODMART_WITH_LATTICE,
+    GEO,
+    HR,
+    JDBC_SCOTT,
+    SCOTT,
+    BLANK,
+    LINGUAL,
+    POST,
+    ORINOCO
   }
 
   /** Converts a {@link ResultSet} to string. */
