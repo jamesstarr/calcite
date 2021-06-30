@@ -2635,5 +2635,4 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
       throw new AssertionError(comparisonKind);
     }
   }
-
 }

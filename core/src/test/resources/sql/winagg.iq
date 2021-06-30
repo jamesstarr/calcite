@@ -446,6 +446,7 @@ order by "deptno", ar, br limit 5;
 
 !ok
 
+<<<<<<< HEAD
 select a."empid", a."deptno", a."commission", a.r as ar, b.r as br
 from (
   select "empid", "deptno", "commission", first_value("empid") over w as r
@@ -546,4 +547,6 @@ EnumerableSort(sort0=[$0], dir0=[ASC])
 
 !ok
 
+=======
+>>>>>>> 391a8883e (Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)")
 # End winagg.iq

@@ -961,12 +961,15 @@ public enum SqlKind {
   /** The {@code NTILE} aggregate function. */
   NTILE,
 
+<<<<<<< HEAD
   /** The {@code NTH_VALUE} aggregate function. */
   NTH_VALUE,
 
   /** The {@code LISTAGG} aggregate function. */
   LISTAGG,
 
+=======
+>>>>>>> 391a8883e (Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)")
   /** The {@code COLLECT} aggregate function. */
   COLLECT,
 
