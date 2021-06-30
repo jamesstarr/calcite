@@ -894,18 +894,6 @@ class SqlFunctionsTest {
     }
   }
 
-  @Test public void testMultiset() {
-    final List<String> abacee = Arrays.asList("a", "b", "a", "c", "e", "e");
-    final List<String> adaa = Arrays.asList("a", "d", "a", "a");
-    final List<String> addc = Arrays.asList("a", "d", "c", "d", "c");
-    final List<String> z = Collections.emptyList();
-    assertThat(SqlFunctions.multisetExceptAll(abacee, addc),
-        is(Arrays.asList("b", "a", "e", "e")));
-    assertThat(SqlFunctions.multisetExceptAll(abacee, z), is(abacee));
-    assertThat(SqlFunctions.multisetExceptAll(z, z), is(z));
-    assertThat(SqlFunctions.multisetExceptAll(z, addc), is(z));
-<<<<<<< HEAD
-=======
 
     assertThat(SqlFunctions.multisetExceptDistinct(abacee, addc),
         is(Arrays.asList("b", "e")));
@@ -948,6 +936,7 @@ class SqlFunctionsTest {
     assertThat(SqlFunctions.multisetUnionDistinct(z, addc),
         is(Arrays.asList("a", "c", "d")));
   }
+=======
 }
 >>>>>>> f6e656f5b ([CALCITE-2355] Implement multiset operations (Sergey Nuyanzin))
 

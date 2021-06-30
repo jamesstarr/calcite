@@ -55,20 +55,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
->>>>>>> 02d8ed362 ([CALCITE-3951] Support different string comparison based on SqlCollation)
-=======
 import java.util.Collection;
+=======
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
->>>>>>> f6e656f5b ([CALCITE-2355] Implement multiset operations (Sergey Nuyanzin))
-import java.util.Set;
+>>>>>>> 53857d63a (Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)")
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
@@ -1303,6 +1299,7 @@ public class SqlFunctions {
     }
   }
 
+<<<<<<< HEAD
   /** Support the MEMBER OF function. */
   public static boolean memberOf(Object object, Collection collection) {
     return collection.contains(object);
@@ -1403,6 +1400,7 @@ public class SqlFunctions {
     return resultCollection;
   }
 
+=======
   public static Function1<Object, Enumerable<ComparableList<Comparable>>> flatProduct(
       final int[] fieldCounts, final boolean withOrdinality,
       final FlatProductInputType[] inputTypes) {

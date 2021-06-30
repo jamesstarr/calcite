@@ -3703,137 +3703,1803 @@ public abstract class SqlOperatorBaseTest {
   @Disabled //TODO reactivity why cherry pick multiset
   @Test void testIsASetOperator() {
     tester.setFor(SqlStdOperatorTable.IS_A_SET, VM_EXPAND);
-    tester.checkBoolean("multiset[1] is a set", Boolean.TRUE);
-    tester.checkBoolean("multiset[1, 1] is a set", Boolean.FALSE);
-    tester.checkBoolean("multiset[cast(null as boolean), cast(null as boolean)] is a set",
-        Boolean.FALSE);
-    tester.checkBoolean("multiset[cast(null as boolean)] is a set", Boolean.TRUE);
-    tester.checkBoolean("multiset['a'] is a set", Boolean.TRUE);
-    tester.checkBoolean("multiset['a', 'b'] is a set", Boolean.TRUE);
-    tester.checkBoolean("multiset['a', 'b', 'a'] is a set", Boolean.FALSE);
   }
 
-  @Test public void testMultisetUnionOperator() {
-    tester.setFor(
-        SqlStdOperatorTable.MULTISET_UNION_DISTINCT,
-        VM_FENNEL,
-        VM_JAVA);
-    tester.checkBoolean("multiset[1,2] submultiset of (multiset[2] multiset union multiset[1])",
-        Boolean.TRUE);
-    tester.checkScalar("cardinality(multiset[1, 2, 3, 4, 2] "
-            + "multiset union distinct multiset[1, 4, 5, 7, 8])",
-        "7",
-        "INTEGER NOT NULL");
-    tester.checkScalar("cardinality(multiset[1, 2, 3, 4, 2] "
-            + "multiset union distinct multiset[1, 4, 5, 7, 8])",
-        "7",
-        "INTEGER NOT NULL");
-    tester.checkBoolean("(multiset[1, 2, 3, 4, 2] "
-            + "multiset union distinct multiset[1, 4, 5, 7, 8]) "
-            + "submultiset of multiset[1, 2, 3, 4, 5, 7, 8]",
-        Boolean.TRUE);
-    tester.checkBoolean("(multiset[1, 2, 3, 4, 2] "
-            + "multiset union distinct multiset[1, 4, 5, 7, 8]) "
-            + "submultiset of multiset[1, 2, 3, 4, 5, 7, 8]",
-        Boolean.TRUE);
-    tester.checkScalar("cardinality(multiset['a', 'b', 'c'] "
-            + "multiset union distinct multiset['c', 'd', 'e'])",
-        "5",
-        "INTEGER NOT NULL");
-    tester.checkScalar("cardinality(multiset['a', 'b', 'c'] "
-            + "multiset union distinct multiset['c', 'd', 'e'])",
-        "5",
-        "INTEGER NOT NULL");
-    tester.checkBoolean("(multiset['a', 'b', 'c'] "
-            + "multiset union distinct multiset['c', 'd', 'e'])"
-            + " submultiset of multiset['a', 'b', 'c', 'd', 'e']",
-         Boolean.TRUE);
-    tester.checkBoolean("(multiset['a', 'b', 'c'] "
-            + "multiset union distinct multiset['c', 'd', 'e'])"
-            + " submultiset of multiset['a', 'b', 'c', 'd', 'e']",
-         Boolean.TRUE);
-    tester.checkScalar(
-        "multiset[cast(null as double)] multiset union multiset[cast(null as double)]",
-        "[null, null]",
-        "DOUBLE MULTISET NOT NULL");
-    tester.checkScalar(
-        "multiset[cast(null as boolean)] multiset union multiset[cast(null as boolean)]",
-        "[null, null]",
-        "BOOLEAN MULTISET NOT NULL");
+  @Test public void testExistsOperator() {
+    tester.setFor(SqlStdOperatorTable.EXISTS, VM_EXPAND);
   }
 
-  @Test public void testMultisetUnionAllOperator() {
-    tester.setFor(
-        SqlStdOperatorTable.MULTISET_UNION,
-        VM_FENNEL,
-        VM_JAVA);
-    tester.checkScalar("cardinality(multiset[1, 2, 3, 4, 2] "
-            + "multiset union all multiset[1, 4, 5, 7, 8])",
-        "10",
-        "INTEGER NOT NULL");
-    tester.checkBoolean("(multiset[1, 2, 3, 4, 2] "
-            + "multiset union all multiset[1, 4, 5, 7, 8]) "
-            + "submultiset of multiset[1, 2, 3, 4, 5, 7, 8]",
-        Boolean.FALSE);
-    tester.checkBoolean("(multiset[1, 2, 3, 4, 2] "
-            + "multiset union all multiset[1, 4, 5, 7, 8]) "
-            + "submultiset of multiset[1, 1, 2, 2, 3, 4, 4, 5, 7, 8]",
-        Boolean.TRUE);
-    tester.checkScalar("cardinality(multiset['a', 'b', 'c'] "
-            + "multiset union all multiset['c', 'd', 'e'])",
-        "6",
-        "INTEGER NOT NULL");
-    tester.checkBoolean("(multiset['a', 'b', 'c'] "
-            + "multiset union all multiset['c', 'd', 'e']) "
-            + "submultiset of multiset['a', 'b', 'c', 'd', 'e']",
-        Boolean.FALSE);
-    tester.checkBoolean("(multiset['a', 'b', 'c'] "
-            + "multiset union distinct multiset['c', 'd', 'e']) "
-            + "submultiset of multiset['a', 'b', 'c', 'd', 'e', 'c']",
-        Boolean.TRUE);
-    tester.checkScalar(
-        "multiset[cast(null as double)] multiset union all multiset[cast(null as double)]",
-        "[null, null]",
-        "DOUBLE MULTISET NOT NULL");
-    tester.checkScalar(
-        "multiset[cast(null as boolean)] multiset union all multiset[cast(null as boolean)]",
-        "[null, null]",
-        "BOOLEAN MULTISET NOT NULL");
+  @Test public void testNotOperator() {
+    tester.setFor(SqlStdOperatorTable.NOT);
+    tester.checkBoolean("not true", Boolean.FALSE);
+    tester.checkBoolean("not false", Boolean.TRUE);
+    tester.checkBoolean("not unknown", null);
+    tester.checkNull("not cast(null as boolean)");
   }
 
-  @Test public void testSubMultisetOfOperator() {
-    tester.setFor(
-        SqlStdOperatorTable.SUBMULTISET_OF,
-        VM_FENNEL,
-        VM_JAVA);
-    tester.checkBoolean("multiset[2] submultiset of multiset[1]", Boolean.FALSE);
-    tester.checkBoolean("multiset[1] submultiset of multiset[1]", Boolean.TRUE);
-    tester.checkBoolean("multiset[1, 2] submultiset of multiset[1]", Boolean.FALSE);
-    tester.checkBoolean("multiset[1] submultiset of multiset[1, 2]", Boolean.TRUE);
-    tester.checkBoolean("multiset[1, 2] submultiset of multiset[1, 2]", Boolean.TRUE);
-    tester.checkBoolean(
-        "multiset['a', 'b'] submultiset of multiset['c', 'd', 's', 'a']", Boolean.FALSE);
-    tester.checkBoolean(
-        "multiset['a', 'd'] submultiset of multiset['c', 's', 'a', 'w', 'd']", Boolean.TRUE);
-    tester.checkBoolean("multiset['q', 'a'] submultiset of multiset['a', 'q']", Boolean.TRUE);
+  @Test public void testPrefixMinusOperator() {
+    tester.setFor(SqlStdOperatorTable.UNARY_MINUS);
+    tester.checkFails(
+        "'a' + ^- 'b'^ + 'c'",
+        "(?s)Cannot apply '-' to arguments of type '-<CHAR\\(1\\)>'.*",
+        false);
+    tester.checkScalarExact("-1", "-1");
+    tester.checkScalarExact(
+        "-1.23",
+        "DECIMAL(3, 2) NOT NULL",
+        "-1.23");
+    tester.checkScalarApprox("-1.0e0", "DOUBLE NOT NULL", -1, 0);
+    tester.checkNull("-cast(null as integer)");
+    tester.checkNull("-cast(null as tinyint)");
   }
 
-  @Test public void testNotSubMultisetOfOperator() {
+  @Test public void testPrefixMinusOperatorIntervals() {
+    tester.checkScalar(
+        "-interval '-6:2:8' hour to second",
+        "+6:02:08.000000",
+        "INTERVAL HOUR TO SECOND NOT NULL");
+    tester.checkScalar(
+        "- -interval '-6:2:8' hour to second",
+        "-6:02:08.000000",
+        "INTERVAL HOUR TO SECOND NOT NULL");
+    tester.checkScalar(
+        "-interval '5' month",
+        "-5",
+        "INTERVAL MONTH NOT NULL");
+    tester.checkNull(
+        "-cast(null as interval day to minute)");
+  }
+
+  @Test public void testPrefixPlusOperator() {
+    tester.setFor(SqlStdOperatorTable.UNARY_PLUS, VM_EXPAND);
+    tester.checkScalarExact("+1", "1");
+    tester.checkScalarExact("+1.23", "DECIMAL(3, 2) NOT NULL", "1.23");
+    tester.checkScalarApprox("+1.0e0", "DOUBLE NOT NULL", 1, 0);
+    tester.checkNull("+cast(null as integer)");
+    tester.checkNull("+cast(null as tinyint)");
+  }
+
+  @Test public void testPrefixPlusOperatorIntervals() {
+    tester.checkScalar(
+        "+interval '-6:2:8' hour to second",
+        "-6:02:08.000000",
+        "INTERVAL HOUR TO SECOND NOT NULL");
+    tester.checkScalar(
+        "++interval '-6:2:8' hour to second",
+        "-6:02:08.000000",
+        "INTERVAL HOUR TO SECOND NOT NULL");
+    if (Bug.FRG254_FIXED) {
+      tester.checkScalar(
+          "+interval '6:2:8.234' hour to second",
+          "+06:02:08.234",
+          "INTERVAL HOUR TO SECOND NOT NULL");
+    }
+    tester.checkScalar(
+        "+interval '5' month",
+        "+5",
+        "INTERVAL MONTH NOT NULL");
+    tester.checkNull(
+        "+cast(null as interval day to minute)");
+  }
+
+  @Test public void testExplicitTableOperator() {
     tester.setFor(
-        SqlStdOperatorTable.NOT_SUBMULTISET_OF,
+        SqlStdOperatorTable.EXPLICIT_TABLE,
+        VM_EXPAND);
+  }
+
+  @Test public void testValuesOperator() {
+    tester.setFor(SqlStdOperatorTable.VALUES, VM_EXPAND);
+    tester.check(
+        "select 'abc' from (values(true))",
+        new SqlTests.StringTypeChecker("CHAR(3) NOT NULL"),
+        "abc",
+        0);
+  }
+
+  @Test public void testNotLikeOperator() {
+    tester.setFor(SqlStdOperatorTable.NOT_LIKE, VM_EXPAND);
+    tester.checkBoolean("'abc' not like '_b_'", Boolean.FALSE);
+    tester.checkBoolean("'ab\ncd' not like 'ab%'", Boolean.FALSE);
+    tester.checkBoolean("'123\n\n45\n' not like '%'", Boolean.FALSE);
+    tester.checkBoolean("'ab\ncd\nef' not like '%cd%'", Boolean.FALSE);
+    tester.checkBoolean("'ab\ncd\nef' not like '%cde%'", Boolean.TRUE);
+  }
+
+  @Test public void testLikeEscape() {
+    tester.setFor(SqlStdOperatorTable.LIKE);
+    tester.checkBoolean("'a_c' like 'a#_c' escape '#'", Boolean.TRUE);
+    tester.checkBoolean("'axc' like 'a#_c' escape '#'", Boolean.FALSE);
+    tester.checkBoolean("'a_c' like 'a\\_c' escape '\\'", Boolean.TRUE);
+    tester.checkBoolean("'axc' like 'a\\_c' escape '\\'", Boolean.FALSE);
+    tester.checkBoolean("'a%c' like 'a\\%c' escape '\\'", Boolean.TRUE);
+    tester.checkBoolean("'a%cde' like 'a\\%c_e' escape '\\'", Boolean.TRUE);
+    tester.checkBoolean("'abbc' like 'a%c' escape '\\'", Boolean.TRUE);
+    tester.checkBoolean("'abbc' like 'a\\%c' escape '\\'", Boolean.FALSE);
+  }
+
+  @Ignore("[CALCITE-525] Exception-handling in built-in functions")
+  @Test public void testLikeEscape2() {
+    tester.checkBoolean("'x' not like 'x' escape 'x'", Boolean.TRUE);
+    tester.checkBoolean("'xyz' not like 'xyz' escape 'xyz'", Boolean.TRUE);
+  }
+
+  @Test public void testLikeOperator() {
+    tester.setFor(SqlStdOperatorTable.LIKE);
+    tester.checkBoolean("''  like ''", Boolean.TRUE);
+    tester.checkBoolean("'a' like 'a'", Boolean.TRUE);
+    tester.checkBoolean("'a' like 'b'", Boolean.FALSE);
+    tester.checkBoolean("'a' like 'A'", Boolean.FALSE);
+    tester.checkBoolean("'a' like 'a_'", Boolean.FALSE);
+    tester.checkBoolean("'a' like '_a'", Boolean.FALSE);
+    tester.checkBoolean("'a' like '%a'", Boolean.TRUE);
+    tester.checkBoolean("'a' like '%a%'", Boolean.TRUE);
+    tester.checkBoolean("'a' like 'a%'", Boolean.TRUE);
+    tester.checkBoolean("'ab'   like 'a_'", Boolean.TRUE);
+    tester.checkBoolean("'abc'  like 'a_'", Boolean.FALSE);
+    tester.checkBoolean("'abcd' like 'a%'", Boolean.TRUE);
+    tester.checkBoolean("'ab'   like '_b'", Boolean.TRUE);
+    tester.checkBoolean("'abcd' like '_d'", Boolean.FALSE);
+    tester.checkBoolean("'abcd' like '%d'", Boolean.TRUE);
+    tester.checkBoolean("'ab\ncd' like 'ab%'", Boolean.TRUE);
+    tester.checkBoolean("'abc\ncd' like 'ab%'", Boolean.TRUE);
+    tester.checkBoolean("'123\n\n45\n' like '%'", Boolean.TRUE);
+    tester.checkBoolean("'ab\ncd\nef' like '%cd%'", Boolean.TRUE);
+    tester.checkBoolean("'ab\ncd\nef' like '%cde%'", Boolean.FALSE);
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-1898">[CALCITE-1898]
+   * LIKE must match '.' (period) literally</a>. */
+  @Test public void testLikeDot() {
+    tester.checkBoolean("'abc' like 'a.c'", Boolean.FALSE);
+    tester.checkBoolean("'abcde' like '%c.e'", Boolean.FALSE);
+    tester.checkBoolean("'abc.e' like '%c.e'", Boolean.TRUE);
+  }
+
+  @Test public void testNotSimilarToOperator() {
+    tester.setFor(SqlStdOperatorTable.NOT_SIMILAR_TO, VM_EXPAND);
+    tester.checkBoolean("'ab' not similar to 'a_'", false);
+    tester.checkBoolean("'aabc' not similar to 'ab*c+d'", true);
+    tester.checkBoolean("'ab' not similar to 'a' || '_'", false);
+    tester.checkBoolean("'ab' not similar to 'ba_'", true);
+    tester.checkBoolean(
+        "cast(null as varchar(2)) not similar to 'a_'",
+        null);
+    tester.checkBoolean(
+        "cast(null as varchar(3)) not similar to cast(null as char(2))",
+        null);
+  }
+
+  @Test public void testSimilarToOperator() {
+    tester.setFor(SqlStdOperatorTable.SIMILAR_TO);
+
+    // like LIKE
+    tester.checkBoolean("''  similar to ''", Boolean.TRUE);
+    tester.checkBoolean("'a' similar to 'a'", Boolean.TRUE);
+    tester.checkBoolean("'a' similar to 'b'", Boolean.FALSE);
+    tester.checkBoolean("'a' similar to 'A'", Boolean.FALSE);
+    tester.checkBoolean("'a' similar to 'a_'", Boolean.FALSE);
+    tester.checkBoolean("'a' similar to '_a'", Boolean.FALSE);
+    tester.checkBoolean("'a' similar to '%a'", Boolean.TRUE);
+    tester.checkBoolean("'a' similar to '%a%'", Boolean.TRUE);
+    tester.checkBoolean("'a' similar to 'a%'", Boolean.TRUE);
+    tester.checkBoolean("'ab'   similar to 'a_'", Boolean.TRUE);
+    tester.checkBoolean("'abc'  similar to 'a_'", Boolean.FALSE);
+    tester.checkBoolean("'abcd' similar to 'a%'", Boolean.TRUE);
+    tester.checkBoolean("'ab'   similar to '_b'", Boolean.TRUE);
+    tester.checkBoolean("'abcd' similar to '_d'", Boolean.FALSE);
+    tester.checkBoolean("'abcd' similar to '%d'", Boolean.TRUE);
+    tester.checkBoolean("'ab\ncd' similar to 'ab%'", Boolean.TRUE);
+    tester.checkBoolean("'abc\ncd' similar to 'ab%'", Boolean.TRUE);
+    tester.checkBoolean("'123\n\n45\n' similar to '%'", Boolean.TRUE);
+    tester.checkBoolean("'ab\ncd\nef' similar to '%cd%'", Boolean.TRUE);
+    tester.checkBoolean("'ab\ncd\nef' similar to '%cde%'", Boolean.FALSE);
+
+    // simple regular expressions
+    // ab*c+d matches acd, abcd, acccd, abcccd but not abd, aabc
+    tester.checkBoolean("'acd'    similar to 'ab*c+d'", Boolean.TRUE);
+    tester.checkBoolean("'abcd'   similar to 'ab*c+d'", Boolean.TRUE);
+    tester.checkBoolean("'acccd'  similar to 'ab*c+d'", Boolean.TRUE);
+    tester.checkBoolean("'abcccd' similar to 'ab*c+d'", Boolean.TRUE);
+    tester.checkBoolean("'abd'    similar to 'ab*c+d'", Boolean.FALSE);
+    tester.checkBoolean("'aabc'   similar to 'ab*c+d'", Boolean.FALSE);
+
+    // compound regular expressions
+    // x(ab|c)*y matches xy, xccy, xababcy but not xbcy
+    tester.checkBoolean(
+        "'xy'      similar to 'x(ab|c)*y'",
+        Boolean.TRUE);
+    tester.checkBoolean(
+        "'xccy'    similar to 'x(ab|c)*y'",
+        Boolean.TRUE);
+    tester.checkBoolean(
+        "'xababcy' similar to 'x(ab|c)*y'",
+        Boolean.TRUE);
+    tester.checkBoolean(
+        "'xbcy'    similar to 'x(ab|c)*y'",
+        Boolean.FALSE);
+
+    // x(ab|c)+y matches xccy, xababcy but not xy, xbcy
+    tester.checkBoolean(
+        "'xy'      similar to 'x(ab|c)+y'",
+        Boolean.FALSE);
+    tester.checkBoolean(
+        "'xccy'    similar to 'x(ab|c)+y'",
+        Boolean.TRUE);
+    tester.checkBoolean(
+        "'xababcy' similar to 'x(ab|c)+y'",
+        Boolean.TRUE);
+    tester.checkBoolean(
+        "'xbcy'    similar to 'x(ab|c)+y'",
+        Boolean.FALSE);
+
+    tester.checkBoolean("'ab' similar to 'a%' ", Boolean.TRUE);
+    tester.checkBoolean("'a' similar to 'a%' ", Boolean.TRUE);
+    tester.checkBoolean("'abcd' similar to 'a_' ", Boolean.FALSE);
+    tester.checkBoolean("'abcd' similar to 'a%' ", Boolean.TRUE);
+    tester.checkBoolean("'1a' similar to '_a' ", Boolean.TRUE);
+    tester.checkBoolean("'123aXYZ' similar to '%a%'", Boolean.TRUE);
+
+    tester.checkBoolean(
+        "'123aXYZ' similar to '_%_a%_' ",
+        Boolean.TRUE);
+
+    tester.checkBoolean("'xy' similar to '(xy)' ", Boolean.TRUE);
+
+    tester.checkBoolean(
+        "'abd' similar to '[ab][bcde]d' ",
+        Boolean.TRUE);
+
+    tester.checkBoolean(
+        "'bdd' similar to '[ab][bcde]d' ",
+        Boolean.TRUE);
+
+    tester.checkBoolean("'abd' similar to '[ab]d' ", Boolean.FALSE);
+    tester.checkBoolean("'cd' similar to '[a-e]d' ", Boolean.TRUE);
+    tester.checkBoolean("'amy' similar to 'amy|fred' ", Boolean.TRUE);
+    tester.checkBoolean("'fred' similar to 'amy|fred' ", Boolean.TRUE);
+
+    tester.checkBoolean(
+        "'mike' similar to 'amy|fred' ",
+        Boolean.FALSE);
+
+    tester.checkBoolean("'acd' similar to 'ab*c+d' ", Boolean.TRUE);
+    tester.checkBoolean("'accccd' similar to 'ab*c+d' ", Boolean.TRUE);
+    tester.checkBoolean("'abd' similar to 'ab*c+d' ", Boolean.FALSE);
+    tester.checkBoolean("'aabc' similar to 'ab*c+d' ", Boolean.FALSE);
+    tester.checkBoolean("'abb' similar to 'a(b{3})' ", Boolean.FALSE);
+    tester.checkBoolean("'abbb' similar to 'a(b{3})' ", Boolean.TRUE);
+
+    tester.checkBoolean(
+        "'abbbbb' similar to 'a(b{3})' ",
+        Boolean.FALSE);
+
+    tester.checkBoolean(
+        "'abbbbb' similar to 'ab{3,6}' ",
+        Boolean.TRUE);
+
+    tester.checkBoolean(
+        "'abbbbbbbb' similar to 'ab{3,6}' ",
+        Boolean.FALSE);
+    tester.checkBoolean("'' similar to 'ab?' ", Boolean.FALSE);
+    tester.checkBoolean("'a' similar to 'ab?' ", Boolean.TRUE);
+    tester.checkBoolean("'a' similar to 'a(b?)' ", Boolean.TRUE);
+    tester.checkBoolean("'ab' similar to 'ab?' ", Boolean.TRUE);
+    tester.checkBoolean("'ab' similar to 'a(b?)' ", Boolean.TRUE);
+    tester.checkBoolean("'abb' similar to 'ab?' ", Boolean.FALSE);
+
+    tester.checkBoolean(
+        "'ab' similar to 'a\\_' ESCAPE '\\' ",
+        Boolean.FALSE);
+
+    tester.checkBoolean(
+        "'ab' similar to 'a\\%' ESCAPE '\\' ",
+        Boolean.FALSE);
+
+    tester.checkBoolean(
+        "'a_' similar to 'a\\_' ESCAPE '\\' ",
+        Boolean.TRUE);
+
+    tester.checkBoolean(
+        "'a%' similar to 'a\\%' ESCAPE '\\' ",
+        Boolean.TRUE);
+
+    tester.checkBoolean(
+        "'a(b{3})' similar to 'a(b{3})' ",
+        Boolean.FALSE);
+
+    tester.checkBoolean(
+        "'a(b{3})' similar to 'a\\(b\\{3\\}\\)' ESCAPE '\\' ",
+        Boolean.TRUE);
+
+    tester.checkBoolean("'yd' similar to '[a-ey]d'", Boolean.TRUE);
+    tester.checkBoolean("'yd' similar to '[^a-ey]d'", Boolean.FALSE);
+    tester.checkBoolean("'yd' similar to '[^a-ex-z]d'", Boolean.FALSE);
+    tester.checkBoolean("'yd' similar to '[a-ex-z]d'", Boolean.TRUE);
+    tester.checkBoolean("'yd' similar to '[x-za-e]d'", Boolean.TRUE);
+    tester.checkBoolean("'yd' similar to '[^a-ey]?d'", Boolean.FALSE);
+    tester.checkBoolean("'yyyd' similar to '[a-ey]*d'", Boolean.TRUE);
+
+    // range must be specified in []
+    tester.checkBoolean("'yd' similar to 'x-zd'", Boolean.FALSE);
+    tester.checkBoolean("'y' similar to 'x-z'", Boolean.FALSE);
+
+    tester.checkBoolean("'cd' similar to '([a-e])d'", Boolean.TRUE);
+    tester.checkBoolean("'xy' similar to 'x*?y'", Boolean.TRUE);
+    tester.checkBoolean("'y' similar to 'x*?y'", Boolean.TRUE);
+    tester.checkBoolean("'y' similar to '(x?)*y'", Boolean.TRUE);
+    tester.checkBoolean("'y' similar to 'x+?y'", Boolean.FALSE);
+
+    tester.checkBoolean("'y' similar to 'x?+y'", Boolean.TRUE);
+    tester.checkBoolean("'y' similar to 'x*+y'", Boolean.TRUE);
+
+    // dot is a wildcard for SIMILAR TO but not LIKE
+    tester.checkBoolean("'abc' similar to 'a.c'", Boolean.TRUE);
+    tester.checkBoolean("'a.c' similar to 'a.c'", Boolean.TRUE);
+    tester.checkBoolean("'abcd' similar to 'a.*d'", Boolean.TRUE);
+    tester.checkBoolean("'abc' like 'a.c'", Boolean.FALSE);
+    tester.checkBoolean("'a.c' like 'a.c'", Boolean.TRUE);
+    tester.checkBoolean("'abcd' like 'a.*d'", Boolean.FALSE);
+
+    // The following two tests throws exception(They probably should).
+    // "Dangling meta character '*' near index 2"
+
+    if (enable) {
+      tester.checkBoolean("'y' similar to 'x+*y'", Boolean.TRUE);
+      tester.checkBoolean("'y' similar to 'x?*y'", Boolean.TRUE);
+    }
+
+    // some negative tests
+    tester.checkFails(
+        "'yd' similar to '[x-ze-a]d'",
+        "Illegal character range near index 6\n"
+            + "\\[x-ze-a\\]d\n"
+            + "      \\^",
+        true);   // illegal range
+
+    tester.checkFails(
+        "'yd3223' similar to '[:LOWER:]{2}[:DIGIT:]{,5}'",
+        "Illegal repetition near index 20\n"
+            + "\\[\\:LOWER\\:\\]\\{2\\}\\[\\:DIGIT\\:\\]\\{,5\\}\n"
+            + "                    \\^",
+        true);
+
+    tester.checkFails(
+        "'cd' similar to '[(a-e)]d' ",
+        "Invalid regular expression: \\[\\(a-e\\)\\]d at 1",
+        true);
+
+    tester.checkFails(
+        "'yd' similar to '[(a-e)]d' ",
+        "Invalid regular expression: \\[\\(a-e\\)\\]d at 1",
+        true);
+
+    // all the following tests wrong results due to missing functionality
+    // or defect (FRG-375, 377).
+
+    if (Bug.FRG375_FIXED) {
+      tester.checkBoolean(
+          "'cd' similar to '[a-e^c]d' ", Boolean.FALSE); // FRG-375
+    }
+
+    // following tests use regular character set identifiers.
+    // Not implemented yet. FRG-377.
+    if (Bug.FRG377_FIXED) {
+      tester.checkBoolean(
+          "'y' similar to '[:ALPHA:]*'",
+          Boolean.TRUE);
+
+      tester.checkBoolean(
+          "'yd32' similar to '[:LOWER:]{2}[:DIGIT:]*'",
+          Boolean.TRUE);
+
+      tester.checkBoolean(
+          "'yd32' similar to '[:ALNUM:]*'",
+          Boolean.TRUE);
+
+      tester.checkBoolean(
+          "'yd32' similar to '[:ALNUM:]*[:DIGIT:]?'",
+          Boolean.TRUE);
+
+      tester.checkBoolean(
+          "'yd32' similar to '[:ALNUM:]?[:DIGIT:]*'",
+          Boolean.FALSE);
+
+      tester.checkBoolean(
+          "'yd3223' similar to '([:LOWER:]{2})[:DIGIT:]{2,5}'",
+          Boolean.TRUE);
+
+      tester.checkBoolean(
+          "'yd3223' similar to '[:LOWER:]{2}[:DIGIT:]{2,}'",
+          Boolean.TRUE);
+
+      tester.checkBoolean(
+          "'yd3223' similar to '[:LOWER:]{2}||[:DIGIT:]{4}'",
+          Boolean.TRUE);
+
+      tester.checkBoolean(
+          "'yd3223' similar to '[:LOWER:]{2}[:DIGIT:]{3}'",
+          Boolean.FALSE);
+
+      tester.checkBoolean(
+          "'yd  3223' similar to '[:UPPER:]{2}  [:DIGIT:]{3}'",
+          Boolean.FALSE);
+
+      tester.checkBoolean(
+          "'YD  3223' similar to '[:UPPER:]{2}  [:DIGIT:]{3}'",
+          Boolean.FALSE);
+
+      tester.checkBoolean(
+          "'YD  3223' similar to "
+              + "'[:UPPER:]{2}||[:WHITESPACE:]*[:DIGIT:]{4}'",
+          Boolean.TRUE);
+
+      tester.checkBoolean(
+          "'YD\t3223' similar to '[:UPPER:]{2}[:SPACE:]*[:DIGIT:]{4}'",
+          Boolean.FALSE);
+
+      tester.checkBoolean(
+          "'YD\t3223' similar to "
+              + "'[:UPPER:]{2}[:WHITESPACE:]*[:DIGIT:]{4}'",
+          Boolean.TRUE);
+
+      tester.checkBoolean(
+          "'YD\t\t3223' similar to "
+              + "'([:UPPER:]{2}[:WHITESPACE:]+)||[:DIGIT:]{4}'",
+          Boolean.TRUE);
+    }
+  }
+
+  @Test public void testEscapeOperator() {
+    tester.setFor(SqlStdOperatorTable.ESCAPE, VM_EXPAND);
+  }
+
+  @Test public void testConvertFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.CONVERT,
         VM_FENNEL,
         VM_JAVA);
-    tester.checkBoolean("multiset[2] not submultiset of multiset[1]", Boolean.TRUE);
-    tester.checkBoolean("multiset[1] not submultiset of multiset[1]", Boolean.FALSE);
-    tester.checkBoolean("multiset[1, 2] not submultiset of multiset[1]", Boolean.TRUE);
-    tester.checkBoolean("multiset[1] not submultiset of multiset[1, 2]", Boolean.FALSE);
-    tester.checkBoolean("multiset[1, 2] not submultiset of multiset[1, 2]", Boolean.FALSE);
-    tester.checkBoolean(
-        "multiset['a', 'b'] not submultiset of multiset['c', 'd', 's', 'a']", Boolean.TRUE);
-    tester.checkBoolean(
-        "multiset['a', 'd'] not submultiset of multiset['c', 's', 'a', 'w', 'd']",
-        Boolean.FALSE);
-    tester.checkBoolean("multiset['q', 'a'] not submultiset of multiset['a', 'q']", Boolean.FALSE);
+  }
+
+  @Test public void testTranslateFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.TRANSLATE,
+        VM_FENNEL,
+        VM_JAVA);
+  }
+
+  @Test public void testTranslate3Func() {
+    final SqlTester tester1 = oracleTester();
+    tester1.setFor(OracleSqlOperatorTable.TRANSLATE3);
+    tester1.checkString(
+        "translate('aabbcc', 'ab', '+-')",
+        "++--cc",
+        "VARCHAR(6) NOT NULL");
+    tester1.checkString(
+        "translate('aabbcc', 'ab', 'ba')",
+        "bbaacc",
+        "VARCHAR(6) NOT NULL");
+    tester1.checkString(
+        "translate('aabbcc', 'ab', '')",
+        "cc",
+        "VARCHAR(6) NOT NULL");
+    tester1.checkString(
+        "translate('aabbcc', '', '+-')",
+        "aabbcc",
+        "VARCHAR(6) NOT NULL");
+    tester1.checkString(
+        "translate(cast('aabbcc' as varchar(10)), 'ab', '+-')",
+        "++--cc",
+        "VARCHAR(10) NOT NULL");
+    tester1.checkNull(
+        "translate(cast(null as varchar(7)), 'ab', '+-')");
+    tester1.checkNull(
+        "translate('aabbcc', cast(null as varchar(2)), '+-')");
+    tester1.checkNull(
+        "translate('aabbcc', 'ab', cast(null as varchar(2)))");
+  }
+
+  @Test public void testOverlayFunc() {
+    tester.setFor(SqlStdOperatorTable.OVERLAY);
+    tester.checkString(
+        "overlay('ABCdef' placing 'abc' from 1)",
+        "abcdef",
+        "VARCHAR(9) NOT NULL");
+    tester.checkString(
+        "overlay('ABCdef' placing 'abc' from 1 for 2)",
+        "abcCdef",
+        "VARCHAR(9) NOT NULL");
+    if (enable) {
+      tester.checkString(
+          "overlay(cast('ABCdef' as varchar(10)) placing "
+              + "cast('abc' as char(5)) from 1 for 2)",
+          "abc  Cdef",
+          "VARCHAR(15) NOT NULL");
+    }
+    if (enable) {
+      tester.checkString(
+          "overlay(cast('ABCdef' as char(10)) placing "
+              + "cast('abc' as char(5)) from 1 for 2)",
+          "abc  Cdef    ",
+          "VARCHAR(15) NOT NULL");
+    }
+    tester.checkNull(
+        "overlay('ABCdef' placing 'abc' from 1 for cast(null as integer))");
+    tester.checkNull(
+        "overlay(cast(null as varchar(1)) placing 'abc' from 1)");
+
+    tester.checkString(
+        "overlay(x'ABCdef' placing x'abcd' from 1)",
+        "abcdef",
+        "VARBINARY(5) NOT NULL");
+    tester.checkString(
+        "overlay(x'ABCDEF1234' placing x'2345' from 1 for 2)",
+        "2345ef1234",
+        "VARBINARY(7) NOT NULL");
+    if (enable) {
+      tester.checkString(
+          "overlay(cast(x'ABCdef' as varbinary(5)) placing "
+              + "cast(x'abcd' as binary(3)) from 1 for 2)",
+          "abc  Cdef",
+          "VARBINARY(8) NOT NULL");
+    }
+    if (enable) {
+      tester.checkString(
+          "overlay(cast(x'ABCdef' as binary(5)) placing "
+              + "cast(x'abcd' as binary(3)) from 1 for 2)",
+          "abc  Cdef    ",
+          "VARBINARY(8) NOT NULL");
+    }
+    tester.checkNull(
+        "overlay(x'ABCdef' placing x'abcd' from 1 for cast(null as integer))");
+    tester.checkNull(
+        "overlay(cast(null as varbinary(1)) placing x'abcd' from 1)");
+
+    tester.checkNull(
+        "overlay(x'abcd' placing x'abcd' from cast(null as integer))");
+  }
+
+  @Test public void testPositionFunc() {
+    tester.setFor(SqlStdOperatorTable.POSITION);
+    tester.checkScalarExact("position('b' in 'abc')", "2");
+    tester.checkScalarExact("position('' in 'abc')", "1");
+    tester.checkScalarExact("position('b' in 'abcabc' FROM 3)", "5");
+    tester.checkScalarExact("position('b' in 'abcabc' FROM 5)", "5");
+    tester.checkScalarExact("position('b' in 'abcabc' FROM 6)", "0");
+    tester.checkScalarExact("position('b' in 'abcabc' FROM -5)", "0");
+    tester.checkScalarExact("position('' in 'abc' FROM 3)", "3");
+    tester.checkScalarExact("position('' in 'abc' FROM 10)", "0");
+
+    tester.checkScalarExact("position(x'bb' in x'aabbcc')", "2");
+    tester.checkScalarExact("position(x'' in x'aabbcc')", "1");
+    tester.checkScalarExact("position(x'bb' in x'aabbccaabbcc' FROM 3)", "5");
+    tester.checkScalarExact("position(x'bb' in x'aabbccaabbcc' FROM 5)", "5");
+    tester.checkScalarExact("position(x'bb' in x'aabbccaabbcc' FROM 6)", "0");
+    tester.checkScalarExact("position(x'bb' in x'aabbccaabbcc' FROM -5)", "0");
+    tester.checkScalarExact("position(x'cc' in x'aabbccdd' FROM 2)", "3");
+    tester.checkScalarExact("position(x'' in x'aabbcc' FROM 3)", "3");
+    tester.checkScalarExact("position(x'' in x'aabbcc' FROM 10)", "0");
+
+    // FRG-211
+    tester.checkScalarExact("position('tra' in 'fdgjklewrtra')", "10");
+
+    tester.checkNull("position(cast(null as varchar(1)) in '0010')");
+    tester.checkNull("position('a' in cast(null as varchar(1)))");
+
+    tester.checkScalar(
+        "position(cast('a' as char) in cast('bca' as varchar))",
+        3,
+        "INTEGER NOT NULL");
+  }
+
+  @Test public void testReplaceFunc() {
+    tester.setFor(SqlStdOperatorTable.REPLACE);
+    tester.checkString("REPLACE('ciao', 'ciao', '')", "",
+        "VARCHAR(4) NOT NULL");
+    tester.checkString("REPLACE('hello world', 'o', '')", "hell wrld",
+        "VARCHAR(11) NOT NULL");
+    tester.checkNull("REPLACE(cast(null as varchar(5)), 'ciao', '')");
+    tester.checkNull("REPLACE('ciao', cast(null as varchar(3)), 'zz')");
+    tester.checkNull("REPLACE('ciao', 'bella', cast(null as varchar(3)))");
+  }
+
+  @Test public void testCharLengthFunc() {
+    tester.setFor(SqlStdOperatorTable.CHAR_LENGTH);
+    tester.checkScalarExact("char_length('abc')", "3");
+    tester.checkNull("char_length(cast(null as varchar(1)))");
+  }
+
+  @Test public void testCharacterLengthFunc() {
+    tester.setFor(SqlStdOperatorTable.CHARACTER_LENGTH);
+    tester.checkScalarExact("CHARACTER_LENGTH('abc')", "3");
+    tester.checkNull("CHARACTER_LENGTH(cast(null as varchar(1)))");
+  }
+
+  @Test public void testUpperFunc() {
+    tester.setFor(SqlStdOperatorTable.UPPER);
+    tester.checkString("upper('a')", "A", "CHAR(1) NOT NULL");
+    tester.checkString("upper('A')", "A", "CHAR(1) NOT NULL");
+    tester.checkString("upper('1')", "1", "CHAR(1) NOT NULL");
+    tester.checkString("upper('aa')", "AA", "CHAR(2) NOT NULL");
+    tester.checkNull("upper(cast(null as varchar(1)))");
+  }
+
+  @Test public void testLowerFunc() {
+    tester.setFor(SqlStdOperatorTable.LOWER);
+
+    // SQL:2003 6.29.8 The type of lower is the type of its argument
+    tester.checkString("lower('A')", "a", "CHAR(1) NOT NULL");
+    tester.checkString("lower('a')", "a", "CHAR(1) NOT NULL");
+    tester.checkString("lower('1')", "1", "CHAR(1) NOT NULL");
+    tester.checkString("lower('AA')", "aa", "CHAR(2) NOT NULL");
+    tester.checkNull("lower(cast(null as varchar(1)))");
+  }
+
+  @Test public void testInitcapFunc() {
+    // Note: the initcap function is an Oracle defined function and is not
+    // defined in the SQL:2003 standard
+    // todo: implement in fennel
+    tester.setFor(SqlStdOperatorTable.INITCAP, VM_FENNEL);
+
+    tester.checkString("initcap('aA')", "Aa", "CHAR(2) NOT NULL");
+    tester.checkString("initcap('Aa')", "Aa", "CHAR(2) NOT NULL");
+    tester.checkString("initcap('1a')", "1a", "CHAR(2) NOT NULL");
+    tester.checkString(
+        "initcap('ab cd Ef 12')",
+        "Ab Cd Ef 12",
+        "CHAR(11) NOT NULL");
+    tester.checkNull("initcap(cast(null as varchar(1)))");
+
+    // dtbug 232
+    tester.checkFails(
+        "^initcap(cast(null as date))^",
+        "Cannot apply 'INITCAP' to arguments of type 'INITCAP\\(<DATE>\\)'\\. Supported form\\(s\\): 'INITCAP\\(<CHARACTER>\\)'",
+        false);
+  }
+
+  @Test public void testPowerFunc() {
+    tester.setFor(SqlStdOperatorTable.POWER);
+    tester.checkScalarApprox(
+        "power(2,-2)",
+        "DOUBLE NOT NULL",
+        0.25,
+        0);
+    tester.checkNull("power(cast(null as integer),2)");
+    tester.checkNull("power(2,cast(null as double))");
+
+    // 'pow' is an obsolete form of the 'power' function
+    tester.checkFails(
+        "^pow(2,-2)^",
+        "No match found for function signature POW\\(<NUMERIC>, <NUMERIC>\\)",
+        false);
+  }
+
+  @Test public void testSqrtFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.SQRT, SqlTester.VmName.EXPAND);
+    tester.checkType("sqrt(2)", "DOUBLE NOT NULL");
+    tester.checkType("sqrt(cast(2 as float))", "DOUBLE NOT NULL");
+    tester.checkType(
+        "sqrt(case when false then 2 else null end)", "DOUBLE");
+    tester.checkFails(
+        "^sqrt('abc')^",
+        "Cannot apply 'SQRT' to arguments of type 'SQRT\\(<CHAR\\(3\\)>\\)'\\. Supported form\\(s\\): 'SQRT\\(<NUMERIC>\\)'",
+        false);
+    tester.checkScalarApprox(
+        "sqrt(2)",
+        "DOUBLE NOT NULL",
+        1.4142d,
+        0.0001d);
+    tester.checkScalarApprox(
+        "sqrt(cast(2 as decimal(2, 0)))",
+        "DOUBLE NOT NULL",
+        1.4142d,
+        0.0001d);
+    tester.checkNull("sqrt(cast(null as integer))");
+    tester.checkNull("sqrt(cast(null as double))");
+  }
+
+  @Test public void testExpFunc() {
+    tester.setFor(SqlStdOperatorTable.EXP, VM_FENNEL);
+    tester.checkScalarApprox(
+        "exp(2)", "DOUBLE NOT NULL", 7.389056, 0.000001);
+    tester.checkScalarApprox(
+        "exp(-2)",
+        "DOUBLE NOT NULL",
+        0.1353,
+        0.0001);
+    tester.checkNull("exp(cast(null as integer))");
+    tester.checkNull("exp(cast(null as double))");
+  }
+
+  @Test public void testModFunc() {
+    tester.setFor(SqlStdOperatorTable.MOD);
+    tester.checkScalarExact("mod(4,2)", "0");
+    tester.checkScalarExact("mod(8,5)", "3");
+    tester.checkScalarExact("mod(-12,7)", "-5");
+    tester.checkScalarExact("mod(-12,-7)", "-5");
+    tester.checkScalarExact("mod(12,-7)", "5");
+    tester.checkScalarExact(
+        "mod(cast(12 as tinyint), cast(-7 as tinyint))",
+        "TINYINT NOT NULL",
+        "5");
+
+    if (!DECIMAL) {
+      return;
+    }
+    tester.checkScalarExact(
+        "mod(cast(9 as decimal(2, 0)), 7)",
+        "INTEGER NOT NULL",
+        "2");
+    tester.checkScalarExact(
+        "mod(7, cast(9 as decimal(2, 0)))",
+        "DECIMAL(2, 0) NOT NULL",
+        "7");
+    tester.checkScalarExact(
+        "mod(cast(-9 as decimal(2, 0)), cast(7 as decimal(1, 0)))",
+        "DECIMAL(1, 0) NOT NULL",
+        "-2");
+  }
+
+  @Test public void testModFuncNull() {
+    tester.checkNull("mod(cast(null as integer),2)");
+    tester.checkNull("mod(4,cast(null as tinyint))");
+    if (!DECIMAL) {
+      return;
+    }
+    tester.checkNull("mod(4,cast(null as decimal(12,0)))");
+  }
+
+  @Test public void testModFuncDivByZero() {
+    // The extra CASE expression is to fool Janino.  It does constant
+    // reduction and will throw the divide by zero exception while
+    // compiling the expression.  The test frame work would then issue
+    // unexpected exception occurred during "validation".  You cannot
+    // submit as non-runtime because the janino exception does not have
+    // error position information and the framework is unhappy with that.
+    tester.checkFails(
+        "mod(3,case 'a' when 'a' then 0 end)", DIVISION_BY_ZERO_MESSAGE, true);
+  }
+
+  @Test public void testLnFunc() {
+    tester.setFor(SqlStdOperatorTable.LN);
+    tester.checkScalarApprox(
+        "ln(2.71828)",
+        "DOUBLE NOT NULL",
+        1.0,
+        0.000001);
+    tester.checkScalarApprox(
+        "ln(2.71828)",
+        "DOUBLE NOT NULL",
+        0.999999327,
+        0.0000001);
+    tester.checkNull("ln(cast(null as tinyint))");
+  }
+
+  @Test public void testLogFunc() {
+    tester.setFor(SqlStdOperatorTable.LOG10);
+    tester.checkScalarApprox(
+        "log10(10)",
+        "DOUBLE NOT NULL",
+        1.0,
+        0.000001);
+    tester.checkScalarApprox(
+        "log10(100.0)",
+        "DOUBLE NOT NULL",
+        2.0,
+        0.000001);
+    tester.checkScalarApprox(
+        "log10(cast(10e8 as double))",
+        "DOUBLE NOT NULL",
+        9.0,
+        0.000001);
+    tester.checkScalarApprox(
+        "log10(cast(10e2 as float))",
+        "DOUBLE NOT NULL",
+        3.0,
+        0.000001);
+    tester.checkScalarApprox(
+        "log10(cast(10e-3 as real))",
+        "DOUBLE NOT NULL",
+        -2.0,
+        0.000001);
+    tester.checkNull("log10(cast(null as real))");
+  }
+
+  @Test public void testRandFunc() {
+    tester.setFor(SqlStdOperatorTable.RAND);
+    tester.checkFails("^rand^", "Column 'RAND' not found in any table", false);
+    for (int i = 0; i < 100; i++) {
+      // Result must always be between 0 and 1, inclusive.
+      tester.checkScalarApprox("rand()", "DOUBLE NOT NULL", 0.5, 0.5);
+    }
+  }
+
+  @Test public void testRandSeedFunc() {
+    tester.setFor(SqlStdOperatorTable.RAND);
+    tester.checkScalarApprox("rand(1)", "DOUBLE NOT NULL", 0.6016, 0.0001);
+    tester.checkScalarApprox("rand(2)", "DOUBLE NOT NULL", 0.4728, 0.0001);
+  }
+
+  @Test public void testRandIntegerFunc() {
+    tester.setFor(SqlStdOperatorTable.RAND_INTEGER);
+    for (int i = 0; i < 100; i++) {
+      // Result must always be between 0 and 10, inclusive.
+      tester.checkScalarApprox("rand_integer(11)", "INTEGER NOT NULL", 5.0,
+          5.0);
+    }
+  }
+
+  @Test public void testRandIntegerSeedFunc() {
+    tester.setFor(SqlStdOperatorTable.RAND_INTEGER);
+    tester.checkScalar("rand_integer(1, 11)", 4, "INTEGER NOT NULL");
+    tester.checkScalar("rand_integer(2, 11)", 1, "INTEGER NOT NULL");
+  }
+
+  @Test public void testAbsFunc() {
+    tester.setFor(SqlStdOperatorTable.ABS);
+    tester.checkScalarExact("abs(-1)", "1");
+    tester.checkScalarExact(
+        "abs(cast(10 as TINYINT))", "TINYINT NOT NULL", "10");
+    tester.checkScalarExact(
+        "abs(cast(-20 as SMALLINT))", "SMALLINT NOT NULL", "20");
+    tester.checkScalarExact(
+        "abs(cast(-100 as INT))", "INTEGER NOT NULL", "100");
+    tester.checkScalarExact(
+        "abs(cast(1000 as BIGINT))", "BIGINT NOT NULL", "1000");
+    tester.checkScalarExact(
+        "abs(54.4)",
+        "DECIMAL(3, 1) NOT NULL",
+        "54.4");
+    tester.checkScalarExact(
+        "abs(-54.4)",
+        "DECIMAL(3, 1) NOT NULL",
+        "54.4");
+    tester.checkScalarApprox(
+        "abs(-9.32E-2)",
+        "DOUBLE NOT NULL",
+        0.0932,
+        0);
+    tester.checkScalarApprox(
+        "abs(cast(-3.5 as double))",
+        "DOUBLE NOT NULL",
+        3.5,
+        0);
+    tester.checkScalarApprox(
+        "abs(cast(-3.5 as float))",
+        "FLOAT NOT NULL",
+        3.5,
+        0);
+    tester.checkScalarApprox(
+        "abs(cast(3.5 as real))",
+        "REAL NOT NULL",
+        3.5,
+        0);
+
+    tester.checkNull("abs(cast(null as double))");
+  }
+
+  @Test public void testAbsFuncIntervals() {
+    tester.checkScalar(
+        "abs(interval '-2' day)",
+        "+2",
+        "INTERVAL DAY NOT NULL");
+    tester.checkScalar(
+        "abs(interval '-5-03' year to month)",
+        "+5-03",
+        "INTERVAL YEAR TO MONTH NOT NULL");
+    tester.checkNull("abs(cast(null as interval hour))");
+  }
+
+  @Test public void testAcosFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.ACOS);
+    tester.checkType("acos(0)", "DOUBLE NOT NULL");
+    tester.checkType("acos(cast(1 as float))", "DOUBLE NOT NULL");
+    tester.checkType(
+        "acos(case when false then 0.5 else null end)", "DOUBLE");
+    tester.checkFails(
+        "^acos('abc')^",
+        "Cannot apply 'ACOS' to arguments of type 'ACOS\\(<CHAR\\(3\\)>\\)'\\. Supported form\\(s\\): 'ACOS\\(<NUMERIC>\\)'",
+        false);
+    tester.checkScalarApprox(
+        "acos(0.5)",
+        "DOUBLE NOT NULL",
+        1.0472d,
+        0.0001d);
+    tester.checkScalarApprox(
+        "acos(cast(0.5 as decimal(1, 1)))",
+        "DOUBLE NOT NULL",
+        1.0472d,
+        0.0001d);
+    tester.checkNull("acos(cast(null as integer))");
+    tester.checkNull("acos(cast(null as double))");
+  }
+
+  @Test public void testAsinFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.ASIN);
+    tester.checkType("asin(0)", "DOUBLE NOT NULL");
+    tester.checkType("asin(cast(1 as float))", "DOUBLE NOT NULL");
+    tester.checkType(
+        "asin(case when false then 0.5 else null end)", "DOUBLE");
+    tester.checkFails(
+        "^asin('abc')^",
+        "Cannot apply 'ASIN' to arguments of type 'ASIN\\(<CHAR\\(3\\)>\\)'\\. Supported form\\(s\\): 'ASIN\\(<NUMERIC>\\)'",
+        false);
+    tester.checkScalarApprox(
+        "asin(0.5)",
+        "DOUBLE NOT NULL",
+        0.5236d,
+        0.0001d);
+    tester.checkScalarApprox(
+        "asin(cast(0.5 as decimal(1, 1)))",
+        "DOUBLE NOT NULL",
+        0.5236d,
+        0.0001d);
+    tester.checkNull("asin(cast(null as integer))");
+    tester.checkNull("asin(cast(null as double))");
+  }
+
+  @Test public void testAtanFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.ATAN);
+    tester.checkType("atan(2)", "DOUBLE NOT NULL");
+    tester.checkType("atan(cast(2 as float))", "DOUBLE NOT NULL");
+    tester.checkType(
+        "atan(case when false then 2 else null end)", "DOUBLE");
+    tester.checkFails(
+        "^atan('abc')^",
+        "Cannot apply 'ATAN' to arguments of type 'ATAN\\(<CHAR\\(3\\)>\\)'\\. Supported form\\(s\\): 'ATAN\\(<NUMERIC>\\)'",
+        false);
+    tester.checkScalarApprox(
+        "atan(2)",
+        "DOUBLE NOT NULL",
+        1.1071d,
+        0.0001d);
+    tester.checkScalarApprox(
+        "atan(cast(2 as decimal(1, 0)))",
+        "DOUBLE NOT NULL",
+        1.1071d,
+        0.0001d);
+    tester.checkNull("atan(cast(null as integer))");
+    tester.checkNull("atan(cast(null as double))");
+  }
+
+  @Test public void testAtan2Func() {
+    tester.setFor(
+        SqlStdOperatorTable.ATAN2);
+    tester.checkType("atan2(2, -2)", "DOUBLE NOT NULL");
+    tester.checkType("atan2(cast(1 as float), -1)", "DOUBLE NOT NULL");
+    tester.checkType(
+        "atan2(case when false then 0.5 else null end, -1)", "DOUBLE");
+    tester.checkFails(
+        "^atan2('abc', 'def')^",
+        "Cannot apply 'ATAN2' to arguments of type 'ATAN2\\(<CHAR\\(3\\)>, <CHAR\\(3\\)>\\)'\\. Supported form\\(s\\): 'ATAN2\\(<NUMERIC>, <NUMERIC>\\)'",
+        false);
+    tester.checkScalarApprox(
+        "atan2(0.5, -0.5)",
+        "DOUBLE NOT NULL",
+        2.3562d,
+        0.0001d);
+    tester.checkScalarApprox(
+        "atan2(cast(0.5 as decimal(1, 1)), cast(-0.5 as decimal(1, 1)))",
+        "DOUBLE NOT NULL",
+        2.3562d,
+        0.0001d);
+    tester.checkNull("atan2(cast(null as integer), -1)");
+    tester.checkNull("atan2(1, cast(null as double))");
+  }
+
+  @Test public void testCosFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.COS);
+    tester.checkType("cos(1)", "DOUBLE NOT NULL");
+    tester.checkType("cos(cast(1 as float))", "DOUBLE NOT NULL");
+    tester.checkType(
+        "cos(case when false then 1 else null end)", "DOUBLE");
+    tester.checkFails(
+        "^cos('abc')^",
+        "Cannot apply 'COS' to arguments of type 'COS\\(<CHAR\\(3\\)>\\)'\\. Supported form\\(s\\): 'COS\\(<NUMERIC>\\)'",
+        false);
+    tester.checkScalarApprox(
+        "cos(1)",
+        "DOUBLE NOT NULL",
+        0.5403d,
+        0.0001d);
+    tester.checkScalarApprox(
+        "cos(cast(1 as decimal(1, 0)))",
+        "DOUBLE NOT NULL",
+        0.5403d,
+        0.0001d);
+    tester.checkNull("cos(cast(null as integer))");
+    tester.checkNull("cos(cast(null as double))");
+  }
+
+  @Test public void testCotFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.COT);
+    tester.checkType("cot(1)", "DOUBLE NOT NULL");
+    tester.checkType("cot(cast(1 as float))", "DOUBLE NOT NULL");
+    tester.checkType(
+        "cot(case when false then 1 else null end)", "DOUBLE");
+    tester.checkFails(
+        "^cot('abc')^",
+        "Cannot apply 'COT' to arguments of type 'COT\\(<CHAR\\(3\\)>\\)'\\. Supported form\\(s\\): 'COT\\(<NUMERIC>\\)'",
+        false);
+    tester.checkScalarApprox(
+        "cot(1)",
+        "DOUBLE NOT NULL",
+        0.6421d,
+        0.0001d);
+    tester.checkScalarApprox(
+        "cot(cast(1 as decimal(1, 0)))",
+        "DOUBLE NOT NULL",
+        0.6421d,
+        0.0001d);
+    tester.checkNull("cot(cast(null as integer))");
+    tester.checkNull("cot(cast(null as double))");
+  }
+
+  @Test public void testDegreesFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.DEGREES);
+    tester.checkType("degrees(1)", "DOUBLE NOT NULL");
+    tester.checkType("degrees(cast(1 as float))", "DOUBLE NOT NULL");
+    tester.checkType(
+        "degrees(case when false then 1 else null end)", "DOUBLE");
+    tester.checkFails(
+        "^degrees('abc')^",
+        "Cannot apply 'DEGREES' to arguments of type 'DEGREES\\(<CHAR\\(3\\)>\\)'\\. Supported form\\(s\\): 'DEGREES\\(<NUMERIC>\\)'",
+        false);
+    tester.checkScalarApprox(
+        "degrees(1)",
+        "DOUBLE NOT NULL",
+        57.2958d,
+        0.0001d);
+    tester.checkScalarApprox(
+        "degrees(cast(1 as decimal(1, 0)))",
+        "DOUBLE NOT NULL",
+        57.2958d,
+        0.0001d);
+    tester.checkNull("degrees(cast(null as integer))");
+    tester.checkNull("degrees(cast(null as double))");
+  }
+
+  @Test public void testPiFunc() {
+    tester.setFor(SqlStdOperatorTable.PI);
+    tester.checkScalarApprox("PI", "DOUBLE NOT NULL", 3.1415d, 0.0001d);
+    tester.checkFails("^PI()^",
+        "No match found for function signature PI\\(\\)", false);
+  }
+
+  @Test public void testRadiansFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.RADIANS);
+    tester.checkType("radians(42)", "DOUBLE NOT NULL");
+    tester.checkType("radians(cast(42 as float))", "DOUBLE NOT NULL");
+    tester.checkType(
+        "radians(case when false then 42 else null end)", "DOUBLE");
+    tester.checkFails(
+        "^radians('abc')^",
+        "Cannot apply 'RADIANS' to arguments of type 'RADIANS\\(<CHAR\\(3\\)>\\)'\\. Supported form\\(s\\): 'RADIANS\\(<NUMERIC>\\)'",
+        false);
+    tester.checkScalarApprox(
+        "radians(42)",
+        "DOUBLE NOT NULL",
+        0.7330d,
+        0.0001d);
+    tester.checkScalarApprox(
+        "radians(cast(42 as decimal(2, 0)))",
+        "DOUBLE NOT NULL",
+        0.7330d,
+        0.0001d);
+    tester.checkNull("radians(cast(null as integer))");
+    tester.checkNull("radians(cast(null as double))");
+  }
+
+
+  @Test public void testRoundFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.ROUND);
+    tester.checkType("round(42, -1)", "INTEGER NOT NULL");
+    tester.checkType("round(cast(42 as float), 1)", "FLOAT NOT NULL");
+    tester.checkType(
+        "round(case when false then 42 else null end, -1)", "INTEGER");
+    tester.checkFails(
+        "^round('abc', 'def')^",
+        "Cannot apply 'ROUND' to arguments of type 'ROUND\\(<CHAR\\(3\\)>, <CHAR\\(3\\)>\\)'\\. Supported form\\(s\\): 'ROUND\\(<NUMERIC>, <INTEGER>\\)'",
+        false);
+    tester.checkScalar(
+        "round(42, -1)",
+        40,
+        "INTEGER NOT NULL");
+    tester.checkScalar(
+        "round(cast(42.346 as decimal(2, 3)), 2)",
+        BigDecimal.valueOf(4235, 2),
+        "DECIMAL(2, 3) NOT NULL");
+    tester.checkScalar(
+        "round(cast(-42.346 as decimal(2, 3)), 2)",
+        BigDecimal.valueOf(-4235, 2),
+        "DECIMAL(2, 3) NOT NULL");
+    tester.checkNull("round(cast(null as integer), 1)");
+    tester.checkNull("round(cast(null as double), 1)");
+    tester.checkNull("round(43.21, cast(null as integer))");
+
+    tester.checkNull("round(cast(null as double))");
+    tester.checkScalar("round(42)", 42, "INTEGER NOT NULL");
+    tester.checkScalar(
+        "round(cast(42.346 as decimal(2, 3)))",
+        BigDecimal.valueOf(42, 0),
+        "DECIMAL(2, 3) NOT NULL");
+    tester.checkScalar("round(42.324)",
+        BigDecimal.valueOf(42, 0),
+        "DECIMAL(5, 3) NOT NULL");
+    tester.checkScalar("round(42.724)",
+        BigDecimal.valueOf(43, 0),
+        "DECIMAL(5, 3) NOT NULL");
+  }
+
+  @Test public void testSignFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.SIGN);
+    tester.checkType("sign(1)", "INTEGER NOT NULL");
+    tester.checkType("sign(cast(1 as float))", "FLOAT NOT NULL");
+    tester.checkType(
+        "sign(case when false then 1 else null end)", "INTEGER");
+    tester.checkFails(
+        "^sign('abc')^",
+        "Cannot apply 'SIGN' to arguments of type 'SIGN\\(<CHAR\\(3\\)>\\)'\\. Supported form\\(s\\): 'SIGN\\(<NUMERIC>\\)'",
+        false);
+    tester.checkScalar(
+        "sign(1)",
+        1,
+        "INTEGER NOT NULL");
+    tester.checkScalar(
+        "sign(cast(-1 as decimal(1, 0)))",
+        BigDecimal.valueOf(-1),
+        "DECIMAL(1, 0) NOT NULL");
+    tester.checkScalar(
+        "sign(cast(0 as float))",
+        0d,
+        "FLOAT NOT NULL");
+    tester.checkNull("sign(cast(null as integer))");
+    tester.checkNull("sign(cast(null as double))");
+  }
+
+  @Test public void testSinFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.SIN);
+    tester.checkType("sin(1)", "DOUBLE NOT NULL");
+    tester.checkType("sin(cast(1 as float))", "DOUBLE NOT NULL");
+    tester.checkType(
+        "sin(case when false then 1 else null end)", "DOUBLE");
+    tester.checkFails(
+        "^sin('abc')^",
+        "Cannot apply 'SIN' to arguments of type 'SIN\\(<CHAR\\(3\\)>\\)'\\. Supported form\\(s\\): 'SIN\\(<NUMERIC>\\)'",
+        false);
+    tester.checkScalarApprox(
+        "sin(1)",
+        "DOUBLE NOT NULL",
+        0.8415d,
+        0.0001d);
+    tester.checkScalarApprox(
+        "sin(cast(1 as decimal(1, 0)))",
+        "DOUBLE NOT NULL",
+        0.8415d,
+        0.0001d);
+    tester.checkNull("sin(cast(null as integer))");
+    tester.checkNull("sin(cast(null as double))");
+  }
+
+  @Test public void testTanFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.TAN);
+    tester.checkType("tan(1)", "DOUBLE NOT NULL");
+    tester.checkType("tan(cast(1 as float))", "DOUBLE NOT NULL");
+    tester.checkType(
+        "tan(case when false then 1 else null end)", "DOUBLE");
+    tester.checkFails(
+        "^tan('abc')^",
+        "Cannot apply 'TAN' to arguments of type 'TAN\\(<CHAR\\(3\\)>\\)'\\. Supported form\\(s\\): 'TAN\\(<NUMERIC>\\)'",
+        false);
+    tester.checkScalarApprox(
+        "tan(1)",
+        "DOUBLE NOT NULL",
+        1.5574d,
+        0.0001d);
+    tester.checkScalarApprox(
+        "tan(cast(1 as decimal(1, 0)))",
+        "DOUBLE NOT NULL",
+        1.5574d,
+        0.0001d);
+    tester.checkNull("tan(cast(null as integer))");
+    tester.checkNull("tan(cast(null as double))");
+  }
+
+  @Test public void testTruncateFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.TRUNCATE);
+    tester.checkType("truncate(42, -1)", "INTEGER NOT NULL");
+    tester.checkType("truncate(cast(42 as float), 1)", "FLOAT NOT NULL");
+    tester.checkType(
+        "truncate(case when false then 42 else null end, -1)", "INTEGER");
+    tester.checkFails(
+        "^truncate('abc', 'def')^",
+        "Cannot apply 'TRUNCATE' to arguments of type 'TRUNCATE\\(<CHAR\\(3\\)>, <CHAR\\(3\\)>\\)'\\. Supported form\\(s\\): 'TRUNCATE\\(<NUMERIC>, <INTEGER>\\)'",
+        false);
+    tester.checkScalar(
+        "truncate(42, -1)",
+        40,
+        "INTEGER NOT NULL");
+    tester.checkScalar(
+        "truncate(cast(42.345 as decimal(2, 3)), 2)",
+        BigDecimal.valueOf(4234, 2),
+        "DECIMAL(2, 3) NOT NULL");
+    tester.checkScalar(
+        "truncate(cast(-42.345 as decimal(2, 3)), 2)",
+        BigDecimal.valueOf(-4234, 2),
+        "DECIMAL(2, 3) NOT NULL");
+    tester.checkNull("truncate(cast(null as integer), 1)");
+    tester.checkNull("truncate(cast(null as double), 1)");
+    tester.checkNull("truncate(43.21, cast(null as integer))");
+
+    tester.checkScalar("truncate(42)", 42, "INTEGER NOT NULL");
+    tester.checkScalar("truncate(42.324)",
+        BigDecimal.valueOf(42, 0),
+        "DECIMAL(5, 3) NOT NULL");
+    tester.checkScalar("truncate(cast(42.324 as float))", 42F, "FLOAT NOT NULL");
+    tester.checkScalar(
+        "truncate(cast(42.345 as decimal(2, 3)))",
+        BigDecimal.valueOf(42, 0),
+        "DECIMAL(2, 3) NOT NULL");
+    tester.checkNull("truncate(cast(null as integer))");
+    tester.checkNull("truncate(cast(null as double))");
+  }
+
+  @Test public void testNullifFunc() {
+    tester.setFor(SqlStdOperatorTable.NULLIF, VM_EXPAND);
+    tester.checkNull("nullif(1,1)");
+    tester.checkScalarExact(
+        "nullif(1.5, 13.56)",
+        "DECIMAL(2, 1)",
+        "1.5");
+    tester.checkScalarExact(
+        "nullif(13.56, 1.5)",
+        "DECIMAL(4, 2)",
+        "13.56");
+    tester.checkScalarExact("nullif(1.5, 3)", "DECIMAL(2, 1)", "1.5");
+    tester.checkScalarExact("nullif(3, 1.5)", "INTEGER", "3");
+    tester.checkScalarApprox("nullif(1.5e0, 3e0)", "DOUBLE", 1.5, 0);
+    tester.checkScalarApprox(
+        "nullif(1.5, cast(3e0 as REAL))",
+        "DECIMAL(2, 1)",
+        1.5,
+        0);
+    tester.checkScalarExact("nullif(3, 1.5e0)", "INTEGER", "3");
+    tester.checkScalarExact(
+        "nullif(3, cast(1.5e0 as REAL))",
+        "INTEGER",
+        "3");
+    tester.checkScalarApprox("nullif(1.5e0, 3.4)", "DOUBLE", 1.5, 0);
+    tester.checkScalarExact(
+        "nullif(3.4, 1.5e0)",
+        "DECIMAL(2, 1)",
+        "3.4");
+    tester.checkString(
+        "nullif('a','bc')",
+        "a",
+        "CHAR(1)");
+    tester.checkString(
+        "nullif('a',cast(null as varchar(1)))",
+        "a",
+        "CHAR(1)");
+    tester.checkNull("nullif(cast(null as varchar(1)),'a')");
+    tester.checkNull("nullif(cast(null as numeric(4,3)), 4.3)");
+
+    // Error message reflects the fact that Nullif is expanded before it is
+    // validated (like a C macro). Not perfect, but good enough.
+    tester.checkFails(
+        "1 + ^nullif(1, date '2005-8-4')^ + 2",
+        "(?s)Cannot apply '=' to arguments of type '<INTEGER> = <DATE>'\\..*",
+        false);
+
+    tester.checkFails(
+        "1 + ^nullif(1, 2, 3)^ + 2",
+        "Invalid number of arguments to function 'NULLIF'\\. Was expecting 2 arguments",
+        false);
+  }
+
+  @Test public void testNullIfOperatorIntervals() {
+    tester.checkScalar(
+        "nullif(interval '2' month, interval '3' year)",
+        "+2",
+        "INTERVAL MONTH");
+    tester.checkScalar(
+        "nullif(interval '2 5' day to hour, interval '5' second)",
+        "+2 05",
+        "INTERVAL DAY TO HOUR");
+    tester.checkNull(
+        "nullif(interval '3' day, interval '3' day)");
+  }
+
+  @Test public void testCoalesceFunc() {
+    tester.setFor(SqlStdOperatorTable.COALESCE, VM_EXPAND);
+    tester.checkString("coalesce('a','b')", "a", "CHAR(1) NOT NULL");
+    tester.checkScalarExact("coalesce(null,null,3)", "3");
+    tester.checkFails(
+        "1 + ^coalesce('a', 'b', 1, null)^ + 2",
+        "Illegal mixing of types in CASE or COALESCE statement",
+        false);
+  }
+
+  @Test public void testUserFunc() {
+    tester.setFor(SqlStdOperatorTable.USER, VM_FENNEL);
+    tester.checkString("USER", "sa", "VARCHAR(2000) NOT NULL");
+  }
+
+  @Test public void testCurrentUserFunc() {
+    tester.setFor(SqlStdOperatorTable.CURRENT_USER, VM_FENNEL);
+    tester.checkString("CURRENT_USER", "sa", "VARCHAR(2000) NOT NULL");
+  }
+
+  @Test public void testSessionUserFunc() {
+    tester.setFor(SqlStdOperatorTable.SESSION_USER, VM_FENNEL);
+    tester.checkString("SESSION_USER", "sa", "VARCHAR(2000) NOT NULL");
+  }
+
+  @Test public void testSystemUserFunc() {
+    tester.setFor(SqlStdOperatorTable.SYSTEM_USER, VM_FENNEL);
+    String user = System.getProperty("user.name"); // e.g. "jhyde"
+    tester.checkString("SYSTEM_USER", user, "VARCHAR(2000) NOT NULL");
+  }
+
+  @Test public void testCurrentPathFunc() {
+    tester.setFor(SqlStdOperatorTable.CURRENT_PATH, VM_FENNEL);
+    tester.checkString("CURRENT_PATH", "", "VARCHAR(2000) NOT NULL");
+  }
+
+  @Test public void testCurrentRoleFunc() {
+    tester.setFor(SqlStdOperatorTable.CURRENT_ROLE, VM_FENNEL);
+    // By default, the CURRENT_ROLE function returns
+    // the empty string because a role has to be set explicitly.
+    tester.checkString("CURRENT_ROLE", "", "VARCHAR(2000) NOT NULL");
+  }
+
+  @Test public void testCurrentCatalogFunc() {
+    tester.setFor(SqlStdOperatorTable.CURRENT_CATALOG, VM_FENNEL);
+    // By default, the CURRENT_CATALOG function returns
+    // the empty string because a catalog has to be set explicitly.
+    tester.checkString("CURRENT_CATALOG", "", "VARCHAR(2000) NOT NULL");
+  }
+
+  @Test public void testLocalTimeFunc() {
+    tester.setFor(SqlStdOperatorTable.LOCALTIME);
+    tester.checkScalar("LOCALTIME", TIME_PATTERN, "TIME(0) NOT NULL");
+    tester.checkFails(
+        "^LOCALTIME()^",
+        "No match found for function signature LOCALTIME\\(\\)",
+        false);
+    tester.checkScalar(
+        "LOCALTIME(1)", TIME_PATTERN,
+        "TIME(1) NOT NULL");
+
+    final Pair<String, Hook.Closeable> pair = currentTimeString(LOCAL_TZ);
+    tester.checkScalar(
+        "CAST(LOCALTIME AS VARCHAR(30))",
+        Pattern.compile(
+            pair.left.substring(11) + "[0-9][0-9]:[0-9][0-9]"),
+        "VARCHAR(30) NOT NULL");
+    tester.checkScalar(
+        "LOCALTIME",
+        Pattern.compile(
+            pair.left.substring(11) + "[0-9][0-9]:[0-9][0-9]"),
+        "TIME(0) NOT NULL");
+    pair.right.close();
+  }
+
+  @Test public void testLocalTimestampFunc() {
+    tester.setFor(SqlStdOperatorTable.LOCALTIMESTAMP);
+    tester.checkScalar(
+        "LOCALTIMESTAMP", TIMESTAMP_PATTERN,
+        "TIMESTAMP(0) NOT NULL");
+    tester.checkFails(
+        "^LOCALTIMESTAMP()^",
+        "No match found for function signature LOCALTIMESTAMP\\(\\)",
+        false);
+    tester.checkFails(
+        "^LOCALTIMESTAMP(4000000000)^", LITERAL_OUT_OF_RANGE_MESSAGE, false);
+    tester.checkFails(
+        "^LOCALTIMESTAMP(9223372036854775807)^", LITERAL_OUT_OF_RANGE_MESSAGE,
+        false);
+    tester.checkScalar(
+        "LOCALTIMESTAMP(1)", TIMESTAMP_PATTERN,
+        "TIMESTAMP(1) NOT NULL");
+
+    // Check that timestamp is being generated in the right timezone by
+    // generating a specific timestamp.
+    final Pair<String, Hook.Closeable> pair = currentTimeString(
+        LOCAL_TZ);
+    tester.checkScalar(
+        "CAST(LOCALTIMESTAMP AS VARCHAR(30))",
+        Pattern.compile(pair.left + "[0-9][0-9]:[0-9][0-9]"),
+        "VARCHAR(30) NOT NULL");
+    tester.checkScalar(
+        "LOCALTIMESTAMP",
+        Pattern.compile(pair.left + "[0-9][0-9]:[0-9][0-9]"),
+        "TIMESTAMP(0) NOT NULL");
+    pair.right.close();
+  }
+
+  @Test public void testCurrentTimeFunc() {
+    tester.setFor(SqlStdOperatorTable.CURRENT_TIME);
+    tester.checkScalar(
+        "CURRENT_TIME", TIME_PATTERN,
+        "TIME(0) NOT NULL");
+    tester.checkFails(
+        "^CURRENT_TIME()^",
+        "No match found for function signature CURRENT_TIME\\(\\)",
+        false);
+    tester.checkScalar(
+        "CURRENT_TIME(1)", TIME_PATTERN, "TIME(1) NOT NULL");
+
+    final Pair<String, Hook.Closeable> pair = currentTimeString(CURRENT_TZ);
+    tester.checkScalar(
+        "CAST(CURRENT_TIME AS VARCHAR(30))",
+        Pattern.compile(pair.left.substring(11) + "[0-9][0-9]:[0-9][0-9]"),
+        "VARCHAR(30) NOT NULL");
+    tester.checkScalar(
+        "CURRENT_TIME",
+        Pattern.compile(pair.left.substring(11) + "[0-9][0-9]:[0-9][0-9]"),
+        "TIME(0) NOT NULL");
+    pair.right.close();
+  }
+
+  @Test public void testCurrentTimestampFunc() {
+    tester.setFor(SqlStdOperatorTable.CURRENT_TIMESTAMP);
+    tester.checkScalar(
+        "CURRENT_TIMESTAMP", TIMESTAMP_PATTERN,
+        "TIMESTAMP(0) NOT NULL");
+    tester.checkFails(
+        "^CURRENT_TIMESTAMP()^",
+        "No match found for function signature CURRENT_TIMESTAMP\\(\\)",
+        false);
+    tester.checkFails(
+        "^CURRENT_TIMESTAMP(4000000000)^", LITERAL_OUT_OF_RANGE_MESSAGE, false);
+    tester.checkScalar(
+        "CURRENT_TIMESTAMP(1)", TIMESTAMP_PATTERN,
+        "TIMESTAMP(1) NOT NULL");
+
+    final Pair<String, Hook.Closeable> pair = currentTimeString(
+        CURRENT_TZ);
+    tester.checkScalar(
+        "CAST(CURRENT_TIMESTAMP AS VARCHAR(30))",
+        Pattern.compile(pair.left + "[0-9][0-9]:[0-9][0-9]"),
+        "VARCHAR(30) NOT NULL");
+    tester.checkScalar(
+        "CURRENT_TIMESTAMP",
+        Pattern.compile(pair.left + "[0-9][0-9]:[0-9][0-9]"),
+        "TIMESTAMP(0) NOT NULL");
+    pair.right.close();
+  }
+
+  /**
+   * Returns a time string, in GMT, that will be valid for at least 2 minutes.
+   *
+   * <p>For example, at "2005-01-01 12:34:56 PST", returns "2005-01-01 20:".
+   * At "2005-01-01 12:34:59 PST", waits a minute, then returns "2005-01-01
+   * 21:".
+   *
+   * @param tz Time zone
+   * @return Time string
+   */
+  protected static Pair<String, Hook.Closeable> currentTimeString(TimeZone tz) {
+    final Calendar calendar;
+    final Hook.Closeable closeable;
+    if (CalciteAssert.ENABLE_SLOW) {
+      calendar = getCalendarNotTooNear(Calendar.HOUR_OF_DAY);
+      closeable = new Hook.Closeable() {
+        public void close() {}
+      };
+    } else {
+      calendar = Util.calendar();
+      calendar.set(Calendar.YEAR, 2014);
+      calendar.set(Calendar.MONTH, 8);
+      calendar.set(Calendar.DATE, 7);
+      calendar.set(Calendar.HOUR_OF_DAY, 17);
+      calendar.set(Calendar.MINUTE, 8);
+      calendar.set(Calendar.SECOND, 48);
+      calendar.set(Calendar.MILLISECOND, 15);
+      final long timeInMillis = calendar.getTimeInMillis();
+      closeable = Hook.CURRENT_TIME.addThread(
+          new Function<Holder<Long>, Void>() {
+            public Void apply(Holder<Long> o) {
+              o.set(timeInMillis);
+              return null;
+            }
+          });
+    }
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:", Locale.ROOT);
+    sdf.setTimeZone(tz);
+    return Pair.of(sdf.format(calendar.getTime()), closeable);
+  }
+
+  @Test public void testCurrentDateFunc() {
+    tester.setFor(SqlStdOperatorTable.CURRENT_DATE, VM_FENNEL);
+
+    // A tester with a lenient conformance that allows parentheses.
+    final SqlTester tester1 = tester
+        .withConformance(SqlConformanceEnum.LENIENT);
+
+    tester.checkScalar("CURRENT_DATE", DATE_PATTERN, "DATE NOT NULL");
+    tester.checkScalar(
+        "(CURRENT_DATE - CURRENT_DATE) DAY",
+        "+0",
+        "INTERVAL DAY NOT NULL");
+    tester.checkBoolean("CURRENT_DATE IS NULL", false);
+    tester.checkBoolean("CURRENT_DATE IS NOT NULL", true);
+    tester.checkBoolean("NOT (CURRENT_DATE IS NULL)", true);
+    tester.checkFails(
+        "^CURRENT_DATE()^",
+        "No match found for function signature CURRENT_DATE\\(\\)",
+        false);
+
+    tester1.checkBoolean("CURRENT_DATE() IS NULL", false);
+    tester1.checkBoolean("CURRENT_DATE IS NOT NULL", true);
+    tester1.checkBoolean("NOT (CURRENT_DATE() IS NULL)", true);
+    tester1.checkType("CURRENT_DATE", "DATE NOT NULL");
+    tester1.checkType("CURRENT_DATE()", "DATE NOT NULL");
+    tester1.checkType("CURRENT_TIMESTAMP()", "TIMESTAMP(0) NOT NULL");
+    tester1.checkType("CURRENT_TIME()", "TIME(0) NOT NULL");
+
+    // Check the actual value.
+    final Pair<String, Hook.Closeable> pair = currentTimeString(LOCAL_TZ);
+    final String dateString = pair.left;
+    try (Hook.Closeable ignore = pair.right) {
+      tester.checkScalar("CAST(CURRENT_DATE AS VARCHAR(30))",
+          dateString.substring(0, 10),
+          "VARCHAR(30) NOT NULL");
+      tester.checkScalar("CURRENT_DATE",
+          dateString.substring(0, 10),
+          "DATE NOT NULL");
+
+      tester1.checkScalar("CAST(CURRENT_DATE AS VARCHAR(30))",
+          dateString.substring(0, 10),
+          "VARCHAR(30) NOT NULL");
+      tester1.checkScalar("CAST(CURRENT_DATE() AS VARCHAR(30))",
+          dateString.substring(0, 10),
+          "VARCHAR(30) NOT NULL");
+      tester1.checkScalar("CURRENT_DATE",
+          dateString.substring(0, 10),
+          "DATE NOT NULL");
+      tester1.checkScalar("CURRENT_DATE()",
+          dateString.substring(0, 10),
+          "DATE NOT NULL");
+    }
+  }
+
+  @Test public void testSubstringFunction() {
+    tester.setFor(SqlStdOperatorTable.SUBSTRING);
+    tester.checkString(
+        "substring('abc' from 1 for 2)",
+        "ab",
+        "VARCHAR(3) NOT NULL");
+    tester.checkString(
+        "substring('abc' from 2)", "bc", "VARCHAR(3) NOT NULL");
+
+    tester.checkString(
+        "substring(x'aabbcc' from 1 for 2)",
+        "aabb",
+        "VARBINARY(3) NOT NULL");
+    tester.checkString(
+        "substring(x'aabbcc' from 2)", "bbcc", "VARBINARY(3) NOT NULL");
+
+    if (Bug.FRG296_FIXED) {
+      // substring regexp not supported yet
+      tester.checkString(
+          "substring('foobar' from '%#\"o_b#\"%' for'#')",
+          "oob",
+          "xx");
+    }
+    tester.checkNull("substring(cast(null as varchar(1)),1,2)");
+  }
+
+  @Test public void testTrimFunc() {
+    tester.setFor(SqlStdOperatorTable.TRIM);
+
+    // SQL:2003 6.29.11 Trimming a CHAR yields a VARCHAR
+    tester.checkString(
+        "trim('a' from 'aAa')",
+        "A",
+        "VARCHAR(3) NOT NULL");
+    tester.checkString(
+        "trim(both 'a' from 'aAa')", "A", "VARCHAR(3) NOT NULL");
+    tester.checkString(
+        "trim(leading 'a' from 'aAa')",
+        "Aa",
+        "VARCHAR(3) NOT NULL");
+    tester.checkString(
+        "trim(trailing 'a' from 'aAa')",
+        "aA",
+        "VARCHAR(3) NOT NULL");
+    tester.checkNull("trim(cast(null as varchar(1)) from 'a')");
+    tester.checkNull("trim('a' from cast(null as varchar(1)))");
+
+    if (Bug.FNL3_FIXED) {
+      // SQL:2003 6.29.9: trim string must have length=1. Failure occurs
+      // at runtime.
+      //
+      // TODO: Change message to "Invalid argument\(s\) for
+      // 'TRIM' function".
+      // The message should come from a resource file, and should still
+      // have the SQL error code 22027.
+      tester.checkFails(
+          "trim('xy' from 'abcde')",
+          "could not calculate results for the following row:\n"
+              + "\\[ 0 \\]\n"
+              + "Messages:\n"
+              + "\\[0\\]:PC=0 Code=22027 ",
+          true);
+      tester.checkFails(
+          "trim('' from 'abcde')",
+          "could not calculate results for the following row:\n"
+              + "\\[ 0 \\]\n"
+              + "Messages:\n"
+              + "\\[0\\]:PC=0 Code=22027 ",
+          true);
+    }
+  }
+
+  @Test public void testRtrimFunc() {
+    tester.setFor(OracleSqlOperatorTable.RTRIM);
+    final SqlTester tester1 = oracleTester();
+    tester1.checkString("rtrim(' aAa  ')", " aAa", "VARCHAR(6) NOT NULL");
+    tester1.checkNull("rtrim(CAST(NULL AS VARCHAR(6)))");
+  }
+
+  @Test public void testLtrimFunc() {
+    tester.setFor(OracleSqlOperatorTable.LTRIM);
+    final SqlTester tester1 = oracleTester();
+    tester1.checkString("ltrim(' aAa  ')", "aAa  ", "VARCHAR(6) NOT NULL");
+    tester1.checkNull("ltrim(CAST(NULL AS VARCHAR(6)))");
+  }
+
+  @Test public void testGreatestFunc() {
+    tester.setFor(OracleSqlOperatorTable.GREATEST);
+    final SqlTester tester1 = oracleTester();
+    tester1.checkString("greatest('on', 'earth')", "on   ", "CHAR(5) NOT NULL");
+    tester1.checkString("greatest('show', 'on', 'earth')", "show ",
+        "CHAR(5) NOT NULL");
+    tester1.checkScalar("greatest(12, CAST(NULL AS INTEGER), 3)", null, "INTEGER");
+    tester1.checkScalar("greatest(false, true)", true, "BOOLEAN NOT NULL");
+  }
+
+  @Test public void testLeastFunc() {
+    tester.setFor(OracleSqlOperatorTable.LEAST);
+    final SqlTester tester1 = oracleTester();
+    tester1.checkString("least('on', 'earth')", "earth", "CHAR(5) NOT NULL");
+    tester1.checkString("least('show', 'on', 'earth')", "earth",
+        "CHAR(5) NOT NULL");
+    tester1.checkScalar("least(12, CAST(NULL AS INTEGER), 3)", null, "INTEGER");
+    tester1.checkScalar("least(false, true)", false, "BOOLEAN NOT NULL");
+  }
+
+  @Test public void testNvlFunc() {
+    tester.setFor(OracleSqlOperatorTable.NVL);
+    final SqlTester tester1 = oracleTester();
+    tester1.checkScalar("nvl(1, 2)", "1", "INTEGER NOT NULL");
+    tester1.checkFails("^nvl(1, true)^", "Parameters must be of the same type",
+        false);
+    tester1.checkScalar("nvl(true, false)", true, "BOOLEAN NOT NULL");
+    tester1.checkScalar("nvl(false, true)", false, "BOOLEAN NOT NULL");
+    tester1.checkString("nvl('abc', 'de')", "abc", "CHAR(3) NOT NULL");
+    tester1.checkString("nvl('abc', 'defg')", "abc ", "CHAR(4) NOT NULL");
+    tester1.checkString("nvl('abc', CAST(NULL AS VARCHAR(20)))", "abc",
+        "VARCHAR(20) NOT NULL");
+    tester1.checkString("nvl(CAST(NULL AS VARCHAR(20)), 'abc')", "abc",
+        "VARCHAR(20) NOT NULL");
+    tester1.checkNull(
+        "nvl(CAST(NULL AS VARCHAR(6)), cast(NULL AS VARCHAR(4)))");
+  }
+
+  @Test public void testNvlCharImplicitCastFunc() {
+    tester.setFor(OracleSqlOperatorTable.NVL);
+    final SqlTester tester1 = oracleTester();
+    tester1.checkFails("nvl(CAST(1 AS decimal(19, 9)), '3')",
+            "Operand types mismatch for: "
+                    + "NVL\\(CAST\\(1 AS DECIMAL\\(19, 9\\)\\), '3'\\)", false);
+  }
+
+  @Test public void testDecodeFunc() {
+    tester.setFor(OracleSqlOperatorTable.DECODE);
+    final SqlTester tester1 = oracleTester();
+    tester1.checkScalar("decode(0, 0, 'a', 1, 'b', 2, 'c')", "a", "CHAR(1)");
+    tester1.checkScalar("decode(1, 0, 'a', 1, 'b', 2, 'c')", "b", "CHAR(1)");
+    // if there are duplicates, take the first match
+    tester1.checkScalar("decode(1, 0, 'a', 1, 'b', 1, 'z', 2, 'c')", "b",
+        "CHAR(1)");
+    // if there's no match, and no "else", return null
+    tester1.checkScalar("decode(3, 0, 'a', 1, 'b', 2, 'c')", null, "CHAR(1)");
+    // if there's no match, return the "else" value
+    tester1.checkScalar("decode(3, 0, 'a', 1, 'b', 2, 'c', 'd')", "d",
+        "CHAR(1) NOT NULL");
+    tester1.checkScalar("decode(1, 0, 'a', 1, 'b', 2, 'c', 'd')", "b",
+        "CHAR(1) NOT NULL");
+    // nulls match
+    tester1.checkScalar("decode(cast(null as integer), 0, 'a',\n"
+        + " cast(null as integer), 'b', 2, 'c', 'd')", "b",
+        "CHAR(1) NOT NULL");
+  }
+
+  @Test public void testWindow() {
+    if (!enable) {
+      return;
+    }
+    tester.check(
+        "select sum(1) over (order by x) from (select 1 as x, 2 as y from (values (true)))",
+        new SqlTests.StringTypeChecker("INTEGER"),
+        "1",
+        0);
+  }
+
+  @Test public void testElementFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.ELEMENT,
+        VM_FENNEL,
+        VM_JAVA);
+    if (TODO) {
+      tester.checkString(
+          "element(multiset['abc']))",
+          "abc",
+          "char(3) not null");
+      tester.checkNull("element(multiset[cast(null as integer)]))");
+    }
+  }
+
+  @Test public void testCardinalityFunc() {
+    tester.setFor(
+        SqlStdOperatorTable.CARDINALITY,
+        VM_FENNEL,
+        VM_JAVA);
+    if (TODO) {
+      tester.checkScalarExact(
+          "cardinality(multiset[cast(null as integer),2]))", "2");
+    }
+
+    if (!enable) {
+      return;
+    }
+
+    // applied to array
+    tester.checkScalarExact(
+        "cardinality(array['foo', 'bar'])", "2");
+
+    // applied to map
+    tester.checkScalarExact(
+        "cardinality(map['foo', 1, 'bar', 2])", "2");
+  }
+
+  @Test public void testMemberOfOperator() {
+    tester.setFor(
+        SqlStdOperatorTable.MEMBER_OF,
+        VM_FENNEL,
+        VM_JAVA);
+    if (TODO) {
+      tester.checkBoolean("1 member of multiset[1]", Boolean.TRUE);
+      tester.checkBoolean(
+          "'2' member of multiset['1']",
+          Boolean.FALSE);
+      tester.checkBoolean(
+          "cast(null as double) member of multiset[cast(null as double)]",
+          Boolean.TRUE);
+      tester.checkBoolean(
+          "cast(null as double) member of multiset[1.1]",
+          Boolean.FALSE);
+      tester.checkBoolean(
+          "1.1 member of multiset[cast(null as double)]", Boolean.FALSE);
+    }
   }
 
   @Disabled //TODO reactivity why cherry pick multiset
