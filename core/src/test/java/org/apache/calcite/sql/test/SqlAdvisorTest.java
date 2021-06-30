@@ -183,7 +183,6 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
           "KEYWORD(NEW)",
           "KEYWORD(NEXT)",
           "KEYWORD(NOT)",
-          "KEYWORD(NTH_VALUE)",
           "KEYWORD(NTILE)",
           "KEYWORD(NULL)",
           "KEYWORD(NULLIF)",
