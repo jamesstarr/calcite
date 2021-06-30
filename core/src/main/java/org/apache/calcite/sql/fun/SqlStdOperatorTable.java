@@ -2412,57 +2412,17 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
   public static final SqlWithinGroupOperator WITHIN_GROUP = new SqlWithinGroupOperator();
 
   /**
-<<<<<<< HEAD
-=======
-   * The MEDIAN operator. Takes the median / PERCENTILE_CONT(.5) of a dataset.
-   * The argument must be a numeric expression.
-   * The return type is a double.
-   */
-  public static final SqlAggFunction MEDIAN =
-      SqlBasicAggFunction
-          .create(SqlKind.MEDIAN, ReturnTypes.DOUBLE,
-              OperandTypes.NUMERIC)
-          .withFunctionType(SqlFunctionCategory.SYSTEM);
-
-  /**
-   * {@code PERCENTILE_CONT} inverse distribution aggregate function.
-   *
-   * <p>The argument must be a numeric literal in the range 0 to 1 inclusive
-   * (representing a percentage), and the return type is {@code DOUBLE}.
-   */
-  public static final SqlAggFunction PERCENTILE_CONT =
-      SqlBasicAggFunction
-          .create(SqlKind.PERCENTILE_CONT, ReturnTypes.DOUBLE,
-              OperandTypes.UNIT_INTERVAL_NUMERIC_LITERAL)
-          .withFunctionType(SqlFunctionCategory.SYSTEM)
-          .withGroupOrder(Optionality.MANDATORY)
-          .withPercentile(true);
-
-  /**
-   * {@code PERCENTILE_DISC} inverse distribution aggregate function.
-   *
-   * <p>The argument must be a numeric literal in the range 0 to 1 inclusive
-   * (representing a percentage), and the return type is {@code DOUBLE}.
-   * (The return type should determined by the type of the {@code ORDER BY}
-   * expression, but this cannot be determined by the function itself.)
-   */
-  public static final SqlAggFunction PERCENTILE_DISC =
-      SqlBasicAggFunction
-          .create(SqlKind.PERCENTILE_DISC, ReturnTypes.DOUBLE,
-              OperandTypes.UNIT_INTERVAL_NUMERIC_LITERAL)
-          .withFunctionType(SqlFunctionCategory.SYSTEM)
-          .withGroupOrder(Optionality.MANDATORY)
-          .withPercentile(true);
-
-<<<<<<< HEAD
+>>>>>>> 3564ebb7c (Revert "Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)"")
   /**
    * <code>NTH_VALUE</code> aggregate function.
    */
   public static final SqlAggFunction NTH_VALUE =
       new SqlNthValueAggFunction(SqlKind.NTH_VALUE);
 
+<<<<<<< HEAD
 =======
->>>>>>> 02da13dc0 (DX-33699: Move newly added operators to bottom)
+=======
+>>>>>>> 3564ebb7c (Revert "Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)"")
   //~ Methods ----------------------------------------------------------------
 
   /**
@@ -2580,4 +2540,5 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
       throw new AssertionError(comparisonKind);
     }
   }
+
 }

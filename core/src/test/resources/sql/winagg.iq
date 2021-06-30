@@ -447,6 +447,7 @@ order by "deptno", ar, br limit 5;
 !ok
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 select a."empid", a."deptno", a."commission", a.r as ar, b.r as br
 from (
   select "empid", "deptno", "commission", first_value("empid") over w as r
@@ -500,6 +501,8 @@ from
 
 !ok
 
+=======
+>>>>>>> 3564ebb7c (Revert "Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)"")
 # NTH_VALUE
 select emp."ENAME", emp."DEPTNO",
  nth_value(emp."DEPTNO", 1) over() as "first_value",
@@ -508,6 +511,7 @@ select emp."ENAME", emp."DEPTNO",
  nth_value(emp."DEPTNO", 8) over() as "eighth_value",
  nth_value(emp."DEPTNO", 10) over() as "tenth_value"
 from emp order by emp."ENAME";
+<<<<<<< HEAD
 EnumerableSort(sort0=[$0], dir0=[ASC])
   EnumerableWindow(window#0=[window(partition {} order by [] range between UNBOUNDED PRECEDING and UNBOUNDED FOLLOWING aggs [NTH_VALUE($1, $2), NTH_VALUE($1, $3), NTH_VALUE($1, $4), NTH_VALUE($1, $5), NTH_VALUE($1, $6)])])
     EnumerableUnion(all=[true])
@@ -530,6 +534,8 @@ EnumerableSort(sort0=[$0], dir0=[ASC])
       EnumerableCalc(expr#0=[{inputs}], expr#1=['Wilma'], expr#2=[null:INTEGER], EXPR$0=[$t1], EXPR$1=[$t2])
         EnumerableValues(tuples=[[{ 0 }]])
 !plan
+=======
+>>>>>>> 3564ebb7c (Revert "Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)"")
 +-------+--------+-------------+--------------+-------------+--------------+-------------+
 | ENAME | DEPTNO | first_value | second_value | fifth_value | eighth_value | tenth_value |
 +-------+--------+-------------+--------------+-------------+--------------+-------------+
@@ -547,6 +553,9 @@ EnumerableSort(sort0=[$0], dir0=[ASC])
 
 !ok
 
+<<<<<<< HEAD
 =======
 >>>>>>> 391a8883e (Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)")
+=======
+>>>>>>> 3564ebb7c (Revert "Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)"")
 # End winagg.iq
