@@ -262,7 +262,6 @@ public abstract class QuidemTest {
         return CalciteAssert.that()
             .with(CalciteAssert.Config.REGULAR)
             .with(CalciteAssert.SchemaSpec.POST)
-            .withDefaultSchema("POST")
             .connect();
       case "catchall":
         return CalciteAssert.that()
@@ -273,7 +272,6 @@ public abstract class QuidemTest {
       case "orinoco":
         return CalciteAssert.that()
             .with(CalciteAssert.SchemaSpec.ORINOCO)
-            .withDefaultSchema("ORINOCO")
             .connect();
       case "blank":
         return CalciteAssert.that()
@@ -281,7 +279,6 @@ public abstract class QuidemTest {
                 "org.apache.calcite.sql.parser.parserextensiontesting"
                     + ".ExtensionSqlParserImpl#FACTORY")
             .with(CalciteAssert.SchemaSpec.BLANK)
-            .withDefaultSchema("BLANK")
             .connect();
       case "seq":
         final Connection connection = CalciteAssert.that()
