@@ -428,11 +428,15 @@ data: {
       ]
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 97f1be88e (Revert "Revert "[CALCITE-2304] In Babel parser, allow Hive-style syntax "LEFT SEMI JOIN""")
       # List of additional join types. Each is a method with no arguments.
       # Example: LeftSemiJoin()
       joinTypes: [
       ]
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
     # List of files in @includes directory that have parser method
@@ -451,6 +455,8 @@ data: {
 =======
 =======
 >>>>>>> 09de8c6c8 (Revert "[CALCITE-2304] In Babel parser, allow Hive-style syntax "LEFT SEMI JOIN"")
+=======
+>>>>>>> 97f1be88e (Revert "Revert "[CALCITE-2304] In Babel parser, allow Hive-style syntax "LEFT SEMI JOIN""")
       # List of methods for parsing custom SQL statements.
       statementParserMethods: [
       ]
