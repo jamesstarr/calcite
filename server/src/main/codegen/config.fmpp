@@ -427,6 +427,7 @@ data: {
         "VIRTUAL"
       ]
 
+<<<<<<< HEAD
       # List of additional join types. Each is a method with no arguments.
       # Example: LeftSemiJoin()
       joinTypes: [
@@ -448,6 +449,8 @@ data: {
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
   }
 =======
+=======
+>>>>>>> 09de8c6c8 (Revert "[CALCITE-2304] In Babel parser, allow Hive-style syntax "LEFT SEMI JOIN"")
       # List of methods for parsing custom SQL statements.
       statementParserMethods: [
       ]

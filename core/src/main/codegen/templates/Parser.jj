@@ -1968,10 +1968,6 @@ SqlLiteral JoinType() :
         <FULL> [ <OUTER> ] <JOIN> { joinType = JoinType.FULL; }
     |
         <CROSS> <JOIN> { joinType = JoinType.CROSS; }
-<#list parser.joinTypes as method>
-    |
-        joinType = ${method}()
-</#list>
     )
     {
         return joinType.symbol(getPos());
