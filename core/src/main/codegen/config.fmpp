@@ -33,17 +33,15 @@
 # part of the calcite-core-<version>.jar under "codegen" directory.
 
 data: {
-  # Data declarations for this parser.
-  #
-  # Default declarations are in default_config.fmpp; if you do not include a
-  # declaration ('imports' or 'nonReservedKeywords', for example) in this file,
-  # FMPP will use the declaration from default_config.fmpp.
   parser: {
     # Generated parser implementation package and class name.
     package: "org.apache.calcite.sql.parser.impl",
     class: "SqlParserImpl",
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
     # List of additional classes and packages to import.
     # Example. "org.apache.calcite.sql.*", "java.util.List".
     imports: [
@@ -56,6 +54,7 @@ data: {
 
     # List of keywords from "keywords" section that are not reserved.
     nonReservedKeywords: [
+<<<<<<< HEAD
 <<<<<<< HEAD
       "A"
       "ABSENT"
@@ -389,6 +388,8 @@ data: {
     # Example: LeftSemiJoin()
     joinTypes: [
 =======
+=======
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
         "A"
         "ABSOLUTE"
         "ACTION"
@@ -674,7 +675,10 @@ data: {
         "WRITE"
         "XML"
         "ZONE"
+<<<<<<< HEAD
 >>>>>>> 38576ceb2 ([CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved)
+=======
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
     ]
 
     # List of additional join types. Each is a method with no arguments.
@@ -695,17 +699,24 @@ data: {
     ]
 
     # List of methods for parsing custom data types.
+<<<<<<< HEAD
     # Return type of method implementation should be "SqlTypeNameSpec".
+=======
+    # Return type of method implementation should be "SqlIdentifier".
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
     # Example: SqlParseTimeStampZ().
     dataTypeParserMethods: [
     ]
 
+<<<<<<< HEAD
     # List of methods for parsing builtin function calls.
     # Return type of method implementation should be "SqlNode".
     # Example: DateFunctionCall().
     builtinFunctionCallMethods: [
     ]
 
+=======
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
     # List of methods for parsing extensions to "ALTER <scope>" calls.
     # Each must accept arguments "(SqlParserPos pos, String scope)".
     # Example: "SqlUploadJarNode"
@@ -722,6 +733,7 @@ data: {
     dropStatementParserMethods: [
     ]
 
+<<<<<<< HEAD
     # Binary operators tokens
     binaryOperatorsTokens: [
     ]
@@ -732,6 +744,8 @@ data: {
 
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
     # List of files in @includes directory that have parser method
     # implementations for parsing custom SQL statements, literals or types
     # given as part of "statementParserMethods", "literalParserMethods" or
@@ -740,9 +754,16 @@ data: {
       "parserImpls.ftl"
     ]
 <<<<<<< HEAD
+<<<<<<< HEAD
     includePosixOperators: false
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+
+    includeCompoundIdentifier: true
+    includeBraces: true
+    includeAdditionalDeclarations: false
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
   }
 }
 

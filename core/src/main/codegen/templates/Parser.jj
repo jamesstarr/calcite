@@ -29,7 +29,7 @@ PARSER_BEGIN(${parser.class})
 
 package ${parser.package};
 
-<#list (parser.imports!default.parser.imports) as importStr>
+<#list parser.imports as importStr>
 import ${importStr};
 </#list>
 
@@ -1097,19 +1097,19 @@ SqlNode SqlStmt() :
 {
     (
 <#-- Add methods to parse additional statements here -->
-<#list (parser.statementParserMethods!default.parser.statementParserMethods) as method>
-        LOOKAHEAD(2) stmt = ${method}
+<#list parser.statementParserMethods as method>
+        stmt = ${method}
     |
 </#list>
         stmt = SqlSetOption(Span.of(), null)
     |
         stmt = SqlAlter()
     |
-<#if (parser.createStatementParserMethods!default.parser.createStatementParserMethods)?size != 0>
+<#if parser.createStatementParserMethods?size != 0>
         stmt = SqlCreate()
     |
 </#if>
-<#if (parser.dropStatementParserMethods!default.parser.dropStatementParserMethods)?size != 0>
+<#if parser.dropStatementParserMethods?size != 0>
         stmt = SqlDrop()
     |
 </#if>
@@ -1149,7 +1149,7 @@ SqlNode SqlStmtEof() :
 }
 
 <#-- Add implementations of additional parser statement calls here -->
-<#list (parser.implementationFiles!default.parser.implementationFiles) as file>
+<#list parser.implementationFiles as file>
     <#include "/@includes/"+file />
 </#list>
 
@@ -1945,11 +1945,6 @@ SqlLiteral JoinType() :
 }
 {
     (
-    LOOKAHEAD(3) // required for "LEFT SEMI JOIN" in Babel
-    <#list (parser.joinTypes!default.parser.joinTypes) as method>
-            joinType = ${method}()
-        |
-    </#list>
         <JOIN> { joinType = JoinType.INNER; }
     |
         <INNER> <JOIN> { joinType = JoinType.INNER; }
@@ -1961,7 +1956,10 @@ SqlLiteral JoinType() :
         <FULL> [ <OUTER> ] <JOIN> { joinType = JoinType.FULL; }
     |
         <CROSS> <JOIN> { joinType = JoinType.CROSS; }
-
+<#list parser.joinTypes as method>
+    |
+        joinType = ${method}()
+</#list>
     )
     {
         return joinType.symbol(getPos());
@@ -4259,7 +4257,7 @@ SqlAlter SqlAlter() :
     scope = Scope()
     (
 <#-- additional literal parser methods are included here -->
-<#list (parser.alterStatementParserMethods!default.parser.alterStatementParserMethods) as method>
+<#list parser.alterStatementParserMethods as method>
         alterNode = ${method}(s, scope)
     |
 </#list>
@@ -4278,7 +4276,7 @@ String Scope() :
     ( <SYSTEM> | <SESSION> ) { return token.image.toUpperCase(Locale.ROOT); }
 }
 
-<#if (parser.createStatementParserMethods!default.parser.createStatementParserMethods)?size != 0>
+<#if parser.createStatementParserMethods?size != 0>
 /**
  * Parses a CREATE statement.
  */
@@ -4297,7 +4295,7 @@ SqlCreate SqlCreate() :
     ]
     (
 <#-- additional literal parser methods are included here -->
-<#list (parser.createStatementParserMethods!default.parser.createStatementParserMethods) as method>
+<#list parser.createStatementParserMethods as method>
         create = ${method}(s, replace)
         <#sep>| LOOKAHEAD(2) </#sep>
 </#list>
@@ -4308,7 +4306,7 @@ SqlCreate SqlCreate() :
 }
 </#if>
 
-<#if (parser.dropStatementParserMethods!default.parser.dropStatementParserMethods)?size != 0>
+<#if parser.dropStatementParserMethods?size != 0>
 /**
  * Parses a DROP statement.
  */
@@ -4322,7 +4320,7 @@ SqlDrop SqlDrop() :
     <DROP> { s = span(); }
     (
 <#-- additional literal parser methods are included here -->
-<#list (parser.dropStatementParserMethods!default.parser.dropStatementParserMethods) as method>
+<#list parser.dropStatementParserMethods as method>
         drop = ${method}(s, replace)
         <#sep>|</#sep>
 </#list>
@@ -4355,7 +4353,7 @@ SqlNode Literal() :
     |
         e = IntervalLiteral()
 <#-- additional literal parser methods are included here -->
-<#list (parser.literalParserMethods!default.parser.literalParserMethods) as method>
+<#list parser.literalParserMethods as method>
     |
         e = ${method}
 </#list>
@@ -5055,6 +5053,7 @@ SqlNodeList ParenthesizedSimpleIdentifierList() :
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 /** List of simple identifiers in parentheses or one simple identifier.
  *
  * <ul>Examples:
@@ -5080,6 +5079,9 @@ SqlNodeList SimpleIdentifierOrList() :
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 <#if (parser.includeCompoundIdentifier!default.parser.includeCompoundIdentifier) >
+=======
+<#if parser.includeCompoundIdentifier >
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 /**
  * Parses a compound identifier.
  */
@@ -5241,6 +5243,7 @@ SqlTypeNameSpec TypeName() :
     (
 <#-- additional types are included here -->
 <<<<<<< HEAD
+<<<<<<< HEAD
 <#-- put custom data types in front of Calcite core data types -->
         LOOKAHEAD(2)
 <#if (parser.dataTypeParserMethods!default.parser.dataTypeParserMethods)?size != 0>
@@ -5249,6 +5252,9 @@ SqlTypeNameSpec TypeName() :
 =======
 <#list (parser.dataTypeParserMethods!default.parser.dataTypeParserMethods) as method>
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+<#list parser.dataTypeParserMethods as method>
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
     |
 </#list>
 </#if>
@@ -7877,7 +7883,7 @@ SqlPostfixOperator PostfixRowOperator() :
 |   < YEARS: "YEARS" >
 |   < ZONE: "ZONE" >
 <#-- additional parser keywords are included here -->
-<#list (parser.keywords!default.parser.keywords) as keyword>
+<#list parser.keywords as keyword>
 |   < ${keyword}: "${keyword}" >
 </#list>
 }
@@ -7918,6 +7924,7 @@ void NonReservedKeyWord0of3() :
     (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 <#list (parser.nonReservedKeywords!default.parser.nonReservedKeywords) + (parser.nonReservedKeywordsToAdd!default.parser.nonReservedKeywordsToAdd) as keyword>
 =======
 <#list parser.nonReservedKeywords as keyword>
@@ -7925,6 +7932,9 @@ void NonReservedKeyWord0of3() :
 =======
 <#list (parser.nonReservedKeywords!default.parser.nonReservedKeywords) + (parser.nonReservedKeywordsToAdd!default.parser.nonReservedKeywordsToAdd) as keyword>
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+<#list parser.nonReservedKeywords as keyword>
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 <#if keyword?index == 0>
         <${keyword}>
 <#elseif keyword?index % 3 == 0>
@@ -7942,6 +7952,7 @@ void NonReservedKeyWord1of3() :
     (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 <#list (parser.nonReservedKeywords!default.parser.nonReservedKeywords) + (parser.nonReservedKeywordsToAdd!default.parser.nonReservedKeywordsToAdd) as keyword>
 =======
 <#list parser.nonReservedKeywords as keyword>
@@ -7949,6 +7960,9 @@ void NonReservedKeyWord1of3() :
 =======
 <#list (parser.nonReservedKeywords!default.parser.nonReservedKeywords) + (parser.nonReservedKeywordsToAdd!default.parser.nonReservedKeywordsToAdd) as keyword>
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+<#list parser.nonReservedKeywords as keyword>
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 <#if keyword?index == 1>
         <${keyword}>
 <#elseif keyword?index % 3 == 1>
@@ -7966,6 +7980,7 @@ void NonReservedKeyWord2of3() :
     (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 <#list (parser.nonReservedKeywords!default.parser.nonReservedKeywords) + (parser.nonReservedKeywordsToAdd!default.parser.nonReservedKeywordsToAdd) as keyword>
 =======
 <#list parser.nonReservedKeywords as keyword>
@@ -7973,6 +7988,9 @@ void NonReservedKeyWord2of3() :
 =======
 <#list (parser.nonReservedKeywords!default.parser.nonReservedKeywords) + (parser.nonReservedKeywordsToAdd!default.parser.nonReservedKeywordsToAdd) as keyword>
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+<#list parser.nonReservedKeywords as keyword>
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 <#if keyword?index == 2>
         <${keyword}>
 <#elseif keyword?index % 3 == 2>
@@ -8034,7 +8052,7 @@ void NonReservedKeyWord2of3() :
 {
     < LPAREN: "(">
 |   < RPAREN: ")">
-<#if (parser.includeBraces!default.parser.includeBraces) >
+<#if parser.includeBraces >
 |   < LBRACE_D: "{" (" ")* ["d","D"] >
 |   < LBRACE_T: "{" (" ")* ["t","T"] >
 |   < LBRACE_TS: "{" (" ")* ["t","T"] ["s","S"] >
@@ -8077,9 +8095,6 @@ void NonReservedKeyWord2of3() :
 |   < VERTICAL_BAR: "|" >
 |   < CARET: "^" >
 |   < DOLLAR: "$" >
-<#list (parser.binaryOperatorsTokens!default.parser.binaryOperatorsTokens) as operator>
-|   ${operator}
-</#list>
 }
 
 
@@ -8098,7 +8113,7 @@ TOKEN_MGR_DECLS : {
       SwitchTo(lexicalStateStack.remove(lexicalStateStack.size() - 1));
     }
 
-<#if (parser.includeAdditionalDeclarations!default.parser.includeAdditionalDeclarations)>
+<#if parser.includeAdditionalDeclarations>
   <#include "/@includes/tokenManagerDeclarations.ftl" />
 </#if>
 }

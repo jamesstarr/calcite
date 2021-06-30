@@ -14,15 +14,10 @@
 # limitations under the License.
 
 data: {
-  # Data declarations for this parser.
-  #
-  # Default declarations are in default_config.fmpp; if you do not include a
-  # declaration ('imports' or 'nonReservedKeywords', for example) in this file,
-  # FMPP will use the declaration from default_config.fmpp.
-  parser: {
-    # Generated parser implementation class package and name
-    package: "org.apache.calcite.sql.parser.ddl",
-    class: "SqlDdlParserImpl",
+    parser: {
+      # Generated parser implementation class package and name
+      package: "org.apache.calcite.sql.parser.ddl",
+      class: "SqlDdlParserImpl",
 
     # List of import statements.
     imports: [
@@ -34,18 +29,15 @@ data: {
       "java.util.HashMap"
     ]
 
-    # List of new keywords. Example: "DATABASES", "TABLES". If the keyword is
-    # not a reserved keyword, add it to the 'nonReservedKeywords' section.
-    keywords: [
-      "IF"
-      "MATERIALIZED"
-      "STORED"
-      "VIRTUAL"
-      "JAR"
-      "FILE"
-      "ARCHIVE"
-    ]
+      # List of keywords.
+      keywords: [
+        "IF"
+        "MATERIALIZED"
+        "STORED"
+        "VIRTUAL"
+      ]
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -64,6 +56,8 @@ data: {
     ]
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
       # List of keywords from "keywords" section that are not reserved.
       nonReservedKeywords: [
         "A"
@@ -351,6 +345,7 @@ data: {
         "WRITE"
         "XML"
         "ZONE"
+<<<<<<< HEAD
 
         # not in core, added in server
         "IF"
@@ -419,28 +414,22 @@ data: {
     ]
 
 =======
+=======
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 
-    # List of methods for parsing extensions to "CREATE [OR REPLACE]" calls.
-    # Each must accept arguments "(SqlParserPos pos, boolean replace)".
-    # Example: "SqlCreateForeignSchema".
-    createStatementParserMethods: [
-      "SqlCreateForeignSchema"
-      "SqlCreateMaterializedView"
-      "SqlCreateSchema"
-      "SqlCreateTable"
-      "SqlCreateView"
-    ]
+        # not in core, added in server
+        "IF"
+        "MATERIALIZED"
+        "STORED"
+        "VIRTUAL"
+      ]
 
-    # List of methods for parsing extensions to "DROP" calls.
-    # Each must accept arguments "(SqlParserPos pos)".
-    # Example: "SqlDropSchema".
-    dropStatementParserMethods: [
-      "SqlDropMaterializedView"
-      "SqlDropSchema"
-      "SqlDropTable"
-      "SqlDropView"
-    ]
+      # List of additional join types. Each is a method with no arguments.
+      # Example: LeftSemiJoin()
+      joinTypes: [
+      ]
 
+<<<<<<< HEAD
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
     # List of files in @includes directory that have parser method
     # implementations for parsing custom SQL statements, literals or types
@@ -455,6 +444,58 @@ data: {
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
   }
+=======
+      # List of methods for parsing custom SQL statements.
+      statementParserMethods: [
+      ]
+
+      # List of methods for parsing custom literals.
+      # Example: ParseJsonLiteral().
+      literalParserMethods: [
+      ]
+
+      # List of methods for parsing custom data types.
+      dataTypeParserMethods: [
+      ]
+
+      # List of methods for parsing extensions to "ALTER <scope>" calls.
+      # Each must accept arguments "(SqlParserPos pos, String scope)".
+      alterStatementParserMethods: [
+      ]
+
+      # List of methods for parsing extensions to "CREATE [OR REPLACE]" calls.
+      # Each must accept arguments "(SqlParserPos pos, boolean replace)".
+      createStatementParserMethods: [
+        "SqlCreateForeignSchema"
+        "SqlCreateMaterializedView"
+        "SqlCreateSchema"
+        "SqlCreateTable"
+        "SqlCreateView"
+      ]
+
+      # List of methods for parsing extensions to "DROP" calls.
+      # Each must accept arguments "(SqlParserPos pos)".
+      dropStatementParserMethods: [
+        "SqlDropMaterializedView"
+        "SqlDropSchema"
+        "SqlDropTable"
+        "SqlDropView"
+      ]
+
+      # List of files in @includes directory that have parser method
+      # implementations for parsing custom SQL statements, literals or types
+      # given as part of "statementParserMethods", "literalParserMethods" or
+      # "dataTypeParserMethods".
+      implementationFiles: [
+        "parserImpls.ftl"
+      ]
+
+      includeCompoundIdentifier: true
+      includeBraces: true
+      includeAdditionalDeclarations: false
+
+    }
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 }
 
 freemarkerLinks: {

@@ -14,31 +14,25 @@
 # limitations under the License.
 
 data: {
-  # Data declarations for this parser.
-  #
-  # Default declarations are in default_config.fmpp; if you do not include a
-  # declaration ('imports' or 'nonReservedKeywords', for example) in this file,
-  # FMPP will use the declaration from default_config.fmpp.
-  parser: {
-    # Generated parser implementation class package and name
-    package: "org.apache.calcite.sql.parser.parserextensiontesting",
-    class: "ExtensionSqlParserImpl",
+    parser: {
+      # Generated parser implementation class package and name
+      package: "org.apache.calcite.sql.parser.parserextensiontesting",
+      class: "ExtensionSqlParserImpl",
 
-    # List of additional classes and packages to import.
-    # Example: "org.apache.calcite.sql.*", "java.util.List".
-    imports: [
-      "org.apache.calcite.sql.SqlCreate",
-      "org.apache.calcite.sql.parser.parserextensiontesting.SqlCreateTable",
-      "org.apache.calcite.sql.parser.parserextensiontesting.SqlUploadJarNode"
-    ]
+      # List of import statements.
+      imports: [
+        "org.apache.calcite.sql.SqlCreate",
+        "org.apache.calcite.sql.parser.parserextensiontesting.SqlCreateTable",
+        "org.apache.calcite.sql.parser.parserextensiontesting.SqlUploadJarNode"
+      ]
 
-    # List of new keywords. Example: "DATABASES", "TABLES". If the keyword is
-    # not a reserved keyword, add it to the 'nonReservedKeywords' section.
-    keywords: [
-      "UPLOAD"
-      "JAR"
-    ]
+      # List of keywords.
+      keywords: [
+        "UPLOAD"
+        "JAR"
+      ]
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
       "DAYS"
@@ -48,6 +42,8 @@ data: {
       "SECONDS"
       "YEARS"
 =======
+=======
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
       # List of keywords from "keywords" section that are not reserved.
       nonReservedKeywords: [
         "A"
@@ -336,6 +332,7 @@ data: {
         "XML"
         "ZONE"
       ]
+<<<<<<< HEAD
 >>>>>>> 38576ceb2 ([CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved)
 
 <<<<<<< HEAD
@@ -405,21 +402,20 @@ data: {
     statementParserMethods: [
       "SqlDescribeSpacePower()"
     ]
+=======
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 
-    # List of methods for parsing extensions to "ALTER <scope>" calls.
-    # Each must accept arguments "(SqlParserPos pos, String scope)".
-    # Example: "SqlAlterTable".
-    alterStatementParserMethods: [
-      "SqlUploadJarNode"
-    ]
+      # List of additional join types. Each is a method with no arguments.
+      # Example: LeftSemiJoin()
+      joinTypes: [
+      ]
 
-    # List of methods for parsing extensions to "CREATE [OR REPLACE]" calls.
-    # Each must accept arguments "(SqlParserPos pos, boolean replace)".
-    # Example: "SqlCreateForeignSchema".
-    createStatementParserMethods: [
-      "SqlCreateTable"
-    ]
+      # List of methods for parsing custom SQL statements.
+      statementParserMethods: [
+        "SqlDescribeSpacePower()"
+      ]
 
+<<<<<<< HEAD
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
     # List of files in @includes directory that have parser method
     # implementations for parsing custom SQL statements, literals or types
@@ -433,6 +429,47 @@ data: {
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
   }
+=======
+      # List of methods for parsing custom literals.
+      # Example: ParseJsonLiteral().
+      literalParserMethods: [
+      ]
+
+      # List of methods for parsing custom data types.
+      dataTypeParserMethods: [
+      ]
+
+      # List of methods for parsing extensions to "ALTER <scope>" calls.
+      # Each must accept arguments "(SqlParserPos pos, String scope)".
+      alterStatementParserMethods: [
+        "SqlUploadJarNode"
+      ]
+
+      # List of methods for parsing extensions to "CREATE [OR REPLACE]" calls.
+      # Each must accept arguments "(SqlParserPos pos, boolean replace)".
+      createStatementParserMethods: [
+        "SqlCreateTable"
+      ]
+
+      # List of methods for parsing extensions to "DROP" calls.
+      # Each must accept arguments "(SqlParserPos pos)".
+      dropStatementParserMethods: [
+      ]
+
+      # List of files in @includes directory that have parser method
+      # implementations for parsing custom SQL statements, literals or types
+      # given as part of "statementParserMethods", "literalParserMethods" or
+      # "dataTypeParserMethods".
+      implementationFiles: [
+        "parserImpls.ftl"
+      ]
+
+      includeCompoundIdentifier: true
+      includeBraces: true
+      includeAdditionalDeclarations: false
+
+    }
+>>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 }
 
 freemarkerLinks: {
