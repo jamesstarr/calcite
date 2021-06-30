@@ -2230,6 +2230,12 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           .withGroupOrder(Optionality.MANDATORY)
           .withPercentile(true);
 
+  /**
+   * <code>NTH_VALUE</code> aggregate function.
+   */
+  public static final SqlAggFunction NTH_VALUE =
+      new SqlNthValueAggFunction(SqlKind.NTH_VALUE);
+
   //~ Methods ----------------------------------------------------------------
 
   /**
@@ -2347,6 +2353,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
       throw new AssertionError(comparisonKind);
     }
   }
+
 }
 
 // End SqlStdOperatorTable.java
