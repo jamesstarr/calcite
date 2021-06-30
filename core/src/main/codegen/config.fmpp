@@ -56,6 +56,7 @@ data: {
     nonReservedKeywords: [
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       "A"
       "ABSENT"
       "ABSOLUTE"
@@ -679,6 +680,8 @@ data: {
 >>>>>>> 38576ceb2 ([CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved)
 =======
 >>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
+=======
+>>>>>>> bfa324222 (Revert "[CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved")
     ]
 
     # List of additional join types. Each is a method with no arguments.

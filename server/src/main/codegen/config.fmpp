@@ -60,6 +60,7 @@ data: {
 >>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
       # List of keywords from "keywords" section that are not reserved.
       nonReservedKeywords: [
+<<<<<<< HEAD
         "A"
         "ABSOLUTE"
         "ACTION"
@@ -418,6 +419,8 @@ data: {
 >>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 
         # not in core, added in server
+=======
+>>>>>>> bfa324222 (Revert "[CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved")
         "IF"
         "MATERIALIZED"
         "STORED"
