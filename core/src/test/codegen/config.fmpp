@@ -14,24 +14,32 @@
 # limitations under the License.
 
 data: {
-    parser: {
-      # Generated parser implementation class package and name
-      package: "org.apache.calcite.sql.parser.parserextensiontesting",
-      class: "ExtensionSqlParserImpl",
+  # Data declarations for this parser.
+  #
+  # Default declarations are in default_config.fmpp; if you do not include a
+  # declaration ('imports' or 'nonReservedKeywords', for example) in this file,
+  # FMPP will use the declaration from default_config.fmpp.
+  parser: {
+    # Generated parser implementation class package and name
+    package: "org.apache.calcite.sql.parser.parserextensiontesting",
+    class: "ExtensionSqlParserImpl",
 
-      # List of import statements.
-      imports: [
-        "org.apache.calcite.sql.SqlCreate",
-        "org.apache.calcite.sql.parser.parserextensiontesting.SqlCreateTable",
-        "org.apache.calcite.sql.parser.parserextensiontesting.SqlUploadJarNode"
-      ]
+    # List of additional classes and packages to import.
+    # Example: "org.apache.calcite.sql.*", "java.util.List".
+    imports: [
+      "org.apache.calcite.sql.SqlCreate",
+      "org.apache.calcite.sql.parser.parserextensiontesting.SqlCreateTable",
+      "org.apache.calcite.sql.parser.parserextensiontesting.SqlUploadJarNode"
+    ]
 
-      # List of keywords.
-      keywords: [
-        "UPLOAD"
-        "JAR"
-      ]
+    # List of new keywords. Example: "DATABASES", "TABLES". If the keyword is
+    # not a reserved keyword, add it to the 'nonReservedKeywords' section.
+    keywords: [
+      "UPLOAD"
+      "JAR"
+    ]
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -345,12 +353,23 @@ data: {
       # Example: LeftSemiJoin()
       joinTypes: [
       ]
+=======
+    # List of methods for parsing custom SQL statements.
+    # Return type of method implementation should be 'SqlNode'.
+    # Example: "SqlShowDatabases()", "SqlShowTables()".
+    statementParserMethods: [
+      "SqlDescribeSpacePower()"
+    ]
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 
-      # List of additional join types. Each is a method with no arguments.
-      # Example: LeftSemiJoin()
-      joinTypes: [
-      ]
+    # List of methods for parsing extensions to "ALTER <scope>" calls.
+    # Each must accept arguments "(SqlParserPos pos, String scope)".
+    # Example: "SqlAlterTable".
+    alterStatementParserMethods: [
+      "SqlUploadJarNode"
+    ]
 
+<<<<<<< HEAD
       # List of methods for parsing custom SQL statements.
       statementParserMethods: [
         "SqlDescribeSpacePower()"
@@ -417,6 +436,15 @@ data: {
 
 <<<<<<< HEAD
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+    # List of methods for parsing extensions to "CREATE [OR REPLACE]" calls.
+    # Each must accept arguments "(SqlParserPos pos, boolean replace)".
+    # Example: "SqlCreateForeignSchema".
+    createStatementParserMethods: [
+      "SqlCreateTable"
+    ]
+
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     # List of files in @includes directory that have parser method
     # implementations for parsing custom SQL statements, literals or types
     # given as part of "statementParserMethods", "literalParserMethods" or
@@ -424,6 +452,7 @@ data: {
     implementationFiles: [
       "parserImpls.ftl"
     ]
+<<<<<<< HEAD
 <<<<<<< HEAD
     includePosixOperators: false
 =======
@@ -470,6 +499,9 @@ data: {
 
     }
 >>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
+=======
+  }
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 }
 
 freemarkerLinks: {

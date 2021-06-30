@@ -32,9 +32,12 @@ parser: {
   nonReservedKeywords: [
     "A"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "ABSENT"
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "ABSOLUTE"
     "ACTION"
     "ADA"
@@ -73,9 +76,12 @@ parser: {
     "COMMAND_FUNCTION_CODE"
     "COMMITTED"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "CONDITIONAL"
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "CONDITION_NUMBER"
     "CONNECTION"
     "CONNECTION_NAME"
@@ -91,9 +97,12 @@ parser: {
     "DATETIME_INTERVAL_CODE"
     "DATETIME_INTERVAL_PRECISION"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "DAYS"
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "DECADE"
     "DEFAULTS"
     "DEFERRABLE"
@@ -114,12 +123,16 @@ parser: {
     "DYNAMIC_FUNCTION"
     "DYNAMIC_FUNCTION_CODE"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "ENCODING"
     "EPOCH"
     "ERROR"
 =======
     "EPOCH"
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+    "EPOCH"
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "EXCEPTION"
     "EXCLUDE"
     "EXCLUDING"
@@ -127,9 +140,12 @@ parser: {
     "FIRST"
     "FOLLOWING"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "FORMAT"
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "FORTRAN"
     "FOUND"
     "FRAC_SECOND"
@@ -142,6 +158,7 @@ parser: {
     "GRANTED"
     "HIERARCHY"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "HOURS"
     "IGNORE"
     "IMMEDIATE"
@@ -153,6 +170,11 @@ parser: {
     "IMMEDIATELY"
     "IMPLEMENTATION"
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+    "IMMEDIATE"
+    "IMMEDIATELY"
+    "IMPLEMENTATION"
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "INCLUDING"
     "INCREMENT"
     "INITIALLY"
@@ -160,6 +182,7 @@ parser: {
     "INSTANCE"
     "INSTANTIABLE"
     "INVOKER"
+<<<<<<< HEAD
 <<<<<<< HEAD
     "ISODOW"
     "ISOLATION"
@@ -176,6 +199,11 @@ parser: {
     "JAVA"
     "JSON"
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+    "ISOLATION"
+    "JAVA"
+    "JSON"
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "K"
     "KEY"
     "KEY_MEMBER"
@@ -196,6 +224,7 @@ parser: {
     "MICROSECOND"
     "MILLENNIUM"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "MILLISECOND"
     "MINUTES"
     "MINVALUE"
@@ -203,14 +232,20 @@ parser: {
 =======
     "MINVALUE"
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+    "MINVALUE"
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "MORE_"
     "MUMPS"
     "NAME"
     "NAMES"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "NANOSECOND"
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "NESTING"
     "NORMALIZED"
     "NULLABLE"
@@ -235,6 +270,7 @@ parser: {
     "PARTIAL"
     "PASCAL"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "PASSING"
     "PASSTHROUGH"
     "PAST"
@@ -245,6 +281,11 @@ parser: {
     "PAST"
     "PATH"
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+    "PASSTHROUGH"
+    "PAST"
+    "PATH"
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "PLACING"
     "PLAN"
     "PLI"
@@ -259,9 +300,12 @@ parser: {
     "REPEATABLE"
     "REPLACE"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "RESPECT"
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "RESTART"
     "RESTRICT"
     "RETURNED_CARDINALITY"
@@ -269,9 +313,12 @@ parser: {
     "RETURNED_OCTET_LENGTH"
     "RETURNED_SQLSTATE"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "RETURNING"
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "ROLE"
     "ROUTINE"
     "ROUTINE_CATALOG"
@@ -279,9 +326,12 @@ parser: {
     "ROUTINE_SCHEMA"
     "ROW_COUNT"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "SCALAR"
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "SCALE"
     "SCHEMA"
     "SCHEMA_NAME"
@@ -289,9 +339,12 @@ parser: {
     "SCOPE_NAME"
     "SCOPE_SCHEMA"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "SECONDS"
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "SECTION"
     "SECURITY"
     "SELF"
@@ -380,12 +433,16 @@ parser: {
     "UNBOUNDED"
     "UNCOMMITTED"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "UNCONDITIONAL"
     "UNDER"
     "UNPIVOT"
 =======
     "UNDER"
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+    "UNDER"
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "UNNAMED"
     "USAGE"
     "USER_DEFINED_TYPE_CATALOG"
@@ -393,11 +450,14 @@ parser: {
     "USER_DEFINED_TYPE_NAME"
     "USER_DEFINED_TYPE_SCHEMA"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "UTF16"
     "UTF32"
     "UTF8"
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "VERSION"
     "VIEW"
     "WEEK"
@@ -406,9 +466,12 @@ parser: {
     "WRITE"
     "XML"
 <<<<<<< HEAD
+<<<<<<< HEAD
     "YEARS"
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
+=======
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "ZONE"
   ]
 

@@ -33,11 +33,17 @@
 # part of the calcite-core-<version>.jar under "codegen" directory.
 
 data: {
+  # Data declarations for this parser.
+  #
+  # Default declarations are in default_config.fmpp; if you do not include a
+  # declaration ('imports' or 'nonReservedKeywords', for example) in this file,
+  # FMPP will use the declaration from default_config.fmpp.
   parser: {
     # Generated parser implementation package and class name.
     package: "org.apache.calcite.sql.parser.impl",
     class: "SqlParserImpl",
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -755,6 +761,8 @@ data: {
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
 >>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
+=======
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     # List of files in @includes directory that have parser method
     # implementations for parsing custom SQL statements, literals or types
     # given as part of "statementParserMethods", "literalParserMethods" or
@@ -762,6 +770,7 @@ data: {
     implementationFiles: [
       "parserImpls.ftl"
     ]
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     includePosixOperators: false
@@ -773,6 +782,8 @@ data: {
     includeBraces: true
     includeAdditionalDeclarations: false
 >>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
+=======
+>>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
   }
 }
 
