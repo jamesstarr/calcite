@@ -2954,13 +2954,6 @@ public class SqlToRelConverter {
     return Collections.emptyList();
   }
 
-<<<<<<< HEAD
-  private RexNode convertJoinCondition(Blackboard bb,
-      SqlValidatorNamespace leftNamespace,
-      SqlValidatorNamespace rightNamespace,
-      SqlNode condition,
-      JoinConditionType conditionType,
-=======
 =======
   private void convertJoin(Blackboard bb, SqlJoin join) {
     final SqlValidatorScope scope = validator.getJoinScope(join);
@@ -5526,7 +5519,6 @@ public class SqlToRelConverter {
      * extracting DESC, NULLS LAST and NULLS FIRST flags first.
      */
     public RexFieldCollation convertSortExpression(SqlNode expr,
->>>>>>> 5a56f040b (DX-56145 Qualify Support in Calcite)
                                                    RelFieldCollation.Direction direction,
                                                    RelFieldCollation.NullDirection nullDirection) {
       switch (expr.getKind()) {

@@ -544,15 +544,10 @@ public class PushProjector {
       } else {
         newExpr = projExpr;
       }
-      final String originalFieldName = findOriginalFieldName(projExpr);
-      final String newAlias;
-      if (originalFieldName != null) {
-        newAlias = originalFieldName;
-      } else {
-        newAlias = SqlUtil.deriveAliasFromOrdinal(preserveExpOrdinal);
-      }
-      newProjects.add(Pair.of(newExpr, newAlias));
-      preserveExpOrdinal++;
+      newProjects.add(
+          Pair.of(
+              newExpr,
+              SqlUtil.deriveAliasFromOrdinal(preserveExpOrdinal++)));
     }
 
     return (Project) relBuilder.push(projChild)
