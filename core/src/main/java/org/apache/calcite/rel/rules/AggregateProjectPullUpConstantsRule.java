@@ -236,6 +236,24 @@ public class AggregateProjectPullUpConstantsRule extends RelOptRule {
       if (i >= groupCount) {
         // Aggregate expressions' names and positions are unchanged.
         expr = relBuilder.field(i - map.size());
+<<<<<<< HEAD
+=======
+        // When newGroupCount is 0 the cloned aggregate calls (e.g. MAX)
+        // may lose NOT NULL attribute.
+        RelDataType originalType = field.getType();
+        if (!originalType.equals(expr.getType())) {
+          expr = rexBuilder.makeCast(originalType, expr, true);
+        }
+      } else if (map.containsKey(i)) {
+        // Re-generate the constant expression in the project.
+        RelDataType originalType =
+            aggregate.getRowType().getFieldList().get(projects.size()).getType();
+        if (!originalType.equals(map.get(i).getType())) {
+          expr = rexBuilder.makeCast(originalType, map.get(i), true);
+        } else {
+          expr = map.get(i);
+        }
+>>>>>>> 552aa99f0 ([CALCITE-4634] preserve IS NULL when GROUP BY is empty)
       } else {
         int pos = aggregate.getGroupSet().nth(i);
         if (map.containsKey(pos)) {
