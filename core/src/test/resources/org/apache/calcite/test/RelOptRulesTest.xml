@@ -8374,6 +8374,60 @@ LogicalProject(EXPR$0=[$0], EXPR$1=[$2])
 ]]>
         </Resource>
     </TestCase>
+    <TestCase name="testAggregateConstantKeyRuleWithRemoveAll3">
+        <Resource name="sql">
+            <![CDATA[select 'abc'
+from sales.emp
+group by ('abc', 'def')
+]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(EXPR$0=[$0])
+  LogicalAggregate(group=[{0, 1}])
+    LogicalProject(EXPR$0=['abc'], $f1=['def'])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(EXPR$0=[$0])
+  LogicalProject(EXPR$0=['abc'], $f1=['def'])
+    LogicalFilter(condition=[>($0, 0)])
+      LogicalAggregate(group=[{}], agg#0=[COUNT()])
+        LogicalProject(EXPR$0=['abc'], $f1=['def'])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testAggregateConstantKeyRuleWithRemoveAll4">
+        <Resource name="sql">
+            <![CDATA[select 'abc', max('def')
+from sales.emp
+group by ('abc', 'def')
+having count('def') > 3 or count('abc') > 5]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(EXPR$0=[$0], EXPR$1=[$2])
+  LogicalFilter(condition=[OR(>($3, 3), >($3, 5))])
+    LogicalAggregate(group=[{0, 1}], EXPR$1=[MAX($1)], agg#1=[COUNT()])
+      LogicalProject(EXPR$0=['abc'], $f1=['def'])
+        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(EXPR$0=[$0], EXPR$1=[$2])
+  LogicalFilter(condition=[OR(>($3, 3), >($3, 5))])
+    LogicalProject(EXPR$0=['abc'], $f1=['def'], EXPR$1=[CAST($0):CHAR(3) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL], $f3=[$1])
+      LogicalFilter(condition=[>($2, 0)])
+        LogicalAggregate(group=[{}], EXPR$1=[MAX($1)], agg#1=[COUNT()], agg#2=[COUNT()])
+          LogicalProject(EXPR$0=['abc'], $f1=['def'])
+            LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
     <TestCase name="testExpandProjectInNullable">
         <Resource name="sql">
             <![CDATA[with e2 as (
