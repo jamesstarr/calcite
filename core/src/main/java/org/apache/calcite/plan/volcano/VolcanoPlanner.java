@@ -232,7 +232,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
   /**
    * Whether rels with Convention.NONE has infinite cost.
    */
-  private boolean noneConventionHaveInfiniteCost = true;
+  private boolean noneConventionHasInfiniteCost = true;
 
   private final List<RelOptMaterialization> materializations =
       Lists.newArrayList();
@@ -946,11 +946,11 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
 
   /**
    * Sets whether this planner should consider rel nodes with Convention.NONE
-   * to have inifinte cost or not.
-   * @param infinite Whether to make none convention rel nodes inifite cost
+   * to have infinite cost or not.
+   * @param infinite Whether to make none convention rel nodes infinite cost
    */
-  public void setNoneConventionHaveInfiniteCost(boolean infinite) {
-    this.noneConventionHaveInfiniteCost = infinite;
+  public void setNoneConventionHasInfiniteCost(boolean infinite) {
+    this.noneConventionHasInfiniteCost = infinite;
   }
 
   public RelOptCost getCost(RelNode rel, RelMetadataQuery mq) {
@@ -958,7 +958,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     if (rel instanceof RelSubset) {
       return ((RelSubset) rel).bestCost;
     }
-    if (noneConventionHaveInfiniteCost
+    if (noneConventionHasInfiniteCost
         && rel.getTraitSet().getTrait(ConventionTraitDef.INSTANCE) == Convention.NONE) {
       return costFactory.makeInfiniteCost();
     }
