@@ -136,6 +136,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import javax.sql.DataSource;
 
 import static org.apache.calcite.test.Matchers.isLinux;
@@ -241,6 +242,20 @@ public class JdbcTest {
 
   public static List<Pair<String, String>> getFoodmartQueries() {
     return FOODMART_QUERIES;
+  }
+
+  static Stream<String> explainFormats() {
+    return Stream.of("text", "dot");
+  }
+
+  /** Runs a task (such as a test) with and without expansion. */
+  static void forEachExpand(Runnable r) {
+    try (TryThreadLocal.Memo ignored = Prepare.THREAD_EXPAND.push(false)) {
+      r.run();
+    }
+    try (TryThreadLocal.Memo ignored = Prepare.THREAD_EXPAND.push(true)) {
+      r.run();
+    }
   }
 
   /** Tests a modifiable view. */
@@ -1971,6 +1986,10 @@ public class JdbcTest {
   }
 
   @Test public void testMultisetQuery() {
+    forEachExpand(this::checkMultisetQuery);
+  }
+
+  void checkMultisetQuery() {
     CalciteAssert.hr()
         .query("select multiset(\n"
             + "  select \"deptno\", \"empid\" from \"hr\".\"emps\") as a\n"
@@ -1980,6 +1999,10 @@ public class JdbcTest {
 
   @Ignore // TODO re-activite when multiset is cherry picked
   @Test public void testMultisetQueryWithSingleColumn() {
+    forEachExpand(this::checkMultisetQueryWithSingleColumn);
+  }
+
+  void checkMultisetQueryWithSingleColumn() {
     CalciteAssert.hr()
         .query("select multiset(\n"
             + "  select \"deptno\" from \"hr\".\"emps\") as a\n"

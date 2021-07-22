@@ -292,30 +292,6 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
   }
 
   private void setTimeoutIfPossible(Statement statement) throws SQLException {
-<<<<<<< HEAD
-    if (timeout == 0) {
-      return;
-    }
-    long now = System.currentTimeMillis();
-    long secondsLeft = (queryStart + timeout - now) / 1000;
-    if (secondsLeft <= 0) {
-      throw Static.RESOURCE.queryExecutionTimeoutReached(
-          String.valueOf(timeout),
-          String.valueOf(Instant.ofEpochMilli(queryStart))).ex();
-    }
-    if (secondsLeft > Integer.MAX_VALUE) {
-      // Just ignore the timeout if it happens to be too big, we can't squeeze it into int
-      return;
-    }
-    try {
-      statement.setQueryTimeout((int) secondsLeft);
-    } catch (SQLFeatureNotSupportedException e) {
-      if (!timeoutSetFailed && LOGGER.isDebugEnabled()) {
-        // We don't really want to print this again and again if enumerable is used multiple times
-        LOGGER.debug("Failed to set query timeout " + secondsLeft + " seconds", e);
-        timeoutSetFailed = true;
-      }
-=======
     try {
       statement.setQueryTimeout(10);
     } catch (SQLFeatureNotSupportedException e) {
@@ -442,7 +418,6 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
     void enrich(PreparedStatement statement) throws SQLException;
   }
 }
->>>>>>> 643817238 ([CALCITE-563] In JDBC adapter, push bindable parameters down to the underlying JDBC data source (Vladimir Sitnikov, Piotr Bojko))
 
   /**
    * Consumer for decorating a {@link PreparedStatement}, that is, setting

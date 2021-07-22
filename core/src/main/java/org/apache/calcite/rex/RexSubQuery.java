@@ -29,6 +29,7 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
@@ -129,21 +130,27 @@ public class RexSubQuery extends RexCall {
   }
 
   /** Creates an ARRAY sub-query. */
-  public static RexSubQuery array(RelNode rel) {
+  public static RexSubQuery array(RelNode rel, @Nullable CorrelationId correlationId) {
     final RelDataTypeFactory typeFactory = rel.getCluster().getTypeFactory();
     final RelDataType type =
         typeFactory.createArrayType(rel.getRowType(), -1L);
     return new RexSubQuery(type, SqlStdOperatorTable.ARRAY_QUERY,
-        ImmutableList.of(), rel, null);
+        ImmutableList.of(), rel, correlationId);
   }
 
   /** Creates a MAP sub-query. */
-  public static RexSubQuery map(RelNode rel) {
+  public static RexSubQuery map(RelNode rel, @Nullable CorrelationId correlationId) {
     final RelDataTypeFactory typeFactory = rel.getCluster().getTypeFactory();
+    final RelDataType rowType = rel.getRowType();
+    Preconditions.checkArgument(rowType.getFieldCount() == 2,
+        "MAP requires exactly two fields, got %s; row type %s",
+        rowType.getFieldCount(), rowType);
+    final List<RelDataTypeField> fieldList = rowType.getFieldList();
     final RelDataType type =
-        typeFactory.createMultisetType(rel.getRowType(), -1L);
+        typeFactory.createMapType(fieldList.get(0).getType(),
+            fieldList.get(1).getType());
     return new RexSubQuery(type, SqlStdOperatorTable.MAP_QUERY,
-        ImmutableList.of(), rel, null);
+        ImmutableList.of(), rel, correlationId);
   }
 
   public <R> R accept(RexVisitor<R> visitor) {

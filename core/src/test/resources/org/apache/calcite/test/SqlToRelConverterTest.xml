@@ -572,6 +572,7 @@ LogicalProject(DEPTNO=[$0], ENAME=[$1])
         LogicalFilter(condition=[=($7, $cor0.DEPTNO)])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
+<<<<<<< HEAD
         </Resource>
     </TestCase>
     <TestCase name="testCorrelatedSubQueryInAggregate">
@@ -616,6 +617,8 @@ LogicalProject(DEPTNO=[$0], NUM=[$2])
     LogicalFilter(condition=[=($cor0.DEPTNO, $0)])
       LogicalTableFunctionScan(invocation=[RAMP($cor0.DEPTNO)], rowType=[RecordType(INTEGER I)])
 ]]>
+=======
+>>>>>>> 06bb6f836 ([CALCITE-4946] Add method RelBuilder.size())
     </Resource>
   </TestCase>
   <TestCase name="testCorrelatedArraySubQuery">
@@ -7332,6 +7335,9 @@ LogicalSort(fetch=[1])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 06bb6f836 ([CALCITE-4946] Add method RelBuilder.size())
     </Resource>
   </TestCase>
   <TestCase name="testUnnestArrayNoExpand">
@@ -7362,6 +7368,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 LogicalProject(EMPNO=[$0], JOB=[$2])
   LogicalFilter(condition=[=($7, $cor2.DEPTNO)])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+<<<<<<< HEAD
 })])
   LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 =======
@@ -7382,6 +7389,10 @@ LogicalUnion(all=[true])
 })])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 >>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
+=======
+})])
+  LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+>>>>>>> 06bb6f836 ([CALCITE-4946] Add method RelBuilder.size())
 ]]>
     </Resource>
   </TestCase>

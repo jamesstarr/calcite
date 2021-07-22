@@ -42,6 +42,22 @@ public interface SqlReturnTypeInference {
    */
   RelDataType inferReturnType(
       SqlOperatorBinding opBinding);
+<<<<<<< HEAD
+=======
+
+  /** Returns a return-type inference that applies this rule then a
+   * transform. */
+  default SqlReturnTypeInference andThen(SqlTypeTransform transform) {
+    return ReturnTypes.cascade(this, transform);
+  }
+
+  /** Returns a return-type inference that applies this rule then another
+   * rule, until one of them returns a not-null result. */
+  default SqlReturnTypeInference orElse(SqlReturnTypeInference transform) {
+    return ReturnTypes.chain(this, transform);
+  }
+}
+>>>>>>> 06bb6f836 ([CALCITE-4946] Add method RelBuilder.size())
 
   /** Returns a return-type inference that applies this rule then a
    * transform. */

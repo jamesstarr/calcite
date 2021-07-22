@@ -52,7 +52,7 @@ public class SqlMultisetQueryConstructor extends SqlSpecialOperator {
 
   public SqlMultisetQueryConstructor() {
     this("MULTISET", SqlKind.MULTISET_QUERY_CONSTRUCTOR,
-        SqlTypeTransforms.TO_MULTISET_QUERY);
+        SqlTypeTransforms.TO_MULTISET);
   }
 
   protected SqlMultisetQueryConstructor(String name, SqlKind kind,
@@ -89,12 +89,12 @@ public class SqlMultisetQueryConstructor extends SqlSpecialOperator {
       SqlCall call) {
     SqlSelect subSelect = call.operand(0);
     subSelect.validateExpr(validator, scope);
-    SqlValidatorNamespace ns = validator.getNamespace(subSelect);
-    assert null != ns.getRowType();
-    return SqlTypeUtil.createMultisetType(
-        validator.getTypeFactory(),
-        ns.getRowType(),
-        false);
+    final SqlValidatorNamespace ns =
+        requireNonNull(validator.getNamespace(subSelect),
+            () -> "namespace is missing for " + subSelect);
+    final RelDataType rowType = requireNonNull(ns.getRowType(), "rowType");
+    final SqlCallBinding opBinding = new SqlCallBinding(validator, scope, call);
+    return typeTransform.transformType(opBinding, rowType);
   }
 
   public void unparse(

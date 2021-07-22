@@ -223,6 +223,41 @@ public class RelBuilder {
     return new RelBuilder(context, cluster, relOptSchema);
   }
 
+  /** Performs an action on this RelBuilder.
+   *
+   * <p>For example, consider the following code:
+   *
+   * <blockquote><pre>
+   *   RelNode filterAndRename(RelBuilder relBuilder, RelNode rel,
+   *       RexNode condition, List&lt;String&gt; fieldNames) {
+   *     relBuilder.push(rel)
+   *         .filter(condition);
+   *     if (fieldNames != null) {
+   *       relBuilder.rename(fieldNames);
+   *     }
+   *     return relBuilder
+   *         .build();</pre>
+   * </blockquote>
+   *
+   * <p>The pipeline is disrupted by the 'if'. The {@code let} method
+   * allows you to perform the flow as a single pipeline:
+   *
+   * <blockquote><pre>
+   *   RelNode filterAndRename(RelBuilder relBuilder, RelNode rel,
+   *       RexNode condition, List&lt;String&gt; fieldNames) {
+   *     return relBuilder.push(rel)
+   *         .filter(condition)
+   *         .let(r -&gt; fieldNames == null ? r : r.rename(fieldNames))
+   *         .build();</pre>
+   * </blockquote>
+   *
+   * <p>In pipelined cases such as this one, the lambda must return this
+   * RelBuilder. But {@code let} return values of other types.
+   */
+  public <R> R let(java.util.function.Function<RelBuilder, R> consumer) {
+    return consumer.apply(this);
+  }
+
   /** Returns the type factory. */
   public RelDataTypeFactory getTypeFactory() {
     return cluster.getTypeFactory();
@@ -271,6 +306,11 @@ public class RelBuilder {
       push(node);
     }
     return this;
+  }
+
+  /** Returns the size of the stack. */
+  public int size() {
+    return stack.size();
   }
 
   /** Returns the final relational expression.
@@ -675,7 +715,7 @@ public class RelBuilder {
    * FROM Depts
    * }</pre> */
   public RexSubQuery arrayQuery(Function<RelBuilder, RelNode> f) {
-    return RexSubQuery.array(f.apply(this));
+    return RexSubQuery.array(f.apply(this), null);
   }
 
   /** Creates a MULTISET sub-query.
@@ -722,7 +762,7 @@ public class RelBuilder {
    * FROM Depts
    * }</pre> */
   public RexSubQuery mapQuery(Function<RelBuilder, RelNode> f) {
-    return RexSubQuery.map(f.apply(this));
+    return RexSubQuery.map(f.apply(this), null);
   }
 
   /** Creates an AND. */

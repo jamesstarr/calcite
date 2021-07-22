@@ -1379,7 +1379,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql("select*from unnest(array(select*from dept))").ok();
   }
 
-  @Test void testUnnestArrayNoExpand() {
+  @Test public void testUnnestArrayNoExpand() {
     final String sql = "select name,\n"
         + "    array (select *\n"
         + "        from emp\n"
@@ -1394,7 +1394,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).expand(false).ok();
   }
 
-  @Test void testUnnestWithOrdinality() {
+  @Test public void testUnnestWithOrdinality() {
     final String sql =
         "select*from unnest(array(select*from dept)) with ordinality";
     sql(sql).ok();
@@ -1420,11 +1420,11 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql("select 'abc',multiset[deptno,sal] from emp").ok();
   }
 
-  @Test void testCorrelationJoin() {
+  @Test public void testCorrelationJoin() {
     checkCorrelationJoin(true);
   }
 
-  @Test void testCorrelationJoinRex() {
+  @Test public void testCorrelationJoinRex() {
     checkCorrelationJoin(false);
   }
 
