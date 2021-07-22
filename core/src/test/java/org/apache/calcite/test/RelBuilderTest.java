@@ -128,37 +128,6 @@ public class RelBuilderTest {
         .programs(Programs.heuristicJoinOrder(Programs.RULE_SET, true, 2));
   }
 
-<<<<<<< HEAD
-  /** Creates a RelBuilder with default config. */
-  static RelBuilder createBuilder() {
-    return createBuilder(c -> c);
-  }
-
-  /** Creates a config builder that will contain a view, "MYVIEW", and also
-   * the SCOTT JDBC schema, whose tables implement
-   * {@link org.apache.calcite.schema.TranslatableTable}. */
-  static Frameworks.ConfigBuilder expandingConfig(Connection connection)
-      throws SQLException {
-    final CalciteConnection calciteConnection =
-        connection.unwrap(CalciteConnection.class);
-    final SchemaPlus root = calciteConnection.getRootSchema();
-    CalciteAssert.SchemaSpec spec = CalciteAssert.SchemaSpec.SCOTT;
-    CalciteAssert.addSchema(root, spec);
-    final String viewSql =
-        String.format(Locale.ROOT, "select * from \"%s\".\"%s\" where 1=1",
-            spec.schemaName, "EMP");
-
-    // create view
-    ViewTableMacro macro = ViewTable.viewMacro(root, viewSql,
-        Collections.singletonList("test"), Arrays.asList("test", "view"), false);
-
-    // register view (in root schema)
-    root.add("MYVIEW", macro);
-
-    return Frameworks.newConfigBuilder().defaultSchema(root);
-  }
-
-=======
   static RelBuilder createBuilder(UnaryOperator<RelBuilder.Config> transform) {
     final Frameworks.ConfigBuilder configBuilder = config();
     configBuilder.context(
@@ -3222,7 +3191,6 @@ public class RelBuilderTest {
     assertThat(root, hasTree(expected));
   }
 }
->>>>>>> 8eb4baa00 ([CALCITE-3183] Trimming method for Filter rel uses wrong traitSet)
 
   /** Tests filter builder with correlation variables */
   @Test void testFilterWithCorrelationVariables() {

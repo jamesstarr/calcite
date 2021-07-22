@@ -16,7 +16,7 @@
  */
 package org.apache.calcite.rel.core;
 
-import org.apache.calcite.linq4j.function.Experimental;
+>>>>>>> 273e6a302 (DX-34523:cherry pick 051b6919dfc5b60406e81d5e8b8d)
 import org.apache.calcite.plan.Context;
 import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.RelOptCluster;
@@ -107,6 +107,7 @@ public class RelFactories {
   public static final TableScanFactory DEFAULT_TABLE_SCAN_FACTORY =
       new TableScanFactoryImpl();
 
+<<<<<<< HEAD
   public static final TableFunctionScanFactory
       DEFAULT_TABLE_FUNCTION_SCAN_FACTORY = new TableFunctionScanFactoryImpl();
 
@@ -119,23 +120,19 @@ public class RelFactories {
   public static final RepeatUnionFactory DEFAULT_REPEAT_UNION_FACTORY =
       new RepeatUnionFactoryImpl();
 
+=======
   public static final Struct DEFAULT_STRUCT =
       new Struct(DEFAULT_FILTER_FACTORY,
           DEFAULT_PROJECT_FACTORY,
           DEFAULT_AGGREGATE_FACTORY,
           DEFAULT_SORT_FACTORY,
-          DEFAULT_EXCHANGE_FACTORY,
-          DEFAULT_SORT_EXCHANGE_FACTORY,
           DEFAULT_SET_OP_FACTORY,
           DEFAULT_JOIN_FACTORY,
+          DEFAULT_SEMI_JOIN_FACTORY,
           DEFAULT_CORRELATE_FACTORY,
           DEFAULT_VALUES_FACTORY,
           DEFAULT_TABLE_SCAN_FACTORY,
-          DEFAULT_TABLE_FUNCTION_SCAN_FACTORY,
-          DEFAULT_SNAPSHOT_FACTORY,
-          DEFAULT_MATCH_FACTORY,
-          DEFAULT_SPOOL_FACTORY,
-          DEFAULT_REPEAT_UNION_FACTORY);
+          DEFAULT_MATCH_FACTORY);
 
   /** A {@link RelBuilderFactory} that creates a {@link RelBuilder} that will
    * create logical relational expressions for everything. */
@@ -586,6 +583,79 @@ public class RelFactories {
           partitionKeys, orderKeys, interval);
     }
   }
+<<<<<<< HEAD
+=======
+
+  /** Immutable record that contains an instance of each factory. */
+  public static class Struct {
+    public final FilterFactory filterFactory;
+    public final ProjectFactory projectFactory;
+    public final AggregateFactory aggregateFactory;
+    public final SortFactory sortFactory;
+    public final SetOpFactory setOpFactory;
+    public final JoinFactory joinFactory;
+    public final SemiJoinFactory semiJoinFactory;
+    public final CorrelateFactory correlateFactory;
+    public final ValuesFactory valuesFactory;
+    public final TableScanFactory scanFactory;
+    public final MatchFactory matchFactory;
+
+    private Struct(FilterFactory filterFactory,
+        ProjectFactory projectFactory,
+        AggregateFactory aggregateFactory,
+        SortFactory sortFactory,
+        SetOpFactory setOpFactory,
+        JoinFactory joinFactory,
+        SemiJoinFactory semiJoinFactory,
+        CorrelateFactory correlateFactory,
+        ValuesFactory valuesFactory,
+        TableScanFactory scanFactory,
+        MatchFactory matchFactory) {
+      this.filterFactory = Objects.requireNonNull(filterFactory);
+      this.projectFactory = Objects.requireNonNull(projectFactory);
+      this.aggregateFactory = Objects.requireNonNull(aggregateFactory);
+      this.sortFactory = Objects.requireNonNull(sortFactory);
+      this.setOpFactory = Objects.requireNonNull(setOpFactory);
+      this.joinFactory = Objects.requireNonNull(joinFactory);
+      this.semiJoinFactory = Objects.requireNonNull(semiJoinFactory);
+      this.correlateFactory = Objects.requireNonNull(correlateFactory);
+      this.valuesFactory = Objects.requireNonNull(valuesFactory);
+      this.scanFactory = Objects.requireNonNull(scanFactory);
+      this.matchFactory = Objects.requireNonNull(matchFactory);
+    }
+
+    public static @Nonnull Struct fromContext(Context context) {
+      Struct struct = context.unwrap(Struct.class);
+      if (struct != null) {
+        return struct;
+      }
+      return new Struct(
+          Util.first(context.unwrap(FilterFactory.class),
+              DEFAULT_FILTER_FACTORY),
+          Util.first(context.unwrap(ProjectFactory.class),
+              DEFAULT_PROJECT_FACTORY),
+          Util.first(context.unwrap(AggregateFactory.class),
+              DEFAULT_AGGREGATE_FACTORY),
+          Util.first(context.unwrap(SortFactory.class),
+              DEFAULT_SORT_FACTORY),
+          Util.first(context.unwrap(SetOpFactory.class),
+              DEFAULT_SET_OP_FACTORY),
+          Util.first(context.unwrap(JoinFactory.class),
+              DEFAULT_JOIN_FACTORY),
+          Util.first(context.unwrap(SemiJoinFactory.class),
+              DEFAULT_SEMI_JOIN_FACTORY),
+          Util.first(context.unwrap(CorrelateFactory.class),
+              DEFAULT_CORRELATE_FACTORY),
+          Util.first(context.unwrap(ValuesFactory.class),
+              DEFAULT_VALUES_FACTORY),
+          Util.first(context.unwrap(TableScanFactory.class),
+              DEFAULT_TABLE_SCAN_FACTORY),
+          Util.first(context.unwrap(MatchFactory.class),
+              DEFAULT_MATCH_FACTORY));
+    }
+  }
+}
+>>>>>>> 273e6a302 (DX-34523:cherry pick 051b6919dfc5b60406e81d5e8b8d)
 
   /**
    * Can create a {@link Spool} of
