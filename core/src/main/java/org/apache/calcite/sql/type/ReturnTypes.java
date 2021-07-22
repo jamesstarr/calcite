@@ -365,6 +365,15 @@ public abstract class ReturnTypes {
       cascade(MULTISET, SqlTypeTransforms.ONLY_COLUMN);
 
   /**
+   * Returns a MAP type.
+   *
+   * <p>For example, given {@code Record(f0: INTEGER, f1: DATE)}, returns
+   * {@code (INTEGER, DATE) MAP}.
+   */
+  public static final SqlReturnTypeInference TO_MAP =
+      ARG0.andThen(SqlTypeTransforms.TO_MAP);
+
+  /**
    * Type-inference strategy whereby the result type of a call is
    * {@link #ARG0_INTERVAL_NULLABLE} and {@link #LEAST_RESTRICTIVE}. These rules
    * are used for integer division.

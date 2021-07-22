@@ -51,6 +51,7 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexUtil;
+import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.util.Util;
 import org.apache.calcite.util.mapping.Mappings;
@@ -60,6 +61,7 @@ import com.google.common.collect.Lists;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /** Utilities for dealing with {@link MutableRel}s. */
 public abstract class MutableRels {
@@ -152,6 +154,32 @@ public abstract class MutableRels {
         });
   }
 
+  /**
+   * Construct expression list of Project by the given fields of the input.
+   */
+  public static List<RexNode> createProjectExprs(final MutableRel child,
+      final List<Integer> posList) {
+    return posList.stream().map(pos -> RexInputRef.of(pos, child.rowType))
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Construct expression list of Project by the given fields of the input.
+   */
+  public static List<RexNode> createProjects(final MutableRel child,
+      final List<RexNode> projects) {
+    List<RexNode> rexNodeList = new ArrayList<>(projects.size());
+    for (RexNode project : projects) {
+      if (project instanceof RexInputRef) {
+        RexInputRef rexInputRef = (RexInputRef) project;
+        rexNodeList.add(RexInputRef.of(rexInputRef.getIndex(), child.rowType));
+      } else {
+        rexNodeList.add(project);
+      }
+    }
+    return rexNodeList;
+  }
+
   /** Equivalence to {@link org.apache.calcite.plan.RelOptUtil#createCastRel}
    * for {@link MutableRel}. */
   public static MutableRel createCastRel(MutableRel rel,
@@ -209,7 +237,7 @@ public abstract class MutableRels {
     case COLLECT: {
       final MutableCollect collect = (MutableCollect) node;
       final RelNode child = fromMutable(collect.getInput(), relBuilder);
-      return new Collect(collect.cluster, child.getTraitSet(), child, collect.fieldName);
+      return Collect.create(child, SqlTypeName.MULTISET, collect.fieldName);
     }
     case UNCOLLECT: {
       final MutableUncollect uncollect = (MutableUncollect) node;

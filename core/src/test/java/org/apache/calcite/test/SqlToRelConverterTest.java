@@ -1220,6 +1220,21 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql("select*from unnest(array(select*from dept))").ok();
   }
 
+  @Test public void testUnnestArrayNoExpand() {
+    final String sql = "select name,\n"
+        + "    array (select *\n"
+        + "        from emp\n"
+        + "        where deptno = dept.deptno) as emp_array,\n"
+        + "    multiset (select *\n"
+        + "        from emp\n"
+        + "        where deptno = dept.deptno) as emp_multiset,\n"
+        + "    map (select empno, job\n"
+        + "        from emp\n"
+        + "        where deptno = dept.deptno) as job_map\n"
+        + "from dept";
+    sql(sql).expand(false).ok();
+  }
+
   @Test public void testUnnestWithOrdinality() {
     final String sql =
         "select*from unnest(array(select*from dept)) with ordinality";
@@ -1247,17 +1262,50 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
   }
 
   @Test public void testCorrelationJoin() {
-    final String sql = "select *,\n"
-        + "  multiset(select * from emp where deptno=dept.deptno) as empset\n"
-        + "from dept";
-    sql(sql).ok();
+    checkCorrelationJoin(true);
   }
 
   @Test public void testCorrelationJoinRex() {
+    checkCorrelationJoin(false);
+  }
+
+  void checkCorrelationJoin(boolean expand) {
     final String sql = "select *,\n"
         + "  multiset(select * from emp where deptno=dept.deptno) as empset\n"
         + "from dept";
-    sql(sql).expand(false).ok();
+    sql(sql).expand(expand).ok();
+  }
+
+  @Test public void testCorrelatedArraySubQuery() {
+    checkCorrelatedArraySubQuery(true);
+  }
+
+  @Test public void testCorrelatedArraySubQueryRex() {
+    checkCorrelatedArraySubQuery(false);
+  }
+
+  void checkCorrelatedArraySubQuery(boolean expand) {
+    final String sql = "select *,\n"
+        + "    array (select * from emp\n"
+        + "        where deptno = dept.deptno) as empset\n"
+        + "from dept";
+    sql(sql).expand(expand).ok();
+  }
+
+  @Test public void testCorrelatedMapSubQuery() {
+    checkCorrelatedMapSubQuery(true);
+  }
+
+  @Test public void testCorrelatedMapSubQueryRex() {
+    checkCorrelatedMapSubQuery(false);
+  }
+
+  void checkCorrelatedMapSubQuery(boolean expand) {
+    final String sql = "select *,\n"
+        + "  map (select empno, job\n"
+        + "       from emp where deptno = dept.deptno) as jobMap\n"
+        + "from dept";
+    sql(sql).expand(expand).ok();
   }
 
   /** Test case for

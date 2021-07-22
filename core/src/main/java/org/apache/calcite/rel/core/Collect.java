@@ -25,7 +25,6 @@ import org.apache.calcite.rel.RelWriter;
 import org.apache.calcite.rel.SingleRel;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 
@@ -41,9 +40,10 @@ import static java.util.Objects.requireNonNull;
  * <p>Rules:</p>
  *
  * <ul>
- * <li>{@code net.sf.farrago.fennel.rel.FarragoMultisetSplitterRule}
+ * <li>{@link org.apache.calcite.rel.rules.SubQueryRemoveRule}
  * creates a Collect from a call to
- * {@link org.apache.calcite.sql.fun.SqlMultisetValueConstructor} or to
+ * {@link org.apache.calcite.sql.fun.SqlArrayQueryConstructor},
+ * {@link org.apache.calcite.sql.fun.SqlMapQueryConstructor}, or
  * {@link org.apache.calcite.sql.fun.SqlMultisetQueryConstructor}.</li>
  * </ul>
  */
@@ -81,13 +81,6 @@ public class Collect extends SingleRel {
     }
   }
 
-  /**
-   * Creates a Collect.
-   *
-   * @param cluster   Cluster
-   * @param input     Child relational expression
-   * @param fieldName Name of the sole output field
-   */
   @Deprecated // to be removed before 2.0
   public Collect(
       RelOptCluster cluster,
@@ -104,7 +97,9 @@ public class Collect extends SingleRel {
    */
   public Collect(RelInput input) {
     this(input.getCluster(), input.getTraitSet(), input.getInput(),
-        input.getString("field"));
+        deriveRowType(input.getCluster().getTypeFactory(), SqlTypeName.MULTISET,
+            requireNonNull(input.getString("field"), "field"),
+            input.getInput().getRowType()));
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -126,26 +121,15 @@ public class Collect extends SingleRel {
    * Creates a Collect.
    *
    * @param input          Input relational expression
-   * @param sqlKind        SqlKind
+   * @param collectionType ARRAY, MAP or MULTISET
    * @param fieldName      Name of the sole output field
    */
   public static Collect create(RelNode input,
-      SqlKind sqlKind,
+      SqlTypeName collectionType,
       String fieldName) {
-    SqlTypeName collectionType = getCollectionType(sqlKind);
-    RelDataType rowType;
-    switch (sqlKind) {
-    case ARRAY_QUERY_CONSTRUCTOR:
-    case MULTISET_QUERY_CONSTRUCTOR:
-      rowType = deriveRowType(input.getCluster().getTypeFactory(),
-          collectionType, fieldName,
-          SqlTypeUtil.deriveCollectionQueryComponentType(collectionType, input.getRowType()));
-      break;
-    default:
-      rowType = deriveRowType(input.getCluster().getTypeFactory(), collectionType,
-          fieldName, input.getRowType());
-    }
-    return create(input, rowType);
+    return create(input,
+        deriveRowType(input.getCluster().getTypeFactory(), collectionType,
+            fieldName, input.getRowType()));
   }
 
   /** Returns the row type, guaranteed not null.
@@ -179,31 +163,36 @@ public class Collect extends SingleRel {
     return Iterables.getOnlyElement(rowType().getFieldList()).getName();
   }
 
+  /** Returns the collection type (ARRAY, MAP, or MULTISET). */
+  public SqlTypeName getCollectionType() {
+    return getCollectionType(rowType());
+  }
+
   private static SqlTypeName getCollectionType(RelDataType rowType) {
     return Iterables.getOnlyElement(rowType.getFieldList())
         .getType().getSqlTypeName();
   }
 
-  private static SqlTypeName getCollectionType(SqlKind sqlKind) {
-    switch (sqlKind) {
-    case ARRAY_QUERY_CONSTRUCTOR:
-    case ARRAY_VALUE_CONSTRUCTOR:
-      return SqlTypeName.ARRAY;
-    case MULTISET_QUERY_CONSTRUCTOR:
-    case MULTISET_VALUE_CONSTRUCTOR:
-      return SqlTypeName.MULTISET;
-    case MAP_QUERY_CONSTRUCTOR:
-    case MAP_VALUE_CONSTRUCTOR:
-      return SqlTypeName.MAP;
-    default:
-      throw new IllegalArgumentException("not a collection kind "
-          + sqlKind);
-    }
-  }
-
   @Override protected RelDataType deriveRowType() {
     // this method should never be called; rowType is always set
     throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Derives the output row type of a Collect relational expression.
+   *
+   * @param rel       relational expression
+   * @param fieldName name of sole output field
+   * @return output row type of a Collect relational expression
+   */
+  @Deprecated // to be removed before 2.0
+  public static RelDataType deriveCollectRowType(
+      SingleRel rel,
+      String fieldName) {
+    RelDataType inputType = rel.getInput().getRowType();
+    assert inputType.isStruct();
+    return deriveRowType(rel.getCluster().getTypeFactory(),
+        SqlTypeName.MULTISET, fieldName, inputType);
   }
 
   /**

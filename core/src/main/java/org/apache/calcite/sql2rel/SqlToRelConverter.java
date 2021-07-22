@@ -1087,12 +1087,14 @@ public class SqlToRelConverter {
       convertCursor(bb, subQuery);
       return;
 
+    case ARRAY_QUERY_CONSTRUCTOR:
+    case MAP_QUERY_CONSTRUCTOR:
     case MULTISET_QUERY_CONSTRUCTOR:
     case MULTISET_VALUE_CONSTRUCTOR:
-    case ARRAY_QUERY_CONSTRUCTOR:
       if (!config.isExpand()) {
         return;
       }
+
       rel = convertMultisets(ImmutableList.of(subQuery.node), bb);
       subQuery.expr = bb.register(rel, JoinRelType.INNER);
       return;
@@ -1803,6 +1805,7 @@ public class SqlToRelConverter {
     case MULTISET_QUERY_CONSTRUCTOR:
     case MULTISET_VALUE_CONSTRUCTOR:
     case ARRAY_QUERY_CONSTRUCTOR:
+    case MAP_QUERY_CONSTRUCTOR:
     case CURSOR:
     case SCALAR_QUERY:
       if (!registerOnlyScalarSubQueries
@@ -4078,18 +4081,18 @@ public class SqlToRelConverter {
     assert call.getKind() == SqlKind.MULTISET_VALUE_CONSTRUCTOR;
 
     final SqlNodeList list =
-        new SqlNodeList(call.getOperandList(), call.getParserPosition());
+            new SqlNodeList(call.getOperandList(), call.getParserPosition());
     CollectNamespace nss = getNamespaceOrNull(call);
     Blackboard usedBb;
     if (null != nss) {
       usedBb = createBlackboard(nss.getScope(), null, false);
     } else {
       usedBb =
-          createBlackboard(new ListScope(bb.scope) {
-            @Override public SqlNode getNode() {
-              return call;
-            }
-          }, null, false);
+              createBlackboard(new ListScope(bb.scope) {
+                @Override public SqlNode getNode() {
+                  return call;
+                }
+              }, null, false);
     }
     RelDataType multisetType = validator().getValidatedNodeType(call);
     validator().setValidatedNodeType(list,
@@ -4138,6 +4141,7 @@ public class SqlToRelConverter {
         break;
       case MULTISET_QUERY_CONSTRUCTOR:
       case ARRAY_QUERY_CONSTRUCTOR:
+      case MAP_QUERY_CONSTRUCTOR:
         final RelRoot root = convertQuery(call.operand(0), false, true);
         input = root.rel;
         break;
@@ -4150,13 +4154,14 @@ public class SqlToRelConverter {
         joinList.add(lastList);
       }
       lastList = new ArrayList<>();
-      Collect collect =
-          new Collect(
-              cluster,
-              cluster.traitSetOf(Convention.NONE),
-              input,
-              validator.deriveAlias(call, i));
-      joinList.add(collect);
+      final SqlTypeName typeName =
+          requireNonNull(validator, "validator")
+              .getValidatedNodeType(call)
+              .getSqlTypeName();
+      relBuilder.push(
+          Collect.create(requireNonNull(input, "input"),
+              typeName, validator().deriveAlias(call, i)));
+      joinList.add(relBuilder.build());
     }
 
     if (joinList.size() == 0) {
@@ -5152,20 +5157,36 @@ public class SqlToRelConverter {
           return RexSubQuery.scalar(relAndCorrelationContext.relNode,
               relAndCorrelationContext.correlationContext.correlationId);
 
-        case MULTISET_VALUE_CONSTRUCTOR: {
+        case ARRAY_QUERY_CONSTRUCTOR:
           call = (SqlCall) expr;
-          CorrelationContext correlationContext = findCorrelationContext(scope,
-              Util.first(inputs, ImmutableList.of()));
-          rel = convertValueConstructorList(this, call);
-          scopeToCorrelationContext.remove(correlationContext);
-          return RexSubQuery.multiset(rel, correlationContext.correlationId);
-        }
+          query = Util.getOnlyElement(call.getOperandList());
+          relAndCorrelationContext = convertSubQuery(query);
+          return RexSubQuery.array(relAndCorrelationContext.relNode,
+                  relAndCorrelationContext.correlationContext.correlationId);
+
+        case MAP_QUERY_CONSTRUCTOR:
+          call = (SqlCall) expr;
+          query = Util.getOnlyElement(call.getOperandList());
+          relAndCorrelationContext = convertSubQuery(query);
+          return RexSubQuery.map(relAndCorrelationContext.relNode,
+                  relAndCorrelationContext.correlationContext.correlationId);
+
         case MULTISET_QUERY_CONSTRUCTOR:
           call = (SqlCall) expr;
           query = Util.getOnlyElement(call.getOperandList());
           relAndCorrelationContext = convertSubQuery(query);
           return RexSubQuery.multiset(relAndCorrelationContext.relNode,
                   relAndCorrelationContext.correlationContext.correlationId);
+
+        case MULTISET_VALUE_CONSTRUCTOR: {
+          call = (SqlCall) expr;
+          CorrelationContext correlationContext = findCorrelationContext(scope,
+                  Util.first(inputs, ImmutableList.of()));
+          rel = convertValueConstructorList(this, call);
+          scopeToCorrelationContext.remove(correlationContext);
+          return RexSubQuery.multiset(rel, correlationContext.correlationId);
+        }
+
         default:
           break;
         }
@@ -5190,6 +5211,9 @@ public class SqlToRelConverter {
       case SELECT:
       case EXISTS:
       case SCALAR_QUERY:
+      case ARRAY_QUERY_CONSTRUCTOR:
+      case MAP_QUERY_CONSTRUCTOR:
+      case MULTISET_QUERY_CONSTRUCTOR:
         subQuery = getSubQuery(expr);
         assert subQuery != null;
         rex = subQuery.expr;

@@ -40,6 +40,7 @@ import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.fun.SqlQuantifyOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql2rel.RelDecorrelator;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.util.ImmutableBeans;
@@ -91,9 +92,13 @@ public class SubQueryRemoveRule
     case SCALAR_QUERY:
       return rewriteScalarQuery(e, variablesSet, builder, inputCount, offset);
     case ARRAY_QUERY_CONSTRUCTOR:
+      return rewriteCollection(e, SqlTypeName.ARRAY, variablesSet, builder,
+          inputCount, offset);
     case MAP_QUERY_CONSTRUCTOR:
+      return rewriteCollection(e, SqlTypeName.MAP, variablesSet, builder,
+          inputCount, offset);
     case MULTISET_QUERY_CONSTRUCTOR:
-      return rewriteCollection(e, variablesSet, builder,
+      return rewriteCollection(e, SqlTypeName.MULTISET, variablesSet, builder,
           inputCount, offset);
     case SOME:
       return rewriteSome(e, variablesSet, builder);
@@ -110,7 +115,7 @@ public class SubQueryRemoveRule
    * Rewrites a scalar sub-query into an
    * {@link org.apache.calcite.rel.core.Aggregate}.
    *
-   * @param e            IN sub-query to rewrite
+   * @param e            Scalar sub-query to rewrite
    * @param variablesSet A set of variables used by a relational
    *                     expression of the specified RexSubQuery
    * @param builder      Builder
@@ -133,12 +138,12 @@ public class SubQueryRemoveRule
     return field(builder, inputCount, offset);
   }
 
-
   /**
    * Rewrites a sub-query into a
    * {@link org.apache.calcite.rel.core.Collect}.
    *
    * @param e            Sub-query to rewrite
+   * @param collectionType Collection type (ARRAY, MAP, MULTISET)
    * @param variablesSet A set of variables used by a relational
    *                     expression of the specified RexSubQuery
    * @param builder      Builder
@@ -146,11 +151,11 @@ public class SubQueryRemoveRule
    * @return Expression that may be used to replace the RexSubQuery
    */
   private static RexNode rewriteCollection(RexSubQuery e,
-      Set<CorrelationId> variablesSet, RelBuilder builder,
-      int inputCount, int offset) {
+      SqlTypeName collectionType, Set<CorrelationId> variablesSet,
+      RelBuilder builder, int inputCount, int offset) {
     builder.push(e.rel);
     builder.push(
-        Collect.create(builder.build(), e.getKind(), "x"));
+        Collect.create(builder.build(), collectionType, "x"));
     builder.join(JoinRelType.INNER, builder.literal(true), variablesSet);
     return field(builder, inputCount, offset);
   }
