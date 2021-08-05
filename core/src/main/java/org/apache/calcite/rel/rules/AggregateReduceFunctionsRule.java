@@ -90,23 +90,15 @@ public class AggregateReduceFunctionsRule
 
   /** The singleton. */
   public static final AggregateReduceFunctionsRule INSTANCE =
-      new AggregateReduceFunctionsRule(operand(LogicalAggregate.class, any()), true,
+      new AggregateReduceFunctionsRule(operand(LogicalAggregate.class, any()),
           RelFactories.LOGICAL_BUILDER);
-
-  /** The singleton. */
-  public static final AggregateReduceFunctionsRule NO_REDUCE_SUM =
-          new AggregateReduceFunctionsRule(operand(LogicalAggregate.class, any()), false,
-                  RelFactories.LOGICAL_BUILDER);
-
-  private final boolean reduceSum;
 
   //~ Constructors -----------------------------------------------------------
 
   /** Creates an AggregateReduceFunctionsRule. */
-  public AggregateReduceFunctionsRule(RelOptRuleOperand operand, boolean reduceSum,
+  public AggregateReduceFunctionsRule(RelOptRuleOperand operand,
       RelBuilderFactory relBuilderFactory) {
     super(operand, relBuilderFactory, null);
-    this.reduceSum = reduceSum;
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -147,7 +139,7 @@ public class AggregateReduceFunctionsRule
     }
     switch (kind) {
     case SUM:
-      return reduceSum;
+      return true;
     }
     return false;
   }
