@@ -19,11 +19,11 @@ package org.apache.calcite.plan;
 import org.apache.calcite.rel.RelNode;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * Operand that determines whether a {@link RelOptRule}
@@ -98,6 +98,8 @@ public class RelOptRuleOperand {
    * and add constructor parameters for them. See
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1166">[CALCITE-1166]
    * Disallow sub-classes of RelOptRuleOperand</a>. */
+  @SuppressWarnings({"initialization.fields.uninitialized",
+      "initialization.invalid.field.write.initialized"})
   <R extends RelNode> RelOptRuleOperand(
       Class<R> clazz,
       RelTrait trait,
@@ -167,11 +169,11 @@ public class RelOptRuleOperand {
     this.rule = rule;
   }
 
-  public int hashCode() {
+  @Override public int hashCode() {
     return Objects.hash(clazz, trait, children);
   }
 
-  public boolean equals(Object obj) {
+  @Override public boolean equals(Object obj) {
     if (this == obj) {
       return true;
     }
@@ -212,7 +214,7 @@ public class RelOptRuleOperand {
     if ((trait != null) && !rel.getTraitSet().contains(trait)) {
       return false;
     }
-    return predicate.apply(rel);
+    return predicate.test(rel);
   }
 }
 

@@ -21,8 +21,10 @@ import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
@@ -30,6 +32,8 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
 import java.util.Set;
+
+import static java.util.Objects.requireNonNull;
 
 /** Compatibility layer.
  *
@@ -57,16 +61,9 @@ public interface Compatible {
    * immutable. */
   <K, V> NavigableMap<K, V> immutableNavigableMap(NavigableMap<K, V> map);
 
-  /** Calls {@link java.sql.Connection}{@code .setSchema(String)}.
-   *
-   * <p>This method is available in JDK 1.7 and above, and in
-   * {@link org.apache.calcite.jdbc.CalciteConnection} in all JDK versions. */
-  @SuppressWarnings("unused") @Deprecated // to be removed before 2.0
-  void setSchema(Connection connection, String schema);
-
-  /** Calls the {@link Method}.{@code getParameters()[i].getName()} method
-   * (introduced in JDK 1.8). */
-  String getParameterName(Method method, int i);
+  /** Same as {@code MethodHandles#privateLookupIn()}.
+   * (On JDK 8, only {@link MethodHandles#lookup()} is available. */
+  <T> MethodHandles.Lookup lookupPrivate(Class<T> clazz);
 
   /** Creates the implementation of Compatible suitable for the
    * current environment. */
@@ -74,16 +71,14 @@ public interface Compatible {
     Compatible create() {
       return (Compatible) Proxy.newProxyInstance(
           Compatible.class.getClassLoader(),
-          new Class<?>[] {Compatible.class},
-          new InvocationHandler() {
-            public Object invoke(Object proxy, Method method, Object[] args)
-                throws Throwable {
+          new Class<?>[] {Compatible.class}, (proxy, method, args) -> {
+
               if (method.getName().equals("asMap")) {
                 // Use the Guava implementation Maps.asMap if it is available
                 try {
                   //noinspection ConfusingArgumentToVarargsMethod
                   final Method guavaMethod = Maps.class.getMethod(
-                      method.getName(), method.getParameterTypes());
+                        method.getName(), method.getParameterTypes());
                   return guavaMethod.invoke(null, args);
                 } catch (NoSuchMethodException e) {
                   Set set = (Set) args[0];
@@ -125,9 +120,42 @@ public interface Compatible {
                   return "arg" + i;
                 }
               }
-              return null;
+
+              if (method.getName().equals("lookupPrivate")) {
+              // Use MethodHandles.privateLookupIn if it is available (JDK 9
+              // and above)
+              @SuppressWarnings("rawtypes")
+              final Class<?> clazz = (Class) requireNonNull(args[0], "args[0]");
+              try {
+                final Method privateLookupMethod =
+                    MethodHandles.class.getMethod("privateLookupIn",
+                        Class.class, MethodHandles.Lookup.class);
+                final MethodHandles.Lookup lookup = MethodHandles.lookup();
+                return privateLookupMethod.invoke(null, clazz, lookup);
+              } catch (NoSuchMethodException e) {
+                return privateLookupJdk8(clazz);
+              }
             }
+            return null;
           });
+    }
+
+    /** Emulates MethodHandles.privateLookupIn on JDK 8;
+     * in later JDK versions, throws. */
+    @SuppressWarnings("deprecation")
+    static <T> MethodHandles.Lookup privateLookupJdk8(Class<T> clazz) {
+      try {
+        final Constructor<MethodHandles.Lookup> constructor =
+            MethodHandles.Lookup.class.getDeclaredConstructor(Class.class,
+                int.class);
+        if (!constructor.isAccessible()) {
+          constructor.setAccessible(true);
+        }
+        return constructor.newInstance(clazz, MethodHandles.Lookup.PRIVATE);
+      } catch (InstantiationException | IllegalAccessException
+          | InvocationTargetException | NoSuchMethodException e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 }

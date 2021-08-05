@@ -17,13 +17,12 @@
 package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptRuleOperand;
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.AggregateCall;
-import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalAggregate;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -38,18 +37,24 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.CompositeList;
+import org.apache.calcite.util.ImmutableBeans;
 import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableSet;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+import javax.annotation.Nullable;
 
 /**
  * Planner rule that reduces aggregate functions in
@@ -79,20 +84,56 @@ import java.util.Map;
  * forms like {@code COUNT(x)}, the rule gathers common sub-expressions as it
  * goes.
  */
-public class AggregateReduceFunctionsRule extends RelOptRule {
+public class AggregateReduceFunctionsRule
+    extends RelRule<AggregateReduceFunctionsRule.Config> {
   //~ Static fields/initializers ---------------------------------------------
 
   /** The singleton. */
   public static final AggregateReduceFunctionsRule INSTANCE =
-      new AggregateReduceFunctionsRule(operand(LogicalAggregate.class, any()),
-          RelFactories.LOGICAL_BUILDER);
+      new AggregateReduceFunctionsRule(Config.DEFAULT);
+  private static void validateFunction(SqlKind function) {
+    if (!isValid(function)) {
+      throw new IllegalArgumentException("AggregateReduceFunctionsRule doesn't "
+          + "support function: " + function.sql);
+    }
+  }
+
+  private static boolean isValid(SqlKind function) {
+    return SqlKind.AVG_AGG_FUNCTIONS.contains(function)
+        || function == SqlKind.SUM;
+  }
+
+  private final Set<SqlKind> functionsToReduce;
 
   //~ Constructors -----------------------------------------------------------
 
   /** Creates an AggregateReduceFunctionsRule. */
+  protected AggregateReduceFunctionsRule(Config config) {
+    super(config);
+    this.functionsToReduce =
+        ImmutableSet.copyOf(config.actualFunctionsToReduce());
+  }
+
+  @Deprecated // to be removed before 2.0
   public AggregateReduceFunctionsRule(RelOptRuleOperand operand,
       RelBuilderFactory relBuilderFactory) {
-    super(operand, relBuilderFactory, null);
+    this(Config.DEFAULT
+        .withRelBuilderFactory(relBuilderFactory)
+        .withOperandSupplier(b -> b.exactly(operand))
+        .as(Config.class)
+        // reduce all functions handled by this rule
+        .withFunctionsToReduce(null));
+  }
+
+  @Deprecated // to be removed before 2.0
+  public AggregateReduceFunctionsRule(Class<? extends Aggregate> aggregateClass,
+      RelBuilderFactory relBuilderFactory, EnumSet<SqlKind> functionsToReduce) {
+    this(Config.DEFAULT
+        .withRelBuilderFactory(relBuilderFactory)
+        .as(Config.class)
+        .withOperandFor(aggregateClass)
+        // reduce specific functions provided by the client
+        .withFunctionsToReduce(Objects.requireNonNull(functionsToReduce, "functionsToReduce")));
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -105,7 +146,7 @@ public class AggregateReduceFunctionsRule extends RelOptRule {
     return containsAvgStddevVarCall(oldAggRel.getAggCallList());
   }
 
-  public void onMatch(RelOptRuleCall ruleCall) {
+  @Override public void onMatch(RelOptRuleCall ruleCall) {
     Aggregate oldAggRel = (Aggregate) ruleCall.rels[0];
     reduceAggs(ruleCall, oldAggRel);
   }
@@ -116,26 +157,12 @@ public class AggregateReduceFunctionsRule extends RelOptRule {
    * @param aggCallList List of aggregate calls
    */
   private boolean containsAvgStddevVarCall(List<AggregateCall> aggCallList) {
-    for (AggregateCall call : aggCallList) {
-      if (isReducible(call.getAggregation().getKind())) {
-        return true;
-      }
-    }
-    return false;
+    return aggCallList.stream().anyMatch(this::canReduce);
   }
 
-  /**
-   * Returns whether the aggregate call is a reducible function
-   */
-  private boolean isReducible(final SqlKind kind) {
-    if (SqlKind.AVG_AGG_FUNCTIONS.contains(kind)) {
-      return true;
-    }
-    switch (kind) {
-    case SUM:
-      return true;
-    }
-    return false;
+  /** Returns whether this rule can reduce a given aggregate function call. */
+  public boolean canReduce(AggregateCall call) {
+    return functionsToReduce.contains(call.getAggregation().getKind());
   }
 
   /**
@@ -152,19 +179,15 @@ public class AggregateReduceFunctionsRule extends RelOptRule {
 
     List<AggregateCall> oldCalls = oldAggRel.getAggCallList();
     final int groupCount = oldAggRel.getGroupCount();
-    final int indicatorCount = oldAggRel.getIndicatorCount();
 
-    final List<AggregateCall> newCalls = Lists.newArrayList();
-    final Map<AggregateCall, RexNode> aggCallMapping = Maps.newHashMap();
+    final List<AggregateCall> newCalls = new ArrayList<>();
+    final Map<AggregateCall, RexNode> aggCallMapping = new HashMap<>();
 
-    final List<RexNode> projList = Lists.newArrayList();
+    final List<RexNode> projList = new ArrayList<>();
 
-    // pass through group key (+ indicators if present)
-    for (int i = 0; i < groupCount + indicatorCount; ++i) {
-      projList.add(
-          rexBuilder.makeInputRef(
-              getFieldType(oldAggRel, i),
-              i));
+    // pass through group key
+    for (int i = 0; i < groupCount; ++i) {
+      projList.add(rexBuilder.makeInputRef(oldAggRel, i));
     }
 
     // List of input expressions. If a particular aggregate needs more, it
@@ -190,7 +213,7 @@ public class AggregateReduceFunctionsRule extends RelOptRule {
               Collections.<String>nCopies(extraArgCount, null)));
     }
     newAggregateRel(relBuilder, oldAggRel, newCalls);
-    relBuilder.project(projList, oldAggRel.getRowType().getFieldNames());
+    newCalcRel(relBuilder, oldAggRel.getRowType(), projList);
     ruleCall.transformTo(relBuilder.build());
   }
 
@@ -200,8 +223,10 @@ public class AggregateReduceFunctionsRule extends RelOptRule {
       List<AggregateCall> newCalls,
       Map<AggregateCall, RexNode> aggCallMapping,
       List<RexNode> inputExprs) {
-    final SqlKind kind = oldCall.getAggregation().getKind();
-    if (isReducible(kind)) {
+    if (canReduce(oldCall)) {
+      final Integer y;
+      final Integer x;
+      final SqlKind kind = oldCall.getAggregation().getKind();
       switch (kind) {
       case SUM:
         // replace original SUM(x) with
@@ -255,7 +280,7 @@ public class AggregateReduceFunctionsRule extends RelOptRule {
     }
   }
 
-  private AggregateCall createAggregateCallWithBinding(
+  private static AggregateCall createAggregateCallWithBinding(
       RelDataTypeFactory typeFactory,
       SqlAggFunction aggFunction,
       RelDataType operandType,
@@ -281,7 +306,7 @@ public class AggregateReduceFunctionsRule extends RelOptRule {
       AggregateCall oldCall,
       List<AggregateCall> newCalls,
       Map<AggregateCall, RexNode> aggCallMapping,
-      List<RexNode> inputExprs) {
+      @SuppressWarnings("unused") List<RexNode> inputExprs) {
     final int nGroups = oldAggRel.getGroupCount();
     final RexBuilder rexBuilder = oldAggRel.getCluster().getRexBuilder();
     final int iAvgInput = oldCall.getArgList().get(0);
@@ -571,6 +596,59 @@ public class AggregateReduceFunctionsRule extends RelOptRule {
         relBuilder.groupKey(oldAggregate.getGroupSet(),
             oldAggregate.getGroupSets()),
         newCalls);
+  }
+
+  /**
+   * Add a calc with the expressions to compute the original agg calls from the
+   * decomposed ones.
+   *
+   * @param relBuilder Builder of relational expressions; at the top of its
+   *                   stack is its input
+   * @param rowType The output row type of the original aggregate.
+   * @param exprs The expressions to compute the original agg calls.
+   */
+  protected void newCalcRel(RelBuilder relBuilder,
+      RelDataType rowType,
+      List<RexNode> exprs) {
+    relBuilder.project(exprs, rowType.getFieldNames());
+  }
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+        .withOperandFor(LogicalAggregate.class);
+
+    Set<SqlKind> DEFAULT_FUNCTIONS_TO_REDUCE =
+        ImmutableSet.<SqlKind>builder()
+            .addAll(SqlKind.AVG_AGG_FUNCTIONS)
+            .add(SqlKind.SUM)
+            .build();
+
+
+    @Override default AggregateReduceFunctionsRule toRule() {
+      return new AggregateReduceFunctionsRule(this);
+    }
+
+    @ImmutableBeans.Property
+    @Nullable Set<SqlKind> functionsToReduce();
+
+    /** Sets {@link #functionsToReduce}. */
+    Config withFunctionsToReduce(@Nullable Set<SqlKind> functionSet);
+
+    /** Returns the validated set of functions to reduce, or the default set
+     * if not specified. */
+    default Set<SqlKind> actualFunctionsToReduce() {
+      final Set<SqlKind> set =
+          Util.first(functionsToReduce(), DEFAULT_FUNCTIONS_TO_REDUCE);
+      set.forEach(AggregateReduceFunctionsRule::validateFunction);
+      return set;
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Aggregate> aggregateClass) {
+      return withOperandSupplier(b -> b.operand(aggregateClass).anyInputs())
+          .as(Config.class);
+    }
   }
 
   private RelDataType getFieldType(RelNode relNode, int i) {

@@ -24,13 +24,12 @@ import org.apache.calcite.tools.RelBuilderFactory;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * A <code>RelOptRule</code> transforms an expression into another. It has a
@@ -57,7 +56,7 @@ public abstract class RelOptRule {
    */
   private final RelOptRuleOperand operand;
 
-  /** Factory for a builder for relational expressions.
+  /**  Factory for a builder for relational expressions.
    *
    * <p>The actual builder is available via {@link RelOptRuleCall#builder()}. */
   public final RelBuilderFactory relBuilderFactory;
@@ -122,11 +121,14 @@ public abstract class RelOptRule {
    * @param <R> Class of relational expression to match
    * @return Operand that matches a relational expression that has no
    *   children
+   *
+   * @deprecated Use {@link RelRule.OperandBuilder#operand(Class)}
    */
+  @Deprecated // to be removed before 2.0
   public static <R extends RelNode> RelOptRuleOperand operand(
       Class<R> clazz,
       RelOptRuleOperandChildren operandList) {
-    return new RelOptRuleOperand(clazz, null, Predicates.<R>alwaysTrue(),
+    return new RelOptRuleOperand(clazz, null, r -> true,
         operandList.policy, operandList.operands);
   }
 
@@ -140,12 +142,15 @@ public abstract class RelOptRule {
    * @param <R> Class of relational expression to match
    * @return Operand that matches a relational expression that has no
    *   children
+   *
+   * @deprecated Use {@link RelRule.OperandBuilder#operand(Class)}
    */
+  @Deprecated // to be removed before 2.0
   public static <R extends RelNode> RelOptRuleOperand operand(
       Class<R> clazz,
       RelTrait trait,
       RelOptRuleOperandChildren operandList) {
-    return new RelOptRuleOperand(clazz, trait, Predicates.<R>alwaysTrue(),
+    return new RelOptRuleOperand(clazz, trait, r -> true,
         operandList.policy, operandList.operands);
   }
 
@@ -160,14 +165,30 @@ public abstract class RelOptRule {
    * @param <R> Class of relational expression to match
    * @return Operand that matches a relational expression that has a
    *   particular trait and predicate
+   *
+   * @deprecated Use {@link RelRule.OperandBuilder#operand(Class)}
    */
-  public static <R extends RelNode> RelOptRuleOperand operand(
+  @Deprecated // to be removed before 2.0
+  public static <R extends RelNode> RelOptRuleOperand operandJ(
       Class<R> clazz,
       RelTrait trait,
       Predicate<? super R> predicate,
       RelOptRuleOperandChildren operandList) {
     return new RelOptRuleOperand(clazz, trait, predicate, operandList.policy,
         operandList.operands);
+  }
+
+  // CHECKSTYLE: IGNORE 1
+  /** @deprecated Use {@link #operandJ} */
+  @SuppressWarnings("Guava")
+  @Deprecated // to be removed before 2.0
+  public static <R extends RelNode> RelOptRuleOperand operand(
+      Class<R> clazz,
+      RelTrait trait,
+      com.google.common.base.Predicate<? super R> predicate,
+      RelOptRuleOperandChildren operandList) {
+    return operandJ(clazz, trait, (Predicate<? super R>) predicate::apply,
+        operandList);
   }
 
   /**
@@ -181,14 +202,29 @@ public abstract class RelOptRule {
    * @param rest Rest operands
    * @param <R> Class of relational expression to match
    * @return Operand
+   *
+   * @deprecated Use {@link RelRule.OperandBuilder#operand(Class)}
    */
-  public static <R extends RelNode> RelOptRuleOperand operand(
+  @Deprecated // to be removed before 2.0
+  public static <R extends RelNode> RelOptRuleOperand operandJ(
       Class<R> clazz,
       RelTrait trait,
       Predicate<? super R> predicate,
       RelOptRuleOperand first,
       RelOptRuleOperand... rest) {
-    return operand(clazz, trait, predicate, some(first, rest));
+    return operandJ(clazz, trait, predicate, some(first, rest));
+  }
+
+  @SuppressWarnings("Guava")
+  @Deprecated // to be removed before 2.0
+  public static <R extends RelNode> RelOptRuleOperand operand(
+      Class<R> clazz,
+      RelTrait trait,
+      com.google.common.base.Predicate<? super R> predicate,
+      RelOptRuleOperand first,
+      RelOptRuleOperand... rest) {
+    return operandJ(clazz, trait, (Predicate<? super R>) predicate::apply,
+        first, rest);
   }
 
   /**
@@ -209,7 +245,10 @@ public abstract class RelOptRule {
    * @param <R> Class of relational expression to match
    * @return Operand that matches a relational expression with a given
    *   list of children
+   *
+   * @deprecated Use {@link RelRule.OperandBuilder#operand(Class)}
    */
+  @Deprecated // to be removed before 2.0
   public static <R extends RelNode> RelOptRuleOperand operand(
       Class<R> clazz,
       RelOptRuleOperand first,
@@ -224,10 +263,22 @@ public abstract class RelOptRule {
    * @param trait    Trait to match, or null to match any trait
    * @param predicate Predicate to apply to relational expression
    */
+  @Deprecated // to be removed before 2.0
   protected static <R extends RelNode> ConverterRelOptRuleOperand
       convertOperand(Class<R> clazz, Predicate<? super R> predicate,
       RelTrait trait) {
     return new ConverterRelOptRuleOperand(clazz, trait, predicate);
+  }
+
+  // CHECKSTYLE: IGNORE 1
+  /** @deprecated Use {@link #convertOperand(Class, Predicate, RelTrait)}. */
+  @SuppressWarnings("Guava")
+  @Deprecated // to be removed before 2.0
+  protected static <R extends RelNode> ConverterRelOptRuleOperand
+      convertOperand(Class<R> clazz,
+      com.google.common.base.Predicate<? super R> predicate,
+      RelTrait trait) {
+    return new ConverterRelOptRuleOperand(clazz, trait, predicate::apply);
   }
 
   //~ Methods for creating lists of child operands ---------------------------
@@ -240,7 +291,10 @@ public abstract class RelOptRule {
    * @param rest  Remaining child operands (may be empty)
    * @return List of child operands that matches child relational
    *   expressions in the order
+   *
+   * @deprecated Use {@link RelRule.OperandDetailBuilder#inputs}
    */
+  @Deprecated // to be removed before 2.0
   public static RelOptRuleOperandChildren some(
       RelOptRuleOperand first,
       RelOptRuleOperand... rest) {
@@ -275,6 +329,7 @@ public abstract class RelOptRule {
    * @return List of child operands that matches child relational
    *   expressions in any order
    */
+  @Deprecated // to be removed before 2.0
   public static RelOptRuleOperandChildren unordered(
       RelOptRuleOperand first,
       RelOptRuleOperand... rest) {
@@ -287,7 +342,10 @@ public abstract class RelOptRule {
    * Creates an empty list of child operands.
    *
    * @return Empty list of child operands
+   *
+   * @deprecated Use {@link RelRule.OperandDetailBuilder#noInputs()}
    */
+  @Deprecated // to be removed before 2.0
   public static RelOptRuleOperandChildren none() {
     return RelOptRuleOperandChildren.LEAF_CHILDREN;
   }
@@ -298,7 +356,10 @@ public abstract class RelOptRule {
    *
    * @return List of child operands that signifies that the operand matches
    *   any number of child relational expressions
+   *
+   * @deprecated Use {@link RelRule.OperandDetailBuilder#anyInputs()}
    */
+  @Deprecated // to be removed before 2.0
   public static RelOptRuleOperandChildren any() {
     return RelOptRuleOperandChildren.ANY_CHILDREN;
   }
@@ -615,7 +676,7 @@ public abstract class RelOptRule {
   /**
    * Operand to an instance of the converter rule.
    */
-  private static class ConverterRelOptRuleOperand extends RelOptRuleOperand {
+  protected static class ConverterRelOptRuleOperand extends RelOptRuleOperand {
     <R extends RelNode> ConverterRelOptRuleOperand(Class<R> clazz, RelTrait in,
         Predicate<? super R> predicate) {
       super(clazz, in, predicate, RelOptRuleOperandChildPolicy.ANY,
