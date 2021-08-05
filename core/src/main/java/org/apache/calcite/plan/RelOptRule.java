@@ -22,12 +22,20 @@ import org.apache.calcite.rel.convert.ConverterRule;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.tools.RelBuilderFactory;
 
+<<<<<<< HEAD
+=======
+import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
+>>>>>>> 65c61a11b (DX-34871 AggregateReducefunctionsRule API change)
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
+<<<<<<< HEAD
 import java.util.Objects;
+=======
+>>>>>>> 65c61a11b (DX-34871 AggregateReducefunctionsRule API change)
 import java.util.function.Predicate;
 
 /**

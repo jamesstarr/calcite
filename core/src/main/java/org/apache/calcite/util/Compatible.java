@@ -16,11 +16,19 @@
  */
 package org.apache.calcite.util;
 
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Maps;
+
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+
+import static java.util.Objects.requireNonNull;
 
 import static java.util.Objects.requireNonNull;
 
@@ -32,18 +40,56 @@ import static java.util.Objects.requireNonNull;
 public interface Compatible {
   Compatible INSTANCE = new Factory().create();
 
-  /** Same as {@code MethodHandles#privateLookupIn()}.
-   * (On JDK 8, only {@link MethodHandles#lookup()} is available. */
-  <T> MethodHandles.Lookup lookupPrivate(Class<T> clazz);
 
-  /** Creates the implementation of Compatible suitable for the
-   * current environment. */
-  class Factory {
-    Compatible create() {
-      return (Compatible) Proxy.newProxyInstance(
-          Compatible.class.getClassLoader(),
-          new Class<?>[] {Compatible.class}, (proxy, method, args) -> {
-            if (method.getName().equals("lookupPrivate")) {
+              if (method.getName().equals("asMap")) {
+                // Use the Guava implementation Maps.asMap if it is available
+                try {
+                  //noinspection ConfusingArgumentToVarargsMethod
+                  final Method guavaMethod = Maps.class.getMethod(
+                        method.getName(), method.getParameterTypes());
+                  return guavaMethod.invoke(null, args);
+                } catch (NoSuchMethodException e) {
+                  Set set = (Set) args[0];
+                  Function function = (Function) args[1];
+                  return CompatibleGuava11.asMap(set, function);
+                }
+              }
+              if (method.getName().equals("navigableSet")) {
+                ImmutableSortedSet set = (ImmutableSortedSet) args[0];
+                return CompatibleGuava11.navigableSet(set);
+              }
+              if (method.getName().equals("navigableMap")) {
+                ImmutableSortedMap map = (ImmutableSortedMap) args[0];
+                return CompatibleGuava11.navigableMap(map);
+              }
+              if (method.getName().equals("immutableNavigableMap")) {
+                Map map = (Map) args[0];
+                ImmutableSortedMap sortedMap = ImmutableSortedMap.copyOf(map);
+                return CompatibleGuava11.navigableMap(sortedMap);
+              }
+              if (method.getName().equals("setSchema")) {
+                Connection connection = (Connection) args[0];
+                String schema = (String) args[1];
+                final Method method1 =
+                    connection.getClass().getMethod("setSchema", String.class);
+                return method1.invoke(connection, schema);
+              }
+              if (method.getName().equals("getParameterName")) {
+                final Method m = (Method) args[0];
+                final int i = (Integer) args[1];
+                try {
+                  final Method method1 =
+                      m.getClass().getMethod("getParameters");
+                  Object parameters = method1.invoke(m);
+                  final Object parameter = Array.get(parameters, i);
+                  final Method method3 = parameter.getClass().getMethod("getName");
+                  return method3.invoke(parameter);
+                } catch (NoSuchMethodException e) {
+                  return "arg" + i;
+                }
+              }
+
+              if (method.getName().equals("lookupPrivate")) {
               // Use MethodHandles.privateLookupIn if it is available (JDK 9
               // and above)
               @SuppressWarnings("rawtypes")

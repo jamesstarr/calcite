@@ -38,7 +38,7 @@ import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.CompositeList;
 import org.apache.calcite.util.ImmutableBeans;
-import org.apache.calcite.util.ImmutableBitSet;
+>>>>>>> 65c61a11b (DX-34871 AggregateReducefunctionsRule API change)
 import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.Util;
 
@@ -54,6 +54,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+<<<<<<< HEAD
+=======
+
 import javax.annotation.Nullable;
 
 /**
@@ -90,15 +93,50 @@ public class AggregateReduceFunctionsRule
 
   /** The singleton. */
   public static final AggregateReduceFunctionsRule INSTANCE =
-      new AggregateReduceFunctionsRule(operand(LogicalAggregate.class, any()),
-          RelFactories.LOGICAL_BUILDER);
+      new AggregateReduceFunctionsRule(Config.DEFAULT);
+  private static void validateFunction(SqlKind function) {
+    if (!isValid(function)) {
+      throw new IllegalArgumentException("AggregateReduceFunctionsRule doesn't "
+          + "support function: " + function.sql);
+    }
+  }
+
+  private static boolean isValid(SqlKind function) {
+    return SqlKind.AVG_AGG_FUNCTIONS.contains(function)
+        || function == SqlKind.SUM;
+  }
+
+  private final Set<SqlKind> functionsToReduce;
 
   //~ Constructors -----------------------------------------------------------
 
   /** Creates an AggregateReduceFunctionsRule. */
+  protected AggregateReduceFunctionsRule(Config config) {
+    super(config);
+    this.functionsToReduce =
+        ImmutableSet.copyOf(config.actualFunctionsToReduce());
+  }
+
+  @Deprecated // to be removed before 2.0
   public AggregateReduceFunctionsRule(RelOptRuleOperand operand,
       RelBuilderFactory relBuilderFactory) {
-    super(operand, relBuilderFactory, null);
+    this(Config.DEFAULT
+        .withRelBuilderFactory(relBuilderFactory)
+        .withOperandSupplier(b -> b.exactly(operand))
+        .as(Config.class)
+        // reduce all functions handled by this rule
+        .withFunctionsToReduce(null));
+  }
+
+  @Deprecated // to be removed before 2.0
+  public AggregateReduceFunctionsRule(Class<? extends Aggregate> aggregateClass,
+      RelBuilderFactory relBuilderFactory, EnumSet<SqlKind> functionsToReduce) {
+    this(Config.DEFAULT
+        .withRelBuilderFactory(relBuilderFactory)
+        .as(Config.class)
+        .withOperandFor(aggregateClass)
+        // reduce specific functions provided by the client
+        .withFunctionsToReduce(Objects.requireNonNull(functionsToReduce, "functionsToReduce")));
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -123,25 +161,19 @@ public class AggregateReduceFunctionsRule
    */
   private boolean containsAvgStddevVarCall(List<AggregateCall> aggCallList) {
     return aggCallList.stream().anyMatch(this::canReduce);
+<<<<<<< HEAD
   }
 
   /** Returns whether this rule can reduce a given aggregate function call. */
   public boolean canReduce(AggregateCall call) {
     return functionsToReduce.contains(call.getAggregation().getKind());
+=======
+>>>>>>> 65c61a11b (DX-34871 AggregateReducefunctionsRule API change)
   }
 
-  /**
-   * Returns whether the aggregate call is a reducible function
-   */
-  private boolean isReducible(final SqlKind kind) {
-    if (SqlKind.AVG_AGG_FUNCTIONS.contains(kind)) {
-      return true;
-    }
-    switch (kind) {
-    case SUM:
-      return true;
-    }
-    return false;
+  /** Returns whether this rule can reduce a given aggregate function call. */
+  public boolean canReduce(AggregateCall call) {
+    return functionsToReduce.contains(call.getAggregation().getKind());
   }
 
   /**

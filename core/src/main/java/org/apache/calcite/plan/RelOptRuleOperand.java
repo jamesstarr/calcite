@@ -18,6 +18,10 @@ package org.apache.calcite.plan;
 
 import org.apache.calcite.rel.RelNode;
 
+<<<<<<< HEAD
+=======
+import com.google.common.base.Preconditions;
+>>>>>>> 65c61a11b (DX-34871 AggregateReducefunctionsRule API change)
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
