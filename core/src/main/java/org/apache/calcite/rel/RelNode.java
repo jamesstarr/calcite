@@ -271,6 +271,9 @@ public interface RelNode extends RelOptNode, Cloneable {
   /**
    * Returns a metadata interface.
    *
+   * @deprecated Use {@link RelMetadataQuery} via {@link #getCluster()}.
+   *     {@link RelOptCluster#getMetadataQuery()}.
+   *
    * @param <M> Type of metadata being requested
    * @param metadataClass Metadata interface
    * @param mq Metadata query
@@ -279,6 +282,7 @@ public interface RelNode extends RelOptNode, Cloneable {
    *     although if the information is not present the metadata object may
    *     return null from all methods)
    */
+  @Deprecated // to be removed before 2.0
   <M extends Metadata> M metadata(Class<M> metadataClass, RelMetadataQuery mq);
 
   /**

@@ -279,6 +279,7 @@ public interface RelOptPlanner {
    *
    * @param list receives planner's custom providers, if any
    */
+  @Deprecated // to be removed before 2.0
   void registerMetadataProviders(List<RelMetadataProvider> list);
 
   /**
@@ -289,6 +290,7 @@ public interface RelOptPlanner {
    * @param rel rel of interest
    * @return timestamp of last change which might affect metadata derivation
    */
+  @Deprecated // to be removed before 2.0
   long getRelMetadataTimestamp(RelNode rel);
 
   /**

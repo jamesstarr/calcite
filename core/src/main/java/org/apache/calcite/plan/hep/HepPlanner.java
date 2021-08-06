@@ -1016,12 +1016,14 @@ public class HepPlanner extends AbstractRelOptPlanner {
   }
 
   // implement RelOptPlanner
-  public void registerMetadataProviders(List<RelMetadataProvider> list) {
+  @Deprecated // to be removed before 2.0
+  @Override public void registerMetadataProviders(List<RelMetadataProvider> list) {
     list.add(0, new HepRelMetadataProvider());
   }
 
   // implement RelOptPlanner
-  public long getRelMetadataTimestamp(RelNode rel) {
+  @Deprecated
+  @Override public long getRelMetadataTimestamp(RelNode rel) {
     // TODO jvs 20-Apr-2006: This is overly conservative.  Better would be
     // to keep a timestamp per HepRelVertex, and update only affected
     // vertices and all ancestors on each transformation.
