@@ -121,7 +121,6 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
 =======
     List<RelMetadataProvider> list = Lists.newArrayList();
     list.add(DefaultRelMetadataProvider.INSTANCE);
-    planner.registerMetadataProviders(list);
     RelMetadataProvider plannerChain =
         ChainedRelMetadataProvider.of(list);
     final RelOptCluster cluster = relInitial.getCluster();

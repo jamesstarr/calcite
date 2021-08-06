@@ -57,7 +57,108 @@ import org.apache.calcite.tools.Program;
 import org.apache.calcite.tools.RelBuilder;
 
   @SuppressWarnings("deprecation")
-=======
+  public final RelNode convert(SqlNode sql) throws RelConversionException {
+    return rel(sql).rel;
+  }
+
+  public RelRoot rel(SqlNode sql) throws RelConversionException {
+    ensure(State.STATE_4_VALIDATED);
+    assert validatedSqlNode != null;
+    final RexBuilder rexBuilder = createRexBuilder();
+    final RelOptCluster cluster = RelOptCluster.create(planner, rexBuilder);
+    final SqlToRelConverter.Config config = SqlToRelConverter.configBuilder()
+        .withConfig(sqlToRelConverterConfig)
+        .withTrimUnusedFields(false)
+        .withConvertTableAccess(false)
+        .build();
+    final SqlToRelConverter sqlToRelConverter =
+        new SqlToRelConverter(new ViewExpanderImpl(), validator,
+            createCatalogReader(), cluster, convertletTable, config);
+    root =
+        sqlToRelConverter.convertQuery(validatedSqlNode, false, true);
+    root = root.withRel(sqlToRelConverter.flattenTypes(root.rel, true));
+    final RelBuilder relBuilder =
+        config.getRelBuilderFactory().create(cluster, null);
+    root = root.withRel(
+        RelDecorrelator.decorrelateQuery(root.rel, relBuilder, false));
+    state = State.STATE_5_CONVERTED;
+    return root;
+  }
+
+  /** Implements {@link org.apache.calcite.plan.RelOptTable.ViewExpander}
+   * interface for {@link org.apache.calcite.tools.Planner}. */
+  public class ViewExpanderImpl implements ViewExpander {
+    @Override public RelRoot expandView(RelDataType rowType, String queryString,
+      List<String> schemaPath, List<String> viewPath) {
+      SqlParser parser = SqlParser.create(queryString, parserConfig);
+      SqlNode sqlNode;
+      try {
+        sqlNode = parser.parseQuery();
+      } catch (SqlParseException e) {
+        throw new RuntimeException("parse failed", e);
+      }
+
+      final SqlConformance conformance = conformance();
+      final CalciteCatalogReader catalogReader =
+          createCatalogReader().withSchemaPath(schemaPath);
+      final SqlValidator validator =
+          new CalciteSqlValidator(operatorTable, catalogReader, typeFactory,
+              conformance);
+      validator.setIdentifierExpansion(true);
+      final SqlNode validatedSqlNode = validator.validate(sqlNode);
+
+      final RexBuilder rexBuilder = createRexBuilder();
+      final RelOptCluster cluster = RelOptCluster.create(planner, rexBuilder);
+      final SqlToRelConverter.Config config = SqlToRelConverter
+          .configBuilder()
+          .withConfig(sqlToRelConverterConfig)
+          .withTrimUnusedFields(false)
+          .withConvertTableAccess(false)
+          .build();
+      final SqlToRelConverter sqlToRelConverter =
+          new SqlToRelConverter(new ViewExpanderImpl(), validator,
+              catalogReader, cluster, convertletTable, config);
+
+      root = sqlToRelConverter.convertQuery(validatedSqlNode, true, false);
+      root = root.withRel(sqlToRelConverter.flattenTypes(root.rel, true));
+      final RelBuilder relBuilder =
+          config.getRelBuilderFactory().create(cluster, null);
+      root = root.withRel(
+          RelDecorrelator.decorrelateQuery(root.rel, relBuilder, false));
+
+      return PlannerImpl.this.root;
+    }
+  }
+
+  // CalciteCatalogReader is stateless; no need to store one
+  private CalciteCatalogReader createCatalogReader() {
+    SchemaPlus rootSchema = rootSchema(defaultSchema);
+    return new CalciteCatalogReader(
+        CalciteSchema.from(rootSchema),
+        parserConfig.caseSensitive(),
+        CalciteSchema.from(defaultSchema).path(null),
+        typeFactory);
+  }
+
+  private static SchemaPlus rootSchema(SchemaPlus schema) {
+    for (;;) {
+      if (schema.getParentSchema() == null) {
+        return schema;
+      }
+      schema = schema.getParentSchema();
+    }
+  }
+
+  // RexBuilder is stateless; no need to store one
+  private RexBuilder createRexBuilder() {
+    return new RexBuilder(typeFactory);
+  }
+
+  public JavaTypeFactory getTypeFactory() {
+    return typeFactory;
+  }
+
+  @SuppressWarnings("deprecation")
   public RelNode transform(int ruleSetIndex, RelTraitSet requiredOutputTraits,
       RelNode rel) {
     ensure(State.STATE_5_CONVERTED);
