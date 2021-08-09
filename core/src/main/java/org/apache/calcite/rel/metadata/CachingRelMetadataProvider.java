@@ -56,13 +56,9 @@ public class CachingRelMetadataProvider implements RelMetadataProvider {
 
   //~ Methods ----------------------------------------------------------------
 
-<<<<<<< HEAD
-  @Deprecated // to be removed before 2.0
-=======
 >>>>>>> 8a612190e (DX-35420 Revert previous customization rel metadata)
 =======
   @Deprecated // to be removed before 2.0
->>>>>>> a691f7b6e ([CALCITE-4544] Deprecating Reflection base Rel Metadata(James Starr))
   public <M extends Metadata> UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass,
       final Class<? extends M> metadataClass) {

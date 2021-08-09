@@ -21,7 +21,9 @@ import org.apache.calcite.rel.RelNode;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
+
 import java.util.Map;
+
 import javax.annotation.Nullable;
 
 /**
@@ -58,3 +60,8 @@ public class TableRelMetadataCache implements RelMetadataCache {
     return map.put(relNode, args, value);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End TableRelMetadataCache.java
+>>>>>>> 7a4f0f872 (DX-35420 Adding RelMetadataHandlerProvider and RelMetadataCache)
