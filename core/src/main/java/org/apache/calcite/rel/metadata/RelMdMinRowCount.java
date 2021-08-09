@@ -49,7 +49,6 @@ public class RelMdMinRowCount
 
   //~ Methods ----------------------------------------------------------------
 
-  @Deprecated
   public MetadataDef<BuiltInMetadata.MinRowCount> getDef() {
     return BuiltInMetadata.MinRowCount.DEF;
   }

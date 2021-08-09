@@ -74,7 +74,6 @@ public class RelMdSize implements MetadataHandler<BuiltInMetadata.Size> {
 
   //~ Methods ----------------------------------------------------------------
 
-  @Deprecated
   public MetadataDef<BuiltInMetadata.Size> getDef() {
     return BuiltInMetadata.Size.DEF;
   }

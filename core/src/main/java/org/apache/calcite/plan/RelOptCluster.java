@@ -20,9 +20,12 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.hint.HintStrategyTable;
 import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
+import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
 import org.apache.calcite.rel.metadata.MetadataFactory;
+import org.apache.calcite.rel.metadata.MetadataFactoryImpl;
 import org.apache.calcite.rel.metadata.RelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
+import org.apache.calcite.rel.metadata.RelMetadataQueryBase;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexNode;
@@ -47,7 +50,6 @@ public class RelOptCluster {
   private RexNode originalExpression;
   private final RexBuilder rexBuilder;
   private RelMetadataProvider metadataProvider;
-  @Deprecated // to be removed before 2.0
   private MetadataFactory metadataFactory;
   private HintStrategyTable hintStrategies;
   private final RelTraitSet emptyTraitSet;
@@ -137,15 +139,16 @@ public class RelOptCluster {
    *
    * @param metadataProvider custom provider
    */
-  @SuppressWarnings("deprecation")
-
   public void setMetadataProvider(RelMetadataProvider metadataProvider) {
     this.metadataProvider = metadataProvider;
-    this.metadataFactory =
-        new org.apache.calcite.rel.metadata.MetadataFactoryImpl(metadataProvider);
+    this.metadataFactory = new MetadataFactoryImpl(metadataProvider);
+    // Wrap the metadata provider as a JaninoRelMetadataProvider
+    // and set it to the ThreadLocal,
+    // JaninoRelMetadataProvider is required by the RelMetadataQuery.
+    RelMetadataQueryBase.THREAD_PROVIDERS
+        .set(JaninoRelMetadataProvider.of(metadataProvider));
   }
 
-  @Deprecated // to be removed before 2.0
   public MetadataFactory getMetadataFactory() {
     return metadataFactory;
   }

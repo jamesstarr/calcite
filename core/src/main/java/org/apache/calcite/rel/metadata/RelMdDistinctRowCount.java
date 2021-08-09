@@ -56,7 +56,6 @@ public class RelMdDistinctRowCount
 
   //~ Methods ----------------------------------------------------------------
 
-  @Deprecated
   public MetadataDef<BuiltInMetadata.DistinctRowCount> getDef() {
     return BuiltInMetadata.DistinctRowCount.DEF;
   }

@@ -56,8 +56,11 @@ public class RelMdPercentageOriginalRows
 =======
   private RelMdPercentageOriginalRows() {}
 
+<<<<<<< HEAD
   @Deprecated
 >>>>>>> 889035685 ([CALCITE-4544] Deprecation of Java Reflection MD API)
+=======
+>>>>>>> 8a612190e (DX-35420 Revert previous customization rel metadata)
   public MetadataDef<BuiltInMetadata.PercentageOriginalRows> getDef() {
     return BuiltInMetadata.PercentageOriginalRows.DEF;
   }

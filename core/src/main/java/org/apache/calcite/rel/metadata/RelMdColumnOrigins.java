@@ -58,7 +58,6 @@ public class RelMdColumnOrigins
 
   //~ Methods ----------------------------------------------------------------
 
-  @Deprecated
   public MetadataDef<BuiltInMetadata.ColumnOrigin> getDef() {
     return BuiltInMetadata.ColumnOrigin.DEF;
   }

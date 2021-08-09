@@ -85,8 +85,6 @@ public class RelMdExpressionLineage
 
   //~ Methods ----------------------------------------------------------------
 
-
-  @Deprecated
   public MetadataDef<BuiltInMetadata.ExpressionLineage> getDef() {
     return BuiltInMetadata.ExpressionLineage.DEF;
   }

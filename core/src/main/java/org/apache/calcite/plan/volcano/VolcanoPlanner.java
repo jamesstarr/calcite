@@ -42,6 +42,7 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelVisitor;
 import org.apache.calcite.rel.convert.Converter;
 import org.apache.calcite.rel.convert.ConverterRule;
+import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelMdUtil;
 import org.apache.calcite.rel.metadata.RelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
@@ -242,6 +243,11 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
   }
 
   public void setRoot(RelNode rel) {
+    // We're registered all the rules, and therefore RelNode classes,
+    // we're interested in, and have not yet started calling metadata providers.
+    // So now is a good time to tell the metadata layer what to expect.
+    registerMetadataRels();
+
     this.root = registerImpl(rel, null);
     if (this.originalRoot == null) {
       this.originalRoot = rel;
@@ -536,6 +542,13 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
       }
     }
     return cheapest;
+  }
+
+  /** Informs {@link JaninoRelMetadataProvider} about the different kinds of
+   * {@link RelNode} that we will be dealing with. It will reduce the number
+   * of times that we need to re-generate the provider. */
+  private void registerMetadataRels() {
+    JaninoRelMetadataProvider.DEFAULT.register(classOperands.keySet());
   }
 
   /** Ensures that the subset that is the root relational expression contains
@@ -1568,13 +1581,12 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     listener = newListener;
   }
 
-  @Deprecated // to be removed before 2.0
+  // implement RelOptPlanner
   public void registerMetadataProviders(List<RelMetadataProvider> list) {
     list.add(0, new VolcanoRelMetadataProvider());
   }
 
   // implement RelOptPlanner
-  @Deprecated
   public long getRelMetadataTimestamp(RelNode rel) {
     List<Long> inputSubsets = new ArrayList<>();
     for (RelNode input : rel.getInputs()) {

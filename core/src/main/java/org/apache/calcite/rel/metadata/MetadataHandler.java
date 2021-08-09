@@ -22,6 +22,5 @@ package org.apache.calcite.rel.metadata;
  * @param <M> Kind of metadata
  */
 public interface MetadataHandler<M extends Metadata> {
-  @Deprecated
   MetadataDef<M> getDef();
 }

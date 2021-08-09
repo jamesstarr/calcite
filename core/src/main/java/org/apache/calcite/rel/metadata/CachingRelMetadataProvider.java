@@ -35,7 +35,6 @@ import java.util.Objects;
  * Implementation of the {@link RelMetadataProvider}
  * interface that caches results from an underlying provider.
  */
-@Deprecated // to be removed before 2.0
 public class CachingRelMetadataProvider implements RelMetadataProvider {
   //~ Instance fields --------------------------------------------------------
 
@@ -58,8 +57,11 @@ public class CachingRelMetadataProvider implements RelMetadataProvider {
 <<<<<<< HEAD
 =======
 
+<<<<<<< HEAD
 >>>>>>> 889035685 ([CALCITE-4544] Deprecation of Java Reflection MD API)
   @Deprecated // to be removed before 2.0
+=======
+>>>>>>> 8a612190e (DX-35420 Revert previous customization rel metadata)
   public <M extends Metadata> UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass,
       final Class<? extends M> metadataClass) {
