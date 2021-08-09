@@ -317,8 +317,6 @@ public class PlannerImpl implements Planner {
     return typeFactory;
   }
 
-
-  @SuppressWarnings("deprecation")
   public RelNode transform(int ruleSetIndex, RelTraitSet requiredOutputTraits,
       RelNode rel) throws RelConversionException {
     ensure(State.STATE_5_CONVERTED);

@@ -35,7 +35,6 @@ import java.util.Map;
  * Implementation of the {@link RelMetadataProvider}
  * interface that caches results from an underlying provider.
  */
-@Deprecated // to be removed before 2.0
 public class CachingRelMetadataProvider implements RelMetadataProvider {
   //~ Instance fields --------------------------------------------------------
 
@@ -56,7 +55,6 @@ public class CachingRelMetadataProvider implements RelMetadataProvider {
 
   //~ Methods ----------------------------------------------------------------
 
-  @Deprecated // to be removed before 2.0
   public <M extends Metadata> UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass,
       final Class<? extends M> metadataClass) {

@@ -62,9 +62,7 @@ public class ReflectiveRelMetadataProvider
     implements RelMetadataProvider, ReflectiveVisitor {
 
   //~ Instance fields --------------------------------------------------------
-  @Deprecated // to be removed before 2.0
   private final ConcurrentMap<Class<RelNode>, UnboundMetadata> map;
-  @Deprecated // to be removed before 2.0
   private final Class<? extends Metadata> metadataClass0;
   private final ImmutableMultimap<Method, MetadataHandler> handlerMap;
 
@@ -241,7 +239,7 @@ public class ReflectiveRelMetadataProvider
   }
 
   //~ Methods ----------------------------------------------------------------
-  @Deprecated
+
   public <M extends Metadata> UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass, Class<? extends M> metadataClass) {
     if (metadataClass == metadataClass0) {
@@ -251,8 +249,7 @@ public class ReflectiveRelMetadataProvider
     }
   }
 
-
-  @Deprecated // to be removed before 2.0
+  @SuppressWarnings({ "unchecked", "SuspiciousMethodCalls" })
   public <M extends Metadata> UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass) {
     List<Class<? extends RelNode>> newSources = new ArrayList<>();

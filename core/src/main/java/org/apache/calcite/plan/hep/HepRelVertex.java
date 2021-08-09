@@ -22,7 +22,6 @@ import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.AbstractRelNode;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelWriter;
-import org.apache.calcite.rel.metadata.DelegatingMetadataRel;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
 
@@ -32,7 +31,7 @@ import java.util.List;
  * HepRelVertex wraps a real {@link RelNode} as a vertex in a DAG representing
  * the entire query expression.
  */
-public class HepRelVertex extends AbstractRelNode implements DelegatingMetadataRel {
+public class HepRelVertex extends AbstractRelNode {
   //~ Instance fields --------------------------------------------------------
 
   /**
@@ -92,7 +91,7 @@ public class HepRelVertex extends AbstractRelNode implements DelegatingMetadataR
   /**
    * @return current implementation chosen for this vertex
    */
-  @Override public RelNode getCurrentRel() {
+  public RelNode getCurrentRel() {
     return currentRel;
   }
 }

@@ -51,7 +51,6 @@ public class RelMdSelectivity
 
   //~ Methods ----------------------------------------------------------------
 
-  @Deprecated
   public MetadataDef<BuiltInMetadata.Selectivity> getDef() {
     return BuiltInMetadata.Selectivity.DEF;
   }

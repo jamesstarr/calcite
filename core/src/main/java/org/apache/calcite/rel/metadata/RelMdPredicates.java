@@ -129,7 +129,6 @@ public class RelMdPredicates
 
   private static final List<RexNode> EMPTY_LIST = ImmutableList.of();
 
-  @Deprecated
   public MetadataDef<BuiltInMetadata.Predicates> getDef() {
     return BuiltInMetadata.Predicates.DEF;
   }

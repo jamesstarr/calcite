@@ -58,7 +58,6 @@ public class RelMdDistribution
 
   //~ Methods ----------------------------------------------------------------
 
-  @Deprecated
   public MetadataDef<BuiltInMetadata.Distribution> getDef() {
     return BuiltInMetadata.Distribution.DEF;
   }

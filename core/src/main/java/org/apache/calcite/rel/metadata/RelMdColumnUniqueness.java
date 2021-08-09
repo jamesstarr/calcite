@@ -78,7 +78,6 @@ public class RelMdColumnUniqueness
 
   //~ Methods ----------------------------------------------------------------
 
-  @Deprecated
   public MetadataDef<BuiltInMetadata.ColumnUniqueness> getDef() {
     return BuiltInMetadata.ColumnUniqueness.DEF;
   }

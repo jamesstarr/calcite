@@ -37,7 +37,6 @@ public class RelMdExplainVisibility
 
   //~ Methods ----------------------------------------------------------------
 
-  @Deprecated
   public MetadataDef<BuiltInMetadata.ExplainVisibility> getDef() {
     return BuiltInMetadata.ExplainVisibility.DEF;
   }

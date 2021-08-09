@@ -80,7 +80,6 @@ public class RelMdCollation
 
   //~ Methods ----------------------------------------------------------------
 
-  @Deprecated
   public MetadataDef<BuiltInMetadata.Collation> getDef() {
     return BuiltInMetadata.Collation.DEF;
   }
