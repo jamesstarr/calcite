@@ -50,7 +50,6 @@ import org.apache.calcite.rel.logical.LogicalWindow;
 import org.apache.calcite.rel.stream.LogicalChi;
 import org.apache.calcite.rel.stream.LogicalDelta;
 import org.apache.calcite.rex.RexNode;
-import org.apache.calcite.util.ControlFlowException;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.SaffronProperties;
 import org.apache.calcite.util.Util;
@@ -358,7 +357,7 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
         buf2.setLength(0);
       }
       buf2.append("      throw new ")
-          .append(NoHandler.class.getName())
+          .append(RelMetadataHandlerProvider.NoHandler.class.getName())
           .append("(r.getClass());\n")
           .append("    }\n")
           .append("  }\n");
@@ -471,10 +470,10 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
     return def.handlerClass.cast(o);
   }
 
-  synchronized <M extends Metadata, H extends MetadataHandler<M>> H create(
-      MetadataDef<M> def) {
+  static synchronized <M extends Metadata, H extends MetadataHandler<M>> H create(
+      RelMetadataProvider relMetadataProvider, MetadataDef<M> def) {
     try {
-      final Key key = new Key((MetadataDef) def, provider,
+      final Key key = new Key(def, relMetadataProvider,
           ImmutableList.copyOf(ALL_RELS));
       //noinspection unchecked
       return (H) HANDLERS.get(key);
@@ -484,13 +483,14 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
     }
   }
 
-  synchronized <M extends Metadata, H extends MetadataHandler<M>> H revise(
-      Class<? extends RelNode> rClass, MetadataDef<M> def) {
+  static synchronized <M extends Metadata, H extends MetadataHandler<M>> H revise(
+      Class<? extends RelNode> rClass, RelMetadataProvider relMetadataProvider,
+      MetadataDef<M> def) {
     if (ALL_RELS.add(rClass)) {
       HANDLERS.invalidateAll();
     }
     //noinspection unchecked
-    return (H) create(def);
+    return (H) create(relMetadataProvider, def);
   }
 
   /** Registers some classes. Does not flush the providers, but next time we
@@ -512,17 +512,6 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
       if (ALL_RELS.addAll(list)) {
         HANDLERS.invalidateAll();
       }
-    }
-  }
-
-  /** Exception that indicates there there should be a handler for
-   * this class but there is not. The action is probably to
-   * re-generate the handler class. */
-  public static class NoHandler extends ControlFlowException {
-    public final Class<? extends RelNode> relClass;
-
-    public NoHandler(Class<? extends RelNode> relClass) {
-      this.relClass = relClass;
     }
   }
 
