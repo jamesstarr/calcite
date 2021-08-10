@@ -27,8 +27,6 @@ import org.apache.calcite.sql.ExplicitOperatorBinding;
 import org.apache.calcite.sql.SqlCallBinding;
 import org.apache.calcite.sql.SqlCollation;
 import org.apache.calcite.sql.SqlIntervalQualifier;
-import org.apache.calcite.sql.SqlLiteral;
-import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperatorBinding;
 import org.apache.calcite.sql.SqlUtil;
 import org.apache.calcite.sql.parser.SqlParserPos;
@@ -599,11 +597,6 @@ public abstract class ReturnTypes {
   public static final SqlReturnTypeInference NULLABLE_MOD =
           chain(DECIMAL_MOD_NULLABLE, ARG1_NULLABLE);
 
-  public static final SqlReturnTypeInference DECIMAL_TRUNCATE = opBinding -> {
-    RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-    RelDataType type1 = opBinding.getOperandType(0);
-    Integer scale2 = 0;
-=======
   public static final SqlReturnTypeInference DECIMAL_TRUNCATE = new SqlReturnTypeInference() {
     public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
       RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
@@ -679,6 +672,7 @@ public abstract class ReturnTypes {
   public static final SqlReturnTypeInference NULLABLE_ROUND =
       chain(DECIMAL_ROUND_NULLABLE, ARG0_NULLABLE);
 
+=======
   /**
    * Type-inference strategy for DATE - DATE.
    */
