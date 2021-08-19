@@ -18,7 +18,7 @@ package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
-import org.apache.calcite.plan.SubstitutionRule;
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.logical.LogicalCalc;
 import org.apache.calcite.rex.RexProgram;
@@ -63,6 +63,23 @@ public class CalcRemoveRule extends RelRule<CalcRemoveRule.Config>
             input,
             calc.getTraitSet()));
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY
+            .withOperandSupplier(b ->
+                    b.operand(LogicalCalc.class)
+                            .predicate(calc -> calc.getProgram().isTrivial())
+                            .anyInputs())
+            .as(Config.class);
+
+    @Override default CalcRemoveRule toRule() {
+      return new CalcRemoveRule(this);
+    }
+  }
+}
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

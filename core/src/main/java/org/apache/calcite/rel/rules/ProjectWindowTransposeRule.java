@@ -245,6 +245,29 @@ public class ProjectWindowTransposeRule
       return beReferred.get(0, initIndex).cardinality();
     }
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(LogicalProject.class, LogicalWindow.class);
+
+    @Override default ProjectWindowTransposeRule toRule() {
+      return new ProjectWindowTransposeRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Project> projectClass,
+                                  Class<? extends Window> windowClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(projectClass).oneInput(b1 ->
+                      b1.operand(windowClass).anyInputs()))
+              .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

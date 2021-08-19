@@ -17,7 +17,7 @@
 package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.RelOptRuleCall;
-import org.apache.calcite.plan.RelOptUtil;
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
@@ -81,6 +81,7 @@ public class AggregateUnionAggregateRule
 
   //~ Methods ----------------------------------------------------------------
 
+<<<<<<< HEAD
   /**
    * Returns an input with the same row type with the input Aggregate,
    * create a Project node if needed.
@@ -99,6 +100,8 @@ public class AggregateUnionAggregateRule
   }
 
   public void onMatch(RelOptRuleCall call) {
+=======
+  @Override public void onMatch(RelOptRuleCall call) {
     final Aggregate topAggRel = call.rel(0);
     final Union union = call.rel(1);
 
@@ -135,6 +138,50 @@ public class AggregateUnionAggregateRule
         topAggRel.getAggCallList());
     call.transformTo(relBuilder.build());
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY
+            .withDescription("AggregateUnionAggregateRule")
+            .as(Config.class)
+            .withOperandFor(LogicalAggregate.class, LogicalUnion.class,
+                    RelNode.class, RelNode.class);
+
+    Config AGG_FIRST = DEFAULT
+            .withDescription("AggregateUnionAggregateRule:first-input-agg")
+            .as(Config.class)
+            .withOperandFor(LogicalAggregate.class, LogicalUnion.class,
+                    LogicalAggregate.class, RelNode.class);
+
+    Config AGG_SECOND = DEFAULT
+            .withDescription("AggregateUnionAggregateRule:second-input-agg")
+            .as(Config.class)
+            .withOperandFor(LogicalAggregate.class, LogicalUnion.class,
+                    RelNode.class, LogicalAggregate.class);
+
+    @Override default AggregateUnionAggregateRule toRule() {
+      return new AggregateUnionAggregateRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Aggregate> aggregateClass,
+                                  Class<? extends Union> unionClass,
+                                  Class<? extends RelNode> firstUnionInputClass,
+                                  Class<? extends RelNode> secondUnionInputClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(aggregateClass)
+                .predicate(Aggregate::isSimple)
+                .oneInput(b1 ->
+                   b1.operand(unionClass).inputs(
+                       b2 -> b2.operand(firstUnionInputClass).anyInputs(),
+                       b3 -> b3.operand(secondUnionInputClass).anyInputs())))
+                .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

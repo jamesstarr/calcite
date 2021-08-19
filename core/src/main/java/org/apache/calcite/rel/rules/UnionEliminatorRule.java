@@ -49,14 +49,22 @@ public class UnionEliminatorRule
   //~ Methods ----------------------------------------------------------------
 
   @Override public boolean matches(RelOptRuleCall call) {
-    Union union = call.rel(0);
-    return union.all && union.getInputs().size() == 1;
-  }
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(LogicalUnion.class);
 
-  @Override public void onMatch(RelOptRuleCall call) {
-    Union union = call.rel(0);
-    call.transformTo(union.getInputs().get(0));
+    @Override default UnionEliminatorRule toRule() {
+      return new UnionEliminatorRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Union> unionClass) {
+      return withOperandSupplier(b -> b.operand(unionClass).anyInputs())
+              .as(Config.class);
+    }
   }
+}
 
   @Override public boolean autoPruneOld() {
     return true;

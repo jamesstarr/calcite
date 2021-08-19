@@ -20,7 +20,7 @@ package org.apache.calcite.rel.rules;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.core.RelFactories;
@@ -32,6 +32,7 @@ import com.google.common.collect.ImmutableSet;
 
 /**
  * Planner rule that pushes {@code SemiJoin}s down in a tree past
+
  * a {@link org.apache.calcite.rel.core.Filter}.
  *
  * <p>The intention is to trigger other rules that will convert
@@ -54,21 +55,20 @@ public class SemiJoinFilterTransposeRule
   @Deprecated // to be removed before 2.0
 
   public SemiJoinFilterTransposeRule(RelBuilderFactory relBuilderFactory) {
-<<<<<<< HEAD
-    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
-            .as(Config.class));
-
-=======
     super(
         operandJ(LogicalJoin.class, null, Join::isSemiJoin,
             some(operand(LogicalFilter.class, any()))),
         relBuilderFactory, null);
+=======
+    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
+            .as(Config.class));
+
   }
 
   //~ Methods ----------------------------------------------------------------
 
   // implement RelOptRule
-  public void onMatch(RelOptRuleCall call) {
+  @Override public void onMatch(RelOptRuleCall call) {
     LogicalJoin semiJoin = call.rel(0);
     LogicalFilter filter = call.rel(1);
 
@@ -88,6 +88,29 @@ public class SemiJoinFilterTransposeRule
 
     call.transformTo(newFilter);
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+        .withOperandFor(LogicalJoin.class, LogicalFilter.class);
+
+    @Override default SemiJoinFilterTransposeRule toRule() {
+      return new SemiJoinFilterTransposeRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Join> joinClass,
+        Class<? extends Filter> filterClass) {
+      return withOperandSupplier(b0 ->
+          b0.operand(joinClass).predicate(Join::isSemiJoin).inputs(b1 ->
+              b1.operand(filterClass).anyInputs()))
+          .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

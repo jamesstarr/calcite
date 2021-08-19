@@ -241,6 +241,57 @@ public class ValuesReduceRule
       return literalList.get(inputRef.getIndex());
     }
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config FILTER = EMPTY.withDescription("ValuesReduceRule(Filter)")
+            .withOperandSupplier(b0 ->
+                    b0.operand(LogicalFilter.class).oneInput(b1 ->
+                            b1.operand(LogicalValues.class)
+                                    .predicate(Values::isNotEmpty).noInputs()))
+            .as(Config.class)
+            .withMatchHandler(ValuesReduceRule::matchFilter);
+
+    Config PROJECT = EMPTY.withDescription("ValuesReduceRule(Project)")
+            .withOperandSupplier(b0 ->
+                    b0.operand(LogicalProject.class).oneInput(b1 ->
+                            b1.operand(LogicalValues.class)
+                                    .predicate(Values::isNotEmpty).noInputs()))
+            .as(Config.class)
+            .withMatchHandler(ValuesReduceRule::matchProject);
+
+    Config PROJECT_FILTER = EMPTY
+            .withDescription("ValuesReduceRule(Project-Filter)")
+            .withOperandSupplier(b0 ->
+                    b0.operand(LogicalProject.class).oneInput(b1 ->
+                            b1.operand(LogicalFilter.class).oneInput(b2 ->
+                                    b2.operand(LogicalValues.class)
+                                            .predicate(Values::isNotEmpty).noInputs())))
+            .as(Config.class)
+            .withMatchHandler(ValuesReduceRule::matchProjectFilter);
+
+    @Override default ValuesReduceRule toRule() {
+      return new ValuesReduceRule(this);
+    }
+
+    /** Forwards a call to {@link #onMatch(RelOptRuleCall)}. */
+    @ImmutableBeans.Property
+    <R extends RelOptRule> MatchHandler<R> matchHandler();
+
+    /** Sets {@link #matchHandler()}. */
+    <R extends RelOptRule> Config withMatchHandler(MatchHandler<R> matchHandler);
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends RelNode> relClass) {
+      return withOperandSupplier(b -> b.operand(relClass).anyInputs())
+              .as(Config.class);
+    }
+  }
+
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

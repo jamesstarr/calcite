@@ -76,3 +76,8 @@ public class AggregateProjectStarTableRule extends AggregateStarTableRule {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End AggregateProjectStarTableRule.java
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)

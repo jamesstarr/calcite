@@ -16,14 +16,16 @@
  */
 package org.apache.calcite.rel.rules;
 
-import org.apache.calcite.plan.RelOptPredicateList;
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptRuleOperand;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
+<<<<<<< HEAD
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelDistributionTraitDef;
+=======
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Project;
@@ -37,15 +39,13 @@ import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBeans;
-import org.apache.calcite.util.Util;
 
-import java.util.Collections;
 import java.util.function.Predicate;
 
 /**
  * Planner rule that pushes
- * a {@link org.apache.calcite.rel.core.Filter}
- * past a {@link org.apache.calcite.rel.core.Project}.
+ * a {@link org.apache.calcite.rel.logical.LogicalFilter}
+ * past a {@link org.apache.calcite.rel.logical.LogicalProject}.
  *
  * @see CoreRules#FILTER_PROJECT_TRANSPOSE
  */
@@ -173,16 +173,9 @@ public class FilterProjectTransposeRule
     final RelBuilder relBuilder = call.builder();
     RelNode newFilterRel;
     if (config.isCopyFilter()) {
-      final RelNode input = project.getInput();
-      final RelTraitSet traitSet = filter.getTraitSet()
-          .replaceIfs(RelCollationTraitDef.INSTANCE,
-              () -> Collections.singletonList(
-                      input.getTraitSet().getTrait(RelCollationTraitDef.INSTANCE)))
-          .replaceIfs(RelDistributionTraitDef.INSTANCE,
-              () -> Collections.singletonList(
-                      input.getTraitSet().getTrait(RelDistributionTraitDef.INSTANCE)));
-      newCondition = RexUtil.removeNullabilityCast(relBuilder.getTypeFactory(), newCondition);
-      newFilterRel = filter.copy(traitSet, input, newCondition);
+      newFilterRel = filter.copy(filter.getTraitSet(), project.getInput(),
+          RexUtil.removeNullabilityCast(relBuilder.getTypeFactory(),
+              newCondition));
     } else {
       newFilterRel =
           relBuilder.push(project.getInput()).filter(newCondition).build();
@@ -198,6 +191,73 @@ public class FilterProjectTransposeRule
 
     call.transformTo(newProjRel);
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration.
+   *
+   * <p>If {@code copyFilter} is true, creates the same kind of Filter as
+   * matched in the rule, otherwise it creates a Filter using the RelBuilder
+   * obtained by the {@code relBuilderFactory}.
+   * Similarly for {@code copyProject}.
+   *
+   * <p>Defining predicates for the Filter (using {@code filterPredicate})
+   * and/or the Project (using {@code projectPredicate} allows making the rule
+   * more restrictive. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(Filter.class,
+              f -> !RexUtil.containsCorrelation(f.getCondition()),
+                    Project.class, p -> true)
+            .withCopyFilter(true)
+            .withCopyProject(true);
+
+    @Override default FilterProjectTransposeRule toRule() {
+      return new FilterProjectTransposeRule(this);
+    }
+
+    /** Whether to create a {@link Filter} of the same convention as the
+     * matched Filter. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(true)
+    boolean isCopyFilter();
+
+    /** Sets {@link #isCopyFilter()}. */
+    Config withCopyFilter(boolean copyFilter);
+
+    /** Whether to create a {@link Project} of the same convention as the
+     * matched Project. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(true)
+    boolean isCopyProject();
+
+    /** Sets {@link #isCopyProject()}. */
+    Config withCopyProject(boolean copyProject);
+
+    /** Defines an operand tree for the given 2 classes. */
+    default Config withOperandFor(Class<? extends Filter> filterClass,
+                                  Predicate<Filter> filterPredicate,
+                                  Class<? extends Project> projectClass,
+                                  Predicate<Project> projectPredicate) {
+      return withOperandSupplier(b0 ->
+              b0.operand(filterClass).predicate(filterPredicate).oneInput(b1 ->
+                      b1.operand(projectClass).predicate(projectPredicate).anyInputs()))
+              .as(Config.class);
+    }
+
+    /** Defines an operand tree for the given 3 classes. */
+    default Config withOperandFor(Class<? extends Filter> filterClass,
+                                  Class<? extends Project> projectClass,
+                                  Class<? extends RelNode> relClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(filterClass).oneInput(b1 ->
+                      b1.operand(projectClass).oneInput(b2 ->
+                              b2.operand(relClass).anyInputs())))
+              .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /**
    * Simplifies the filter condition using a simplifier created by the

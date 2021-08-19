@@ -18,7 +18,7 @@ package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
-import org.apache.calcite.plan.SubstitutionRule;
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.core.Values;
@@ -106,6 +106,32 @@ public class AggregateValuesRule
     // New plan is absolutely better than old plan.
     call.getPlanner().setImportance(aggregate, 0.0);
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(Aggregate.class, Values.class);
+
+    @Override default AggregateValuesRule toRule() {
+      return new AggregateValuesRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Aggregate> aggregateClass,
+                                  Class<? extends Values> valuesClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(aggregateClass)
+                      .predicate(aggregate -> aggregate.getGroupCount() == 0)
+                      .oneInput(b1 ->
+                              b1.operand(valuesClass)
+                                      .predicate(values -> values.getTuples().isEmpty())
+                                      .noInputs()))
+              .as(Config.class);
+    }
+  }
+}
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

@@ -200,6 +200,29 @@ public class AggregateUnionTransposeRule
     }
     return newCalls;
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(LogicalAggregate.class, LogicalUnion.class);
+
+    @Override default AggregateUnionTransposeRule toRule() {
+      return new AggregateUnionTransposeRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Aggregate> aggregateClass,
+                                  Class<? extends Union> unionClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(aggregateClass).oneInput(b1 ->
+                      b1.operand(unionClass).anyInputs()))
+              .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

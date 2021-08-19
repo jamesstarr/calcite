@@ -23,10 +23,10 @@ import org.apache.calcite.materialize.Lattice;
 import org.apache.calcite.materialize.TileKey;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptLattice;
-import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptRuleOperand;
 import org.apache.calcite.plan.RelOptTable;
+import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.plan.SubstitutionVisitor;
 import org.apache.calcite.plan.ViewExpanders;
@@ -243,6 +243,31 @@ public class AggregateStarTableRule
     }
     return -1;
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(Aggregate.class, StarTable.StarTableScan.class);
+
+    @Override default AggregateStarTableRule toRule() {
+      return new AggregateStarTableRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Aggregate> aggregateClass,
+                                  Class<StarTable.StarTableScan> scanClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(aggregateClass)
+                      .predicate(Aggregate::isSimple)
+                      .oneInput(b1 ->
+                              b1.operand(scanClass).noInputs()))
+              .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

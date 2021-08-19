@@ -46,27 +46,10 @@ public class FilterSetOpTransposeRule
   /** Creates a FilterSetOpTransposeRule. */
   protected FilterSetOpTransposeRule(Config config) {
     super(config);
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
   }
 
-  /**
-   * Creates a FilterSetOpTransposeRule.
-   */
-  /**
-   * Creates a FilterSetOpTransposeRule that uses a generic
-   * {@link Filter} and {@link SetOp}
-   * @param filterClass filter class
-   * @param setOpClass setOp class
-   * @param relBuilderFactory builder factory for relational expressions
-   */
-  public FilterSetOpTransposeRule(Class<? extends Filter> filterClass,
-                                  Class<? extends SetOp> setOpClass,
-                                  RelBuilderFactory relBuilderFactory) {
-    super(
-        operand(filterClass,
-            operand(setOpClass, any())),
-        relBuilderFactory, null);
-  }
-
+  @Deprecated // to be removed before 2.0
   public FilterSetOpTransposeRule(RelBuilderFactory relBuilderFactory) {
     this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
             .as(Config.class));
@@ -112,6 +95,22 @@ public class FilterSetOpTransposeRule
 
     call.transformTo(newSetOp);
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY
+            .withOperandSupplier(b0 ->
+                    b0.operand(Filter.class).oneInput(b1 ->
+                            b1.operand(SetOp.class).anyInputs()))
+            .as(Config.class);
+
+    @Override default FilterSetOpTransposeRule toRule() {
+      return new FilterSetOpTransposeRule(this);
+    }
+  }
+}
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

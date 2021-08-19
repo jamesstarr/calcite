@@ -18,11 +18,7 @@ package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.plan.RelOptRuleCall;
-import org.apache.calcite.plan.RelOptTable;
-import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
-import org.apache.calcite.plan.hep.HepRelVertex;
-import org.apache.calcite.rel.RelHomogeneousShuttle;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Join;
@@ -67,6 +63,8 @@ import static org.apache.calcite.plan.RelOptUtil.classifyFilters;
 import static org.apache.calcite.rel.rules.LoptMultiJoin.Edge;
 import static org.apache.calcite.util.mapping.Mappings.TargetMapping;
 
+import javax.annotation.Nullable;
+
 /**
  * Planner rule that finds an approximately optimal ordering for join operators
  * using a heuristic algorithm.
@@ -97,14 +95,7 @@ public class MultiJoinOptimizeBushyRule
           ? Util.printWriter(System.out)
           : null;
 
-  private static final List<SqlKind> EQUALITY = ImmutableList.of(
-          SqlKind.EQUALS, SqlKind.IS_NOT_DISTINCT_FROM
-  );
-
-  private static final List<SqlKind> EQUI_JOIN = ImmutableList.of(
-          SqlKind.EQUALS, SqlKind.IS_NOT_DISTINCT_FROM, SqlKind.AND
-  );
-
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
   /** Creates a MultiJoinOptimizeBushyRule. */
   protected MultiJoinOptimizeBushyRule(Config config) {
     super(config);
@@ -825,6 +816,20 @@ public class MultiJoinOptimizeBushyRule
           + ")";
     }
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY
+            .withOperandSupplier(b -> b.operand(MultiJoin.class).anyInputs())
+            .as(Config.class);
+
+    @Override default MultiJoinOptimizeBushyRule toRule() {
+      return new MultiJoinOptimizeBushyRule(this);
+    }
+  }
+}
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

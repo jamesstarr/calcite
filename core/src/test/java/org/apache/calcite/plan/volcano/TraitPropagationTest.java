@@ -101,7 +101,7 @@ public class TraitPropagationTest {
           PhysProjRule.INSTANCE,
           PhysTableRule.INSTANCE,
           PhysSortRule.INSTANCE,
-          SortRemoveRule.INSTANCE,
+          CoreRules.SORT_REMOVE,
           ExpandConversionRule.INSTANCE);
 
   @Test public void testOne() throws Exception {

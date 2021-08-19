@@ -22,14 +22,19 @@ import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+import org.apache.calcite.rel.logical.LogicalJoin;
+import org.apache.calcite.rel.type.RelDataTypeField;
+import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.tools.RelBuilderFactory;
+import org.apache.calcite.util.ImmutableIntList;
+
 import com.google.common.collect.ImmutableSet;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Planner rule that pushes a {@code SemiJoin}
+ * Planner rule that pushes a {@link Join#isSemiJoin semi-join}
  * down in a tree past a {@link org.apache.calcite.rel.core.Join}
  * in order to trigger other rules that will convert {@code SemiJoin}s.
  *
@@ -56,22 +61,22 @@ public class SemiJoinJoinTransposeRule
   @Deprecated // to be removed before 2.0
 
   public SemiJoinJoinTransposeRule(RelBuilderFactory relBuilderFactory) {
-    super(
-        operandJ(LogicalJoin.class, null, Join::isSemiJoin,
-            some(operand(Join.class, any()))),
-        relBuilderFactory, null);
+    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
+            .as(Config.class));
+
   }
 
   //~ Methods ----------------------------------------------------------------
 
   // implement RelOptRule
-  public void onMatch(RelOptRuleCall call) {
+  @Override public void onMatch(RelOptRuleCall call) {
     LogicalJoin semiJoin = call.rel(0);
     final Join join = call.rel(1);
     if (join.isSemiJoin()) {
       return;
     }
     final ImmutableIntList leftKeys = semiJoin.analyzeCondition().leftKeys;
+
 
     // X is the left child of the join below the semi-join
     // Y is the right child of the join below the semi-join
@@ -110,6 +115,7 @@ public class SemiJoinJoinTransposeRule
 
     // need to convert the semi-join condition and possibly the keys
     RexNode newSemiJoinFilter;
+
     int[] adjustments = new int[nTotalFields];
     if (nKeysFromX > 0) {
       // (X, Y, Z) --> (X, Z, Y)
@@ -129,6 +135,7 @@ public class SemiJoinJoinTransposeRule
                   semiJoin.getCluster().getRexBuilder(),
                   fields,
                   adjustments));
+
     } else {
       // (X, Y, Z) --> (X, Y, Z)
       // semiJoin(Y, Z)
@@ -145,9 +152,8 @@ public class SemiJoinJoinTransposeRule
                   semiJoin.getCluster().getRexBuilder(),
                   fields,
                   adjustments));
-<<<<<<< HEAD
-
 =======
+
     }
 
     // create the new join
@@ -220,6 +226,29 @@ public class SemiJoinJoinTransposeRule
       adjustments[i] = adjustZ;
     }
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+        .withOperandFor(LogicalJoin.class, Join.class);
+
+    @Override default SemiJoinJoinTransposeRule toRule() {
+      return new SemiJoinJoinTransposeRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Join> joinClass,
+        Class<? extends Join> join2Class) {
+      return withOperandSupplier(b0 ->
+          b0.operand(joinClass).predicate(Join::isSemiJoin).inputs(b1 ->
+              b1.operand(join2Class).anyInputs()))
+          .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

@@ -130,4 +130,25 @@ public class ProjectSetOpTransposeRule
     /** Sets {@link #preserveExprCondition()}. */
     Config withPreserveExprCondition(PushProjector.ExprCondition condition);
   }
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY
+            .withOperandSupplier(b0 ->
+                    b0.operand(LogicalProject.class).oneInput(b1 ->
+                            b1.operand(SetOp.class).anyInputs()))
+            .as(Config.class)
+            .withPreserveExprCondition(PushProjector.ExprCondition.FALSE);
+
+    @Override default ProjectSetOpTransposeRule toRule() {
+      return new ProjectSetOpTransposeRule(this);
+    }
+
+    /** Defines when an expression should not be pushed. */
+    @ImmutableBeans.Property
+    PushProjector.ExprCondition preserveExprCondition();
+
+    /** Sets {@link #preserveExprCondition()}. */
+    Config withPreserveExprCondition(PushProjector.ExprCondition condition);
+  }
 }

@@ -95,6 +95,15 @@ public class CalcMergeRule extends RelRule<CalcMergeRule.Config>
                     b0.operand(Calc.class).oneInput(b1 ->
                             b1.operand(Calc.class).anyInputs()))
             .as(Config.class);
+<<<<<<< HEAD
+=======
+
+    @Override default CalcMergeRule toRule() {
+      return new CalcMergeRule(this);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
     @Override default CalcMergeRule toRule() {
       return new CalcMergeRule(this);

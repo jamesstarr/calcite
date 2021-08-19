@@ -19,7 +19,7 @@ package org.apache.calcite.rel.rules;
 import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
-import org.apache.calcite.plan.SubstitutionRule;
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.tools.RelBuilder;
@@ -30,7 +30,15 @@ import org.apache.calcite.tools.RelBuilderFactory;
  * {@link org.apache.calcite.rel.logical.LogicalFilter}s.
  */
 public class FilterMergeRule extends RelRule<FilterMergeRule.Config>
+<<<<<<< HEAD
     implements SubstitutionRule {
+=======
+        implements SubstitutionRule {
+
+  /** Creates a FilterMergeRule. */
+  protected FilterMergeRule(Config config) {
+    super(config);
+  }
 
   /** Creates a FilterMergeRule. */
   protected FilterMergeRule(Config config) {
@@ -40,8 +48,8 @@ public class FilterMergeRule extends RelRule<FilterMergeRule.Config>
   @Deprecated // to be removed before 2.0
   public FilterMergeRule(RelBuilderFactory relBuilderFactory) {
     this(Config.DEFAULT
-        .withRelBuilderFactory(relBuilderFactory)
-        .as(Config.class));
+            .withRelBuilderFactory(relBuilderFactory)
+            .as(Config.class));
   }
 
   @Deprecated // to be removed before 2.0
@@ -77,6 +85,24 @@ public class FilterMergeRule extends RelRule<FilterMergeRule.Config>
           b0.operand(filterClass).oneInput(b1 ->
               b1.operand(filterClass).anyInputs()))
           .as(Config.class);
+    }
+  }
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(Filter.class);
+
+    @Override default FilterMergeRule toRule() {
+      return new FilterMergeRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Filter> filterClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(filterClass).oneInput(b1 ->
+                      b1.operand(filterClass).anyInputs()))
+              .as(Config.class);
     }
   }
 }

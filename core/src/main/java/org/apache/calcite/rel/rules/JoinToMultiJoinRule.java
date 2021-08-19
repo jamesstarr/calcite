@@ -126,13 +126,7 @@ public class JoinToMultiJoinRule
 
   //~ Methods ----------------------------------------------------------------
 
-
-  @Override public boolean matches(RelOptRuleCall call) {
-    final Join origJoin = call.rel(0);
-    return origJoin.getJoinType().projectsRight();
-  }
-
-  public void onMatch(RelOptRuleCall call) {
+  @Override public void onMatch(RelOptRuleCall call) {
     final Join origJoin = call.rel(0);
     final RelNode left = call.rel(1);
     final RelNode right = call.rel(2);
@@ -577,6 +571,29 @@ public class JoinToMultiJoinRule
       return null;
     }
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(LogicalJoin.class);
+
+    @Override default JoinToMultiJoinRule toRule() {
+      return new JoinToMultiJoinRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Join> joinClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(joinClass).inputs(
+                  b1 -> b1.operand(RelNode.class).anyInputs(),
+                  b2 -> b2.operand(RelNode.class).anyInputs()))
+              .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

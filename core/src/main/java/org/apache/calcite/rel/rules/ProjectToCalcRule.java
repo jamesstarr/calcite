@@ -19,7 +19,6 @@ package org.apache.calcite.rel.rules;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalCalc;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rex.RexProgram;
@@ -42,9 +41,6 @@ import org.apache.calcite.tools.RelBuilderFactory;
  */
 public class ProjectToCalcRule extends RelRule<ProjectToCalcRule.Config>
         implements TransformationRule {
-
-  public static final ProjectToCalcRule INSTANCE =
-          new ProjectToCalcRule(RelFactories.LOGICAL_BUILDER);
 
   /** Creates a ProjectToCalcRule. */
   protected ProjectToCalcRule(Config config) {
@@ -72,6 +68,22 @@ public class ProjectToCalcRule extends RelRule<ProjectToCalcRule.Config>
     final LogicalCalc calc = LogicalCalc.create(input, program);
     call.transformTo(calc);
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY
+            .withOperandSupplier(b ->
+                    b.operand(LogicalProject.class).anyInputs())
+            .as(Config.class);
+
+    @Override default ProjectToCalcRule toRule() {
+      return new ProjectToCalcRule(this);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

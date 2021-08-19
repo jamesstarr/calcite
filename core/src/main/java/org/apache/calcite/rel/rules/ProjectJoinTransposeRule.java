@@ -16,20 +16,24 @@
  */
 package org.apache.calcite.rel.rules;
 
+
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
->>>>>>> 9ac32d14a ([CALCITE-2803] ProjectTransposeJoinRule messes INDF expressions)
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.Project;
-import org.apache.calcite.rel.core.RelFactories;
+
+
+import org.apache.calcite.rel.logical.LogicalJoin;
+import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexShuttle;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBeans;
-import org.apache.calcite.util.mapping.Mappings;
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +43,14 @@ import java.util.List;
  * past a {@link org.apache.calcite.rel.core.Join}
  * by splitting the projection into a projection on top of each child of
  * the join.
+<<<<<<< HEAD
  *
  * @see CoreRules#PROJECT_JOIN_TRANSPOSE
+=======
+
+ *
+ * @see CoreRules#PROJECT_JOIN_TRANSPOSE
+
  */
 public class ProjectJoinTransposeRule
         extends RelRule<ProjectJoinTransposeRule.Config>
@@ -49,40 +59,27 @@ public class ProjectJoinTransposeRule
   /** Creates a ProjectJoinTransposeRule. */
   protected ProjectJoinTransposeRule(Config config) {
     super(config);
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
   }
 
   @Deprecated // to be removed before 2.0
-  public ProjectJoinTransposeRule(
-      PushProjector.ExprCondition preserveExprCondition,
-      RelBuilderFactory relFactory) {
-    this(Project.class, Join.class, preserveExprCondition, relFactory);
-  }
 
-  /**
-   * Creates a ProjectJoinTransposeRule with an explicit condition.
-   *
-   * @param projectClass          Project class to match on
-   * @param joinClass             Join class to match on
-   * @param preserveExprCondition Condition for expressions that should be
-   *                              preserved in the projection
-   * @param relFactory            RelBuilder factory to use
-   */
   public ProjectJoinTransposeRule(
-      Class<? extends Project> projectClass,
-      Class<? extends Join> joinClass,
-      PushProjector.ExprCondition preserveExprCondition,
-      RelBuilderFactory relFactory) {
-    super(
-        operand(projectClass,
-            operand(joinClass, any())),
-        relFactory, null);
-    this.preserveExprCondition = preserveExprCondition;
+          Class<? extends Project> projectClass,
+          Class<? extends Join> joinClass,
+          PushProjector.ExprCondition preserveExprCondition,
+          RelBuilderFactory relBuilderFactory) {
+    this(Config.DEFAULT
+            .withRelBuilderFactory(relBuilderFactory)
+            .as(Config.class)
+            .withOperandFor(projectClass, joinClass)
+            .withPreserveExprCondition(preserveExprCondition));
   }
 
   //~ Methods ----------------------------------------------------------------
 
   // implement RelOptRule
-  public void onMatch(final RelOptRuleCall call) {
+  @Override public void onMatch(final RelOptRuleCall call) {
     Project origProj = call.rel(0);
     final Join join = call.rel(1);
 
@@ -200,6 +197,36 @@ public class ProjectJoinTransposeRule
 
     call.transformTo(topProject);
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(LogicalProject.class, LogicalJoin.class)
+            .withPreserveExprCondition(PushProjector.ExprCondition.TRUE);
+
+    @Override default ProjectJoinTransposeRule toRule() {
+      return new ProjectJoinTransposeRule(this);
+    }
+
+    /** Defines when an expression should not be pushed. */
+    @ImmutableBeans.Property
+    PushProjector.ExprCondition preserveExprCondition();
+
+    /** Sets {@link #preserveExprCondition()}. */
+    Config withPreserveExprCondition(PushProjector.ExprCondition condition);
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Project> projectClass,
+                                  Class<? extends Join> joinClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(projectClass).oneInput(b1 ->
+                      b1.operand(joinClass).anyInputs()))
+              .as(Config.class);
+    }
+  }
+}
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

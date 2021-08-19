@@ -136,6 +136,45 @@ public class ProjectMergeRule
     relBuilder.project(newProjects, topProject.getRowType().getFieldNames());
     call.transformTo(relBuilder.build());
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(Project.class);
+
+    @Override default ProjectMergeRule toRule() {
+      return new ProjectMergeRule(this);
+    }
+
+    /** Limit how much complexity can increase during merging.
+     * Default is {@link #DEFAULT_BLOAT} (100). */
+    @ImmutableBeans.Property
+    @ImmutableBeans.IntDefault(ProjectMergeRule.DEFAULT_BLOAT)
+    int bloat();
+
+    /** Sets {@link #bloat()}. */
+    Config withBloat(int bloat);
+
+    /** Whether to always merge projects, default true. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(true)
+    boolean force();
+
+    /** Sets {@link #force()}. */
+    Config withForce(boolean force);
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Project> projectClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(projectClass).oneInput(b1 ->
+                      b1.operand(projectClass).anyInputs()))
+              .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

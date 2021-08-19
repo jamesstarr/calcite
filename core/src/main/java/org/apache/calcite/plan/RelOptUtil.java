@@ -55,9 +55,11 @@ import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
+import org.apache.calcite.rel.rules.AggregateProjectPullUpConstantsRule;
 import org.apache.calcite.rel.rules.CoreRules;
+import org.apache.calcite.rel.rules.DateRangeRules;
 import org.apache.calcite.rel.rules.MultiJoin;
-import org.apache.calcite.rel.stream.StreamRules;
+import org.apache.calcite.rel.rules.PruneEmptyRules;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeField;
@@ -2008,103 +2010,25 @@ public abstract class RelOptUtil {
 
   @Deprecated // to be removed before 2.0
   public static void registerAbstractRels(RelOptPlanner planner) {
-    registerAbstractRules(planner);
-  }
-
-  @Experimental
-  public static void registerAbstractRules(RelOptPlanner planner) {
-    RelOptRules.ABSTRACT_RULES.forEach(planner::addRule);
-  }
-
-  @Experimental
-  public static void registerAbstractRelationalRules(RelOptPlanner planner) {
-    RelOptRules.ABSTRACT_RELATIONAL_RULES.forEach(planner::addRule);
-    if (CalciteSystemProperty.COMMUTE.value()) {
-      planner.addRule(CoreRules.JOIN_ASSOCIATE);
-    }
-    // todo: rule which makes Project({OrdinalRef}) disappear
-  }
-
-  private static void registerEnumerableRules(RelOptPlanner planner) {
-    EnumerableRules.ENUMERABLE_RULES.forEach(planner::addRule);
-  }
-
-  private static void registerBaseRules(RelOptPlanner planner) {
-    RelOptRules.BASE_RULES.forEach(planner::addRule);
-  }
-
-  private static void registerReductionRules(RelOptPlanner planner) {
-    RelOptRules.CONSTANT_REDUCTION_RULES.forEach(planner::addRule);
-  }
-
-  private static void registerMaterializationRules(RelOptPlanner planner) {
-    RelOptRules.MATERIALIZATION_RULES.forEach(planner::addRule);
-  }
-
-  private static void registerCalcRules(RelOptPlanner planner) {
-    RelOptRules.CALC_RULES.forEach(planner::addRule);
-  }
-
-  @Experimental
-  public static void registerDefaultRules(RelOptPlanner planner,
-      boolean enableMaterialziations, boolean enableBindable) {
-    if (CalciteSystemProperty.ENABLE_COLLATION_TRAIT.value()) {
-      registerAbstractRelationalRules(planner);
-    }
-    registerAbstractRules(planner);
-    registerBaseRules(planner);
-
-    if (enableMaterialziations) {
-      registerMaterializationRules(planner);
-    }
-    if (enableBindable) {
-      for (RelOptRule rule : Bindables.RULES) {
-        planner.addRule(rule);
-      }
-    }
-    // Registers this rule for default ENUMERABLE convention
-    // because:
-    // 1. ScannableTable can bind data directly;
-    // 2. Only BindableTable supports project push down now.
-
-    // EnumerableInterpreterRule.INSTANCE would then transform
-    // the BindableTableScan to
-    // EnumerableInterpreter + BindableTableScan.
-
-    // Note: the cost of EnumerableInterpreter + BindableTableScan
-    // is always bigger that EnumerableTableScan because of the additional
-    // EnumerableInterpreter node, but if there are pushing projects or filter,
-    // we prefer BindableTableScan instead,
-    // see BindableTableScan#computeSelfCost.
-    planner.addRule(Bindables.BINDABLE_TABLE_SCAN_RULE);
-    planner.addRule(CoreRules.PROJECT_TABLE_SCAN);
-    planner.addRule(CoreRules.PROJECT_INTERPRETER_TABLE_SCAN);
-
-    if (CalciteSystemProperty.ENABLE_ENUMERABLE.value()) {
-      registerEnumerableRules(planner);
-      planner.addRule(EnumerableInterpreterRule.INSTANCE);
-    }
-
-    if (enableBindable && CalciteSystemProperty.ENABLE_ENUMERABLE.value()) {
-      planner.addRule(
-          EnumerableBindable.EnumerableToBindableConverterRule.INSTANCE);
-    }
-
-    if (CalciteSystemProperty.ENABLE_STREAM.value()) {
-      for (RelOptRule rule : StreamRules.RULES) {
-        planner.addRule(rule);
-      }
-    }
-
-    planner.addRule(CoreRules.FILTER_REDUCE_EXPRESSIONS);
-
-  }
-
-  public static StringBuilder appendRelDescription(
-      StringBuilder sb, RelNode rel) {
-    sb.append("rel#").append(rel.getId())
-        .append(':').append(rel.getDigest());
-    return sb;
+    planner.addRule(AggregateProjectPullUpConstantsRule.INSTANCE2);
+    planner.addRule(CoreRules.UNION_PULL_UP_CONSTANTS);
+    planner.addRule(PruneEmptyRules.UNION_INSTANCE);
+    planner.addRule(PruneEmptyRules.INTERSECT_INSTANCE);
+    planner.addRule(PruneEmptyRules.MINUS_INSTANCE);
+    planner.addRule(PruneEmptyRules.PROJECT_INSTANCE);
+    planner.addRule(PruneEmptyRules.FILTER_INSTANCE);
+    planner.addRule(PruneEmptyRules.SORT_INSTANCE);
+    planner.addRule(PruneEmptyRules.AGGREGATE_INSTANCE);
+    planner.addRule(PruneEmptyRules.JOIN_LEFT_INSTANCE);
+    planner.addRule(PruneEmptyRules.JOIN_RIGHT_INSTANCE);
+    planner.addRule(PruneEmptyRules.SORT_FETCH_ZERO_INSTANCE);
+    planner.addRule(CoreRules.UNION_MERGE);
+    planner.addRule(CoreRules.INTERSECT_MERGE);
+    planner.addRule(CoreRules.MINUS_MERGE);
+    planner.addRule(CoreRules.PROJECT_TO_LOGICAL_PROJECT_AND_WINDOW);
+    planner.addRule(CoreRules.FILTER_MERGE);
+    planner.addRule(DateRangeRules.FILTER_INSTANCE);
+    planner.addRule(CoreRules.INTERSECT_TO_DISTINCT);
   }
 
   /**

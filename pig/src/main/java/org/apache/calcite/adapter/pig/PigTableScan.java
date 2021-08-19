@@ -82,7 +82,7 @@ public class PigTableScan extends TableScan implements PigRel {
     }
     // Don't move Aggregates around, otherwise PigAggregate.implement() won't
     // know how to correctly procuce Pig Latin
-    planner.removeRule(AggregateExpandDistinctAggregatesRule.INSTANCE);
+    planner.removeRule(CoreRules.AGGREGATE_EXPAND_DISTINCT_AGGREGATES);
     // Make sure planner picks PigJoin over EnumerableHashJoin. Should there be
     // a rule for this instead for removing ENUMERABLE_JOIN_RULE here?
     planner.removeRule(EnumerableRules.ENUMERABLE_JOIN_RULE);

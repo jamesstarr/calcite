@@ -112,6 +112,39 @@ public class JoinUnionTransposeRule
         unionRel.copy(unionRel.getTraitSet(), newUnionInputs, true);
     call.transformTo(newUnionRel);
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config LEFT = EMPTY.withDescription("JoinUnionTransposeRule(Union-Other)")
+            .as(Config.class)
+            .withOperandFor(Join.class, Union.class, true);
+
+    Config RIGHT = EMPTY.withDescription("JoinUnionTransposeRule(Other-Union)")
+            .as(Config.class)
+            .withOperandFor(Join.class, Union.class, false);
+
+    @Override default JoinUnionTransposeRule toRule() {
+      return new JoinUnionTransposeRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Join> joinClass,
+                                  Class<? extends Union> unionClass, boolean left) {
+      final Class<? extends RelNode> leftClass =
+              left ? unionClass : RelNode.class;
+      final Class<? extends RelNode> rightClass =
+              left ? RelNode.class : unionClass;
+      return withOperandSupplier(b0 ->
+              b0.operand(joinClass).inputs(
+                  b1 -> b1.operand(leftClass).anyInputs(),
+                  b2 -> b2.operand(rightClass).anyInputs()))
+              .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

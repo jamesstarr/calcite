@@ -22,7 +22,7 @@ import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
-import org.apache.calcite.plan.SubstitutionVisitor;
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 import org.apache.calcite.plan.hep.HepPlanner;
 import org.apache.calcite.plan.hep.HepProgram;
 import org.apache.calcite.plan.hep.HepProgramBuilder;
@@ -32,6 +32,9 @@ import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.tools.RelBuilderFactory;
 
 import com.google.common.base.Suppliers;
+<<<<<<< HEAD
+=======
+import com.google.common.collect.ImmutableList;
 
 import java.util.Collections;
 import java.util.List;
@@ -105,6 +108,29 @@ public class MaterializedViewFilterScanRule
       }
     }
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(Filter.class, TableScan.class);
+
+    @Override default MaterializedViewFilterScanRule toRule() {
+      return new MaterializedViewFilterScanRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Filter> filterClass,
+                                  Class<? extends TableScan> scanClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(filterClass).oneInput(b1 ->
+                      b1.operand(scanClass).noInputs()))
+              .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

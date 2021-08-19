@@ -116,6 +116,23 @@ public class FilterTableFunctionTransposeRule
             columnMappings);
     call.transformTo(newFuncRel);
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY
+            .withOperandSupplier(b0 ->
+                    b0.operand(LogicalFilter.class).oneInput(b1 ->
+                            b1.operand(LogicalTableFunctionScan.class).anyInputs()))
+            .as(Config.class);
+
+    @Override default FilterTableFunctionTransposeRule toRule() {
+      return new FilterTableFunctionTransposeRule(this);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

@@ -24,7 +24,6 @@ import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Calc;
 import org.apache.calcite.rel.core.Project;
-import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalCalc;
 import org.apache.calcite.rel.logical.LogicalWindow;
 import org.apache.calcite.rex.RexCall;
@@ -47,7 +46,7 @@ import org.apache.calcite.util.graph.DirectedGraph;
 import org.apache.calcite.util.graph.TopologicalOrderIterator;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 import com.google.common.collect.Lists;
 
 import java.util.ArrayDeque;
@@ -75,12 +74,14 @@ public abstract class ProjectToWindowRule
         extends RelRule<ProjectToWindowRule.Config>
         implements TransformationRule {
 
+<<<<<<< HEAD
   public static final ProjectToWindowRule INSTANCE =
       new CalcToWindowRule(RelFactories.LOGICAL_BUILDER);
 
   public static final ProjectToWindowRule PROJECT =
       new ProjectToLogicalProjectAndWindowRule(RelFactories.LOGICAL_BUILDER);
 
+=======
   /** Creates a ProjectToWindowRule. */
   protected ProjectToWindowRule(Config config) {
     super(config);
@@ -393,6 +394,15 @@ public abstract class ProjectToWindowRule
       return graph;
     }
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    @Override ProjectToWindowRule toRule();
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

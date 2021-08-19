@@ -21,7 +21,7 @@ import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptRuleOperand;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
-import org.apache.calcite.plan.Strong;
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
@@ -383,6 +383,65 @@ public class JoinProjectTransposeRule
       }
     }
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY
+            .withOperandSupplier(b0 ->
+                    b0.operand(LogicalJoin.class).inputs(
+                        b1 -> b1.operand(LogicalProject.class).anyInputs(),
+                        b2 -> b2.operand(LogicalProject.class).anyInputs()))
+            .withDescription("JoinProjectTransposeRule(Project-Project)")
+            .as(Config.class);
+
+    Config LEFT = DEFAULT
+            .withOperandSupplier(b0 ->
+                    b0.operand(LogicalJoin.class).inputs(
+                        b1 -> b1.operand(LogicalProject.class).anyInputs()))
+            .withDescription("JoinProjectTransposeRule(Project-Other)")
+            .as(Config.class);
+
+    Config RIGHT = DEFAULT
+            .withOperandSupplier(b0 ->
+                    b0.operand(LogicalJoin.class).inputs(
+                        b1 -> b1.operand(RelNode.class).anyInputs(),
+                        b2 -> b2.operand(LogicalProject.class).anyInputs()))
+            .withDescription("JoinProjectTransposeRule(Other-Project)")
+            .as(Config.class);
+
+    Config OUTER = DEFAULT
+            .withDescription(
+                    "Join(IncludingOuter)ProjectTransposeRule(Project-Project)")
+            .as(Config.class)
+            .withIncludeOuter(true);
+
+    Config LEFT_OUTER = LEFT
+            .withDescription(
+                    "Join(IncludingOuter)ProjectTransposeRule(Project-Other)")
+            .as(Config.class)
+            .withIncludeOuter(true);
+
+    Config RIGHT_OUTER = RIGHT
+            .withDescription(
+                    "Join(IncludingOuter)ProjectTransposeRule(Other-Project)")
+            .as(Config.class)
+            .withIncludeOuter(true);
+
+    @Override default JoinProjectTransposeRule toRule() {
+      return new JoinProjectTransposeRule(this);
+    }
+
+    /** Whether to include outer joins, default false. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(false)
+    boolean isIncludeOuter();
+
+    /** Sets {@link #isIncludeOuter()}. */
+    Config withIncludeOuter(boolean includeOuter);
+  }
+}
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

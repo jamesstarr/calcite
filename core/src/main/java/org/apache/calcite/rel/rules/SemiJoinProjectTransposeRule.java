@@ -21,7 +21,7 @@ import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
-import org.apache.calcite.rel.core.RelFactories;
+import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.type.RelDataType;
@@ -33,7 +33,7 @@ import org.apache.calcite.rex.RexProgram;
 import org.apache.calcite.rex.RexProgramBuilder;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.tools.RelBuilder;
-import org.apache.calcite.tools.RelBuilderFactory;
+
 import org.apache.calcite.util.Pair;
 
 import com.google.common.collect.ImmutableSet;
@@ -63,7 +63,10 @@ public class SemiJoinProjectTransposeRule
 
 
 
-  public void onMatch(RelOptRuleCall call) {
+  }
+
+
+  @Override public void onMatch(RelOptRuleCall call) {
     LogicalJoin semiJoin = call.rel(0);
     LogicalProject project = call.rel(1);
 
@@ -72,18 +75,12 @@ public class SemiJoinProjectTransposeRule
     // otherwise, we wouldn't have created this semi-join.
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
 
+
     // convert the semijoin condition to reflect the LHS with the project
     // pulled up
     RexNode newCondition = adjustCondition(project, semiJoin);
 
     LogicalJoin newSemiJoin =
-<<<<<<< HEAD
-        LogicalJoin.create(project.getInput(),
-            semiJoin.getRight(),
-            // No need to copy the hints, the framework would try to do that.
-            ImmutableList.of(),
-            newCondition,
-=======
         LogicalJoin.create(project.getInput(), semiJoin.getRight(), newCondition,
             ImmutableSet.of(), JoinRelType.SEMI);
 
@@ -177,6 +174,28 @@ public class SemiJoinProjectTransposeRule
     return mergedProgram.expandLocalRef(
         mergedProgram.getCondition());
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+        .withOperandFor(LogicalJoin.class, LogicalProject.class);
+
+    @Override default SemiJoinProjectTransposeRule toRule() {
+      return new SemiJoinProjectTransposeRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Join> joinClass,
+        Class<? extends Project> projectClass) {
+      return withOperandSupplier(b ->
+          b.operand(joinClass).predicate(Join::isSemiJoin).inputs(b2 ->
+              b2.operand(projectClass).anyInputs()))
+          .as(Config.class);
+    }
+  }
+}
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

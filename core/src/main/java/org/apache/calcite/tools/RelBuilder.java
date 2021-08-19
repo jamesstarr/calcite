@@ -983,10 +983,6 @@ public class RelBuilder {
    * expressions, only column projections, but is efficient, especially when you
    * are coming from an existing {@link Aggregate}. */
   public GroupKey groupKey(ImmutableBitSet groupSet,
-<<<<<<< HEAD
-      @Nonnull Iterable<? extends ImmutableBitSet> groupSets) {
-    return groupKey_(groupSet, ImmutableList.copyOf(groupSets));
-=======
       ImmutableList<ImmutableBitSet> groupSets) {
     return groupKey_(groupSet, groupSets);
   }
@@ -3128,7 +3124,6 @@ public class RelBuilder {
      * if {@code approximate} is true. */
     AggCall approximate(boolean approximate);
 
->>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
     /** Returns a copy of this AggCall with a given alias. */
     AggCall as(String alias);
 

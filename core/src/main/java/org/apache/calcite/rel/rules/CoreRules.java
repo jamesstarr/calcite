@@ -16,29 +16,16 @@
  */
 package org.apache.calcite.rel.rules;
 
-import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.Calc;
-import org.apache.calcite.rel.core.Correlate;
 import org.apache.calcite.rel.core.Filter;
-import org.apache.calcite.rel.core.Intersect;
 import org.apache.calcite.rel.core.Join;
-import org.apache.calcite.rel.core.Minus;
 import org.apache.calcite.rel.core.Project;
-import org.apache.calcite.rel.core.SetOp;
 import org.apache.calcite.rel.core.Sort;
-import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.core.Union;
-import org.apache.calcite.rel.core.Values;
 import org.apache.calcite.rel.logical.LogicalCalc;
-import org.apache.calcite.rel.logical.LogicalCorrelate;
 import org.apache.calcite.rel.logical.LogicalFilter;
-import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalProject;
-import org.apache.calcite.rel.logical.LogicalTableFunctionScan;
-import org.apache.calcite.rel.logical.LogicalWindow;
-import org.apache.calcite.rex.RexInputRef;
-import org.apache.calcite.rex.RexUtil;
 
 /** Rules that perform logical transformations on relational expressions.
  *
@@ -53,13 +40,14 @@ public class CoreRules {
   public static final AggregateProjectMergeRule AGGREGATE_PROJECT_MERGE =
       AggregateProjectMergeRule.Config.DEFAULT.toRule();
 
+
   /** Rule that matches an {@link Aggregate} on
-   * a StarTable.StarTableScan. */
+   * a {@link StarTable.StarTableScan}. */
   public static final AggregateStarTableRule AGGREGATE_STAR_TABLE =
       AggregateStarTableRule.Config.DEFAULT.toRule();
 
   /** Variant of {@link #AGGREGATE_STAR_TABLE} that accepts a {@link Project}
-   * between the {@link Aggregate} and its StarTable.StarTableScan
+   * between the {@link Aggregate} and its {@link StarTable.StarTableScan}
    * input. */
   public static final AggregateProjectStarTableRule AGGREGATE_PROJECT_STAR_TABLE =
       AggregateProjectStarTableRule.Config.DEFAULT.toRule();
@@ -69,12 +57,7 @@ public class CoreRules {
   public static final AggregateReduceFunctionsRule AGGREGATE_REDUCE_FUNCTIONS =
       AggregateReduceFunctionsRule.Config.DEFAULT.toRule();
 
-  /** Rule that matches an {@link Aggregate} on an {@link Aggregate},
-   * and merges into a single Aggregate if the top aggregate's group key is a
-   * subset of the lower aggregate's group key, and the aggregates are
-   * expansions of rollups. */
-  public static final AggregateMergeRule AGGREGATE_MERGE =
-      AggregateMergeRule.Config.DEFAULT.toRule();
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule that removes an {@link Aggregate}
    * if it computes no aggregate functions
@@ -152,6 +135,7 @@ public class CoreRules {
   public static final ReduceDecimalsRule CALC_REDUCE_DECIMALS =
       ReduceDecimalsRule.Config.DEFAULT.toRule();
 
+<<<<<<< HEAD
   /** Rule that reduces constants inside a {@link LogicalCalc}.
    *
    * @see #FILTER_REDUCE_EXPRESSIONS */
@@ -159,6 +143,7 @@ public class CoreRules {
       CALC_REDUCE_EXPRESSIONS =
       ReduceExpressionsRule.CalcReduceExpressionsRule.Config.DEFAULT.toRule();
 
+=======
   /** Rule that converts a {@link Calc} to a {@link Project} and
    * {@link Filter}. */
   public static final CalcSplitRule CALC_SPLIT =
@@ -262,16 +247,7 @@ public class CoreRules {
   public static final FilterSetOpTransposeRule FILTER_SET_OP_TRANSPOSE =
       FilterSetOpTransposeRule.Config.DEFAULT.toRule();
 
-  /** Rule that reduces constants inside a {@link LogicalFilter}.
-   *
-   * @see #JOIN_REDUCE_EXPRESSIONS
-   * @see #PROJECT_REDUCE_EXPRESSIONS
-   * @see #CALC_REDUCE_EXPRESSIONS
-   * @see #WINDOW_REDUCE_EXPRESSIONS
-   */
-  public static final ReduceExpressionsRule.FilterReduceExpressionsRule
-      FILTER_REDUCE_EXPRESSIONS =
-      ReduceExpressionsRule.FilterReduceExpressionsRule.Config.DEFAULT.toRule();
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule that flattens an {@link Intersect} on an {@code Intersect}
    * into a single {@code Intersect}. */
@@ -314,6 +290,7 @@ public class CoreRules {
       PROJECT_FILTER_TRANSPOSE_WHOLE_PROJECT_EXPRESSIONS =
       ProjectFilterTransposeRule.Config.PROJECT.toRule();
 
+<<<<<<< HEAD
   /** Rule that reduces constants inside a {@link LogicalProject}.
    *
    * @see #FILTER_REDUCE_EXPRESSIONS */
@@ -321,6 +298,7 @@ public class CoreRules {
       PROJECT_REDUCE_EXPRESSIONS =
       ReduceExpressionsRule.ProjectReduceExpressionsRule.Config.DEFAULT.toRule();
 
+=======
   /** Rule that converts sub-queries from project expressions into
    * {@link Correlate} instances.
    *
@@ -488,13 +466,7 @@ public class CoreRules {
       JOIN_PUSH_TRANSITIVE_PREDICATES =
       JoinPushTransitivePredicatesRule.Config.DEFAULT.toRule();
 
-  /** Rule that reduces constants inside a {@link Join}.
-   *
-   * @see #FILTER_REDUCE_EXPRESSIONS
-   * @see #PROJECT_REDUCE_EXPRESSIONS */
-  public static final ReduceExpressionsRule.JoinReduceExpressionsRule
-      JOIN_REDUCE_EXPRESSIONS =
-      ReduceExpressionsRule.JoinReduceExpressionsRule.Config.DEFAULT.toRule();
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule that converts a {@link LogicalJoin}
    * into a {@link LogicalCorrelate}. */
@@ -530,7 +502,10 @@ public class CoreRules {
    * <p>It is triggered by the pattern
    * {@link LogicalProject} ({@link MultiJoin}).
    *
+<<<<<<< HEAD
    * @see #MULTI_JOIN_OPTIMIZE_BUSHY
+=======
+   * @see #MULTI_JOIN_OPTIMIZE
    */
   public static final MultiJoinOptimizeBushyRule MULTI_JOIN_OPTIMIZE_BUSHY =
       MultiJoinOptimizeBushyRule.Config.DEFAULT.toRule();
@@ -655,11 +630,5 @@ public class CoreRules {
   public static final ValuesReduceRule PROJECT_FILTER_VALUES_MERGE =
       ValuesReduceRule.Config.PROJECT_FILTER.toRule();
 
-  /** Rule that reduces constants inside a {@link LogicalWindow}.
-   *
-   * @see #FILTER_REDUCE_EXPRESSIONS */
-  public static final ReduceExpressionsRule.WindowReduceExpressionsRule
-      WINDOW_REDUCE_EXPRESSIONS =
-      ReduceExpressionsRule.WindowReduceExpressionsRule.Config
-          .DEFAULT.toRule();
 }
+// End CoreRules.java

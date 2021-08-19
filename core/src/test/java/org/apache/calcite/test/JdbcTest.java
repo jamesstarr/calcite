@@ -3522,10 +3522,12 @@ public class JdbcTest {
         + "select \"empid\", \"name\" from \"hr\".\"emps\" where \"empid\">=150";
     CalciteAssert.hr()
         .query(sql)
-        .withHook(Hook.PLANNER, (Consumer<RelOptPlanner>) planner ->
-            planner.removeRule(CoreRules.INTERSECT_TO_DISTINCT))
-
-
+        .withHook(Hook.PLANNER, new Function<RelOptPlanner, Void>() {
+          @Override public Void apply(RelOptPlanner planner) {
+            planner.removeRule(CoreRules.INTERSECT_TO_DISTINCT);
+            return null;
+          }
+        })
         .explainContains(""
             + "PLAN=EnumerableIntersect(all=[false])")
         .returnsUnordered("empid=150; name=Sebastian");

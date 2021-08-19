@@ -48,8 +48,7 @@ import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.ProjectMergeRule;
-import org.apache.calcite.rel.rules.PruneEmptyRules;
-import org.apache.calcite.rel.rules.UnionMergeRule;
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.SchemaPlus;
@@ -382,7 +381,9 @@ public class PlannerTest {
     Program program =
         Programs.ofRules(
             CoreRules.FILTER_MERGE,
+<<<<<<< HEAD
             EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
+=======
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
     Planner planner = getPlanner(null, program);
@@ -514,38 +515,7 @@ public class PlannerTest {
     RelOptPlanner planner = relNode.getCluster().getPlanner();
     RuleSet ruleSet =
         RuleSets.ofList(
-            PruneEmptyRules.UNION_INSTANCE,
-            CoreRules.FILTER_VALUES_MERGE,
-            EnumerableRules.ENUMERABLE_PROJECT_RULE,
-            EnumerableRules.ENUMERABLE_FILTER_RULE,
-            EnumerableRules.ENUMERABLE_VALUES_RULE,
-            EnumerableRules.ENUMERABLE_UNION_RULE);
-    Program program = Programs.of(ruleSet);
-
-    RelTraitSet toTraits = relNode.getTraitSet()
-        .replace(EnumerableConvention.INSTANCE);
-
-    RelNode output = program.run(planner, relNode, toTraits,
-        ImmutableList.of(), ImmutableList.of());
-
-    // Expected outcomes are:
-    // 1) relation is optimized to simple VALUES
-    // 2) the number of rule invocations is reasonable
-    // 3) planner does not throw OutOfMemoryError
-    assertThat("empty union should be pruned out of " + toString(relNode),
-        Util.toLinux(toString(output)),
-        equalTo("EnumerableUnion(all=[true])\n"
-            + "  EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n"
-            + "  EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 2 }]])\n"));
-  }
-
-  /** Unit test that parses, validates, converts and
-   * plans for query using order by */
-  @Test void testSortPlan() throws Exception {
-    RuleSet ruleSet =
-        RuleSets.ofList(
             CoreRules.SORT_REMOVE,
-            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE,
             EnumerableRules.ENUMERABLE_SORT_RULE);
     Planner planner = getPlanner(null, Programs.of(ruleSet));
@@ -684,7 +654,7 @@ public class PlannerTest {
     RuleSet ruleSet =
         RuleSets.ofList(
             CoreRules.SORT_REMOVE,
-            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
             EnumerableRules.ENUMERABLE_PROJECT_RULE,
             EnumerableRules.ENUMERABLE_WINDOW_RULE,
             EnumerableRules.ENUMERABLE_SORT_RULE,
@@ -754,7 +724,9 @@ public class PlannerTest {
     RuleSet ruleSet =
         RuleSets.ofList(
             CoreRules.FILTER_MERGE,
+<<<<<<< HEAD
             EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
+=======
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
     final List<RelTraitDef> traitDefs = new ArrayList<>();
@@ -780,7 +752,7 @@ public class PlannerTest {
     RuleSet ruleSet =
         RuleSets.ofList(
             CoreRules.FILTER_MERGE,
-            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
     Planner planner = getPlanner(null, Programs.of(ruleSet));
@@ -879,7 +851,9 @@ public class PlannerTest {
     Program program0 =
         Programs.ofRules(
             CoreRules.FILTER_MERGE,
+<<<<<<< HEAD
             EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
+=======
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
 

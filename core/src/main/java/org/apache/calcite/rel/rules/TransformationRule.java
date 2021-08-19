@@ -24,11 +24,11 @@ import org.apache.calcite.plan.volcano.VolcanoPlanner;
  * and only generate logical alternatives. It is only visible to
  * {@link VolcanoPlanner}, {@link HepPlanner} will ignore this interface.
  * That means, in {@link HepPlanner}, the rule that implements
- * {@link TransformationRule} can still match with physical operators
- * and generate physical alternatives.
+ * {@link TransformationRule} can still match with physical operator of
+ * {@link PhysicalNode} and generate physical alternatives.
  *
  * <p>But in {@link VolcanoPlanner}, {@link TransformationRule} doesn't match
- * with physical operators. It is not
+ * with physical operator that implements {@link PhysicalNode}. It is not
  * allowed to generate physical operators in {@link TransformationRule},
  * unless you are using it in {@link HepPlanner}.</p>
  *
@@ -37,3 +37,7 @@ import org.apache.calcite.plan.volcano.VolcanoPlanner;
  */
 public interface TransformationRule {
 }
+<<<<<<< HEAD
+=======
+// End TransformationRule.java
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)

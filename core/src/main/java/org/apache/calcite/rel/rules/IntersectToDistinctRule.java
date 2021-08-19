@@ -128,6 +128,26 @@ public class IntersectToDistinctRule
     // finally add a project to project out the last column
     call.transformTo(relBuilder.build());
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(LogicalIntersect.class);
+
+    @Override default IntersectToDistinctRule toRule() {
+      return new IntersectToDistinctRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Intersect> intersectClass) {
+      return withOperandSupplier(b -> b.operand(intersectClass).anyInputs())
+              .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

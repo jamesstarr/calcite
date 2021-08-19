@@ -145,6 +145,40 @@ public class FilterAggregateTransposeRule
     }
     return true;
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(Filter.class, Aggregate.class);
+
+    @Override default FilterAggregateTransposeRule toRule() {
+      return new FilterAggregateTransposeRule(this);
+    }
+
+    /** Defines an operand tree for the given 2 classes. */
+    default Config withOperandFor(Class<? extends Filter> filterClass,
+                                  Class<? extends Aggregate> aggregateClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(filterClass).oneInput(b1 ->
+                      b1.operand(aggregateClass).anyInputs()))
+              .as(Config.class);
+    }
+
+    /** Defines an operand tree for the given 3 classes. */
+    default Config withOperandFor(Class<? extends Filter> filterClass,
+                                  Class<? extends Aggregate> aggregateClass,
+                                  Class<? extends RelNode> relClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(filterClass).oneInput(b1 ->
+                      b1.operand(aggregateClass).oneInput(b2 ->
+                              b2.operand(relClass).anyInputs())))
+              .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

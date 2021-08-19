@@ -105,6 +105,29 @@ public class ProjectCalcMergeRule
         LogicalCalc.create(calc.getInput(), mergedProgram);
     call.transformTo(newCalc);
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(LogicalProject.class, LogicalCalc.class);
+
+    @Override default ProjectCalcMergeRule toRule() {
+      return new ProjectCalcMergeRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Project> projectClass,
+                                  Class<? extends Calc> calcClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(projectClass).oneInput(b1 ->
+                      b1.operand(calcClass).anyInputs()))
+              .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

@@ -147,11 +147,11 @@ public class AggregateJoinTransposeRule
   // OUTER joins are supported for group by without aggregate functions
   // FULL OUTER JOIN is not supported since it could produce wrong result
   // due to bug (CALCITE-3012)
-  private boolean isJoinSupported(final Join join, final Aggregate aggregate) {
+  private static boolean isJoinSupported(final Join join, final Aggregate aggregate) {
     return join.getJoinType() == JoinRelType.INNER || aggregate.getAggCallList().isEmpty();
   }
 
-  public void onMatch(RelOptRuleCall call) {
+  @Override public void onMatch(RelOptRuleCall call) {
     final Aggregate aggregate = call.rel(0);
     final Join join = call.rel(1);
     final RexBuilder rexBuilder = aggregate.getCluster().getRexBuilder();
@@ -449,6 +449,45 @@ public class AggregateJoinTransposeRule
     RelNode newInput;
     boolean aggregate;
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(LogicalAggregate.class, LogicalJoin.class, false);
+
+    /** Extended instance that can push down aggregate functions. */
+    Config EXTENDED = EMPTY.as(Config.class)
+            .withOperandFor(LogicalAggregate.class, LogicalJoin.class, true);
+
+    @Override default AggregateJoinTransposeRule toRule() {
+      return new AggregateJoinTransposeRule(this);
+    }
+
+    /** Whether to push down aggregate functions, default false. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(false)
+    boolean isAllowFunctions();
+
+    /** Sets {@link #isAllowFunctions()}. */
+    Config withAllowFunctions(boolean allowFunctions);
+
+    /** Defines an operand tree for the given classes, and also sets
+     * {@link #isAllowFunctions()}. */
+    default Config withOperandFor(Class<? extends Aggregate> aggregateClass,
+                                  Class<? extends Join> joinClass, boolean allowFunctions) {
+      return withAllowFunctions(allowFunctions)
+           .withOperandSupplier(b0 ->
+               b0.operand(aggregateClass)
+                   .predicate(agg -> isAggregateSupported(agg, allowFunctions))
+               .oneInput(b1 ->
+                    b1.operand(joinClass).anyInputs()))
+           .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

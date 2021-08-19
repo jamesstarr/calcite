@@ -67,28 +67,7 @@ public class UnionMergeRule
 
   //~ Methods ----------------------------------------------------------------
 
-  @Override public boolean matches(RelOptRuleCall call) {
-    // It avoids adding the rule match to the match queue in case the rule is known to be a no-op
-    final SetOp topOp = call.rel(0);
-    @SuppressWarnings("unchecked") final Class<? extends SetOp> setOpClass =
-        (Class<? extends SetOp>) operands.get(0).getMatchedClass();
-    final SetOp bottomOp;
-    if (setOpClass.isInstance(call.rel(2))
-        && !Minus.class.isAssignableFrom(setOpClass)) {
-      bottomOp = call.rel(2);
-    } else if (setOpClass.isInstance(call.rel(1))) {
-      bottomOp = call.rel(1);
-    } else {
-      return false;
-    }
-
-    if (topOp.all && !bottomOp.all) {
-      return false;
-    }
-
-    return true;
-  }
-
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
   @Override public void onMatch(RelOptRuleCall call) {
     final SetOp topOp = call.rel(0);
     @SuppressWarnings("unchecked") final Class<? extends SetOp> setOpClass =
@@ -158,6 +137,37 @@ public class UnionMergeRule
     }
     call.transformTo(relBuilder.build());
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.withDescription("UnionMergeRule")
+            .as(Config.class)
+            .withOperandFor(LogicalUnion.class);
+
+    Config INTERSECT = EMPTY.withDescription("IntersectMergeRule")
+            .as(Config.class)
+            .withOperandFor(LogicalIntersect.class);
+
+    Config MINUS = EMPTY.withDescription("MinusMergeRule")
+            .as(Config.class)
+            .withOperandFor(LogicalMinus.class);
+
+    @Override default UnionMergeRule toRule() {
+      return new UnionMergeRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends RelNode> setOpClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(setOpClass).inputs(
+                  b1 -> b1.operand(RelNode.class).anyInputs(),
+                  b2 -> b2.operand(RelNode.class).anyInputs()))
+              .as(Config.class);
+    }
+  }
+}
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

@@ -59,9 +59,6 @@ public class ElasticsearchAggregate extends Aggregate implements ElasticsearchRe
       ImmutableBitSet groupSet,
       List<ImmutableBitSet> groupSets,
       List<AggregateCall> aggCalls) throws InvalidRelException  {
-<<<<<<< HEAD
-    super(cluster, traitSet, ImmutableList.of(), input, groupSet, groupSets, aggCalls);
-=======
     super(cluster, traitSet, input, groupSet, groupSets, aggCalls);
 
     if (getConvention() != input.getConvention()) {
@@ -194,4 +191,3 @@ public class ElasticsearchAggregate extends Aggregate implements ElasticsearchRe
 =======
 
 // End ElasticsearchAggregate.java
->>>>>>> a5ef91d2f (Following [CALCITE-2944] remove internal uses of Aggregate.indicator)

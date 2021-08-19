@@ -18,14 +18,14 @@ package org.apache.calcite.rel.rules;
 
 
 import org.apache.calcite.plan.RelOptRuleCall;
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.core.Join;
-import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.tools.RelBuilderFactory;
 
 /**
  * Planner rule that removes a {@code SemiJoin}s from a join tree.
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+
  *
  * <p>It is invoked after attempts have been made to convert a SemiJoin to an
  * indexed scan on a join factor have failed. Namely, if the join factor does
@@ -48,12 +48,11 @@ public class SemiJoinRemoveRule
 
   @Deprecated // to be removed before 2.0
   public SemiJoinRemoveRule(RelBuilderFactory relBuilderFactory) {
-<<<<<<< HEAD
-    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
-        .as(Config.class));
-=======
     super(operandJ(LogicalJoin.class, null, Join::isSemiJoin, any()),
         relBuilderFactory, null);
+=======
+    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
+        .as(Config.class));
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -61,6 +60,27 @@ public class SemiJoinRemoveRule
   @Override public void onMatch(RelOptRuleCall call) {
     call.transformTo(call.rel(0).getInput(0));
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+        .withOperandFor(LogicalJoin.class);
+
+    @Override default SemiJoinRemoveRule toRule() {
+      return new SemiJoinRemoveRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Join> joinClass) {
+      return withOperandSupplier(b ->
+          b.operand(joinClass).predicate(Join::isSemiJoin).anyInputs())
+          .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

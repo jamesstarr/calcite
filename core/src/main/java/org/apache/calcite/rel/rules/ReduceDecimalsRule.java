@@ -1312,6 +1312,21 @@ public class ReduceDecimalsRule
       return true;
     }
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY
+            .withOperandSupplier(b -> b.operand(LogicalCalc.class).anyInputs())
+            .as(Config.class);
+
+    @Override default ReduceDecimalsRule toRule() {
+      return new ReduceDecimalsRule(this);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

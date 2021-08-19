@@ -24,182 +24,10 @@ import org.apache.calcite.plan.hep.HepProgram;
 import org.apache.calcite.plan.hep.HepProgramBuilder;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
-/**
- * HepPlannerTest is a unit test for {@link HepPlanner}. See
- * {@link RelOptRulesTest} for an explanation of how to add tests; the tests in
- * this class are targeted at exercising the planner, and use specific rules for
- * convenience only, whereas the tests in that class are targeted at exercising
- * specific rules, and use the planner for convenience only. Hence the split.
- */
-class HepPlannerTest extends RelOptTestBase {
-  //~ Static fields/initializers ---------------------------------------------
-
-  private static final String UNION_TREE =
-      "(select name from dept union select ename from emp)"
-      + " union (select ename from bonus)";
-
-  private static final String COMPLEX_UNION_TREE = "select * from (\n"
-      + "  select ENAME, 50011895 as cat_id, '1' as cat_name, 1 as require_free_postage, 0 as require_15return, 0 as require_48hour,1 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 50011895 union all\n"
-      + "  select ENAME, 50013023 as cat_id, '2' as cat_name, 0 as require_free_postage, 0 as require_15return, 0 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 50013023 union all\n"
-      + "  select ENAME, 50013032 as cat_id, '3' as cat_name, 0 as require_free_postage, 0 as require_15return, 0 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 50013032 union all\n"
-      + "  select ENAME, 50013024 as cat_id, '4' as cat_name, 0 as require_free_postage, 0 as require_15return, 0 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 50013024 union all\n"
-      + "  select ENAME, 50004204 as cat_id, '5' as cat_name, 0 as require_free_postage, 0 as require_15return, 0 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 50004204 union all\n"
-      + "  select ENAME, 50013043 as cat_id, '6' as cat_name, 0 as require_free_postage, 0 as require_15return, 0 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 50013043 union all\n"
-      + "  select ENAME, 290903 as cat_id, '7' as cat_name, 1 as require_free_postage, 0 as require_15return, 0 as require_48hour,1 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 290903 union all\n"
-      + "  select ENAME, 50008261 as cat_id, '8' as cat_name, 1 as require_free_postage, 0 as require_15return, 0 as require_48hour,1 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 50008261 union all\n"
-      + "  select ENAME, 124478013 as cat_id, '9' as cat_name, 0 as require_free_postage, 0 as require_15return, 1 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 124478013 union all\n"
-      + "  select ENAME, 124472005 as cat_id, '10' as cat_name, 0 as require_free_postage, 0 as require_15return, 1 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 124472005 union all\n"
-      + "  select ENAME, 50013475 as cat_id, '11' as cat_name, 0 as require_free_postage, 1 as require_15return, 1 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 50013475 union all\n"
-      + "  select ENAME, 50018263 as cat_id, '12' as cat_name, 0 as require_free_postage, 1 as require_15return, 1 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 50018263 union all\n"
-      + "  select ENAME, 50013498 as cat_id, '13' as cat_name, 0 as require_free_postage, 1 as require_15return, 1 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 50013498 union all\n"
-      + "  select ENAME, 350511 as cat_id, '14' as cat_name, 0 as require_free_postage, 1 as require_15return, 1 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 350511 union all\n"
-      + "  select ENAME, 50019790 as cat_id, '15' as cat_name, 0 as require_free_postage, 1 as require_15return, 1 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 50019790 union all\n"
-      + "  select ENAME, 50015382 as cat_id, '16' as cat_name, 0 as require_free_postage, 1 as require_15return, 1 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 50015382 union all\n"
-      + "  select ENAME, 350503 as cat_id, '17' as cat_name, 0 as require_free_postage, 1 as require_15return, 1 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 350503 union all\n"
-      + "  select ENAME, 350401 as cat_id, '18' as cat_name, 0 as require_free_postage, 1 as require_15return, 1 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 350401 union all\n"
-      + "  select ENAME, 50015560 as cat_id, '19' as cat_name, 0 as require_free_postage, 0 as require_15return, 0 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 50015560 union all\n"
-      + "  select ENAME, 122658003 as cat_id, '20' as cat_name, 0 as require_free_postage, 1 as require_15return, 1 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 122658003 union all\n"
-      + "  select ENAME, 50022371 as cat_id, '100' as cat_name, 0 as require_free_postage, 0 as require_15return, 0 as require_48hour,0 as require_insurance from emp where EMPNO = 20171216 and MGR = 0 and ENAME = 'Y' and SAL = 50022371\n"
-      + ") a";
-
-  //~ Methods ----------------------------------------------------------------
-
-  protected DiffRepository getDiffRepos() {
-    return DiffRepository.lookup(HepPlannerTest.class);
-  }
-
-  @Test void testRuleClass() throws Exception {
-    // Verify that an entire class of rules can be applied.
-
-    HepProgramBuilder programBuilder = HepProgram.builder();
-    programBuilder.addRuleClass(CoerceInputsRule.class);
-
-    HepPlanner planner =
-        new HepPlanner(
-            programBuilder.build());
-
-    planner.addRule(
-        CoerceInputsRule.Config.DEFAULT
-            .withCoerceNames(false)
-            .withConsumerRelClass(LogicalUnion.class)
-            .toRule());
-    planner.addRule(
-        CoerceInputsRule.Config.DEFAULT
-            .withCoerceNames(false)
-            .withConsumerRelClass(LogicalIntersect.class)
-            .withDescription("CoerceInputsRule:Intersection") // TODO
-            .toRule());
-
-    final String sql = "(select name from dept union select ename from emp)\n"
-        + "intersect (select fname from customer.contact)";
-    sql(sql).with(planner).check();
-  }
-
-  @Test void testRuleDescription() throws Exception {
-    // Verify that a rule can be applied via its description.
-
-    HepProgramBuilder programBuilder = HepProgram.builder();
-    programBuilder.addRuleByDescription("FilterToCalcRule");
-
-    HepPlanner planner =
-        new HepPlanner(
-            programBuilder.build());
-
-    planner.addRule(CoreRules.FILTER_TO_CALC);
-
-    final String sql = "select name from sales.dept where deptno=12";
-    sql(sql).with(planner).check();
-  }
-
-  /**
-   * Ensures {@link org.apache.calcite.rel.AbstractRelNode} digest does not include
-   * full digest tree.
-   */
-  @Test public void relDigestLength() {
-    HepProgramBuilder programBuilder = HepProgram.builder();
-    HepPlanner planner =
-        new HepPlanner(
-            programBuilder.build());
-    StringBuilder sb = new StringBuilder();
-    final int n = 10;
-    sb.append("select * from (");
-    sb.append("select name from sales.dept");
-    for (int i = 0; i < n; i++) {
-      sb.append(" union all select name from sales.dept");
-    }
-    sb.append(")");
-    RelRoot root = tester.convertSqlToRel(sb.toString());
-    planner.setRoot(root.rel);
-    RelNode best = planner.findBestExp();
-
-    // Good digest should look like rel#66:LogicalProject(input=rel#64:LogicalUnion)
-    // Bad digest includes full tree like rel#66:LogicalProject(input=rel#64:LogicalUnion(...))
-    // So the assertion is to ensure digest includes LogicalUnion exactly once
-
-    assertIncludesExactlyOnce("best.getDescription()", best.getDescription(), "LogicalUnion");
-    assertIncludesExactlyOnce("best.getDigest()", best.getDigest(), "LogicalUnion");
-  }
-
-  private void assertIncludesExactlyOnce(String message, String digest, String substring) {
-    int pos = 0;
-    int cnt = 0;
-    while (pos >= 0) {
-      pos = digest.indexOf(substring, pos + 1);
-      if (pos > 0) {
-        cnt++;
-      }
-    }
-    assertEquals(
-        message + " should include <<" + substring + ">> exactly once, actual value is " + digest,
-        1, cnt);
-  }
-
-  @Test public void testMatchLimitOneTopDown() throws Exception {
-    // Verify that only the top union gets rewritten.
-
-    HepProgramBuilder programBuilder = HepProgram.builder();
-    programBuilder.addMatchOrder(HepMatchOrder.TOP_DOWN);
-    programBuilder.addMatchLimit(1);
-    programBuilder.addRuleInstance(CoreRules.UNION_TO_DISTINCT);
-
-    sql(UNION_TREE).with(programBuilder.build()).check();
-  }
-
-  @Test void testMatchLimitOneBottomUp() throws Exception {
-    // Verify that only the bottom union gets rewritten.
-
-    HepProgramBuilder programBuilder = HepProgram.builder();
-    programBuilder.addMatchLimit(1);
-    programBuilder.addMatchOrder(HepMatchOrder.BOTTOM_UP);
-    programBuilder.addRuleInstance(CoreRules.UNION_TO_DISTINCT);
-
-    sql(UNION_TREE).with(programBuilder.build()).check();
-  }
-
-  @Test void testMatchUntilFixpoint() throws Exception {
-    // Verify that both unions get rewritten.
-
-    HepProgramBuilder programBuilder = HepProgram.builder();
-    programBuilder.addMatchLimit(HepProgram.MATCH_UNTIL_FIXPOINT);
-    programBuilder.addRuleInstance(CoreRules.UNION_TO_DISTINCT);
-
-    sql(UNION_TREE).with(programBuilder.build()).check();
-  }
-
-  @Test void testReplaceCommonSubexpression() throws Exception {
-    // Note that here it may look like the rule is firing
-    // twice, but actually it's only firing once on the
-    // common sub-expression.  The purpose of this test
-    // is to make sure the planner can deal with
-    // rewriting something used as a common sub-expression
-    // twice by the same parent (the join in this case).
-
-    final String sql = "select d1.deptno from (select * from dept) d1,\n"
-        + "(select * from dept) d2";
-    sql(sql).withRule(CoreRules.PROJECT_REMOVE).check();
+    checkPlanning(
+        CoreRules.PROJECT_REMOVE,
+        "select d1.deptno from (select * from dept) d1,"
+            + " (select * from dept) d2");
   }
 
   /** Tests that if two relational expressions are equivalent, the planner
@@ -235,7 +63,10 @@ class HepPlannerTest extends RelOptTestBase {
     subprogramBuilder.addMatchOrder(HepMatchOrder.TOP_DOWN);
     subprogramBuilder.addMatchLimit(1);
     subprogramBuilder.addRuleInstance(CoreRules.PROJECT_TO_CALC);
+<<<<<<< HEAD
     subprogramBuilder.addRuleInstance(CoreRules.FILTER_TO_CALC);
+=======
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
     subprogramBuilder.addRuleInstance(CoreRules.CALC_MERGE);
 
     HepProgramBuilder programBuilder = HepProgram.builder();

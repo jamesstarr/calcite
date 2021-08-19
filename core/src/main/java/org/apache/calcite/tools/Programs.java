@@ -40,7 +40,7 @@ import org.apache.calcite.rel.metadata.RelMetadataProvider;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.JoinPushThroughJoinRule;
 import org.apache.calcite.rel.rules.LoptOptimizeJoinRule;
-import org.apache.calcite.rel.rules.MatchRule;
+import org.apache.calcite.rel.rules.TableScanRule;
 import org.apache.calcite.sql2rel.RelDecorrelator;
 import org.apache.calcite.sql2rel.RelFieldTrimmer;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
@@ -57,8 +57,31 @@ import java.util.List;
  * Utilities for creating {@link Program}s.
  */
 public class Programs {
-  @Deprecated // to be removed before 2.0
-  public static final ImmutableList<RelOptRule> CALC_RULES = RelOptRules.CALC_RULES;
+  private static final Function<RuleSet, Program> RULE_SET_TO_PROGRAM =
+      new Function<RuleSet, Program>() {
+        public Program apply(RuleSet ruleSet) {
+          return of(ruleSet);
+        }
+      };
+
+  public static final ImmutableList<RelOptRule> CALC_RULES =
+      ImmutableList.of(
+          NoneToBindableConverterRule.INSTANCE,
+          EnumerableRules.ENUMERABLE_CALC_RULE,
+          EnumerableRules.ENUMERABLE_FILTER_TO_CALC_RULE,
+          EnumerableRules.ENUMERABLE_PROJECT_TO_CALC_RULE,
+          CoreRules.CALC_MERGE,
+          CoreRules.FILTER_CALC_MERGE,
+          CoreRules.PROJECT_CALC_MERGE,
+          CoreRules.FILTER_TO_CALC,
+          CoreRules.PROJECT_TO_CALC,
+          CoreRules.CALC_MERGE,
+
+          // REVIEW jvs 9-Apr-2006: Do we still need these two?  Doesn't the
+          // combination of CalcMergeRule, FilterToCalcRule, and
+          // ProjectToCalcRule have the same effect?
+          CoreRules.FILTER_CALC_MERGE,
+          CoreRules.PROJECT_CALC_MERGE);
 
   /** Program that converts filters and projects to {@link Calc}s. */
   public static final Program CALC_PROGRAM =
@@ -85,11 +108,10 @@ public class Programs {
           EnumerableRules.ENUMERABLE_TABLE_MODIFICATION_RULE,
           EnumerableRules.ENUMERABLE_VALUES_RULE,
           EnumerableRules.ENUMERABLE_WINDOW_RULE,
-          EnumerableRules.ENUMERABLE_MATCH_RULE,
           CoreRules.PROJECT_TO_SEMI_JOIN,
           CoreRules.JOIN_TO_SEMI_JOIN,
-          MatchRule.INSTANCE,
-          CalciteSystemProperty.COMMUTE.value()
+          TableScanRule.INSTANCE,
+          CalcitePrepareImpl.COMMUTE
               ? CoreRules.JOIN_ASSOCIATE
               : CoreRules.PROJECT_MERGE,
           CoreRules.AGGREGATE_STAR_TABLE,
@@ -184,35 +206,39 @@ public class Programs {
   public static Program heuristicJoinOrder(
       final Iterable<? extends RelOptRule> rules,
       final boolean bushy, final int minJoinCount) {
-    return (planner, rel, requiredOutputTraits, materializations, lattices) -> {
-      final int joinCount = RelOptUtil.countJoins(rel);
-      final Program program;
-      if (joinCount < minJoinCount) {
-        program = ofRules(rules);
-      } else {
-        // Create a program that gathers together joins as a MultiJoin.
-        final HepProgram hep = new HepProgramBuilder()
-            .addRuleInstance(CoreRules.FILTER_INTO_JOIN)
-            .addMatchOrder(HepMatchOrder.BOTTOM_UP)
-            .addRuleInstance(CoreRules.JOIN_TO_MULTI_JOIN)
-            .build();
-        final Program program1 =
-            of(hep, false, DefaultRelMetadataProvider.INSTANCE);
+    return new Program() {
+      public RelNode run(RelOptPlanner planner, RelNode rel,
+          RelTraitSet requiredOutputTraits,
+          List<RelOptMaterialization> materializations,
+          List<RelOptLattice> lattices) {
+        final int joinCount = RelOptUtil.countJoins(rel);
+        final Program program;
+        if (joinCount < minJoinCount) {
+          program = ofRules(rules);
+        } else {
+          // Create a program that gathers together joins as a MultiJoin.
+          final HepProgram hep = new HepProgramBuilder()
+              .addRuleInstance(CoreRules.FILTER_INTO_JOIN)
+              .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+              .addRuleInstance(CoreRules.JOIN_TO_MULTI_JOIN)
+              .build();
+          final Program program1 =
+              of(hep, false, DefaultRelMetadataProvider.INSTANCE);
 
-        // Create a program that contains a rule to expand a MultiJoin
-        // into heuristically ordered joins.
-        // We use the rule set passed in, but remove JoinCommuteRule and
-        // JoinPushThroughJoinRule, because they cause exhaustive search.
-        final List<RelOptRule> list = Lists.newArrayList(rules);
-        list.removeAll(
-            ImmutableList.of(CoreRules.JOIN_COMMUTE,
-                CoreRules.JOIN_ASSOCIATE,
-                JoinPushThroughJoinRule.LEFT,
-                JoinPushThroughJoinRule.RIGHT));
-        list.add(bushy
-            ? CoreRules.MULTI_JOIN_OPTIMIZE_BUSHY
-            : LoptOptimizeJoinRule.INSTANCE);
-        final Program program2 = ofRules(list);
+          // Create a program that contains a rule to expand a MultiJoin
+          // into heuristically ordered joins.
+          // We use the rule set passed in, but remove JoinCommuteRule and
+          // JoinPushThroughJoinRule, because they cause exhaustive search.
+          final List<RelOptRule> list = Lists.newArrayList(rules);
+          list.removeAll(
+              ImmutableList.of(CoreRules.JOIN_COMMUTE,
+                  CoreRules.JOIN_ASSOCIATE,
+                  JoinPushThroughJoinRule.LEFT,
+                  JoinPushThroughJoinRule.RIGHT));
+          list.add(bushy
+              ? CoreRules.MULTI_JOIN_OPTIMIZE_BUSHY
+              : LoptOptimizeJoinRule.INSTANCE);
+          final Program program2 = ofRules(list);
 
         program = sequence(program1, program2);
       }
@@ -231,12 +257,10 @@ public class Programs {
   }
 
   public static Program subQuery(RelMetadataProvider metadataProvider) {
-    final HepProgramBuilder builder = HepProgram.builder();
-    builder.addRuleCollection(
-        ImmutableList.of(CoreRules.FILTER_SUB_QUERY_TO_CORRELATE,
+    return hep(
+        ImmutableList.of((RelOptRule) CoreRules.FILTER_SUB_QUERY_TO_CORRELATE,
             CoreRules.PROJECT_SUB_QUERY_TO_CORRELATE,
-            CoreRules.JOIN_SUB_QUERY_TO_CORRELATE));
-    return of(builder.build(), true, metadataProvider);
+            CoreRules.JOIN_SUB_QUERY_TO_CORRELATE), true, metadataProvider);
   }
 
   public static Program getProgram() {

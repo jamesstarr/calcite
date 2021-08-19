@@ -91,9 +91,6 @@ public class AggregateReduceFunctionsRule
     extends RelRule<AggregateReduceFunctionsRule.Config> {
   //~ Static fields/initializers ---------------------------------------------
 
-  /** The singleton. */
-  public static final AggregateReduceFunctionsRule INSTANCE =
-      new AggregateReduceFunctionsRule(Config.DEFAULT);
   private static void validateFunction(SqlKind function) {
     if (!isValid(function)) {
       throw new IllegalArgumentException("AggregateReduceFunctionsRule doesn't "

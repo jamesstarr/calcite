@@ -26,8 +26,11 @@ import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
+<<<<<<< HEAD
 import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.rex.RexVisitorImpl;
+=======
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.mapping.Mapping;
@@ -141,6 +144,32 @@ public class ProjectTableScanRule
               .push(newScan)
               .project(newProjectRexNodes)
               .build());
+    }
+  }
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    /** Config that matches Project on TableScan. */
+    Config DEFAULT = EMPTY
+            .withOperandSupplier(b0 ->
+                    b0.operand(Project.class).oneInput(b1 ->
+                            b1.operand(TableScan.class)
+                                    .predicate(ProjectTableScanRule::test)
+                                    .noInputs()))
+            .as(Config.class);
+
+    /** Config that matches Project on EnumerableInterpreter on TableScan. */
+    Config INTERPRETER = DEFAULT
+            .withOperandSupplier(b0 ->
+                    b0.operand(Project.class).oneInput(b1 ->
+                            b1.operand(EnumerableInterpreter.class).oneInput(b2 ->
+                                    b2.operand(TableScan.class)
+                                            .predicate(ProjectTableScanRule::test)
+                                            .noInputs())))
+            .withDescription("ProjectTableScanRule:interpreter")
+            .as(Config.class);
+
+    @Override default ProjectTableScanRule toRule() {
+      return new ProjectTableScanRule(this);
     }
   }
   /** Rule configuration. */

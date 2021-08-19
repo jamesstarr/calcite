@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
+import javax.annotation.Nullable;
+
 /**
  * CoerceInputsRule pre-casts inputs to a particular type. This can be used to
  * assist operator implementations which impose requirements on their input
@@ -96,6 +98,44 @@ public class CoerceInputsRule
             newInputs);
     call.transformTo(newConsumerRel);
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+        .withCoerceNames(false)
+        .withOperandFor(RelNode.class);
+
+    @Override default CoerceInputsRule toRule() {
+      return new CoerceInputsRule(this);
+    }
+
+    /** Whether to coerce names. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(false)
+    boolean isCoerceNames();
+
+    /** Sets {@link #isCoerceNames()}. */
+    Config withCoerceNames(boolean coerceNames);
+
+    /** Class of {@link RelNode} to coerce to. */
+    @ImmutableBeans.Property
+    Class<? extends RelNode> consumerRelClass();
+
+    /** Sets {@link #consumerRelClass()}. */
+    Config withConsumerRelClass(Class<? extends RelNode> relClass);
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends RelNode> consumerRelClass) {
+      return withConsumerRelClass(consumerRelClass)
+          .withOperandSupplier(b -> b.operand(consumerRelClass).anyInputs())
+          .withDescription("CoerceInputsRule:" + consumerRelClass.getName())
+          .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

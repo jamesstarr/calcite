@@ -94,9 +94,7 @@ public class Interpreter extends AbstractEnumerable<Object[]>
         .addRuleInstance(CoreRules.FILTER_SCAN)
         .addRuleInstance(CoreRules.FILTER_INTERPRETER_SCAN)
         .addRuleInstance(CoreRules.PROJECT_TABLE_SCAN)
-        .addRuleInstance(CoreRules.PROJECT_INTERPRETER_TABLE_SCAN)
-        .addRuleInstance(CoreRules.AGGREGATE_REDUCE_FUNCTIONS)
-        .build();
+        .addRuleInstance(CoreRules.PROJECT_INTERPRETER_TABLE_SCAN).build();
     final HepPlanner planner = new HepPlanner(hepProgram);
     planner.setRoot(rootRel);
     rootRel = planner.findBestExp();

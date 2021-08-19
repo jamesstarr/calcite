@@ -67,99 +67,62 @@ import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableScan;
-import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.rel.type.RelDataTypeField;
-import org.apache.calcite.rex.RexBuilder;
-import org.apache.calcite.rex.RexInputRef;
-import org.apache.calcite.rex.RexNode;
-import org.apache.calcite.rex.RexProgram;
-import org.apache.calcite.runtime.Bindable;
-import org.apache.calcite.runtime.Hook;
-import org.apache.calcite.runtime.Typed;
-import org.apache.calcite.schema.Schemas;
-import org.apache.calcite.schema.Table;
-import org.apache.calcite.server.CalciteServerStatement;
-import org.apache.calcite.sql.SqlBinaryOperator;
-import org.apache.calcite.sql.SqlExecutableStatement;
-import org.apache.calcite.sql.SqlExplainFormat;
-import org.apache.calcite.sql.SqlExplainLevel;
-import org.apache.calcite.sql.SqlKind;
-import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlOperator;
-import org.apache.calcite.sql.SqlOperatorTable;
-import org.apache.calcite.sql.SqlUtil;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
-import org.apache.calcite.sql.parser.SqlParseException;
-import org.apache.calcite.sql.parser.SqlParser;
-import org.apache.calcite.sql.parser.SqlParserImplFactory;
-import org.apache.calcite.sql.type.ExtraSqlTypes;
-import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.calcite.sql.util.SqlOperatorTables;
-import org.apache.calcite.sql.validate.SqlConformance;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql2rel.SqlRexConvertletTable;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.calcite.sql2rel.StandardConvertletTable;
-import org.apache.calcite.tools.FrameworkConfig;
-import org.apache.calcite.tools.Frameworks;
-import org.apache.calcite.util.ImmutableIntList;
-import org.apache.calcite.util.Pair;
-import org.apache.calcite.util.Util;
-
-import com.google.common.base.Supplier;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-
-import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.sql.DatabaseMetaData;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.apache.calcite.util.Static.RESOURCE;
-
-/**
- * Shit just got real.
- *
- * <p>This class is public so that projects that create their own JDBC driver
- * and server can fine-tune preferences. However, this class and its methods are
- * subject to change without notice.</p>
- */
-public class CalcitePrepareImpl implements CalcitePrepare {
-
-  @Deprecated // to be removed before 2.0
-  public static final boolean ENABLE_ENUMERABLE =
-      CalciteSystemProperty.ENABLE_ENUMERABLE.value();
-
-  @Deprecated // to be removed before 2.0
-  public static final boolean ENABLE_STREAM =
-      CalciteSystemProperty.ENABLE_STREAM.value();
-
-  @Deprecated // to be removed before 2.0
   public static final List<RelOptRule> ENUMERABLE_RULES =
-      EnumerableRules.ENUMERABLE_RULES;
+      ImmutableList.of(
+          EnumerableRules.ENUMERABLE_JOIN_RULE,
+          EnumerableRules.ENUMERABLE_MERGE_JOIN_RULE,
+          EnumerableRules.ENUMERABLE_SEMI_JOIN_RULE,
+          EnumerableRules.ENUMERABLE_CORRELATE_RULE,
+          EnumerableRules.ENUMERABLE_PROJECT_RULE,
+          EnumerableRules.ENUMERABLE_FILTER_RULE,
+          EnumerableRules.ENUMERABLE_AGGREGATE_RULE,
+          EnumerableRules.ENUMERABLE_SORT_RULE,
+          EnumerableRules.ENUMERABLE_LIMIT_RULE,
+          EnumerableRules.ENUMERABLE_COLLECT_RULE,
+          EnumerableRules.ENUMERABLE_UNCOLLECT_RULE,
+          EnumerableRules.ENUMERABLE_UNION_RULE,
+          EnumerableRules.ENUMERABLE_INTERSECT_RULE,
+          EnumerableRules.ENUMERABLE_MINUS_RULE,
+          EnumerableRules.ENUMERABLE_TABLE_MODIFICATION_RULE,
+          EnumerableRules.ENUMERABLE_VALUES_RULE,
+          EnumerableRules.ENUMERABLE_WINDOW_RULE,
+          EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
+          EnumerableRules.ENUMERABLE_TABLE_FUNCTION_SCAN_RULE);
 
+  private static final List<RelOptRule> DEFAULT_RULES =
+      ImmutableList.of(
+          CoreRules.AGGREGATE_STAR_TABLE,
+          CoreRules.AGGREGATE_PROJECT_STAR_TABLE,
+          TableScanRule.INSTANCE,
+          COMMUTE
+              ? CoreRules.JOIN_ASSOCIATE
+              : CoreRules.PROJECT_MERGE,
+          CoreRules.FILTER_SCAN,
+          CoreRules.PROJECT_FILTER_TRANSPOSE,
+          CoreRules.FILTER_PROJECT_TRANSPOSE,
+          CoreRules.FILTER_INTO_JOIN,
+          CoreRules.JOIN_PUSH_EXPRESSIONS,
+          CoreRules.AGGREGATE_EXPAND_DISTINCT_AGGREGATES,
+          CoreRules.AGGREGATE_REDUCE_FUNCTIONS,
+          CoreRules.FILTER_AGGREGATE_TRANSPOSE,
+          CoreRules.PROJECT_WINDOW_TRANSPOSE,
+          CoreRules.JOIN_COMMUTE,
+          JoinPushThroughJoinRule.RIGHT,
+          JoinPushThroughJoinRule.LEFT,
+          CoreRules.SORT_PROJECT_TRANSPOSE,
+          CoreRules.SORT_JOIN_TRANSPOSE,
+          CoreRules.SORT_UNION_TRANSPOSE);
 
-  /** Whether the bindable convention should be the root convention of any
-   * plan. If not, enumerable convention is the default. */
-  public final boolean enableBindable = Hook.ENABLE_BINDABLE.get(false);
-
-  private static final Set<String> SIMPLE_SQLS =
-      ImmutableSet.of(
-          "SELECT 1",
-          "select 1",
-          "SELECT 1 FROM DUAL",
-          "select 1 from dual",
-          "values 1",
-          "VALUES 1");
+  private static final List<RelOptRule> CONSTANT_REDUCTION_RULES =
+      ImmutableList.of(
+          ReduceExpressionsRule.PROJECT_INSTANCE,
+          ReduceExpressionsRule.FILTER_INSTANCE,
+          ReduceExpressionsRule.CALC_INSTANCE,
+          ReduceExpressionsRule.JOIN_INSTANCE,
+          CoreRules.FILTER_VALUES_MERGE,
+          CoreRules.PROJECT_FILTER_VALUES_MERGE,
+          CoreRules.PROJECT_VALUES_MERGE,
+          CoreRules.AGGREGATE_VALUES);
 
   public CalcitePrepareImpl() {
   }
@@ -431,9 +394,27 @@ public class CalcitePrepareImpl implements CalcitePrepare {
     if (CalciteSystemProperty.ENABLE_COLLATION_TRAIT.value()) {
       planner.addRelTraitDef(RelCollationTraitDef.INSTANCE);
     }
-    RelOptUtil.registerDefaultRules(planner,
-        prepareContext.config().materializationsEnabled(),
-        enableBindable);
+    RelOptUtil.registerAbstractRels(planner);
+    for (RelOptRule rule : DEFAULT_RULES) {
+      planner.addRule(rule);
+    }
+    if (prepareContext.config().materializationsEnabled()) {
+      planner.addRule(MaterializedViewFilterScanRule.INSTANCE);
+      planner.addRule(AbstractMaterializedViewRule.INSTANCE_PROJECT_FILTER);
+      planner.addRule(AbstractMaterializedViewRule.INSTANCE_FILTER);
+      planner.addRule(AbstractMaterializedViewRule.INSTANCE_PROJECT_JOIN);
+      planner.addRule(AbstractMaterializedViewRule.INSTANCE_JOIN);
+      planner.addRule(AbstractMaterializedViewRule.INSTANCE_PROJECT_AGGREGATE);
+      planner.addRule(AbstractMaterializedViewRule.INSTANCE_AGGREGATE);
+    }
+    if (enableBindable) {
+      for (RelOptRule rule : Bindables.RULES) {
+        planner.addRule(rule);
+      }
+    }
+    planner.addRule(Bindables.BINDABLE_TABLE_SCAN_RULE);
+    planner.addRule(CoreRules.PROJECT_TABLE_SCAN);
+    planner.addRule(CoreRules.PROJECT_INTERPRETER_TABLE_SCAN);
 
     final CalcitePrepare.SparkHandler spark = prepareContext.spark();
     if (spark.enabled()) {

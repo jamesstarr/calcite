@@ -85,11 +85,9 @@ public class JoinToCorrelateRule
 
   //~ Methods ----------------------------------------------------------------
 
-<<<<<<< HEAD
-  @Override public boolean matches(RelOptRuleCall call) {
-    Join join = call.rel(0);
-=======
   public boolean matches(RelOptRuleCall call) {
+=======
+  @Override public boolean matches(RelOptRuleCall call) {
     LogicalJoin join = call.rel(0);
     return !join.getJoinType().generatesNullsOnLeft();
   }
@@ -131,6 +129,26 @@ public class JoinToCorrelateRule
             join.getJoinType());
     call.transformTo(newRel);
   }
+<<<<<<< HEAD
+=======
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(LogicalJoin.class);
+
+    @Override default JoinToCorrelateRule toRule() {
+      return new JoinToCorrelateRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Join> joinClass) {
+      return withOperandSupplier(b -> b.operand(joinClass).anyInputs())
+              .as(Config.class);
+    }
+  }
+}
+>>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
