@@ -809,12 +809,9 @@ public class DruidRules {
      */
     public DruidProjectFilterTransposeRule(
         RelBuilderFactory relBuilderFactory) {
-      super(
-          operand(Project.class,
-              operand(Filter.class,
-                  operand(DruidQuery.class, none()))),
-          PushProjector.ExprCondition.FALSE,
-          relBuilderFactory);
+      super(Config.DEFAULT
+              .withOperandFor(Project.class, Filter.class, DruidQuery.class)
+              .withPreserveExprCondition(PushProjector.ExprCondition.FALSE));
     }
   }
 

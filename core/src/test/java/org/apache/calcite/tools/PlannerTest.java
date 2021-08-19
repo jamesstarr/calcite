@@ -45,10 +45,8 @@ import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
-import org.apache.calcite.rel.rules.FilterMergeRule;
+import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.ProjectMergeRule;
-import org.apache.calcite.rel.rules.ProjectToWindowRule;
-import org.apache.calcite.rel.rules.SortRemoveRule;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.SchemaPlus;
@@ -354,7 +352,7 @@ public class PlannerTest {
   @Test public void testPlan() throws Exception {
     Program program =
         Programs.ofRules(
-            FilterMergeRule.INSTANCE,
+            CoreRules.FILTER_MERGE,
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
     Planner planner = getPlanner(null, program);
@@ -375,7 +373,7 @@ public class PlannerTest {
   @Test public void testSortPlan() throws Exception {
     RuleSet ruleSet =
         RuleSets.ofList(
-            SortRemoveRule.INSTANCE,
+            CoreRules.SORT_REMOVE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE,
             EnumerableRules.ENUMERABLE_SORT_RULE);
     Planner planner = getPlanner(null, Programs.of(ruleSet));
@@ -455,11 +453,11 @@ public class PlannerTest {
   private void runDuplicateSortCheck(String sql, String plan) throws Exception {
     RuleSet ruleSet =
         RuleSets.ofList(
-            SortRemoveRule.INSTANCE,
+            CoreRules.SORT_REMOVE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE,
             EnumerableRules.ENUMERABLE_WINDOW_RULE,
             EnumerableRules.ENUMERABLE_SORT_RULE,
-            ProjectToWindowRule.PROJECT);
+            CoreRules.PROJECT_TO_LOGICAL_PROJECT_AND_WINDOW);
     Planner planner = getPlanner(null,
         SqlParser.configBuilder().setLex(Lex.JAVA).build(),
         Programs.of(ruleSet));
@@ -508,7 +506,7 @@ public class PlannerTest {
   @Test public void testPlanWithExplicitTraitDefs() throws Exception {
     RuleSet ruleSet =
         RuleSets.ofList(
-            FilterMergeRule.INSTANCE,
+            CoreRules.FILTER_MERGE,
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
     final List<RelTraitDef> traitDefs = new ArrayList<>();
@@ -533,7 +531,7 @@ public class PlannerTest {
   @Test public void testPlanTransformTwice() throws Exception {
     RuleSet ruleSet =
         RuleSets.ofList(
-            FilterMergeRule.INSTANCE,
+            CoreRules.FILTER_MERGE,
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
     Planner planner = getPlanner(null, Programs.of(ruleSet));
@@ -630,7 +628,7 @@ public class PlannerTest {
       throws Exception {
     Program program0 =
         Programs.ofRules(
-            FilterMergeRule.INSTANCE,
+            CoreRules.FILTER_MERGE,
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
 

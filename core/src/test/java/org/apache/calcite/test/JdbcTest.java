@@ -54,7 +54,7 @@ import org.apache.calcite.prepare.Prepare;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.TableModify;
 import org.apache.calcite.rel.logical.LogicalTableModify;
-import org.apache.calcite.rel.rules.IntersectToDistinctRule;
+import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexNode;
@@ -3390,7 +3390,7 @@ public class JdbcTest {
         .query(sql)
         .withHook(Hook.PLANNER, new Function<RelOptPlanner, Void>() {
           @Override public Void apply(RelOptPlanner planner) {
-            planner.removeRule(IntersectToDistinctRule.INSTANCE);
+            planner.removeRule(CoreRules.INTERSECT_TO_DISTINCT);
             return null;
           }
         })

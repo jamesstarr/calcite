@@ -17,11 +17,10 @@
 package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.RelOptPredicateList;
-import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.core.Union;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataTypeField;
@@ -44,16 +43,24 @@ import java.util.Map;
 
 /**
  * Planner rule that pulls up constants through a Union operator.
+ *
+ * @see CoreRules#UNION_PULL_UP_CONSTANTS
  */
-public class UnionPullUpConstantsRule extends RelOptRule {
-
-  public static final UnionPullUpConstantsRule INSTANCE =
-      new UnionPullUpConstantsRule(Union.class, RelFactories.LOGICAL_BUILDER);
+public class UnionPullUpConstantsRule
+        extends RelRule<UnionPullUpConstantsRule.Config>
+        implements TransformationRule {
 
   /** Creates a UnionPullUpConstantsRule. */
+  protected UnionPullUpConstantsRule(Config config) {
+    super(config);
+  }
+
+  @Deprecated // to be removed before 2.0
   public UnionPullUpConstantsRule(Class<? extends Union> unionClass,
-      RelBuilderFactory relBuilderFactory) {
-    super(operand(unionClass, any()), relBuilderFactory, null);
+                                  RelBuilderFactory relBuilderFactory) {
+    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
+            .as(Config.class)
+            .withOperandFor(unionClass));
   }
 
   @Override public void onMatch(RelOptRuleCall call) {
@@ -138,6 +145,23 @@ public class UnionPullUpConstantsRule extends RelOptRule {
     call.transformTo(relBuilder.build());
   }
 
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(Union.class);
+
+    @Override default UnionPullUpConstantsRule toRule() {
+      return new UnionPullUpConstantsRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Union> unionClass) {
+      return withOperandSupplier(b ->
+              b.operand(unionClass)
+                      .anyInputs())
+              .as(Config.class);
+    }
+  }
 }
 
 // End UnionPullUpConstantsRule.java

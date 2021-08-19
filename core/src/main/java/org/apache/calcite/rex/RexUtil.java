@@ -50,7 +50,6 @@ import org.apache.calcite.util.mapping.Mappings;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
@@ -68,6 +67,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 
@@ -2565,49 +2565,55 @@ public class RexUtil {
   public static class SubQueryFinder extends RexVisitorImpl<Void> {
     public static final SubQueryFinder INSTANCE = new SubQueryFinder();
 
-    /** Returns whether a {@link Project} contains a sub-query. */
-    public static final Predicate<Project> PROJECT_PREDICATE =
-        new PredicateImpl<Project>() {
-          public boolean test(Project project) {
-            for (RexNode node : project.getProjects()) {
-              try {
-                node.accept(INSTANCE);
-              } catch (Util.FoundOne e) {
-                return true;
-              }
-            }
-            return false;
-          }
-        };
+    @SuppressWarnings("Guava")
+    @Deprecated // to be removed before 2.0
+    public static final com.google.common.base.Predicate<Project> PROJECT_PREDICATE =
+        SubQueryFinder::containsSubQuery;
 
-    /** Returns whether a {@link Filter} contains a sub-query. */
+    @SuppressWarnings("Guava")
+    @Deprecated // to be removed before 2.0
     public static final Predicate<Filter> FILTER_PREDICATE =
-        new PredicateImpl<Filter>() {
-          public boolean test(Filter filter) {
-            try {
-              filter.getCondition().accept(INSTANCE);
-              return false;
-            } catch (Util.FoundOne e) {
-              return true;
-            }
-          }
-        };
+        SubQueryFinder::containsSubQuery;
 
-    /** Returns whether a {@link Join} contains a sub-query. */
-    public static final Predicate<Join> JOIN_PREDICATE =
-        new PredicateImpl<Join>() {
-          public boolean test(Join join) {
-            try {
-              join.getCondition().accept(INSTANCE);
-              return false;
-            } catch (Util.FoundOne e) {
-              return true;
-            }
-          }
-        };
+    @SuppressWarnings("Guava")
+    @Deprecated // to be removed before 2.0
+    public static final com.google.common.base.Predicate<Join> JOIN_PREDICATE =
+        SubQueryFinder::containsSubQuery;
 
     private SubQueryFinder() {
       super(true);
+    }
+
+    /** Returns whether a {@link Project} contains a sub-query. */
+    public static boolean containsSubQuery(Project project) {
+      for (RexNode node : project.getProjects()) {
+        try {
+          node.accept(INSTANCE);
+        } catch (Util.FoundOne e) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    /** Returns whether a {@link Filter} contains a sub-query. */
+    public static boolean containsSubQuery(Filter filter) {
+      try {
+        filter.getCondition().accept(INSTANCE);
+        return false;
+      } catch (Util.FoundOne e) {
+        return true;
+      }
+    }
+
+    /** Returns whether a {@link Join} contains a sub-query. */
+    public static boolean containsSubQuery(Join join) {
+      try {
+        join.getCondition().accept(INSTANCE);
+        return false;
+      } catch (Util.FoundOne e) {
+        return true;
+      }
     }
 
     @Override public Void visitSubQuery(RexSubQuery subQuery) {

@@ -16,9 +16,8 @@
  */
 package org.apache.calcite.rel.rules;
 
-import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
-import org.apache.calcite.rel.core.RelFactories;
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.core.Union;
 import org.apache.calcite.rel.logical.LogicalUnion;
 import org.apache.calcite.tools.RelBuilderFactory;
@@ -27,24 +26,34 @@ import org.apache.calcite.tools.RelBuilderFactory;
  * <code>UnionEliminatorRule</code> checks to see if its possible to optimize a
  * Union call by eliminating the Union operator altogether in the case the call
  * consists of only one input.
+ *
+ * @see CoreRules#UNION_REMOVE
  */
-public class UnionEliminatorRule extends RelOptRule {
-  public static final UnionEliminatorRule INSTANCE =
-      new UnionEliminatorRule(LogicalUnion.class, RelFactories.LOGICAL_BUILDER);
+public class UnionEliminatorRule
+        extends RelRule<UnionEliminatorRule.Config>
+        implements SubstitutionRule {
 
-  //~ Constructors -----------------------------------------------------------
+  /** Creates a UnionEliminatorRule. */
+  protected UnionEliminatorRule(Config config) {
+    super(config);
+  }
 
-  /**
-   * Creates a UnionEliminatorRule.
-   */
-  public UnionEliminatorRule(Class<? extends Union> clazz,
-      RelBuilderFactory relBuilderFactory) {
-    super(operand(clazz, any()), relBuilderFactory, null);
+  @Deprecated // to be removed before 2.0
+  public UnionEliminatorRule(Class<? extends Union> unionClass,
+                             RelBuilderFactory relBuilderFactory) {
+    super(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
+            .as(Config.class)
+            .withOperandFor(unionClass));
   }
 
   //~ Methods ----------------------------------------------------------------
 
-  public void onMatch(RelOptRuleCall call) {
+  @Override public boolean matches(RelOptRuleCall call) {
+    Union union = call.rel(0);
+    return union.all && union.getInputs().size() == 1;
+  }
+
+  @Override public void onMatch(RelOptRuleCall call) {
     Union union = call.rel(0);
     if (union.getInputs().size() != 1) {
       return;
@@ -57,6 +66,21 @@ public class UnionEliminatorRule extends RelOptRule {
     // the equivalence here like we do in AggregateRemoveRule?
 
     call.transformTo(union.getInputs().get(0));
+  }
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(LogicalUnion.class);
+
+    @Override default UnionEliminatorRule toRule() {
+      return new UnionEliminatorRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Union> unionClass) {
+      return withOperandSupplier(b -> b.operand(unionClass).anyInputs())
+              .as(Config.class);
+    }
   }
 }
 

@@ -16,10 +16,9 @@
  */
 package org.apache.calcite.rel.rules;
 
-import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalCalc;
 import org.apache.calcite.rex.RexProgram;
 import org.apache.calcite.tools.RelBuilderFactory;
@@ -34,26 +33,23 @@ import org.apache.calcite.tools.RelBuilderFactory;
  *
  * @see ProjectRemoveRule
  */
-public class CalcRemoveRule extends RelOptRule {
-  //~ Static fields/initializers ---------------------------------------------
+public class CalcRemoveRule extends RelRule<CalcRemoveRule.Config>
+        implements SubstitutionRule {
 
-  public static final CalcRemoveRule INSTANCE =
-      new CalcRemoveRule(RelFactories.LOGICAL_BUILDER);
+  /** Creates a CalcRemoveRule. */
+  protected CalcRemoveRule(Config config) {
+    super(config);
+  }
 
-  //~ Constructors -----------------------------------------------------------
-
-  /**
-   * Creates a CalcRemoveRule.
-   *
-   * @param relBuilderFactory Builder for relational expressions
-   */
+  @Deprecated // to be removed before 2.0
   public CalcRemoveRule(RelBuilderFactory relBuilderFactory) {
-    super(operand(LogicalCalc.class, any()), relBuilderFactory, null);
+    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
+            .as(Config.class));
   }
 
   //~ Methods ----------------------------------------------------------------
 
-  public void onMatch(RelOptRuleCall call) {
+  @Override public void onMatch(RelOptRuleCall call) {
     LogicalCalc calc = call.rel(0);
     RexProgram program = calc.getProgram();
     if (!program.isTrivial()) {
@@ -65,6 +61,20 @@ public class CalcRemoveRule extends RelOptRule {
         convert(
             input,
             calc.getTraitSet()));
+  }
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY
+            .withOperandSupplier(b ->
+                    b.operand(LogicalCalc.class)
+                            .predicate(calc -> calc.getProgram().isTrivial())
+                            .anyInputs())
+            .as(Config.class);
+
+    @Override default CalcRemoveRule toRule() {
+      return new CalcRemoveRule(this);
+    }
   }
 }
 

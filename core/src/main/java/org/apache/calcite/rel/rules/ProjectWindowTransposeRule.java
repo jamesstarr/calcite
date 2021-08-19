@@ -17,11 +17,11 @@
 package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelFieldCollation;
-import org.apache.calcite.rel.core.RelFactories;
+import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.Window;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.logical.LogicalWindow;
@@ -43,23 +43,22 @@ import java.util.List;
  * Planner rule that pushes
  * a {@link org.apache.calcite.rel.logical.LogicalProject}
  * past a {@link org.apache.calcite.rel.logical.LogicalWindow}.
+ *
+ * @see CoreRules#PROJECT_WINDOW_TRANSPOSE
  */
-public class ProjectWindowTransposeRule extends RelOptRule {
-  /** The default instance of
-   * {@link org.apache.calcite.rel.rules.ProjectWindowTransposeRule}. */
-  public static final ProjectWindowTransposeRule INSTANCE =
-      new ProjectWindowTransposeRule(RelFactories.LOGICAL_BUILDER);
+public class ProjectWindowTransposeRule
+        extends RelRule<ProjectWindowTransposeRule.Config>
+        implements TransformationRule {
 
-  /**
-   * Creates ProjectWindowTransposeRule.
-   *
-   * @param relBuilderFactory Builder for relational expressions
-   */
+  /** Creates a ProjectWindowTransposeRule. */
+  protected ProjectWindowTransposeRule(Config config) {
+    super(config);
+  }
+
+  @Deprecated // to be removed before 2.0
   public ProjectWindowTransposeRule(RelBuilderFactory relBuilderFactory) {
-    super(
-        operand(LogicalProject.class,
-            operand(LogicalWindow.class, any())),
-        relBuilderFactory, null);
+    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
+            .as(Config.class));
   }
 
   @Override public void onMatch(RelOptRuleCall call) {
@@ -240,6 +239,25 @@ public class ProjectWindowTransposeRule extends RelOptRule {
       return beReferred.cardinality() + (initIndex - windowInputColumn);
     } else {
       return beReferred.get(0, initIndex).cardinality();
+    }
+  }
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(LogicalProject.class, LogicalWindow.class);
+
+    @Override default ProjectWindowTransposeRule toRule() {
+      return new ProjectWindowTransposeRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Project> projectClass,
+                                  Class<? extends Window> windowClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(projectClass).oneInput(b1 ->
+                      b1.operand(windowClass).anyInputs()))
+              .as(Config.class);
     }
   }
 }

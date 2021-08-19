@@ -17,15 +17,14 @@
 package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.Contexts;
-import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptRuleOperand;
 import org.apache.calcite.plan.RelOptUtil;
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.core.Project;
-import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.core.RelFactories.ProjectFactory;
 import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalProject;
@@ -39,6 +38,7 @@ import org.apache.calcite.rex.RexProgramBuilder;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
+import org.apache.calcite.util.ImmutableBeans;
 import org.apache.calcite.util.Pair;
 
 import java.util.ArrayList;
@@ -55,92 +55,58 @@ import java.util.List;
  * {@link org.apache.calcite.rel.logical.LogicalProject} doesn't originate from
  * a null generating input in an outer join.
  */
-public class JoinProjectTransposeRule extends RelOptRule {
-  //~ Static fields/initializers ---------------------------------------------
-
-  public static final JoinProjectTransposeRule BOTH_PROJECT =
-      new JoinProjectTransposeRule(
-          operand(LogicalJoin.class,
-              operand(LogicalProject.class, any()),
-              operand(LogicalProject.class, any())),
-          "JoinProjectTransposeRule(Project-Project)");
-
-  public static final JoinProjectTransposeRule LEFT_PROJECT =
-      new JoinProjectTransposeRule(
-          operand(LogicalJoin.class,
-              some(operand(LogicalProject.class, any()))),
-          "JoinProjectTransposeRule(Project-Other)");
-
-  public static final JoinProjectTransposeRule RIGHT_PROJECT =
-      new JoinProjectTransposeRule(
-          operand(
-              LogicalJoin.class,
-              operand(RelNode.class, any()),
-              operand(LogicalProject.class, any())),
-          "JoinProjectTransposeRule(Other-Project)");
-
-  public static final JoinProjectTransposeRule BOTH_PROJECT_INCLUDE_OUTER =
-      new JoinProjectTransposeRule(
-          operand(LogicalJoin.class,
-              operand(LogicalProject.class, any()),
-              operand(LogicalProject.class, any())),
-          "Join(IncludingOuter)ProjectTransposeRule(Project-Project)",
-          true, RelFactories.LOGICAL_BUILDER);
-
-  public static final JoinProjectTransposeRule LEFT_PROJECT_INCLUDE_OUTER =
-      new JoinProjectTransposeRule(
-          operand(LogicalJoin.class,
-              some(operand(LogicalProject.class, any()))),
-          "Join(IncludingOuter)ProjectTransposeRule(Project-Other)",
-          true, RelFactories.LOGICAL_BUILDER);
-
-  public static final JoinProjectTransposeRule RIGHT_PROJECT_INCLUDE_OUTER =
-      new JoinProjectTransposeRule(
-          operand(
-              LogicalJoin.class,
-              operand(RelNode.class, any()),
-              operand(LogicalProject.class, any())),
-          "Join(IncludingOuter)ProjectTransposeRule(Other-Project)",
-          true, RelFactories.LOGICAL_BUILDER);
-
-  private final boolean includeOuter;
-
-  //~ Constructors -----------------------------------------------------------
+public class JoinProjectTransposeRule
+        extends RelRule<JoinProjectTransposeRule.Config>
+        implements TransformationRule {
 
   /** Creates a JoinProjectTransposeRule. */
-  public JoinProjectTransposeRule(RelOptRuleOperand operand,
-      String description, boolean includeOuter,
-      RelBuilderFactory relBuilderFactory) {
-    super(operand, relBuilderFactory, description);
-    this.includeOuter = includeOuter;
+  protected JoinProjectTransposeRule(Config config) {
+    super(config);
   }
 
-  /** Creates a JoinProjectTransposeRule with default factory. */
+  @Deprecated // to be removed before 2.0
+  public JoinProjectTransposeRule(RelOptRuleOperand operand,
+                                  String description, boolean includeOuter,
+                                  RelBuilderFactory relBuilderFactory) {
+    this(Config.DEFAULT.withDescription(description)
+            .withRelBuilderFactory(relBuilderFactory)
+            .withOperandSupplier(b -> b.exactly(operand))
+            .as(Config.class)
+            .withIncludeOuter(includeOuter));
+  }
+
+  @Deprecated // to be removed before 2.0
   public JoinProjectTransposeRule(
-      RelOptRuleOperand operand,
-      String description) {
-    this(operand, description, false, RelFactories.LOGICAL_BUILDER);
+          RelOptRuleOperand operand,
+          String description) {
+    this(Config.DEFAULT.withDescription(description)
+            .withOperandSupplier(b -> b.exactly(operand))
+            .as(Config.class));
   }
 
   @Deprecated // to be removed before 2.0
   public JoinProjectTransposeRule(RelOptRuleOperand operand,
-      String description, ProjectFactory projectFactory) {
-    this(operand, description, false,
-        RelBuilder.proto(Contexts.of(projectFactory)));
+                                  String description, ProjectFactory projectFactory) {
+    this(Config.DEFAULT.withDescription(description)
+            .withRelBuilderFactory(RelBuilder.proto(Contexts.of(projectFactory)))
+            .withOperandSupplier(b -> b.exactly(operand))
+            .as(Config.class));
   }
 
   @Deprecated // to be removed before 2.0
   public JoinProjectTransposeRule(RelOptRuleOperand operand,
-      String description, boolean includeOuter,
-      ProjectFactory projectFactory) {
-    this(operand, description, includeOuter,
-        RelBuilder.proto(Contexts.of(projectFactory)));
+                                  String description, boolean includeOuter,
+                                  ProjectFactory projectFactory) {
+    this(Config.DEFAULT.withDescription(description)
+            .withRelBuilderFactory(RelBuilder.proto(Contexts.of(projectFactory)))
+            .withOperandSupplier(b -> b.exactly(operand))
+            .as(Config.class)
+            .withIncludeOuter(includeOuter));
   }
 
   //~ Methods ----------------------------------------------------------------
 
-  // implement RelOptRule
-  public void onMatch(RelOptRuleCall call) {
+  @Override public void onMatch(RelOptRuleCall call) {
     Join joinRel = call.rel(0);
     JoinRelType joinType = joinRel.getJoinType();
 
@@ -151,6 +117,7 @@ public class JoinProjectTransposeRule extends RelOptRule {
 
     // If 1) the rule works on outer joins, or
     //    2) input's projection doesn't generate nulls
+    final boolean includeOuter = config.isIncludeOuter();
     if (hasLeftChild(call)
             && (includeOuter || !joinType.generatesNullsOnLeft())) {
       leftProj = call.rel(1);
@@ -390,6 +357,62 @@ public class JoinProjectTransposeRule extends RelOptRule {
                 field.getName()));
       }
     }
+  }
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY
+            .withOperandSupplier(b0 ->
+                    b0.operand(LogicalJoin.class).inputs(
+                        b1 -> b1.operand(LogicalProject.class).anyInputs(),
+                        b2 -> b2.operand(LogicalProject.class).anyInputs()))
+            .withDescription("JoinProjectTransposeRule(Project-Project)")
+            .as(Config.class);
+
+    Config LEFT = DEFAULT
+            .withOperandSupplier(b0 ->
+                    b0.operand(LogicalJoin.class).inputs(
+                        b1 -> b1.operand(LogicalProject.class).anyInputs()))
+            .withDescription("JoinProjectTransposeRule(Project-Other)")
+            .as(Config.class);
+
+    Config RIGHT = DEFAULT
+            .withOperandSupplier(b0 ->
+                    b0.operand(LogicalJoin.class).inputs(
+                        b1 -> b1.operand(RelNode.class).anyInputs(),
+                        b2 -> b2.operand(LogicalProject.class).anyInputs()))
+            .withDescription("JoinProjectTransposeRule(Other-Project)")
+            .as(Config.class);
+
+    Config OUTER = DEFAULT
+            .withDescription(
+                    "Join(IncludingOuter)ProjectTransposeRule(Project-Project)")
+            .as(Config.class)
+            .withIncludeOuter(true);
+
+    Config LEFT_OUTER = LEFT
+            .withDescription(
+                    "Join(IncludingOuter)ProjectTransposeRule(Project-Other)")
+            .as(Config.class)
+            .withIncludeOuter(true);
+
+    Config RIGHT_OUTER = RIGHT
+            .withDescription(
+                    "Join(IncludingOuter)ProjectTransposeRule(Other-Project)")
+            .as(Config.class)
+            .withIncludeOuter(true);
+
+    @Override default JoinProjectTransposeRule toRule() {
+      return new JoinProjectTransposeRule(this);
+    }
+
+    /** Whether to include outer joins, default false. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(false)
+    boolean isIncludeOuter();
+
+    /** Sets {@link #isIncludeOuter()}. */
+    Config withIncludeOuter(boolean includeOuter);
   }
 }
 

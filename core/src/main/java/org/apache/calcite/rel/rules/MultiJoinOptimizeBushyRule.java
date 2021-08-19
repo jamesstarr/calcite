@@ -16,9 +16,9 @@
  */
 package org.apache.calcite.rel.rules;
 
-import org.apache.calcite.plan.RelOptRule;
+import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.plan.RelOptRuleCall;
-import org.apache.calcite.prepare.CalcitePrepareImpl;
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.core.RelFactories;
@@ -45,6 +45,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 /**
  * Planner rule that finds an approximately optimal ordering for join operators
  * using a heuristic algorithm.
@@ -64,18 +66,26 @@ import java.util.List;
  *   <li>More than 1 join conditions that touch the same pair of factors,
  *       e.g. {@code t0.c1 = t1.c1 and t1.c2 = t0.c3}
  * </ol>
+ *
+ * @see CoreRules#MULTI_JOIN_OPTIMIZE_BUSHY
  */
-public class MultiJoinOptimizeBushyRule extends RelOptRule {
-  public static final MultiJoinOptimizeBushyRule INSTANCE =
-      new MultiJoinOptimizeBushyRule(RelFactories.LOGICAL_BUILDER);
+public class MultiJoinOptimizeBushyRule
+        extends RelRule<MultiJoinOptimizeBushyRule.Config>
+        implements TransformationRule {
 
-  private final PrintWriter pw = CalcitePrepareImpl.DEBUG
-      ? Util.printWriter(System.out)
-      : null;
+  private final @Nullable PrintWriter pw = CalciteSystemProperty.DEBUG.value()
+          ? Util.printWriter(System.out)
+          : null;
 
-  /** Creates an MultiJoinOptimizeBushyRule. */
+  /** Creates a MultiJoinOptimizeBushyRule. */
+  protected MultiJoinOptimizeBushyRule(Config config) {
+    super(config);
+  }
+
+  @Deprecated // to be removed before 2.0
   public MultiJoinOptimizeBushyRule(RelBuilderFactory relBuilderFactory) {
-    super(operand(MultiJoin.class, any()), relBuilderFactory, null);
+    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
+            .as(Config.class));
   }
 
   @Deprecated // to be removed before 2.0
@@ -382,6 +392,17 @@ public class MultiJoinOptimizeBushyRule extends RelOptRule {
           + ", leftFactor: " + leftFactor
           + ", rightFactor: " + rightFactor
           + ")";
+    }
+  }
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY
+            .withOperandSupplier(b -> b.operand(MultiJoin.class).anyInputs())
+            .as(Config.class);
+
+    @Override default MultiJoinOptimizeBushyRule toRule() {
+      return new MultiJoinOptimizeBushyRule(this);
     }
   }
 }

@@ -47,14 +47,10 @@ import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.rules.AggregateProjectPullUpConstantsRule;
+import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.DateRangeRules;
-import org.apache.calcite.rel.rules.FilterMergeRule;
-import org.apache.calcite.rel.rules.IntersectToDistinctRule;
 import org.apache.calcite.rel.rules.MultiJoin;
-import org.apache.calcite.rel.rules.ProjectToWindowRule;
 import org.apache.calcite.rel.rules.PruneEmptyRules;
-import org.apache.calcite.rel.rules.UnionMergeRule;
-import org.apache.calcite.rel.rules.UnionPullUpConstantsRule;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeField;
@@ -1858,7 +1854,7 @@ public abstract class RelOptUtil {
 
   public static void registerAbstractRels(RelOptPlanner planner) {
     planner.addRule(AggregateProjectPullUpConstantsRule.INSTANCE2);
-    planner.addRule(UnionPullUpConstantsRule.INSTANCE);
+    planner.addRule(CoreRules.UNION_PULL_UP_CONSTANTS);
     planner.addRule(PruneEmptyRules.UNION_INSTANCE);
     planner.addRule(PruneEmptyRules.INTERSECT_INSTANCE);
     planner.addRule(PruneEmptyRules.MINUS_INSTANCE);
@@ -1869,13 +1865,13 @@ public abstract class RelOptUtil {
     planner.addRule(PruneEmptyRules.JOIN_LEFT_INSTANCE);
     planner.addRule(PruneEmptyRules.JOIN_RIGHT_INSTANCE);
     planner.addRule(PruneEmptyRules.SORT_FETCH_ZERO_INSTANCE);
-    planner.addRule(UnionMergeRule.INSTANCE);
-    planner.addRule(UnionMergeRule.INTERSECT_INSTANCE);
-    planner.addRule(UnionMergeRule.MINUS_INSTANCE);
-    planner.addRule(ProjectToWindowRule.PROJECT);
-    planner.addRule(FilterMergeRule.INSTANCE);
+    planner.addRule(CoreRules.UNION_MERGE);
+    planner.addRule(CoreRules.INTERSECT_MERGE);
+    planner.addRule(CoreRules.MINUS_MERGE);
+    planner.addRule(CoreRules.PROJECT_TO_LOGICAL_PROJECT_AND_WINDOW);
+    planner.addRule(CoreRules.FILTER_MERGE);
     planner.addRule(DateRangeRules.FILTER_INSTANCE);
-    planner.addRule(IntersectToDistinctRule.INSTANCE);
+    planner.addRule(CoreRules.INTERSECT_TO_DISTINCT);
   }
 
   /**

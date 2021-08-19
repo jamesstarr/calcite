@@ -119,12 +119,34 @@ public abstract class Values extends AbstractRelNode {
   /**
    * Creates a Values by parsing serialized output.
    */
-  public Values(RelInput input) {
+  protected Values(RelInput input) {
     this(input.getCluster(), input.getRowType("type"),
         input.getTuples("tuples"), input.getTraitSet());
   }
 
   //~ Methods ----------------------------------------------------------------
+
+  /** Predicate, to be used when defining an operand of a {@link RelOptRule},
+   * that returns true if a Values contains zero tuples.
+   *
+   * <p>This is the conventional way to represent an empty relational
+   * expression. There are several rules that recognize empty relational
+   * expressions and prune away that section of the tree.
+   */
+  public static boolean isEmpty(Values values) {
+    return values.getTuples().isEmpty();
+  }
+
+  /** Predicate, to be used when defining an operand of a {@link RelOptRule},
+   * that returns true if a Values contains one or more tuples.
+   *
+   * <p>This is the conventional way to represent an empty relational
+   * expression. There are several rules that recognize empty relational
+   * expressions and prune away that section of the tree.
+   */
+  public static boolean isNotEmpty(Values values) {
+    return !isEmpty(values);
+  }
 
   public ImmutableList<ImmutableList<RexLiteral>> getTuples(RelInput input) {
     return input.getTuples("tuples");
@@ -139,6 +161,7 @@ public abstract class Values extends AbstractRelNode {
   /** Returns true if all tuples match rowType; otherwise, assert on
    * mismatch. */
   private boolean assertRowType() {
+    RelDataType rowType = getRowType();
     for (List<RexLiteral> tuple : tuples) {
       assert tuple.size() == rowType.getFieldCount();
       for (Pair<RexLiteral, RelDataTypeField> pair
@@ -173,12 +196,12 @@ public abstract class Values extends AbstractRelNode {
   }
 
   // implement RelNode
-  public double estimateRowCount(RelMetadataQuery mq) {
+  @Override public double estimateRowCount(RelMetadataQuery mq) {
     return tuples.size();
   }
 
   // implement RelNode
-  public RelWriter explainTerms(RelWriter pw) {
+  @Override public RelWriter explainTerms(RelWriter pw) {
     // A little adapter just to get the tuples to come out
     // with curly brackets instead of square brackets.  Plus
     // more whitespace for readability.

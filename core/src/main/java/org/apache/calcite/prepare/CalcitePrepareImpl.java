@@ -74,29 +74,11 @@ import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.rules.AbstractMaterializedViewRule;
-import org.apache.calcite.rel.rules.AggregateExpandDistinctAggregatesRule;
-import org.apache.calcite.rel.rules.AggregateReduceFunctionsRule;
-import org.apache.calcite.rel.rules.AggregateStarTableRule;
-import org.apache.calcite.rel.rules.AggregateValuesRule;
-import org.apache.calcite.rel.rules.FilterAggregateTransposeRule;
-import org.apache.calcite.rel.rules.FilterJoinRule;
-import org.apache.calcite.rel.rules.FilterProjectTransposeRule;
-import org.apache.calcite.rel.rules.FilterTableScanRule;
-import org.apache.calcite.rel.rules.JoinAssociateRule;
-import org.apache.calcite.rel.rules.JoinCommuteRule;
-import org.apache.calcite.rel.rules.JoinPushExpressionsRule;
+import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.JoinPushThroughJoinRule;
 import org.apache.calcite.rel.rules.MaterializedViewFilterScanRule;
-import org.apache.calcite.rel.rules.ProjectFilterTransposeRule;
-import org.apache.calcite.rel.rules.ProjectMergeRule;
-import org.apache.calcite.rel.rules.ProjectTableScanRule;
-import org.apache.calcite.rel.rules.ProjectWindowTransposeRule;
 import org.apache.calcite.rel.rules.ReduceExpressionsRule;
-import org.apache.calcite.rel.rules.SortJoinTransposeRule;
-import org.apache.calcite.rel.rules.SortProjectTransposeRule;
-import org.apache.calcite.rel.rules.SortUnionTransposeRule;
 import org.apache.calcite.rel.rules.TableScanRule;
-import org.apache.calcite.rel.rules.ValuesReduceRule;
 import org.apache.calcite.rel.stream.StreamRules;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -219,27 +201,27 @@ public class CalcitePrepareImpl implements CalcitePrepare {
 
   private static final List<RelOptRule> DEFAULT_RULES =
       ImmutableList.of(
-          AggregateStarTableRule.INSTANCE,
-          AggregateStarTableRule.INSTANCE2,
+          CoreRules.AGGREGATE_STAR_TABLE,
+          CoreRules.AGGREGATE_PROJECT_STAR_TABLE,
           TableScanRule.INSTANCE,
           COMMUTE
-              ? JoinAssociateRule.INSTANCE
-              : ProjectMergeRule.INSTANCE,
-          FilterTableScanRule.INSTANCE,
-          ProjectFilterTransposeRule.INSTANCE,
-          FilterProjectTransposeRule.INSTANCE,
-          FilterJoinRule.FILTER_ON_JOIN,
-          JoinPushExpressionsRule.INSTANCE,
-          AggregateExpandDistinctAggregatesRule.INSTANCE,
-          AggregateReduceFunctionsRule.INSTANCE,
-          FilterAggregateTransposeRule.INSTANCE,
-          ProjectWindowTransposeRule.INSTANCE,
-          JoinCommuteRule.INSTANCE,
+              ? CoreRules.JOIN_ASSOCIATE
+              : CoreRules.PROJECT_MERGE,
+          CoreRules.FILTER_SCAN,
+          CoreRules.PROJECT_FILTER_TRANSPOSE,
+          CoreRules.FILTER_PROJECT_TRANSPOSE,
+          CoreRules.FILTER_INTO_JOIN,
+          CoreRules.JOIN_PUSH_EXPRESSIONS,
+          CoreRules.AGGREGATE_EXPAND_DISTINCT_AGGREGATES,
+          CoreRules.AGGREGATE_REDUCE_FUNCTIONS,
+          CoreRules.FILTER_AGGREGATE_TRANSPOSE,
+          CoreRules.PROJECT_WINDOW_TRANSPOSE,
+          CoreRules.JOIN_COMMUTE,
           JoinPushThroughJoinRule.RIGHT,
           JoinPushThroughJoinRule.LEFT,
-          SortProjectTransposeRule.INSTANCE,
-          SortJoinTransposeRule.INSTANCE,
-          SortUnionTransposeRule.INSTANCE);
+          CoreRules.SORT_PROJECT_TRANSPOSE,
+          CoreRules.SORT_JOIN_TRANSPOSE,
+          CoreRules.SORT_UNION_TRANSPOSE);
 
   private static final List<RelOptRule> CONSTANT_REDUCTION_RULES =
       ImmutableList.of(
@@ -247,10 +229,10 @@ public class CalcitePrepareImpl implements CalcitePrepare {
           ReduceExpressionsRule.FILTER_INSTANCE,
           ReduceExpressionsRule.CALC_INSTANCE,
           ReduceExpressionsRule.JOIN_INSTANCE,
-          ValuesReduceRule.FILTER_INSTANCE,
-          ValuesReduceRule.PROJECT_FILTER_INSTANCE,
-          ValuesReduceRule.PROJECT_INSTANCE,
-          AggregateValuesRule.INSTANCE);
+          CoreRules.FILTER_VALUES_MERGE,
+          CoreRules.PROJECT_FILTER_VALUES_MERGE,
+          CoreRules.PROJECT_VALUES_MERGE,
+          CoreRules.AGGREGATE_VALUES);
 
   public CalcitePrepareImpl() {
   }
@@ -548,8 +530,8 @@ public class CalcitePrepareImpl implements CalcitePrepare {
       }
     }
     planner.addRule(Bindables.BINDABLE_TABLE_SCAN_RULE);
-    planner.addRule(ProjectTableScanRule.INSTANCE);
-    planner.addRule(ProjectTableScanRule.INTERPRETER);
+    planner.addRule(CoreRules.PROJECT_TABLE_SCAN);
+    planner.addRule(CoreRules.PROJECT_INTERPRETER_TABLE_SCAN);
 
     if (ENABLE_ENUMERABLE) {
       for (RelOptRule rule : ENUMERABLE_RULES) {

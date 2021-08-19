@@ -17,17 +17,16 @@
 package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptRuleOperand;
 import org.apache.calcite.plan.RelOptUtil;
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Project;
-import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rex.RexCall;
@@ -49,55 +48,64 @@ import java.util.Map;
  * a {@link org.apache.calcite.rel.core.Sort}
  * past a {@link org.apache.calcite.rel.core.Project}.
  *
- * @see org.apache.calcite.rel.rules.ProjectSortTransposeRule
+ * @see CoreRules#SORT_PROJECT_TRANSPOSE
  */
-public class SortProjectTransposeRule extends RelOptRule {
-  public static final SortProjectTransposeRule INSTANCE =
-      new SortProjectTransposeRule(Sort.class, LogicalProject.class,
-          RelFactories.LOGICAL_BUILDER, null);
-
-  //~ Constructors -----------------------------------------------------------
-
-  @Deprecated // to be removed before 2.0
-  public SortProjectTransposeRule(
-      Class<? extends Sort> sortClass,
-      Class<? extends Project> projectClass) {
-    this(sortClass, projectClass, RelFactories.LOGICAL_BUILDER, null);
-  }
-
-  @Deprecated // to be removed before 2.0
-  public SortProjectTransposeRule(
-      Class<? extends Sort> sortClass,
-      Class<? extends Project> projectClass,
-      String description) {
-    this(sortClass, projectClass, RelFactories.LOGICAL_BUILDER, description);
-  }
+public class SortProjectTransposeRule
+        extends RelRule<SortProjectTransposeRule.Config>
+        implements TransformationRule {
 
   /** Creates a SortProjectTransposeRule. */
-  public SortProjectTransposeRule(
-      Class<? extends Sort> sortClass,
-      Class<? extends Project> projectClass,
-      RelBuilderFactory relBuilderFactory, String description) {
-    this(
-        operand(sortClass,
-            operand(projectClass, any())),
-        relBuilderFactory, description);
+  protected SortProjectTransposeRule(Config config) {
+    super(config);
   }
 
-  /** Creates a SortProjectTransposeRule with an operand. */
+  @Deprecated // to be removed before 2.0
+  public SortProjectTransposeRule(
+          Class<? extends Sort> sortClass,
+          Class<? extends Project> projectClass) {
+    this(Config.DEFAULT.withOperandFor(sortClass, projectClass));
+  }
+
+  @Deprecated // to be removed before 2.0
+  public SortProjectTransposeRule(
+          Class<? extends Sort> sortClass,
+          Class<? extends Project> projectClass,
+          String description) {
+    this(Config.DEFAULT.withDescription(description)
+            .as(Config.class)
+            .withOperandFor(sortClass, projectClass));
+  }
+
+  @Deprecated // to be removed before 2.0
+  public SortProjectTransposeRule(
+          Class<? extends Sort> sortClass,
+          Class<? extends Project> projectClass,
+          RelBuilderFactory relBuilderFactory, String description) {
+    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
+            .withDescription(description)
+            .as(Config.class)
+            .withOperandFor(sortClass, projectClass));
+  }
+
+  @Deprecated // to be removed before 2.0
   protected SortProjectTransposeRule(RelOptRuleOperand operand,
-      RelBuilderFactory relBuilderFactory, String description) {
-    super(operand, relBuilderFactory, description);
+                                     RelBuilderFactory relBuilderFactory, String description) {
+    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
+            .withDescription(description)
+            .withOperandSupplier(b -> b.exactly(operand))
+            .as(Config.class));
   }
 
   @Deprecated // to be removed before 2.0
   protected SortProjectTransposeRule(RelOptRuleOperand operand) {
-    super(operand);
+    this(Config.DEFAULT
+            .withOperandSupplier(b -> b.exactly(operand))
+            .as(Config.class));
   }
 
   //~ Methods ----------------------------------------------------------------
 
-  public void onMatch(RelOptRuleCall call) {
+  @Override public void onMatch(RelOptRuleCall call) {
     final Sort sort = call.rel(0);
     final Project project = call.rel(1);
     final RelOptCluster cluster = project.getCluster();
@@ -154,6 +162,38 @@ public class SortProjectTransposeRule extends RelOptRule {
       equiv = ImmutableMap.of();
     }
     call.transformTo(newProject, equiv);
+  }
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(Sort.class, LogicalProject.class);
+
+    @Override default SortProjectTransposeRule toRule() {
+      return new SortProjectTransposeRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Sort> sortClass,
+                                  Class<? extends Project> projectClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(sortClass).oneInput(b1 ->
+                      b1.operand(projectClass)
+                              .predicate(p -> !p.containsOver()).anyInputs()))
+              .as(Config.class);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Sort> sortClass,
+                                  Class<? extends Project> projectClass,
+                                  Class<? extends RelNode> inputClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(sortClass).oneInput(b1 ->
+                      b1.operand(projectClass)
+                              .predicate(p -> !p.containsOver())
+                              .oneInput(b2 ->
+                                      b2.operand(inputClass).anyInputs())))
+              .as(Config.class);
+    }
   }
 }
 

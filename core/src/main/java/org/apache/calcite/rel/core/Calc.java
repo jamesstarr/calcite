@@ -29,6 +29,7 @@ import org.apache.calcite.rel.metadata.RelMdUtil;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rex.RexLocalRef;
 import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.rex.RexOver;
 import org.apache.calcite.rex.RexProgram;
 import org.apache.calcite.rex.RexShuttle;
 
@@ -108,6 +109,11 @@ public abstract class Calc extends SingleRel {
       List<RelCollation> collationList) {
     Util.discard(collationList);
     return copy(traitSet, child, program);
+  }
+
+  /** Returns whether this Calc contains any windowed-aggregate functions. */
+  public final boolean containsOver() {
+    return RexOver.containsOver(program);
   }
 
   public boolean isValid(Litmus litmus, Context context) {

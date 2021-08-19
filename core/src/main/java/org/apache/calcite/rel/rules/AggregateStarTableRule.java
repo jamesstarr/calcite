@@ -21,19 +21,17 @@ import org.apache.calcite.materialize.Lattice;
 import org.apache.calcite.materialize.TileKey;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptLattice;
-import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptRuleOperand;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelOptUtil;
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.plan.SubstitutionVisitor;
 import org.apache.calcite.prepare.CalcitePrepareImpl;
 import org.apache.calcite.prepare.RelOptTableImpl;
-import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.core.Project;
-import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.schema.Table;
@@ -56,53 +54,28 @@ import java.util.List;
  *
  * <p>This pattern indicates that an aggregate table may exist. The rule asks
  * the star table for an aggregate table at the required level of aggregation.
+ *
+ * @see AggregateProjectStarTableRule
+ * @see CoreRules#AGGREGATE_STAR_TABLE
+ * @see CoreRules#AGGREGATE_PROJECT_STAR_TABLE
  */
-public class AggregateStarTableRule extends RelOptRule {
-  public static final AggregateStarTableRule INSTANCE =
-      new AggregateStarTableRule(
-          operand(Aggregate.class, null, Aggregate.IS_SIMPLE,
-              some(operand(StarTable.StarTableScan.class, none()))),
-          RelFactories.LOGICAL_BUILDER,
-          "AggregateStarTableRule");
+public class AggregateStarTableRule
+        extends RelRule<AggregateStarTableRule.Config>
+        implements TransformationRule {
 
-  public static final AggregateStarTableRule INSTANCE2 =
-      new AggregateStarTableRule(
-          operand(Aggregate.class, null, Aggregate.IS_SIMPLE,
-              operand(Project.class,
-                  operand(StarTable.StarTableScan.class, none()))),
-          RelFactories.LOGICAL_BUILDER,
-          "AggregateStarTableRule:project") {
-        @Override public void onMatch(RelOptRuleCall call) {
-          final Aggregate aggregate = call.rel(0);
-          final Project project = call.rel(1);
-          final StarTable.StarTableScan scan = call.rel(2);
-          final RelNode rel =
-              AggregateProjectMergeRule.apply(call, aggregate, project);
-          final Aggregate aggregate2;
-          final Project project2;
-          if (rel instanceof Aggregate) {
-            project2 = null;
-            aggregate2 = (Aggregate) rel;
-          } else if (rel instanceof Project) {
-            project2 = (Project) rel;
-            aggregate2 = (Aggregate) project2.getInput();
-          } else {
-            return;
-          }
-          apply(call, project2, aggregate2, scan);
-        }
-      };
+  /** Creates an AggregateStarTableRule. */
+  protected AggregateStarTableRule(Config config) {
+    super(config);
+  }
 
-  /**
-   * Creates an AggregateStarTableRule.
-   *
-   * @param operand           root operand, must not be null
-   * @param description       Description, or null to guess description
-   * @param relBuilderFactory Builder for relational expressions
-   */
+  @Deprecated // to be removed before 2.0
   public AggregateStarTableRule(RelOptRuleOperand operand,
-      RelBuilderFactory relBuilderFactory, String description) {
-    super(operand, relBuilderFactory, description);
+                                RelBuilderFactory relBuilderFactory, String description) {
+    this(Config.DEFAULT
+            .withRelBuilderFactory(relBuilderFactory)
+            .withDescription(description)
+            .withOperandSupplier(b -> b.exactly(operand))
+            .as(Config.class));
   }
 
   @Override public void onMatch(RelOptRuleCall call) {
@@ -259,6 +232,27 @@ public class AggregateStarTableRule extends RelOptRule {
       }
     }
     return -1;
+  }
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(Aggregate.class, StarTable.StarTableScan.class);
+
+    @Override default AggregateStarTableRule toRule() {
+      return new AggregateStarTableRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Aggregate> aggregateClass,
+                                  Class<StarTable.StarTableScan> scanClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(aggregateClass)
+                      .predicate(Aggregate::isSimple)
+                      .oneInput(b1 ->
+                              b1.operand(scanClass).noInputs()))
+              .as(Config.class);
+    }
   }
 }
 

@@ -37,28 +37,9 @@ import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.metadata.ChainedRelMetadataProvider;
 import org.apache.calcite.rel.metadata.DefaultRelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelMetadataProvider;
-import org.apache.calcite.rel.rules.AggregateExpandDistinctAggregatesRule;
-import org.apache.calcite.rel.rules.AggregateReduceFunctionsRule;
-import org.apache.calcite.rel.rules.AggregateStarTableRule;
-import org.apache.calcite.rel.rules.CalcMergeRule;
-import org.apache.calcite.rel.rules.FilterAggregateTransposeRule;
-import org.apache.calcite.rel.rules.FilterCalcMergeRule;
-import org.apache.calcite.rel.rules.FilterJoinRule;
-import org.apache.calcite.rel.rules.FilterProjectTransposeRule;
-import org.apache.calcite.rel.rules.FilterTableScanRule;
-import org.apache.calcite.rel.rules.FilterToCalcRule;
-import org.apache.calcite.rel.rules.JoinAssociateRule;
-import org.apache.calcite.rel.rules.JoinCommuteRule;
+import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.JoinPushThroughJoinRule;
-import org.apache.calcite.rel.rules.JoinToMultiJoinRule;
 import org.apache.calcite.rel.rules.LoptOptimizeJoinRule;
-import org.apache.calcite.rel.rules.MultiJoinOptimizeBushyRule;
-import org.apache.calcite.rel.rules.ProjectCalcMergeRule;
-import org.apache.calcite.rel.rules.ProjectMergeRule;
-import org.apache.calcite.rel.rules.ProjectToCalcRule;
-import org.apache.calcite.rel.rules.SemiJoinRule;
-import org.apache.calcite.rel.rules.SortProjectTransposeRule;
-import org.apache.calcite.rel.rules.SubQueryRemoveRule;
 import org.apache.calcite.rel.rules.TableScanRule;
 import org.apache.calcite.sql2rel.RelDecorrelator;
 import org.apache.calcite.sql2rel.RelFieldTrimmer;
@@ -89,18 +70,18 @@ public class Programs {
           EnumerableRules.ENUMERABLE_CALC_RULE,
           EnumerableRules.ENUMERABLE_FILTER_TO_CALC_RULE,
           EnumerableRules.ENUMERABLE_PROJECT_TO_CALC_RULE,
-          CalcMergeRule.INSTANCE,
-          FilterCalcMergeRule.INSTANCE,
-          ProjectCalcMergeRule.INSTANCE,
-          FilterToCalcRule.INSTANCE,
-          ProjectToCalcRule.INSTANCE,
-          CalcMergeRule.INSTANCE,
+          CoreRules.CALC_MERGE,
+          CoreRules.FILTER_CALC_MERGE,
+          CoreRules.PROJECT_CALC_MERGE,
+          CoreRules.FILTER_TO_CALC,
+          CoreRules.PROJECT_TO_CALC,
+          CoreRules.CALC_MERGE,
 
           // REVIEW jvs 9-Apr-2006: Do we still need these two?  Doesn't the
           // combination of CalcMergeRule, FilterToCalcRule, and
           // ProjectToCalcRule have the same effect?
-          FilterCalcMergeRule.INSTANCE,
-          ProjectCalcMergeRule.INSTANCE);
+          CoreRules.FILTER_CALC_MERGE,
+          CoreRules.PROJECT_CALC_MERGE);
 
   /** Program that converts filters and projects to {@link Calc}s. */
   public static final Program CALC_PROGRAM =
@@ -127,24 +108,24 @@ public class Programs {
           EnumerableRules.ENUMERABLE_TABLE_MODIFICATION_RULE,
           EnumerableRules.ENUMERABLE_VALUES_RULE,
           EnumerableRules.ENUMERABLE_WINDOW_RULE,
-          SemiJoinRule.PROJECT,
-          SemiJoinRule.JOIN,
+          CoreRules.PROJECT_TO_SEMI_JOIN,
+          CoreRules.JOIN_TO_SEMI_JOIN,
           TableScanRule.INSTANCE,
           CalcitePrepareImpl.COMMUTE
-              ? JoinAssociateRule.INSTANCE
-              : ProjectMergeRule.INSTANCE,
-          AggregateStarTableRule.INSTANCE,
-          AggregateStarTableRule.INSTANCE2,
-          FilterTableScanRule.INSTANCE,
-          FilterProjectTransposeRule.INSTANCE,
-          FilterJoinRule.FILTER_ON_JOIN,
-          AggregateExpandDistinctAggregatesRule.INSTANCE,
-          AggregateReduceFunctionsRule.INSTANCE,
-          FilterAggregateTransposeRule.INSTANCE,
-          JoinCommuteRule.INSTANCE,
+              ? CoreRules.JOIN_ASSOCIATE
+              : CoreRules.PROJECT_MERGE,
+          CoreRules.AGGREGATE_STAR_TABLE,
+          CoreRules.AGGREGATE_PROJECT_STAR_TABLE,
+          CoreRules.FILTER_SCAN,
+          CoreRules.FILTER_PROJECT_TRANSPOSE,
+          CoreRules.FILTER_INTO_JOIN,
+          CoreRules.AGGREGATE_EXPAND_DISTINCT_AGGREGATES,
+          CoreRules.AGGREGATE_REDUCE_FUNCTIONS,
+          CoreRules.FILTER_AGGREGATE_TRANSPOSE,
+          CoreRules.JOIN_COMMUTE,
           JoinPushThroughJoinRule.RIGHT,
           JoinPushThroughJoinRule.LEFT,
-          SortProjectTransposeRule.INSTANCE);
+          CoreRules.SORT_PROJECT_TRANSPOSE);
 
   // private constructor for utility class
   private Programs() {}
@@ -236,9 +217,9 @@ public class Programs {
         } else {
           // Create a program that gathers together joins as a MultiJoin.
           final HepProgram hep = new HepProgramBuilder()
-              .addRuleInstance(FilterJoinRule.FILTER_ON_JOIN)
+              .addRuleInstance(CoreRules.FILTER_INTO_JOIN)
               .addMatchOrder(HepMatchOrder.BOTTOM_UP)
-              .addRuleInstance(JoinToMultiJoinRule.INSTANCE)
+              .addRuleInstance(CoreRules.JOIN_TO_MULTI_JOIN)
               .build();
           final Program program1 =
               of(hep, false, DefaultRelMetadataProvider.INSTANCE);
@@ -249,12 +230,12 @@ public class Programs {
           // JoinPushThroughJoinRule, because they cause exhaustive search.
           final List<RelOptRule> list = Lists.newArrayList(rules);
           list.removeAll(
-              ImmutableList.of(JoinCommuteRule.INSTANCE,
-                  JoinAssociateRule.INSTANCE,
+              ImmutableList.of(CoreRules.JOIN_COMMUTE,
+                  CoreRules.JOIN_ASSOCIATE,
                   JoinPushThroughJoinRule.LEFT,
                   JoinPushThroughJoinRule.RIGHT));
           list.add(bushy
-              ? MultiJoinOptimizeBushyRule.INSTANCE
+              ? CoreRules.MULTI_JOIN_OPTIMIZE_BUSHY
               : LoptOptimizeJoinRule.INSTANCE);
           final Program program2 = ofRules(list);
 
@@ -277,9 +258,9 @@ public class Programs {
 
   public static Program subQuery(RelMetadataProvider metadataProvider) {
     return hep(
-        ImmutableList.of((RelOptRule) SubQueryRemoveRule.FILTER,
-            SubQueryRemoveRule.PROJECT,
-            SubQueryRemoveRule.JOIN), true, metadataProvider);
+        ImmutableList.of((RelOptRule) CoreRules.FILTER_SUB_QUERY_TO_CORRELATE,
+            CoreRules.PROJECT_SUB_QUERY_TO_CORRELATE,
+            CoreRules.JOIN_SUB_QUERY_TO_CORRELATE), true, metadataProvider);
   }
 
   public static Program getProgram() {

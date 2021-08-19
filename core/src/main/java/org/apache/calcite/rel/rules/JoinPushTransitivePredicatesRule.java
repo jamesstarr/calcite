@@ -18,8 +18,8 @@ package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.RelOptPredicateList;
-import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.RelFactories;
@@ -38,23 +38,33 @@ import org.apache.calcite.tools.RelBuilderFactory;
  * the predicates,
  * returns them in a {@link org.apache.calcite.plan.RelOptPredicateList}
  * and applies them appropriately.
+ *
+ * @see CoreRules#JOIN_PUSH_TRANSITIVE_PREDICATES
  */
-public class JoinPushTransitivePredicatesRule extends RelOptRule {
-  /** The singleton. */
-  public static final JoinPushTransitivePredicatesRule INSTANCE =
-      new JoinPushTransitivePredicatesRule(Join.class,
-          RelFactories.LOGICAL_BUILDER);
+public class JoinPushTransitivePredicatesRule
+    extends RelRule<JoinPushTransitivePredicatesRule.Config>
+    implements TransformationRule {
 
   /** Creates a JoinPushTransitivePredicatesRule. */
-  public JoinPushTransitivePredicatesRule(Class<? extends Join> clazz,
-      RelBuilderFactory relBuilderFactory) {
-    super(operand(clazz, any()), relBuilderFactory, null);
+  protected JoinPushTransitivePredicatesRule(Config config) {
+    super(config);
   }
 
   @Deprecated // to be removed before 2.0
-  public JoinPushTransitivePredicatesRule(Class<? extends Join> clazz,
+  public JoinPushTransitivePredicatesRule(Class<? extends Join> joinClass,
+      RelBuilderFactory relBuilderFactory) {
+    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
+        .as(Config.class)
+        .withOperandFor(joinClass));
+  }
+
+  @Deprecated // to be removed before 2.0
+  public JoinPushTransitivePredicatesRule(Class<? extends Join> joinClass,
       RelFactories.FilterFactory filterFactory) {
-    this(clazz, RelBuilder.proto(Contexts.of(filterFactory)));
+    this(Config.DEFAULT
+        .withRelBuilderFactory(RelBuilder.proto(Contexts.of(filterFactory)))
+        .as(Config.class)
+        .withOperandFor(joinClass));
   }
 
   @Override public void onMatch(RelOptRuleCall call) {
@@ -91,6 +101,22 @@ public class JoinPushTransitivePredicatesRule extends RelOptRule {
     call.getPlanner().onCopy(join, newRel);
 
     call.transformTo(newRel);
+  }
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+        .withOperandFor(Join.class);
+
+    @Override default JoinPushTransitivePredicatesRule toRule() {
+      return new JoinPushTransitivePredicatesRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Join> joinClass) {
+      return withOperandSupplier(b -> b.operand(joinClass).anyInputs())
+          .as(Config.class);
+    }
   }
 }
 

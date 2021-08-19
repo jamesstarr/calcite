@@ -25,6 +25,7 @@ import org.apache.calcite.plan.hep.HepPlanner;
 import org.apache.calcite.plan.hep.HepProgram;
 import org.apache.calcite.plan.hep.HepProgramBuilder;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.rules.UnionMergeRule;
 import org.apache.calcite.runtime.FlatLists;
 import org.apache.calcite.schema.SchemaPlus;
@@ -954,7 +955,7 @@ public class RelToSqlConverterTest {
 
     final HepProgram program =
         new HepProgramBuilder().addRuleClass(UnionMergeRule.class).build();
-    final RuleSet rules = RuleSets.ofList(UnionMergeRule.INSTANCE);
+    final RuleSet rules = RuleSets.ofList(CoreRules.UNION_MERGE);
     sql(query)
         .optimize(rules, new HepPlanner(program))
         .ok(expected);

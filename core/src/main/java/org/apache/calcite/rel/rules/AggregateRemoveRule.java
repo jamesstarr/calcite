@@ -16,14 +16,16 @@
  */
 package org.apache.calcite.rel.rules;
 
-import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
+import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalAggregate;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.runtime.SqlFunctions;
+import org.apache.calcite.sql.SqlSplittableAggFunction;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 
@@ -31,43 +33,56 @@ import org.apache.calcite.tools.RelBuilderFactory;
  * Planner rule that removes
  * a {@link org.apache.calcite.rel.core.Aggregate}
  * if it computes no aggregate functions
- * (that is, it is implementing {@code SELECT DISTINCT})
+ * (that is, it is implementing {@code SELECT DISTINCT}),
+ * or all the aggregate functions are splittable,
  * and the underlying relational expression is already distinct.
+ *
+ * @see CoreRules#AGGREGATE_REMOVE
  */
-public class AggregateRemoveRule extends RelOptRule {
-  public static final AggregateRemoveRule INSTANCE =
-      new AggregateRemoveRule(LogicalAggregate.class,
-          RelFactories.LOGICAL_BUILDER);
+public class AggregateRemoveRule
+    extends RelRule<AggregateRemoveRule.Config>
+    implements SubstitutionRule {
 
-  //~ Constructors -----------------------------------------------------------
+  /** Creates an AggregateRemoveRule. */
+  protected AggregateRemoveRule(Config config) {
+    super(config);
+  }
 
   @Deprecated // to be removed before 2.0
   public AggregateRemoveRule(Class<? extends Aggregate> aggregateClass) {
     this(aggregateClass, RelFactories.LOGICAL_BUILDER);
   }
 
-  /**
-   * Creates an AggregateRemoveRule.
-   */
+  @Deprecated // to be removed before 2.0
   public AggregateRemoveRule(Class<? extends Aggregate> aggregateClass,
       RelBuilderFactory relBuilderFactory) {
-    // REVIEW jvs 14-Mar-2006: We have to explicitly mention the child here
-    // to make sure the rule re-fires after the child changes (e.g. via
-    // ProjectRemoveRule), since that may change our information
-    // about whether the child is distinct.  If we clean up the inference of
-    // distinct to make it correct up-front, we can get rid of the reference
-    // to the child here.
-    super(
-        operand(aggregateClass,
-            operand(RelNode.class, any())),
-        relBuilderFactory, null);
+    this(Config.DEFAULT
+        .withRelBuilderFactory(relBuilderFactory)
+        .as(Config.class)
+        .withOperandFor(aggregateClass));
+  }
+
+  private static boolean isAggregateSupported(Aggregate aggregate) {
+    if (aggregate.getGroupType() != Aggregate.Group.SIMPLE
+        || aggregate.getGroupCount() == 0) {
+      return false;
+    }
+    // If any aggregate functions do not support splitting, bail out.
+    for (AggregateCall aggregateCall : aggregate.getAggCallList()) {
+      if (aggregateCall.filterArg >= 0
+          || !aggregateCall.getAggregation()
+              .maybeUnwrap(SqlSplittableAggFunction.class).isPresent()) {
+        return false;
+      }
+    }
+    return true;
   }
 
   //~ Methods ----------------------------------------------------------------
 
-  public void onMatch(RelOptRuleCall call) {
+  @Override public void onMatch(RelOptRuleCall call) {
     final Aggregate aggregate = call.rel(0);
-    final RelNode input = call.rel(1);
+    final RelNode input = aggregate.getInput();
     if (!aggregate.getAggCallList().isEmpty() || aggregate.indicator) {
       return;
     }
@@ -89,6 +104,27 @@ public class AggregateRemoveRule extends RelOptRule {
       relBuilder.project(relBuilder.fields(aggregate.getGroupSet().asList()));
     }
     call.transformTo(relBuilder.build());
+  }
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY
+        .withRelBuilderFactory(RelFactories.LOGICAL_BUILDER)
+        .as(Config.class)
+        .withOperandFor(LogicalAggregate.class);
+
+    @Override default AggregateRemoveRule toRule() {
+      return new AggregateRemoveRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Aggregate> aggregateClass) {
+      return withOperandSupplier(b ->
+          b.operand(aggregateClass)
+                  .oneInput(b1 ->
+                          b1.operand(RelNode.class).anyInputs()))
+          .as(Config.class);
+    }
   }
 }
 

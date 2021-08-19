@@ -18,16 +18,14 @@ package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.adapter.enumerable.EnumerableInterpreter;
 import org.apache.calcite.interpreter.Bindables;
-import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptRuleOperand;
 import org.apache.calcite.plan.RelOptTable;
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.core.Filter;
-import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexUtil;
-import org.apache.calcite.runtime.PredicateImpl;
 import org.apache.calcite.schema.FilterableTable;
 import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.calcite.tools.RelBuilderFactory;
@@ -35,7 +33,6 @@ import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.mapping.Mapping;
 import org.apache.calcite.util.mapping.Mappings;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -46,66 +43,64 @@ import com.google.common.collect.ImmutableList;
  * or a {@link org.apache.calcite.schema.ProjectableFilterableTable}
  * to a {@link org.apache.calcite.interpreter.Bindables.BindableTableScan}.
  *
- * <p>The {@link #INTERPRETER} variant allows an intervening
+ * <p>The {@link CoreRules#FILTER_INTERPRETER_SCAN} variant allows an
+ * intervening
  * {@link org.apache.calcite.adapter.enumerable.EnumerableInterpreter}.
  *
  * @see org.apache.calcite.rel.rules.ProjectTableScanRule
+ * @see CoreRules#FILTER_SCAN
+ * @see CoreRules#FILTER_INTERPRETER_SCAN
  */
-public abstract class FilterTableScanRule extends RelOptRule {
-  public static final Predicate<TableScan> PREDICATE =
-      new PredicateImpl<TableScan>() {
-        public boolean test(TableScan scan) {
-          // We can only push filters into a FilterableTable or
-          // ProjectableFilterableTable.
-          final RelOptTable table = scan.getTable();
-          return table.unwrap(FilterableTable.class) != null
-              || table.unwrap(ProjectableFilterableTable.class) != null;
-        }
-      };
+public class FilterTableScanRule
+        extends RelRule<FilterTableScanRule.Config> {
+  @SuppressWarnings("Guava")
+  @Deprecated // to be removed before 2.0
+  public static final com.google.common.base.Predicate<TableScan> PREDICATE =
+          FilterTableScanRule::test;
 
-  /** Rule that matches Filter on TableScan. */
-  public static final FilterTableScanRule INSTANCE =
-      new FilterTableScanRule(
-          operand(Filter.class,
-              operand(TableScan.class, null, PREDICATE, none())),
-          RelFactories.LOGICAL_BUILDER,
-          "FilterTableScanRule") {
-        public void onMatch(RelOptRuleCall call) {
-          final Filter filter = call.rel(0);
-          final TableScan scan = call.rel(1);
-          apply(call, filter, scan);
-        }
-      };
-
-  /** Rule that matches Filter on EnumerableInterpreter on TableScan. */
-  public static final FilterTableScanRule INTERPRETER =
-      new FilterTableScanRule(
-          operand(Filter.class,
-              operand(EnumerableInterpreter.class,
-                  operand(TableScan.class, null, PREDICATE, none()))),
-          RelFactories.LOGICAL_BUILDER,
-          "FilterTableScanRule:interpreter") {
-        public void onMatch(RelOptRuleCall call) {
-          final Filter filter = call.rel(0);
-          final TableScan scan = call.rel(2);
-          apply(call, filter, scan);
-        }
-      };
-
-  //~ Constructors -----------------------------------------------------------
+  /** Creates a FilterTableScanRule. */
+  protected FilterTableScanRule(Config config) {
+    super(config);
+  }
 
   @Deprecated // to be removed before 2.0
   protected FilterTableScanRule(RelOptRuleOperand operand, String description) {
-    this(operand, RelFactories.LOGICAL_BUILDER, description);
+    this(Config.EMPTY.as(Config.class));
+    throw new UnsupportedOperationException();
   }
 
-  /** Creates a FilterTableScanRule. */
+  @Deprecated // to be removed before 2.0
   protected FilterTableScanRule(RelOptRuleOperand operand,
-      RelBuilderFactory relBuilderFactory, String description) {
-    super(operand, relBuilderFactory, description);
+                                RelBuilderFactory relBuilderFactory, String description) {
+    this(Config.EMPTY.as(Config.class));
+    throw new UnsupportedOperationException();
   }
 
   //~ Methods ----------------------------------------------------------------
+
+  public static boolean test(TableScan scan) {
+    // We can only push filters into a FilterableTable or
+    // ProjectableFilterableTable.
+    final RelOptTable table = scan.getTable();
+    return table.unwrap(FilterableTable.class) != null
+            || table.unwrap(ProjectableFilterableTable.class) != null;
+  }
+
+  @Override public void onMatch(RelOptRuleCall call) {
+    if (call.rels.length == 2) {
+      // the ordinary variant
+      final Filter filter = call.rel(0);
+      final TableScan scan = call.rel(1);
+      apply(call, filter, scan);
+    } else if (call.rels.length == 3) {
+      // the variant with intervening EnumerableInterpreter
+      final Filter filter = call.rel(0);
+      final TableScan scan = call.rel(2);
+      apply(call, filter, scan);
+    } else {
+      throw new AssertionError();
+    }
+  }
 
   protected void apply(RelOptRuleCall call, Filter filter, TableScan scan) {
     final ImmutableIntList projects;
@@ -127,6 +122,29 @@ public abstract class FilterTableScanRule extends RelOptRule {
     call.transformTo(
         Bindables.BindableTableScan.create(scan.getCluster(), scan.getTable(),
             filters.build(), projects));
+  }
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY
+          .withOperandSupplier(b0 ->
+                b0.operand(Filter.class).oneInput(b1 ->
+                        b1.operand(TableScan.class)
+          .predicate(FilterTableScanRule::test).noInputs()))
+          .as(Config.class);
+
+    Config INTERPRETER = EMPTY
+          .withOperandSupplier(b0 ->
+                b0.operand(Filter.class).oneInput(b1 ->
+                        b1.operand(EnumerableInterpreter.class).oneInput(b2 ->
+                                b2.operand(TableScan.class)
+          .predicate(FilterTableScanRule::test).noInputs())))
+          .withDescription("FilterTableScanRule:interpreter")
+          .as(Config.class);
+
+    @Override default FilterTableScanRule toRule() {
+      return new FilterTableScanRule(this);
+    }
   }
 }
 

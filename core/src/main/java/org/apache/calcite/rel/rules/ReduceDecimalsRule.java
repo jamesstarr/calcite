@@ -18,9 +18,8 @@ package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.linq4j.Ord;
 import org.apache.calcite.plan.Convention;
-import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
-import org.apache.calcite.rel.core.RelFactories;
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.logical.LogicalCalc;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
@@ -65,29 +64,31 @@ import static org.apache.calcite.util.Static.RESOURCE;
  * <p>While decimals are generally not implemented by the Calcite runtime, the
  * rule is optionally applied, in order to support the situation in which we
  * would like to push down decimal operations to an external database.
+ *
+ * @see CoreRules#CALC_REDUCE_DECIMALS
  */
-public class ReduceDecimalsRule extends RelOptRule {
-  public static final ReduceDecimalsRule INSTANCE =
-      new ReduceDecimalsRule(RelFactories.LOGICAL_BUILDER);
+public class ReduceDecimalsRule
+        extends RelRule<ReduceDecimalsRule.Config>
+        implements TransformationRule {
 
-  //~ Constructors -----------------------------------------------------------
+  /** Creates a ReduceDecimalsRule. */
+  protected ReduceDecimalsRule(Config config) {
+    super(config);
+  }
 
-  /**
-   * Creates a ReduceDecimalsRule.
-   */
+  @Deprecated // to be removed before 2.0
   public ReduceDecimalsRule(RelBuilderFactory relBuilderFactory) {
-    super(operand(LogicalCalc.class, any()), relBuilderFactory, null);
+    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
+            .as(Config.class));
   }
 
   //~ Methods ----------------------------------------------------------------
 
-  // implement RelOptRule
-  public Convention getOutConvention() {
+  @Override public Convention getOutConvention() {
     return Convention.NONE;
   }
 
-  // implement RelOptRule
-  public void onMatch(RelOptRuleCall call) {
+  @Override public void onMatch(RelOptRuleCall call) {
     LogicalCalc calc = call.rel(0);
 
     // Expand decimals in every expression in this program. If no
@@ -145,7 +146,7 @@ public class ReduceDecimalsRule extends RelOptRule {
      * </ol>
      * </ol>
      */
-    public RexNode visitCall(RexCall call) {
+    @Override public RexNode visitCall(RexCall call) {
       RexNode savedResult = lookup(call);
       if (savedResult != null) {
         return savedResult;
@@ -728,7 +729,7 @@ public class ReduceDecimalsRule extends RelOptRule {
     }
 
     // implement RexExpander
-    public RexNode expand(RexCall call) {
+    @Override public RexNode expand(RexCall call) {
       List<RexNode> operands = call.operands;
       assert call.isA(SqlKind.CAST);
       assert operands.size() == 1;
@@ -831,8 +832,7 @@ public class ReduceDecimalsRule extends RelOptRule {
       super(builder);
     }
 
-    // implement RexExpander
-    public RexNode expand(RexCall call) {
+    @Override public RexNode expand(RexCall call) {
       List<RexNode> operands = call.operands;
       assert operands.size() == 2;
       RelDataType typeA = operands.get(0).getType();
@@ -1017,7 +1017,7 @@ public class ReduceDecimalsRule extends RelOptRule {
       super(rexBuilder);
     }
 
-    public RexNode expand(RexCall call) {
+    @Override public RexNode expand(RexCall call) {
       assert call.getOperator() == SqlStdOperatorTable.FLOOR;
       RexNode decValue = call.operands.get(0);
       int scale = decValue.getType().getScale();
@@ -1066,7 +1066,7 @@ public class ReduceDecimalsRule extends RelOptRule {
       super(rexBuilder);
     }
 
-    public RexNode expand(RexCall call) {
+    @Override public RexNode expand(RexCall call) {
       assert call.getOperator() == SqlStdOperatorTable.CEIL;
       RexNode decValue = call.operands.get(0);
       int scale = decValue.getType().getScale();
@@ -1117,7 +1117,7 @@ public class ReduceDecimalsRule extends RelOptRule {
       super(rexBuilder);
     }
 
-    public RexNode expand(RexCall call) {
+    @Override public RexNode expand(RexCall call) {
       RelDataType retType = call.getType();
       int argCount = call.operands.size();
       ImmutableList.Builder<RexNode> opBuilder = ImmutableList.builder();
@@ -1154,11 +1154,11 @@ public class ReduceDecimalsRule extends RelOptRule {
       super(builder);
     }
 
-    public boolean canExpand(RexCall call) {
+    @Override public boolean canExpand(RexCall call) {
       return RexUtil.requiresDecimalExpansion(call, false);
     }
 
-    public RexNode expand(RexCall call) {
+    @Override public RexNode expand(RexCall call) {
       ImmutableList.Builder<RexNode> opBuilder = ImmutableList.builder();
       for (RexNode operand : call.operands) {
         if (SqlTypeUtil.isNumeric(operand.getType())) {
@@ -1189,7 +1189,7 @@ public class ReduceDecimalsRule extends RelOptRule {
       super(builder);
     }
 
-    public RelDataType getArgType(RexCall call, int ordinal) {
+    @Override public RelDataType getArgType(RexCall call, int ordinal) {
       RelDataType type = real8;
       if (call.operands.get(ordinal).getType().isNullable()) {
         type =
@@ -1211,7 +1211,7 @@ public class ReduceDecimalsRule extends RelOptRule {
 
     public abstract RelDataType getArgType(RexCall call, int ordinal);
 
-    public RexNode expand(RexCall call) {
+    @Override public RexNode expand(RexCall call) {
       ImmutableList.Builder<RexNode> opBuilder = ImmutableList.builder();
 
       for (Ord<RexNode> operand : Ord.zip(call.operands)) {
@@ -1249,12 +1249,12 @@ public class ReduceDecimalsRule extends RelOptRule {
       super(builder);
     }
 
-    public boolean canExpand(RexCall call) {
+    @Override public boolean canExpand(RexCall call) {
       return call.isA(SqlKind.REINTERPRET)
           && call.operands.get(0).isA(SqlKind.REINTERPRET);
     }
 
-    public RexNode expand(RexCall call) {
+    @Override public RexNode expand(RexCall call) {
       List<RexNode> operands = call.operands;
       RexCall subCall = (RexCall) operands.get(0);
       RexNode innerValue = subCall.operands.get(0);
@@ -1318,6 +1318,17 @@ public class ReduceDecimalsRule extends RelOptRule {
         return false;
       }
       return true;
+    }
+  }
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY
+            .withOperandSupplier(b -> b.operand(LogicalCalc.class).anyInputs())
+            .as(Config.class);
+
+    @Override default ReduceDecimalsRule toRule() {
+      return new ReduceDecimalsRule(this);
     }
   }
 }

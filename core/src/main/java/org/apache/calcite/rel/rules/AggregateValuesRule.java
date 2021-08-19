@@ -16,11 +16,10 @@
  */
 package org.apache.calcite.rel.rules;
 
-import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
+import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.AggregateCall;
-import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.core.Values;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexLiteral;
@@ -28,7 +27,6 @@ import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.Util;
 
-import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 
 import java.math.BigDecimal;
@@ -52,21 +50,23 @@ import java.util.List;
  * <p>This rule only applies to "grand totals", that is, {@code GROUP BY ()}.
  * Any non-empty {@code GROUP BY} clause will return one row per group key
  * value, and each group will consist of at least one row.
+ *
+ * @see CoreRules#AGGREGATE_VALUES
  */
-public class AggregateValuesRule extends RelOptRule {
-  public static final AggregateValuesRule INSTANCE =
-      new AggregateValuesRule(RelFactories.LOGICAL_BUILDER);
+public class AggregateValuesRule
+        extends RelRule<AggregateValuesRule.Config>
+        implements SubstitutionRule {
 
-  /**
-   * Creates an AggregateValuesRule.
-   *
-   * @param relBuilderFactory Builder for relational expressions
-   */
+  /** Creates an AggregateValuesRule. */
+  protected AggregateValuesRule(Config config) {
+    super(config);
+  }
+
+  @Deprecated // to be removed before 2.0
   public AggregateValuesRule(RelBuilderFactory relBuilderFactory) {
-    super(
-        operand(Aggregate.class, null, Predicates.not(Aggregate.IS_NOT_GRAND_TOTAL),
-            operand(Values.class, null, Values.IS_EMPTY, none())),
-        relBuilderFactory, null);
+    this(Config.DEFAULT
+            .withRelBuilderFactory(relBuilderFactory)
+            .as(Config.class));
   }
 
   @Override public void onMatch(RelOptRuleCall call) {
@@ -104,6 +104,29 @@ public class AggregateValuesRule extends RelOptRule {
 
     // New plan is absolutely better than old plan.
     call.getPlanner().setImportance(aggregate, 0.0);
+  }
+
+  /** Rule configuration. */
+  public interface Config extends RelRule.Config {
+    Config DEFAULT = EMPTY.as(Config.class)
+            .withOperandFor(Aggregate.class, Values.class);
+
+    @Override default AggregateValuesRule toRule() {
+      return new AggregateValuesRule(this);
+    }
+
+    /** Defines an operand tree for the given classes. */
+    default Config withOperandFor(Class<? extends Aggregate> aggregateClass,
+                                  Class<? extends Values> valuesClass) {
+      return withOperandSupplier(b0 ->
+              b0.operand(aggregateClass)
+                      .predicate(aggregate -> aggregate.getGroupCount() == 0)
+                      .oneInput(b1 ->
+                              b1.operand(valuesClass)
+                                      .predicate(values -> values.getTuples().isEmpty())
+                                      .noInputs()))
+              .as(Config.class);
+    }
   }
 }
 
