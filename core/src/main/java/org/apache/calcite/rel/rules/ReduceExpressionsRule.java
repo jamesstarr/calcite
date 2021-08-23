@@ -146,7 +146,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
       final RelOptPredicateList predicates =
           mq.getPulledUpPredicates(filter.getInput());
       if (reduceExpressions(filter, expList, predicates, true,
-              config.matchNullability())) {
+              config.matchNullability(), config.treatDynamicCallsAsConstant())) {
         assert expList.size() == 1;
         newConditionExp = expList.get(0);
         reduced = true;
@@ -298,7 +298,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
       final List<RexNode> expList =
           Lists.newArrayList(project.getProjects());
       if (reduceExpressions(project, expList, predicates, false,
-              config.matchNullability())) {
+              config.matchNullability(), config.treatDynamicCallsAsConstant())) {
         call.transformTo(
             call.builder()
                 .push(project.getInput())
@@ -368,7 +368,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
           leftPredicates.union(rexBuilder,
               rightPredicates.shift(rexBuilder, fieldCount));
       if (!reduceExpressions(join, expList, predicates, true,
-              config.matchNullability())) {
+              config.matchNullability(), config.treatDynamicCallsAsConstant())) {
         return;
       }
       if (RelOptUtil.forceEquiJoin(join)) {
@@ -457,7 +457,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
       }
       final RelOptPredicateList predicates = RelOptPredicateList.EMPTY;
       if (reduceExpressions(calc, expandedExprList, predicates, false,
-                config.matchNullability())) {
+                config.matchNullability(), config.treatDynamicCallsAsConstant())) {
         final RexProgramBuilder builder =
             new RexProgramBuilder(
                 calc.getInput().getRowType(),
@@ -553,13 +553,13 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
    */
   protected static boolean reduceExpressions(RelNode rel, List<RexNode> expList,
       RelOptPredicateList predicates) {
-    return reduceExpressions(rel, expList, predicates, false, true);
+    return reduceExpressions(rel, expList, predicates, false, true, false);
   }
 
   @Deprecated // to be removed before 2.0
   protected static boolean reduceExpressions(RelNode rel, List<RexNode> expList,
       RelOptPredicateList predicates, boolean unknownAsFalse) {
-    return reduceExpressions(rel, expList, predicates, unknownAsFalse, true);
+    return reduceExpressions(rel, expList, predicates, unknownAsFalse, true, false);
   }
 
   /**
@@ -589,12 +589,14 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
    *                         resulting from simplification and expression if the
    *                         expression had nullable type and the literal is
    *                         NOT NULL
+   * @param treatDynamicCallsAsConstant Whether to treat dynamic functions as
+   *                                    constants
    *
    * @return whether reduction found something to change, and succeeded
    */
   protected static boolean reduceExpressions(RelNode rel, List<RexNode> expList,
       RelOptPredicateList predicates, boolean unknownAsFalse,
-      boolean matchNullability) {
+      boolean matchNullability, boolean treatDynamicCallsAsConstant) {
     final RelOptCluster cluster = rel.getCluster();
     final RexBuilder rexBuilder = cluster.getRexBuilder();
     final RexExecutor executor =
@@ -603,8 +605,8 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
         new RexSimplify(rexBuilder, predicates, unknownAsFalse, executor);
 
     // Simplify predicates in place
-    boolean reduced = reduceExpressionsInternal(rel, simplify, expList,
-        predicates);
+    final boolean reduced = reduceExpressionsInternal(rel, simplify,
+        expList, predicates, treatDynamicCallsAsConstant);
 
     final ExprSimplifier simplifier =
         new ExprSimplifier(simplify, matchNullability);
@@ -622,7 +624,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
 
   protected static boolean reduceExpressionsInternal(RelNode rel,
       RexSimplify simplify, List<RexNode> expList,
-      RelOptPredicateList predicates) {
+      RelOptPredicateList predicates, boolean treatDynamicCallsAsConstant) {
     // Replace predicates on CASE to CASE on predicates.
     new CaseShuttle().mutate(expList);
 
@@ -631,7 +633,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
     List<Boolean> addCasts = Lists.newArrayList();
     final List<RexNode> removableCasts = Lists.newArrayList();
     findReducibleExps(rel.getCluster().getTypeFactory(), expList,
-        predicates.constantMap, constExps, addCasts, removableCasts);
+        predicates.constantMap, constExps, addCasts, removableCasts, treatDynamicCallsAsConstant);
     if (constExps.isEmpty() && removableCasts.isEmpty()) {
       return false;
     }
@@ -722,14 +724,16 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
    *                       reduced, whether a cast of the resulting reduced
    *                       expression is potentially necessary
    * @param removableCasts returns the list of cast expressions where the cast
+   * @param treatDynamicCallsAsConstant Whether to treat dynamic functions as
+   *                                    constants
    */
   protected static void findReducibleExps(RelDataTypeFactory typeFactory,
       List<RexNode> exps, ImmutableMap<RexNode, RexNode> constants,
       List<RexNode> constExps, List<Boolean> addCasts,
-      List<RexNode> removableCasts) {
+      List<RexNode> removableCasts, boolean treatDynamicCallsAsConstant) {
     ReducibleExprLocator gardener =
         new ReducibleExprLocator(typeFactory, constants, constExps,
-            addCasts, removableCasts);
+            addCasts, removableCasts, treatDynamicCallsAsConstant);
     for (RexNode exp : exps) {
       gardener.analyze(exp);
     }
@@ -898,6 +902,8 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
 
     private final RelDataTypeFactory typeFactory;
 
+    private final boolean treatDynamicCallsAsConstant;
+
     private final List<Constancy> stack = new ArrayList<>();
 
     private final ImmutableMap<RexNode, RexNode> constants;
@@ -912,7 +918,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
 
     ReducibleExprLocator(RelDataTypeFactory typeFactory,
         ImmutableMap<RexNode, RexNode> constants, List<RexNode> constExprs,
-        List<Boolean> addCasts, List<RexNode> removableCasts) {
+        List<Boolean> addCasts, List<RexNode> removableCasts, boolean treatDynamicCallsAsConstant) {
       // go deep
       super(true);
       this.typeFactory = typeFactory;
@@ -920,6 +926,7 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
       this.constExprs = constExprs;
       this.addCasts = addCasts;
       this.removableCasts = removableCasts;
+      this.treatDynamicCallsAsConstant = treatDynamicCallsAsConstant;
     }
 
     public void analyze(RexNode exp) {
@@ -1032,8 +1039,9 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
       // be non-deterministic.
       if (!call.getOperator().isDeterministic()) {
         callConstancy = Constancy.NON_CONSTANT;
-      } else if (call.getOperator().isDynamicFunction()) {
-        // In some circumstances,, we should avoid caching the plan if we have dynamic functions.
+      } else if (!treatDynamicCallsAsConstant
+          && call.getOperator().isDynamicFunction()) {
+        // In some circumstances, we should avoid caching the plan if we have dynamic functions.
         // If desired, treat this situation the same as a non-deterministic function.
         callConstancy = Constancy.NON_CONSTANT;
       }
@@ -1181,6 +1189,19 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
 
     /** Sets {@link #matchNullability()}. */
     Config withMatchNullability(boolean matchNullability);
+
+    /** Whether to treat
+     * {@link SqlOperator#isDynamicFunction() dynamic functions} as constants.
+     *
+     * <p>When false (the default), calls to dynamic functions (e.g.
+     * {@code USER}) are not reduced. When true, calls to dynamic functions
+     * are treated as a constant, and reduced. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(false)
+    boolean treatDynamicCallsAsConstant();
+
+    /** Sets {@link #treatDynamicCallsAsConstant()}. */
+    Config withTreatDynamicCallsAsConstant(boolean treatDynamicCallsAsConstant);
 
     /**
      * Whether UNKNOWN will be treated as false. Typically used in the context of a filter

@@ -3311,6 +3311,18 @@ LogicalProject(EXPR$0=[$1], EXPR$1=[$2], $2=[$3])
 ]]>
         </Resource>
     </TestCase>
+    <TestCase name="testNoReduceDynamic">
+        <Resource name="sql">
+            <![CDATA[select USER from emp]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(USER=[USER])
+  LogicalProject(DUMMY=[0])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
     <TestCase name="testPushSumConstantThroughUnion">
         <Resource name="sql">
             <![CDATA[select ename, sum(u) from
@@ -6670,6 +6682,25 @@ LogicalAggregate(group=[{0}], EXPR$1=[COUNT($1) FILTER $3], EXPR$2=[COUNT($2) FI
     LogicalProject(DEPTNO=[$2], ENAME=[$0], JOB=[$1], $g=[$3])
       LogicalAggregate(group=[{1, 2, 7}], groups=[[{1, 7}, {2, 7}]], $g=[GROUPING($7, $1, $2)])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testReduceDynamic">
+    <Resource name="sql">
+      <![CDATA[select USER from emp]]>
+    </Resource>
+    <Resource name="planBefore">
+      <![CDATA[
+LogicalProject(USER=[USER])
+  LogicalProject(DUMMY=[0])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+    <Resource name="planAfter">
+      <![CDATA[
+LogicalProject(USER=['happyCalciteUser'])
+  LogicalProject(DUMMY=[0])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
     </TestCase>
