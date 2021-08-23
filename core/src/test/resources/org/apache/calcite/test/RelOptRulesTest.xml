@@ -4623,6 +4623,7 @@ LogicalProject(EXPR$0=[$1], EXPR$1=[$2], $2=[$3])
         <Resource name="planBefore">
             <![CDATA[
 LogicalProject(USER=[USER])
+<<<<<<< HEAD
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -4640,6 +4641,10 @@ LogicalProject(HIREDATE=[$4])
 LogicalProject(HIREDATE=[CAST(2020-12-11):DATE])
   LogicalFilter(condition=[IS NOT DISTINCT FROM($4, 2020-12-11)])
     LogicalTableScan(table=[[scott, EMP]])
+=======
+  LogicalProject(DUMMY=[0])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+>>>>>>> 789ac66d1 ([CALCITE-2736] ReduceExpressionsRule never reduces dynamic expressions but this should be configurable (Yingyu Wang))
 ]]>
         </Resource>
     </TestCase>
@@ -9053,13 +9058,24 @@ LogicalAggregate(group=[{0}], EXPR$1=[COUNT($1) FILTER $3], EXPR$2=[COUNT($2) FI
     <Resource name="planBefore">
       <![CDATA[
 LogicalProject(USER=[USER])
+<<<<<<< HEAD
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+=======
+  LogicalProject(DUMMY=[0])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+>>>>>>> 789ac66d1 ([CALCITE-2736] ReduceExpressionsRule never reduces dynamic expressions but this should be configurable (Yingyu Wang))
 ]]>
     </Resource>
     <Resource name="planAfter">
       <![CDATA[
+<<<<<<< HEAD
 LogicalProject(USER=['happyCalciteUser':VARCHAR(2000)])
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+=======
+LogicalProject(USER=['happyCalciteUser'])
+  LogicalProject(DUMMY=[0])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+>>>>>>> 789ac66d1 ([CALCITE-2736] ReduceExpressionsRule never reduces dynamic expressions but this should be configurable (Yingyu Wang))
 ]]>
         </Resource>
     </TestCase>

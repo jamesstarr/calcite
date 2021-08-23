@@ -3899,8 +3899,8 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
         Function<RelOptCluster, RelOptCluster> clusterFactory) {
 
       super(diffRepos, enableDecorrelate, enableTrim, enableExpand, enableLateDecorrelate,
-        enableLateTypeCoercion, null, null, SqlToRelConverter.Config.DEFAULT,
-        SqlConformanceEnum.DEFAULT, Contexts.empty());
+        enableLateTypeCoercion, null, null, MockRelOptPlanner::new,
+        SqlToRelConverter.Config.DEFAULT, SqlConformanceEnum.DEFAULT, Contexts.empty());
     }
 
     private TesterImplWithNonStandardTypeFactory(DiffRepository diffRepos,
@@ -3910,7 +3910,8 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
         Function<RelOptCluster, RelOptCluster> clusterFactory, Config config,
         SqlConformance conformance, Context context) {
       super(diffRepos, enableDecorrelate, enableTrim, enableExpand, enableLateDecorrelate,
-        enableLateTypeCoercion, catalogReaderFactory, clusterFactory, config, conformance, context);
+        enableLateTypeCoercion, catalogReaderFactory, clusterFactory, MockRelOptPlanner::new,
+        config, conformance, context);
     }
 
     @Override protected RelDataTypeFactory createTypeFactory() {
