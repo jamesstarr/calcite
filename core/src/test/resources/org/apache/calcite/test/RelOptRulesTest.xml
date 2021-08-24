@@ -11927,6 +11927,7 @@ LogicalProject(JOB=[$1])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testAggregateDynamicFunction">
         <Resource name="sql">
             <![CDATA[select hiredate
@@ -12039,6 +12040,8 @@ LogicalProject(EXPR$0=[$0], EXPR$1=[$2])
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> 0689d8785 (Revert "[CALCITE-4634] Improve AggregateProjectPullUpConstantsRule to remove all constant keys")
     <TestCase name="testExpandProjectInNullable">
         <Resource name="sql">
             <![CDATA[with e2 as (
