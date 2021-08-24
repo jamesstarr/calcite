@@ -3652,41 +3652,6 @@ public class RelOptRulesTest extends RelOptTestBase {
     checkPlanning(new HepPlanner(program), sql);
   }
 
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-4634">[CALCITE-4634]
-   * Improve AggregateProjectPullUpConstantsRule to remove all constant keys</a>
-   * Tests with {@code removeAll == TRUE} and no aggregate function
-   * both constant keys can be removed. */
-  @Test public void testAggregateConstantKeyRuleWithRemoveAll3() {
-    final HepProgram program = new HepProgramBuilder()
-            .addRuleInstance(AggregateProjectPullUpConstantsRule.INSTANCE_REMOVE_ALL)
-            .build();
-
-    final String sql = "select 'abc'\n"
-            + "from sales.emp\n"
-            + "group by ('abc', 'def')\n";
-
-    checkPlanning(new HepPlanner(program), sql);
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-4634">[CALCITE-4634]
-   * Improve AggregateProjectPullUpConstantsRule to remove all constant keys</a>
-   * Tests with {@code removeAll == TRUE} and MAX aggregate function:
-   * - both constant keys are removed
-   * - IS NULL attribute is preserved */
-  @Test public void testAggregateConstantKeyRuleWithRemoveAll4() {
-    final HepProgram program = new HepProgramBuilder()
-            .addRuleInstance(AggregateProjectPullUpConstantsRule.INSTANCE_REMOVE_ALL)
-            .build();
-
-    final String sql = "select 'abc', max('def')\n"
-            + "from sales.emp\n"
-            + "group by ('abc', 'def')\n"
-            + "having count('def') > 3 or count('abc') > 5";
-    checkPlanning(new HepPlanner(program), sql);
-  }
-
   @Test public void testReduceExpressionsNot() {
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
