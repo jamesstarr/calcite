@@ -43,7 +43,7 @@ import org.apache.calcite.sql.pretty.SqlPrettyWriter;
 import org.apache.calcite.sql.type.BasicSqlType;
 import org.apache.calcite.sql.type.SqlOperandTypeChecker;
 import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.calcite.sql.util.ChainedSqlOperatorTable;
+import org.apache.calcite.sql.util.SqlOperatorTables;
 import org.apache.calcite.sql.util.SqlString;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.sql.validate.SqlNameMatchers;
@@ -305,7 +305,7 @@ public abstract class SqlOperatorBaseTest {
 
   protected SqlTester oracleTester() {
     return tester.withOperatorTable(
-        ChainedSqlOperatorTable.of(OracleSqlOperatorTable.instance(),
+            SqlOperatorTables.chain(OracleSqlOperatorTable.instance(),
             SqlStdOperatorTable.instance()))
         .withConnectionFactory(
             CalciteAssert.EMPTY_CONNECTION_FACTORY

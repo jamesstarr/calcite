@@ -25,7 +25,7 @@ import org.apache.calcite.runtime.GeoFunctions;
 import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.fun.OracleSqlOperatorTable;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
-import org.apache.calcite.sql.util.ChainedSqlOperatorTable;
+import org.apache.calcite.sql.util.SqlOperatorTables;
 import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 
@@ -94,7 +94,7 @@ public class CalciteConnectionConfigImpl extends ConnectionConfigImpl
     }
     tables.add(SqlStdOperatorTable.instance());
     return operatorTableClass.cast(
-        ChainedSqlOperatorTable.of(
+            SqlOperatorTables.chain(
             tables.toArray(new SqlOperatorTable[tables.size()])));
   }
 
