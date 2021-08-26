@@ -376,10 +376,6 @@ public abstract class SqlUtil {
   public static SqlOperator lookupRoutine(SqlOperatorTable opTab,
       SqlIdentifier funcName, List<RelDataType> argTypes,
       List<String> argNames, SqlFunctionCategory category,
-<<<<<<< HEAD
-      SqlSyntax syntax, SqlKind sqlKind, SqlNameMatcher nameMatcher,
-      boolean coerce) {
-=======
       SqlSyntax syntax, SqlKind sqlKind, SqlNameMatcher nameMatcher) {
     Iterator<SqlOperator> list =
         lookupSubjectRoutines(
@@ -734,7 +730,6 @@ public abstract class SqlUtil {
     return null;
   }
 
->>>>>>> 7bbe08b5b ([CALCITE-2674] Column name with escape character should not be verified as a function when the column name is same with it (Danny Chan))
 =======
 >>>>>>> 8782d9063 ([CALCITE-2928] When resolving user-defined functions (UDFs), use the case-sensitivity of the current connection (Danny Chan))
   public static String deriveAliasFromOrdinal(int ordinal) {

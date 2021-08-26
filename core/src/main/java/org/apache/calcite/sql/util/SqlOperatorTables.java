@@ -40,3 +40,7 @@ public class SqlOperatorTables extends ReflectiveSqlOperatorTable {
     return chain(ImmutableList.copyOf(tables));
   }
 }
+<<<<<<< HEAD
+=======
+// End SqlOperatorTables.java
+>>>>>>> 28b18befd (Partially cherry-pick "[CALCITE-1861] Spatial index, based on Hilbert space-filling curve")

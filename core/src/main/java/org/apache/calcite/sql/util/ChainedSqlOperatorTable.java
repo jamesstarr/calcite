@@ -44,16 +44,19 @@ public class ChainedSqlOperatorTable implements SqlOperatorTable {
   @Deprecated // to be removed before 2.0
   public ChainedSqlOperatorTable(List<SqlOperatorTable> tableList) {
     this(ImmutableList.copyOf(tableList));
+<<<<<<< HEAD
   }
 
   /** Internal constructor; call {@link SqlOperatorTables#chain}. */
   protected ChainedSqlOperatorTable(ImmutableList<SqlOperatorTable> tableList) {
     this.tableList = ImmutableList.copyOf(tableList);
+=======
+>>>>>>> 28b18befd (Partially cherry-pick "[CALCITE-1861] Spatial index, based on Hilbert space-filling curve")
   }
 
-  /** Creates a {@code ChainedSqlOperatorTable}. */
-  public static SqlOperatorTable of(SqlOperatorTable... tables) {
-    return new ChainedSqlOperatorTable(ImmutableList.copyOf(tables));
+  /** Internal constructor; call {@link SqlOperatorTables#chain}. */
+  protected ChainedSqlOperatorTable(ImmutableList<SqlOperatorTable> tableList) {
+    this.tableList = ImmutableList.copyOf(tableList);
   }
 
   //~ Methods ----------------------------------------------------------------
