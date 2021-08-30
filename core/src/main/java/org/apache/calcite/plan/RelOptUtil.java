@@ -906,13 +906,6 @@ public abstract class RelOptUtil {
     }
     if (rename) {
       // Use names and types from castRowType.
-<<<<<<< HEAD
-      return projectFactory.createProject(input, hints, castExps,
-          castRowType.getFieldNames());
-    } else {
-      // Use names from rowType, types from castRowType.
-      return projectFactory.createProject(input, hints, castExps,
-=======
       return projectFactory.createProject(input, castExps,
           castRowType.getFieldNames());
     } else {
@@ -4159,6 +4152,13 @@ public abstract class RelOptUtil {
    * Visitor which builds a bitmap of the inputs used by an expression.
    */
   public static class InputFinder extends RexVisitorImpl<Void> {
+<<<<<<< HEAD
+=======
+    /** @deprecated Being replaced by private field {@link #bitBuilder}.
+     * Use {@link #build}. */
+    @Deprecated // to be removed before 1.25
+    public final ImmutableBitSet.Builder inputBitSet;
+
     private final ImmutableBitSet.Builder bitBuilder;
     private final Set<RelDataTypeField> extraFields;
 
@@ -4166,6 +4166,10 @@ public abstract class RelOptUtil {
         ImmutableBitSet.Builder bitBuilder) {
       super(true);
       this.bitBuilder = bitBuilder;
+<<<<<<< HEAD
+=======
+      this.inputBitSet = bitBuilder; // deprecated field mirrors private field
+>>>>>>> eac65607d (Partially cherry-pick [CALCITE-4038] Refactor RexVisitor)
       this.extraFields = extraFields;
     }
 

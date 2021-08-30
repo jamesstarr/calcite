@@ -51,9 +51,6 @@ import org.apache.calcite.sql.fun.SqlBetweenOperator;
 import org.apache.calcite.sql.fun.SqlCase;
 import org.apache.calcite.sql.fun.SqlDatetimeSubtractionOperator;
 import org.apache.calcite.sql.fun.SqlExtractFunction;
-<<<<<<< HEAD
-import org.apache.calcite.sql.fun.SqlJsonValueFunction;
-=======
 import org.apache.calcite.sql.fun.SqlLibraryOperators;
 import org.apache.calcite.sql.fun.SqlLiteralChainOperator;
 import org.apache.calcite.sql.fun.SqlMapValueConstructor;
@@ -80,7 +77,6 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
->>>>>>> 3c8da1f95 (DX-11147: Fix RexSimplify#processRange cast issue)
 
 /**
  * Standard implementation of {@link SqlRexConvertletTable}.

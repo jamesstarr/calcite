@@ -42,21 +42,6 @@ import java.util.Objects;
  */
 public enum SqlLibrary {
   /** The standard operators. */
-<<<<<<< HEAD
-  STANDARD("", "standard"),
-  /** Geospatial operators. */
-  SPATIAL("s", "spatial"),
-  /** A collection of operators that are in Google BigQuery but not in standard
-   * SQL. */
-  BIG_QUERY("b", "bigquery"),
-  /** A collection of operators that are in MySQL but not in standard SQL. */
-  MYSQL("m", "mysql"),
-  /** A collection of operators that are in Oracle but not in standard SQL. */
-  ORACLE("o", "oracle"),
-  /** A collection of operators that are in PostgreSQL but not in standard
-   * SQL. */
-  POSTGRESQL("p", "postgresql");
-=======
   STANDARD(""),
   /** Geospatial operators. */
   SPATIAL("s"),
@@ -112,4 +97,3 @@ public enum SqlLibrary {
 =======
 
 // End SqlLibrary.java
->>>>>>> 1d2fb0f01 ([CALCITE-3017] Re-organize how we represent built-in operators that are not in the standard operator table)
