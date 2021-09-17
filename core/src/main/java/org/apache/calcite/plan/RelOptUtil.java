@@ -47,6 +47,7 @@ import org.apache.calcite.rel.externalize.RelJsonWriter;
 import org.apache.calcite.rel.externalize.RelWriterImpl;
 import org.apache.calcite.rel.externalize.RelXmlWriter;
 import org.apache.calcite.rel.hint.Hintable;
+import org.apache.calcite.rel.hint.RelHint;
 import org.apache.calcite.rel.logical.LogicalAggregate;
 import org.apache.calcite.rel.logical.LogicalCalc;
 import org.apache.calcite.rel.logical.LogicalFilter;
@@ -612,7 +613,7 @@ public abstract class RelOptUtil {
     if (!outerJoin) {
       final LogicalAggregate aggregate =
           LogicalAggregate.create(ret, ImmutableList.of(), ImmutableBitSet.range(keyCount), null,
-              ImmutableList.of());
+              ImmutableList.<AggregateCall>of());
       return new Exists(aggregate, false, false);
     }
 
@@ -821,14 +822,17 @@ public abstract class RelOptUtil {
     final RexBuilder rexBuilder = rel.getCluster().getRexBuilder();
     List<RexNode> castExps;
     RelNode input;
+    List<RelHint> hints = ImmutableList.of();
     if (rel instanceof Project) {
       // No need to create another project node if the rel
       // is already a project.
+      final Project project = (Project) rel;
       castExps = RexUtil.generateCastExpressions(
           rexBuilder,
           castRowType,
           ((Project) rel).getProjects());
       input = rel.getInput(0);
+      hints = project.getHints();
     } else {
       castExps = RexUtil.generateCastExpressions(
           rexBuilder,
@@ -838,11 +842,11 @@ public abstract class RelOptUtil {
     }
     if (rename) {
       // Use names and types from castRowType.
-      return projectFactory.createProject(input, castExps,
+      return projectFactory.createProject(input, hints, castExps,
           castRowType.getFieldNames());
     } else {
       // Use names from rowType, types from castRowType.
-      return projectFactory.createProject(input, castExps,
+      return projectFactory.createProject(input, hints, castExps,
           rowType.getFieldNames());
     }
   }
@@ -3320,6 +3324,7 @@ public abstract class RelOptUtil {
       exprList.add(rexBuilder.makeInputRef(rel, source));
     }
     return projectFactory.createProject(rel, ImmutableList.of(), exprList, outputNameList);
+<<<<<<< HEAD
   }
 
   /** Predicate for if a {@link Calc} does not contain windowed aggregates. */
@@ -3335,6 +3340,8 @@ public abstract class RelOptUtil {
   /** Predicate for if a {@link Project} does not contain windowed aggregates. */
   public static boolean notContainsWindowedAgg(Project project) {
     return !RexOver.containsOver(project.getProjects(), null);
+=======
+>>>>>>> a532c10f9 ([CALCITE-3730] Add hints to RelBuilder)
   }
 
   /** Policies for handling two- and three-valued boolean logic. */

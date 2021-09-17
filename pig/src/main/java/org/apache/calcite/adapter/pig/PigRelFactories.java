@@ -58,9 +58,8 @@ public class PigRelFactories {
 
     public static final PigTableScanFactory INSTANCE = new PigTableScanFactory();
 
-    @Override public RelNode createScan(RelOptTable.ToRelContext toRelContext,
-        RelOptTable table) {
-      final RelOptCluster cluster = toRelContext.getCluster();
+    @Override public RelNode createScan(RelOptCluster cluster,
+        RelOptTable table, List<RelHint> hints) {
       return new PigTableScan(cluster, cluster.traitSetOf(PigRel.CONVENTION), table);
     }
   }
@@ -92,10 +91,9 @@ public class PigRelFactories {
     public static final PigAggregateFactory INSTANCE = new PigAggregateFactory();
 
     @Override public RelNode createAggregate(RelNode input,
-<<<<<<< HEAD
-        List<RelHint> hints,
-=======
 >>>>>>> a5ef91d2f (Following [CALCITE-2944] remove internal uses of Aggregate.indicator)
+=======
+        List<RelHint> hints,
         ImmutableBitSet groupSet, ImmutableList<ImmutableBitSet> groupSets,
         List<AggregateCall> aggCalls) {
       return new PigAggregate(input.getCluster(), input.getTraitSet(), input,
@@ -115,6 +113,15 @@ public class PigRelFactories {
     @Override public RelNode createJoin(RelNode left, RelNode right, List<RelHint> hints,
         RexNode condition, Set<CorrelationId> variablesSet, JoinRelType joinType,
         boolean semiJoinDone) {
+<<<<<<< HEAD
+=======
+      return new PigJoin(left.getCluster(), left.getTraitSet(), left, right, condition, joinType);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override public RelNode createJoin(RelNode left, RelNode right, RexNode condition,
+        JoinRelType joinType, Set<String> variablesStopped, boolean semiJoinDone) {
+>>>>>>> a532c10f9 ([CALCITE-3730] Add hints to RelBuilder)
       return new PigJoin(left.getCluster(), left.getTraitSet(), left, right, condition, joinType);
     }
   }

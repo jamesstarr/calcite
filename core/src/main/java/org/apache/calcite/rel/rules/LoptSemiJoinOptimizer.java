@@ -37,7 +37,7 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.Util;
 
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
@@ -321,10 +321,9 @@ public class LoptSemiJoinOptimizer {
               multiJoin.getNumFieldsInJoinFactor(factIdx),
               semiJoinCondition);
     }
-<<<<<<< HEAD
-    return LogicalJoin.create(factRel, dimRel, ImmutableList.of(), semiJoinCondition,
-=======
     return LogicalJoin.create(factRel, dimRel, semiJoinCondition,
+=======
+    return LogicalJoin.create(factRel, dimRel, ImmutableList.of(), semiJoinCondition,
         ImmutableSet.of(), JoinRelType.SEMI);
   }
 

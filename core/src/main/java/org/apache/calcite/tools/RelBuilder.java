@@ -56,9 +56,7 @@ import org.apache.calcite.rel.core.Union;
 import org.apache.calcite.rel.core.Values;
 import org.apache.calcite.rel.hint.Hintable;
 import org.apache.calcite.rel.hint.RelHint;
-import org.apache.calcite.rel.logical.LogicalFilter;
-import org.apache.calcite.rel.logical.LogicalProject;
-import org.apache.calcite.rel.metadata.RelColumnMapping;
+>>>>>>> a532c10f9 ([CALCITE-3730] Add hints to RelBuilder)
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -947,7 +945,6 @@ public class RelBuilder {
   public GroupKey groupKey(Iterable<? extends RexNode> nodes, boolean indicator,
       Iterable<? extends Iterable<? extends RexNode>> nodeLists) {
     Aggregate.checkIndicator(indicator);
->>>>>>> a5ef91d2f (Following [CALCITE-2944] remove internal uses of Aggregate.indicator)
     final ImmutableList.Builder<ImmutableList<RexNode>> builder =
         ImmutableList.builder();
     for (Iterable<? extends RexNode> nodeList : nodeLists) {
@@ -1252,7 +1249,7 @@ public class RelBuilder {
     if (relOptTable == null) {
       throw RESOURCE.tableNotFound(String.join(".", names)).ex();
     }
-    final RelNode scan = struct.scanFactory.createScan(cluster, relOptTable);
+    final RelNode scan = struct.scanFactory.createScan(cluster, relOptTable, ImmutableList.of());
     push(scan);
     rename(relOptTable.getRowType().getFieldNames());
 
@@ -1425,101 +1422,7 @@ public class RelBuilder {
   }
 
   /** Creates a {@link Project} of the given list
-   * of expressions, using the given names.
-   *
-   * <p>Names are deduced as follows:
-   * <ul>
-   *   <li>If the length of {@code fieldNames} is greater than the index of
-   *     the current entry in {@code nodes}, and the entry in
-   *     {@code fieldNames} is not null, uses it; otherwise
-   *   <li>If an expression projects an input field,
-   *     or is a cast an input field,
-   *     uses the input field name; otherwise
-   *   <li>If an expression is a call to
-   *     {@link SqlStdOperatorTable#AS}
-   *     (see {@link #alias}), removes the call but uses the intended alias.
-   * </ul>
-   *
-   * <p>After the field names have been inferred, makes the
-   * field names unique by appending numeric suffixes.
-   *
-   * @param nodes Expressions
-   * @param fieldNames Suggested field names
-   * @param force create project even if it is identity
-   */
-  public RelBuilder project(Iterable<? extends RexNode> nodes,
-      Iterable<String> fieldNames, boolean force) {
-    return project_(nodes, fieldNames, ImmutableList.of(), force);
-  }
-
-  /** Creates a {@link Project} of all original fields, plus the given
-   * expressions. */
-  public RelBuilder projectPlus(RexNode... nodes) {
-    return projectPlus(ImmutableList.copyOf(nodes));
-  }
-
-  /** Creates a {@link Project} of all original fields, plus the given list of
-   * expressions. */
-  public RelBuilder projectPlus(Iterable<RexNode> nodes) {
-    final ImmutableList.Builder<RexNode> builder = ImmutableList.builder();
-    return project(builder.addAll(fields()).addAll(nodes).build());
-  }
-
-  /** Creates a {@link Project} of all original fields, except the given
-   * expressions.
-   *
-   * @throws IllegalArgumentException if the given expressions contain duplicates
-   *    or there is an expression that does not match an existing field
-   */
-  public RelBuilder projectExcept(RexNode... expressions) {
-    return projectExcept(ImmutableList.copyOf(expressions));
-  }
-
-  /** Creates a {@link Project} of all original fields, except the given list of
-   * expressions.
-   *
-   * @throws IllegalArgumentException if the given expressions contain duplicates
-   *    or there is an expression that does not match an existing field
-   */
-  public RelBuilder projectExcept(Iterable<RexNode> expressions) {
-    List<RexNode> allExpressions = new ArrayList<>(fields());
-    Set<RexNode> excludeExpressions = new HashSet<>();
-    for (RexNode excludeExp : expressions) {
-      if (!excludeExpressions.add(excludeExp)) {
-        throw new IllegalArgumentException(
-          "Input list contains duplicates. Expression " + excludeExp + " exists multiple times.");
-      }
-      if (!allExpressions.remove(excludeExp)) {
-        throw new IllegalArgumentException("Expression " + excludeExp.toString() + " not found.");
-      }
-    }
-    return this.project(allExpressions);
-  }
-
-  /** Creates a {@link Project} of the given list
-   * of expressions, using the given names.
-   *
-   * <p>Names are deduced as follows:
-   * <ul>
-   *   <li>If the length of {@code fieldNames} is greater than the index of
-   *     the current entry in {@code nodes}, and the entry in
-   *     {@code fieldNames} is not null, uses it; otherwise
-   *   <li>If an expression projects an input field,
-   *     or is a cast an input field,
-   *     uses the input field name; otherwise
-   *   <li>If an expression is a call to
-   *     {@link SqlStdOperatorTable#AS}
-   *     (see {@link #alias}), removes the call but uses the intended alias.
-   * </ul>
-   *
-   * <p>After the field names have been inferred, makes the
-   * field names unique by appending numeric suffixes.
-   *
-   * @param nodes Expressions
-   * @param fieldNames Suggested field names
-   * @param hints Hints
-   * @param force create project even if it is identity
-   */
+>>>>>>> a532c10f9 ([CALCITE-3730] Add hints to RelBuilder)
   private RelBuilder project_(
       Iterable<? extends RexNode> nodes,
       Iterable<String> fieldNames,
@@ -1645,8 +1548,10 @@ public class RelBuilder {
       return this;
     }
     final RelNode project =
-        struct.projectFactory.createProject(frame.rel, ImmutableList.copyOf(exprList),
-          names);
+        struct.projectFactory.createProject(frame.rel,
+            ImmutableList.copyOf(hints),
+            ImmutableList.copyOf(exprList),
+            names);
     stack.pop();
     stack.push(new Frame(project, fields.build()));
     return this;
@@ -1808,7 +1713,7 @@ public class RelBuilder {
         final Project childProject = (Project) frame.rel;
         final Project newInput = childProject.copy(childProject.getTraitSet(),
             childProject.getInput(), childProject.getProjects(), rowType);
-        stack.push(new Frame(newInput, frame.fields));
+        stack.push(new Frame(newInput.attachHints(childProject.getHints()), frame.fields));
       }
     } else {
       project(nodeList, rowType.getFieldNames(), force);
@@ -2007,7 +1912,7 @@ public class RelBuilder {
       assert groupSet.contains(set);
     }
     final RelNode aggregate = struct.aggregateFactory.createAggregate(r,
-        groupSet, groupSets, aggregateCalls);
+        ImmutableList.of(), groupSet, groupSets, aggregateCalls);
 
     // build field list
     final ImmutableList.Builder<Field> fields = ImmutableList.builder();
@@ -2287,7 +2192,7 @@ public class RelBuilder {
       join = struct.correlateFactory.createCorrelate(left.rel, right.rel, id,
           requiredColumns, joinType);
     } else {
-      join = struct.joinFactory.createJoin(left.rel, right.rel, condition,
+      join = struct.joinFactory.createJoin(left.rel, right.rel, ImmutableList.of(), condition,
           variablesSet, joinType, false);
     }
     final ImmutableList.Builder<Field> fields = ImmutableList.builder();
@@ -2374,8 +2279,13 @@ public class RelBuilder {
   public RelBuilder semiJoin(Iterable<? extends RexNode> conditions) {
     final Frame right = stack.pop();
     final RelNode semiJoin =
-        struct.joinFactory.createJoin(peek(), right.rel,
-            and(conditions), ImmutableSet.of(), JoinRelType.SEMI, false);
+        struct.joinFactory.createJoin(peek(),
+            right.rel,
+            ImmutableList.of(),
+            and(conditions),
+            ImmutableSet.of(),
+            JoinRelType.SEMI,
+            false);
     replaceTop(semiJoin);
     return this;
   }
@@ -2711,6 +2621,7 @@ public class RelBuilder {
                     offsetNode, fetchNode);
             replaceTop(
                 struct.projectFactory.createProject(sort,
+                    project.getHints(),
                     project.getProjects(),
                     Pair.right(project.getNamedProjects())));
             return this;
@@ -2870,6 +2781,7 @@ public class RelBuilder {
     return this;
   }
 
+<<<<<<< HEAD
   /** Creates a Pivot.
    *
    * <p>To achieve the same effect as the SQL
@@ -3095,6 +3007,7 @@ public class RelBuilder {
     return this;
   }
 
+=======
   /** Clears the stack.
    *
    * <p>The builder's state is now the same as when it was created. */

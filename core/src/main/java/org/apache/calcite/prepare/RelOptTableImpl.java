@@ -284,7 +284,23 @@ public class RelOptTableImpl extends Prepare.AbstractPreparingTable {
     if (table instanceof TranslatableTable) {
       return ((TranslatableTable) table).toRel(context, this);
     }
-    return LogicalTableScan.create(context.getCluster(), this, context.getTableHints());
+    final RelOptCluster cluster = context.getCluster();
+    if (Hook.ENABLE_BINDABLE.get(false)) {
+      return LogicalTableScan.create(cluster, this, ImmutableList.of());
+    }
+    if (CalcitePrepareImpl.ENABLE_ENUMERABLE
+        && table instanceof QueryableTable) {
+      return EnumerableTableScan.create(cluster, this);
+    }
+    if (table instanceof ScannableTable
+        || table instanceof FilterableTable
+        || table instanceof ProjectableFilterableTable) {
+      return LogicalTableScan.create(cluster, this, ImmutableList.of());
+    }
+    if (CalcitePrepareImpl.ENABLE_ENUMERABLE) {
+      return EnumerableTableScan.create(cluster, this);
+    }
+    throw new AssertionError();
   }
 
   public List<RelCollation> getCollationList() {

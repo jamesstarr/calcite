@@ -1496,7 +1496,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
   private void checkAverageRowSize(RelOptCluster cluster, RelOptTable empTable,
       RelOptTable deptTable) {
     final RexBuilder rexBuilder = cluster.getRexBuilder();
-    final RelMetadataQuery mq = cluster.getMetadataQuery();
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
     final LogicalTableScan empScan = LogicalTableScan.create(cluster, empTable, ImmutableList.of());
 
     Double rowSize = mq.getAverageRowSize(empScan);
@@ -1586,7 +1586,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     // Join
     final LogicalJoin join =
         LogicalJoin.create(empScan, deptProject, ImmutableList.of(),
-            rexBuilder.makeLiteral(true), ImmutableSet.of(),
+            rexBuilder.makeLiteral(true), ImmutableSet.<CorrelationId>of(),
             JoinRelType.INNER);
     rowSize = mq.getAverageRowSize(join);
     columnSizes = mq.getAverageColumnSizes(join);

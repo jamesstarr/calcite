@@ -168,6 +168,13 @@ public final class LogicalJoin extends Join {
         ImmutableList.of());
   }
 
+  /** Creates a LogicalJoin. */
+  public static LogicalJoin create(RelNode left, RelNode right, List<RelHint> hints,
+      RexNode condition, Set<CorrelationId> variablesSet, JoinRelType joinType) {
+    return create(left, right, hints, condition, variablesSet, joinType, false,
+        ImmutableList.of());
+  }
+
   /** Creates a LogicalJoin, flagged with whether it has been translated to a
    * semi-join. */
   public static LogicalJoin create(RelNode left, RelNode right, List<RelHint> hints,
@@ -175,47 +182,16 @@ public final class LogicalJoin extends Join {
       boolean semiJoinDone, ImmutableList<RelDataTypeField> systemFieldList) {
     final RelOptCluster cluster = left.getCluster();
     final RelTraitSet traitSet = cluster.traitSetOf(Convention.NONE);
-    return new LogicalJoin(cluster, traitSet, ImmutableList.of(), left, right, condition,
+    return new LogicalJoin(cluster, traitSet, hints, left, right, condition,
         variablesSet, joinType, semiJoinDone, systemFieldList);
   }
 
-  //~ Methods ----------------------------------------------------------------
-
-  @Override public LogicalJoin copy(RelTraitSet traitSet, RexNode conditionExpr,
-      RelNode left, RelNode right, JoinRelType joinType, boolean semiJoinDone) {
-    assert traitSet.containsIfApplicable(Convention.NONE);
-    return new LogicalJoin(getCluster(),
-        getCluster().traitSetOf(Convention.NONE), hints, left, right, conditionExpr,
-        variablesSet, joinType, semiJoinDone, systemFieldList);
-  }
-
-  @Override public RelNode accept(RelShuttle shuttle) {
-    return shuttle.visit(this);
-  }
-
-  public RelWriter explainTerms(RelWriter pw) {
-    // Don't ever print semiJoinDone=false. This way, we
-    // don't clutter things up in optimizers that don't use semi-joins.
-    return super.explainTerms(pw)
-        .itemIf("semiJoinDone", semiJoinDone, semiJoinDone);
-  }
-
-  @Override public boolean isSemiJoinDone() {
-    return semiJoinDone;
-  }
-
-  public List<RelDataTypeField> getSystemFieldList() {
-    return systemFieldList;
-  }
-<<<<<<< HEAD
-=======
 
   @Override public RelNode attachHints(List<RelHint> hintList) {
     return new LogicalJoin(getCluster(), traitSet, mergeHints(hintList),
         left, right, condition, variablesSet, joinType, semiJoinDone, systemFieldList);
   }
 }
->>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
 
   @Override public RelNode withHints(List<RelHint> hintList) {
     return new LogicalJoin(getCluster(), traitSet, hintList,

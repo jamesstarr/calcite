@@ -205,6 +205,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 import static org.apache.calcite.sql.SqlUtil.stripAs;
 
 /**
@@ -2569,9 +2571,9 @@ public class SqlToRelConverter {
     }
     final RelNode tableRel;
     if (config.isConvertTableAccess()) {
-      tableRel = toRel(table, null);
+      tableRel = toRel(table, ImmutableList.of());
     } else {
-      tableRel = LogicalTableScan.create(cluster, table);
+      tableRel = LogicalTableScan.create(cluster, table, ImmutableList.of());
     }
     bb.setRoot(tableRel, true);
     if (usedDataset[0]) {
@@ -2608,7 +2610,7 @@ public class SqlToRelConverter {
       final RelDataType rowType = table.getRowType(typeFactory);
       RelOptTable relOptTable = RelOptTableImpl.create(null, rowType, table,
           udf.getNameAsId().names);
-      RelNode converted = toRel(relOptTable, null);
+      RelNode converted = toRel(relOptTable, ImmutableList.of());
       bb.setRoot(converted, true);
       return;
     }
@@ -2758,7 +2760,7 @@ public class SqlToRelConverter {
     }
     final Join originalJoin =
         (Join) RelFactories.DEFAULT_JOIN_FACTORY.createJoin(leftRel, rightRel,
-            ImmutableList.of(), joinCond, correlationIdSet, joinType, false);
+            ImmutableList.of(), joinCond, ImmutableSet.<CorrelationId>of(), joinType, false);
 
     RelNode node = RelOptUtil.pushDownJoinConditions(originalJoin, relBuilder);
     // If join conditions are pushed down, update the leaves.
@@ -3764,7 +3766,7 @@ public class SqlToRelConverter {
     return ViewExpanders.toRelContext(viewExpander, cluster, hints);
   }
 
-  public RelNode toRel(final RelOptTable table, final List<RelHint> hints) {
+  public RelNode toRel(final RelOptTable table, @Nonnull final List<RelHint> hints) {
     final RelNode scan = table.toRel(createToRelContext());
 
     final InitializerExpressionFactory ief =

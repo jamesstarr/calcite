@@ -625,7 +625,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
         RexUtil.composeConjunction(relBuilder.getRexBuilder(), conditions,
             false);
     RelNode newJoin = relBuilder.push(leftFrame.r).push(rightFrame.r)
-        .join(rel.getJoinType(), condition, ImmutableSet.<CorrelationId>of()).build();
+        .join(rel.getJoinType(), condition).build();
 
     return register(rel, newJoin, mapOldToNewOutputs, corDefOutputs);
   }
@@ -663,8 +663,10 @@ import org.apache.calcite.tools.RelBuilderFactory;
     final RelNode newJoin = relBuilder
         .push(leftFrame.r)
         .push(rightFrame.r)
-        .join(rel.getJoinType(), decorrelateExpr(currentRel, map, cm, rel.getCondition()),
+        .join(rel.getJoinType(),
+            decorrelateExpr(currentRel, map, cm, rel.getCondition()),
             ImmutableSet.of())
+        .hints(rel.getHints())
         .build();
 
     // Create the mapping between the output of the old correlation rel
