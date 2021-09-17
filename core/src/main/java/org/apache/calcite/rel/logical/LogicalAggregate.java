@@ -27,6 +27,7 @@ import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.hint.RelHint;
 import org.apache.calcite.util.ImmutableBitSet;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,10 +52,32 @@ public final class LogicalAggregate extends Aggregate {
    *
    * @param cluster    Cluster that this relational expression belongs to
    * @param traitSet   Traits
-   * @param input      input relational expression
+   * @param hints      Hints for this relational expression
+   * @param input      Input relational expression
+   * @param groupSet Bit set of grouping fields
+   * @param groupSets Grouping sets, or null to use just {@code groupSet}
+   * @param aggCalls Array of aggregates to compute, not null
+   */
+  public LogicalAggregate(
+      RelOptCluster cluster,
+      RelTraitSet traitSet,
+      List<RelHint> hints,
+      RelNode input,
+      ImmutableBitSet groupSet,
+      List<ImmutableBitSet> groupSets,
+      List<AggregateCall> aggCalls) {
+    super(cluster, traitSet, hints, input, groupSet, groupSets, aggCalls);
+  }
+
+
+  /**
+   * Creates a LogicalAggregate.
+   *
+   * <p>Use {@link #create} unless you know what you're doing.
+   *
    * @param cluster    Cluster that this relational expression belongs to
    * @param traitSet   Traits
-   * @param hints      Hints for this relational expression
+   * @param input      Input relational expression
    * @param groupSet Bit set of grouping fields
    * @param groupSets Grouping sets, or null to use just {@code groupSet}
    * @param aggCalls Array of aggregates to compute, not null
@@ -67,27 +90,10 @@ public final class LogicalAggregate extends Aggregate {
       ImmutableBitSet groupSet,
       List<ImmutableBitSet> groupSets,
       List<AggregateCall> aggCalls) {
-    super(cluster, traitSet, input, groupSet, groupSets, aggCalls);
+    this(cluster, traitSet, new ArrayList<>(), input, groupSet, groupSets, aggCalls);
   }
 
   @Deprecated // to be removed before 2.0
-<<<<<<< HEAD
-  public LogicalAggregate(
-      RelOptCluster cluster,
-      RelTraitSet traitSet,
-      RelNode input,
-      ImmutableBitSet groupSet,
-      List<ImmutableBitSet> groupSets,
-      List<AggregateCall> aggCalls) {
-    this(cluster, traitSet, ImmutableList.of(), input, groupSet, groupSets, aggCalls);
-  }
-
-  @Deprecated // to be removed before 2.0
-  public LogicalAggregate(RelOptCluster cluster, RelTraitSet traitSet,
-      RelNode input, boolean indicator, ImmutableBitSet groupSet,
-      List<ImmutableBitSet> groupSets, List<AggregateCall> aggCalls) {
-    super(cluster, traitSet, ImmutableList.of(), input, groupSet, groupSets, aggCalls);
-=======
   public LogicalAggregate(RelOptCluster cluster, RelTraitSet traitSet,
       RelNode input, boolean indicator, ImmutableBitSet groupSet,
       List<ImmutableBitSet> groupSets, List<AggregateCall> aggCalls) {
@@ -146,13 +152,17 @@ public final class LogicalAggregate extends Aggregate {
       ImmutableBitSet groupSet,
       List<ImmutableBitSet> groupSets, List<AggregateCall> aggCalls) {
     assert traitSet.containsIfApplicable(Convention.NONE);
-    return new LogicalAggregate(getCluster(), traitSet, input,
+    return new LogicalAggregate(getCluster(), traitSet, hints, input,
         groupSet, groupSets, aggCalls);
   }
 
   @Override public RelNode accept(RelShuttle shuttle) {
     return shuttle.visit(this);
   }
+<<<<<<< HEAD
+=======
+
+}
 
   @Override public RelNode withHints(List<RelHint> hintList) {
     return new LogicalAggregate(getCluster(), traitSet, hintList, input,
