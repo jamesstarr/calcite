@@ -28,10 +28,6 @@ import org.apache.calcite.rex.RexShuttle;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.Litmus;
 
-<<<<<<< HEAD
-import com.google.common.collect.ImmutableList;
-
-=======
 import java.util.List;
 import java.util.Objects;
 
@@ -78,7 +74,6 @@ public abstract class Snapshot extends SingleRel  {
 
   public abstract Snapshot copy(RelTraitSet traitSet, RelNode input, RexNode period);
 
->>>>>>> d39266f6b (DX-37039: getChildExps has been removed from RelNode)
   @Override public RelNode accept(RexShuttle shuttle) {
     RexNode condition = shuttle.apply(this.period);
     if (this.period == condition) {
