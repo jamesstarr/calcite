@@ -114,6 +114,15 @@ public final class LogicalJoin extends Join {
   }
 
   @Deprecated // to be removed before 2.0
+  public LogicalJoin(RelOptCluster cluster, RelTraitSet traitSet,
+      RelNode left, RelNode right, RexNode condition, Set<CorrelationId> variablesSet,
+      JoinRelType joinType, boolean semiJoinDone,
+      ImmutableList<RelDataTypeField> systemFieldList) {
+    this(cluster, traitSet, new ArrayList<>(), left, right, condition,
+        variablesSet, joinType, semiJoinDone, systemFieldList);
+  }
+
+  @Deprecated // to be removed before 2.0
   public LogicalJoin(RelOptCluster cluster, RelTraitSet traitSet, RelNode left,
       RelNode right, RexNode condition, JoinRelType joinType,
       Set<String> variablesStopped, boolean semiJoinDone,
@@ -166,7 +175,7 @@ public final class LogicalJoin extends Join {
       boolean semiJoinDone, ImmutableList<RelDataTypeField> systemFieldList) {
     final RelOptCluster cluster = left.getCluster();
     final RelTraitSet traitSet = cluster.traitSetOf(Convention.NONE);
-    return new LogicalJoin(cluster, traitSet, hints, left, right, condition,
+    return new LogicalJoin(cluster, traitSet, ImmutableList.of(), left, right, condition,
         variablesSet, joinType, semiJoinDone, systemFieldList);
   }
 
@@ -198,6 +207,15 @@ public final class LogicalJoin extends Join {
   public List<RelDataTypeField> getSystemFieldList() {
     return systemFieldList;
   }
+<<<<<<< HEAD
+=======
+
+  @Override public RelNode attachHints(List<RelHint> hintList) {
+    return new LogicalJoin(getCluster(), traitSet, mergeHints(hintList),
+        left, right, condition, variablesSet, joinType, semiJoinDone, systemFieldList);
+  }
+}
+>>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
 
   @Override public RelNode withHints(List<RelHint> hintList) {
     return new LogicalJoin(getCluster(), traitSet, hintList,

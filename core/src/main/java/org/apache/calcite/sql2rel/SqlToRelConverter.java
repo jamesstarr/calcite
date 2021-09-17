@@ -48,8 +48,8 @@ import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.core.Sample;
 import org.apache.calcite.rel.core.Sort;
-import org.apache.calcite.rel.hint.HintStrategyTable;
-import org.apache.calcite.rel.hint.Hintable;
+import org.apache.calcite.rel.core.Uncollect;
+import org.apache.calcite.rel.core.Values;
 import org.apache.calcite.rel.hint.RelHint;
 import org.apache.calcite.rel.logical.LogicalAggregate;
 import org.apache.calcite.rel.logical.LogicalCorrelate;
@@ -2567,12 +2567,12 @@ public class SqlToRelConverter {
               extendedColumns);
       table = table.extend(extendedFields);
     }
-    // Review Danny 2020-01-13: hacky to construct a new table scan
-    // in order to apply the hint strategies.
-    final List<RelHint> hints = hintStrategies.apply(
-        SqlUtil.getRelHint(hintStrategies, tableHints),
-        LogicalTableScan.create(cluster, table, ImmutableList.of()));
-    final RelNode tableRel = toRel(table, hints);
+    final RelNode tableRel;
+    if (config.isConvertTableAccess()) {
+      tableRel = toRel(table, null);
+    } else {
+      tableRel = LogicalTableScan.create(cluster, table);
+    }
     bb.setRoot(tableRel, true);
     if (usedDataset[0]) {
       bb.setDataset(datasetName);
@@ -2608,7 +2608,7 @@ public class SqlToRelConverter {
       final RelDataType rowType = table.getRowType(typeFactory);
       RelOptTable relOptTable = RelOptTableImpl.create(null, rowType, table,
           udf.getNameAsId().names);
-      RelNode converted = toRel(relOptTable, ImmutableList.of());
+      RelNode converted = toRel(relOptTable, null);
       bb.setRoot(converted, true);
       return;
     }
@@ -3764,8 +3764,8 @@ public class SqlToRelConverter {
     return ViewExpanders.toRelContext(viewExpander, cluster, hints);
   }
 
-  public RelNode toRel(final RelOptTable table, @Nonnull final List<RelHint> hints) {
-    final RelNode scan = table.toRel(createToRelContext(hints));
+  public RelNode toRel(final RelOptTable table, final List<RelHint> hints) {
+    final RelNode scan = table.toRel(createToRelContext());
 
     final InitializerExpressionFactory ief =
         first(table.unwrap(InitializerExpressionFactory.class),

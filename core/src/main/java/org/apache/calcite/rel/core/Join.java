@@ -41,6 +41,7 @@ import org.apache.calcite.util.Util;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -68,8 +69,83 @@ public abstract class Join extends BiRel implements Hintable {
   protected final JoinRelType joinType;
 
   protected final JoinInfo joinInfo;
+<<<<<<< HEAD
+=======
+
+  //~ Constructors -----------------------------------------------------------
+
+  // Next time we need to change the constructor of Join, let's change the
+  // "Set<String> variablesStopped" parameter to
+  // "Set<CorrelationId> variablesSet". At that point we would deprecate
+  // RelNode.getVariablesStopped().
+
+  /**
+   * Creates a Join.
+   *
+   * <p>Note: We plan to change the {@code variablesStopped} parameter to
+   * {@code Set&lt;CorrelationId&gt; variablesSet}
+   * {@link org.apache.calcite.util.Bug#upgrade(String) before version 2.0},
+   * because {@link #getVariablesSet()}
+   * is preferred over {@link #getVariablesStopped()}.
+   * This constructor is not deprecated, for now, because maintaining overloaded
+   * constructors in multiple sub-classes would be onerous.
+   *
+   * @param cluster          Cluster
+   * @param traitSet         Trait set
+   * @param hints            Hints
+   * @param left             Left input
+   * @param right            Right input
+   * @param condition        Join condition
+   * @param joinType         Join type
+   * @param variablesSet     Set variables that are set by the
+   *                         LHS and used by the RHS and are not available to
+   *                         nodes above this Join in the tree
+   */
+  protected Join(
+      RelOptCluster cluster,
+      RelTraitSet traitSet,
+      List<RelHint> hints,
+      RelNode left,
+      RelNode right,
+      RexNode condition,
+      Set<CorrelationId> variablesSet,
+      JoinRelType joinType) {
+    super(cluster, traitSet, left, right);
+    this.condition = Preconditions.checkNotNull(condition);
+    this.variablesSet = ImmutableSet.copyOf(variablesSet);
+>>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
     this.joinType = Preconditions.checkNotNull(joinType);
     this.joinInfo = JoinInfo.of(left, right, condition);
+    this.hints = ImmutableList.copyOf(hints);
+  }
+
+  /**
+   * Creates a Join.
+   *
+   * <p>Note: We plan to change the {@code variablesStopped} parameter to
+   * {@code Set&lt;CorrelationId&gt; variablesSet}
+   * {@link org.apache.calcite.util.Bug#upgrade(String) before version 2.0},
+   * because {@link #getVariablesSet()}
+   * is preferred over {@link #getVariablesStopped()}.
+   * This constructor is not deprecated, for now, because maintaining overloaded
+   * constructors in multiple sub-classes would be onerous.
+   *
+   * @param cluster          Cluster
+   * @param traitSet         Trait set
+   * @param left             Left input
+   * @param right            Right input
+   * @param condition        Join condition
+   * @param joinType         Join type
+   * @param variablesSet     Set variables that are set by the
+   *                         LHS and used by the RHS and are not available to
+   *                         nodes above this Join in the tree
+   */
+  protected Join(
+      RelOptCluster cluster, RelTraitSet traitSet, RelNode left,
+      RelNode right, RexNode condition, Set<CorrelationId> variablesSet,
+      JoinRelType joinType) {
+    this(cluster, traitSet, new ArrayList<>(), left, right,
+        condition, variablesSet, joinType);
   }
 
   @Deprecated // to be removed before 2.0
@@ -276,5 +352,9 @@ public abstract class Join extends BiRel implements Hintable {
     return hints;
 =======
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+  }
+
+  @Override public ImmutableList<RelHint> getHints() {
+    return hints;
   }
 }

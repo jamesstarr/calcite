@@ -1952,9 +1952,6 @@ class RelOptRulesTest extends RelOptTestBase {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-570">[CALCITE-570]
    * ReduceExpressionsRule throws "duplicate key" exception</a>. */
-<<<<<<< HEAD
-  @Test void testReduceConstantsDup() throws Exception {
-=======
   @Test public void testReduceConstantsDup() throws Exception {
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
@@ -2759,7 +2756,6 @@ class RelOptRulesTest extends RelOptTestBase {
   @Test void testLeftEmptyFullJoin() {
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
->>>>>>> 8ef4c666a (DX-37375 Move ReduceExpressionsRule to Config API)
         .addRuleInstance(PruneEmptyRules.SORT_INSTANCE)
         .build();
 

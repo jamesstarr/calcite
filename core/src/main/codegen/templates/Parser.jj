@@ -1347,7 +1347,10 @@ SqlSelect SqlSelect() :
     final SqlNodeList groupBy;
     final SqlNode having;
     final SqlNodeList windowDecls;
+<<<<<<< HEAD
     final SqlNode qualify;
+=======
+>>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
     final List<SqlNode> hints = new ArrayList<SqlNode>();
     final Span s;
 }
@@ -1399,7 +1402,11 @@ SqlSelect SqlSelect() :
     {
         return new SqlSelect(s.end(this), keywordList,
             new SqlNodeList(selectList, Span.of(selectList).pos()),
+<<<<<<< HEAD
             fromClause, where, groupBy, having, windowDecls, qualify, null, null, null,
+=======
+            fromClause, where, groupBy, having, windowDecls, null, null, null,
+>>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
             new SqlNodeList(hints, getPos()));
     }
 }

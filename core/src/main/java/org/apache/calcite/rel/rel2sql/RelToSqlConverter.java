@@ -346,11 +346,6 @@ public class RelToSqlConverter extends SqlImplementor
     for (RexNode ref : e.getChildExps()) {
       SqlNode sqlExpr = builder.context.toSql(null,
           simplifyDatetimePlus(ref, e.getCluster().getRexBuilder()));
-<<<<<<< HEAD
-      if (SqlUtil.isNullLiteral(sqlExpr, false)) {
-        sqlExpr = castNullType(sqlExpr, e.getRowType().getFieldList().get(selectList.size()));
-      }
-=======
       addSelect(selectList, sqlExpr, e.getRowType());
     }
 
@@ -617,8 +612,12 @@ public class RelToSqlConverter extends SqlImplementor
         list.add(
             new SqlSelect(POS, null,
                 new SqlNodeList(values2, POS),
+<<<<<<< HEAD
                 getDual(), null, null,
                 null, null, null, null, null, null, null));
+=======
+                new SqlIdentifier("DUAL", POS), null, null,
+                null, null, null, null, null, null));
       }
       if (list.isEmpty()) {
         // In this case we need to construct the following query:

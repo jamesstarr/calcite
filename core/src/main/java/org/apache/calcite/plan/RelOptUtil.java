@@ -46,9 +46,7 @@ import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.externalize.RelJsonWriter;
 import org.apache.calcite.rel.externalize.RelWriterImpl;
 import org.apache.calcite.rel.externalize.RelXmlWriter;
-import org.apache.calcite.rel.hint.HintStrategyTable;
 import org.apache.calcite.rel.hint.Hintable;
-import org.apache.calcite.rel.hint.RelHint;
 import org.apache.calcite.rel.logical.LogicalAggregate;
 import org.apache.calcite.rel.logical.LogicalCalc;
 import org.apache.calcite.rel.logical.LogicalFilter;
@@ -396,105 +394,19 @@ public abstract class RelOptUtil {
    * Copy the {@link org.apache.calcite.rel.hint.RelHint}s from {@code originalRel}
    * to {@code newRel} if both of them are {@link Hintable}.
    *
-   * <p>The two relational expressions are assumed as semantically equivalent,
-   * that means the hints should be attached to the relational expression
-   * that expects to have them.
-   *
-   * <p>Try to propagate the hints to the first relational expression that matches,
-   * this is needed because many planner rules would generate a sub-tree whose
-   * root rel type is different with the original matched rel.
-   *
-   * <p>For the worst case, there is no relational expression that can apply these hints,
-   * and the whole sub-tree would be visited. We add a protection here:
-   * if the visiting depth is over than 3, just returns, because there are rare cases
-   * the new created sub-tree has layers bigger than that.
-   *
-   * <p>This is a best effort, we do not know exactly how the nodes are transformed
-   * in all kinds of planner rules, so for some complex relational expressions,
-   * the hints would very probably lost.
-   *
-   * <p>This function is experimental and would change without any notes.
-   *
-   * @param originalRel Original relational expression
-   * @param equiv       New equivalent relational expression
-   * @return A copy of {@code newRel} with attached qualified hints from {@code originalRel},
-   * or {@code newRel} directly if one of them are not {@link Hintable}
-   */
-  public static RelNode propagateRelHints(RelNode originalRel, RelNode equiv) {
-    if (!(originalRel instanceof Hintable)
-            || ((Hintable) originalRel).getHints().isEmpty()) {
-      return equiv;
-    }
-    final RelShuttle shuttle =
-            new SubTreeHintPropagateShuttle(
-                    originalRel.getCluster().getHintStrategies(),
-                    ((Hintable) originalRel).getHints());
-    return equiv.accept(shuttle);
-  }
-
-  /**
-   * Copy the {@link org.apache.calcite.rel.hint.RelHint}s from {@code originalRel}
-   * to {@code newRel} if both of them are {@link Hintable}.
-   *
-   * <p>The hints would be attached directly(e.g. without any filtering).
+   * <p>The hints are also filtered by the specified hint strategies.
    *
    * @param originalRel Original relational expression
    * @param newRel      New relational expression
-   * @return A copy of {@code newRel} with attached hints from {@code originalRel},
-   * or {@code newRel} directly if one of them are not {@link Hintable}
+   * @return A copy of {@code newRel} with hints of {@code originalRel}, or {@code newRel}
+   * directly if one of them are not {@link Hintable}
    */
   public static RelNode copyRelHints(RelNode originalRel, RelNode newRel) {
-    return copyRelHints(originalRel, newRel, false);
-  }
-
-  /**
-   * Copy the {@link org.apache.calcite.rel.hint.RelHint}s from {@code originalRel}
-   * to {@code newRel} if both of them are {@link Hintable}.
-   *
-   * <p>The hints would be filtered by the specified hint strategies
-   * if {@code filterHints} is true.
-   *
-   * @param originalRel Original relational expression
-   * @param newRel      New relational expression
-   * @param filterHints Flag saying if to filter out unqualified hints for {@code newRel}
-   * @return A copy of {@code newRel} with attached hints from {@code originalRel},
-   * or {@code newRel} directly if one of them are not {@link Hintable}
-   */
-  public static RelNode copyRelHints(RelNode originalRel, RelNode newRel, boolean filterHints) {
-    if (originalRel instanceof Hintable
-        && newRel instanceof Hintable
-        && ((Hintable) originalRel).getHints().size() > 0) {
-      final List<RelHint> hints = ((Hintable) originalRel).getHints();
-      if (filterHints) {
-        HintStrategyTable hintStrategies = originalRel.getCluster().getHintStrategies();
-        return ((Hintable) newRel).attachHints(hintStrategies.apply(hints, newRel));
-      } else {
-        // Keep all the hints if filterHints is false for 2 reasons:
-        // 1. Keep sync with the hints propagation logic,
-        // see RelHintPropagateShuttle for details.
-        // 2. We may re-propagate these hints when decorrelating a query.
-        return ((Hintable) newRel).attachHints(hints);
-      }
-    }
     return newRel;
   }
 
   /**
-   * Propagates the relational expression hints from root node to leaf node.
-   *
-   * @param rel   The relational expression
-   * @param reset Flag saying if to reset the existing hints before the propagation
-   * @return New relational expression with hints propagated
-   */
-  public static RelNode propagateRelHints(RelNode rel, boolean reset) {
-    if (reset) {
-      rel = rel.accept(new ResetHintsShuttle());
-    }
-    final RelShuttle shuttle = new RelHintPropagateShuttle(rel.getCluster().getHintStrategies());
-    return rel.accept(shuttle);
-  }
-
-  /**
+>>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
    * Returns a permutation describing where output fields come from. In
    * the returned map, value of {@code map.getTargetOpt(i)} is {@code n} if
    * field {@code i} projects input field {@code n} or applies a cast on
@@ -900,7 +812,6 @@ public abstract class RelOptUtil {
           castRowType,
           ((Project) rel).getProjects());
       input = rel.getInput(0);
->>>>>>> 19da4a82d (DX-36428 [CALCITE-3608] Promote RelOptUtil.createCastRel to not create new projection if the input rel is already a project)
     } else {
       castExps = RexUtil.generateCastExpressions(
           rexBuilder,

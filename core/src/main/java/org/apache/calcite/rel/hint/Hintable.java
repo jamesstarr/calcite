@@ -28,13 +28,15 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * {@link Hintable} is a kind of {@link RelNode} that can attach {@link RelHint}s.
+ * Base class for relational expressions with {@link RelHint}s.
  *
- * <p>This interface is experimental, {@link RelNode}s that implement it
- * have a constructor parameter named "hints" used to construct relational expression
- * with given hints.
+ * <p>Relational expressions that can attach hints should implement
+ * this interface.
  *
- * <p>This interface is experimental, currently, we make some {@link RelNode}s
+ * <p>This interface is experimental, currently, we make
+ * {@link org.apache.calcite.rel.core.Project}
+ * {@link org.apache.calcite.rel.core.Join}
+ * {@link org.apache.calcite.rel.core.TableScan}
  * implement this interface and add an argument named "hints" to construct these
  * relational expressions if hints are attached.
  *
@@ -49,45 +51,47 @@ import java.util.Set;
 public interface Hintable {
 
   /**
-   * Attaches list of hints to this relational expression.
+   * Attach list of hints to this relational expression, should be overridden by
+   * every logical node that supports hint. This method is only for
+   * internal use during sql-to-rel conversion.
    *
-   * <p>This method is only for internal use during sql-to-rel conversion.
-   *
-   * <p>Sub-class should return a new copy of the relational expression.
-   *
-   * <p>The default implementation merges the given hints with existing ones,
-   * put them in one list and eliminate the duplicates; then
-   * returns a new copy of this relational expression with the merged hints.
+   * <p>The sub-class should return a new copy of the relational expression. We make
+   * the default implementation return the relational expression directly only
+   * because not every kind of relational expression supports hints.
    *
    * @param hintList The hints to attach to this relational expression
    * @return Relational expression with the hints {@code hintList} attached
    */
   default RelNode attachHints(List<RelHint> hintList) {
-    Objects.requireNonNull(hintList);
-    final Set<RelHint> hints = new LinkedHashSet<>(getHints());
-    hints.addAll(hintList);
-    return withHints(new ArrayList<>(hints));
-  }
-
-  /**
-   * Returns a new relational expression with the specified hints {@code hintList}.
-   *
-   * <p>This method should be overridden by every logical node that supports hint.
-   * It is only for internal use during decorrelation.
-   *
-   * <p>Sub-class should return a new copy of the relational expression.
-   *
-   * <p>The default implementation returns the relational expression directly
-   * only because not every kind of relational expression supports hints.
-   *
-   * @return Relational expression with set up hints
-   */
-  default RelNode withHints(List<RelHint> hintList) {
+>>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
     return (RelNode) this;
   }
 
   /**
+<<<<<<< HEAD
    * Returns the hints of this relational expressions as an immutable list.
    */
   ImmutableList<RelHint> getHints();
 }
+=======
+   * @return The hints list of this relational expressions
+   */
+  ImmutableList<RelHint> getHints();
+
+  /**
+   * Merge this relation expression's hints with the given hint list.
+   *
+   * <p>The default behavior is to put them in one list and eliminate the duplicates.
+   *
+   * @param hintList Hints to be merged
+   * @return A merged hint list
+   */
+  default List<RelHint> mergeHints(List<RelHint> hintList) {
+    Objects.requireNonNull(hintList);
+    final Set<RelHint> hints = new LinkedHashSet<>(getHints());
+    hints.addAll(hintList);
+    return new ArrayList<>(hints);
+  }
+}
+
+// End Hintable.java

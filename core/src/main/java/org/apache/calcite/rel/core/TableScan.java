@@ -72,10 +72,9 @@ public abstract class TableScan
     this.hints = ImmutableList.copyOf(hints);
   }
 
-  @Deprecated // to be removed before 2.0
   protected TableScan(RelOptCluster cluster, RelTraitSet traitSet,
       RelOptTable table) {
-    this(cluster, traitSet, ImmutableList.of(), table);
+    this(cluster, traitSet, new ArrayList<>(), table);
   }
 
   /**
@@ -174,6 +173,14 @@ public abstract class TableScan
   @Override public RelNode accept(RelShuttle shuttle) {
     return shuttle.visit(this);
   }
+<<<<<<< HEAD
+=======
+
+  @Override public ImmutableList<RelHint> getHints() {
+    return hints;
+  }
+}
+>>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
 
   @Override public ImmutableList<RelHint> getHints() {
     return hints;

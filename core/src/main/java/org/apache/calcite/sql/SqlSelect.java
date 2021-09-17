@@ -50,6 +50,10 @@ public class SqlSelect extends SqlCall {
   SqlNodeList orderBy;
   SqlNode offset;
   SqlNode fetch;
+<<<<<<< HEAD
+=======
+  SqlMatchRecognize matchRecognize;
+>>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
   SqlNodeList hints;
 
   //~ Constructors -----------------------------------------------------------
@@ -228,6 +232,19 @@ public class SqlSelect extends SqlCall {
 
   public void setFetch(SqlNode fetch) {
     this.fetch = fetch;
+  }
+
+  public void setHints(SqlNodeList hints) {
+    this.hints = hints;
+  }
+
+  public SqlNodeList getHints() {
+    return this.hints;
+  }
+
+  public boolean hasHints() {
+    // The hints may be passed as null explicitly.
+    return this.hints != null && this.hints.size() > 0;
   }
 
   public void setHints(SqlNodeList hints) {

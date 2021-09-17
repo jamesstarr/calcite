@@ -29,6 +29,7 @@ import org.apache.calcite.schema.Table;
 
 import com.google.common.collect.ImmutableList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -70,10 +71,14 @@ public final class LogicalTableScan extends TableScan {
     super(cluster, traitSet, hints, table);
   }
 
-  @Deprecated // to be removed before 2.0
+  /**
+   * Creates a LogicalTableScan.
+   *
+   * <p>Use {@link #create} unless you know what you're doing.
+   */
   public LogicalTableScan(RelOptCluster cluster, RelTraitSet traitSet,
       RelOptTable table) {
-    this(cluster, traitSet, ImmutableList.of(), table);
+    this(cluster, traitSet, new ArrayList<>(), table);
   }
 
   @Deprecated // to be removed before 2.0
@@ -105,18 +110,29 @@ public final class LogicalTableScan extends TableScan {
     final Table table = relOptTable.unwrap(Table.class);
     final RelTraitSet traitSet =
         cluster.traitSetOf(Convention.NONE)
-            .replaceIfs(RelCollationTraitDef.INSTANCE, () -> {
-
-              if (table != null) {
-                return table.getStatistic().getCollations();
-              }
-              return ImmutableList.of();
-
-            });
+            .replaceIfs(RelCollationTraitDef.INSTANCE,
+                new Supplier<List<RelCollation>>() {
+                  public List<RelCollation> get() {
+                    if (table != null) {
+                      return table.getStatistic().getCollations();
+                    }
+                    return ImmutableList.of();
+                  }
+                });
     return new LogicalTableScan(cluster, traitSet, hints, relOptTable);
   }
 
-  @Override public RelNode withHints(List<RelHint> hintList) {
-    return new LogicalTableScan(getCluster(), traitSet, hintList, table);
+  /** Creates a LogicalTableScan.
+   *
+   * @param cluster Cluster
+   * @param relOptTable Table
+   */
+  public static LogicalTableScan create(RelOptCluster cluster,
+      final RelOptTable relOptTable) {
+    return create(cluster, relOptTable, new ArrayList<>());
+  }
+
+  @Override public RelNode attachHints(List<RelHint> hintList) {
+    return new LogicalTableScan(getCluster(), traitSet, mergeHints(hintList), table);
   }
 }

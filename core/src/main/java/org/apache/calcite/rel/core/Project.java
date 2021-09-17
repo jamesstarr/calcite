@@ -47,6 +47,7 @@ import org.apache.calcite.util.mapping.Mappings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,23 +73,9 @@ public abstract class Project extends SingleRel implements Hintable {
    * @param cluster  Cluster that this relational expression belongs to
    * @param traits   Traits of this relational expression
    * @param hints    Hints of this relation expression
-   * @param input    Input relational expression
-   * @param projects List of expressions for the input columns
-   * @param rowType  Output row type
-   */
-  protected Project(
-      RelOptCluster cluster,
-      RelTraitSet traits,
-      List<RelHint> hints,
-      RelNode input,
-      List<? extends RexNode> projects,
-      RelDataType rowType) {
-    super(cluster, traits, input);
-    assert rowType != null;
-    this.exps = ImmutableList.copyOf(projects);
-    this.hints = ImmutableList.copyOf(hints);
-    this.rowType = rowType;
-    assert isValid(Litmus.THROW, null);
+  protected Project(RelOptCluster cluster, RelTraitSet traits,
+      RelNode input, List<? extends RexNode> projects, RelDataType rowType) {
+    this(cluster, traits, new ArrayList<>(), input, projects, rowType);
   }
 
   @Deprecated // to be removed before 2.0

@@ -70,11 +70,10 @@ public class SqlSelectOperator extends SqlOperator {
         (SqlNodeList) operands[4],
         operands[5],
         (SqlNodeList) operands[6],
-        operands[7],
-        (SqlNodeList) operands[8],
+        (SqlNodeList) operands[7],
+        operands[8],
         operands[9],
-        operands[10],
-        (SqlNodeList) operands[11]);
+        null);
   }
 
   /**
@@ -151,7 +150,7 @@ public class SqlSelectOperator extends SqlOperator {
 
     if (select.hasHints()) {
       writer.sep("/*+");
-      select.hints.unparse(writer, 0, 0);
+      select.hints.unparse(writer, leftPrec, rightPrec);
       writer.print("*/");
       writer.newlineAndIndent();
     }

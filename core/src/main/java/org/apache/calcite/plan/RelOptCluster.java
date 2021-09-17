@@ -205,7 +205,7 @@ public class RelOptCluster {
   }
 
   /**
-   * Sets up the hint propagation strategies to be used during rule planning.
+   * Setup the hint propagation strategies to be used during rule planning.
    *
    * <p>Use <code>RelOptNode.getCluster().getHintStrategies()</code> to fetch
    * the hint strategies.
@@ -216,9 +216,10 @@ public class RelOptCluster {
    *
    * @param hintStrategies The specified hint strategies to override the default one(empty)
    */
-  public void setHintStrategies(HintStrategyTable hintStrategies) {
+  public RelOptCluster withHintStrategies(HintStrategyTable hintStrategies) {
     Objects.requireNonNull(hintStrategies);
     this.hintStrategies = hintStrategies;
+    return this;
   }
 
   /**

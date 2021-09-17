@@ -496,25 +496,7 @@ public abstract class SqlImplementor {
       node = as(node, "t");
     }
     return new SqlSelect(POS, SqlNodeList.EMPTY, null, node, null, null, null,
-        null, null, SqlNodeList.EMPTY, null, null, null);
-  }
-
-  /** Returns whether we need to add an alias if this node is to be the FROM
-   * clause of a SELECT. */
-  private boolean requiresAlias(SqlNode node) {
-    if (!dialect.requiresAliasForFromItems()) {
-      return false;
-    }
-    switch (node.getKind()) {
-    case IDENTIFIER:
-      return !dialect.hasImplicitTableAlias();
-    case AS:
-    case JOIN:
-    case EXPLICIT_TABLE:
-      return false;
-    default:
-      return true;
-    }
+        SqlNodeList.EMPTY, null, null, null, null);
   }
 
   /** Context for translating a {@link RexNode} expression (within a
