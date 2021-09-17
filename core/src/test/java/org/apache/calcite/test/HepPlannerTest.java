@@ -27,7 +27,6 @@ import org.apache.calcite.rel.logical.LogicalIntersect;
 import org.apache.calcite.rel.logical.LogicalUnion;
 import org.apache.calcite.rel.rules.CoerceInputsRule;
 import org.apache.calcite.rel.rules.CoreRules;
-import org.apache.calcite.rel.rules.ReduceExpressionsRule;
 
 import org.junit.Test;
 
@@ -384,8 +383,8 @@ public class HepPlannerTest extends RelOptTestBase {
   private long checkRuleApplyCount(HepMatchOrder matchOrder) {
     final HepProgramBuilder programBuilder = HepProgram.builder();
     programBuilder.addMatchOrder(matchOrder);
-    programBuilder.addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE);
-    programBuilder.addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE);
+    programBuilder.addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS);
+    programBuilder.addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
 
     final HepTestListener listener = new HepTestListener(0);
     HepPlanner planner = new HepPlanner(programBuilder.build());

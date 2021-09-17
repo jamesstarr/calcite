@@ -159,7 +159,7 @@ public class RelOptRulesTest extends RelOptTestBase {
     HepProgramBuilder builder = new HepProgramBuilder();
     builder.addRuleClass(ReduceExpressionsRule.class);
     HepPlanner hepPlanner = new HepPlanner(builder.build());
-    hepPlanner.addRule(ReduceExpressionsRule.FILTER_INSTANCE);
+    hepPlanner.addRule(CoreRules.FILTER_REDUCE_EXPRESSIONS);
 
     final String sql = "select *\n"
         + "from (select (case when sal > 1000 then null else false end) as caseCol from emp)\n"
@@ -174,7 +174,7 @@ public class RelOptRulesTest extends RelOptTestBase {
     HepProgramBuilder builder = new HepProgramBuilder();
     builder.addRuleClass(ReduceExpressionsRule.class);
     HepPlanner hepPlanner = new HepPlanner(builder.build());
-    hepPlanner.addRule(ReduceExpressionsRule.FILTER_INSTANCE);
+    hepPlanner.addRule(CoreRules.FILTER_REDUCE_EXPRESSIONS);
 
     final String sql = "select sal\n"
             + "from emp\n"
@@ -190,7 +190,7 @@ public class RelOptRulesTest extends RelOptTestBase {
    * sub-query</a>. */
   @Test public void testReduceCompositeInSubQuery() {
     final HepProgram hepProgram = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .build();
     final String sql = "select *\n"
         + "from emp\n"
@@ -212,7 +212,7 @@ public class RelOptRulesTest extends RelOptTestBase {
     HepProgramBuilder builder = new HepProgramBuilder();
     builder.addRuleClass(ReduceExpressionsRule.class);
     HepPlanner hepPlanner = new HepPlanner(builder.build());
-    hepPlanner.addRule(ReduceExpressionsRule.FILTER_INSTANCE);
+    hepPlanner.addRule(CoreRules.FILTER_REDUCE_EXPRESSIONS);
 
     final String sql = "select sal\n"
         + "from emp\n"
@@ -225,7 +225,7 @@ public class RelOptRulesTest extends RelOptTestBase {
     HepProgramBuilder builder = new HepProgramBuilder();
     builder.addRuleClass(ReduceExpressionsRule.class);
     HepPlanner hepPlanner = new HepPlanner(builder.build());
-    hepPlanner.addRule(ReduceExpressionsRule.PROJECT_INSTANCE);
+    hepPlanner.addRule(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
 
     final String sql = "SELECT CASE WHEN 1=2 "
         + "THEN cast((values(1)) as integer) "
@@ -237,7 +237,7 @@ public class RelOptRulesTest extends RelOptTestBase {
     HepProgramBuilder builder = new HepProgramBuilder();
     builder.addRuleClass(ReduceExpressionsRule.class);
     HepPlanner hepPlanner = new HepPlanner(builder.build());
-    hepPlanner.addRule(ReduceExpressionsRule.PROJECT_INSTANCE);
+    hepPlanner.addRule(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
 
     final String sql = "SELECT deptno, ename, CASE WHEN 1=2 "
         + "THEN substring(ename, 1, cast(2 as int)) ELSE NULL end from emp"
@@ -668,7 +668,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.PROJECT_TO_SEMI_JOIN)
         .build();
     final HepProgram program = HepProgram.builder()
-        .addRuleInstance(ReduceExpressionsRule.JOIN_INSTANCE)
+        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
     final String sql = "select e1.sal\n"
         + "from (select * from emp where deptno = 200) as e1\n"
@@ -1303,7 +1303,7 @@ public class RelOptRulesTest extends RelOptTestBase {
     sql(sql).with(program).checkUnchanged();
   }
 
-  /** Tests {@link UnionMergeRule#INTERSECT_INSTANCE}, which merges 2
+  /** Tests {@link CoreRules#INTERSECT_MERGE}, which merges 2
    * {@link Intersect} operators into a single {@code Intersect} with 3
    * inputs. */
   @Test public void testMergeIntersect() throws Exception {
@@ -1352,7 +1352,7 @@ public class RelOptRulesTest extends RelOptTestBase {
     sql(sql).with(program).check();
   }
 
-  /** Tests {@link UnionMergeRule#MINUS_INSTANCE}, which merges 2
+  /** Tests {@link CoreRules#MINUS_MERGE}, which merges 2
    * {@link Minus} operators into a single {@code Minus} with 3
    * inputs. */
   @Test public void testMergeMinus() throws Exception {
@@ -1368,7 +1368,7 @@ public class RelOptRulesTest extends RelOptTestBase {
     sql(sql).with(program).check();
   }
 
-  /** Tests {@link UnionMergeRule#MINUS_INSTANCE}
+  /** Tests {@link CoreRules#MINUS_MERGE}
    * does not merge {@code Minus(a, Minus(b, c))}
    * into {@code Minus(a, b, c)}, which would be incorrect. */
   @Test public void testMergeMinusRightDeep() throws Exception {
@@ -1546,9 +1546,9 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testReduceConstants() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.JOIN_INSTANCE)
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
 
     // NOTE jvs 27-May-2006: among other things, this verifies
@@ -1573,9 +1573,9 @@ public class RelOptRulesTest extends RelOptTestBase {
    * ReduceExpressionsRule throws "duplicate key" exception</a>. */
   @Test public void testReduceConstantsDup() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.JOIN_INSTANCE)
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
 
     final String sql = "select d.deptno"
@@ -1589,9 +1589,9 @@ public class RelOptRulesTest extends RelOptTestBase {
    * Improve how ReduceExpressionsRule handles duplicate constraints</a>. */
   @Test public void testReduceConstantsDup2() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.JOIN_INSTANCE)
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
 
     final String sql = "select *\n"
@@ -1603,9 +1603,9 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testPullNull() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.JOIN_INSTANCE)
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
 
     final String sql = "select *\n"
@@ -1617,9 +1617,9 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testReduceConstants2() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.JOIN_INSTANCE)
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
 
     checkPlanning(program,
@@ -1631,9 +1631,9 @@ public class RelOptRulesTest extends RelOptTestBase {
    * Match nullability when reducing expressions in a Project</a>. */
   @Test public void testReduceConstantsProjectNullable() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.JOIN_INSTANCE)
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
 
     checkPlanning(program, "select mgr from emp where mgr=10");
@@ -1642,9 +1642,9 @@ public class RelOptRulesTest extends RelOptTestBase {
   // see HIVE-9645
   @Test public void testReduceConstantsNullEqualsOne() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.JOIN_INSTANCE)
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
 
     checkPlanning(program,
@@ -1654,9 +1654,9 @@ public class RelOptRulesTest extends RelOptTestBase {
   // see HIVE-9644
   @Test public void testReduceConstantsCaseEquals() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.JOIN_INSTANCE)
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
 
     // Equivalent to 'deptno = 10'
@@ -1670,9 +1670,9 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testReduceConstantsCaseEquals2() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.JOIN_INSTANCE)
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
 
     // Equivalent to 'case when deptno = 20 then false
@@ -1688,9 +1688,9 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testReduceConstantsCaseEquals3() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.JOIN_INSTANCE)
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
 
     // Equivalent to 'deptno = 30 or deptno = 10'
@@ -1707,8 +1707,8 @@ public class RelOptRulesTest extends RelOptTestBase {
   @Test
   public void testSkipReduceConstantsCaseEquals() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .addRuleInstance(CoreRules.FILTER_INTO_JOIN_DUMB)
         .build();
 
@@ -1719,7 +1719,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testReduceConstantsEliminatesFilter() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .build();
 
     // WHERE NULL is the same as WHERE FALSE, so get empty result
@@ -1732,7 +1732,7 @@ public class RelOptRulesTest extends RelOptTestBase {
    * Duplicate null predicates cause NullPointerException in RexUtil</a>. */
   @Test public void testReduceConstantsNull() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .build();
     final String sql = "select * from (\n"
         + "  select *\n"
@@ -1749,7 +1749,7 @@ public class RelOptRulesTest extends RelOptTestBase {
    * ReduceExpressionsRule requires planner to have an Executor</a>. */
   @Test public void testReduceConstantsRequiresExecutor() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .build();
 
     // Remove the executor
@@ -1764,7 +1764,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testAlreadyFalseEliminatesFilter() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .build();
 
     checkPlanning(program,
@@ -1773,7 +1773,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testReduceConstantsCalc() throws Exception {
     // This reduction does not work using
-    // ReduceExpressionsRule.PROJECT_INSTANCE or FILTER_INSTANCE,
+    // CoreRules.PROJECT_REDUCE_EXPRESSIONS or FILTER_INSTANCE,
     // only CALC_INSTANCE, because we need to pull the project expression
     //    upper('table')
     // into the condition
@@ -1786,13 +1786,13 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.FILTER_TO_CALC)
         .addRuleInstance(CoreRules.PROJECT_TO_CALC)
         .addRuleInstance(CoreRules.CALC_MERGE)
-        .addRuleInstance(ReduceExpressionsRule.CALC_INSTANCE)
+        .addRuleInstance(CoreRules.CALC_REDUCE_EXPRESSIONS)
 
             // the hard part is done... a few more rule calls to clean up
         .addRuleInstance(PruneEmptyRules.UNION_INSTANCE)
         .addRuleInstance(CoreRules.PROJECT_TO_CALC)
         .addRuleInstance(CoreRules.CALC_MERGE)
-        .addRuleInstance(ReduceExpressionsRule.CALC_INSTANCE)
+        .addRuleInstance(CoreRules.CALC_REDUCE_EXPRESSIONS)
         .build();
 
     // Result should be same as typing
@@ -1988,7 +1988,7 @@ public class RelOptRulesTest extends RelOptTestBase {
    * Handling errors during constant reduction</a>. */
   @Test public void testReduceCase() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE)
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
         .build();
 
     final String sql = "select\n"
@@ -2016,7 +2016,7 @@ public class RelOptRulesTest extends RelOptTestBase {
   /** Test case that reduces a nullable expression to a NOT NULL literal that
    *  is cast to nullable. */
   @Test public void testReduceNullableToNotNull() throws Exception {
-    checkReduceNullableToNotNull(ReduceExpressionsRule.PROJECT_INSTANCE);
+    checkReduceNullableToNotNull(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
   }
 
   /** Test case that reduces a nullable expression to a NOT NULL literal. */
@@ -2030,7 +2030,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testReduceConstantsIsNull() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .build();
 
     checkPlanning(program,
@@ -2039,7 +2039,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testReduceConstantsIsNotNull() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .build();
 
     final String sql = "select empno from emp\n"
@@ -2049,7 +2049,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testReduceConstantsNegated() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .build();
 
     final String sql = "select empno from emp\n"
@@ -2059,7 +2059,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testReduceConstantsNegatedInverted() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .build();
 
     final String sql = "select empno from emp where empno>10 and empno<=10";
@@ -2196,7 +2196,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testEmptyJoin() {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .addRuleInstance(PruneEmptyRules.PROJECT_INSTANCE)
         .addRuleInstance(PruneEmptyRules.JOIN_LEFT_INSTANCE)
         .addRuleInstance(PruneEmptyRules.JOIN_RIGHT_INSTANCE)
@@ -2211,7 +2211,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testEmptyJoinLeft() {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .addRuleInstance(PruneEmptyRules.PROJECT_INSTANCE)
         .addRuleInstance(PruneEmptyRules.JOIN_LEFT_INSTANCE)
         .addRuleInstance(PruneEmptyRules.JOIN_RIGHT_INSTANCE)
@@ -2226,7 +2226,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testEmptyJoinRight() {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .addRuleInstance(PruneEmptyRules.PROJECT_INSTANCE)
         .addRuleInstance(PruneEmptyRules.JOIN_LEFT_INSTANCE)
         .addRuleInstance(PruneEmptyRules.JOIN_RIGHT_INSTANCE)
@@ -2242,7 +2242,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testEmptySort() {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .addRuleInstance(PruneEmptyRules.SORT_INSTANCE)
         .build();
 
@@ -2261,11 +2261,11 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testEmptyAggregate() {
     HepProgram preProgram = HepProgram.builder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .addRuleInstance(PruneEmptyRules.PROJECT_INSTANCE)
         .build();
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .addRuleInstance(PruneEmptyRules.PROJECT_INSTANCE)
         .addRuleInstance(PruneEmptyRules.AGGREGATE_INSTANCE)
         .addRuleInstance(PruneEmptyRules.PROJECT_INSTANCE)
@@ -2277,7 +2277,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testEmptyAggregateEmptyKey() {
     HepProgram preProgram = HepProgram.builder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .addRuleInstance(PruneEmptyRules.PROJECT_INSTANCE)
         .build();
     HepProgram program = new HepProgramBuilder()
@@ -2292,7 +2292,7 @@ public class RelOptRulesTest extends RelOptTestBase {
   @Test public void testEmptyAggregateEmptyKeyWithAggregateValuesRule() {
     HepProgram preProgram = HepProgram
         .builder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .addRuleInstance(PruneEmptyRules.PROJECT_INSTANCE)
         .build();
     HepProgram program = new HepProgramBuilder()
@@ -2305,9 +2305,9 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testReduceCasts() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.JOIN_INSTANCE)
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
 
     // The resulting plan should have no cast expressions
@@ -2322,9 +2322,9 @@ public class RelOptRulesTest extends RelOptTestBase {
    * constant because the result depends upon the current date. */
   @Test public void testReduceCastTimeUnchanged() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.JOIN_INSTANCE)
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
 
     sql("select cast(time '12:34:56' as timestamp) from emp as e")
@@ -2334,7 +2334,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testReduceCastAndConsts() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .build();
 
     // Make sure constant expressions inside the cast can be reduced
@@ -2358,7 +2358,7 @@ public class RelOptRulesTest extends RelOptTestBase {
             // reduce redundant casts in merged calc.
         .addRuleInstance(CoreRules.PROJECT_TO_CALC)
         .addRuleInstance(CoreRules.CALC_MERGE)
-        .addRuleInstance(ReduceExpressionsRule.CALC_INSTANCE)
+        .addRuleInstance(CoreRules.CALC_REDUCE_EXPRESSIONS)
         .build();
     checkPlanning(program,
         "insert into sales.depts(name) "
@@ -2837,11 +2837,11 @@ public class RelOptRulesTest extends RelOptTestBase {
   }
 
   @Test public void testPullConstantIntoProject() throws Exception {
-    transitiveInference(ReduceExpressionsRule.PROJECT_INSTANCE);
+    transitiveInference(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
   }
 
   @Test public void testPullConstantIntoFilter() throws Exception {
-    transitiveInference(ReduceExpressionsRule.FILTER_INSTANCE);
+    transitiveInference(CoreRules.FILTER_REDUCE_EXPRESSIONS);
   }
 
   /** Test case for
@@ -2849,32 +2849,32 @@ public class RelOptRulesTest extends RelOptTestBase {
    * Remove predicates from Filter if they can be proved to be always true or
    * false</a>. */
   @Test public void testSimplifyFilter() throws Exception {
-    transitiveInference(ReduceExpressionsRule.FILTER_INSTANCE);
+    transitiveInference(CoreRules.FILTER_REDUCE_EXPRESSIONS);
   }
 
   @Test public void testPullConstantIntoJoin() throws Exception {
-    transitiveInference(ReduceExpressionsRule.JOIN_INSTANCE);
+    transitiveInference(CoreRules.JOIN_REDUCE_EXPRESSIONS);
   }
 
   @Test public void testPullConstantIntoJoin2() throws Exception {
-    transitiveInference(ReduceExpressionsRule.JOIN_INSTANCE,
-        ReduceExpressionsRule.PROJECT_INSTANCE,
+    transitiveInference(CoreRules.JOIN_REDUCE_EXPRESSIONS,
+        CoreRules.PROJECT_REDUCE_EXPRESSIONS,
         CoreRules.FILTER_PROJECT_TRANSPOSE);
   }
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2110">[CALCITE-2110]
    * ArrayIndexOutOfBoundsException in RexSimplify when using
-   * ReduceExpressionsRule.JOIN_INSTANCE</a>. */
+   * CoreRules.JOIN_REDUCE_EXPRESSIONS</a>. */
   @Test public void testCorrelationScalarAggAndFilter() {
     final String sql = "SELECT e1.empno\n"
         + "FROM emp e1, dept d1 where e1.deptno = d1.deptno\n"
         + "and e1.deptno < 10 and d1.deptno < 15\n"
         + "and e1.sal > (select avg(sal) from emp e2 where e1.empno = e2.empno)";
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
-        .addRuleInstance(ReduceExpressionsRule.JOIN_INSTANCE)
+        .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
         .build();
     sql(sql)
         .withDecorrelation(true)
@@ -3031,12 +3031,12 @@ public class RelOptRulesTest extends RelOptTestBase {
     HepProgramBuilder preBuilder = new HepProgramBuilder();
     preBuilder.addRuleClass(ProjectToWindowRule.class);
     preBuilder.addRuleInstance(CoreRules.PROJECT_TO_LOGICAL_PROJECT_AND_WINDOW);
-    preBuilder.addRuleInstance(ReduceExpressionsRule.CALC_INSTANCE);
+    preBuilder.addRuleInstance(CoreRules.CALC_REDUCE_EXPRESSIONS);
 
     HepProgramBuilder builder = new HepProgramBuilder();
-    builder.addRuleInstance(ReduceExpressionsRule.PROJECT_INSTANCE);
-    builder.addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE);
-    builder.addRuleInstance(ReduceExpressionsRule.CALC_INSTANCE);
+    builder.addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
+    builder.addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS);
+    builder.addRuleInstance(CoreRules.CALC_REDUCE_EXPRESSIONS);
     HepPlanner hepPlanner = new HepPlanner(builder.build());
 
     final String sql = "select empno, deptno, w_count from (\n"
@@ -3522,7 +3522,7 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testReduceExpressionsNot() {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(ReduceExpressionsRule.FILTER_INSTANCE)
+        .addRuleInstance(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .build();
     checkPlanUnchanged(new HepPlanner(program),
         "select * from (values (false),(true)) as q (col1) where not(col1)");
@@ -4144,7 +4144,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         + "EXTRACT(SECOND FROM d) "
         + "FROM (VALUES({ts '2018-01-01 01:23:45'})) tbl(d)";
 
-    checkPlanning(ReduceExpressionsRule.PROJECT_INSTANCE, sql);
+    checkPlanning(CoreRules.PROJECT_REDUCE_EXPRESSIONS, sql);
   }
 
   @Test public void testRangeSimplification() {
@@ -4153,7 +4153,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         + "WHERE d = '2018-01-01 01:23:45' AND d > '2018-01-01 01:23:45'";
 
 
-    checkPlanning(ReduceExpressionsRule.FILTER_INSTANCE, sql);
+    checkPlanning(CoreRules.FILTER_REDUCE_EXPRESSIONS, sql);
   }
 
   @Test public void testPushProjectWithIsNotDistinctFromPastJoin() {
