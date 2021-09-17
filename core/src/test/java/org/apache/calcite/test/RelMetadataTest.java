@@ -1168,7 +1168,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
   private void checkCollation(RelOptCluster cluster, RelOptTable empTable,
       RelOptTable deptTable) {
     final RexBuilder rexBuilder = cluster.getRexBuilder();
-    final LogicalTableScan empScan = LogicalTableScan.create(cluster, empTable);
+    final LogicalTableScan empScan = LogicalTableScan.create(cluster, empTable, ImmutableList.of());
 
     List<RelCollation> collations =
         RelMdCollation.table(empScan.getTable());
@@ -1200,11 +1200,13 @@ public class RelMetadataTest extends SqlToRelTestBase {
     assertThat(collations.get(0).getFieldCollations().get(1).getFieldIndex(),
         equalTo(0));
 
-    final LogicalProject project = LogicalProject.create(empSort, projects,
+    final LogicalProject project = LogicalProject.create(empSort,
+        ImmutableList.of(),
+        projects,
         ImmutableList.of("a", "b", "c", "d"));
 
     final LogicalTableScan deptScan =
-        LogicalTableScan.create(cluster, deptTable);
+        LogicalTableScan.create(cluster, deptTable, ImmutableList.of());
 
     final RelCollation deptCollation =
         RelCollations.of(new RelFieldCollation(0), new RelFieldCollation(1));
@@ -1366,7 +1368,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
       RelOptTable deptTable) {
     final RexBuilder rexBuilder = cluster.getRexBuilder();
     final RelMetadataQuery mq = RelMetadataQuery.instance();
-    final LogicalTableScan empScan = LogicalTableScan.create(cluster, empTable);
+    final LogicalTableScan empScan = LogicalTableScan.create(cluster, empTable, ImmutableList.of());
 
     Double rowSize = mq.getAverageRowSize(empScan);
     List<Double> columnSizes = mq.getAverageColumnSizes(empScan);
@@ -1421,7 +1423,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
 
     // Filter
     final LogicalTableScan deptScan =
-        LogicalTableScan.create(cluster, deptTable);
+        LogicalTableScan.create(cluster, deptTable, ImmutableList.of());
     final LogicalFilter filter =
         LogicalFilter.create(deptScan,
             rexBuilder.makeCall(SqlStdOperatorTable.LESS_THAN,
@@ -1436,6 +1438,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     // Project
     final LogicalProject deptProject =
         LogicalProject.create(filter,
+            ImmutableList.of(),
             ImmutableList.of(
                 rexBuilder.makeInputRef(filter, 0),
                 rexBuilder.makeInputRef(filter, 1),
@@ -1453,8 +1456,9 @@ public class RelMetadataTest extends SqlToRelTestBase {
 
     // Join
     final LogicalJoin join =
-        LogicalJoin.create(empScan, deptProject, rexBuilder.makeLiteral(true),
-            ImmutableSet.<CorrelationId>of(), JoinRelType.INNER);
+        LogicalJoin.create(empScan, deptProject, ImmutableList.of(),
+            rexBuilder.makeLiteral(true), ImmutableSet.<CorrelationId>of(),
+            JoinRelType.INNER);
     rowSize = mq.getAverageRowSize(join);
     columnSizes = mq.getAverageColumnSizes(join);
     assertThat(columnSizes.size(), equalTo(13));
@@ -1466,7 +1470,9 @@ public class RelMetadataTest extends SqlToRelTestBase {
 
     // Aggregate
     final LogicalAggregate aggregate =
-        LogicalAggregate.create(join, ImmutableBitSet.of(2, 0),
+        LogicalAggregate.create(join,
+            ImmutableList.of(),
+            ImmutableBitSet.of(2, 0),
             ImmutableList.<ImmutableBitSet>of(),
             ImmutableList.of(
                 AggregateCall.create(SqlStdOperatorTable.COUNT,
@@ -1511,7 +1517,8 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final RelBuilder relBuilder = RelBuilder.proto().create(cluster, null);
     final RelMetadataQuery mq = RelMetadataQuery.instance();
 
-    final LogicalTableScan empScan = LogicalTableScan.create(cluster, empTable);
+    final LogicalTableScan empScan = LogicalTableScan.create(cluster, empTable,
+        ImmutableList.of());
     relBuilder.push(empScan);
 
     RelOptPredicateList predicates =
@@ -1527,7 +1534,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     assertThat(predicates.pulledUpPredicates.toString(), is("[=($0, 1)]"));
 
     final LogicalTableScan deptScan =
-        LogicalTableScan.create(cluster, deptTable);
+        LogicalTableScan.create(cluster, deptTable, ImmutableList.of());
     relBuilder.push(deptScan);
 
     relBuilder.semiJoin(
@@ -2011,7 +2018,8 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final RelBuilder relBuilder = RelBuilder.proto().create(cluster, null);
     final RelMetadataQuery mq = RelMetadataQuery.instance();
 
-    final LogicalTableScan empScan = LogicalTableScan.create(cluster, empTable);
+    final LogicalTableScan empScan = LogicalTableScan.create(cluster, empTable,
+        ImmutableList.of());
     relBuilder.push(empScan);
 
     RelOptPredicateList predicates =
@@ -2032,7 +2040,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     assertThat(inputRef1.getIndex(), is(0));
 
     final LogicalTableScan deptScan =
-        LogicalTableScan.create(cluster, deptTable);
+        LogicalTableScan.create(cluster, deptTable, ImmutableList.of());
     relBuilder.push(deptScan);
 
     relBuilder.join(JoinRelType.INNER,

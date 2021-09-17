@@ -536,6 +536,7 @@ public class RelOptUtilTest {
         .DEFAULT_PROJECT_FACTORY
         .createProject(
             agg,
+            ImmutableList.of(),
             ImmutableList.of(
                 RexInputRef.of(0, agg.getRowType()),
                 RexInputRef.of(1, agg.getRowType()),
@@ -558,6 +559,7 @@ public class RelOptUtilTest {
         .DEFAULT_PROJECT_FACTORY
         .createProject(
             agg,
+            ImmutableList.of(),
             ImmutableList.of(
                 RexInputRef.of(0, agg.getRowType()),
                 RexInputRef.of(1, agg.getRowType()),

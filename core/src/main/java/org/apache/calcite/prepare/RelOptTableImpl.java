@@ -286,7 +286,7 @@ public class RelOptTableImpl extends Prepare.AbstractPreparingTable {
     }
     final RelOptCluster cluster = context.getCluster();
     if (Hook.ENABLE_BINDABLE.get(false)) {
-      return LogicalTableScan.create(cluster, this);
+      return LogicalTableScan.create(cluster, this, ImmutableList.of());
     }
     if (CalcitePrepareImpl.ENABLE_ENUMERABLE
         && table instanceof QueryableTable) {
@@ -295,7 +295,7 @@ public class RelOptTableImpl extends Prepare.AbstractPreparingTable {
     if (table instanceof ScannableTable
         || table instanceof FilterableTable
         || table instanceof ProjectableFilterableTable) {
-      return LogicalTableScan.create(cluster, this);
+      return LogicalTableScan.create(cluster, this, ImmutableList.of());
     }
     if (CalcitePrepareImpl.ENABLE_ENUMERABLE) {
       return EnumerableTableScan.create(cluster, this);

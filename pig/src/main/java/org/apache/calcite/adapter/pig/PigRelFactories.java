@@ -25,6 +25,7 @@ import org.apache.calcite.rel.core.AggregateCall;
 import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.core.RelFactories;
+import org.apache.calcite.rel.hint.RelHint;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.util.ImmutableBitSet;
 
@@ -57,7 +58,8 @@ public class PigRelFactories {
 
     public static final PigTableScanFactory INSTANCE = new PigTableScanFactory();
 
-    @Override public RelNode createScan(RelOptCluster cluster, RelOptTable table) {
+    @Override public RelNode createScan(RelOptCluster cluster,
+        RelOptTable table, List<RelHint> hints) {
       return new PigTableScan(cluster, cluster.traitSetOf(PigRel.CONVENTION), table);
     }
   }
@@ -89,6 +91,7 @@ public class PigRelFactories {
     public static final PigAggregateFactory INSTANCE = new PigAggregateFactory();
 
     @Override public RelNode createAggregate(RelNode input,
+        List<RelHint> hints,
         ImmutableBitSet groupSet, ImmutableList<ImmutableBitSet> groupSets,
         List<AggregateCall> aggCalls) {
       return new PigAggregate(input.getCluster(), input.getTraitSet(), input,
@@ -105,8 +108,9 @@ public class PigRelFactories {
 
     public static final PigJoinFactory INSTANCE = new PigJoinFactory();
 
-    @Override public RelNode createJoin(RelNode left, RelNode right, RexNode condition,
-        Set<CorrelationId> variablesSet, JoinRelType joinType, boolean semiJoinDone) {
+    @Override public RelNode createJoin(RelNode left, RelNode right, List<RelHint> hints,
+        RexNode condition, Set<CorrelationId> variablesSet, JoinRelType joinType,
+        boolean semiJoinDone) {
       return new PigJoin(left.getCluster(), left.getTraitSet(), left, right, condition, joinType);
     }
 

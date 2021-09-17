@@ -36,6 +36,7 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.Util;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
@@ -319,7 +320,7 @@ public class LoptSemiJoinOptimizer {
               multiJoin.getNumFieldsInJoinFactor(factIdx),
               semiJoinCondition);
     }
-    return LogicalJoin.create(factRel, dimRel, semiJoinCondition,
+    return LogicalJoin.create(factRel, dimRel, ImmutableList.of(), semiJoinCondition,
         ImmutableSet.of(), JoinRelType.SEMI);
   }
 
@@ -580,6 +581,7 @@ public class LoptSemiJoinOptimizer {
         LogicalJoin chosenSemiJoin =
             LogicalJoin.create(factRel,
                 chosenSemiJoins[bestDimIdx],
+                ImmutableList.of(),
                 semiJoin.getCondition(),
                 ImmutableSet.of(),
                 JoinRelType.SEMI);

@@ -281,7 +281,8 @@ public class SplunkPushDownRule
     if (proj == null) {
       return rel;
     }
-    return LogicalProject.create(rel, proj.getProjects(), proj.getRowType());
+    return LogicalProject.create(rel, proj.getHints(),
+        proj.getProjects(), proj.getRowType());
   }
 
   // TODO: use StringBuilder instead of String

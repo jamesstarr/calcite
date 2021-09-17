@@ -166,7 +166,7 @@ public class RelRoot {
     for (Pair<Integer, String> field : fields) {
       projects.add(rexBuilder.makeInputRef(rel, field.left));
     }
-    return LogicalProject.create(rel, projects, Pair.right(fields));
+    return LogicalProject.create(rel, hints, projects, Pair.right(fields));
   }
 
   public boolean isNameTrivial() {

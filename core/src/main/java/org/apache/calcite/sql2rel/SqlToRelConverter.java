@@ -202,6 +202,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 import static org.apache.calcite.sql.SqlUtil.stripAs;
 
 /**
@@ -729,8 +731,8 @@ public class SqlToRelConverter {
         }
       }
       rel =
-          LogicalProject.create(rel, Pair.left(newProjects),
-              Pair.right(newProjects));
+          LogicalProject.create(rel, ImmutableList.of(),
+              Pair.left(newProjects), Pair.right(newProjects));
       bb.root = rel;
       distinctify(bb, false);
       rel = bb.root;
@@ -749,8 +751,8 @@ public class SqlToRelConverter {
       }
 
       rel =
-          LogicalProject.create(rel, Pair.left(undoProjects),
-              Pair.right(undoProjects));
+          LogicalProject.create(rel, ImmutableList.of(),
+              Pair.left(undoProjects), Pair.right(undoProjects));
       bb.setRoot(
           rel,
           false);
@@ -821,7 +823,9 @@ public class SqlToRelConverter {
         exprs.add(rexBuilder.makeInputRef(bb.root, i));
       }
       bb.setRoot(
-          LogicalProject.create(bb.root, exprs,
+          LogicalProject.create(bb.root,
+              ImmutableList.of(),
+              exprs,
               rowType.getFieldNames().subList(0, fieldCount)),
           false);
     }
@@ -1123,7 +1127,10 @@ public class SqlToRelConverter {
         final int keyCount = leftKeys.size();
         final List<Integer> args = ImmutableIntList.range(0, keyCount);
         LogicalAggregate aggregate =
-            LogicalAggregate.create(seek, ImmutableBitSet.of(), null,
+            LogicalAggregate.create(seek,
+                ImmutableList.of(),
+                ImmutableBitSet.of(),
+                null,
                 ImmutableList.of(
                     AggregateCall.create(SqlStdOperatorTable.COUNT, false,
                         false, ImmutableList.of(), -1, RelCollations.EMPTY,
@@ -1131,8 +1138,9 @@ public class SqlToRelConverter {
                     AggregateCall.create(SqlStdOperatorTable.COUNT, false,
                         false, args, -1, RelCollations.EMPTY, longType, null)));
         LogicalJoin join =
-            LogicalJoin.create(bb.root, aggregate, rexBuilder.makeLiteral(true),
-                ImmutableSet.<CorrelationId>of(), JoinRelType.INNER);
+            LogicalJoin.create(bb.root, aggregate, ImmutableList.of(),
+                rexBuilder.makeLiteral(true), ImmutableSet.<CorrelationId>of(),
+                JoinRelType.INNER);
         bb.setRoot(join, false);
       }
       final RexNode rex =
@@ -2269,9 +2277,9 @@ public class SqlToRelConverter {
     }
     final RelNode tableRel;
     if (config.isConvertTableAccess()) {
-      tableRel = toRel(table, null);
+      tableRel = toRel(table, ImmutableList.of());
     } else {
-      tableRel = LogicalTableScan.create(cluster, table);
+      tableRel = LogicalTableScan.create(cluster, table, ImmutableList.of());
     }
     bb.setRoot(tableRel, true);
     if (usedDataset[0]) {
@@ -2308,7 +2316,7 @@ public class SqlToRelConverter {
       final RelDataType rowType = table.getRowType(typeFactory);
       RelOptTable relOptTable = RelOptTableImpl.create(null, rowType, table,
           udf.getNameAsId().names);
-      RelNode converted = toRel(relOptTable, null);
+      RelNode converted = toRel(relOptTable, ImmutableList.of());
       bb.setRoot(converted, true);
       return;
     }
@@ -2379,7 +2387,7 @@ public class SqlToRelConverter {
 
     final Join originalJoin =
         (Join) RelFactories.DEFAULT_JOIN_FACTORY.createJoin(leftRel, rightRel,
-            joinCond, ImmutableSet.<CorrelationId>of(), joinType, false);
+            ImmutableList.of(), joinCond, ImmutableSet.<CorrelationId>of(), joinType, false);
 
     return RelOptUtil.pushDownJoinConditions(originalJoin, relBuilder);
   }
@@ -2970,7 +2978,7 @@ public class SqlToRelConverter {
    */
   protected RelNode createAggregate(Blackboard bb, ImmutableBitSet groupSet,
       ImmutableList<ImmutableBitSet> groupSets, List<AggregateCall> aggCalls) {
-    return LogicalAggregate.create(bb.root, groupSet, groupSets, aggCalls);
+    return LogicalAggregate.create(bb.root, ImmutableList.of(), groupSet, groupSets, aggCalls);
   }
 
   public RexDynamicParam convertDynamicParam(
@@ -3293,7 +3301,7 @@ public class SqlToRelConverter {
     };
   }
 
-  public RelNode toRel(final RelOptTable table, final List<RelHint> hints) {
+  public RelNode toRel(final RelOptTable table, @Nonnull final List<RelHint> hints) {
     final RelNode scan = table.toRel(createToRelContext());
 
     final InitializerExpressionFactory ief =
@@ -3873,6 +3881,7 @@ public class SqlToRelConverter {
           RelFactories.DEFAULT_JOIN_FACTORY.createJoin(
               ret,
               relNode,
+              ImmutableList.of(),
               rexBuilder.makeLiteral(true),
               ImmutableSet.<CorrelationId>of(),
               JoinRelType.INNER,

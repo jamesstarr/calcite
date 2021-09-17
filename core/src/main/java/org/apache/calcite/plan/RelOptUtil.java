@@ -41,6 +41,7 @@ import org.apache.calcite.rel.externalize.RelJsonWriter;
 import org.apache.calcite.rel.externalize.RelWriterImpl;
 import org.apache.calcite.rel.externalize.RelXmlWriter;
 import org.apache.calcite.rel.hint.Hintable;
+import org.apache.calcite.rel.hint.RelHint;
 import org.apache.calcite.rel.logical.LogicalAggregate;
 import org.apache.calcite.rel.logical.LogicalCalc;
 import org.apache.calcite.rel.logical.LogicalFilter;
@@ -607,7 +608,7 @@ public abstract class RelOptUtil {
         || logic == RelOptUtil.Logic.TRUE_FALSE_UNKNOWN;
     if (!outerJoin) {
       final LogicalAggregate aggregate =
-          LogicalAggregate.create(ret, ImmutableBitSet.range(keyCount), null,
+          LogicalAggregate.create(ret, ImmutableList.of(), ImmutableBitSet.range(keyCount), null,
               ImmutableList.<AggregateCall>of());
       return new Exists(aggregate, false, false);
     }
@@ -817,14 +818,17 @@ public abstract class RelOptUtil {
     final RexBuilder rexBuilder = rel.getCluster().getRexBuilder();
     List<RexNode> castExps;
     RelNode input;
+    List<RelHint> hints = ImmutableList.of();
     if (rel instanceof Project) {
       // No need to create another project node if the rel
       // is already a project.
+      final Project project = (Project) rel;
       castExps = RexUtil.generateCastExpressions(
           rexBuilder,
           castRowType,
           ((Project) rel).getProjects());
       input = rel.getInput(0);
+      hints = project.getHints();
     } else {
       castExps = RexUtil.generateCastExpressions(
           rexBuilder,
@@ -834,11 +838,11 @@ public abstract class RelOptUtil {
     }
     if (rename) {
       // Use names and types from castRowType.
-      return projectFactory.createProject(input, castExps,
+      return projectFactory.createProject(input, hints, castExps,
           castRowType.getFieldNames());
     } else {
       // Use names from rowType, types from castRowType.
-      return projectFactory.createProject(input, castExps,
+      return projectFactory.createProject(input, hints, castExps,
           rowType.getFieldNames());
     }
   }
@@ -863,13 +867,15 @@ public abstract class RelOptUtil {
               null));
     }
 
-    return LogicalAggregate.create(rel, ImmutableBitSet.of(), null, aggCalls);
+    return LogicalAggregate.create(rel, ImmutableList.of(), ImmutableBitSet.of(),
+        null, aggCalls);
   }
 
   /** @deprecated Use {@link RelBuilder#distinct()}. */
   @Deprecated // to be removed before 2.0
   public static RelNode createDistinctRel(RelNode rel) {
     return LogicalAggregate.create(rel,
+        ImmutableList.of(),
         ImmutableBitSet.range(rel.getRowType().getFieldCount()), null,
         ImmutableList.<AggregateCall>of());
   }
@@ -3268,7 +3274,7 @@ public abstract class RelOptUtil {
               : fieldNames.get(i));
       exprList.add(rexBuilder.makeInputRef(rel, source));
     }
-    return projectFactory.createProject(rel, exprList, outputNameList);
+    return projectFactory.createProject(rel, ImmutableList.of(), exprList, outputNameList);
   }
 
   /** Policies for handling two- and three-valued boolean logic. */

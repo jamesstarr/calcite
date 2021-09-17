@@ -415,9 +415,10 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
   }
 
   public void rewriteRel(LogicalJoin rel) {
-    LogicalJoin newRel =
+    final LogicalJoin newRel =
         LogicalJoin.create(getNewForOldRel(rel.getLeft()),
             getNewForOldRel(rel.getRight()),
+            rel.getHints(),
             rel.getCondition().accept(new RewriteRexShuttle()),
             rel.getVariablesSet(), rel.getJoinType());
     setNewForOldRel(rel, newRel);

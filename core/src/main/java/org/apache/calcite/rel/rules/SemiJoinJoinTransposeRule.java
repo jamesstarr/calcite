@@ -28,6 +28,7 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableIntList;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.ArrayList;
@@ -165,6 +166,8 @@ public class SemiJoinJoinTransposeRule
     LogicalJoin newSemiJoin =
         LogicalJoin.create(leftSemiJoinOp,
             semiJoin.getRight(),
+            // No need to copy the hints, the framework would try to do that.
+            ImmutableList.of(),
             newSemiJoinFilter,
             ImmutableSet.of(),
             JoinRelType.SEMI);
