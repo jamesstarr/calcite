@@ -67,6 +67,112 @@ import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableScan;
+<<<<<<< HEAD
+=======
+import org.apache.calcite.rel.rules.AbstractMaterializedViewRule;
+import org.apache.calcite.rel.rules.CoreRules;
+import org.apache.calcite.rel.rules.JoinPushThroughJoinRule;
+import org.apache.calcite.rel.rules.MaterializedViewFilterScanRule;
+import org.apache.calcite.rel.rules.TableScanRule;
+import org.apache.calcite.rel.stream.StreamRules;
+import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.rel.type.RelDataTypeField;
+import org.apache.calcite.rex.RexBuilder;
+import org.apache.calcite.rex.RexInputRef;
+import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.rex.RexProgram;
+import org.apache.calcite.runtime.Bindable;
+import org.apache.calcite.runtime.Hook;
+import org.apache.calcite.runtime.Typed;
+import org.apache.calcite.schema.Schemas;
+import org.apache.calcite.schema.Table;
+import org.apache.calcite.server.CalciteServerStatement;
+import org.apache.calcite.sql.SqlBinaryOperator;
+import org.apache.calcite.sql.SqlExecutableStatement;
+import org.apache.calcite.sql.SqlExplainFormat;
+import org.apache.calcite.sql.SqlExplainLevel;
+import org.apache.calcite.sql.SqlKind;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlOperator;
+import org.apache.calcite.sql.SqlOperatorTable;
+import org.apache.calcite.sql.SqlUtil;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.parser.SqlParseException;
+import org.apache.calcite.sql.parser.SqlParser;
+import org.apache.calcite.sql.parser.SqlParserImplFactory;
+import org.apache.calcite.sql.type.ExtraSqlTypes;
+import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.sql.util.SqlOperatorTables;
+import org.apache.calcite.sql.validate.SqlConformance;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.sql2rel.SqlRexConvertletTable;
+import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.calcite.sql2rel.StandardConvertletTable;
+import org.apache.calcite.tools.Frameworks;
+import org.apache.calcite.util.ImmutableIntList;
+import org.apache.calcite.util.Pair;
+import org.apache.calcite.util.Util;
+
+import com.google.common.base.Supplier;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
+
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.sql.DatabaseMetaData;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.apache.calcite.util.Static.RESOURCE;
+
+/**
+ * Shit just got real.
+ *
+ * <p>This class is public so that projects that create their own JDBC driver
+ * and server can fine-tune preferences. However, this class and its methods are
+ * subject to change without notice.</p>
+ */
+public class CalcitePrepareImpl implements CalcitePrepare {
+
+  public static final boolean DEBUG = Util.getBooleanProperty("calcite.debug");
+
+  public static final boolean COMMUTE =
+      Util.getBooleanProperty("calcite.enable.join.commute");
+
+  /** Whether to enable the collation trait. Some extra optimizations are
+   * possible if enabled, but queries should work either way. At some point
+   * this will become a preference, or we will run multiple phases: first
+   * disabled, then enabled. */
+  private static final boolean ENABLE_COLLATION_TRAIT = true;
+
+  /** Whether the bindable convention should be the root convention of any
+   * plan. If not, enumerable convention is the default. */
+  public final boolean enableBindable = Hook.ENABLE_BINDABLE.get(false);
+
+  /** Whether the enumerable convention is enabled. */
+  public static final boolean ENABLE_ENUMERABLE = true;
+
+  /** Whether the streaming is enabled. */
+  public static final boolean ENABLE_STREAM = true;
+
+  private static final Set<String> SIMPLE_SQLS =
+      ImmutableSet.of(
+          "SELECT 1",
+          "select 1",
+          "SELECT 1 FROM DUAL",
+          "select 1 from dual",
+          "values 1",
+          "VALUES 1");
+
+>>>>>>> 8ef4c666a (DX-37375 Move ReduceExpressionsRule to Config API)
   public static final List<RelOptRule> ENUMERABLE_RULES =
       ImmutableList.of(
           EnumerableRules.ENUMERABLE_JOIN_RULE,
@@ -115,10 +221,10 @@ import org.apache.calcite.rel.core.TableScan;
 
   private static final List<RelOptRule> CONSTANT_REDUCTION_RULES =
       ImmutableList.of(
-          ReduceExpressionsRule.PROJECT_INSTANCE,
-          ReduceExpressionsRule.FILTER_INSTANCE,
-          ReduceExpressionsRule.CALC_INSTANCE,
-          ReduceExpressionsRule.JOIN_INSTANCE,
+          CoreRules.PROJECT_REDUCE_EXPRESSIONS,
+          CoreRules.FILTER_REDUCE_EXPRESSIONS,
+          CoreRules.CALC_REDUCE_EXPRESSIONS,
+          CoreRules.JOIN_REDUCE_EXPRESSIONS,
           CoreRules.FILTER_VALUES_MERGE,
           CoreRules.PROJECT_FILTER_VALUES_MERGE,
           CoreRules.PROJECT_VALUES_MERGE,

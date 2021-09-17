@@ -135,6 +135,13 @@ public class CoreRules {
   public static final ReduceDecimalsRule CALC_REDUCE_DECIMALS =
       ReduceDecimalsRule.Config.DEFAULT.toRule();
 
+  /** Rule that reduces constants inside a {@link LogicalCalc}.
+   *
+   * @see #FILTER_REDUCE_EXPRESSIONS */
+  public static final ReduceExpressionsRule.CalcReduceExpressionsRule
+      CALC_REDUCE_EXPRESSIONS =
+      ReduceExpressionsRule.CalcReduceExpressionsRule.Config.DEFAULT.toRule();
+
   /** Rule that converts a {@link Calc} to a {@link Project} and
    * {@link Filter}. */
   public static final CalcSplitRule CALC_SPLIT =
@@ -238,6 +245,16 @@ public class CoreRules {
   public static final FilterSetOpTransposeRule FILTER_SET_OP_TRANSPOSE =
       FilterSetOpTransposeRule.Config.DEFAULT.toRule();
 
+  /** Rule that reduces constants inside a {@link LogicalFilter}.
+   *
+   * @see #JOIN_REDUCE_EXPRESSIONS
+   * @see #PROJECT_REDUCE_EXPRESSIONS
+   * @see #CALC_REDUCE_EXPRESSIONS
+   * @see #WINDOW_REDUCE_EXPRESSIONS
+   */
+  public static final ReduceExpressionsRule.FilterReduceExpressionsRule
+      FILTER_REDUCE_EXPRESSIONS =
+      ReduceExpressionsRule.FilterReduceExpressionsRule.Config.DEFAULT.toRule();
 
   /** Rule that flattens an {@link Intersect} on an {@code Intersect}
    * into a single {@code Intersect}. */
@@ -279,6 +296,13 @@ public class CoreRules {
   public static final ProjectFilterTransposeRule
       PROJECT_FILTER_TRANSPOSE_WHOLE_PROJECT_EXPRESSIONS =
       ProjectFilterTransposeRule.Config.PROJECT.toRule();
+
+  /** Rule that reduces constants inside a {@link LogicalProject}.
+   *
+   * @see #FILTER_REDUCE_EXPRESSIONS */
+  public static final ReduceExpressionsRule.ProjectReduceExpressionsRule
+      PROJECT_REDUCE_EXPRESSIONS =
+      ReduceExpressionsRule.ProjectReduceExpressionsRule.Config.DEFAULT.toRule();
 
   /** Rule that converts sub-queries from project expressions into
    * {@link Correlate} instances.
@@ -447,6 +471,13 @@ public class CoreRules {
       JOIN_PUSH_TRANSITIVE_PREDICATES =
       JoinPushTransitivePredicatesRule.Config.DEFAULT.toRule();
 
+  /** Rule that reduces constants inside a {@link Join}.
+   *
+   * @see #FILTER_REDUCE_EXPRESSIONS
+   * @see #PROJECT_REDUCE_EXPRESSIONS */
+  public static final ReduceExpressionsRule.JoinReduceExpressionsRule
+      JOIN_REDUCE_EXPRESSIONS =
+      ReduceExpressionsRule.JoinReduceExpressionsRule.Config.DEFAULT.toRule();
 
   /** Rule that converts a {@link LogicalJoin}
    * into a {@link LogicalCorrelate}. */
@@ -609,6 +640,5 @@ public class CoreRules {
    * and potentially fewer rows. */
   public static final ValuesReduceRule PROJECT_FILTER_VALUES_MERGE =
       ValuesReduceRule.Config.PROJECT_FILTER.toRule();
-
 }
 // End CoreRules.java
