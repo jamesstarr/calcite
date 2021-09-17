@@ -1029,6 +1029,7 @@ SqlSelect SqlSelect() :
     final SqlNodeList groupBy;
     final SqlNode having;
     final SqlNodeList windowDecls;
+    final List<SqlNode> hints = new ArrayList<SqlNode>();
     final Span s;
 }
 {
@@ -1072,7 +1073,8 @@ SqlSelect SqlSelect() :
     {
         return new SqlSelect(s.end(this), keywordList,
             new SqlNodeList(selectList, Span.of(selectList).pos()),
-            fromClause, where, groupBy, having, windowDecls, null, null, null);
+            fromClause, where, groupBy, having, windowDecls, null, null, null,
+            new SqlNodeList(hints, getPos()));
     }
 }
 

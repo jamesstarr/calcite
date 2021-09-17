@@ -26,6 +26,7 @@ import org.apache.calcite.rel.RelInput;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelShuttle;
 import org.apache.calcite.rel.core.Project;
+import org.apache.calcite.rel.hint.RelHint;
 import org.apache.calcite.rel.metadata.RelMdCollation;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
@@ -36,6 +37,7 @@ import org.apache.calcite.util.Util;
 
 import com.google.common.base.Supplier;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,6 +54,7 @@ public final class LogicalProject extends Project {
    *
    * @param cluster  Cluster this relational expression belongs to
    * @param traitSet Traits of this relational expression
+   * @param hints    Hints of this relational expression
    * @param input    Input relational expression
    * @param projects List of expressions for the input columns
    * @param rowType  Output row type
@@ -59,11 +62,28 @@ public final class LogicalProject extends Project {
   public LogicalProject(
       RelOptCluster cluster,
       RelTraitSet traitSet,
+      List<RelHint> hints,
       RelNode input,
       List<? extends RexNode> projects,
       RelDataType rowType) {
-    super(cluster, traitSet, input, projects, rowType);
+    super(cluster, traitSet, hints, input, projects, rowType);
     assert traitSet.containsIfApplicable(Convention.NONE);
+  }
+
+  /**
+   * Creates a LogicalProject.
+   *
+   * <p>Use {@link #create} unless you know what you're doing.
+   *
+   * @param cluster  Cluster this relational expression belongs to
+   * @param traitSet Traits of this relational expression
+   * @param input    Input relational expression
+   * @param projects List of expressions for the input columns
+   * @param rowType  Output row type
+   */
+  public LogicalProject(RelOptCluster cluster, RelTraitSet traitSet,
+      RelNode input, List<? extends RexNode> projects, RelDataType rowType) {
+    this(cluster, traitSet, new ArrayList<>(), input, projects, rowType);
   }
 
   @Deprecated // to be removed before 2.0
@@ -122,11 +142,16 @@ public final class LogicalProject extends Project {
 
   @Override public LogicalProject copy(RelTraitSet traitSet, RelNode input,
       List<RexNode> projects, RelDataType rowType) {
-    return new LogicalProject(getCluster(), traitSet, input, projects, rowType);
+    return new LogicalProject(getCluster(), traitSet, hints, input, projects, rowType);
   }
 
   @Override public RelNode accept(RelShuttle shuttle) {
     return shuttle.visit(this);
+  }
+
+  @Override public RelNode attachHints(List<RelHint> hintList) {
+    return new LogicalProject(getCluster(), traitSet, mergeHints(hintList),
+        input, getProjects(), rowType);
   }
 }
 

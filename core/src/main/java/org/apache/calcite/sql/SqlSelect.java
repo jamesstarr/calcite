@@ -50,6 +50,7 @@ public class SqlSelect extends SqlCall {
   SqlNode offset;
   SqlNode fetch;
   SqlMatchRecognize matchRecognize;
+  SqlNodeList hints;
 
   //~ Constructors -----------------------------------------------------------
 
@@ -63,7 +64,8 @@ public class SqlSelect extends SqlCall {
       SqlNodeList windowDecls,
       SqlNodeList orderBy,
       SqlNode offset,
-      SqlNode fetch) {
+      SqlNode fetch,
+      SqlNodeList hints) {
     super(pos);
     this.keywordList = Preconditions.checkNotNull(keywordList != null
         ? keywordList : new SqlNodeList(pos));
@@ -77,6 +79,7 @@ public class SqlSelect extends SqlCall {
     this.orderBy = orderBy;
     this.offset = offset;
     this.fetch = fetch;
+    this.hints = hints;
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -220,6 +223,19 @@ public class SqlSelect extends SqlCall {
 
   public void setMatchRecognize(SqlMatchRecognize matchRecognize) {
     this.matchRecognize = matchRecognize;
+  }
+
+  public void setHints(SqlNodeList hints) {
+    this.hints = hints;
+  }
+
+  public SqlNodeList getHints() {
+    return this.hints;
+  }
+
+  public boolean hasHints() {
+    // The hints may be passed as null explicitly.
+    return this.hints != null && this.hints.size() > 0;
   }
 
   public void validate(SqlValidator validator, SqlValidatorScope scope) {

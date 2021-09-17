@@ -47,6 +47,7 @@ import org.apache.calcite.rel.core.Sample;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.Uncollect;
 import org.apache.calcite.rel.core.Values;
+import org.apache.calcite.rel.hint.RelHint;
 import org.apache.calcite.rel.logical.LogicalAggregate;
 import org.apache.calcite.rel.logical.LogicalCorrelate;
 import org.apache.calcite.rel.logical.LogicalFilter;
@@ -2268,7 +2269,7 @@ public class SqlToRelConverter {
     }
     final RelNode tableRel;
     if (config.isConvertTableAccess()) {
-      tableRel = toRel(table);
+      tableRel = toRel(table, null);
     } else {
       tableRel = LogicalTableScan.create(cluster, table);
     }
@@ -2307,7 +2308,7 @@ public class SqlToRelConverter {
       final RelDataType rowType = table.getRowType(typeFactory);
       RelOptTable relOptTable = RelOptTableImpl.create(null, rowType, table,
           udf.getNameAsId().names);
-      RelNode converted = toRel(relOptTable);
+      RelNode converted = toRel(relOptTable, null);
       bb.setRoot(converted, true);
       return;
     }
@@ -3292,7 +3293,7 @@ public class SqlToRelConverter {
     };
   }
 
-  public RelNode toRel(final RelOptTable table) {
+  public RelNode toRel(final RelOptTable table, final List<RelHint> hints) {
     final RelNode scan = table.toRel(createToRelContext());
 
     final InitializerExpressionFactory ief =
