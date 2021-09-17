@@ -415,14 +415,31 @@ public abstract class RelOptUtil {
    * Copy the {@link org.apache.calcite.rel.hint.RelHint}s from {@code originalRel}
    * to {@code newRel} if both of them are {@link Hintable}.
    *
-   * <p>The hints are also filtered by the specified hint strategies.
+   * <p>The hints are filtered by the hint strategies when attaching to the {@code newRel}.
    *
    * @param originalRel Original relational expression
    * @param newRel      New relational expression
-   * @return A copy of {@code newRel} with hints of {@code originalRel}, or {@code newRel}
-   * directly if one of them are not {@link Hintable}
+   * @return A copy of {@code newRel} with attached qualified hints from {@code originalRel},
+   * or {@code newRel} directly if one of them are not {@link Hintable}
    */
   public static RelNode copyRelHints(RelNode originalRel, RelNode newRel) {
+    return copyRelHints(originalRel, newRel, true);
+  }
+
+  /**
+   * Copy the {@link org.apache.calcite.rel.hint.RelHint}s from {@code originalRel}
+   * to {@code newRel} if both of them are {@link Hintable}.
+   *
+   * <p>The hints would be filtered by the specified hint strategies
+   * if {@code filterHints} is true.
+   *
+   * @param originalRel Original relational expression
+   * @param newRel      New relational expression
+   * @param filterHints Flag saying if to filter out unqualified hints for {@code newRel}
+   * @return A copy of {@code newRel} with attached hints from {@code originalRel},
+   * or {@code newRel} directly if one of them are not {@link Hintable}
+   */
+  public static RelNode copyRelHints(RelNode originalRel, RelNode newRel, boolean filterHints) {
     return newRel;
   }
 
