@@ -128,7 +128,7 @@ public final class LogicalTableScan extends TableScan {
     return create(cluster, relOptTable, ImmutableList.of());
   }
 
-  @Override public RelNode attachHints(List<RelHint> hintList) {
-    return new LogicalTableScan(getCluster(), traitSet, mergeHints(hintList), table);
+  @Override public RelNode withHints(List<RelHint> hintList) {
+    return new LogicalTableScan(getCluster(), traitSet, hintList, table);
   }
 }

@@ -187,8 +187,8 @@ public final class LogicalJoin extends Join {
   }
 
 
-  @Override public RelNode attachHints(List<RelHint> hintList) {
-    return new LogicalJoin(getCluster(), traitSet, mergeHints(hintList),
+  @Override public RelNode withHints(List<RelHint> hintList) {
+    return new LogicalJoin(getCluster(), traitSet, hintList,
         left, right, condition, variablesSet, joinType, semiJoinDone, systemFieldList);
   }
 }
