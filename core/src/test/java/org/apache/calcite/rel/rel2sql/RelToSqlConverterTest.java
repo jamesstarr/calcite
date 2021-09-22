@@ -4328,12 +4328,30 @@ class RelToSqlConverterTest {
             + "join \"customer\" as c\n"
             + "  on s.\"customer_id\" = c.\"customer_id\"\n"
             + "group by s.\"customer_id\"";
-    final String expected = "SELECT \"t\".\"customer_id\", SUM(\"store_sales\" * \"store_cost\")\n"
-            + "FROM (SELECT \"customer_id\", \"store_sales\" * \"store_cost\"\n"
+    final String expected = "SELECT \"t\".\"customer_id\", SUM(\"t\".\"$f1\")\n"
+            + "FROM (SELECT \"customer_id\", \"store_sales\" * \"store_cost\" AS \"$f1\"\n"
             + "FROM \"foodmart\".\"sales_fact_1997\") AS \"t\"\n"
             + "INNER JOIN (SELECT \"customer_id\"\n"
             + "FROM \"foodmart\".\"customer\") AS \"t0\" ON \"t\".\"customer_id\" = \"t0\".\"customer_id\"\n"
             + "GROUP BY \"t\".\"customer_id\"";
+    RuleSet rules = RuleSets.ofList(CoreRules.PROJECT_JOIN_TRANSPOSE);
+    final HepProgram program = new HepProgramBuilder()
+            .addRuleClass(ProjectJoinTransposeRule.class)
+            .build();
+    sql(sql).optimize(rules, new HepPlanner(program)).ok(expected);
+  }
+
+  @Test public void testMultiplicationRetainsExplicitAlias() {
+    final String sql = "select s.\"customer_id\", s.\"store_sales\" * s.\"store_cost\" as \"total\""
+            + "from \"sales_fact_1997\" as s\n"
+            + "join \"customer\" as c\n"
+            + "  on s.\"customer_id\" = c.\"customer_id\"\n";
+    final String expected = "SELECT \"t\".\"customer_id\", \"t\".\"total\"\n"
+            + "FROM (SELECT \"customer_id\", \"store_sales\" * \"store_cost\" AS \"total\"\n"
+            + "FROM \"foodmart\".\"sales_fact_1997\") AS \"t\"\n"
+            + "INNER JOIN (SELECT \"customer_id\"\n"
+            + "FROM \"foodmart\".\"customer\") AS \"t0\" ON \"t\".\"customer_id\" = \"t0\""
+            + ".\"customer_id\"";
     RuleSet rules = RuleSets.ofList(CoreRules.PROJECT_JOIN_TRANSPOSE);
     final HepProgram program = new HepProgramBuilder()
             .addRuleClass(ProjectJoinTransposeRule.class)

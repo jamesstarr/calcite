@@ -544,10 +544,15 @@ public class PushProjector {
       } else {
         newExpr = projExpr;
       }
-      newProjects.add(
-          Pair.of(
-              newExpr,
-              SqlUtil.deriveAliasFromOrdinal(preserveExpOrdinal++)));
+      final String originalFieldName = findOriginalFieldName(projExpr);
+      final String newAlias;
+      if (originalFieldName != null) {
+        newAlias = originalFieldName;
+      } else {
+        newAlias = SqlUtil.deriveAliasFromOrdinal(preserveExpOrdinal);
+      }
+      newProjects.add(Pair.of(newExpr, newAlias));
+      preserveExpOrdinal++;
     }
 
     return (Project) relBuilder.push(projChild)
@@ -567,6 +572,17 @@ public class PushProjector {
     return origProj.getRowType().getFieldList().get(idx).getName();
 =======
 >>>>>>> cae0c46b2 ([CALCITE-2201] Pass RelBuilder into RelDecorrelator and RelStructured TypeFlattener)
+  }
+
+  private String findOriginalFieldName(RexNode originRexNode) {
+    if (origProj == null) {
+      return null;
+    }
+    int idx = origProj.getProjects().indexOf(originRexNode);
+    if (idx < 0) {
+      return null;
+    }
+    return origProj.getRowType().getFieldList().get(idx).getName();
   }
 
   /**
