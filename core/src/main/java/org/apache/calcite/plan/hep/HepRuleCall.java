@@ -26,7 +26,6 @@ import org.apache.calcite.rel.RelNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 /**
  * HepRuleCall implements {@link RelOptRuleCall} for a {@link HepPlanner}. It
@@ -55,7 +54,7 @@ public class HepRuleCall extends RelOptRuleCall {
 
   // implement RelOptRuleCall
   public void transformTo(RelNode rel, Map<RelNode, RelNode> equiv,
-      BiFunction<RelNode, RelNode, RelNode> handler) {
+      RelHintsPropagator handler) {
     final RelNode rel0 = rels[0];
     RelOptUtil.verifyTypeEquivalence(rel0, rel, rel0);
     rel = handler.propagate(rel0, rel);

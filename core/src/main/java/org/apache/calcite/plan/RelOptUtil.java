@@ -398,8 +398,23 @@ public abstract class RelOptUtil {
    * <p>The hints are filtered by the hint strategies when attaching to the {@code newRel}.
    *
    * @param originalRel Original relational expression
-   * @param newRel      New relational expression
+   * @param equiv       New equivalent relational expression
    * @return A copy of {@code newRel} with attached qualified hints from {@code originalRel},
+   * or {@code newRel} directly if one of them are not {@link Hintable}
+   */
+  public static RelNode propagateRelHints(RelNode originalRel, RelNode equiv) {
+    return equiv;
+  }
+
+  /**
+   * Copy the {@link org.apache.calcite.rel.hint.RelHint}s from {@code originalRel}
+   * to {@code newRel} if both of them are {@link Hintable}.
+   *
+   * <p>The hints would be attached directly(e.g. without any filtering).
+   *
+   * @param originalRel Original relational expression
+   * @param newRel      New relational expression
+   * @return A copy of {@code newRel} with attached hints from {@code originalRel},
    * or {@code newRel} directly if one of them are not {@link Hintable}
    */
   public static RelNode copyRelHints(RelNode originalRel, RelNode newRel) {
