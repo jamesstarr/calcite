@@ -278,6 +278,15 @@ public abstract class RelOptUtil {
     return visitor.vuv.variables;
   }
 
+  /**
+   * TODO.
+   */
+  public static boolean isVariablesUsed(CorrelationId id, RexNode rex) {
+    CorrelationCollector visitor = new CorrelationCollector();
+    rex.accept(visitor.vuv);
+    return visitor.vuv.variables.contains(id);
+  }
+
   /** Finds which columns of a correlation variable are used within a
    * relational expression. */
   public static ImmutableBitSet correlationColumns(CorrelationId id,
