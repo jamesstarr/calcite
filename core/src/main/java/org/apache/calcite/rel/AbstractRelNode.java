@@ -296,14 +296,12 @@ public abstract class AbstractRelNode implements RelNode {
     return r;
   }
 
->>>>>>> 889035685 ([CALCITE-4544] Deprecation of Java Reflection MD API)
-  public String recomputeDigest() {
+  public void recomputeDigest() {
     String tempDigest = computeDigest();
     assert tempDigest != null : "computeDigest() should be non-null";
 
     this.desc = "rel#" + id + ":" + tempDigest;
     this.digest = tempDigest;
-    return this.digest;
   }
 
   public void replaceInput(
