@@ -238,7 +238,7 @@ public interface RelNode extends RelOptNode, Cloneable {
    *
    * @return Digest of this relational expression
    */
-  String recomputeDigest();
+  void recomputeDigest();
 
   /**
    * Replaces the <code>ordinalInParent</code><sup>th</sup> input. You must

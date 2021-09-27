@@ -1261,7 +1261,8 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
           Pair.of(oldDigest, rel.getRowType());
       final RelNode removed = mapDigestToRel.remove(oldKey);
       assert removed == rel;
-      final String newDigest = rel.recomputeDigest();
+      rel.recomputeDigest();
+      final String newDigest = rel.getDigest();
       LOGGER.trace("Rename #{} from '{}' to '{}'", rel.getId(), oldDigest, newDigest);
       final Pair<String, RelDataType> key = key(rel);
       final RelNode equivRel = mapDigestToRel.put(key, rel);

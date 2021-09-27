@@ -303,13 +303,12 @@ public abstract class AbstractRelNode implements RelNode {
     return r;
   }
 
-  public String recomputeDigest() {
+  public void recomputeDigest() {
     String tempDigest = computeDigest();
     assert tempDigest != null : "computeDigest() should be non-null";
 
     this.desc = "rel#" + id + ":" + tempDigest;
     this.digest = tempDigest;
-    return this.digest;
   }
 
   public void replaceInput(
@@ -326,7 +325,7 @@ public abstract class AbstractRelNode implements RelNode {
     return desc;
   }
 
-  public final String getDigest() {
+  public String getDigest() {
     return digest;
   }
 
