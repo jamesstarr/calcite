@@ -300,7 +300,7 @@ public class SqlIdentifier extends SqlNode {
     }
 
     if (null != collation) {
-      collation.unparse(writer, leftPrec, rightPrec);
+      collation.unparse(writer);
     }
     writer.endList(frame);
   }

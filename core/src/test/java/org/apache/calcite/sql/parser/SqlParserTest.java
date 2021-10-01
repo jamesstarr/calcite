@@ -8618,7 +8618,7 @@ public class SqlParserTest {
         String sql,
         boolean list,
         String expectedMsgPattern) {
-      SqlParserUtil.StringAndPos sap = SqlParserUtil.findPos(sql);
+      StringAndPos sap = SqlParserUtil.findPos(sql);
       Throwable thrown = null;
       try {
         final SqlNode sqlNode;
@@ -8636,7 +8636,7 @@ public class SqlParserTest {
     }
 
     public void checkNode(String sql, Matcher<SqlNode> matcher) {
-      SqlParserUtil.StringAndPos sap = SqlParserUtil.findPos(sql);
+      StringAndPos sap = SqlParserUtil.findPos(sql);
       try {
         final SqlNode sqlNode = getSqlParser(sap.sql).parseStmt();
         assertThat(sqlNode, matcher);
@@ -8652,7 +8652,7 @@ public class SqlParserTest {
     public void checkExpFails(
         String sql,
         String expectedMsgPattern) {
-      SqlParserUtil.StringAndPos sap = SqlParserUtil.findPos(sql);
+      StringAndPos sap = SqlParserUtil.findPos(sql);
       Throwable thrown = null;
       try {
         final SqlNode sqlNode = getSqlParser(sap.sql).parseExpression();

@@ -348,7 +348,7 @@ public class ReflectiveSchema
       return "Member {method=" + method + "}";
     }
 
-    public TranslatableTable apply(final List<Object> arguments) {
+    public TranslatableTable apply(final List<? extends Object> arguments) {
       try {
         final Object o = method.invoke(schema.getTarget(), arguments.toArray());
         return (TranslatableTable) o;

@@ -938,6 +938,13 @@ public class MockCatalogReader extends CalciteCatalogReader {
           && columns.contains(ImmutableBitSet.of(keyList));
     }
 
+    public List<ImmutableBitSet> getKeys() {
+      if (keyList.isEmpty()) {
+        return ImmutableList.of();
+      }
+      return ImmutableList.of(ImmutableBitSet.of(keyList));
+    }
+
     public List<RelReferentialConstraint> getReferentialConstraints() {
       return referentialConstraints;
     }
@@ -948,6 +955,10 @@ public class MockCatalogReader extends CalciteCatalogReader {
 
     public boolean supportsModality(SqlModality modality) {
       return modality == (stream ? SqlModality.STREAM : SqlModality.RELATION);
+    }
+
+    @Override public boolean isTemporal() {
+      return false;
     }
 
     public void onRegister(RelDataTypeFactory typeFactory) {

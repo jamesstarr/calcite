@@ -90,6 +90,7 @@ import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.parser.SqlParserImplFactory;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.parser.SqlParserUtil;
+import org.apache.calcite.sql.parser.StringAndPos;
 import org.apache.calcite.sql.parser.impl.SqlParserImpl;
 import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.JsonBuilder;
@@ -459,7 +460,7 @@ public class JdbcTest {
     schema.add("get_hints", table);
     PreparedStatement ps = connection.prepareStatement("select *\n"
         + "from table(\"s\".\"get_hints\"(?, ?)) as t(id, names, type)");
-    SqlParserUtil.StringAndPos sap = SqlParserUtil.findPos(sql);
+    StringAndPos sap = SqlParserUtil.findPos(sql);
     ps.setString(1, sap.sql);
     ps.setInt(2, sap.cursor);
     final ResultSet resultSet = ps.executeQuery();

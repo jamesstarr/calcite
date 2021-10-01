@@ -37,6 +37,7 @@ import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.parser.SqlParserUtil;
+import org.apache.calcite.sql.parser.StringAndPos;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.util.SqlShuttle;
 import org.apache.calcite.sql.validate.SqlConformance;
@@ -108,7 +109,7 @@ public class SqlTesterImpl implements SqlTester, AutoCloseable {
       String expectedMsgPattern) {
     SqlValidator validator;
     SqlNode sqlNode;
-    SqlParserUtil.StringAndPos sap = SqlParserUtil.findPos(sql);
+    StringAndPos sap = SqlParserUtil.findPos(sql);
     try {
       sqlNode = parseQuery(sap.sql);
       validator = getValidator();

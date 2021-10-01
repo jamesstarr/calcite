@@ -39,6 +39,10 @@ public interface Statistic {
    */
   boolean isKey(ImmutableBitSet columns);
 
+  /** Returns a list of unique keys, or null if no key exist. */
+  default List<ImmutableBitSet> getKeys() {
+    return null;
+  }
   /** Returns the collection of referential constraints (foreign-keys)
    * for this table. */
   List<RelReferentialConstraint> getReferentialConstraints();

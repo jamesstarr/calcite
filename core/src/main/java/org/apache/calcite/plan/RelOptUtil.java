@@ -3016,6 +3016,10 @@ public abstract class RelOptUtil {
           List<String> schemaPath, List<String> viewPath) {
         throw new UnsupportedOperationException();
       }
+
+      @Override public List<RelHint> getTableHints() {
+        return ImmutableList.of();
+      }
     };
   }
 

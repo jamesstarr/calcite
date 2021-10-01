@@ -478,7 +478,7 @@ public class SqlToRelConverter {
       boolean restructure) {
     RelStructuredTypeFlattener typeFlattener =
         new RelStructuredTypeFlattener(relBuilder,
-            rexBuilder, createToRelContext(), restructure);
+            rexBuilder, createToRelContext(ImmutableList.of()), restructure);
     return typeFlattener.rewrite(rootRel);
   }
 
@@ -3435,10 +3435,14 @@ public class SqlToRelConverter {
         .build();
   }
 
-  private RelOptTable.ToRelContext createToRelContext() {
+  private RelOptTable.ToRelContext createToRelContext(List<RelHint> hints) {
     return new RelOptTable.ToRelContext() {
       public RelOptCluster getCluster() {
         return cluster;
+      }
+
+      @Override public List<RelHint> getTableHints() {
+        return hints;
       }
 
       @Override public RelRoot expandView(
@@ -3453,7 +3457,7 @@ public class SqlToRelConverter {
   }
 
   public RelNode toRel(final RelOptTable table, @Nonnull final List<RelHint> hints) {
-    final RelNode scan = table.toRel(createToRelContext());
+    final RelNode scan = table.toRel(createToRelContext(hints));
 
     final InitializerExpressionFactory ief =
         Util.first(table.unwrap(InitializerExpressionFactory.class),

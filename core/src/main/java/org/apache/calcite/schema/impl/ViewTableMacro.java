@@ -67,7 +67,7 @@ public class ViewTableMacro implements TableMacro {
     return Collections.emptyList();
   }
 
-  public TranslatableTable apply(List<Object> arguments) {
+  public TranslatableTable apply(List<? extends Object> arguments) {
     final CalciteConnection connection =
         MaterializedViewTable.MATERIALIZATION_CONNECTION;
     CalcitePrepare.AnalyzeViewResult parsed =

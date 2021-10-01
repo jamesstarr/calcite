@@ -18,6 +18,7 @@ package org.apache.calcite.sql.parser;
 
 import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.avatica.util.Quoting;
+import org.apache.calcite.config.CharLiteralStyle;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.runtime.CalciteContextException;
 import org.apache.calcite.sql.SqlNode;
@@ -28,8 +29,10 @@ import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.sql.validate.SqlDelegatingConformance;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 
 import java.io.StringReader;
+import java.util.Set;
 
 /**
  * A <code>SqlParser</code> parses a SQL statement.
@@ -227,6 +230,7 @@ public class SqlParser {
     SqlConformance conformance();
     @Deprecated // to be removed before 2.0
     boolean allowBangEqual();
+    Set<CharLiteralStyle> charLiteralStyles();
     SqlParserImplFactory parserFactory();
   }
 
@@ -240,6 +244,7 @@ public class SqlParser {
     private SqlConformance conformance = SqlConformanceEnum.DEFAULT;
     private boolean allowBangEqual =
         SqlConformanceEnum.DEFAULT.isBangEqualAllowed();
+    Set<CharLiteralStyle> charLiteralStyles = ImmutableSet.of(CharLiteralStyle.STANDARD);
     private SqlParserImplFactory parserFactory = SqlParserImpl.FACTORY;
 
     private ConfigBuilder() {}
@@ -252,6 +257,7 @@ public class SqlParser {
       this.identifierMaxLength = config.identifierMaxLength();
       this.conformance = config.conformance();
       this.allowBangEqual = config.allowBangEqual();
+      this.charLiteralStyles = config.charLiteralStyles();
       this.parserFactory = config.parserFactory();
       return this;
     }
@@ -301,6 +307,11 @@ public class SqlParser {
       return this;
     }
 
+    public ConfigBuilder setCharLiteralStyles(Set<CharLiteralStyle> charLiteralStyles) {
+      this.charLiteralStyles = charLiteralStyles;
+      return this;
+    }
+
     public ConfigBuilder setParserFactory(SqlParserImplFactory factory) {
       this.parserFactory = Preconditions.checkNotNull(factory);
       return this;
@@ -318,7 +329,7 @@ public class SqlParser {
      * {@link Config}. */
     public Config build() {
       return new ConfigImpl(identifierMaxLength, quotedCasing, unquotedCasing,
-          quoting, caseSensitive, conformance, parserFactory);
+          quoting, caseSensitive, conformance, charLiteralStyles, parserFactory);
     }
 
   }
@@ -333,17 +344,20 @@ public class SqlParser {
     private final Casing quotedCasing;
     private final Casing unquotedCasing;
     private final Quoting quoting;
+    private final Set<CharLiteralStyle> charLiteralStyles;
     private final SqlParserImplFactory parserFactory;
 
     private ConfigImpl(int identifierMaxLength, Casing quotedCasing,
         Casing unquotedCasing, Quoting quoting, boolean caseSensitive,
-        SqlConformance conformance, SqlParserImplFactory parserFactory) {
+        SqlConformance conformance, Set<CharLiteralStyle> charLiteralStyles,
+        SqlParserImplFactory parserFactory) {
       this.identifierMaxLength = identifierMaxLength;
       this.caseSensitive = caseSensitive;
       this.conformance = Preconditions.checkNotNull(conformance);
       this.quotedCasing = Preconditions.checkNotNull(quotedCasing);
       this.unquotedCasing = Preconditions.checkNotNull(unquotedCasing);
       this.quoting = Preconditions.checkNotNull(quoting);
+      this.charLiteralStyles = charLiteralStyles;
       this.parserFactory = Preconditions.checkNotNull(parserFactory);
     }
 
@@ -373,6 +387,10 @@ public class SqlParser {
 
     public boolean allowBangEqual() {
       return conformance.isBangEqualAllowed();
+    }
+
+    public Set<CharLiteralStyle> charLiteralStyles() {
+      return charLiteralStyles;
     }
 
     public SqlParserImplFactory parserFactory() {

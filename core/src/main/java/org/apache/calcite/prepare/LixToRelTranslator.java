@@ -29,6 +29,7 @@ import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
+import org.apache.calcite.rel.hint.RelHint;
 import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.logical.LogicalTableScan;
@@ -62,6 +63,10 @@ class LixToRelTranslator implements RelOptTable.ToRelContext {
 
   public RelOptCluster getCluster() {
     return cluster;
+  }
+
+  @Override public List<RelHint> getTableHints() {
+    return ImmutableList.of();
   }
 
   public RelRoot expandView(RelDataType rowType, String queryString,

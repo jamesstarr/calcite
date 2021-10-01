@@ -113,7 +113,7 @@ public class MaterializedViewTable extends ViewTable {
               existing));
     }
 
-    @Override public TranslatableTable apply(List<Object> arguments) {
+    @Override public TranslatableTable apply(List<? extends Object> arguments) {
       assert arguments.isEmpty();
       CalcitePrepare.ParseResult parsed =
           Schemas.parse(MATERIALIZATION_CONNECTION, schema, schemaPath,

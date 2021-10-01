@@ -71,7 +71,7 @@ public class TableMacroImpl extends ReflectiveFunctionBase
    * @param arguments Arguments
    * @return Table
    */
-  public TranslatableTable apply(List<Object> arguments) {
+  public TranslatableTable apply(List<? extends Object> arguments) {
     try {
       Object o = null;
       if (!Modifier.isStatic(method.getModifiers())) {
