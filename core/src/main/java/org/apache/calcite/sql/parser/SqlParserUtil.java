@@ -788,7 +788,10 @@ public final class SqlParserUtil {
     }
   }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ee1ef8208 (DX-36442: Clean up trivial method signatures)
   /** Implementation of
    * {@link org.apache.calcite.sql.SqlSpecialOperator.TokenSequence}
    * based on an existing parser. */

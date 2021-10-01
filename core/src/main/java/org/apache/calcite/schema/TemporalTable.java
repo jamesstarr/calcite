@@ -16,8 +16,7 @@
  */
 package org.apache.calcite.schema;
 
-import javax.annotation.Nonnull;
-
+>>>>>>> ee1ef8208 (DX-36442: Clean up trivial method signatures)
 /**
  * Table that is temporal.
  */
@@ -25,9 +24,19 @@ public interface TemporalTable extends Table {
 
   /** Returns the name of the system column that contains the start effective
    * time of each row. */
+<<<<<<< HEAD
   @Nonnull String getSysStartFieldName();
 
   /** Returns the name of the system column that contains the end effective
    * time of each row. */
   @Nonnull String getSysEndFieldName();
 }
+=======
+  String getSysStartFieldName();
+
+  /** Returns the name of the system column that contains the end effective
+   * time of each row. */
+  String getSysEndFieldName();
+}
+
+// End TemporalTable.java

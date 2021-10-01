@@ -90,3 +90,8 @@ public class StringAndPos {
         pos.getEndLineNum(), pos.getEndColumnNum() + 1);
   }
 }
+<<<<<<< HEAD
+=======
+
+// End StringAndPos.java
+>>>>>>> ee1ef8208 (DX-36442: Clean up trivial method signatures)

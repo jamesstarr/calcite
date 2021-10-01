@@ -18,7 +18,7 @@ package org.apache.calcite.config;
 
 /** Styles of character literal.
  *
- * @see org.apache.calcite.sql.parser.SqlParser.Config#charLiteralStyles() */
+ * @see Lex#charLiteralStyles */
 public enum CharLiteralStyle {
   /** Standard character literal. Enclosed in single quotes, using single quotes
    * to escape. Example: {@code 'Won''t'}. */
@@ -30,3 +30,7 @@ public enum CharLiteralStyle {
    * Example: {@code "Won\'t"}. */
   BQ_DOUBLE
 }
+<<<<<<< HEAD
+=======
+// End CharLiteralStyle.java
+>>>>>>> ee1ef8208 (DX-36442: Clean up trivial method signatures)

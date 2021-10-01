@@ -637,14 +637,6 @@ public class SqlParserTest {
   }
 
   public SqlParser getSqlParser(String sql) {
-<<<<<<< HEAD
-    return getSqlParser(new SourceStringReader(sql), UnaryOperator.identity());
-  }
-
-  protected SqlParser getSqlParser(Reader source,
-      UnaryOperator<SqlParser.ConfigBuilder> transform) {
-    final SqlParser.ConfigBuilder configBuilder =
-=======
     return SqlParser.create(sql,
         SqlParser.configBuilder()
             .setParserFactory(parserImplFactory())
@@ -8751,6 +8743,190 @@ public class SqlParserTest {
         sqlNodeList = getSqlParser(sql).parseStmtList();
       } catch (SqlParseException e) {
         throw new RuntimeException("Error while parsing SQL: " + sql, e);
+<<<<<<< HEAD
+=======
+      }
+      return sqlNodeList;
+    }
+
+    public void checkExp(
+        String sql,
+        String expected) {
+      final SqlNode sqlNode = parseExpressionAndHandleEx(sql);
+      String actual = sqlNode.toSqlString(null, true).getSql();
+      if (LINUXIFY.get()[0]) {
+        actual = Util.toLinux(actual);
+      }
+      TestUtil.assertEqualsVerbose(expected, actual);
+    }
+
+    protected SqlNode parseExpressionAndHandleEx(String sql) {
+      final SqlNode sqlNode;
+      try {
+        sqlNode = getSqlParser(sql).parseExpression();
+      } catch (SqlParseException e) {
+        throw new RuntimeException("Error while parsing expression: " + sql, e);
+      }
+      return sqlNode;
+    }
+
+    public void checkFails(
+        String sql,
+        boolean list,
+        String expectedMsgPattern) {
+      StringAndPos sap = SqlParserUtil.findPos(sql);
+      Throwable thrown = null;
+      try {
+        final SqlNode sqlNode;
+        if (list) {
+          sqlNode = getSqlParser(sap.sql).parseStmtList();
+        } else {
+          sqlNode = getSqlParser(sap.sql).parseStmt();
+        }
+        Util.discard(sqlNode);
+      } catch (Throwable ex) {
+        thrown = ex;
+      }
+
+      SqlValidatorTestCase.checkEx(thrown, expectedMsgPattern, sap);
+    }
+
+    public void checkNode(String sql, Matcher<SqlNode> matcher) {
+      StringAndPos sap = SqlParserUtil.findPos(sql);
+      try {
+        final SqlNode sqlNode = getSqlParser(sap.sql).parseStmt();
+        assertThat(sqlNode, matcher);
+      } catch (SqlParseException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    /**
+     * Tests that an expression throws an exception which matches the given
+     * pattern.
+     */
+    public void checkExpFails(
+        String sql,
+        String expectedMsgPattern) {
+      StringAndPos sap = SqlParserUtil.findPos(sql);
+      Throwable thrown = null;
+      try {
+        final SqlNode sqlNode = getSqlParser(sap.sql).parseExpression();
+        Util.discard(sqlNode);
+      } catch (Throwable ex) {
+        thrown = ex;
+      }
+
+      SqlValidatorTestCase.checkEx(thrown, expectedMsgPattern, sap);
+    }
+  }
+
+  private boolean isNotSubclass() {
+    return this.getClass().equals(SqlParserTest.class);
+  }
+
+  /**
+   * Implementation of {@link Tester} which makes sure that the results of
+   * unparsing a query are consistent with the original query.
+   */
+  public class UnparsingTesterImpl extends TesterImpl {
+    private UnaryOperator<SqlWriterConfig> simple() {
+      return c -> c.withSelectListItemsOnSeparateLines(false)
+          .withUpdateSetListNewline(false)
+          .withIndentation(0)
+          .withFromFolding(SqlWriterConfig.LineFolding.TALL);
+    }
+
+    private UnaryOperator<SqlWriterConfig> simpleWithParens() {
+      return simple().andThen(withParens())::apply;
+    }
+
+    private UnaryOperator<SqlWriterConfig> simpleWithParensAnsi() {
+      return simpleWithParens().andThen(withAnsi())::apply;
+    }
+
+    private UnaryOperator<SqlWriterConfig> withParens() {
+      return c -> c.withAlwaysUseParentheses(true);
+    }
+
+    private UnaryOperator<SqlWriterConfig> withAnsi() {
+      return c -> c.withDialect(AnsiSqlDialect.DEFAULT);
+    }
+
+    private UnaryOperator<SqlWriterConfig> randomize(Random random) {
+      return c -> c.withFoldLength(random.nextInt(5) * 20 + 3)
+          .withHavingFolding(nextLineFolding(random))
+          .withWhereFolding(nextLineFolding(random))
+          .withSelectFolding(nextLineFolding(random))
+          .withFromFolding(nextLineFolding(random))
+          .withGroupByFolding(nextLineFolding(random))
+          .withClauseStartsLine(random.nextBoolean())
+          .withClauseEndsLine(random.nextBoolean());
+    }
+
+    private String toSqlString(SqlNodeList sqlNodeList,
+        UnaryOperator<SqlWriterConfig> transform) {
+      return sqlNodeList.getList().stream()
+          .map(node -> node.toSqlString(transform).getSql())
+          .collect(Collectors.joining(";"));
+    }
+
+    private SqlWriterConfig.LineFolding nextLineFolding(Random random) {
+      return nextEnum(random, SqlWriterConfig.LineFolding.class);
+    }
+
+    private <E extends Enum<E>> E nextEnum(Random random, Class<E> enumClass) {
+      final E[] constants = enumClass.getEnumConstants();
+      return constants[random.nextInt(constants.length)];
+    }
+
+    private void checkList(SqlNodeList sqlNodeList, List<String> expected) {
+      assertEquals(expected.size(), sqlNodeList.size());
+
+      for (int i = 0; i < sqlNodeList.size(); i++) {
+        SqlNode sqlNode = sqlNodeList.get(i);
+        // Unparse with no dialect, always parenthesize.
+        final String actual =
+            sqlNode.toSqlString(simpleWithParensAnsi()).getSql();
+        assertEquals(expected.get(i), linux(actual));
+      }
+    }
+
+    @Override public void checkList(String sql, List<String> expected) {
+      SqlNodeList sqlNodeList = parseStmtsAndHandleEx(sql);
+
+      checkList(sqlNodeList, expected);
+
+      // Unparse again in Calcite dialect (which we can parse), and
+      // minimal parentheses.
+      final String sql1 = toSqlString(sqlNodeList, simple());
+
+      // Parse and unparse again.
+      SqlNodeList sqlNodeList2;
+      final Quoting q = quoting;
+      try {
+        quoting = Quoting.DOUBLE_QUOTE;
+        sqlNodeList2 = parseStmtsAndHandleEx(sql1);
+      } finally {
+        quoting = q;
+      }
+      final String sql2 = toSqlString(sqlNodeList2, simple());
+
+      // Should be the same as we started with.
+      assertEquals(sql1, sql2);
+
+      // Now unparse again in the null dialect.
+      // If the unparser is not including sufficient parens to override
+      // precedence, the problem will show up here.
+      checkList(sqlNodeList2, expected);
+
+      final Random random = new Random();
+      final String sql3 = toSqlString(sqlNodeList, randomize(random));
+      assertThat(sql3, notNullValue());
+    }
+
+    @Override public void check(String sql, String expected) {
+      SqlNode sqlNode = parseStmtAndHandleEx(sql);
       // Unparse with no dialect, always parenthesize.
       final String actual = sqlNode.toSqlString(null, true).getSql();
       assertEquals(expected, linux(actual));

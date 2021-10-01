@@ -98,7 +98,7 @@ public abstract class RelOptAbstractTable implements RelOptTable {
   }
 
   // Override to get unique keys
-  public List<ImmutableBitSet> getKeys() {
+  @Override public List<ImmutableBitSet> getKeys() {
     return Collections.emptyList();
   }
 

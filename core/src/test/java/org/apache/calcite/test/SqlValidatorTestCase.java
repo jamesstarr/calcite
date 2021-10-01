@@ -24,7 +24,10 @@ import org.apache.calcite.sql.SqlCollation;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.parser.SqlParseException;
-import org.apache.calcite.sql.test.AbstractSqlTester;
+import org.apache.calcite.sql.parser.SqlParserUtil;
+import org.apache.calcite.sql.parser.StringAndPos;
+import org.apache.calcite.sql.test.DefaultSqlTestFactory;
+import org.apache.calcite.sql.test.DelegatingSqlTestFactory;
 import org.apache.calcite.sql.test.SqlTestFactory;
 import org.apache.calcite.sql.test.SqlTester;
 import org.apache.calcite.sql.test.SqlValidatorTester;
@@ -227,7 +230,7 @@ public class SqlValidatorTestCase {
   public static void checkEx(
       Throwable ex,
       String expectedMsgPattern,
-      SqlParserUtil.StringAndPos sap) {
+      StringAndPos sap) {
     if (null == ex) {
       if (expectedMsgPattern == null) {
         // No error expected, and no error happened.

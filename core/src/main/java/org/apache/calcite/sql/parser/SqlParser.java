@@ -29,12 +29,7 @@ import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.sql.validate.SqlDelegatingConformance;
 import org.apache.calcite.util.SourceStringReader;
 
-import com.google.common.collect.ImmutableSet;
-
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.List;
-import java.util.Objects;
+>>>>>>> ee1ef8208 (DX-36442: Clean up trivial method signatures)
 import java.util.Set;
 
 /**
@@ -168,7 +163,6 @@ public class SqlParser {
 <<<<<<< HEAD
 
 =======
->>>>>>> 6b74b695a ([CALCITE-2453] Parse list of SQL statements separated with a semicolon (Chunwei Lei, charbel yazbeck))
     }
   }
 
@@ -273,18 +267,7 @@ public class SqlParser {
     private int identifierMaxLength = DEFAULT_IDENTIFIER_MAX_LENGTH;
     private boolean caseSensitive = Lex.ORACLE.caseSensitive;
     private SqlConformance conformance = SqlConformanceEnum.DEFAULT;
-    Set<CharLiteralStyle> charLiteralStyles = ImmutableSet.of(CharLiteralStyle.STANDARD);
-    private SqlParserImplFactory parserFactory = SqlParserImpl.FACTORY;
-
-    private ConfigBuilder() {}
-
-    /** Sets configuration identical to a given {@link Config}. */
-    public ConfigBuilder setConfig(Config config) {
-      this.quotedCasing = config.quotedCasing();
-      this.unquotedCasing = config.unquotedCasing();
-      this.quoting = config.quoting();
-      this.identifierMaxLength = config.identifierMaxLength();
-      this.conformance = config.conformance();
+      this.allowBangEqual = config.allowBangEqual();
       this.charLiteralStyles = config.charLiteralStyles();
       this.parserFactory = config.parserFactory();
       return this;
@@ -339,6 +322,11 @@ public class SqlParser {
       return this;
     }
 
+    public ConfigBuilder setCharLiteralStyles(Set<CharLiteralStyle> charLiteralStyles) {
+      this.charLiteralStyles = charLiteralStyles;
+      return this;
+    }
+
     public ConfigBuilder setParserFactory(SqlParserImplFactory factory) {
       this.parserFactory = Objects.requireNonNull(factory);
       return this;
@@ -380,13 +368,12 @@ public class SqlParser {
         SqlParserImplFactory parserFactory) {
       this.identifierMaxLength = identifierMaxLength;
       this.caseSensitive = caseSensitive;
-      this.conformance = Objects.requireNonNull(conformance);
-      this.quotedCasing = Objects.requireNonNull(quotedCasing);
-      this.unquotedCasing = Objects.requireNonNull(unquotedCasing);
-      this.quoting = Objects.requireNonNull(quoting);
+      this.conformance = Preconditions.checkNotNull(conformance);
+      this.quotedCasing = Preconditions.checkNotNull(quotedCasing);
+      this.unquotedCasing = Preconditions.checkNotNull(unquotedCasing);
+      this.quoting = Preconditions.checkNotNull(quoting);
       this.charLiteralStyles = charLiteralStyles;
-      this.parserFactory = Objects.requireNonNull(parserFactory);
-
+      this.parserFactory = Preconditions.checkNotNull(parserFactory);
     }
 
     public int identifierMaxLength() {
