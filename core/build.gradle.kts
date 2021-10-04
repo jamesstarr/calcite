@@ -152,6 +152,11 @@ val javaCCMain by tasks.registering(org.apache.calcite.buildtools.javacc.JavaCCT
     packageName.set("org.apache.calcite.sql.parser.impl")
 }
 
+tasks.compileKotlin {
+    dependsOn(versionClass)
+    dependsOn(javaCCMain)
+}
+
 val fmppTest by tasks.registering(org.apache.calcite.buildtools.fmpp.FmppTask::class) {
     config.set(file("src/test/codegen/config.fmpp"))
     templates.set(file("src/main/codegen/templates"))
@@ -164,6 +169,10 @@ val javaCCTest by tasks.registering(org.apache.calcite.buildtools.javacc.JavaCCT
     }
     inputFile.set(parserFile)
     packageName.set("org.apache.calcite.sql.parser.parserextensiontesting")
+}
+
+tasks.compileTestKotlin {
+    dependsOn(javaCCTest)
 }
 
 ide {
