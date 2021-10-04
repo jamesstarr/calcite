@@ -942,7 +942,8 @@ public class Resources {
      * Opens the properties file corresponding to a given class. The code is
      * copied from {@link ResourceBundle}.
      */
-<<<<<<< HEAD
+    private static InputStream openPropertiesFile(Class clazz) {
+=======
     @SuppressWarnings("removal")
     private static @Nullable InputStream openPropertiesFile(Class clazz) {
       final ClassLoader loader = clazz.getClassLoader();
@@ -953,18 +954,6 @@ public class Resources {
               return loader.getResourceAsStream(resName);
             } else {
               return ClassLoader.getSystemResourceAsStream(resName);
-=======
-    private static InputStream openPropertiesFile(Class clazz) {
-      final ClassLoader loader = clazz.getClassLoader();
-      final String resName = clazz.getName().replace('.', '/') + ".properties";
-      return (InputStream) java.security.AccessController.doPrivileged(
-          new java.security.PrivilegedAction() {
-            public Object run() {
-              if (loader != null) {
-                return loader.getResourceAsStream(resName);
-              } else {
-                return ClassLoader.getSystemResourceAsStream(resName);
-              }
             }
           });
     }
