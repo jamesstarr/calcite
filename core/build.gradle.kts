@@ -223,11 +223,15 @@ val javaCCMain by tasks.registering(org.apache.calcite.buildtools.javacc.JavaCCT
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> af96e9835 ([CALCITE-4829] Bump Gradle to 7.2 and test with Java 17 at GitHub Actions)
 tasks.compileKotlin {
     dependsOn(versionClass)
     dependsOn(javaCCMain)
 }
 
+<<<<<<< HEAD
 // Ensure spotless runs after version class generation and JAR tasks depend on JavaCC
 afterEvaluate {
     tasks.findByName("spotlessJava")?.let { spotlessTask ->
@@ -247,6 +251,8 @@ afterEvaluate {
 
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> af96e9835 ([CALCITE-4829] Bump Gradle to 7.2 and test with Java 17 at GitHub Actions)
 val fmppTest by tasks.registering(org.apache.calcite.buildtools.fmpp.FmppTask::class) {
     config.set(file("src/test/codegen/config.fmpp"))
     templates.set(file("src/main/codegen/templates"))
@@ -262,12 +268,18 @@ val javaCCTest by tasks.registering(org.apache.calcite.buildtools.javacc.JavaCCT
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> af96e9835 ([CALCITE-4829] Bump Gradle to 7.2 and test with Java 17 at GitHub Actions)
 tasks.compileTestKotlin {
     dependsOn(javaCCTest)
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> af96e9835 ([CALCITE-4829] Bump Gradle to 7.2 and test with Java 17 at GitHub Actions)
 ide {
     fun generatedSource(javacc: TaskProvider<org.apache.calcite.buildtools.javacc.JavaCCTask>, sourceSet: String) =
         generatedJavaSources(javacc.get(), javacc.get().output.get().asFile, sourceSets.named(sourceSet))

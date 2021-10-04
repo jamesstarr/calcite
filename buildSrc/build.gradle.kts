@@ -56,6 +56,7 @@ fun Project.applyKotlinProjectConventions() {
     apply(plugin = "org.gradle.kotlin.kotlin-dsl")
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     tasks.withType<KotlinCompile> {
 =======
     plugins.withType<KotlinDslPlugin> {
@@ -64,6 +65,8 @@ fun Project.applyKotlinProjectConventions() {
         }
     }
 
+=======
+>>>>>>> af96e9835 ([CALCITE-4829] Bump Gradle to 7.2 and test with Java 17 at GitHub Actions)
     tasks.withType<KotlinCompile> {
         sourceCompatibility = "unused"
         targetCompatibility = "unused"
