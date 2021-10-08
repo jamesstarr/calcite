@@ -2745,7 +2745,10 @@ public class RexUtil {
       // Only transform DATETIME_PLUS calls that are applied to a
       // datetime <op> single-field interval.
       if (call.getOperator() != SqlStdOperatorTable.DATETIME_PLUS
-          && call.getOperator() != SqlStdOperatorTable.DATETIME_MINUS) {
+          && ((call.getOperator() != SqlStdOperatorTable.MINUS_DATE)
+              || (call.getOperands().size() != 2)
+              || !(INTERVAL_TYPES.contains(
+                      call.getOperands().get(1).getType().getSqlTypeName())))) {
         return super.visitCall(call);
       }
 
@@ -2766,7 +2769,7 @@ public class RexUtil {
         throw new Util.FoundOne(call);
       }
 
-      final boolean negate = call.getOperator() == SqlStdOperatorTable.DATETIME_MINUS;
+      final boolean negate = call.getOperator() == SqlStdOperatorTable.MINUS_DATE;
 
       // TODO DX-13313: Support more types of interval expressions.
 

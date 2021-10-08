@@ -9090,7 +9090,6 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         + "+ left\n"
         + "- left\n"
         + "- -\n"
-        + "DATETIME_MINUS -\n"
         + "DATETIME_PLUS -\n"
         + "EXISTS pre\n"
         + "\n"
