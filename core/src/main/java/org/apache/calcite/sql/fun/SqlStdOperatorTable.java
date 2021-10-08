@@ -548,16 +548,6 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           OperandTypes.PLUS_OPERATOR);
 
   /**
-   * Infix datetime minus operator, '<code>DATETIME - INTERVAL</code>'.
-   */
-  public static final SqlSpecialOperator DATETIME_MINUS =
-      new SqlDatetimeAddMinusOperator(
-          "DATETIME_MINUS",
-          "-",
-          SqlKind.MINUS,
-          OperandTypes.MINUS_OPERATOR);
-
-  /**
    * Multiset {@code MEMBER OF}, which returns whether a element belongs to a
    * multiset.
    *
