@@ -55,10 +55,6 @@ public abstract class TableScan
    */
   protected final RelOptTable table;
 
-  /**
-   * The table hints.
-   */
-  protected final ImmutableList<RelHint> hints;
 
   //~ Constructors -----------------------------------------------------------
 
@@ -69,7 +65,6 @@ public abstract class TableScan
     if (table.getRelOptSchema() != null) {
       cluster.getPlanner().registerSchema(table.getRelOptSchema());
     }
-    this.hints = ImmutableList.copyOf(hints);
   }
 
   @Deprecated // to be removed before 2.0
@@ -179,7 +174,7 @@ public abstract class TableScan
   }
 
   @Override public ImmutableList<RelHint> getHints() {
-    return hints;
+    return ImmutableList.of();
   }
 }
 

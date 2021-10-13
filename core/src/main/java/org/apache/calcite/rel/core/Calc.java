@@ -49,8 +49,6 @@ import java.util.List;
 public abstract class Calc extends SingleRel implements Hintable {
   //~ Instance fields --------------------------------------------------------
 
-  protected final ImmutableList<RelHint> hints;
-
   protected final RexProgram program;
 
   //~ Constructors -----------------------------------------------------------
@@ -72,7 +70,6 @@ public abstract class Calc extends SingleRel implements Hintable {
     super(cluster, traits, child);
     this.rowType = program.getOutputRowType();
     this.program = program;
-    this.hints = ImmutableList.copyOf(hints);
     assert isValid(Litmus.THROW, null);
   }
 
@@ -155,7 +152,7 @@ public abstract class Calc extends SingleRel implements Hintable {
   }
 
   @Override public ImmutableList<RelHint> getHints() {
-    return hints;
+    return ImmutableList.of();
   }
 
   @Override public double estimateRowCount(RelMetadataQuery mq) {

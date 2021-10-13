@@ -44,12 +44,14 @@ import java.util.Set;
 public abstract class EquiJoin extends Join {
   public final ImmutableIntList leftKeys;
   public final ImmutableIntList rightKeys;
+  protected final JoinInfo joinInfo;
 
   /** Creates an EquiJoin. */
   public EquiJoin(RelOptCluster cluster, RelTraitSet traits, RelNode left,
       RelNode right, RexNode condition, Set<CorrelationId> variablesSet,
       JoinRelType joinType) {
     super(cluster, traits, ImmutableList.of(), left, right, condition, variablesSet, joinType);
+    this.joinInfo = JoinInfo.of(left, right, condition);
     this.leftKeys = Objects.requireNonNull(joinInfo.leftKeys);
     this.rightKeys = Objects.requireNonNull(joinInfo.rightKeys);
     assert joinInfo.isEqui() : "Create EquiJoin with non-equi join condition.";
@@ -62,6 +64,7 @@ public abstract class EquiJoin extends Join {
       ImmutableIntList rightKeys, Set<CorrelationId> variablesSet,
       JoinRelType joinType) {
     super(cluster, traits, ImmutableList.of(), left, right, condition, variablesSet, joinType);
+    this.joinInfo = JoinInfo.of(left, right, condition);
     this.leftKeys = Preconditions.checkNotNull(leftKeys);
     this.rightKeys = Preconditions.checkNotNull(rightKeys);
   }

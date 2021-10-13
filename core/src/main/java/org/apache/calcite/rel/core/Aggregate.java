@@ -75,7 +75,6 @@ import java.util.Set;
  */
 public abstract class Aggregate extends SingleRel implements Hintable {
 
-  protected final ImmutableList<RelHint> hints;
   /**
    * @see org.apache.calcite.util.Bug#CALCITE_461_FIXED
    */
@@ -158,7 +157,6 @@ public abstract class Aggregate extends SingleRel implements Hintable {
       List<ImmutableBitSet> groupSets,
       List<AggregateCall> aggCalls) {
     super(cluster, traitSet, input);
-    this.hints = ImmutableList.copyOf(hints);
     this.aggCalls = ImmutableList.copyOf(aggCalls);
     this.groupSet = Preconditions.checkNotNull(groupSet);
     if (groupSets == null) {
@@ -477,7 +475,7 @@ public abstract class Aggregate extends SingleRel implements Hintable {
   }
 
   @Override public ImmutableList<RelHint> getHints() {
-    return hints;
+    return ImmutableList.of();
   }
 
   /**

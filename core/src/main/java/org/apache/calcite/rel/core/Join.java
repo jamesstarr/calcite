@@ -59,15 +59,12 @@ public abstract class Join extends BiRel implements Hintable {
 
   protected final RexNode condition;
   protected final ImmutableSet<CorrelationId> variablesSet;
-  protected final ImmutableList<RelHint> hints;
 
   /**
    * Values must be of enumeration {@link JoinRelType}, except that
    * {@link JoinRelType#RIGHT} is disallowed.
    */
   protected final JoinRelType joinType;
-
-  protected final JoinInfo joinInfo;
 
   //~ Constructors -----------------------------------------------------------
 
@@ -98,8 +95,6 @@ public abstract class Join extends BiRel implements Hintable {
     this.condition = Preconditions.checkNotNull(condition);
     this.variablesSet = ImmutableSet.copyOf(variablesSet);
     this.joinType = Preconditions.checkNotNull(joinType);
-    this.joinInfo = JoinInfo.of(left, right, condition);
-    this.hints = ImmutableList.copyOf(hints);
   }
 
   @Deprecated // to be removed before 2.0
@@ -307,11 +302,11 @@ public abstract class Join extends BiRel implements Hintable {
    * @return Analyzed join condition
    */
   public JoinInfo analyzeCondition() {
-    return joinInfo;
+    return JoinInfo.of(left, right, condition);
   }
 
   @Override public ImmutableList<RelHint> getHints() {
-    return hints;
+    return ImmutableList.of();
   }
 }
 

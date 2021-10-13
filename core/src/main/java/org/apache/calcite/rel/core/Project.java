@@ -63,8 +63,6 @@ public abstract class Project extends SingleRel implements Hintable {
 
   protected final ImmutableList<RexNode> exps;
 
-  protected final ImmutableList<RelHint> hints;
-
   //~ Constructors -----------------------------------------------------------
 
   /**
@@ -87,7 +85,6 @@ public abstract class Project extends SingleRel implements Hintable {
     super(cluster, traits, input);
     assert rowType != null;
     this.exps = ImmutableList.copyOf(projects);
-    this.hints = ImmutableList.copyOf(hints);
     this.rowType = rowType;
     assert isValid(Litmus.THROW, null);
   }
@@ -180,7 +177,7 @@ public abstract class Project extends SingleRel implements Hintable {
   }
 
   @Override public ImmutableList<RelHint> getHints() {
-    return hints;
+    return ImmutableList.of();
   }
 
   @Deprecated // to be removed before 2.0
