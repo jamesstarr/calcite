@@ -120,7 +120,7 @@ public final class LogicalCalc extends Calc {
 
   @Override public LogicalCalc copy(RelTraitSet traitSet, RelNode child,
       RexProgram program) {
-    return new LogicalCalc(getCluster(), traitSet, hints, child, program);
+    return new LogicalCalc(getCluster(), traitSet, ImmutableList.of(), child, program);
   }
 
   @Override public void collectVariablesUsed(Set<CorrelationId> variableSet) {

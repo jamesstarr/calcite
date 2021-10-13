@@ -125,7 +125,7 @@ public final class LogicalProject extends Project {
 
   @Override public LogicalProject copy(RelTraitSet traitSet, RelNode input,
       List<RexNode> projects, RelDataType rowType) {
-    return new LogicalProject(getCluster(), traitSet, hints, input, projects, rowType);
+    return new LogicalProject(getCluster(), traitSet, input, projects, rowType);
   }
 
   @Override public RelNode accept(RelShuttle shuttle) {
