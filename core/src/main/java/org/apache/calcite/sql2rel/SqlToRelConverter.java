@@ -5421,7 +5421,7 @@ public class SqlToRelConverter {
           query = Util.getOnlyElement(call.getOperandList());
           relAndCorrelationContext = convertSubQuery(query);
           return RexSubQuery.multiset(relAndCorrelationContext.relNode,
-              relAndCorrelationContext.correlationContext.correlationId);
+                  relAndCorrelationContext.correlationContext.correlationId);
         default:
           break;
         }

@@ -128,6 +128,24 @@ public class RexSubQuery extends RexCall {
 >>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
   }
 
+  /** Creates an ARRAY sub-query. */
+  public static RexSubQuery array(RelNode rel) {
+    final RelDataTypeFactory typeFactory = rel.getCluster().getTypeFactory();
+    final RelDataType type =
+        typeFactory.createArrayType(rel.getRowType(), -1L);
+    return new RexSubQuery(type, SqlStdOperatorTable.ARRAY_QUERY,
+        ImmutableList.of(), rel, null);
+  }
+
+  /** Creates a MAP sub-query. */
+  public static RexSubQuery map(RelNode rel) {
+    final RelDataTypeFactory typeFactory = rel.getCluster().getTypeFactory();
+    final RelDataType type =
+        typeFactory.createMultisetType(rel.getRowType(), -1L);
+    return new RexSubQuery(type, SqlStdOperatorTable.MAP_QUERY,
+        ImmutableList.of(), rel, null);
+  }
+
   public <R> R accept(RexVisitor<R> visitor) {
     return visitor.visitSubQuery(this);
   }
