@@ -106,7 +106,9 @@ public class RexSubQuery extends RexCall {
   /** Creates a scalar sub-query. */
   public static RexSubQuery scalar(RelNode rel, @Nullable CorrelationId correlationId) {
     final List<RelDataTypeField> fieldList = rel.getRowType().getFieldList();
-    assert fieldList.size() == 1;
+    if (fieldList.size() != 1) {
+      throw new IllegalArgumentException();
+    }
     final RelDataTypeFactory typeFactory = rel.getCluster().getTypeFactory();
     final RelDataType type =
         typeFactory.createTypeWithNullability(fieldList.get(0).getType(), true);
@@ -123,6 +125,24 @@ public class RexSubQuery extends RexCall {
             -1L);
     return new RexSubQuery(type, SqlStdOperatorTable.MULTISET_QUERY,
         ImmutableList.of(), rel, correlationId);
+  }
+
+  /** Creates an ARRAY sub-query. */
+  public static RexSubQuery array(RelNode rel) {
+    final RelDataTypeFactory typeFactory = rel.getCluster().getTypeFactory();
+    final RelDataType type =
+        typeFactory.createArrayType(rel.getRowType(), -1L);
+    return new RexSubQuery(type, SqlStdOperatorTable.ARRAY_QUERY,
+        ImmutableList.of(), rel, null);
+  }
+
+  /** Creates a MAP sub-query. */
+  public static RexSubQuery map(RelNode rel) {
+    final RelDataTypeFactory typeFactory = rel.getCluster().getTypeFactory();
+    final RelDataType type =
+        typeFactory.createMultisetType(rel.getRowType(), -1L);
+    return new RexSubQuery(type, SqlStdOperatorTable.MAP_QUERY,
+        ImmutableList.of(), rel, null);
   }
 
   public <R> R accept(RexVisitor<R> visitor) {

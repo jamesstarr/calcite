@@ -1427,6 +1427,125 @@ public class RelBuilderTest {
     assertThat(root, hasTree(expected));
   }
 
+  @Test public void testInQuery() {
+    // Equivalent SQL:
+    //   SELECT *
+    //   FROM emp
+    //   WHERE deptno IN (
+    //     SELECT deptno
+    //     FROM dept
+    //     WHERE dname = 'Accounting')
+    final Function<RelBuilder, RelNode> f = b ->
+        b.scan("EMP")
+            .filter(
+                b.in(b.field("DEPTNO"),
+                    b2 ->
+                        b2.scan("DEPT")
+                            .filter(
+                                b2.equals(b2.field("DNAME"),
+                                    b2.literal("Accounting")))
+                            .project(b2.field("DEPTNO"))
+                            .build()))
+            .build();
+
+    final String expected = "LogicalFilter(condition=[IN($7, {\n"
+        + "LogicalProject(DEPTNO=[$0])\n"
+        + "  LogicalFilter(condition=[=($1, 'Accounting')])\n"
+        + "    LogicalTableScan(table=[[scott, DEPT]])\n"
+        + "})])\n"
+        + "  LogicalTableScan(table=[[scott, EMP]])\n";
+    assertThat(f.apply(createBuilder()), hasTree(expected));
+  }
+
+  @Test public void testExists() {
+    // Equivalent SQL:
+    //   SELECT *
+    //   FROM emp
+    //   WHERE EXISTS (
+    //     SELECT null
+    //     FROM dept
+    //     WHERE dname = 'Accounting')
+    final Function<RelBuilder, RelNode> f = b ->
+        b.scan("EMP")
+            .filter(
+                b.exists(b2 ->
+                    b2.scan("DEPT")
+                        .filter(
+                            b2.equals(b2.field("DNAME"),
+                                b2.literal("Accounting")))
+                        .build()))
+            .build();
+
+    final String expected = "LogicalFilter(condition=[EXISTS({\n"
+        + "LogicalFilter(condition=[=($1, 'Accounting')])\n"
+        + "  LogicalTableScan(table=[[scott, DEPT]])\n"
+        + "})])\n"
+        + "  LogicalTableScan(table=[[scott, EMP]])\n";
+    assertThat(f.apply(createBuilder()), hasTree(expected));
+  }
+
+  @Test public void testArrayQuery() {
+    // Equivalent SQL:
+    //   SELECT deptno, ARRAY (SELECT * FROM Emp)
+    //   FROM Dept AS d
+    final Function<RelBuilder, RelNode> f = b ->
+        b.scan("DEPT")
+            .project(
+                b.field("DEPTNO"),
+                b.arrayQuery(b2 ->
+                        b2.scan("EMP")
+                            .build()))
+            .build();
+
+    final String expected = "LogicalProject(DEPTNO=[$0], $f1=[ARRAY({\n"
+        + "LogicalTableScan(table=[[scott, EMP]])\n"
+        + "})])\n"
+        + "  LogicalTableScan(table=[[scott, DEPT]])\n";
+    assertThat(f.apply(createBuilder()), hasTree(expected));
+  }
+
+  @Test public void testMultisetQuery() {
+    // Equivalent SQL:
+    //   SELECT deptno, MULTISET (SELECT * FROM Emp)
+    //   FROM Dept AS d
+    final Function<RelBuilder, RelNode> f = b ->
+        b.scan("DEPT")
+            .project(
+                b.field("DEPTNO"),
+                b.multisetQuery(b2 ->
+                        b2.scan("EMP")
+                            .build()))
+            .build();
+
+    final String expected = "LogicalProject(DEPTNO=[$0], $f1=[MULTISET({\n"
+        + "LogicalTableScan(table=[[scott, EMP]])\n"
+        + "})])\n"
+        + "  LogicalTableScan(table=[[scott, DEPT]])\n";
+    assertThat(f.apply(createBuilder()), hasTree(expected));
+  }
+
+  @Test public void testMapQuery() {
+    // Equivalent SQL:
+    //   SELECT deptno, MAP (SELECT empno, job FROM Emp)
+    //   FROM Dept AS d
+    final Function<RelBuilder, RelNode> f = b ->
+        b.scan("DEPT")
+            .project(
+                b.field("DEPTNO"),
+                b.mapQuery(b2 ->
+                        b2.scan("EMP")
+                            .project(b2.field("EMPNO"), b2.field("JOB"))
+                            .build()))
+            .build();
+
+    final String expected = "LogicalProject(DEPTNO=[$0], $f1=[MAP({\n"
+        + "LogicalProject(EMPNO=[$0], JOB=[$2])\n"
+        + "  LogicalTableScan(table=[[scott, EMP]])\n"
+        + "})])\n"
+        + "  LogicalTableScan(table=[[scott, DEPT]])\n";
+    assertThat(f.apply(createBuilder()), hasTree(expected));
+  }
+
   @Test public void testAlias() {
     // Equivalent SQL:
     //   SELECT *
