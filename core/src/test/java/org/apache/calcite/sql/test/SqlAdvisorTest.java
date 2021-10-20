@@ -23,7 +23,438 @@ import org.apache.calcite.sql.advise.SqlSimpleParser;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.parser.SqlParserUtil;
 import org.apache.calcite.sql.parser.StringAndPos;
->>>>>>> ee1ef8208 (DX-36442: Clean up trivial method signatures)
+import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
+import org.apache.calcite.sql.validate.SqlConformance;
+import org.apache.calcite.sql.validate.SqlMoniker;
+import org.apache.calcite.sql.validate.SqlMonikerType;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.sql.validate.SqlValidatorWithHints;
+import org.apache.calcite.test.MockCatalogReader;
+import org.apache.calcite.test.SqlValidatorTestCase;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
+/**
+ * Concrete child class of {@link SqlValidatorTestCase}, containing unit tests
+ * for SqlAdvisor.
+ */
+public class SqlAdvisorTest extends SqlValidatorTestCase {
+  //~ Static fields/initializers ---------------------------------------------
+
+  private static final List<String> STAR_KEYWORD =
+      Arrays.asList(
+          "KEYWORD(*)");
+
+  protected static final List<String> FROM_KEYWORDS =
+      Arrays.asList(
+          "KEYWORD(()",
+          "KEYWORD(LATERAL)",
+          "KEYWORD(TABLE)",
+          "KEYWORD(UNNEST)");
+
+  protected static final List<String> SALES_TABLES =
+      Arrays.asList(
+          "SCHEMA(CATALOG.SALES)",
+          "SCHEMA(CATALOG.SALES.NEST)",
+          "TABLE(CATALOG.SALES.EMP)",
+          "TABLE(CATALOG.SALES.EMPDEFAULTS)",
+          "TABLE(CATALOG.SALES.EMPNULLABLES)",
+          "TABLE(CATALOG.SALES.EMP_B)",
+          "TABLE(CATALOG.SALES.EMP_20)",
+          "TABLE(CATALOG.SALES.EMPNULLABLES_20)",
+          "TABLE(CATALOG.SALES.EMP_ADDRESS)",
+          "TABLE(CATALOG.SALES.DEPT)",
+          "TABLE(CATALOG.SALES.DEPT_NESTED)",
+          "TABLE(CATALOG.SALES.BONUS)",
+          "TABLE(CATALOG.SALES.ORDERS)",
+          "TABLE(CATALOG.SALES.SALGRADE)",
+          "TABLE(CATALOG.SALES.SHIPMENTS)",
+          "TABLE(CATALOG.SALES.PRODUCTS)",
+          "TABLE(CATALOG.SALES.SUPPLIERS)",
+          "TABLE(CATALOG.SALES.EMP_R)",
+          "TABLE(CATALOG.SALES.DEPT_R)");
+
+  protected static final List<String> SALES_E_TABLES =
+      Arrays.asList(
+          "TABLE(CATALOG.SALES.EMP)",
+          "TABLE(CATALOG.SALES.EMPDEFAULTS)",
+          "TABLE(CATALOG.SALES.EMPNULLABLES)",
+          "TABLE(CATALOG.SALES.EMPNULLABLES_20)",
+          "TABLE(CATALOG.SALES.EMP_20)",
+          "TABLE(CATALOG.SALES.EMP_ADDRESS)",
+          "TABLE(CATALOG.SALES.EMP_B)",
+          "TABLE(CATALOG.SALES.EMP_R)");
+
+  private static final List<String> SCHEMAS =
+      Arrays.asList(
+          "CATALOG(CATALOG)",
+          "SCHEMA(CATALOG.DYNAMIC)",
+          "SCHEMA(CATALOG.SALES)",
+          "SCHEMA(CATALOG.STRUCT)",
+          "SCHEMA(CATALOG.CUSTOMER)",
+          "SCHEMA(CATALOG.SALES.NEST)");
+
+  private static final List<String> AB_TABLES =
+      Arrays.asList(
+          "TABLE(A)",
+          "TABLE(B)");
+
+  private static final List<String> EMP_TABLE =
+      Arrays.asList(
+          "TABLE(EMP)");
+
+  protected static final List<String> FETCH_OFFSET =
+      Arrays.asList(
+          "KEYWORD(FETCH)",
+          "KEYWORD(LIMIT)",
+          "KEYWORD(OFFSET)");
+
+  protected static final List<String> EXPR_KEYWORDS =
+      Arrays.asList(
+          "KEYWORD(()",
+          "KEYWORD(+)",
+          "KEYWORD(-)",
+          "KEYWORD(?)",
+          "KEYWORD(ABS)",
+          "KEYWORD(ARRAY)",
+          "KEYWORD(AVG)",
+          "KEYWORD(CARDINALITY)",
+          "KEYWORD(CASE)",
+          "KEYWORD(CAST)",
+          "KEYWORD(CEIL)",
+          "KEYWORD(CEILING)",
+          "KEYWORD(CHARACTER_LENGTH)",
+          "KEYWORD(CHAR_LENGTH)",
+          "KEYWORD(CLASSIFIER)",
+          "KEYWORD(COALESCE)",
+          "KEYWORD(COLLECT)",
+          "KEYWORD(CONVERT)",
+          "KEYWORD(COUNT)",
+          "KEYWORD(COVAR_POP)",
+          "KEYWORD(COVAR_SAMP)",
+          "KEYWORD(CUME_DIST)",
+          "KEYWORD(CURRENT)",
+          "KEYWORD(CURRENT_CATALOG)",
+          "KEYWORD(CURRENT_DATE)",
+          "KEYWORD(CURRENT_DEFAULT_TRANSFORM_GROUP)",
+          "KEYWORD(CURRENT_PATH)",
+          "KEYWORD(CURRENT_ROLE)",
+          "KEYWORD(CURRENT_SCHEMA)",
+          "KEYWORD(CURRENT_TIME)",
+          "KEYWORD(CURRENT_TIMESTAMP)",
+          "KEYWORD(CURRENT_USER)",
+          "KEYWORD(CURSOR)",
+          "KEYWORD(DATE)",
+          "KEYWORD(DENSE_RANK)",
+          "KEYWORD(ELEMENT)",
+          "KEYWORD(EXISTS)",
+          "KEYWORD(EXP)",
+          "KEYWORD(EXTRACT)",
+          "KEYWORD(FALSE)",
+          "KEYWORD(FIRST_VALUE)",
+          "KEYWORD(FLOOR)",
+          "KEYWORD(FUSION)",
+          "KEYWORD(GROUPING)",
+          "KEYWORD(HOUR)",
+          "KEYWORD(INTERVAL)",
+          "KEYWORD(LAG)",
+          "KEYWORD(LAST_VALUE)",
+          "KEYWORD(LEAD)",
+          "KEYWORD(LEFT)",
+          "KEYWORD(LN)",
+          "KEYWORD(LOCALTIME)",
+          "KEYWORD(LOCALTIMESTAMP)",
+          "KEYWORD(LOWER)",
+          "KEYWORD(MATCH_NUMBER)",
+          "KEYWORD(MAX)",
+          "KEYWORD(MIN)",
+          "KEYWORD(MINUTE)",
+          "KEYWORD(MOD)",
+          "KEYWORD(MONTH)",
+          "KEYWORD(MULTISET)",
+          "KEYWORD(NEW)",
+          "KEYWORD(NEXT)",
+          "KEYWORD(NOT)",
+          "KEYWORD(NTH_VALUE)",
+          "KEYWORD(NTILE)",
+          "KEYWORD(NULL)",
+          "KEYWORD(NULLIF)",
+          "KEYWORD(OCTET_LENGTH)",
+          "KEYWORD(OVERLAY)",
+          "KEYWORD(PERCENTILE_CONT)",
+          "KEYWORD(PERCENTILE_DISC)",
+          "KEYWORD(PERCENT_RANK)",
+          "KEYWORD(PERIOD)",
+          "KEYWORD(POSITION)",
+          "KEYWORD(POWER)",
+          "KEYWORD(PREV)",
+          "KEYWORD(RANK)",
+          "KEYWORD(REGR_SXX)",
+          "KEYWORD(REGR_SYY)",
+          "KEYWORD(RIGHT)",
+          "KEYWORD(ROW)",
+          "KEYWORD(ROW_NUMBER)",
+          "KEYWORD(RUNNING)",
+          "KEYWORD(SECOND)",
+          "KEYWORD(SESSION_USER)",
+          "KEYWORD(SPECIFIC)",
+          "KEYWORD(SQRT)",
+          "KEYWORD(SUBSTRING)",
+          "KEYWORD(STDDEV_POP)",
+          "KEYWORD(STDDEV_SAMP)",
+          "KEYWORD(SUM)",
+          "KEYWORD(SYSTEM_USER)",
+          "KEYWORD(TIME)",
+          "KEYWORD(TIMESTAMP)",
+          "KEYWORD(TRANSLATE)",
+          "KEYWORD(TRIM)",
+          "KEYWORD(TRUE)",
+          "KEYWORD(TRUNCATE)",
+          "KEYWORD(UNKNOWN)",
+          "KEYWORD(UPPER)",
+          "KEYWORD(USER)",
+          "KEYWORD(VAR_POP)",
+          "KEYWORD(VAR_SAMP)",
+          "KEYWORD(YEAR)");
+
+  protected static final List<String> QUANTIFIERS =
+      Arrays.asList(
+          "KEYWORD(ALL)",
+          "KEYWORD(ANY)",
+          "KEYWORD(SOME)");
+
+  protected static final List<String> SELECT_KEYWORDS =
+      Arrays.asList(
+          "KEYWORD(ALL)",
+          "KEYWORD(DISTINCT)",
+          "KEYWORD(STREAM)",
+          "KEYWORD(*)");
+
+  private static final List<String> ORDER_KEYWORDS =
+      Arrays.asList(
+          "KEYWORD(,)",
+          "KEYWORD(ASC)",
+          "KEYWORD(DESC)",
+          "KEYWORD(NULLS)");
+
+  private static final List<String> EMP_COLUMNS =
+      Arrays.asList(
+          "COLUMN(EMPNO)",
+          "COLUMN(ENAME)",
+          "COLUMN(JOB)",
+          "COLUMN(MGR)",
+          "COLUMN(HIREDATE)",
+          "COLUMN(SAL)",
+          "COLUMN(COMM)",
+          "COLUMN(DEPTNO)",
+          "COLUMN(SLACKER)");
+
+  private static final List<String> DEPT_COLUMNS =
+      Arrays.asList(
+          "COLUMN(DEPTNO)",
+          "COLUMN(NAME)");
+
+  protected static final List<String> PREDICATE_KEYWORDS =
+      Arrays.asList(
+          "KEYWORD(()",
+          "KEYWORD(*)",
+          "KEYWORD(+)",
+          "KEYWORD(-)",
+          "KEYWORD(.)",
+          "KEYWORD(/)",
+          "KEYWORD(%)",
+          "KEYWORD(<)",
+          "KEYWORD(<=)",
+          "KEYWORD(<>)",
+          "KEYWORD(!=)",
+          "KEYWORD(=)",
+          "KEYWORD(>)",
+          "KEYWORD(>=)",
+          "KEYWORD(AND)",
+          "KEYWORD(BETWEEN)",
+          "KEYWORD(CONTAINS)",
+          "KEYWORD(EQUALS)",
+          "KEYWORD(IMMEDIATELY)",
+          "KEYWORD(IN)",
+          "KEYWORD(IS)",
+          "KEYWORD(LIKE)",
+          "KEYWORD(MEMBER)",
+          "KEYWORD(MULTISET)",
+          "KEYWORD(NOT)",
+          "KEYWORD(OR)",
+          "KEYWORD(OVERLAPS)",
+          "KEYWORD(PRECEDES)",
+          "KEYWORD(SIMILAR)",
+          "KEYWORD(SUBMULTISET)",
+          "KEYWORD(SUCCEEDS)",
+          "KEYWORD([)",
+          "KEYWORD(||)");
+
+  private static final List<String> WHERE_KEYWORDS =
+      Arrays.asList(
+          "KEYWORD(EXCEPT)",
+          "KEYWORD(MINUS)",
+          "KEYWORD(FETCH)",
+          "KEYWORD(OFFSET)",
+          "KEYWORD(LIMIT)",
+          "KEYWORD(GROUP)",
+          "KEYWORD(HAVING)",
+          "KEYWORD(INTERSECT)",
+          "KEYWORD(ORDER)",
+          "KEYWORD(UNION)",
+          "KEYWORD(WINDOW)");
+
+  private static final List<String> A_TABLE =
+      Arrays.asList(
+          "TABLE(A)");
+
+  protected static final List<String> JOIN_KEYWORDS =
+      Arrays.asList(
+          "KEYWORD(FETCH)",
+          "KEYWORD(OFFSET)",
+          "KEYWORD(LIMIT)",
+          "KEYWORD(UNION)",
+          "KEYWORD(FULL)",
+          "KEYWORD(ORDER)",
+          "KEYWORD(()",
+          "KEYWORD(EXTEND)",
+          "KEYWORD(AS)",
+          "KEYWORD(USING)",
+          "KEYWORD(OUTER)",
+          "KEYWORD(RIGHT)",
+          "KEYWORD(GROUP)",
+          "KEYWORD(CROSS)",
+          "KEYWORD(,)",
+          "KEYWORD(NATURAL)",
+          "KEYWORD(INNER)",
+          "KEYWORD(HAVING)",
+          "KEYWORD(LEFT)",
+          "KEYWORD(EXCEPT)",
+          "KEYWORD(MATCH_RECOGNIZE)",
+          "KEYWORD(MINUS)",
+          "KEYWORD(JOIN)",
+          "KEYWORD(WINDOW)",
+          "KEYWORD(.)",
+          "KEYWORD(TABLESAMPLE)",
+          "KEYWORD(ON)",
+          "KEYWORD(INTERSECT)",
+          "KEYWORD(WHERE)");
+
+  private static final List<String> SETOPS =
+      Arrays.asList(
+          "KEYWORD(EXCEPT)",
+          "KEYWORD(MINUS)",
+          "KEYWORD(INTERSECT)",
+          "KEYWORD(ORDER)",
+          "KEYWORD(UNION)");
+
+  private static final String EMPNO_EMP =
+      "COLUMN(EMPNO)\n"
+          + "TABLE(EMP)\n";
+
+  //~ Constructors -----------------------------------------------------------
+
+  public SqlAdvisorTest() {
+    super();
+  }
+
+  //~ Methods ----------------------------------------------------------------
+
+  protected List<String> getFromKeywords() {
+    return FROM_KEYWORDS;
+  }
+
+  protected List<String> getSelectKeywords() {
+    return SELECT_KEYWORDS;
+  }
+
+  /**
+   * Returns a list of the tables in the SALES schema. Derived classes with
+   * extended SALES schemas may override.
+   *
+   * @return list of tables in the SALES schema
+   */
+  protected List<String> getSalesTables() {
+    return SALES_TABLES;
+  }
+
+  protected List<String> getJoinKeywords() {
+    return JOIN_KEYWORDS;
+  }
+
+  private void assertTokenizesTo(String sql, String expected) {
+    SqlSimpleParser.Tokenizer tokenizer =
+        new SqlSimpleParser.Tokenizer(sql, "xxxxx");
+    StringBuilder buf = new StringBuilder();
+    while (true) {
+      SqlSimpleParser.Token token = tokenizer.nextToken();
+      if (token == null) {
+        break;
+      }
+      buf.append(token).append("\n");
+    }
+    Assert.assertEquals(expected, buf.toString());
+  }
+
+  protected void assertHint(
+      String sql,
+      List<String>... expectedLists) throws Exception {
+    List<String> expectedList = plus(expectedLists);
+    final String expected = toString(new TreeSet<>(expectedList));
+    assertHint(sql, expected);
+  }
+
+  /**
+   * Checks that a given SQL statement yields the expected set of completion
+   * hints.
+   *
+   * @param sql             SQL statement
+   * @param expectedResults Expected list of hints
+   * @throws Exception on error
+   */
+  protected void assertHint(
+      String sql,
+      String expectedResults) throws Exception {
+    SqlValidatorWithHints validator =
+        (SqlValidatorWithHints) tester.getValidator();
+    SqlAdvisor advisor = tester.getFactory().createAdvisor(validator);
+
+    StringAndPos sap = SqlParserUtil.findPos(sql);
+
+    List<SqlMoniker> results =
+        advisor.getCompletionHints(
+            sap.sql,
+            sap.pos);
+    Assert.assertEquals(
+        expectedResults, convertCompletionHints(results));
+  }
+
+  /**
+   * Tests that a given SQL statement simplifies to the salesTables result.
+   *
+   * @param sql      SQL statement to simplify. The SQL statement must contain
+   *                 precisely one caret '^', which marks the location where
+   *                 completion is to occur.
+   * @param expected Expected result after simplification.
+   */
+  protected void assertSimplify(String sql, String expected) {
+    SqlValidatorWithHints validator =
+        (SqlValidatorWithHints) tester.getValidator();
+    SqlAdvisor advisor = tester.getFactory().createAdvisor(validator);
+
     StringAndPos sap = SqlParserUtil.findPos(sql);
     String actual = advisor.simplifySql(sap.sql, sap.cursor);
     Assertions.assertEquals(expected, actual);

@@ -2412,7 +2412,35 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
   public static final SqlWithinGroupOperator WITHIN_GROUP = new SqlWithinGroupOperator();
 
   /**
->>>>>>> 3564ebb7c (Revert "Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)"")
+   * {@code PERCENTILE_CONT} inverse distribution aggregate function.
+   *
+   * <p>The argument must be a numeric literal in the range 0 to 1 inclusive
+   * (representing a percentage), and the return type is {@code DOUBLE}.
+   */
+  public static final SqlAggFunction PERCENTILE_CONT =
+      SqlBasicAggFunction
+          .create(SqlKind.PERCENTILE_CONT, ReturnTypes.DOUBLE,
+              OperandTypes.UNIT_INTERVAL_NUMERIC_LITERAL)
+          .withFunctionType(SqlFunctionCategory.SYSTEM)
+          .withGroupOrder(Optionality.MANDATORY)
+          .withPercentile(true);
+
+  /**
+   * {@code PERCENTILE_DISC} inverse distribution aggregate function.
+   *
+   * <p>The argument must be a numeric literal in the range 0 to 1 inclusive
+   * (representing a percentage), and the return type is {@code DOUBLE}.
+   * (The return type should determined by the type of the {@code ORDER BY}
+   * expression, but this cannot be determined by the function itself.)
+   */
+  public static final SqlAggFunction PERCENTILE_DISC =
+      SqlBasicAggFunction
+          .create(SqlKind.PERCENTILE_DISC, ReturnTypes.DOUBLE,
+              OperandTypes.UNIT_INTERVAL_NUMERIC_LITERAL)
+          .withFunctionType(SqlFunctionCategory.SYSTEM)
+          .withGroupOrder(Optionality.MANDATORY)
+          .withPercentile(true);
+
   /**
    * <code>NTH_VALUE</code> aggregate function.
    */
