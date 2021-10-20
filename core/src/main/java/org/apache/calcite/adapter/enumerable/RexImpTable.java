@@ -1308,12 +1308,6 @@ public class RexImpTable {
     }
   }
 
-  /** Implementor for the {@code MEDIAN} aggregate function. */
-  static class MedianImplementor extends StrictAggImplementor {
-    @Override protected void implementNotNullAdd(AggContext info, AggAddContext add) {
-    }
-  }
-
   /** Implementor for the {@code PERCENTILE_CONT} aggregate function. */
   static class PercentileContImplementor extends StrictAggImplementor {
 

@@ -333,7 +333,6 @@ public class SqlParserTest {
       "MAX",                           "92",               "2011", "2014", "c",
       "MAX_CARDINALITY",                                   "2011",
       "MEASURES",                                                          "c",
-      "MEDIAN",                                            "2011", "2014", "c",
       "MEMBER",                                    "2003", "2011", "2014", "c",
       "MERGE",                                     "2003", "2011", "2014", "c",
       "METHOD",                              "99", "2003", "2011", "2014", "c",
@@ -8514,9 +8513,6 @@ public class SqlParserTest {
     sql(sql2).ok(expected);
   }
 
-  @Test public void testMedian() {
-    check("SELECT MEDIAN(A) FROM FOO", "SELECT MEDIAN(`A`)\nFROM `FOO`");
-  }
   //~ Inner Interfaces -------------------------------------------------------
 
   /**

@@ -2191,17 +2191,6 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
   public static final SqlWithinGroupOperator WITHIN_GROUP = new SqlWithinGroupOperator();
 
   /**
-   * The MEDIAN operator. Takes the median / PERCENTILE_CONT(.5) of a dataset.
-   * The argument must be a numeric expression.
-   * The return type is a double.
-   */
-  public static final SqlAggFunction MEDIAN =
-      SqlBasicAggFunction
-          .create(SqlKind.MEDIAN, ReturnTypes.DOUBLE,
-              OperandTypes.NUMERIC)
-          .withFunctionType(SqlFunctionCategory.SYSTEM);
-
-  /**
    * {@code PERCENTILE_CONT} inverse distribution aggregate function.
    *
    * <p>The argument must be a numeric literal in the range 0 to 1 inclusive
