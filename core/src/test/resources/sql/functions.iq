@@ -1,0 +1,44 @@
+# functions.iq - Queries involving Functions
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to you under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+!set outputformat mysql
+
+
+# [CALCITE-4875] Preserve Operand Nullability in NVL rewrite
+# Asserting that NVL does not change a Nullable operand to NOT Nullable
+
+!use oraclefunc
+select nvl("name", 'undefined') FROM "hr"."emps";
+
+EnumerableCalc(expr#0..4=[{inputs}], expr#5=[IS NOT NULL($t2)], expr#6=[CAST($t2):VARCHAR CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], expr#7=['undefined'], expr#8=[CASE($t5, $t6, $t7)], EXPR$0=[$t8])
+  EnumerableTableScan(table=[[hr, emps]])
+!plan
+
++-----------+
+| EXPR$0    |
++-----------+
+| Bill      |
+| Eric      |
+| Sebastian |
+| Theodore  |
++-----------+
+(4 rows)
+
+!ok
+
+# End functions.iq
