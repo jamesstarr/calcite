@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+<<<<<<< HEAD
 
 !set outputformat mysql
 
@@ -44,6 +45,10 @@ select strcmp('mytesttext', 'mytesttext');
 !ok
 
 # XML Functions
+=======
+!set outputformat mysql
+
+>>>>>>> 4176d20cc ([CALCITE-4875] Preserve Operand Nullability in NVL rewrite)
 
 # [CALCITE-4875] Preserve Operand Nullability in NVL rewrite
 # Asserting that NVL does not change a Nullable operand to NOT Nullable
@@ -51,7 +56,11 @@ select strcmp('mytesttext', 'mytesttext');
 !use oraclefunc
 select nvl("name", 'undefined') FROM "hr"."emps";
 
+<<<<<<< HEAD
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[IS NOT NULL($t2)], expr#6=[CAST($t2):VARCHAR], expr#7=['undefined':VARCHAR], expr#8=[CASE($t5, $t6, $t7)], EXPR$0=[$t8])
+=======
+EnumerableCalc(expr#0..4=[{inputs}], expr#5=[IS NOT NULL($t2)], expr#6=[CAST($t2):VARCHAR CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], expr#7=['undefined'], expr#8=[CASE($t5, $t6, $t7)], EXPR$0=[$t8])
+>>>>>>> 4176d20cc ([CALCITE-4875] Preserve Operand Nullability in NVL rewrite)
   EnumerableTableScan(table=[[hr, emps]])
 !plan
 
@@ -67,6 +76,7 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[IS NOT NULL($t2)], expr#6=[CAST($t2
 
 !ok
 
+<<<<<<< HEAD
 # COSH
 select cosh(1);
 +-------------------+
@@ -229,4 +239,6 @@ select replace('ciAao', 'A', 'ciao');
 
 !ok
 
+=======
+>>>>>>> 4176d20cc ([CALCITE-4875] Preserve Operand Nullability in NVL rewrite)
 # End functions.iq

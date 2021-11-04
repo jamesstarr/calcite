@@ -176,24 +176,7 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
     registerOp(SqlLibraryOperators.GREATEST, new GreatestConvertlet());
     registerOp(SqlLibraryOperators.LEAST, new GreatestConvertlet());
 
-    registerOp(SqlLibraryOperators.NVL,
-        new SqlRexConvertlet() {
-          public RexNode convertCall(SqlRexContext cx, SqlCall call) {
-            final RexBuilder rexBuilder = cx.getRexBuilder();
-            final RexNode operand0 =
-                cx.convertExpression(call.getOperandList().get(0));
-            final RexNode operand1 =
-                cx.convertExpression(call.getOperandList().get(1));
-            final RelDataType type =
-                cx.getValidator().getValidatedNodeType(call);
-            return rexBuilder.makeCall(type, SqlStdOperatorTable.CASE,
-                ImmutableList.of(
-                    rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL,
-                        operand0),
-                    rexBuilder.makeCast(type, operand0),
-                    rexBuilder.makeCast(type, operand1)));
-          }
-        });
+    registerOp(SqlLibraryOperators.NVL, StandardConvertletTable::convertNvl);
 
     registerOp(SqlLibraryOperators.DECODE,
         new SqlRexConvertlet() {
@@ -384,6 +367,31 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
             }
           });
     }
+  }
+
+  /** Converts a call to the NVL function. */
+  private static RexNode convertNvl(SqlRexContext cx, SqlCall call) {
+    final RexBuilder rexBuilder = cx.getRexBuilder();
+    final RexNode operand0 =
+        cx.convertExpression(call.getOperandList().get(0));
+    final RexNode operand1 =
+        cx.convertExpression(call.getOperandList().get(1));
+    final RelDataType type =
+        cx.getValidator().getValidatedNodeType(call);
+    // Preserve Operand Nullability
+    return rexBuilder.makeCall(type, SqlStdOperatorTable.CASE,
+        ImmutableList.of(
+            rexBuilder.makeCall(SqlStdOperatorTable.IS_NOT_NULL,
+                operand0),
+            rexBuilder.makeCast(
+                cx.getTypeFactory()
+                    .createTypeWithNullability(type, operand0.getType().isNullable()),
+                operand0),
+            rexBuilder.makeCast(
+                cx.getTypeFactory()
+                    .createTypeWithNullability(type, operand1.getType().isNullable()),
+                operand1)
+        ));
   }
 
   //~ Methods ----------------------------------------------------------------
