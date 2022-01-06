@@ -1843,6 +1843,11 @@ SqlNode TableRef2(boolean lateral) :
     (
         LOOKAHEAD(2)
         tableRef = CompoundIdentifier()
+<#if (parser.tableVersionContextParserMethod!default.parser.tableVersionContextParserMethod)?has_content >
+        [
+            tableRef = ${parser.tableVersionContextParserMethod}(tableRef)
+        ]
+</#if>
         [
             [ <EXTEND> ]
             extendList = ExtendList() {
@@ -1902,6 +1907,11 @@ SqlNode TableRef2(boolean lateral) :
         <TABLE> { s = span(); } <LPAREN>
         tableRef = TableFunctionCall(s.pos())
         <RPAREN>
+<#if (parser.tableVersionContextParserMethod!default.parser.tableVersionContextParserMethod)?has_content >
+        [
+            tableRef = ${parser.tableVersionContextParserMethod}(tableRef)
+        ]
+</#if>
         {
             if (lateral) {
                 tableRef = SqlStdOperatorTable.LATERAL.createCall(
