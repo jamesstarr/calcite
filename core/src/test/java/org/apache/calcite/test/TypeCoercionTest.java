@@ -492,15 +492,6 @@ public class TypeCoercionTest extends SqlValidatorTestCase {
   }
 
   /** Test arithmetic expressions with string type arguments. */
-<<<<<<< HEAD
-  @Test void testArithmeticExpressionsWithStrings() {
-    // for null type in binary arithmetic.
-    expr("1 + null").ok();
-    expr("1 - null").ok();
-    expr("1 / null").ok();
-    expr("1 * null").ok();
-    expr("MOD(1, null)").ok();
-=======
   @Test public void testArithmeticExpressionsWithStrings() {
     // for null type in binary arithmetic.
     checkExp("1 + null");
@@ -591,7 +582,6 @@ public class TypeCoercionTest extends SqlValidatorTestCase {
     // timestamp int varchar
     sql("select COALESCE(t1_timestamp, t1_int, t1_varchar20) from t1")
         .type("RecordType(TIMESTAMP(0) NOT NULL EXPR$0) NOT NULL");
->>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 
     // case when
     // smallint int char
@@ -612,15 +602,6 @@ public class TypeCoercionTest extends SqlValidatorTestCase {
     // bigint decimal
     sql("select case when 1 > 0 then t2_bigint else t2_decimal end from t2")
         .type("RecordType(DECIMAL(19, 0) NOT NULL EXPR$0) NOT NULL");
-<<<<<<< HEAD
-    // date timestamp
-    sql("select case when 1 > 0 then t2_date else t2_timestamp end from t2")
-        .type("RecordType(TIMESTAMP(0) NOT NULL EXPR$0) NOT NULL");
-  }
-
-  /** Test case for {@link AbstractTypeCoercion#implicitCast} */
-  @Test void testImplicitCasts() {
-=======
   }
 
   /** Test case for {@link AbstractTypeCoercion#implicitCast} */
@@ -845,4 +826,3 @@ public class TypeCoercionTest extends SqlValidatorTestCase {
 =======
 
 // End TypeCoercionTest.java
->>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)

@@ -2163,7 +2163,11 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
 {
     (
         LOOKAHEAD(2)
+<<<<<<< HEAD
         tableRef = TableRefWithHintsOpt()
+=======
+        tableRef = CompoundIdentifier()
+>>>>>>> 620865484 (DX-42079: Add extensibility hook for table version specifier)
 <#if (parser.tableVersionContextParserMethod!default.parser.tableVersionContextParserMethod)?has_content >
         [
             tableRef = ${parser.tableVersionContextParserMethod}(tableRef)
@@ -2217,8 +2221,15 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
             tableRef = unnestOp.createCall(s.end(this), args.toArray());
         }
     |
+<<<<<<< HEAD
         [ LOOKAHEAD(1) <LATERAL> { lateral = true; } ]
         tableRef = TableFunctionCall()
+=======
+        [ <LATERAL> { lateral = true; } ]
+        <TABLE> { s = span(); } <LPAREN>
+        tableRef = TableFunctionCall(s.pos())
+        <RPAREN>
+>>>>>>> 620865484 (DX-42079: Add extensibility hook for table version specifier)
 <#if (parser.tableVersionContextParserMethod!default.parser.tableVersionContextParserMethod)?has_content >
         [
             tableRef = ${parser.tableVersionContextParserMethod}(tableRef)
