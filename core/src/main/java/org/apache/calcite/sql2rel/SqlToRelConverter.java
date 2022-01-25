@@ -202,9 +202,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-
 import javax.annotation.Nonnull;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Converts a SQL parse tree (consisting of
@@ -3853,12 +3855,12 @@ public class SqlToRelConverter {
     } else {
       qualified = SqlQualified.create(null, 1, null, identifier);
     }
-    final Pair<RexNode, Map<String, Integer>> e0 = bb.lookupExp(qualified);
+    final Pair<RexNode, BiFunction<RexNode, String, RexNode>> e0 =
+        bb.lookupExp(qualified);
     RexNode e = e0.left;
     for (String name : qualified.suffix()) {
       if (e == e0.left && e0.right != null) {
-        int i = e0.right.get(name);
-        e = rexBuilder.makeFieldAccess(e, i);
+        e = e0.right.apply(e, name);
       } else {
         final boolean caseSensitive = true; // name already fully-qualified
         if (identifier.isStar() && bb.scope instanceof MatchRecognizeScope) {
@@ -4566,13 +4568,14 @@ public class SqlToRelConverter {
     }
 
     /**
-     * Returns an expression with which to reference a from-list item.
+     * Returns an expression with which to reference a from-list item;
+     * throws if not found.
      *
-     * @param qualified the alias of the from item
-     * @return a {@link RexFieldAccess} or {@link RexRangeRef}, or null if
-     * not found
+     * @param qualified The alias of the FROM item
+     * @return a {@link RexFieldAccess} or {@link RexRangeRef}, never null
      */
-    Pair<RexNode, Map<String, Integer>> lookupExp(SqlQualified qualified) {
+    Pair<RexNode, BiFunction<RexNode, String, RexNode>> lookupExp(
+        SqlQualified qualified) {
       if (nameToNodeMap != null && qualified.prefixLength == 1) {
         RexNode node = nameToNodeMap.get(qualified.identifier.names.get(0));
         if (node == null) {
@@ -4586,8 +4589,9 @@ public class SqlToRelConverter {
       final SqlValidatorScope.ResolvedImpl resolved =
           new SqlValidatorScope.ResolvedImpl();
       scope.resolve(qualified.prefix(), nameMatcher, false, resolved);
-      if (!(resolved.count() == 1)) {
-        return null;
+      if (resolved.count() != 1) {
+        throw new AssertionError("no unique expression found for " + qualified
+            + "; count is " + resolved.count());
       }
       final SqlValidatorScope.Resolve resolve = resolved.only();
       final RelDataType rowType = resolve.rowType();
@@ -4601,18 +4605,13 @@ public class SqlToRelConverter {
         final LookupContext rels =
             new LookupContext(this, inputs, systemFieldList.size());
         final RexNode node = lookup(resolve.path.steps().get(0).i, rels);
-        if (node == null) {
-          return null;
-        } else {
-          final Map<String, Integer> fieldOffsets = new HashMap<>();
-          for (RelDataTypeField f : resolve.rowType().getFieldList()) {
-            if (!fieldOffsets.containsKey(f.getName())) {
-              fieldOffsets.put(f.getName(), f.getIndex());
-            }
-          }
-          final Map<String, Integer> map = ImmutableMap.copyOf(fieldOffsets);
-          return Pair.of(node, map);
-        }
+        assert node != null;
+        return Pair.of(node, (e, fieldName) -> {
+          final RelDataTypeField field =
+              requireNonNull(rowType.getField(fieldName, true, false),
+                  () -> "field " + fieldName);
+          return rexBuilder.makeFieldAccess(e, field.getIndex());
+        });
       } else {
         // We're referencing a relational expression which has not been
         // converted yet. This occurs when from items are correlated,
@@ -4643,7 +4642,11 @@ public class SqlToRelConverter {
           }
           final RexNode c =
               rexBuilder.makeCorrel(builder.uniquify().build(), correlId);
-          return Pair.<RexNode, Map<String, Integer>>of(c, fields.build());
+          final ImmutableMap<String, Integer> fieldMap = fields.build();
+          return Pair.of(c, (e, fieldName) -> {
+            final int j = requireNonNull(fieldMap.get(fieldName), "field " + fieldName);
+            return rexBuilder.makeFieldAccess(e, j);
+          });
         }
       }
     }

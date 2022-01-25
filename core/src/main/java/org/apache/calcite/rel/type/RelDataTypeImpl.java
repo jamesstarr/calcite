@@ -32,6 +32,7 @@ import com.google.common.collect.Lists;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
 
 /**
  * RelDataTypeImpl is an abstract base for implementations of
@@ -77,11 +78,23 @@ public abstract class RelDataTypeImpl
 
   //~ Methods ----------------------------------------------------------------
 
-  public RelDataTypeField getField(String fieldName, boolean caseSensitive,
-      boolean elideRecord) {
-    for (RelDataTypeField field : fieldList) {
-      if (Util.matches(caseSensitive, field.getName(), fieldName)) {
+  @Override public RelDataTypeField getField(String fieldName,
+      boolean caseSensitive, boolean elideRecord) {
+    if (fieldList == null) {
+      throw new IllegalStateException("Trying to access field " + fieldName
+          + " in a type with no fields: " + this);
+    }
+    final Map<String, RelDataTypeField> fieldMap = getFieldMap();
+    if (caseSensitive && fieldMap != null) {
+      RelDataTypeField field = fieldMap.get(fieldName);
+      if (field != null) {
         return field;
+      }
+    } else {
+      for (RelDataTypeField field : fieldList) {
+        if (Util.matches(caseSensitive, field.getName(), fieldName)) {
+          return field;
+        }
       }
     }
     if (elideRecord) {
@@ -109,13 +122,32 @@ public abstract class RelDataTypeImpl
     }
 
     // a dynamic * field will match any field name.
-    for (RelDataTypeField field : fieldList) {
-      if (field.isDynamicStar()) {
-        // the requested field could be in the unresolved star
-        return field;
+    if (fieldMap != null) {
+      return fieldMap.get("");
+    } else {
+      for (RelDataTypeField field : fieldList) {
+        if (field.isDynamicStar()) {
+          // the requested field could be in the unresolved star
+          return field;
+        }
       }
     }
 
+    return null;
+  }
+
+  /** Returns a map from field names to fields.
+   *
+   * <p>Matching is case-sensitive.
+   *
+   * <p>If several fields have the same name, the map contains the first.
+   *
+   * <p>A {@link RelDataTypeField#isDynamicStar() dynamic star field} is indexed
+   * under its own name and "" (the empty string).
+   *
+   * <p>If the map is null, the type must do lookup the long way.
+   */
+  protected Map<String, RelDataTypeField> getFieldMap() {
     return null;
   }
 
