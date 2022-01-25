@@ -35,7 +35,11 @@ public class RelRecordType extends RelDataTypeImpl implements Serializable {
   /** Name resolution policy; usually {@link StructKind#FULLY_QUALIFIED}. */
   private final StructKind kind;
   private final boolean nullable;
->>>>>>> a76afe52d ([CALCITE-2464] Allow to set nullability for columns of structured types (Ruben Quesada Lopez))
+  private final Map<String, RelDataTypeField> fieldNameMap;
+
+  /** Minimum number of fields where it is worth populating {@link #fieldNameMap}
+   * to accelerate lookups by field name. */
+  private static final int THRESHOLD = 20;
 
   //~ Constructors -----------------------------------------------------------
 
@@ -48,7 +52,8 @@ public class RelRecordType extends RelDataTypeImpl implements Serializable {
    */
   public RelRecordType(StructKind kind, List<RelDataTypeField> fields, boolean nullable) {
     super(fields);
-<<<<<<< HEAD
+    this.kind = Preconditions.checkNotNull(kind);
+=======
     this.nullable = nullable;
     this.kind = requireNonNull(kind, "kind");
     if (fields.size() > THRESHOLD) {
@@ -64,9 +69,6 @@ public class RelRecordType extends RelDataTypeImpl implements Serializable {
     } else {
       this.fieldNameMap = null;
     }
-=======
-    this.kind = Preconditions.checkNotNull(kind);
-    this.nullable = nullable;
     computeDigest();
   }
 

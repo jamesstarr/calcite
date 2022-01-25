@@ -56,9 +56,6 @@ import org.apache.calcite.tools.FrameworkConfig;
 import org.apache.calcite.tools.Planner;
 import org.apache.calcite.tools.Program;
 import org.apache.calcite.tools.RelBuilder;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 import org.apache.calcite.tools.RelConversionException;
 =======
 import org.apache.calcite.tools.ValidationException;
@@ -235,7 +232,6 @@ public class PlannerImpl implements Planner {
         this.validator.getValidatedNodeType(validatedNode);
     return Pair.of(validatedNode, type);
   }
->>>>>>> 9d2c4bca7 (Revert "Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)"")
 
   @SuppressWarnings("deprecation")
   public final RelNode convert(SqlNode sql) {

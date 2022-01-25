@@ -183,10 +183,6 @@ public class ToLogicalConverter extends RelShuttleImpl {
     if (relNode instanceof Uncollect) {
       final Uncollect uncollect = (Uncollect) relNode;
       final RelNode input = visit(uncollect.getInput());
-<<<<<<< HEAD
-      return Uncollect.create(input.getTraitSet(), input,
-          uncollect.withOrdinality, Collections.emptyList());
-=======
       return new Uncollect(input.getCluster(), input.getTraitSet(), input,
           uncollect.withOrdinality);
     }
@@ -199,4 +195,3 @@ public class ToLogicalConverter extends RelShuttleImpl {
 =======
 
 // End ToLogicalConverter.java
->>>>>>> e62a96083 ([CALCITE-3900] Add Config for SqlValidator)

@@ -206,3 +206,8 @@ public class RelNodeConversionBenchmark {
   }
 
 }
+<<<<<<< HEAD:ubenchmark/src/jmh/java/org/apache/calcite/benchmarks/RelNodeConversionBenchmark.java
+=======
+
+// End RelNodeConversionBenchmark.java
+>>>>>>> 633b98959 (DX-43359: [CALCITE-4994] SQL-to-RelNode conversion is slow if table contains hundreds of fields):ubenchmark/src/main/java/org/apache/calcite/benchmarks/RelNodeConversionBenchmark.java
