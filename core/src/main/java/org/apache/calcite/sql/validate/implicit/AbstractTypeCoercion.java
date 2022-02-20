@@ -445,9 +445,7 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
 
     if (SqlTypeUtil.isDecimal(type1) && SqlTypeUtil.isCharacter(type2)
         || SqlTypeUtil.isCharacter(type1) && SqlTypeUtil.isDecimal(type2)) {
-      // There is no proper DECIMAL type for VARCHAR, using max precision/scale DECIMAL
-      // as the best we can do.
-      return SqlTypeUtil.getMaxPrecisionScaleDecimal(factory);
+      return SqlTypeUtil.isDecimal(type1) ? type1 : type2;
     }
 
     // Keep sync with SQL-SERVER:
