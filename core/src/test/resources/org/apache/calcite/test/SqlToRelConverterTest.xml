@@ -8655,6 +8655,7 @@ LogicalAggregate(group=[{0}], EXPR$1=[PERCENTILE_DISC($1) WITHIN GROUP ([2])])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 1677deb9e ([CALCITE-4644] Added validation for PERCENTILE functions)
 =======
     <TestCase name="testTrimUnionAll">
@@ -8798,4 +8799,6 @@ LogicalProject(JOB_NAME=[CASE(OR(=($1, '810000'), =($1, '820000')), $1, 'error':
         </Resource>
     </TestCase>
 >>>>>>> e0943d89d ([CALCITE-3399] Field-pruning for set operators (except UNION ALL) changes query semantics (Jin Xing))
+=======
+>>>>>>> 7b99452a8 (Revert "[CALCITE-3399] Field-pruning for set operators (except UNION ALL) changes query semantics (Jin Xing)")
 </Root>
