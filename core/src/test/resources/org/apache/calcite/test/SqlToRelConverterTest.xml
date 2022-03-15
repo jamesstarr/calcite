@@ -1159,7 +1159,36 @@ LogicalProject(NAME=[$0])
 ]]>
         </Resource>
     </TestCase>
-    <TestCase name="testOrder">
+  <TestCase name="testGroupByExprArgFieldSameWithAlias">
+    <Resource name="sql">
+      <![CDATA[SELECT floor(deptno / 2) AS deptno
+FROM emp
+GROUP BY floor(deptno / 2)]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalAggregate(group=[{0}])
+  LogicalProject(DEPTNO=[FLOOR(/($7, 2))])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testGroupByExprArgFieldSameWithAlias2">
+    <Resource name="sql">
+      <![CDATA[SELECT deptno / 2 AS deptno, deptno / 2 as empno, sum(sal)
+FROM emp
+GROUP BY GROUPING SETS ((deptno), (empno, deptno / 2), (2, 1))]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalProject(DEPTNO=[$0], EMPNO=[$0], EXPR$2=[$1])
+  LogicalAggregate(group=[{0}], EXPR$2=[SUM($1)])
+    LogicalProject(EMPNO=[/($7, 2)], SAL=[$5])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testGOrder">
         <Resource name="sql">
             <![CDATA[select empno from emp order by empno, empno desc]]>
         </Resource>
@@ -5565,6 +5594,30 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 ]]>
         </Resource>
     </TestCase>
+  <TestCase name="testOrder">
+    <Resource name="sql">
+      <![CDATA[select empno from emp order by empno, empno desc]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalSort(sort0=[$0], dir0=[ASC])
+  LogicalProject(EMPNO=[$0])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testOrderBasedRepeatFields">
+    <Resource name="sql">
+      <![CDATA[select empno from emp order by empno DESC, empno ASC]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalSort(sort0=[$0], dir0=[DESC])
+  LogicalProject(EMPNO=[$0])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
     <TestCase name="testSelectFromDynamicTable">
         <Resource name="sql">
             <![CDATA[select n_nationkey, n_name from SALES.NATION]]>

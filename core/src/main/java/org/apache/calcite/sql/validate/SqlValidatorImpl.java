@@ -133,6 +133,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
@@ -6228,6 +6229,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     final SqlSelect select;
     final SqlNode root;
     final boolean havingExpr;
+    final Set<SqlNode> aliasOrdinalExpandSet = Sets.newIdentityHashSet();
 
     ExtendedExpander(SqlValidatorImpl validator, SqlValidatorScope scope,
         SqlSelect select, SqlNode root, boolean havingExpr) {
@@ -6235,13 +6237,44 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       this.select = select;
       this.root = root;
       this.havingExpr = havingExpr;
+      if (!havingExpr) {
+        /**
+         * Add all possible expandable group by expression to set, which is
+         * used to check whether expr could be expanded as alias or ordinal.
+         */
+        switch (root.getKind()) {
+        case IDENTIFIER:
+        case LITERAL:
+          aliasOrdinalExpandSet.add(root);
+          break;
+        case GROUPING_SETS:
+        case ROLLUP:
+        case CUBE:
+          if (root instanceof SqlBasicCall) {
+            List<SqlNode> operandList = ((SqlBasicCall) root).getOperandList();
+            for (SqlNode node : operandList) {
+              if (node.getKind() == SqlKind.ROW) {
+                List<SqlNode> rowOperandList = ((SqlCall) node).getOperandList();
+                rowOperandList = Optional.ofNullable(rowOperandList).orElse(ImmutableList.of());
+                aliasOrdinalExpandSet.addAll(rowOperandList);
+              } else {
+                aliasOrdinalExpandSet.add(node);
+              }
+            }
+          }
+          break;
+        default:
+          break;
+        }
+      }
     }
 
     @Override public SqlNode visit(SqlIdentifier id) {
       if (id.isSimple()
           && (havingExpr
               ? validator.config().sqlConformance().isHavingAlias()
-              : validator.config().sqlConformance().isGroupByAlias())) {
+              : (validator.config().sqlConformance().isGroupByAlias()
+                  && aliasOrdinalExpandSet.contains(id)))) {
         String name = id.getSimple();
         SqlNode expr = null;
         final SqlNameMatcher nameMatcher =
@@ -6277,22 +6310,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       if (havingExpr || !validator.config().sqlConformance().isGroupByOrdinal()) {
         return super.visit(literal);
       }
-      boolean isOrdinalLiteral = literal == root;
-      switch (root.getKind()) {
-      case GROUPING_SETS:
-      case ROLLUP:
-      case CUBE:
-        if (root instanceof SqlBasicCall) {
-          List<SqlNode> operandList = ((SqlBasicCall) root).getOperandList();
-          for (SqlNode node : operandList) {
-            if (node.equals(literal)) {
-              isOrdinalLiteral = true;
-              break;
-            }
-          }
-        }
-        break;
-      }
+      boolean isOrdinalLiteral = aliasOrdinalExpandSet.contains(literal);
       if (isOrdinalLiteral) {
         switch (literal.getTypeName()) {
         case DECIMAL:
