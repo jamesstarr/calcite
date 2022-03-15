@@ -134,6 +134,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
@@ -6413,7 +6414,8 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       if (id.isSimple()
           && (havingExpr
               ? validator.config().sqlConformance().isHavingAlias()
-              : validator.config().sqlConformance().isGroupByAlias())) {
+              : (validator.config().sqlConformance().isGroupByAlias()
+                  && aliasOrdinalExpandSet.contains(id)))) {
         String name = id.getSimple();
         SqlNode expr = null;
         final SqlNameMatcher nameMatcher =
