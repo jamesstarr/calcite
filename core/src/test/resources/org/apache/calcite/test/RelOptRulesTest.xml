@@ -4094,6 +4094,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
   LogicalJoin(condition=[AND(=($3, $10), =($5, $9))], joinType=[inner])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalProject(EXPR$0=[$2], EMPNO=[$1])
       LogicalAggregate(group=[{0, 1}], EXPR$0=[MAX($2)])
         LogicalProject(DEPTNO=[$7], EMPNO=[$0], SAL=[$5])
@@ -4115,6 +4116,12 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
           LogicalProject(DEPTNO=[$7], EMPNO=[$0], $f1=['abc'], SAL=[$5])
             LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
+=======
+    LogicalProject(EXPR$0=[$2], EMPNO=[$1])
+      LogicalAggregate(group=[{0, 1}], EXPR$0=[MAX($3)])
+        LogicalProject(DEPTNO=[$7], EMPNO=[$0], $f1=['abc'], SAL=[$5])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+>>>>>>> c871a3be9 ([CALCITE-5149] Refine RelMdColumnUniqueness for Aggregate by considering intersect keys between target keys and group keys)
 ]]>
         </Resource>
     </TestCase>
