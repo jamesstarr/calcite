@@ -1074,23 +1074,42 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     RelNode rel0 = builder.scan("EMP")
-        .project(builder.field("DEPTNO"), builder.field("SAL"))
-        .distinct()
-        .filter(builder.equals(builder.field("SAL"), builder.literal(1)))
-        .build();
+            .project(builder.field("DEPTNO"), builder.field("SAL"))
+            .distinct()
+            .filter(builder.equals(builder.field("SAL"), builder.literal(1)))
+            .build();
     final Holder<RexCorrelVariable> v = Holder.of(null);
     final RelNode rel1 = builder.scan("EMP")
-        .variable(v)
-        .project(builder.field("DEPTNO"), builder.field("SAL"))
-        .filter(
-            builder.equals(builder.field(0), builder.field(v.get(), "DEPTNO")))
-        .build();
+            .variable(v)
+            .project(builder.field("DEPTNO"), builder.field("SAL"))
+            .filter(
+                    builder.equals(builder.field(0), builder.field(v.get(), "DEPTNO")))
+            .build();
     final RelNode correl = builder.push(rel0)
-        .variable(v)
-        .push(rel1)
-        .correlate(JoinRelType.SEMI, v.get().id, builder.field(2, 0, "DEPTNO"))
-        .build();
+            .variable(v)
+            .push(rel1)
+            .correlate(JoinRelType.SEMI, v.get().id, builder.field(2, 0, "DEPTNO"))
+            .build();
     assertThat(mq.areColumnsUnique(correl, ImmutableBitSet.of(0)), is(true));
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-5149">[CALCITE-5149]
+   * Refine RelMdColumnUniqueness for Aggregate by considering intersect keys
+   * between target keys and group keys</a>. */
+  @Test public void testColumnUniquenessForAggregate() {
+    final RelMetadataQuery mq = RelMetadataQuery.instance();
+    RelNode rel = convertSql("select empno, ename, count(1) as cnt from emp group by empno, ename");
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(0, 1)), is(true));
+
+    rel = convertSql("select empno, ename, count(1) as cnt from emp group by empno, ename");
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(0)), is(true));
+
+    rel = convertSql("select ename, empno, count(1) as cnt from emp group by ename, empno");
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(1)), is(true));
+
+    rel = convertSql("select empno, ename, count(1) as cnt from emp group by empno, ename");
+    assertThat(mq.areColumnsUnique(rel, ImmutableBitSet.of(2)), is(false));
   }
 
   @Test public void testGroupBy() {
