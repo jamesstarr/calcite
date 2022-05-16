@@ -593,7 +593,10 @@ JAVACODE boolean matchesPrefix(int[] seq, int[][] prefixes)
 SqlNode ExprOrJoinOrOrderedQuery(ExprContext exprContext) :
 {
     SqlNode e;
+<<<<<<< HEAD
     final List<Object> list = new ArrayList<Object>();
+=======
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
 }
 {
     // Lookhead to distinguish between "TABLE emp" (which will be
@@ -603,6 +606,7 @@ SqlNode ExprOrJoinOrOrderedQuery(ExprContext exprContext) :
         LOOKAHEAD(2)
         e = Query(exprContext)
         e = OrderByLimitOpt(e)
+<<<<<<< HEAD
         { return e; }
     |
         e = TableRef1(ExprContext.ACCEPT_QUERY_OR_JOIN)
@@ -611,6 +615,13 @@ SqlNode ExprOrJoinOrOrderedQuery(ExprContext exprContext) :
         ( AddSetOpQuery(list, exprContext) )*
         { return SqlParserUtil.toTree(list); }
     )
+=======
+    |
+        e = TableRef1(ExprContext.ACCEPT_QUERY_OR_JOIN)
+        ( e = JoinTable(e) )*
+    )
+    { return e; }
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
 }
 
 /**
@@ -647,6 +658,7 @@ SqlNode ExprOrJoinOrOrderedQuery(ExprContext exprContext) :
 SqlNode OrderedQueryOrExpr(ExprContext exprContext) :
 {
     SqlNode e;
+<<<<<<< HEAD
 }
 {
     e = QueryOrExpr(exprContext)
@@ -665,6 +677,26 @@ SqlNode OrderByLimitOpt(SqlNode e) :
     SqlNode[] offsetFetch = {null, null};
 }
 {
+=======
+}
+{
+    e = QueryOrExpr(exprContext)
+    e = OrderByLimitOpt(e)
+    { return e; }
+}
+
+/** Reads optional "ORDER BY", "LIMIT", "OFFSET", "FETCH" following a query,
+ * {@code e}. If any of them are present, adds them to the query;
+ * otherwise returns the query unchanged.
+ * Throws if they are present and {@code e} is not a query. */
+SqlNode OrderByLimitOpt(SqlNode e) :
+{
+    SqlNodeList orderBy = null;
+    SqlNode start = null;
+    SqlNode count = null;
+}
+{
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
     [
         // use the syntactic type of the expression we just parsed
         // to decide whether ORDER BY makes sense
@@ -1976,7 +2008,6 @@ SqlLiteral JoinType() :
         <FULL> [ <OUTER> ] <JOIN> { joinType = JoinType.FULL; }
     |
         <CROSS> <JOIN> { joinType = JoinType.CROSS; }
-
     )
     {
         return joinType.symbol(getPos());
@@ -2234,10 +2265,14 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
         tableRef = TableFunctionCall()
 =======
         [ <LATERAL> { lateral = true; } ]
+<<<<<<< HEAD
         <TABLE> { s = span(); } <LPAREN>
         tableRef = TableFunctionCall(s.pos())
         <RPAREN>
 >>>>>>> 620865484 (DX-42079: Add extensibility hook for table version specifier)
+=======
+        tableRef = TableFunctionCall()
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
 <#if (parser.tableVersionContextParserMethod!default.parser.tableVersionContextParserMethod)?has_content >
         [
             tableRef = ${parser.tableVersionContextParserMethod}(tableRef)
@@ -2304,6 +2339,78 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
     {
         return tableRef;
     }
+<<<<<<< HEAD
+=======
+}
+
+SqlNode Tablesample(SqlNode tableRef) :
+{
+    final Span s;
+    final SqlNode sample;
+    final boolean isBernoulli;
+    final SqlNumericLiteral samplePercentage;
+    boolean isRepeatable = false;
+    int repeatableSeed = 0;
+}
+{
+    <TABLESAMPLE> { s = span(); checkNotJoin(tableRef); }
+    (
+        <SUBSTITUTE> <LPAREN> sample = StringLiteral() <RPAREN>
+        {
+            String sampleName =
+                SqlLiteral.unchain(sample).getValueAs(String.class);
+            SqlSampleSpec sampleSpec = SqlSampleSpec.createNamed(sampleName);
+            final SqlLiteral sampleLiteral =
+                SqlLiteral.createSample(sampleSpec, s.end(this));
+            tableRef = SqlStdOperatorTable.TABLESAMPLE.createCall(
+                s.add(tableRef).end(this), tableRef, sampleLiteral);
+        }
+    |
+        (
+            <BERNOULLI> { isBernoulli = true; }
+        |
+            <SYSTEM> { isBernoulli = false; }
+        )
+        <LPAREN> samplePercentage = UnsignedNumericLiteral() <RPAREN>
+        [
+            <REPEATABLE> <LPAREN> repeatableSeed = IntLiteral() <RPAREN>
+            {
+                isRepeatable = true;
+            }
+        ]
+        {
+            final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100L);
+            BigDecimal rate = samplePercentage.bigDecimalValue();
+            if (rate.compareTo(BigDecimal.ZERO) < 0
+                || rate.compareTo(ONE_HUNDRED) > 0)
+            {
+                throw SqlUtil.newContextException(getPos(), RESOURCE.invalidSampleSize());
+            }
+
+            // Treat TABLESAMPLE(0) and TABLESAMPLE(100) as no table
+            // sampling at all.  Not strictly correct: TABLESAMPLE(0)
+            // should produce no output, but it simplifies implementation
+            // to know that some amount of sampling will occur.
+            // In practice values less than ~1E-43% are treated as 0.0 and
+            // values greater than ~99.999997% are treated as 1.0
+            float fRate = rate.divide(ONE_HUNDRED).floatValue();
+            if (fRate > 0.0f && fRate < 1.0f) {
+                SqlSampleSpec tableSampleSpec =
+                    isRepeatable
+                        ? SqlSampleSpec.createTableSample(
+                            isBernoulli, fRate, repeatableSeed)
+                        : SqlSampleSpec.createTableSample(isBernoulli, fRate);
+
+                SqlLiteral tableSampleLiteral =
+                    SqlLiteral.createSample(tableSampleSpec, s.end(this));
+                tableRef = SqlStdOperatorTable.TABLESAMPLE.createCall(
+                    s.end(this), tableRef, tableSampleLiteral);
+            }
+        }
+    )
+    { return tableRef; }
+
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
 }
 
 SqlNode Tablesample(SqlNode tableRef) :
@@ -2446,7 +2553,11 @@ void CompoundIdentifierType(List<SqlNode> list, List<SqlNode> extendList) :
 SqlNode TableFunctionCall() :
 {
     final Span s;
+<<<<<<< HEAD
     SqlNode call;
+=======
+    final SqlNode call;
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
     SqlFunctionCategory funcType = SqlFunctionCategory.USER_DEFINED_TABLE_FUNCTION;
 }
 {
@@ -2458,11 +2569,14 @@ SqlNode TableFunctionCall() :
         }
     ]
     call = NamedRoutineCall(funcType, ExprContext.ACCEPT_CURSOR)
+<<<<<<< HEAD
 <#if (parser.tableFunctionVersionContextParserMethod!default.parser.tableFunctionVersionContextParserMethod)?has_content >
     [
         call = ${parser.tableFunctionVersionContextParserMethod}(call)
     ]
 </#if>
+=======
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
     <RPAREN>
     {
         return SqlStdOperatorTable.COLLECTION_TABLE.createCall(s.end(this), call);
@@ -2937,10 +3051,14 @@ SqlNode Pivot(SqlNode tableRef) :
 }
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     <PIVOT> { s = span(); checkNotJoin(tableRef); }
 =======
     <PIVOT> { s = span(); }
 >>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+=======
+    <PIVOT> { s = span(); checkNotJoin(tableRef); }
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
     <LPAREN>
     PivotAgg(aggList) ( <COMMA> PivotAgg(aggList) )*
     <FOR> axisList = SimpleIdentifierOrList()
@@ -3011,10 +3129,14 @@ SqlNode Unpivot(SqlNode tableRef) :
 }
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     <UNPIVOT> { s = span(); checkNotJoin(tableRef); }
 =======
     <UNPIVOT> { s = span(); }
 >>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
+=======
+    <UNPIVOT> { s = span(); checkNotJoin(tableRef); }
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
     (
         <INCLUDE> <NULLS> { includeNulls = true; }
     |   <EXCLUDE> <NULLS> { includeNulls = false; }
@@ -3593,6 +3715,7 @@ SqlNode Query(ExprContext exprContext) :
     }
 }
 
+<<<<<<< HEAD
 /** Parses a set operator (e.g. UNION or INTERSECT)
  * followed by a query,
  * and adds both to {@code list}. */
@@ -3622,6 +3745,8 @@ void AddSetOpQuery(List<Object> list, ExprContext exprContext) :
     }
 }
 
+=======
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
 SqlNodeList WithList() :
 {
     SqlWithItem withItem;

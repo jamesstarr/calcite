@@ -80,15 +80,6 @@ public class SqlBasicTypeNameSpec extends SqlTypeNameSpec {
 
   /**
    * Create a basic sql type name specification.
-<<<<<<< HEAD
-   *
-   * @param typeName    Type name
-   * @param precision   Precision of the type name if it is allowed, default is -1
-   * @param scale       Scale of the type name if it is allowed, default is -1
-   * @param charSetName Char set of the type, only works when the type
-   *                    belong to CHARACTER type family
-   * @param pos         The parser position
-=======
    * @param typeName    Type name.
    * @param precision   Precision of the type name if it is allowed, default is -1.
    * @param scale       Scale of the type name if it is allowed, default is -1.
@@ -275,4 +266,3 @@ public class SqlBasicTypeNameSpec extends SqlTypeNameSpec {
 =======
 
 // End SqlBasicTypeNameSpec.java
->>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)

@@ -19,6 +19,9 @@
 !set outputformat mysql
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
 # Various combinations of comma and cross join
 with t (i) as (values (0), (1))
 select *
@@ -92,8 +95,11 @@ where t1.i + t2.i + t3.i + t4.i = 1;
 
 !ok
 
+<<<<<<< HEAD
 =======
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
 # OR is a nestedLoop join
 select *
 from emp

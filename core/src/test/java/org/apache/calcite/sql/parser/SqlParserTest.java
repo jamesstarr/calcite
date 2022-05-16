@@ -2476,6 +2476,17 @@ public class SqlParserTest {
                  +   "SELECT 20.55 AS `C2`)");
   }
 
+  @Ignore
+  @Test public void testParameterizedUnion() {
+    check("select * from ((select 100.0 as c1)\n"
+            + "union\n"
+            + "(select 20.55 as c2))",
+            "SELECT *\n"
+                 +   "FROM (SELECT 100.0 AS `C1`\n"
+                 +   "UNION\n"
+                 +   "SELECT 20.55 AS `C2`)");
+  }
+
   /**
    * In modern SQL, a query can occur almost everywhere that an expression
    * can. This test tests the few exceptions.
@@ -3645,8 +3656,9 @@ public class SqlParserTest {
     sql("select * from table ^emp^")
         .fails("(?s).*Encountered \"emp\" at .*");
 
-    sql("select * from (table (^select^ empno from emp))")
-        .fails("(?s)Encountered \"select\".*");
+    checkFails(
+        "select * from (table (^select^ empno from emp))",
+        "(?s)Encountered \"select\".*");
   }
 
   @Test void testCollectionTable() {
@@ -3703,8 +3715,8 @@ public class SqlParserTest {
     sql("select * from lateral table(ramp(1)) as t(x)")
         .ok(expected + " AS `T` (`X`)");
     // Bad: Parentheses make it look like a sub-query
-    sql("select * from lateral (^table(ramp(1))^)")
-        .fails("(?s)Expected query or join.*");
+    checkFails("select * from lateral (^table(ramp(1))^)",
+        "Expected query or join");
 
     // Good: LATERAL (subQuery)
     final String expected2 = "SELECT *\n"
@@ -5031,66 +5043,6 @@ public class SqlParserTest {
         .ok("(ARRAY[(ROW(1, 'a')), (ROW(2, 'b'))])");
   }
 
-<<<<<<< HEAD
-  @Test void testCastAsCollectionType() {
-    // test array type.
-    expr("cast(a as int array)")
-        .ok("CAST(`A` AS INTEGER ARRAY)");
-    expr("cast(a as varchar(5) array)")
-        .ok("CAST(`A` AS VARCHAR(5) ARRAY)");
-    expr("cast(a as int array array)")
-        .ok("CAST(`A` AS INTEGER ARRAY ARRAY)");
-    expr("cast(a as varchar(5) array array)")
-        .ok("CAST(`A` AS VARCHAR(5) ARRAY ARRAY)");
-    expr("cast(a as int array^<^10>)")
-        .fails("(?s).*Encountered \"<\" at line 1, column 20.\n.*");
-    // test multiset type.
-    expr("cast(a as int multiset)")
-        .ok("CAST(`A` AS INTEGER MULTISET)");
-    expr("cast(a as varchar(5) multiset)")
-        .ok("CAST(`A` AS VARCHAR(5) MULTISET)");
-    expr("cast(a as int multiset array)")
-        .ok("CAST(`A` AS INTEGER MULTISET ARRAY)");
-    expr("cast(a as varchar(5) multiset array)")
-        .ok("CAST(`A` AS VARCHAR(5) MULTISET ARRAY)");
-    // test row type nested in collection type.
-    expr("cast(a as row(f0 int array multiset, f1 varchar(5) array) array multiset)")
-        .ok("CAST(`A` AS "
-            + "ROW(`F0` INTEGER ARRAY MULTISET, "
-            + "`F1` VARCHAR(5) ARRAY) "
-            + "ARRAY MULTISET)");
-    // test UDT collection type.
-    expr("cast(a as MyUDT array multiset)")
-        .ok("CAST(`A` AS `MYUDT` ARRAY MULTISET)");
-  }
-
-  @Test void testCastAsRowType() {
-    expr("cast(a as row(f0 int, f1 varchar))")
-        .ok("CAST(`A` AS ROW(`F0` INTEGER, `F1` VARCHAR))");
-    expr("cast(a as row(f0 int not null, f1 varchar null))")
-        .ok("CAST(`A` AS ROW(`F0` INTEGER, `F1` VARCHAR NULL))");
-    // test nested row type.
-    expr("cast(a as row("
-        + "f0 row(ff0 int not null, ff1 varchar null) null, "
-        + "f1 timestamp not null))")
-        .ok("CAST(`A` AS ROW("
-            + "`F0` ROW(`FF0` INTEGER, `FF1` VARCHAR NULL) NULL, "
-            + "`F1` TIMESTAMP))");
-    // test row type in collection data types.
-    expr("cast(a as row(f0 bigint not null, f1 decimal null) array)")
-        .ok("CAST(`A` AS ROW(`F0` BIGINT, `F1` DECIMAL NULL) ARRAY)");
-    expr("cast(a as row(f0 varchar not null, f1 timestamp null) multiset)")
-        .ok("CAST(`A` AS ROW(`F0` VARCHAR, `F1` TIMESTAMP NULL) MULTISET)");
-  }
-
-  @Test void testMapValueConstructor() {
-    expr("map[1, 'x', 2, 'y']")
-        .ok("(MAP[1, 'x', 2, 'y'])");
-    expr("map [1, 'x', 2, 'y']")
-        .ok("(MAP[1, 'x', 2, 'y'])");
-    expr("map[]")
-        .ok("(MAP[])");
-=======
   @Test public void testCastAsRowType() {
     checkExp("cast(a as row(f0 int, f1 varchar))",
         "CAST(`A` AS ROW(`F0` INTEGER, `F1` VARCHAR))");
@@ -7457,6 +7409,7 @@ public class SqlParserTest {
   @Test void testParensInFrom() {
     // UNNEST may not occur within parentheses.
     // FIXME should fail at "unnest"
+<<<<<<< HEAD
     sql("select *from (^unnest(x)^)")
         .fails("(?s)Expected query or join.*");
 
@@ -7471,6 +7424,25 @@ public class SqlParserTest {
     // <table-name> may not occur within parentheses.
     sql("select * from (^emp^) as x")
         .fails("(?s)Expected query or join.*");
+=======
+    checkFails(
+        "select *from (^unnest(x)^)",
+        "Expected query or join");
+
+    // <table-name> may not occur within parentheses.
+    checkFails(
+        "select * from (^emp^)",
+        "Expected query or join");
+
+    // <table-name> may not occur within parentheses.
+    checkFails(
+        "select * from (^emp as x^)",
+        "Expected query or join");
+
+    // <table-name> may not occur within parentheses.
+    checkFails(
+        "select * from (^emp^) as x",
+        "Expected query or join");
 
     // Parentheses around JOINs are OK, and sometimes necessary.
     if (false) {
@@ -8740,6 +8712,48 @@ public class SqlParserTest {
 
     final String sql2 = "SELECT * FROM ((((((((((((SELECT * FROM tab)))))))))))) X";
     sql(sql2).ok(expected);
+  }
+
+  @Test public void testParenthesizedSubQueries2() {
+    final String expected = "SELECT `O_CUSTKEY`\n"
+        + "FROM (SELECT `O1`.`O_CUSTKEY`\n"
+        + "FROM `T1` AS `O1`\n"
+        + "INNER JOIN `T2` AS `O2` ON (`O1`.`O_ORDERKEY` = `O2`.`O_CUSTKEY`)\n"
+        + "UNION ALL\n"
+        + "(SELECT `O_CUSTKEY`\n"
+        + "FROM `T1`\n"
+        + "ORDER BY `DIR0`\n"
+        + "FETCH NEXT 1 ROWS ONLY))";
+
+    final String sql = "SELECT O_CUSTKEY\n"
+        + "FROM (SELECT O1.O_CUSTKEY\n"
+        + "FROM T1 AS O1\n"
+        + "INNER JOIN T2 AS O2 ON (O1.O_ORDERKEY = O2.O_CUSTKEY)\n"
+        + "UNION ALL\n"
+        + "(SELECT O_CUSTKEY\n"
+        + "FROM T1\n"
+        + "ORDER BY DIR0\n"
+        + "FETCH NEXT 1 ROWS ONLY))";
+    sql(sql).ok(expected);
+  }
+
+  @Ignore
+  @Test public void testParenthesizedSubQueries3() {
+    final String expected = "SELECT `O_CUSTKEY`\n"
+            + "FROM ((SELECT `O_CUSTKEY`\n"
+            + "FROM `T1`\n"
+            + "ORDER BY `DIR0`\n"
+            + "FETCH NEXT 1 ROWS ONLY)\n"
+            + "UNION ALL\n"
+            + "SELECT `O1`.`O_CUSTKEY`\n"
+            + "FROM `T2` AS `O1`\n"
+            + "INNER JOIN `T1` AS `O2` ON (`O1`.`O_ORDERKEY` = `O2`.`O_CUSTKEY`))";
+
+    final String sql = "SELECT o_custkey FROM \n"
+            + " ((SELECT o_custkey FROM T1 order by dir0 limit 1)"
+            + " union all"
+            + " (select o1.o_custkey from T2 o1 inner join T1 o2 on o1.o_orderkey = o2.o_custkey))";
+    sql(sql).ok(expected);
   }
 
   //~ Inner Interfaces -------------------------------------------------------

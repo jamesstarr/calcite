@@ -45,11 +45,6 @@ import java.util.stream.Collectors;
  *   &lt;field name&gt; &lt;data type&gt;
  * </pre></blockquote>
  *
-<<<<<<< HEAD
- * <p>As a extended syntax to the standard SQL, each field type can have a
- * [ NULL | NOT NULL ] suffix specification, i.e.
- * Row(f0 int null, f1 varchar not null). The default is NOT NULL(not nullable).
-=======
  * <p>We also support to add a [ NULL | NOT NULL ] suffix for every field type, i.e.
  * Row(f0 int null, f1 varchar not null), the default is not nullable.
  */
@@ -142,4 +137,3 @@ public class SqlRowTypeNameSpec extends SqlTypeNameSpec {
 =======
 
 // End SqlRowTypeNameSpec.java
->>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)

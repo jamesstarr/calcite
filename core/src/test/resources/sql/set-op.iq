@@ -19,6 +19,7 @@
 !set outputformat mysql
 
 # Intersect all
+<<<<<<< HEAD
 select * from
 (select x, y from (values (1, 'a'), (1, 'a'), (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y))
 intersect all
@@ -32,6 +33,21 @@ intersect all
 (2 rows)
 
 !ok
+=======
+#select * from
+#(select x, y from (values (1, 'a'), (1, 'a'), (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y))
+#intersect all
+#(select x, y from (values (1, 'a'), (1, 'a'), (2, 'c'), (4, 'x')) as t2(x, y));
+#+---+---+
+#| X | Y |
+#+---+---+
+#| 1 | a |
+#| 1 | a |
+#+---+---+
+#(2 rows)
+
+#!ok
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
 
 # Intersect
 select * from
@@ -48,6 +64,7 @@ intersect
 !ok
 
 # Intersect all with null value rows
+<<<<<<< HEAD
 select * from
 (select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
   (cast(NULL as int), cast(NULL as varchar(1))), (cast(NULL as int), cast(NULL as varchar(1)))) as t(x, y))
@@ -64,6 +81,24 @@ intersect all
 (2 rows)
 
 !ok
+=======
+#select * from
+#(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
+#  (cast(NULL as int), cast(NULL as varchar(1))), (cast(NULL as int), cast(NULL as varchar(1)))) as t(x, y))
+#intersect all
+#(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
+#  (cast(NULL as int), cast(NULL as varchar(1)))) as t2(x, y));
+
+#+---+---+
+#| X | Y |
+#+---+---+
+#|   |   |
+#|   |   |
+#+---+---+
+#(2 rows)
+
+#!ok
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
 
 # Intersect with null value rows
 select * from
@@ -157,6 +192,7 @@ union
 !ok
 
 # Except all
+<<<<<<< HEAD
 select * from
 (select x, y from (values (1, 'a'), (1, 'a'), (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y))
 except all
@@ -172,6 +208,23 @@ except all
 (4 rows)
 
 !ok
+=======
+#select * from
+#(select x, y from (values (1, 'a'), (1, 'a'), (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y))
+#except all
+#(select x, y from (values (1, 'a'), (2, 'c'), (4, 'x')) as t2(x, y));
+#+---+---+
+#| X | Y |
+#+---+---+
+#| 1 | a |
+#| 1 | a |
+#| 2 | b |
+#| 3 | c |
+#+---+---+
+#(4 rows)
+
+#!ok
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
 
 # Except
 select * from
@@ -189,6 +242,7 @@ except
 !ok
 
 # Except all with null value rows
+<<<<<<< HEAD
 select * from
 (select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
   (cast(NULL as int), cast(NULL as varchar(1))), (cast(NULL as int), cast(NULL as varchar(1)))) as t(x, y))
@@ -204,6 +258,23 @@ except all
 (1 row)
 
 !ok
+=======
+#select * from
+#(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
+#  (cast(NULL as int), cast(NULL as varchar(1))), (cast(NULL as int), cast(NULL as varchar(1)))) as t(x, y))
+#except all
+#(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
+#  (cast(NULL as int), cast(NULL as varchar(1)))) as t2(x, y));
+
+#+---+---+
+#| X | Y |
+#+---+---+
+#|   |   |
+#+---+---+
+#(1 row)
+
+#!ok
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
 
 # Except with null value rows
 select * from

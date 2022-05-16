@@ -39,7 +39,7 @@ import org.apache.calcite.test.DiffTestCase;
 import org.apache.calcite.tools.Hoist;
 import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.ConversionUtil;
-import org.apache.calcite.util.Litmus;
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
@@ -80,7 +80,9 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+<<<<<<< HEAD
 import static org.junit.jupiter.api.Assertions.assertTrue;
+=======
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -549,13 +551,15 @@ public class SqlParserTest {
       "USAGE",                         "92", "99",
       "USER",                          "92", "99", "2003", "2011", "2014", "c",
       "USING",                         "92", "99", "2003", "2011", "2014", "c",
-      "UUID",                                                              "c",
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
       "VALUE",                         "92", "99", "2003", "2011", "2014", "c",
       "VALUES",                        "92", "99", "2003", "2011", "2014", "c",
       "VALUE_OF",                                                  "2014", "c",
       "VARBINARY",                                         "2011", "2014", "c",
       "VARCHAR",                       "92", "99", "2003", "2011", "2014", "c",
+<<<<<<< HEAD
       "VARIANT",                                                           "c",
+=======
       "VARYING",                       "92", "99", "2003", "2011", "2014", "c",
       "VAR_POP",                                           "2011", "2014", "c",
       "VAR_SAMP",                                          "2011", "2014", "c",
@@ -1095,20 +1099,7 @@ public class SqlParserTest {
         .fails("Bang equal '!=' is not allowed under the current SQL conformance level");
   }
 
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-6178">[CALCITE-6178]
-   * WITH RECURSIVE query when cloned using sqlshuttle looses RECURSIVE property</a>. */
-  @Test void testRecursiveQueryCloned() throws Exception {
-    SqlNode sqlNode = sql("with RECURSIVE emp2 as "
-        + "(select * from emp union select * from emp2) select * from emp2").parser().parseStmt();
-    SqlNode sqlNode1 = sqlNode.accept(new SqlShuttle() {
-      @Override public SqlNode visit(SqlIdentifier identifier) {
-        return new SqlIdentifier(identifier.names, identifier.getParserPosition());
-      }
-    });
-    assertTrue(sqlNode.equalsDeep(sqlNode1, Litmus.IGNORE));
-  }
-
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
   @Test void testBetween() {
     sql("select * from t where price between 1 and 2")
         .ok("SELECT *\n"
@@ -2200,6 +2191,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
+<<<<<<< HEAD
   @Test void testWithRecursive() {
     final String sql = "WITH RECURSIVE aux(i) AS (\n"
         + "  VALUES (1)\n"
@@ -2252,6 +2244,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
+=======
   @Test void testWith() {
     final String sql = "with femaleEmps as (select * from emps where gender = 'F')"
         + "select deptno from femaleEmps";
@@ -3424,7 +3417,7 @@ public class SqlParserTest {
   @Test void testLimitStartCount() {
     final String error = "'LIMIT start, count' is not allowed under the "
         + "current SQL conformance level";
-    sql("select a from foo ^limit 1,2^")
+    sql("select a from foo limit 1,^2^")
         .withConformance(SqlConformanceEnum.DEFAULT)
         .fails(error);
 
@@ -3459,10 +3452,14 @@ public class SqlParserTest {
         .withConformance(SqlConformanceEnum.LENIENT)
         .ok(expected3);
 
-    // "fetch next 4" is invalid after "limit 3"
-    sql("select a from foo limit 2,3 ^fetch^ next 4 rows only")
+    // "fetch next 4" overrides the earlier "limit 3"
+    final String expected4 = "SELECT `A`\n"
+        + "FROM `FOO`\n"
+        + "OFFSET 2 ROWS\n"
+        + "FETCH NEXT 4 ROWS ONLY";
+    sql("select a from foo limit 2,3 fetch next 4 rows only")
         .withConformance(SqlConformanceEnum.LENIENT)
-        .fails("(?s).*Encountered \"fetch\" at line 1.*");
+        .ok(expected4);
 
     // "limit start, all" is not valid
     sql("select a from foo limit 2, ^all^")
@@ -3470,44 +3467,7 @@ public class SqlParserTest {
         .fails("(?s).*Encountered \"all\" at line 1.*");
   }
 
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-5086">[CALCITE-5086]
-   * Calcite supports OFFSET start LIMIT count expression</a>. */
-  @Test void testOffsetStartLimitCount() {
-    final String error = "'OFFSET start LIMIT count' is not allowed under the "
-        + "current SQL conformance level";
-    sql("select a from foo order by b, c offset 1 limit 2")
-        .withConformance(SqlConformanceEnum.LENIENT)
-        .ok("SELECT `A`\n"
-            + "FROM `FOO`\n"
-            + "ORDER BY `B`, `C`\n"
-            + "OFFSET 1 ROWS\n"
-            + "FETCH NEXT 2 ROWS ONLY");
-
-    sql("select a from foo order by b, c ^offset 1 limit 2^")
-        .withConformance(SqlConformanceEnum.DEFAULT)
-        .fails(error);
-
-    // "limit 2" overrides the earlier "offset 4"
-    final String expected3 = "SELECT `A`\n"
-        + "FROM `FOO`\n"
-        + "OFFSET 2 ROWS\n"
-        + "FETCH NEXT 3 ROWS ONLY";
-    sql("select a from foo offset 4 limit 2,3")
-        .withConformance(SqlConformanceEnum.LENIENT)
-        .ok(expected3);
-
-    // "fetch next 4" is illegal following "limit 3"
-    sql("select a from foo offset 2 limit 3 ^fetch^ next 4 rows only")
-        .withConformance(SqlConformanceEnum.LENIENT)
-        .fails("(?s).*Encountered \"fetch\" at line 1.*");
-
-    // "limit start, all" is not valid
-    sql("select a from foo offset 1 limit 2, ^all^")
-        .withConformance(SqlConformanceEnum.LENIENT)
-        .fails("(?s).*Encountered \"all\" at line 1.*");
-  }
-
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
   @Test void testSqlInlineComment() {
     sql("select 1 from t --this is a comment\n")
         .ok("SELECT 1\n"
@@ -7987,6 +7947,7 @@ public class SqlParserTest {
     sql(sql2).ok(expected2);
   }
 
+<<<<<<< HEAD
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-5194">[CALCITE-5194]
    * Cannot parse parenthesized UNION in FROM</a>. */
@@ -8083,6 +8044,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
+=======
   @Test void testFromExpr() {
     String sql0 = "select * from a cross join b";
     String sql1 = "select * from (a cross join b)";
@@ -8580,6 +8542,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
+<<<<<<< HEAD
   @Test void testPivotThroughShuttle() {
     final String sql = ""
         + "SELECT *\n"
@@ -8602,6 +8565,8 @@ public class SqlParserTest {
     assertThat(toLinux(shuttled.toString()), is(expected));
   }
 
+=======
+>>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
   @Test void testMatchRecognize1() {
     final String sql = "select *\n"
         + "  from t match_recognize\n"
