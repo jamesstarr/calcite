@@ -2259,6 +2259,17 @@ public class SqlParserTest {
         "Non-query expression encountered in illegal context");
   }
 
+  @Ignore
+  @Test public void testParameterizedUnion() {
+    check("select * from ((select 100.0 as c1)\n"
+            + "union\n"
+            + "(select 20.55 as c2))",
+            "SELECT *\n"
+                 +   "FROM (SELECT 100.0 AS `C1`\n"
+                 +   "UNION\n"
+                 +   "SELECT 20.55 AS `C2`)");
+  }
+
   /**
    * In modern SQL, a query can occur almost everywhere that an expression
    * can. This test tests the few exceptions.
@@ -2522,22 +2533,24 @@ public class SqlParserTest {
   @Test public void testApply() {
     final String pattern =
         "APPLY operator is not allowed under the current SQL conformance level";
-    final String sql = "select * from dept\n"
-        + "cross apply table(ramp(deptno)) as t(a)";
-    sql(sql).fails(pattern);
+    checkFails("select * from dept\n"
+            + "cross apply table(ramp(deptno)) as t(a^)^", pattern);
 
     conformance = SqlConformanceEnum.SQL_SERVER_2008;
     final String expected = "SELECT *\n"
         + "FROM `DEPT`\n"
         + "CROSS JOIN LATERAL TABLE(`RAMP`(`DEPTNO`)) AS `T` (`A`)";
-    sql(sql).ok(expected);
+    check("select * from dept\n"
+            + "cross apply table(ramp(deptno)) as t(a)", expected);
 
     // Supported in Oracle 12 but not Oracle 10
     conformance = SqlConformanceEnum.ORACLE_10;
-    sql(sql).fails(pattern);
+    checkFails("select * from dept\n"
+            + "cross apply table(ramp(deptno)) as t(a^)^", pattern);
 
     conformance = SqlConformanceEnum.ORACLE_12;
-    sql(sql).ok(expected);
+    check("select * from dept\n"
+            + "cross apply table(ramp(deptno)) as t(a)", expected);
   }
 
   /** Tests OUTER APPLY. */
@@ -3445,8 +3458,8 @@ public class SqlParserTest {
         "(?s).*Encountered \"table emp\" at .*");
 
     checkFails(
-        "select * from (^table^ (select empno from emp))",
-        "(?s)Encountered \"table \\(\".*");
+        "select * from (table (^select^ empno from emp))",
+        "(?s)Encountered \"select\".*");
   }
 
   @Test public void testCollectionTable() {
@@ -3493,8 +3506,8 @@ public class SqlParserTest {
     sql("select * from lateral table(ramp(1)) as t(x)")
         .ok(expected + " AS `T` (`X`)");
     // Bad: Parentheses make it look like a sub-query
-    sql("select * from lateral (^table^(ramp(1)))")
-        .fails("(?s)Encountered \"table \\(\" at .*");
+    checkFails("select * from lateral (^table(ramp(1))^)",
+        "Expected query or join");
 
     // Good: LATERAL (subQuery)
     final String expected2 = "SELECT *\n"
@@ -7348,23 +7361,23 @@ public class SqlParserTest {
     // UNNEST may not occur within parentheses.
     // FIXME should fail at "unnest"
     checkFails(
-        "select *from ^(^unnest(x))",
-        "(?s)Encountered \"\\( unnest\" at .*");
+        "select *from (^unnest(x)^)",
+        "Expected query or join");
 
     // <table-name> may not occur within parentheses.
     checkFails(
         "select * from (^emp^)",
-        "(?s)Non-query expression encountered in illegal context.*");
+        "Expected query or join");
 
     // <table-name> may not occur within parentheses.
     checkFails(
-        "select * from (^emp^ as x)",
-        "(?s)Non-query expression encountered in illegal context.*");
+        "select * from (^emp as x^)",
+        "Expected query or join");
 
     // <table-name> may not occur within parentheses.
     checkFails(
         "select * from (^emp^) as x",
-        "(?s)Non-query expression encountered in illegal context.*");
+        "Expected query or join");
 
     // Parentheses around JOINs are OK, and sometimes necessary.
     if (false) {
@@ -8647,6 +8660,48 @@ public class SqlParserTest {
 
     final String sql2 = "SELECT * FROM ((((((((((((SELECT * FROM tab)))))))))))) X";
     sql(sql2).ok(expected);
+  }
+
+  @Test public void testParenthesizedSubQueries2() {
+    final String expected = "SELECT `O_CUSTKEY`\n"
+        + "FROM (SELECT `O1`.`O_CUSTKEY`\n"
+        + "FROM `T1` AS `O1`\n"
+        + "INNER JOIN `T2` AS `O2` ON (`O1`.`O_ORDERKEY` = `O2`.`O_CUSTKEY`)\n"
+        + "UNION ALL\n"
+        + "(SELECT `O_CUSTKEY`\n"
+        + "FROM `T1`\n"
+        + "ORDER BY `DIR0`\n"
+        + "FETCH NEXT 1 ROWS ONLY))";
+
+    final String sql = "SELECT O_CUSTKEY\n"
+        + "FROM (SELECT O1.O_CUSTKEY\n"
+        + "FROM T1 AS O1\n"
+        + "INNER JOIN T2 AS O2 ON (O1.O_ORDERKEY = O2.O_CUSTKEY)\n"
+        + "UNION ALL\n"
+        + "(SELECT O_CUSTKEY\n"
+        + "FROM T1\n"
+        + "ORDER BY DIR0\n"
+        + "FETCH NEXT 1 ROWS ONLY))";
+    sql(sql).ok(expected);
+  }
+
+  @Ignore
+  @Test public void testParenthesizedSubQueries3() {
+    final String expected = "SELECT `O_CUSTKEY`\n"
+            + "FROM ((SELECT `O_CUSTKEY`\n"
+            + "FROM `T1`\n"
+            + "ORDER BY `DIR0`\n"
+            + "FETCH NEXT 1 ROWS ONLY)\n"
+            + "UNION ALL\n"
+            + "SELECT `O1`.`O_CUSTKEY`\n"
+            + "FROM `T2` AS `O1`\n"
+            + "INNER JOIN `T1` AS `O2` ON (`O1`.`O_ORDERKEY` = `O2`.`O_CUSTKEY`))";
+
+    final String sql = "SELECT o_custkey FROM \n"
+            + " ((SELECT o_custkey FROM T1 order by dir0 limit 1)"
+            + " union all"
+            + " (select o1.o_custkey from T2 o1 inner join T1 o2 on o1.o_orderkey = o2.o_custkey))";
+    sql(sql).ok(expected);
   }
 
   //~ Inner Interfaces -------------------------------------------------------

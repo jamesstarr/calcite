@@ -4152,6 +4152,7 @@ public class RelOptRulesTest extends RelOptTestBase {
   /**
    * Test case to push custom Filter past custom union.
    */
+  @Ignore
   @Test public void testFilterSetOpTranspose() {
 
     final HepProgram preProgram = new HepProgramBuilder()

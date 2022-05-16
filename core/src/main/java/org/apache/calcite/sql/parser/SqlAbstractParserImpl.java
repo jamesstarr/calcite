@@ -20,6 +20,7 @@ import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
@@ -27,6 +28,7 @@ import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.SqlSyntax;
 import org.apache.calcite.sql.SqlUnresolvedFunction;
+import org.apache.calcite.sql.SqlUtil;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlNameMatchers;
@@ -46,6 +48,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import static org.apache.calcite.util.Static.RESOURCE;
 
 /**
  * Abstract base for parsers generated from CommonParser.jj.
@@ -302,8 +306,30 @@ public abstract class SqlAbstractParserImpl {
 
     /**
      * Accept only query expressions in this context.
+     *
+     * <p>Valid: "SELECT x FROM a",
+     * "SELECT x FROM a UNION SELECT y FROM b",
+     * "TABLE a",
+     * "VALUES (1, 2), (3, 4)",
+     * "(SELECT x FROM a UNION SELECT y FROM b) INTERSECT SELECT z FROM c",
+     * "(SELECT x FROM a UNION SELECT y FROM b) ORDER BY 1 LIMIT 10".
+     * Invalid: "e CROSS JOIN d".
+     * Debatable: "(SELECT x FROM a)".
      */
     ACCEPT_QUERY,
+
+    /**
+     * Accept only query expressions or joins in this context.
+     *
+     * <p>Valid: "(SELECT x FROM a)",
+     * "e CROSS JOIN d",
+     * "((SELECT x FROM a) CROSS JOIN d)",
+     * "((e CROSS JOIN d) LEFT JOIN c)".
+     * Invalid: "e, d",
+     * "SELECT x FROM a",
+     * "(e)".
+     */
+    ACCEPT_QUERY_OR_JOIN,
 
     /**
      * Accept only non-query expressions in this context.
@@ -327,6 +353,33 @@ public abstract class SqlAbstractParserImpl {
 
     @Deprecated // to be removed before 2.0
     public static final ExprContext ACCEPT_NONQUERY = ACCEPT_NON_QUERY;
+
+    public void throwIfNotCompatible(SqlNode e) {
+      switch (this) {
+      case ACCEPT_NON_QUERY:
+      case ACCEPT_SUB_QUERY:
+      case ACCEPT_CURSOR:
+        if (e.isA(SqlKind.QUERY)) {
+          throw SqlUtil.newContextException(e.getParserPosition(),
+              RESOURCE.illegalQueryExpression());
+        }
+        break;
+      case ACCEPT_QUERY:
+        if (!e.isA(SqlKind.QUERY)) {
+          throw SqlUtil.newContextException(e.getParserPosition(),
+              RESOURCE.illegalNonQueryExpression());
+        }
+        break;
+      case ACCEPT_QUERY_OR_JOIN:
+        if (!e.isA(SqlKind.QUERY) && e.getKind() != SqlKind.JOIN) {
+          throw SqlUtil.newContextException(e.getParserPosition(),
+              RESOURCE.expectedQueryOrJoinExpression());
+        }
+        break;
+      default:
+        break;
+      }
+    }
   }
 
   //~ Instance fields --------------------------------------------------------
