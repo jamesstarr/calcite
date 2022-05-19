@@ -118,6 +118,38 @@ LogicalFilter(condition=[>($0, 1)])
             <![CDATA[select count(empno) as e from emp having e > 1]]>
         </Resource>
     </TestCase>
+    <TestCase name="testAliasWithinGroupingSets">
+        <Resource name="sql">
+            <![CDATA[SELECT empno / 2 AS x
+FROM emp
+GROUP BY ROLLUP(x)]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalAggregate(group=[{0}], groups=[[{0}, {}]])
+  LogicalProject(X=[/($0, 2)])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testAliasWithinGroupingSetsCaseStmt">
+        <Resource name="sql">
+            <![CDATA[SELECT empno,
+CASE WHEN ename IN ('Fred','Eric') THEN 'Manager' ELSE 'Other' END AS x
+FROM emp
+GROUP BY GROUPING SETS (
+(empno, x),
+(empno)
+)]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalAggregate(group=[{0, 1}], groups=[[{0, 1}, {0}]])
+  LogicalProject(EMPNO=[$0], X=[CASE(OR(=($1, 'Fred'), =($1, 'Eric')), 'Manager', CAST('Other'):CHAR(7) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL)])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
     <TestCase name="testAllValueList">
         <Resource name="sql">
             <![CDATA[select empno from emp where deptno > all (10, 20)]]>
@@ -213,6 +245,24 @@ LogicalAggregate(group=[{0}], EXPR$1=[SUM($1)], EXPR$2=[SUM(DISTINCT $1)], EXPR$
             <![CDATA[select deptno, sum(sal), sum(distinct sal), count(*)
 from emp
 group by deptno]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testCaseWithinGroupingSets">
+        <Resource name="sql">
+            <![CDATA[SELECT empno,
+CASE WHEN ename IN ('Fred','Eric') THEN 'Manager' ELSE 'Other' END
+FROM emp
+GROUP BY GROUPING SETS (
+(empno, CASE WHEN ename IN ('Fred','Eric') THEN 'Manager' ELSE 'Other' END),
+(empno)
+)]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalAggregate(group=[{0, 1}], groups=[[{0, 1}, {0}]])
+  LogicalProject(EMPNO=[$0], EXPR$1=[CASE(OR(=($1, 'Fred'), =($1, 'Eric')), 'Manager', CAST('Other'):CHAR(7) CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary" NOT NULL)])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
         </Resource>
     </TestCase>
     <TestCase name="testCollectionTableWithLateral">
