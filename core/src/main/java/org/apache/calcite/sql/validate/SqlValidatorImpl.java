@@ -483,6 +483,20 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     if (expanded != null) {
       inferUnknownTypes(targetType, scope, expanded);
     }
+
+    // Re-derive type for CASE expression from AggregatingSelectScope if it's a grouping expression.
+    if (selectScope instanceof AggregatingSelectScope) {
+      final SqlNode expr =
+              (expanded.getKind() == SqlKind.AS) ? ((SqlCall) expanded).operand(0) : expanded;
+      if (expr instanceof SqlCase) {
+        final AggregatingSelectScope.Resolved r =
+                ((AggregatingSelectScope) selectScope).resolved.get();
+        if (r.isGroupingExpr(expr)) {
+          nodeToTypeMap.remove(expr);
+        }
+      }
+    }
+
     final RelDataType type = deriveType(selectScope, expanded);
     setValidatedNodeType(expanded, type);
     fields.add(Pair.of(alias, type));
@@ -2099,12 +2113,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
 
   public boolean shouldExpandIdentifiers() {
     return this.config.identifierExpansion();
-<<<<<<< HEAD
-  }
-
-  public boolean shouldAllowAmbiguousColumn() {
-    return this.config.ambiguousColumnAllowed();
-=======
   }
 
   protected boolean shouldAllowIntermediateOrderBy() {
@@ -4899,9 +4907,14 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
         }
         expr = stripAs(expr);
         if (expr instanceof SqlIdentifier) {
+<<<<<<< HEAD
           SqlIdentifier sid = (SqlIdentifier) expr;
           final SqlIdentifier fqId = getScope().fullyQualify(sid).identifier;
           expr = expandDynamicStar(sid, fqId);
+=======
+          expr = getScope().fullyQualify((SqlIdentifier) expr).identifier;
+        } else {
+          expr = SqlNode.clone(expr);
         }
         return expr;
       }
