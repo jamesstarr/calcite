@@ -594,9 +594,13 @@ SqlNode ExprOrJoinOrOrderedQuery(ExprContext exprContext) :
 {
     SqlNode e;
 <<<<<<< HEAD
+<<<<<<< HEAD
     final List<Object> list = new ArrayList<Object>();
 =======
 >>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
+=======
+    final List<Object> list = new ArrayList<Object>();
+>>>>>>> 3c22ca8ae ([CALCITE-5194] Cannot parse parenthesized UNION in FROM)
 }
 {
     // Lookhead to distinguish between "TABLE emp" (which will be
@@ -607,6 +611,7 @@ SqlNode ExprOrJoinOrOrderedQuery(ExprContext exprContext) :
         e = Query(exprContext)
         e = OrderByLimitOpt(e)
 <<<<<<< HEAD
+<<<<<<< HEAD
         { return e; }
     |
         e = TableRef1(ExprContext.ACCEPT_QUERY_OR_JOIN)
@@ -616,12 +621,21 @@ SqlNode ExprOrJoinOrOrderedQuery(ExprContext exprContext) :
         { return SqlParserUtil.toTree(list); }
     )
 =======
+=======
+        { return e; }
+>>>>>>> 3c22ca8ae ([CALCITE-5194] Cannot parse parenthesized UNION in FROM)
     |
         e = TableRef1(ExprContext.ACCEPT_QUERY_OR_JOIN)
         ( e = JoinTable(e) )*
+        { list.add(e); }
+        ( AddSetOpQuery(list, exprContext) )*
+        { return SqlParserUtil.toTree(list); }
     )
+<<<<<<< HEAD
     { return e; }
 >>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
+=======
+>>>>>>> 3c22ca8ae ([CALCITE-5194] Cannot parse parenthesized UNION in FROM)
 }
 
 /**
@@ -3716,6 +3730,9 @@ SqlNode Query(ExprContext exprContext) :
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3c22ca8ae ([CALCITE-5194] Cannot parse parenthesized UNION in FROM)
 /** Parses a set operator (e.g. UNION or INTERSECT)
  * followed by a query,
  * and adds both to {@code list}. */
@@ -3745,8 +3762,11 @@ void AddSetOpQuery(List<Object> list, ExprContext exprContext) :
     }
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
+=======
+>>>>>>> 3c22ca8ae ([CALCITE-5194] Cannot parse parenthesized UNION in FROM)
 SqlNodeList WithList() :
 {
     SqlWithItem withItem;
@@ -5727,9 +5747,6 @@ SqlTypeNameSpec SqlTypeName1(Span s) :
     |
         <REAL> { sqlTypeName = SqlTypeName.REAL; }
     |
-        <DOUBLE> { s.add(this); }
-        [ <PRECISION> ] { sqlTypeName = SqlTypeName.DOUBLE; }
-    |
         <FLOAT> { sqlTypeName = SqlTypeName.FLOAT; }
     )
     {
@@ -5769,19 +5786,35 @@ SqlTypeNameSpec SqlTypeName3(Span s) :
 }
 {
     (
-        (<DECIMAL> | <DEC> | <NUMERIC>) { sqlTypeName = SqlTypeName.DECIMAL; }
-    |
-        <ANY> { sqlTypeName = SqlTypeName.ANY; }
-    )
-    [
-        <LPAREN>
-        precision = UnsignedIntLiteral()
+        (
+            (<DECIMAL> | <DEC> | <NUMERIC>) { sqlTypeName = SqlTypeName.DECIMAL; }
+        |
+            <ANY> { sqlTypeName = SqlTypeName.ANY; }
+        )
         [
-            <COMMA>
-            scale = UnsignedIntLiteral()
+            <LPAREN>
+            precision = UnsignedIntLiteral()
+            [
+                <COMMA>
+                scale = UnsignedIntLiteral()
+            ]
+            <RPAREN>
         ]
-        <RPAREN>
-    ]
+        |
+        (
+            <DOUBLE> { s.add(this); }
+            [ <PRECISION> ] { sqlTypeName = SqlTypeName.DOUBLE; }
+        )
+        [
+            <LPAREN>
+            precision = UnsignedIntLiteral()
+            [
+                <COMMA>
+                scale = UnsignedIntLiteral()
+            ]
+            <RPAREN>
+        ]
+    )
     {
         return new SqlBasicTypeNameSpec(sqlTypeName, precision, scale, s.end(this));
     }

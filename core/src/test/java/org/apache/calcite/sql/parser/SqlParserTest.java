@@ -1596,16 +1596,18 @@ public class SqlParserTest {
         "(?s).*Encountered \"without\" at line 1, column 23.\n.*");
   }
 
-  @Test void testAddFunction() {
+  @Test public void testAddFunction() {
     check("SELECT ADD(CAST(manager_id as DECIMAL(10,5)),\n"
-            + " CAST(manager_id as DOUBLE)) FROM employees e",
+            + " CAST(manager_id as DOUBLE(10, 5))) FROM employees e",
             "SELECT `ADD`(CAST(`MANAGER_ID` AS DECIMAL(10, 5)), CAST(`MANAGER_ID` AS DOUBLE))\n"
                     + "FROM `EMPLOYEES` AS `E`");
   }
 
-  @Test void testLikeAndSimilar() {
-    sql("select * from t where x like '%abc%'")
-        .ok("SELECT *\n"
+
+  @Test public void testLikeAndSimilar() {
+    check(
+        "select * from t where x like '%abc%'",
+        "SELECT *\n"
             + "FROM `T`\n"
             + "WHERE (`X` LIKE '%abc%')");
 
@@ -2476,7 +2478,6 @@ public class SqlParserTest {
                  +   "SELECT 20.55 AS `C2`)");
   }
 
-  @Ignore
   @Test public void testParameterizedUnion() {
     check("select * from ((select 100.0 as c1)\n"
             + "union\n"
@@ -8737,7 +8738,6 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-  @Ignore
   @Test public void testParenthesizedSubQueries3() {
     final String expected = "SELECT `O_CUSTKEY`\n"
             + "FROM ((SELECT `O_CUSTKEY`\n"

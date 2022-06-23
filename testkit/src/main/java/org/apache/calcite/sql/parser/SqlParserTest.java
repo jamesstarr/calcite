@@ -80,9 +80,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
-<<<<<<< HEAD
-import static org.junit.jupiter.api.Assertions.assertTrue;
-=======
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -551,15 +548,11 @@ public class SqlParserTest {
       "USAGE",                         "92", "99",
       "USER",                          "92", "99", "2003", "2011", "2014", "c",
       "USING",                         "92", "99", "2003", "2011", "2014", "c",
->>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
       "VALUE",                         "92", "99", "2003", "2011", "2014", "c",
       "VALUES",                        "92", "99", "2003", "2011", "2014", "c",
       "VALUE_OF",                                                  "2014", "c",
       "VARBINARY",                                         "2011", "2014", "c",
       "VARCHAR",                       "92", "99", "2003", "2011", "2014", "c",
-<<<<<<< HEAD
-      "VARIANT",                                                           "c",
-=======
       "VARYING",                       "92", "99", "2003", "2011", "2014", "c",
       "VAR_POP",                                           "2011", "2014", "c",
       "VAR_SAMP",                                          "2011", "2014", "c",
@@ -1099,7 +1092,6 @@ public class SqlParserTest {
         .fails("Bang equal '!=' is not allowed under the current SQL conformance level");
   }
 
->>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
   @Test void testBetween() {
     sql("select * from t where price between 1 and 2")
         .ok("SELECT *\n"
@@ -2191,60 +2183,6 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-<<<<<<< HEAD
-  @Test void testWithRecursive() {
-    final String sql = "WITH RECURSIVE aux(i) AS (\n"
-        + "  VALUES (1)\n"
-        + "  UNION ALL\n"
-        + "  SELECT i+1 FROM aux WHERE i < 10\n"
-        + "  )\n"
-        + "  SELECT * FROM aux";
-    final String expected = "WITH RECURSIVE `AUX` (`I`) AS ((VALUES (ROW(1)))\n"
-        + "UNION ALL\n"
-        + "SELECT (`I` + 1)\n"
-        + "FROM `AUX`\n"
-        + "WHERE (`I` < 10)) SELECT *\n"
-        + "FROM `AUX`";
-    sql(sql).ok(expected);
-  }
-
-  @Test void testMultipleWithRecursive() {
-    final String sql = "WITH RECURSIVE a(x) AS\n"
-        + "  (SELECT 1),\n"
-        + "               b(y) AS\n"
-        + "  (SELECT x\n"
-        + "   FROM a\n"
-        + "   UNION ALL SELECT y + 1\n"
-        + "   FROM b\n"
-        + "   WHERE y < 2),\n"
-        + "               c(z) AS\n"
-        + "  (SELECT y\n"
-        + "   FROM b\n"
-        + "   UNION ALL SELECT z * 4\n"
-        + "   FROM c\n"
-        + "   WHERE z < 4 )\n"
-        + "SELECT *\n"
-        + "FROM a,\n"
-        + "     b,\n"
-        + "     c";
-    final String expected = "WITH RECURSIVE `A` (`X`) AS (SELECT 1), `B` (`Y`) AS (SELECT `X`\n"
-        + "FROM `A`\n"
-        + "UNION ALL\n"
-        + "SELECT (`Y` + 1)\n"
-        + "FROM `B`\n"
-        + "WHERE (`Y` < 2)), `C` (`Z`) AS (SELECT `Y`\n"
-        + "FROM `B`\n"
-        + "UNION ALL\n"
-        + "SELECT (`Z` * 4)\n"
-        + "FROM `C`\n"
-        + "WHERE (`Z` < 4)) SELECT *\n"
-        + "FROM `A`,\n"
-        + "`B`,\n"
-        + "`C`";
-    sql(sql).ok(expected);
-  }
-
-=======
   @Test void testWith() {
     final String sql = "with femaleEmps as (select * from emps where gender = 'F')"
         + "select deptno from femaleEmps";
@@ -3467,7 +3405,6 @@ public class SqlParserTest {
         .fails("(?s).*Encountered \"all\" at line 1.*");
   }
 
->>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
   @Test void testSqlInlineComment() {
     sql("select 1 from t --this is a comment\n")
         .ok("SELECT 1\n"
@@ -7947,7 +7884,7 @@ public class SqlParserTest {
     sql(sql2).ok(expected2);
   }
 
-<<<<<<< HEAD
+>>>>>>> 3c22ca8ae ([CALCITE-5194] Cannot parse parenthesized UNION in FROM)
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-5194">[CALCITE-5194]
    * Cannot parse parenthesized UNION in FROM</a>. */
@@ -8044,6 +7981,8 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
+<<<<<<< HEAD
+=======
 =======
   @Test void testFromExpr() {
     String sql0 = "select * from a cross join b";
