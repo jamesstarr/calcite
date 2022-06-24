@@ -386,6 +386,20 @@ from orders
 window w as (partition by productId)]]>
         </Resource>
     </TestCase>
+  <TestCase name="testAliasWithinGroupingSets">
+    <Resource name="sql">
+      <![CDATA[SELECT empno / 2 AS x
+FROM emp
+GROUP BY ROLLUP(x)]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalAggregate(group=[{0}], groups=[[{0}, {}]])
+  LogicalProject(X=[/($0, 2)])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
     <TestCase name="testArrayOfRecord">
         <Resource name="sql">
             <![CDATA[select employees[1].detail.skills[2+3].desc from dept_nested]]>
@@ -540,6 +554,42 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
   select 1 from dept where emp.deptno=dept.deptno)]]>
         </Resource>
     </TestCase>
+  <TestCase name="testCaseAliasWithinGroupingSets">
+    <Resource name="sql">
+      <![CDATA[SELECT empno,
+CASE
+WHEN ename in ('Fred','Eric') THEN 'CEO'
+ELSE 'Other'
+END AS derived_col
+FROM emp
+GROUP BY GROUPING SETS ((empno, derived_col),(empno))]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalAggregate(group=[{0, 1}], groups=[[{0, 1}, {0}]])
+  LogicalProject(EMPNO=[$0], DERIVED_COL=[CASE(OR(=($1, 'Fred'), =($1, 'Eric')), CAST('CEO'):CHAR(5) NOT NULL, 'Other')])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testCaseWithinGroupingSets">
+    <Resource name="sql">
+      <![CDATA[SELECT empno,
+CASE WHEN ename IN ('Fred','Eric') THEN 'Manager' ELSE 'Other' END
+FROM emp
+GROUP BY GROUPING SETS (
+(empno, CASE WHEN ename IN ('Fred','Eric') THEN 'Manager' ELSE 'Other' END),
+(empno)
+)]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalAggregate(group=[{0, 1}], groups=[[{0, 1}, {0}]])
+  LogicalProject(EMPNO=[$0], EXPR$1=[CASE(OR(=($1, 'Fred'), =($1, 'Eric')), 'Manager', CAST('Other'):CHAR(7) NOT NULL)])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
     <TestCase name="testUnnestSelect">
         <Resource name="plan">
             <![CDATA[
