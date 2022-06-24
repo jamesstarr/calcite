@@ -1054,7 +1054,11 @@ GROUP BY GROUPING SETS ((empno, derived_col),(empno))]]>
     <Resource name="plan">
       <![CDATA[
 LogicalAggregate(group=[{0, 1}], groups=[[{0, 1}, {0}]])
+<<<<<<< HEAD
   LogicalProject(EMPNO=[$0], DERIVED_COL=[CASE(OR(=($1, 'Fred'), =($1, 'Eric')), 'CEO  ', 'Other')])
+=======
+  LogicalProject(EMPNO=[$0], DERIVED_COL=[CASE(OR(=($1, 'Fred'), =($1, 'Eric')), CAST('CEO'):CHAR(5) NOT NULL, 'Other')])
+>>>>>>> 148d638eb ([CALCITE-5045] Alias within GroupingSets throws type mis-match exception [CALCITE-5145] CASE statement within GROUPING SETS throws type mis-match exception)
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
     </Resource>
@@ -1072,7 +1076,11 @@ GROUP BY GROUPING SETS (
     <Resource name="plan">
       <![CDATA[
 LogicalAggregate(group=[{0, 1}], groups=[[{0, 1}, {0}]])
+<<<<<<< HEAD
   LogicalProject(EMPNO=[$0], EXPR$1=[CASE(OR(=($1, 'Fred'), =($1, 'Eric')), 'Manager', 'Other  ')])
+=======
+  LogicalProject(EMPNO=[$0], EXPR$1=[CASE(OR(=($1, 'Fred'), =($1, 'Eric')), 'Manager', CAST('Other'):CHAR(7) NOT NULL)])
+>>>>>>> 148d638eb ([CALCITE-5045] Alias within GroupingSets throws type mis-match exception [CALCITE-5145] CASE statement within GROUPING SETS throws type mis-match exception)
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
     </Resource>
