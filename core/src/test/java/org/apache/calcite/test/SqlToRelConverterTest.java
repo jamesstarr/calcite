@@ -3995,58 +3995,6 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
   }
 
   /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-5045">[CALCITE-5045]
-   * Alias within GroupingSets throws type mis-match exception</a>.
-   */
-  @Test public void testAliasWithinGroupingSets() {
-    String sql = "SELECT empno / 2 AS x\n"
-            + "FROM emp\n"
-            + "GROUP BY ROLLUP(x)";
-    sql(sql)
-         .conformance(SqlConformanceEnum.LENIENT)
-         .ok();
-  }
-
-  /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-5045">[CALCITE-5045]
-   * Alias within GroupingSets throws type mis-match exception</a>.
-   *
-   * Test alias of CASE statement.
-   */
-  @Test public void testAliasWithinGroupingSetsCaseStmt() {
-    String sql = "SELECT empno,\n"
-            + "CASE WHEN ename IN ('Fred','Eric') THEN 'Manager' ELSE 'Other' END AS x\n"
-            + "FROM emp\n"
-            + "GROUP BY GROUPING SETS (\n"
-            + "(empno, x),\n"
-            + "(empno)\n"
-            + ")";
-    sql(sql)
-         .conformance(SqlConformanceEnum.LENIENT)
-         .ok();
-  }
-
-  /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-5145">[CALCITE-5145]
-   * CASE statement within GROUPING SETS throws type mis-match exception</a>.
-   */
-  @Test public void testCaseWithinGroupingSets() {
-    String sql = "SELECT empno,\n"
-            + "CASE WHEN ename IN ('Fred','Eric') THEN 'Manager' ELSE 'Other' END\n"
-            + "FROM emp\n"
-            + "GROUP BY GROUPING SETS (\n"
-            + "(empno, CASE WHEN ename IN ('Fred','Eric') THEN 'Manager' ELSE 'Other' END),\n"
-            + "(empno)\n"
-            + ")";
-    sql(sql)
-         .conformance(SqlConformanceEnum.LENIENT)
-         .ok();
-  }
-
-  /**
    * Visitor that checks that every {@link RelNode} in a tree is valid.
    *
    * @see RelNode#isValid(Litmus, RelNode.Context)

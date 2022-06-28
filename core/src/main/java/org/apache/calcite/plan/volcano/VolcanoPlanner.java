@@ -73,9 +73,6 @@ import org.apache.calcite.rel.metadata.RelMetadataQuery;
         LOGGER.trace("After renaming rel#{} it is now equivalent to rel#{}",
             rel.getId(), equivRel.getId());
 
-<<<<<<< HEAD
-        mapDigestToRel.put(key, equivRel);
-=======
         assert RelOptUtil.equal(
             "rel rowtype",
             rel.getRowType(),
@@ -387,7 +384,6 @@ import org.apache.calcite.rel.metadata.RelMetadataQuery;
                 "equivRel rowtype",
                 equivRel.getRowType(),
                 Litmus.THROW);
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 
             // make sure this bad rel didn't get into the
             // set in any way (fixupInputs will do this but it
