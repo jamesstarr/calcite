@@ -200,35 +200,6 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
     RelNode flattened = getNewForOldRel(root);
     flattenedRootType = flattened.getRowType();
     if (restructure) {
-<<<<<<< HEAD
-      return tryRestructure(root, flattened);
-    }
-    return flattened;
-  }
-
-  private RelNode tryRestructure(RelNode root, RelNode flattened) {
-    iRestructureInput = 0;
-    restructured = false;
-    final List<RexNode> structuringExps = restructureFields(root.getRowType());
-    if (restructured) {
-      List<String> resultFieldNames = root.getRowType().getFieldNames();
-      // If requested, add an additional projection which puts
-      // everything back into structured form for return to the
-      // client.
-      RelNode restructured = relBuilder.push(flattened)
-            .project(structuringExps, resultFieldNames, true)
-          .build();
-      restructured = RelOptUtil.copyRelHints(flattened, restructured);
-      // REVIEW jvs 23-Mar-2005:  How do we make sure that this
-      // implementation stays in Java?  Fennel can't handle
-      // structured types.
-      return relBuilder.push(flattened)
-          .projectNamed(structuringExps, root.getRowType().getFieldNames(),
-              true)
-          .build();
-    } else {
-      return flattened;
-=======
       iRestructureInput = 0;
       restructured = false;
       final List<RexNode> structuringExps = restructureFields(root.getRowType());
@@ -341,7 +312,6 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
           .findFirst()
           .orElseThrow(NoSuchElementException::new);
   }
->>>>>>> af4516c57 ([CALCITE-3138] RelStructuredTypeFlattener doesn't restructure ROW type fields (Igor Guzenko))
 
   /**
    * Maps the ordinal of a field pre-flattening to the ordinal of the
