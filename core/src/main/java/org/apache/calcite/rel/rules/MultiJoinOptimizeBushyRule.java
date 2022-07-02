@@ -18,17 +18,21 @@ package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.plan.RelOptRuleCall;
+import org.apache.calcite.plan.RelOptTable;
+import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.core.RelFactories;
-import org.apache.calcite.rel.metadata.RelMdUtil;
+import org.apache.calcite.rel.metadata.RelColumnOrigin;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
+import org.apache.calcite.rel.rules.LoptMultiJoin.Edge;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexPermuteInputsShuttle;
 import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.rex.RexVisitor;
+import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBitSet;
@@ -41,9 +45,18 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -77,6 +90,14 @@ public class MultiJoinOptimizeBushyRule
           ? Util.printWriter(System.out)
           : null;
 
+  private static final List<SqlKind> EQUALITY = ImmutableList.of(
+          SqlKind.EQUALS, SqlKind.IS_NOT_DISTINCT_FROM
+  );
+
+  private static final List<SqlKind> EQUI_JOIN = ImmutableList.of(
+          SqlKind.EQUALS, SqlKind.IS_NOT_DISTINCT_FROM, SqlKind.AND
+  );
+
   /** Creates a MultiJoinOptimizeBushyRule. */
   protected MultiJoinOptimizeBushyRule(Config config) {
     super(config);
@@ -107,32 +128,61 @@ public class MultiJoinOptimizeBushyRule
     for (int i = 0; i < multiJoin.getNumJoinFactors(); i++) {
       final RelNode rel = multiJoin.getJoinFactor(i);
       double cost = mq.getRowCount(rel);
-      vertexes.add(new LeafVertex(i, rel, cost, x));
+      Double rowReduction = mq.getPercentageOriginalRows(rel);
+      if (rowReduction == null) {
+        rowReduction = 1.0;
+      }
+
+      vertexes.add(new LeafVertex(i, rel, cost, x, rowReduction));
       x += rel.getRowType().getFieldCount();
     }
     assert x == multiJoin.getNumTotalFields();
 
     final List<LoptMultiJoin.Edge> unusedEdges = Lists.newArrayList();
+    List<RexNode> remainingConditions = new ArrayList<>();
     for (RexNode node : multiJoin.getJoinFilters()) {
-      unusedEdges.add(multiJoin.createEdge(node));
+      Edge e = multiJoin.createEdge(node);
+      if (e.factors.cardinality() != 2) {
+        remainingConditions.add(node);
+      } else {
+        unusedEdges.add(multiJoin.createEdge(node));
+      }
     }
 
-    // Comparator that chooses the best edge. A "good edge" is one that has
-    // a large difference in the number of rows on LHS and RHS.
-    final Comparator<LoptMultiJoin.Edge> edgeComparator =
-        new Comparator<LoptMultiJoin.Edge>() {
-          public int compare(LoptMultiJoin.Edge e0, LoptMultiJoin.Edge e1) {
-            return Double.compare(rowCountDiff(e0), rowCountDiff(e1));
-          }
+    Iterator<Edge> iter = unusedEdges.iterator();
+    Map<ImmutableBitSet, Edge> edgeMap = new HashMap<>();
+    while (iter.hasNext()) {
+      Edge edge = iter.next();
+      if (!edge.condition.isA(SqlKind.EQUALS)) {
+        continue;
+      }
+      iter.remove();
+      Edge other = edgeMap.get(edge.factors);
+      if (other == null) {
+        edgeMap.put(edge.factors, edge);
+        continue;
+      }
+      List<RexNode> conjunctions = new ArrayList<>();
+      conjunctions.addAll(RelOptUtil.conjunctions(other.condition));
+      conjunctions.add(edge.condition);
+      ImmutableBitSet combinedColumns =
+              edge.columns.rebuild().addAll(other.columns).build();
+      Edge combined = new Edge(
+              RexUtil.composeConjunction(
+                      rexBuilder,
+                      conjunctions,
+                      false
+              ),
+              edge.factors,
+              combinedColumns);
+      edgeMap.put(combined.factors, combined);
+    }
 
-          private double rowCountDiff(LoptMultiJoin.Edge edge) {
-            assert edge.factors.cardinality() == 2 : edge.factors;
-            final int factor0 = edge.factors.nextSetBit(0);
-            final int factor1 = edge.factors.nextSetBit(factor0 + 1);
-            return Math.abs(vertexes.get(factor0).cost
-                - vertexes.get(factor1).cost);
-          }
-        };
+    Comparator<Edge> edgeComparator = createComparator(multiJoin,
+            vertexes, mq);
+
+    unusedEdges.addAll(edgeMap.values());
+
 
     final List<LoptMultiJoin.Edge> usedEdges = Lists.newArrayList();
     for (;;) {
@@ -164,7 +214,7 @@ public class MultiJoinOptimizeBushyRule
       // Determine which factor is to be on the LHS of the join.
       final int majorFactor;
       final int minorFactor;
-      if (vertexes.get(factors[0]).cost <= vertexes.get(factors[1]).cost) {
+      if (vertexes.get(factors[1]).cost <= vertexes.get(factors[0]).cost) {
         majorFactor = factors[0];
         minorFactor = factors[1];
       } else {
@@ -184,6 +234,12 @@ public class MultiJoinOptimizeBushyRule
               .set(v)
               .build();
 
+      double rowReduction = 1.0;
+      if (edgeOrdinal >= 0) {
+        rowReduction = Math.min(rowReduction,
+              rowReduction(unusedEdges.get(edgeOrdinal),
+              multiJoin, vertexes, false, mq));
+      }
       final List<RexNode> conditions = Lists.newArrayList();
       final Iterator<LoptMultiJoin.Edge> edgeIterator = unusedEdges.iterator();
       while (edgeIterator.hasNext()) {
@@ -196,13 +252,13 @@ public class MultiJoinOptimizeBushyRule
       }
 
       double cost =
-          majorVertex.cost
-          * minorVertex.cost
-          * RelMdUtil.guessSelectivity(
-              RexUtil.composeConjunction(rexBuilder, conditions, false));
+          Math.max(majorVertex.cost, minorVertex.cost);
+
       final Vertex newVertex =
           new JoinVertex(v, majorFactor, minorFactor, newFactors,
-              cost, ImmutableList.copyOf(conditions));
+              cost, ImmutableList.copyOf(conditions),
+              majorVertex.rowReduction * rowReduction,
+              majorVertex.coreFactor());
       vertexes.add(newVertex);
 
       // Re-compute selectivity of edges above the one just chosen.
@@ -281,10 +337,246 @@ public class MultiJoinOptimizeBushyRule
       }
     }
 
+    remainingConditions.addAll(
+            RelOptUtil.conjunctions(multiJoinRel.getPostJoinFilter())
+    );
+    RexNode postJoinFilter = RexUtil.composeConjunction(rexBuilder,
+            remainingConditions, false);
     final Pair<RelNode, Mappings.TargetMapping> top = Util.last(relNodes);
     relBuilder.push(top.left)
-        .project(relBuilder.fields(top.right));
+            .project(relBuilder.fields(top.right))
+            .filter(postJoinFilter);
     call.transformTo(relBuilder.build());
+  }
+
+  /**
+   * Create the comparator used to decide which is best next edge to merge.
+   * The basic heuristic for determining which edges are best:
+   * 1. Edge condition is on a primary key or distinct key
+   *   a. For edges that satisfy 1, prefer edges where smaller input
+   *     has row reduction, as this will probably be a filtering join
+   *     condition
+   * 2. Edge condition does not indicate a self join
+   * 3. Condition is not on "fanout" column of the larger Vertex
+   * 4. Prefer non-PrimaryKey/Distinct edges with row reduction,
+   *   as it's possible that it's actually a primary key, but we
+   *   just don't have the statistics/information to know for sure
+   * 5. Finally, for edges that satisfy none of the above, prefer
+   *   the edges where ratio of rowcount is the largest
+   */
+  protected Comparator<Edge> createComparator(LoptMultiJoin multiJoin,
+                                              List<Vertex> vertexes,
+                                              RelMetadataQuery mq) {
+    return new Comparator<LoptMultiJoin.Edge>() {
+      public int compare(LoptMultiJoin.Edge e0, LoptMultiJoin.Edge e1) {
+        int comp = -Double.compare(
+                rowReduction(e0, multiJoin, vertexes, true, mq),
+                rowReduction(e1, multiJoin, vertexes, true, mq));
+        if (comp != 0) {
+          return comp;
+        }
+        comp = Integer.compare(selfJoin(e0, multiJoin, mq),
+                selfJoin(e1, multiJoin, mq));
+        if (comp != 0) {
+          return comp;
+        }
+        comp = Integer.compare(hasFanout(e0, multiJoin, vertexes),
+                hasFanout(e1, multiJoin, vertexes));
+        if (comp != 0) {
+          return comp;
+        }
+        comp = -Double.compare(
+                rowReduction(e0, multiJoin, vertexes, false, mq),
+                rowReduction(e1, multiJoin, vertexes, false, mq));
+        if (comp != 0) {
+          return comp;
+        }
+        return Double.compare(rowCountRatio(e0), rowCountRatio(e1));
+      }
+
+
+      private double rowCountRatio(LoptMultiJoin.Edge edge) {
+        assert edge.factors.cardinality() == 2 : edge.factors;
+        final int factor0 = edge.factors.nextSetBit(0);
+        final int factor1 = edge.factors.nextSetBit(factor0 + 1);
+        double ratio = vertexes.get(factor0).cost
+                / vertexes.get(factor1).cost;
+        return Math.max(ratio, 1 / ratio);
+      }
+    };
+  }
+
+  /**
+   * if the column origin of join conditions refer to the same
+   * underlying table, this is considered a self join. These
+   * are often many-to-many joins, and thus it is safest
+   * to de-prioritize these joins
+   */
+  public static int selfJoin(Edge edge,
+                             LoptMultiJoin multiJoin,
+                             RelMetadataQuery mq) {
+    Map<Integer, ImmutableBitSet> factorRefMap =
+            edge.getFactorRefMap(multiJoin);
+
+    Set<RelOptTable> refTables = new HashSet<>();
+    for (int oFactor : factorRefMap.keySet()) {
+      RelNode rel = multiJoin.getJoinFactor(oFactor);
+      Set<RelOptTable> set = factorRefMap.get(oFactor).asList().stream()
+              .map(c -> mq.getColumnOrigins(rel, c))
+              .filter(Objects::nonNull)
+              .flatMap(Collection::stream)
+              .map(RelColumnOrigin::getOriginTable)
+              .collect(Collectors.toSet());
+      if (intersects(refTables, set)) {
+        return 0;
+      }
+      refTables.addAll(set);
+    }
+    return 1;
+  }
+
+  private static <T> boolean intersects(Set<T> set1, Set<T> set2) {
+    Set<T> tmp = new HashSet<>(set1);
+    tmp.retainAll(set2);
+    return !tmp.isEmpty();
+  }
+
+  /**
+   * When a smaller table joins with a larger table, if we assume the larger table is a fact
+   * table and the smaller is a dimension table, and the join key of the dimension is a primary
+   * key, the columns of the smaller dimension table will have "fanout", i.e. duplicated values
+   * after the join. If we then add another join that includes a join on a column from the "fanout"
+   * table, there is a high potential of this being a many-to-many join, which we should
+   * deprioritize
+   */
+  public static int hasFanout(Edge edge,
+                                  LoptMultiJoin multiJoin,
+                                  List<Vertex> vertexes) {
+    Map<Integer, ImmutableBitSet> factorRefMap =
+            edge.getFactorRefMap(multiJoin);
+    Set<Integer> coreFactors = edge.factors.asList().stream()
+            .map(vertexes::get)
+            .map(Vertex::coreFactor)
+            .collect(Collectors.toSet());
+    return factorRefMap.keySet().stream().anyMatch(f -> !coreFactors.contains(f))
+            ? 0 : 1;
+  }
+
+  /**
+   * Return the underlying factors from this edge
+   * where the condition is on a primary key or
+   * distinct column
+   */
+  private static Set<Integer> distinctFactors(LoptMultiJoin.Edge edge,
+                         LoptMultiJoin multiJoin,
+                         List<Vertex> vertexes,
+                         RelMetadataQuery mq) {
+    Set<Integer> distinctFactors = new HashSet<>();
+    Map<Integer, Integer> oFactorFactorMap = new HashMap<>();
+    for (int factor : edge.factors) {
+      Vertex v = vertexes.get(factor);
+      for (int oFactor : v.factors) {
+        oFactorFactorMap.put(oFactor, factor);
+      }
+    }
+
+    Map<Integer, ImmutableBitSet> factorRefMap =
+            edge.getFactorRefMap(multiJoin);
+
+    Set<Integer> coreFactors = edge.factors.asList().stream()
+            .map(vertexes::get)
+            .map(Vertex::coreFactor)
+            .collect(Collectors.toSet());
+
+    for (int oFactor : factorRefMap.keySet()) {
+      ImmutableBitSet factorRefs = factorRefMap.get(oFactor);
+      boolean unique = isKey(multiJoin.getJoinFactor(oFactor),
+              factorRefs, mq)
+              && coreFactors.contains(oFactor);
+      unique |= Optional.ofNullable(
+                mq.areColumnsUnique(multiJoin.getJoinFactor(oFactor),
+                factorRefs, true))
+              .orElse(false);
+      if (unique) {
+        Integer factor = oFactorFactorMap.get(oFactor);
+        distinctFactors.add(factor);
+      }
+    }
+    return distinctFactors;
+  }
+
+  /**
+   * Assume the larger vertex contains the fact table. If
+   * there is row reduction on the smaller side, we can
+   * treat this is a filtering join
+   */
+  private static Double rowReduction(LoptMultiJoin.Edge edge,
+                                     LoptMultiJoin multiJoin,
+                                     List<Vertex> vertexes,
+                                     boolean requireDistinct,
+                                     RelMetadataQuery mq) {
+    if (!edge.condition.isA(EQUI_JOIN)) {
+      return Double.POSITIVE_INFINITY;
+    }
+    if (edge.condition.isA(SqlKind.AND)) {
+      if (RelOptUtil.conjunctions(edge.condition).stream()
+              .noneMatch(c -> c.isA(EQUALITY))
+      ) {
+        return Double.POSITIVE_INFINITY;
+      }
+    }
+    Set<Integer> distinctFactors = distinctFactors(edge, multiJoin, vertexes, mq);
+    if (requireDistinct && distinctFactors.isEmpty()) {
+      return Double.POSITIVE_INFINITY;
+    }
+
+    double reduction = 1.0;
+    if (requireDistinct) {
+      for (int factor : edge.factors) {
+        if (distinctFactors.contains(factor)) {
+          double newReduction = vertexes.get(factor).rowReduction;
+          reduction = Math.min(reduction, newReduction);
+        }
+      }
+    } else {
+      double minCost = edge.factors.asList()
+              .stream()
+              .mapToDouble(f -> vertexes.get(f).cost)
+              .min()
+              .orElse(0);
+      for (int factor : edge.factors) {
+        Vertex v = vertexes.get(factor);
+        if (isEqWithEpsilon(minCost, v.cost)) {
+          reduction = Math.min(reduction, v.rowReduction);
+        }
+      }
+    }
+
+    return reduction < 1.0 ? 0.5 : 1.0;
+  }
+
+  public static boolean isEqWithEpsilon(double d1, double d2) {
+    return Math.abs(d1 - d2) < RelOptUtil.EPSILON;
+  }
+  public static boolean isKey(RelNode dim, ImmutableBitSet dimKeys, RelMetadataQuery mq) {
+    List<RelColumnOrigin> columnOrigins =
+            dimKeys.asList().stream()
+                    .map(k -> mq.getColumnOrigin(dim, k))
+                    .filter(Objects::nonNull).collect(Collectors.toList());
+    if (columnOrigins.size() != dimKeys.cardinality()) {
+      return false;
+    }
+    Set<RelOptTable> tables = columnOrigins.stream()
+            .filter(Objects::nonNull)
+            .map(RelColumnOrigin::getOriginTable)
+            .collect(Collectors.toSet());
+    if (tables.size() != 1) {
+      return false;
+    }
+    RelOptTable table = tables.iterator().next();
+    ImmutableBitSet.Builder keyBuilder = ImmutableBitSet.builder();
+    columnOrigins.forEach(o -> keyBuilder.set(o.getOriginColumnOrdinal()));
+    return table != null && table.isKey(keyBuilder.build());
   }
 
   private void trace(List<Vertex> vertexes,
@@ -309,7 +601,7 @@ public class MultiJoinOptimizeBushyRule
 
   int chooseBestEdge(List<LoptMultiJoin.Edge> edges,
       Comparator<LoptMultiJoin.Edge> comparator) {
-    return minPos(edges, comparator);
+    return maxPos(edges, comparator);
   }
 
   /** Returns the index within a list at which compares least according to a
@@ -319,7 +611,7 @@ public class MultiJoinOptimizeBushyRule
    *
    * <p>If the list is empty, returns -1.</p>
    */
-  static <E> int minPos(List<E> list, Comparator<E> fn) {
+  static <E> int maxPos(List<E> list, Comparator<E> fn) {
     if (list.isEmpty()) {
       return -1;
     }
@@ -327,7 +619,7 @@ public class MultiJoinOptimizeBushyRule
     int iBest = 0;
     for (int i = 1; i < list.size(); i++) {
       E e = list.get(i);
-      if (fn.compare(e, eBest) < 0) {
+      if (fn.compare(e, eBest) > 0) {
         eBest = e;
         iBest = i;
       }
@@ -342,10 +634,17 @@ public class MultiJoinOptimizeBushyRule
     protected final ImmutableBitSet factors;
     final double cost;
 
-    Vertex(int id, ImmutableBitSet factors, double cost) {
+    final double rowReduction;
+
+    Vertex(int id, ImmutableBitSet factors, double cost, double rowReduction) {
       this.id = id;
       this.factors = factors;
       this.cost = cost;
+      this.rowReduction = rowReduction;
+    }
+
+    int coreFactor() {
+      return id;
     }
   }
 
@@ -354,8 +653,8 @@ public class MultiJoinOptimizeBushyRule
     private final RelNode rel;
     final int fieldOffset;
 
-    LeafVertex(int id, RelNode rel, double cost, int fieldOffset) {
-      super(id, ImmutableBitSet.of(id), cost);
+    LeafVertex(int id, RelNode rel, double cost, int fieldOffset, double rowReduction) {
+      super(id, ImmutableBitSet.of(id), cost, rowReduction);
       this.rel = rel;
       this.fieldOffset = fieldOffset;
     }
@@ -365,6 +664,7 @@ public class MultiJoinOptimizeBushyRule
           + ", cost: " + Util.human(cost)
           + ", factors: " + factors
           + ", fieldOffset: " + fieldOffset
+          + ", rowReduceCount: " + rowReduction
           + ")";
     }
   }
@@ -375,14 +675,21 @@ public class MultiJoinOptimizeBushyRule
     private final int rightFactor;
     /** Zero or more join conditions. All are in terms of the original input
      * columns (not in terms of the outputs of left and right input factors). */
+
+    private final int coreFactor;
     final ImmutableList<RexNode> conditions;
 
     JoinVertex(int id, int leftFactor, int rightFactor, ImmutableBitSet factors,
-        double cost, ImmutableList<RexNode> conditions) {
-      super(id, factors, cost);
+        double cost, ImmutableList<RexNode> conditions, double rowReduction, int coreFactor) {
+      super(id, factors, cost, rowReduction);
       this.leftFactor = leftFactor;
       this.rightFactor = rightFactor;
       this.conditions = Preconditions.checkNotNull(conditions);
+      this.coreFactor = coreFactor;
+    }
+
+    @Override int coreFactor() {
+      return coreFactor;
     }
 
     @Override public String toString() {
@@ -391,6 +698,7 @@ public class MultiJoinOptimizeBushyRule
           + ", factors: " + factors
           + ", leftFactor: " + leftFactor
           + ", rightFactor: " + rightFactor
+          + ", rowReduceCount: " + rowReduction
           + ")";
     }
   }

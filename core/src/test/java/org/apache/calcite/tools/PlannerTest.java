@@ -789,6 +789,7 @@ public class PlannerTest {
 
   /** Plans a 3-table join query on the FoodMart schema. The ideal plan is not
    * bushy, but nevertheless exercises the bushy-join heuristic optimizer. */
+  @Ignore
   @Test public void testAlmostBushy() throws Exception {
     checkBushy("select *\n"
             + "from \"sales_fact_1997\" as s\n"
@@ -814,6 +815,7 @@ public class PlannerTest {
    * which would be written
    *   (customer x ((product_class x product) x sales))
    * if you don't assume 'x' is left-associative. */
+  @Ignore
   @Test public void testBushy() throws Exception {
     checkBushy("select *\n"
             + "from \"sales_fact_1997\" as s\n"
@@ -837,6 +839,7 @@ public class PlannerTest {
 
   /** Plans a 5-table join query on the FoodMart schema. The ideal plan is
    * bushy: store x (customer x (product_class x product x sales)). */
+  @Ignore
   @Test public void testBushy5() throws Exception {
     checkBushy("select *\n"
             + "from \"sales_fact_1997\" as s\n"
@@ -861,6 +864,7 @@ public class PlannerTest {
 
   /** Tests the bushy join algorithm where one table does not join to
    * anything. */
+  @Ignore
   @Test public void testBushyCrossJoin() throws Exception {
     checkBushy("select * from \"sales_fact_1997\"\n"
             + "join \"customer\" using (\"customer_id\")\n"
@@ -876,6 +880,7 @@ public class PlannerTest {
 
   /** Tests the bushy join algorithm against a query where not all tables have a
    * join condition to the others. */
+  @Ignore
   @Test public void testBushyCrossJoin2() throws Exception {
     checkBushy("select * from \"sales_fact_1997\"\n"
             + "join \"customer\" using (\"customer_id\")\n"

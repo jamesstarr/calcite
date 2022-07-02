@@ -31,6 +31,7 @@ import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.util.BitSets;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.ImmutableIntList;
+import org.apache.calcite.util.Pair;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -179,6 +180,8 @@ public class LoptMultiJoin {
    * the self join.
    */
   Map<Integer, RemovableSelfJoin> removableSelfJoinPairs;
+
+  private ImmutableBitSet[][] factorFieldsRefByFactor;
 
   //~ Constructors -----------------------------------------------------------
 
@@ -514,6 +517,23 @@ public class LoptMultiJoin {
   }
 
   /**
+   * Determines the join factor and RexInputRef corresponding to a RexInputRef
+   *
+   * @param rexInputRef the input reference relative to the multijoin
+   * @return
+   */
+  public Pair<Integer, Integer> findFactorAndInputRef(int rexInputRef) {
+    for (int factor = 0; factor < nJoinFactors; factor++) {
+      if ((rexInputRef >= joinStart[factor])
+              && (rexInputRef < (joinStart[factor] + nFieldsInJoinFactor[factor]))) {
+        int newInputRef = rexInputRef - joinStart[factor];
+        return Pair.of(factor, newInputRef);
+      }
+    }
+    throw new AssertionError();
+  }
+
+  /**
    * Sets weighting for each combination of factors, depending on which join
    * filters reference which factors. Greater weight is given to equality
    * conditions. Also, sets bitmaps indicating which factors are referenced by
@@ -809,10 +829,31 @@ public class LoptMultiJoin {
     final ImmutableBitSet columns;
     final RexNode condition;
 
+    Map<Integer, ImmutableBitSet> factorRefMap;
+
     Edge(RexNode condition, ImmutableBitSet factors, ImmutableBitSet columns) {
       this.condition = condition;
       this.factors = factors;
       this.columns = columns;
+    }
+
+    public Map<Integer, ImmutableBitSet> getFactorRefMap(LoptMultiJoin multiJoin) {
+      if (factorRefMap == null) {
+        factorRefMap = new HashMap<>();
+        int col = columns.nextSetBit(0);
+        while (col != -1) {
+          Pair<Integer, Integer> factorRef = multiJoin.findFactorAndInputRef(col);
+          ImmutableBitSet factorRefs = factorRefMap.get(factorRef.left);
+          if (factorRefs == null) {
+            factorRefs = ImmutableBitSet.of(factorRef.right);
+          } else {
+            factorRefs = factorRefs.rebuild().set(factorRef.right).build();
+          }
+          factorRefMap.put(factorRef.left, factorRefs);
+          col = columns.nextSetBit(col + 1);
+        }
+      }
+      return factorRefMap;
     }
 
     @Override public String toString() {

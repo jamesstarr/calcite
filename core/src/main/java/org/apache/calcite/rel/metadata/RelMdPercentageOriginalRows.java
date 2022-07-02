@@ -52,8 +52,6 @@ public class RelMdPercentageOriginalRows
 
   //~ Methods ----------------------------------------------------------------
 
-  private RelMdPercentageOriginalRows() {}
-
   public MetadataDef<BuiltInMetadata.PercentageOriginalRows> getDef() {
     return BuiltInMetadata.PercentageOriginalRows.DEF;
   }
@@ -162,7 +160,7 @@ public class RelMdPercentageOriginalRows
     return rel.computeSelfCost(rel.getCluster().getPlanner(), mq);
   }
 
-  private static Double quotientForPercentage(
+  protected static Double quotientForPercentage(
       Double numerator,
       Double denominator) {
     if ((numerator == null) || (denominator == null)) {
