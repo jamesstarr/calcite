@@ -99,6 +99,16 @@ public class SqlAdvisorValidator extends SqlValidatorImpl {
     return expr;
   }
 
+  public SqlNode expandWhereWithAlias(SqlNode expr, SqlValidatorScope scope, SqlSelect sqlSelect) {
+    // Disable expansion. It doesn't help us come up with better hints.
+    return expr;
+  }
+
+  public SqlNode expandWithAlias(SqlNode expr, SqlValidatorScope scope, SqlSelect sqlSelect) {
+    // Disable expansion. It doesn't help us come up with better hints.
+    return expr;
+  }
+
   public SqlNode expandOrderExpr(SqlSelect select, SqlNode orderExpr) {
     // Disable expansion. It doesn't help us come up with better hints.
     return orderExpr;

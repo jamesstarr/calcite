@@ -452,7 +452,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     // Expand the select item: fully-qualify columns, and convert
     // parentheses-free functions such as LOCALTIME into explicit function
     // calls.
-    SqlNode expanded = expand(selectItem, scope);
+    SqlNode expanded = expandWithAlias(selectItem, scope, select);
     final String alias =
         deriveAlias(
             selectItem,
@@ -3241,7 +3241,13 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       break;
     case ON:
       Preconditions.checkArgument(condition != null);
-      SqlNode expandedCondition = expand(condition, joinScope);
+
+      SqlNode expandedCondition = condition;
+      if (scope.getNode() instanceof SqlSelect) {
+        expandedCondition = expandWithAlias(condition, joinScope, (SqlSelect) scope.getNode());
+      } else {
+        expandedCondition = expand(condition, joinScope);
+      }
       join.setOperand(5, expandedCondition);
       condition = join.getCondition();
       validateWhereOrOn(joinScope, condition, "ON");
@@ -4106,7 +4112,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       return;
     }
     final SqlValidatorScope whereScope = getWhereScope(select);
-    final SqlNode expandedWhere = expand(where, whereScope);
+    final SqlNode expandedWhere = expandWhereWithAlias(where, whereScope, select);
     select.setWhere(expandedWhere);
     validateWhereOrOn(whereScope, expandedWhere, "WHERE");
   }
@@ -5648,6 +5654,18 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     return newExpr;
   }
 
+  //overridden in Dremio because we need to handle nested types there
+  public SqlNode expandWhereWithAlias(SqlNode expr,
+      SqlValidatorScope scope, SqlSelect select) {
+    return expand(expr, scope);
+  }
+
+  //overridden in Dremio because we need to handle nested types there
+  public SqlNode expandWithAlias(SqlNode expr,
+      SqlValidatorScope scope, SqlSelect select) {
+    return expand(expr, scope);
+  }
+
   public boolean isSystemField(RelDataTypeField field) {
     return false;
   }
@@ -6186,6 +6204,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       return super.visitScoped(call);
     }
   }
+
 
   /**
    * Shuttle which walks over an expression in the GROUP BY/HAVING clause, replacing
