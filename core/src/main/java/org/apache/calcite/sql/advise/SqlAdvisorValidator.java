@@ -27,9 +27,6 @@ import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.sql.validate.OverScope;
-<<<<<<< HEAD
-import org.apache.calcite.sql.validate.SelectScope;
-=======
 >>>>>>> e62a96083 ([CALCITE-3900] Add Config for SqlValidator)
 import org.apache.calcite.sql.validate.SqlModality;
 import org.apache.calcite.sql.validate.SqlValidatorCatalogReader;
@@ -113,11 +110,13 @@ public class SqlAdvisorValidator extends SqlValidatorImpl {
     return expr;
   }
 
+<<<<<<< HEAD
   public SqlNode expandSelectExpr(SqlNode expr, SelectScope scope, SqlSelect select) {
     // Disable expansion. It doesn't help us come up with better hints.
     return expr;
   }
 
+=======
   public SqlNode expandOrderExpr(SqlSelect select, SqlNode orderExpr) {
     // Disable expansion. It doesn't help us come up with better hints.
     return orderExpr;
