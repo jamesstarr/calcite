@@ -57,10 +57,9 @@ public class SqlProcedureCallOperator extends SqlPrefixOperator {
         null,
         null,
         null,
-<<<<<<< HEAD
-        null,
-=======
 >>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
+=======
+        null,
         null);
   }
 }

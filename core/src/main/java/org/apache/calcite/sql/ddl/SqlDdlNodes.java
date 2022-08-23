@@ -221,11 +221,10 @@ public class SqlDdlNodes {
                 .addAll(columnList)
                 .build());
     return new SqlSelect(p, null, selectList, from, null, null, null, null,
-<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/ddl/SqlDdlNodes.java
-        null, null, null, null, null);
-=======
         null, null, null, null);
->>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints):server/src/main/java/org/apache/calcite/sql/ddl/SqlDdlNodes.java
+=======
+        null, null, null, null, null);
+>>>>>>> 5a56f040b (DX-56145 Qualify Support in Calcite)
   }
 
   /** Populates the table called {@code name} by executing {@code query}. */

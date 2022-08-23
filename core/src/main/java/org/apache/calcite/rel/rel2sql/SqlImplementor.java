@@ -496,7 +496,7 @@ public abstract class SqlImplementor {
       node = as(node, "t");
     }
     return new SqlSelect(POS, SqlNodeList.EMPTY, null, node, null, null, null,
-        SqlNodeList.EMPTY, null, null, null, null);
+        null, SqlNodeList.EMPTY, null, null, null, null);
   }
 
   /** Context for translating a {@link RexNode} expression (within a

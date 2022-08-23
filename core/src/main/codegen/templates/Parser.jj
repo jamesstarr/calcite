@@ -1464,6 +1464,7 @@ SqlSelect SqlSelect() :
     final SqlNode where;
     final SqlNodeList groupBy;
     final SqlNode having;
+    final SqlNode qualify;
     final SqlNodeList windowDecls;
 <<<<<<< HEAD
     final SqlNode qualify;
@@ -1505,6 +1506,7 @@ SqlSelect SqlSelect() :
         where = WhereOpt()
         groupBy = GroupByOpt()
         having = HavingOpt()
+        qualify = QualifyOpt()
         windowDecls = WindowOpt()
         qualify = QualifyOpt()
     |
@@ -1513,6 +1515,7 @@ SqlSelect SqlSelect() :
             where = null;
             groupBy = null;
             having = null;
+            qualify = null;
             windowDecls = null;
             qualify = null;
         }
@@ -1521,10 +1524,14 @@ SqlSelect SqlSelect() :
         return new SqlSelect(s.end(this), keywordList,
             new SqlNodeList(selectList, Span.of(selectList).pos()),
 <<<<<<< HEAD
+<<<<<<< HEAD
             fromClause, where, groupBy, having, windowDecls, qualify, null, null, null,
 =======
             fromClause, where, groupBy, having, windowDecls, null, null, null,
 >>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
+=======
+            fromClause, where, groupBy, having, qualify, windowDecls, null, null, null,
+>>>>>>> 5a56f040b (DX-56145 Qualify Support in Calcite)
             new SqlNodeList(hints, getPos()));
     }
 }

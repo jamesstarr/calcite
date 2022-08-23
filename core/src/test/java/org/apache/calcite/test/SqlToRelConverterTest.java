@@ -3894,6 +3894,100 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
+  @Test public void testQualifyWithoutReferences() {
+    sql("SELECT empno, ename, deptno "
+            + "FROM emp "
+            + "QUALIFY ROW_NUMBER() over (partition by ename order by deptno) = 1")
+            .conformance(SqlConformanceEnum.LENIENT)
+            .ok();
+  }
+
+  @Test public void testQualifyWithoutReferencesAndFilter() {
+    sql("SELECT empno, ename, deptno "
+            + "FROM emp "
+            + "WHERE deptno > 5 "
+            + "QUALIFY ROW_NUMBER() over (partition by ename order by deptno) = 1")
+            .conformance(SqlConformanceEnum.LENIENT)
+            .ok();
+  }
+
+  @Test public void testQualifyWithReferences() {
+    sql("SELECT empno, ename, deptno, "
+            + "   ROW_NUMBER() over (partition by ename order by deptno) as row_num "
+            + "FROM emp "
+            + "QUALIFY row_num = 1")
+            .conformance(SqlConformanceEnum.LENIENT)
+            .ok();
+  }
+
+  @Test public void testQualifyWithDerivedColumn() {
+    sql("SELECT empno, ename, deptno, SUBSTRING(ename,1,1) as DERIVED_COLUMN "
+            + "FROM emp "
+            + "QUALIFY ROW_NUMBER() OVER (PARTITION BY deptno ORDER BY DERIVED_COLUMN) = 1")
+            .conformance(SqlConformanceEnum.LENIENT)
+            .ok();
+  }
+
+  @Test public void testQualifyInDDL() {
+    sql("INSERT INTO dept(deptno, name) "
+            + "SELECT DISTINCT empno, ename "
+            + "FROM emp "
+            + "WHERE deptno > 5 "
+            + "QUALIFY RANK() OVER (PARTITION BY ename ORDER BY slacker DESC) = 1 ")
+            .conformance(SqlConformanceEnum.LENIENT)
+            .ok();
+  }
+
+  @Test public void testQualifyInSubquery() {
+    sql("SELECT * "
+            + "FROM ("
+            + " SELECT DISTINCT empno, ename, deptno "
+            + " FROM emp "
+            + " QUALIFY RANK() OVER (PARTITION BY ename ORDER BY deptno DESC) = 1 )")
+            .conformance(SqlConformanceEnum.LENIENT)
+            .ok();
+  }
+
+  /**
+   * This query doesn't work, since convertExpression doesn't work on complicated subqueries
+   */
+  @Ignore
+  @Test public void testQualifyWithPreOpertators() {
+    sql("SELECT deptno, SUM(sal) OVER (PARTITION BY deptno) as SUM_SAL "
+            + "FROM emp "
+            + "WHERE sal > 1000 "
+            + "GROUP BY deptno, sal "
+            + "HAVING SUM(empno) > 5 "
+            + "QUALIFY SUM_SAL IN ( "
+            + "   SELECT MIN(deptno)"
+            + "   FROM dept "
+            + "   GROUP BY dname "
+            + "   HAVING MIN(loc) > 'asdf')")
+            .conformance(SqlConformanceEnum.LENIENT)
+            .ok();
+  }
+
+  /**
+   * This query doesn't work, since convertExpression doesn't work on complicated subqueries
+   */
+  @Ignore
+  @Test public void testQualifyWithEverything() {
+    sql("SELECT DISTINCT deptno, SUM(sal) OVER (PARTITION BY deptno) as sum_sal "
+            + "FROM emp "
+            + "WHERE sal > 1000 "
+            + "GROUP BY deptno, sal "
+            + "HAVING SUM(empno) > 5 "
+            + "QUALIFY sum_sal IN ( "
+            + "   SELECT MIN(deptno)"
+            + "   FROM dept "
+            + "   GROUP BY dname "
+            + "   HAVING MIN(loc) > 'asdf') "
+            + "ORDER BY deptno "
+            + "LIMIT 5")
+            .conformance(SqlConformanceEnum.LENIENT)
+            .ok();
+  }
+
   /**
    * Visitor that checks that every {@link RelNode} in a tree is valid.
    *

@@ -7170,60 +7170,6 @@ public class SqlParserTest {
         .ok("INTERVAL 'wael was here' HOUR");
   }
 
-<<<<<<< HEAD
-  @Test void testDateMinusDate() {
-    expr("(date1 - date2) HOUR")
-        .ok("((`DATE1` - `DATE2`) HOUR)");
-    expr("(date1 - date2) YEAR TO MONTH")
-        .ok("((`DATE1` - `DATE2`) YEAR TO MONTH)");
-    expr("(date1 - date2) HOUR > interval '1' HOUR")
-        .ok("(((`DATE1` - `DATE2`) HOUR) > INTERVAL '1' HOUR)");
-    expr("^(date1 + date2) second^")
-        .fails("(?s).*Illegal expression. "
-            + "Was expecting ..DATETIME - DATETIME. INTERVALQUALIFIER.*");
-    expr("^(date1,date2,date2) second^")
-        .fails("(?s).*Illegal expression. "
-            + "Was expecting ..DATETIME - DATETIME. INTERVALQUALIFIER.*");
-  }
-
-  @Test void testExtract() {
-    expr("extract(year from x)")
-        .ok("EXTRACT(YEAR FROM `X`)");
-    expr("extract(month from x)")
-        .ok("EXTRACT(MONTH FROM `X`)");
-    expr("extract(day from x)")
-        .ok("EXTRACT(DAY FROM `X`)");
-    expr("extract(hour from x)")
-        .ok("EXTRACT(HOUR FROM `X`)");
-    expr("extract(minute from x)")
-        .ok("EXTRACT(MINUTE FROM `X`)");
-    expr("extract(second from x)")
-        .ok("EXTRACT(SECOND FROM `X`)");
-    expr("extract(dow from x)")
-        .ok("EXTRACT(DOW FROM `X`)");
-    expr("extract(doy from x)")
-        .ok("EXTRACT(DOY FROM `X`)");
-    expr("extract(week from x)")
-        .ok("EXTRACT(WEEK FROM `X`)");
-    expr("extract(epoch from x)")
-        .ok("EXTRACT(EPOCH FROM `X`)");
-    expr("extract(quarter from x)")
-        .ok("EXTRACT(QUARTER FROM `X`)");
-    expr("extract(decade from x)")
-        .ok("EXTRACT(DECADE FROM `X`)");
-    expr("extract(century from x)")
-        .ok("EXTRACT(CENTURY FROM `X`)");
-    expr("extract(millennium from x)")
-        .ok("EXTRACT(MILLENNIUM FROM `X`)");
-
-    expr("extract(day ^to^ second from x)")
-        .fails("(?s)Encountered \"to\".*");
-  }
-
-  @Test void testGeometry() {
-    expr("cast(null as ^geometry^)")
-        .fails("Geo-spatial extensions and the GEOMETRY data type are not enabled");
-=======
   @Test public void testGeometry() {
     checkExpFails("cast(null as ^geometry^)",
         "Geo-spatial extensions and the GEOMETRY data type are not enabled");
@@ -7575,6 +7521,7 @@ public class SqlParserTest {
         .fails("(?s).*Encountered \"= =\" at line 1, column 32\\..*");
   }
 
+<<<<<<< HEAD
   @Test void qualify() {
     check(
             "SELECT a, b, c FROM mytable QUALIFY ROW_NUMBER() over (partition by p order by o) = 1",
@@ -7596,6 +7543,16 @@ public class SqlParserTest {
   }
 
   @Test void testLongIdentifiers() {
+=======
+  @Test public void qualify() {
+    check(
+            "SELECT a, b, c FROM mytable qualify ROW_NUMBER() over (partition by p order by o) = 1",
+            "SELECT `A`, `B`, `C`\n"
+                    + "FROM `MYTABLE`\n"
+                    + "QUALIFY ((ROW_NUMBER() OVER (PARTITION BY `P` ORDER BY `O`)) = 1)");
+  }
+
+  @Test public void testLongIdentifiers() {
     StringBuilder ident128Builder = new StringBuilder();
     for (int i = 0; i < 128; i++) {
       ident128Builder.append((char) ('a' + (i % 26)));

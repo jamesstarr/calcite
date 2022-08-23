@@ -9036,6 +9036,7 @@ LogicalAggregate(group=[{0}], EXPR$1=[PERCENTILE_DISC($1) WITHIN GROUP ([2])])
     </TestCase>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 1677deb9e ([CALCITE-4644] Added validation for PERCENTILE functions)
 =======
     <TestCase name="testTrimUnionAll">
@@ -9174,11 +9175,96 @@ LogicalProject(JOB_NAME=[CASE(OR(=($1, '810000'), =($1, '820000')), $1, 'error':
   LogicalAggregate(group=[{0, 1}], EXPR$1=[COUNT()])
     LogicalProject(DEPTNO=[$7], JOB=[$2], EMPNO=[$0])
       LogicalFilter(condition=[OR(<>($2, ''), =($2, '810000'), =($2, '820000'))])
+=======
+    <TestCase name="testQualifyWithoutReferences">
+        <Resource name="sql">
+            <![CDATA[SELECT empno, ename, deptno FROM emp QUALIFY ROW_NUMBER() over (partition by ename order by deptno) = 1]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], DEPTNO=[$7])
+  LogicalFilter(condition=[=(ROW_NUMBER() OVER (PARTITION BY $1 ORDER BY $7 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 1)])
+    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testQualifyWithoutReferencesAndFilter">
+        <Resource name="sql">
+            <![CDATA[SELECT empno, ename, deptno FROM emp WHERE deptno > 5 QUALIFY ROW_NUMBER() over (partition by ename order by deptno) = 1]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], DEPTNO=[$7])
+  LogicalFilter(condition=[=(ROW_NUMBER() OVER (PARTITION BY $1 ORDER BY $7 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 1)])
+    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+      LogicalFilter(condition=[>($7, 5)])
+>>>>>>> 5a56f040b (DX-56145 Qualify Support in Calcite)
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 >>>>>>> e0943d89d ([CALCITE-3399] Field-pruning for set operators (except UNION ALL) changes query semantics (Jin Xing))
 =======
 >>>>>>> 7b99452a8 (Revert "[CALCITE-3399] Field-pruning for set operators (except UNION ALL) changes query semantics (Jin Xing)")
+=======
+    <TestCase name="testQualifyWithReferences">
+        <Resource name="sql">
+            <![CDATA[SELECT empno, ename, deptno, ROW_NUMBER() over (partition by ename order by deptno) as row_num FROM emp QUALIFY row_num = 1]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], DEPTNO=[$7], ROW_NUM=[ROW_NUMBER() OVER (PARTITION BY $1 ORDER BY $7 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)])
+  LogicalFilter(condition=[=(ROW_NUMBER() OVER (PARTITION BY $1 ORDER BY $7 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 1)])
+    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testQualifyWithDerivedColumn">
+        <Resource name="sql">
+            <![CDATA[SELECT empno, ename, deptno, SUBSTRING(ename,1,1) as DERIVED_COLUMN FROM emp QUALIFY ROW_NUMBER() OVER (PARTITION BY deptno ORDER BY DERIVED_COLUMN) = 1]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], DEPTNO=[$7], DERIVED_COLUMN=[SUBSTRING($1, 1, 1)])
+  LogicalFilter(condition=[=(ROW_NUMBER() OVER (PARTITION BY $7 ORDER BY SUBSTRING($1, 1, 1) ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 1)])
+    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testQualifyInDDL">
+        <Resource name="sql">
+            <![CDATA[INSERT INTO dept(deptno, name) SELECT DISTINCT empno, ename FROM emp WHERE deptno > 5 QUALIFY RANK() OVER (PARTITION BY ename ORDER BY slacker DESC) = 1 ]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalTableModify(table=[[CATALOG, SALES, DEPT]], operation=[INSERT], flattened=[true])
+  LogicalAggregate(group=[{0, 1}])
+    LogicalProject(EMPNO=[$0], ENAME=[$1])
+      LogicalFilter(condition=[=(RANK() OVER (PARTITION BY $1 ORDER BY $8 DESC RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 1)])
+        LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+          LogicalFilter(condition=[>($7, 5)])
+            LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testQualifyInSubquery">
+        <Resource name="sql">
+            <![CDATA[SELECT * FROM ( SELECT DISTINCT empno, ename, deptno  FROM emp  QUALIFY RANK() OVER (PARTITION BY ename ORDER BY deptno DESC) = 1 )]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], DEPTNO=[$2])
+  LogicalAggregate(group=[{0, 1, 2}])
+    LogicalProject(EMPNO=[$0], ENAME=[$1], DEPTNO=[$7])
+      LogicalFilter(condition=[=(RANK() OVER (PARTITION BY $1 ORDER BY $7 DESC RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 1)])
+        LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+>>>>>>> 5a56f040b (DX-56145 Qualify Support in Calcite)
 </Root>
