@@ -411,6 +411,7 @@ public class SqlParserTest {
       "PRIVILEGES",                    "92", "99",
       "PROCEDURE",                     "92", "99", "2003", "2011", "2014", "c",
       "PUBLIC",                        "92", "99",
+      "QUALIFY",                                                           "c",
       "RANGE",                               "99", "2003", "2011", "2014", "c",
       "RANK",                                              "2011", "2014", "c",
       "READ",                          "92", "99",
@@ -7572,6 +7573,14 @@ public class SqlParserTest {
     checkFails(
         "SELECT *\tFROM mytable\t\tWHERE x ^=^ = y AND b = 1",
         "(?s).*Encountered \"= =\" at line 1, column 32\\..*");
+  }
+
+  @Test public void qualify() {
+    check(
+            "SELECT a, b, c FROM mytable qualify ROW_NUMBER() over (partition by p order by o) = 1",
+            "SELECT `A`, `B`, `C`\n"
+                    + "FROM `MYTABLE`\n"
+                    + "QUALIFY ((ROW_NUMBER() OVER (PARTITION BY `P` ORDER BY `O`)) = 1)");
   }
 
   @Test public void testLongIdentifiers() {

@@ -45,6 +45,7 @@ public class SqlSelect extends SqlCall {
   SqlNode where;
   SqlNodeList groupBy;
   SqlNode having;
+  SqlNode qualify;
   SqlNodeList windowDecls;
   SqlNodeList orderBy;
   SqlNode offset;
@@ -61,6 +62,7 @@ public class SqlSelect extends SqlCall {
       SqlNode where,
       SqlNodeList groupBy,
       SqlNode having,
+      SqlNode qualify,
       SqlNodeList windowDecls,
       SqlNodeList orderBy,
       SqlNode offset,
@@ -74,6 +76,7 @@ public class SqlSelect extends SqlCall {
     this.where = where;
     this.groupBy = groupBy;
     this.having = having;
+    this.qualify = qualify;
     this.windowDecls = Preconditions.checkNotNull(windowDecls != null
         ? windowDecls : new SqlNodeList(pos));
     this.orderBy = orderBy;
@@ -94,7 +97,7 @@ public class SqlSelect extends SqlCall {
 
   @Override public List<SqlNode> getOperandList() {
     return ImmutableNullableList.of(keywordList, selectList, from, where,
-        groupBy, having, windowDecls, orderBy, offset, fetch, hints);
+        groupBy, having, qualify, windowDecls, orderBy, offset, fetch, hints);
   }
 
   @Override public void setOperand(int i, SqlNode operand) {
@@ -118,15 +121,18 @@ public class SqlSelect extends SqlCall {
       having = operand;
       break;
     case 6:
-      windowDecls = Preconditions.checkNotNull((SqlNodeList) operand);
+      qualify = operand;
       break;
     case 7:
-      orderBy = (SqlNodeList) operand;
+      windowDecls = Preconditions.checkNotNull((SqlNodeList) operand);
       break;
     case 8:
-      offset = operand;
+      orderBy = (SqlNodeList) operand;
       break;
     case 9:
+      offset = operand;
+      break;
+    case 10:
       fetch = operand;
       break;
     default:
@@ -171,6 +177,14 @@ public class SqlSelect extends SqlCall {
 
   public void setHaving(SqlNode having) {
     this.having = having;
+  }
+
+  public final SqlNode getQualify() {
+    return qualify;
+  }
+
+  public void setQualify(SqlNode qualify) {
+    this.qualify = qualify;
   }
 
   public final SqlNodeList getSelectList() {
@@ -259,6 +273,10 @@ public class SqlSelect extends SqlCall {
 
   public boolean hasOrderBy() {
     return orderBy != null && orderBy.size() != 0;
+  }
+
+  public boolean hasQualify() {
+    return qualify != null;
   }
 
   public boolean hasWhere() {

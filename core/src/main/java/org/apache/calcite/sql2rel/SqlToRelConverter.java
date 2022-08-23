@@ -696,6 +696,10 @@ public class SqlToRelConverter {
     final RelCollation collation =
         cluster.traitSet().canonize(RelCollations.of(collationList));
 
+    if (select.hasQualify()) {
+      convertQualify(bb, select.getQualify(), select.getSelectList());
+    }
+
     if (validator.isAggregate(select)) {
       convertAgg(
           bb,
@@ -4101,6 +4105,33 @@ public class SqlToRelConverter {
               false);
     }
     return ret;
+  }
+
+  private void convertQualify(Blackboard bb, SqlNode qualify, SqlNodeList selectList) {
+    // We want to project out every column,
+    // because the qualify might reference a column that is not in the projection
+    List<String> projectNames = new ArrayList<>(bb.root.getRowType().getFieldNames());
+    List<RexNode> projectExpressions = new ArrayList<>();
+    int i;
+    for (i = 0; i < projectNames.size(); i++) {
+      RexNode projectExpression = rexBuilder.makeInputRef(bb.root, i);
+      projectExpressions.add(projectExpression);
+    }
+
+    RelNode projectRelNode = relBuilder
+        .push(bb.root)
+        .projectNamed(projectExpressions, projectNames, true)
+        .build();
+    bb.setRoot(projectRelNode, false);
+
+    // Filter for the qualify expression
+    replaceSubQueries(bb, qualify, RelOptUtil.Logic.UNKNOWN_AS_FALSE);
+    RexNode qualifyRexNode = bb.convertExpression(qualify);
+    RelNode filterRelNode = relBuilder
+        .push(bb.root)
+        .filter(qualifyRexNode)
+        .build();
+    bb.setRoot(filterRelNode, false);
   }
 
   private void convertSelectList(
