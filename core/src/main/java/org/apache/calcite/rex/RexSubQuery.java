@@ -132,7 +132,9 @@ public class RexSubQuery extends RexCall {
   public static RexSubQuery array(RelNode rel, @Nullable CorrelationId correlationId) {
     final RelDataTypeFactory typeFactory = rel.getCluster().getTypeFactory();
     final RelDataType type =
-        typeFactory.createArrayType(rel.getRowType(), -1L);
+        typeFactory.createArrayType(
+            SqlTypeUtil.deriveCollectionQueryComponentType(SqlTypeName.ARRAY, rel.getRowType()),
+            -1L);
     return new RexSubQuery(type, SqlStdOperatorTable.ARRAY_QUERY,
         ImmutableList.of(), rel, correlationId);
   }
