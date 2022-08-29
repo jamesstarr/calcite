@@ -7965,6 +7965,20 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         .columnType("CHAR(3) ARRAY NOT NULL");
   }
 
+  /**
+   * Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-4999">[CALCITE-4999]
+   * ARRAY, MULTISET functions should return a collection of scalars
+   * if a sub-query returns 1 column</a>.
+   */
+  @Test public void testArrayQueryConstructor() {
+    sql("select array(select 1)")
+        .columnType("INTEGER NOT NULL ARRAY NOT NULL");
+    sql("select array(select ROW(1,2))")
+        .columnType(
+            "RecordType(INTEGER NOT NULL EXPR$0, INTEGER NOT NULL EXPR$1) NOT NULL ARRAY NOT NULL");
+  }
+
   @Test public void testCastAsCollectionType() {
     sql("select cast(array[1,null,2] as int array) from (values (1))")
         .columnType("INTEGER NOT NULL ARRAY NOT NULL");
@@ -8006,6 +8020,20 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
   @Test public void testMultisetConstructor() {
     sql("select multiset[1,null,2] as a from (values (1))")
         .columnType("INTEGER MULTISET NOT NULL");
+  }
+
+  /**
+   * Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-4999">[CALCITE-4999]
+   * ARRAY, MULTISET functions should return an collection of scalars
+   * if a sub-query returns 1 column</a>.
+   */
+  @Test public void testMultisetQueryConstructor() {
+    sql("select multiset(select 1)")
+        .columnType("INTEGER NOT NULL MULTISET NOT NULL");
+    sql("select multiset(select ROW(1,2))")
+        .columnType(
+            "RecordType(INTEGER NOT NULL EXPR$0, INTEGER NOT NULL EXPR$1) NOT NULL MULTISET NOT NULL");
   }
 
   @Test public void testUnnestArrayColumn() {
@@ -8056,29 +8084,27 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     check("select deptno\n"
         + "from unnest(array(select*from dept)) with ordinality\n"
         + "where ordinality < 5");
-    checkFails("select c from unnest(\n"
-        + "  array(select deptno from dept)) with ordinality as t(^c^)",
-        "List of column aliases must have same degree as table; table has 2 "
-        + "columns \\('DEPTNO', 'ORDINALITY'\\), "
-        + "whereas alias list has 1 columns");
-    check("select c from unnest(\n"
-        + "  array(select deptno from dept)) with ordinality as t(c, d)");
-    checkFails("select c from unnest(\n"
-        + "  array(select deptno from dept)) with ordinality as t(^c, d, e^)",
-        "List of column aliases must have same degree as table; table has 2 "
-        + "columns \\('DEPTNO', 'ORDINALITY'\\), "
-        + "whereas alias list has 3 columns");
-    checkFails("select c\n"
-        + "from unnest(array(select * from dept)) with ordinality as t(^c, d, e, f^)",
-        "List of column aliases must have same degree as table; table has 3 "
-        + "columns \\('DEPTNO', 'NAME', 'ORDINALITY'\\), "
-        + "whereas alias list has 4 columns");
-    checkFails(
-        "select ^name^ from unnest(array(select name from dept)) with ordinality as t(c, o)",
-        "Column 'NAME' not found in any table");
-    checkFails(
-        "select ^ordinality^ from unnest(array(select name from dept)) with ordinality as t(c, o)",
-        "Column 'ORDINALITY' not found in any table");
+    sql("select c from unnest(\n"
+        + "  array(select deptno from dept)) with ordinality as t(^c^)")
+        .fails("List of column aliases must have same degree as table; table has 2 "
+            + "columns \\('EXPR\\$0', 'ORDINALITY'\\), "
+            + "whereas alias list has 1 columns");
+    sql("select c from unnest(\n"
+        + "  array(select deptno from dept)) with ordinality as t(c, d)").ok();
+    sql("select c from unnest(\n"
+        + "  array(select deptno from dept)) with ordinality as t(^c, d, e^)")
+        .fails("List of column aliases must have same degree as table; table has 2 "
+            + "columns \\('EXPR\\$0', 'ORDINALITY'\\), "
+            + "whereas alias list has 3 columns");
+    sql("select c\n"
+        + "from unnest(array(select * from dept)) with ordinality as t(^c, d, e, f^)")
+        .fails("List of column aliases must have same degree as table; table has 3 "
+            + "columns \\('DEPTNO', 'NAME', 'ORDINALITY'\\), "
+            + "whereas alias list has 4 columns");
+    sql("select ^name^ from unnest(array(select name from dept)) with ordinality as t(c, o)")
+        .fails("Column 'NAME' not found in any table");
+    sql("select ^ordinality^ from unnest(array(select name from dept)) with ordinality as t(c, o)")
+        .fails("Column 'ORDINALITY' not found in any table");
   }
 
   @Test public void unnestMapMustNameColumnsKeyAndValueWhenNotAliased() {

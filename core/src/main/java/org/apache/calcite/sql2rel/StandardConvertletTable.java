@@ -536,17 +536,10 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
         cx.getRexBuilder().makeInputRef(
             msType,
             rr.getOffset());
-    assert msType.getComponentType().isStruct();
-    if (!originalType.getComponentType().isStruct()) {
-      // If the type is not a struct, the multiset operator will have
-      // wrapped the type as a record. Add a call to the $SLICE operator
-      // to compensate. For example,
-      // if '<ms>' has type 'RECORD (INTEGER x) MULTISET',
-      // then '$SLICE(<ms>) has type 'INTEGER MULTISET'.
-      // This will be removed as the expression is translated.
-      expr =
-          cx.getRexBuilder().makeCall(SqlStdOperatorTable.SLICE, expr);
-    }
+    assert msType.getComponentType() != null
+        : "componentType of " + msType + " must not be null";
+    assert originalType.getComponentType() != null
+        : "componentType of " + originalType + " must not be null";
     return expr;
   }
 
