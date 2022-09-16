@@ -55,7 +55,13 @@ public class RexSqlStandardConvertletTable
     registerEquivOp(SqlStdOperatorTable.NOT_IN);
     registerEquivOp(SqlStdOperatorTable.IN);
     registerEquivOp(SqlStdOperatorTable.LIKE);
+    registerEquivOp(SqlStdOperatorTable.LIKE_ALL);
+    registerEquivOp(SqlStdOperatorTable.LIKE_ANY);
+    registerEquivOp(SqlStdOperatorTable.LIKE_SOME);
     registerEquivOp(SqlStdOperatorTable.NOT_LIKE);
+    registerEquivOp(SqlStdOperatorTable.NOT_LIKE_ALL);
+    registerEquivOp(SqlStdOperatorTable.NOT_LIKE_ANY);
+    registerEquivOp(SqlStdOperatorTable.NOT_LIKE_SOME);
     registerEquivOp(SqlStdOperatorTable.SIMILAR_TO);
     registerEquivOp(SqlStdOperatorTable.NOT_SIMILAR_TO);
     registerEquivOp(SqlStdOperatorTable.PLUS);

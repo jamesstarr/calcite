@@ -1498,6 +1498,84 @@ LogicalProject(DEPTNO=[$7])
 ]]>
     </Resource>
   </TestCase>
+  <TestCase name="testLikeAny">
+    <Resource name="sql">
+      <![CDATA[select ename from emp where ename like any ('Fred', 'Eric')
+]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalFilter(condition=[OR(LIKE($1, 'Fred'), LIKE($1, 'Eric'))])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testLikeSome">
+    <Resource name="sql">
+      <![CDATA[select ename from emp where ename like some ('Fred', 'Eric')
+]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalFilter(condition=[OR(LIKE($1, 'Fred'), LIKE($1, 'Eric'))])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testLikeAll">
+    <Resource name="sql">
+      <![CDATA[select ename from emp where ename like all ('Fred', 'Eric')
+]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalFilter(condition=[AND(LIKE($1, 'Fred'), LIKE($1, 'Eric'))])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testNotLikeAny">
+    <Resource name="sql">
+      <![CDATA[select ename from emp where ename not like any ('Fred', 'Eric')
+]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalFilter(condition=[NOT(OR(LIKE($1, 'Fred'), LIKE($1, 'Eric')))])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testNotLikeSome">
+    <Resource name="sql">
+      <![CDATA[select ename from emp where ename not like some ('Fred', 'Eric')
+]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalFilter(condition=[NOT(OR(LIKE($1, 'Fred'), LIKE($1, 'Eric')))])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testNotLikeAll">
+    <Resource name="sql">
+      <![CDATA[select ename from emp where ename not like all ('Fred', 'Eric')
+]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalFilter(condition=[NOT(AND(LIKE($1, 'Fred'), LIKE($1, 'Eric')))])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
     <TestCase name="testJoinUsingCompound">
         <Resource name="sql">
             <![CDATA[SELECT * FROM emp LEFT JOIN (SELECT *, deptno * 5 as empno FROM dept) USING (deptno,empno)]]>

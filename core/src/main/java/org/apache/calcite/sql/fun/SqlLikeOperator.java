@@ -63,7 +63,7 @@ public class SqlLikeOperator extends SqlSpecialOperator {
    * @param kind    Kind
    * @param negated Whether this is 'NOT LIKE'
    */
-  SqlLikeOperator(
+  private SqlLikeOperator(
       String name,
       SqlKind kind,
       boolean negated) {
@@ -82,6 +82,16 @@ public class SqlLikeOperator extends SqlSpecialOperator {
   }
 
   //~ Methods ----------------------------------------------------------------
+
+  public static SqlLikeOperator createLike(boolean isNot) {
+    String name = isNot ? "NOT LIKE" : "LIKE";
+    return new SqlLikeOperator(name, SqlKind.LIKE, isNot);
+  }
+
+  public static SqlLikeOperator createSimilarTo(boolean isNot) {
+    String name = isNot ? "NOT SIMILAR TO" : "SIMILAR TO";
+    return new SqlLikeOperator(name, SqlKind.LIKE, isNot);
+  }
 
   /**
    * Returns whether this is the 'NOT LIKE' operator.

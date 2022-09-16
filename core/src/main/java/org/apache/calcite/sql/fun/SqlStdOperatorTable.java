@@ -1195,16 +1195,34 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           true);
 
   public static final SqlSpecialOperator NOT_LIKE =
-      new SqlLikeOperator("NOT LIKE", SqlKind.LIKE, true);
+      SqlLikeOperator.createLike(true);
+
+  public static final SqlSpecialOperator NOT_LIKE_ALL =
+      SqlLikeListOperator.createLikeAll(true);
+
+  public static final SqlSpecialOperator NOT_LIKE_ANY =
+      SqlLikeListOperator.createLikeAny(true);
+
+  public static final SqlSpecialOperator NOT_LIKE_SOME =
+          SqlLikeListOperator.createLikeSome(true);
 
   public static final SqlSpecialOperator LIKE =
-      new SqlLikeOperator("LIKE", SqlKind.LIKE, false);
+      SqlLikeOperator.createLike(false);
+
+  public static final SqlSpecialOperator LIKE_ALL =
+      SqlLikeListOperator.createLikeAll(false);
+
+  public static final SqlSpecialOperator LIKE_ANY =
+      SqlLikeListOperator.createLikeAny(false);
+
+  public static final SqlSpecialOperator LIKE_SOME =
+          SqlLikeListOperator.createLikeSome(false);
 
   public static final SqlSpecialOperator NOT_SIMILAR_TO =
-      new SqlLikeOperator("NOT SIMILAR TO", SqlKind.SIMILAR, true);
+      SqlLikeOperator.createSimilarTo(true);
 
   public static final SqlSpecialOperator SIMILAR_TO =
-      new SqlLikeOperator("SIMILAR TO", SqlKind.SIMILAR, false);
+      SqlLikeOperator.createSimilarTo(false);
 
   /**
    * Internal operator used to represent the ESCAPE clause of a LIKE or

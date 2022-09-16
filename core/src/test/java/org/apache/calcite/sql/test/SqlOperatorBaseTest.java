@@ -3737,6 +3737,35 @@ public abstract class SqlOperatorBaseTest {
     tester.checkBoolean("'ab\ncd\nef' like '%cde%'", Boolean.FALSE);
   }
 
+  @Test public void testLikeAnyOperator() {
+    tester.setFor(SqlStdOperatorTable.LIKE_ANY);
+    tester.checkBoolean("'a' like any ('a', 'b')", Boolean.TRUE);
+    tester.checkBoolean("'a' like any ('b', 'c')", Boolean.FALSE);
+    tester.checkBoolean("'a' like some ('a', 'b')", Boolean.TRUE);
+    tester.checkBoolean("'a' like some ('b', 'c')", Boolean.FALSE);
+  }
+
+  @Test public void testNotLikeAnyOperator() {
+    tester.setFor(SqlStdOperatorTable.NOT_LIKE_ANY);
+    tester.checkBoolean("'a' not like any ('a', 'b')", Boolean.FALSE);
+    tester.checkBoolean("'a' not like any ('b', 'c')", Boolean.TRUE);
+    tester.checkBoolean("'a' not like some ('a', 'b')", Boolean.FALSE);
+    tester.checkBoolean("'a' not like some ('b', 'c')", Boolean.TRUE);
+  }
+
+  @Test public void testLikeAllOperator() {
+    tester.setFor(SqlStdOperatorTable.LIKE_ALL);
+    tester.checkBoolean("'a' like all ('a', 'b')", Boolean.FALSE);
+    tester.checkBoolean("'a' like all ('a', 'a')", Boolean.TRUE);
+  }
+
+  @Test public void testNotLikeAllOperator() {
+    tester.setFor(SqlStdOperatorTable.NOT_LIKE_ALL);
+    tester.checkBoolean("'a' not like all ('a', 'b')", Boolean.TRUE);
+    tester.checkBoolean("'a' not like all ('b', 'c')", Boolean.TRUE);
+    tester.checkBoolean("'a' not like all ('a', 'a')", Boolean.FALSE);
+  }
+
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1898">[CALCITE-1898]
    * LIKE must match '.' (period) literally</a>. */

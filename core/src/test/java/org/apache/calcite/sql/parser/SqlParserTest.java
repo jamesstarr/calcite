@@ -1440,6 +1440,58 @@ public class SqlParserTest {
             + "WHERE (`X` LIKE '%abc%')");
 
     check(
+            "select * from t where x like any ('%abc%', '%ab%')",
+            "SELECT *\n"
+                    + "FROM `T`\n"
+                    + "WHERE (`X` LIKE ANY ('%abc%', '%ab%'))");
+
+    checkFails(
+            "select * from t where x like any ('%abc%', '%ab%') ^escape^ 'd'",
+            "(?s).*Encountered \"escape\" at .*");
+
+    check(
+            "select * from t where x like ('%abc%', '%ab%')",
+            "SELECT *\n"
+                    + "FROM `T`\n"
+                    + "WHERE (`X` LIKE (ROW('%abc%', '%ab%')))");
+
+    check(
+            "select * from t where x like any ('%abc%')",
+            "SELECT *\n"
+                    + "FROM `T`\n"
+                    + "WHERE (`X` LIKE ANY ('%abc%'))");
+
+    check(
+            "select * from t where x like some ('%abc%', '%ab%')",
+            "SELECT *\n"
+                    + "FROM `T`\n"
+                    + "WHERE (`X` LIKE SOME ('%abc%', '%ab%'))");
+
+    check(
+            "select * from t where x like all ('%abc%', '%ab%')",
+            "SELECT *\n"
+                    + "FROM `T`\n"
+                    + "WHERE (`X` LIKE ALL ('%abc%', '%ab%'))");
+
+    check(
+            "select * from t where x not like any ('%abc%', '%ab%')",
+            "SELECT *\n"
+                    + "FROM `T`\n"
+                    + "WHERE (`X` NOT LIKE ANY ('%abc%', '%ab%'))");
+
+    check(
+            "select * from t where x not like some ('%abc%', '%ab%')",
+            "SELECT *\n"
+                    + "FROM `T`\n"
+                    + "WHERE (`X` NOT LIKE SOME ('%abc%', '%ab%'))");
+
+    check(
+            "select * from t where x not like all ('%abc%', '%ab%')",
+            "SELECT *\n"
+                    + "FROM `T`\n"
+                    + "WHERE (`X` NOT LIKE ALL ('%abc%', '%ab%'))");
+
+    check(
         "select * from t where x+1 not siMilaR to '%abc%' ESCAPE 'e'",
         "SELECT *\n"
             + "FROM `T`\n"
@@ -1483,6 +1535,26 @@ public class SqlParserTest {
         "values a similar to b like c similar to d escape e escape f",
         "VALUES (ROW((`A` SIMILAR TO (`B` LIKE (`C` SIMILAR TO `D` ESCAPE `E`) ESCAPE `F`))))");
 
+    // Mixed LIKE and SIMILAR TO and LIKE ANY
+    check(
+            "values a similar to b like c like any (d, e) escape f",
+            "VALUES (ROW((`A` SIMILAR TO (`B` LIKE (`C` LIKE ANY (`D`, `E`)) ESCAPE `F`))))");
+
+    // Mixed LIKE and SIMILAR TO and LIKE SOME
+    check(
+            "values a similar to b like c like some (d, e) escape f",
+            "VALUES (ROW((`A` SIMILAR TO (`B` LIKE (`C` LIKE SOME (`D`, `E`)) ESCAPE `F`))))");
+
+
+    // Mixed LIKE and SIMILAR TO and LIKE ALL
+    check(
+            "values a similar to b like c like all (d, e) escape f",
+            "VALUES (ROW((`A` SIMILAR TO (`B` LIKE (`C` LIKE ALL (`D`, `E`)) ESCAPE `F`))))");
+
+    check(
+            "values ((a like b) and ((c not like all (d, e)) or (e not like any (f, g))))",
+            "VALUES (ROW(((`A` LIKE `B`) AND ((`C` NOT LIKE ALL (`D`, `E`)) OR (`E` NOT LIKE ANY (`F`, `G`))))))");
+
     if (isReserved("ESCAPE")) {
       // FIXME should fail at "escape"
       checkFails(
@@ -1513,6 +1585,27 @@ public class SqlParserTest {
       checkFails(
           "values a like b || c ^escape^ and false",
           "(?s).*Encountered \"escape and\" at line 1, column 22.*");
+    }
+
+    // ESCAPE with LIKE ANY
+    if (isReserved("ESCAPE")) {
+      checkFails(
+              "values a like any (b, c) ^escape^ d",
+              "(?s).*Encountered \"escape\" at line 1, column 26.*");
+    }
+
+    // ESCAPE with LIKE SOME
+    if (isReserved("ESCAPE")) {
+      checkFails(
+              "values a like some (b, c) ^escape^ d",
+              "(?s).*Encountered \"escape\" at line 1, column 27.*");
+    }
+
+    // ESCAPE with LIKE ALL
+    if (isReserved("ESCAPE")) {
+      checkFails(
+              "values a like all (b, c) ^escape^ d",
+              "(?s).*Encountered \"escape\" at line 1, column 26.*");
     }
 
     // basic SIMILAR TO
@@ -2051,10 +2144,6 @@ public class SqlParserTest {
     final String sql3 = "select * from emp\n"
         + "where name like (select ^some^ name from emp)";
     sql(sql3).fails("(?s).*Encountered \"some\" at .*");
-
-    final String sql4 = "select * from emp\n"
-        + "where name ^like^ some (select name from emp)";
-    sql(sql4).fails("(?s).*Encountered \"like some\" at .*");
 
     final String sql5 = "select * from emp where empno = any (10,20)";
     final String expected5 = "SELECT *\n"

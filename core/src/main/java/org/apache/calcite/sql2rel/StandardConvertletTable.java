@@ -77,7 +77,9 @@ import com.google.common.collect.Lists;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Standard implementation of {@link SqlRexConvertletTable}.
@@ -204,6 +206,36 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
           }
         });
 
+    // Expand "x LIKE ANY (y, z)" into "(x LIKE y) OR (x LIKE z)"
+    registerOp(
+        SqlStdOperatorTable.LIKE_ANY,
+        new SqlRexConvertlet() {
+          public RexNode convertCall(SqlRexContext cx, SqlCall call) {
+            return cx.convertExpression(
+                    convertLikeListCall(call, false, true));
+          }
+        });
+
+    // Expand "x LIKE SOME (y, z)" into "(x LIKE y) OR (x LIKE z)"
+    registerOp(
+        SqlStdOperatorTable.LIKE_SOME,
+        new SqlRexConvertlet() {
+          public RexNode convertCall(SqlRexContext cx, SqlCall call) {
+            return cx.convertExpression(
+                    convertLikeListCall(call, false, true));
+          }
+        });
+
+    // Expand "x LIKE ALL (y, z)" into "(x LIKE y) AND (x LIKE z)"
+    registerOp(
+        SqlStdOperatorTable.LIKE_ALL,
+        new SqlRexConvertlet() {
+          public RexNode convertCall(SqlRexContext cx, SqlCall call) {
+            return cx.convertExpression(
+                    convertLikeListCall(call, false, false));
+          }
+        });
+
     // Expand "x NOT LIKE y" into "NOT (x LIKE y)"
     registerOp(
         SqlStdOperatorTable.NOT_LIKE,
@@ -218,6 +250,38 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
             return cx.convertExpression(expanded);
           }
         });
+
+    // Expand "x NOT LIKE ANY (y, z)" into "NOT ((x LIKE y) OR (x LIKE z))"
+    registerOp(
+        SqlStdOperatorTable.NOT_LIKE_ANY,
+        new SqlRexConvertlet() {
+          public RexNode convertCall(SqlRexContext cx, SqlCall call) {
+            return cx.convertExpression(
+                    convertLikeListCall(call, true, true));
+          }
+        });
+
+      // Expand "x NOT LIKE SOME (y, z)" into "NOT ((x LIKE y) OR (x LIKE z))"
+    registerOp(
+        SqlStdOperatorTable.NOT_LIKE_SOME,
+        new SqlRexConvertlet() {
+          public RexNode convertCall(SqlRexContext cx, SqlCall call) {
+            return cx.convertExpression(
+                    convertLikeListCall(call, true, true));
+          }
+        });
+
+    // Expand "x NOT LIKE ALL (y, z)" into "NOT ((x LIKE y) AND (x LIKE z))"
+    registerOp(
+        SqlStdOperatorTable.NOT_LIKE_ALL,
+        new SqlRexConvertlet() {
+          public RexNode convertCall(SqlRexContext cx, SqlCall call) {
+            return cx.convertExpression(
+                    convertLikeListCall(call, true, false));
+          }
+        });
+
+
 
     // Expand "x NOT SIMILAR y" into "NOT (x SIMILAR y)"
     registerOp(
@@ -369,6 +433,34 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
             }
           });
     }
+  }
+
+  private static SqlNode convertLikeListCall(SqlCall call, boolean isNegated, boolean isAny) {
+    final List<SqlNode> likeOps = extractLikeOps(call);
+    SqlNode rewrittenNode;
+    if (likeOps.size() > 1) {
+      SqlOperator operator = isAny ? SqlStdOperatorTable.OR : SqlStdOperatorTable.AND;
+      rewrittenNode = operator.createCall(SqlParserPos.ZERO, likeOps);
+    } else {
+      rewrittenNode = likeOps.get(0);
+    }
+    if (isNegated) {
+      rewrittenNode = SqlStdOperatorTable.NOT.createCall(SqlParserPos.ZERO, rewrittenNode);
+    }
+    return rewrittenNode;
+  }
+
+  private static List<SqlNode> extractLikeOps(SqlCall call) {
+    SqlNode subject = call.getOperandList().get(0);
+    List<SqlNode> likeOps = ((SqlNodeList) call.getOperandList().get(1)).getList()
+        .stream()
+        .map(operand -> SqlStdOperatorTable.LIKE
+                .createCall(SqlParserPos.ZERO, Arrays.asList(subject, operand)))
+        .collect(Collectors.toList());
+    if (likeOps.isEmpty()) {
+      throw new UnsupportedOperationException("There must be at least one pattern to match to.");
+    }
+    return likeOps;
   }
 
   /** Converts a call to the NVL function. */

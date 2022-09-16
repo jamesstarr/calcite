@@ -3194,6 +3194,7 @@ List<Object> Expression2(ExprContext exprContext) :
     SqlOperator op;
     SqlIdentifier p;
     final Span s = span();
+    boolean isNot = false;
 }
 {
     Expression2b(exprContext, list)
@@ -3273,32 +3274,48 @@ List<Object> Expression2(ExprContext exprContext) :
                     checkNonQueryExpression(exprContext);
                     s.clear().add(this);
                 }
+                [<NOT> { isNot = true; }]
                 (
-                    <NOT>
+                    // str [ NOT ] like { ANY | SOME | ALL } ( [ pattern [, ...] ] )
                     (
-                        <LIKE> { op = SqlStdOperatorTable.NOT_LIKE; }
+                        LOOKAHEAD(2)
+                        <LIKE> <ALL> { op = isNot ? SqlStdOperatorTable.NOT_LIKE_ALL : SqlStdOperatorTable.LIKE_ALL; }
                     |
-                        <SIMILAR> <TO> { op = SqlStdOperatorTable.NOT_SIMILAR_TO; }
+                        LOOKAHEAD(2)
+                        <LIKE> <ANY> { op = isNot ? SqlStdOperatorTable.NOT_LIKE_ANY : SqlStdOperatorTable.LIKE_ANY; }
+                    |
+                        LOOKAHEAD(2)
+                        <LIKE> <SOME> { op = isNot ? SqlStdOperatorTable.NOT_LIKE_SOME : SqlStdOperatorTable.LIKE_SOME; }
                     )
-                |
-                    <LIKE> { op = SqlStdOperatorTable.LIKE; }
-                |
-                    <SIMILAR> <TO> { op = SqlStdOperatorTable.SIMILAR_TO; }
-                )
-                list2 = Expression2(ExprContext.ACCEPT_SUB_QUERY) {
-                    list.add(new SqlParserUtil.ToTreeListItem(op, s.pos()));
-                    list.addAll(list2);
-                }
-                [
-                    LOOKAHEAD(2)
-                    <ESCAPE> e = Expression3(ExprContext.ACCEPT_SUB_QUERY) {
-                        s.clear().add(this);
-                        list.add(
-                            new SqlParserUtil.ToTreeListItem(
-                                SqlStdOperatorTable.ESCAPE, s.pos()));
-                        list.add(e);
+                    { s.clear().add(this); }
+                    nodeList = ParenthesizedQueryOrCommaList(ExprContext.ACCEPT_NONCURSOR)
+                    {
+                        list.add(new SqlParserUtil.ToTreeListItem(op, s.pos()));
+                        s.add(nodeList);
+                        list.add(nodeList);
                     }
-                ]
+                |
+                    // string1 [NOT] (LIKE | SIMILAR TO) string2 [ ESCAPE string3 ]
+                    (
+                        <LIKE> { op = isNot ? SqlStdOperatorTable.NOT_LIKE : SqlStdOperatorTable.LIKE; }
+                    |
+                        <SIMILAR> <TO> { op = isNot ? SqlStdOperatorTable.NOT_SIMILAR_TO : SqlStdOperatorTable.SIMILAR_TO; }
+                    )
+                    list2 = Expression2(ExprContext.ACCEPT_SUB_QUERY) {
+                        list.add(new SqlParserUtil.ToTreeListItem(op, s.pos()));
+                        list.addAll(list2);
+                    }
+                    [
+                        LOOKAHEAD(2)
+                        <ESCAPE> e = Expression3(ExprContext.ACCEPT_SUB_QUERY) {
+                            s.clear().add(this);
+                            list.add(
+                                new SqlParserUtil.ToTreeListItem(
+                                    SqlStdOperatorTable.ESCAPE, s.pos()));
+                            list.add(e);
+                        }
+                    ]
+                )
             |
                 LOOKAHEAD(3) op = BinaryRowOperator() {
                     checkNonQueryExpression(exprContext);
