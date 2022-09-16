@@ -218,3 +218,8 @@ public final class SqlLikeListOperator extends SqlSpecialOperator {
   }
 
 }
+<<<<<<< HEAD
+=======
+
+// End SqlLikeListOperator.java
+>>>>>>> d192c11b0 (Implement [NOT] LIKE ANY/ALL/SOME as logical rewrites)

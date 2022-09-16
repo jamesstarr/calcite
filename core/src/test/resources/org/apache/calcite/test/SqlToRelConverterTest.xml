@@ -2215,6 +2215,9 @@ LogicalProject(DEPTNO=[$7])
     </Resource>
   </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> d192c11b0 (Implement [NOT] LIKE ANY/ALL/SOME as logical rewrites)
   <TestCase name="testLikeAny">
     <Resource name="sql">
       <![CDATA[select ename from emp where ename like any ('Fred', 'Eric')
@@ -2293,8 +2296,11 @@ LogicalProject(ENAME=[$1])
 ]]>
     </Resource>
   </TestCase>
+<<<<<<< HEAD
 =======
 >>>>>>> beaa487a1 ([CALCITE-4548] Support convert subQuery for SqlToRelConverter#convertExpression (jibiyr))
+=======
+>>>>>>> d192c11b0 (Implement [NOT] LIKE ANY/ALL/SOME as logical rewrites)
     <TestCase name="testJoinUsingCompound">
         <Resource name="sql">
             <![CDATA[SELECT * FROM emp LEFT JOIN (SELECT *, deptno * 5 as empno FROM dept) USING (deptno,empno)]]>

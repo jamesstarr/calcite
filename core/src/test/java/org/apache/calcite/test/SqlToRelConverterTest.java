@@ -3852,6 +3852,48 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
+  @Test public void testLikeAny() {
+    final String sql = "select ename\n"
+            + "from emp\n"
+            + "where ename like any ('Fred', 'Eric')";
+    sql(sql).ok();
+  }
+
+  @Test public void testLikeSome() {
+    final String sql = "select ename\n"
+            + "from emp\n"
+            + "where ename like some ('Fred', 'Eric')";
+    sql(sql).ok();
+  }
+
+  @Test public void testLikeAll() {
+    final String sql = "select ename\n"
+            + "from emp\n"
+            + "where ename like all ('Fred', 'Eric')";
+    sql(sql).ok();
+  }
+
+  @Test public void testNotLikeAny() {
+    final String sql = "select ename\n"
+            + "from emp\n"
+            + "where ename not like any ('Fred', 'Eric')";
+    sql(sql).ok();
+  }
+
+  @Test public void testNotLikeSome() {
+    final String sql = "select ename\n"
+            + "from emp\n"
+            + "where ename not like some ('Fred', 'Eric')";
+    sql(sql).ok();
+  }
+
+  @Test public void testNotLikeAll() {
+    final String sql = "select ename\n"
+            + "from emp\n"
+            + "where ename not like all ('Fred', 'Eric')";
+    sql(sql).ok();
+  }
+
   /**
    * Visitor that checks that every {@link RelNode} in a tree is valid.
    *

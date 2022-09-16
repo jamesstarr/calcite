@@ -3823,7 +3823,10 @@ List<Object> Expression2(ExprContext exprContext) :
                 [<NOT> { isNot = true; }]
                 (
                     // str [ NOT ] like { ANY | SOME | ALL } ( [ pattern [, ...] ] )
+<<<<<<< HEAD
                     LOOKAHEAD(2)
+=======
+>>>>>>> d192c11b0 (Implement [NOT] LIKE ANY/ALL/SOME as logical rewrites)
                     (
                         LOOKAHEAD(2)
                         <LIKE> <ALL> { op = isNot ? SqlStdOperatorTable.NOT_LIKE_ALL : SqlStdOperatorTable.LIKE_ALL; }
@@ -3844,6 +3847,7 @@ List<Object> Expression2(ExprContext exprContext) :
                 |
                     // string1 [NOT] (LIKE | SIMILAR TO) string2 [ ESCAPE string3 ]
                     (
+<<<<<<< HEAD
                         LOOKAHEAD(2)
                         <LIKE> { op = isNot ? SqlStdOperatorTable.NOT_LIKE : SqlStdOperatorTable.LIKE; }
                     |
@@ -3857,6 +3861,11 @@ List<Object> Expression2(ExprContext exprContext) :
                     <TILDE> { op = SqlStdOperatorTable.POSIX_REGEX_CASE_SENSITIVE; }
                     [ <STAR> { op = SqlStdOperatorTable.POSIX_REGEX_CASE_INSENSITIVE; } ]
                 </#if>
+=======
+                        <LIKE> { op = isNot ? SqlStdOperatorTable.NOT_LIKE : SqlStdOperatorTable.LIKE; }
+                    |
+                        <SIMILAR> <TO> { op = isNot ? SqlStdOperatorTable.NOT_SIMILAR_TO : SqlStdOperatorTable.SIMILAR_TO; }
+>>>>>>> d192c11b0 (Implement [NOT] LIKE ANY/ALL/SOME as logical rewrites)
                     )
                     list2 = Expression2(ExprContext.ACCEPT_SUB_QUERY) {
                         list.add(new SqlParserUtil.ToTreeListItem(op, s.pos()));
