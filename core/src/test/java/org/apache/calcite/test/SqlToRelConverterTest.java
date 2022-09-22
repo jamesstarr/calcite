@@ -3928,6 +3928,15 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
             .ok();
   }
 
+  @Test public void testQualifyWithWindowClause() {
+    sql("SELECT empno, ename, SUM(deptno) OVER myWindow as sumDeptNo "
+            + "FROM emp "
+            + "WINDOW myWindow AS (PARTITION BY ename ORDER BY empno) "
+            + "QUALIFY sumDeptNo = 1")
+            .conformance(SqlConformanceEnum.LENIENT)
+            .ok();
+  }
+
   @Test public void testQualifyInDDL() {
     sql("INSERT INTO dept(deptno, name) "
             + "SELECT DISTINCT empno, ename "
@@ -3948,40 +3957,21 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
             .ok();
   }
 
-  /**
-   * This query doesn't work, since convertExpression doesn't work on complicated subqueries
-   */
-  @Ignore
-  @Test public void testQualifyWithPreOpertators() {
-    sql("SELECT deptno, SUM(sal) OVER (PARTITION BY deptno) as SUM_SAL "
+  @Test public void testQualifyWithSubqueryFilter() {
+    sql("SELECT empno, ename, deptno, "
+            + "    RANK() OVER (PARTITION BY ename ORDER BY deptno DESC) as rank_val "
             + "FROM emp "
-            + "WHERE sal > 1000 "
-            + "GROUP BY deptno, sal "
-            + "HAVING SUM(empno) > 5 "
-            + "QUALIFY SUM_SAL IN ( "
-            + "   SELECT MIN(deptno)"
-            + "   FROM dept "
-            + "   GROUP BY dname "
-            + "   HAVING MIN(loc) > 'asdf')")
+            + "QUALIFY rank_val = (SELECT COUNT(*) FROM emp)")
             .conformance(SqlConformanceEnum.LENIENT)
             .ok();
   }
 
-  /**
-   * This query doesn't work, since convertExpression doesn't work on complicated subqueries
-   */
-  @Ignore
   @Test public void testQualifyWithEverything() {
-    sql("SELECT DISTINCT deptno, SUM(sal) OVER (PARTITION BY deptno) as sum_sal "
+    sql("SELECT DISTINCT empno, ename, deptno, "
+            + "    RANK() OVER (PARTITION BY ename ORDER BY deptno DESC) as rank_val "
             + "FROM emp "
             + "WHERE sal > 1000 "
-            + "GROUP BY deptno, sal "
-            + "HAVING SUM(empno) > 5 "
-            + "QUALIFY sum_sal IN ( "
-            + "   SELECT MIN(deptno)"
-            + "   FROM dept "
-            + "   GROUP BY dname "
-            + "   HAVING MIN(loc) > 'asdf') "
+            + "QUALIFY rank_val = (SELECT COUNT(*) FROM emp) "
             + "ORDER BY deptno "
             + "LIMIT 5")
             .conformance(SqlConformanceEnum.LENIENT)

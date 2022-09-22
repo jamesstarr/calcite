@@ -92,6 +92,7 @@ import org.apache.calcite.rex.RexShuttle;
 import org.apache.calcite.rex.RexSubQuery;
 import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.rex.RexWindowBound;
+import org.apache.calcite.runtime.CalciteContextException;
 import org.apache.calcite.schema.ColumnStrategy;
 import org.apache.calcite.schema.ModifiableTable;
 import org.apache.calcite.schema.ModifiableView;
@@ -4213,7 +4214,32 @@ public class SqlToRelConverter {
 
     final SqlQualified qualified;
     if (bb.scope != null) {
-      qualified = bb.scope.fullyQualify(identifier);
+      try {
+        qualified = bb.scope.fullyQualify(identifier);
+      } catch (CalciteContextException e) {
+        if (!(bb.scope instanceof SelectScope)) {
+          throw e;
+        }
+
+        if (!((SqlSelect) bb.scope.getNode()).hasQualify()) {
+          throw e;
+        }
+
+        // Try and see if the identifier is a derived column
+        if (identifier.names.size() != 1) {
+          throw e;
+        }
+        // Return a ref input in the project at the index that matches it
+        List<String> fieldNames = bb.root.getRowType().getFieldNames();
+        String alias = identifier.names.get(0);
+        for (int i = 0; i < fieldNames.size(); i++) {
+          String fieldName = fieldNames.get(i);
+          if (fieldName.equals(alias)) {
+            return rexBuilder.makeInputRef(bb.root, i);
+          }
+        }
+        throw e;
+      }
     } else {
       qualified = SqlQualified.create(null, 1, null, identifier);
     }
@@ -4420,6 +4446,15 @@ public class SqlToRelConverter {
       projectExpressions.add(projectExpression);
     }
 
+    // Also add any derived columns
+    for (SqlNode selectItem : selectList) {
+      if (selectItem.getKind() != SqlKind.IDENTIFIER) {
+        RexNode derivedColumn = bb.convertExpression(selectItem);
+        deriveAlias(selectItem, projectNames, i++);
+        projectExpressions.add(derivedColumn);
+      }
+    }
+
     RelNode projectRelNode = relBuilder
         .push(bb.root)
         .projectNamed(projectExpressions, projectNames, true)
@@ -4464,7 +4499,54 @@ public class SqlToRelConverter {
     int i = -1;
     for (SqlNode expr : selectList) {
       ++i;
-      exprs.add(bb.convertExpression(expr));
+      RexNode selectItemRexNode;
+      if (!(select.hasQualify() && (expr.getKind() == SqlKind.AS))) {
+        selectItemRexNode = bb.convertExpression(expr);
+      } else {
+        /* It's possible that we introduced a derived column so the plan looks like this:
+          LogicalProject(
+            EMPNO=[$0],
+            ENAME=[$1],
+            DEPTNO=[$7],
+            ROW_NUM=[
+              ROW_NUMBER()
+              OVER (
+                PARTITION BY $1
+                ORDER BY $7
+                ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)])
+            LogicalFilter(condition=[=($9, 1)])
+              LogicalProject(
+                EMPNO=[$0],
+                ENAME=[$1],
+                JOB=[$2],
+                MGR=[$3],
+                HIREDATE=[$4],
+                SAL=[$5],
+                COMM=[$6],
+                DEPTNO=[$7],
+                SLACKER=[$8],
+                ROW_NUM=[
+                  ROW_NUMBER()
+                  OVER (
+                    PARTITION BY $1
+                    ORDER BY $7
+                    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)])
+                LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+          The issue with this is that ROW_NUM is recomputing the ROW_NUMBER()
+            after we have already filtered for it.
+          We need to reference the original project instead.
+        */
+        SqlBasicCall sqlBasicCall = (SqlBasicCall) expr;
+        SqlIdentifier alias = sqlBasicCall.operand(1);
+        int matchedIndex = bb.root.getRowType().getFieldNames().indexOf(alias.getSimple());
+        if (matchedIndex < 0) {
+          selectItemRexNode = bb.convertExpression(expr);
+        } else {
+          selectItemRexNode = rexBuilder.makeInputRef(bb.root, matchedIndex);
+        }
+      }
+
+      exprs.add(selectItemRexNode);
       fieldNames.add(deriveAlias(expr, aliases, i));
     }
 

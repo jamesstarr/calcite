@@ -9215,9 +9215,9 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], DEPTNO=[$7])
         </Resource>
         <Resource name="plan">
             <![CDATA[
-LogicalProject(EMPNO=[$0], ENAME=[$1], DEPTNO=[$7], ROW_NUM=[ROW_NUMBER() OVER (PARTITION BY $1 ORDER BY $7 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)])
-  LogicalFilter(condition=[=(ROW_NUMBER() OVER (PARTITION BY $1 ORDER BY $7 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 1)])
-    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+LogicalProject(EMPNO=[$0], ENAME=[$1], DEPTNO=[$7], ROW_NUM=[$9])
+  LogicalFilter(condition=[=($9, 1)])
+    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], ROW_NUM=[ROW_NUMBER() OVER (PARTITION BY $1 ORDER BY $7 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -9228,9 +9228,22 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], DEPTNO=[$7], ROW_NUM=[ROW_NUMBER() OVER (
         </Resource>
         <Resource name="plan">
             <![CDATA[
-LogicalProject(EMPNO=[$0], ENAME=[$1], DEPTNO=[$7], DERIVED_COLUMN=[SUBSTRING($1, 1, 1)])
-  LogicalFilter(condition=[=(ROW_NUMBER() OVER (PARTITION BY $7 ORDER BY SUBSTRING($1, 1, 1) ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 1)])
-    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+LogicalProject(EMPNO=[$0], ENAME=[$1], DEPTNO=[$7], DERIVED_COLUMN=[$9])
+  LogicalFilter(condition=[=(ROW_NUMBER() OVER (PARTITION BY $7 ORDER BY $9 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 1)])
+    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], DERIVED_COLUMN=[SUBSTRING($1, 1, 1)])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testQualifyWithWindowClause">
+        <Resource name="sql">
+            <![CDATA[SELECT empno, ename, SUM(deptno) OVER myWindow as sumDeptNo FROM emp WINDOW myWindow AS (PARTITION BY ename ORDER BY empno) QUALIFY sumDeptNo = 1]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], SUMDEPTNO=[$9])
+  LogicalFilter(condition=[=($9, 1)])
+    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], SUMDEPTNO=[SUM($7) OVER (PARTITION BY $1 ORDER BY $0 RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -9266,5 +9279,45 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], DEPTNO=[$2])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 >>>>>>> 5a56f040b (DX-56145 Qualify Support in Calcite)
+=======
+    <TestCase name="testQualifyWithSubqueryFilter">
+        <Resource name="sql">
+            <![CDATA[SELECT empno, ename, deptno, RANK() OVER (PARTITION BY ename ORDER BY deptno DESC) as rank_val FROM emp QUALIFY rank_val = (SELECT COUNT(*) FROM emp)]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], DEPTNO=[$7], RANK_VAL=[$9])
+  LogicalFilter(condition=[=($9, $10)])
+    LogicalJoin(condition=[true], joinType=[left])
+      LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], RANK_VAL=[RANK() OVER (PARTITION BY $1 ORDER BY $7 DESC RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)])
+        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalAggregate(group=[{}], EXPR$0=[COUNT()])
+        LogicalProject($f0=[0])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testQualifyWithEverything">
+        <Resource name="sql">
+            <![CDATA[SELECT DISTINCT empno, ename, deptno, RANK() OVER (PARTITION BY ename ORDER BY deptno DESC) as rank_val FROM emp WHERE sal > 1000 QUALIFY rank_val = (SELECT COUNT(*) FROM emp) ORDER BY deptno LIMIT 5]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalSort(sort0=[$2], dir0=[ASC], fetch=[5])
+  LogicalAggregate(group=[{0, 1, 2, 3}])
+    LogicalProject(EMPNO=[$0], ENAME=[$1], DEPTNO=[$7], RANK_VAL=[$9])
+      LogicalFilter(condition=[=($9, $10)])
+        LogicalJoin(condition=[true], joinType=[left])
+          LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], RANK_VAL=[RANK() OVER (PARTITION BY $1 ORDER BY $7 DESC RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)])
+            LogicalFilter(condition=[>($5, 1000)])
+              LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+          LogicalAggregate(group=[{}], EXPR$0=[COUNT()])
+            LogicalProject($f0=[0])
+              LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+>>>>>>> 47a2def7d (Qualify Fix)
 </Root>
