@@ -69,8 +69,8 @@ public class SqlSelectOperator extends SqlOperator {
         operands[3],
         (SqlNodeList) operands[4],
         operands[5],
-        operands[6],
-        (SqlNodeList) operands[7],
+        (SqlNodeList) operands[6],
+        operands[7],
         (SqlNodeList) operands[8],
         operands[9],
         operands[10],
@@ -104,8 +104,8 @@ public class SqlSelectOperator extends SqlOperator {
       SqlNode whereClause,
       SqlNodeList groupBy,
       SqlNode having,
-      SqlNode qualify,
       SqlNodeList windowDecls,
+      SqlNode qualify,
       SqlNodeList orderBy,
       SqlNode offset,
       SqlNode fetch,
@@ -119,8 +119,8 @@ public class SqlSelectOperator extends SqlOperator {
         whereClause,
         groupBy,
         having,
-        qualify,
         windowDecls,
+        qualify,
         orderBy,
         offset,
         fetch,
@@ -226,14 +226,14 @@ public class SqlSelectOperator extends SqlOperator {
       writer.sep("HAVING");
       select.having.unparse(writer, 0, 0);
     }
-    if (select.qualify != null) {
-      writer.sep("QUALIFY");
-      select.qualify.unparse(writer, 0, 0);
-    }
     if (select.windowDecls.size() > 0) {
       writer.sep("WINDOW");
       writer.list(SqlWriter.FrameTypeEnum.WINDOW_DECL_LIST, SqlWriter.COMMA,
           select.windowDecls);
+    }
+    if (select.qualify != null) {
+      writer.sep("QUALIFY");
+      select.qualify.unparse(writer, 0, 0);
     }
     if (select.orderBy != null && select.orderBy.size() > 0) {
       writer.sep("ORDER BY");

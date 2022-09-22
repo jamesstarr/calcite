@@ -7577,10 +7577,22 @@ public class SqlParserTest {
 
   @Test public void qualify() {
     check(
-            "SELECT a, b, c FROM mytable qualify ROW_NUMBER() over (partition by p order by o) = 1",
+            "SELECT a, b, c FROM mytable QUALIFY ROW_NUMBER() over (partition by p order by o) = 1",
             "SELECT `A`, `B`, `C`\n"
                     + "FROM `MYTABLE`\n"
                     + "QUALIFY ((ROW_NUMBER() OVER (PARTITION BY `P` ORDER BY `O`)) = 1)");
+
+    check(
+            "SELECT a, b, SUM(c) OVER myWindow as sumC "
+                    + "FROM mytable "
+                    + "WINDOW myWindow AS (PARTITION BY a ORDER BY b) "
+                    + "QUALIFY sumC = 1 "
+                    + "ORDER BY a, b",
+            "SELECT `A`, `B`, (SUM(`C`) OVER `MYWINDOW`) AS `SUMC`\n"
+                    + "FROM `MYTABLE`\n"
+                    + "WINDOW `MYWINDOW` AS (PARTITION BY `A` ORDER BY `B`)\n"
+                    + "QUALIFY (`SUMC` = 1)\n"
+                    + "ORDER BY `A`, `B`");
   }
 
   @Test public void testLongIdentifiers() {

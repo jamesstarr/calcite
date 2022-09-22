@@ -1689,7 +1689,55 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       SqlValidatorScope scope,
       SqlNode operand) {
     DeriveTypeVisitor v = new DeriveTypeVisitor(scope);
-    final RelDataType type = operand.accept(v);
+    RelDataType type;
+    try {
+      type = operand.accept(v);
+    } catch (CalciteContextException e) {
+      if (!(scope instanceof SelectScope)) {
+        throw e;
+      }
+
+      if (!((SqlSelect) scope.getNode()).hasQualify()) {
+        // Only do this hack for the QUALIFY scenario.
+        throw e;
+      }
+
+      // it's possible that the operand is a derived value
+      // In which case we should derive the type of the thing it is aliasing
+      if (operand.getKind() != SqlKind.IDENTIFIER) {
+        throw e;
+      }
+
+      SqlIdentifier identifier = (SqlIdentifier) operand;
+      if (identifier.names.size() != 1) {
+        throw e;
+      }
+
+      for (SqlSelect select : selectScopes.keySet()) {
+        for (SqlNode selectItem : select.getSelectList()) {
+          if (selectItem.getKind() == SqlKind.AS) {
+            SqlBasicCall sqlBasicCall = (SqlBasicCall) selectItem;
+
+            SqlIdentifier candidateAlias = sqlBasicCall.operand(1);
+            if (identifier.toString().equals(candidateAlias.toString())) {
+              SqlNode aliasValue = sqlBasicCall.operand(0);
+              if (aliasValue.accept(new ContainsIdentifierVisitor(candidateAlias))) {
+                // We have something like:
+                // empno + 1 AS empno
+                // And we don't want a stackoverflow
+                throw e;
+              }
+              type = aliasValue.accept(v);
+              // After Guava 17, use Verify.verifyNotNull for Preconditions.checkNotNull
+              Bug.upgrade("guava-17");
+              return Preconditions.checkNotNull(scope.nullifyType(aliasValue, type));
+            }
+          }
+        }
+      }
+
+      throw e;
+    }
 
     // After Guava 17, use Verify.verifyNotNull for Preconditions.checkNotNull
     Bug.upgrade("guava-17");
@@ -2542,6 +2590,12 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
           selectScope,
           select,
           SqlSelect.WHERE_OPERAND);
+
+      // Register subqueries in the qualify clause
+      registerOperandSubQueries(
+              selectScope,
+              select,
+              SqlSelect.QUALIFY_OPERAND);
 
       // Register FROM with the inherited scope 'parentScope', not
       // 'selectScope', otherwise tables in the FROM clause would be
@@ -4171,15 +4225,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     }
 
     SqlValidatorScope qualifyScope = getSelectScope(select);
-    if (config.sqlConformance().isHavingAlias()) {
-      SqlNode newExpr = expandGroupByOrHavingExpr(qualify, qualifyScope, select, true);
-      if (qualify != newExpr) {
-        qualify = newExpr;
-        select.setQualify(newExpr);
-      }
-    }
-
-    qualify.validate(this, qualifyScope);
     final RelDataType type = deriveType(qualifyScope, qualify);
     if (!SqlTypeUtil.inBooleanFamily(type)) {
       throw newValidationError(qualify, RESOURCE.havingMustBeBoolean());
@@ -6633,6 +6678,45 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     VALID
   }
 
+  /**
+   * Visitor to determine if a SqlNode contains a certain identifier.
+   */
+  private static final class ContainsIdentifierVisitor implements SqlVisitor<Boolean> {
+    private final SqlIdentifier identifier;
+
+    ContainsIdentifierVisitor(SqlIdentifier identifier) {
+      this.identifier = identifier;
+    }
+
+    @Override public Boolean visit(SqlLiteral literal) {
+      return false;
+    }
+
+    @Override public Boolean visit(SqlCall call) {
+      return call.getOperandList().stream().anyMatch(operand ->
+              (operand != null) && operand.accept(this));
+    }
+
+    @Override public Boolean visit(SqlNodeList nodeList) {
+      return nodeList.getList().stream().anyMatch(node -> node.accept(this));
+    }
+
+    @Override public Boolean visit(SqlIdentifier id) {
+      return identifier.getSimple().equals(id.getSimple());
+    }
+
+    @Override public Boolean visit(SqlDataTypeSpec type) {
+      return false;
+    }
+
+    @Override public Boolean visit(SqlDynamicParam param) {
+      return false;
+    }
+
+    @Override public Boolean visit(SqlIntervalQualifier intervalQualifier) {
+      return false;
+    }
+  }
 }
 
 // End SqlValidatorImpl.java

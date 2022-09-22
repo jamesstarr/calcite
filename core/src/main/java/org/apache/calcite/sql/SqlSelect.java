@@ -38,6 +38,7 @@ public class SqlSelect extends SqlCall {
   public static final int FROM_OPERAND = 2;
   public static final int WHERE_OPERAND = 3;
   public static final int HAVING_OPERAND = 5;
+  public static final int QUALIFY_OPERAND = 7;
 
   SqlNodeList keywordList;
   SqlNodeList selectList;
@@ -45,8 +46,8 @@ public class SqlSelect extends SqlCall {
   SqlNode where;
   SqlNodeList groupBy;
   SqlNode having;
-  SqlNode qualify;
   SqlNodeList windowDecls;
+  SqlNode qualify;
   SqlNodeList orderBy;
   SqlNode offset;
   SqlNode fetch;
@@ -62,8 +63,8 @@ public class SqlSelect extends SqlCall {
       SqlNode where,
       SqlNodeList groupBy,
       SqlNode having,
-      SqlNode qualify,
       SqlNodeList windowDecls,
+      SqlNode qualify,
       SqlNodeList orderBy,
       SqlNode offset,
       SqlNode fetch,
@@ -76,9 +77,9 @@ public class SqlSelect extends SqlCall {
     this.where = where;
     this.groupBy = groupBy;
     this.having = having;
-    this.qualify = qualify;
     this.windowDecls = Preconditions.checkNotNull(windowDecls != null
         ? windowDecls : new SqlNodeList(pos));
+    this.qualify = qualify;
     this.orderBy = orderBy;
     this.offset = offset;
     this.fetch = fetch;
@@ -97,7 +98,7 @@ public class SqlSelect extends SqlCall {
 
   @Override public List<SqlNode> getOperandList() {
     return ImmutableNullableList.of(keywordList, selectList, from, where,
-        groupBy, having, qualify, windowDecls, orderBy, offset, fetch, hints);
+        groupBy, having, windowDecls, qualify, orderBy, offset, fetch, hints);
   }
 
   @Override public void setOperand(int i, SqlNode operand) {
@@ -121,10 +122,10 @@ public class SqlSelect extends SqlCall {
       having = operand;
       break;
     case 6:
-      qualify = operand;
+      windowDecls = Preconditions.checkNotNull((SqlNodeList) operand);
       break;
     case 7:
-      windowDecls = Preconditions.checkNotNull((SqlNodeList) operand);
+      qualify = operand;
       break;
     case 8:
       orderBy = (SqlNodeList) operand;
@@ -179,14 +180,6 @@ public class SqlSelect extends SqlCall {
     this.having = having;
   }
 
-  public final SqlNode getQualify() {
-    return qualify;
-  }
-
-  public void setQualify(SqlNode qualify) {
-    this.qualify = qualify;
-  }
-
   public final SqlNodeList getSelectList() {
     return selectList;
   }
@@ -207,8 +200,16 @@ public class SqlSelect extends SqlCall {
     return windowDecls;
   }
 
+  public final SqlNode getQualify() {
+    return qualify;
+  }
+
   public final SqlNodeList getOrderList() {
     return orderBy;
+  }
+
+  public void setQualify(SqlNode qualify) {
+    this.qualify = qualify;
   }
 
   public void setOrderBy(SqlNodeList orderBy) {
@@ -275,12 +276,12 @@ public class SqlSelect extends SqlCall {
     return orderBy != null && orderBy.size() != 0;
   }
 
-  public boolean hasQualify() {
-    return qualify != null;
-  }
-
   public boolean hasWhere() {
     return where != null;
+  }
+
+  public boolean hasQualify() {
+    return qualify != null;
   }
 
   public boolean isKeywordPresent(SqlSelectKeyword targetKeyWord) {
