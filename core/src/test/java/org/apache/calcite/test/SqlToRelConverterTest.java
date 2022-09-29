@@ -3360,10 +3360,31 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
             .ok();
   }
 
+  @Test public void testQualifyWithMultipleReferences() {
+    sql("SELECT empno, ename, deptno + 1 as derived_deptno, "
+            + "   ROW_NUMBER() over (partition by ename order by deptno) as row_num "
+            + "FROM emp "
+            + "QUALIFY row_num = derived_deptno")
+            .conformance(SqlConformanceEnum.LENIENT)
+            .ok();
+  }
+
   @Test public void testQualifyWithDerivedColumn() {
     sql("SELECT empno, ename, deptno, SUBSTRING(ename,1,1) as DERIVED_COLUMN "
             + "FROM emp "
             + "QUALIFY ROW_NUMBER() OVER (PARTITION BY deptno ORDER BY DERIVED_COLUMN) = 1")
+            .conformance(SqlConformanceEnum.LENIENT)
+            .ok();
+  }
+
+  // Not supported yet.
+  @Ignore
+  @Test public void testQualifyWithDerivedColumnWithReference() {
+    sql("SELECT empno, ename, deptno, "
+            + "   SUBSTRING(ename,1,1) as DERIVED_COLUMN, "
+            + "   ROW_NUMBER() OVER (PARTITION BY deptno ORDER BY DERIVED_COLUMN) as row_num "
+            + "FROM emp "
+            + "QUALIFY row_num = 1")
             .conformance(SqlConformanceEnum.LENIENT)
             .ok();
   }

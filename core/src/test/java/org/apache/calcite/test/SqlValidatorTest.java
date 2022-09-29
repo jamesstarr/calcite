@@ -4564,6 +4564,16 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
             "RANK or DENSE_RANK functions require ORDER BY clause in window specification");
   }
 
+  @Test public void testQualify() {
+    // Make sure the qualify clause is a boolean condition
+    sql("SELECT ename FROM emp\n"
+            + "QUALIFY ^1 + 1^")
+            .fails("QUALIFY clause must be a condition");
+
+    sql("SELECT ename FROM emp\n"
+            + "QUALIFY true").ok();
+  }
+
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1954">[CALCITE-1954]
    * Column from outer join should be null, whether or not it is aliased</a>. */
