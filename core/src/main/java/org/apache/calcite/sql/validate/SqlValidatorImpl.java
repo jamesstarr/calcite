@@ -1877,55 +1877,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       SqlValidatorScope scope,
       SqlNode operand) {
     DeriveTypeVisitor v = new DeriveTypeVisitor(scope);
-    RelDataType type;
-    try {
-      type = operand.accept(v);
-    } catch (CalciteContextException e) {
-      if (!(scope instanceof SelectScope)) {
-        throw e;
-      }
-
-      if (!((SqlSelect) scope.getNode()).hasQualify()) {
-        // Only do this hack for the QUALIFY scenario.
-        throw e;
-      }
-
-      // it's possible that the operand is a derived value
-      // In which case we should derive the type of the thing it is aliasing
-      if (operand.getKind() != SqlKind.IDENTIFIER) {
-        throw e;
-      }
-
-      SqlIdentifier identifier = (SqlIdentifier) operand;
-      if (identifier.names.size() != 1) {
-        throw e;
-      }
-
-      for (SqlSelect select : selectScopes.keySet()) {
-        for (SqlNode selectItem : select.getSelectList()) {
-          if (selectItem.getKind() == SqlKind.AS) {
-            SqlBasicCall sqlBasicCall = (SqlBasicCall) selectItem;
-
-            SqlIdentifier candidateAlias = sqlBasicCall.operand(1);
-            if (identifier.toString().equals(candidateAlias.toString())) {
-              SqlNode aliasValue = sqlBasicCall.operand(0);
-              if (aliasValue.accept(new ContainsIdentifierVisitor(candidateAlias))) {
-                // We have something like:
-                // empno + 1 AS empno
-                // And we don't want a stackoverflow
-                throw e;
-              }
-              type = aliasValue.accept(v);
-              // After Guava 17, use Verify.verifyNotNull for Preconditions.checkNotNull
-              Bug.upgrade("guava-17");
-              return Preconditions.checkNotNull(scope.nullifyType(aliasValue, type));
-            }
-          }
-        }
-      }
-
-      throw e;
-    }
+    RelDataType type = operand.accept(v);
 
     // After Guava 17, use Verify.verifyNotNull for Preconditions.checkNotNull
     Bug.upgrade("guava-17");
@@ -4408,15 +4360,26 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
   }
 
   protected void validateQualifyClause(SqlSelect select) {
-    SqlNode qualify = select.getQualify();
-    if (qualify == null) {
+    SqlNode qualifyNode = select.getQualify();
+    if (qualifyNode == null) {
       return;
     }
 
     SqlValidatorScope qualifyScope = getSelectScope(select);
-    final RelDataType type = deriveType(qualifyScope, qualify);
+
+    qualifyNode = expandGroupByOrHavingExpr(qualifyNode, qualifyScope, select, true);
+    select.setQualify(qualifyNode);
+
+    inferUnknownTypes(
+            booleanType,
+            qualifyScope,
+            qualifyNode);
+
+    qualifyNode.validate(this, qualifyScope);
+
+    final RelDataType type = deriveType(qualifyScope, qualifyNode);
     if (!SqlTypeUtil.inBooleanFamily(type)) {
-      throw newValidationError(qualify, RESOURCE.havingMustBeBoolean());
+      throw newValidationError(qualifyNode, RESOURCE.condMustBeBoolean("QUALIFY"));
     }
   }
 
@@ -6493,10 +6456,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       if (id.isSimple()
           && (havingExpr
               ? validator.config().sqlConformance().isHavingAlias()
-<<<<<<< HEAD
-              : (validator.config().sqlConformance().isGroupByAlias()
-                  && aliasOrdinalExpandSet.contains(id)))) {
-=======
               : validator.config().sqlConformance().isGroupByAlias())) {
         String name = id.getSimple();
         SqlNode expr = null;
@@ -7021,6 +6980,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
      */
     VALID
   }
+<<<<<<< HEAD
 
   /**
 <<<<<<< HEAD
@@ -7068,4 +7028,5 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       return false;
     }
   }
+=======
 }

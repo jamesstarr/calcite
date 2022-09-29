@@ -86,13 +86,13 @@ import org.apache.calcite.rex.RexFieldCollation;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.rex.RexOver;
 import org.apache.calcite.rex.RexPatternFieldRef;
 import org.apache.calcite.rex.RexRangeRef;
 import org.apache.calcite.rex.RexShuttle;
 import org.apache.calcite.rex.RexSubQuery;
 import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.rex.RexWindowBound;
-import org.apache.calcite.runtime.CalciteContextException;
 import org.apache.calcite.schema.ColumnStrategy;
 import org.apache.calcite.schema.ModifiableTable;
 import org.apache.calcite.schema.ModifiableView;
@@ -213,6 +213,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.annotation.Nonnull;
 
 import static java.util.Objects.requireNonNull;
@@ -699,10 +700,6 @@ public class SqlToRelConverter {
     final RelCollation collation =
         cluster.traitSet().canonize(RelCollations.of(collationList));
 
-    if (select.hasQualify()) {
-      convertQualify(bb, select.getQualify(), select.getSelectList());
-    }
-
     if (validator.isAggregate(select)) {
       convertAgg(
           bb,
@@ -713,6 +710,10 @@ public class SqlToRelConverter {
           bb,
           select,
           orderExprList);
+    }
+
+    if (select.hasQualify()) {
+      convertQualify(bb, select.getQualify());
     }
 
     if (select.isDistinct()) {
@@ -4214,32 +4215,7 @@ public class SqlToRelConverter {
 
     final SqlQualified qualified;
     if (bb.scope != null) {
-      try {
-        qualified = bb.scope.fullyQualify(identifier);
-      } catch (CalciteContextException e) {
-        if (!(bb.scope instanceof SelectScope)) {
-          throw e;
-        }
-
-        if (!((SqlSelect) bb.scope.getNode()).hasQualify()) {
-          throw e;
-        }
-
-        // Try and see if the identifier is a derived column
-        if (identifier.names.size() != 1) {
-          throw e;
-        }
-        // Return a ref input in the project at the index that matches it
-        List<String> fieldNames = bb.root.getRowType().getFieldNames();
-        String alias = identifier.names.get(0);
-        for (int i = 0; i < fieldNames.size(); i++) {
-          String fieldName = fieldNames.get(i);
-          if (fieldName.equals(alias)) {
-            return rexBuilder.makeInputRef(bb.root, i);
-          }
-        }
-        throw e;
-      }
+      qualified = bb.scope.fullyQualify(identifier);
     } else {
       qualified = SqlQualified.create(null, 1, null, identifier);
     }
@@ -4435,40 +4411,145 @@ public class SqlToRelConverter {
     return ret;
   }
 
-  private void convertQualify(Blackboard bb, SqlNode qualify, SqlNodeList selectList) {
-    // We want to project out every column,
-    // because the qualify might reference a column that is not in the projection
-    List<String> projectNames = new ArrayList<>(bb.root.getRowType().getFieldNames());
-    List<RexNode> projectExpressions = new ArrayList<>();
-    int i;
-    for (i = 0; i < projectNames.size(); i++) {
-      RexNode projectExpression = rexBuilder.makeInputRef(bb.root, i);
-      projectExpressions.add(projectExpression);
-    }
+  private void convertQualify(Blackboard bb, SqlNode qualify) {
+    LogicalProject projectionFromSelect = (LogicalProject) bb.root;
 
-    // Also add any derived columns
-    for (SqlNode selectItem : selectList) {
-      if (selectItem.getKind() != SqlKind.IDENTIFIER) {
-        RexNode derivedColumn = bb.convertExpression(selectItem);
-        deriveAlias(selectItem, projectNames, i++);
-        projectExpressions.add(derivedColumn);
-      }
-    }
-
-    RelNode projectRelNode = relBuilder
-        .push(bb.root)
-        .projectNamed(projectExpressions, projectNames, true)
-        .build();
-    bb.setRoot(projectRelNode, false);
-
-    // Filter for the qualify expression
+    // Convert qualify SqlNode to a RexNode
     replaceSubQueries(bb, qualify, RelOptUtil.Logic.UNKNOWN_AS_FALSE);
-    RexNode qualifyRexNode = bb.convertExpression(qualify);
-    RelNode filterRelNode = relBuilder
-        .push(bb.root)
-        .filter(qualifyRexNode)
-        .build();
-    bb.setRoot(filterRelNode, false);
+    RelNode originalRoot = bb.root;
+    RexNode qualifyRexNode;
+    try {
+      // Set the root to the input of the project,
+      // Since QUALIFY might have an expression in the over clause
+      // that references a column not in the select
+      bb.setRoot(projectionFromSelect.getInput(0), false);
+      qualifyRexNode = bb.convertExpression(qualify);
+    } finally {
+      bb.setRoot(originalRoot, false);
+    }
+
+    // Check to see if the qualify expression was has a referenced expression and
+    // do some referencing accordingly
+    ProjectCSERexVisitor visitor = new ProjectCSERexVisitor(
+            rexBuilder,
+            projectionFromSelect);
+    RexNode qualifyWithReferencesRexNode = qualifyRexNode.accept(visitor);
+
+    // Create a Project Rel with the QUALIFY expression
+    RelNode qualifyProjectInput;
+    List<RexNode> projects;
+    List<String> fieldNames;
+    if (qualifyWithReferencesRexNode.equals(qualifyRexNode)) {
+      // The QUALIFY expression does not depend on any references like so:
+      //
+      //  SELECT A, B
+      //  FROM tbl
+      //  QUALIFY WINDOW(C) = 1
+      //
+      // Meaning we should generate a plan like:
+      //  Project(A, B, WINDOW(C) = 1 as QualifyExpression)
+      //    TableScan(tbl)
+      qualifyProjectInput = projectionFromSelect.getInput(0);
+      projects = new ArrayList<>(projectionFromSelect.getProjects());
+      fieldNames = new ArrayList<>(projectionFromSelect.getRowType().getFieldNames());
+    } else {
+      // The QUALIFY expression depended on a reference meaning
+      // we need to introduce an extra project like so:
+      //
+      //  SELECT A, B, WINDOW(C) as window_val
+      //  FROM tbl
+      //  QUALIFY window_val = 1
+      //
+      // Meaning we should generate a plan like:
+      //
+      //  Project($0, $1, $2, =($2, 1) as QualifyExpression)
+      //    Project(A, B, WINDOW(C) as window_val)
+      //      TableScan(tbl)
+      //
+      // This is a very specific application of Common Subexpression Elimination (CSE),
+      // since the window value pops up twice.
+      qualifyProjectInput = bb.root;
+      projects = IntStream
+              .range(0, bb.root.getRowType().getFieldCount())
+              .mapToObj(i -> rexBuilder.makeInputRef(bb.root, i))
+              .collect(Collectors.toList());
+      fieldNames = new ArrayList<>(bb.root.getRowType().getFieldNames());
+    }
+
+    // Append qualify condition to the projection
+    projects.add(qualifyWithReferencesRexNode);
+    fieldNames.add("QualifyExpression");
+
+    RelNode projectionWithQualify = relBuilder
+            .push(qualifyProjectInput)
+            .project(projects, fieldNames)
+            .build();
+
+    // Filter on that extra column
+    RexNode qualifyExpressionIndex = rexBuilder.makeInputRef(
+            projectionWithQualify,
+            projects.size() - 1);
+    RelNode filter = relBuilder
+            .push(projectionWithQualify)
+            .filter(qualifyExpressionIndex)
+            .build();
+
+    // Remove that extra column from the projection
+    List<RexNode> inputRefs = IntStream
+            .range(0, projectionFromSelect.getProjects().size())
+            .mapToObj(i -> rexBuilder.makeInputRef(filter, i))
+            .collect(Collectors.toList());
+    RelNode projectionWithoutQualify = relBuilder
+            .push(filter)
+            .project(inputRefs, fieldNames)
+            .build();
+
+    // Update the root
+    bb.setRoot(projectionWithoutQualify, false);
+  }
+
+  /**
+   * Tries to implement CSE by seeing if a rex node is already defined in
+   * the project Rel and returning a refIndex instead of the raw node
+   */
+  private static final class ProjectCSERexVisitor extends RexShuttle {
+    private final RexBuilder rexBuilder;
+    private final LogicalProject inputRelNode;
+
+    ProjectCSERexVisitor(RexBuilder rexBuilder, LogicalProject inputRelNode) {
+      this.rexBuilder = rexBuilder;
+      this.inputRelNode = inputRelNode;
+    }
+
+    @Override public RexNode visitCall(RexCall call) {
+      List<RexNode> projections = inputRelNode.getProjects();
+      for (int i = 0; i < projections.size(); i++) {
+        RexNode project = projections.get(i);
+        if (call.equals(project)) {
+          return rexBuilder.makeInputRef(inputRelNode, i);
+        }
+      }
+
+      return rexBuilder.makeCall(
+              call.getType(),
+              call.getOperator(),
+              call.operands
+                      .stream()
+                      .map(operand -> operand.accept(this))
+                      .collect(Collectors.toList()));
+    }
+
+    @Override public RexNode visitOver(RexOver over) {
+      List<RexNode> projections = inputRelNode.getProjects();
+      for (int i = 0; i < projections.size(); i++) {
+        RexNode project = projections.get(i);
+        if (over.equals(project)) {
+          return rexBuilder.makeInputRef(inputRelNode, i);
+        }
+      }
+
+      return over;
+    }
   }
 
   private void convertSelectList(
@@ -4499,54 +4580,7 @@ public class SqlToRelConverter {
     int i = -1;
     for (SqlNode expr : selectList) {
       ++i;
-      RexNode selectItemRexNode;
-      if (!(select.hasQualify() && (expr.getKind() == SqlKind.AS))) {
-        selectItemRexNode = bb.convertExpression(expr);
-      } else {
-        /* It's possible that we introduced a derived column so the plan looks like this:
-          LogicalProject(
-            EMPNO=[$0],
-            ENAME=[$1],
-            DEPTNO=[$7],
-            ROW_NUM=[
-              ROW_NUMBER()
-              OVER (
-                PARTITION BY $1
-                ORDER BY $7
-                ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)])
-            LogicalFilter(condition=[=($9, 1)])
-              LogicalProject(
-                EMPNO=[$0],
-                ENAME=[$1],
-                JOB=[$2],
-                MGR=[$3],
-                HIREDATE=[$4],
-                SAL=[$5],
-                COMM=[$6],
-                DEPTNO=[$7],
-                SLACKER=[$8],
-                ROW_NUM=[
-                  ROW_NUMBER()
-                  OVER (
-                    PARTITION BY $1
-                    ORDER BY $7
-                    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)])
-                LogicalTableScan(table=[[CATALOG, SALES, EMP]])
-          The issue with this is that ROW_NUM is recomputing the ROW_NUMBER()
-            after we have already filtered for it.
-          We need to reference the original project instead.
-        */
-        SqlBasicCall sqlBasicCall = (SqlBasicCall) expr;
-        SqlIdentifier alias = sqlBasicCall.operand(1);
-        int matchedIndex = bb.root.getRowType().getFieldNames().indexOf(alias.getSimple());
-        if (matchedIndex < 0) {
-          selectItemRexNode = bb.convertExpression(expr);
-        } else {
-          selectItemRexNode = rexBuilder.makeInputRef(bb.root, matchedIndex);
-        }
-      }
-
-      exprs.add(selectItemRexNode);
+      exprs.add(bb.convertExpression(expr));
       fieldNames.add(deriveAlias(expr, aliases, i));
     }
 
