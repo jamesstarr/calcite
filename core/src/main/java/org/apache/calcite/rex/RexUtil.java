@@ -408,19 +408,22 @@ public class RexUtil {
       RexNode predicate, Map<RexNode, C> map, Set<RexNode> excludeSet,
       RexBuilder rexBuilder) {
     if (predicate.getKind() != SqlKind.EQUALS
-            && predicate.getKind() != SqlKind.IS_NULL) {
+            && predicate.getKind() != SqlKind.IS_NULL
+            && predicate.getKind() != SqlKind.IS_NOT_DISTINCT_FROM) {
       decompose(excludeSet, predicate);
       return;
     }
     final List<RexNode> operands = ((RexCall) predicate).getOperands();
-    if (operands.size() != 2 && predicate.getKind() == SqlKind.EQUALS) {
+    if (operands.size() != 2 && (predicate.getKind() == SqlKind.EQUALS
+            || predicate.getKind() == SqlKind.IS_NOT_DISTINCT_FROM)) {
       decompose(excludeSet, predicate);
       return;
     }
     // if it reaches here, we have rexNode equals rexNode
     final RexNode left;
     final RexNode right;
-    if (predicate.getKind() == SqlKind.EQUALS) {
+    if (predicate.getKind() == SqlKind.EQUALS
+            || predicate.getKind() == SqlKind.IS_NOT_DISTINCT_FROM) {
       left = operands.get(0);
       right = operands.get(1);
     } else {
