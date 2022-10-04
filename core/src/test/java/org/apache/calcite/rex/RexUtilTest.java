@@ -21,7 +21,7 @@ import org.apache.calcite.util.DateString;
 
 import com.google.common.collect.ImmutableMap;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.util.Arrays;
 
@@ -47,3 +47,7 @@ public class RexUtilTest {
     assert constantMap.size() == 1;
   }
 }
+<<<<<<< HEAD
+=======
+// End RexUtilTest.java
+>>>>>>> 6e1f9b309 (DX-57286: improved RexUtil's predicateConstants method)

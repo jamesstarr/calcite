@@ -77,6 +77,7 @@ import org.apache.calcite.rel.rules.UnionMergeRule;
 import org.apache.calcite.rel.rules.ValuesReduceRule;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexExecutor;
 import org.apache.calcite.rex.RexExecutorImpl;
 import org.apache.calcite.rex.RexExecutorTest;
@@ -84,6 +85,7 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexOver;
 import org.apache.calcite.runtime.Hook;
 import org.apache.calcite.runtime.PredicateImpl;
+import org.apache.calcite.schema.Schemas;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperator;
@@ -102,6 +104,7 @@ import org.apache.calcite.test.catalog.MockCatalogReader;
 >>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
+import org.apache.calcite.util.DateString;
 
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
@@ -119,6 +122,9 @@ import javax.annotation.Nullable;
 
 import static org.apache.calcite.plan.RelOptRule.none;
 import static org.apache.calcite.plan.RelOptRule.operand;
+
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.EQUALS;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_NOT_DISTINCT_FROM;
 
 import static org.junit.Assert.assertTrue;
 
@@ -6871,4 +6877,102 @@ class RelOptRulesTest extends RelOptTestBase {
     final String finalPlan = NL + RelOptUtil.toString(output);
     getDiffRepos().assertEquals("finalPlan", "${finalPlan}", finalPlan);
   }
+
+  @Test public void testProjectReduceExpressionsWithIsNotDistinctFrom() {
+
+    final RelBuilder relBuilder = RelBuilder.create(RelBuilderTest.config().build());
+    // Build a rel equivalent to sql:
+    // SELECT hiredate from emp where hiredate is not distinct from '2020-12-11'
+
+    final RexBuilder rexB = relBuilder.getRexBuilder();
+
+    final RexNode dateLiteral = rexB.makeDateLiteral(new DateString(2020, 12, 11));
+
+    RexNode dateInput4 = rexB.makeInputRef(
+            rexB.getTypeFactory().createSqlType(SqlTypeName.DATE), 4);
+
+    final RexNode filterCond = rexB.makeCall(IS_NOT_DISTINCT_FROM,
+            dateInput4,
+            dateLiteral);
+
+    RelNode plan = relBuilder.scan("EMP")
+            .filter(filterCond)
+            .project(relBuilder.field("HIREDATE"))
+            .build();
+
+    final String planBefore = NL + RelOptUtil.toString(plan);
+    getDiffRepos().assertEquals("planBefore",
+            "${planBefore}", planBefore);
+
+    HepProgram program = new HepProgramBuilder()
+            .addRuleInstance(CoreRules.PROJECT_REDUCE_EXPRESSIONS)
+            .build();
+
+    HepPlanner hepPlanner = new HepPlanner(program);
+    final RexExecutorImpl executor =
+               new RexExecutorImpl(Schemas.createDataContext(null, null));
+    plan.getCluster().getPlanner().setExecutor(executor);
+    hepPlanner.setRoot(plan);
+    RelNode output = hepPlanner.findBestExp();
+    final String planAfter = NL + RelOptUtil.toString(output);
+
+    getDiffRepos().assertEquals("planAfter", "${planAfter}", planAfter);
+  }
+
+  @Test public void testJoinReduceExpressionsWithIsNotDistinctFrom() {
+
+    final RelBuilder relBuilder = RelBuilder.create(RelBuilderTest.config().build());
+    // Build a rel equivalent to sql:
+    // SELECT hiredate from emp e1 join (select hiredate from emp
+    // where hiredate is not distinct from '2020-12-11') e2
+    // on e1.hiredate = e2.hiredate
+
+    final RexBuilder rexB = relBuilder.getRexBuilder();
+
+    RelDataTypeFactory typeFactory = rexB.getTypeFactory();
+
+    RelDataType dateType = typeFactory.createTypeWithNullability(
+            typeFactory.createSqlType(SqlTypeName.DATE), true);
+
+    RexNode dateInput4 = rexB.makeInputRef(dateType, 4);
+
+    RexNode dateInput8 = rexB.makeInputRef(dateType, 8);
+
+    final RexNode dateLiteral = rexB.makeDateLiteral(
+            new DateString(2020, 12, 11));
+
+    final RexNode filterCond = rexB.makeCall(IS_NOT_DISTINCT_FROM,
+            dateInput4,
+            dateLiteral);
+
+    RelNode right = relBuilder.scan("EMP")
+            .filter(filterCond)
+            .project(relBuilder.field("HIREDATE"))
+            .build();
+
+    RelNode plan = relBuilder.scan("EMP")
+            .push(right)
+            .join(JoinRelType.INNER,
+                    rexB.makeCall(EQUALS, dateInput4, dateInput8))
+            .build();
+
+    final String planBefore = NL + RelOptUtil.toString(plan);
+    getDiffRepos().assertEquals("planBefore",
+            "${planBefore}", planBefore);
+
+    HepProgram program = new HepProgramBuilder()
+            .addRuleInstance(CoreRules.JOIN_REDUCE_EXPRESSIONS)
+            .build();
+
+    HepPlanner hepPlanner = new HepPlanner(program);
+    final RexExecutorImpl executor =
+            new RexExecutorImpl(Schemas.createDataContext(null, null));
+    plan.getCluster().getPlanner().setExecutor(executor);
+    hepPlanner.setRoot(plan);
+    RelNode output = hepPlanner.findBestExp();
+    final String planAfter = NL + RelOptUtil.toString(output);
+
+    getDiffRepos().assertEquals("planAfter", "${planAfter}", planAfter);
+  }
+
 }

@@ -4256,6 +4256,26 @@ LogicalJoin(condition=[=($4, 2020-12-11)], joinType=[inner])
 ]]>
         </Resource>
     </TestCase>
+    <TestCase name="testJoinReduceExpressionsWithIsNotDistinctFrom">
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalJoin(condition=[=($4, $8)], joinType=[inner])
+  LogicalTableScan(table=[[scott, EMP]])
+  LogicalProject(HIREDATE=[$4])
+    LogicalFilter(condition=[IS NOT DISTINCT FROM($4, 2020-12-11)])
+      LogicalTableScan(table=[[scott, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalJoin(condition=[=($4, 2020-12-11)], joinType=[inner])
+  LogicalTableScan(table=[[scott, EMP]])
+  LogicalProject(HIREDATE=[$4])
+    LogicalFilter(condition=[IS NOT DISTINCT FROM($4, 2020-12-11)])
+      LogicalTableScan(table=[[scott, EMP]])
+]]>
+        </Resource>
+    </TestCase>
     <TestCase name="testMergeIntersect">
         <Resource name="sql">
             <![CDATA[select * from emp where deptno = 10
@@ -4719,6 +4739,22 @@ LogicalProject(HIREDATE=[CAST(2020-12-11):DATE])
   LogicalProject(DUMMY=[0])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 >>>>>>> 789ac66d1 ([CALCITE-2736] ReduceExpressionsRule never reduces dynamic expressions but this should be configurable (Yingyu Wang))
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testProjectReduceExpressionsWithIsNotDistinctFrom">
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(HIREDATE=[$4])
+  LogicalFilter(condition=[IS NOT DISTINCT FROM($4, 2020-12-11)])
+    LogicalTableScan(table=[[scott, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(HIREDATE=[CAST(2020-12-11):DATE])
+  LogicalFilter(condition=[IS NOT DISTINCT FROM($4, 2020-12-11)])
+    LogicalTableScan(table=[[scott, EMP]])
 ]]>
         </Resource>
     </TestCase>
