@@ -1806,6 +1806,39 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).withRule(CoreRules.PROJECT_CORRELATE_TRANSPOSE).check();
   }
 
+  @Test void testNestedCorrelatedQueries() {
+    final String sql = ""
+        + "SELECT deptno\n"
+        + "FROM dept d\n"
+        + "WHERE EXISTS (\n"
+        + "  SELECT *\n"
+        + "  FROM emp e\n"
+        + "  WHERE 1 < (SELECT count(*) FROM emp_address ea WHERE ea.empno = e.empno)\n"
+        + "    AND 0 < (SELECT count(*) FROM bonus b WHERE b.ename = e.ename)"
+        + ")";
+    sql(sql)
+        .expand(false)
+        .withRule(CoreRules.FILTER_SUB_QUERY_TO_CORRELATE)
+        .check();
+  }
+
+  @Test void testNestedCorrelatedQueriesUsingOuterContext() {
+    final String sql = ""
+        + "SELECT deptno\n"
+        + "FROM emp e\n"
+        + "WHERE EXISTS (\n"
+        + "  SELECT *\n"
+        + "  FROM dept d\n"
+        + "  WHERE 1 < (SELECT count(*) FROM emp_address ea WHERE ea.empno = e.empno)\n"
+        + "    AND 0 < (SELECT count(*) FROM bonus b WHERE b.ename = e.ename)"
+        + ")";
+    sql(sql)
+        .expand(false)
+        .withRule(CoreRules.FILTER_SUB_QUERY_TO_CORRELATE)
+        .withLateDecorrelation(true)
+        .check();
+  }
+
   /** Tests that the default instance of {@link FilterProjectTransposeRule}
    * does not push a Filter that contains a correlating variable.
    *

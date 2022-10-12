@@ -813,8 +813,7 @@ public class SubQueryRemoveRule
             project.getProjects(), e);
     builder.push(project.getInput());
     final int fieldCount = builder.peek().getRowType().getFieldCount();
-    final Set<CorrelationId>  variablesSet =
-        RelOptUtil.getVariablesUsed(e.rel);
+    final Set<CorrelationId>  variablesSet = project.getVariablesSet();
     final RexNode target = rule.apply(e, variablesSet,
         logic, builder, 1, fieldCount);
     final RexShuttle shuttle = new ReplaceSubQueryShuttle(e, target);
@@ -839,8 +838,7 @@ public class SubQueryRemoveRule
       ++count;
       final RelOptUtil.Logic logic =
           LogicVisitor.find(RelOptUtil.Logic.TRUE, ImmutableList.of(c), e);
-      final Set<CorrelationId>  variablesSet =
-          RelOptUtil.getVariablesUsed(e.rel);
+      final Set<CorrelationId>  variablesSet = filter.getVariablesSet();
       final RexNode target = rule.apply(e, variablesSet, logic,
           builder, 1, builder.peek().getRowType().getFieldCount());
       final RexShuttle shuttle = new ReplaceSubQueryShuttle(e, target);
@@ -863,8 +861,7 @@ public class SubQueryRemoveRule
     builder.push(join.getLeft());
     builder.push(join.getRight());
     final int fieldCount = join.getRowType().getFieldCount();
-    final Set<CorrelationId>  variablesSet =
-        RelOptUtil.getVariablesUsed(e.rel);
+    final Set<CorrelationId>  variablesSet = join.getVariablesSet();
     final RexNode target = rule.apply(e, variablesSet,
         logic, builder, 2, fieldCount);
     final RexShuttle shuttle = new ReplaceSubQueryShuttle(e, target);
