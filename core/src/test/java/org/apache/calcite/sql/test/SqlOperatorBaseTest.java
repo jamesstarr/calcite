@@ -3767,22 +3767,28 @@ public abstract class SqlOperatorBaseTest {
     tester.setFor(SqlStdOperatorTable.LIKE_ANY);
     tester.checkBoolean("'a' like any ('a', 'b')", Boolean.TRUE);
     tester.checkBoolean("'a' like any ('b', 'c')", Boolean.FALSE);
-    tester.checkBoolean("'a' like some ('a', 'b')", Boolean.TRUE);
-    tester.checkBoolean("'a' like some ('b', 'c')", Boolean.FALSE);
+    tester.checkBoolean("'a' like any ('%', 'c')", Boolean.TRUE);
+    tester.checkBoolean("'a' like any ('_', 'c')", Boolean.TRUE);
+    tester.checkBoolean("'hello' like any ('%llo', '_ello')", Boolean.TRUE);
   }
 
   @Test public void testNotLikeAnyOperator() {
     tester.setFor(SqlStdOperatorTable.NOT_LIKE_ANY);
     tester.checkBoolean("'a' not like any ('a', 'b')", Boolean.FALSE);
     tester.checkBoolean("'a' not like any ('b', 'c')", Boolean.TRUE);
-    tester.checkBoolean("'a' not like some ('a', 'b')", Boolean.FALSE);
-    tester.checkBoolean("'a' not like some ('b', 'c')", Boolean.TRUE);
+    tester.checkBoolean("'a' not like any ('%b', 'c')", Boolean.TRUE);
+    tester.checkBoolean("'a' not like any ('__', 'c')", Boolean.TRUE);
+    tester.checkBoolean("'hello' not like any ('%llo', '_ello')", Boolean.FALSE);
   }
 
   @Test public void testLikeAllOperator() {
     tester.setFor(SqlStdOperatorTable.LIKE_ALL);
     tester.checkBoolean("'a' like all ('a', 'b')", Boolean.FALSE);
     tester.checkBoolean("'a' like all ('a', 'a')", Boolean.TRUE);
+    tester.checkBoolean("'a' like all ('%', 'c')", Boolean.FALSE);
+    tester.checkBoolean("'a' like all ('%', '_', 'a')", Boolean.TRUE);
+    tester.checkBoolean("'hello' like all ('%llo', '_ell_', '_____')", Boolean.TRUE);
+    tester.checkBoolean("'hello' like all ('%llo', '__ello')", Boolean.FALSE);
   }
 
   @Test public void testNotLikeAllOperator() {
@@ -3790,6 +3796,27 @@ public abstract class SqlOperatorBaseTest {
     tester.checkBoolean("'a' not like all ('a', 'b')", Boolean.TRUE);
     tester.checkBoolean("'a' not like all ('b', 'c')", Boolean.TRUE);
     tester.checkBoolean("'a' not like all ('a', 'a')", Boolean.FALSE);
+    tester.checkBoolean("'a' not like all ('%', '_', 'a')", Boolean.FALSE);
+    tester.checkBoolean("'hello' not like all ('%llo', '_ell_')", Boolean.FALSE);
+    tester.checkBoolean("'hello' not like all ('%llo', '__ello')", Boolean.TRUE);
+  }
+
+  @Test public void testLikeSomeOperator() {
+    tester.setFor(SqlStdOperatorTable.LIKE_SOME);
+    tester.checkBoolean("'a' like some ('a', 'b')", Boolean.TRUE);
+    tester.checkBoolean("'a' like some ('b', 'c')", Boolean.FALSE);
+    tester.checkBoolean("'a' like some ('%', 'c')", Boolean.TRUE);
+    tester.checkBoolean("'a' like some ('_', 'c')", Boolean.TRUE);
+    tester.checkBoolean("'hello' like some ('%llo', '_ello')", Boolean.TRUE);
+  }
+
+  @Test public void testNotLikeSomeOperator() {
+    tester.setFor(SqlStdOperatorTable.NOT_LIKE_SOME);
+    tester.checkBoolean("'a' not like some ('a', 'b')", Boolean.FALSE);
+    tester.checkBoolean("'a' not like some ('b', 'c')", Boolean.TRUE);
+    tester.checkBoolean("'a' not like some ('%b', 'c')", Boolean.TRUE);
+    tester.checkBoolean("'a' not like some ('__', 'c')", Boolean.TRUE);
+    tester.checkBoolean("'hello' not like some ('%llo', '_ello')", Boolean.FALSE);
   }
 
   /** Test case for

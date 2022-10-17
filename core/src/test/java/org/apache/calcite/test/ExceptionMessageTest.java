@@ -141,6 +141,43 @@ public class ExceptionMessageTest {
           containsString("Object 'nonexistentTable' not found"));
     }
   }
+<<<<<<< HEAD
+=======
+
+  @Test
+  public void testLikeAnySyntaxError() {
+    try {
+      runQuery("select 'a' LIKE ANY()");
+    } catch (SQLException e) {
+      assertThat(e.getMessage(),
+              containsString("Error while executing SQL \"select 'a' LIKE ANY()\": "
+                     + "parse failed: Encountered \")\""));
+    }
+  }
+
+  @Test
+  public void testLikeAllSyntaxError() {
+    try {
+      runQuery("select 'a' LIKE ALL(1)");
+    } catch (SQLException e) {
+      assertThat(e.getMessage(),
+              containsString("Error while executing SQL \"select 'a' LIKE ALL(1)\": "
+                     + "Expression must be a STRING"));
+    }
+  }
+
+  @Test
+  public void testLikeSomeSyntaxError() {
+    try {
+      runQuery("select 1 LIKE SOME('a')");
+    } catch (SQLException e) {
+      assertThat(e.getMessage(),
+              containsString("Error while executing SQL \"select 1 LIKE SOME('a')\": "
+                     + "Expression must be a STRING"));
+    }
+  }
+}
+>>>>>>> 3e1f10548 (DX-57689: add like any some all unit tests)
 
   @Test public void testLikeAnySyntaxError() {
     try {
