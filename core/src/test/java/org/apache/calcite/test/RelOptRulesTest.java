@@ -2934,6 +2934,67 @@ public class RelOptRulesTest extends RelOptTestBase {
         .checkUnchanged();
   }
 
+  @Test public void testNestedCorrelatedQueriesUsingOuterContext() {
+    final String sql = ""
+        + "SELECT deptno\n"
+        + "FROM emp e\n"
+        + "WHERE EXISTS (\n"
+        + "  SELECT *\n"
+        + "  FROM dept d\n"
+        + "  WHERE d.deptno = e.deptno\n"
+        + "    AND exists(\n"
+        + "      SELECT *\n"
+        + "      FROM emp_address ea\n"
+        + "      WHERE ea.empno = e.empno)\n"
+        + "    AND exists(\n"
+        + "      SELECT *\n"
+        + "      FROM bonus b\n"
+        + "      WHERE b.ename = e.ename\n))";
+    sql(sql)
+        .expand(false)
+        .with(HepProgram.builder()
+            .addRuleInstance(CoreRules.FILTER_SUB_QUERY_TO_CORRELATE)
+            .addRuleInstance(CoreRules.PROJECT_MERGE)
+            .addRuleInstance(CoreRules.FILTER_MERGE)
+            .addRuleInstance(CoreRules.FILTER_PROJECT_TRANSPOSE)
+            .addRuleInstance(CoreRules.AGGREGATE_FILTER_TRANSPOSE)
+            .addRuleInstance(CoreRules.AGGREGATE_PROJECT_MERGE)
+            .build())
+        .withLateDecorrelation(true)
+        .check();
+  }
+
+
+  @Test public void testNestedCorrelatedQueriesUsingInnerContext() {
+    final String sql = ""
+        + "SELECT deptno\n"
+        + "FROM dept d\n"
+        + "WHERE EXISTS (\n"
+        + "  SELECT *\n"
+        + "  FROM emp e\n"
+        + "  WHERE d.deptno = e.deptno\n"
+        + "    AND exists(\n"
+        + "      SELECT *\n"
+        + "      FROM emp_address ea\n"
+        + "      WHERE ea.empno = e.empno)\n"
+        + "    AND exists(\n"
+        + "      SELECT *\n"
+        + "      FROM bonus b\n"
+        + "      WHERE b.ename = e.ename\n))";
+    sql(sql)
+        .expand(false)
+        .with(HepProgram.builder()
+            .addRuleInstance(CoreRules.FILTER_SUB_QUERY_TO_CORRELATE)
+            .addRuleInstance(CoreRules.PROJECT_MERGE)
+            .addRuleInstance(CoreRules.FILTER_MERGE)
+            .addRuleInstance(CoreRules.FILTER_PROJECT_TRANSPOSE)
+            .addRuleInstance(CoreRules.AGGREGATE_FILTER_TRANSPOSE)
+            .addRuleInstance(CoreRules.AGGREGATE_PROJECT_MERGE)
+            .build())
+        .withLateDecorrelation(true)
+        .check();
+  }
+
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3111">[CALCITE-3111]
    * Allow custom implementations of Correlate in RelDecorrelator </a>
