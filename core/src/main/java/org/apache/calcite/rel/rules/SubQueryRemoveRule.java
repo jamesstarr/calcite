@@ -48,6 +48,7 @@ import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -614,19 +615,20 @@ public class SubQueryRemoveRule
     int count = 0;
     RexNode c = filter.getCondition();
     while (true) {
-      final RexSubQuery e = RexUtil.SubQueryFinder.find(c);
-      if (e == null) {
+      final RexSubQuery subQuery = RexUtil.SubQueryFinder.find(c);
+      if (subQuery == null) {
         assert count > 0;
         break;
       }
       ++count;
       final RelOptUtil.Logic logic =
-          LogicVisitor.find(RelOptUtil.Logic.TRUE, ImmutableList.of(c), e);
+          LogicVisitor.find(RelOptUtil.Logic.TRUE, ImmutableList.of(c), subQuery);
       final Set<CorrelationId>  variablesSet =
-          RelOptUtil.getVariablesUsed(e.rel);
-      final RexNode target = rule.apply(e, variablesSet, logic,
+          Sets.intersection(filter.getVariablesSet(), RelOptUtil.getVariablesUsed(subQuery.rel));
+      assert variablesSet.size() < 2 : "Each sub-query should resolve to a single variable";
+      final RexNode target = rule.apply(subQuery, variablesSet, logic,
           builder, 1, builder.peek().getRowType().getFieldCount());
-      final RexShuttle shuttle = new ReplaceSubQueryShuttle(e, target);
+      final RexShuttle shuttle = new ReplaceSubQueryShuttle(subQuery, target);
       c = c.accept(shuttle);
     }
     builder.filter(c);
