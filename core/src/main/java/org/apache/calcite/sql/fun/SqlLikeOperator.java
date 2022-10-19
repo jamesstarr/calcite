@@ -90,7 +90,7 @@ public class SqlLikeOperator extends SqlSpecialOperator {
 
   public static SqlLikeOperator createSimilarTo(boolean isNot) {
     String name = isNot ? "NOT SIMILAR TO" : "SIMILAR TO";
-    return new SqlLikeOperator(name, SqlKind.LIKE, isNot);
+    return new SqlLikeOperator(name, SqlKind.SIMILAR, isNot);
   }
 
   /**
