@@ -3793,6 +3793,57 @@ public abstract class SqlOperatorBaseTest {
     tester.checkBoolean("'hello' not like some ('%llo', '_ello')", Boolean.FALSE);
   }
 
+  @Test public void testLikeWithSql99Syntax() {
+    tester.setFor(SqlStdOperatorTable.LIKE);
+    tester.checkBoolean("'HELLO' like '%(H|I)E%'", Boolean.FALSE);
+    tester.checkBoolean("'HELLO' like '%L{2}%'", Boolean.FALSE);
+    tester.checkBoolean("'HELLO' like '%B*%'", Boolean.FALSE);
+    tester.checkBoolean("'HELLO' like '%B?%'", Boolean.FALSE);
+    tester.checkBoolean("'HELLO' like '%E+%'", Boolean.FALSE);
+    tester.setFor(SqlStdOperatorTable.LIKE_ANY);
+    tester.checkBoolean("'HELLO' like any ('%(H|I)E%')", Boolean.FALSE);
+    tester.checkBoolean("'HELLO' like any ('%L{2}%')", Boolean.FALSE);
+    tester.checkBoolean("'HELLO' like any ('%B*%')", Boolean.FALSE);
+    tester.checkBoolean("'HELLO' like any ('%B?%')", Boolean.FALSE);
+    tester.checkBoolean("'HELLO' like any ('%E+%')", Boolean.FALSE);
+    tester.setFor(SqlStdOperatorTable.LIKE_SOME);
+    tester.checkBoolean("'HELLO' like some ('%(H|I)E%')", Boolean.FALSE);
+    tester.checkBoolean("'HELLO' like some ('%L{2}%')", Boolean.FALSE);
+    tester.checkBoolean("'HELLO' like some ('%B*%')", Boolean.FALSE);
+    tester.checkBoolean("'HELLO' like some ('%B?%')", Boolean.FALSE);
+    tester.checkBoolean("'HELLO' like some ('%E+%')", Boolean.FALSE);
+    tester.setFor(SqlStdOperatorTable.LIKE_ALL);
+    tester.checkBoolean("'HELLO' like all ('%(H|I)E%')", Boolean.FALSE);
+    tester.checkBoolean("'HELLO' like all ('%L{2}%')", Boolean.FALSE);
+    tester.checkBoolean("'HELLO' like all ('%B*%')", Boolean.FALSE);
+    tester.checkBoolean("'HELLO' like all ('%B?%')", Boolean.FALSE);
+    tester.checkBoolean("'HELLO' like all ('%E+%')", Boolean.FALSE);
+    tester.setFor(SqlStdOperatorTable.NOT_LIKE);
+    tester.checkBoolean("'HELLO' not like ('%(H|I)E%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' not like ('%L{2}%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' not like ('%B*%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' not like ('%B?%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' not like ('%E+%')", Boolean.TRUE);
+    tester.setFor(SqlStdOperatorTable.NOT_LIKE_ANY);
+    tester.checkBoolean("'HELLO' not like any ('%(H|I)E%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' not like any ('%L{2}%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' not like any ('%B*%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' not like any ('%B?%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' not like any ('%E+%')", Boolean.TRUE);
+    tester.setFor(SqlStdOperatorTable.NOT_LIKE_SOME);
+    tester.checkBoolean("'HELLO' not like some ('%(H|I)E%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' not like some ('%L{2}%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' not like some ('%B*%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' not like some ('%B?%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' not like some ('%E+%')", Boolean.TRUE);
+    tester.setFor(SqlStdOperatorTable.NOT_LIKE_ALL);
+    tester.checkBoolean("'HELLO' not like all ('%(H|I)E%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' not like all ('%L{2}%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' not like all ('%B*%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' not like all ('%B?%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' not like all ('%E+%')", Boolean.TRUE);
+  }
+
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1898">[CALCITE-1898]
    * LIKE must match '.' (period) literally</a>. */
@@ -3841,6 +3892,12 @@ public abstract class SqlOperatorBaseTest {
     tester.checkBoolean("'ab\ncd\nef' similar to '%cd%'", Boolean.TRUE);
     tester.checkBoolean("'ab\ncd\nef' similar to '%cde%'", Boolean.FALSE);
 
+    // SQL99 regular expression
+    tester.checkBoolean("'HELLO' similar to '%(H|I)E%'", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' similar to '%L{2}%'", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' similar to ('%B*%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' similar to ('%B?%')", Boolean.TRUE);
+    tester.checkBoolean("'HELLO' similar to ('%E+%')", Boolean.TRUE);
     // simple regular expressions
     // ab*c+d matches acd, abcd, acccd, abcccd but not abd, aabc
     tester.checkBoolean("'acd'    similar to 'ab*c+d'", Boolean.TRUE);
