@@ -4786,7 +4786,12 @@ SqlTypeNameSpec TypeName() :
         typeNameSpec = RowTypeName()
     |
         typeName = CompoundIdentifier() {
-            typeNameSpec = new SqlUserDefinedTypeNameSpec(typeName, s.end(this));
+            if (SqlTypeName.get(typeName.toString()) != null) {
+                typeNameSpec = new SqlBasicTypeNameSpec(SqlTypeName.get(typeName.toString()), s.end(this));
+            }
+            else {
+                typeNameSpec = new SqlUserDefinedTypeNameSpec(typeName, s.end(this));
+            }
         }
     )
     {

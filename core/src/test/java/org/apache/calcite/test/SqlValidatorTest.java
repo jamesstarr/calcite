@@ -871,7 +871,7 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkExp("substring('a' FROM 1 FOR 3)");
     checkExp("substring('a' FROM 'reg' FOR '\\')");
     checkExp("substring(x'ff' FROM 1  FOR 2)"); // binary string
-
+    checkExp("select substring(cast (CAST('1234' AS varchar) as \"VARCHAR\"), 3)");
     checkExpType("substring('10' FROM 1  FOR 2)", "VARCHAR(2) NOT NULL");
     checkExpType("substring('1000' FROM 2)", "VARCHAR(4) NOT NULL");
     checkExpType(
