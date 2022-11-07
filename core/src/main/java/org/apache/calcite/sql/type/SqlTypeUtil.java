@@ -1200,7 +1200,38 @@ public abstract class SqlTypeUtil {
   }
 
   /**
->>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
+   * This is a poorman's
+   * {@link #equalSansNullability(RelDataTypeFactory, RelDataType, RelDataType)}.
+   *
+   * <p>We assume that "not null" is represented in the type's digest
+   * as a trailing "NOT NULL" (case sensitive).
+   *
+   * <p>If you got a type factory,
+   * {@link #equalSansNullability(RelDataTypeFactory, RelDataType, RelDataType)}
+   * is preferred.
+   *
+   * @param type1 First type
+   * @param type2 Second type
+   * @return true if the types are equal or the only difference is nullability
+   */
+  public static boolean equalSansNullability(RelDataType type1, RelDataType type2) {
+    if (type1 == type2) {
+      return true;
+    }
+    String x = type1.getFullTypeString();
+    String y = type2.getFullTypeString();
+    if (x.length() < y.length()) {
+      String c = x;
+      x = y;
+      y = c;
+    }
+
+    return (x.length() == y.length()
+            || x.length() == y.length() + NON_NULLABLE_SUFFIX.length()
+            && x.endsWith(NON_NULLABLE_SUFFIX)) && x.startsWith(y);
+  }
+
+  /**
    * Returns whether two struct types are equal, ignoring nullability.
    *
    * <p>They do not need to come from the same factory.

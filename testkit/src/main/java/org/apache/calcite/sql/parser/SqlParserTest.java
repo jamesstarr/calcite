@@ -7981,9 +7981,6 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-<<<<<<< HEAD
-=======
-=======
   @Test void testFromExpr() {
     String sql0 = "select * from a cross join b";
     String sql1 = "select * from (a cross join b)";
@@ -8505,7 +8502,6 @@ public class SqlParserTest {
   }
 
 =======
->>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
   @Test void testMatchRecognize1() {
     final String sql = "select *\n"
         + "  from t match_recognize\n"

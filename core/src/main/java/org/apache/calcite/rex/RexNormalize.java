@@ -189,3 +189,8 @@ public class RexNormalize {
     return CalciteSystemProperty.ENABLE_REX_DIGEST_NORMALIZE.value();
   }
 }
+<<<<<<< HEAD
+=======
+
+// End RexNormalize.java
+>>>>>>> e93a6fdc9 (DX-58856: Improving RexCall's equals method)

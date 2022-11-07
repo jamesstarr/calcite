@@ -17,7 +17,7 @@
 package org.apache.calcite.rex;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -25,7 +25,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /** Test cases for {@link RexNormalize}. */
 public class RexNormalizeTest extends RexProgramBuilderBase {
 
-  @Test public void digestIsNormalized() {
+  @Test
+  public void digestIsNormalized() {
     assertNodeEquals(
         and(or(vBool(1), vBool(0)), vBool(0)),
         and(vBool(0), or(vBool(0), vBool(1))));
@@ -43,7 +44,8 @@ public class RexNormalizeTest extends RexProgramBuilderBase {
         eq(literal("01"), vVarchar(0)));
   }
 
-  @Test public void reversibleNormalizedToLess() {
+  @Test
+  public void reversibleNormalizedToLess() {
     // Same type operands.
     assertNodeEquals(
         lt(vBool(0), vBool(0)),
@@ -63,7 +65,8 @@ public class RexNormalizeTest extends RexProgramBuilderBase {
         ge(vInt(1), vSmallInt(0)));
   }
 
-  @Test public void reversibleDifferentArgTypesShouldNotBeShuffled() {
+  @Test
+  public void reversibleDifferentArgTypesShouldNotBeShuffled() {
     assertNodeNotEqual(
         plus(vSmallInt(1), vInt(0)),
         plus(vInt(0), vSmallInt(1)));
@@ -73,7 +76,8 @@ public class RexNormalizeTest extends RexProgramBuilderBase {
         mul(vInt(1), vSmallInt(0)));
   }
 
-  @Test public void reversibleDifferentNullabilityArgsAreNormalized() {
+  @Test
+  public void reversibleDifferentNullabilityArgsAreNormalized() {
     assertNodeEquals(
         plus(vIntNotNull(0), vInt(1)),
         plus(vInt(1), vIntNotNull(0)));
@@ -83,7 +87,8 @@ public class RexNormalizeTest extends RexProgramBuilderBase {
         mul(vInt(0), vIntNotNull(1)));
   }
 
-  @Test public void symmetricalDifferentArgOps() {
+  @Test
+  public void symmetricalDifferentArgOps() {
     assertNodeEquals(
         eq(vBool(0), vBool(1)),
         eq(vBool(1), vBool(0)));
@@ -93,7 +98,8 @@ public class RexNormalizeTest extends RexProgramBuilderBase {
         ne(vBool(1), vBool(0)));
   }
 
-  @Test public void reversibleDifferentArgOps() {
+  @Test
+  public void reversibleDifferentArgOps() {
     assertNodeNotEqual(
         lt(vBool(0), vBool(1)),
         lt(vBool(1), vBool(0)));
@@ -139,3 +145,7 @@ public class RexNormalizeTest extends RexProgramBuilderBase {
     return reason.toString();
   }
 }
+<<<<<<< HEAD
+=======
+// End RexNormalizeTest.java
+>>>>>>> e93a6fdc9 (DX-58856: Improving RexCall's equals method)

@@ -185,6 +185,27 @@ public class RexSubQuery extends RexCall {
   public RexSubQuery clone(RelNode rel) {
     return new RexSubQuery(type, getOperator(), operands, rel, correlationId);
   }
+<<<<<<< HEAD
+=======
+
+  @Override public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+    RexCall rexCall = (RexCall) obj;
+    return toString().equals(((RexCall) obj).toString())
+          && type.equals(rexCall.getType());
+  }
+
+  @Override public int hashCode() {
+    return toString().hashCode();
+  }
+
+}
+>>>>>>> e93a6fdc9 (DX-58856: Improving RexCall's equals method)
 
   @Override public boolean equals(Object obj) {
     if (this == obj) {

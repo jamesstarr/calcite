@@ -1028,7 +1028,7 @@ public abstract class SqlOperator {
   }
 
   /**
-   * Returns whether it is unsafe to cache query plans referencing this
+   * @return true iff it is unsafe to cache query plans referencing this
    * operator; false is assumed by default
    */
   public boolean isDynamicFunction() {
@@ -1057,5 +1057,10 @@ public abstract class SqlOperator {
   public boolean argumentMustBeScalar(int ordinal) {
     return true;
   }
+<<<<<<< HEAD
+=======
+
+}
+>>>>>>> e93a6fdc9 (DX-58856: Improving RexCall's equals method)
 
 }

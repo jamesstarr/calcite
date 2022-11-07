@@ -92,12 +92,6 @@ public class RexOver extends RexCall {
     return distinct;
   }
 
-<<<<<<< HEAD
-  public boolean ignoreNulls() {
-    return ignoreNulls;
-  }
-
-=======
   @Override protected @Nonnull String computeDigest(boolean withType) {
     final StringBuilder sb = new StringBuilder(op.getName());
     sb.append("(");
@@ -193,6 +187,26 @@ public class RexOver extends RexCall {
       throw OverFound.INSTANCE;
     }
   }
+<<<<<<< HEAD
+=======
+
+  @Override public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+    RexCall rexCall = (RexCall) obj;
+    return toString().equals(((RexCall) obj).toString())
+            && type.equals(rexCall.getType());
+  }
+
+  @Override public int hashCode() {
+    return toString().hashCode();
+  }
+
+}
 
   @Override public boolean equals(Object obj) {
     if (this == obj) {
