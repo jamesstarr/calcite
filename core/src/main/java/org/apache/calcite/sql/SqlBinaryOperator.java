@@ -30,6 +30,7 @@ import org.apache.calcite.util.Util;
 
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import javax.annotation.Nullable;
 
 import static org.apache.calcite.util.Static.RESOURCE;
 
@@ -93,6 +94,32 @@ public class SqlBinaryOperator extends SqlOperator {
    */
   @Override boolean needsSpace() {
     return !getName().equals(".");
+  }
+
+  @Override public @Nullable SqlOperator reverse() {
+    switch (kind) {
+    case EQUALS:
+    case NOT_EQUALS:
+    case IS_DISTINCT_FROM:
+    case IS_NOT_DISTINCT_FROM:
+    case OR:
+    case AND:
+    case PLUS:
+    case TIMES:
+      return this;
+
+    case GREATER_THAN:
+      return SqlStdOperatorTable.LESS_THAN;
+    case GREATER_THAN_OR_EQUAL:
+      return SqlStdOperatorTable.LESS_THAN_OR_EQUAL;
+    case LESS_THAN:
+      return SqlStdOperatorTable.GREATER_THAN;
+    case LESS_THAN_OR_EQUAL:
+      return SqlStdOperatorTable.GREATER_THAN_OR_EQUAL;
+
+    default:
+      return null;
+    }
   }
 
   protected RelDataType adjustType(

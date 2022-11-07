@@ -24,6 +24,7 @@ import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSyntax;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.Litmus;
+import org.apache.calcite.util.Pair;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * An expression formed by a call to an operator with zero or more expressions
@@ -59,6 +61,17 @@ public class RexCall extends RexNode {
   public final RelDataType type;
 
   private static final Set<SqlKind> SIMPLE_BINARY_OPS;
+
+
+  /**
+   * Cache of hash code.
+   */
+  protected int hash = 0;
+
+  /**
+   * Cache of normalized variables used for #equals and #hashCode.
+   */
+  private @Nullable Pair<SqlOperator, List<RexNode>> normalized;
 
   static {
     EnumSet<SqlKind> kinds = EnumSet.of(SqlKind.PLUS, SqlKind.MINUS, SqlKind.TIMES, SqlKind.DIVIDE);
@@ -249,20 +262,33 @@ public class RexCall extends RexNode {
     return new RexCall(type, op, operands);
   }
 
-  @Override public boolean equals(Object obj) {
-    if (this == obj) {
+  private Pair<SqlOperator, List<RexNode>> getNormalized() {
+    if (this.normalized == null) {
+      this.normalized = RexNormalize.normalize(this.op, this.operands);
+    }
+    return this.normalized;
+  }
+
+  @Override public boolean equals(@Nullable Object o) {
+    if (this == o) {
       return true;
     }
-    if (obj == null || getClass() != obj.getClass()) {
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    RexCall rexCall = (RexCall) obj;
-    return toString().equals(((RexCall) obj).toString())
-        && type.equals(rexCall.getType());
+    Pair<SqlOperator, List<RexNode>> x = getNormalized();
+    RexCall rexCall = (RexCall) o;
+    Pair<SqlOperator, List<RexNode>> y = rexCall.getNormalized();
+    return x.left.equals(y.left)
+            && x.right.equals(y.right)
+            && type.equals(rexCall.type);
   }
 
   @Override public int hashCode() {
-    return toString().hashCode();
+    if (hash == 0) {
+      hash = RexNormalize.hashCode(this.op, this.operands);
+    }
+    return hash;
   }
 }
 

@@ -180,6 +180,23 @@ public class RexOver extends RexCall {
       throw OverFound.INSTANCE;
     }
   }
+
+  @Override public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+    RexCall rexCall = (RexCall) obj;
+    return toString().equals(((RexCall) obj).toString())
+            && type.equals(rexCall.getType());
+  }
+
+  @Override public int hashCode() {
+    return toString().hashCode();
+  }
+
 }
 
 // End RexOver.java

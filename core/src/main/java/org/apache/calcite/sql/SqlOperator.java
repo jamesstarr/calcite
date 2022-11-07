@@ -41,6 +41,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import javax.annotation.Nullable;
 
 import static org.apache.calcite.util.Static.RESOURCE;
 
@@ -939,6 +940,38 @@ public abstract class SqlOperator {
     return returnTypeInference;
   }
 
+  /** Returns the operator that is the logical inverse of this operator.
+   *
+   * <p>For example, {@code SqlStdOperatorTable.LIKE.not()} returns
+   * {@code SqlStdOperatorTable.NOT_LIKE}, and vice versa.
+   *
+   * <p>By default, returns {@code null}, which means there is no inverse
+   * operator.
+   *
+   * @see #reverse */
+  public @Nullable SqlOperator not() {
+    return null;
+  }
+
+  /** Returns the operator that has the same effect as this operator
+   * if its arguments are reversed.
+   *
+   * <p>For example, {@code SqlStdOperatorTable.GREATER_THAN.reverse()} returns
+   * {@code SqlStdOperatorTable.LESS_THAN}, and vice versa,
+   * because {@code a > b} is equivalent to {@code b < a}.
+   *
+   * <p>{@code SqlStdOperatorTable.EQUALS.reverse()} returns itself.
+   *
+   * <p>By default, returns {@code null}, which means there is no inverse
+   * operator.
+   *
+   * @see SqlOperator#not()
+   * @see SqlKind#reverse()
+   */
+  public @Nullable SqlOperator reverse() {
+    return null;
+  }
+
   /**
    * Returns whether this operator is monotonic.
    *
@@ -978,6 +1011,17 @@ public abstract class SqlOperator {
   }
 
   /**
+   * Returns whether a call to this operator is not sensitive to the operands input order.
+   * An operator is symmetrical if the call returns the same result when
+   * the operands are shuffled.
+   *
+   * <p>By default, returns true for {@link SqlKind#SYMMETRICAL}.
+   */
+  public boolean isSymmetrical() {
+    return SqlKind.SYMMETRICAL.contains(kind);
+  }
+
+  /**
    * @return true iff it is unsafe to cache query plans referencing this
    * operator; false is assumed by default
    */
@@ -1007,6 +1051,7 @@ public abstract class SqlOperator {
   public boolean argumentMustBeScalar(int ordinal) {
     return true;
   }
+
 }
 
 // End SqlOperator.java

@@ -1663,7 +1663,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
       final RelNode rel = convertSql(sql, false);
       final RelMetadataQuery mq = RelMetadataQuery.instance();
       RelOptPredicateList inputSet = mq.getPulledUpPredicates(rel.getInput(0));
-      assertThat(inputSet.pulledUpPredicates.size(), is(131089));
+      assertThat(inputSet.pulledUpPredicates.size(), is(131083));
     }
   }
 

@@ -346,6 +346,22 @@ public abstract class Match extends SingleRel {
     @Override public int compareTo(RexMRAggCall o) {
       return toString().compareTo(o.toString());
     }
+
+    @Override public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null || getClass() != obj.getClass()) {
+        return false;
+      }
+      RexCall rexCall = (RexCall) obj;
+      return toString().equals(((RexCall) obj).toString())
+              && type.equals(rexCall.getType());
+    }
+
+    @Override public int hashCode() {
+      return toString().hashCode();
+    }
   }
 }
 

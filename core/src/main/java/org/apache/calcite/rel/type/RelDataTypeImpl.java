@@ -43,6 +43,12 @@ import java.util.Map;
  */
 public abstract class RelDataTypeImpl
     implements RelDataType, RelDataTypeFamily {
+
+  /**
+   * Suffix for the digests of non-nullable types.
+   */
+  public static final String NON_NULLABLE_SUFFIX = " NOT NULL";
+
   //~ Instance fields --------------------------------------------------------
 
   protected final List<RelDataTypeField> fieldList;
