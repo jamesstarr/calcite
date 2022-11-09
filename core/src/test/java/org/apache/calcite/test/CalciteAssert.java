@@ -68,11 +68,15 @@ import org.apache.calcite.util.Sources;
 import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
 
-import org.apache.commons.dbcp2.PoolableConnection;
 import org.apache.commons.dbcp2.PoolableConnectionFactory;
 import org.apache.commons.dbcp2.PoolingDataSource;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
+import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultiset;
@@ -109,7 +113,6 @@ import java.util.Properties;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
 
@@ -521,11 +524,14 @@ public class CalciteAssert {
       String sql,
       int limit,
       boolean materializationsEnabled,
-      List<Pair<Hook, Consumer>> hooks,
-      Consumer<ResultSet> resultChecker,
-      Consumer<Integer> updateChecker,
-      Consumer<Throwable> exceptionChecker) {
-    try (Closer closer = new Closer()) {
+      List<Pair<Hook, Function>> hooks,
+      Function<ResultSet, Void> resultChecker,
+      Function<Integer, Void> updateChecker,
+      Function<Throwable, Void> exceptionChecker) throws Exception {
+    final String message =
+        "With materializationsEnabled=" + materializationsEnabled
+            + ", limit=" + limit;
+    try (final Closer closer = new Closer()) {
       if (connection.isWrapperFor(CalciteConnection.class)) {
         final CalciteConnection calciteConnection =
             connection.unwrap(CalciteConnection.class);
@@ -1366,15 +1372,8 @@ public class CalciteAssert {
       final PoolableConnectionFactory connectionFactory =
           new PoolableConnectionFactory(factory::createConnection, null);
       connectionFactory.setRollbackOnReturn(false);
-
-      // Create the object pool with the connection factory
-      final GenericObjectPool<PoolableConnection> connectionPool =
-          new GenericObjectPool<>(connectionFactory);
-
-      // IMPORTANT: Link the factory to the pool to avoid the warning
-      connectionFactory.setPool(connectionPool);
-
-      this.dataSource = new PoolingDataSource<>(connectionPool);
+      this.dataSource = new PoolingDataSource<>(
+          new GenericObjectPool<>(connectionFactory));
     }
 
     public Connection createConnection() throws SQLException {
@@ -1522,28 +1521,27 @@ public class CalciteAssert {
     }
 
     public final AssertQuery updates(int count) {
-      return withConnection(connection ->
-          assertQuery(connection, sql, limit, materializationsEnabled,
-              hooks, null, checkUpdateCount(count), null));
+      try (final Connection connection = createConnection()) {
+        assertQuery(connection, sql, limit, materializationsEnabled,
+            hooks, null, checkUpdateCount(count), null);
+        return this;
+      } catch (Exception e) {
+        throw new RuntimeException(
+            "exception while executing [" + sql + "]", e);
+      }
     }
 
-    @SuppressWarnings("Guava")
-    @Deprecated // to be removed in 2.0
-    public final AssertQuery returns(
-        com.google.common.base.Function<ResultSet, Void> checker) {
-      return returns(sql, checker::apply);
-    }
-
-    protected AssertQuery returns(String sql, Consumer<ResultSet> checker) {
-      return withConnection(connection -> {
-        if (consumer == null) {
-          assertQuery(connection, sql, limit, materializationsEnabled,
-              hooks, checker, null, null);
-        } else {
-          assertPrepare(connection, sql, limit, materializationsEnabled,
-              hooks, checker, null, null, consumer);
-        }
-      });
+    protected AssertQuery returns(String sql,
+        Function<ResultSet, Void> checker) {
+      try (final Connection connection = createConnection()) {
+        assertQuery(connection, sql, limit, materializationsEnabled,
+            hooks, checker, null, null);
+        return this;
+      } catch (Exception e) {
+        e.printStackTrace();
+        throw new RuntimeException(
+            "exception while executing [" + sql + "]", e);
+      }
     }
 
     public AssertQuery returnsUnordered(String... lines) {
@@ -1559,9 +1557,14 @@ public class CalciteAssert {
     }
 
     public AssertQuery throws_(String message) {
-      return withConnection(connection ->
+      try (final Connection connection = createConnection()) {
         assertQuery(connection, sql, limit, materializationsEnabled,
-            hooks, null, null, checkException(message)));
+            hooks, null, null, checkException(message));
+        return this;
+      } catch (Exception e) {
+        throw new RuntimeException(
+            "exception while executing [" + sql + "]", e);
+      }
     }
 
     /**
@@ -1571,9 +1574,14 @@ public class CalciteAssert {
      * @param optionalMessage An optional message to check for in the output stacktrace
      * */
     public AssertQuery failsAtValidation(String optionalMessage) {
-      return withConnection(connection ->
+      try (final Connection connection = createConnection()) {
         assertQuery(connection, sql, limit, materializationsEnabled,
-            hooks, null, null, checkValidationException(optionalMessage)));
+            hooks, null, null, checkValidationException(optionalMessage));
+        return this;
+      } catch (Exception e) {
+        throw new RuntimeException("exception while executing [" + sql + "]",
+            e);
+      }
     }
 
     /**
@@ -1585,21 +1593,25 @@ public class CalciteAssert {
     }
 
     public AssertQuery runs() {
-      return withConnection(connection -> {
-        if (consumer == null) {
-          assertQuery(connection, sql, limit, materializationsEnabled,
-              hooks, null, null, null);
-        } else {
-          assertPrepare(connection, sql, limit, materializationsEnabled,
-              hooks, null, null, null, consumer);
-        }
-      });
+      try (final Connection connection = createConnection()) {
+        assertQuery(connection, sql, limit, materializationsEnabled,
+            hooks, null, null, null);
+        return this;
+      } catch (Exception e) {
+        throw new RuntimeException(
+            "exception while executing [" + sql + "]", e);
+      }
     }
 
     public AssertQuery typeIs(String expected) {
-      return withConnection(connection ->
+      try (final Connection connection = createConnection()) {
         assertQuery(connection, sql, limit, false,
-            hooks, checkResultType(expected), null, null));
+            hooks, checkResultType(expected), null, null);
+        return this;
+      } catch (Exception e) {
+        throw new RuntimeException(
+            "exception while executing [" + sql + "]", e);
+      }
     }
 
     /** Checks that when the query (which was set using
@@ -1615,15 +1627,25 @@ public class CalciteAssert {
     }
 
     public AssertQuery convertMatches(final Function<RelNode, Void> checker) {
-      return withConnection(connection ->
+      try (final Connection connection = createConnection()) {
         assertPrepare(connection, sql, this.materializationsEnabled,
-            checker, null));
+            checker, null);
+        return this;
+      } catch (Exception e) {
+        throw new RuntimeException("exception while preparing [" + sql + "]",
+            e);
+      }
     }
 
     public AssertQuery substitutionMatches(
         final Function<RelNode, Void> checker) {
-      return withConnection(connection ->
-        assertPrepare(connection, sql, materializationsEnabled, null, checker));
+      try (final Connection connection = createConnection()) {
+        assertPrepare(connection, sql, materializationsEnabled, null, checker);
+        return this;
+      } catch (Exception e) {
+        throw new RuntimeException("exception while preparing [" + sql + "]",
+            e);
+      }
     }
 
     public AssertQuery explainContains(String expected) {
@@ -1772,8 +1794,14 @@ public class CalciteAssert {
       if (plan != null) {
         return;
       }
-      addHook(Hook.JAVA_PLAN, this::setPlan);
-      withConnection(connection -> {
+      addHook(Hook.JAVA_PLAN,
+          new Function<String, Void>() {
+            public Void apply(String a0) {
+              plan = a0;
+              return null;
+            }
+          });
+      try (final Connection connection = createConnection()) {
         assertQuery(connection, sql, limit, materializationsEnabled,
             hooks, null, checkUpdate, null);
         assertNotNull(plan);
@@ -1788,10 +1816,16 @@ public class CalciteAssert {
      * queries. The checker should throw to fail the test if it does not see
      * what it wants. This method can be used to check whether a particular
      * MongoDB or SQL query is generated, for instance. */
-    public AssertQuery queryContains(Consumer<List> predicate1) {
-      final List<Object> list = new ArrayList<>();
-      addHook(Hook.QUERY_PLAN, list::add);
-      return withConnection(connection -> {
+    public AssertQuery queryContains(Function<List, Void> predicate1) {
+      final List<Object> list = Lists.newArrayList();
+      addHook(Hook.QUERY_PLAN,
+          new Function<Object, Void>() {
+            public Void apply(Object a0) {
+              list.add(a0);
+              return null;
+            }
+          });
+      try (final Connection connection = createConnection()) {
         assertQuery(connection, sql, limit, materializationsEnabled,
             hooks, null, null, null);
         predicate1.accept(list);
@@ -1899,8 +1933,8 @@ public class CalciteAssert {
       this.function = function;
     }
 
-    public final AssertMetaData returns(Consumer<ResultSet> checker) {
-      try (Connection c = connectionFactory.createConnection()) {
+    public final AssertMetaData returns(Function<ResultSet, Void> checker) {
+      try (final Connection c = connectionFactory.createConnection()) {
         final ResultSet resultSet = function.apply(c);
         checker.accept(resultSet);
         resultSet.close();

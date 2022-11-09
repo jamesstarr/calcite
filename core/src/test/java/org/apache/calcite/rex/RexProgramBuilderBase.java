@@ -46,11 +46,6 @@ public abstract class RexProgramBuilderBase {
 
   protected JavaTypeFactory typeFactory;
   protected RexBuilder rexBuilder;
-<<<<<<< HEAD
-  protected RexExecutor executor;
-  protected RexSimplify simplify;
-
-=======
   protected RexLiteral trueLiteral;
   protected RexLiteral falseLiteral;
   protected RexLiteral nullBool;
@@ -301,7 +296,6 @@ public abstract class RexProgramBuilderBase {
     return rexNode;
   }
 
->>>>>>> e93a6fdc9 (DX-58856: Improving RexCall's equals method)
   // Types
   protected RelDataType nullable(RelDataType type) {
     if (type.isNullable()) {

@@ -155,8 +155,11 @@ class CalciteRemoteDriverTest {
     localConnection = CalciteAssert.hr().connect();
 
     // Make sure we pick an ephemeral port for the server
-    start = Main.start(new String[]{Factory.class.getName()}, 0,
-        AvaticaJsonHandler::new);
+    start = Main.start(new String[]{Factory.class.getName()}, 0, new HandlerFactory() {
+      public AvaticaJsonHandler createHandler(Service service) {
+        return new AvaticaJsonHandler(service);
+      }
+    });
   }
 
   protected static Connection getRemoteConnection() throws SQLException {
@@ -289,7 +292,7 @@ class CalciteRemoteDriverTest {
 
   /** Same query as {@link #testRemoteExecuteQuery()}, run without the test
    * infrastructure. */
-  @Test void testRemoteExecuteQuery2() throws Exception {
+  @Test public void testRemoteExecuteQuery2() throws Exception {
     try (Connection remoteConnection = getRemoteConnection()) {
       final Statement statement = remoteConnection.createStatement();
       final String sql = "values (1, 'a'), (cast(null as integer), 'b')";
@@ -448,7 +451,7 @@ class CalciteRemoteDriverTest {
    * <p>Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-646">[CALCITE-646]
    * AvaticaStatement execute method broken over remote JDBC</a>. */
-  @Test void testRemoteStatementExecute() throws Exception {
+  @Test public void testRemoteStatementExecute() throws Exception {
     try (Connection remoteConnection = getRemoteConnection()) {
       final Statement statement = remoteConnection.createStatement();
       final boolean status = statement.execute("values (1, 2), (3, 4), (5, 6)");
@@ -462,25 +465,23 @@ class CalciteRemoteDriverTest {
     }
   }
 
-  @Test void testAvaticaConnectionException() {
-    assertThrows(SQLException.class, () -> {
-      try (Connection remoteConnection = getRemoteConnection()) {
-        remoteConnection.isValid(-1);
-      }
-    });
+  @Test(expected = SQLException.class)
+  public void testAvaticaConnectionException() throws Exception {
+    try (Connection remoteConnection = getRemoteConnection()) {
+      remoteConnection.isValid(-1);
+    }
   }
 
-  @Test void testAvaticaStatementException() {
-    assertThrows(SQLException.class, () -> {
-      try (Connection remoteConnection = getRemoteConnection()) {
-        try (Statement statement = remoteConnection.createStatement()) {
-          statement.setCursorName("foo");
-        }
+  @Test(expected = SQLException.class)
+  public void testAvaticaStatementException() throws Exception {
+    try (Connection remoteConnection = getRemoteConnection()) {
+      try (Statement statement = remoteConnection.createStatement()) {
+        statement.setCursorName("foo");
       }
-    });
+    }
   }
 
-  @Test void testAvaticaStatementGetMoreResults() throws Exception {
+  @Test public void testAvaticaStatementGetMoreResults() throws Exception {
     try (Connection remoteConnection = getRemoteConnection()) {
       try (Statement statement = remoteConnection.createStatement()) {
         assertThat(statement.getMoreResults(), is(false));
@@ -488,7 +489,7 @@ class CalciteRemoteDriverTest {
     }
   }
 
-  @Test void testRemoteExecute() throws Exception {
+  @Test public void testRemoteExecute() throws Exception {
     try (Connection remoteConnection = getRemoteConnection()) {
       ResultSet resultSet =
           remoteConnection.createStatement().executeQuery(
@@ -501,7 +502,7 @@ class CalciteRemoteDriverTest {
     }
   }
 
-  @Test void testRemoteExecuteMaxRow() throws Exception {
+  @Test public void testRemoteExecuteMaxRow() throws Exception {
     try (Connection remoteConnection = getRemoteConnection()) {
       Statement statement = remoteConnection.createStatement();
       statement.setMaxRows(2);
@@ -518,7 +519,7 @@ class CalciteRemoteDriverTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-661">[CALCITE-661]
    * Remote fetch in Calcite JDBC driver</a>. */
-  @Test void testRemotePrepareExecute() throws Exception {
+  @Test public void testRemotePrepareExecute() throws Exception {
     try (Connection remoteConnection = getRemoteConnection()) {
       final PreparedStatement preparedStatement =
           remoteConnection.prepareStatement("select * from \"hr\".\"emps\"");

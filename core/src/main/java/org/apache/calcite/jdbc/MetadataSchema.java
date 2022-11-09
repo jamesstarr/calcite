@@ -43,8 +43,12 @@ class MetadataSchema extends AbstractSchema {
               } catch (SQLException e) {
                 throw new RuntimeException(e);
               }
-              return meta.tables(catalog)
-                  .selectMany(meta::columns).enumerator();
+              return meta.tables(catalog).selectMany(
+                  new Function1<MetaTable, Enumerable<MetaColumn>>() {
+                    public Enumerable<MetaColumn> apply(MetaTable table) {
+                      return meta.columns(table);
+                    }
+                  }).enumerator();
             }
           },
           "TABLES",

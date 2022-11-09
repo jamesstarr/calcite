@@ -360,13 +360,23 @@ public class CalciteMetaImpl extends MetaImpl {
   Enumerable<MetaSchema> schemas(final String catalog) {
     return Linq4j.asEnumerable(
         getConnection().rootSchema.getSubSchemaMap().values())
-        .select((Function1<CalciteSchema, MetaSchema>) calciteSchema ->
-            new CalciteMetaSchema(calciteSchema, catalog,
-                calciteSchema.getName()))
-        .orderBy((Function1<MetaSchema, Comparable>) metaSchema ->
-            (Comparable) FlatLists.of(Util.first(metaSchema.tableCatalog, ""),
-                metaSchema.tableSchem));
-
+        .select(
+            new Function1<CalciteSchema, MetaSchema>() {
+              public MetaSchema apply(CalciteSchema calciteSchema) {
+                return new CalciteMetaSchema(
+                    calciteSchema,
+                    catalog,
+                    calciteSchema.getName());
+              }
+            })
+        .orderBy(
+            new Function1<MetaSchema, Comparable>() {
+              public Comparable apply(MetaSchema metaSchema) {
+                return (Comparable) FlatLists.of(
+                    Util.first(metaSchema.tableCatalog, ""),
+                    metaSchema.tableSchem);
+              }
+            });
   }
 
   Enumerable<MetaTable> tables(String catalog) {
