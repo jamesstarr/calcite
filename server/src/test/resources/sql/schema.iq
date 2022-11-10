@@ -66,7 +66,11 @@ create schema if not exists s;
 
 # Bad library
 create foreign schema fs library 'com.example.BadSchemaFactory';
+<<<<<<< HEAD
 Caused by: java.lang.RuntimeException: Property 'com.example.BadSchemaFactory' not valid as 'com.example.BadSchemaFactory' not found in the classpath
+=======
+Property 'com.example.BadSchemaFactory' not valid as 'com.example.BadSchemaFactory' not found in the classpath
+>>>>>>> 6b49c7320 (Update to Avatica 1.22)
 !error
 
 # Bad type

@@ -58,7 +58,7 @@ limitations under the License.
 
     <!-- This list is in alphabetical order. -->
     <airlift-tpch.version>0.1</airlift-tpch.version>
-    <avatica.version>1.15.0</avatica.version>
+    <avatica.version>1.22.0</avatica.version>
     <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
     <cassandra-driver-core.version>3.4.0</cassandra-driver-core.version>
     <checksum-maven-plugin.version>1.2</checksum-maven-plugin.version>
@@ -97,7 +97,7 @@ limitations under the License.
     <java-diff.version>1.1.1</java-diff.version>
     <javacc-maven-plugin.version>2.4</javacc-maven-plugin.version>
     <jcip-annotations.version>1.0-1</jcip-annotations.version>
-    <jetty.version>9.4.11.v20180605</jetty.version>
+    <jetty.version>9.4.44.v20210927</jetty.version>
     <jmh.version>1.12</jmh.version>
     <jsoup.version>1.10.2</jsoup.version>
     <junit.version>4.12</junit.version>
