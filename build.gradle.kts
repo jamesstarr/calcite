@@ -148,6 +148,7 @@ val javadocAggregate by tasks.registering(Javadoc::class) {
 
     val sourceSets = allprojects
         .mapNotNull { it.extensions.findByType<SourceSetContainer>() }
+        .filter { it.names.contains("main") }
         .map { it.named("main") }
 
     classpath = files(sourceSets.map { set -> set.map { it.output + it.compileClasspath } })

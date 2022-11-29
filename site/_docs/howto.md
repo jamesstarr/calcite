@@ -31,29 +31,31 @@ adapters.
 
 ## Building from a source distribution
 
-Prerequisite is Java (JDK 8, 9, 10, 11, 12, or 13) on your path.
+Prerequisite is Java (JDK 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 or 18)
+and Gradle (version 7.4.2) on your path.
 
 Unpack the source distribution `.tar.gz` file,
 `cd` to the root directory of the unpacked source,
-then build using the included maven wrapper:
+then build using Gradle:
 
 {% highlight bash %}
-$ tar xvfz calcite-1.21.0-source.tar.gz
-$ cd calcite-1.21.0
-$ ./gradlew build
+$ tar xvfz apache-calcite-1.34.0-src.tar.gz
+$ cd apache-calcite-1.34.0-src
+$ gradle build
 {% endhighlight %}
 
 [Running tests](#running-tests) describes how to run more or fewer
-tests.
+tests  (but you should use the `gradle` command rather than
+`./gradlew`).
 
 ## Building from Git
 
 Prerequisites are git
-and Java (JDK 8, 9, 10, 11, 12, or 13) on your path.
+and Java (JDK 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 or 18) on your path.
 
-Create a local copy of the github repository,
+Create a local copy of the GitHub repository,
 `cd` to its root directory,
-then build using the included maven wrapper:
+then build using the included Gradle wrapper:
 
 {% highlight bash %}
 $ git clone git://github.com/apache/calcite.git
@@ -68,24 +70,50 @@ has not changed.
 
 Typically re-generation is called automatically when the relevant templates
 are changed, and it should work transparently.
-However if your IDE does not generate sources (e.g. `core/build/javacc/javaCCMain/org/apache/calcite/sql/parser/impl/SqlParserImpl.java`),
+However, if your IDE does not generate sources (e.g. `core/build/javacc/javaCCMain/org/apache/calcite/sql/parser/impl/SqlParserImpl.java`),
 then you can call `./gradlew generateSources` tasks manually.
 
 [Running tests](#running-tests) describes how to run more or fewer
 tests.
 
-## Gradle vs Gradle wrapper
+## Gradle vs the Gradle Wrapper
 
-Calcite uses Gradle wrapper to make a consistent build environment.
+Calcite uses the Gradle Wrapper to make a consistent build environment.
 In the typical case you don't need to install Gradle manually, and
-`./gradlew` would download the proper version for you and verify the expected checksum.
+`./gradlew` downloads the proper version for you and verify the expected checksum.
 
-You can install Gradle manually, however please note that there might
-be impedance mismatch between different versions.
+If you like, you can install Gradle manually, but be aware that is might
+cause a version mismatch.
 
 For more information about Gradle, check the following links:
 [Gradle five things](https://docs.gradle.org/current/userguide/what_is_gradle.html#five_things);
 [Gradle multi-project builds](https://docs.gradle.org/current/userguide/intro_multi_project_builds.html).
+
+## Upgrade Gradle and the Gradle Wrapper
+
+Gradle's [documentation](https://docs.gradle.org/current/userguide/upgrading_version_7.html)
+provides detailed information about how to upgrade Gradle. Here is a list of steps:
+
+1. Run `./gradlew help --warning-mode=all` to find out whether you are
+   using any deprecated features.
+2. Fix the deprecations and repeat the previous step to confirm they are
+   fixed. This is a step where Gradle doc could be very helpful since it
+   contains info about deprecations and how to cope with them.
+3. Run `./gradlew wrapper --gradle-version <new_gradle_version>` to upgrade
+   Gradle. If necessary it will also upgrade the Gradle Wrapper.
+   This step also updates `gradle/wrapper/gradle-wrapper.properties`,
+   including the checksum.
+4. Check and update Kotlin version in `gradle.properties` if required.
+   Check should be done against [Kotlin compatibility matrix](https://docs.gradle.org/current/userguide/compatibility.html#kotlin).
+5. Step 3 will have removed the header from
+   `gradle/wrapper/gradle-wrapper.properties`,
+   so now run `./gradlew autostyleApply` to add it back.
+6. Check the updated Gradle version and checksum in
+   `gradle/wrapper/gradle-wrapper.properties` against the official
+   [Gradle release checksums](https://gradle.org/release-checksums/).
+7. Try to build the project and run tests; debug any errors using the
+   [Troubleshooting Guide](https://docs.gradle.org/current/userguide/troubleshooting.html#troubleshooting).
+8. Update the Gradle version in this howto.
 
 ## Running tests
 
@@ -98,7 +126,8 @@ $ ./gradlew build -x test # build the artifacts, verify code style, skip tests
 $ ./gradlew check # verify code style, execute tests
 $ ./gradlew test # execute tests
 $ ./gradlew style # update code formatting (for auto-correctable cases) and verify style
-$ ./gradlew spotlessCheck checkstyleAll # report code style violations
+$ ./gradlew autostyleCheck checkstyleAll # report code style violations
+$ ./gradlew -PenableErrorprone classes # verify Java code with Error Prone compiler, requires Java 11
 {% endhighlight %}
 
 You can use `./gradlew assemble` to build the artifacts and skip all tests and verifications.
@@ -106,7 +135,7 @@ You can use `./gradlew assemble` to build the artifacts and skip all tests and v
 There are other options that control which tests are run, and in what
 environment, as follows.
 
-* `-Dcalcite.test.db=DB` (where db is `h2`, `hsqldb`, `mysql`, or `postgresql`) allows you
+* `-Dcalcite.test.db=DB` (where DB is `h2`, `hsqldb`, `mysql`, or `postgresql`) allows you
   to change the JDBC data source for the test suite. Calcite's test
   suite requires a JDBC data source populated with the foodmart data
   set.
@@ -116,11 +145,11 @@ environment, as follows.
      `mysql` and `postgresql` might be somewhat faster than hsqldb, but you need
      to populate it (i.e. provision a VM).
 * `-Dcalcite.debug` prints extra debugging information to stdout.
-* `-Dcalcite.test.slow` enables tests that take longer to execute. For
-  example, there are tests that create virtual TPC-H and TPC-DS schemas
-  in-memory and run tests from those benchmarks.
 * `-Dcalcite.test.splunk` enables tests that run against Splunk.
   Splunk must be installed and running.
+* `./gradlew testSlow` runs tests that take longer to execute. For
+  example, there are tests that create virtual TPC-H and TPC-DS schemas
+  in-memory and run tests from those benchmarks.
 
 Note: tests are executed in a forked JVM, so system properties are not passed automatically
 when running tests with Gradle.
@@ -192,9 +221,9 @@ From within IDE:
 
 ### Integration tests technical details
 
-Tests with external data are executed at maven's integration-test phase.
-We do not currently use pre-integration-test/post-integration-test, however we could use that in future.
-The verification of build pass/failure is performed at verify phase.
+Tests with external data are executed during Gradle's integration-test phase.
+We do not currently use pre-integration-test/post-integration-test, however, we could use that in the future.
+The verification of build pass/failure is performed during the verify phase.
 Integration tests should be named `...IT.java`, so they are not picked up on unit test execution.
 
 ## Contributing
@@ -239,7 +268,7 @@ Wait for NetBeans to finish importing all dependencies.
 
 To ensure that the project is configured successfully, navigate to the method `testWinAgg` in `org.apache.calcite.test.JdbcTest`.
 Right-click on the method and select to *Run Focused Test Method*.
-NetBeans will run a Maven process, and you should see in the command output window a line with
+NetBeans will run a Gradle process, and you should see in the command output window a line with
  `Running org.apache.calcite.test.JdbcTest` followed by `"BUILD SUCCESS"`.
 
 Note: it is not clear if NetBeans automatically generates relevant sources on project import,
@@ -287,7 +316,7 @@ To debug generated classes, set two system properties when starting the JVM:
   for temporary files, such as `/tmp` on Unix-based systems.)
 
 After code is generated, either go into Intellij and mark the folder that
-contains generated temporary files as a generated sources root or sources root,
+contains generated temporary files as generated sources root or sources root,
 or directly set the value of `org.codehaus.janino.source_debugging.dir` to an
 existing source root when starting the JVM.
 
@@ -300,7 +329,7 @@ See the [tutorial]({{ site.baseurl }}/docs/tutorial.html).
 First, download and install Calcite,
 and <a href="https://www.mongodb.org/downloads">install MongoDB</a>.
 
-Note: you can use MongoDB from integration test virtual machine above.
+Note: you can use MongoDB from the integration test virtual machine above.
 
 Import MongoDB's zipcode data set into MongoDB:
 
