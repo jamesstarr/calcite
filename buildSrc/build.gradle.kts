@@ -68,9 +68,12 @@ fun Project.applyKotlinProjectConventions() {
 =======
 >>>>>>> af96e9835 ([CALCITE-4829] Bump Gradle to 7.2 and test with Java 17 at GitHub Actions)
     tasks.withType<KotlinCompile> {
+<<<<<<< HEAD
         sourceCompatibility = "unused"
         targetCompatibility = "unused"
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
         kotlinOptions {
             jvmTarget = "1.8"
         }

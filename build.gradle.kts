@@ -206,9 +206,13 @@ val javadocAggregate by tasks.registering(Javadoc::class) {
     val sourceSets = allprojects
         .mapNotNull { it.extensions.findByType<SourceSetContainer>() }
 <<<<<<< HEAD
+<<<<<<< HEAD
         .filter { it.names.contains("main") }
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+        .filter { it.names.contains("main") }
+>>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
         .map { it.named("main") }
 
     classpath = files(sourceSets.map { set -> set.map { it.output + it.compileClasspath } })
