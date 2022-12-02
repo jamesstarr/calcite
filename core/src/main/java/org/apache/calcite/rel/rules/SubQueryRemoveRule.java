@@ -46,6 +46,7 @@ import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.Pair;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 
 import org.immutables.value.Value;
 
@@ -817,8 +818,8 @@ public class SubQueryRemoveRule
             project.getProjects(), e);
     builder.push(project.getInput());
     final int fieldCount = builder.peek().getRowType().getFieldCount();
-    final Set<CorrelationId>  variablesSet =
-        RelOptUtil.getVariablesUsed(e.rel);
+    final Set<CorrelationId>  variablesSet = Sets.intersection(
+        project.getVariablesSet(), RelOptUtil.getVariablesUsed(e.rel));
     final RexNode target = rule.apply(e, variablesSet,
         logic, builder, 1, fieldCount);
     final RexShuttle shuttle = new ReplaceSubQueryShuttle(e, target);
@@ -843,8 +844,8 @@ public class SubQueryRemoveRule
       ++count;
       final RelOptUtil.Logic logic =
           LogicVisitor.find(RelOptUtil.Logic.TRUE, ImmutableList.of(c), e);
-      final Set<CorrelationId>  variablesSet =
-          RelOptUtil.getVariablesUsed(e.rel);
+      final Set<CorrelationId>  variablesSet = Sets.intersection(
+          RelOptUtil.getVariablesUsed(e.rel), filter.getVariablesSet());
       final RexNode target = rule.apply(e, variablesSet, logic,
           builder, 1, builder.peek().getRowType().getFieldCount());
       final RexShuttle shuttle = new ReplaceSubQueryShuttle(e, target);
@@ -867,6 +868,7 @@ public class SubQueryRemoveRule
     builder.push(join.getLeft());
     builder.push(join.getRight());
     final int fieldCount = join.getRowType().getFieldCount();
+    //[CALCITE-4792] Blocks fixing [CALCITE-5418] since SqlToRel does not populate join.variableSet
     final Set<CorrelationId>  variablesSet =
         RelOptUtil.getVariablesUsed(e.rel);
     final RexNode target = rule.apply(e, variablesSet,
