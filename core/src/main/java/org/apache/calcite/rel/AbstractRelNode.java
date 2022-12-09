@@ -89,7 +89,7 @@ public abstract class AbstractRelNode implements RelNode {
   /**
    * unique id of this object -- for debugging
    */
-  protected final int id;
+  protected int id;
 
   /**
    * The RelTraitSet that describes the traits of this RelNode.
