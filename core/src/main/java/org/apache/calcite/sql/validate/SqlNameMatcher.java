@@ -59,11 +59,6 @@ public interface SqlNameMatcher {
    */
   RelDataTypeField field(RelDataType rowType, String fieldName);
 
-  /** Returns how many times a string occurs in a collection.
-   *
-   * <p>Similar to {@link java.util.Collections#frequency}. */
-  int frequency(Iterable<String> names, String name);
-
   /** Creates a set that has the same case-sensitivity as this matcher. */
   Set<String> createSet();
 }
