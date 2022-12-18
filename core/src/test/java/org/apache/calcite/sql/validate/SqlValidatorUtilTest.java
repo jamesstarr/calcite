@@ -24,7 +24,6 @@ import org.apache.calcite.sql.test.SqlTestFactory;
 import org.apache.calcite.sql.test.SqlTester;
 import org.apache.calcite.sql.test.SqlValidatorTester;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import org.junit.jupiter.api.Test;
@@ -140,8 +139,6 @@ class SqlValidatorUtilTest {
     newList.set(1, new SqlIdentifier(Arrays.asList("f0", "c1"), SqlParserPos.ZERO));
     SqlValidatorUtil.checkIdentifierListForDuplicates(newList, null);
   }
-<<<<<<< HEAD
-=======
 
   @Test public void testNameMatcher() {
     final ImmutableList<String> beatles =
@@ -156,6 +153,7 @@ class SqlValidatorUtilTest {
     assertThat(sensitiveMatcher.frequency(beatles, "rinGo"), is(1));
     assertThat(sensitiveMatcher.frequency(beatles, "Ringo"), is(0));
   }
+=======
 }
 >>>>>>> 9a00f8eec ([CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING)
 

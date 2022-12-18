@@ -283,6 +283,7 @@ public class RexProgramTest {
   }
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 =======
   private RexNode plus(RexNode n1, RexNode n2) {
@@ -294,6 +295,8 @@ public class RexProgramTest {
   }
 
 >>>>>>> 9a00f8eec ([CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+>>>>>>> 97b385c7d (Revert "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING"):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   /**
    * Tests construction of a RexProgram.
    */
@@ -1441,6 +1444,7 @@ public class RexProgramTest {
         "IS NOT NULL(?0.int1)");
 =======
     checkSimplify(gt(iRef, hRef), ">(?0.i, ?0.h)");
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 
     checkSimplify(coalesce(hRef, iRef), "?0.h"); // first arg not null
     checkSimplify(coalesce(iRef, hRef), "COALESCE(?0.i, ?0.h)"); // a0 nullable
@@ -1451,6 +1455,8 @@ public class RexProgramTest {
     checkSimplify(coalesce(iRef, plus(iRef, hRef), literal1, hRef),
         "COALESCE(?0.i, +(?0.i, ?0.h), 1)");
 >>>>>>> 9a00f8eec ([CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+>>>>>>> 97b385c7d (Revert "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING"):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   @Test void simplifyStrong() {

@@ -120,8 +120,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CBRT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CEIL;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CHARACTER_LENGTH;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CHAR_LENGTH;
->>>>>>> 9a00f8eec ([CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING)
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.COALESCE;
+>>>>>>> 97b385c7d (Revert "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING")
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.COLLECT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CONCAT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.COS;
@@ -512,7 +511,7 @@ public class RexImpTable {
         NullPolicy.NONE, NotImplementor.of(subMultisetImplementor), false);
 
     map.put(CASE, new CaseImplementor());
-    map.put(COALESCE, new CoalesceImplementor());
+
     map.put(CAST, new CastOptimizedImplementor());
     map.put(DATE, new CastOptimizedImplementor());
 
@@ -2709,6 +2708,7 @@ public class RexImpTable {
     }
   }
 
+<<<<<<< HEAD
   /** Implementor for the SQL {@code COALESCE} operator. */
   private static class CoalesceImplementor implements CallImplementor {
     public Expression implement(RexToLixTranslator translator, RexCall call,
@@ -2735,6 +2735,7 @@ public class RexImpTable {
     }
   }
 
+=======
   /** Implementor for the SQL {@code CAST} function that optimizes if, say, the
    * argument is already of the desired type. */
   private static class CastOptimizedImplementor implements CallImplementor {
