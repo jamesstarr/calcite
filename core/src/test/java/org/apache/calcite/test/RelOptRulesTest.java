@@ -2894,10 +2894,6 @@ public class RelOptRulesTest extends RelOptTestBase {
     transitiveInference();
   }
 
-  @Test public void testTransitiveInferenceFunction() throws Exception {
-    transitiveInference();
-  }
-
   @Test public void testPullConstantIntoProject() throws Exception {
     transitiveInference(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
   }
