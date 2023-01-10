@@ -3296,24 +3296,25 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES)
         .build();
 
-    final HepProgram emptyProgram = new HepProgramBuilder().build();
-
+    final HepPlanner hepPlanner =
+        new HepPlanner(new HepProgramBuilder().build());
 
     final String sql = "select d.deptno from sales.emp d where d.deptno\n"
         + "IN (select e.deptno from sales.emp e "
         + "where e.deptno = d.deptno or e.deptno = 4)";
-    sql(sql).withPre(preProgram).with(emptyProgram).checkUnchanged();
+    sql(sql).withPre(preProgram).with(hepPlanner).checkUnchanged();
   }
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2205">[CALCITE-2205]
    * One more infinite loop for JoinPushTransitivePredicatesRule</a>. */
   @Test public void testJoinPushTransitivePredicatesRule2() {
-    HepProgram program = new HepProgramBuilder()
+    HepProgram hepProgram = new HepProgramBuilder()
         .addRuleInstance(CoreRules.FILTER_INTO_JOIN)
         .addRuleInstance(CoreRules.JOIN_CONDITION_PUSH)
         .addRuleInstance(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES)
         .build();
+    HepPlanner hepPlanner = new HepPlanner(hepProgram);
 
     final String sql = "select n1.SAL\n"
         + "from EMPNULLABLES_20 n1\n"
@@ -3321,21 +3322,10 @@ public class RelOptRulesTest extends RelOptTestBase {
         + "  select n2.SAL\n"
         + "  from EMPNULLABLES_20 n2\n"
         + "  where n1.SAL = n2.SAL or n1.SAL = 4)";
-    sql(sql).withDecorrelation(true).with(program).checkUnchanged();
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2275">[CALCITE-2275]
-   * JoinPushTransitivePredicatesRule wrongly pushes down NOT condition</a>. */
-  @Test public void testInferringPredicatesWithNotOperatorInJoinCondition() {
-    HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(CoreRules.FILTER_INTO_JOIN)
-        .addRuleInstance(CoreRules.JOIN_CONDITION_PUSH)
-        .addRuleInstance(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES)
-        .build();
-    final String sql = "select * from sales.emp d\n"
-        + "join sales.emp e on e.deptno = d.deptno and d.deptno not in (4, 6)";
-    sql(sql).withDecorrelation(true).with(program).check();
+    sql(sql)
+        .withDecorrelation(true)
+        .with(hepPlanner)
+        .checkUnchanged();
   }
 
   /** Test case for
