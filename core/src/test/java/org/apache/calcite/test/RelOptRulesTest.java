@@ -3592,6 +3592,10 @@ class RelOptRulesTest extends RelOptTestBase {
         .withRule(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES).check();
   }
 
+  @Test public void testTransitiveInferenceFunction() throws Exception {
+    transitiveInference();
+  }
+
   @Test public void testPullConstantIntoProject() throws Exception {
     transitiveInference(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
   }

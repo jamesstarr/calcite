@@ -264,9 +264,6 @@ public class SqlParser {
     private int identifierMaxLength = DEFAULT_IDENTIFIER_MAX_LENGTH;
     private boolean caseSensitive = Lex.ORACLE.caseSensitive;
     private SqlConformance conformance = SqlConformanceEnum.DEFAULT;
-<<<<<<< HEAD
-      this.allowBangEqual = config.allowBangEqual();
-=======
     Set<CharLiteralStyle> charLiteralStyles = ImmutableSet.of(CharLiteralStyle.STANDARD);
     private SqlParserImplFactory parserFactory = SqlParserImpl.FACTORY;
 
@@ -332,7 +329,6 @@ public class SqlParser {
     public ConfigBuilder setCharLiteralStyles(Set<CharLiteralStyle> charLiteralStyles) {
       this.charLiteralStyles = charLiteralStyles;
 =======
->>>>>>> 192f9096c ([CALCITE-2159] Support dynamic row type in UNNEST (Chunhui Shi))
       return this;
     }
 
