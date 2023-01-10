@@ -1333,6 +1333,17 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
+  @Test void testUnnestThenCollect() {
+    String sql = ""
+        + "WITH t1 AS (\n"
+        + "    SELECT x, collect(y) as ys\n"
+        + "    FROM (VALUES (1, 1), (2, 2), (1, 3)) AS t (x, y)\n"
+        + "    GROUP BY x)\n"
+        + "SELECT *\n"
+        + "FROM t1 AS u, UNNEST(u.ys) AS z";
+    sql(sql).withExpand(false).ok();
+  }
+
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-4206">[CALCITE-4206]
    * RelDecorrelator outputs wrong plan for correlate sort with fetch

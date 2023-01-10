@@ -7200,6 +7200,16 @@ LogicalProject(DEPTNO=[$0], NAME=[$1])
       <![CDATA[select*from unnest(multiset(select*from dept))]]>
     </Resource>
   </TestCase>
+  <TestCase name="testUnnestThenCollect">
+    <Resource name="sql">
+      <![CDATA[WITH t1 AS (
+    SELECT x, collect(y) as ys
+    FROM (VALUES (1, 1), (2, 2), (1, 3)) AS t (x, y)
+    GROUP BY x)
+SELECT *
+FROM t1 AS u, UNNEST(u.ys) AS z]]>
+    </Resource>
+  </TestCase>
   <TestCase name="testUnnestWithOrdinality">
     <Resource name="sql">
       <![CDATA[select*from unnest(array(select*from dept)) with ordinality]]>
