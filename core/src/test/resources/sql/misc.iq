@@ -193,6 +193,7 @@ Object 'HR' not found; did you mean 'hr'?
 select empid from bad_schema.bad_table;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Object 'BAD_SCHEMA.BAD_TABLE' not found
 !error
 
@@ -223,35 +224,42 @@ Table 'BAD_SCHEMA.BAD_TABLE' not found
 =======
 Object 'BAD_SCHEMA' not found
 >>>>>>> b7a4336d1 (Revert "Partial revert of CALCITE-1549")
+=======
+Object 'BAD_SCHEMA.BAD_TABLE' not found
+>>>>>>> 03d479037 (DX-57149: Reword for a more descriptive error message)
 !error
 
 select empid from bad_cat.bad_schema.bad_table;
-Object 'BAD_CAT' not found
+Object 'BAD_CAT.BAD_SCHEMA.BAD_TABLE' not found
 !error
 
 select empid from "catalog".bad_schema.bad_table;
-Object 'catalog' not found
+Object 'catalog.BAD_SCHEMA.BAD_TABLE' not found
 !error
 
 select empid from catalog.bad_schema.bad_table;
-Object 'CATALOG' not found
+Object 'CATALOG.BAD_SCHEMA.BAD_TABLE' not found
 !error
 
 select empid from catalog.HR.bad_table;
-Object 'CATALOG' not found
+Object 'CATALOG.HR.BAD_TABLE' not found
 !error
 
 select empid from catalog."hr".bad_table;
-Object 'CATALOG' not found
+Object 'CATALOG.hr.BAD_TABLE' not found
 !error
 
 select empid from catalog."hr".emp;
+<<<<<<< HEAD
 <<<<<<< HEAD
 Table 'CATALOG.hr.EMP' not found
 >>>>>>> ca38362df (Partial revert of CALCITE-1549)
 =======
 Object 'CATALOG' not found
 >>>>>>> b7a4336d1 (Revert "Partial revert of CALCITE-1549")
+=======
+Object 'CATALOG.hr.EMP' not found
+>>>>>>> 03d479037 (DX-57149: Reword for a more descriptive error message)
 !error
 
 select empid from HR.bad_table;

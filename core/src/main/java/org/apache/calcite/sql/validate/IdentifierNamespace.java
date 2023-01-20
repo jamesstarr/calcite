@@ -148,9 +148,7 @@ public class IdentifierNamespace extends AbstractNamespace {
       // If we're case sensitive, we'll shortly try again and give an error
       // then.
       if (!nameMatcher.isCaseSensitive()) {
-        throw validator.newValidationError(id,
-            RESOURCE.objectNotFoundWithin(resolve.remainingNames.get(0),
-                SqlIdentifier.getString(resolve.path.stepNames())));
+        notFoundWithinError(id, names, resolve);
       }
     }
 
@@ -187,15 +185,14 @@ public class IdentifierNamespace extends AbstractNamespace {
                     SqlIdentifier.getString(prefix), next));
           }
         } else {
-          throw validator.newValidationError(id,
-              RESOURCE.objectNotFoundWithin(resolve.remainingNames.get(0),
-                  SqlIdentifier.getString(resolve.path.stepNames())));
+          notFoundWithinError(id, names, resolve);
         }
       }
     }
     throw validator.newValidationError(id,
-=======
-        RESOURCE.objectNotFound(id.getComponent(0).toString()));
+        id.isSimple() ? RESOURCE.objectNotFound(id.getComponent(0).toString())
+                      : RESOURCE.objectNotFound(id.toString())
+    );
   }
 
   public RelDataType validateImpl(RelDataType targetRowType) {
