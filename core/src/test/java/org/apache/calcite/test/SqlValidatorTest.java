@@ -5174,9 +5174,9 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     sql("select emp.empno AS x from ^sales.*^")
         .fails("Object '\\*' not found within 'SALES'");
     sql("select * from ^emp.*^")
-        .fails("Object '\\*' not found within 'SALES.EMP'");
+        .fails("Object '\\*' not found within 'EMP'");
     sql("select emp.empno AS x from ^emp.*^")
-        .fails("Object '\\*' not found within 'SALES.EMP'");
+        .fails("Object '\\*' not found within 'EMP'");
     sql("select emp.empno from emp where emp.^*^ is not null")
         .fails("Unknown field '\\*'");
   }
@@ -8256,7 +8256,8 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkFails("table ^nonexistent^", "Object 'NONEXISTENT' not found");
     checkFails("table ^sales.nonexistent^",
         "Object 'NONEXISTENT' not found within 'SALES'");
-    checkFails("table ^nonexistent.foo^", "Object 'NONEXISTENT' not found");
+    checkFails("table ^nonexistent.foo^",
+            "Object 'NONEXISTENT.FOO' not found");
   }
 
   @Test public void testCollectionTable() {
@@ -8936,7 +8937,7 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
 
     // No schema found
     tester.checkQueryFails("select * from ^unknownSchema.unknownTable^",
-        "Object 'UNKNOWNSCHEMA' not found");
+        "Object 'UNKNOWNSCHEMA\\.UNKNOWNTABLE' not found");
     // Similar schema found
     tester.checkQueryFails("select * from ^\"sales\".emp^",
         "Object 'sales' not found; did you mean 'SALES'\\?");
@@ -8945,7 +8946,7 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
 
     // Spurious after table
     tester.checkQueryFails("select * from ^emp.foo^",
-        "Object 'FOO' not found within 'SALES\\.EMP'");
+        "Object 'FOO' not found within 'EMP'");
     tester.checkQueryFails("select * from ^sales.emp.foo^",
         "Object 'FOO' not found within 'SALES\\.EMP'");
 

@@ -6217,7 +6217,7 @@ public class JdbcTest {
     // With [CALCITE-1563], the following query succeeded; it queried
     // metadata.tables.
     with.query("select COUNT(*) as c from `metaData`.`zoo`")
-        .throws_("Object 'zoo' not found within 'metadata'");
+        .throws_("Object 'zoo' not found within 'metaData'");
     with.query("select COUNT(*) as c from `metaData`.`tAbLes`")
         .returns("c=2\n");
   }

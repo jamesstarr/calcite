@@ -78,31 +78,31 @@ Object 'HR' not found; did you mean 'hr'?
 !error
 
 select empid from bad_schema.bad_table;
-Object 'BAD_SCHEMA' not found
+Object 'BAD_SCHEMA.BAD_TABLE' not found
 !error
 
 select empid from bad_cat.bad_schema.bad_table;
-Object 'BAD_CAT' not found
+Object 'BAD_CAT.BAD_SCHEMA.BAD_TABLE' not found
 !error
 
 select empid from "catalog".bad_schema.bad_table;
-Object 'catalog' not found
+Object 'catalog.BAD_SCHEMA.BAD_TABLE' not found
 !error
 
 select empid from catalog.bad_schema.bad_table;
-Object 'CATALOG' not found
+Object 'CATALOG.BAD_SCHEMA.BAD_TABLE' not found
 !error
 
 select empid from catalog.HR.bad_table;
-Object 'CATALOG' not found
+Object 'CATALOG.HR.BAD_TABLE' not found
 !error
 
 select empid from catalog."hr".bad_table;
-Object 'CATALOG' not found
+Object 'CATALOG.hr.BAD_TABLE' not found
 !error
 
 select empid from catalog."hr".emp;
-Object 'CATALOG' not found
+Object 'CATALOG.hr.EMP' not found
 !error
 
 select empid from HR.bad_table;

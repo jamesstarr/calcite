@@ -25,6 +25,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.util.Pair;
+import org.apache.calcite.util.Util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -103,6 +104,22 @@ public class IdentifierNamespace extends AbstractNamespace {
     }
   }
 
+  private void notFoundWithinError(SqlIdentifier id,
+                              List<String> names,
+                              SqlValidatorScope.Resolve resolve) {
+    int num = names.size() - resolve.remainingNames.size();
+    if (num > 0) {
+      // when possible ... throw a better error by leveraging a limited set of names
+      throw validator.newValidationError(id,
+              RESOURCE.objectNotFoundWithin(resolve.remainingNames.get(0),
+                      Util.sepList(SqlIdentifier.toStar(names.subList(0, num)), ".")));
+    } else {
+      throw validator.newValidationError(id,
+              RESOURCE.objectNotFoundWithin(resolve.remainingNames.get(0),
+                      SqlIdentifier.getString(resolve.path.stepNames())));
+    }
+  }
+
   private SqlValidatorNamespace resolveImpl(SqlIdentifier id) {
     final SqlNameMatcher nameMatcher = validator.catalogReader.nameMatcher();
     final SqlValidatorScope.ResolvedImpl resolved =
@@ -131,9 +148,7 @@ public class IdentifierNamespace extends AbstractNamespace {
       // If we're case sensitive, we'll shortly try again and give an error
       // then.
       if (!nameMatcher.isCaseSensitive()) {
-        throw validator.newValidationError(id,
-            RESOURCE.objectNotFoundWithin(resolve.remainingNames.get(0),
-                SqlIdentifier.getString(resolve.path.stepNames())));
+        notFoundWithinError(id, names, resolve);
       }
     }
 
@@ -170,14 +185,14 @@ public class IdentifierNamespace extends AbstractNamespace {
                     SqlIdentifier.getString(prefix), next));
           }
         } else {
-          throw validator.newValidationError(id,
-              RESOURCE.objectNotFoundWithin(resolve.remainingNames.get(0),
-                  SqlIdentifier.getString(resolve.path.stepNames())));
+          notFoundWithinError(id, names, resolve);
         }
       }
     }
     throw validator.newValidationError(id,
-        RESOURCE.objectNotFound(id.getComponent(0).toString()));
+        id.isSimple() ? RESOURCE.objectNotFound(id.getComponent(0).toString())
+                      : RESOURCE.objectNotFound(id.toString())
+    );
   }
 
   public RelDataType validateImpl(RelDataType targetRowType) {
