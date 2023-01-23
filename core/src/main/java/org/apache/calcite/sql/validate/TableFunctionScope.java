@@ -14,15 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.calcite.sql.validate;
+
+import org.apache.calcite.sql.SqlNode;
 
 /**
- * Tests for Calcite.
+ * Stub scope for table functions.
  */
-@DefaultQualifier(value = NonNull.class, locations = TypeUseLocation.FIELD)
-@DefaultQualifier(value = NonNull.class, locations = TypeUseLocation.PARAMETER)
-@DefaultQualifier(value = NonNull.class, locations = TypeUseLocation.RETURN)
-package org.apache.calcite.test;
+public class TableFunctionScope extends ListScope {
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.checkerframework.framework.qual.TypeUseLocation;
+  private final SqlNode node;
+
+  protected TableFunctionScope(SqlNode node, SqlValidatorScope parent) {
+    super(parent);
+    this.node = node;
+  }
+
+  @Override public SqlNode getNode() {
+    return node;
+  }
+
+}

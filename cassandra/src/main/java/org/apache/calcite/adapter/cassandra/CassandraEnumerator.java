@@ -27,7 +27,6 @@ import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
 import com.datastax.oss.driver.api.core.data.TupleValue;
-import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -88,7 +87,7 @@ class CassandraEnumerator implements Enumerator<Object> {
   private @Nullable Object currentRowField(int index) {
     assert current != null;
     final Object o =  current.get(index,
-        CodecRegistry.DEFAULT.codecFor(
+        CassandraSchema.CODEC_REGISTRY.codecFor(
             current.getColumnDefinitions().get(index).getType()));
 
     return convertToEnumeratorObject(o);
@@ -125,7 +124,7 @@ class CassandraEnumerator implements Enumerator<Object> {
       return IntStream.range(0, numComponents)
           .mapToObj(i ->
               tupleValue.get(i,
-                  CodecRegistry.DEFAULT.codecFor(
+                  CassandraSchema.CODEC_REGISTRY.codecFor(
                       tupleValue.getType().getComponentTypes().get(i)))
           ).map(this::convertToEnumeratorObject)
           .map(Objects::requireNonNull) // "null" cannot appear inside collections

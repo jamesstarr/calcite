@@ -1288,6 +1288,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
         + "from emp e");
   }
 
+
   @Test void testCorrelationLateralSubQuery() {
     String sql = "SELECT deptno, ename\n"
         + "FROM\n"
@@ -1465,6 +1466,13 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).withExtendedTester().ok();
   }
 
+  @Test void testUnnestArrayPlanRex() {
+    final String sql = "select d.deptno, e2.empno\n"
+        + "from dept_nested as d,\n"
+        + " UNNEST(d.employees) e2";
+    sql(sql).withExtendedTester().withExpand(false).ok();
+  }
+
   @Test void testUnnestArrayPlanAs() {
     final String sql = "select d.deptno, e2.empno\n"
         + "from dept_nested as d,\n"
@@ -1506,6 +1514,11 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
 
   @Test void testUnnestArray() {
     sql("select*from unnest(array(select*from dept))").ok();
+  }
+
+  @Test void testUnnestArrayRex() {
+    sql("select * from unnest(array(select*from dept))")
+        .withExpand(false).ok();
   }
 
   @Test void testUnnestArrayNoExpand() {
@@ -1601,7 +1614,8 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
    * Correlation variable has incorrect row type if it is populated by right
    * side of a Join</a>. */
   @Test void testCorrelatedSubQueryInJoin() {
-    final String sql = "select *\n"
+    final String sql = ""
+        + "select *\n"
         + "from emp as e\n"
         + "join dept as d using (deptno)\n"
         + "where d.name = (\n"
