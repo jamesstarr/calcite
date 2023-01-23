@@ -53,6 +53,7 @@ import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexShuttle;
 import org.apache.calcite.rex.RexSimplify;
+import org.apache.calcite.rex.RexSubQuery;
 import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.runtime.Hook;
 import org.apache.calcite.schema.SchemaPlus;
@@ -554,6 +555,90 @@ public class RelBuilder {
   public RexNode call(SqlOperator operator,
       Iterable<? extends RexNode> operands) {
     return call(operator, ImmutableList.copyOf(operands));
+  }
+
+  /** Creates an IN predicate with a sub-query. */
+  public RexSubQuery in(RelNode rel, Iterable<? extends RexNode> nodes,
+      CorrelationId correlationId) {
+    return RexSubQuery.in(rel, ImmutableList.copyOf(nodes), correlationId);
+  }
+
+  /** Creates an IN predicate with a sub-query.
+   *
+   * <p>For example,
+   *
+   * <pre>{@code
+   * b.scan("Emps")
+   *     .filter(
+   *         b.in(b.field("deptno"),
+   *             b2 -> b2.scan("Depts")
+   *                 .filter(
+   *                     b2.eq(b2.field("location"), b2.literal("Boston")))
+   *                 .project(b.field("deptno"))
+   *                 .build()))
+   * }</pre>
+   *
+   * <p>is equivalent to the SQL
+   *
+   * <pre>{@code
+   * SELECT *
+   * FROM Emps
+   * WHERE deptno IN (SELECT deptno FROM Dept WHERE location = 'Boston')
+   * }</pre> */
+  public RexNode in(RexNode arg, Function<RelBuilder, RelNode> f) {
+    final RelNode rel = f.apply(this);
+    return RexSubQuery.in(rel, ImmutableList.of(arg), null);
+  }
+
+  /** Creates an EXISTS predicate.
+   *
+   * <p>For example,
+   *
+   * <pre>{@code
+   * b.scan("Depts")
+   *     .filter(
+   *         b.exists(b2 ->
+   *             b2.scan("Emps")
+   *                 .filter(
+   *                     b2.eq(b2.field("job"), b2.literal("Manager")))
+   *                 .build()))
+   * }</pre>
+   *
+   * <p>is equivalent to the SQL
+   *
+   * <pre>{@code
+   * SELECT *
+   * FROM Depts
+   * WHERE EXISTS (SELECT 1 FROM Emps WHERE job = 'Manager')
+   * }</pre> */
+  public RexSubQuery exists(Function<RelBuilder, RelNode> f) {
+    final RelNode rel = f.apply(this);
+    return RexSubQuery.exists(rel, null);
+  }
+
+  /** Creates a scalar sub-query.
+   *
+   * <p>For example,
+   *
+   * <pre>{@code
+   * b.scan("Depts")
+   *     .project(
+   *         b.field("deptno")
+   *         b.scalarQuery(b2 ->
+   *             b2.scan("Emps")
+   *                 .aggregate(
+   *                     b2.eq(b2.field("job"), b2.literal("Manager")))
+   *                 .build()))
+   * }</pre>
+   *
+   * <p>is equivalent to the SQL
+   *
+   * <pre>{@code
+   * SELECT deptno, (SELECT MAX(sal) FROM Emps)
+   * FROM Depts
+   * }</pre> */
+  public RexSubQuery scalarQuery(Function<RelBuilder, RelNode> f) {
+    return RexSubQuery.scalar(f.apply(this), null);
   }
 
   /** Creates an AND. */
@@ -1654,7 +1739,7 @@ public class RelBuilder {
       case LEFT:
         // For a LEFT/SEMI/ANTI, predicate must be evaluated first.
         stack.push(right);
-        filter(condition.accept(new Shifter(left.rel, id, right.rel)));
+        filter(condition.accept(new Shifter(getRexBuilder(), left.rel, id, right.rel)));
         right = stack.pop();
         break;
       case INNER:
@@ -2811,12 +2896,14 @@ public class RelBuilder {
   /** Shuttle that shifts a predicate's inputs to the left, replacing early
    * ones with references to a
    * {@link org.apache.calcite.rex.RexCorrelVariable}. */
-  private class Shifter extends RexShuttle {
+  public static class Shifter extends RexShuttle {
     private final RelNode left;
     private final CorrelationId id;
     private final RelNode right;
+    private final RexBuilder rexBuilder;
 
-    Shifter(RelNode left, CorrelationId id, RelNode right) {
+    public Shifter(RexBuilder rexbuilder, RelNode left, CorrelationId id, RelNode right) {
+      this.rexBuilder = rexbuilder;
       this.left = left;
       this.id = id;
       this.right = right;
@@ -2824,7 +2911,6 @@ public class RelBuilder {
 
     public RexNode visitInputRef(RexInputRef inputRef) {
       final RelDataType leftRowType = left.getRowType();
-      final RexBuilder rexBuilder = getRexBuilder();
       final int leftCount = leftRowType.getFieldCount();
       if (inputRef.getIndex() < leftCount) {
         final RexNode v = rexBuilder.makeCorrel(leftRowType, id);

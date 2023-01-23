@@ -20,6 +20,7 @@ import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.core.Collect;
 import org.apache.calcite.rel.core.Correlate;
 import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.core.Filter;
@@ -47,7 +48,7 @@ import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,6 +90,11 @@ public class SubQueryRemoveRule
     switch (e.getKind()) {
     case SCALAR_QUERY:
       return rewriteScalarQuery(e, variablesSet, builder, inputCount, offset);
+    case ARRAY_QUERY_CONSTRUCTOR:
+    case MAP_QUERY_CONSTRUCTOR:
+    case MULTISET_QUERY_CONSTRUCTOR:
+      return rewriteCollection(e, variablesSet, builder,
+          inputCount, offset);
     case SOME:
       return rewriteSome(e, variablesSet, builder);
     case IN:
@@ -124,6 +130,28 @@ public class SubQueryRemoveRule
               false, null, null, builder.field(0)));
     }
     builder.join(JoinRelType.LEFT, builder.literal(true), variablesSet);
+    return field(builder, inputCount, offset);
+  }
+
+
+  /**
+   * Rewrites a sub-query into a
+   * {@link org.apache.calcite.rel.core.Collect}.
+   *
+   * @param e            Sub-query to rewrite
+   * @param variablesSet A set of variables used by a relational
+   *                     expression of the specified RexSubQuery
+   * @param builder      Builder
+   * @param offset       Offset to shift {@link RexInputRef}
+   * @return Expression that may be used to replace the RexSubQuery
+   */
+  private static RexNode rewriteCollection(RexSubQuery e,
+      Set<CorrelationId> variablesSet, RelBuilder builder,
+      int inputCount, int offset) {
+    builder.push(e.rel);
+    builder.push(
+        Collect.create(builder.build(), e.getKind(), "x"));
+    builder.join(JoinRelType.INNER, builder.literal(true), variablesSet);
     return field(builder, inputCount, offset);
   }
 
@@ -563,7 +591,7 @@ public class SubQueryRemoveRule
 
   /** Returns a reference to a particular field, by offset, across several
    * inputs on a {@link RelBuilder}'s stack. */
-  private RexInputRef field(RelBuilder builder, int inputCount, int offset) {
+  private static RexInputRef field(RelBuilder builder, int inputCount, int offset) {
     for (int inputOrdinal = 0;;) {
       final RelNode r = builder.peek(inputCount, inputOrdinal);
       if (offset < r.getRowType().getFieldCount()) {
@@ -596,8 +624,9 @@ public class SubQueryRemoveRule
             project.getProjects(), e);
     builder.push(project.getInput());
     final int fieldCount = builder.peek().getRowType().getFieldCount();
-    final Set<CorrelationId>  variablesSet =
-        RelOptUtil.getVariablesUsed(e.rel);
+    final Set<CorrelationId>  variablesSet = e.correlationId == null
+        ? ImmutableSet.of()
+        : ImmutableSet.of(e.correlationId);
     final RexNode target = rule.apply(e, variablesSet,
         logic, builder, 1, fieldCount);
     final RexShuttle shuttle = new ReplaceSubQueryShuttle(e, target);
@@ -622,8 +651,9 @@ public class SubQueryRemoveRule
       ++count;
       final RelOptUtil.Logic logic =
           LogicVisitor.find(RelOptUtil.Logic.TRUE, ImmutableList.of(c), subQuery);
-      final Set<CorrelationId>  variablesSet =
-          Sets.intersection(filter.getVariablesSet(), RelOptUtil.getVariablesUsed(subQuery.rel));
+      final Set<CorrelationId>  variablesSet = subQuery.correlationId == null
+          ? ImmutableSet.of()
+          : ImmutableSet.of(subQuery.correlationId);
       assert variablesSet.size() < 2 : "Each sub-query should resolve to a single variable";
       final RexNode target = rule.apply(subQuery, variablesSet, logic,
           builder, 1, builder.peek().getRowType().getFieldCount());
@@ -647,8 +677,9 @@ public class SubQueryRemoveRule
     builder.push(join.getLeft());
     builder.push(join.getRight());
     final int fieldCount = join.getRowType().getFieldCount();
-    final Set<CorrelationId>  variablesSet =
-        RelOptUtil.getVariablesUsed(e.rel);
+    final Set<CorrelationId>  variablesSet = e.correlationId == null
+        ? ImmutableSet.of()
+        : ImmutableSet.of(e.correlationId);
     final RexNode target = rule.apply(e, variablesSet,
         logic, builder, 2, fieldCount);
     final RexShuttle shuttle = new ReplaceSubQueryShuttle(e, target);

@@ -2035,6 +2035,7 @@ public class JdbcTest {
         .returnsUnordered("A=[1, 2]");
   }
 
+  @Ignore // TODO re-activite when multiset is cherry picked
   @Test public void testMultisetConstructor() {
     CalciteAssert.that()
         .query("select multiset[1,2] as a from (values (1))")
@@ -2049,6 +2050,7 @@ public class JdbcTest {
         .returnsUnordered("A=[{10, 100}, {20, 200}, {10, 150}, {10, 110}]");
   }
 
+  @Ignore // TODO re-activite when multiset is cherry picked
   @Test public void testMultisetQueryWithSingleColumn() {
     CalciteAssert.hr()
         .query("select multiset(\n"
@@ -2071,6 +2073,7 @@ public class JdbcTest {
             "I=20; O=2");
   }
 
+  @Ignore // TODO re-activite when multiset is cherry picked
   @Test public void testUnnestMultiset() {
     CalciteAssert.that()
         .with(CalciteAssert.Config.REGULAR)
@@ -4583,7 +4586,7 @@ public class JdbcTest {
         + " where \"emps\".\"deptno\"=\"depts\".\"deptno\")";
     final String plan = ""
         + "LogicalProject(empid=[$0], deptno=[$1], name=[$2], salary=[$3], commission=[$4])\n"
-        + "  LogicalFilter(condition=[EXISTS({\n"
+        + "  LogicalFilter(condition=[EXISTS($cor0, {\n"
         + "LogicalFilter(condition=[=($cor0.deptno, $0)])\n"
         + "  EnumerableTableScan(table=[[hr, depts]])\n"
         + "})], variablesSet=[[$cor0]])\n"

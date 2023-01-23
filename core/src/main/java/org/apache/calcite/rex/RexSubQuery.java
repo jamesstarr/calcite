@@ -18,6 +18,7 @@ package org.apache.calcite.rex;
 
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeField;
@@ -26,29 +27,35 @@ import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlQuantifyOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.sql.type.SqlTypeUtil;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Scalar expression that represents an IN, EXISTS or scalar sub-query.
  */
 public class RexSubQuery extends RexCall {
   public final RelNode rel;
+  public final @Nullable CorrelationId correlationId;
 
   private RexSubQuery(RelDataType type, SqlOperator op,
-      ImmutableList<RexNode> operands, RelNode rel) {
+      List<RexNode> operands, RelNode rel, @Nullable CorrelationId correlationId) {
     super(type, op, operands);
     this.rel = rel;
+    this.correlationId = correlationId;
     this.digest = computeDigest(false);
   }
 
   /** Creates an IN sub-query. */
-  public static RexSubQuery in(RelNode rel, ImmutableList<RexNode> nodes) {
+  public static RexSubQuery in(RelNode rel, List<RexNode> nodes,
+      @Nullable CorrelationId correlationId) {
     final RelDataType type = type(rel, nodes);
-    return new RexSubQuery(type, SqlStdOperatorTable.IN, nodes, rel);
+    return new RexSubQuery(type, SqlStdOperatorTable.IN, nodes, rel, correlationId);
   }
 
   /** Creates a SOME sub-query.
@@ -59,18 +66,18 @@ public class RexSubQuery extends RexCall {
    * then {@code negated-comparison} is {@code <=}, and so forth.
    *
    * <p>Also =SOME is rewritten into IN</p> */
-  public static RexSubQuery some(RelNode rel, ImmutableList<RexNode> nodes,
-      SqlQuantifyOperator op) {
+  public static RexSubQuery some(RelNode rel, List<RexNode> nodes,
+      SqlQuantifyOperator op, @Nullable CorrelationId correlationId) {
     assert op.kind == SqlKind.SOME;
 
     if (op == SqlStdOperatorTable.SOME_EQ) {
-      return RexSubQuery.in(rel, nodes);
+      return RexSubQuery.in(rel, nodes, correlationId);
     }
     final RelDataType type = type(rel, nodes);
-    return new RexSubQuery(type, op, nodes, rel);
+    return new RexSubQuery(type, op, nodes, rel, correlationId);
   }
 
-  static RelDataType type(RelNode rel, ImmutableList<RexNode> nodes) {
+  static RelDataType type(RelNode rel, List<RexNode> nodes) {
     assert rel.getRowType().getFieldCount() == nodes.size();
     final RelDataTypeFactory typeFactory = rel.getCluster().getTypeFactory();
     boolean nullable = false;
@@ -89,22 +96,33 @@ public class RexSubQuery extends RexCall {
   }
 
   /** Creates an EXISTS sub-query. */
-  public static RexSubQuery exists(RelNode rel) {
+  public static RexSubQuery exists(RelNode rel, @Nullable CorrelationId correlationId) {
     final RelDataTypeFactory typeFactory = rel.getCluster().getTypeFactory();
     final RelDataType type = typeFactory.createSqlType(SqlTypeName.BOOLEAN);
     return new RexSubQuery(type, SqlStdOperatorTable.EXISTS,
-        ImmutableList.<RexNode>of(), rel);
+        ImmutableList.of(), rel, correlationId);
   }
 
   /** Creates a scalar sub-query. */
-  public static RexSubQuery scalar(RelNode rel) {
+  public static RexSubQuery scalar(RelNode rel, @Nullable CorrelationId correlationId) {
     final List<RelDataTypeField> fieldList = rel.getRowType().getFieldList();
     assert fieldList.size() == 1;
     final RelDataTypeFactory typeFactory = rel.getCluster().getTypeFactory();
     final RelDataType type =
         typeFactory.createTypeWithNullability(fieldList.get(0).getType(), true);
     return new RexSubQuery(type, SqlStdOperatorTable.SCALAR_QUERY,
-        ImmutableList.<RexNode>of(), rel);
+        ImmutableList.<RexNode>of(), rel, correlationId);
+  }
+
+  /** Creates a MULTISET sub-query. */
+  public static RexSubQuery multiset(RelNode rel, @Nullable CorrelationId correlationId) {
+    final RelDataTypeFactory typeFactory = rel.getCluster().getTypeFactory();
+    final RelDataType type =
+        typeFactory.createMultisetType(
+            SqlTypeUtil.deriveCollectionQueryComponentType(SqlTypeName.MULTISET, rel.getRowType()),
+            -1L);
+    return new RexSubQuery(type, SqlStdOperatorTable.MULTISET_QUERY,
+        ImmutableList.of(), rel, correlationId);
   }
 
   public <R> R accept(RexVisitor<R> visitor) {
@@ -118,6 +136,10 @@ public class RexSubQuery extends RexCall {
   @Override protected @Nonnull String computeDigest(boolean withType) {
     final StringBuilder sb = new StringBuilder(op.getName());
     sb.append("(");
+    if (null != correlationId) {
+      sb.append(correlationId);
+      sb.append(", ");
+    }
     for (RexNode operand : operands) {
       sb.append(operand);
       sb.append(", ");
@@ -130,11 +152,11 @@ public class RexSubQuery extends RexCall {
 
   @Override public RexSubQuery clone(RelDataType type, List<RexNode> operands) {
     return new RexSubQuery(type, getOperator(),
-        ImmutableList.copyOf(operands), rel);
+        ImmutableList.copyOf(operands), rel, correlationId);
   }
 
   public RexSubQuery clone(RelNode rel) {
-    return new RexSubQuery(type, getOperator(), operands, rel);
+    return new RexSubQuery(type, getOperator(), operands, rel, correlationId);
   }
 
   @Override public boolean equals(Object obj) {
@@ -144,9 +166,10 @@ public class RexSubQuery extends RexCall {
     if (obj == null || getClass() != obj.getClass()) {
       return false;
     }
-    RexCall rexCall = (RexCall) obj;
+    RexSubQuery rexCall = (RexSubQuery) obj;
     return toString().equals(((RexCall) obj).toString())
-          && type.equals(rexCall.getType());
+          && type.equals(rexCall.getType())
+          && Objects.equal(correlationId, ((RexSubQuery) obj).correlationId);
   }
 
   @Override public int hashCode() {

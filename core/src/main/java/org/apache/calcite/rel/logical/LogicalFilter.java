@@ -34,7 +34,6 @@ import org.apache.calcite.rel.metadata.RelMdDistribution;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rex.RexNode;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableSet;
 
@@ -46,7 +45,7 @@ import java.util.Set;
  * not targeted at any particular engine or calling convention.
  */
 public final class LogicalFilter extends Filter {
-  private final ImmutableSet<CorrelationId> variablesSet;
+  private final Set<CorrelationId> variablesSet;
 
   //~ Constructors -----------------------------------------------------------
 
@@ -67,9 +66,9 @@ public final class LogicalFilter extends Filter {
       RelTraitSet traitSet,
       RelNode child,
       RexNode condition,
-      ImmutableSet<CorrelationId> variablesSet) {
+      Set<CorrelationId> variablesSet) {
     super(cluster, traitSet, child, condition);
-    this.variablesSet = Preconditions.checkNotNull(variablesSet);
+    this.variablesSet = ImmutableSet.copyOf(variablesSet);
   }
 
   @Deprecated // to be removed before 2.0
@@ -105,7 +104,7 @@ public final class LogicalFilter extends Filter {
 
   /** Creates a LogicalFilter. */
   public static LogicalFilter create(final RelNode input, RexNode condition,
-      ImmutableSet<CorrelationId> variablesSet) {
+      Set<CorrelationId> variablesSet) {
     final RelOptCluster cluster = input.getCluster();
     final RelMetadataQuery mq = cluster.getMetadataQuery();
     final RelTraitSet traitSet = cluster.traitSetOf(Convention.NONE)
