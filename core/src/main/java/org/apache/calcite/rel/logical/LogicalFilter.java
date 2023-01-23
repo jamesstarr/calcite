@@ -33,6 +33,10 @@ import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.util.Litmus;
 
+<<<<<<< HEAD
+=======
+import com.google.common.base.Supplier;
+>>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Set;
@@ -66,7 +70,10 @@ public final class LogicalFilter extends Filter {
       Set<CorrelationId> variablesSet) {
     super(cluster, traitSet, child, condition);
     this.variablesSet = ImmutableSet.copyOf(variablesSet);
+<<<<<<< HEAD
     assert isValid(Litmus.THROW, null);
+=======
+>>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
   }
 
   @Deprecated // to be removed before 2.0

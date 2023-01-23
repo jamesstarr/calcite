@@ -17,9 +17,10 @@
 package org.apache.calcite.sql.validate;
 
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlSelect;
 
-import com.google.common.base.Preconditions;
+import java.util.Objects;
+
+import javax.annotation.Nullable;
 
 import java.util.Objects;
 import javax.annotation.Nullable;
@@ -33,17 +34,19 @@ import javax.annotation.Nullable;
 public class LateralTableScope extends ListScope {
   private final SqlNode node;
 
-<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/validate/LateralTableScope.java
-=======
   //~ Constructors -----------------------------------------------------------
 
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL):core/src/main/java/org/apache/calcite/sql/validate/TableScope.java
+=======
+>>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
   /**
    * Creates a scope corresponding to a LATERAL TABLE clause.
    *
    * @param parent  Parent scope
    */
-<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/validate/LateralTableScope.java
+  TableScope(SqlValidatorScope parent, SqlNode node) {
+    super(Preconditions.checkNotNull(parent));
+    this.node = Preconditions.checkNotNull(node);
+=======
   LateralTableScope(SqlValidatorScope parent, SqlNode node) {
     super(Objects.requireNonNull(parent, "parent"));
     this.node = Objects.requireNonNull(node, "node");
@@ -57,24 +60,7 @@ public class LateralTableScope extends ListScope {
     return this == scope2
         || (scope2 instanceof JoinScope && node == scope2.getNode())
         || super.isWithin(scope2);
-=======
-  TableScope(SqlValidatorScope parent, SqlNode node) {
-    super(Preconditions.checkNotNull(parent));
-    this.node = Preconditions.checkNotNull(node);
-  }
-
-  //~ Methods ----------------------------------------------------------------
-
-  public SqlNode getNode() {
-    return node;
-  }
-
-  @Override public boolean isWithin(SqlValidatorScope scope2) {
-    if (this == scope2) {
-      return true;
-    }
-    SqlValidatorScope s = getValidator().getSelectScope((SqlSelect) node);
-    return s.isWithin(scope2);
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL):core/src/main/java/org/apache/calcite/sql/validate/TableScope.java
   }
 }
+
+// End LateralTableScope.java

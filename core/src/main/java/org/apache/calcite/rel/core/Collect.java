@@ -82,6 +82,13 @@ public class Collect extends SingleRel {
     }
   }
 
+  /**
+   * Creates a Collect.
+   *
+   * @param cluster   Cluster
+   * @param input     Child relational expression
+   * @param fieldName Name of the sole output field
+   */
   @Deprecated // to be removed before 2.0
   public Collect(
       RelOptCluster cluster,
@@ -122,22 +129,7 @@ public class Collect extends SingleRel {
    * Creates a Collect.
    *
    * @param input          Input relational expression
-   * @param collectionType ARRAY, MAP or MULTISET
-   * @param fieldName      Name of the sole output field
-   */
-  @Deprecated // to be removed before 2.0
-  public static Collect create(RelNode input,
-      SqlTypeName collectionType,
-      String fieldName) {
-    return create(input,
-        deriveRowType(input.getCluster().getTypeFactory(), collectionType,
-            fieldName, input.getRowType()));
-  }
-
-  /**
-   * Creates a Collect.
-   *
-   * @param input          Input relational expression
+>>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
    * @param sqlKind        SqlKind
    * @param fieldName      Name of the sole output field
    */
@@ -191,11 +183,13 @@ public class Collect extends SingleRel {
     return Iterables.getOnlyElement(rowType().getFieldList()).getName();
   }
 
+<<<<<<< HEAD
   /** Returns the collection type (ARRAY, MAP, or MULTISET). */
   public SqlTypeName getCollectionType() {
     return getCollectionType(rowType());
   }
 
+=======
   private static SqlTypeName getCollectionType(RelDataType rowType) {
     return Iterables.getOnlyElement(rowType.getFieldList())
         .getType().getSqlTypeName();
@@ -221,23 +215,6 @@ public class Collect extends SingleRel {
   @Override protected RelDataType deriveRowType() {
     // this method should never be called; rowType is always set
     throw new UnsupportedOperationException();
-  }
-
-  /**
-   * Derives the output row type of a Collect relational expression.
-   *
-   * @param rel       relational expression
-   * @param fieldName name of sole output field
-   * @return output row type of a Collect relational expression
-   */
-  @Deprecated // to be removed before 2.0
-  public static RelDataType deriveCollectRowType(
-      SingleRel rel,
-      String fieldName) {
-    RelDataType inputType = rel.getInput().getRowType();
-    assert inputType.isStruct();
-    return deriveRowType(rel.getCluster().getTypeFactory(),
-        SqlTypeName.MULTISET, fieldName, inputType);
   }
 
   /**

@@ -26,55 +26,7 @@ import org.apache.calcite.rel.RelShuttle;
 import org.apache.calcite.rel.core.Correlate;
 import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.core.JoinRelType;
-<<<<<<< HEAD
-=======
-import org.apache.calcite.util.ImmutableBitSet;
-import org.apache.calcite.util.Litmus;
-
-/**
- * A relational operator that performs nested-loop joins.
- *
- * <p>It behaves like a kind of {@link org.apache.calcite.rel.core.Join},
- * but works by setting variables in its environment and restarting its
- * right-hand input.
- *
- * <p>A LogicalCorrelate is used to represent a correlated query. One
- * implementation strategy is to de-correlate the expression.
- *
- * @see org.apache.calcite.rel.core.CorrelationId
- */
-public final class LogicalCorrelate extends Correlate {
-  //~ Instance fields --------------------------------------------------------
-
-  //~ Constructors -----------------------------------------------------------
-
-  /**
-   * Creates a LogicalCorrelate.
-   * @param cluster      cluster this relational expression belongs to
-   * @param left         left input relational expression
-   * @param right        right input relational expression
-   * @param correlationId variable name for the row of left input
-   * @param requiredColumns Required columns
-   * @param joinType     join type
-   */
-  public LogicalCorrelate(
-      RelOptCluster cluster,
-      RelTraitSet traitSet,
-      RelNode left,
-      RelNode right,
-      CorrelationId correlationId,
-      ImmutableBitSet requiredColumns,
-      JoinRelType joinType) {
-    super(
-        cluster,
-        traitSet,
-        left,
-        right,
-        correlationId,
-        requiredColumns,
-        joinType);
->>>>>>> 7ae993b90 ([CALCITE-3133] Remove completely SemiJoinType)
-    assert !CalcitePrepareImpl.DEBUG || isValid(Litmus.THROW, null);
+    assert isValid(Litmus.THROW, null);
   }
 
   /**

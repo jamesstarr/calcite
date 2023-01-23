@@ -723,7 +723,11 @@ where d.name = (
         </Resource>
         <Resource name="plan">
             <![CDATA[
+<<<<<<< HEAD
 LogicalProject(DEPTNO=[$7], EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], SLACKER=[$8], NAME=[$10])
+=======
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], DEPTNO0=[$9], NAME=[$10])
+>>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
   LogicalFilter(condition=[=($10, $SCALAR_QUERY($cor0, {
 LogicalAggregate(group=[{}], EXPR$0=[MAX($0)])
   LogicalProject(NAME=[$1])
@@ -7252,6 +7256,7 @@ LogicalSort(fetch=[1])
 })], variablesSet=[[$cor0]])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
+<<<<<<< HEAD
     </Resource>
   </TestCase>
   <TestCase name="testUnnestArrayNoExpand">
@@ -7284,6 +7289,24 @@ LogicalProject(EMPNO=[$0], JOB=[$2])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 })])
   LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+=======
+        </Resource>
+    </TestCase>
+    <TestCase name="testUnnestSelectRex">
+        <Resource name="sql">
+            <![CDATA[select*from unnest(select multiset[deptno] from dept)]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EXPR$0=[$0])
+  Uncollect
+    LogicalProject(EXPR$0=[MULTISET($cor0, {
+LogicalUnion(all=[true])
+  LogicalProject(EXPR$0=[$cor0.DEPTNO])
+    LogicalValues(tuples=[[{ 0 }]])
+})])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+>>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
 ]]>
     </Resource>
   </TestCase>

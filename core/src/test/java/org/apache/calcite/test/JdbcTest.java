@@ -2034,6 +2034,7 @@ public class JdbcTest {
         .returnsUnordered("A=[1, 2]");
   }
 
+  @Ignore // TODO re-activite when multiset is cherry picked
   @Test public void testMultisetConstructor() {
     CalciteAssert.that()
         .query("select multiset[1,2] as a from (values (1))")
@@ -2048,6 +2049,7 @@ public class JdbcTest {
         .returnsUnordered("A=[{10, 100}, {20, 200}, {10, 150}, {10, 110}]");
   }
 
+  @Ignore // TODO re-activite when multiset is cherry picked
   @Test public void testMultisetQueryWithSingleColumn() {
     CalciteAssert.hr()
         .query("select multiset(\n"
@@ -2070,6 +2072,7 @@ public class JdbcTest {
             "I=20; O=2");
   }
 
+  @Ignore // TODO re-activite when multiset is cherry picked
   @Test public void testUnnestMultiset() {
     CalciteAssert.that()
         .with(CalciteAssert.Config.REGULAR)

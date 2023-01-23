@@ -434,8 +434,13 @@ public class DiffRepository {
             expected2.replace(Util.LINE_SEPARATOR, "\n");
         String actualCanonical =
             actual.replace(Util.LINE_SEPARATOR, "\n");
-        Assertions.assertEquals(expected2Canonical, actualCanonical, tag);
-      } catch (AssertionFailedError e) {
+        Assert.assertEquals(
+            tag,
+            "\n"
+                + expected2Canonical,
+            "\n"
+                + actualCanonical);
+      } catch (ComparisonFailure e) {
         amend(expected, actual);
         throw e;
       }

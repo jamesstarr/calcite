@@ -735,76 +735,7 @@ public class RelBuilder {
     return RexSubQuery.scalar(f.apply(this), null);
   }
 
-  /** Creates an ARRAY sub-query.
-   *
-   * <p>For example,
-   *
-   * <pre>{@code
-   * b.scan("Depts")
-   *     .project(
-   *         b.field("deptno")
-   *         b.arrayQuery(b2 ->
-   *             b2.scan("Emps")
-   *                 .build()))
-   * }</pre>
-   *
-   * <p>is equivalent to the SQL
-   *
-   * <pre>{@code
-   * SELECT deptno, ARRAY (SELECT * FROM Emps)
-   * FROM Depts
-   * }</pre> */
-  public RexSubQuery arrayQuery(Function<RelBuilder, RelNode> f) {
-    return RexSubQuery.array(f.apply(this), null);
-  }
-
-  /** Creates a MULTISET sub-query.
-   *
-   * <p>For example,
-   *
-   * <pre>{@code
-   * b.scan("Depts")
-   *     .project(
-   *         b.field("deptno")
-   *         b.multisetQuery(b2 ->
-   *             b2.scan("Emps")
-   *                 .build()))
-   * }</pre>
-   *
-   * <p>is equivalent to the SQL
-   *
-   * <pre>{@code
-   * SELECT deptno, MULTISET (SELECT * FROM Emps)
-   * FROM Depts
-   * }</pre> */
-  public RexSubQuery multisetQuery(Function<RelBuilder, RelNode> f) {
-    return RexSubQuery.multiset(f.apply(this), null);
-  }
-
-  /** Creates a MAP sub-query.
-   *
-   * <p>For example,
-   *
-   * <pre>{@code
-   * b.scan("Depts")
-   *     .project(
-   *         b.field("deptno")
-   *         b.multisetQuery(b2 ->
-   *             b2.scan("Emps")
-   *                 .project(b2.field("empno"), b2.field("job"))
-   *                 .build()))
-   * }</pre>
-   *
-   * <p>is equivalent to the SQL
-   *
-   * <pre>{@code
-   * SELECT deptno, MAP (SELECT empno, job FROM Emps)
-   * FROM Depts
-   * }</pre> */
-  public RexSubQuery mapQuery(Function<RelBuilder, RelNode> f) {
-    return RexSubQuery.map(f.apply(this), null);
-  }
-
+>>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
   /** Creates an AND. */
   public RexNode and(RexNode... operands) {
     return and(ImmutableList.copyOf(operands));
@@ -1428,7 +1359,6 @@ public class RelBuilder {
   }
 
   /** Creates a {@link Project} of the given list
->>>>>>> a532c10f9 ([CALCITE-3730] Add hints to RelBuilder)
   private RelBuilder project_(
       Iterable<? extends RexNode> nodes,
       Iterable<String> fieldNames,
@@ -3014,9 +2944,6 @@ public class RelBuilder {
     return this;
   }
 
-<<<<<<< HEAD
-=======
-=======
 =======
   /** Clears the stack.
    *
@@ -3480,7 +3407,10 @@ public class RelBuilder {
 
   /** Shuttle that shifts a predicate's inputs to the left, replacing early
    * ones with references to a
+<<<<<<< HEAD
    * {@link RexCorrelVariable}. */
+=======
+   * {@link org.apache.calcite.rex.RexCorrelVariable}. */
   public static class Shifter extends RexShuttle {
     private final RelNode left;
     private final CorrelationId id;

@@ -25,7 +25,7 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Collect;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.calcite.sql.type.SqlTypeUtil;
+>>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
 import org.apache.calcite.util.BuiltInMethod;
 
 import static java.util.Objects.requireNonNull;
@@ -56,6 +56,7 @@ public class EnumerableCollect extends Collect implements EnumerableRel {
     this(cluster, traitSet, input,
         deriveRowType(cluster.getTypeFactory(), SqlTypeName.MULTISET, fieldName,
             input.getRowType()));
+<<<<<<< HEAD
   }
 
   /**
@@ -69,6 +70,7 @@ public class EnumerableCollect extends Collect implements EnumerableRel {
     final RelTraitSet traitSet =
         cluster.traitSet().replace(EnumerableConvention.INSTANCE);
     return new EnumerableCollect(cluster, traitSet, input, rowType);
+=======
   }
 
   @Override public EnumerableCollect copy(RelTraitSet traitSet,

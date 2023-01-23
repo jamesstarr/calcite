@@ -29,11 +29,12 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 
-import com.google.common.base.Preconditions;
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Scalar expression that represents an IN, EXISTS or scalar sub-query.
@@ -65,12 +66,12 @@ public class RexSubQuery extends RexCall {
    * then {@code negated-comparison} is {@code <=}, and so forth.
    *
    * <p>Also =SOME is rewritten into IN</p> */
-  public static RexSubQuery some(RelNode rel, ImmutableList<RexNode> nodes,
-      SqlQuantifyOperator op) {
+  public static RexSubQuery some(RelNode rel, List<RexNode> nodes,
+      SqlQuantifyOperator op, @Nullable CorrelationId correlationId) {
     assert op.kind == SqlKind.SOME;
 
     if (op == SqlStdOperatorTable.SOME_EQ) {
-      return RexSubQuery.in(rel, nodes);
+      return RexSubQuery.in(rel, nodes, correlationId);
     }
     final RelDataType type = type(rel, nodes);
     return new RexSubQuery(type, op, nodes, rel, correlationId);
@@ -124,32 +125,7 @@ public class RexSubQuery extends RexCall {
             -1L);
     return new RexSubQuery(type, SqlStdOperatorTable.MULTISET_QUERY,
         ImmutableList.of(), rel, correlationId);
-  }
-
-  /** Creates an ARRAY sub-query. */
-  public static RexSubQuery array(RelNode rel, @Nullable CorrelationId correlationId) {
-    final RelDataTypeFactory typeFactory = rel.getCluster().getTypeFactory();
-    final RelDataType type =
-        typeFactory.createArrayType(
-            SqlTypeUtil.deriveCollectionQueryComponentType(SqlTypeName.ARRAY, rel.getRowType()),
-            -1L);
-    return new RexSubQuery(type, SqlStdOperatorTable.ARRAY_QUERY,
-        ImmutableList.of(), rel, correlationId);
-  }
-
-  /** Creates a MAP sub-query. */
-  public static RexSubQuery map(RelNode rel, @Nullable CorrelationId correlationId) {
-    final RelDataTypeFactory typeFactory = rel.getCluster().getTypeFactory();
-    final RelDataType rowType = rel.getRowType();
-    Preconditions.checkArgument(rowType.getFieldCount() == 2,
-        "MAP requires exactly two fields, got %s; row type %s",
-        rowType.getFieldCount(), rowType);
-    final List<RelDataTypeField> fieldList = rowType.getFieldList();
-    final RelDataType type =
-        typeFactory.createMapType(fieldList.get(0).getType(),
-            fieldList.get(1).getType());
-    return new RexSubQuery(type, SqlStdOperatorTable.MAP_QUERY,
-        ImmutableList.of(), rel, correlationId);
+>>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
   }
 
   public <R> R accept(RexVisitor<R> visitor) {
@@ -195,9 +171,10 @@ public class RexSubQuery extends RexCall {
     if (obj == null || getClass() != obj.getClass()) {
       return false;
     }
-    RexCall rexCall = (RexCall) obj;
+    RexSubQuery rexCall = (RexSubQuery) obj;
     return toString().equals(((RexCall) obj).toString())
-          && type.equals(rexCall.getType());
+          && type.equals(rexCall.getType())
+          && Objects.equal(correlationId, ((RexSubQuery) obj).correlationId);
   }
 
   @Override public int hashCode() {
@@ -205,7 +182,6 @@ public class RexSubQuery extends RexCall {
   }
 
 }
->>>>>>> e93a6fdc9 (DX-58856: Improving RexCall's equals method)
 
   @Override public boolean equals(Object obj) {
     if (this == obj) {
