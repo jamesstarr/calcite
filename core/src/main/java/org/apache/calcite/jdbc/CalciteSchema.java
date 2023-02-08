@@ -176,13 +176,6 @@ public abstract class CalciteSchema {
   /** Creates a TableEntryImpl with no SQLs. */
   protected TableEntryImpl tableEntry(String name, Table table) {
     return new TableEntryImpl(this, name, table, ImmutableList.of());
-<<<<<<< HEAD
-  }
-
-  /** Creates a TableEntryImpl with no SQLs. */
-  protected TypeEntryImpl typeEntry(String name, RelProtoDataType relProtoDataType) {
-    return new TypeEntryImpl(this, name, relProtoDataType);
-=======
   }
 
   /** Creates a TableEntryImpl with no SQLs. */
@@ -779,7 +772,6 @@ public abstract class CalciteSchema {
 <<<<<<< HEAD
 =======
       assert table != null;
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
       this.table = Objects.requireNonNull(table);
     }
 

@@ -218,30 +218,6 @@ class LatticeTest {
               lattice.sql(ImmutableBitSet.of(0, 1), false,
                   ImmutableList.of()),
               is(sql2));
-<<<<<<< HEAD
-        });
-  }
-
-  /** Tests some of the properties of the {@link Lattice} data structure. */
-  @Test void testLattice() throws Exception {
-    modelWithLattice("star",
-        "select 1 from \"foodmart\".\"sales_fact_1997\" as s\n"
-            + "join \"foodmart\".\"product\" as p using (\"product_id\")\n"
-            + "join \"foodmart\".\"time_by_day\" as t on t.\"time_id\" = s.\"time_id\"")
-        .doWithConnection(c -> {
-          final SchemaPlus schema = c.getRootSchema();
-          final SchemaPlus adhoc = schema.getSubSchema("adhoc");
-          assertThat(adhoc.getTableNames().contains("EMPLOYEES"), is(true));
-          final Map.Entry<String, CalciteSchema.LatticeEntry> entry =
-              adhoc.unwrap(CalciteSchema.class).getLatticeMap().firstEntry();
-          final Lattice lattice = entry.getValue().getLattice();
-          assertThat(lattice.firstColumn("S"), is(10));
-          assertThat(lattice.firstColumn("P"), is(18));
-          assertThat(lattice.firstColumn("T"), is(0));
-          assertThat(lattice.firstColumn("PC"), is(-1));
-          assertThat(lattice.defaultMeasures.size(), is(1));
-          assertThat(lattice.rootNode.descendants.size(), is(3));
-=======
         });
   }
 
@@ -315,7 +291,6 @@ class LatticeTest {
         + "join \"foodmart\".\"product\" as p using (\"product_id\")\n"
         + "left join \"foodmart\".\"time_by_day\" as t on s.\"product_id\" = p.\"product_id\"")
         .connectThrows("only non nulls-generating join allowed, but got LEFT");
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
   }
 
   /** When a lattice is registered, there is a table with the same name.

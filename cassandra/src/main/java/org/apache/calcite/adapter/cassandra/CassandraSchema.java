@@ -51,9 +51,6 @@ import com.datastax.driver.core.KeyspaceMetadata;
 import com.datastax.driver.core.MaterializedViewMetadata;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.TableMetadata;
-<<<<<<< HEAD
-import com.datastax.driver.core.TupleType;
-=======
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -62,7 +59,6 @@ import org.slf4j.Logger;
 <<<<<<< HEAD
 import java.net.InetSocketAddress;
 =======
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

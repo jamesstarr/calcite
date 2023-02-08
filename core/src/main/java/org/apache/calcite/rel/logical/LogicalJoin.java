@@ -151,15 +151,6 @@ public final class LogicalJoin extends Join {
         input.getExpression("condition"), ImmutableSet.of(),
         input.getEnum("joinType", JoinRelType.class), false,
         ImmutableList.of());
-<<<<<<< HEAD
-  }
-
-  /** Creates a LogicalJoin. */
-  public static LogicalJoin create(RelNode left, RelNode right, List<RelHint> hints,
-      RexNode condition, Set<CorrelationId> variablesSet, JoinRelType joinType) {
-    return create(left, right, hints, condition, variablesSet, joinType, false,
-        ImmutableList.of());
-=======
   }
 
   /** Creates a LogicalJoin. */
@@ -210,7 +201,6 @@ public final class LogicalJoin extends Join {
   public List<RelDataTypeField> getSystemFieldList() {
     return systemFieldList;
   }
->>>>>>> c07d23e83 ([CALCITE-3856] Remove code to be removed before 1.23)
 
   @Override public RelNode withHints(List<RelHint> hintList) {
     return new LogicalJoin(getCluster(), traitSet, hintList,

@@ -91,10 +91,6 @@ class OsAdapterTest {
     }
   }
 
-<<<<<<< HEAD
-  private static void assumeToolExists(String command) {
-    assumeTrue(checkProcessExists(command), () -> command + " does not exist");
-=======
   @Test public void testDu() {
     Assume.assumeFalse("Skip: the 'du' table does not work on Windows",
         isWindows());
@@ -331,7 +327,6 @@ class OsAdapterTest {
   @Test void testStdin() throws SQLException {
     try (Hook.Closeable ignore = Hook.STANDARD_STREAMS.addThread(
 =======
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
         (Consumer<Holder<Object[]>>) o -> {
           final Object[] values = o.get();
           final InputStream in = (InputStream) values[0];

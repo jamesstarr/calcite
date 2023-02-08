@@ -266,10 +266,6 @@ public class StreamTest {
           }
           // With a 3 millisecond delay, typically n is between 200 - 400
           // before cancel takes effect.
-<<<<<<< HEAD
-          assertThat(n,
-              ComparatorMatcherBuilder.<Integer>usingNaturalOrdering().greaterThan(5));
-=======
           assertTrue("n is " + n, n > 5);
         });
   }
@@ -537,7 +533,6 @@ public class StreamTest {
     public Schema.TableType getJdbcTableType() {
       return Schema.TableType.TABLE;
     }
->>>>>>> 9d2c4bca7 (Revert "Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)"")
 
     @Override public boolean isRolledUp(String column) {
       return false;

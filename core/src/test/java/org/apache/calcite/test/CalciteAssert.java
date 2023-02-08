@@ -981,9 +981,6 @@ public class CalciteAssert {
    */
   public static void assertArrayEqual(
       String message, Object[] expected, Object[] actual) {
-<<<<<<< HEAD
-    assertEquals(str(expected), str(actual), message);
-=======
     assertEquals(message, str(expected), str(actual));
 
   }
@@ -1425,7 +1422,6 @@ public class CalciteAssert {
     private int limit;
     private boolean materializationsEnabled = false;
     private final List<Pair<Hook, Consumer>> hooks = new ArrayList<>();
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
     private AssertQuery(ConnectionFactory connectionFactory, String sql) {
       this.sql = sql;

@@ -110,7 +110,7 @@ class ProfilerTest {
 
   @Test void testProfileScott() throws Exception {
     final String sql = "select * from \"scott\".emp\n"
-        + "join \"scott\".dept using (deptno)";
+        + "join \"scott\".dept on emp.deptno = dept.deptno";
     sql(sql)
         .where(statistic ->
             !(statistic instanceof Profiler.Distribution)
@@ -416,7 +416,7 @@ class ProfilerTest {
 
   private Fluid scott() throws Exception {
     final String sql = "select * from \"scott\".emp\n"
-        + "join \"scott\".dept using (deptno)";
+        + "join \"scott\".dept on emp.deptno = dept.deptno";
     return sql(sql)
         .where(Fluid.STATISTIC_PREDICATE)
         .sort(Fluid.ORDERING.reverse())

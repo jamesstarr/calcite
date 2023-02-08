@@ -1115,6 +1115,10 @@ class UtilTest {
 >>>>>>> 97b385c7d (Revert "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING")
 =======
 
+    assertThat(list2.appendAll(Collections.emptyList()), sameInstance(list2));
+    assertThat(list2.appendAll(list), sameInstance(list2));
+    //noinspection CollectionAddedToSelf
+    assertThat(list2.appendAll(list2), is(Arrays.asList(1, 3, 5, 1, 3, 5)));
   }
 
   /**

@@ -28,10 +28,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-<<<<<<< HEAD
-import java.nio.file.Paths;
-import java.util.Locale;
-=======
 import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 
@@ -49,7 +45,6 @@ public abstract class Sources {
     return new FileSource(url);
   }
 
->>>>>>> 1d2fb0f01 ([CALCITE-3017] Re-organize how we represent built-in operators that are not in the standard operator table)
   public static Source file(File baseDirectory, String fileName) {
     final File file = new File(fileName);
     if (baseDirectory != null && !file.isAbsolute()) {

@@ -700,9 +700,6 @@ class JdbcAdapterTest {
                 connection.getMetaData().getTables(null, null, "%", null);
             assertFalse(CalciteAssert.toString(resultSet).isEmpty());
           } catch (SQLException e) {
-<<<<<<< HEAD
-            throw TestUtil.rethrow(e);
-=======
             throw new RuntimeException(e);
           }
         });
@@ -915,7 +912,6 @@ class JdbcAdapterTest {
 
     that.doWithConnection(connection -> {
       try (LockWrapper ignore = exclusiveCleanDb(connection)) {
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
         final String sql = "DELETE FROM \"foodmart\".\"expense_fact\"\n"
             + "WHERE \"store_id\"=666\n";
         final String explain = "PLAN=JdbcToEnumerableConverter\n"

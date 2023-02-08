@@ -134,9 +134,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Supplier;
-<<<<<<< HEAD
-import java.util.stream.Collectors;
-=======
 
 /**
  * <code>RelOptUtil</code> defines static utility methods for use in optimizing
@@ -459,7 +456,6 @@ public abstract class RelOptUtil {
   }
 
   /**
->>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
    * Returns a permutation describing where output fields come from. In
    * the returned map, value of {@code map.getTargetOpt(i)} is {@code n} if
    * field {@code i} projects input field {@code n} or applies a cast on

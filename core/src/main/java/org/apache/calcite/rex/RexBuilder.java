@@ -79,16 +79,6 @@ public class RexBuilder {
   public static final SqlSpecialOperator GET_OPERATOR =
       new SqlSpecialOperator("_get", SqlKind.OTHER_FUNCTION);
 
-<<<<<<< HEAD
-  /** The smallest valid {@code int} value, as a {@link BigDecimal}. */
-  private static final BigDecimal INT_MIN =
-      BigDecimal.valueOf(Integer.MIN_VALUE);
-
-  /** The largest valid {@code int} value, as a {@link BigDecimal}. */
-  private static final BigDecimal INT_MAX =
-      BigDecimal.valueOf(Integer.MAX_VALUE);
-
-=======
   //~ Instance fields --------------------------------------------------------
 
   protected final RelDataTypeFactory typeFactory;
@@ -1076,7 +1066,6 @@ public class RexBuilder {
       return charEmpty;
     }
     return makeCharLiteral(new NlsString(s, null, null));
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   }
 
   /**

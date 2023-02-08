@@ -117,10 +117,6 @@ import org.apache.calcite.sql2rel.SqlToRelConverter;
   }
 
   public static Program getProgram() {
-<<<<<<< HEAD
-    return (planner, rel, requiredOutputTraits, materializations, lattices) ->
-        null;
-=======
     return (planner, rel, requiredOutputTraits, materializations, lattices)
         -> null;
   }
@@ -255,4 +251,3 @@ import org.apache.calcite.sql2rel.SqlToRelConverter;
 <<<<<<< HEAD
 =======
 // End Programs.java
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)

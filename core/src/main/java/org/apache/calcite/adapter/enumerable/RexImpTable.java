@@ -120,6 +120,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CBRT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CEIL;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CHARACTER_LENGTH;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CHAR_LENGTH;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.COALESCE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.COLLECT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.CONCAT;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.COS;
@@ -507,7 +508,7 @@ public class RexImpTable {
         NullPolicy.NONE, NotImplementor.of(subMultisetImplementor), false);
 
     map.put(CASE, new CaseImplementor());
-
+    map.put(COALESCE, new CoalesceImplementor());
     map.put(CAST, new CastOptimizedImplementor());
     map.put(DATE, new CastOptimizedImplementor());
 
@@ -694,9 +695,6 @@ public class RexImpTable {
     case ANY:
     case STRICT:
     case SEMI_STRICT:
-<<<<<<< HEAD
-    case ARG0:
-=======
       return (translator, call, nullAs) -> implementNullSemantics0(
           translator, call, nullAs, nullPolicy, harmonize,
           implementor);
@@ -2702,6 +2700,8 @@ public class RexImpTable {
   }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
   /** Implementor for the SQL {@code COALESCE} operator. */
   private static class CoalesceImplementor implements CallImplementor {
     public Expression implement(RexToLixTranslator translator, RexCall call,
@@ -2712,11 +2712,6 @@ public class RexImpTable {
     private Expression implementRecurse(RexToLixTranslator translator,
         List<RexNode> operands, NullAs nullAs) {
       if (operands.size() == 1) {
-<<<<<<< HEAD
-        return translator.translate(operands.get(0), nullAs);
-      } else {
-        return Expressions.condition(
-            translator.translate(operands.get(0), NullAs.IS_NOT_NULL),
 =======
         return translator.translate(operands.get(0));
       } else {
@@ -2728,7 +2723,10 @@ public class RexImpTable {
     }
   }
 
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 9ea1621a9 (Reapply "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING"")
   /** Implementor for the SQL {@code CAST} function that optimizes if, say, the
    * argument is already of the desired type. */
   private static class CastOptimizedImplementor implements CallImplementor {

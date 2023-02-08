@@ -788,13 +788,8 @@ public final class SqlParserUtil {
     }
   }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
 =======
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
   /** Implementation of
    * {@link org.apache.calcite.sql.SqlSpecialOperator.TokenSequence}
    * based on an existing parser. */

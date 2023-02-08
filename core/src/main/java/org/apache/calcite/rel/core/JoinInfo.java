@@ -47,13 +47,6 @@ public class JoinInfo {
   public final ImmutableList<RexNode> nonEquiConditions;
 
   /** Creates a JoinInfo. */
-<<<<<<< HEAD
-  protected JoinInfo(ImmutableIntList leftKeys, ImmutableIntList rightKeys,
-      ImmutableList<RexNode> nonEquiConditions) {
-    this.leftKeys = Objects.requireNonNull(leftKeys);
-    this.rightKeys = Objects.requireNonNull(rightKeys);
-    this.nonEquiConditions = Objects.requireNonNull(nonEquiConditions);
-=======
   protected JoinInfo(ImmutableIntList leftKeys, ImmutableIntList rightKeys) {
     this.leftKeys = Objects.requireNonNull(leftKeys);
     this.rightKeys = Objects.requireNonNull(rightKeys);
@@ -148,5 +141,4 @@ public class JoinInfo {
       return remaining;
     }
   }
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 }
