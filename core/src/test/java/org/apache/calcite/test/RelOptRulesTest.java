@@ -308,7 +308,7 @@ public class RelOptRulesTest extends RelOptTestBase {
             .addRuleInstance(CoreRules.FILTER_INTO_JOIN)
             .build();
     final String sql = "select *\n"
-        + "from dept left join emp using (deptno)\n"
+        + "from dept left join emp on dept.deptno = emp.deptno\n"
         + "where emp.deptno is not null and emp.sal > 100";
     sql(sql)
         .withDecorrelation(true)
@@ -2293,10 +2293,10 @@ public class RelOptRulesTest extends RelOptTestBase {
         .build();
 
     // Plan should be empty
-    checkPlanning(program,
-        "select * from (\n"
-            + "select * from emp where false)\n"
-            + "join dept using (deptno)");
+    final String sql = "select * from (\n"
+        + "select * from emp where false) as e\n"
+        + "join dept as d on e.deptno = d.deptno";
+    sql(sql).with(program).check();
   }
 
   @Test public void testEmptyJoinLeft() {
@@ -2308,10 +2308,10 @@ public class RelOptRulesTest extends RelOptTestBase {
         .build();
 
     // Plan should be empty
-    checkPlanning(program,
-        "select * from (\n"
-            + "select * from emp where false)\n"
-            + "left join dept using (deptno)");
+    final String sql = "select * from (\n"
+        + "  select * from emp where false) e\n"
+        + "left join dept d on e.deptno = d.deptno";
+    sql(sql).with(program).check();
   }
 
   @Test public void testEmptyJoinRight() {
@@ -2324,10 +2324,10 @@ public class RelOptRulesTest extends RelOptTestBase {
 
     // Plan should be equivalent to "select * from emp join dept".
     // Cannot optimize away the join because of RIGHT.
-    checkPlanning(program,
-        "select * from (\n"
-            + "select * from emp where false)\n"
-            + "right join dept using (deptno)");
+    final String sql = "select * from (\n"
+        + "  select * from emp where false) e\n"
+        + "right join dept d on e.deptno = d.deptno";
+    sql(sql).with(program).check();
   }
 
   @Test public void testEmptySort() {
@@ -3509,8 +3509,8 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.SORT_JOIN_TRANSPOSE)
         .build();
     final String sql = "select * from sales.emp e left join (\n"
-            + "select * from sales.dept d) using (deptno)\n"
-            + "order by sal limit 10";
+        + "  select * from sales.dept d) d on e.deptno = d.deptno\n"
+        + "order by sal limit 10";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
   }
 
@@ -3522,8 +3522,8 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.SORT_JOIN_TRANSPOSE)
         .build();
     final String sql = "select * from sales.emp e right join (\n"
-            + "select * from sales.dept d) using (deptno)\n"
-            + "order by name";
+        + "  select * from sales.dept d) d on e.deptno = d.deptno\n"
+        + "order by name";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
   }
 
@@ -3535,8 +3535,8 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.SORT_JOIN_TRANSPOSE)
         .build();
     // This one cannot be pushed down
-    final String sql = "select * from sales.emp left join (\n"
-        + "select * from sales.dept) using (deptno)\n"
+    final String sql = "select * from sales.emp e left join (\n"
+        + "  select * from sales.dept) d on e.deptno = d.deptno\n"
         + "order by sal, name limit 10";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql, true);
   }
@@ -3568,7 +3568,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .addRuleInstance(CoreRules.SORT_JOIN_TRANSPOSE)
         .build();
     final String sql = "select * from sales.emp e right join (\n"
-        + "select * from sales.dept d) using (deptno)\n"
+        + "  select * from sales.dept d) d on e.deptno = d.deptno\n"
         + "order by name";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql);
   }
@@ -3587,7 +3587,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .build();
     // SortJoinTransposeRule should not be fired again.
     final String sql = "select * from sales.emp e right join (\n"
-        + "select * from sales.dept d) using (deptno)\n"
+        + "  select * from sales.dept d) d on e.deptno = d.deptno\n"
         + "limit 10";
     checkPlanning(tester, preProgram, new HepPlanner(program), sql, true);
   }

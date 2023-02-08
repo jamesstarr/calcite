@@ -1092,6 +1092,10 @@ public class UtilTest {
     //noinspection EqualsWithItself
     assertThat(list2.equals(list2), is(true));
 
+    assertThat(list2.appendAll(Collections.emptyList()), sameInstance(list2));
+    assertThat(list2.appendAll(list), sameInstance(list2));
+    //noinspection CollectionAddedToSelf
+    assertThat(list2.appendAll(list2), is(Arrays.asList(1, 3, 5, 1, 3, 5)));
   }
 
   /**
