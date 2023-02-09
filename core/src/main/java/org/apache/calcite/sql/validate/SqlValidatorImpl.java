@@ -374,7 +374,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
           Util.first(originalType, unknownType),
           list,
           catalogReader.nameMatcher().createSet(),
-
           types,
           includeSystemVars);
     }
@@ -567,7 +566,9 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       // If NATURAL JOIN or USING is present, move key fields to the front of
       // the list, per standard SQL. Disabled if there are dynamic fields.
       if (!hasDynamicStruct || Bug.CALCITE_2400_FIXED) {
-        new Permute(scope.getNode().getFrom(), 0).permute(selectItems, fields);
+        if (null != scope.getNode().getFrom()) {
+          new Permute(scope.getNode().getFrom(), 0).permute(selectItems, fields);
+        }
       }
       return true;
 
@@ -3270,7 +3271,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       break;
     case ON:
       Preconditions.checkArgument(condition != null);
-
       SqlNode expandedCondition = condition;
       if (scope.getNode() instanceof SqlSelect) {
         expandedCondition = expandWithAlias(condition, joinScope, (SqlSelect) scope.getNode());
@@ -3320,9 +3320,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
           SqlValidatorUtil.deriveNaturalJoinColumnList(nameMatcher,
               leftRowType, rightRowType);
 
-
       // Check compatibility of the chosen columns.
-
       for (String name : naturalColumnNames) {
         final RelDataType leftColType =
             nameMatcher.field(leftRowType, name).getType();
@@ -3951,7 +3949,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     assert config.typeCoercionEnabled();
     return this.typeCoercion;
   }
-
 
   public Config config() {
     return this.config;
@@ -5279,7 +5276,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
   private void validateDefinitions(SqlMatchRecognize mr,
       MatchRecognizeScope scope) {
     final Set<String> aliases = catalogReader.nameMatcher().createSet();
-
     for (SqlNode item : mr.getPatternDefList().getList()) {
       final String alias = alias(item);
       if (!aliases.add(alias)) {
