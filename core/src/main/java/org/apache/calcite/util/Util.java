@@ -1666,7 +1666,6 @@ public class Util {
       final Iterable<? super E> iterable,
       final Class<E> clazz) {
     return () -> cast(iterable.iterator(), clazz);
-
   }
 
   /**
@@ -1691,7 +1690,6 @@ public class Util {
       final Iterable<?> iterable,
       final Class<E> includeFilter) {
     return () -> new Filterator<>(iterable.iterator(), includeFilter);
-
   }
 
   public static <E> Collection<E> filter(
