@@ -45,9 +45,6 @@ public interface ElasticsearchRel extends RelNode {
    * {@link ElasticsearchRel} nodes into an Elasticsearch query.
    */
   class Implementor {
-<<<<<<< HEAD
-
-=======
     final List<String> list = new ArrayList<>();
 
     /**
@@ -101,7 +98,6 @@ public interface ElasticsearchRel extends RelNode {
       groupBy.add(field);
     }
 
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
     void addAggregation(String field, String expression) {
       Objects.requireNonNull(field, "field");
       Objects.requireNonNull(expression, "expression");

@@ -49,18 +49,6 @@ class QueryBuilders {
   }
 
   /**
-<<<<<<< HEAD
-   * A Query that matches documents containing a single character term.
-   *
-   * @param name  The name of the field
-   * @param value The value of the term
-   */
-  static TermQueryBuilder termQuery(String name, char value) {
-    return new TermQueryBuilder(name, value);
-  }
-
-  /**
-=======
    * A Query that matches documents containing a term.
    *
    * @param name  The name of the field
@@ -111,7 +99,6 @@ class QueryBuilders {
   }
 
   /**
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
    * A Query that matches documents within an range of terms.
    *
    * @param name The field name

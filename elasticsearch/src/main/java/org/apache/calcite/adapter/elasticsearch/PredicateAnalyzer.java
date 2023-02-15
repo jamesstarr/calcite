@@ -131,9 +131,6 @@ import static java.lang.String.format;
       switch (syntax) {
       case BINARY:
         switch (call.getKind()) {
-<<<<<<< HEAD
-        case CONTAINS:
-=======
         case AND:
         case OR:
         case LIKE:
@@ -151,7 +148,6 @@ import static java.lang.String.format;
         switch (call.getKind()) {
         case CAST:
         case LIKE:
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
         case OTHER_FUNCTION:
           return true;
         case CASE:
@@ -166,17 +162,6 @@ import static java.lang.String.format;
         case IS_NOT_NULL:
         case IS_NULL:
           return true;
-<<<<<<< HEAD
-        }
-      case PREFIX: // NOT()
-        switch (call.getKind()) {
-        case NOT:
-          return true;
-        }
-      // fall through
-      case FUNCTION_ID:
-      case FUNCTION_STAR:
-=======
         default: // fall through
         }
         // fall through
@@ -201,17 +186,12 @@ import static java.lang.String.format;
         return binary(call);
       case POSTFIX:
         return postfix(call);
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
       case SPECIAL:
         switch (call.getKind()) {
         case CAST:
           return toCastExpression(call);
         case LIKE:
           return binary(call);
-<<<<<<< HEAD
-        case CONTAINS:
-          return binary(call);
-=======
         default:
           // manually process ITEM($0, 'foo') which in our case will be named attribute
           if (call.getOperator().getName().equalsIgnoreCase("ITEM")) {
@@ -259,7 +239,6 @@ import static java.lang.String.format;
       }
     }
 
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
     private QueryExpression postfix(RexCall call) {
       Preconditions.checkArgument(call.getKind() == SqlKind.IS_NULL
           || call.getKind() == SqlKind.IS_NOT_NULL);
@@ -316,10 +295,6 @@ import static java.lang.String.format;
       }
 
       switch (call.getKind()) {
-<<<<<<< HEAD
-      case CONTAINS:
-        return QueryExpression.create(pair.getKey()).contains(pair.getValue());
-=======
       case LIKE:
         throw new UnsupportedOperationException("LIKE not yet supported");
       case EQUALS:
@@ -512,7 +487,6 @@ import static java.lang.String.format;
       return false;
     }
 
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
     public abstract QueryExpression exists();
 
     public abstract QueryExpression notExists();
@@ -546,9 +520,6 @@ import static java.lang.String.format;
         throw new PredicateAnalyzerException(message);
       }
     }
-<<<<<<< HEAD
-
-=======
   }
 
   /**
@@ -600,7 +571,6 @@ import static java.lang.String.format;
           + "cannot be applied to a compound expression");
     }
 
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
     @Override public QueryExpression notExists() {
       throw new PredicateAnalyzerException("SqlOperatorImpl ['notExists'] "
           + "cannot be applied to a compound expression");
@@ -673,17 +643,6 @@ import static java.lang.String.format;
     }
 
     @Override public QueryBuilder builder() {
-<<<<<<< HEAD
-      if (builder == null) {
-        throw new IllegalStateException("Builder was not initialized");
-      }
-      return builder;
-    }
-
-    @Override public QueryExpression not() {
-      builder = boolQuery().mustNot(builder());
-      return this;
-=======
       return Objects.requireNonNull(builder);
     }
 
@@ -704,7 +663,6 @@ import static java.lang.String.format;
       return this;
     }
 
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
     @Override public QueryExpression notLike(LiteralExpression literal) {
       builder = boolQuery()
               // NOT LIKE should return false when field is NULL

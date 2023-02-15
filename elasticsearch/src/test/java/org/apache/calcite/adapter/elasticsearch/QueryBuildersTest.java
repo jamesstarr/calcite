@@ -50,50 +50,6 @@ public class QueryBuildersTest {
         toJson(QueryBuilders.termQuery("foo", 42.42D)));
     assertEquals("{\"term\":{\"foo\":1.1}}",
         toJson(QueryBuilders.termQuery("foo", 1.1F)));
-<<<<<<< HEAD
-    assertEquals("{\"term\":{\"foo\":1}}",
-        toJson(QueryBuilders.termQuery("foo", new BigDecimal(1))));
-    assertEquals("{\"term\":{\"foo\":121}}",
-        toJson(QueryBuilders.termQuery("foo", new BigInteger("121"))));
-    assertEquals("{\"term\":{\"foo\":111}}",
-        toJson(QueryBuilders.termQuery("foo", new AtomicLong(111))));
-    assertEquals("{\"term\":{\"foo\":222}}",
-        toJson(QueryBuilders.termQuery("foo", new AtomicInteger(222))));
-    assertEquals("{\"term\":{\"foo\":true}}",
-        toJson(QueryBuilders.termQuery("foo", new AtomicBoolean(true))));
-  }
-
-  @Test void terms() throws Exception {
-    assertEquals("{\"terms\":{\"foo\":[]}}",
-        toJson(QueryBuilders.termsQuery("foo", Collections.emptyList())));
-
-    assertEquals("{\"terms\":{\"bar\":[]}}",
-        toJson(QueryBuilders.termsQuery("bar", Collections.emptySet())));
-
-    assertEquals("{\"terms\":{\"singleton\":[0]}}",
-        toJson(QueryBuilders.termsQuery("singleton", Collections.singleton(0))));
-
-    assertEquals("{\"terms\":{\"foo\":[true]}}",
-        toJson(QueryBuilders.termsQuery("foo", Collections.singleton(true))));
-
-    assertEquals("{\"terms\":{\"foo\":[\"bar\"]}}",
-        toJson(QueryBuilders.termsQuery("foo", Collections.singleton("bar"))));
-
-    assertEquals("{\"terms\":{\"foo\":[\"bar\"]}}",
-        toJson(QueryBuilders.termsQuery("foo", Collections.singletonList("bar"))));
-
-    assertEquals("{\"terms\":{\"foo\":[true,false]}}",
-        toJson(QueryBuilders.termsQuery("foo", Arrays.asList(true, false))));
-
-    assertEquals("{\"terms\":{\"foo\":[1,2,3]}}",
-        toJson(QueryBuilders.termsQuery("foo", Arrays.asList(1, 2, 3))));
-
-    assertEquals("{\"terms\":{\"foo\":[1.1,2.2,3.3]}}",
-        toJson(QueryBuilders.termsQuery("foo", Arrays.asList(1.1, 2.2, 3.3))));
-  }
-
-  @Test void boolQuery() throws Exception {
-=======
   }
 
   @Test
@@ -154,7 +110,6 @@ public class QueryBuildersTest {
         toJson(QueryBuilders.rangeQuery("f").lt(1).lt(2).lte(3)));
   }
 
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
   private String toJson(QueryBuilders.QueryBuilder builder) throws IOException {
     StringWriter writer = new StringWriter();
     JsonGenerator gen = mapper.getFactory().createGenerator(writer);

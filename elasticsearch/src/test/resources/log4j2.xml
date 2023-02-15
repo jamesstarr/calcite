@@ -56,7 +56,11 @@
     </Root>
   </Loggers>
 <<<<<<< HEAD
+<<<<<<< HEAD
 </Configuration>
 =======
 </Configuration>
 >>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
+=======
+</Configuration>
+>>>>>>> 2fd3f202e (Reapply [CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin))

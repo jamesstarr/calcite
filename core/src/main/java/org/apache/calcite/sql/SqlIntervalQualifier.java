@@ -130,6 +130,7 @@ public class SqlIntervalQualifier extends SqlNode {
   public SqlTypeName typeName() {
     switch (timeUnitRange) {
     case YEAR:
+    case ISOYEAR:
     case CENTURY:
     case DECADE:
     case MILLENNIUM:
@@ -140,6 +141,7 @@ public class SqlIntervalQualifier extends SqlNode {
     case QUARTER:
       return SqlTypeName.INTERVAL_MONTH;
     case DOW:
+    case ISODOW:
     case DOY:
     case DAY:
     case WEEK:

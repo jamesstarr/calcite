@@ -45,10 +45,6 @@ import java.util.Objects;
  *    }
  *  }
  *  </pre>
-<<<<<<< HEAD
- */
-class EmbeddedElasticsearchPolicy {
-=======
  * @see ExternalResource
  */
 class EmbeddedElasticsearchPolicy extends ExternalResource {
@@ -169,7 +165,6 @@ class EmbeddedElasticsearchPolicy extends ExternalResource {
     return client;
   }
 
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
   /**
    * HTTP address for rest clients (can be ES native or any other).
    * @return http address to connect to

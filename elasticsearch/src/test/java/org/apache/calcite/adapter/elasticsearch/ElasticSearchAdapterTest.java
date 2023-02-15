@@ -29,12 +29,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.io.LineProcessor;
 import com.google.common.io.Resources;
 
-<<<<<<< HEAD
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.ResourceAccessMode;
-import org.junit.jupiter.api.parallel.ResourceLock;
-=======
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -44,18 +38,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-<<<<<<< HEAD
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Consumer;
-=======
 import java.util.Map;
 
 /**
@@ -69,7 +56,6 @@ public class ElasticSearchAdapterTest {
 
   /** Default index/type name */
   private static final String ZIPS = "zips";
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
 
   /**
    * Used to create {@code zips} index and insert zip data in bulk.
