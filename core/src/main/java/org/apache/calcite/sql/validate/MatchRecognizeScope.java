@@ -22,9 +22,11 @@ import org.apache.calcite.sql.SqlMatchRecognize;
 import org.apache.calcite.sql.SqlNode;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Scope for expressions in a {@code MATCH_RECOGNIZE} clause.
@@ -43,7 +45,9 @@ public class MatchRecognizeScope extends ListScope {
       SqlMatchRecognize matchRecognize) {
     super(parent);
     this.matchRecognize = matchRecognize;
-    patternVars = validator.getCatalogReader().nameMatcher().createSet();
+    patternVars = validator.getCatalogReader().nameMatcher().isCaseSensitive()
+        ? new LinkedHashSet<String>()
+        : new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     patternVars.add(STAR);
   }
 
