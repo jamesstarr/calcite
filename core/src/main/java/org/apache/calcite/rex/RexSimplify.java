@@ -67,7 +67,6 @@ public class RexSimplify {
   public final RexBuilder rexBuilder;
   private final RelOptPredicateList predicates;
   final boolean unknownAsFalse;
-  final boolean predicateElimination;
   private final RexExecutor executor;
   private final Strong strong;
   /**
@@ -88,18 +87,16 @@ public class RexSimplify {
    */
   public RexSimplify(RexBuilder rexBuilder, RelOptPredicateList predicates,
       boolean unknownAsFalse, RexExecutor executor) {
-    this(rexBuilder, predicates, unknownAsFalse, true, false, executor);
+    this(rexBuilder, predicates, unknownAsFalse, false, executor);
   }
 
   /** Internal constructor. */
   private RexSimplify(RexBuilder rexBuilder, RelOptPredicateList predicates,
-      boolean unknownAsFalse, boolean predicateElimination, boolean paranoid,
-      RexExecutor executor) {
+      boolean unknownAsFalse, boolean paranoid, RexExecutor executor) {
     this.rexBuilder = Objects.requireNonNull(rexBuilder);
     this.predicates = Objects.requireNonNull(predicates);
 
     this.unknownAsFalse = unknownAsFalse;
-    this.predicateElimination = predicateElimination;
     this.paranoid = paranoid;
     this.executor = Objects.requireNonNull(executor);
   }
@@ -128,18 +125,18 @@ public class RexSimplify {
   @Deprecated // to be removed before 2.0
   public RexSimplify withUnknownAsFalse(boolean unknownAsFalse) {
     return unknownAsFalse == this.unknownAsFalse
-      ? this
-      : new RexSimplify(rexBuilder, predicates, unknownAsFalse, predicateElimination, paranoid,
-              executor);
+        ? this
+        : new RexSimplify(rexBuilder, predicates, unknownAsFalse, paranoid,
+            executor);
   }
 
   /** Returns a RexSimplify the same as this but with a specified
    * {@link #predicates} value. */
   public RexSimplify withPredicates(RelOptPredicateList predicates) {
     return predicates == this.predicates
-      ? this
-      : new RexSimplify(rexBuilder, predicates, unknownAsFalse, predicateElimination, paranoid,
-              executor);
+        ? this
+        : new RexSimplify(rexBuilder, predicates, unknownAsFalse, paranoid,
+            executor);
   }
 
   /** Returns a RexSimplify the same as this but which verifies that
@@ -149,19 +146,8 @@ public class RexSimplify {
    */
   public RexSimplify withParanoid(boolean paranoid) {
     return paranoid == this.paranoid
-      ? this
-      : new RexSimplify(rexBuilder, predicates, unknownAsFalse, predicateElimination, paranoid,
-              executor);
-  }
-
-  /** Returns a RexSimplify the same as this but with a specified {@link #predicateElimination}
-   * value.
-   * This is introduced temporarily; until CALCITE-2401 is fixed
-   */
-  private RexSimplify withPredicateElimination(boolean predicateElimination) {
-    return predicateElimination == this.predicateElimination
-      ? this
-      : new RexSimplify(rexBuilder, predicates, unknownAsFalse, predicateElimination, paranoid,
+        ? this
+        : new RexSimplify(rexBuilder, predicates, unknownAsFalse, paranoid,
             executor);
   }
 
@@ -1001,7 +987,7 @@ public class RexSimplify {
       final List<RexNode> notTerms = new ArrayList<>();
       RelOptUtil.decomposeConjunction(e, terms, notTerms);
 
-      if (unknownAsFalse && predicateElimination) {
+      if (unknownAsFalse) {
         simplifyAndTerms(terms);
       } else {
         simplifyList(terms);
@@ -1457,9 +1443,7 @@ public class RexSimplify {
     try {
       assert call.getKind() == SqlKind.OR;
       final List<RexNode> terms = RelOptUtil.disjunctions(call);
-      if (predicateElimination) {
-        simplifyOrTerms(terms);
-      }
+      simplifyOrTerms(terms);
       return simplifyOrs(terms);
     } catch (ClassCastException ex) {
       return call;
@@ -2172,8 +2156,7 @@ public class RexSimplify {
    * @return simplified conjunction of predicates for the filter, null if always false
    */
   public RexNode simplifyFilterPredicates(Iterable<? extends RexNode> predicates) {
-    final RexNode simplifiedAnds = withPredicateElimination(true)
-        .simplifyAnds(predicates);
+    final RexNode simplifiedAnds = simplifyAnds(predicates);
     if (simplifiedAnds.isAlwaysFalse()) {
       return null;
     }
