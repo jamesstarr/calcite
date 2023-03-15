@@ -566,20 +566,6 @@ public class RexSimplify {
     return call;
   }
 
-<<<<<<< HEAD
-  private RexNode simplifyIsPredicate(SqlKind kind, RexNode a) {
-    if (!RexUtil.isReferenceOrAccess(a, true)) {
-      return null;
-    }
-
-    for (RexNode p : predicates.pulledUpPredicates) {
-      IsPredicate pred = IsPredicate.of(p);
-      if (pred == null || !a.toString().equals(pred.ref.toString())) {
-        continue;
-      }
-      if (kind == pred.kind) {
-        return rexBuilder.makeLiteral(true);
-=======
   private RexNode simplifyIs2(SqlKind kind, RexNode a) {
     switch (kind) {
     case IS_NULL:
@@ -941,7 +927,6 @@ public class RexSimplify {
     }
   }
 
->>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values)
   // package-protected only to support a deprecated method; treat as private
   RexNode simplifyAnd2(List<RexNode> terms, List<RexNode> notTerms) {
     for (RexNode term : terms) {

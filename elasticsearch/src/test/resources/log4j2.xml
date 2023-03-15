@@ -57,6 +57,7 @@
   </Loggers>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 </Configuration>
 =======
 </Configuration>
@@ -64,3 +65,6 @@
 =======
 </Configuration>
 >>>>>>> 2fd3f202e (Reapply [CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin))
+=======
+</Configuration>
+>>>>>>> e4ce0a986 (Revert "Reapply [CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin)")

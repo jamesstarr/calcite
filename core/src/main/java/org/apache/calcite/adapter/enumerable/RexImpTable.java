@@ -2500,10 +2500,7 @@ public class RexImpTable {
       case MONTH:
       case DAY:
       case DOW:
-      case DECADE:
       case DOY:
-      case ISODOW:
-      case ISOYEAR:
       case WEEK:
         switch (sqlTypeName) {
         case INTERVAL_YEAR:
@@ -2537,14 +2534,28 @@ public class RexImpTable {
           throw new AssertionError("unexpected " + sqlTypeName);
         }
         break;
-      case MILLISECOND:
-        return Expressions.modulo(
-              operand, Expressions.constant(TimeUnit.MINUTE.multiplier.longValue()));
-      case MICROSECOND:
-        operand = Expressions.modulo(
-              operand, Expressions.constant(TimeUnit.MINUTE.multiplier.longValue()));
-        return Expressions.multiply(
-              operand, Expressions.constant(TimeUnit.SECOND.multiplier.longValue()));
+      case DECADE:
+        switch (sqlTypeName) {
+        case TIMESTAMP_WITH_LOCAL_TIME_ZONE:
+          operand = Expressions.call(
+              BuiltInMethod.TIMESTAMP_WITH_LOCAL_TIME_ZONE_TO_TIMESTAMP.method,
+              operand,
+              Expressions.call(BuiltInMethod.TIME_ZONE.method, translator.getRoot()));
+          // fall through
+        case TIMESTAMP:
+          operand = Expressions.divide(operand,
+              Expressions.constant(TimeUnit.DAY.multiplier.longValue()));
+          // fall through
+        case DATE:
+          operand = Expressions.call(
+              BuiltInMethod.UNIX_DATE_EXTRACT.method,
+              Expressions.constant(TimeUnitRange.YEAR), operand);
+          return Expressions.divide(operand,
+              Expressions.constant(
+                  unit.multiplier.divideToIntegralValue(TimeUnit.YEAR.multiplier)
+                      .longValue()));
+        }
+        break;
       case EPOCH:
         switch (sqlTypeName) {
         case DATE:
@@ -2583,7 +2594,8 @@ public class RexImpTable {
       case HOUR:
       case MINUTE:
       case SECOND:
->>>>>>> 2fd3f202e (Reapply [CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin))
+      case MILLISECOND:
+      case MICROSECOND:
         switch (sqlTypeName) {
         case DATE:
           // convert to milliseconds
@@ -2632,8 +2644,6 @@ public class RexImpTable {
       return TimeUnit.HOUR.multiplier.longValue();
     case SECOND:
       return TimeUnit.MINUTE.multiplier.longValue();
-    case MILLISECOND:
-      return TimeUnit.SECOND.multiplier.longValue();
     case MONTH:
       return TimeUnit.YEAR.multiplier.longValue();
     case QUARTER:
