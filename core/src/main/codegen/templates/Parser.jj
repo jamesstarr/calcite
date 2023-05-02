@@ -5038,15 +5038,6 @@ SqlTypeNameSpec SqlTypeName3(Span s) :
             <DOUBLE> { s.add(this); }
             [ <PRECISION> ] { sqlTypeName = SqlTypeName.DOUBLE; }
         )
-        [
-            <LPAREN>
-            precision = UnsignedIntLiteral()
-            [
-                <COMMA>
-                scale = UnsignedIntLiteral()
-            ]
-            <RPAREN>
-        ]
     )
     {
         return new SqlBasicTypeNameSpec(sqlTypeName, precision, scale, s.end(this));

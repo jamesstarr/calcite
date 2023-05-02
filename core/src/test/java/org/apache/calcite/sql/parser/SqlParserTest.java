@@ -1464,11 +1464,10 @@ public class SqlParserTest {
 
   @Test public void testAddFunction() {
     check("SELECT ADD(CAST(manager_id as DECIMAL(10,5)),\n"
-            + " CAST(manager_id as DOUBLE(10, 5))) FROM employees e",
+            + " CAST(manager_id as DOUBLE)) FROM employees e",
             "SELECT `ADD`(CAST(`MANAGER_ID` AS DECIMAL(10, 5)), CAST(`MANAGER_ID` AS DOUBLE))\n"
                     + "FROM `EMPLOYEES` AS `E`");
   }
-
 
   @Test public void testLikeAndSimilar() {
     check(

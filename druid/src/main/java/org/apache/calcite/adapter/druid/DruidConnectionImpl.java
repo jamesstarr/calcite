@@ -45,7 +45,6 @@ import org.joda.time.Interval;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -126,7 +125,7 @@ class DruidConnectionImpl implements DruidConnection {
       try {
         final byte[] bytes = AvaticaUtils.readFullyToBytes(in);
         System.out.println("Response: "
-            + new String(bytes, StandardCharsets.UTF_8)); // CHECKSTYLE: IGNORE 0
+            + bytes.toString()); // CHECKSTYLE: IGNORE 0
         in = new ByteArrayInputStream(bytes);
       } catch (IOException e) {
         throw new RuntimeException(e);
@@ -646,7 +645,7 @@ class DruidConnectionImpl implements DruidConnection {
         final byte[] bytes = AvaticaUtils.readFullyToBytes(in);
         in.close();
         System.out.println("Response: "
-            + new String(bytes, StandardCharsets.UTF_8)); // CHECKSTYLE: IGNORE 0
+            + bytes.toString()); // CHECKSTYLE: IGNORE 0
         in = new ByteArrayInputStream(bytes);
       } catch (IOException e) {
         throw new RuntimeException(e);
