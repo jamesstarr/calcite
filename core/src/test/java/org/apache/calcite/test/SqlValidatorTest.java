@@ -8059,14 +8059,14 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     checkFails("select c from unnest(\n"
         + "  array(select deptno from dept)) with ordinality as t(^c^)",
         "List of column aliases must have same degree as table; table has 2 "
-        + "columns \\('DEPTNO', 'ORDINALITY'\\), "
+        + "columns \\('EXPR\\$0', 'ORDINALITY'\\), "
         + "whereas alias list has 1 columns");
     check("select c from unnest(\n"
         + "  array(select deptno from dept)) with ordinality as t(c, d)");
     checkFails("select c from unnest(\n"
         + "  array(select deptno from dept)) with ordinality as t(^c, d, e^)",
         "List of column aliases must have same degree as table; table has 2 "
-        + "columns \\('DEPTNO', 'ORDINALITY'\\), "
+        + "columns \\('EXPR\\$0', 'ORDINALITY'\\), "
         + "whereas alias list has 3 columns");
     checkFails("select c\n"
         + "from unnest(array(select * from dept)) with ordinality as t(^c, d, e, f^)",

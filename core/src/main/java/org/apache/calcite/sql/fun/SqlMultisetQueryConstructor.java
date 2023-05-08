@@ -89,12 +89,21 @@ public class SqlMultisetQueryConstructor extends SqlSpecialOperator {
       SqlCall call) {
     SqlSelect subSelect = call.operand(0);
     subSelect.validateExpr(validator, scope);
-    final SqlValidatorNamespace ns =
-        requireNonNull(validator.getNamespace(subSelect),
-            () -> "namespace is missing for " + subSelect);
-    final RelDataType rowType = requireNonNull(ns.getRowType(), "rowType");
-    final SqlCallBinding opBinding = new SqlCallBinding(validator, scope, call);
-    return typeTransform.transformType(opBinding, rowType);
+
+    // This is a stop gap until we have [CALCITE-4999]
+    SqlValidatorNamespace ns = validator.getNamespace(subSelect);
+    assert null != ns.getRowType();
+
+    boolean isScalar = (subSelect.getSelectList().size() == 1)
+            && !subSelect.getSelectList().get(0).toString().equals("*");
+    RelDataType elementType = isScalar
+            ? ns.getRowType().getFieldList().get(0).getType()
+            : ns.getRowType();
+
+    return SqlTypeUtil.createMultisetType(
+        validator.getTypeFactory(),
+        elementType,
+        false);
   }
 
   public void unparse(

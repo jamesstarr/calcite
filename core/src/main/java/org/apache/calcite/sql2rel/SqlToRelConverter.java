@@ -4423,13 +4423,12 @@ public class SqlToRelConverter {
         joinList.add(lastList);
       }
       lastList = new ArrayList<>();
-      Collect collect =
-          new Collect(
-              cluster,
-              cluster.traitSetOf(Convention.NONE),
-              input,
-              validator.deriveAlias(call, i));
-      joinList.add(collect);
+      relBuilder.push(
+              Collect.create(
+                      requireNonNull(input, "input"),
+                      call.getKind(),
+                      validator().deriveAlias(call, i)));
+      joinList.add(relBuilder.build());
     }
 
     if (joinList.size() == 0) {
