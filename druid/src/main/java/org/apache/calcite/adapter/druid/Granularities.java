@@ -16,10 +16,9 @@
  */
 package org.apache.calcite.adapter.druid;
 
-import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonGenerator;
 import org.apache.calcite.avatica.util.TimeUnitRange;
 
-
+import com.fasterxml.jackson.core.JsonGenerator;
 
 
 import java.io.IOException;

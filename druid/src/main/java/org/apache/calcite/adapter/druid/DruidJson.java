@@ -16,10 +16,9 @@
  */
 package org.apache.calcite.adapter.druid;
 
-import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 import java.io.IOException;
-
 
 /** Object that knows how to write itself to a
  * {@link com.fasterxml.jackson.core.JsonGenerator}. */

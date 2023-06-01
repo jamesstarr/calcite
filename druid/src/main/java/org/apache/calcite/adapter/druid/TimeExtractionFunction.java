@@ -16,7 +16,6 @@
  */
 package org.apache.calcite.adapter.druid;
 
-import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonGenerator;
 import org.apache.calcite.avatica.util.DateTimeUtils;
 import org.apache.calcite.avatica.util.TimeUnitRange;
 import org.apache.calcite.rex.RexCall;
@@ -28,6 +27,7 @@ import org.apache.calcite.sql.type.SqlTypeFamily;
 >>>>>>> 41f568a78 ([CALCITE-2286] Support timestamp type for Druid adapter)
 import org.apache.calcite.sql.type.SqlTypeName;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 

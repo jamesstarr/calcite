@@ -16,8 +16,8 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonGenerator;
-import org.apache.calcite.avatica.com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.Test;
 

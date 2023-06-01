@@ -16,6 +16,19 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
+<<<<<<< HEAD
+=======
+import org.apache.calcite.util.Closer;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+>>>>>>> 26b8eb9c0 (Revert "[] Use shaded avatica")
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.junit.rules.ExternalResource;

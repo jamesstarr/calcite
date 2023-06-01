@@ -18,8 +18,6 @@ package org.apache.calcite.model;
 
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
 import org.apache.calcite.avatica.AvaticaUtils;
-import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonParser;
-import org.apache.calcite.avatica.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.materialize.Lattice;
@@ -46,12 +44,10 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 
-<<<<<<< HEAD
+>>>>>>> 1750bd07a ([] Use shaded avatica)
+=======
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-=======
->>>>>>> 1750bd07a ([] Use shaded avatica)
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 

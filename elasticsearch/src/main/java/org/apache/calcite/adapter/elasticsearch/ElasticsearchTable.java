@@ -16,8 +16,6 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-import org.apache.calcite.avatica.com.fasterxml.jackson.databind.JsonNode;
-import org.apache.calcite.avatica.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Linq4j;
 import org.apache.calcite.linq4j.function.Function1;
@@ -31,6 +29,9 @@ import org.apache.http.HttpStatus;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;

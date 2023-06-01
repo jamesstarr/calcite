@@ -16,7 +16,12 @@
  */
 package org.apache.calcite.adapter.geode.rel;
 
->>>>>>> 1b41ebada ([CALCITE-2588] Run Geode Adapter tests with an Embedded Instance)
+import org.apache.geode.cache.Region;
+import org.apache.geode.pdx.PdxInstance;
+import org.apache.geode.pdx.PdxInstanceFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
