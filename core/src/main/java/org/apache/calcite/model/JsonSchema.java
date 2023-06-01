@@ -16,9 +16,8 @@
  */
 package org.apache.calcite.model;
 
-
-import org.apache.calcite.avatica.com.fasterxml.jackson.annotation.JsonSubTypes;
-import org.apache.calcite.avatica.com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.util.ArrayList;
 import java.util.List;

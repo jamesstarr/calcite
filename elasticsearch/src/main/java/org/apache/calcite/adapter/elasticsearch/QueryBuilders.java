@@ -16,7 +16,7 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 import java.io.IOException;
 import java.util.ArrayList;

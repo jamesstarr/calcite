@@ -16,8 +16,6 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-import org.apache.calcite.avatica.com.fasterxml.jackson.core.JsonGenerator;
-import org.apache.calcite.avatica.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptCost;
 import org.apache.calcite.plan.RelOptPlanner;
@@ -34,6 +32,8 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.util.JsonBuilder;
 import org.apache.calcite.util.Pair;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 

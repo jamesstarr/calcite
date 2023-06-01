@@ -17,7 +17,6 @@
 package org.apache.calcite.adapter.elasticsearch;
 
 import org.apache.calcite.adapter.java.AbstractQueryableTable;
-import org.apache.calcite.avatica.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.linq4j.QueryProvider;
@@ -28,6 +27,8 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.TranslatableTable;
 import org.apache.calcite.schema.impl.AbstractTableQueryable;
 import org.apache.calcite.sql.type.SqlTypeName;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Map;

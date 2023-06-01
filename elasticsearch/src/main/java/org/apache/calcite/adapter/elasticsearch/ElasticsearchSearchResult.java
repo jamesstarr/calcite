@@ -16,9 +16,9 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-import org.apache.calcite.avatica.com.fasterxml.jackson.annotation.JsonCreator;
-import org.apache.calcite.avatica.com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.apache.calcite.avatica.com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Duration;
 import java.util.Iterator;

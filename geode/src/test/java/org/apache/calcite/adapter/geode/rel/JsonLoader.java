@@ -16,11 +16,11 @@
  */
 package org.apache.calcite.adapter.geode.rel;
 
-import org.apache.calcite.avatica.com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.apache.geode.cache.Region;
 import org.apache.geode.pdx.PdxInstance;
 import org.apache.geode.pdx.PdxInstanceFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
