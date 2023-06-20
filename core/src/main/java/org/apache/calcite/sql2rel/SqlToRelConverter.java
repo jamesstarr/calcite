@@ -4406,12 +4406,13 @@ public class SqlToRelConverter {
         joinList.add(lastList);
       }
       lastList = new ArrayList<>();
-      relBuilder.push(
-              Collect.create(
-                      requireNonNull(input, "input"),
-                      call.getKind(),
-                      validator().deriveAlias(call, i)));
-      joinList.add(relBuilder.build());
+      Collect collect =
+          new Collect(
+              cluster,
+              cluster.traitSetOf(Convention.NONE),
+              input,
+              validator.deriveAlias(call, i));
+      joinList.add(collect);
     }
 
     if (joinList.size() == 0) {

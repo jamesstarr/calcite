@@ -89,20 +89,11 @@ public class SqlMultisetQueryConstructor extends SqlSpecialOperator {
       SqlCall call) {
     SqlSelect subSelect = call.operand(0);
     subSelect.validateExpr(validator, scope);
-
-    // This is a stop gap until we have [CALCITE-4999]
     SqlValidatorNamespace ns = validator.getNamespace(subSelect);
     assert null != ns.getRowType();
-
-    boolean isScalar = (subSelect.getSelectList().size() == 1)
-            && !subSelect.getSelectList().get(0).toString().equals("*");
-    RelDataType elementType = isScalar
-            ? ns.getRowType().getFieldList().get(0).getType()
-            : ns.getRowType();
-
     return SqlTypeUtil.createMultisetType(
         validator.getTypeFactory(),
-        elementType,
+        ns.getRowType(),
         false);
   }
 
