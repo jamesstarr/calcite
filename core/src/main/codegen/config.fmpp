@@ -541,6 +541,7 @@ data: {
         "MUMPS"
         "NAME"
         "NAMES"
+        "NANOSECOND"
         "NESTING"
         "NORMALIZED"
         "NULLABLE"
