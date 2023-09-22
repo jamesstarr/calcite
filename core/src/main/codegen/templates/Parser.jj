@@ -7559,9 +7559,6 @@ void NonReservedKeyWord0of3() :
 <#if keyword?index == 0>
         <${keyword}>
 <#elseif keyword?index % 3 == 0>
-
-    |   <NANOSECOND>
-
     |   <${keyword}>
 </#if>
 </#list>

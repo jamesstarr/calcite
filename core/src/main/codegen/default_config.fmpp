@@ -157,6 +157,7 @@ parser: {
     "MUMPS"
     "NAME"
     "NAMES"
+    "NANOSECOND"
     "NESTING"
     "NORMALIZED"
     "NULLABLE"
