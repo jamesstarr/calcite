@@ -1511,6 +1511,12 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).expand(false).ok();
   }
 
+  @Test public void testAll() {
+    final String sql = "select empno from emp where deptno > all (\n"
+        + "  select deptno from dept)";
+    sql(sql).expand(false).ok();
+  }
+
   @Test public void testSomeValueList() {
     final String sql = "select empno from emp where deptno > some (10, 20)";
     sql(sql).expand(false).ok();
@@ -1819,6 +1825,138 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
         + "from Shipments\n"
         + "GROUP BY TUMBLE(rowtime, INTERVAL '1' MINUTE)";
     sql(sql).ok();
+  }
+
+  @Test public void testInValuesList() {
+    SqlToRelConverter.Config inRexSubqueryConfig =
+        SqlToRelConverter.configBuilder()
+            .withInSubQueryThreshold(0)
+            .withExpand(false)
+            .withDecorrelationEnabled(false)
+            .build();
+    final String sql = "SELECT * FROM EMP WHERE EMPNO IN (1, 2)";
+    sql(sql).withConfig(inRexSubqueryConfig).ok();
+  }
+
+  @Test public void testInValuesListWithNull() {
+    SqlToRelConverter.Config inRexSubqueryConfig =
+        SqlToRelConverter.configBuilder()
+            .withInSubQueryThreshold(0)
+            .withExpand(false)
+            .withDecorrelationEnabled(false)
+            .build();
+    final String sql = "SELECT * FROM EMP WHERE EMPNO IN (1, 2, null)";
+    sql(sql).withConfig(inRexSubqueryConfig).ok();
+  }
+
+  @Test public void testNullInValuesListWithNull() {
+    SqlToRelConverter.Config inRexSubqueryConfig =
+        SqlToRelConverter.configBuilder()
+            .withInSubQueryThreshold(0)
+            .withExpand(false)
+            .withDecorrelationEnabled(false)
+            .build();
+    final String sql = "SELECT * FROM EMP WHERE null IN (1, 2, null)";
+    sql(sql).withConfig(inRexSubqueryConfig).ok();
+  }
+
+  @Test public void testNullInValuesListWithoutNull() {
+    SqlToRelConverter.Config inRexSubqueryConfig =
+        SqlToRelConverter.configBuilder()
+            .withInSubQueryThreshold(0)
+            .withExpand(false)
+            .withDecorrelationEnabled(false)
+            .build();
+    final String sql = "SELECT * FROM EMP WHERE null IN (1, 2)";
+    sql(sql).withConfig(inRexSubqueryConfig).ok();
+  }
+
+  @Test public void testNotInValuesList() {
+    SqlToRelConverter.Config inRexSubqueryConfig =
+        SqlToRelConverter.configBuilder()
+            .withInSubQueryThreshold(0)
+            .withExpand(false)
+            .withDecorrelationEnabled(false)
+            .build();
+    final String sql = "SELECT * FROM EMP WHERE EMPNO NOT IN (1, 2)";
+    sql(sql).withConfig(inRexSubqueryConfig).ok();
+  }
+
+  @Test public void testNotInValuesListWithNull() {
+    SqlToRelConverter.Config inRexSubqueryConfig =
+        SqlToRelConverter.configBuilder()
+            .withInSubQueryThreshold(0)
+            .withExpand(false)
+            .withDecorrelationEnabled(false)
+            .build();
+    final String sql = "SELECT * FROM EMP WHERE EMPNO NOT IN (1, 2, null)";
+    sql(sql).withConfig(inRexSubqueryConfig).ok();
+  }
+
+  @Test public void testNullNotInValuesListWithNull() {
+    SqlToRelConverter.Config inRexSubqueryConfig =
+        SqlToRelConverter.configBuilder()
+            .withInSubQueryThreshold(0)
+            .withExpand(false)
+            .withDecorrelationEnabled(false)
+            .build();
+    final String sql = "SELECT * FROM EMP WHERE null NOT IN (1, 2, null)";
+    sql(sql).withConfig(inRexSubqueryConfig).ok();
+  }
+
+  @Test public void testNullNotInValuesListWithoutNull() {
+    SqlToRelConverter.Config inRexSubqueryConfig =
+        SqlToRelConverter.configBuilder()
+            .withInSubQueryThreshold(0)
+            .withExpand(false)
+            .withDecorrelationEnabled(false)
+            .build();
+    final String sql = "SELECT * FROM EMP WHERE null NOT IN (1, 2)";
+    sql(sql).withConfig(inRexSubqueryConfig).ok();
+  }
+
+  @Test public void testComplexExpressionInValuesList() {
+    SqlToRelConverter.Config inRexSubqueryConfig =
+        SqlToRelConverter.configBuilder()
+            .withInSubQueryThreshold(0)
+            .withExpand(false)
+            .withDecorrelationEnabled(false)
+            .build();
+    final String sql = "SELECT * FROM EMP WHERE ABS(EMPNO) IN (1, 2)";
+    sql(sql).withConfig(inRexSubqueryConfig).ok();
+  }
+
+  @Test public void testCastedExpressionInValuesList() {
+    SqlToRelConverter.Config inRexSubqueryConfig =
+        SqlToRelConverter.configBuilder()
+            .withInSubQueryThreshold(0)
+            .withExpand(false)
+            .withDecorrelationEnabled(false)
+            .build();
+    final String sql = "SELECT * FROM EMP WHERE CAST(EMPNO AS FLOAT) IN (1, 2)";
+    sql(sql).withConfig(inRexSubqueryConfig).ok();
+  }
+
+  @Test public void testInComplexValuesList() {
+    SqlToRelConverter.Config inRexSubqueryConfig =
+        SqlToRelConverter.configBuilder()
+            .withInSubQueryThreshold(0)
+            .withExpand(false)
+            .withDecorrelationEnabled(false)
+            .build();
+    final String sql = "SELECT * FROM EMP WHERE EMPNO IN (1, ABS(2))";
+    sql(sql).withConfig(inRexSubqueryConfig).ok();
+  }
+
+  @Test public void testInValuesWithSubquery() {
+    SqlToRelConverter.Config inRexSubqueryConfig =
+        SqlToRelConverter.configBuilder()
+            .withInSubQueryThreshold(0)
+            .withExpand(false)
+            .withDecorrelationEnabled(false)
+            .build();
+    final String sql = "SELECT * FROM EMP WHERE EMPNO IN ((SELECT EMPNO + EMPNO), (SELECT EMPNO))";
+    sql(sql).withConfig(inRexSubqueryConfig).ok();
   }
 
   @Test public void testNotNotIn() {

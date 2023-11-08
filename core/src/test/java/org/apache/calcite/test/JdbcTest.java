@@ -4496,20 +4496,24 @@ public class JdbcTest {
   /** Tests the NOT IN operator. Problems arose in code-generation because
    * the column allows nulls. */
   @Test public void testNotIn() {
-    predicate("\"name\" not in ('a', 'b') or \"name\" is null")
-        .returns(""
-            + "empid=100; deptno=10; name=Bill; salary=10000.0; commission=1000\n"
-            + "empid=200; deptno=20; name=Eric; salary=8000.0; commission=500\n"
-            + "empid=150; deptno=10; name=Sebastian; salary=7000.0; commission=null\n"
-            + "empid=110; deptno=10; name=Theodore; salary=11500.0; commission=250\n");
+    // Expand needs to be true since there is a
+    // NOT IN(a, b, NULL) and the correlated variable isn't executable on JDBC
+    try (TryThreadLocal.Memo ignored = Prepare.THREAD_EXPAND.push(true)) {
+      predicate("\"name\" not in ('a', 'b') or \"name\" is null")
+              .returns(""
+                      + "empid=100; deptno=10; name=Bill; salary=10000.0; commission=1000\n"
+                      + "empid=200; deptno=20; name=Eric; salary=8000.0; commission=500\n"
+                      + "empid=150; deptno=10; name=Sebastian; salary=7000.0; commission=null\n"
+                      + "empid=110; deptno=10; name=Theodore; salary=11500.0; commission=250\n");
 
-    // And some similar combinations...
-    predicate("\"name\" in ('a', 'b') or \"name\" is null");
-    predicate("\"name\" in ('a', 'b', null) or \"name\" is null");
-    predicate("\"name\" in ('a', 'b') or \"name\" is not null");
-    predicate("\"name\" in ('a', 'b', null) or \"name\" is not null");
-    predicate("\"name\" not in ('a', 'b', null) or \"name\" is not null");
-    predicate("\"name\" not in ('a', 'b', null) and \"name\" is not null");
+      // And some similar combinations...
+      predicate("\"name\" in ('a', 'b') or \"name\" is null");
+      predicate("\"name\" in ('a', 'b', null) or \"name\" is null");
+      predicate("\"name\" in ('a', 'b') or \"name\" is not null");
+      predicate("\"name\" in ('a', 'b', null) or \"name\" is not null");
+      predicate("\"name\" not in ('a', 'b', null) or \"name\" is not null");
+      predicate("\"name\" not in ('a', 'b', null) and \"name\" is not null");
+    }
   }
 
   @Test public void testNotInEmptyQuery() {

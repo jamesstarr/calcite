@@ -129,6 +129,21 @@ LogicalProject(EMPNO=[$0])
 ]]>
         </Resource>
     </TestCase>
+    <TestCase name="testAll">
+      <Resource name="sql">
+        <![CDATA[select empno from emp where deptno > all (select deptno from dept)]]>
+      </Resource>
+      <Resource name="plan">
+        <![CDATA[
+LogicalProject(EMPNO=[$0])
+  LogicalFilter(condition=[NOT(<= SOME($7, {
+LogicalProject(DEPTNO=[$0])
+  LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+}))])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+      </Resource>
+    </TestCase>
     <TestCase name="testGroupJustOneAgg">
         <Resource name="plan">
             <![CDATA[
@@ -3381,6 +3396,194 @@ LogicalProject(START_MGR=[$0], UP_DAYS=[$1], TOTAL_DAYS=[$2])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
+    </TestCase>
+    <TestCase name="testInValuesList">
+        <Resource name="sql">
+            <![CDATA[SELECT * FROM EMP WHERE EMPNO IN (1, 2)]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+  LogicalFilter(condition=[IN($0, {
+LogicalValues(tuples=[[{ 1 }, { 2 }]])
+})])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testInValuesListWithNull">
+        <Resource name="sql">
+            <![CDATA[SELECT * FROM EMP WHERE EMPNO IN (1, 2, null)]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+  LogicalFilter(condition=[IN($0, {
+LogicalValues(tuples=[[{ 1 }, { 2 }, { null }]])
+})])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testNullInValuesListWithNull">
+        <Resource name="sql">
+            <![CDATA[SELECT * FROM EMP WHERE null IN (1, 2, null)]]>
+        </Resource>
+        <Resource name="plan">
+            <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+  LogicalFilter(condition=[IN(null:INTEGER, {
+LogicalUnion(all=[true])
+  LogicalProject(EXPR$0=[null:INTEGER])
+    LogicalValues(tuples=[[{ 0 }]])
+  LogicalValues(tuples=[[{ 1 }, { 2 }]])
+})])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testNullInValuesListWithoutNull">
+      <Resource name="sql">
+        <![CDATA[SELECT * FROM EMP WHERE null IN (1, 2)]]>
+      </Resource>
+      <Resource name="plan">
+        <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+  LogicalFilter(condition=[IN(null:INTEGER, {
+LogicalValues(tuples=[[{ 1 }, { 2 }]])
+})])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+      </Resource>
+    </TestCase>
+    <TestCase name="testNotInValuesList">
+      <Resource name="sql">
+        <![CDATA[SELECT * FROM EMP WHERE EMPNO NOT IN (1, 2)]]>
+      </Resource>
+      <Resource name="plan">
+        <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+  LogicalFilter(condition=[NOT(IN($0, {
+LogicalValues(tuples=[[{ 1 }, { 2 }]])
+}))])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+      </Resource>
+    </TestCase>
+    <TestCase name="testNotInValuesListWithNull">
+      <Resource name="sql">
+        <![CDATA[SELECT * FROM EMP WHERE EMPNO NOT IN (1, 2, null)]]>
+      </Resource>
+      <Resource name="plan">
+        <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+  LogicalFilter(condition=[NOT(IN($0, {
+LogicalValues(tuples=[[{ 1 }, { 2 }, { null }]])
+}))])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+      </Resource>
+    </TestCase>
+    <TestCase name="testNullNotInValuesListWithNull">
+      <Resource name="sql">
+        <![CDATA[SELECT * FROM EMP WHERE null NOT IN (1, 2, null)]]>
+      </Resource>
+      <Resource name="plan">
+        <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+  LogicalFilter(condition=[NOT(IN(null:NULL, {
+LogicalValues(tuples=[[{ 1 }, { 2 }, { null }]])
+}))])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+      </Resource>
+    </TestCase>
+    <TestCase name="testNullNotInValuesListWithoutNull">
+      <Resource name="sql">
+        <![CDATA[SELECT * FROM EMP WHERE null NOT IN (1, 2)]]>
+      </Resource>
+      <Resource name="plan">
+        <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+  LogicalFilter(condition=[NOT(IN(null:NULL, {
+LogicalValues(tuples=[[{ 1 }, { 2 }]])
+}))])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+      </Resource>
+    </TestCase>
+    <TestCase name="testComplexExpressionInValuesList">
+      <Resource name="sql">
+        <![CDATA[SELECT * FROM EMP WHERE ABS(EMPNO) IN (1, 2)]]>
+      </Resource>
+      <Resource name="plan">
+        <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+  LogicalFilter(condition=[IN(ABS($0), {
+LogicalValues(tuples=[[{ 1 }, { 2 }]])
+})])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+      </Resource>
+    </TestCase>
+    <TestCase name="testCastedExpressionInValuesList">
+      <Resource name="sql">
+        <![CDATA[SELECT * FROM EMP WHERE CAST(EMPNO AS FLOAT) IN (1, 2)]]>
+      </Resource>
+      <Resource name="plan">
+        <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+  LogicalFilter(condition=[IN(CAST($0):FLOAT NOT NULL, {
+LogicalUnion(all=[true])
+  LogicalProject(EXPR$0=[1:FLOAT])
+    LogicalValues(tuples=[[{ 0 }]])
+  LogicalProject(EXPR$0=[2:FLOAT])
+    LogicalValues(tuples=[[{ 0 }]])
+})])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+      </Resource>
+    </TestCase>
+    <TestCase name="testInComplexValuesList">
+      <Resource name="sql">
+        <![CDATA[SELECT * FROM EMP WHERE EMPNO IN (1, ABS(2))]]>
+      </Resource>
+      <Resource name="plan">
+        <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+  LogicalFilter(condition=[IN($0, {
+LogicalUnion(all=[true])
+  LogicalProject(EXPR$0=[ABS(2)])
+    LogicalValues(tuples=[[{ 0 }]])
+  LogicalValues(tuples=[[{ 1 }]])
+})])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+      </Resource>
+    </TestCase>
+    <TestCase name="testInValuesWithSubquery">
+      <Resource name="sql">
+        <![CDATA[SELECT * FROM EMP WHERE EMPNO IN ((SELECT EMPNO + EMPNO), (SELECT EMPNO))]]>
+      </Resource>
+      <Resource name="plan">
+        <![CDATA[
+LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
+  LogicalFilter(condition=[IN($0, {
+LogicalUnion(all=[true])
+  LogicalProject(EXPR$0=[$SCALAR_QUERY($cor0, {
+LogicalProject(EXPR$0=[+($cor0.EMPNO, $cor0.EMPNO)])
+  LogicalValues(tuples=[[{ 0 }]])
+})])
+    LogicalValues(tuples=[[{ 0 }]])
+  LogicalProject(EXPR$0=[$SCALAR_QUERY($cor1, {
+LogicalProject(EMPNO=[$cor1.EMPNO])
+  LogicalValues(tuples=[[{ 0 }]])
+})])
+    LogicalValues(tuples=[[{ 0 }]])
+})])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+      </Resource>
     </TestCase>
     <TestCase name="testNotNotIn">
         <Resource name="sql">

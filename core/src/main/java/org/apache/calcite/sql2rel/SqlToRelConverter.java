@@ -1091,7 +1091,8 @@ public class SqlToRelConverter {
     final RelNode rel;
     final SqlNode query;
     final RelOptUtil.Exists converted;
-    switch (subQuery.node.getKind()) {
+    final SqlKind kind = subQuery.node.getKind();
+    switch (kind) {
     case CURSOR:
       convertCursor(bb, subQuery);
       return;
@@ -1114,9 +1115,25 @@ public class SqlToRelConverter {
     case ALL:
       call = (SqlBasicCall) subQuery.node;
       query = call.operand(1);
-      if (!config.isExpand() && !(query instanceof SqlNodeList)) {
-        return;
+      if (!config.isExpand()) {
+        // At this point the configuration is asking that we convert the
+        // query using expand = false path, but if we don't have an implementation for it,
+        // then we have to use this code path.
+
+        if (kind == SqlKind.IN || kind == SqlKind.NOT_IN) {
+          if (!(call.operand(0).getKind() == SqlKind.ROW
+              && call.operand(1) instanceof SqlNodeList)) {
+            // We don't have an implementation for tuples
+            return;
+          }
+        } else {
+          // SOME and ALL doesn't have a values list implementation
+          if (!(query instanceof SqlNodeList)) {
+            return;
+          }
+        }
       }
+
       final SqlNode leftKeyNode = call.operand(0);
 
       final List<RexNode> leftKeys;
@@ -5195,6 +5212,7 @@ public class SqlToRelConverter {
         final SqlNode query;
         final RelAndCorrelationContext relAndCorrelationContext;
         switch (kind) {
+
         case IN:
         case NOT_IN:
         case SOME:
@@ -5237,6 +5255,41 @@ public class SqlToRelConverter {
                       relAndCorrelationContext.correlationContext.correlationId));
             default:
               throw new AssertionError(kind);
+            }
+          } else {
+            if (kind == SqlKind.IN || kind == SqlKind.NOT_IN) {
+              if (call.operand(0).getKind() == SqlKind.ROW) {
+                // We don't have an implementation for tuples
+                break;
+              }
+              SqlNode needleNode = call.getOperandList().get(0);
+              SqlNodeList nodeList = (SqlNodeList) query;
+
+              // Need to honor the configuration
+              if (!containsNullLiteral(nodeList)
+                  && nodeList.getList().size() < config.getInSubQueryThreshold()) {
+                return convertInToOr(
+                    this,
+                    ImmutableList.of(convertExpression(needleNode)),
+                    nodeList,
+                    (SqlInOperator) call.getOperator());
+              }
+
+              RexNode needle = convertExpression(needleNode);
+              RelNode values = convertRowValues(
+                  this,
+                  nodeList,
+                  nodeList.getList(),
+                  false,
+                  null);
+
+              // The query is not correlated, since it's just a simple values lookup.
+              RexNode inSubquery = RexSubQuery.in(values, ImmutableList.of(needle), null);
+              if (call.getKind() == SqlKind.NOT_IN) {
+                inSubquery = rexBuilder.makeCall(SqlStdOperatorTable.NOT, inSubquery);
+              }
+
+              return inSubquery;
             }
           }
           break;
