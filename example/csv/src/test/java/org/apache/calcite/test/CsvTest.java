@@ -314,9 +314,6 @@ class CsvTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2272">[CALCITE-2272]
    * Incorrect result for {@code name like '%E%' and city not like '%W%'}</a>.
    */
-<<<<<<< HEAD
-  @Test void testFilterableWhereWithNot1() throws SQLException {
-=======
   @Test public void testFilterableWhereWithNot1() throws SQLException {
     sql("filterable-model",
         "select name, empno from EMPS "
@@ -520,8 +517,12 @@ class CsvTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-824">[CALCITE-824]
    * Type inference when converting IN clause to semijoin</a>. */
+<<<<<<< HEAD
   @Disabled("No longer rewriting this to a join and no execution for in subquery rexnode")
   @Test void testInToSemiJoinWithCast() throws SQLException {
+=======
+  @Ignore("No longer rewriting this to a join and no execution for in subquery rexnode")
+  @Test public void testInToSemiJoinWithCast() throws SQLException {
     // Note that the IN list needs at least 20 values to trigger the rewrite
     // to a semijoin. Try it both ways.
     final String sql = "SELECT e.name\n"

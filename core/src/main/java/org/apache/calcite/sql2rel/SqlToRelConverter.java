@@ -4593,6 +4593,7 @@ public class SqlToRelConverter {
         final SqlNode query;
         final RelAndCorrelationContext relAndCorrelationContext;
         switch (kind) {
+
         case IN:
         case NOT_IN:
         case SOME:
@@ -4635,6 +4636,41 @@ public class SqlToRelConverter {
                       relAndCorrelationContext.correlationContext.correlationId));
             default:
               throw new AssertionError(kind);
+            }
+          } else {
+            if (kind == SqlKind.IN || kind == SqlKind.NOT_IN) {
+              if (call.operand(0).getKind() == SqlKind.ROW) {
+                // We don't have an implementation for tuples
+                break;
+              }
+              SqlNode needleNode = call.getOperandList().get(0);
+              SqlNodeList nodeList = (SqlNodeList) query;
+
+              // Need to honor the configuration
+              if (!containsNullLiteral(nodeList)
+                  && nodeList.getList().size() < config.getInSubQueryThreshold()) {
+                return convertInToOr(
+                    this,
+                    ImmutableList.of(convertExpression(needleNode)),
+                    nodeList,
+                    (SqlInOperator) call.getOperator());
+              }
+
+              RexNode needle = convertExpression(needleNode);
+              RelNode values = convertRowValues(
+                  this,
+                  nodeList,
+                  nodeList.getList(),
+                  false,
+                  null);
+
+              // The query is not correlated, since it's just a simple values lookup.
+              RexNode inSubquery = RexSubQuery.in(values, ImmutableList.of(needle), null);
+              if (call.getKind() == SqlKind.NOT_IN) {
+                inSubquery = rexBuilder.makeCall(SqlStdOperatorTable.NOT, inSubquery);
+              }
+
+              return inSubquery;
             }
           }
           break;
