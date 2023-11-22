@@ -2149,6 +2149,10 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     return this.config.identifierExpansion();
   }
 
+  public boolean shouldAllowAmbiguousColumn() {
+    return this.config.ambiguousColumnAllowed();
+  }
+
   protected boolean shouldAllowIntermediateOrderBy() {
     return true;
   }

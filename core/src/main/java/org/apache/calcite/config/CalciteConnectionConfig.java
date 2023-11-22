@@ -74,6 +74,7 @@ public interface CalciteConnectionConfig extends ConnectionConfig {
   @Override String timeZone();
   /** @see CalciteConnectionProperty#TYPE_COERCION */
   boolean typeCoercion();
+  boolean ambiguousColumnAllowed();
   /** @see CalciteConnectionProperty#LENIENT_OPERATOR_LOOKUP */
   boolean lenientOperatorLookup();
 }
