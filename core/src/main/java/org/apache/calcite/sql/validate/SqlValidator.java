@@ -957,6 +957,15 @@ public interface SqlValidator {
 
     /** Sets up the sql conformance of the validator. */
     Config withSqlConformance(SqlConformance conformance);
+
+    /** Returns whether the validator allows ambiguous column names. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(false)
+    boolean ambiguousColumnAllowed();
+
+    /**
+     * Sets whether to enable implicit type coercion for validation, default false. */
+    Config withAmbiguousColumnAllowed(boolean allowed);
   }
 }
 

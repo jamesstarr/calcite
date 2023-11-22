@@ -36,6 +36,9 @@ import static org.apache.calcite.avatica.ConnectionConfigImpl.PropEnv;
  * Properties that may be specified on the JDBC connect string.
  */
 public enum CalciteConnectionProperty implements ConnectionProperty {
+  /** Whether Calcite should allow ambiguous column names. */
+  ALLOW_AMBIGUOUS_COLUMN("allowAmbiguousColumn", Type.BOOLEAN, false, false),
+
   /** Whether approximate results from {@code COUNT(DISTINCT ...)} aggregate
    * functions are acceptable. */
   APPROXIMATE_DISTINCT_COUNT("approximateDistinctCount", Type.BOOLEAN, false,

@@ -630,7 +630,9 @@ public abstract class SqlToRelTestBase {
       final CalciteConnectionConfig calciteConfig = context.unwrap(CalciteConnectionConfig.class);
       if (calciteConfig != null) {
         validator.transform(config ->
-            config.withDefaultNullCollation(calciteConfig.defaultNullCollation()));
+            config.withDefaultNullCollation(calciteConfig.defaultNullCollation())
+                  .withAmbiguousColumnAllowed(calciteConfig.ambiguousColumnAllowed())
+        );
       }
       if (config == SqlToRelConverter.Config.DEFAULT) {
         localConfig = SqlToRelConverter.configBuilder()

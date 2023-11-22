@@ -557,14 +557,16 @@ public abstract class DelegatingScope implements SqlValidatorScope {
         }
       }
     } else { // check if there are fields with the same name
-      int count = 0;
-      for (RelDataTypeField f : rowType.getFieldList()) {
-        if (Util.matches(nameMatcher.isCaseSensitive(), f.getName(), columnName)) {
-          count++;
+      if (!validator.shouldAllowAmbiguousColumn()) {
+        int count = 0;
+        for (RelDataTypeField f : rowType.getFieldList()) {
+          if (Util.matches(nameMatcher.isCaseSensitive(), f.getName(), columnName)) {
+            count++;
+          }
         }
-      }
-      if (count > 1) {
-        return true;
+        if (count > 1) {
+          return true;
+        }
       }
     }
     return false;
