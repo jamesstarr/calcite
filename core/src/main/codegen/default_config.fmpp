@@ -33,11 +33,15 @@ parser: {
     "A"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "ABSENT"
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
+=======
+    "ABSENT"
+>>>>>>> bc05cf861 (DX-86250 - Unintended reserved words added after Calcite upgrade)
     "ABSOLUTE"
     "ACTION"
     "ADA"
@@ -60,11 +64,11 @@ parser: {
     "CATALOG_NAME"
     "CENTURY"
     "CHAIN"
-    "CHARACTERISTICS"
-    "CHARACTERS"
     "CHARACTER_SET_CATALOG"
     "CHARACTER_SET_NAME"
     "CHARACTER_SET_SCHEMA"
+    "CHARACTERISTICS"
+    "CHARACTERS"
     "CLASS_ORIGIN"
     "COBOL"
     "COLLATION"
@@ -83,12 +87,13 @@ parser: {
 =======
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "CONDITION_NUMBER"
+    "CONDITIONAL"
     "CONNECTION"
     "CONNECTION_NAME"
     "CONSTRAINT_CATALOG"
     "CONSTRAINT_NAME"
-    "CONSTRAINTS"
     "CONSTRAINT_SCHEMA"
+    "CONSTRAINTS"
     "CONSTRUCTOR"
     "CONTINUE"
     "CURSOR_NAME"
@@ -130,12 +135,15 @@ parser: {
     "ENCODING"
     "EPOCH"
     "ERROR"
+<<<<<<< HEAD
 =======
     "EPOCH"
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
     "EPOCH"
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
+=======
+>>>>>>> bc05cf861 (DX-86250 - Unintended reserved words added after Calcite upgrade)
     "EXCEPTION"
     "EXCLUDE"
     "EXCLUDING"
@@ -304,6 +312,9 @@ parser: {
     "PASCAL"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> bc05cf861 (DX-86250 - Unintended reserved words added after Calcite upgrade)
     "PASSING"
     "PASSTHROUGH"
     "PAST"
@@ -367,11 +378,15 @@ parser: {
     "ROW_COUNT"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "SCALAR"
 =======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
+=======
+    "SCALAR"
+>>>>>>> bc05cf861 (DX-86250 - Unintended reserved words added after Calcite upgrade)
     "SCALE"
     "SCHEMA"
     "SCHEMA_NAME"
@@ -474,6 +489,9 @@ parser: {
     "UNCOMMITTED"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> bc05cf861 (DX-86250 - Unintended reserved words added after Calcite upgrade)
     "UNCONDITIONAL"
     "UNDER"
     "UNPIVOT"
@@ -494,6 +512,7 @@ parser: {
     "USER_DEFINED_TYPE_SCHEMA"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "UTF16"
     "UTF32"
     "UTF8"
@@ -501,6 +520,11 @@ parser: {
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
+=======
+    "UTF8"
+    "UTF16"
+    "UTF32"
+>>>>>>> bc05cf861 (DX-86250 - Unintended reserved words added after Calcite upgrade)
     "VERSION"
     "VIEW"
     "WEEK"
