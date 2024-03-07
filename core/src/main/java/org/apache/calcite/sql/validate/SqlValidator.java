@@ -836,6 +836,13 @@ public interface SqlValidator {
   /** Get the type coercion instance. */
   TypeCoercion getTypeCoercion();
 
+  boolean hasValidationMessage();
+
+  /** Get the validation message. */
+  String getValidationMessage();
+
+  void setValidationMessage(String message);
+
   /** Returns the config of the validator. */
   Config config();
 

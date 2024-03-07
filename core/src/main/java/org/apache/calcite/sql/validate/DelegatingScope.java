@@ -557,13 +557,26 @@ public abstract class DelegatingScope implements SqlValidatorScope {
         }
       }
     } else { // check if there are fields with the same name
-      if (!validator.shouldAllowAmbiguousColumn()) {
-        int count = 0;
-        for (RelDataTypeField f : rowType.getFieldList()) {
-          if (Util.matches(nameMatcher.isCaseSensitive(), f.getName(), columnName)) {
-            count++;
+      int count = 0;
+      for (RelDataTypeField f : rowType.getFieldList()) {
+        if (Util.matches(nameMatcher.isCaseSensitive(), f.getName(), columnName)) {
+          count++;
+          if (count > 1) {
+            if (validator.shouldAllowAmbiguousColumn()) {
+              // We aren't going to throw an exception here, but we store the
+              // ambiguous column so it can be reported later by Dremio
+              String msg = new StringBuilder()
+                      .append("Column ")
+                      .append(columnName)
+                      .append(" is ambiguous")
+                      .toString();
+              //String msg = String.format("Column %s is ambiguous", columnName);
+              this.getValidator().setValidationMessage(msg);
+            }
           }
         }
+      }
+      if (!validator.shouldAllowAmbiguousColumn()) {
         if (count > 1) {
           return true;
         }
