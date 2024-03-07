@@ -290,6 +290,9 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
   // TypeCoercion instance used for implicit type coercion.
   private TypeCoercion typeCoercion;
 
+  // Validation message stores information from validation that can be displayed later.
+  private String validationMessage;
+
   //~ Constructors -----------------------------------------------------------
 
   /**
@@ -324,6 +327,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     aggOrOverOrGroupFinder = new AggFinder(opTab, true, true, true, null,
         nameMatcher);
     this.typeCoercion = TypeCoercions.getTypeCoercion(this, config.sqlConformance());
+    this.validationMessage = "";
   }
 
   /**
@@ -4160,6 +4164,21 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
   public TypeCoercion getTypeCoercion() {
     assert config.typeCoercionEnabled();
     return this.typeCoercion;
+  }
+
+  public boolean hasValidationMessage() {
+    assert this.validationMessage != null;
+    return !this.validationMessage.isEmpty();
+  }
+
+  public void setValidationMessage(String message) {
+    assert message != null;
+    this.validationMessage = message;
+  }
+
+  public String getValidationMessage() {
+    assert this.validationMessage != null;
+    return this.validationMessage;
   }
 
   public Config config() {
