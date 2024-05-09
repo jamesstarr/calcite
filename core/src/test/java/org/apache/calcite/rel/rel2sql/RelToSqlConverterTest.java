@@ -985,18 +985,22 @@ class RelToSqlConverterTest {
     sql(query).withBigQuery().ok(expected);
   }
 
-  /** Tests that we escape single-quotes in character literals using back-slash
+  /** Note: This test came with CALCITE-3147. It is commented out
+   * because CALCITE-3147 turns nonascii characters into unicode when query is parsed,
+   * which might not be compatible to other JDBCs in ArpRelToSqlConverter.
+   *
+   * Tests that we escape single-quotes in character literals using back-slash
    * in BigQuery. The norm is to escape single-quotes with single-quotes. */
-  @Test public void testCharLiteralForBigQuery() {
-    final String query = "select 'that''s all folks!' from \"product\"";
-    final String expectedPostgresql = "SELECT 'that''s all folks!'\n"
-        + "FROM \"foodmart\".\"product\"";
-    final String expectedBigQuery = "SELECT 'that\\'s all folks!'\n"
-        + "FROM foodmart.product";
-    sql(query)
-        .withPostgresql().ok(expectedPostgresql)
-        .withBigQuery().ok(expectedBigQuery);
-  }
+//  @Test public void testCharLiteralForBigQuery() {
+//    final String query = "select 'that''s all folks!' from \"product\"";
+//    final String expectedPostgresql = "SELECT 'that''s all folks!'\n"
+//        + "FROM \"foodmart\".\"product\"";
+//    final String expectedBigQuery = "SELECT 'that\\'s all folks!'\n"
+//        + "FROM foodmart.product";
+//    sql(query)
+//        .withPostgresql().ok(expectedPostgresql)
+//        .withBigQuery().ok(expectedBigQuery);
+//  }
 
   @Test public void testIdentifier() {
     // Note that IGNORE is reserved in BigQuery but not in standard SQL
@@ -2139,18 +2143,21 @@ class RelToSqlConverterTest {
     sql(query).ok(expected);
   }
 
-  @Test public void testSelectUnicodeLike() {
-    String query = "select \"product_name\" from \"product\" a "
-            + "where \"product_name\" like '上海'";
-    sql(query)
-       .withMssql()
-       .throws_("while converting `A`.`product_name` LIKE u&'\\4e0a\\6d77'");
-    sql(query)
-       .withPostgresql()
-       .throws_("while converting `A`.`product_name` LIKE u&'\\4e0a\\6d77'");
-    sql(query)
-       .throws_("while converting `A`.`product_name` LIKE u&'\\4e0a\\6d77'");
-  }
+  /** Note: This test came with CALCITE-3147. It is commented out
+   * because CALCITE-3147 turns nonascii characters into unicode when query is parsed,
+   * which might not be compatible to other JDBCs in ArpRelToSqlConverter.*/
+//  @Test public void testSelectUnicodeLike() {
+//    String query = "select \"product_name\" from \"product\" a "
+//            + "where \"product_name\" like '上海'";
+//    sql(query)
+//       .withMssql()
+//       .throws_("while converting `A`.`product_name` LIKE u&'\\4e0a\\6d77'");
+//    sql(query)
+//       .withPostgresql()
+//       .throws_("while converting `A`.`product_name` LIKE u&'\\4e0a\\6d77'");
+//    sql(query)
+//       .throws_("while converting `A`.`product_name` LIKE u&'\\4e0a\\6d77'");
+//  }
 
   @Test public void testSelectUnicodeEqual() {
     String query1 = "select \"product_name\" from \"product\" a "
