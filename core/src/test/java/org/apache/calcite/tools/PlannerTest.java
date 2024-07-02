@@ -559,10 +559,6 @@ public class PlannerTest {
         + "   order by emps.deptno) "
         + ")"
         + "order by deptno",
-<<<<<<< HEAD
-        "EnumerableSort(sort0=[$1], dir0=[ASC])\n"
-        + "  EnumerableProject(EXPR$0=[+($0, $1)], deptno=[$1])\n"
-=======
         "EnumerableSort(sort0=[$2], dir0=[ASC])\n"
         + "  EnumerableProject(emp_cnt=[$2], EXPR$1=[+($0, $1)], deptno=[$1])\n"
         + "    EnumerableWindow(window#0=[window(partition {1} order by [] range between UNBOUNDED PRECEDING and UNBOUNDED FOLLOWING aggs [COUNT()])])\n"
@@ -656,7 +652,6 @@ public class PlannerTest {
         + "JavaType(class java.lang.String) name, REAL NOT NULL salary, "
         + "INTEGER NOT NULL commission) NOT NULL", typeString);
 =======
->>>>>>> eaf3bd424 ([CALCITE-2798] Remove ORDER BY in sub-query, provided it has no LIMIT or OFFSET, during SQL-to-RelNode conversion (Haisheng Yuan))
   }
 
   /** Test case for

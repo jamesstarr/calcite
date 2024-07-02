@@ -961,12 +961,9 @@ public class RelFieldTrimmer implements ReflectiveVisitor {
                 .distinct(aggCall.isDistinct())
                 .filter(filterArg)
                 .approximate(aggCall.isApproximate())
-<<<<<<< HEAD
-                .sort(sortArg)
-                .as(aggCall.name);
-        mapping.set(j, groupCount + newAggCallList.size());
-=======
                 .sort(relBuilder.fields(aggCall.collation))
+=======
+                .sort(sortArg)
                 .as(aggCall.name);
         mapping.set(j, groupCount + newAggCallList.size());
         newAggCallList.add(newAggCall);
