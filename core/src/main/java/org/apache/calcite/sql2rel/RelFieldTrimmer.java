@@ -868,12 +868,16 @@ public class RelFieldTrimmer implements ReflectiveVisitor {
                 Mappings.apply2(inputMapping, aggCall.getArgList()));
         final RexNode filterArg = aggCall.filterArg < 0 ? null
             : relBuilder.field(Mappings.apply(inputMapping, aggCall.filterArg));
+        // This has been fixed in OSS Calcite in a future commit
+        // https://bit.ly/3VP2m6W
+        final ImmutableList<RexNode> sortArg =
+            relBuilder.fields(RexUtil.apply(inputMapping, aggCall.collation));
         RelBuilder.AggCall newAggCall =
             relBuilder.aggregateCall(aggCall.getAggregation(), args)
                 .distinct(aggCall.isDistinct())
                 .filter(filterArg)
                 .approximate(aggCall.isApproximate())
-                .sort(relBuilder.fields(aggCall.collation))
+                .sort(sortArg)
                 .as(aggCall.name);
         mapping.set(j, groupCount + newAggCallList.size());
         newAggCallList.add(newAggCall);
