@@ -6471,6 +6471,11 @@ SqlNode NamedFunctionCall() :
     {
         call = createCall(qualifiedName, s.end(this), funcType, quantifier, args);
     }
+<#if (parser.functionVersionContextParserMethod!default.parser.functionVersionContextParserMethod)?has_content >
+    [
+        call = ${parser.functionVersionContextParserMethod}(call)
+    ]
+</#if>
     [
         LOOKAHEAD(2) call = nullTreatment(call)
     ]
