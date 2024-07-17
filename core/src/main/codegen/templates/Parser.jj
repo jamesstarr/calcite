@@ -8123,12 +8123,15 @@ SqlNode NamedFunctionCall() :
         call = ${parser.functionVersionContextParserMethod}(call)
     ]
 </#if>
+<<<<<<< HEAD
     [
         LOOKAHEAD(2) call = nullTreatment(call)
     ]
     [
         call = withinGroup(call)
     ]
+=======
+>>>>>>> 3b1ea8a43 (DX-92322: Add AT syntax support for calling versioned UDF)
     [
         LOOKAHEAD(2) call = nullTreatment(call)
     ]
