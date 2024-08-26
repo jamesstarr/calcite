@@ -2272,7 +2272,7 @@ void CompoundIdentifierType(List<SqlNode> list, List<SqlNode> extendList) :
 SqlNode TableFunctionCall() :
 {
     final Span s;
-    final SqlNode call;
+    SqlNode call;
     SqlFunctionCategory funcType = SqlFunctionCategory.USER_DEFINED_TABLE_FUNCTION;
 }
 {
@@ -2284,6 +2284,11 @@ SqlNode TableFunctionCall() :
         }
     ]
     call = NamedRoutineCall(funcType, ExprContext.ACCEPT_CURSOR)
+<#if (parser.tableFunctionVersionContextParserMethod!default.parser.tableFunctionVersionContextParserMethod)?has_content >
+    [
+        call = ${parser.tableFunctionVersionContextParserMethod}(call)
+    ]
+</#if>
     <RPAREN>
     {
         return SqlStdOperatorTable.COLLECTION_TABLE.createCall(s.end(this), call);
