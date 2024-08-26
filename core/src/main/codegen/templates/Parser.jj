@@ -2684,10 +2684,14 @@ SqlNode TableFunctionCall() :
 {
     final Span s;
 <<<<<<< HEAD
+<<<<<<< HEAD
     SqlNode call;
 =======
     final SqlNode call;
 >>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
+=======
+    SqlNode call;
+>>>>>>> c626742c9 (DX-94459:  Add AT syntax support for calling versioned Tabular UDF)
     SqlFunctionCategory funcType = SqlFunctionCategory.USER_DEFINED_TABLE_FUNCTION;
 }
 {
@@ -2700,13 +2704,19 @@ SqlNode TableFunctionCall() :
     ]
     call = NamedRoutineCall(funcType, ExprContext.ACCEPT_CURSOR)
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c626742c9 (DX-94459:  Add AT syntax support for calling versioned Tabular UDF)
 <#if (parser.tableFunctionVersionContextParserMethod!default.parser.tableFunctionVersionContextParserMethod)?has_content >
     [
         call = ${parser.tableFunctionVersionContextParserMethod}(call)
     ]
 </#if>
+<<<<<<< HEAD
 =======
 >>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
+=======
+>>>>>>> c626742c9 (DX-94459:  Add AT syntax support for calling versioned Tabular UDF)
     <RPAREN>
     {
         return SqlStdOperatorTable.COLLECTION_TABLE.createCall(s.end(this), call);
