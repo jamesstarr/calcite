@@ -1653,21 +1653,46 @@ public class RelBuilder {
    * Check if the child project contains sql function, if so then do not merge the
    * projects as we could lose some important nodes with sql functions.
    * Also, we do not merge {@link Project} when it contains window functions.
+   * Also, we do not merge if the top node contains subqueries
    */
   protected boolean shouldMergeProject(List<RexNode> nodes, List<RexNode> childNodes) {
     for (RexNode node: childNodes) {
       if (RexOver.containsOver(node)
-              || (node instanceof RexCall
-                && ((RexCall) node).getOperator() instanceof SqlFunction)) {
+          || (node instanceof RexCall
+          && ((RexCall) node).getOperator() instanceof SqlFunction)) {
         return false;
       }
     }
-    for (RexNode node: nodes) {
+    for (RexNode node : nodes) {
       if (RexOver.containsOver(node)) {
         return false;
       }
+
+      // MODIFICATION BEGIN:
+      // This can be removed once we bring in CALCITE-5127
+      if (containsSubQuery(node)) {
+        return false;
+      }
+      // MODIFICATION END
     }
     return true;
+  }
+
+  /**
+   * Helper method to recursively check if a RexNode contains a RexSubQuery.
+   */
+  private boolean containsSubQuery(RexNode node) {
+    if (node instanceof RexSubQuery) {
+      return true;
+    }
+    if (node instanceof RexCall) {
+      for (RexNode operand : ((RexCall) node).getOperands()) {
+        if (containsSubQuery(operand)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**
