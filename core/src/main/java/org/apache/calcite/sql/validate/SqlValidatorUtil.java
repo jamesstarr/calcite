@@ -165,7 +165,7 @@ public class SqlValidatorUtil {
       extendedFields.add(
           new RelDataTypeFieldImpl(identifier.toString(),
               extendedFieldOffset++,
-              type.deriveType(validator)));
+              type.deriveType(validator, type.getNullable() == null || type.getNullable())));
     }
     return extendedFields.build();
   }
