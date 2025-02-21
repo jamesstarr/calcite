@@ -186,8 +186,18 @@ public abstract class RelOptMaterializations {
     HepProgram program =
         new HepProgramBuilder()
             .addRuleInstance(CoreRules.FILTER_PROJECT_TRANSPOSE)
+            .addRuleInstance(CoreRules.FILTER_MERGE)
+            .addRuleInstance(CoreRules.FILTER_INTO_JOIN)
+            .addRuleInstance(CoreRules.JOIN_CONDITION_PUSH)
+            .addRuleInstance(CoreRules.FILTER_AGGREGATE_TRANSPOSE)
             .addRuleInstance(CoreRules.PROJECT_MERGE)
             .addRuleInstance(CoreRules.PROJECT_REMOVE)
+            .addRuleInstance(CoreRules.PROJECT_JOIN_TRANSPOSE)
+            .addRuleInstance(CoreRules.FILTER_TO_CALC)
+            .addRuleInstance(CoreRules.PROJECT_TO_CALC)
+            .addRuleInstance(CoreRules.FILTER_CALC_MERGE)
+            .addRuleInstance(CoreRules.PROJECT_CALC_MERGE)
+            .addRuleInstance(CoreRules.CALC_MERGE)
             .build();
 
     // We must use the same HEP planner for the two optimizations below.
@@ -201,6 +211,7 @@ public abstract class RelOptMaterializations {
     root = hepPlanner.findBestExp();
 
     return new SubstitutionVisitor(target, root).go(materialization.tableRel);
+<<<<<<< HEAD
   }
 
   /**
@@ -217,6 +228,8 @@ public abstract class RelOptMaterializations {
     final RelFieldTrimmer relFieldTrimmer = new RelFieldTrimmer(null, relBuilder);
     final RelNode rel = relFieldTrimmer.trim(relNode);
     return rel;
+=======
+>>>>>>> 2e6c42a57 ([CALCITE-3334]: Refinement for Substitution-Based MV Matching (#12))
   }
 
   /**
