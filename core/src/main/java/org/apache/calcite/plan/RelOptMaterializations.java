@@ -183,8 +183,18 @@ public abstract class RelOptMaterializations {
     HepProgram program =
         new HepProgramBuilder()
             .addRuleInstance(CoreRules.FILTER_PROJECT_TRANSPOSE)
+            .addRuleInstance(CoreRules.FILTER_MERGE)
+            .addRuleInstance(CoreRules.FILTER_INTO_JOIN)
+            .addRuleInstance(CoreRules.JOIN_CONDITION_PUSH)
+            .addRuleInstance(CoreRules.FILTER_AGGREGATE_TRANSPOSE)
             .addRuleInstance(CoreRules.PROJECT_MERGE)
             .addRuleInstance(CoreRules.PROJECT_REMOVE)
+            .addRuleInstance(CoreRules.PROJECT_JOIN_TRANSPOSE)
+            .addRuleInstance(CoreRules.FILTER_TO_CALC)
+            .addRuleInstance(CoreRules.PROJECT_TO_CALC)
+            .addRuleInstance(CoreRules.FILTER_CALC_MERGE)
+            .addRuleInstance(CoreRules.PROJECT_CALC_MERGE)
+            .addRuleInstance(CoreRules.CALC_MERGE)
             .build();
 
     // We must use the same HEP planner for the two optimizations below.
@@ -197,8 +207,7 @@ public abstract class RelOptMaterializations {
     hepPlanner.setRoot(root);
     root = hepPlanner.findBestExp();
 
-    return new MaterializedViewSubstitutionVisitor(target, root)
-            .go(materialization.tableRel);
+    return new SubstitutionVisitor(target, root).go(materialization.tableRel);
   }
 
   /**

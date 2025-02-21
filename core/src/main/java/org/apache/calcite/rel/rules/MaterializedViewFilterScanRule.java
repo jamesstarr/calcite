@@ -16,13 +16,13 @@
  */
 package org.apache.calcite.rel.rules;
 
-import org.apache.calcite.plan.MaterializedViewSubstitutionVisitor;
 import org.apache.calcite.plan.RelOptMaterialization;
 import org.apache.calcite.plan.RelOptMaterializations;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
+import org.apache.calcite.plan.SubstitutionVisitor;
 import org.apache.calcite.plan.hep.HepPlanner;
 import org.apache.calcite.plan.hep.HepProgram;
 import org.apache.calcite.plan.hep.HepProgramBuilder;
@@ -96,7 +96,7 @@ public class MaterializedViewFilterScanRule
               new HepPlanner(PROGRAM.get(), planner.getContext());
           hepPlanner.setRoot(target);
           target = hepPlanner.findBestExp();
-          List<RelNode> subs = new MaterializedViewSubstitutionVisitor(target, root)
+          List<RelNode> subs = new SubstitutionVisitor(target, root)
               .go(materialization.tableRel);
           for (RelNode s : subs) {
             call.transformTo(s);
