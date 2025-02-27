@@ -39,6 +39,12 @@ data: {
       "JAR"
     ]
 
+      "DAYS"
+      "HOURS"
+      "MINUTES"
+      "MONTHS"
+      "SECONDS"
+      "YEARS"
 
     # List of non-reserved keywords to add;
     # items in this list become non-reserved
