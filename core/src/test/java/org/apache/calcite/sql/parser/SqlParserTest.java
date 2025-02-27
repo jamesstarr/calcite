@@ -37,6 +37,7 @@ import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.test.DiffTestCase;
 import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.ConversionUtil;
+import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.SourceStringReader;
 import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
@@ -54,14 +55,16 @@ import org.junit.Test;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+import java.util.Objects;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -598,11 +601,11 @@ public class SqlParserTest {
   }
 
   protected Sql sql(String sql) {
-    return new Sql(sql, false, null);
+    return new Sql(sql, false, null, parser -> { });
   }
 
   protected Sql expr(String sql) {
-    return new Sql(sql, true, null);
+    return new Sql(sql, true, null, parser -> { });
   }
 
   /** Creates an instance of helper class {@link SqlList} to test parsing a
@@ -6681,9 +6684,13 @@ public class SqlParserTest {
             + "    \"HOUR\" \\.\\.\\.\n"
             + "    \"HOURS\" \\.\\.\\.\n"
             + "    \"MINUTE\" \\.\\.\\.\n"
+            + "    \"MINUTES\" \\.\\.\\.\n"
             + "    \"MONTH\" \\.\\.\\.\n"
+            + "    \"MONTHS\" \\.\\.\\.\n"
             + "    \"SECOND\" \\.\\.\\.\n"
+            + "    \"SECONDS\" \\.\\.\\.\n"
             + "    \"YEAR\" \\.\\.\\.\n"
+            + "    \"YEARS\" \\.\\.\\.\n"
             + "    ");
 
     // illegal qualifiers, no precision in either field
@@ -7048,6 +7055,45 @@ public class SqlParserTest {
         .fails(ANY);
     expr("INTERVAL '4' ^QUARTER^")
         .fails(ANY);
+  }
+
+  /** Tests that plural time units are allowed when not in strict mode. */
+  @Test public void testIntervalPluralUnits() {
+    expr("interval '2' years")
+        .hasWarning(checkWarnings("YEARS"))
+        .ok("INTERVAL '2' YEAR");
+    expr("interval '2:1' years to months")
+        .hasWarning(checkWarnings("YEARS", "MONTHS"))
+        .ok("INTERVAL '2:1' YEAR TO MONTH");
+    expr("interval '2' days")
+        .hasWarning(checkWarnings("DAYS"))
+        .ok("INTERVAL '2' DAY");
+    expr("interval '2:1' days to hours")
+        .hasWarning(checkWarnings("DAYS", "HOURS"))
+        .ok("INTERVAL '2:1' DAY TO HOUR");
+    expr("interval '2:1' day to hours")
+        .hasWarning(checkWarnings("HOURS"))
+        .ok("INTERVAL '2:1' DAY TO HOUR");
+    expr("interval '2:1' days to hour")
+        .hasWarning(checkWarnings("DAYS"))
+        .ok("INTERVAL '2:1' DAY TO HOUR");
+    expr("interval '1:1' minutes to seconds")
+        .hasWarning(checkWarnings("MINUTES", "SECONDS"))
+        .ok("INTERVAL '1:1' MINUTE TO SECOND");
+  }
+
+  @Nonnull private Consumer<List<? extends Throwable>> checkWarnings(
+      String... tokens) {
+    final List<String> messages = new ArrayList<>();
+    for (String token : tokens) {
+      messages.add("Warning: use of non-standard feature '" + token + "'");
+    }
+    return throwables -> {
+      assertThat(throwables.size(), is(messages.size()));
+      for (Pair<? extends Throwable, String> pair : Pair.zip(throwables, messages)) {
+        assertThat(pair.left.getMessage(), containsString(pair.right));
+      }
+    };
   }
 
   @Test public void testMiscIntervalQualifier() {
@@ -9070,9 +9116,11 @@ public class SqlParserTest {
 <<<<<<< HEAD
 =======
 
-    void check(String sql, SqlDialect dialect, String expected);
+    void check(String sql, SqlDialect dialect, String expected,
+        Consumer<SqlParser> parserChecker);
 
-    void checkExp(String sql, String expected);
+    void checkExp(String sql, String expected,
+        Consumer<SqlParser> parserChecker);
 
     void checkFails(String sql, boolean list, String expectedMsgPattern);
 
@@ -9113,19 +9161,23 @@ public class SqlParserTest {
       }
     }
 
-    public void check(String sql, SqlDialect dialect, String expected) {
+    public void check(String sql, SqlDialect dialect, String expected,
+        Consumer<SqlParser> parserChecker) {
       final SqlNode sqlNode = parseStmtAndHandleEx(sql,
-          dialect == null ? UnaryOperator.identity() : dialect::configureParser);
+          dialect == null ? UnaryOperator.identity() : dialect::configureParser,
+          parserChecker);
       check(sqlNode, dialect, expected);
     }
 
     protected SqlNode parseStmtAndHandleEx(String sql,
-        UnaryOperator<SqlParser.ConfigBuilder> transform) {
+        UnaryOperator<SqlParser.ConfigBuilder> transform,
+        Consumer<SqlParser> parserChecker) {
       final SqlParser parser =
           getSqlParser(new SourceStringReader(sql), transform);
       final SqlNode sqlNode;
       try {
         sqlNode = parser.parseStmt();
+        parserChecker.accept(parser);
       } catch (SqlParseException e) {
         throw new RuntimeException("Error while parsing SQL: " + sql, e);
       }
@@ -9145,18 +9197,20 @@ public class SqlParserTest {
       return sqlNodeList;
     }
 
-    public void checkExp(
-        String sql,
-        String expected) {
-      final SqlNode sqlNode = parseExpressionAndHandleEx(sql);
+    public void checkExp(String sql, String expected,
+        Consumer<SqlParser> parserChecker) {
+      final SqlNode sqlNode = parseExpressionAndHandleEx(sql, parserChecker);
       final String actual = sqlNode.toSqlString(null, true).getSql();
       TestUtil.assertEqualsVerbose(expected, linux(actual));
     }
 
-    protected SqlNode parseExpressionAndHandleEx(String sql) {
+    protected SqlNode parseExpressionAndHandleEx(String sql,
+        Consumer<SqlParser> parserChecker) {
       final SqlNode sqlNode;
       try {
-        sqlNode = getSqlParser(sql).parseExpression();
+        final SqlParser parser = getSqlParser(sql);
+        sqlNode = parser.parseExpression();
+        parserChecker.accept(parser);
       } catch (SqlParseException e) {
         throw new RuntimeException("Error while parsing expression: " + sql, e);
       }
@@ -9324,10 +9378,11 @@ public class SqlParserTest {
       assertThat(sql3, notNullValue());
     }
 
-    @Override public void check(String sql, SqlDialect dialect,
-        String expected) {
+    @Override public void check(String sql, SqlDialect dialect, String expected,
+        Consumer<SqlParser> parserChecker) {
       SqlNode sqlNode = parseStmtAndHandleEx(sql,
-          dialect == null ? UnaryOperator.identity() : dialect::configureParser);
+          dialect == null ? UnaryOperator.identity() : dialect::configureParser,
+          parserChecker);
       // Unparse with the given dialect, always parenthesize.
       final String actual = sqlNode.toSqlString(dialect, true).getSql();
       assertEquals(expected, linux(actual));
@@ -9340,7 +9395,7 @@ public class SqlParserTest {
       final Quoting q = quoting;
       try {
         quoting = Quoting.DOUBLE_QUOTE;
-        sqlNode2 = parseStmtAndHandleEx(sql1, b -> b);
+        sqlNode2 = parseStmtAndHandleEx(sql1, b -> b, parser -> { });
       } finally {
         quoting = q;
       }
@@ -9417,11 +9472,14 @@ public class SqlParserTest {
     private final String sql;
     private final boolean expression;
     private final SqlDialect dialect;
+    private final Consumer<SqlParser> parserChecker;
 
-    Sql(String sql, boolean expression, SqlDialect dialect) {
-      this.sql = sql;
+    Sql(String sql, boolean expression, SqlDialect dialect,
+        Consumer<SqlParser> parserChecker) {
+      this.sql = Objects.requireNonNull(sql);
       this.expression = expression;
       this.dialect = dialect;
+      this.parserChecker = Objects.requireNonNull(parserChecker);
     }
 
     public Sql same() {
@@ -9432,7 +9490,7 @@ public class SqlParserTest {
       if (expression) {
         getTester().checkExp(sql, expected, parserChecker);
       } else {
-        getTester().check(sql, dialect, expected);
+        getTester().check(sql, dialect, expected, parserChecker);
       }
       return this;
     }
@@ -9458,18 +9516,18 @@ public class SqlParserTest {
 
     /** Flags that this is an expression, not a whole query. */
     public Sql expression() {
-      return expression ? this : new Sql(sql, true, dialect);
+      return expression ? this : new Sql(sql, true, dialect, parserChecker);
     }
 
     /** Removes the carets from the SQL string. Useful if you want to run
      * a test once at a conformance level where it fails, then run it again
      * at a conformance level where it succeeds. */
     public Sql sansCarets() {
-      return new Sql(sql.replace("^", ""), expression, dialect);
+      return new Sql(sql.replace("^", ""), expression, dialect, parserChecker);
     }
 
     public Sql withDialect(SqlDialect dialect) {
-      return new Sql(sql, expression, dialect);
+      return new Sql(sql, expression, dialect, parserChecker);
     }
   }
 

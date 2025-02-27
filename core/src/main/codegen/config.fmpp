@@ -127,9 +127,13 @@ data: {
       "DATETIME_INTERVAL_CODE"
       "DATETIME_INTERVAL_PRECISION"
 <<<<<<< HEAD
+<<<<<<< HEAD
       "DAYS"
 =======
 >>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
+=======
+      "DAYS"
+>>>>>>> 7aadeab7b ([CALCITE-3383] Plural time units (#18))
       "DECADE"
       "DEFAULTS"
       "DEFERRABLE"
@@ -171,10 +175,14 @@ data: {
       "GRANTED"
       "HIERARCHY"
 <<<<<<< HEAD
+<<<<<<< HEAD
       "HOP"
       "HOURS"
 =======
 >>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
+=======
+      "HOURS"
+>>>>>>> 7aadeab7b ([CALCITE-3383] Plural time units (#18))
       "IGNORE"
       "IMMEDIATE"
       "IMMEDIATELY"
@@ -217,12 +225,18 @@ data: {
       "MILLENNIUM"
       "MILLISECOND"
 <<<<<<< HEAD
+<<<<<<< HEAD
       "MINUTES"
       "MINVALUE"
       "MONTHS"
 =======
       "MINVALUE"
 >>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
+=======
+      "MINUTES"
+      "MINVALUE"
+      "MONTHS"
+>>>>>>> 7aadeab7b ([CALCITE-3383] Plural time units (#18))
       "MORE_"
       "MUMPS"
       "NAME"
@@ -290,9 +304,13 @@ data: {
       "SCOPE_NAME"
       "SCOPE_SCHEMA"
 <<<<<<< HEAD
+<<<<<<< HEAD
       "SECONDS"
 =======
 >>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
+=======
+      "SECONDS"
+>>>>>>> 7aadeab7b ([CALCITE-3383] Plural time units (#18))
       "SECTION"
       "SECURITY"
       "SELF"
@@ -407,9 +425,13 @@ data: {
       "WRITE"
       "XML"
 <<<<<<< HEAD
+<<<<<<< HEAD
       "YEARS"
 =======
 >>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
+=======
+      "YEARS"
+>>>>>>> 7aadeab7b ([CALCITE-3383] Plural time units (#18))
       "ZONE"
     ]
 

@@ -982,6 +982,7 @@ freemarkerLinks: {
       "DATABASE"
       "DATETIME_INTERVAL_CODE"
       "DATETIME_INTERVAL_PRECISION"
+      "DAYS"
       "DECADE"
       "DEFAULTS"
       "DEFERRABLE"
@@ -1022,6 +1023,7 @@ freemarkerLinks: {
       "GOTO"
       "GRANTED"
       "HIERARCHY"
+      "HOURS"
       "IGNORE"
       "IMMEDIATE"
       "IMMEDIATELY"
@@ -1063,7 +1065,9 @@ freemarkerLinks: {
       "MICROSECOND"
       "MILLENNIUM"
       "MILLISECOND"
+      "MINUTES"
       "MINVALUE"
+      "MONTHS"
       "MORE_"
       "MUMPS"
       "NAME"
@@ -1130,6 +1134,7 @@ freemarkerLinks: {
       "SCOPE_CATALOGS"
       "SCOPE_NAME"
       "SCOPE_SCHEMA"
+      "SECONDS"
       "SECTION"
       "SECURITY"
       "SELF"
@@ -1235,12 +1240,8 @@ freemarkerLinks: {
       "WRAPPER"
       "WRITE"
       "XML"
+      "YEARS"
       "ZONE"
-    ]
-
-    # List of non-reserved keywords to remove;
-    # items in this list become reserved
-    nonReservedKeywordsToRemove: [
     ]
 
     # List of non-reserved keywords to add;
@@ -1359,7 +1360,6 @@ freemarkerLinks: {
       "DATA"
 #     "DATE"
       "DAY"
-#     "DAYS" # not a keyword in Calcite
       "DEALLOCATE"
       "DEC"
       "DECIMAL"
@@ -1438,7 +1438,6 @@ freemarkerLinks: {
 #     "HAVING"
       "HOLD"
       "HOUR"
-#     "HOURS" # not a keyword in Calcite
       "IDENTITY"
 #     "IF" # not a keyword in Calcite
       "IMMEDIATE"
@@ -1511,7 +1510,6 @@ freemarkerLinks: {
       "MIN"
 #     "MINUS"
       "MINUTE"
-#     "MINUTES" # not a keyword in Calcite
       "MOD"
       "MODIFIES"
       "MODULE"
@@ -1624,7 +1622,6 @@ freemarkerLinks: {
       "SCROLL"
       "SEARCH"
       "SECOND"
-#     "SECONDS" # not a keyword in Calcite
       "SECTION"
       "SEEK"
 #     "SELECT"
@@ -1725,8 +1722,12 @@ freemarkerLinks: {
       "WORK"
       "WRITE"
       "YEAR"
-#     "YEARS" # not a keyword in Calcite
       "ZONE"
+    ]
+
+    # List of non-reserved keywords to remove;
+    # items in this list become reserved
+    nonReservedKeywordsToRemove: [
     ]
 
     # List of additional join types. Each is a method with no arguments.
