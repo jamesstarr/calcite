@@ -1003,6 +1003,9 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($3, 0), false, IS TRUE(=($1, $2)), tr
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4025d8942 ([CALCITE-6746] Optimization rule ProjectWindowTranspose is unsound (#26))
     <TestCase name="testConstantWindow">
       <Resource name="sql">
         <![CDATA[with empsalary(dept, empno, salary, enroll_date) as (VALUES ('x', 10, 5200, DATE '2007-08-01'), (NULL, NULL, NULL, NULL))
@@ -1018,8 +1021,11 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[CASE(=($3, 0), false, IS TRUE(=($1, $2)), tr
   ]]>
       </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 >>>>>>> d2308d995 ([CALCITE-3007] Type mismatch for ANY subquery in project (Vineet Garg))
+=======
+>>>>>>> 4025d8942 ([CALCITE-6746] Optimization rule ProjectWindowTranspose is unsound (#26))
     <TestCase name="testCorrelationScalarAggAndFilter">
         <Resource name="sql">
             <![CDATA[SELECT e1.empno

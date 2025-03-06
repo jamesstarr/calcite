@@ -243,7 +243,7 @@ class RelOptRulesTest extends RelOptTestBase {
    * Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-6746">[CALCITE-6746]
    * Optimization rule ProjectWindowTranspose is unsound</a>. */
-  @Disabled @Test void testConstantWindow() {
+  @Ignore @Test public void testConstantWindow() {
     final String sql = "with empsalary(dept, empno, salary, enroll_date) as "
         + "(VALUES ('x', 10, 5200, DATE '2007-08-01'), (NULL, NULL, NULL, NULL))\n"
         + "select sum(salary) "
@@ -256,7 +256,7 @@ class RelOptRulesTest extends RelOptTestBase {
         .checkUnchanged();
   }
 
-  @Test void testReduceNestedCaseWhen() {
+  @Test public void testReduceNestedCaseWhen() {
     HepProgram preProgram = new HepProgramBuilder()
         .build();
 

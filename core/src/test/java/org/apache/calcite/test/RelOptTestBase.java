@@ -207,6 +207,14 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
 =======
     }
 
+    public Sql withPreRule(RelOptRule... rules) {
+      final HepProgramBuilder builder = HepProgram.builder();
+      for (RelOptRule rule : rules) {
+        builder.addRuleInstance(rule);
+      }
+      return withPre(builder.build());
+    }
+
     public Sql with(HepPlanner hepPlanner) {
       return new Sql(tester, sql, preProgram, hepPlanner, hooks, transforms);
     }
