@@ -720,6 +720,21 @@ LogicalProject(DEPTNO=[$0], EXPR$1=[OR(AND(IS NOT NULL($5), <>($2, 0)), AND(<($3
 ]]>
         </Resource>
     </TestCase>
+    <TestCase name="testConstantWindow">
+      <Resource name="sql">
+        <![CDATA[with empsalary(dept, empno, salary, enroll_date) as (VALUES ('x', 10, 5200, DATE '2007-08-01'), (NULL, NULL, NULL, NULL))
+  select sum(salary) OVER (order by enroll_date range between INTERVAL 365 DAYS preceding and INTERVAL 365 DAYS following),
+  salary, enroll_date FROM empsalary]]>
+      </Resource>
+      <Resource name="planBefore">
+        <![CDATA[
+  LogicalProject(EXPR$0=[CASE(>($3, 0), $4, null:INTEGER)], SALARY=[$0], ENROLL_DATE=[$1])
+    LogicalWindow(window#0=[window(order by [1] range between $2 PRECEDING and $2 FOLLOWING aggs [COUNT($0), SUM($0)])])
+      LogicalProject(EXPR$2=[$2], EXPR$3=[$3], $2=[*(365, 86400000:INTERVAL DAY)])
+        LogicalValues(tuples=[[{ 'x', 10, 5200, 2007-08-01 }, { null, null, null, null }]])
+  ]]>
+      </Resource>
+    </TestCase>
     <TestCase name="testCorrelationScalarAggAndFilter">
         <Resource name="sql">
             <![CDATA[SELECT e1.empno
