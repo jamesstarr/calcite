@@ -215,6 +215,8 @@ public class RelMetadataQuery extends RelMetadataQueryBase {
         return nodeTypesHandler.getNodeTypes(rel, this);
       } catch (RelMetadataHandlerProvider.NoHandler e) {
         nodeTypesHandler = revise(e.relClass, BuiltInMetadata.NodeTypes.DEF);
+      } catch (CyclicMetadataException e) {
+        return null;
       }
     }
   }

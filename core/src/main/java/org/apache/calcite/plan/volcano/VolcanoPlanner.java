@@ -44,6 +44,7 @@ import org.apache.calcite.rel.RelVisitor;
 import org.apache.calcite.rel.convert.Converter;
 import org.apache.calcite.rel.convert.ConverterRule;
 import org.apache.calcite.rel.externalize.RelWriterImpl;
+import org.apache.calcite.rel.metadata.CyclicMetadataException;
 import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelMdUtil;
 import org.apache.calcite.rel.metadata.RelMetadataProvider;
@@ -853,17 +854,11 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
       set = getSet(equivRel);
     }
     final RelSubset subset = registerImpl(rel, set);
-
-    // Checking if tree is valid considerably slows down planning
-    // Only doing it if logger level is debug or finer
-    if (LOGGER.isDebugEnabled()) {
-      assert isValid(Litmus.THROW);
-    }
-
     return subset;
   }
 
   public RelSubset ensureRegistered(RelNode rel, RelNode equivRel) {
+    RelSubset result;
     final RelSubset subset = getSubset(rel);
     if (subset != null) {
       if (equivRel != null) {
@@ -872,10 +867,18 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
           merge(equivSubset.set, subset.set);
         }
       }
-      return subset;
+      result = subset;
     } else {
-      return register(rel, equivRel);
+      result = register(rel, equivRel);
     }
+
+    // Checking if tree is valid considerably slows down planning
+    // Only doing it if logger level is debug or finer
+    if (LOGGER.isDebugEnabled()) {
+      assert isValid(Litmus.THROW);
+    }
+
+    return result;
   }
 
   /**
@@ -886,6 +889,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
       return true;
     }
 
+    RelMetadataQuery metaQuery = this.getRoot().getCluster().getMetadataQuerySupplier().get();
     for (RelSet set : allSets) {
       if (set.equivalentSet != null) {
         return litmus.fail("set [{}] has been merged: it should not be in the list", set);
@@ -905,19 +909,27 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
           }
 
           // Make sure bestCost is up-to-date
-          RelOptCost bestCost = getCost(subset.best, subset.best.getCluster().getMetadataQuery());
-          if (!subset.bestCost.equals(bestCost)) {
-            return litmus.fail("RelSubset [" + subset.getDescription()
-                            + "] has wrong best cost "
-                            + subset.bestCost + ". Correct cost is " + bestCost);
+          try {
+            RelOptCost bestCost = getCost(subset.best, metaQuery);
+            if (!subset.bestCost.equals(bestCost)) {
+              return litmus.fail("RelSubset [" + subset.getDescription()
+                      + "] has wrong best cost "
+                      + subset.bestCost + ". Correct cost is " + bestCost);
+            }
+          } catch (CyclicMetadataException e) {
+            // ignore
           }
         }
 
         for (RelNode rel : subset.getRels()) {
-          RelOptCost relCost = getCost(rel, rel.getCluster().getMetadataQuery());
-          if (relCost.isLt(subset.bestCost)) {
-            return litmus.fail("rel [{}] has lower cost {} than best cost {} of subset [{}]",
-                      rel, relCost, subset.bestCost, subset);
+          try {
+            RelOptCost relCost = getCost(rel, metaQuery);
+            if (relCost.isLt(subset.bestCost)) {
+              return litmus.fail("rel [{}] has lower cost {} than best cost {} of subset [{}]",
+                  rel, relCost, subset.bestCost, subset);
+            }
+          } catch (CyclicMetadataException e) {
+            // ignore
           }
         }
       }
@@ -1410,9 +1422,15 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
         boolean existed = subset.set.rels.remove(rel);
         assert existed : "rel was not known to its set";
         final RelSubset equivSubset = getSubset(equivRel);
-        if (subset.best == rel) {
-          subset.best = equivRel;
-          subset.bestCost = getCost(equivRel);
+        for (RelSubset s : subset.set.subsets) {
+          if (s.best == rel) {
+            s.best = equivRel;
+
+            // Propagate cost improvement since this potentially would change the subset's best cost
+            s.propagateCostImprovements(
+                    this, equivRel.getCluster().getMetadataQuery(),
+                    equivRel);
+          }
         }
 
         if (equivSubset != subset) {
@@ -1791,7 +1809,11 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     // not established. So, give the subset another chance to figure out
     // its cost.
     final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-    subset.propagateCostImprovements(this, mq, rel);
+    try {
+      subset.propagateCostImprovements(this, mq, rel);
+    } catch (CyclicMetadataException e) {
+      // ignore
+    }
 
     return subset;
   }
