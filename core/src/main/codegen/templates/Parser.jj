@@ -5958,9 +5958,7 @@ SqlTypeNameSpec TypeName() :
         LOOKAHEAD(2)
 <#if (parser.dataTypeParserMethods!default.parser.dataTypeParserMethods)?size != 0>
 <#list (parser.dataTypeParserMethods!default.parser.dataTypeParserMethods) as method>
-        typeName = ${method}{
-            typeNameSpec = new SqlUserDefinedTypeNameSpec(typeName, s.end(this));
-        }
+        typeNameSpec = ${method}
     |
 </#list>
 </#if>
