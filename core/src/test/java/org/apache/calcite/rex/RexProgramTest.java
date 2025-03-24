@@ -838,6 +838,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
   @Test void testItemStrong() {
     final ImmutableBitSet c0 = ImmutableBitSet.of(0);
     RexNode item = item(input(tArray(tInt()), 0), literal(0));
@@ -854,6 +855,31 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
   @Test void xAndNotX() {
 =======
+=======
+  @Test public void testItemStrong() {
+    final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
+
+    final ImmutableBitSet c0 = ImmutableBitSet.of(0);
+    final RelDataType intArray = typeFactory.createArrayType(intType, -1);
+    RexInputRef inputRef = rexBuilder.makeInputRef(intArray, 0);
+
+    RexNode rexNode = item(inputRef, literal(0));
+
+    assertThat(Strong.isStrong(rexNode), is(true));
+
+    assertThat(Strong.isNull(rexNode, c0), is(true));
+
+    final RelDataType varcharType = typeFactory.createSqlType(SqlTypeName.VARCHAR);
+    final RelDataType mapType = typeFactory.createMapType(varcharType, varcharType);
+
+    inputRef = rexBuilder.makeInputRef(mapType, 0);
+    rexNode = item(inputRef, literal("abc"));
+    assertThat(Strong.isStrong(rexNode), is(true));
+
+    assertThat(Strong.isNull(rexNode, c0), is(true));
+  }
+
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   @Test public void xAndNotX() {
 >>>>>>> f070f34c8 ([CALCITE-2327] RexSimplify: AND(x, y, NOT(y)) ==> AND(x, null, IS NULL(y))):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify2(
@@ -4362,5 +4388,13 @@ public class RexProgramTest extends RexProgramBuilderBase {
     RelOptPredicateList relOptPredicateList = RelOptPredicateList.of(rexBuilder,
         ImmutableList.of(gt(ref, literal(1)), le(ref, literal(5))));
     checkSimplifyFilter(gt(ref, literal(9)), relOptPredicateList, "false");
+  }
+
+  @Test public void testSimplifyCastUnaryMinus() {
+    RexNode expr =
+        isNull(ne(unaryMinus(cast(unaryMinus(vIntNotNull(1)), nullable(tInt()))), vIntNotNull(1)));
+    RexNode s = simplify.simplifyUnknownAs(expr, RexUnknownAs.UNKNOWN);
+
+    assertThat(s, is(falseLiteral));
   }
 }

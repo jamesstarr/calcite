@@ -576,8 +576,12 @@ on emp.deptno=dept.deptno and emp.ename is not null]]>
     <TestCase name="testNotPushExpression">
         <Resource name="sql">
             <![CDATA[select 1 from emp inner join dept
+<<<<<<< HEAD
             on emp.deptno=dept.deptno and emp.ename is not null]]>
 >>>>>>> d986fd172 ([CALCITE-3101] Don't push non-equi join conditions into Project below Join)
+=======
+on emp.deptno=dept.deptno and emp.ename is not null]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -1094,6 +1098,23 @@ LogicalProject(ENAME=[$1])
 ]]>
         </Resource>
     </TestCase>
+    <TestCase name="testCustomDecorrelate">
+        <Resource name="Comparing Plans from LogicalCorrelate and CustomCorrelate">
+            <![CDATA[
+LogicalProject(EMPNO=[$0])
+  LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], DEPTNO0=[$9], NAME=[$10], EMPNO0=[CAST($11):INTEGER], EXPR$0=[CAST($12):INTEGER])
+    LogicalJoin(condition=[AND(=($0, $11), >($5, $12))], joinType=[inner])
+      LogicalJoin(condition=[=($7, $9)], joinType=[inner])
+        LogicalFilter(condition=[<($7, 10)])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+        LogicalFilter(condition=[<($0, 15)])
+          LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+      LogicalAggregate(group=[{0}], EXPR$0=[AVG($1)])
+        LogicalProject(EMPNO=[$0], SAL=[$5])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
     <TestCase name="testConvertMultiJoinRuleLoptOptimizeJoinRuleNonOptimized">
         <Resource name="sql">
             <![CDATA[select e1.ename from emp e1 full outer join dept d on e1.deptno = d.deptno full outer join emp e2 on d.deptno = e2.deptno]]>
@@ -1505,10 +1526,15 @@ LogicalAggregate(group=[{0}], EXPR$1=[SUM($1)], EXPR$2=[MIN($2)], EXPR$3=[SUM($0
 =======
     <TestCase name="testRemoveDistinctOnAgg">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[SELECT empno, SUM(distinct sal), MIN(sal), MIN(distinct sal), MAX(distinct sal), bit_and(distinct sal), bit_or(sal), count(distinct sal)
 FROM sales.emp
 GROUP BY empno, deptno]]>
 >>>>>>> 873c9f8db ([CALCITE-3159] Remove DISTINCT flag from calls to MIN, MAX, BIT_OR, BIT_AND aggregate functions (xuqianjin))
+=======
+            <![CDATA[SELECT empno, SUM(distinct sal), MIN(sal), MIN(distinct sal), MAX(distinct sal), bit_and(distinct sal), bit_or(sal), count(distinct sal) from sales.emp group by empno, deptno
+]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -2713,11 +2739,15 @@ LogicalProject(EXPR$0=[$1], EXPR$1=[$0])
 count(e.empno) over (partition by e.deptno)
 from emp e join bonus b
 <<<<<<< HEAD
+<<<<<<< HEAD
 on e.ename = b.ename and e.deptno = 10]]>
 =======
 on e.ename = b.ename and e.deptno = 10
 ]]>
 >>>>>>> 305257505 ([CALCITE-2343] PushProjector with OVER expression causes infinite loop (Chunwei Lei))
+=======
+on e.ename = b.ename and e.deptno = 10]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -2746,11 +2776,15 @@ LogicalProject(EXPR$0=[+($1, $5)], EXPR$1=[$2])
 count(b.sal) over (partition by b.job)
 from emp e join bonus b
 <<<<<<< HEAD
+<<<<<<< HEAD
 on e.ename = b.ename and e.deptno = 10]]>
 =======
 on e.ename = b.ename and e.deptno = 10
 ]]>
 >>>>>>> 305257505 ([CALCITE-2343] PushProjector with OVER expression causes infinite loop (Chunwei Lei))
+=======
+on e.ename = b.ename and e.deptno = 10]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -2779,11 +2813,15 @@ LogicalProject(EXPR$0=[+($1, $4)], EXPR$1=[$5])
 sum(b.sal + b.sal + 100) over (partition by b.job)
 from emp e join bonus b
 <<<<<<< HEAD
+<<<<<<< HEAD
 on e.ename = b.ename and e.deptno = 10]]>
 =======
 on e.ename = b.ename and e.deptno = 10
 ]]>
 >>>>>>> 305257505 ([CALCITE-2343] PushProjector with OVER expression causes infinite loop (Chunwei Lei))
+=======
+on e.ename = b.ename and e.deptno = 10]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -6279,8 +6317,14 @@ where d.deptno > 3) where ename LIKE 'bar']]>
 =======
     <TestCase name="testManyFiltersOnTopOfMultiJoinShouldCollapse">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[select * from (select * from emp e1 left outer join dept d on e1.deptno = d.deptno where d.deptno > 3) where ename LIKE 'bar']]>
 >>>>>>> 9712e4907 ([CALCITE-2437] FilterMultiJoinMerge doesn't combine filters)
+=======
+            <![CDATA[select * from (select * from emp e1 left outer join dept d
+on e1.deptno = d.deptno
+where d.deptno > 3) where ename LIKE 'bar']]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -7369,12 +7413,17 @@ LogicalProject(EXPR$0=[1])
     <TestCase name="testPullConstantIntoProject">
         <Resource name="sql">
 <<<<<<< HEAD
+<<<<<<< HEAD
             <![CDATA[select deptno, deptno + 1, empno + deptno
 from sales.emp where deptno = 10]]>
 =======
             <![CDATA[select deptno, deptno + 1, empno + deptno from sales.emp where deptno = 10]]>
 
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+            <![CDATA[select deptno, deptno + 1, empno + deptno
+from sales.emp where deptno = 10]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -8062,6 +8111,7 @@ LogicalAggregate(group=[{1}])
         <Resource name="sql">
             <![CDATA[select e.job,d.name
 from (select * from sales.emp where ename = 'A') as e
+<<<<<<< HEAD
 =======
     <TestCase name="testPushAggregateThroughtOuterJoin6">
 =======
@@ -8071,6 +8121,8 @@ from (select * from sales.emp where ename = 'A') as e
             <![CDATA[select e.job,d.name
 from (select * from sales.emp where empno = 10) as e
 >>>>>>> 33f139a23 ([CALCITE-3011] Support left and right outer joins with AggregateJoinTransposeRule (Vineet Garg))
+=======
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
 left outer join sales.dept as d on e.job = d.name
 group by e.job,d.name]]>
         </Resource>
@@ -8181,6 +8233,7 @@ LogicalAggregate(group=[{0}])
         <Resource name="sql">
             <![CDATA[select d.name
 from (select * from sales.emp where ename = 'A') as e
+<<<<<<< HEAD
 =======
     <TestCase name="testPushAggregateThroughtOuterJoin8">
 =======
@@ -8190,6 +8243,8 @@ from (select * from sales.emp where ename = 'A') as e
             <![CDATA[select d.name
 from (select * from sales.emp where empno = 10) as e
 >>>>>>> 33f139a23 ([CALCITE-3011] Support left and right outer joins with AggregateJoinTransposeRule (Vineet Garg))
+=======
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
 left outer join sales.dept as d on e.job = d.name
 and e.deptno + e.empno = d.deptno + 5
 group by d.name]]>
@@ -8743,11 +8798,15 @@ LogicalAggregate(group=[{0, 1}])
 =======
     <TestCase name="testPullAggregateThroughUnionAndAddProjects">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[select job, deptno from
             (select job, deptno from emp as e1 group by job, deptno
             union all select job, deptno from emp as e2 group by job, deptno)
             group by job, deptno]]>
 >>>>>>> 682d0a77d ([CALCITE-2801] Check input type in AggregateUnionAggregateRule when remove the bottom Aggregate (Hequn Cheng))
+=======
+            <![CDATA[select job, deptno from (select job, deptno from emp as e1 group by job, deptno  union all select job, deptno from emp as e2 group by job, deptno) group by job, deptno]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -8775,6 +8834,7 @@ LogicalAggregate(group=[{0, 1}])
     <TestCase name="testPullAggregateThroughUnionWithAlias">
         <Resource name="sql">
 <<<<<<< HEAD
+<<<<<<< HEAD
             <![CDATA[select job, c from (select job, deptno c from emp as e1 group by job, deptno  union all select job, deptno from emp as e2 group by job, deptno) group by job, c]]>
 =======
             <![CDATA[select job, c from
@@ -8782,6 +8842,9 @@ LogicalAggregate(group=[{0, 1}])
              union all select job, deptno from emp as e2 group by job, deptno)
              group by job, c]]>
 >>>>>>> 682d0a77d ([CALCITE-2801] Check input type in AggregateUnionAggregateRule when remove the bottom Aggregate (Hequn Cheng))
+=======
+            <![CDATA[select job, c from (select job, deptno c from emp as e1 group by job, deptno  union all select job, deptno from emp as e2 group by job, deptno) group by job, c]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -9988,8 +10051,14 @@ else null end as qx from emp]]>
 =======
     <TestCase name="testReduceCaseNullabilityChange">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[select case when empno = 1 then 1 when 1 IS NOT NULL then 2 else null end as qx from emp]]>
 >>>>>>> 2e8d6c73c ([CALCITE-2675] Type validation error as ReduceExpressionRule fails to preserve type nullability (Zoltan Haindrich))
+=======
+            <![CDATA[select case when empno = 1 then 1
+when 1 IS NOT NULL then 2
+else null end as qx from emp]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -10023,8 +10092,12 @@ select empno, cast(job as varchar(128)) from sales.empnullables]]>
     <TestCase name="testReduceCastsNullable">
         <Resource name="sql">
             <![CDATA[insert into sales.dept(deptno, name)
+<<<<<<< HEAD
 select empno, cast(job as varchar(128)) from sales.EMPNULLABLES]]>
 >>>>>>> d5492d7cf ([CALCITE-3346] Re-enable some ignored tests in RelOptRuleTests (Wang Yanlin))
+=======
+select empno, cast(job as varchar(128)) from sales.empnullables]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -10723,8 +10796,12 @@ LogicalAggregate(group=[{}], EXPR$0=[$SUM0($0)])
 =======
     <TestCase name="testPushAggregateThroughJoinOnEmptyLogicalValues">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[select count(*) from sales.emp join sales.dept on job = name]]>
 >>>>>>> 07cd0bbba ([CALCITE-3076] AggregateJoinTransposeRule throws error for unique under aggregate keys when generating merged calls)
+=======
+            <![CDATA[select count(*) volume, sum(C1.sal) C1_sum_sal from (select sal, ename from sales.emp where 1=2) C1 inner join (select ename from sales.emp) C2   on C1.ename = C2.ename ]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -10892,10 +10969,19 @@ group by deptno]]>
 =======
     <TestCase name="testAggregateMerge1">
         <Resource name="sql">
+<<<<<<< HEAD
             <![CDATA[select deptno c, min(y), max(x), max(z) z from (
  select deptno, ename, max(sal) x, max(sal) z, min(sal) y from
  sales.emp group by deptno, ename) t group by deptno]]>
 >>>>>>> 7af257b44 ([CALCITE-1172] Add rule to flatten two Aggregate operators into one)
+=======
+            <![CDATA[select deptno c, min(y), max(z) z,
+sum(r), sum(m) n, sum(x) sal from (
+   select deptno, ename, sum(sal) x, max(sal) z,
+      min(sal) y, count(hiredate) m, count(mgr) r
+   from sales.emp group by deptno, ename) t
+group by deptno]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -10914,18 +11000,24 @@ LogicalAggregate(group=[{7}], EXPR$1=[MIN($5)], Z=[MAX($5)], EXPR$3=[COUNT($3)],
     <TestCase name="testAggregateMerge2">
         <Resource name="sql">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
             <![CDATA[select deptno, empno, sum(x), sum(y)
 from (
   select ename, empno, deptno, sum(sal) x, count(mgr) y
     from sales.emp
   group by deptno, ename, empno) t
 group by grouping sets(deptno, empno)]]>
+<<<<<<< HEAD
 =======
             <![CDATA[select deptno, empno, sum(x), sum(y) from (
         select ename, empno, deptno, sum(sal) x, count(mgr) y from
         sales.emp group by deptno, ename, empno) t
         group by grouping sets(deptno, empno)]]>
 >>>>>>> 7af257b44 ([CALCITE-1172] Add rule to flatten two Aggregate operators into one)
+=======
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -10947,6 +11039,7 @@ LogicalProject(DEPTNO=[$1], EMPNO=[$0], EXPR$2=[$2], EXPR$3=[$3])
         <Resource name="sql">
             <![CDATA[select deptno, sum(x) from (
 <<<<<<< HEAD
+<<<<<<< HEAD
  select ename, deptno, sum(sal) x from
    sales.emp group by cube(deptno, ename)) t
 group by deptno]]>
@@ -10955,6 +11048,11 @@ group by deptno]]>
         sales.emp group by cube(deptno, ename)) t
         group by deptno]]>
 >>>>>>> 7af257b44 ([CALCITE-1172] Add rule to flatten two Aggregate operators into one)
+=======
+ select ename, deptno, sum(sal) x from
+   sales.emp group by cube(deptno, ename)) t
+group by deptno]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -10975,6 +11073,7 @@ LogicalAggregate(group=[{1}], EXPR$1=[SUM($2)])
         <Resource name="sql">
             <![CDATA[select deptno, sum(x) from (
 <<<<<<< HEAD
+<<<<<<< HEAD
   select ename, deptno, count(distinct sal) x
     from sales.emp group by deptno, ename) t
 group by deptno]]>
@@ -10983,6 +11082,11 @@ group by deptno]]>
         sales.emp group by deptno, ename) t
         group by deptno]]>
 >>>>>>> 7af257b44 ([CALCITE-1172] Add rule to flatten two Aggregate operators into one)
+=======
+  select ename, deptno, count(distinct sal) x
+    from sales.emp group by deptno, ename) t
+group by deptno]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11003,6 +11107,7 @@ LogicalAggregate(group=[{1}], EXPR$1=[SUM($2)])
         <Resource name="sql">
             <![CDATA[select deptno, avg(x) from (
 <<<<<<< HEAD
+<<<<<<< HEAD
   select mgr, deptno, avg(sal) x from
     sales.emp group by deptno, mgr) t
 group by deptno]]>
@@ -11011,6 +11116,11 @@ group by deptno]]>
         sales.emp group by deptno, mgr) t
         group by deptno]]>
 >>>>>>> 7af257b44 ([CALCITE-1172] Add rule to flatten two Aggregate operators into one)
+=======
+  select mgr, deptno, avg(sal) x from
+    sales.emp group by deptno, mgr) t
+group by deptno]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11031,12 +11141,17 @@ LogicalAggregate(group=[{1}], EXPR$1=[AVG($2)])
         <Resource name="sql">
             <![CDATA[select sum(x) from (
 <<<<<<< HEAD
+<<<<<<< HEAD
 select mgr, deptno, count(sal) x from
 sales.emp group by deptno, mgr) t]]>
 =======
         select mgr, deptno, count(sal) x from
         sales.emp group by deptno, mgr) t]]>
 >>>>>>> 7af257b44 ([CALCITE-1172] Add rule to flatten two Aggregate operators into one)
+=======
+select mgr, deptno, count(sal) x from
+sales.emp group by deptno, mgr) t]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11057,6 +11172,7 @@ LogicalAggregate(group=[{}], EXPR$0=[SUM($2)])
         <Resource name="sql">
             <![CDATA[select mgr, deptno, sum(x) from (
 <<<<<<< HEAD
+<<<<<<< HEAD
   select mgr, deptno, count(sal) x from
     sales.emp group by deptno, mgr) t
 group by cube(mgr, deptno)]]>
@@ -11065,6 +11181,11 @@ group by cube(mgr, deptno)]]>
         sales.emp group by deptno, mgr) t
         group by cube(mgr, deptno)]]>
 >>>>>>> 7af257b44 ([CALCITE-1172] Add rule to flatten two Aggregate operators into one)
+=======
+  select mgr, deptno, count(sal) x from
+    sales.emp group by deptno, mgr) t
+group by cube(mgr, deptno)]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11085,10 +11206,14 @@ LogicalAggregate(group=[{0, 1}], groups=[[{0, 1}, {0}, {1}, {}]], EXPR$2=[SUM($2
         <Resource name="sql">
             <![CDATA[select sum(x) x, min(y) z from (
 <<<<<<< HEAD
+<<<<<<< HEAD
   select sum(sal) x, min(sal) y from sales.emp)]]>
 =======
         select sum(sal) x, min(sal) y from sales.emp)]]>
 >>>>>>> 7af257b44 ([CALCITE-1172] Add rule to flatten two Aggregate operators into one)
+=======
+  select sum(sal) x, min(sal) y from sales.emp)]]>
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11097,18 +11222,17 @@ LogicalAggregate(group=[{}], X=[SUM($0)], Z=[MIN($1)])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
-    <Resource name="planAfter">
-      <![CDATA[
+        <Resource name="planAfter">
+            <![CDATA[
 LogicalAggregate(group=[{}], X=[SUM($5)], Z=[MIN($5)])
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
-    </Resource>
+        </Resource>
     </TestCase>
     <TestCase name="testAggregateRemove1">
         <Resource name="sql">
-            <![CDATA[select empno, sum(sal), min(sal), max(sal),
-  bit_and(distinct sal), bit_or(sal), count(distinct sal)
-  from sales.emp group by empno, ename]]>
+            <![CDATA[select empno, sum(sal), min(sal), max(sal), bit_and(distinct sal), bit_or(sal), count(distinct sal) from sales.emp group by empno, deptno
+]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11127,7 +11251,8 @@ LogicalProject(EMPNO=[$0], EXPR$1=[$5], EXPR$2=[$5], EXPR$3=[$5], EXPR$4=[$5], E
     </TestCase>
     <TestCase name="testAggregateRemove2">
         <Resource name="sql">
-            <![CDATA[select distinct empno, deptno from sales.emp]]>
+            <![CDATA[select distinct empno, deptno from sales.emp
+]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11145,8 +11270,8 @@ LogicalProject(EMPNO=[$0], DEPTNO=[$7])
     </TestCase>
     <TestCase name="testAggregateRemove3">
         <Resource name="sql">
-            <![CDATA[select empno, count(mgr)
-            from sales.emp group by empno, deptno]]>
+            <![CDATA[select empno, count(mgr) from sales.emp group by empno, deptno
+]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11165,8 +11290,8 @@ LogicalProject(EMPNO=[$0], EXPR$1=[CASE(IS NOT NULL($3), 1:BIGINT, 0:BIGINT)])
     </TestCase>
     <TestCase name="testAggregateRemove4">
         <Resource name="sql">
-            <![CDATA[select empno, max(sal), avg(sal)
-            from sales.emp group by empno, deptno]]>
+            <![CDATA[select empno, max(sal), avg(sal) from sales.emp group by empno, deptno
+]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11187,8 +11312,8 @@ LogicalProject(EMPNO=[$0], EXPR$1=[$2], EXPR$2=[$3])
     </TestCase>
     <TestCase name="testAggregateRemove5">
         <Resource name="sql">
-            <![CDATA[select empno, deptno, sum(sal)
-            from sales.emp group by cube(empno, deptno)]]>
+            <![CDATA[select empno, deptno, sum(sal) from sales.emp group by cube(empno, deptno)
+]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11207,8 +11332,8 @@ LogicalAggregate(group=[{0, 1}], groups=[[{0, 1}, {0}, {1}, {}]], EXPR$2=[SUM($2
     </TestCase>
     <TestCase name="testAggregateRemove6">
         <Resource name="sql">
-            <![CDATA[select deptno, max(sal)
-            from sales.emp group by deptno]]>
+            <![CDATA[select deptno, max(sal) from sales.emp group by deptno
+]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11227,15 +11352,13 @@ LogicalAggregate(group=[{0}], EXPR$1=[MAX($1)])
     </TestCase>
     <TestCase name="testAggregateRemove7">
         <Resource name="sql">
-            <![CDATA[
-select mgr, sum(sum_sal)
+            <![CDATA[select mgr, sum(sum_sal)
 from
 (select mgr, deptno, sum(sal) sum_sal
  from sales.emp
  group by mgr, deptno)
 where deptno=100
-group by mgr
-]]>
+group by mgr]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11260,8 +11383,7 @@ LogicalProject(MGR=[$0], SUM_SAL=[$2])
     <TestCase name="testAggregateJoinRemove1">
         <Resource name="sql">
             <![CDATA[select distinct e.deptno from sales.emp e
-left outer join sales.dept d on e.deptno = d.deptno
-]]>
+left outer join sales.dept d on e.deptno = d.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11458,6 +11580,7 @@ LogicalAggregate(group=[{7}])
             <![CDATA[select e.deptno, count(distinct e.job) from sales.emp e
 left outer join sales.dept d on e.deptno = d.deptno
 group by e.deptno]]>
+<<<<<<< HEAD
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11907,6 +12030,8 @@ LogicalProject(DEPTNO=[$9], NAME=[$1])
 left outer join sales.dept d on e.deptno = d.deptno
 group by e.deptno
 ]]>
+=======
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11951,8 +12076,7 @@ LogicalAggregate(group=[{7}], EXPR$1=[COUNT(DISTINCT $2)])
         <Resource name="sql">
             <![CDATA[select e.deptno, count(distinct d.name) from sales.emp e
 left outer join sales.dept d on e.deptno = d.deptno
-group by e.deptno
-]]>
+group by e.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11975,8 +12099,7 @@ LogicalAggregate(group=[{7}], EXPR$1=[COUNT(DISTINCT $10)])
     <TestCase name="testAggregateJoinRemove4">
         <Resource name="sql">
             <![CDATA[select distinct d.deptno from sales.emp e
-right outer join sales.dept d on e.deptno = d.deptno
-]]>
+right outer join sales.dept d on e.deptno = d.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -11998,8 +12121,7 @@ LogicalProject(DEPTNO=[$0])
         <Resource name="sql">
             <![CDATA[select d.deptno, count(distinct d.name) from sales.emp e
 right outer join sales.dept d on e.deptno = d.deptno
-group by d.deptno
-]]>
+group by d.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -12021,8 +12143,7 @@ LogicalAggregate(group=[{0}], EXPR$1=[COUNT(DISTINCT $1)])
         <Resource name="sql">
             <![CDATA[select d.deptno, count(distinct e.job) from sales.emp e
 right outer join sales.dept d on e.deptno = d.deptno
-group by d.deptno
-]]>
+group by d.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -12047,8 +12168,7 @@ LogicalAggregate(group=[{9}], EXPR$1=[COUNT(DISTINCT $2)])
             <![CDATA[SELECT distinct e.deptno
 FROM sales.emp e
 LEFT JOIN sales.dept d1 ON e.deptno = d1.deptno
-LEFT JOIN sales.dept d2 ON e.deptno = d2.deptno
-]]>
+LEFT JOIN sales.dept d2 ON e.deptno = d2.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -12076,8 +12196,7 @@ LogicalAggregate(group=[{7}])
 FROM sales.emp e
 LEFT JOIN sales.dept d1 ON e.deptno = d1.deptno
 LEFT JOIN sales.dept d2 ON e.deptno = d2.deptno
-GROUP BY e.deptno
-]]>
+GROUP BY e.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -12101,12 +12220,10 @@ LogicalAggregate(group=[{7}], EXPR$1=[COUNT(DISTINCT $10)])
     </TestCase>
     <TestCase name="testAggregateJoinRemove9">
         <Resource name="sql">
-            <![CDATA[SELECT e.deptno, d2.name
+            <![CDATA[SELECT distinct e.deptno, d2.name
 FROM sales.emp e
 LEFT JOIN sales.dept d1 ON e.deptno = d1.deptno
-LEFT JOIN sales.dept d2 ON e.deptno = d2.deptno
-GROUP BY e.deptno
-]]>
+LEFT JOIN sales.dept d2 ON e.deptno = d2.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -12134,8 +12251,7 @@ LogicalAggregate(group=[{7, 10}])
 FROM sales.emp e
 LEFT JOIN sales.dept d1 ON e.deptno = d1.deptno
 LEFT JOIN sales.dept d2 ON e.deptno = d2.deptno
-GROUP BY e.deptno
-]]>
+GROUP BY e.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -12164,8 +12280,7 @@ LogicalAggregate(group=[{7}], EXPR$1=[COUNT(DISTINCT $10, $12)])
             <![CDATA[SELECT e.deptno, d2.deptno
 FROM sales.emp e
 LEFT JOIN sales.dept d1 ON e.deptno = d1.deptno
-LEFT JOIN sales.dept d2 ON e.deptno = d2.deptno
-]]>
+LEFT JOIN sales.dept d2 ON e.deptno = d2.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -12191,8 +12306,7 @@ LogicalProject(DEPTNO=[$7], DEPTNO0=[$9])
             <![CDATA[SELECT e.deptno, d1.deptno
 FROM sales.emp e
 LEFT JOIN sales.dept d1 ON e.deptno = d1.deptno
-LEFT JOIN sales.dept d2 ON e.deptno = d2.deptno
-]]>
+LEFT JOIN sales.dept d2 ON e.deptno = d2.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -12220,8 +12334,7 @@ LogicalProject(DEPTNO=[$7], DEPTNO0=[$9])
             <![CDATA[SELECT e1.deptno, d.deptno
 FROM sales.emp e1
 LEFT JOIN sales.emp e2 ON e1.deptno = e2.deptno
-LEFT JOIN sales.dept d ON e1.deptno = d.deptno
-]]>
+LEFT JOIN sales.dept d ON e1.deptno = d.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -12248,8 +12361,7 @@ LogicalProject(DEPTNO=[$7], DEPTNO0=[$18])
         <Resource name="sql">
             <![CDATA[SELECT e.deptno
 FROM sales.emp e
-LEFT JOIN sales.dept d ON e.deptno = d.deptno
-]]>
+LEFT JOIN sales.dept d ON e.deptno = d.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -12270,8 +12382,7 @@ LogicalProject(DEPTNO=[$7])
         <Resource name="sql">
             <![CDATA[SELECT e1.deptno
 FROM sales.emp e1
-LEFT JOIN sales.emp e2 ON e1.deptno = e2.deptno
-]]>
+LEFT JOIN sales.emp e2 ON e1.deptno = e2.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -12298,8 +12409,7 @@ LogicalProject(DEPTNO=[$7])
         <Resource name="sql">
             <![CDATA[SELECT e.deptno, d.name
 FROM sales.emp e
-LEFT JOIN sales.dept d ON e.deptno = d.deptno
-]]>
+LEFT JOIN sales.dept d ON e.deptno = d.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -12321,9 +12431,8 @@ LogicalProject(DEPTNO=[$7], NAME=[$10])
     <TestCase name="testProjectJoinRemove7">
         <Resource name="sql">
             <![CDATA[SELECT e.deptno
-FROM sales.dept
-LEFT JOIN sales.emp e ON e.deptno = d.deptno
-]]>
+FROM sales.dept d
+RIGHT JOIN sales.emp e ON e.deptno = d.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -12344,8 +12453,7 @@ LogicalProject(DEPTNO=[$7])
         <Resource name="sql">
             <![CDATA[SELECT e2.deptno
 FROM sales.emp e1
-LEFT JOIN sales.emp e2 ON e1.deptno = e2.deptno
-]]>
+RIGHT JOIN sales.emp e2 ON e1.deptno = e2.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -12368,8 +12476,7 @@ LogicalProject(DEPTNO=[$16])
         <Resource name="sql">
             <![CDATA[SELECT e.deptno, d.name
 FROM sales.dept d
-RIGHT JOIN sales.emp e ON e.deptno = d.deptno
-]]>
+RIGHT JOIN sales.emp e ON e.deptno = d.deptno]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -12385,14 +12492,14 @@ LogicalProject(DEPTNO=[$9], NAME=[$1])
   LogicalJoin(condition=[=($9, $0)], joinType=[right])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
 ]]>
-    </Resource>
-  </TestCase>
-  <TestCase name="testReduceNullableCase2">
-    <Resource name="sql">
-      <![CDATA[SELECT deptno, ename, CASE WHEN 1=2 THEN substring(ename, 1, cast(2 as int)) ELSE NULL end from emp group by deptno, ename, case when 1=2 then substring(ename,1, cast(2 as int))  else null end]]>
-    </Resource>
-    <Resource name="planBefore">
-      <![CDATA[
+        </Resource>
+    </TestCase>
+    <TestCase name="testReduceNullableCase2">
+        <Resource name="sql">
+            <![CDATA[SELECT deptno, ename, CASE WHEN 1=2 THEN substring(ename, 1, cast(2 as int)) ELSE NULL end from emp group by deptno, ename, case when 1=2 then substring(ename,1, cast(2 as int))  else null end]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
 LogicalAggregate(group=[{0, 1, 2}])
   LogicalProject(DEPTNO=[$7], ENAME=[$1], EXPR$2=[null:VARCHAR(20)])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -12983,8 +13090,12 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 >>>>>>> fb39c867e ([CALCITE-2275] Do not push down NOT condition in JOIN (Vitalii Diravka))
 =======
             <![CDATA[select * from sales.emp left join (
+<<<<<<< HEAD
 select * from sales.dept) using (deptno)
 >>>>>>> 5afba4c56 (Revert "[CALCITE-2275] Do not push down NOT condition in JOIN (Vitalii Diravka)")
+=======
+  select * from sales.dept) using (deptno)
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
 order by sal, name limit 10]]>
         </Resource>
         <Resource name="planBefore">
@@ -13013,6 +13124,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
             <![CDATA[select * from sales.emp e right join (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   select * from sales.dept d) using (deptno)
 =======
   select * from sales.dept d) d on e.deptno = d.deptno
@@ -13020,6 +13132,9 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 =======
 select * from sales.dept d) using (deptno)
 >>>>>>> 5afba4c56 (Revert "[CALCITE-2275] Do not push down NOT condition in JOIN (Vitalii Diravka)")
+=======
+  select * from sales.dept d) using (deptno)
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
 order by name]]>
         </Resource>
         <Resource name="planBefore">
@@ -13049,6 +13164,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
             <![CDATA[select * from sales.emp e right join (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   select * from sales.dept d) using (deptno)
 =======
   select * from sales.dept d) d on e.deptno = d.deptno
@@ -13056,6 +13172,9 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 =======
 select * from sales.dept d) using (deptno)
 >>>>>>> 5afba4c56 (Revert "[CALCITE-2275] Do not push down NOT condition in JOIN (Vitalii Diravka)")
+=======
+  select * from sales.dept d) using (deptno)
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
 limit 10]]>
         </Resource>
         <Resource name="planBefore">
@@ -13521,6 +13640,7 @@ LogicalProject
         <Resource name="sql">
             <![CDATA[select empno > ANY (
   select deptno from dept where emp.job = dept.name)
+<<<<<<< HEAD
 =======
     <TestCase name="testSelectAnyCorrelated">
         <Resource name="sql">
@@ -13531,6 +13651,8 @@ LogicalProject
 =======
  select deptno from dept where emp.job = dept.name)
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
+=======
+>>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19))
 from emp
 ]]>
         </Resource>
@@ -16945,7 +17067,9 @@ LogicalFilter(condition=[=($7, 20)])
     </TestCase>
     <TestCase name="testProjectCorrelateTransposeWithExprCond">
         <Resource name="sql">
-            <![CDATA[select t1.name, t2.ename from DEPT_NESTED as t1, unnest(t1.employees) as t2]]>
+            <![CDATA[select t1.name, t2.ename
+from DEPT_NESTED as t1,
+unnest(t1.employees) as t2]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -16973,8 +17097,7 @@ LogicalProject(NAME=[$0], ENAME=[$2])
     <TestCase name="testProjectSetOpTranspose">
         <Resource name="sql">
             <![CDATA[select job, sum(sal + 100) over (partition by deptno) from
-(select * from emp e1 union all select * from emp e2)
-]]>
+(select * from emp e1 union all select * from emp e2)]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -17028,7 +17151,9 @@ LogicalProject(C_NATIONKEY=[$1], FAKE_COL2=[$2])
     </TestCase>
     <TestCase name="testProjectCorrelateTranspose">
         <Resource name="sql">
-            <![CDATA[select t1.name, t2.ename from DEPT_NESTED as t1, unnest(t1.employees) as t2]]>
+            <![CDATA[select t1.name, t2.ename
+from DEPT_NESTED as t1,
+unnest(t1.employees) as t2]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -17057,8 +17182,8 @@ LogicalProject(NAME=[$0], ENAME=[$2])
         <Resource name="sql">
             <![CDATA[select sum(t1.deptno + 1) over (partition by t1.name),
 count(t2.empno) over ()
-from DEPT_NESTED as t1, unnest(t1.employees) as t2
-]]>
+from DEPT_NESTED as t1,
+unnest(t1.employees) as t2]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -17156,20 +17281,19 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
-    </TestCase>
         <Resource name="sql">
             <![CDATA[select * from emp where MGR > 0 and case when MGR > 0 then deptno / MGR else null end > 1]]>
         </Resource>
+    </TestCase>
     <TestCase name="testReduceConstantsWindow">
         <Resource name="sql">
             <![CDATA[select col1, col2, col3
 from (
   select empno,
     sum(100) over (partition by deptno, sal order by sal) as col1,
-    sum(100) over (partition by deptno order by deptno) as col2,
+    sum(100) over (partition by sal order by deptno) as col2,
     sum(sal) over (partition by deptno order by sal) as col3
-  from emp where sal = 5000)
-]]>
+  from emp where sal = 5000)]]>
         </Resource>
         <Resource name="planAfter">
             <![CDATA[
@@ -17212,7 +17336,8 @@ LogicalSortExchange(distribution=[hash[1]], collation=[[1]])
     </TestCase>
     <TestCase name="testReduceAverageWithNoReduceSum">
         <Resource name="sql">
-            <![CDATA[select name, max(name), avg(deptno), min(name) from sales.dept group by name]]>
+            <![CDATA[select name, max(name), avg(deptno), min(name)
+from sales.dept group by name]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -17270,7 +17395,7 @@ LogicalAggregate(group=[{0}], EXPR$1=[SUM($1)])
     </TestCase>
     <TestCase name="testReduceAverageAndVarWithNoReduceStddev">
         <Resource name="sql">
-            <![CDATA[select name, stddev_pop(deptno), avg(deptno), stddev_samp(deptno),var_pop(deptno), var_samp(deptno)
+            <![CDATA[select name, stddev_pop(deptno), avg(deptno), var_pop(deptno)
 from sales.dept group by name]]>
         </Resource>
         <Resource name="planBefore">
@@ -17292,7 +17417,7 @@ LogicalProject(NAME=[$0], EXPR$1=[$1], EXPR$2=[CAST(/($2, $3)):INTEGER NOT NULL]
     </TestCase>
     <TestCase name="testReduceAverageAndSumWithNoReduceStddevAndVar">
         <Resource name="sql">
-            <![CDATA[select name, stddev_pop(deptno), avg(deptno), stddev_samp(deptno),var_pop(deptno), var_samp(deptno)
+            <![CDATA[select name, stddev_pop(deptno), avg(deptno), var_pop(deptno)
 from sales.dept group by name]]>
         </Resource>
         <Resource name="planBefore">
@@ -17313,7 +17438,7 @@ LogicalProject(NAME=[$0], EXPR$1=[$1], EXPR$2=[CAST(/($2, $3)):INTEGER NOT NULL]
     </TestCase>
     <TestCase name="testReduceAllAggregateFunctions">
         <Resource name="sql">
-            <![CDATA[select name, stddev_pop(deptno), avg(deptno), stddev_samp(deptno),var_pop(deptno), var_samp(deptno)
+            <![CDATA[select name, stddev_pop(deptno), avg(deptno), stddev_samp(deptno), var_pop(deptno), var_samp(deptno)
 from sales.dept group by name]]>
         </Resource>
         <Resource name="planBefore">
@@ -17477,7 +17602,7 @@ LogicalJoin(condition=[=($2, $12)], joinType=[anti])
     </TestCase>
     <TestCase name="testReduceDecimal">
         <Resource name="sql">
-            <![CDATA[select ename from emp where sal > cast (100.0 as decimal(4, 1))]]]>
+            <![CDATA[select ename from emp where sal > cast (100.0 as decimal(4, 1))]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -17515,7 +17640,7 @@ EnumerableProject(FNAME=[$1], LNAME=[$2])
     </TestCase>
     <TestCase name="testMaxReuseDistinctAttrWithMixedOptionality">
         <Resource name="sql">
-            <![CDATA[select sum(distinct deptno), count(distinct deptno), max(deptno) from emp]]]>
+            <![CDATA[select sum(distinct deptno), count(distinct deptno), max(deptno) from emp]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -17535,7 +17660,7 @@ LogicalAggregate(group=[{}], EXPR$0=[SUM($0)], EXPR$1=[COUNT($0)], EXPR$2=[MAX($
     </TestCase>
     <TestCase name="testMinReuseDistinctAttrWithMixedOptionality">
         <Resource name="sql">
-            <![CDATA[select sum(distinct deptno), count(distinct deptno), min(deptno) from emp]]]>
+            <![CDATA[select sum(distinct deptno), count(distinct deptno), min(deptno) from emp]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -17555,7 +17680,7 @@ LogicalAggregate(group=[{}], EXPR$0=[SUM($0)], EXPR$1=[COUNT($0)], EXPR$2=[MIN($
     </TestCase>
     <TestCase name="testBitAndReuseDistinctAttrWithMixedOptionality">
         <Resource name="sql">
-            <![CDATA[select sum(distinct deptno), count(distinct deptno), bit_and(deptno) from emp]]]>
+            <![CDATA[select sum(distinct deptno), count(distinct deptno), bit_and(deptno) from emp]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -17575,7 +17700,7 @@ LogicalAggregate(group=[{}], EXPR$0=[SUM($0)], EXPR$1=[COUNT($0)], EXPR$2=[BIT_A
     </TestCase>
     <TestCase name="testBitOrReuseDistinctAttrWithMixedOptionality">
         <Resource name="sql">
-            <![CDATA[select sum(distinct deptno), count(distinct deptno), bit_or(deptno) from emp]]]>
+            <![CDATA[select sum(distinct deptno), count(distinct deptno), bit_or(deptno) from emp]]>
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -17590,6 +17715,57 @@ LogicalAggregate(group=[{}], EXPR$0=[SUM($0)], EXPR$1=[COUNT($0)], EXPR$2=[BIT_O
   LogicalAggregate(group=[{0}])
     LogicalProject(DEPTNO=[$7])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testProjectJoinTransposeItem">
+        <Resource name="sql">
+            <![CDATA[select t1.c_nationkey[0], t2.c_nationkey[0] from sales.customer as t1 left outer join sales.customer as t2 on t1.c_nationkey[0] = t2.c_nationkey[0]]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(EXPR$0=[ITEM($0, 0)], EXPR$1=[ITEM($2, 0)])
+  LogicalJoin(condition=[=($1, $3)], joinType=[left])
+    LogicalProject(C_NATIONKEY=[$0], $f1=[ITEM($0, 0)])
+      LogicalTableScan(table=[[CATALOG, SALES, CUSTOMER]])
+    LogicalProject(C_NATIONKEY=[$0], $f1=[ITEM($0, 0)])
+      LogicalTableScan(table=[[CATALOG, SALES, CUSTOMER]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(EXPR$0=[$1], EXPR$1=[$3])
+  LogicalJoin(condition=[=($0, $2)], joinType=[left])
+    LogicalProject($f1=[$1], EXPR$0=[ITEM($0, 0)])
+      LogicalProject(C_NATIONKEY=[$0], $f1=[ITEM($0, 0)])
+        LogicalTableScan(table=[[CATALOG, SALES, CUSTOMER]])
+    LogicalProject($f1=[$1], EXPR$1=[ITEM($0, 0)])
+      LogicalProject(C_NATIONKEY=[$0], $f1=[ITEM($0, 0)])
+        LogicalTableScan(table=[[CATALOG, SALES, CUSTOMER]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testSimplifyItemIsNotNull">
+        <Resource name="sql">
+            <![CDATA[select * from sales.customer as t1 where t1.c_nationkey[0] is not null]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(**=[$1])
+  LogicalFilter(condition=[IS NOT NULL(ITEM($0, 0))])
+    LogicalTableScan(table=[[CATALOG, SALES, CUSTOMER]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testSimplifyItemIsNull">
+        <Resource name="sql">
+            <![CDATA[select * from sales.customer as t1 where t1.c_nationkey[0] is null]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(**=[$1])
+  LogicalFilter(condition=[IS NULL(ITEM($0, 0))])
+    LogicalTableScan(table=[[CATALOG, SALES, CUSTOMER]])
 ]]>
         </Resource>
     </TestCase>

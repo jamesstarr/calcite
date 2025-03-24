@@ -184,6 +184,7 @@ class PredicateAnalyzer {
         switch (call.getKind()) {
         case CAST:
         case LIKE:
+        case ITEM:
         case OTHER_FUNCTION:
           return true;
         case CASE:
