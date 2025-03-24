@@ -6952,6 +6952,43 @@ public class RelOptRulesTest extends RelOptTestBase {
         + "bit_or(deptno) from emp";
     sql(sql).withRule(CoreRules.AGGREGATE_EXPAND_DISTINCT_AGGREGATES).check();
   }
+
+  @Test public void testProjectJoinTransposeItem() {
+    ProjectJoinTransposeRule projectJoinTransposeRule =
+        CoreRules.PROJECT_JOIN_TRANSPOSE.config
+            .withOperandFor(Project.class, Join.class)
+            .withPreserveExprCondition(skipItem)
+            .toRule();
+
+    final String sql = "select t1.c_nationkey[0], t2.c_nationkey[0]\n"
+        + "from sales.customer as t1\n"
+        + "left outer join sales.customer as t2\n"
+        + "on t1.c_nationkey[0] = t2.c_nationkey[0]";
+
+    sql(sql)
+        .withTester(t -> createDynamicTester())
+        .withRule(projectJoinTransposeRule)
+        .check();
+  }
+
+  @Test public void testSimplifyItemIsNotNull() {
+    String query = "select * from sales.customer as t1 where t1.c_nationkey[0] is not null";
+
+    sql(query)
+        .withTester(t -> createDynamicTester())
+        .withRule(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .checkUnchanged();
+  }
+
+  @Test public void testSimplifyItemIsNull() {
+    String query = "select * from sales.customer as t1 where t1.c_nationkey[0] is null";
+
+    sql(query)
+        .withTester(t -> createDynamicTester())
+        .withRule(CoreRules.FILTER_REDUCE_EXPRESSIONS)
+        .checkUnchanged();
+  }
+
 }
 
 // End RelOptRulesTest.java
