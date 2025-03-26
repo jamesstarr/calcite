@@ -51,6 +51,1209 @@ import org.apache.calcite.rex.RexProgramBuilder;
 import org.apache.calcite.rex.RexShuttle;
 import org.apache.calcite.rex.RexSimplify;
 import org.apache.calcite.rex.RexUtil;
+<<<<<<< HEAD
+=======
+import org.apache.calcite.rex.RexVisitor;
+import org.apache.calcite.rex.RexVisitorImpl;
+import org.apache.calcite.sql.SqlAggFunction;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.tools.RelBuilder;
+import org.apache.calcite.tools.RelBuilderFactory;
+import org.apache.calcite.util.ControlFlowException;
+import org.apache.calcite.util.ImmutableBitSet;
+import org.apache.calcite.util.Litmus;
+import org.apache.calcite.util.Pair;
+import org.apache.calcite.util.Util;
+import org.apache.calcite.util.mapping.Mapping;
+import org.apache.calcite.util.mapping.Mappings;
+import org.apache.calcite.util.trace.CalciteTrace;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+
+import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import static org.apache.calcite.rex.RexUtil.andNot;
+import static org.apache.calcite.rex.RexUtil.removeAll;
+
+/**
+ * Substitutes part of a tree of relational expressions with another tree.
+ *
+ * <p>The call {@code new SubstitutionVisitor(target, query).go(replacement))}
+ * will return {@code query} with every occurrence of {@code target} replaced
+ * by {@code replacement}.</p>
+ *
+ * <p>The following example shows how {@code SubstitutionVisitor} can be used
+ * for materialized view recognition.</p>
+ *
+ * <ul>
+ * <li>query = SELECT a, c FROM t WHERE x = 5 AND b = 4</li>
+ * <li>target = SELECT a, b, c FROM t WHERE x = 5</li>
+ * <li>replacement = SELECT * FROM mv</li>
+ * <li>result = SELECT a, c FROM mv WHERE b = 4</li>
+ * </ul>
+ *
+ * <p>Note that {@code result} uses the materialized view table {@code mv} and a
+ * simplified condition {@code b = 4}.</p>
+ *
+ * <p>Uses a bottom-up matching algorithm. Nodes do not need to be identical.
+ * At each level, returns the residue.</p>
+ *
+ * <p>The inputs must only include the core relational operators:
+ * {@link org.apache.calcite.rel.core.TableScan},
+ * {@link org.apache.calcite.rel.core.Filter},
+ * {@link org.apache.calcite.rel.core.Project},
+ * {@link org.apache.calcite.rel.core.Join},
+ * {@link org.apache.calcite.rel.core.Union},
+ * {@link org.apache.calcite.rel.core.Aggregate}.</p>
+ */
+public class SubstitutionVisitor {
+  private static final boolean DEBUG = CalciteSystemProperty.DEBUG.value();
+
+  private static final Logger LOGGER = CalciteTrace.getPlannerTracer();
+
+  protected static final ImmutableList<UnifyRule> DEFAULT_RULES =
+      ImmutableList.of(
+          TrivialRule.INSTANCE,
+          ScanToCalcUnifyRule.INSTANCE,
+          CalcToCalcUnifyRule.INSTANCE,
+          JoinOnLeftCalcToJoinUnifyRule.INSTANCE,
+          JoinOnRightCalcToJoinUnifyRule.INSTANCE,
+          JoinOnCalcsToJoinUnifyRule.INSTANCE,
+          AggregateToAggregateUnifyRule.INSTANCE,
+          AggregateOnCalcToAggregateUnifyRule.INSTANCE,
+          UnionToUnionUnifyRule.INSTANCE,
+          UnionOnCalcsToUnionUnifyRule.INSTANCE);
+
+  /**
+   * Factory for a builder for relational expressions.
+   */
+  protected final RelBuilder relBuilder;
+
+  private final ImmutableList<UnifyRule> rules;
+  private final Map<Pair<Class, Class>, List<UnifyRule>> ruleMap =
+      new HashMap<>();
+  private final RelOptCluster cluster;
+  private final RexSimplify simplify;
+  private final Holder query;
+  private final MutableRel target;
+
+  /**
+   * Nodes in {@link #target} that have no children.
+   */
+  final List<MutableRel> targetLeaves;
+
+  /**
+   * Nodes in {@link #query} that have no children.
+   */
+  final List<MutableRel> queryLeaves;
+
+  final Map<MutableRel, MutableRel> replacementMap = new HashMap<>();
+
+  final Multimap<MutableRel, MutableRel> equivalents =
+      LinkedHashMultimap.create();
+
+  /** Workspace while rule is being matched.
+   * Careful, re-entrant!
+   * Assumes no rule needs more than 2 slots. */
+  protected final MutableRel[] slots = new MutableRel[2];
+
+  /** Creates a SubstitutionVisitor with the default rule set. */
+  public SubstitutionVisitor(RelNode target_, RelNode query_) {
+    this(target_, query_, DEFAULT_RULES, RelFactories.LOGICAL_BUILDER);
+  }
+
+  /** Creates a SubstitutionVisitor with the default logical builder. */
+  public SubstitutionVisitor(RelNode target_, RelNode query_,
+      ImmutableList<UnifyRule> rules) {
+    this(target_, query_, rules, RelFactories.LOGICAL_BUILDER);
+  }
+
+  public SubstitutionVisitor(RelNode target_, RelNode query_,
+      ImmutableList<UnifyRule> rules, RelBuilderFactory relBuilderFactory) {
+    this.cluster = target_.getCluster();
+    final RexExecutor executor =
+        Util.first(cluster.getPlanner().getExecutor(), RexUtil.EXECUTOR);
+    final RelOptPredicateList predicates = RelOptPredicateList.EMPTY;
+    this.simplify =
+        new RexSimplify(cluster.getRexBuilder(), predicates, executor);
+    this.rules = rules;
+    this.query = Holder.of(MutableRels.toMutable(query_));
+    this.target = MutableRels.toMutable(target_);
+    this.relBuilder = relBuilderFactory.create(cluster, null);
+    final Set<MutableRel> parents = Sets.newIdentityHashSet();
+    final List<MutableRel> allNodes = new ArrayList<>();
+    final MutableRelVisitor visitor =
+        new MutableRelVisitor() {
+          public void visit(MutableRel node) {
+            parents.add(node.getParent());
+            allNodes.add(node);
+            super.visit(node);
+          }
+        };
+    visitor.go(target);
+
+    // Populate the list of leaves in the tree under "target".
+    // Leaves are all nodes that are not parents.
+    // For determinism, it is important that the list is in scan order.
+    allNodes.removeAll(parents);
+    targetLeaves = ImmutableList.copyOf(allNodes);
+
+    allNodes.clear();
+    parents.clear();
+    visitor.go(query);
+    allNodes.removeAll(parents);
+    queryLeaves = ImmutableList.copyOf(allNodes);
+  }
+
+  void register(MutableRel result, MutableRel query) {
+  }
+
+  /**
+   * Maps a condition onto a target.
+   *
+   * <p>If condition is stronger than target, returns the residue.
+   * If it is equal to target, returns the expression that evaluates to
+   * the constant {@code true}. If it is weaker than target, returns
+   * {@code null}.</p>
+   *
+   * <p>The terms satisfy the relation</p>
+   *
+   * <blockquote>
+   * <pre>{@code condition = target AND residue}</pre>
+   * </blockquote>
+   *
+   * <p>and {@code residue} must be as weak as possible.</p>
+   *
+   * <p>Example #1: condition stronger than target</p>
+   * <ul>
+   * <li>condition: x = 1 AND y = 2</li>
+   * <li>target: x = 1</li>
+   * <li>residue: y = 2</li>
+   * </ul>
+   *
+   * <p>Note that residue {@code x &gt; 0 AND y = 2} would also satisfy the
+   * relation {@code condition = target AND residue} but is stronger than
+   * necessary, so we prefer {@code y = 2}.</p>
+   *
+   * <p>Example #2: target weaker than condition (valid, but not currently
+   * implemented)</p>
+   * <ul>
+   * <li>condition: x = 1</li>
+   * <li>target: x = 1 OR z = 3</li>
+   * <li>residue: x = 1</li>
+   * </ul>
+   *
+   * <p>Example #3: condition and target are equivalent</p>
+   * <ul>
+   * <li>condition: x = 1 AND y = 2</li>
+   * <li>target: y = 2 AND x = 1</li>
+   * <li>residue: TRUE</li>
+   * </ul>
+   *
+   * <p>Example #4: condition weaker than target</p>
+   * <ul>
+   * <li>condition: x = 1</li>
+   * <li>target: x = 1 AND y = 2</li>
+   * <li>residue: null (i.e. no match)</li>
+   * </ul>
+   *
+   * <p>There are many other possible examples. It amounts to solving
+   * whether {@code condition AND NOT target} can ever evaluate to
+   * true, and therefore is a form of the NP-complete
+   * <a href="http://en.wikipedia.org/wiki/Satisfiability">Satisfiability</a>
+   * problem.</p>
+   */
+  @VisibleForTesting
+  public static RexNode splitFilter(final RexSimplify simplify,
+      RexNode condition, RexNode target) {
+    final RexBuilder rexBuilder = simplify.rexBuilder;
+    RexNode condition2 = canonizeNode(rexBuilder, condition);
+    RexNode target2 = canonizeNode(rexBuilder, target);
+
+    // First, try splitting into ORs.
+    // Given target    c1 OR c2 OR c3 OR c4
+    // and condition   c2 OR c4
+    // residue is      c2 OR c4
+    // Also deals with case target [x] condition [x] yields residue [true].
+    RexNode z = splitOr(rexBuilder, condition2, target2);
+    if (z != null) {
+      return z;
+    }
+
+    if (isEquivalent(rexBuilder, condition2, target2)) {
+      return rexBuilder.makeLiteral(true);
+    }
+
+    RexNode x = andNot(rexBuilder, target2, condition2);
+    if (mayBeSatisfiable(x)) {
+      RexNode x2 = RexUtil.composeConjunction(rexBuilder,
+          ImmutableList.of(condition2, target2));
+      RexNode r = canonizeNode(rexBuilder,
+          simplify.simplifyUnknownAsFalse(x2));
+      if (!r.isAlwaysFalse() && isEquivalent(rexBuilder, condition2, r)) {
+        List<RexNode> conjs = RelOptUtil.conjunctions(r);
+        for (RexNode e : RelOptUtil.conjunctions(target2)) {
+          removeAll(conjs, e);
+        }
+        return RexUtil.composeConjunction(rexBuilder, conjs);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Reorders some of the operands in this expression so structural comparison,
+   * i.e., based on string representation, can be more precise.
+   */
+  private static RexNode canonizeNode(RexBuilder rexBuilder, RexNode condition) {
+    switch (condition.getKind()) {
+    case AND:
+    case OR: {
+      RexCall call = (RexCall) condition;
+      SortedMap<String, RexNode> newOperands = new TreeMap<>();
+      for (RexNode operand : call.operands) {
+        operand = canonizeNode(rexBuilder, operand);
+        newOperands.put(operand.toString(), operand);
+      }
+      if (newOperands.size() < 2) {
+        return newOperands.values().iterator().next();
+      }
+      return rexBuilder.makeCall(call.getOperator(),
+          ImmutableList.copyOf(newOperands.values()));
+    }
+    case EQUALS:
+    case NOT_EQUALS:
+    case LESS_THAN:
+    case GREATER_THAN:
+    case LESS_THAN_OR_EQUAL:
+    case GREATER_THAN_OR_EQUAL: {
+      RexCall call = (RexCall) condition;
+      final RexNode left = call.getOperands().get(0);
+      final RexNode right = call.getOperands().get(1);
+      if (left.toString().compareTo(right.toString()) <= 0) {
+        return call;
+      }
+      return RexUtil.invert(rexBuilder, call);
+    }
+    default:
+      return condition;
+    }
+  }
+
+  private static RexNode splitOr(
+      final RexBuilder rexBuilder, RexNode condition, RexNode target) {
+    List<RexNode> conditions = RelOptUtil.disjunctions(condition);
+    int conditionsLength = conditions.size();
+    int targetsLength = 0;
+    for (RexNode e : RelOptUtil.disjunctions(target)) {
+      removeAll(conditions, e);
+      targetsLength++;
+    }
+    if (conditions.isEmpty() && conditionsLength == targetsLength) {
+      return rexBuilder.makeLiteral(true);
+    } else if (conditions.isEmpty()) {
+      return condition;
+    }
+    return null;
+  }
+
+  private static boolean isEquivalent(RexBuilder rexBuilder, RexNode condition, RexNode target) {
+    // Example:
+    //  e: x = 1 AND y = 2 AND z = 3 AND NOT (x = 1 AND y = 2)
+    //  disjunctions: {x = 1, y = 2, z = 3}
+    //  notDisjunctions: {x = 1 AND y = 2}
+    final Set<String> conditionDisjunctions = new HashSet<>(
+        RexUtil.strings(RelOptUtil.conjunctions(condition)));
+    final Set<String> targetDisjunctions = new HashSet<>(
+        RexUtil.strings(RelOptUtil.conjunctions(target)));
+    if (conditionDisjunctions.equals(targetDisjunctions)) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Returns whether a boolean expression ever returns true.
+   *
+   * <p>This method may give false positives. For instance, it will say
+   * that {@code x = 5 AND x > 10} is satisfiable, because at present it
+   * cannot prove that it is not.</p>
+   */
+  public static boolean mayBeSatisfiable(RexNode e) {
+    // Example:
+    //  e: x = 1 AND y = 2 AND z = 3 AND NOT (x = 1 AND y = 2)
+    //  disjunctions: {x = 1, y = 2, z = 3}
+    //  notDisjunctions: {x = 1 AND y = 2}
+    final List<RexNode> disjunctions = new ArrayList<>();
+    final List<RexNode> notDisjunctions = new ArrayList<>();
+    RelOptUtil.decomposeConjunction(e, disjunctions, notDisjunctions);
+
+    // If there is a single FALSE or NOT TRUE, the whole expression is
+    // always false.
+    for (RexNode disjunction : disjunctions) {
+      switch (disjunction.getKind()) {
+      case LITERAL:
+        if (!RexLiteral.booleanValue(disjunction)) {
+          return false;
+        }
+      }
+    }
+    for (RexNode disjunction : notDisjunctions) {
+      switch (disjunction.getKind()) {
+      case LITERAL:
+        if (RexLiteral.booleanValue(disjunction)) {
+          return false;
+        }
+      }
+    }
+    // If one of the not-disjunctions is a disjunction that is wholly
+    // contained in the disjunctions list, the expression is not
+    // satisfiable.
+    //
+    // Example #1. x AND y AND z AND NOT (x AND y)  - not satisfiable
+    // Example #2. x AND y AND NOT (x AND y)        - not satisfiable
+    // Example #3. x AND y AND NOT (x AND y AND z)  - may be satisfiable
+    for (RexNode notDisjunction : notDisjunctions) {
+      final List<RexNode> disjunctions2 =
+          RelOptUtil.conjunctions(notDisjunction);
+      if (disjunctions.containsAll(disjunctions2)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public RelNode go0(RelNode replacement_) {
+    assert false; // not called
+    MutableRel replacement = MutableRels.toMutable(replacement_);
+    assert equalType(
+        "target", target, "replacement", replacement, Litmus.THROW);
+    replacementMap.put(target, replacement);
+    final UnifyResult unifyResult = matchRecurse(target);
+    if (unifyResult == null) {
+      return null;
+    }
+    final MutableRel node0 = unifyResult.result;
+    MutableRel node = node0; // replaceAncestors(node0);
+    if (DEBUG) {
+      System.out.println("Convert: query:\n"
+          + query.deep()
+          + "\nunify.query:\n"
+          + unifyResult.call.query.deep()
+          + "\nunify.result:\n"
+          + unifyResult.result.deep()
+          + "\nunify.target:\n"
+          + unifyResult.call.target.deep()
+          + "\nnode0:\n"
+          + node0.deep()
+          + "\nnode:\n"
+          + node.deep());
+    }
+    return MutableRels.fromMutable(node, relBuilder);
+  }
+
+  /**
+   * Returns a list of all possible rels that result from substituting the
+   * matched RelNode with the replacement RelNode within the query.
+   *
+   * <p>For example, the substitution result of A join B, while A and B
+   * are both a qualified match for replacement R, is R join B, R join R,
+   * A join R.
+   */
+  public List<RelNode> go(RelNode replacement_) {
+    List<List<Replacement>> matches = go(MutableRels.toMutable(replacement_));
+    if (matches.isEmpty()) {
+      return ImmutableList.of();
+    }
+    List<RelNode> sub = new ArrayList<>();
+    sub.add(MutableRels.fromMutable(query.getInput(), relBuilder));
+    reverseSubstitute(relBuilder, query, matches, sub, 0, matches.size());
+    return sub;
+  }
+
+  /**
+   * Substitutes the query with replacement whenever possible but meanwhile
+   * keeps track of all the substitutions and their original rel before
+   * replacement, so that in later processing stage, the replacement can be
+   * recovered individually to produce a list of all possible rels with
+   * substitution in different places.
+   */
+  private List<List<Replacement>> go(MutableRel replacement) {
+    assert equalType(
+        "target", target, "replacement", replacement, Litmus.THROW);
+    final List<MutableRel> queryDescendants = MutableRels.descendants(query);
+    final List<MutableRel> targetDescendants = MutableRels.descendants(target);
+
+    // Populate "equivalents" with (q, t) for each query descendant q and
+    // target descendant t that are equal.
+    final Map<MutableRel, MutableRel> map = new HashMap<>();
+    for (MutableRel queryDescendant : queryDescendants) {
+      map.put(queryDescendant, queryDescendant);
+    }
+    for (MutableRel targetDescendant : targetDescendants) {
+      MutableRel queryDescendant = map.get(targetDescendant);
+      if (queryDescendant != null) {
+        assert rowTypesAreEquivalent(
+            queryDescendant, targetDescendant, Litmus.THROW);
+        equivalents.put(queryDescendant, targetDescendant);
+      }
+    }
+    map.clear();
+
+    final List<Replacement> attempted = new ArrayList<>();
+    List<List<Replacement>> substitutions = new ArrayList<>();
+
+    for (;;) {
+      int count = 0;
+      MutableRel queryDescendant = query;
+    outer:
+      while (queryDescendant != null) {
+        for (Replacement r : attempted) {
+          if (r.stopTrying && queryDescendant == r.after) {
+            // This node has been replaced by previous iterations in the
+            // hope to match its ancestors and stopTrying indicates
+            // there's no need to be matched again.
+            queryDescendant = MutableRels.preOrderTraverseNext(queryDescendant);
+            continue outer;
+          }
+        }
+        final MutableRel next = MutableRels.preOrderTraverseNext(queryDescendant);
+        final MutableRel childOrNext =
+            queryDescendant.getInputs().isEmpty()
+                ? next : queryDescendant.getInputs().get(0);
+        for (MutableRel targetDescendant : targetDescendants) {
+          for (UnifyRule rule
+              : applicableRules(queryDescendant, targetDescendant)) {
+            UnifyRuleCall call =
+                rule.match(this, queryDescendant, targetDescendant);
+            if (call != null) {
+              final UnifyResult result = rule.apply(call);
+              if (result != null) {
+                ++count;
+                attempted.add(
+                    new Replacement(result.call.query, result.result, result.stopTrying));
+                result.call.query.replaceInParent(result.result);
+
+                // Replace previous equivalents with new equivalents, higher up
+                // the tree.
+                for (int i = 0; i < rule.slotCount; i++) {
+                  Collection<MutableRel> equi = equivalents.get(slots[i]);
+                  if (!equi.isEmpty()) {
+                    equivalents.remove(slots[i], equi.iterator().next());
+                  }
+                }
+                assert rowTypesAreEquivalent(result.result, result.call.query, Litmus.THROW);
+                equivalents.put(result.result, result.call.query);
+                if (targetDescendant == target) {
+                  // A real substitution happens. We purge the attempted
+                  // replacement list and add them into substitution list.
+                  // Meanwhile we stop matching the descendants and jump
+                  // to the next subtree in pre-order traversal.
+                  if (!target.equals(replacement)) {
+                    Replacement r = replace(
+                        query.getInput(), target, replacement.clone());
+                    assert r != null
+                        : rule + "should have returned a result containing the target.";
+                    attempted.add(r);
+                  }
+                  substitutions.add(ImmutableList.copyOf(attempted));
+                  attempted.clear();
+                  queryDescendant = next;
+                  continue outer;
+                }
+                // We will try walking the query tree all over again to see
+                // if there can be any substitutions after the replacement
+                // attempt.
+                break outer;
+              }
+            }
+          }
+        }
+        queryDescendant = childOrNext;
+      }
+      // Quit the entire loop if:
+      // 1) we have walked the entire query tree with one or more successful
+      //    substitutions, thus count != 0 && attempted.isEmpty();
+      // 2) we have walked the entire query tree but have made no replacement
+      //    attempt, thus count == 0 && attempted.isEmpty();
+      // 3) we had done some replacement attempt in a previous walk, but in
+      //    this one we have not found any potential matches or substitutions,
+      //    thus count == 0 && !attempted.isEmpty().
+      if (count == 0 || attempted.isEmpty()) {
+        break;
+      }
+    }
+    if (!attempted.isEmpty()) {
+      // We had done some replacement attempt in the previous walk, but that
+      // did not lead to any substitutions in this walk, so we need to recover
+      // the replacement.
+      undoReplacement(attempted);
+    }
+    return substitutions;
+  }
+
+  /**
+   * Equivalence checking for row types, but except for the field names.
+   */
+  private boolean rowTypesAreEquivalent(
+      MutableRel rel0, MutableRel rel1, Litmus litmus) {
+    if (rel0.rowType.getFieldCount() != rel1.rowType.getFieldCount()) {
+      return litmus.fail("Mismatch for column count: [{}]", Pair.of(rel0, rel1));
+    }
+    for (Pair<RelDataTypeField, RelDataTypeField> pair
+        : Pair.zip(rel0.rowType.getFieldList(), rel1.rowType.getFieldList())) {
+      if (!pair.left.getType().equals(pair.right.getType())) {
+        return litmus.fail("Mismatch for column type: [{}]", Pair.of(rel0, rel1));
+      }
+    }
+    return litmus.succeed();
+  }
+
+  /**
+   * Represents a replacement action: before &rarr; after.
+   * {@code stopTrying} indicates whether there's no need
+   * to do matching for the same query node again.
+   */
+  static class Replacement {
+    final MutableRel before;
+    final MutableRel after;
+    final boolean stopTrying;
+
+    Replacement(MutableRel before, MutableRel after) {
+      this(before, after, true);
+    }
+
+    Replacement(MutableRel before, MutableRel after, boolean stopTrying) {
+      this.before = before;
+      this.after = after;
+      this.stopTrying = stopTrying;
+    }
+  }
+
+  /** Within a relational expression {@code query}, replaces occurrences of
+   * {@code find} with {@code replace}.
+   *
+   * <p>Assumes relational expressions (and their descendants) are not null.
+   * Does not handle cycles. */
+  public static Replacement replace(MutableRel query, MutableRel find,
+      MutableRel replace) {
+    if (find.equals(replace)) {
+      // Short-cut common case.
+      return null;
+    }
+    assert equalType("find", find, "replace", replace, Litmus.THROW);
+    return replaceRecurse(query, find, replace);
+  }
+
+  /** Helper for {@link #replace}. */
+  private static Replacement replaceRecurse(MutableRel query,
+      MutableRel find, MutableRel replace) {
+    if (find.equals(query)) {
+      query.replaceInParent(replace);
+      return new Replacement(query, replace);
+    }
+    for (MutableRel input : query.getInputs()) {
+      Replacement r = replaceRecurse(input, find, replace);
+      if (r != null) {
+        return r;
+      }
+    }
+    return null;
+  }
+
+  private static void undoReplacement(List<Replacement> replacement) {
+    for (int i = replacement.size() - 1; i >= 0; i--) {
+      Replacement r = replacement.get(i);
+      r.after.replaceInParent(r.before);
+    }
+  }
+
+  private static void redoReplacement(List<Replacement> replacement) {
+    for (Replacement r : replacement) {
+      r.before.replaceInParent(r.after);
+    }
+  }
+
+  private static void reverseSubstitute(RelBuilder relBuilder, Holder query,
+      List<List<Replacement>> matches, List<RelNode> sub,
+      int replaceCount, int maxCount) {
+    if (matches.isEmpty()) {
+      return;
+    }
+    final List<List<Replacement>> rem = matches.subList(1, matches.size());
+    reverseSubstitute(relBuilder, query, rem, sub, replaceCount, maxCount);
+    undoReplacement(matches.get(0));
+    if (++replaceCount < maxCount) {
+      sub.add(MutableRels.fromMutable(query.getInput(), relBuilder));
+    }
+    reverseSubstitute(relBuilder, query, rem, sub, replaceCount, maxCount);
+    redoReplacement(matches.get(0));
+  }
+
+  private UnifyResult matchRecurse(MutableRel target) {
+    assert false; // not called
+    final List<MutableRel> targetInputs = target.getInputs();
+    MutableRel queryParent = null;
+
+    for (MutableRel targetInput : targetInputs) {
+      UnifyResult unifyResult = matchRecurse(targetInput);
+      if (unifyResult == null) {
+        return null;
+      }
+      queryParent = unifyResult.call.query.replaceInParent(unifyResult.result);
+    }
+
+    if (targetInputs.isEmpty()) {
+      for (MutableRel queryLeaf : queryLeaves) {
+        for (UnifyRule rule : applicableRules(queryLeaf, target)) {
+          final UnifyResult x = apply(rule, queryLeaf, target);
+          if (x != null) {
+            if (DEBUG) {
+              System.out.println("Rule: " + rule
+                  + "\nQuery:\n"
+                  + queryParent
+                  + (x.call.query != queryParent
+                     ? "\nQuery (original):\n"
+                     + queryParent
+                     : "")
+                  + "\nTarget:\n"
+                  + target.deep()
+                  + "\nResult:\n"
+                  + x.result.deep()
+                  + "\n");
+            }
+            return x;
+          }
+        }
+      }
+    } else {
+      assert queryParent != null;
+      for (UnifyRule rule : applicableRules(queryParent, target)) {
+        final UnifyResult x = apply(rule, queryParent, target);
+        if (x != null) {
+          if (DEBUG) {
+            System.out.println(
+                "Rule: " + rule
+                + "\nQuery:\n"
+                + queryParent.deep()
+                + (x.call.query != queryParent
+                   ? "\nQuery (original):\n"
+                   + queryParent.toString()
+                   : "")
+                + "\nTarget:\n"
+                + target.deep()
+                + "\nResult:\n"
+                + x.result.deep()
+                + "\n");
+          }
+          return x;
+        }
+      }
+    }
+    if (DEBUG) {
+      System.out.println(
+          "Unify failed:"
+          + "\nQuery:\n"
+          + queryParent.toString()
+          + "\nTarget:\n"
+          + target.toString()
+          + "\n");
+    }
+    return null;
+  }
+
+  private UnifyResult apply(UnifyRule rule, MutableRel query,
+      MutableRel target) {
+    final UnifyRuleCall call =
+        new UnifyRuleCall(rule, query, target, ImmutableList.of());
+    return rule.apply(call);
+  }
+
+  private List<UnifyRule> applicableRules(MutableRel query,
+      MutableRel target) {
+    final Class queryClass = query.getClass();
+    final Class targetClass = target.getClass();
+    final Pair<Class, Class> key = Pair.of(queryClass, targetClass);
+    List<UnifyRule> list = ruleMap.get(key);
+    if (list == null) {
+      final ImmutableList.Builder<UnifyRule> builder =
+          ImmutableList.builder();
+      for (UnifyRule rule : rules) {
+        //noinspection unchecked
+        if (mightMatch(rule, queryClass, targetClass)) {
+          builder.add(rule);
+        }
+      }
+      list = builder.build();
+      ruleMap.put(key, list);
+    }
+    return list;
+  }
+
+  private static boolean mightMatch(UnifyRule rule,
+      Class queryClass, Class targetClass) {
+    return rule.queryOperand.clazz.isAssignableFrom(queryClass)
+        && rule.targetOperand.clazz.isAssignableFrom(targetClass);
+  }
+
+  /** Exception thrown to exit a matcher. Not really an error. */
+  protected static class MatchFailed extends ControlFlowException {
+    @SuppressWarnings("ThrowableInstanceNeverThrown")
+    public static final MatchFailed INSTANCE = new MatchFailed();
+  }
+
+  /** Rule that attempts to match a query relational expression
+   * against a target relational expression.
+   *
+   * <p>The rule declares the query and target types; this allows the
+   * engine to fire only a few rules in a given context.</p>
+   */
+  public abstract static class UnifyRule {
+    protected final int slotCount;
+    protected final Operand queryOperand;
+    protected final Operand targetOperand;
+
+    protected UnifyRule(int slotCount, Operand queryOperand,
+        Operand targetOperand) {
+      this.slotCount = slotCount;
+      this.queryOperand = queryOperand;
+      this.targetOperand = targetOperand;
+    }
+
+    /**
+     * <p>Applies this rule to a particular node in a query. The goal is
+     * to convert {@code query} into {@code target}. Before the rule is
+     * invoked, Calcite has made sure that query's children are equivalent
+     * to target's children.
+     *
+     * <p>There are 3 possible outcomes:</p>
+     *
+     * <ul>
+     *
+     * <li>{@code query} already exactly matches {@code target}; returns
+     * {@code target}</li>
+     *
+     * <li>{@code query} is sufficiently close to a match for
+     * {@code target}; returns {@code target}</li>
+     *
+     * <li>{@code query} cannot be made to match {@code target}; returns
+     * null</li>
+     *
+     * </ul>
+     *
+     * <p>REVIEW: Is possible that we match query PLUS one or more of its
+     * ancestors?</p>
+     *
+     * @param call Input parameters
+     */
+    protected abstract UnifyResult apply(UnifyRuleCall call);
+
+    protected UnifyRuleCall match(SubstitutionVisitor visitor, MutableRel query,
+        MutableRel target) {
+      if (queryOperand.matches(visitor, query)) {
+        if (targetOperand.matches(visitor, target)) {
+          return visitor.new UnifyRuleCall(this, query, target,
+              copy(visitor.slots, slotCount));
+        }
+      }
+      return null;
+    }
+
+    protected <E> ImmutableList<E> copy(E[] slots, int slotCount) {
+      // Optimize if there are 0 or 1 slots.
+      switch (slotCount) {
+      case 0:
+        return ImmutableList.of();
+      case 1:
+        return ImmutableList.of(slots[0]);
+      default:
+        return ImmutableList.copyOf(slots).subList(0, slotCount);
+      }
+    }
+  }
+
+  /**
+   * Arguments to an application of a {@link UnifyRule}.
+   */
+  protected class UnifyRuleCall {
+    protected final UnifyRule rule;
+    public final MutableRel query;
+    public final MutableRel target;
+    protected final ImmutableList<MutableRel> slots;
+
+    public UnifyRuleCall(UnifyRule rule, MutableRel query, MutableRel target,
+        ImmutableList<MutableRel> slots) {
+      this.rule = Objects.requireNonNull(rule);
+      this.query = Objects.requireNonNull(query);
+      this.target = Objects.requireNonNull(target);
+      this.slots = Objects.requireNonNull(slots);
+    }
+
+    public UnifyResult result(MutableRel result) {
+      return result(result,  true);
+    }
+
+    public UnifyResult result(MutableRel result, boolean stopTrying) {
+      assert MutableRels.contains(result, target);
+      assert equalType("result", result, "query", query,
+          Litmus.THROW);
+      MutableRel replace = replacementMap.get(target);
+      if (replace != null) {
+        assert false; // replacementMap is always empty
+        // result =
+        replace(result, target, replace);
+      }
+      register(result, query);
+      return new UnifyResult(this, result, stopTrying);
+    }
+
+    /**
+     * Creates a {@link UnifyRuleCall} based on the parent of {@code query}.
+     */
+    public UnifyRuleCall create(MutableRel query) {
+      return new UnifyRuleCall(rule, query, target, slots);
+    }
+
+    public RelOptCluster getCluster() {
+      return cluster;
+    }
+
+    public RexSimplify getSimplify() {
+      return simplify;
+    }
+  }
+
+  /**
+   * Result of an application of a {@link UnifyRule} indicating that the
+   * rule successfully matched {@code query} against {@code target} and
+   * generated a {@code result} that is equivalent to {@code query} and
+   * contains {@code target}. {@code stopTrying} indicates whether there's
+   * no need to do matching for the same query node again.
+   */
+  protected static class UnifyResult {
+    private final UnifyRuleCall call;
+    private final MutableRel result;
+    private final boolean stopTrying;
+
+    UnifyResult(UnifyRuleCall call, MutableRel result, boolean stopTrying) {
+      this.call = call;
+      assert equalType("query", call.query, "result", result,
+          Litmus.THROW);
+      this.result = result;
+      this.stopTrying = stopTrying;
+    }
+  }
+
+  /** Abstract base class for implementing {@link UnifyRule}. */
+  protected abstract static class AbstractUnifyRule extends UnifyRule {
+    public AbstractUnifyRule(Operand queryOperand, Operand targetOperand,
+        int slotCount) {
+      super(slotCount, queryOperand, targetOperand);
+      //noinspection AssertWithSideEffects
+      assert isValid();
+    }
+
+    protected boolean isValid() {
+      final SlotCounter slotCounter = new SlotCounter();
+      slotCounter.visit(queryOperand);
+      assert slotCounter.queryCount == slotCount;
+      assert slotCounter.targetCount == 0;
+      slotCounter.queryCount = 0;
+      slotCounter.visit(targetOperand);
+      assert slotCounter.queryCount == 0;
+      assert slotCounter.targetCount == slotCount;
+      return true;
+    }
+
+    /** Creates an operand with given inputs. */
+    protected static Operand operand(Class<? extends MutableRel> clazz,
+        Operand... inputOperands) {
+      return new InternalOperand(clazz, ImmutableList.copyOf(inputOperands));
+    }
+
+    /** Creates an operand that doesn't check inputs. */
+    protected static Operand any(Class<? extends MutableRel> clazz) {
+      return new AnyOperand(clazz);
+    }
+
+    /** Creates an operand that matches a relational expression in the query. */
+    protected static Operand query(int ordinal) {
+      return new QueryOperand(ordinal);
+    }
+
+    /** Creates an operand that matches a relational expression in the
+     * target. */
+    protected static Operand target(int ordinal) {
+      return new TargetOperand(ordinal);
+    }
+  }
+
+  /** Implementation of {@link UnifyRule} that matches if the query is already
+   * equal to the target.
+   *
+   * <p>Matches scans to the same table, because these will be
+   * {@link MutableScan}s with the same
+   * {@link org.apache.calcite.rel.core.TableScan} instance.</p>
+   */
+  public static class TrivialRule extends AbstractUnifyRule {
+    public static final TrivialRule INSTANCE = new TrivialRule();
+
+    private TrivialRule() {
+      super(any(MutableRel.class), any(MutableRel.class), 0);
+    }
+
+    public UnifyResult apply(UnifyRuleCall call) {
+      if (call.query.equals(call.target)) {
+        return call.result(call.target);
+      }
+      return null;
+    }
+  }
+
+  /** Implementation of {@link UnifyRule} that matches
+   * {@link org.apache.calcite.rel.core.TableScan}. */
+  public static class ScanToProjectUnifyRule extends AbstractUnifyRule {
+    public static final ScanToProjectUnifyRule INSTANCE =
+        new ScanToProjectUnifyRule();
+
+    private ScanToProjectUnifyRule() {
+      super(any(MutableScan.class),
+          any(MutableProject.class), 0);
+    }
+
+    public UnifyResult apply(UnifyRuleCall call) {
+      final MutableProject target = (MutableProject) call.target;
+      final MutableScan query = (MutableScan) call.query;
+      // We do not need to check query's parent type to avoid duplication
+      // of ProjectToProjectUnifyRule or FilterToProjectUnifyRule, since
+      // SubstitutionVisitor performs a top-down match.
+      if (!query.equals(target.getInput())) {
+        return null;
+      }
+      final RexShuttle shuttle = getRexShuttle(target);
+      final RexBuilder rexBuilder = target.cluster.getRexBuilder();
+      final List<RexNode> newProjects;
+      try {
+        newProjects = (List<RexNode>)
+            shuttle.apply(rexBuilder.identityProjects(query.rowType));
+      } catch (MatchFailed e) {
+        return null;
+      }
+      final MutableProject newProject =
+          MutableProject.of(query.rowType, target, newProjects);
+      final MutableRel newProject2 = MutableRels.strip(newProject);
+      return call.result(newProject2);
+    }
+  }
+
+  /** Implementation of {@link UnifyRule} that matches
+   * {@link org.apache.calcite.rel.core.Project}. */
+  public static class ProjectToProjectUnifyRule extends AbstractUnifyRule {
+    public static final ProjectToProjectUnifyRule INSTANCE =
+        new ProjectToProjectUnifyRule();
+
+    private ProjectToProjectUnifyRule() {
+      super(operand(MutableProject.class, query(0)),
+          operand(MutableProject.class, target(0)), 1);
+    }
+
+    public UnifyResult apply(UnifyRuleCall call) {
+      final MutableProject target = (MutableProject) call.target;
+      final MutableProject query = (MutableProject) call.query;
+      final RexShuttle shuttle = getRexShuttle(target);
+      final List<RexNode> newProjects;
+      try {
+        newProjects = shuttle.apply(query.projects);
+      } catch (MatchFailed e) {
+        return null;
+      }
+      final MutableProject newProject =
+          MutableProject.of(query.rowType, target, newProjects);
+      final MutableRel newProject2 = MutableRels.strip(newProject);
+      return call.result(newProject2);
+    }
+  }
+
+
+  /** Implementation of {@link UnifyRule} that matches a {@link MutableFilter}
+   * to a {@link MutableProject}. */
+  public static class FilterToProjectUnifyRule extends AbstractUnifyRule {
+    public static final FilterToProjectUnifyRule INSTANCE =
+        new FilterToProjectUnifyRule();
+
+    private FilterToProjectUnifyRule() {
+      super(operand(MutableFilter.class, query(0)),
+          operand(MutableProject.class, target(0)), 1);
+    }
+
+    public UnifyResult apply(UnifyRuleCall call) {
+      // Child of projectTarget is equivalent to child of filterQuery.
+      try {
+        // TODO: make sure that constants are ok
+        final MutableProject target = (MutableProject) call.target;
+        final RexShuttle shuttle = getRexShuttle(target);
+        final RexNode newCondition;
+        final MutableFilter query = (MutableFilter) call.query;
+        try {
+          newCondition = query.condition.accept(shuttle);
+        } catch (MatchFailed e) {
+          return null;
+        }
+        final MutableFilter newFilter = MutableFilter.of(target, newCondition);
+        if (query.getParent() instanceof MutableProject) {
+          final MutableRel inverse =
+              invert(((MutableProject) query.getParent()).getNamedProjects(),
+                  newFilter, shuttle);
+          return call.create(query.getParent()).result(inverse);
+        } else {
+          final MutableRel inverse = invert(query, newFilter, target);
+          return call.result(inverse);
+        }
+      } catch (MatchFailed e) {
+        return null;
+      }
+    }
+
+    protected MutableRel invert(List<Pair<RexNode, String>> namedProjects,
+        MutableRel input,
+        RexShuttle shuttle) {
+      LOGGER.trace("SubstitutionVisitor: invert:\nprojects: {}\ninput: {}\nproject: {}\n",
+          namedProjects, input, shuttle);
+      final List<RexNode> exprList = new ArrayList<>();
+      final RexBuilder rexBuilder = input.cluster.getRexBuilder();
+      final List<RexNode> projects = Pair.left(namedProjects);
+      for (RexNode expr : projects) {
+        exprList.add(rexBuilder.makeZeroLiteral(expr.getType()));
+      }
+      for (Ord<RexNode> expr : Ord.zip(projects)) {
+        final RexNode node = expr.e.accept(shuttle);
+        if (node == null) {
+          throw MatchFailed.INSTANCE;
+        }
+        exprList.set(expr.i, node);
+      }
+      return MutableProject.of(input, exprList, Pair.right(namedProjects));
+    }
+
+    protected MutableRel invert(MutableRel model, MutableRel input,
+        MutableProject project) {
+      LOGGER.trace("SubstitutionVisitor: invert:\nmodel: {}\ninput: {}\nproject: {}\n",
+          model, input, project);
+      if (project.projects.size() < model.rowType.getFieldCount()) {
+        throw MatchFailed.INSTANCE;
+      }
+      final List<RexNode> exprList = new ArrayList<>();
+      final RexBuilder rexBuilder = model.cluster.getRexBuilder();
+      for (int i = 0; i < model.rowType.getFieldCount(); i++) {
+        exprList.add(null);
+      }
+      for (Ord<RexNode> expr : Ord.zip(project.projects)) {
+        if (expr.e instanceof RexInputRef) {
+          final int target = ((RexInputRef) expr.e).getIndex();
+          if (exprList.get(target) == null) {
+            exprList.set(target,
+                rexBuilder.ensureType(expr.e.getType(),
+                    RexInputRef.of(expr.i, input.rowType),
+                    false));
+          }
+        }
+      }
+      if (exprList.indexOf(null) != -1) {
+        throw MatchFailed.INSTANCE;
+      }
+      return MutableProject.of(model.rowType, input, exprList);
+    }
+  }
+
+  /** Implementation of {@link UnifyRule} that matches a
+   * {@link MutableFilter}. */
+  protected static class FilterToFilterUnifyRule extends AbstractUnifyRule {
+    public static final FilterToFilterUnifyRule INSTANCE =
+        new FilterToFilterUnifyRule();
+
+    private FilterToFilterUnifyRule() {
+      super(operand(MutableFilter.class, query(0)),
+          operand(MutableFilter.class, target(0)), 1);
+    }
+
+    public UnifyResult apply(UnifyRuleCall call) {
+      // in.query can be rewritten in terms of in.target if its condition
+      // is weaker. For example:
+      //   query: SELECT * FROM t WHERE x = 1 AND y = 2
+      //   target: SELECT * FROM t WHERE x = 1
+      // transforms to
+      //   result: SELECT * FROM (target) WHERE y = 2
+      final MutableFilter query = (MutableFilter) call.query;
+      final MutableFilter target = (MutableFilter) call.target;
+      final MutableFilter newFilter =
+          createFilter(call, query, target);
+      if (newFilter == null) {
+        return null;
+      }
+      return call.result(newFilter);
+    }
+
+    MutableFilter createFilter(UnifyRuleCall call, MutableFilter query,
+        MutableFilter target) {
+      final RexNode newCondition =
+          splitFilter(call.getSimplify(), query.condition,
+              target.condition);
+      if (newCondition == null) {
+        // Could not map query onto target.
+        return null;
+      }
+      if (newCondition.isAlwaysTrue()) {
+        return target;
+      }
+      return MutableFilter.of(target, newCondition);
+    }
+  }
+
+  /** Implementation of {@link UnifyRule} that matches a {@link MutableProject}
+   * to a {@link MutableFilter}. */
+  protected static class ProjectToFilterUnifyRule extends AbstractUnifyRule {
+    public static final ProjectToFilterUnifyRule INSTANCE =
+        new ProjectToFilterUnifyRule();
+
+    private ProjectToFilterUnifyRule() {
+      super(operand(MutableProject.class, query(0)),
+          operand(MutableFilter.class, target(0)), 1);
+    }
+
+    public UnifyResult apply(UnifyRuleCall call) {
+      if (call.query.getParent() instanceof MutableFilter) {
+        final UnifyRuleCall in2 = call.create(call.query.getParent());
+        final MutableFilter query = (MutableFilter) in2.query;
+        final MutableFilter target = (MutableFilter) in2.target;
+        final MutableFilter newFilter =
+            FilterToFilterUnifyRule.INSTANCE.createFilter(call, query, target);
+        if (newFilter == null) {
+          return null;
+        }
+        return in2.result(query.replaceInParent(newFilter));
+      }
+      return null;
+    }
+  }
+
+>>>>>>> 56aa025a1 ([CALCITE-3448] AggregateOnCalcToAggUnifyRule may ignore Project incor… (#35))
   public static MutableRel unifyAggregates(MutableAggregate query,
       MutableAggregate target) {
     MutableRel result;
@@ -559,12 +1762,12 @@ import org.apache.calcite.rex.RexUtil;
    * We try to pull up the {@link MutableCalc} to top of {@link MutableAggregate},
    * then match the {@link MutableAggregate} in query to {@link MutableAggregate} in target.
    */
-  protected static class AggregateOnCalcToAggUnifyRule extends AbstractUnifyRule {
+  private static class AggregateOnCalcToAggregateUnifyRule extends AbstractUnifyRule {
 
-    public static final AggregateOnCalcToAggUnifyRule INSTANCE =
-        new AggregateOnCalcToAggUnifyRule();
+    public static final AggregateOnCalcToAggregateUnifyRule INSTANCE =
+        new AggregateOnCalcToAggregateUnifyRule();
 
-    private AggregateOnCalcToAggUnifyRule() {
+    private AggregateOnCalcToAggregateUnifyRule() {
       super(operand(MutableAggregate.class, operand(MutableCalc.class, query(0))),
           operand(MutableAggregate.class, target(0)), 1);
     }
@@ -623,11 +1826,13 @@ import org.apache.calcite.rex.RexUtil;
       if (!Mappings.keepsOrdering(mapping)) {
         final List<Integer> posList = new ArrayList<>();
         final int fieldCount = aggregate2.rowType.getFieldCount();
-        for (int group: aggregate2.groupSet) {
-          if (inverseMapping.getTargetOpt(group) != -1) {
-            posList.add(inverseMapping.getTarget(group));
-          }
+        final List<Pair<Integer, Integer>> pairs = new ArrayList<>();
+        final List<Integer> groupings = aggregate2.groupSet.toList();
+        for (int i = 0; i < groupings.size(); i++) {
+          pairs.add(Pair.of(mapping.getTarget(groupings.get(i)), i));
         }
+        Collections.sort(pairs);
+        pairs.forEach(pair -> posList.add(pair.right));
         for (int i = posList.size(); i < fieldCount; i++) {
           posList.add(i);
         }
