@@ -26,6 +26,8 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperator;
 
+import java.util.List;
+
 /**
  * Visitor class, follows the
  * {@link org.apache.calcite.util.Glossary#VISITOR_PATTERN visitor pattern}.
@@ -98,6 +100,10 @@ public interface SqlVisitor<R> {
    * @see SqlIntervalQualifier#accept(SqlVisitor)
    */
   R visit(SqlIntervalQualifier intervalQualifier);
+
+  default void visitAll(List<SqlNode> selectList) {
+    selectList.forEach(e -> e.accept(this));
+  }
 }
 
 // End SqlVisitor.java

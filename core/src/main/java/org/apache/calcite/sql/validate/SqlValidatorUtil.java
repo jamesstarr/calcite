@@ -46,7 +46,6 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.SqlSelect;
-import org.apache.calcite.sql.SqlUtil;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlTypeUtil;
@@ -74,8 +73,14 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.annotation.Nullable;
 
+import static org.apache.calcite.sql.SqlUtil.deriveAliasFromOrdinal;
 import static org.apache.calcite.util.Static.RESOURCE;
+
+import static com.google.common.base.Preconditions.checkArgument;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Utility methods related to validation.
@@ -307,7 +312,28 @@ public class SqlValidatorUtil {
    * @return An alias, if one can be derived; or a synthetic alias
    * "expr$<i>ordinal</i>" if ordinal &lt; 0; otherwise null
    */
-  public static String getAlias(SqlNode node, int ordinal) {
+  public static String alias(SqlNode node, int ordinal) {
+    checkArgument(ordinal >= 0);
+    return requireNonNull(alias_(node, ordinal), "alias");
+  }
+
+  public static @Nullable String alias(SqlNode node) {
+    return alias_(node, -1);
+  }
+
+  /** Derives an alias for a node, and invents a mangled identifier if it
+   * cannot.
+   *
+   * @deprecated Use {@link #alias(SqlNode)} if {@code ordinal} is negative,
+   * or {@link #alias(SqlNode, int)} if {@code ordinal} is non-negative. */
+  @Deprecated // to be removed before 2.0
+  public static @Nullable String getAlias(SqlNode node, int ordinal) {
+    return alias_(node, ordinal);
+  }
+
+  /** Returns an alias, if one can be derived; or a synthetic alias
+   * "expr$<i>ordinal</i>" if ordinal &ge; 0; otherwise null. */
+  private static @Nullable String alias_(SqlNode node, int ordinal) {
     switch (node.getKind()) {
     case AS:
       // E.g. "1 + 2 as foo" --> "foo"
@@ -325,7 +351,7 @@ public class SqlValidatorUtil {
       if (ordinal < 0) {
         return null;
       } else {
-        return SqlUtil.deriveAliasFromOrdinal(ordinal);
+        return deriveAliasFromOrdinal(ordinal);
       }
     }
   }
@@ -815,7 +841,7 @@ public class SqlValidatorUtil {
    * grouped, and returns a bitmap indicating which expressions this tuple
    * is grouping. */
   private static List<ImmutableBitSet> analyzeGroupTuple(SqlValidatorScope scope,
-       GroupAnalyzer groupAnalyzer, List<SqlNode> operandList) {
+      GroupAnalyzer groupAnalyzer, List<SqlNode> operandList) {
     List<ImmutableBitSet> list = new ArrayList<>();
     for (SqlNode operand : operandList) {
       list.add(
