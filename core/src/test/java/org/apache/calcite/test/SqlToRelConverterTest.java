@@ -4189,6 +4189,30 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
             .ok();
   }
 
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-6691">[CALCITE-6691]
+   * QUALIFY on subquery that projects</a>. */
+  @Test public void testQualifyOnProject() {
+    sql("WITH t0 AS (SELECT deptno, sal FROM emp),\n"
+        + "t1 AS (SELECT deptno\n"
+        + "    FROM t0\n"
+        + "    QUALIFY row_number() OVER (PARTITION BY deptno\n"
+        + "                               ORDER BY sal DESC) = 1)\n"
+        + "SELECT deptno FROM t1")
+        .ok();
+  }
+
+  @Test public void testQualifyAfterGroupBy() {
+    sql("WITH t0 AS (SELECT deptno, sal FROM emp),\n"
+        + "t1 AS (SELECT deptno, sal, COUNT(*)\n"
+        + "    FROM t0\n"
+        + "    GROUP BY deptno, sal\n"
+        + "    QUALIFY row_number() OVER (PARTITION BY deptno\n"
+        + "                               ORDER BY COUNT(*) DESC) = 1)\n"
+        + "SELECT deptno FROM t1")
+        .ok();
+  }
+
   @Test public void testQualifyWithWindowClause() {
     sql("SELECT empno, ename, SUM(deptno) OVER myWindow as sumDeptNo "
             + "FROM emp "

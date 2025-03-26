@@ -82,3 +82,8 @@ public class MapEntry<T, U> implements Map.Entry<T, U> {
     throw new UnsupportedOperationException("setValue");
   }
 }
+<<<<<<< HEAD
+=======
+
+// End MapEntry.java
+>>>>>>> 970b01de2 ( DX-97766: Query with QUALIFY fails with AssertionError (#36))

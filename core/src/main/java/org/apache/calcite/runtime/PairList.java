@@ -30,9 +30,9 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import static org.apache.calcite.linq4j.Nullness.castNonNullList;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /** A list of pairs, stored as a quotient list.
  *
@@ -244,3 +244,8 @@ public interface PairList<T, U> extends List<Map.Entry<T, U>> {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End PairList.java
+>>>>>>> 970b01de2 ( DX-97766: Query with QUALIFY fails with AssertionError (#36))
