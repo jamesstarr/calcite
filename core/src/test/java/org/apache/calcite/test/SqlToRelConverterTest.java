@@ -75,6 +75,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -2257,6 +2258,22 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     RelTrait sortCollation = rels.get(1).getTraitSet()
         .getTrait(RelCollationTraitDef.INSTANCE);
     assertTrue(filterCollation.satisfies(sortCollation));
+  }
+
+  @Test public void testRelShuttleForLogicalTableModify() {
+    final String sql = "insert into emp select * from emp";
+    final LogicalTableModify rel = (LogicalTableModify) tester.convertSqlToRel(sql).rel;
+    final List<RelNode> rels = new ArrayList<>();
+    final RelShuttleImpl visitor = new RelShuttleImpl() {
+      @Override public RelNode visit(LogicalTableModify modify) {
+        RelNode visitedRel = super.visit(modify);
+        rels.add(visitedRel);
+        return visitedRel;
+      }
+    };
+    visitor.visit(rel);
+    assertThat(rels.size(), is(1));
+    assertThat(rels.get(0), instanceOf(LogicalTableModify.class));
   }
 
   @Test public void testOffset0() {
