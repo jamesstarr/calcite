@@ -45,7 +45,12 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 /**
-* Evaluates a {@link RexNode} expression.
+ * Evaluates a {@link RexNode} expression.
+ *
+ * <p>For this impl, all the public methods should be
+ * static except that it inherits from {@link RexExecutor}.
+ * This pretends that other code in the project assumes
+ * the executor instance is {@link RexExecutorImpl}.
 */
 public class RexExecutorImpl implements RexExecutor {
 
@@ -55,14 +60,14 @@ public class RexExecutorImpl implements RexExecutor {
     this.dataContext = dataContext;
   }
 
-  private String compile(RexBuilder rexBuilder, List<RexNode> constExps,
+  private static String compile(RexBuilder rexBuilder, List<RexNode> constExps,
       RexToLixTranslator.InputGetter getter) {
     final RelDataTypeFactory typeFactory = rexBuilder.getTypeFactory();
     final RelDataType emptyRowType = typeFactory.builder().build();
     return compile(rexBuilder, constExps, getter, emptyRowType);
   }
 
-  private String compile(RexBuilder rexBuilder, List<RexNode> constExps,
+  private static String compile(RexBuilder rexBuilder, List<RexNode> constExps,
       RexToLixTranslator.InputGetter getter, RelDataType rowType) {
     final RexProgramBuilder programBuilder =
         new RexProgramBuilder(rowType, rexBuilder);
@@ -107,7 +112,7 @@ public class RexExecutorImpl implements RexExecutor {
    * @param exps Expressions
    * @param rowType describes the structure of the input row.
    */
-  public RexExecutable getExecutable(RexBuilder rexBuilder, List<RexNode> exps,
+  public static RexExecutable getExecutable(RexBuilder rexBuilder, List<RexNode> exps,
       RelDataType rowType) {
     final JavaTypeFactoryImpl typeFactory =
         new JavaTypeFactoryImpl(rexBuilder.getTypeFactory().getTypeSystem());
@@ -169,12 +174,5 @@ public class RexExecutorImpl implements RexExecutor {
       }
       return EnumUtils.convert(recordAccess, storageType);
     }
-  }
-
-  public Object[] execute(RexBuilder rexBuilder, List<RexNode> exps,
-                                     RelDataType rowType,  DataContext dataValues) {
-    final RexExecutable exec = getExecutable(rexBuilder, exps, rowType);
-    exec.setDataContext(dataValues);
-    return exec.execute();
   }
 }
