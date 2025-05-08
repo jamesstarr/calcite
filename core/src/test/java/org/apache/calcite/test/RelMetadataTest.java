@@ -1973,23 +1973,16 @@ public class RelMetadataTest extends SqlToRelTestBase {
         sortsAs("[=($0, 1)]"));
   }
 
-<<<<<<< HEAD
-  @Test void testPullUpPredicatesFromUnion1() {
-=======
   @Test public void testPullUpPredicatesFromUnion1() {
     final RelMetadataQuery mq = RelMetadataQuery.instance();
     final RelNode rel = convertSql(""
         + "select empno, deptno from emp where empno=1 or deptno=2\n"
         + "union all\n"
         + "select empno, deptno from emp where empno=3 or deptno=4");
->>>>>>> b5263a78a ([CALCITE-3439] Support Intersect and Minus in RelMdPredicates (Jin Xing) & [CALCITE-3797] RelMdPredicates should not assume the RexExecutor instance is RexExecutorImpl (#9))
     assertThat(mq.getPulledUpPredicates(rel).pulledUpPredicates,
         sortsAs("[OR(=($0, 1), =($1, 2), =($0, 3), =($1, 4))]"));
   }
 
-<<<<<<< HEAD
-  @Test void testPullUpPredicatesFromUnion2() {
-=======
   @Test public void testPullUpPredicatesFromUnion2() {
     final RelMetadataQuery mq = RelMetadataQuery.instance();
     final RelNode rel = convertSql(""
@@ -2016,66 +2009,49 @@ public class RelMetadataTest extends SqlToRelTestBase {
         + "select empno from emp where empno=1\n"
         + "intersect all\n"
         + "select empno from emp where empno=1");
->>>>>>> b5263a78a ([CALCITE-3439] Support Intersect and Minus in RelMdPredicates (Jin Xing) & [CALCITE-3797] RelMdPredicates should not assume the RexExecutor instance is RexExecutorImpl (#9))
     assertThat(mq.getPulledUpPredicates(rel).pulledUpPredicates,
         sortsAs("[=($0, 1)]"));
 
   }
 
-<<<<<<< HEAD
-  @Test void testPullUpPredicatesFromIntersect1() {
-=======
   @Test public void testPullUpPredicatesFromIntersect1() {
     final RelMetadataQuery mq = RelMetadataQuery.instance();
     final RelNode rel = convertSql(""
         + "select empno, deptno, comm from emp where empno=1 and deptno=2\n"
         + "intersect all\n"
         + "select empno, deptno, comm from emp where empno=1 and comm=3");
->>>>>>> b5263a78a ([CALCITE-3439] Support Intersect and Minus in RelMdPredicates (Jin Xing) & [CALCITE-3797] RelMdPredicates should not assume the RexExecutor instance is RexExecutorImpl (#9))
     assertThat(mq.getPulledUpPredicates(rel).pulledUpPredicates,
         sortsAs("[=($0, 1), =($1, 2), =($2, 3)]"));
 
   }
 
-<<<<<<< HEAD
-  @Test void testPullUpPredicatesFromIntersect2() {
-=======
   @Test public void testPullUpPredicatesFromIntersect2() {
     final RelMetadataQuery mq = RelMetadataQuery.instance();
     final RelNode rel = convertSql(""
         + "select empno, deptno, comm from emp where empno=1 and deptno=2\n"
         + "intersect all\n"
         + "select empno, deptno, comm from emp where 1=empno and (deptno=2 or comm=3)");
->>>>>>> b5263a78a ([CALCITE-3439] Support Intersect and Minus in RelMdPredicates (Jin Xing) & [CALCITE-3797] RelMdPredicates should not assume the RexExecutor instance is RexExecutorImpl (#9))
     assertThat(mq.getPulledUpPredicates(rel).pulledUpPredicates,
         sortsAs("[=($0, 1), =($1, 2)]"));
 
   }
 
-<<<<<<< HEAD
-  @Test void testPullUpPredicatesFromIntersect3() {
-=======
   @Test public void testPullUpPredicatesFromIntersect3() {
     final RelMetadataQuery mq = RelMetadataQuery.instance();
     final RelNode rel = convertSql(""
         + "select empno, deptno, comm from emp where empno=1 or deptno=2\n"
         + "intersect all\n"
         + "select empno, deptno, comm from emp where deptno=2 or empno=1 or comm=3");
->>>>>>> b5263a78a ([CALCITE-3439] Support Intersect and Minus in RelMdPredicates (Jin Xing) & [CALCITE-3797] RelMdPredicates should not assume the RexExecutor instance is RexExecutorImpl (#9))
     assertThat(mq.getPulledUpPredicates(rel).pulledUpPredicates,
         sortsAs("[OR(=($0, 1), =($1, 2))]"));
   }
 
-<<<<<<< HEAD
-  @Test void testPullUpPredicatesFromMinus() {
-=======
   @Test public void testPullUpPredicatesFromMinus() {
     final RelMetadataQuery mq = RelMetadataQuery.instance();
     final RelNode rel = convertSql(""
         + "select empno, deptno, comm from emp where empno=1 and deptno=2\n"
         + "except all\n"
         + "select empno, deptno, comm from emp where comm=3");
->>>>>>> b5263a78a ([CALCITE-3439] Support Intersect and Minus in RelMdPredicates (Jin Xing) & [CALCITE-3797] RelMdPredicates should not assume the RexExecutor instance is RexExecutorImpl (#9))
     assertThat(mq.getPulledUpPredicates(rel).pulledUpPredicates,
         sortsAs("[=($0, 1), =($1, 2)]"));
   }
