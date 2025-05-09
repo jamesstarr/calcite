@@ -26,8 +26,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-import org.junit.jupiter.api.Assertions;
-import org.opentest4j.AssertionFailedError;
+import org.junit.Assert;
+import org.junit.ComparisonFailure;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
@@ -43,10 +43,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -764,21 +763,11 @@ public class DiffRepository {
    * @param filter    Filters each string returned by the repository
    * @return The diff repository shared between test cases in this class.
    */
-  public static DiffRepository lookup(Class<?> clazz,
+  public static DiffRepository lookup(Class clazz,
       DiffRepository baseRepository,
       Filter filter) {
-    DiffRepository diffRepository = MAP_CLASS_TO_REPOSITORY.get(clazz);
-    if (diffRepository == null) {
-      final URL refFile = findFile(clazz, ".xml");
-      final String refFilePath = Sources.of(refFile).file().getAbsolutePath();
-      final File logFile =
-          new File(refFilePath.replace(".xml", "_actual.xml"));
-      assert !refFilePath.equals(logFile.getAbsolutePath());
-      diffRepository =
-          new DiffRepository(refFile, logFile, baseRepository, filter);
-      MAP_CLASS_TO_REPOSITORY.put(clazz, diffRepository);
-    }
-    return diffRepository;
+    final Key key = new Key(clazz, baseRepository, filter);
+    return REPOSITORY_CACHE.getUnchecked(key);
   }
 
   /**
@@ -802,6 +791,44 @@ public class DiffRepository {
         String text,
         String expanded);
   }
+<<<<<<< HEAD
+=======
+
+  /** Cache key. */
+  private static class Key {
+    private final Class clazz;
+    private final DiffRepository baseRepository;
+    private final Filter filter;
+
+    Key(Class clazz, DiffRepository baseRepository, Filter filter) {
+      this.clazz = Objects.requireNonNull(clazz);
+      this.baseRepository = baseRepository;
+      this.filter = filter;
+    }
+
+    @Override public int hashCode() {
+      return Objects.hash(clazz, baseRepository, filter);
+    }
+
+    @Override public boolean equals(Object obj) {
+      return this == obj
+          || obj instanceof Key
+          && clazz.equals(((Key) obj).clazz)
+          && Objects.equals(baseRepository, ((Key) obj).baseRepository)
+          && Objects.equals(filter, ((Key) obj).filter);
+    }
+
+    DiffRepository toRepo() {
+      final URL refFile = findFile(clazz, ".xml");
+      final String refFilePath = Sources.of(refFile).file().getAbsolutePath();
+      final String logFilePath = refFilePath.replace(".xml", "_actual.xml");
+      final File logFile = new File(logFilePath);
+      assert !refFilePath.equals(logFile.getAbsolutePath());
+      return new DiffRepository(refFile, logFile, baseRepository, filter);
+    }
+  }
+}
+>>>>>>> c5f531781 (In DiffRepository, replace a synchronized Map with a Guava cache (#54))
 
   /** Cache key. */
   private static class Key {
