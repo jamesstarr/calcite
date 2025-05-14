@@ -35,13 +35,11 @@ import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.metadata.RelMdCollation;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
-<<<<<<< HEAD
-=======
 import org.apache.calcite.rex.RexBuilder;
+=======
 import org.apache.calcite.rex.RexLiteral;
 >>>>>>> 475cf3352 ([CALCITE-3285] EnumerableMergeJoin should support non-equi join condions (Jin Xing))
 import org.apache.calcite.rex.RexNode;
-import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.util.BuiltInMethod;
 import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.Pair;
@@ -160,9 +158,6 @@ public class EnumerableMergeJoin extends Join implements EnumerableRel {
         leftResult.physType.project(joinInfo.leftKeys, JavaRowFormat.LIST);
     final PhysType rightKeyPhysType =
         rightResult.physType.project(joinInfo.rightKeys, JavaRowFormat.LIST);
-    final RexBuilder rexBuilder = getCluster().getRexBuilder();
-    final RexNode nonEquiCondition = RexUtil.composeConjunction(
-        getCluster().getRexBuilder(), joinInfo.nonEquiConditions, false);
     return implementor.result(
         physType,
         builder.append(
@@ -175,9 +170,6 @@ public class EnumerableMergeJoin extends Join implements EnumerableRel {
                         leftKeyPhysType.record(leftExpressions), left_),
                     Expressions.lambda(
                         rightKeyPhysType.record(rightExpressions), right_),
-                    EnumUtils.generatePredicate(
-                        implementor, rexBuilder, left, right, leftResult.physType,
-                        rightResult.physType, nonEquiCondition),
                     EnumUtils.joinSelector(joinType,
                         physType,
                         ImmutableList.of(

@@ -547,11 +547,15 @@ EnumerableCalc(expr#0..2=[{inputs}], proj#0..1=[{exprs}])
 =======
 EnumerableCalc(expr#0..2=[{inputs}], A=[$t1], B=[$t2])
 <<<<<<< HEAD
+<<<<<<< HEAD
   EnumerableMergeJoin(condition=[=($0, $1)], joinType=[inner])
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
 =======
   EnumerableMergeJoin(condition=[=($1, $0)], joinType=[inner])
 >>>>>>> 475cf3352 ([CALCITE-3285] EnumerableMergeJoin should support non-equi join condions (Jin Xing))
+=======
+  EnumerableMergeJoin(condition=[=($0, $1)], joinType=[inner])
+>>>>>>> 9ce106577 (Revert "[CALCITE-3285] EnumerableMergeJoin should support non-equi jo… (#68))
     EnumerableCalc(expr#0..2=[{inputs}], DEPTNO=[$t0])
       EnumerableTableScan(table=[[scott, DEPT]])
 !plan
