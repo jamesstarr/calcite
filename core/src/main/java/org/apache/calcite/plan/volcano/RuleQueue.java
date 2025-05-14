@@ -19,18 +19,6 @@ package org.apache.calcite.plan.volcano;
 import org.apache.calcite.plan.RelOptRuleOperand;
 import org.apache.calcite.plan.SubstitutionRule;
 import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.util.Util;
-import org.apache.calcite.util.trace.CalciteTrace;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Multimap;
-
-import org.slf4j.Logger;
-
-import java.util.ArrayDeque;
-<<<<<<< HEAD
-=======
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -443,12 +431,49 @@ class RuleQueue {
       if (matchList.isEmpty()) {
         return null;
       }
->>>>>>> aa1d61783 ([CALCITE-2518] Add failOnWarnings to maven-javadoc-plugin configuration)
+<<<<<<< HEAD
+=======
+      int bestPos;
+>>>>>>> e34ad9ce0 (Replace ChunkList with ArrayList in RuleQueue#list (#70))
       if (LOGGER.isTraceEnabled()) {
         matchList.sort(MATCH_COMPARATOR);
-        match = matchList.remove(0);
+        match = matchList.get(0);
+        bestPos = 0;
 
-      match = phaseMatchList.list.poll();
+        StringBuilder b = new StringBuilder();
+        b.append("Sorted rule queue:");
+        for (VolcanoRuleMatch match2 : matchList) {
+          final double importance = match2.computeImportance();
+          b.append("\n");
+          b.append(match2);
+          b.append(" importance ");
+          b.append(importance);
+        }
+
+        LOGGER.trace(b.toString());
+      } else {
+        // If we're not tracing, it's not worth the effort of sorting the
+        // list to find the minimum.
+        match = null;
+        bestPos = -1;
+        int i = -1;
+        for (VolcanoRuleMatch match2 : matchList) {
+          ++i;
+          if (match == null
+              || MATCH_COMPARATOR.compare(match2, match) < 0) {
+            bestPos = i;
+            match = match2;
+          }
+        }
+      }
+      // Removal from the middle is not efficient, but the removal from the tail is.
+      // We remove the very last element, then put it to the bestPos index which
+      // effectively removes an element from the list.
+      final VolcanoRuleMatch lastElement = matchList.remove(matchList.size() - 1);
+      if (bestPos < matchList.size()) {
+        // Replace the middle element with the last one
+        matchList.set(bestPos, lastElement);
+      }
 
       if (skipMatch(match)) {
         LOGGER.debug("Skip match: {}", match);
@@ -547,7 +572,7 @@ class RuleQueue {
      * are appended to the end of this list.
      * The rules are not sorted in any way.
      */
-    final Deque<VolcanoRuleMatch> list = new LinkedList<>();
+    final List<VolcanoRuleMatch> list = new ArrayList<>();
 
     /**
      * A set of rule-match names contained in {@link #list}. Allows fast
@@ -567,6 +592,7 @@ class RuleQueue {
 
     void clear() {
       list.clear();
+      ((ArrayList<VolcanoRuleMatch>) list).trimToSize();
       names.clear();
       matchMap.clear();
     }
