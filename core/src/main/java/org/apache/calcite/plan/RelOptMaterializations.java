@@ -191,6 +191,7 @@ public abstract class RelOptMaterializations {
             .addRuleInstance(CoreRules.PROJECT_REMOVE)
             .addRuleInstance(CoreRules.PROJECT_JOIN_TRANSPOSE)
             .addRuleInstance(CoreRules.FILTER_TO_CALC)
+            .addRuleInstance(CoreRules.PROJECT_SET_OP_TRANSPOSE)
             .addRuleInstance(CoreRules.PROJECT_TO_CALC)
             .addRuleInstance(CoreRules.FILTER_CALC_MERGE)
             .addRuleInstance(CoreRules.PROJECT_CALC_MERGE)
