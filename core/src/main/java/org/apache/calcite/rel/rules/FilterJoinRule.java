@@ -132,7 +132,8 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
     // If no filter got pushed after validate, reset filterPushed flag
     if (leftFilters.isEmpty()
         && rightFilters.isEmpty()
-        && joinFilters.size() == origJoinFilters.size()) {
+        && joinFilters.size() == origJoinFilters.size()
+        && aboveFilters.size() == origAboveFilters.size()) {
       if (Sets.newHashSet(joinFilters)
           .equals(Sets.newHashSet(origJoinFilters))) {
         filterPushed = false;
