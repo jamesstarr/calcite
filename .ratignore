@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 
+=======
+**/local.properties
+>>>>>>> eb5cf8076 ([CALCITE-3749] Ignore local.proproperties in RAT, Autostyle checks, a… (#87))
 **/.editorconfig
 **/.gitignore
 **/.gitattributes
@@ -12,7 +16,12 @@
 **/src/test/resources/*.json
 **/data.txt
 **/data2.txt
+<<<<<<< HEAD
 .idea/vcs.xml
+=======
+#bu ildSrc/build
+#b uildSrc/subprojects/*/build
+>>>>>>> eb5cf8076 ([CALCITE-3749] Ignore local.proproperties in RAT, Autostyle checks, a… (#87))
 
 # TODO: remove when pom.xml files are removed
 src/main/config/licenses
@@ -45,7 +54,10 @@ site/js/**
 # Images
 site/img/*.png
 site/favicon.ico
+<<<<<<< HEAD
 
 # Development and personal files
 *.txt
 *.patch
+=======
+>>>>>>> eb5cf8076 ([CALCITE-3749] Ignore local.proproperties in RAT, Autostyle checks, a… (#87))

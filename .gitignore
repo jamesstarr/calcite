@@ -61,9 +61,14 @@ nb-configuration.xml
 .mvn/wrapper/maven-wrapper.jar
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Local configuration file (sdk path, etc)
 local.properties
 spark/build
 =======
 # End .gitignore
 >>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
+=======
+# Local configuration file (sdk path, etc)
+local.properties
+>>>>>>> eb5cf8076 ([CALCITE-3749] Ignore local.proproperties in RAT, Autostyle checks, a… (#87))
