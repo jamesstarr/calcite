@@ -48,9 +48,9 @@ public class HintStrategyCascade implements HintStrategy {
 
   //~ Methods ----------------------------------------------------------------
 
-  @Override public boolean supportsRel(RelHint hint, RelNode rel) {
+  @Override public boolean canApply(RelHint hint, RelNode rel) {
     for (HintStrategy strategy : strategies) {
-      if (!strategy.supportsRel(hint, rel)) {
+      if (!strategy.canApply(hint, rel)) {
         return false;
       }
     }
