@@ -2510,19 +2510,19 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).with(getExtendedTester()).ok();
   }
 
-  @Test void testInsertWithSort() {
+  @Test public void testInsertWithSort() {
     final String sql = "insert into empnullables (empno, ename) "
         + "select deptno, ename from emp order by ename";
     sql(sql).ok();
   }
 
-  @Test void testInsertWithLimit() {
+  @Test public void testInsertWithLimit() {
     final String sql = "insert into empnullables (empno, ename) "
         + "select deptno, ename from emp order by ename limit 10";
     sql(sql).ok();
   }
 
-  @Test void testDelete() {
+  @Test public void testDelete() {
     final String sql = "delete from emp";
     sql(sql).ok();
   }
