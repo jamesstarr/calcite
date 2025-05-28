@@ -28,6 +28,7 @@ import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelCollationTraitDef;
+import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.convert.ConverterImpl;
 import org.apache.calcite.rel.convert.ConverterRule;
@@ -157,53 +158,6 @@ class VolcanoPlannerTest {
     planner.chooseDelegate().findBestExp();
   }
 
-<<<<<<< HEAD
-  /**
-   * A pattern that matches a three input union with third child matching for
-   * a PhysLeafRel node.
-   */
-  static class ThreeInputsUnionRule extends RelOptRule {
-    ThreeInputsUnionRule() {
-      super(
-          operand(EnumerableUnion.class,
-              some(
-                  operand(PhysBiRel.class, any()),
-                  operand(PhysBiRel.class, any()),
-                  operand(PhysLeafRel.class, any()))));
-    }
-
-    public void onMatch(RelOptRuleCall call) {
-    }
-  }
-
-  @Test void testMultiInputsParentOpMatching() {
-    VolcanoPlanner planner = new VolcanoPlanner();
-    planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
-    RelOptCluster cluster = newCluster(planner);
-
-    // The trigger rule that generates PhysLeafRel from NoneLeafRel
-    planner.addRule(new PhysLeafRule());
-
-    // The rule with third child op matching PhysLeafRel, which should not be
-    // matched at all
-    planner.addRule(new ThreeInputsUnionRule());
-
-    // Construct a union with only two children
-    NoneLeafRel leftRel = new NoneLeafRel(cluster, "b");
-    RelNode leftPhy = planner
-        .changeTraits(leftRel, cluster.traitSetOf(PHYS_CALLING_CONVENTION));
-    PhysLeafRel rightPhy =
-        new PhysLeafRel(cluster, PHYS_CALLING_CONVENTION, "b");
-
-    planner.setRoot(
-        new EnumerableUnion(cluster,
-            cluster.traitSetOf(PHYS_CALLING_CONVENTION),
-            Arrays.asList(leftPhy, rightPhy), false));
-
-    planner.chooseDelegate().findBestExp();
-  }
-
-=======
   /**
    * A pattern that matches a three input union with third child matching for
    * a PhysLeafRel node.
@@ -286,12 +240,17 @@ class VolcanoPlannerTest {
         equalTo(
             sort(
 <<<<<<< HEAD
+<<<<<<< HEAD
                 "NoneSingleRel:Subset#0.NONE.[]",
                 "PhysSingleRel:Subset#0.PHYS.[0]",
                 "PhysSingleRel:Subset#0.PHYS.[]")));
 =======
                 "NoneSingleRel:Subset#0.NONE",
                 "PhysSingleRel:Subset#0.PHYS")));
+=======
+                "NoneSingleRel:Subset#0.NONE.[]",
+                "PhysSingleRel:Subset#0.PHYS.[0]",
+                "PhysSingleRel:Subset#0.PHYS.[]")));
   }
 
   private static <E extends Comparable> List<E> sort(List<E> list) {

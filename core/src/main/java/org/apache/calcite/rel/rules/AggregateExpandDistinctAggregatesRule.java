@@ -514,10 +514,6 @@ public final class AggregateExpandDistinctAggregatesRule
 
     relBuilder.aggregate(
         relBuilder.groupKey(
-<<<<<<< HEAD
-            remap(fullGroupSet, groupSet),
-            remap(fullGroupSet, aggregate.getGroupSets())),
-=======
             remap(fullGroupSet, aggregate.getGroupSet()),
             (Iterable<ImmutableBitSet>)
                 remap(fullGroupSet, aggregate.getGroupSets())),
@@ -923,7 +919,6 @@ public final class AggregateExpandDistinctAggregatesRule
     Config withUsingGroupingSets(boolean usingGroupingSets);
   }
 }
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
