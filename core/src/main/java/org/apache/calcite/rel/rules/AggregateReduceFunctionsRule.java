@@ -38,7 +38,7 @@ import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.CompositeList;
 import org.apache.calcite.util.ImmutableBeans;
->>>>>>> 65c61a11b (DX-34871 AggregateReducefunctionsRule API change)
+import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.Util;
 

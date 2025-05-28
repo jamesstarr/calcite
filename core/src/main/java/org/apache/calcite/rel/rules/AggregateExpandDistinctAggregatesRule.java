@@ -456,11 +456,7 @@ public final class AggregateExpandDistinctAggregatesRule
       filters.put(groupSet.e, z + groupSet.i);
     }
 
-    distinctAggCalls.add(
-        AggregateCall.create(SqlStdOperatorTable.GROUPING, false, false, false,
-            ImmutableIntList.copyOf(fullGroupSet), -1, RelCollations.EMPTY,
-            groupSets.size(), relBuilder.peek(), null, "$g"));
-
+>>>>>>> 4ff578681 (Really deprecate RelBuilder.groupKey(ImmutableBitSet, ImmutableList<I… (#76))
     relBuilder.aggregate(
         relBuilder.groupKey(fullGroupSet,
             (Iterable<ImmutableBitSet>) groupSets),
@@ -518,8 +514,13 @@ public final class AggregateExpandDistinctAggregatesRule
 
     relBuilder.aggregate(
         relBuilder.groupKey(
+<<<<<<< HEAD
             remap(fullGroupSet, groupSet),
             remap(fullGroupSet, aggregate.getGroupSets())),
+=======
+            remap(fullGroupSet, aggregate.getGroupSet()),
+            (Iterable<ImmutableBitSet>)
+                remap(fullGroupSet, aggregate.getGroupSets())),
         newCalls);
     relBuilder.convert(aggregate.getRowType(), true);
     call.transformTo(relBuilder.build());

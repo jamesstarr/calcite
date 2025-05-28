@@ -36,7 +36,7 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
->>>>>>> 0218f4ee7 ([CALCITE-3144] Add rule, AggregateCaseToFilterRule, that converts "SUM(CASE WHEN b THEN x END)" to "SUM(x) FILTER (WHERE b)")
+import org.apache.calcite.util.ImmutableBitSet;
 
 import com.google.common.collect.ImmutableList;
 
@@ -132,7 +132,7 @@ public class AggregateCaseToFilterRule extends RelOptRule {
 
     final RelBuilder.GroupKey groupKey =
         relBuilder.groupKey(aggregate.getGroupSet(),
-            aggregate.getGroupSets());
+            (Iterable<ImmutableBitSet>) aggregate.getGroupSets());
 
     relBuilder.aggregate(groupKey, newCalls)
         .convert(aggregate.getRowType(), false);
