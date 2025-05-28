@@ -392,7 +392,7 @@ public class RelOptRulesTest extends RelOptTestBase {
   }
 
   @Test public void testNotPushExpression() {
-    final String sql = "select 1 from emp inner join dept \n"
+    final String sql = "select 1 from emp inner join dept\n"
         + "on emp.deptno=dept.deptno and emp.MGR is not null";
     sql(sql).withRule(CoreRules.JOIN_PUSH_EXPRESSIONS)
         .checkUnchanged();
@@ -2500,7 +2500,7 @@ public class RelOptRulesTest extends RelOptTestBase {
   }
 
   @Test public void testReduceConstants2() throws Exception {
-    final String sql = "select p1 is not distinct from p0 \n"
+    final String sql = "select p1 is not distinct from p0\n"
         + "from (values (2, cast(null as integer))) as t(p0, p1)";
     sql(sql)
         .withRule(CoreRules.PROJECT_REDUCE_EXPRESSIONS,
@@ -2819,7 +2819,7 @@ public class RelOptRulesTest extends RelOptTestBase {
   @Test public void testReduceValuesUnderProjectFilter() throws Exception {
     // Plan should be same as for
     // select * from (values (11, 1, 10), (23, 3, 20)) as t(x, b, a)");
-    final String sql = "select a + b as x, b, a \n"
+    final String sql = "select a + b as x, b, a\n"
         + "from (values (10, 1), (30, 7), (20, 3)) as t(a, b)\n"
         + "where a - b < 21";
     sql(sql).withRule(CoreRules.FILTER_PROJECT_TRANSPOSE,
@@ -6041,7 +6041,7 @@ public class RelOptRulesTest extends RelOptTestBase {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2744">[CALCITE-2744]
    * RelDecorrelator use wrong output map for LogicalAggregate decorrelate</a>. */
   @Test public void testDecorrelateAggWithConstantGroupKey() {
-    final String sql = "SELECT * FROM emp A where sal in \n"
+    final String sql = "SELECT * FROM emp A where sal in\n"
         + "(SELECT max(sal) FROM emp B where A.mgr = B.empno group by deptno, 'abc')";
     sql(sql)
         .withLateDecorrelation(true)

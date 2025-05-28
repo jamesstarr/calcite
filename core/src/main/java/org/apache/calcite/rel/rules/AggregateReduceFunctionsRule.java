@@ -38,6 +38,7 @@ import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.CompositeList;
 import org.apache.calcite.util.ImmutableBeans;
+import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.Util;
 
@@ -585,7 +586,7 @@ public class AggregateReduceFunctionsRule
       List<AggregateCall> newCalls) {
     relBuilder.aggregate(
         relBuilder.groupKey(oldAggregate.getGroupSet(),
-            oldAggregate.getGroupSets()),
+            (Iterable<ImmutableBitSet>) oldAggregate.getGroupSets()),
         newCalls);
   }
 

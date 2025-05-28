@@ -246,7 +246,8 @@ public final class AggregateExpandDistinctAggregatesRule
     int n = 0;
     if (!newAggCallList.isEmpty()) {
       final RelBuilder.GroupKey groupKey =
-          relBuilder.groupKey(groupSet, aggregate.getGroupSets());
+          relBuilder.groupKey(groupSet,
+              (Iterable<ImmutableBitSet>) aggregate.getGroupSets());
       relBuilder.aggregate(groupKey, newAggCallList);
       ++n;
     }
@@ -441,7 +442,9 @@ public final class AggregateExpandDistinctAggregatesRule
       filters.put(groupSet.e, z + groupSet.i);
     }
 
-    relBuilder.aggregate(relBuilder.groupKey(fullGroupSet, groupSets),
+    relBuilder.aggregate(
+        relBuilder.groupKey(fullGroupSet,
+            (Iterable<ImmutableBitSet>) groupSets),
         distinctAggCalls);
     final RelNode distinct = relBuilder.peek();
 
@@ -490,7 +493,8 @@ public final class AggregateExpandDistinctAggregatesRule
     relBuilder.aggregate(
         relBuilder.groupKey(
             remap(fullGroupSet, aggregate.getGroupSet()),
-            remap(fullGroupSet, aggregate.getGroupSets())),
+            (Iterable<ImmutableBitSet>)
+                remap(fullGroupSet, aggregate.getGroupSets())),
         newCalls);
     relBuilder.convert(aggregate.getRowType(), true);
     call.transformTo(relBuilder.build());
