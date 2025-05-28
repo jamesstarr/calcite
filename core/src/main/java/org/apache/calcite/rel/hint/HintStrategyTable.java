@@ -71,7 +71,7 @@ public class HintStrategyTable {
    */
   public List<RelHint> apply(List<RelHint> hints, RelNode rel) {
     return hints.stream()
-        .filter(relHint -> supportsRel(relHint, rel))
+        .filter(relHint -> canApply(relHint, rel))
         .collect(Collectors.toList());
   }
 
@@ -86,10 +86,10 @@ public class HintStrategyTable {
     }
   }
 
-  private boolean supportsRel(RelHint hint, RelNode rel) {
+  private boolean canApply(RelHint hint, RelNode rel) {
     final Key key = Key.of(hint.hintName);
     assert this.hintStrategyMap.containsKey(key);
-    return this.hintStrategyMap.get(key).supportsRel(hint, rel);
+    return this.hintStrategyMap.get(key).canApply(hint, rel);
   }
 
   /**
