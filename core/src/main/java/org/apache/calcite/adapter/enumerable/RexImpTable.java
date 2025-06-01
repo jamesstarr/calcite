@@ -169,7 +169,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.GREATER_THAN;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.GREATER_THAN_OR_EQUAL;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.GROUPING;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.GROUPING_ID;
-import static org.apache.calcite.sql.fun.SqlStdOperatorTable.HOP;
+>>>>>>> b2e91c455 ([CALCITE-1824] GROUP_ID returns wrong result (DonnyZone) (#95))
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.INITCAP;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_A_SET;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_EMPTY;
@@ -954,7 +954,6 @@ public class RexImpTable {
     }
   }
 
->>>>>>> 73334a91f ([CALCITE-3302] Implement CLASSIFIER and LAST functions for MATCH_RECOGNIZE)
   static Expression maybeNegate(boolean negate, Expression expression) {
     if (!negate) {
       return expression;
