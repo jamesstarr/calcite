@@ -264,9 +264,9 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
   /**
    * Creates a {@code VolcanoPlanner} with a given cost factory.
    */
-  public VolcanoPlanner(RelOptCostFactory costFactory, //
+  public VolcanoPlanner(RelOptCostFactory costFactory,
       Context externalContext) {
-    super(costFactory == null ? VolcanoCost.FACTORY : costFactory, //
+    super(costFactory == null ? VolcanoCost.FACTORY : costFactory,
         externalContext);
     this.zeroCost = this.costFactory.makeZeroCost();
     // If LOGGER is debug enabled, enable provenance information to be captured
@@ -292,7 +292,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
   }
 
   public void setRoot(RelNode rel) {
-    // We're registered all the rules, and therefore RelNode classes,
+    // We've registered all the rules, and therefore RelNode classes,
     // we're interested in, and have not yet started calling metadata providers.
     // So now is a good time to tell the metadata layer what to expect.
     registerMetadataRels();
@@ -855,8 +855,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
           Litmus.THROW);
       set = getSet(equivRel);
     }
-    final RelSubset subset = registerImpl(rel, set);
-    return subset;
+    return registerImpl(rel, set);
   }
 
   public RelSubset ensureRegistered(RelNode rel, RelNode equivRel) {
@@ -1478,7 +1477,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     }
 
     // Add the relational expression into the correct set and subset.
-    RelSubset subset2 = addRelToSet(rel, set);
+    addRelToSet(rel, set);
   }
 
   /**
@@ -1933,8 +1932,6 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     this.locked = locked;
   }
 
-<<<<<<< HEAD
-=======
   public void ensureRegistered(
       RelNode rel,
       RelNode equivRel,
@@ -1942,6 +1939,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     ensureRegistered(rel, equivRel);
   }
 
+=======
   //~ Inner Classes ----------------------------------------------------------
 
   /**
