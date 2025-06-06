@@ -62,7 +62,10 @@ class FileReaderTest {
   }
 
   /** Tests {@link FileReader} URL instantiation - no path. */
-  @Test @RequiresNetwork public void testFileReaderUrlNoPath() throws FileReaderException {
+  @Ignore("[CALCITE-3800] FileReaderTest#testFileReaderUrlNoPath() timeout for AppVeyor test")
+  @Test public void testFileReaderUrlNoPath() throws FileReaderException {
+    Assume.assumeTrue(FileSuite.hazNetwork());
+
     // Under OpenJDK, test fails with the following, so skip test:
     //   javax.net.ssl.SSLHandshakeException:
     //   sun.security.validator.ValidatorException: PKIX path building failed:
