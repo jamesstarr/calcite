@@ -61,6 +61,7 @@ public class FileReaderTest {
   }
 
   /** Tests {@link FileReader} URL instantiation - no path. */
+  @Ignore("[CALCITE-3800] FileReaderTest#testFileReaderUrlNoPath() timeout for AppVeyor test")
   @Test public void testFileReaderUrlNoPath() throws FileReaderException {
     Assume.assumeTrue(FileSuite.hazNetwork());
 
