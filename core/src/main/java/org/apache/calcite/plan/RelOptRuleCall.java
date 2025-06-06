@@ -194,7 +194,7 @@ public abstract class RelOptRuleCall {
   }
 
   /**
-   * Returns the current RelMetadataQuery or its sub-class,
+   * Returns the current RelMetadataQuery
    * to be used for instance by
    * {@link RelOptRule#onMatch(RelOptRuleCall)}.
    */
