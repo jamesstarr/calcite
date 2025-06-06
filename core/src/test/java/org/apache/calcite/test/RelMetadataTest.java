@@ -1503,6 +1503,8 @@ public class RelMetadataTest extends SqlToRelTestBase {
     assertThat(buf.size(), equalTo(5));
     assertThat(colType(mq1, input, 0), equalTo("DEPTNO-agg"));
     assertThat(buf.size(), equalTo(5));
+    // Resets the RelMetadataQuery to default.
+    rel.getCluster().setMetadataQuerySupplier(RelMetadataQuery::instance);
   }
 
   /** Unit test for
