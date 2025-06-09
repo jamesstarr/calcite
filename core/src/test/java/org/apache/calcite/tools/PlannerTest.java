@@ -165,7 +165,7 @@ public class PlannerTest {
   private String toString(RelNode rel) {
     return Util.toLinux(
         RelOptUtil.dumpPlan("", rel, SqlExplainFormat.TEXT,
-            SqlExplainLevel.DIGEST_ATTRIBUTES));
+            SqlExplainLevel.EXPPLAN_ATTRIBUTES));
   }
 
   @Test public void testParseFails() throws SqlParseException {
@@ -401,10 +401,10 @@ public class PlannerTest {
   /** Unit test that parses, validates, converts and plans. */
   @Test public void trimEmptyUnion2() throws Exception {
     checkUnionPruning("values(1) union all select * from (values(2)) where false",
-        "EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n");
+        "EnumerableValues(tuples=[[{ 1 }]])\n");
 
     checkUnionPruning("select * from (values(2)) where false union all values(1)",
-        "EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n");
+        "EnumerableValues(tuples=[[{ 1 }]])\n");
   }
 
   @Test public void trimEmptyUnion31() throws Exception {
@@ -417,7 +417,7 @@ public class PlannerTest {
 
   private void emptyUnions31(UnionMergeRule... extraRules)
       throws SqlParseException, ValidationException, RelConversionException {
-    String plan = "EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n";
+    String plan = "EnumerableValues(tuples=[[{ 1 }]])\n";
     checkUnionPruning("values(1)"
             + " union all select * from (values(2)) where false"
             + " union all select * from (values(3)) where false",
@@ -449,8 +449,8 @@ public class PlannerTest {
   private void emptyUnions32(UnionMergeRule... extraRules)
       throws SqlParseException, ValidationException, RelConversionException {
     String plan = "EnumerableUnion(all=[true])\n"
-        + "  EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n"
-        + "  EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 2 }]])\n";
+        + "  EnumerableValues(tuples=[[{ 1 }]])\n"
+        + "  EnumerableValues(tuples=[[{ 2 }]])\n";
 
     checkUnionPruning("values(1)"
             + " union all values(2)"
@@ -535,8 +535,8 @@ public class PlannerTest {
     assertThat("empty union should be pruned out of " + toString(relNode),
         Util.toLinux(toString(output)),
         equalTo("EnumerableUnion(all=[true])\n"
-            + "  EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n"
-            + "  EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 2 }]])\n"));
+            + "  EnumerableValues(tuples=[[{ 1 }]])\n"
+            + "  EnumerableValues(tuples=[[{ 2 }]])\n"));
   }
 
   /** Unit test that parses, validates, converts and
@@ -1427,7 +1427,7 @@ public class PlannerTest {
   @Test public void testView() throws Exception {
     final String sql = "select * FROM dept";
     final String expected = "LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
-        + "  LogicalValues(type=[RecordType(INTEGER DEPTNO, CHAR(11) DNAME)], "
+        + "  LogicalValues("
         + "tuples=[[{ 10, 'Sales      ' },"
         + " { 20, 'Marketing  ' },"
         + " { 30, 'Engineering' },"
@@ -1440,7 +1440,7 @@ public class PlannerTest {
     final String expected = "LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
         + "  LogicalFilter(condition=[=($0, 30)])\n"
         + "    LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
-        + "      LogicalValues(type=[RecordType(INTEGER DEPTNO, CHAR(11) DNAME)], "
+        + "      LogicalValues("
         + "tuples=[[{ 10, 'Sales      ' },"
         + " { 20, 'Marketing  ' },"
         + " { 30, 'Engineering' },"
