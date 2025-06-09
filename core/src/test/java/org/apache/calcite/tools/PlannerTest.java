@@ -166,7 +166,7 @@ public class PlannerTest {
   private String toString(RelNode rel) {
     return Util.toLinux(
         RelOptUtil.dumpPlan("", rel, SqlExplainFormat.TEXT,
-            SqlExplainLevel.DIGEST_ATTRIBUTES));
+            SqlExplainLevel.EXPPLAN_ATTRIBUTES));
   }
 
   @Test void testParseFails() throws SqlParseException {
@@ -401,10 +401,10 @@ public class PlannerTest {
   /** Unit test that parses, validates, converts and plans. */
   @Test public void trimEmptyUnion2() throws Exception {
     checkUnionPruning("values(1) union all select * from (values(2)) where false",
-        "EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n");
+        "EnumerableValues(tuples=[[{ 1 }]])\n");
 
     checkUnionPruning("select * from (values(2)) where false union all values(1)",
-        "EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n");
+        "EnumerableValues(tuples=[[{ 1 }]])\n");
   }
 
   @Test public void trimEmptyUnion31() throws Exception {
@@ -417,7 +417,7 @@ public class PlannerTest {
 
   private void emptyUnions31(UnionMergeRule... extraRules)
       throws SqlParseException, ValidationException, RelConversionException {
-    String plan = "EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n";
+    String plan = "EnumerableValues(tuples=[[{ 1 }]])\n";
     checkUnionPruning("values(1)"
             + " union all select * from (values(2)) where false"
             + " union all select * from (values(3)) where false",
@@ -449,8 +449,8 @@ public class PlannerTest {
   private void emptyUnions32(UnionMergeRule... extraRules)
       throws SqlParseException, ValidationException, RelConversionException {
     String plan = "EnumerableUnion(all=[true])\n"
-        + "  EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n"
-        + "  EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 2 }]])\n";
+        + "  EnumerableValues(tuples=[[{ 1 }]])\n"
+        + "  EnumerableValues(tuples=[[{ 2 }]])\n";
 
     checkUnionPruning("values(1)"
             + " union all values(2)"
@@ -512,6 +512,102 @@ public class PlannerTest {
         .build();
 
     RelOptPlanner planner = relNode.getCluster().getPlanner();
+<<<<<<< HEAD
+=======
+    RuleSet ruleSet =
+        RuleSets.ofList(
+            PruneEmptyRules.UNION_INSTANCE,
+            CoreRules.FILTER_VALUES_MERGE,
+            EnumerableRules.ENUMERABLE_PROJECT_RULE,
+            EnumerableRules.ENUMERABLE_FILTER_RULE,
+            EnumerableRules.ENUMERABLE_VALUES_RULE,
+            EnumerableRules.ENUMERABLE_UNION_RULE);
+    Program program = Programs.of(ruleSet);
+
+    RelTraitSet toTraits = relNode.getTraitSet()
+        .replace(EnumerableConvention.INSTANCE);
+
+    RelNode output = program.run(planner, relNode, toTraits,
+        ImmutableList.of(), ImmutableList.of());
+
+    // Expected outcomes are:
+    // 1) relation is optimized to simple VALUES
+    // 2) the number of rule invocations is reasonable
+    // 3) planner does not throw OutOfMemoryError
+    assertThat("empty union should be pruned out of " + toString(relNode),
+        Util.toLinux(toString(output)),
+        equalTo("EnumerableUnion(all=[true])\n"
+            + "  EnumerableValues(tuples=[[{ 1 }]])\n"
+            + "  EnumerableValues(tuples=[[{ 2 }]])\n"));
+  }
+
+  /** Unit test that parses, validates, converts and
+   * plans for query using order by */
+  @Test public void testSortPlan() throws Exception {
+    RuleSet ruleSet =
+        RuleSets.ofList(
+            CoreRules.SORT_REMOVE,
+            EnumerableRules.ENUMERABLE_PROJECT_RULE,
+            EnumerableRules.ENUMERABLE_SORT_RULE);
+    Planner planner = getPlanner(null, Programs.of(ruleSet));
+    SqlNode parse = planner.parse(
+        "select * from \"emps\" "
+            + "order by \"emps\".\"deptno\"");
+    SqlNode validate = planner.validate(parse);
+    RelNode convert = planner.rel(validate).project();
+    RelTraitSet traitSet = convert.getTraitSet()
+        .replace(EnumerableConvention.INSTANCE);
+    RelNode transform = planner.transform(0, traitSet, convert);
+    assertThat(toString(transform),
+        equalTo("EnumerableSort(sort0=[$1], dir0=[ASC])\n"
+            + "  EnumerableProject(empid=[$0], deptno=[$1], name=[$2], salary=[$3], commission=[$4])\n"
+            + "    EnumerableTableScan(table=[[hr, emps]])\n"));
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2554">[CALCITE-2554]
+   * Enrich EnumerableJoin operator with order preserving information</a>.
+   *
+   * <p>Since the left input to the join is sorted, and this join preserves
+   * order, there shouldn't be any sort operator above the join.
+   */
+  @Test public void testRedundantSortOnJoinPlan() throws Exception {
+    RuleSet ruleSet =
+        RuleSets.ofList(
+            CoreRules.SORT_REMOVE,
+            CoreRules.SORT_JOIN_TRANSPOSE,
+            CoreRules.SORT_PROJECT_TRANSPOSE,
+            EnumerableRules.ENUMERABLE_LIMIT_RULE,
+            EnumerableRules.ENUMERABLE_JOIN_RULE,
+            EnumerableRules.ENUMERABLE_PROJECT_RULE,
+            EnumerableRules.ENUMERABLE_SORT_RULE);
+    Planner planner = getPlanner(null, Programs.of(ruleSet));
+    SqlNode parse = planner.parse(
+        "select e.\"deptno\" from \"emps\" e "
+            + "left outer join \"depts\" d "
+            + " on e.\"deptno\" = d.\"deptno\" "
+            + "order by e.\"deptno\" "
+            + "limit 10");
+    SqlNode validate = planner.validate(parse);
+    RelNode convert = planner.rel(validate).rel;
+    RelTraitSet traitSet = convert.getTraitSet()
+        .replace(EnumerableConvention.INSTANCE).simplify();
+    RelNode transform = planner.transform(0, traitSet, convert);
+    assertThat(toString(transform),
+        equalTo("EnumerableProject(deptno=[$1])\n"
+        + "  EnumerableLimit(fetch=[10])\n"
+        + "    EnumerableHashJoin(condition=[=($1, $5)], joinType=[left])\n"
+        + "      EnumerableLimit(fetch=[10])\n"
+        + "        EnumerableSort(sort0=[$1], dir0=[ASC])\n"
+        + "          EnumerableTableScan(table=[[hr, emps]])\n"
+        + "      EnumerableProject(deptno=[$0], name=[$1], employees=[$2], x=[$3.x], y=[$3.y])\n"
+        + "        EnumerableTableScan(table=[[hr, depts]])\n"));
+  }
+
+  /** Unit test that parses, validates, converts and
+   * plans for query using two duplicate order by.
+   * The duplicate order by should be removed by SqlToRelConverter. */
+>>>>>>> 6b57c668a ([CALCITE-3713] Remove column names from Project#digest (#66))
   @Test public void testDuplicateSortPlan() throws Exception {
     runDuplicateSortCheck(
         "select empid from ( "
@@ -1380,7 +1476,7 @@ public class PlannerTest {
   @Test public void testView() throws Exception {
     final String sql = "select * FROM dept";
     final String expected = "LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
-        + "  LogicalValues(type=[RecordType(INTEGER DEPTNO, CHAR(11) DNAME)], "
+        + "  LogicalValues("
         + "tuples=[[{ 10, 'Sales      ' },"
         + " { 20, 'Marketing  ' },"
         + " { 30, 'Engineering' },"
@@ -1393,7 +1489,7 @@ public class PlannerTest {
     final String expected = "LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
         + "  LogicalFilter(condition=[=($0, 30)])\n"
         + "    LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
-        + "      LogicalValues(type=[RecordType(INTEGER DEPTNO, CHAR(11) DNAME)], "
+        + "      LogicalValues("
         + "tuples=[[{ 10, 'Sales      ' },"
         + " { 20, 'Marketing  ' },"
         + " { 30, 'Engineering' },"

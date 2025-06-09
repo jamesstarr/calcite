@@ -143,9 +143,13 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
    * <p>Row type is part of the key for the rare occasion that similar
    * expressions have different types, e.g. variants of
    * {@code Project(child=rel#1, a=null)} where a is a null INTEGER or a
-   * null VARCHAR(10).
+   * null VARCHAR(10).</p>
+   * <p>Row type is represented as fieldTypes only, so {@code RelNode} that differ
+   * with field names only are treated equal.
+   * For instance, {@code Project(input=rel#1,empid=$0)} and {@code Project(input=rel#1,deptno=$0)}
+   * are equal</p>
    */
-  private final Map<Pair<String, RelDataType>, RelNode> mapDigestToRel =
+  private final Map<Pair<String, List<RelDataType>>, RelNode> mapDigestToRel =
       new HashMap<>();
 
   /**
@@ -1135,8 +1139,8 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
   }
 
   /** Computes the key for {@link #mapDigestToRel}. */
-  private static Pair<String, RelDataType> key(RelNode rel) {
-    return Pair.of(rel.getDigest(), rel.getRowType());
+  private static Pair<String, List<RelDataType>> key(RelNode rel) {
+    return Pair.of(rel.getDigest(), Pair.right(rel.getRowType().getFieldList()));
   }
 
   public String toDot() {
@@ -1381,14 +1385,14 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
   void rename(RelNode rel) {
     final String oldDigest = rel.getDigest();
     if (fixUpInputs(rel)) {
-      final Pair<String, RelDataType> oldKey =
-          Pair.of(oldDigest, rel.getRowType());
+      final Pair<String, List<RelDataType>> oldKey =
+          Pair.of(oldDigest, Pair.right(rel.getRowType().getFieldList()));
       final RelNode removed = mapDigestToRel.remove(oldKey);
       assert removed == rel;
       rel.recomputeDigest();
       final String newDigest = rel.getDigest();
       LOGGER.trace("Rename #{} from '{}' to '{}'", rel.getId(), oldDigest, newDigest);
-      final Pair<String, RelDataType> key = key(rel);
+      final Pair<String, List<RelDataType>> key = key(rel);
       final RelNode equivRel = mapDigestToRel.put(key, rel);
       if (equivRel != null) {
         assert equivRel != rel;
@@ -1452,7 +1456,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     // Is there an equivalent relational expression? (This might have
     // just occurred because the relational expression's child was just
     // found to be equivalent to another set.)
-    final Pair<String, RelDataType> key = key(rel);
+    final Pair<String, List<RelDataType>> key = key(rel);
     RelNode equivRel = mapDigestToRel.get(key);
     if (equivRel != null && equivRel != rel) {
       assert equivRel.getClass() == rel.getClass();
@@ -1660,7 +1664,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
 
     // If it is equivalent to an existing expression, return the set that
     // the equivalent expression belongs to.
-    Pair<String, RelDataType> key = key(rel);
+    Pair<String, List<RelDataType>> key = key(rel);
     RelNode equivExp = mapDigestToRel.get(key);
     if (equivExp == null) {
       // do nothing
