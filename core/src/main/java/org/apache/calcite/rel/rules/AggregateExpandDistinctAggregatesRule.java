@@ -20,7 +20,6 @@ import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelCollations;
-import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.Aggregate.Group;
 import org.apache.calcite.rel.core.AggregateCall;
@@ -446,15 +445,21 @@ public final class AggregateExpandDistinctAggregatesRule
     relBuilder.push(aggregate.getInput());
     final int groupCount = fullGroupSet.cardinality();
 
-    final Map<ImmutableBitSet, Integer> filters = new LinkedHashMap<>();
-    final int z = groupCount + distinctAggCalls.size();
+    // Get the base ordinal of filter args for different groupSets.
+    final Map<Pair<ImmutableBitSet, Integer>, Integer> filters = new LinkedHashMap<>();
+    int z = groupCount + distinctAggCalls.size();
+    for (ImmutableBitSet groupSet: groupSets) {
+      Set<Integer> filterArgList = distinctFilterArgMap.get(groupSet);
+      for (Integer filterArg: filterArgList) {
+        filters.put(Pair.of(groupSet, filterArg), z);
+        z += 1;
+      }
+    }
+
     distinctAggCalls.add(
         AggregateCall.create(SqlStdOperatorTable.GROUPING, false, false, false,
             ImmutableIntList.copyOf(fullGroupSet), -1, RelCollations.EMPTY,
             groupSets.size(), relBuilder.peek(), null, "$g"));
-    for (Ord<ImmutableBitSet> groupSet : Ord.zip(groupSets)) {
-      filters.put(groupSet.e, z + groupSet.i);
-    }
 
 >>>>>>> 4ff578681 (Really deprecate RelBuilder.groupKey(ImmutableBitSet, ImmutableList<I… (#76))
     relBuilder.aggregate(
@@ -508,15 +513,14 @@ public final class AggregateExpandDistinctAggregatesRule
           AggregateCall.create(aggregation, false,
               aggCall.isApproximate(), aggCall.ignoreNulls(),
               newArgList, newFilterArg, aggCall.collation,
-              aggregate.getGroupCount(), distinct, null, aggCall.name);
+              aggregate.getGroupCount(), relBuilder.peek(), null, aggCall.name);
       newCalls.add(newCall);
     }
 
     relBuilder.aggregate(
         relBuilder.groupKey(
-            remap(fullGroupSet, aggregate.getGroupSet()),
-            (Iterable<ImmutableBitSet>)
-                remap(fullGroupSet, aggregate.getGroupSets())),
+            remap(fullGroupSet, groupSet),
+            remap(fullGroupSet, aggregate.getGroupSets())),
         newCalls);
     relBuilder.convert(aggregate.getRowType(), true);
     call.transformTo(relBuilder.build());

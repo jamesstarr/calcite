@@ -1505,6 +1505,35 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).with(program).check();
   }
 
+  @Test public void testDistinctWithFilterWithoutGroupBy() {
+    final String sql = "SELECT SUM(comm), COUNT(DISTINCT sal) FILTER (WHERE sal > 1000)\n"
+        + "FROM emp";
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.AGGREGATE_EXPAND_DISTINCT_AGGREGATES)
+        .build();
+    sql(sql).with(program).check();
+  }
+
+  @Test public void testDistinctWithDiffFiltersAndSameGroupSet() {
+    final String sql = "SELECT COUNT(DISTINCT c) FILTER (WHERE d),\n"
+        + "COUNT(DISTINCT d) FILTER (WHERE c)\n"
+        + "FROM (select sal > 1000 is true as c, sal < 500 is true as d, comm from emp)";
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.AGGREGATE_EXPAND_DISTINCT_AGGREGATES)
+        .build();
+    sql(sql).with(program).check();
+  }
+
+  @Test public void testDistinctWithFilterAndGroupBy() {
+    final String sql = "SELECT deptno, SUM(comm), COUNT(DISTINCT sal) FILTER (WHERE sal > 1000)\n"
+        + "FROM emp\n"
+        + "GROUP BY deptno";
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.AGGREGATE_EXPAND_DISTINCT_AGGREGATES)
+        .build();
+    sql(sql).with(program).check();
+  }
+
   @Test public void testPushProjectPastFilter() {
     final String sql = "select empno + deptno from emp where sal = 10 * comm\n"
         + "and upper(ename) = 'FOO'";
