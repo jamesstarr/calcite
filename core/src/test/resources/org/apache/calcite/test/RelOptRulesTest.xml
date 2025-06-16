@@ -3762,8 +3762,12 @@ left join dept d on e.deptno = d.deptno]]>
 >>>>>>> fb39c867e ([CALCITE-2275] Do not push down NOT condition in JOIN (Vitalii Diravka))
 =======
 select * from emp where false)
+<<<<<<< HEAD
 left join dept using (deptno)]]>
 >>>>>>> 5afba4c56 (Revert "[CALCITE-2275] Do not push down NOT condition in JOIN (Vitalii Diravka)")
+=======
+full join dept d on e.deptno = d.deptno]]>
+>>>>>>> f393e4bc6 ([CALCITE-3783] PruneEmptyRules#JOIN_RIGHT_INSTANCE wrong behavior for… (#105))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -3956,7 +3960,13 @@ LogicalProject(EMPNO=[$0])
         <Resource name="planAfter">
             <![CDATA[
 LogicalProject(EMPNO=[$0])
+<<<<<<< HEAD
   LogicalTableScan(table=[[scott, EMP]])
+=======
+  LogicalJoin(condition=[AND(=($7, $8), =($5, 2000))], joinType=[anti])
+    LogicalTableScan(table=[[scott, EMP]])
+    LogicalValues(tuples=[[]])
+>>>>>>> f393e4bc6 ([CALCITE-3783] PruneEmptyRules#JOIN_RIGHT_INSTANCE wrong behavior for… (#105))
 ]]>
         </Resource>
     </TestCase>

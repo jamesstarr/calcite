@@ -19,10 +19,6 @@ package org.apache.calcite.rel.rules;
 import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
-<<<<<<< HEAD
-import org.apache.calcite.plan.RelTraitSet;
-import org.apache.calcite.plan.SubstitutionRule;
-=======
 >>>>>>> 8873490bb ([CALCITE-2456] VolcanoRuleCall doesn't match unordered child operand when the operand is not the first operand. PruneEmptyRules UNION and MINUS with empty inputs cause infinite cycle. (Zuozhi Wang))
 import org.apache.calcite.plan.hep.HepRelVertex;
 import org.apache.calcite.plan.volcano.RelSubset;
@@ -350,8 +346,15 @@ public abstract class PruneEmptyRules implements SubstitutionRule {
             return;
           }
           if (join.getJoinType() == JoinRelType.ANTI) {
+<<<<<<< HEAD
             // In case of anti join: Join(X, Empty, ANTI) becomes X
             call.transformTo(join.getLeft());
+=======
+            // "select * from emp anti join dept" is not necessarily empty if dept is empty
+            if (join.analyzeCondition().isEqui()) {
+              // In case of anti (equi) join: Join(X, Empty, ANTI) becomes X
+              call.transformTo(join.getLeft());
+            }
             return;
           }
           call.transformTo(call.builder().push(join).empty().build());
