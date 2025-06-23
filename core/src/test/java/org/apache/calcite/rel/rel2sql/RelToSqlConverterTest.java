@@ -1011,7 +1011,11 @@ class RelToSqlConverterTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3663">[CALCITE-3663]
    * Support for TRIM function in Bigquery dialect</a>. */
 
-  @Test public void testHiveAndBqTrim() {
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3771">[CALCITE-3771]
+   * Support of TRIM function for SPARK dialect and improvement in HIVE Dialect</a>. */
+
+  @Test public void testHiveSparkAndBqTrim() {
     final String query = "SELECT TRIM(' str ')\n"
         + "from \"foodmart\".\"reserve_employee\"";
     final String expected = "SELECT TRIM(' str ')\n"
@@ -1019,11 +1023,13 @@ class RelToSqlConverterTest {
     sql(query)
       .withHive()
       .ok(expected)
+      .withSpark()
+      .ok(expected)
       .withBigQuery()
       .ok(expected);
   }
 
-  @Test public void testHiveAndBqTrimWithBoth() {
+  @Test public void testHiveSparkAndBqTrimWithBoth() {
     final String query = "SELECT TRIM(both ' ' from ' str ')\n"
         + "from \"foodmart\".\"reserve_employee\"";
     final String expected = "SELECT TRIM(' str ')\n"
@@ -1031,11 +1037,13 @@ class RelToSqlConverterTest {
     sql(query)
       .withHive()
       .ok(expected)
+      .withSpark()
+      .ok(expected)
       .withBigQuery()
       .ok(expected);
   }
 
-  @Test public void testHiveAndBqTrimWithLeading() {
+  @Test public void testHiveSparkAndBqTrimWithLeading() {
     final String query = "SELECT TRIM(LEADING ' ' from ' str ')\n"
         + "from \"foodmart\".\"reserve_employee\"";
     final String expected = "SELECT LTRIM(' str ')\n"
@@ -1043,18 +1051,22 @@ class RelToSqlConverterTest {
     sql(query)
       .withHive()
       .ok(expected)
+      .withSpark()
+      .ok(expected)
       .withBigQuery()
       .ok(expected);
   }
 
 
-  @Test public void testHiveAndBqTrimWithTailing() {
+  @Test public void testHiveSparkAndBqTrimWithTailing() {
     final String query = "SELECT TRIM(TRAILING ' ' from ' str ')\n"
         + "from \"foodmart\".\"reserve_employee\"";
     final String expected = "SELECT RTRIM(' str ')\n"
         + "FROM foodmart.reserve_employee";
     sql(query)
       .withHive()
+      .ok(expected)
+      .withSpark()
       .ok(expected)
       .withBigQuery()
       .ok(expected);
@@ -1069,9 +1081,27 @@ class RelToSqlConverterTest {
         + "from \"foodmart\".\"reserve_employee\"";
     final String expected = "SELECT LTRIM('abcd', 'a')\n"
         + "FROM foodmart.reserve_employee";
+    final String expectedHS = "SELECT REGEXP_REPLACE('abcd', '^(a)*', '')\n"
+        + "FROM foodmart.reserve_employee";
     sql(query)
       .withBigQuery()
       .ok(expected);
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3771">[CALCITE-3771]
+   * Support of TRIM function for SPARK dialect and improvement in HIVE Dialect</a>. */
+
+  @Test public void testHiveAndSparkTrimWithLeadingChar() {
+    final String query = "SELECT TRIM(LEADING 'a' from 'abcd')\n"
+        + "from \"foodmart\".\"reserve_employee\"";
+    final String expected = "SELECT REGEXP_REPLACE('abcd', '^(a)*', '')\n"
+        + "FROM foodmart.reserve_employee";
+    sql(query)
+        .withHive()
+        .ok(expected)
+        .withSpark()
+        .ok(expected);
   }
 
   @Test public void testBqTrimWithBothChar() {
@@ -1084,14 +1114,61 @@ class RelToSqlConverterTest {
       .ok(expected);
   }
 
-  @Test public void testBqTrimWithTailingChar() {
+  @Test public void testHiveAndSparkTrimWithBothChar() {
+    final String query = "SELECT TRIM(both 'a' from 'abcda')\n"
+        + "from \"foodmart\".\"reserve_employee\"";
+    final String expected = "SELECT REGEXP_REPLACE('abcda', '^(a)*|(a)*$', '')\n"
+        + "FROM foodmart.reserve_employee";
+    sql(query)
+        .withHive()
+        .ok(expected)
+        .withSpark()
+        .ok(expected);
+  }
+
+  @Test public void testHiveBqTrimWithTailingChar() {
     final String query = "SELECT TRIM(TRAILING 'a' from 'abcd')\n"
-         + "from \"foodmart\".\"reserve_employee\"";
+        + "from \"foodmart\".\"reserve_employee\"";
     final String expected = "SELECT RTRIM('abcd', 'a')\n"
-         + "FROM foodmart.reserve_employee";
+        + "FROM foodmart.reserve_employee";
     sql(query)
       .withBigQuery()
       .ok(expected);
+  }
+
+  @Test public void testHiveAndSparkTrimWithTailingChar() {
+    final String query = "SELECT TRIM(TRAILING 'a' from 'abcd')\n"
+        + "from \"foodmart\".\"reserve_employee\"";
+    final String expected = "SELECT REGEXP_REPLACE('abcd', '(a)*$', '')\n"
+        + "FROM foodmart.reserve_employee";
+    sql(query)
+        .withHive()
+        .ok(expected)
+        .withSpark()
+        .ok(expected);
+  }
+
+  @Test public void testBqTrimWithBothSpecialCharacter() {
+    final String query = "SELECT TRIM(BOTH '$@*A' from '$@*AABC$@*AADCAA$@*A')\n"
+        + "from \"foodmart\".\"reserve_employee\"";
+    final String expected = "SELECT TRIM('$@*AABC$@*AADCAA$@*A', '$@*A')\n"
+        + "FROM foodmart.reserve_employee";
+    sql(query)
+      .withBigQuery()
+      .ok(expected);
+  }
+
+  @Test public void testHiveAndSparkTrimWithBothSpecialCharacter() {
+    final String query = "SELECT TRIM(BOTH '$@*A' from '$@*AABC$@*AADCAA$@*A')\n"
+        + "from \"foodmart\".\"reserve_employee\"";
+    final String expected = "SELECT REGEXP_REPLACE('$@*AABC$@*AADCAA$@*A',"
+        + " '^(\\$\\@\\*A)*|(\\$\\@\\*A)*$', '')\n"
+        + "FROM foodmart.reserve_employee";
+    sql(query)
+        .withHive()
+        .ok(expected)
+        .withSpark()
+        .ok(expected);
   }
 
   /** Test case for

@@ -136,3 +136,7 @@ public abstract class RelToSqlConverterUtil {
     return inputString;
   }
 }
+<<<<<<< HEAD
+=======
+// End RelToSqlConverterUtil.java
+>>>>>>> 4136e359a ([CALCITE-3771] TRIM Support for HIVE/SPARK Dialect (Dhirenda Gautam) (#115))
