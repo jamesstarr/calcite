@@ -716,8 +716,8 @@ public class RexSimplify {
     // UnknownAs.FALSE corresponds to x IS TRUE evaluation
     // UnknownAs.TRUE to x IS NOT FALSE
     // Note that both UnknownAs.TRUE and UnknownAs.FALSE only changes the meaning of Unknown
-    // (1) if we are already in UnknownAs.FALSE mode; x IS TRUE can be simiplified to x
-    // (2) similarily  in UnknownAs.TRUE mode ; x IS NOT FALSE can be simplified to x
+    // (1) if we are already in UnknownAs.FALSE mode; x IS TRUE can be simplified to x
+    // (2) similarily in UnknownAs.TRUE mode; x IS NOT FALSE can be simplified to x
     // (3) x IS FALSE could be rewritten to (NOT x) IS TRUE and from there the 1. rule applies
     // (4) x IS NOT TRUE can be rewritten to (NOT x) IS NOT FALSE and from there the 2. rule applies
     if (kind == SqlKind.IS_TRUE && unknownAs == RexUnknownAs.FALSE) {
@@ -1679,6 +1679,9 @@ public class RexSimplify {
 
   private <C extends Comparable<C>> RexNode simplifyUsingPredicates(RexNode e,
       Class<C> clazz) {
+    if (predicates.pulledUpPredicates.isEmpty()) {
+      return e;
+    }
     final Comparison comparison = Comparison.of(e);
     // Check for comparison with null values
     if (comparison == null
@@ -1853,7 +1856,6 @@ public class RexSimplify {
               //   - if it is not an IS_NOT_NULL (i.e. it is a NOT_EQUALS): check comparison values
               if (prevNotEquals.getKind() != SqlKind.IS_NOT_NULL) {
                 final Comparable comparable1 = notEqualsComparison.literal.getValue();
-                //noinspection ConstantConditions
                 final Comparable comparable2 = Comparison.of(prevNotEquals).literal.getValue();
                 //noinspection unchecked
                 if (comparable1.compareTo(comparable2) != 0) {
@@ -2098,7 +2100,7 @@ public class RexSimplify {
     final C v0 = comparison.literal.getValueAs(clazz);
     if (p == null) {
       rangeTerms.put(comparison.ref,
-          (List<RexNode>) ImmutableList.of(term),
+          ImmutableList.of(term),
               comparison.kind, comparison, simplify, clazz);
     } else {
       // Exists
@@ -2115,7 +2117,7 @@ public class RexSimplify {
         rangeTerms.put(comparison.ref.toString(),
 =======
         rangeTerms.put(comparison.ref,
-            Range.singleton(v0), (List<RexNode>) ImmutableList.of(term));
+            Range.singleton(v0), ImmutableList.of(term));
         // remove
         for (RexNode e : p.right) {
           replaceLast(terms, e, trueLiteral);
@@ -2272,7 +2274,7 @@ public class RexSimplify {
           }
         }
         newBounds.add(term);
-        rangeTerms.put(comparison.ref, r, (List<RexNode>) newBounds.build());
+        rangeTerms.put(comparison.ref, r, newBounds.build());
       } else if (removeLowerBound) {
         ImmutableList.Builder<RexNode> newBounds = ImmutableList.builder();
         for (RexNode e : p.right) {
@@ -2283,7 +2285,7 @@ public class RexSimplify {
           }
         }
         newBounds.add(term);
-        rangeTerms.put(comparison.ref, r, (List<RexNode>) newBounds.build());
+        rangeTerms.put(comparison.ref, r, newBounds.build());
       }
     }
     // Default
