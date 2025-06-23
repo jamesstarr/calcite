@@ -79,6 +79,16 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[IS NOT NULL($t2)], expr#6=[CAST($t2
 (4 rows)
 
 !ok
+# COSH
+select cosh(1);
++-------------------+
+| EXPR$0            |
++-------------------+
+| 1.543080634815244 |
++-------------------+
+(1 row)
+
+!ok
 
 <<<<<<< HEAD
 # COSH
