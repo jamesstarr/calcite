@@ -1728,6 +1728,21 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
             + "'CARDINALITY\\(<MAP>\\)'");
   }
 
+  @Test public void testMatchRecognizeWithDistinctAggregation() {
+    final String sql = "SELECT *\n"
+        + "FROM emp\n"
+        + "MATCH_RECOGNIZE (\n"
+        + "  ORDER BY ename\n"
+        + "  MEASURES\n"
+        + "    ^COUNT(DISTINCT A.deptno)^ AS deptno\n"
+        + "  PATTERN (A B)\n"
+        + "  DEFINE\n"
+        + "    A AS A.empno = 123\n"
+        + ") AS T";
+    sql(sql).fails("DISTINCT/ALL not allowed with "
+        + "COUNT\\(DISTINCT `A`\\.`DEPTNO`\\) function");
+  }
+
   @Test public void testPivot() {
     final String sql = "SELECT * FROM emp\n"
         + "PIVOT (sum(sal) AS ss FOR job in ('CLERK' AS c, 'MANAGER' AS m))";
