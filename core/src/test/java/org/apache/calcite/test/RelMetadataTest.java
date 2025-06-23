@@ -1025,11 +1025,11 @@ public class RelMetadataTest extends SqlToRelTestBase {
   }
 
   @Test public void testFullOuterJoinUniqueness1() {
-    final String sql = "select e.empno, d.deptno \n"
+    final String sql = "select e.empno, d.deptno\n"
         + "from (select cast(null as int) empno from sales.emp "
-        + " where empno = 10 group by cast(null as int)) as e \n"
+        + " where empno = 10 group by cast(null as int)) as e\n"
         + "full outer join (select cast (null as int) deptno from sales.dept "
-        + "group by cast(null as int)) as d on e.empno = d.deptno \n"
+        + "group by cast(null as int)) as d on e.empno = d.deptno\n"
         + "group by e.empno, d.deptno";
     RelNode rel = convertSql(sql);
     final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();

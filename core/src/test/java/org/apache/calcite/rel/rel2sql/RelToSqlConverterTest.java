@@ -1444,9 +1444,6 @@ class RelToSqlConverterTest {
     sql(query).dialect(hive2_2_Dialect).ok(expected);
   }
 
-<<<<<<< HEAD
-  @Test void testHiveSelectQueryWithOverDescAndHighNullsWithVersionGreaterThanOrEq21() {
-=======
   @Test public void testHiveSelectQueryWithOverDescAndHighNullsWithVersionGreaterThanOrEq21() {
     final HiveSqlDialect hive2_1Dialect =
             new HiveSqlDialect(SqlDialect.EMPTY_CONTEXT
@@ -2030,7 +2027,10 @@ class RelToSqlConverterTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1636">[CALCITE-1636]
    * JDBC adapter generates wrong SQL for self join with sub-query</a>. */
+<<<<<<< HEAD
   @Test void testSubQueryAlias() {
+=======
+  @Test public void testSubQueryAlias() {
     String query = "select t1.\"customer_id\", t2.\"customer_id\"\n"
         + "from (select \"customer_id\" from \"sales_fact_1997\") as t1\n"
         + "inner join (select \"customer_id\" from \"sales_fact_1997\") t2\n"
@@ -4508,8 +4508,8 @@ class RelToSqlConverterTest {
     final String sql = "select *\n"
         + "  from \"product\" match_recognize\n"
         + "  (\n"
-        + "    partition by \"product_class_id\", \"brand_name\" \n"
-        + "    order by \"product_class_id\" asc, \"brand_name\" desc \n"
+        + "    partition by \"product_class_id\", \"brand_name\"\n"
+        + "    order by \"product_class_id\" asc, \"brand_name\" desc\n"
         + "    pattern (strt down+ up+)\n"
         + "    define\n"
         + "      down as down.\"net_weight\" in (0, 1),\n"
@@ -4691,7 +4691,7 @@ class RelToSqlConverterTest {
   }
 
   @Test public void testUncollectExplicitAlias() {
-    final String sql = "select did + 1 \n"
+    final String sql = "select did + 1\n"
         + "from unnest(select collect(\"department_id\") as deptid"
         + "            from \"department\") as t(did)";
 
@@ -4702,7 +4702,7 @@ class RelToSqlConverterTest {
   }
 
   @Test public void testUncollectImplicitAlias() {
-    final String sql = "select did + 1 \n"
+    final String sql = "select did + 1\n"
         + "from unnest(select collect(\"department_id\") "
         + "            from \"department\") as t(did)";
 
@@ -5176,10 +5176,10 @@ class RelToSqlConverterTest {
   }
 
   @Test public void testSelectNullWithInsertFromJoin() {
-    String query = "insert into \n"
+    String query = "insert into\n"
             + "\"account\"(\"account_id\",\"account_parent\",\n"
             + "\"account_type\",\"account_rollup\")\n"
-            + "select \"product\".\"product_id\", \n"
+            + "select \"product\".\"product_id\",\n"
             + "cast(NULL AS INT),\n"
             + "cast(\"product\".\"product_id\" as varchar),\n"
             + "cast(\"sales_fact_1997\".\"store_id\" as varchar)\n"

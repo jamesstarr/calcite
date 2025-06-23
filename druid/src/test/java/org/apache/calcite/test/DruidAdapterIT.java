@@ -2315,7 +2315,7 @@ public class DruidAdapterIT {
         .queryContains(new DruidChecker(postAggString));
   }
 
-  @Test void testInterleaveBetweenAggregateAndGroupOrderByOnDimension() {
+  @Test public void testInterleaveBetweenAggregateAndGroupOrderByOnDimension() {
     final String sqlQuery = "select \"store_state\", \"brand_name\", \"A\" from\n"
             + "(select \"store_state\", sum(\"store_sales\")+sum(\"store_cost\") "
             + "as a, \"brand_name\" from \"foodmart\" group by \"store_state\", \"brand_name\") "

@@ -353,7 +353,7 @@ class RexTransformerTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-833">[CALCITE-833]
    * RelOptUtil.splitJoinCondition attempts to split a Join-Condition which
    * has a remaining condition</a>. */
-  @Test void testSplitJoinCondition() {
+  @Test public void testSplitJoinCondition() {
     final String sql = "select *\n"
         + "from emp a\n"
         + "INNER JOIN dept b\n"
