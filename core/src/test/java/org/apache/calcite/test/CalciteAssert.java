@@ -1185,7 +1185,7 @@ public class CalciteAssert {
       if (model.contains("defaultSchema: 'foodmart'")) {
         int endIndex = model.lastIndexOf(']');
         model2 = model.substring(0, endIndex)
-            + ", \n{ name: 'mat', "
+            + ",\n{ name: 'mat', "
             + buf
             + "}\n"
             + "]"

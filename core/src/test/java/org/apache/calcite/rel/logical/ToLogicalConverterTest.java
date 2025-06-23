@@ -341,10 +341,10 @@ class ToLogicalConverterTest {
         + "    EnumerableTableScan(table=[[scott, EMP]])\n";
     String expectedLogical = ""
         + "LogicalUnion(all=[true])\n"
-            + "  LogicalProject(DEPTNO=[$0])\n"
-            + "    LogicalTableScan(table=[[scott, DEPT]])\n"
-            + "  LogicalProject(DEPTNO=[$7])\n"
-            + "    LogicalTableScan(table=[[scott, EMP]])\n";
+        + "  LogicalProject(DEPTNO=[$0])\n"
+        + "    LogicalTableScan(table=[[scott, DEPT]])\n"
+        + "  LogicalProject(DEPTNO=[$7])\n"
+        + "    LogicalTableScan(table=[[scott, EMP]])\n";
     verify(rel, expectedPhysical, expectedLogical);
   }
 
@@ -427,12 +427,14 @@ class ToLogicalConverterTest {
     String sql = "SELECT rank() over (order by \"hire_date\") FROM \"employee\"";
     String expectedPhysical = ""
         + "EnumerableProject($0=[$17])\n"
-        + "  EnumerableWindow(window#0=[window(order by [9] aggs [RANK()])])\n"
+        + "  EnumerableWindow(window#0=[window(partition {} order by [9] range between "
+        + "UNBOUNDED PRECEDING and CURRENT ROW aggs [RANK()])])\n"
         + "    JdbcToEnumerableConverter\n"
         + "      JdbcTableScan(table=[[foodmart, employee]])\n";
     String expectedLogical = ""
         + "LogicalProject($0=[$17])\n"
-        + "  LogicalWindow(window#0=[window(order by [9] aggs [RANK()])])\n"
+        + "  LogicalWindow(window#0=[window(partition {} order by [9] range between UNBOUNDED"
+        + " PRECEDING and CURRENT ROW aggs [RANK()])])\n"
         + "    LogicalTableScan(table=[[foodmart, employee]])\n";
     verify(rel(sql), expectedPhysical, expectedLogical);
   }
