@@ -309,7 +309,13 @@ public class RexProgram {
 
     // If a lot of the fields are simply projections of the underlying
     // expression, try to be a bit less verbose.
-    int trivialCount = countTrivial(projects);
+    int trivialCount = 0;
+
+    // Do not use the trivialCount optimization if computing digest for the
+    // optimizer (as opposed to doing an explain plan).
+    if (level != SqlExplainLevel.DIGEST_ATTRIBUTES) {
+      trivialCount = countTrivial(projects);
+    }
 
     switch (trivialCount) {
     case 0:
@@ -322,12 +328,10 @@ public class RexProgram {
       break;
     }
 
-    final boolean withFieldNames = level != SqlExplainLevel.DIGEST_ATTRIBUTES;
     // Print the non-trivial fields with their names as they appear in the
     // output row type.
     for (int i = trivialCount; i < projects.size(); i++) {
-      final String fieldName = withFieldNames ? prefix + outFields.get(i).getName() : prefix + i;
-      pw.item(fieldName, projects.get(i));
+      pw.item(prefix + outFields.get(i).getName(), projects.get(i));
     }
     if (condition != null) {
       pw.item(prefix + "$condition", condition);
