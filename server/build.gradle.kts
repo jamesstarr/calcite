@@ -17,6 +17,7 @@
  */
 
 plugins {
+    `java-library`
     calcite.fmpp
     calcite.javacc
     id("com.github.vlsi.ide")
@@ -58,4 +59,11 @@ ide {
         generatedJavaSources(javacc.get(), javacc.get().output.get().asFile, sourceSets.named(sourceSet))
 
     generatedSource(javaCCMain, "main")
+}
+
+// Configure task dependencies to ensure JavaCC runs before creating JAR files
+afterEvaluate {
+    tasks.findByName("sourcesJar")?.let { sourcesJarTask ->
+        sourcesJarTask.dependsOn(javaCCMain)
+    }
 }

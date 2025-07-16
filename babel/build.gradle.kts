@@ -23,6 +23,14 @@ plugins {
     calcite.javacc
 }
 
+// Disable ALL Babel tasks after they are created
+afterEvaluate {
+    // Disable all tasks in this project
+    tasks.configureEach {
+        enabled = false
+    }
+}
+
 dependencies {
     api(project(":core"))
 

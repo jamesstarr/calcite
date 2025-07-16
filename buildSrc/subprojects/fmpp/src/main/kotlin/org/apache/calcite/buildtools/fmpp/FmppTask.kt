@@ -50,6 +50,34 @@ open class FmppTask @Inject constructor(
     @TaskAction
     fun run() {
         project.delete(output.asFileTree)
+
+        // Find the default_config.fmpp file
+        val configFile = config.get().asFile
+        var defaultConfigFile = configFile.parentFile.resolve("default_config.fmpp")
+
+        // If not found in the same directory, look in src/main/codegen (for test configs)
+        if (!defaultConfigFile.exists()) {
+            val mainCodegenDir = project.file("src/main/codegen")
+            if (mainCodegenDir.exists()) {
+                defaultConfigFile = mainCodegenDir.resolve("default_config.fmpp")
+            }
+        }
+
+        // If still not found, look in the core module's codegen directory (for server module)
+        if (!defaultConfigFile.exists()) {
+            val coreCodegenDir = project.rootProject.file("core/src/main/codegen")
+            if (coreCodegenDir.exists()) {
+                defaultConfigFile = coreCodegenDir.resolve("default_config.fmpp")
+            }
+        }
+
+        // Build the data parameter like Maven does: main config + default config
+        val dataParam = if (defaultConfigFile.exists()) {
+            "tdd(${configFile.absolutePath}), default:tdd(${defaultConfigFile.absolutePath})"
+        } else {
+            "tdd(${configFile.absolutePath})"
+        }
+
         ant.withGroovyBuilder {
             "taskdef"("name" to "fmpp",
                 "classname" to "fmpp.tools.AntTask",
@@ -57,7 +85,8 @@ open class FmppTask @Inject constructor(
             "fmpp"(
                 "configuration" to config.get(),
                 "sourceRoot" to templates.get().asFile,
-                "outputRoot" to output.get().asFile
+                "outputRoot" to output.get().asFile,
+                "data" to dataParam
             )
         }
     }

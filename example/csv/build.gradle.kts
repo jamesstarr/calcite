@@ -23,7 +23,6 @@ val sqllineClasspath by configurations.creating {
 
 dependencies {
     api(project(":core"))
-    api(project(":file"))
     api(project(":linq4j"))
     api("org.checkerframework:checker-qual")
 

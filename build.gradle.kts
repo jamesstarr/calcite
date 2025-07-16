@@ -94,6 +94,16 @@ val rat by tasks.getting(org.nosphere.apache.rat.RatTask::class) {
     exclude(rootDir.resolve(".ratignore").readLines())
 }
 
+// Configure RAT task dependencies after all projects are evaluated
+gradle.projectsEvaluated {
+    val ratTask = tasks.getByName("rat")
+    allprojects.forEach { project ->
+        project.tasks.withType<com.diffplug.gradle.spotless.SpotlessTask>().configureEach {
+            ratTask.mustRunAfter(this)
+        }
+    }
+}
+
 tasks.validateBeforeBuildingReleaseArtifacts {
     dependsOn(rat)
 }
@@ -202,7 +212,8 @@ val buildSqllineClasspath by tasks.registering(Jar::class) {
     }
 }
 
-val semaphore = `java.util.concurrent`.Semaphore(1)
+val semaphore = `java.util.concurrent`.Semaphore(4) // Allow 4 concurrent checkstyle tasks
+
 val licenseHeaderFile = file("config/license.header.java")
 
 val javaccGeneratedPatterns = arrayOf(
@@ -241,23 +252,25 @@ allprojects {
 
     val hasTests = file("src/test/java").isDirectory || file("src/test/kotlin").isDirectory
     if (hasTests) {
-        // Add default tests dependencies
-        dependencies {
-            val testImplementation by configurations
-            val testRuntimeOnly by configurations
-            testImplementation("org.junit.jupiter:junit-jupiter-api")
-            testImplementation("org.junit.jupiter:junit-jupiter-params")
-            testImplementation("org.hamcrest:hamcrest")
-            testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-            if (project.props.bool("junit4", default = true)) {
-                // Allow projects to opt-out of junit dependency, so they can be JUnit5-only
-                testImplementation("junit:junit")
-                testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
-            } else {
-                // org.apache.calcite.test.CalciteAssert depends on org/junit/ComparisonFailure
-                // and it is commonly used. So we keep junit on the test runtime classpath.
-                // However, it still prevents JUnit4 types in autocomplete which is fine.
-                testRuntimeOnly("junit:junit")
+        // Add default tests dependencies only if Java plugin is applied
+        plugins.withType<JavaPlugin> {
+            dependencies {
+                val testImplementation by configurations
+                val testRuntimeOnly by configurations
+                testImplementation("org.junit.jupiter:junit-jupiter-api")
+                testImplementation("org.junit.jupiter:junit-jupiter-params")
+                testImplementation("org.hamcrest:hamcrest")
+                testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+                if (project.props.bool("junit4", default = true)) {
+                    // Allow projects to opt-out of junit dependency, so they can be JUnit5-only
+                    testImplementation("junit:junit")
+                    testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
+                } else {
+                    // org.apache.calcite.test.CalciteAssert depends on org/junit/ComparisonFailure
+                    // and it is commonly used. So we keep junit on the test runtime classpath.
+                    // However, it still prevents JUnit4 types in autocomplete which is fine.
+                    testRuntimeOnly("junit:junit")
+                }
             }
         }
     }
@@ -291,7 +304,7 @@ allprojects {
             checkstyle("net.hydromatic:toolbox:${"hydromatic-toolbox".v}")
         }
         checkstyle {
-            // Current one is ~8.8
+            // Current version is 10.12.4 - no more concurrency issues
             // https://github.com/julianhyde/toolbox/issues/3
             isShowViolations = true
             configDirectory.set(File(rootDir, "src/main/config/checkstyle"))
@@ -309,9 +322,8 @@ allprojects {
             // On the other hand, supporessions.xml still analyzes the file, and
             // then it recognizes it should suppress all the output.
             excludeJavaCcGenerated()
-            // There are concurrency issues with Checkstyle 7.8.2
-            // It could be in Checkstyle, in CheckstyleAnt task or in Gradle's Checkstyle plugin
-            // The bug looks like as if suppression was not working
+            // Limit concurrent checkstyle tasks to prevent resource contention
+            // Allow up to 4 concurrent tasks instead of just 1
             doFirst {
                 semaphore.acquire()
             }
@@ -648,13 +660,24 @@ allprojects {
             archiveClassifier.set("sources")
         }
 
+        // Configure task dependencies to ensure spotless runs before compilation and JAR creation
+        afterEvaluate {
+            tasks.findByName("spotlessJavaApply")?.let { spotlessTask ->
+                tasks.findByName("compileJava")?.let { compileTask ->
+                    compileTask.dependsOn(spotlessTask)
+                }
+                sourcesJar.configure { dependsOn(spotlessTask) }
+                testSourcesJar.configure { dependsOn(spotlessTask) }
+            }
+        }
+
         val javadocJar by tasks.registering(Jar::class) {
             from(tasks.named(JavaPlugin.JAVADOC_TASK_NAME))
             archiveClassifier.set("javadoc")
         }
 
         val testClasses by configurations.creating {
-            extendsFrom(configurations["testRuntime"])
+            extendsFrom(configurations["testRuntimeOnly"])
         }
 
         val archives by configurations.getting

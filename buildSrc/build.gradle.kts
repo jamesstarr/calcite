@@ -45,6 +45,15 @@ fun Project.applyKotlinProjectConventions() {
             jvmTarget = "1.8"
         }
     }
+
+    // Configure task dependencies after evaluation
+    afterEvaluate {
+        tasks.findByName("compileKotlin")?.let { compileTask ->
+            tasks.findByName("spotlessKotlin")?.let { spotlessTask ->
+                compileTask.dependsOn(spotlessTask)
+            }
+        }
+    }
     apply(plugin = "com.diffplug.gradle.spotless")
     spotless {
         kotlin {

@@ -34,10 +34,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 
 import static org.apache.calcite.util.Static.RESOURCE;
-
-import javax.annotation.Nullable;
 /**
  * Abstract base for implementations of the {@link RelOptPlanner} interface.
  */

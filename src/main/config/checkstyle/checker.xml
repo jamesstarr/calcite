@@ -48,6 +48,8 @@ limitations under the License.
     <property name="fileExtensions" value="xml"/>
   </module>
 
+
+
   <!-- Checks for Javadoc comments (checker).           -->
   <!-- See http://checkstyle.sf.net/config_javadoc.html -->
     <!-- Require package javadoc -->
@@ -131,10 +133,11 @@ limitations under the License.
     <module name="IllegalImport" />
     <module name="AvoidStarImport" />
     <module name="ImportOrder">
-      <property name="groups" value="org.apache.calcite,org.apache,au.com.,com.,io.,mondrian.,net.,org.,scala.,/^javax?\./"/>
+      <property name="groups" value="org.apache.calcite.,org.apache.,au.com.,com.,io.,mondrian.,net.,org.,scala.,/^javax?\./"/>
       <property name="ordered" value="true"/>
       <property name="separated" value="true"/>
       <property name="option" value="bottom"/>
+      <property name="sortStaticImportsAlphabetically" value="false"/>
     </module>
 
     <!-- Checks for Javadoc comments (tree walker).       -->
@@ -228,7 +231,7 @@ limitations under the License.
 
     <!-- Checks for Size Violations.                    -->
     <!-- See http://checkstyle.sf.net/config_sizes.html -->
-    <!-- Lines cannot exceed 80 chars, except if they are hyperlinks
+    <!-- Lines cannot exceed 100 chars, except if they are hyperlinks
          or strings (possibly preceded by '+' and followed by say '),'. -->
     <module name="LineLength">
       <property name="max" value="100"/>
@@ -261,7 +264,9 @@ limitations under the License.
       <!-- No extra whitespace around types -->
     <module name="GenericWhitespace"/>
 
-    <!-- Required for SuppressionCommentFilter below -->
+    <!-- FileContentsHolder no longer needed in Checkstyle 10+ -->
+
+    <!-- FileContentsHolder no longer needed in Checkstyle 10+ -->
     <module name="FileContentsHolder"/>
   </module>
 
@@ -278,11 +283,15 @@ limitations under the License.
     <property name="onCommentFormat"  value="CHECKSTYLE\: ON"/>
   </module>
 
-  <!-- Turn off checks for the next N lines. -->
+  <!-- Turn off checks for the next N lines -->
   <module name="SuppressWithNearbyCommentFilter">
     <property name="commentFormat" value="CHECKSTYLE: +IGNORE (\d+)"/>
     <property name="influenceFormat" value="$1"/>
   </module>
+
+
+
+
 
   <module name="net.hydromatic.toolbox.checkstyle.HydromaticFileSetCheck"/>
 

@@ -19,4 +19,5 @@
 dependencies {
     implementation("com.google.guava:guava")
     implementation("org.apache.calcite.avatica:avatica-core")
+    api("org.checkerframework:checker-qual")
 }

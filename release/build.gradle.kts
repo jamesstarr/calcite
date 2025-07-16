@@ -176,6 +176,12 @@ for (archive in listOf(Zip::class, Tar::class)) {
         // So we add a custom property to re-execute the task in case attributes change
         inputs.property("gitproperties", gitProps.map { it.props.attrs.toString() })
 
+        // Ensure all spotless formatting is applied before creating distribution
+        dependsOn(rootProject.allprojects.flatMap { project ->
+            listOf("spotlessApply", "spotlessJavaApply", "spotlessKotlinGradleApply", "spotlessMarkdownApply")
+                .mapNotNull { taskName -> project.tasks.findByName(taskName) }
+        })
+
         // Gradle defaults to the following pattern:
         // [baseName]-[appendix]-[version]-[classifier].[extension]
         archiveBaseName.set("apache-calcite")
@@ -185,6 +191,7 @@ for (archive in listOf(Zip::class, Tar::class)) {
             wa1191SetInputs(gitProps)
             with(sourceLayout())
         }
+
         doLast {
             logger.lifecycle("Source distribution is created: ${archiveFile.get().asFile}")
         }

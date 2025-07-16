@@ -18,7 +18,6 @@ package org.apache.calcite.rel.metadata;
 
 import org.apache.calcite.rel.RelNode;
 
-
 import java.lang.reflect.Proxy;
 
 import static java.util.Objects.requireNonNull;

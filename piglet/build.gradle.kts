@@ -50,3 +50,10 @@ ide {
 
     generatedSource(javaCCMain, "main")
 }
+
+// Configure task dependencies to ensure JavaCC runs before creating JAR files
+afterEvaluate {
+    tasks.findByName("sourcesJar")?.let { sourcesJarTask ->
+        sourcesJarTask.dependsOn(javaCCMain)
+    }
+}

@@ -46,3 +46,7 @@ site/js/**
 # Images
 site/img/*.png
 site/favicon.ico
+
+# Development and personal files
+*.txt
+*.patch

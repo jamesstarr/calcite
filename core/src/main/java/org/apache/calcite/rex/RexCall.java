@@ -26,7 +26,6 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.Pair;
 
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 

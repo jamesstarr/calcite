@@ -49,6 +49,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
     implementation("com.google.code.findbugs:jsr305"/* optional*/)
+    implementation("com.google.errorprone:error_prone_annotations")
     implementation("com.google.guava:guava")
     implementation("com.jayway.jsonpath:json-path")
     implementation("com.yahoo.datasketches:sketches-core")
@@ -76,7 +77,6 @@ dependencies {
     testImplementation("org.incava:java-diff")
     testImplementation("sqlline:sqlline")
     testImplementation(kotlin("stdlib-jdk8"))
-    testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit"))
     testRuntimeOnly("org.slf4j:slf4j-log4j12")
 }
@@ -155,6 +155,23 @@ val javaCCMain by tasks.registering(org.apache.calcite.buildtools.javacc.JavaCCT
 tasks.compileKotlin {
     dependsOn(versionClass)
     dependsOn(javaCCMain)
+}
+
+// Ensure spotless runs after version class generation and JAR tasks depend on JavaCC
+afterEvaluate {
+    tasks.findByName("spotlessJava")?.let { spotlessTask ->
+        spotlessTask.dependsOn(versionClass)
+    }
+
+    // Ensure JAR tasks depend on JavaCC tasks
+    tasks.findByName("sourcesJar")?.let { sourcesJarTask ->
+        sourcesJarTask.dependsOn(javaCCMain)
+    }
+    tasks.findByName("testSourcesJar")?.let { testSourcesJarTask ->
+        tasks.findByName("javaCCTest")?.let { javaCCTestTask ->
+            testSourcesJarTask.dependsOn(javaCCTestTask)
+        }
+    }
 }
 
 val fmppTest by tasks.registering(org.apache.calcite.buildtools.fmpp.FmppTask::class) {

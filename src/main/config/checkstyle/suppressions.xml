@@ -52,4 +52,9 @@ limitations under the License.
 
   <!-- Method names in Resource can have underscores -->
   <suppress checks="MethodName" files="CalciteResource.java"/>
+
+  <!-- Suppress ImportOrder for specific static imports that conflict between Spotless and Checkstyle -->
+  <suppress checks="ImportOrder" files="PairList.java" lines="35"/>
+  <suppress checks="ImportOrder" files="ImmutablePairList.java" lines="28"/>
+  <suppress checks="ImportOrder" files="SqlValidatorUtil.java" lines="80"/>
 </suppressions>
