@@ -220,14 +220,20 @@ for (archive in listOf(Zip::class, Tar::class)) {
         inputs.property("gitproperties", gitProps.map { it.props.attrs.toString() })
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
         // Ensure all spotless formatting is applied before creating distribution
         dependsOn(rootProject.allprojects.flatMap { project ->
             listOf("spotlessApply", "spotlessJavaApply", "spotlessKotlinGradleApply", "spotlessMarkdownApply")
                 .mapNotNull { taskName -> project.tasks.findByName(taskName) }
         })
 
+<<<<<<< HEAD
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
         // Gradle defaults to the following pattern:
         // [baseName]-[appendix]-[version]-[classifier].[extension]
         archiveBaseName.set("apache-calcite")
@@ -238,9 +244,13 @@ for (archive in listOf(Zip::class, Tar::class)) {
             with(sourceLayout())
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
         doLast {
             logger.lifecycle("Source distribution is created: ${archiveFile.get().asFile}")
         }

@@ -36,5 +36,9 @@ dependencies {
 dependencies {
     implementation("com.google.guava:guava")
     implementation("org.apache.calcite.avatica:avatica-core")
+<<<<<<< HEAD
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    api("org.checkerframework:checker-qual")
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 }

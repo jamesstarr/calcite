@@ -24,6 +24,14 @@ import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.validate.implicit.TypeCoercion;
 import org.apache.calcite.util.Util;
 
+<<<<<<< HEAD
+=======
+import com.google.common.collect.ImmutableList;
+
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.List;
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;

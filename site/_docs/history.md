@@ -2183,6 +2183,9 @@ other software versions as specified in `pom.xml`.
 #### Breaking Changes
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 * core parser config.fmpp#dataTypeParserMethods should return "SqlTypeNameSpec"
 instead of "SqlIdentifier".
 

@@ -39,9 +39,8 @@ import org.apache.calcite.util.DateString;
 import org.apache.calcite.util.NlsString;
 import org.apache.calcite.util.Util;
 
-<<<<<<< HEAD
-=======
 
+=======
 import com.google.common.collect.ImmutableList;
 
 import org.hamcrest.Matcher;

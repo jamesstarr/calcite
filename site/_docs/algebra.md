@@ -410,8 +410,12 @@ Argument types:
 =======
 >>>>>>> 71bc84579 ([CALCITE-1515] In RelBuilder, add functionScan method to create TableFunctionScan (Chunwei Lei))
 * `correlationId` [CorrelationId]({{ site.apiRoot }}/org/apache/calcite/rel/core/CorrelationId.html)
+<<<<<<< HEAD
 * `variablesSet` Iterable of 
 >>>>>>> 1eca0c5dd ([CALCITE-3111] Allow custom implementations of Correlate in RelDecorrelator)
+=======
+* `variablesSet` Iterable of
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
   [CorrelationId]({{ site.apiRoot }}/org/apache/calcite/rel/core/CorrelationId.html)
 * `joinType` [JoinRelType]({{ site.apiRoot }}/org/apache/calcite/rel/core/JoinRelType.html)
 

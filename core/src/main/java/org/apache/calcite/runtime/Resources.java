@@ -16,7 +16,8 @@
  */
 package org.apache.calcite.runtime;
 
->>>>>>> 280da9ef4 ([CALCITE-2905] Add hydromatic-resource as plain source file)
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.ElementType;

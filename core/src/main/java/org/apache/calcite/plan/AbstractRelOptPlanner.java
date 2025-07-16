@@ -44,7 +44,10 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import static org.apache.calcite.util.Static.RESOURCE;
+<<<<<<< HEAD
 >>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 /**
  * Abstract base for implementations of the {@link RelOptPlanner} interface.
  */

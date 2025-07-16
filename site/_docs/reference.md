@@ -1871,7 +1871,7 @@ i: implicit cast / e: explicit cast / x: not allowed
 ##### Conversion Contexts and Strategies
 * Set Operation(UNION/EXCEPT/INTERSECT): Compare every branch row data type and find the common type of each fields pair;
 * Arithmetic Expression: For binary arithmetic(`+`, `-`, `&`, `^`, `/`, `%`), promote string operand to data type of the other numeric operand;
-For binary comparison(`=`, `<`, `<=`, `<>`, `>`, `>=`),  
+For binary comparison(`=`, `<`, `<=`, `<>`, `>`, `>=`),
   - If operands are STRING and TIMESTAMP, promotes to TIMESTAMP
   - Make `1=true` and `0=false` always evaluates true
   - Find common type for both operands if there is NUMERIC type operand

@@ -30,9 +30,9 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
-import static org.apache.calcite.linq4j.Nullness.castNonNullList;
-
 import static com.google.common.base.Preconditions.checkArgument;
+
+import static org.apache.calcite.linq4j.Nullness.castNonNullList;
 
 /** A list of pairs, stored as a quotient list.
  *

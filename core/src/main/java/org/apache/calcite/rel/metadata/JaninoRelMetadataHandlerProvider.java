@@ -18,5 +18,46 @@ package org.apache.calcite.rel.metadata;
 
 import org.apache.calcite.rel.RelNode;
 
+<<<<<<< HEAD
+=======
+import java.lang.reflect.Proxy;
+
+import static java.util.Objects.requireNonNull;
+
+/**
+ * Provides metadata handlers generated via Janino.
+ */
+public class JaninoRelMetadataHandlerProvider implements RelMetadataHandlerProvider {
+
+  public static final JaninoRelMetadataHandlerProvider INSTANCE =
+      new JaninoRelMetadataHandlerProvider();
+  private static final ThreadLocal<RelMetadataProvider> METADATA_PROVIDER_THREAD_LOCAL =
+      new ThreadLocal<>();
+
+  protected JaninoRelMetadataHandlerProvider() {
+  }
+
+  @Override public <H extends MetadataHandler<M>, M extends Metadata> H initialHandler(
+      MetadataDef<M> metadataDef) {
+    return (H) metadataDef.handlerClass.cast(
+        Proxy.newProxyInstance(RelMetadataQuery.class.getClassLoader(),
+            new Class[] {metadataDef.handlerClass}, (proxy, method, args) -> {
+              final RelNode r = requireNonNull((RelNode) args[0], "(RelNode) args[0]");
+              METADATA_PROVIDER_THREAD_LOCAL.set(r.getCluster().getMetadataProvider());
+              throw new NoHandler(r.getClass());
+            }));
+  }
+
+  @Override public <H extends MetadataHandler<M>, M extends Metadata> H revise(
+      Class<? extends RelNode> relClazz, MetadataDef<M> metadataDef) {
+    RelMetadataProvider provider = requireNonNull(METADATA_PROVIDER_THREAD_LOCAL.get());
+    return (H) JaninoRelMetadataProvider.revise(relClazz, provider, metadataDef);
+  }
+
+  @Override public RelMetadataCache buildCache() {
+    return new TableRelMetadataCache();
+  }
+}
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 
 // End JaninoRelMetadataHandlerProvider.java

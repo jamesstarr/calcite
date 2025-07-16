@@ -79,10 +79,14 @@ open class JavaCCTask @Inject constructor(
             classpath = javaCCClasspath.get()
             // The class is in the top-level package
 <<<<<<< HEAD
+<<<<<<< HEAD
             mainClass.set("javacc")
 =======
             main = "javacc"
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+            mainClass.set("javacc")
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
             args("-STATIC=${static.get()}")
             args("-LOOKAHEAD:${lookAhead.get()}")
             args("-OUTPUT_DIRECTORY:${output.get()}/${packageName.get().replace('.', '/')}")

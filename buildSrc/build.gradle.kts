@@ -79,6 +79,9 @@ fun Project.applyKotlinProjectConventions() {
         }
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 
     // Configure task dependencies after evaluation
     afterEvaluate {
@@ -88,6 +91,7 @@ fun Project.applyKotlinProjectConventions() {
             }
         }
     }
+<<<<<<< HEAD
     if (!skipAutostyle) {
         apply(plugin = "com.github.autostyle")
         autostyle {
@@ -102,6 +106,8 @@ fun Project.applyKotlinProjectConventions() {
                 endWithNewline()
             }
 =======
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
     apply(plugin = "com.diffplug.gradle.spotless")
     spotless {
         kotlin {

@@ -27,10 +27,9 @@ import org.apache.calcite.util.ImmutableBitSet;
 
 import org.apache.pig.scripting.Pig;
 
-import com.google.common.base.Joiner;
-=======
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;

@@ -28,7 +28,6 @@ import org.apache.calcite.sql.validate.SqlValidatorScope;
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.Util;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

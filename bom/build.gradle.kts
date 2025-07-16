@@ -73,11 +73,14 @@ dependencies {
         apiv("com.google.guava:guava")
         api("com.google.errorprone:error_prone_annotations:2.28.0")
         api("org.checkerframework:checker-qual:3.10.0")
+<<<<<<< HEAD
 =======
         apiv("com.github.stephenc.jcip:jcip-annotations")
         apiv("com.google.code.findbugs:jsr305", "findbugs.jsr305")
         apiv("com.google.guava:guava")
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
         apiv("com.google.protobuf:protobuf-java", "protobuf")
         apiv("com.h2database:h2")
         apiv("com.jayway.jsonpath:json-path")
@@ -186,9 +189,14 @@ dependencies {
         apiv("sqlline:sqlline")
         runtimev("org.junit.jupiter:junit-jupiter-engine", "junit5")
         runtimev("org.junit.vintage:junit-vintage-engine", "junit5")
+<<<<<<< HEAD
         runtimev("org.openjdk.jmh:jmh-core", "jmh")
         runtimev("org.openjdk.jmh:jmh-generator-annprocess", "jmh")
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+        apiv("org.openjdk.jmh:jmh-core", "jmh")
+        apiv("org.openjdk.jmh:jmh-generator-annprocess", "jmh")
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
         runtimev("xalan:xalan")
         runtimev("xerces:xercesImpl")
     }

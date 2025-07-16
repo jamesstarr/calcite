@@ -30,7 +30,11 @@ plugins {
  */
 
 plugins {
+<<<<<<< HEAD
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    `java-library`
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
     calcite.fmpp
     calcite.javacc
     id("com.github.vlsi.ide")
@@ -74,6 +78,9 @@ ide {
     generatedSource(javaCCMain, "main")
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 
 // Configure task dependencies to ensure JavaCC runs before creating JAR files
 afterEvaluate {
@@ -81,5 +88,8 @@ afterEvaluate {
         sourcesJarTask.dependsOn(javaCCMain)
     }
 }
+<<<<<<< HEAD
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)

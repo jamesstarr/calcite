@@ -66,9 +66,13 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
     implementation("com.google.code.findbugs:jsr305"/* optional*/)
 <<<<<<< HEAD
+<<<<<<< HEAD
     implementation("com.google.errorprone:error_prone_annotations")
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    implementation("com.google.errorprone:error_prone_annotations")
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
     implementation("com.google.guava:guava")
     implementation("com.jayway.jsonpath:json-path")
     implementation("com.yahoo.datasketches:sketches-core")
@@ -120,6 +124,7 @@ dependencies {
     testImplementation("sqlline:sqlline")
     testImplementation(kotlin("stdlib-jdk8"))
 <<<<<<< HEAD
+<<<<<<< HEAD
     testImplementation(kotlin("test-junit5"))
     testRuntimeOnly("org.slf4j:slf4j-log4j12")
 }
@@ -137,6 +142,8 @@ publishing {
 
 =======
     testImplementation(kotlin("test"))
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
     testImplementation(kotlin("test-junit"))
     testRuntimeOnly("org.slf4j:slf4j-log4j12")
 }
@@ -232,6 +239,9 @@ tasks.compileKotlin {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 // Ensure spotless runs after version class generation and JAR tasks depend on JavaCC
 afterEvaluate {
     tasks.findByName("spotlessJava")?.let { spotlessTask ->
@@ -249,10 +259,13 @@ afterEvaluate {
     }
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 >>>>>>> af96e9835 ([CALCITE-4829] Bump Gradle to 7.2 and test with Java 17 at GitHub Actions)
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 val fmppTest by tasks.registering(org.apache.calcite.buildtools.fmpp.FmppTask::class) {
     config.set(file("src/test/codegen/config.fmpp"))
     templates.set(file("src/main/codegen/templates"))

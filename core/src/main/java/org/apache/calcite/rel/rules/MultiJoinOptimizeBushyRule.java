@@ -59,12 +59,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
->>>>>>> 68bcc7659 (DX-53583: Fix and enhance MultiJoinOptimizeBushyRule)
+import javax.annotation.Nullable;
 
 import static org.apache.calcite.rel.rules.LoptMultiJoin.Edge;
 import static org.apache.calcite.util.mapping.Mappings.TargetMapping;
-
-import javax.annotation.Nullable;
 
 /**
  * Planner rule that finds an approximately optimal ordering for join operators

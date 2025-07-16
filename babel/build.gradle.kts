@@ -27,6 +27,9 @@ plugins {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 // Disable ALL Babel tasks after they are created
 afterEvaluate {
     // Disable all tasks in this project
@@ -35,8 +38,11 @@ afterEvaluate {
     }
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 dependencies {
     api(project(":core"))
 

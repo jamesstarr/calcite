@@ -45,10 +45,14 @@ Models can also be built programmatically using the `Schema` SPI.
 version: 1.0
 defaultSchema: mongo
 <<<<<<< HEAD
+<<<<<<< HEAD
 schemas:
 =======
 schemas: 
 >>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
+=======
+schemas:
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 - [Schema...]
 {% endhighlight %}
 
@@ -78,6 +82,7 @@ Occurs within `root.schemas`.
 {% highlight yaml %}
 name: foodmart
 <<<<<<< HEAD
+<<<<<<< HEAD
 path:
   lib
 cache: true
@@ -88,6 +93,12 @@ path:
 cache: true
 materializations: 
 >>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
+=======
+path:
+  lib
+cache: true
+materializations:
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 - [ Materialization... ]
 {% endhighlight %}
 
@@ -112,10 +123,14 @@ strings. For example,
 #### YAML
 {% highlight yaml %}
 <<<<<<< HEAD
+<<<<<<< HEAD
 path:
 =======
 path: 
 >>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
+=======
+path:
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 - [usr, lib]
 - lib
 {% endhighlight %}
@@ -154,10 +169,14 @@ immediately, and are never flushed.
 Like base class <a href="#schema">Schema</a>, occurs within `root.schemas`.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #### JSON
 =======
 #### JSON 
 >>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
+=======
+#### JSON
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 {% highlight json %}
 {
   name: 'foodmart',
@@ -173,6 +192,7 @@ Like base class <a href="#schema">Schema</a>, occurs within `root.schemas`.
 name: foodmart
 type: map
 <<<<<<< HEAD
+<<<<<<< HEAD
 tables:
 - [ Table... ]
 functions:
@@ -180,11 +200,18 @@ functions:
 types:
 =======
 tables: 
+=======
+tables:
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 - [ Table... ]
-functions: 
+functions:
 - [ Function... ]
+<<<<<<< HEAD
 types: 
 >>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
+=======
+types:
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 - [ Type... ]
 {% endhighlight %}
 
@@ -222,10 +249,14 @@ name: mongo
 type: custom
 factory: org.apache.calcite.adapter.mongodb.MongoSchemaFactory
 <<<<<<< HEAD
+<<<<<<< HEAD
 operand:
 =======
 operand: 
 >>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
+=======
+operand:
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
   host: localhost
   database: test
 {% endhighlight %}
@@ -335,10 +366,14 @@ Occurs within `root.schemas.tables`.
 {% highlight yaml %}
 name: sales_fact
 <<<<<<< HEAD
+<<<<<<< HEAD
 columns:
 =======
 columns: 
 >>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
+=======
+columns:
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
   [ Column... ]
 {% endhighlight %}
 
@@ -429,10 +464,14 @@ name: female_emps
 type: custom
 factory: TODO
 <<<<<<< HEAD
+<<<<<<< HEAD
 operand:
 =======
 operand: 
 >>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
+=======
+operand:
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
   todo: TODO
 {% endhighlight %}
 
@@ -509,10 +548,14 @@ name: MY_PLUS
 className: com.example.functions.MyPlusFunction
 methodName: apply
 <<<<<<< HEAD
+<<<<<<< HEAD
 path: {}
 =======
 path: {}  
 >>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
+=======
+path: {}
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 {% endhighlight %}
 
 `name` (required string) is the name of this function.
@@ -571,10 +614,14 @@ Occurs within `root.schemas.types`.
 name: mytype1
 type: BIGINT
 <<<<<<< HEAD
+<<<<<<< HEAD
 attributes:
 =======
 attributes:  
 >>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
+=======
+attributes:
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 - name: f1
   type: BIGINT
 {% endhighlight %}
@@ -641,6 +688,7 @@ algorithm: true
 algorithmMaxMillis: 10000
 rowCountEstimate: 86837
 <<<<<<< HEAD
+<<<<<<< HEAD
 defaultMeasures:
 - agg: count
 tiles:
@@ -653,6 +701,13 @@ tiles:
 - dimensions: [ 'the_year', ['t', 'quarter'] ] 
   measures: 
 >>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
+=======
+defaultMeasures:
+- agg: count
+tiles:
+- dimensions: [ 'the_year', ['t', 'quarter'] ]
+  measures:
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
   - agg: sum
     args: unit_sales
   - agg: sum
@@ -735,12 +790,17 @@ Occurs within `root.schemas.lattices.tiles`.
 #### YAML
 {% highlight yaml %}
 <<<<<<< HEAD
+<<<<<<< HEAD
 dimensions: [ 'the_year', ['t', 'quarter'] ]
 measures:
 =======
 dimensions: [ 'the_year', ['t', 'quarter'] ] 
 measures: 
 >>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
+=======
+dimensions: [ 'the_year', ['t', 'quarter'] ]
+measures:
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 - agg: sum
   args: unit_sales
 - agg: sum

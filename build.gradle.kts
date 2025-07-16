@@ -134,18 +134,28 @@ val rat by tasks.getting(org.nosphere.apache.rat.RatTask::class) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 // Configure RAT task dependencies after all projects are evaluated
 gradle.projectsEvaluated {
     val ratTask = tasks.getByName("rat")
     allprojects.forEach { project ->
+<<<<<<< HEAD
         project.tasks.withType<com.github.autostyle.gradle.AutostyleTask>().configureEach {
+=======
+        project.tasks.withType<com.diffplug.gradle.spotless.SpotlessTask>().configureEach {
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
             ratTask.mustRunAfter(this)
         }
     }
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 tasks.validateBeforeBuildingReleaseArtifacts {
     dependsOn(rat)
 }
@@ -291,6 +301,9 @@ val buildSqllineClasspath by tasks.registering(Jar::class) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 val semaphore = `java.util.concurrent`.Semaphore(4) // Allow 4 concurrent checkstyle tasks
 
 val licenseHeaderFile = file("config/license.header.java")
@@ -367,6 +380,9 @@ allprojects {
     val hasTests = file("src/test/java").isDirectory || file("src/test/kotlin").isDirectory
     if (hasTests) {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
         // Add default tests dependencies only if Java plugin is applied
         plugins.withType<JavaPlugin> {
             dependencies {
@@ -386,6 +402,7 @@ allprojects {
                     // However, it still prevents JUnit4 types in autocomplete which is fine.
                     testRuntimeOnly("junit:junit")
                 }
+<<<<<<< HEAD
             }
         }
     }
@@ -425,6 +442,8 @@ allprojects {
                 // and it is commonly used. So we keep junit on the test runtime classpath.
                 // However, it still prevents JUnit4 types in autocomplete which is fine.
                 testRuntimeOnly("junit:junit")
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
             }
         }
     }
@@ -477,10 +496,14 @@ allprojects {
         }
         checkstyle {
 <<<<<<< HEAD
+<<<<<<< HEAD
             // Current version is 10.12.4 - no more concurrency issues
 =======
             // Current one is ~8.8
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+            // Current version is 10.12.4 - no more concurrency issues
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
             // https://github.com/julianhyde/toolbox/issues/3
             isShowViolations = true
             configDirectory.set(File(rootDir, "src/main/config/checkstyle"))
@@ -509,6 +532,7 @@ allprojects {
             // then it recognizes it should suppress all the output.
             excludeJavaCcGenerated()
 <<<<<<< HEAD
+<<<<<<< HEAD
             // Limit concurrent checkstyle tasks to prevent resource contention
             // Allow up to 4 concurrent tasks instead of just 1
 =======
@@ -516,6 +540,10 @@ allprojects {
             // It could be in Checkstyle, in CheckstyleAnt task or in Gradle's Checkstyle plugin
             // The bug looks like as if suppression was not working
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+            // Limit concurrent checkstyle tasks to prevent resource contention
+            // Allow up to 4 concurrent tasks instead of just 1
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
             doFirst {
                 semaphore.acquire()
             }
@@ -1005,6 +1033,9 @@ allprojects {
         }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
         // Configure task dependencies to ensure spotless runs before compilation and JAR creation
         afterEvaluate {
             tasks.findByName("spotlessJavaApply")?.let { spotlessTask ->
@@ -1016,8 +1047,11 @@ allprojects {
             }
         }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
         val javadocJar by tasks.registering(Jar::class) {
             from(tasks.named(JavaPlugin.JAVADOC_TASK_NAME))
             archiveClassifier.set("javadoc")
@@ -1025,10 +1059,14 @@ allprojects {
 
         val testClasses by configurations.creating {
 <<<<<<< HEAD
+<<<<<<< HEAD
             extendsFrom(configurations["testRuntimeOnly"])
 =======
             extendsFrom(configurations["testRuntime"])
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+            extendsFrom(configurations["testRuntimeOnly"])
+>>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
         }
 
         val archives by configurations.getting
