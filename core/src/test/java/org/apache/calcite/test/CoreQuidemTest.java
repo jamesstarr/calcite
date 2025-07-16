@@ -85,9 +85,6 @@ class CoreQuidemTest extends QuidemTest {
     }
   }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   @Override protected Quidem.ConnectionFactory createConnectionFactory() {
     return new QuidemConnectionFactory() {
       @Override public Connection connect(String name, boolean reference)
@@ -109,7 +106,6 @@ class CoreQuidemTest extends QuidemTest {
 
 <<<<<<< HEAD
 =======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 =======
 >>>>>>> 9d5cc2f5f ([CALCITE-6791] Search pattern during matching in REPLACE function should be case insensitive in MSSQL)
 }
