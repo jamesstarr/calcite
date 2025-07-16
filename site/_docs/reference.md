@@ -2051,8 +2051,8 @@ will apply tumbling with 1 minute window size on rows from table orders. rowtime
 watermarked column of table orders that tells data completeness.
 
 #### HOP
-In streaming queries, HOP assigns windows that cover rows within the interval of *size*, shifting every *slide*,
-and optionally aligned at *time* based on a timestamp column. Windows assigned could have overlapping so hopping
+In streaming queries, HOP assigns windows that cover rows within the interval of *size* and shifting every *slide* based
+on a timestamp column. Windows assigned could have overlapping so hopping sometime is named as "sliding windowing".
 sometime is named as "sliding windowing".
 
 

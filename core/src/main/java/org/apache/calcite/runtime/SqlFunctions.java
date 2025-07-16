@@ -2436,7 +2436,7 @@ public class SqlFunctions {
       return s.replace(search, replacement);
     }
     // for MSSQL's REPLACE function, search pattern is case-insensitive during matching
-    return org.apache.commons.lang3.StringUtils.replaceIgnoreCase(s, search, replacement);
+    return org.apache.commons.lang3.Strings.CI.replace(s, search, replacement);
   }
 
   /** Helper for "array element reference". Caller has already ensured that
