@@ -655,7 +655,7 @@ public class RelMetadataQuery extends RelMetadataQueryBase {
     }
   }
 
-  /** As {@link #getAverageColumnSizes(org.apache.calcite.rel.RelNode)} but
+  /** As {@link #getAverageColumnSizes(RelNode)} but
    * never returns a null list, only ever a list of nulls. */
   public List<Double> getAverageColumnSizesNotNull(RelNode rel) {
     final List<Double> averageColumnSizes = getAverageColumnSizes(rel);

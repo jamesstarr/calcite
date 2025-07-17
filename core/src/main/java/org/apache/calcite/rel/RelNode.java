@@ -197,8 +197,8 @@ public interface RelNode extends RelOptNode, Cloneable {
   /**
    * Returns a metadata interface.
    *
-   * @deprecated Use {@link RelMetadataQuery} via {@link #getCluster()}.
-   *     {@link RelOptCluster#getMetadataQuery()}.
+   * @deprecated Use {@link RelMetadataQuery} via
+   *     {@link org.apache.calcite.plan.RelOptCluster#getMetadataQuery()}.
    *
    * @param <M> Type of metadata being requested
    * @param metadataClass Metadata interface
@@ -234,9 +234,7 @@ public interface RelNode extends RelOptNode, Cloneable {
   RelNode onRegister(RelOptPlanner planner);
 
   /**
-   * Computes the digest, assigns it, and returns it. For planner use only.
-   *
-   * @return Digest of this relational expression
+   * Computes the digest and assigns it. For planner use only.
    */
   void recomputeDigest();
 

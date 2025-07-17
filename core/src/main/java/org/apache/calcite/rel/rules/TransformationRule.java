@@ -24,11 +24,11 @@ import org.apache.calcite.plan.volcano.VolcanoPlanner;
  * and only generate logical alternatives. It is only visible to
  * {@link VolcanoPlanner}, {@link HepPlanner} will ignore this interface.
  * That means, in {@link HepPlanner}, the rule that implements
- * {@link TransformationRule} can still match with physical operator of
- * {@link PhysicalNode} and generate physical alternatives.
+ * {@link TransformationRule} can still match with physical operators
+ * and generate physical alternatives.
  *
  * <p>But in {@link VolcanoPlanner}, {@link TransformationRule} doesn't match
- * with physical operator that implements {@link PhysicalNode}. It is not
+ * with physical operators. It is not
  * allowed to generate physical operators in {@link TransformationRule},
  * unless you are using it in {@link HepPlanner}.</p>
  *

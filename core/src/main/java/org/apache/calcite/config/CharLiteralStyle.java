@@ -18,7 +18,7 @@ package org.apache.calcite.config;
 
 /** Styles of character literal.
  *
- * @see Lex#charLiteralStyles */
+ * @see org.apache.calcite.sql.parser.SqlParser.Config#charLiteralStyles() */
 public enum CharLiteralStyle {
   /** Standard character literal. Enclosed in single quotes, using single quotes
    * to escape. Example: {@code 'Won''t'}. */
