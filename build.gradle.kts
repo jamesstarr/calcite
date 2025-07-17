@@ -595,6 +595,9 @@ allprojects {
             configure<SigningExtension> {
                 val release = rootProject.releaseParams.release.get()
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7f94964d5 (Change build.gradle.kts so signing is optional)
                 // Only require signing if we have signing credentials configured
                 val hasSigningCredentials = if (useGpgCmd) {
                     findProperty("signing.gnupg.keyName") != null
@@ -603,6 +606,7 @@ allprojects {
                     findProperty("signing.password") != null &&
                     findProperty("signing.secretKeyRingFile") != null
                 }
+<<<<<<< HEAD
                 // Note it would still try to sign the artifacts,
                 // however it would fail only when signing a RELEASE version fails
                 isRequired = release && hasSigningCredentials
@@ -629,13 +633,37 @@ allprojects {
                     }
                 }
 =======
+=======
+>>>>>>> 7f94964d5 (Change build.gradle.kts so signing is optional)
                 // Note it would still try to sign the artifacts,
                 // however it would fail only when signing a RELEASE version fails
-                isRequired = release
+                isRequired = release && hasSigningCredentials
                 if (useGpgCmd) {
                     useGpgCmd()
                 }
+<<<<<<< HEAD
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+                // Sign all publications if this is a release version and publishing plugin is applied
+                if (release && plugins.hasPlugin("maven-publish")) {
+                    try {
+                        val publishingExt = extensions.findByType<PublishingExtension>()
+                        if (publishingExt != null && publishingExt.publications.isNotEmpty()) {
+                            // Only sign if signing tasks haven't been created yet
+                            val publicationNames = publishingExt.publications.names
+                            val existingSignTasks = publicationNames.map { "sign${it.capitalize()}Publication" }
+                                .filter { tasks.findByName(it) != null }
+
+                            if (existingSignTasks.isEmpty()) {
+                                sign(publishingExt.publications)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // Ignore if publishing extension is not available
+                        logger.debug("Publishing extension not available for project ${project.path}: ${e.message}")
+                    }
+                }
+>>>>>>> 7f94964d5 (Change build.gradle.kts so signing is optional)
             }
         }
     }
@@ -712,6 +740,7 @@ allprojects {
         }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         if (!skipAutostyle) {
             autostyle {
                 java {
@@ -741,6 +770,8 @@ allprojects {
             }
         }
 
+=======
+>>>>>>> 7f94964d5 (Change build.gradle.kts so signing is optional)
         if (!skipSpotless) {
             spotless {
                 java {
