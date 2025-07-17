@@ -357,11 +357,38 @@ allprojects {
         afterEvaluate {
             configure<SigningExtension> {
                 val release = rootProject.releaseParams.release.get()
+                // Only require signing if we have signing credentials configured
+                val hasSigningCredentials = if (useGpgCmd) {
+                    findProperty("signing.gnupg.keyName") != null
+                } else {
+                    findProperty("signing.keyId") != null &&
+                    findProperty("signing.password") != null &&
+                    findProperty("signing.secretKeyRingFile") != null
+                }
                 // Note it would still try to sign the artifacts,
                 // however it would fail only when signing a RELEASE version fails
-                isRequired = release
+                isRequired = release && hasSigningCredentials
                 if (useGpgCmd) {
                     useGpgCmd()
+                }
+                // Sign all publications if this is a release version and publishing plugin is applied
+                if (release && plugins.hasPlugin("maven-publish")) {
+                    try {
+                        val publishingExt = extensions.findByType<PublishingExtension>()
+                        if (publishingExt != null && publishingExt.publications.isNotEmpty()) {
+                            // Only sign if signing tasks haven't been created yet
+                            val publicationNames = publishingExt.publications.names
+                            val existingSignTasks = publicationNames.map { "sign${it.capitalize()}Publication" }
+                                .filter { tasks.findByName(it) != null }
+
+                            if (existingSignTasks.isEmpty()) {
+                                sign(publishingExt.publications)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // Ignore if publishing extension is not available
+                        logger.debug("Publishing extension not available for project ${project.path}: ${e.message}")
+                    }
                 }
             }
         }
@@ -422,13 +449,6 @@ allprojects {
         if (!enableGradleMetadata) {
             tasks.withType<GenerateModuleMetadata> {
                 enabled = false
-            }
-        }
-
-        if (isReleaseVersion) {
-            configure<SigningExtension> {
-                // Sign all the publications
-                sign(publishing.publications)
             }
         }
 
