@@ -960,9 +960,9 @@ public interface SqlValidator {
     boolean lenientOperatorLookup();
 
     /**
-   * Sets enable or disable implicit type coercion when the validator does validation.
+   * Sets whether to enable lenient operator lookup.
    *
-   * @param enabled if enable the type coercion, default is true
+   * @param lenient if true, enables lenient operator lookup
    *
    * @see org.apache.calcite.sql.validate.implicit.TypeCoercionImpl TypeCoercionImpl
      */
@@ -974,11 +974,10 @@ public interface SqlValidator {
     boolean typeCoercionEnabled();
 
     /**
-   * Sets an instance of type coercion, you can customize the coercion rules to
-   * override the default ones defined in
-   * {@link org.apache.calcite.sql.validate.implicit.TypeCoercionImpl}.
+   * Sets whether to enable implicit type coercion when the validator does validation.
+   * See {@link org.apache.calcite.sql.validate.implicit.TypeCoercionImpl} for the details.
    *
-   * @param typeCoercion {@link TypeCoercion} instance
+   * @param enabled if true, enables type coercion, default is true
      */
     Config withTypeCoercionEnabled(boolean enabled);
 

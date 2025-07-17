@@ -16,16 +16,29 @@
  */
 package org.apache.calcite.rel.rules;
 
+import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.Calc;
+import org.apache.calcite.rel.core.Correlate;
 import org.apache.calcite.rel.core.Filter;
+import org.apache.calcite.rel.core.Intersect;
 import org.apache.calcite.rel.core.Join;
+import org.apache.calcite.rel.core.Minus;
 import org.apache.calcite.rel.core.Project;
+import org.apache.calcite.rel.core.SetOp;
 import org.apache.calcite.rel.core.Sort;
+import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.core.Union;
+import org.apache.calcite.rel.core.Values;
 import org.apache.calcite.rel.logical.LogicalCalc;
+import org.apache.calcite.rel.logical.LogicalCorrelate;
 import org.apache.calcite.rel.logical.LogicalFilter;
+import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalProject;
+import org.apache.calcite.rel.logical.LogicalTableFunctionScan;
+import org.apache.calcite.rel.logical.LogicalWindow;
+import org.apache.calcite.rex.RexInputRef;
+import org.apache.calcite.rex.RexUtil;
 
 /** Rules that perform logical transformations on relational expressions.
  *
@@ -41,12 +54,12 @@ public class CoreRules {
       AggregateProjectMergeRule.Config.DEFAULT.toRule();
 
   /** Rule that matches an {@link Aggregate} on
-   * a {@link StarTable.StarTableScan}. */
+   * a StarTable.StarTableScan. */
   public static final AggregateStarTableRule AGGREGATE_STAR_TABLE =
       AggregateStarTableRule.Config.DEFAULT.toRule();
 
   /** Variant of {@link #AGGREGATE_STAR_TABLE} that accepts a {@link Project}
-   * between the {@link Aggregate} and its {@link StarTable.StarTableScan}
+   * between the {@link Aggregate} and its StarTable.StarTableScan
    * input. */
   public static final AggregateProjectStarTableRule AGGREGATE_PROJECT_STAR_TABLE =
       AggregateProjectStarTableRule.Config.DEFAULT.toRule();
@@ -517,10 +530,9 @@ public class CoreRules {
    * <p>It is triggered by the pattern
    * {@link LogicalProject} ({@link MultiJoin}).
    *
-<<<<<<< HEAD
-   * @see #MULTI_JOIN_OPTIMIZE_BUSHY
-=======
    * @see #MULTI_JOIN_OPTIMIZE
+=======
+   * @see #MULTI_JOIN_OPTIMIZE_BUSHY
    */
   public static final MultiJoinOptimizeBushyRule MULTI_JOIN_OPTIMIZE_BUSHY =
       MultiJoinOptimizeBushyRule.Config.DEFAULT.toRule();

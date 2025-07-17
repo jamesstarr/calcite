@@ -102,7 +102,7 @@ import java.util.stream.Collectors;
  * </pre>
  *
  * <li> For Projections we look at columns that are projected with
- * & without any function applied. So:
+ * &amp; without any function applied. So:
  * <pre>
  * select a from R1 where a &gt; 7
  *   &rarr; "a &gt; 7" is pulled up from the Projection.
@@ -419,7 +419,7 @@ public class RelMdPredicates
 
   /**
    * Infers predicates for a {@link org.apache.calcite.rel.core.Join} (including
-   * {@link org.apache.calcite.rel.core.SemiJoin}).
+   * semi-joins).
    */
   public RelOptPredicateList getPredicates(Join join, RelMetadataQuery mq) {
     RelOptCluster cluster = join.getCluster();

@@ -28,7 +28,7 @@ import org.apache.calcite.sql.validate.SqlValidator;
  *
  * <p>This interface is experimental and would change without notice.
  *
- * @see SqlValidator.Config#withTypeCoercionFactory
+ * @see SqlValidator.Config#withTypeCoercionEnabled
  */
 public interface TypeCoercionFactory {
 

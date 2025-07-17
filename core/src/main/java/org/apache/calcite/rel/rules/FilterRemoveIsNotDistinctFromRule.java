@@ -34,8 +34,7 @@ import org.apache.calcite.tools.RelBuilderFactory;
  * Planner rule that replaces {@code IS NOT DISTINCT FROM}
  * in a {@link Filter} with logically equivalent operations.
  * @see CoreRules#FILTER_EXPAND_IS_NOT_DISTINCT_FROM
- * @see RelBuilder#isDistinctFrom
- * @see RelBuilder#isNotDistinctFrom
+ * @see RelOptUtil#isDistinctFrom
  */
 public final class FilterRemoveIsNotDistinctFromRule
         extends RelRule<FilterRemoveIsNotDistinctFromRule.Config>
