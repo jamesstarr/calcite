@@ -57,7 +57,7 @@ public class RelSet {
    * same parent, there will be multiple entries.
    */
   final List<RelNode> parents = new ArrayList<>();
-  public final List<RelSubset> subsets = new ArrayList<>();
+  final List<RelSubset> subsets = new ArrayList<>();
 
   /**
    * Set to the superseding set when this is found to be equivalent to another

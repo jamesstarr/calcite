@@ -53,9 +53,6 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-<<<<<<< HEAD
-import java.util.stream.Stream;
-=======
 >>>>>>> 9a5b94c08 ([CALCITE-2817] Make CannotPlanException great)
 
 /**
@@ -337,6 +334,24 @@ public class RelSubset extends AbstractRelNode {
     for (RelSubset s : set.subsets) {
       if (rel.getTraitSet().satisfies(s.traitSet)) {
         checkAndEnqueue(planner, mq, rel, s, q);
+<<<<<<< HEAD
+=======
+      }
+    }
+
+    while (!q.isEmpty()) {
+      RelSubset currentSubset = q.poll();
+      for (RelNode parent : currentSubset.getParents()) {
+        final RelSubset parentSubset = planner.getSubset(parent);
+        for (RelSubset s : parentSubset.set.subsets) {
+          if (parent.getTraitSet().satisfies(s.traitSet)) {
+            checkAndEnqueue(planner, mq, parent, s, q);
+          }
+        }
+      }
+    }
+  }
+
   private static final Comparator<RelSubset> COST_COMPARATOR = new Comparator<RelSubset>() {
     @Override public int compare(RelSubset o1, RelSubset o2) {
       if (o1.bestCost.equals(o2.bestCost)) {
