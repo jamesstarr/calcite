@@ -334,7 +334,6 @@ public class RelSubset extends AbstractRelNode {
         checkAndEnqueue(planner, mq, rel, s, q);
       }
     }
-    planner.checkForSatisfiedConverters(set, rel);
 
     while (!q.isEmpty()) {
       RelSubset currentSubset = q.poll();
@@ -345,7 +344,6 @@ public class RelSubset extends AbstractRelNode {
             checkAndEnqueue(planner, mq, parent, s, q);
           }
         }
-        planner.checkForSatisfiedConverters(parentSubset.set, parent);
       }
     }
   }
