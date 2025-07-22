@@ -3282,6 +3282,7 @@ semantics.
 | o | RTRIM(string)                                  | Returns *string* with all blanks removed from the end
 | m p | SHA1(string)                                 | Calculates a SHA-1 hash value of *string* and returns it as a hex string
 | o | SUBSTR(string, position [, substringLength ]) | Returns a portion of *string*, beginning at character *position*, *substringLength* characters long. SUBSTR calculates lengths using characters as defined by the input character set
+| o | TANH(numeric)                                  | Returns the hyperbolic tangent of *numeric*
 | o | GREATEST(expr [, expr ]*)                      | Returns the greatest of the expressions
 | o | LEAST(expr [, expr ]* )                        | Returns the least of the expressions
 | o p | TO_DATE(string, format)                      | Converts *string* to a date using the format *format*

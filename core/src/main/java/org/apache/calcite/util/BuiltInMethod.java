@@ -390,7 +390,7 @@ public enum BuiltInMethod {
   RAND_INTEGER_SEED(RandomFunction.class, "randIntegerSeed", int.class,
       int.class),
   TANH(SqlFunctions.class, "tanh", long.class),
-  SINH(SqlFunctions.class, "sinh", long.class),
+>>>>>>> 82a3d04d6 ([CALCITE-3695] Implement TANH function (#96))
   TRUNCATE(SqlFunctions.class, "truncate", String.class, int.class),
   TRUNCATE_OR_PAD(SqlFunctions.class, "truncateOrPad", String.class, int.class),
   TRIM(SqlFunctions.class, "trim", boolean.class, boolean.class, String.class,
@@ -474,7 +474,6 @@ public enum BuiltInMethod {
   UNIX_TIMESTAMP_CEIL(DateTimeUtils.class, "unixTimestampCeil",
       TimeUnitRange.class, long.class),
   LAST_DAY(SqlFunctions.class, "lastDay", int.class),
->>>>>>> af76dcede ([CALCITE-2995] Implement DAYNAME，MONTHNAME functions; add "locale" connection property (xuqianjin))
   DAYNAME_WITH_TIMESTAMP(SqlFunctions.class,
       "dayNameWithTimestamp", long.class, Locale.class),
   DAYNAME_WITH_DATE(SqlFunctions.class,
