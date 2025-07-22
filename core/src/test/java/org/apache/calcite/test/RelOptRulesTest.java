@@ -65,6 +65,7 @@ import org.apache.calcite.rel.rules.AggregateCaseToFilterRule;
 import org.apache.calcite.rel.rules.AggregateExtractProjectRule;
 import org.apache.calcite.rel.rules.AggregateJoinJoinRemoveRule;
 import org.apache.calcite.rel.rules.AggregateJoinRemoveRule;
+import org.apache.calcite.rel.rules.AggregateProjectMergeRule;
 import org.apache.calcite.rel.rules.AggregateProjectPullUpConstantsRule;
 import org.apache.calcite.rel.rules.AggregateReduceFunctionsRule;
 import org.apache.calcite.rel.rules.AggregateUnionTransposeRule;
@@ -274,6 +275,25 @@ class RelOptRulesTest extends RelOptTestBase {
         .with(hepPlanner)
         .check();
 >>>>>>> 2a2064ec9 ([CALCITE-3410] Simplify RelOptRulesTest and HepPlannerTest by making test methods fluent)
+  }
+
+  @Test public void testDigestOfApproximateDistinctAggregateCall() {
+    HepProgram preProgram = new HepProgramBuilder()
+            .build();
+
+    HepProgramBuilder builder = new HepProgramBuilder();
+    builder.addRuleClass(AggregateProjectMergeRule.class);
+    HepPlanner hepPlanner = new HepPlanner(builder.build());
+    hepPlanner.addRule(CoreRules.AGGREGATE_PROJECT_MERGE);
+
+    final String sql = "select *\n"
+            + "from (\n"
+            + "select deptno, count(distinct empno) from emp group by deptno\n"
+            + "union all\n"
+            + "select deptno, approx_count_distinct(empno) from emp group by deptno)";
+    sql(sql).withPre(preProgram)
+            .with(hepPlanner)
+            .check();
   }
 
   /** Test case for
