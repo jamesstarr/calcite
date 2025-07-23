@@ -3651,20 +3651,6 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
-  /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3826">[CALCITE-3826]
-   * UPDATE assigns wrong type to bind variables</a>.
-   */
-  @Test public void testDynamicParamTypesInUpdate() {
-    RelNode rel = tester.convertSqlToRel("update emp set sal = ?, ename = ? where empno = ?").rel;
-    LogicalTableModify modify = (LogicalTableModify) rel;
-    List<RexNode> parameters = modify.getSourceExpressionList();
-    assertThat(parameters.size(), is(2));
-    assertThat(parameters.get(0).getType().getSqlTypeName(), is(SqlTypeName.INTEGER));
-    assertThat(parameters.get(1).getType().getSqlTypeName(), is(SqlTypeName.VARCHAR));
-  }
-
   @Test public void testCaseFlatten() {
     final String sql = "SELECT (res1 = 'qwe') res2 "
         + "FROM ("
@@ -4342,6 +4328,20 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     final String sql = "select lead(sal, 4) IGNORE NULLS, lead(sal, 4) over (w)\n"
         + "from emp window w as (order by empno)";
     sql(sql).ok();
+  }
+
+  /**
+   * Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3826">[CALCITE-3826]
+   * UPDATE assigns wrong type to bind variables</a>.
+   */
+  @Test public void testDynamicParamTypesInUpdate() {
+    RelNode rel = tester.convertSqlToRel("update emp set sal = ?, ename = ? where empno = ?").rel;
+    LogicalTableModify modify = (LogicalTableModify) rel;
+    List<RexNode> parameters = modify.getSourceExpressionList();
+    assertThat(parameters.size(), is(2));
+    assertThat(parameters.get(0).getType().getSqlTypeName(), is(SqlTypeName.INTEGER));
+    assertThat(parameters.get(1).getType().getSqlTypeName(), is(SqlTypeName.VARCHAR));
   }
 
   /**
