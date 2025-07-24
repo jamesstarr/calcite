@@ -29,7 +29,6 @@ import org.apache.calcite.rel.type.RelDataTypeField;
 
 import org.apache.pig.data.DataType;
 
-
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;

@@ -22,7 +22,6 @@ import com.google.common.collect.ImmutableSet;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.AccessControlException;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
@@ -122,8 +121,7 @@ public final class CalciteSystemProperty<T> {
       booleanProperty("calcite.volcano.dump.sets", true);
 
   /**
-   * Whether to enable top-down optimization. This config can be overridden
-   * by {@link CalciteConnectionProperty#TOPDOWN_OPT}.
+   * Whether to enable top-down optimization.
    *
    * <p>Note: Enabling top-down optimization will automatically disable
    * the use of AbstractConverter and related rules.</p>
@@ -225,7 +223,7 @@ public final class CalciteSystemProperty<T> {
    * Whether to run Druid tests.
    */
   public static final CalciteSystemProperty<Boolean> TEST_DRUID =
-      booleanProperty("calcite.test.druid", true);
+      booleanProperty("calcite.test.druid", false);
 
   /**
    * Whether to run Cassandra tests.
@@ -416,8 +414,10 @@ public final class CalciteSystemProperty<T> {
       }
     } catch (IOException e) {
       throw new RuntimeException("while reading from saffron.properties file", e);
-    } catch (AccessControlException e) {
-      // we're in a sandbox
+    } catch (RuntimeException e) {
+      if (!"java.security.AccessControlException".equals(e.getClass().getName())) {
+        throw e;
+      }
     }
 
     // Merge system and saffron properties, mapping deprecated saffron

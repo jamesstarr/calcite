@@ -18,7 +18,6 @@ package org.apache.calcite.adapter.druid;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
-
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Objects;

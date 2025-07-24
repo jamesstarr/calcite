@@ -4,6 +4,8 @@
 *.cs     text diff=csharp
 *.java   text diff=java
 *.html   text diff=html
+*.kt     text diff=kotlin
+*.kts    text diff=kotlin
 *.py     text diff=python
 *.pl     text diff=perl
 *.pm     text diff=perl
@@ -12,7 +14,10 @@
 *.sql    text
 *.q      text
 
-*.sh     text eol=lf
+*.sh     text eol=lf executable
+gradlew  text eol=lf executable
+sqlsh    text eol=lf executable
+sqlline  text eol=lf executable
 
 #test files, use lf so that size is same on windows as well
 data/files/*.dat    text eol=lf

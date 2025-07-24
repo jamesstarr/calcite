@@ -23,9 +23,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.calcite.linq4j.Nullness.castNonNull;
-
 import static com.google.common.base.Preconditions.checkArgument;
+
+import static org.apache.calcite.linq4j.Nullness.castNonNull;
 
 import static java.util.Objects.requireNonNull;
 

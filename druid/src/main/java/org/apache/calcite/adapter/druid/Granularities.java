@@ -20,7 +20,6 @@ import org.apache.calcite.avatica.util.TimeUnitRange;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
-
 import java.io.IOException;
 import java.util.Objects;
 import javax.annotation.Nonnull;

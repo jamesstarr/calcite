@@ -1182,7 +1182,7 @@ other software versions as specified in `pom.xml`.
 
 #### Breaking Changes
 
-* core parser config.fmpp#dataTypeParserMethods should return "SqlTypeNameSpec" 
+* core parser config.fmpp#dataTypeParserMethods should return "SqlTypeNameSpec"
 instead of "SqlIdentifier".
 
 With over 200 commits from 36 contributors, this is the largest

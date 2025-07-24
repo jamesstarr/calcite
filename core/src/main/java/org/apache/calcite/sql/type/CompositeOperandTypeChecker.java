@@ -24,7 +24,6 @@ import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.validate.implicit.TypeCoercion;
 import org.apache.calcite.util.Util;
 
-
 import com.google.common.collect.ImmutableList;
 
 import java.util.AbstractList;

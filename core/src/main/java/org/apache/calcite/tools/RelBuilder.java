@@ -2346,7 +2346,7 @@ public class RelBuilder {
     return join(joinType, conditions);
   }
 
-  /** Creates a {@link SemiJoin}.
+  /** Creates a semi-join.
    *
    * <p>A semi-join is a form of join that combines two relational expressions
    * according to some condition, and outputs only rows from the left input for

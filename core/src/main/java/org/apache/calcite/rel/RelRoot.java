@@ -26,7 +26,6 @@ import org.apache.calcite.util.ImmutableIntList;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.mapping.Mappings;
 
-
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;

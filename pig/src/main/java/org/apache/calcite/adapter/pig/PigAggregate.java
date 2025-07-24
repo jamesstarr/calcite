@@ -27,7 +27,6 @@ import org.apache.calcite.util.ImmutableBitSet;
 
 import org.apache.pig.scripting.Pig;
 
-
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
