@@ -131,8 +131,11 @@ public class RelFactories {
           DEFAULT_CORRELATE_FACTORY,
           DEFAULT_VALUES_FACTORY,
           DEFAULT_TABLE_SCAN_FACTORY,
+          DEFAULT_TABLE_FUNCTION_SCAN_FACTORY,
           DEFAULT_SNAPSHOT_FACTORY,
-          DEFAULT_MATCH_FACTORY);
+          DEFAULT_MATCH_FACTORY,
+          DEFAULT_SPOOL_FACTORY,
+          DEFAULT_REPEAT_UNION_FACTORY);
 
   /** A {@link RelBuilderFactory} that creates a {@link RelBuilder} that will
    * create logical relational expressions for everything. */
@@ -644,8 +647,11 @@ public class RelFactories {
     public final CorrelateFactory correlateFactory;
     public final ValuesFactory valuesFactory;
     public final TableScanFactory scanFactory;
+    public final TableFunctionScanFactory tableFunctionScanFactory;
     public final SnapshotFactory snapshotFactory;
     public final MatchFactory matchFactory;
+    public final SpoolFactory spoolFactory;
+    public final RepeatUnionFactory repeatUnionFactory;
 
     private Struct(FilterFactory filterFactory,
         ProjectFactory projectFactory,
@@ -658,21 +664,28 @@ public class RelFactories {
         CorrelateFactory correlateFactory,
         ValuesFactory valuesFactory,
         TableScanFactory scanFactory,
+        TableFunctionScanFactory tableFunctionScanFactory,
         SnapshotFactory snapshotFactory,
-        MatchFactory matchFactory) {
+        MatchFactory matchFactory,
+        SpoolFactory spoolFactory,
+        RepeatUnionFactory repeatUnionFactory) {
       this.filterFactory = Objects.requireNonNull(filterFactory);
       this.projectFactory = Objects.requireNonNull(projectFactory);
       this.aggregateFactory = Objects.requireNonNull(aggregateFactory);
+      this.sortFactory = Objects.requireNonNull(sortFactory);
       this.exchangeFactory = Objects.requireNonNull(exchangeFactory);
       this.sortExchangeFactory = Objects.requireNonNull(sortExchangeFactory);
-      this.sortFactory = Objects.requireNonNull(sortFactory);
       this.setOpFactory = Objects.requireNonNull(setOpFactory);
       this.joinFactory = Objects.requireNonNull(joinFactory);
       this.correlateFactory = Objects.requireNonNull(correlateFactory);
       this.valuesFactory = Objects.requireNonNull(valuesFactory);
       this.scanFactory = Objects.requireNonNull(scanFactory);
+      this.tableFunctionScanFactory =
+          Objects.requireNonNull(tableFunctionScanFactory);
       this.snapshotFactory = Objects.requireNonNull(snapshotFactory);
       this.matchFactory = Objects.requireNonNull(matchFactory);
+      this.spoolFactory = Objects.requireNonNull(spoolFactory);
+      this.repeatUnionFactory = Objects.requireNonNull(repeatUnionFactory);
     }
 
     public static @Nonnull Struct fromContext(Context context) {
@@ -703,10 +716,16 @@ public class RelFactories {
               DEFAULT_VALUES_FACTORY),
           Util.first(context.unwrap(TableScanFactory.class),
               DEFAULT_TABLE_SCAN_FACTORY),
+          Util.first(context.unwrap(TableFunctionScanFactory.class),
+              DEFAULT_TABLE_FUNCTION_SCAN_FACTORY),
           Util.first(context.unwrap(SnapshotFactory.class),
               DEFAULT_SNAPSHOT_FACTORY),
           Util.first(context.unwrap(MatchFactory.class),
-              DEFAULT_MATCH_FACTORY));
+              DEFAULT_MATCH_FACTORY),
+          Util.first(context.unwrap(SpoolFactory.class),
+              DEFAULT_SPOOL_FACTORY),
+          Util.first(context.unwrap(RepeatUnionFactory.class),
+              DEFAULT_REPEAT_UNION_FACTORY));
     }
   }
 }
