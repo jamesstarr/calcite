@@ -155,12 +155,6 @@ public class RelBuilder {
 
   protected final RelOptCluster cluster;
   protected final RelOptSchema relOptSchema;
-  private final RelFactories.ExchangeFactory exchangeFactory;
-  private final RelFactories.SortExchangeFactory sortExchangeFactory;
-  private final RelFactories.TableFunctionScanFactory tableFunctionScanFactory;
-  private final RelFactories.SnapshotFactory snapshotFactory;
-  private final RelFactories.SpoolFactory spoolFactory;
-  private final RelFactories.RepeatUnionFactory repeatUnionFactory;
   private final Deque<Frame> stack = new ArrayDeque<>();
   private final RexSimplify simplifier;
   private final Config config;
@@ -176,24 +170,6 @@ public class RelBuilder {
     this.config = getConfig(context);
     this.struct =
         Objects.requireNonNull(RelFactories.Struct.fromContext(context));
-    this.exchangeFactory =
-        Util.first(context.unwrap(RelFactories.ExchangeFactory.class),
-            RelFactories.DEFAULT_EXCHANGE_FACTORY);
-    this.sortExchangeFactory =
-        Util.first(context.unwrap(RelFactories.SortExchangeFactory.class),
-            RelFactories.DEFAULT_SORT_EXCHANGE_FACTORY);
-    this.tableFunctionScanFactory =
-        Util.first(context.unwrap(RelFactories.TableFunctionScanFactory.class),
-            RelFactories.DEFAULT_TABLE_FUNCTION_SCAN_FACTORY);
-    this.snapshotFactory =
-        Util.first(context.unwrap(RelFactories.SnapshotFactory.class),
-            RelFactories.DEFAULT_SNAPSHOT_FACTORY);
-    this.spoolFactory =
-        Util.first(context.unwrap(RelFactories.SpoolFactory.class),
-            RelFactories.DEFAULT_SPOOL_FACTORY);
-    this.repeatUnionFactory =
-        Util.first(context.unwrap(RelFactories.RepeatUnionFactory.class),
-            RelFactories.DEFAULT_REPEAT_UNION_FACTORY);
     final RexExecutor executor =
         Util.first(context.unwrap(RexExecutor.class),
             Util.first(cluster.getPlanner().getExecutor(), RexUtil.EXECUTOR));
@@ -221,20 +197,20 @@ public class RelBuilder {
             new RelBuilder(config.getContext(), cluster, relOptSchema));
   }
 
-  /** Converts this RelBuilder to a string.
-   * The string is the string representation of all of the RelNodes on the stack. */
-  @Override public String toString() {
-    return stack.stream()
-        .map(frame -> RelOptUtil.toString(frame.rel))
-        .collect(Collectors.joining(""));
-  }
-
   /** Creates a copy of this RelBuilder, with the same state as this, applying
    * a transform to the config. */
   public RelBuilder transform(UnaryOperator<Config> transform) {
     final Context context =
         Contexts.of(struct, transform.apply(config));
     return new RelBuilder(context, cluster, relOptSchema);
+  }
+
+  /** Converts this RelBuilder to a string.
+   * The string is the string representation of all of the RelNodes on the stack. */
+  @Override public String toString() {
+    return stack.stream()
+        .map(frame -> RelOptUtil.toString(frame.rel))
+        .collect(Collectors.joining(""));
   }
 
   /** Performs an action on this RelBuilder.
@@ -1249,7 +1225,9 @@ public class RelBuilder {
     if (relOptTable == null) {
       throw RESOURCE.tableNotFound(String.join(".", names)).ex();
     }
-    final RelNode scan = struct.scanFactory.createScan(cluster, relOptTable, ImmutableList.of());
+    final RelNode scan =
+        struct.scanFactory.createScan(cluster, relOptTable,
+            ImmutableList.of());
     push(scan);
     rename(relOptTable.getRowType().getFieldNames());
 
@@ -1282,7 +1260,8 @@ public class RelBuilder {
    */
   public RelBuilder snapshot(RexNode period) {
     final Frame frame = stack.pop();
-    final RelNode snapshot = snapshotFactory.createSnapshot(frame.rel, period);
+    final RelNode snapshot =
+        struct.snapshotFactory.createSnapshot(frame.rel, period);
     stack.push(new Frame(snapshot, frame.fields));
     return this;
   }
@@ -1342,8 +1321,8 @@ public class RelBuilder {
 
     final RexNode call = call(operator, ImmutableList.copyOf(operands));
     final RelNode functionScan =
-        tableFunctionScanFactory.createTableFunctionScan(cluster, inputs,
-            call, null, getColumnMappings(operator));
+        struct.tableFunctionScanFactory.createTableFunctionScan(cluster,
+            inputs, call, null, getColumnMappings(operator));
     push(functionScan);
     return this;
   }
@@ -1375,7 +1354,7 @@ public class RelBuilder {
    * <p>The predicates are combined using AND,
    * and optimized in a similar way to the {@link #and} method.
    * If the result is TRUE no filter is created. */
-  public RelBuilder filter(Iterable<CorrelationId> correlVariables,
+  public RelBuilder filter(Iterable<CorrelationId> variablesSet,
       Iterable<? extends RexNode> predicates) {
     final RexNode x = simplifier.simplifyFilterPredicates(predicates);
     if (x == null) {
@@ -1384,8 +1363,9 @@ public class RelBuilder {
 
     if (!x.isAlwaysTrue()) {
       final Frame frame = stack.pop();
-      final RelNode filter = struct.filterFactory.createFilter(frame.rel,
-          x, ImmutableSet.copyOf(correlVariables));
+      final RelNode filter =
+          struct.filterFactory.createFilter(frame.rel,
+              x, ImmutableSet.copyOf(variablesSet));
       stack.push(new Frame(filter, frame.fields));
     }
     return this;
@@ -1990,7 +1970,8 @@ public class RelBuilder {
       ImmutableList<ImmutableBitSet> groupSets, RelNode input,
       List<AggregateCall> aggregateCalls, List<RexNode> extraNodes,
       ImmutableList<Field> inFields) {
-    final RelNode aggregate = struct.aggregateFactory.createAggregate(input,
+    final RelNode aggregate =
+        struct.aggregateFactory.createAggregate(input,
             ImmutableList.of(), groupSet, groupSets, aggregateCalls);
 
     // build field list
@@ -2133,7 +2114,9 @@ public class RelBuilder {
         rowType,
         transientTable,
         ImmutableList.of(tableName));
-    RelNode scan = struct.scanFactory.createScan(cluster, relOptTable, ImmutableList.of());
+    RelNode scan =
+        struct.scanFactory.createScan(cluster, relOptTable,
+            ImmutableList.of());
     push(scan);
     rename(rowType.getFieldNames());
     return this;
@@ -2146,8 +2129,11 @@ public class RelBuilder {
    * @param writeType Spool's write type (as described in {@link Spool.Type})
    * @param table Table to write into
    */
-  private RelBuilder tableSpool(Spool.Type readType, Spool.Type writeType, RelOptTable table) {
-    RelNode spool =  spoolFactory.createTableSpool(peek(), readType, writeType, table);
+  private RelBuilder tableSpool(Spool.Type readType, Spool.Type writeType,
+      RelOptTable table) {
+    RelNode spool =
+        struct.spoolFactory.createTableSpool(peek(), readType, writeType,
+            table);
     replaceTop(spool);
     return this;
   }
@@ -2203,7 +2189,9 @@ public class RelBuilder {
 
     RelNode iterative = tableSpool(Spool.Type.LAZY, Spool.Type.LAZY, finder.relOptTable).build();
     RelNode seed = tableSpool(Spool.Type.LAZY, Spool.Type.LAZY, finder.relOptTable).build();
-    RelNode repUnion = repeatUnionFactory.createRepeatUnion(seed, iterative, all, iterationLimit);
+    RelNode repUnion =
+        struct.repeatUnionFactory.createRepeatUnion(seed, iterative, all,
+            iterationLimit);
     return push(repUnion);
   }
 
@@ -2280,11 +2268,13 @@ public class RelBuilder {
         throw new IllegalArgumentException("Correlated " + joinType + " join is not supported");
       }
       final ImmutableBitSet requiredColumns = RelOptUtil.correlationColumns(id, right.rel);
-      join = struct.correlateFactory.createCorrelate(left.rel, right.rel, id,
-          requiredColumns, joinType);
+      join =
+          struct.correlateFactory.createCorrelate(left.rel, right.rel, id,
+              requiredColumns, joinType);
     } else {
-      join = struct.joinFactory.createJoin(left.rel, right.rel, ImmutableList.of(), condition,
-          variablesSet, joinType, false);
+      join =
+          struct.joinFactory.createJoin(left.rel, right.rel,
+              ImmutableList.of(), condition, variablesSet, joinType, false);
     }
     final ImmutableList.Builder<Field> fields = ImmutableList.builder();
     fields.addAll(left.fields);
@@ -2316,9 +2306,9 @@ public class RelBuilder {
     rename(registrar.names);
     Frame left = stack.pop();
 
-    final RelNode correlate = struct.correlateFactory
-        .createCorrelate(left.rel, right.rel, correlationId,
-            ImmutableBitSet.of(requiredOrdinals), joinType);
+    final RelNode correlate =
+        struct.correlateFactory.createCorrelate(left.rel, right.rel,
+            correlationId, ImmutableBitSet.of(requiredOrdinals), joinType);
 
     final ImmutableList.Builder<Field> fields = ImmutableList.builder();
     fields.addAll(left.fields);
@@ -2534,7 +2524,8 @@ public class RelBuilder {
    */
   public RelBuilder empty() {
     final Frame frame = stack.pop();
-    final RelNode values = struct.valuesFactory.createValues(cluster, frame.rel.getRowType(),
+    final RelNode values =
+        struct.valuesFactory.createValues(cluster, frame.rel.getRowType(),
             ImmutableList.of());
     stack.push(new Frame(values, frame.fields));
     return this;
@@ -2552,8 +2543,9 @@ public class RelBuilder {
   public RelBuilder values(RelDataType rowType, Object... columnValues) {
     final ImmutableList<ImmutableList<RexLiteral>> tupleList =
         tupleList(rowType.getFieldCount(), columnValues);
-    RelNode values = struct.valuesFactory.createValues(cluster, rowType,
-        ImmutableList.copyOf(tupleList));
+    RelNode values =
+        struct.valuesFactory.createValues(cluster, rowType,
+            ImmutableList.copyOf(tupleList));
     push(values);
     return this;
   }
@@ -2570,7 +2562,8 @@ public class RelBuilder {
   public RelBuilder values(Iterable<? extends List<RexLiteral>> tupleList,
       RelDataType rowType) {
     RelNode values =
-        struct.valuesFactory.createValues(cluster, rowType, copy(tupleList));
+        struct.valuesFactory.createValues(cluster, rowType,
+            copy(tupleList));
     push(values);
     return this;
   }
@@ -2614,7 +2607,8 @@ public class RelBuilder {
 
   /** Creates an Exchange by distribution. */
   public RelBuilder exchange(RelDistribution distribution) {
-    RelNode exchange = exchangeFactory.createExchange(peek(), distribution);
+    RelNode exchange =
+        struct.exchangeFactory.createExchange(peek(), distribution);
     replaceTop(exchange);
     return this;
   }
@@ -2622,8 +2616,9 @@ public class RelBuilder {
   /** Creates a SortExchange by distribution and collation. */
   public RelBuilder sortExchange(RelDistribution distribution,
       RelCollation collation) {
-    RelNode exchange = sortExchangeFactory
-        .createSortExchange(peek(), distribution, collation);
+    RelNode exchange =
+        struct.sortExchangeFactory.createSortExchange(peek(), distribution,
+            collation);
     replaceTop(exchange);
     return this;
   }
@@ -2704,8 +2699,8 @@ public class RelBuilder {
           final Sort sort2 = (Sort) project.getInput();
           if (sort2.offset == null && sort2.fetch == null) {
             final RelNode sort =
-                struct.sortFactory.createSort(sort2.getInput(), sort2.collation,
-                    offsetNode, fetchNode);
+                struct.sortFactory.createSort(sort2.getInput(),
+                    sort2.collation, offsetNode, fetchNode);
             replaceTop(
                 struct.projectFactory.createProject(sort,
                     project.getHints(),
@@ -2720,8 +2715,8 @@ public class RelBuilder {
       project(registrar.extraNodes);
     }
     final RelNode sort =
-        struct.sortFactory.createSort(peek(), RelCollations.of(fieldCollations),
-            offsetNode, fetchNode);
+        struct.sortFactory.createSort(peek(),
+            RelCollations.of(fieldCollations), offsetNode, fetchNode);
     replaceTop(sort);
     if (registrar.addedFieldCount() > 0) {
       project(registrar.originalExtraNodes);
@@ -2765,7 +2760,8 @@ public class RelBuilder {
   public RelBuilder convert(RelDataType castRowType, boolean rename) {
     final RelNode r = build();
     final RelNode r2 =
-        RelOptUtil.createCastRel(r, castRowType, rename, struct.projectFactory);
+        RelOptUtil.createCastRel(r, castRowType, rename,
+            struct.projectFactory);
     push(r2);
     return this;
   }
@@ -2834,11 +2830,11 @@ public class RelBuilder {
       measures.put(alias, operands.get(0));
     }
 
-    final RelNode match = struct.matchFactory.createMatch(peek(), pattern,
-        typeBuilder.build(), strictStart, strictEnd, patternDefinitions,
-        measures.build(), after, subsets, allRows,
-        partitionBitSet, RelCollations.of(fieldCollations),
-        interval);
+    final RelNode match =
+        struct.matchFactory.createMatch(peek(), pattern,
+            typeBuilder.build(), strictStart, strictEnd, patternDefinitions,
+            measures.build(), after, subsets, allRows,
+            partitionBitSet, RelCollations.of(fieldCollations), interval);
     stack.push(new Frame(match));
     return this;
   }
