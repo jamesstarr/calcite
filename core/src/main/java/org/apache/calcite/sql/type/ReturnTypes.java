@@ -213,32 +213,34 @@ public abstract class ReturnTypes {
       cascade(BOOLEAN, SqlTypeTransforms.FORCE_NULLABLE);
 
   /**
-   * Type-inference strategy whereby the result type of a call is Boolean
-   * not null.
+   * Type-inference strategy whereby the result type of a call is BOOLEAN
+   * NOT NULL.
    */
   public static final SqlReturnTypeInference BOOLEAN_NOT_NULL =
       cascade(BOOLEAN, SqlTypeTransforms.TO_NOT_NULLABLE);
+
   /**
-   * Type-inference strategy whereby the result type of a call is Date.
+   * Type-inference strategy whereby the result type of a call is DATE.
    */
   public static final SqlReturnTypeInference DATE =
       explicit(SqlTypeName.DATE);
 
   /**
    * Type-inference strategy whereby the result type of a call is nullable
-   * Date.
+   * DATE.
    */
   public static final SqlReturnTypeInference DATE_NULLABLE =
       cascade(DATE, SqlTypeTransforms.TO_NULLABLE);
 
   /**
-   * Type-inference strategy whereby the result type of a call is Time(0).
+   * Type-inference strategy whereby the result type of a call is TIME(0).
    */
   public static final SqlReturnTypeInference TIME =
       explicit(SqlTypeName.TIME, 0);
+
   /**
    * Type-inference strategy whereby the result type of a call is nullable
-   * Time(0).
+   * TIME(0).
    */
   public static final SqlReturnTypeInference TIME_NULLABLE =
       cascade(TIME, SqlTypeTransforms.TO_NULLABLE);
@@ -254,7 +256,7 @@ public abstract class ReturnTypes {
    * TIMESTAMP.
    */
   public static final SqlReturnTypeInference TIMESTAMP_NULLABLE =
-      TIMESTAMP.andThen(SqlTypeTransforms.TO_NULLABLE);
+      cascade(TIMESTAMP, SqlTypeTransforms.TO_NULLABLE);
 
   /**
    * Type-inference strategy whereby the result type of a call is Double.
