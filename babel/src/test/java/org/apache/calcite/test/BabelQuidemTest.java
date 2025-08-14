@@ -102,7 +102,7 @@ public class BabelQuidemTest extends QuidemTest {
                   SqlConformanceEnum.BABEL)
               .with(CalciteConnectionProperty.LENIENT_OPERATOR_LOOKUP, true)
               .connect();
-<<<<<<< HEAD
+>>>>>>> db7a39c3e ([CALCITE-4089] In Babel, allow 'CAST(integer AS DATE)' even though it is illegal in Calcite SQL (#140))
         case "scott-big-query":
           return CalciteAssert.that()
               .with(CalciteAssert.Config.SCOTT)
@@ -113,8 +113,10 @@ public class BabelQuidemTest extends QuidemTest {
                   SqlConformanceEnum.BABEL)
               .with(CalciteConnectionProperty.LENIENT_OPERATOR_LOOKUP, true)
               .connect();
+<<<<<<< HEAD
 =======
->>>>>>> 35df78c18 ([CALCITE-3361] Add 'lenientOperatorLookup' connection property)
+=======
+>>>>>>> db7a39c3e ([CALCITE-4089] In Babel, allow 'CAST(integer AS DATE)' even though it is illegal in Calcite SQL (#140))
         default:
           return super.connect(name, reference);
         }

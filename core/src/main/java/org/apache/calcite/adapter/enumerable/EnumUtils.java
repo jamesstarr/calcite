@@ -289,6 +289,10 @@ public class EnumUtils {
   }
 
   private static Type toInternal(RelDataType type) {
+    return toInternal(type, false);
+  }
+
+  static Type toInternal(RelDataType type, boolean forceNotNull) {
     switch (type.getSqlTypeName()) {
     case DATE:
     case TIME:
