@@ -18,7 +18,6 @@ package org.apache.calcite.sql.test;
 
 import org.apache.calcite.avatica.util.DateTimeUtils;
 import org.apache.calcite.config.CalciteConnectionProperty;
-import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.linq4j.Linq4j;
 import org.apache.calcite.plan.Strong;
 import org.apache.calcite.rel.type.RelDataType;
@@ -68,6 +67,7 @@ import com.google.common.base.Throwables;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
@@ -320,15 +320,23 @@ public abstract class SqlOperatorBaseTest {
     tester.setFor(null);
   }
 
-  protected SqlTester oracleTester() {
+  private SqlTester oracleTester() {
+    return libraryTester(SqlLibrary.ORACLE);
+  }
+
+  private SqlTester bigQueryTester() {
+    return libraryTester(SqlLibrary.BIG_QUERY);
+  }
+
+  protected SqlTester libraryTester(SqlLibrary library) {
     return tester.withOperatorTable(
             SqlLibraryOperatorTableFactory.INSTANCE
-                .getOperatorTable(SqlLibrary.STANDARD, SqlLibrary.ORACLE))
+                .getOperatorTable(SqlLibrary.STANDARD, library))
         .withConnectionFactory(
             CalciteAssert.EMPTY_CONNECTION_FACTORY
                 .with(new CalciteAssert
                     .AddSchemaSpecPostProcessor(CalciteAssert.SchemaSpec.HR))
-                .with(CalciteConnectionProperty.FUN, "oracle"));
+                .with(CalciteConnectionProperty.FUN, library.fun));
   }
 
   protected SqlTester oracleTester(SqlConformance conformance) {
@@ -1498,6 +1506,18 @@ public abstract class SqlOperatorBaseTest {
     tester.checkNull("cast(cast(null as time) as timestamp)");
     tester.checkNull("cast(cast(null as timestamp) as date)");
     tester.checkNull("cast(cast(null as timestamp) as time)");
+  }
+
+  private static Calendar getFixedCalendar() {
+    Calendar calendar = Util.calendar();
+    calendar.set(Calendar.YEAR, 2014);
+    calendar.set(Calendar.MONTH, 8);
+    calendar.set(Calendar.DATE, 7);
+    calendar.set(Calendar.HOUR_OF_DAY, 17);
+    calendar.set(Calendar.MINUTE, 8);
+    calendar.set(Calendar.SECOND, 48);
+    calendar.set(Calendar.MILLISECOND, 15);
+    return calendar;
   }
 
   /**
@@ -5479,6 +5499,28 @@ public abstract class SqlOperatorBaseTest {
     tester.checkScalar("rand_integer(2, 11)", 1, "INTEGER NOT NULL");
   }
 
+  /** Tests {@code UNIX_SECONDS} and other datetime functions from BigQuery. */
+  @Test public void testUnixSecondsFunc() {
+    SqlTester tester = bigQueryTester();
+    tester.setFor(SqlLibraryOperators.UNIX_SECONDS);
+    tester.checkScalar("unix_seconds(timestamp '1970-01-01 00:00:00')", 0,
+        "BIGINT NOT NULL");
+    tester.checkNull("unix_seconds(cast(null as timestamp))");
+    tester.checkNull("unix_millis(cast(null as timestamp))");
+    tester.checkNull("unix_micros(cast(null as timestamp))");
+    tester.checkScalar("timestamp_seconds(0)", "1970-01-01 00:00:00",
+        "TIMESTAMP(0) NOT NULL");
+    tester.checkNull("timestamp_seconds(cast(null as bigint))");
+    tester.checkNull("timestamp_millis(cast(null as bigint))");
+    tester.checkNull("timestamp_micros(cast(null as bigint))");
+    tester.checkScalar("date_from_unix_date(0)", "1970-01-01", "DATE NOT NULL");
+
+    // Have to quote the "DATE" function because we're not using the Babel
+    // parser. In the regular parser, DATE is a reserved keyword.
+    tester.checkNull("\"DATE\"(null)");
+    tester.checkScalar("\"DATE\"('1985-12-06')", "1985-12-06", "DATE NOT NULL");
+  }
+
   @Test public void testAbsFunc() {
     tester.setFor(SqlStdOperatorTable.ABS);
     tester.checkScalarExact("abs(-1)", "1");
@@ -6090,7 +6132,16 @@ public abstract class SqlOperatorBaseTest {
     tester.checkString("CURRENT_CATALOG", "", "VARCHAR(2000) NOT NULL");
   }
 
-  @Test public void testLocalTimeFunc() {
+  @Tag("slow")
+  @Test public void testLocalTimeFuncWithCurrentTime() {
+    testLocalTimeFunc(currentTimeString(LOCAL_TZ));
+  }
+
+  @Test public void testLocalTimeFuncWithFixedTime() {
+    testLocalTimeFunc(fixedTimeString(LOCAL_TZ));
+  }
+
+  private void testLocalTimeFunc(Pair<String, Hook.Closeable> pair) {
     tester.setFor(SqlStdOperatorTable.LOCALTIME);
     tester.checkScalar("LOCALTIME", TIME_PATTERN, "TIME(0) NOT NULL");
     tester.checkFails(
@@ -6101,7 +6152,6 @@ public abstract class SqlOperatorBaseTest {
         "LOCALTIME(1)", TIME_PATTERN,
         "TIME(1) NOT NULL");
 
-    final Pair<String, Hook.Closeable> pair = currentTimeString(LOCAL_TZ);
     tester.checkScalar(
         "CAST(LOCALTIME AS VARCHAR(30))",
         Pattern.compile(
@@ -6115,7 +6165,16 @@ public abstract class SqlOperatorBaseTest {
     pair.right.close();
   }
 
-  @Test public void testLocalTimestampFunc() {
+  @Tag("slow")
+  @Test public void testLocalTimestampFuncWithCurrentTime() {
+    testLocalTimestampFunc(currentTimeString(LOCAL_TZ));
+  }
+
+  @Test public void testLocalTimestampFuncWithFixedTime() {
+    testLocalTimestampFunc(fixedTimeString(LOCAL_TZ));
+  }
+
+  private void testLocalTimestampFunc(Pair<String, Hook.Closeable> pair) {
     tester.setFor(SqlStdOperatorTable.LOCALTIMESTAMP);
     tester.checkScalar(
         "LOCALTIMESTAMP", TIMESTAMP_PATTERN,
@@ -6135,8 +6194,6 @@ public abstract class SqlOperatorBaseTest {
 
     // Check that timestamp is being generated in the right timezone by
     // generating a specific timestamp.
-    final Pair<String, Hook.Closeable> pair = currentTimeString(
-        LOCAL_TZ);
     tester.checkScalar(
         "CAST(LOCALTIMESTAMP AS VARCHAR(30))",
         Pattern.compile(pair.left + "[0-9][0-9]:[0-9][0-9]"),
@@ -6148,7 +6205,16 @@ public abstract class SqlOperatorBaseTest {
     pair.right.close();
   }
 
-  @Test public void testCurrentTimeFunc() {
+  @Tag("slow")
+  @Test public void testCurrentTimeFuncWithCurrentTime() {
+    testCurrentTimeFunc(currentTimeString(CURRENT_TZ));
+  }
+
+  @Test public void testCurrentTimeFuncWithFixedTime() {
+    testCurrentTimeFunc(fixedTimeString(CURRENT_TZ));
+  }
+
+  private void testCurrentTimeFunc(Pair<String, Hook.Closeable> pair) {
     tester.setFor(SqlStdOperatorTable.CURRENT_TIME);
     tester.checkScalar(
         "CURRENT_TIME", TIME_PATTERN,
@@ -6160,7 +6226,6 @@ public abstract class SqlOperatorBaseTest {
     tester.checkScalar(
         "CURRENT_TIME(1)", TIME_PATTERN, "TIME(1) NOT NULL");
 
-    final Pair<String, Hook.Closeable> pair = currentTimeString(CURRENT_TZ);
     tester.checkScalar(
         "CAST(CURRENT_TIME AS VARCHAR(30))",
         Pattern.compile(pair.left.substring(11) + "[0-9][0-9]:[0-9][0-9]"),
@@ -6172,7 +6237,16 @@ public abstract class SqlOperatorBaseTest {
     pair.right.close();
   }
 
-  @Test public void testCurrentTimestampFunc() {
+  @Tag("slow")
+  @Test public void testCurrentTimestampFuncWithCurrentTime() {
+    testCurrentTimestampFunc(currentTimeString(CURRENT_TZ));
+  }
+
+  @Test public void testCurrentTimestampFuncWithFixedTime() {
+    testCurrentTimestampFunc(fixedTimeString(CURRENT_TZ));
+  }
+
+  private void testCurrentTimestampFunc(Pair<String, Hook.Closeable> pair) {
     tester.setFor(SqlStdOperatorTable.CURRENT_TIMESTAMP);
     tester.checkScalar(
         "CURRENT_TIMESTAMP", TIMESTAMP_PATTERN,
@@ -6187,8 +6261,6 @@ public abstract class SqlOperatorBaseTest {
         "CURRENT_TIMESTAMP(1)", TIMESTAMP_PATTERN,
         "TIMESTAMP(1) NOT NULL");
 
-    final Pair<String, Hook.Closeable> pair = currentTimeString(
-        CURRENT_TZ);
     tester.checkScalar(
         "CAST(CURRENT_TIMESTAMP AS VARCHAR(30))",
         Pattern.compile(pair.left + "[0-9][0-9]:[0-9][0-9]"),
@@ -6211,31 +6283,35 @@ public abstract class SqlOperatorBaseTest {
    * @return Time string
    */
   protected static Pair<String, Hook.Closeable> currentTimeString(TimeZone tz) {
-    final Calendar calendar;
-    final Hook.Closeable closeable;
-    if (CalciteSystemProperty.TEST_SLOW.value()) {
-      calendar = getCalendarNotTooNear(Calendar.HOUR_OF_DAY);
-      closeable = () -> { };
-    } else {
-      calendar = Util.calendar();
-      calendar.set(Calendar.YEAR, 2014);
-      calendar.set(Calendar.MONTH, 8);
-      calendar.set(Calendar.DATE, 7);
-      calendar.set(Calendar.HOUR_OF_DAY, 17);
-      calendar.set(Calendar.MINUTE, 8);
-      calendar.set(Calendar.SECOND, 48);
-      calendar.set(Calendar.MILLISECOND, 15);
-      final long timeInMillis = calendar.getTimeInMillis();
-      closeable = Hook.CURRENT_TIME.addThread(
-          (Consumer<Holder<Long>>) o -> o.set(timeInMillis));
-    }
-
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:", Locale.ROOT);
-    sdf.setTimeZone(tz);
-    return Pair.of(sdf.format(calendar.getTime()), closeable);
+    final Calendar calendar = getCalendarNotTooNear(Calendar.HOUR_OF_DAY);
+    final Hook.Closeable closeable = () -> { };
+    return Pair.of(toTimeString(tz, calendar), closeable);
   }
 
-  @Test public void testCurrentDateFunc() {
+  private static Pair<String, Hook.Closeable> fixedTimeString(TimeZone tz) {
+    final Calendar calendar = getFixedCalendar();
+    final long timeInMillis = calendar.getTimeInMillis();
+    final Hook.Closeable closeable = Hook.CURRENT_TIME.addThread(
+        (Consumer<Holder<Long>>) o -> o.set(timeInMillis));
+    return Pair.of(toTimeString(tz, calendar), closeable);
+  }
+
+  private static String toTimeString(TimeZone tz, Calendar cal) {
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:", Locale.ROOT);
+    sdf.setTimeZone(tz);
+    return sdf.format(cal.getTime());
+  }
+
+  @Tag("slow")
+  @Test public void testCurrentDateFuncWithCurrentTime() {
+    testCurrentDateFunc(currentTimeString(LOCAL_TZ));
+  }
+
+  @Test public void testCurrentDateFuncWithFixedTime() {
+    testCurrentDateFunc(fixedTimeString(LOCAL_TZ));
+  }
+
+  private void testCurrentDateFunc(Pair<String, Hook.Closeable> pair) {
     tester.setFor(SqlStdOperatorTable.CURRENT_DATE, VM_FENNEL);
 
     // A tester with a lenient conformance that allows parentheses.
@@ -6264,7 +6340,6 @@ public abstract class SqlOperatorBaseTest {
     tester1.checkType("CURRENT_TIME()", "TIME(0) NOT NULL");
 
     // Check the actual value.
-    final Pair<String, Hook.Closeable> pair = currentTimeString(LOCAL_TZ);
     final String dateString = pair.left;
     try (Hook.Closeable ignore = pair.right) {
       tester.checkScalar("CAST(CURRENT_DATE AS VARCHAR(30))",
@@ -9070,10 +9145,9 @@ public abstract class SqlOperatorBaseTest {
    * to be fixed especially cases where the query passes from the validation stage
    * and fails at runtime.
    * */
+  @Disabled("Too slow and not really a unit test")
+  @Tag("slow")
   @Test public void testArgumentBounds() {
-    if (!CalciteSystemProperty.TEST_SLOW.value()) {
-      return;
-    }
     final SqlValidatorImpl validator = (SqlValidatorImpl) tester.getValidator();
     final SqlValidatorScope scope = validator.getEmptyScope();
     final RelDataTypeFactory typeFactory = validator.getTypeFactory();

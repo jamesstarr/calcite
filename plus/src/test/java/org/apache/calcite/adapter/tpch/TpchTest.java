@@ -16,7 +16,6 @@
  */
 package org.apache.calcite.adapter.tpch;
 
-import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.util.Bug;
@@ -25,6 +24,7 @@ import org.apache.calcite.util.TestUtil;
 import com.google.common.collect.ImmutableList;
 
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -37,12 +37,11 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 /** Unit test for {@link org.apache.calcite.adapter.tpch.TpchSchema}.
  *
  * <p>Because the TPC-H data generator takes time and memory to instantiate,
- * tests that read data (that is, most tests) only run
- * if {@link org.apache.calcite.config.CalciteSystemProperty#TEST_SLOW} is set.</p>
+ * tests only run as part of slow tests.</p>
  */
+@Tag("slow")
 public class TpchTest {
-  public static final boolean ENABLE =
-      CalciteSystemProperty.TEST_SLOW.value() && TestUtil.getJavaMajorVersion() >= 7;
+  public static final boolean ENABLE = TestUtil.getJavaMajorVersion() >= 7;
 
   private static String schema(String name, String scaleFactor) {
     return "     {\n"
@@ -803,7 +802,6 @@ public class TpchTest {
 
   private CalciteAssert.AssertThat with() {
     // Only run on JDK 1.7 or higher. The io.airlift.tpch library requires it.
-    // Only run if slow tests are enabled; the library uses lots of memory.
     return CalciteAssert.model(TPCH_MODEL).enable(ENABLE);
   }
 
@@ -909,6 +907,7 @@ public class TpchTest {
   }
 
   // a bit slow
+  @Disabled
   @Test public void testQuery19() {
     checkQuery(19);
   }

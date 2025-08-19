@@ -115,6 +115,7 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.CustomTypeSafeMatcher;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
@@ -846,7 +847,10 @@ public class RelMetadataTest extends SqlToRelTestBase {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1808">[CALCITE-1808]
    * JaninoRelMetadataProvider loading cache might cause
-   * OutOfMemoryError</a>. */
+   * OutOfMemoryError</a>.
+   *
+   * Too slow to run every day, and it does not reproduce the issue. */
+  @Tag("slow")
   @Test public void testMetadataHandlerCacheLimit() {
     assumeTrue(CalciteSystemProperty.METADATA_HANDLER_CACHE_MAXIMUM_SIZE.value() < 10_000,
         "If cache size is too large, this test may fail and the test won't be to blame");
@@ -1947,7 +1951,8 @@ public class RelMetadataTest extends SqlToRelTestBase {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2205">[CALCITE-2205]</a>.
    * Since this is a performance problem, the test result does not
    * change, but takes over 15 minutes before the fix and 6 seconds after. */
-  @Test public void testPullUpPredicatesForExprsItr() {
+  @Test
+  public void testPullUpPredicatesForExprsItr() {
     final String sql = "select a.EMPNO, a.ENAME\n"
         + "from (select * from sales.emp ) a\n"
         + "join (select * from sales.emp  ) b\n"
