@@ -24,12 +24,12 @@ import org.apache.calcite.tools.PigRelBuilder;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.util.Util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.function.UnaryOperator;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Unit test for {@link PigRelBuilder}.

@@ -99,13 +99,13 @@ public class FoodmartTest {
   // 202 and others: strip away "CAST(the_year AS UNSIGNED) = 1997"
   public static Stream<FoodMartQuerySet.FoodmartQuery> queries() throws IOException {
     String idList = CalciteSystemProperty.TEST_FOODMART_QUERY_IDS.value();
-    final FoodMartQuerySet set = FoodMartQuerySet.instance();
-    final List<FoodMartQuerySet.FoodmartQuery> list = new ArrayList<>();
     if (idList == null) {
       // Avoid loading the query set in a regular test suite run. It burns too
-      // much memory. Only run when specific query IDs are provided.
+      // much memory.
       return Stream.empty();
     }
+    final FoodMartQuerySet set = FoodMartQuerySet.instance();
+    final List<FoodMartQuerySet.FoodmartQuery> list = new ArrayList<>();
     if (idList != null) {
       if (idList.endsWith(",-disabled")) {
         StringBuilder buf = new StringBuilder(idList);

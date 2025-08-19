@@ -28,7 +28,7 @@ import org.apache.calcite.sql.test.SqlValidatorTester;
 import org.apache.calcite.sql.validate.SqlValidatorCatalogReader;
 import org.apache.calcite.sql.validate.SqlValidatorImpl;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.calcite.util.Static.RESOURCE;
 

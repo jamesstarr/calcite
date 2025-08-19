@@ -16,7 +16,6 @@
  */
 package org.apache.calcite.adapter.tpcds;
 
-import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.plan.RelTraitDef;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.JoinRelType;
@@ -44,7 +43,7 @@ import java.util.function.Consumer;
 
 import static org.apache.calcite.test.Matchers.hasTree;
 
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /** Unit test for {@link org.apache.calcite.adapter.tpcds.TpcdsSchema}.
  *

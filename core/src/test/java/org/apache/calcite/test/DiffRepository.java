@@ -26,8 +26,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-import org.junit.Assert;
-import org.junit.ComparisonFailure;
+import org.junit.jupiter.api.Assertions;
+import org.opentest4j.AssertionFailedError;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
@@ -434,13 +434,8 @@ public class DiffRepository {
             expected2.replace(Util.LINE_SEPARATOR, "\n");
         String actualCanonical =
             actual.replace(Util.LINE_SEPARATOR, "\n");
-        Assert.assertEquals(
-            tag,
-            "\n"
-                + expected2Canonical,
-            "\n"
-                + actualCanonical);
-      } catch (ComparisonFailure e) {
+        Assertions.assertEquals(expected2Canonical, actualCanonical, tag);
+      } catch (AssertionFailedError e) {
         amend(expected, actual);
         throw e;
       }

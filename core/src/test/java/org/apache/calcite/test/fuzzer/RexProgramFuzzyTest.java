@@ -28,9 +28,9 @@ import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.test.RexProgramBuilderBase;
 import org.apache.calcite.util.ImmutableBitSet;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +47,8 @@ import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nonnull;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Validates that {@link org.apache.calcite.rex.RexSimplify} is able to deal with
@@ -123,14 +123,14 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
     }
   }
 
-  @Before public void setUp() {
+  @BeforeEach public void setUp() {
     super.setUp();
   }
 
   /**
    * Verifies {@code IS TRUE(IS NULL(null))} kind of expressions up to 4 level deep.
    */
-  @Ignore("[CALCITE-2556] RexSimplify: not(trueLiteral) could be simplified to false")
+  @Disabled("[CALCITE-2556] RexSimplify: not(trueLiteral) could be simplified to false")
   @Test public void testNestedCalls() {
     nestedCalls(trueLiteral);
     nestedCalls(falseLiteral);
@@ -256,16 +256,14 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
     }
     if (node.isAlwaysTrue()) {
       if (!trueLiteral.equals(opt)) {
-        assertEquals(nodeToString(node) + " isAlwaysTrue, so it should simplify to TRUE "
-                + uaf,
-            trueLiteral, opt);
+        assertEquals(trueLiteral, opt,
+            () -> nodeToString(node) + " isAlwaysTrue, so it should simplify to TRUE " + uaf);
       }
     }
     if (node.isAlwaysFalse()) {
       if (!falseLiteral.equals(opt)) {
-        assertEquals(nodeToString(node) + " isAlwaysFalse, so it should simplify to FALSE "
-                + uaf,
-            falseLiteral, opt);
+        assertEquals(falseLiteral, opt,
+            () -> nodeToString(node) + " isAlwaysFalse, so it should simplify to FALSE " + uaf);
       }
     }
     if (STRONG.isNull(node)) {
@@ -273,38 +271,37 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
       case FALSE:
         if (node.getType().getSqlTypeName() == SqlTypeName.BOOLEAN) {
           if (!falseLiteral.equals(opt)) {
-            assertEquals(nodeToString(node)
-                    + " is always null boolean, so it should simplify to FALSE " + uaf,
-                falseLiteral, opt);
+            assertEquals(falseLiteral, opt,
+                () -> nodeToString(node)
+                    + " is always null boolean, so it should simplify to FALSE " + uaf);
           }
         } else {
           if (!RexLiteral.isNullLiteral(opt)) {
-            assertEquals(nodeToString(node)
-                    + " is always null (non boolean), so it should simplify to NULL " + uaf,
-                rexBuilder.makeNullLiteral(node.getType()), opt);
+            assertEquals(rexBuilder.makeNullLiteral(node.getType()), opt,
+                () -> nodeToString(node)
+                    + " is always null (non boolean), so it should simplify to NULL " + uaf);
           }
         }
         break;
       case TRUE:
         if (node.getType().getSqlTypeName() == SqlTypeName.BOOLEAN) {
           if (!trueLiteral.equals(opt)) {
-            assertEquals(nodeToString(node)
-                    + " is always null boolean, so it should simplify to TRUE " + uaf,
-                trueLiteral, opt);
+            assertEquals(trueLiteral, opt,
+                () -> nodeToString(node)
+                    + " is always null boolean, so it should simplify to TRUE " + uaf);
           }
         } else {
           if (!RexLiteral.isNullLiteral(opt)) {
-            assertEquals(nodeToString(node)
-                    + " is always null (non boolean), so it should simplify to NULL " + uaf,
-                rexBuilder.makeNullLiteral(node.getType()), opt);
+            assertEquals(rexBuilder.makeNullLiteral(node.getType()), opt,
+                () -> nodeToString(node)
+                    + " is always null (non boolean), so it should simplify to NULL " + uaf);
           }
         }
         break;
       case UNKNOWN:
         if (!RexUtil.isNull(opt)) {
-          assertEquals(nodeToString(node)
-                  + " is always null, so it should simplify to NULL " + uaf,
-              nullBool, opt);
+          assertEquals(nullBool, opt,
+              () -> nodeToString(node) + " is always null, so it should simplify to NULL " + uaf);
         }
       }
     }
@@ -316,8 +313,9 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
           + " that has nullable type " + opt.getType());
     }
     if (!SqlTypeUtil.equalSansNullability(typeFactory, node.getType(), opt.getType())) {
-      assertEquals(nodeToString(node) + " has different type after simplification to "
-          + nodeToString(opt), node.getType(), opt.getType());
+      assertEquals(node.getType(), opt.getType(),
+          () -> nodeToString(node)
+              + " has different type after simplification to " + nodeToString(opt));
     }
   }
 
@@ -347,7 +345,7 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
     t.setStackTrace(stackTrace);
   }
 
-  @Ignore("Ignore for now: CALCITE-3457")
+  @Disabled("Ignore for now: CALCITE-3457")
   @Test public void defaultFuzzTest() {
     try {
       runRexFuzzer(DEFAULT_FUZZ_TEST_SEED, DEFAULT_FUZZ_TEST_DURATION, 1,
@@ -363,7 +361,7 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
     }
   }
 
-  @Ignore("Ignore for now: CALCITE-3457")
+  @Disabled("Ignore for now: CALCITE-3457")
   @Test public void testFuzzy() {
     runRexFuzzer(SEED, TEST_DURATION, MAX_FAILURES, TEST_ITERATIONS, TOPN_SLOWEST);
   }
@@ -465,7 +463,7 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
     checkUnknownAs(expression);
   }
 
-  @Ignore("This is just a scaffold for quick investigation of a single fuzz test")
+  @Disabled("This is just a scaffold for quick investigation of a single fuzz test")
   @Test public void singleFuzzyTest() {
     Random r = new Random();
     r.setSeed(4887662474363391810L);

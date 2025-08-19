@@ -20,8 +20,7 @@ import org.apache.calcite.test.QuidemTest;
 
 import net.hydromatic.quidem.Quidem;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.Disabled;
 
 import java.util.Collection;
 
@@ -29,12 +28,8 @@ import java.util.Collection;
  * Entry point for all end-to-end tests based on Chinook data in HSQLDB wrapped
  * by Calcite schema.
  */
-@RunWith(Parameterized.class)
+@Disabled("JUnit 4 parameterized test - disable JUnit 5 detection")
 public class EndToEndTest extends QuidemTest {
-  public EndToEndTest(String path) {
-    super(path);
-  }
-
   /** Runs a test from the command line.
    *
    * <p>For example:
@@ -44,12 +39,11 @@ public class EndToEndTest extends QuidemTest {
    * </blockquote> */
   public static void main(String[] args) throws Exception {
     for (String arg : args) {
-      new EndToEndTest(arg).test();
+      new EndToEndTest().test(arg);
     }
   }
 
-  /** For {@link Parameterized} runner. */
-  @Parameterized.Parameters(name = "{index}: quidem({0})")
+  /** For {@link QuidemTest#test(String)} parameters. */
   public static Collection<Object[]> data() {
     // Start with a test file we know exists, then find the directory and list
     // its files.

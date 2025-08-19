@@ -31,11 +31,11 @@ import org.apache.calcite.rel.rules.CoreRules;
 
 import com.google.common.collect.ImmutableList;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * HepPlannerTest is a unit test for {@link HepPlanner}. See
@@ -162,9 +162,9 @@ public class HepPlannerTest extends RelOptTestBase {
         cnt++;
       }
     }
-    assertEquals(
-        message + " should include <<" + substring + ">> exactly once, actual value is " + digest,
-        1, cnt);
+    assertEquals(1, cnt,
+        () -> message + " should include <<" + substring + ">> exactly once"
+            + ", actual value is " + digest);
   }
 
   @Test public void testMatchLimitOneTopDown() throws Exception {

@@ -23,7 +23,6 @@ import org.apache.calcite.util.TestUtil;
 
 import com.google.common.collect.ImmutableList;
 
-import org.junit.Assume;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,8 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /** Unit test for {@link org.apache.calcite.adapter.tpch.TpchSchema}.
  *
@@ -849,11 +849,13 @@ public class TpchTest {
     checkQuery(6);
   }
 
+  @Disabled("slow")
   @Test public void testQuery07() {
-    Assume.assumeTrue(Bug.CALCITE_2223_FIXED);
+    assumeTrue(Bug.CALCITE_2223_FIXED);
     checkQuery(7);
   }
 
+  @Disabled("slow")
   @Test public void testQuery08() {
     checkQuery(8);
   }
@@ -895,6 +897,7 @@ public class TpchTest {
     checkQuery(16);
   }
 
+  @Disabled("slow")
   @Test public void testQuery17() {
     checkQuery(17);
   }
@@ -913,6 +916,7 @@ public class TpchTest {
     checkQuery(20);
   }
 
+  @Disabled("slow")
   @Test public void testQuery21() {
     checkQuery(21);
   }

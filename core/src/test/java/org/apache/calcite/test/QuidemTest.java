@@ -37,10 +37,8 @@ import com.google.common.io.PatternFilenameFilter;
 
 import net.hydromatic.quidem.Quidem;
 
-import org.junit.Test;
-import org.junit.internal.Throwables;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -56,22 +54,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test that runs every Quidem file as a test.
  */
-@RunWith(Parameterized.class)
 public abstract class QuidemTest {
-  protected final String path;
-  protected final Method method;
-
-  /** Creates a QuidemTest. */
-  protected QuidemTest(String path) {
-    this.path = path;
-    this.method = findMethod(path);
-  }
-
   private static Object getEnv(String varName) {
     switch (varName) {
     case "jdk18":
@@ -101,7 +89,7 @@ public abstract class QuidemTest {
             "test_" + path.replace(File.separatorChar, '_').replaceAll("\\.iq$", ""));
     Method m;
     try {
-      m = getClass().getMethod(methodName);
+      m = getClass().getMethod(methodName, String.class);
     } catch (NoSuchMethodException e) {
       m = null;
     }
@@ -184,19 +172,22 @@ public abstract class QuidemTest {
         : s;
   }
 
-
-  @Test public void test() throws Exception {
+  @ParameterizedTest
+  @MethodSource("data")
+  public void test(String path) throws Exception {
+    final Method method = findMethod(path);
     if (method != null) {
       try {
-        method.invoke(this);
+        method.invoke(this, path);
       } catch (InvocationTargetException e) {
         Throwable cause = e.getCause();
         if (cause instanceof Exception) {
-          throw Throwables.rethrowAsException(cause);
+          throw (Exception) cause;
         }
         if (cause instanceof Error) {
           throw (Error) cause;
         }
+        throw e;
       }
     } else {
       checkRun(path);

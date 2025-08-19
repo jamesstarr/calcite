@@ -30,11 +30,10 @@ import org.apache.calcite.test.WithLex;
 
 import com.google.common.collect.ImmutableMap;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.MethodRule;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,19 +46,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Concrete child class of {@link SqlValidatorTestCase}, containing unit tests
  * for SqlAdvisor.
  */
+@ExtendWith(SqlValidatorTestCase.LexConfiguration.class)
 public class SqlAdvisorTest extends SqlValidatorTestCase {
 
   public static final SqlTestFactory ADVISOR_TEST_FACTORY =
       SqlTestFactory.INSTANCE.withValidator(SqlAdvisorValidator::new);
-
-  @Rule public MethodRule configureTester = SqlValidatorTestCase.TESTER_CONFIGURATION_RULE;
 
   private static final List<String> STAR_KEYWORD =
       Arrays.asList(
@@ -391,6 +389,14 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
       "COLUMN(EMPNO)\n"
           + "TABLE(EMP)\n";
 
+  //~ Constructors -----------------------------------------------------------
+
+  public SqlAdvisorTest() {
+    super();
+  }
+
+  //~ Methods ----------------------------------------------------------------
+
   protected List<String> getFromKeywords() {
     return FROM_KEYWORDS;
   }
@@ -425,7 +431,7 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
       }
       buf.append(token).append("\n");
     }
-    Assert.assertEquals(expected, buf.toString());
+    Assertions.assertEquals(expected, buf.toString());
   }
 
   protected void assertHint(
@@ -455,7 +461,7 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
         advisor.getCompletionHints(
             sap.sql,
             sap.pos);
-    Assert.assertEquals(
+    Assertions.assertEquals(
         expectedResults, convertCompletionHints(results));
   }
 
@@ -468,17 +474,28 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
    * @param expected Expected result after simplification.
    */
   protected void assertSimplify(String sql, String expected) {
-    SqlAdvisor advisor = tester.getFactory().createAdvisor();
+    assertSimplify(tester, sql, expected);
+  }
+
+  protected void assertSimplify(SqlTester customTester, String sql, String expected) {
+    SqlAdvisor advisor = customTester.getFactory().createAdvisor();
 
     StringAndPos sap = SqlParserUtil.findPos(sql);
     String actual = advisor.simplifySql(sap.sql, sap.cursor);
-    Assert.assertEquals(expected, actual);
+    Assertions.assertEquals(expected, actual);
   }
 
   protected void assertComplete(
       String sql,
       List<String>... expectedResults) {
     assertComplete(sql, null, expectedResults);
+  }
+
+  protected void assertComplete(
+      SqlTester customTester,
+      String sql,
+      List<String>... expectedResults) {
+    assertComplete(customTester, sql, null, expectedResults);
   }
 
   protected void assertComplete(
@@ -491,10 +508,28 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
   }
 
   protected void assertComplete(
+      SqlTester customTester,
+      String sql,
+      Map<String, String> replacements,
+      List<String>... expectedResults) {
+    List<String> expectedList = plus(expectedResults);
+    String expected = toString(new TreeSet<>(expectedList));
+    assertComplete(customTester, sql, expected, null, replacements);
+  }
+
+  protected void assertComplete(
       String sql,
       String expectedResults,
       String expectedWord) {
     assertComplete(sql, expectedResults, expectedWord, null);
+  }
+
+  protected void assertComplete(
+      SqlTester customTester,
+      String sql,
+      String expectedResults,
+      String expectedWord) {
+    assertComplete(customTester, sql, expectedResults, expectedWord, null);
   }
   /**
    * Tests that a given SQL which may be invalid or incomplete simplifies
@@ -511,16 +546,25 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
       String expectedResults,
       String expectedWord,
       Map<String, String> replacements) {
-    SqlAdvisor advisor = tester.getFactory().createAdvisor();
+    assertComplete(tester, sql, expectedResults, expectedWord, replacements);
+  }
+
+  protected void assertComplete(
+      SqlTester customTester,
+      String sql,
+      String expectedResults,
+      String expectedWord,
+      Map<String, String> replacements) {
+    SqlAdvisor advisor = customTester.getFactory().createAdvisor();
 
     StringAndPos sap = SqlParserUtil.findPos(sql);
     final String[] replaced = {null};
     List<SqlMoniker> results =
         advisor.getCompletionHints(sap.sql, sap.cursor, replaced);
-    Assert.assertEquals("Completion hints for " + sql,
-        expectedResults, convertCompletionHints(results));
+    Assertions.assertEquals(expectedResults, convertCompletionHints(results),
+        () -> "Completion hints for " + sql);
     if (expectedWord != null) {
-      Assert.assertEquals("replaced[0] for " + sql, expectedWord, replaced[0]);
+      Assertions.assertEquals(expectedWord, replaced[0], "replaced[0] for " + sql);
     } else {
       assertNotNull(replaced[0]);
     }
@@ -541,13 +585,13 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
       }
       missingReplacemenets.remove(id);
       String actualReplacement = advisor.getReplacement(result, word);
-      Assert.assertEquals(sql + ", replacement of " + word + " with " + id,
-          expectedReplacement, actualReplacement);
+      Assertions.assertEquals(expectedReplacement, actualReplacement,
+          () -> sql + ", replacement of " + word + " with " + id);
     }
     if (missingReplacemenets.isEmpty()) {
       return;
     }
-    Assert.fail("Sql " + sql + " did not produce replacement hints " + missingReplacemenets);
+    fail("Sql " + sql + " did not produce replacement hints " + missingReplacemenets);
 
   }
 
@@ -1417,16 +1461,22 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
   }
 
   @Test @WithLex(Lex.JAVA) public void testAdviceMixedCase() {
+    // Manually apply Java lexical configuration since @WithLex doesn't work in JUnit 5
+    SqlTester javaTester = tester.withLex(Lex.JAVA);
+
     String sql;
     sql = "select is^ from (select 1 isOne from emp)";
-    assertComplete(sql, "COLUMN(isOne)\n", "is",
+    assertComplete(javaTester, sql, "COLUMN(isOne)\n", "is",
         ImmutableMap.of("COLUMN(isOne)", "isOne"));
   }
 
   @Test @WithLex(Lex.JAVA) public void testAdviceExpression() {
+    // Manually apply Java lexical configuration since @WithLex doesn't work in JUnit 5
+    SqlTester javaTester = tester.withLex(Lex.JAVA);
+
     String sql;
     sql = "select s.`count`+s.co^ from (select 1 `count` from emp) s";
-    assertComplete(sql, "COLUMN(count)\n", "co",
+    assertComplete(javaTester, sql, "COLUMN(count)\n", "co",
         ImmutableMap.of("COLUMN(count)", "`count`"));
   }
 
@@ -1437,7 +1487,7 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
         ImmutableMap.of("KEYWORD(FROM)", "from"));
   }
 
-  @Ignore("Inserts are not supported by SimpleParser yet")
+  @Disabled("Inserts are not supported by SimpleParser yet")
   @Test public void testInsert() throws Exception {
     String sql;
     sql = "insert into emp(empno, mgr) select ^ from dept a";
@@ -1487,7 +1537,7 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
     assertComplete(sql, "", "nu");
   }
 
-  @Ignore("The set of completion results is empty")
+  @Disabled("The set of completion results is empty")
   @Test public void testNestTable1() throws Exception {
     String sql;
     // select scott.emp.deptno from scott.emp; # valid
@@ -1517,7 +1567,7 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
   }
 
 
-  @Ignore("The set of completion results is empty")
+  @Disabled("The set of completion results is empty")
   @Test public void testNestTable3() throws Exception {
     String sql;
     // select scott.emp.deptno from emp; # valid
@@ -1557,9 +1607,13 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
   }
 
   @WithLex(Lex.SQL_SERVER) @Test public void testNestSchemaSqlServer() throws Exception {
+    // Manually apply SQL Server lexical configuration since @WithLex doesn't work in JUnit 5
+    SqlTester sqlServerTester = tester.withLex(Lex.SQL_SERVER);
+
     String sql;
     sql = "select * from SALES.N^";
     assertComplete(
+        sqlServerTester,
         sql,
         "SCHEMA(CATALOG.SALES.NEST)\n",
         "N",
@@ -1567,6 +1621,7 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
 
     sql = "select * from SALES.[n^asfasdf";
     assertComplete(
+        sqlServerTester,
         sql,
         "SCHEMA(CATALOG.SALES.NEST)\n",
         "[n",
@@ -1574,13 +1629,14 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
 
     sql = "select * from SALES.[N^est";
     assertComplete(
+        sqlServerTester,
         sql,
         "SCHEMA(CATALOG.SALES.NEST)\n",
         "[N",
         ImmutableMap.of("SCHEMA(CATALOG.SALES.NEST)", "[NEST]"));
 
     sql = "select * from SALES.NU^";
-    assertComplete(sql, "", "NU");
+    assertComplete(sqlServerTester, sql, "", "NU");
   }
 
   @Test public void testUnion() throws Exception {
@@ -1605,12 +1661,17 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
   }
 
   @WithLex(Lex.SQL_SERVER) @Test public void testMssql() {
+    // Manually apply SQL Server lexical configuration since @WithLex doesn't work in JUnit 5
+    SqlTester sqlServerTester = tester.withLex(Lex.SQL_SERVER);
+
     String sql =
         "select 1 from [emp] union select 2 from [DEPT] a where ^ and deptno < 5";
     String simplified =
         "SELECT * FROM [DEPT] a WHERE _suggest_ and deptno < 5";
-    assertSimplify(sql, simplified);
-    assertComplete(sql, EXPR_KEYWORDS, Arrays.asList("TABLE(a)"), DEPT_COLUMNS);
+
+    // Use the SQL Server tester for assertions
+    assertSimplify(sqlServerTester, sql, simplified);
+    assertComplete(sqlServerTester, sql, EXPR_KEYWORDS, Arrays.asList("TABLE(a)"), DEPT_COLUMNS);
   }
 
 }
