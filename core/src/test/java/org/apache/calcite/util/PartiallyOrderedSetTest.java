@@ -16,8 +16,11 @@
  */
 package org.apache.calcite.util;
 
+<<<<<<< HEAD
 import org.apache.calcite.config.CalciteSystemProperty;
 
+=======
+>>>>>>> ef260b65b ([CALCITE-3141] Slow tests are not run in continuous integration (#129))
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -46,7 +49,7 @@ public class PartiallyOrderedSetTest {
   private static final boolean DEBUG = false;
 
   // 100, 250, 1000, 3000 are reasonable
-  private static final int SCALE = CalciteSystemProperty.TEST_SLOW.value() ? 250 : 50;
+  private static final int SCALE = 250;
 
   final long seed = new Random().nextLong();
   final Random random = new Random(seed);

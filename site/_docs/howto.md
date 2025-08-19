@@ -714,14 +714,20 @@ Usually the contributor is not a committer (otherwise they would be committing
 it themselves, after you gave approval in a review).
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ef260b65b ([CALCITE-3141] Slow tests are not run in continuous integration (#129))
 There are certain kinds of continuous integration tests that are not run
 automatically against the PR. These tests can be triggered explicitly by adding
 an appropriate label to the PR. For instance, you can run slow tests by adding
 the `slow-tests-needed` label. It is up to you to decide if these additional
 tests need to run before merging.
 
+<<<<<<< HEAD
 =======
 >>>>>>> 42db80129 (Site: Improve contribution guidelines for JIRA)
+=======
+>>>>>>> ef260b65b ([CALCITE-3141] Slow tests are not run in continuous integration (#129))
 If the PR has multiple commits, squash them into a single commit. The
 commit message should follow the conventions outined in
 [contribution guidelines]({{ site.baseurl }}/develop/#contributing).
@@ -888,10 +894,14 @@ Before you start:
   release notes of the previous release.  Document them in the release
   notes.  To test Guava version _x.y_, specify `-Pguava.version=x.y`
 <<<<<<< HEAD
+<<<<<<< HEAD
 * Optional tests using properties:
 =======
 * Optional extra tests:
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+* Optional tests using properties:
+>>>>>>> ef260b65b ([CALCITE-3141] Slow tests are not run in continuous integration (#129))
   * `-Dcalcite.test.db=mysql`
   * `-Dcalcite.test.db=hsqldb`
   * `-Dcalcite.test.mongodb`

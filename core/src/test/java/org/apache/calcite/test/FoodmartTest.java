@@ -115,13 +115,13 @@ public class FoodmartTest {
   // 202 and others: strip away "CAST(the_year AS UNSIGNED) = 1997"
   public static Stream<FoodMartQuerySet.FoodmartQuery> queries() throws IOException {
     String idList = CalciteSystemProperty.TEST_FOODMART_QUERY_IDS.value();
-    if (!CalciteSystemProperty.TEST_SLOW.value() && idList == null) {
-      // Avoid loading the query set in a regular test suite run. It burns too
-      // much memory.
-      return Stream.empty();
-    }
     final FoodMartQuerySet set = FoodMartQuerySet.instance();
     final List<FoodMartQuerySet.FoodmartQuery> list = new ArrayList<>();
+    if (idList == null) {
+      // Avoid loading the query set in a regular test suite run. It burns too
+      // much memory. Only run when specific query IDs are provided.
+      return Stream.empty();
+    }
     if (idList != null) {
       if (idList.endsWith(",-disabled")) {
         StringBuilder buf = new StringBuilder(idList);
@@ -148,9 +148,10 @@ public class FoodmartTest {
     return list.stream();
   }
 
+  /** Returns true if there are queries to run. Used by @EnabledIf. */
   static boolean hasQueries() {
     String idList = CalciteSystemProperty.TEST_FOODMART_QUERY_IDS.value();
-    return CalciteSystemProperty.TEST_SLOW.value() || idList != null;
+    return idList != null;
   }
 
   @ParameterizedTest

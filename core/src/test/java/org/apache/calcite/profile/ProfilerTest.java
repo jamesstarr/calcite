@@ -262,8 +262,6 @@ public class ProfilerTest {
 
   /** As {@link #testProfileScott3()}, but uses the breadth-first profiler. */
   @Disabled
-<<<<<<< HEAD
-  @Test void testProfileScott5() throws Exception {
 =======
   @Test public void testProfileScott5() throws Exception {
     scott().factory(Fluid.PROFILER_FACTORY).unordered(
