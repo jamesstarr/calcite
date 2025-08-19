@@ -16,7 +16,6 @@
  */
 package org.apache.calcite.adapter.tpcds;
 
-import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.plan.RelTraitDef;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.JoinRelType;
