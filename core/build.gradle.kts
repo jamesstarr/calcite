@@ -132,7 +132,7 @@ dependencies {
 =======
 >>>>>>> 3ab086683 ([CALCITE-2457] Migrate core parameterized to JUnit5, and make core junit5-only)
     testImplementation(kotlin("test-junit5"))
-    testRuntimeOnly("org.slf4j:slf4j-log4j12")
+    testImplementation("org.slf4j:slf4j-log4j12")
 }
 
 // There are users that reuse/extend test code (e.g. Apache Felix)

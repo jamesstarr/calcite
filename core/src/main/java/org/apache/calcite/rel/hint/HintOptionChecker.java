@@ -19,15 +19,14 @@ package org.apache.calcite.rel.hint;
 import org.apache.calcite.util.Litmus;
 
 /**
- * A {@code HintOptionChecker} checks if a {@link RelHint}'s options are valid.
+ * A {@code HintOptionChecker} that checks if a {@link RelHint}'s options are valid.
  *
  * <p>Every hint would have a validation when converting to a {@link RelHint}, the
  * validation logic is as follows:
  *
  * <ul>
- *   <li>Checks whether the hint name was already registered</li>
- *   <li>If a {@code HintOptionChecker} was registered,
- *   use it to check the hint options</li>
+ *   <li>Checks the hint name is already registered(case-insensitively)</li>
+ *   <li>If a {@code HintOptionChecker} was registered, use it to check the options</li>
  * </ul>
  *
  * <p>In {@link HintStrategyTable} the option checker is used for
@@ -50,3 +49,8 @@ public interface HintOptionChecker {
    */
   boolean checkOptions(RelHint hint, Litmus errorHandler);
 }
+<<<<<<< HEAD
+=======
+
+// End HintOptionChecker.java
+>>>>>>> fc5b46f76 ([CALCITE-3719] Add hint option checker to customize the option (#147))
