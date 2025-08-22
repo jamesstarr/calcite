@@ -79,7 +79,7 @@ dependencies {
     testImplementation("sqlline:sqlline")
     testImplementation(kotlin("stdlib-jdk8"))
     testImplementation(kotlin("test-junit5"))
-    testRuntimeOnly("org.slf4j:slf4j-log4j12")
+    testImplementation("org.slf4j:slf4j-log4j12")
 }
 
 // There are users that reuse/extend test code (e.g. Apache Felix)
