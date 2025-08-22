@@ -16,7 +16,10 @@
  */
 package org.apache.calcite.util;
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import org.apache.commons.io.input.ReaderInputStream;
+
+import com.google.common.io.CharSource;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -29,6 +32,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 
@@ -45,6 +49,7 @@ public abstract class Sources {
   public static Source of(URL url) {
     return new FileSource(url);
   }
+
 
   public static Source file(File baseDirectory, String fileName) {
     final File file = new File(fileName);
@@ -122,7 +127,7 @@ public abstract class Sources {
 
     @Override public InputStream openStream() throws IOException {
       // use charSource.asByteSource() once calcite can use guava v21+
-      return new ReaderInputStream(reader(), StandardCharsets.UTF_8);
+      return new ReaderInputStream(reader(), StandardCharsets.UTF_8.name());
     }
 
     @Override public String protocol() {
@@ -176,7 +181,7 @@ public abstract class Sources {
       this.url = null;
     }
 
-    private File urlToFile(URL url) {
+    private static File urlToFile(URL url) {
       if (!"file".equals(url.getProtocol())) {
         return null;
       }
@@ -200,58 +205,7 @@ public abstract class Sources {
     }
 
     @Override public URL url() {
-      return url;
-    }
-
-    public File file() {
-      if (file == null) {
-        throw new UnsupportedOperationException();
-      }
-      return file;
-    }
-
-    @Override public String protocol() {
-      return file != null ? "file" : url.getProtocol();
-    }
-
-    public String path() {
-      if (file != null) {
-        return file.getPath();
-      }
-      try {
-        // Decode %20 and friends
-        return url.toURI().getSchemeSpecificPart();
-      } catch (URISyntaxException e) {
-        throw new IllegalArgumentException("Unable to convert URL " + url + " to URI", e);
-      }
-    }
-
-    @Override public Reader reader() throws IOException {
-      final InputStream is;
-      if (path().endsWith(".gz")) {
-        final InputStream fis = openStream();
-        is = new GZIPInputStream(fis);
-      } else {
-        is = openStream();
-      }
-      return new InputStreamReader(is, StandardCharsets.UTF_8);
-    }
-
-    @Override public InputStream openStream() throws IOException {
-      if (file != null) {
-        return new FileInputStream(file);
-      } else {
-        return url.openStream();
-      }
-    }
-
-    @Override public Source trim(String suffix) {
-      Source x = trimOrNull(suffix);
-      return x == null ? this : x;
-    }
-
-    @Override public Source trimOrNull(String suffix) {
-      if (!urlGenerated) {
+      if (url != null) {
         final String s = Sources.trimOrNull(url.toExternalForm(), suffix);
         return s == null ? null : Sources.url(s);
       } else {
@@ -260,7 +214,7 @@ public abstract class Sources {
       }
     }
 
-    public Source append(Source child) {
+    @Override public Source append(Source child) {
       if (isFile(child)) {
         if (child.file().isAbsolute()) {
           return child;

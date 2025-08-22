@@ -68,9 +68,15 @@ public class FileReader implements Iterable<Elements> {
         doc = Jsoup.parse(source.file(), this.charset.name());
       } else if (Arrays.asList("http", "https", "ftp").contains(proto)) {
         // known protocols handled by URL
+<<<<<<< HEAD
         doc = Jsoup.parse(source.url(), (int) TimeUnit.SECONDS.toMillis(20));
       } else {
+=======
+>>>>>>> ff50dd02a ([CALCITE-3560] Additional calcite.util.Source implementation for gene… (#125))
         doc = Jsoup.parse(source.url(), (int) TimeUnit.SECONDS.toMillis(20));
+      } else {
+        // generically read this source
+        doc = Jsoup.parse(source.openStream(), charset.name(), "");
       }
     } catch (IOException e) {
       throw new FileReaderException("Cannot read " + source, e);

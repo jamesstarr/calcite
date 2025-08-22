@@ -16,24 +16,25 @@
  */
 package org.apache.calcite.util;
 
+import com.google.common.io.CharSource;
+
 import org.junit.jupiter.api.Test;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
+>>>>>>> ff50dd02a ([CALCITE-3560] Additional calcite.util.Source implementation for gene… (#125))
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+<<<<<<< HEAD
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.stream.Stream;
+=======
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import static org.apache.calcite.util.Sources.file;
 import static org.apache.calcite.util.Sources.url;
@@ -41,6 +42,7 @@ import static org.apache.calcite.util.Sources.url;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Tests for {@link Source}.
@@ -56,6 +58,21 @@ public class SourceTest {
     }
     throw new IllegalStateException(
         "Unsupported operation system detected. Both / and c:/ produce relative paths");
+  }
+
+  /**
+   * Read lines from {@link CharSource}
+   */
+  @Test public void charSource() throws IOException {
+    Source source = Sources.fromCharSource(CharSource.wrap("a\nb"));
+    for (Reader r: Arrays.asList(source.reader(),
+        new InputStreamReader(source.openStream(), StandardCharsets.UTF_8.name()))) {
+      try (BufferedReader reader = new BufferedReader(r)) {
+        assertEquals("a", reader.readLine());
+        assertEquals("b", reader.readLine());
+        assertNull(reader.readLine());
+      }
+    }
   }
 
   @Test public void testAppendWithSpaces() {

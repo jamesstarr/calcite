@@ -862,9 +862,6 @@ public class TpchTest {
     checkQuery(7);
   }
 
-<<<<<<< HEAD
-  @Disabled("slow")
-=======
   @Test public void testQuery08() {
     checkQuery(8);
   }
@@ -906,7 +903,6 @@ public class TpchTest {
     checkQuery(16);
   }
 
->>>>>>> ef260b65b ([CALCITE-3141] Slow tests are not run in continuous integration (#129))
   @Test public void testQuery17() {
     checkQuery(17);
   }
@@ -916,11 +912,6 @@ public class TpchTest {
   }
 
   // a bit slow
-<<<<<<< HEAD
-  @Timeout(value = 10, unit = TimeUnit.MINUTES)
-  @Disabled("Too slow, more than 5 min")
-  @Test void testQuery19() {
-=======
   @Disabled
   @Test public void testQuery19() {
     checkQuery(19);
@@ -933,7 +924,6 @@ public class TpchTest {
 <<<<<<< HEAD
   @Disabled("slow")
 =======
->>>>>>> ef260b65b ([CALCITE-3141] Slow tests are not run in continuous integration (#129))
   @Test public void testQuery21() {
     checkQuery(21);
   }

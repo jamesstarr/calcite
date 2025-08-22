@@ -83,6 +83,7 @@ dependencies {
     implementation("org.apache.commons:commons-dbcp2")
     implementation("org.apache.commons:commons-lang3")
     implementation("commons-io:commons-io")
+<<<<<<< HEAD
 =======
     implementation("org.apache.calcite.avatica:avatica-server")
 =======
@@ -90,6 +91,8 @@ dependencies {
     implementation("org.apache.commons:commons-dbcp2")
     implementation("org.apache.commons:commons-lang3")
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> ff50dd02a ([CALCITE-3560] Additional calcite.util.Source implementation for gene… (#125))
     implementation("org.codehaus.janino:commons-compiler")
     implementation("org.codehaus.janino:janino")
     implementation("org.slf4j:slf4j-api")
