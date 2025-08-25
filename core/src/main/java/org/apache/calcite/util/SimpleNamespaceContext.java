@@ -72,8 +72,9 @@ public class SimpleNamespaceContext implements NamespaceContext {
     prefixes.add(prefix);
   }
 }
-<<<<<<< HEAD
+
+// End SimpleNamespaceContext.java
 =======
 
 // End SimpleNamespaceContext.java
->>>>>>> ed4e2bca4 ([CALCITE-5263] Improve XmlFunctions by using an XML DocumentBuilder (#153))
+>>>>>>> cb6ae4e4b (DX-60250: [CALCITE-5263] Improve XmlFunctions by using an XML DocumentBuilder (Manual change for fixing CVE-2022-39135))
