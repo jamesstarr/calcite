@@ -52,3 +52,4 @@ nb-configuration.xml
 
 # Local configuration file (sdk path, etc)
 local.properties
+spark/build

@@ -20,10 +20,11 @@ import org.apache.calcite.config.CalciteSystemProperty;
 import org.apache.calcite.linq4j.tree.Primitive;
 import org.apache.calcite.util.IntegerIntervalSet;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -38,6 +39,9 @@ import java.util.stream.Stream;
  */
 @Tag("slow")
 public class FoodmartTest {
+
+  private static CalciteAssert.AssertThat assertFoodmart;
+  private static CalciteAssert.AssertThat assertFoodmartLattice;
 
   private static final int[] DISABLED_IDS = {
       58, 83, 202, 204, 205, 206, 207, 209, 211, 231, 247, 275, 309, 383, 384,
@@ -96,14 +100,25 @@ public class FoodmartTest {
   // 2542: timeout. Running big, simple SQL cartesian product.
   //
 
+  @BeforeAll
+  public static void setupAsserts() {
+    assertFoodmart = CalciteAssert.that()
+            .with(CalciteAssert.Config.FOODMART_CLONE)
+            .pooled();
+    assertFoodmartLattice = CalciteAssert.that()
+            .with(CalciteAssert.Config.JDBC_FOODMART_WITH_LATTICE)
+            .pooled();
+  }
+
+  @AfterAll
+  public static void tearDownAsserts() {
+    assertFoodmart = null;
+    assertFoodmartLattice = null;
+  }
+
   // 202 and others: strip away "CAST(the_year AS UNSIGNED) = 1997"
   public static Stream<FoodMartQuerySet.FoodmartQuery> queries() throws IOException {
     String idList = CalciteSystemProperty.TEST_FOODMART_QUERY_IDS.value();
-    if (idList == null) {
-      // Avoid loading the query set in a regular test suite run. It burns too
-      // much memory.
-      return Stream.empty();
-    }
     final FoodMartQuerySet set = FoodMartQuerySet.instance();
     final List<FoodMartQuerySet.FoodmartQuery> list = new ArrayList<>();
     if (idList != null) {
@@ -122,51 +137,43 @@ public class FoodmartTest {
         }
       }
     } else {
+      int idLimit = 200; // Limit the number of tests to avoid timeout
+      if (CalciteSystemProperty.TEST_SLOW.value()) {
+        idLimit = -1; // no limit
+      }
       for (FoodMartQuerySet.FoodmartQuery query1 : set.queries.values()) {
         if (Primitive.asList(DISABLED_IDS).contains(query1.id)) {
           continue;
         }
         list.add(query1);
+        if (idLimit != -1 && list.size() >= idLimit) {
+          break;
+        }
       }
     }
     return list.stream();
   }
 
-  /** Returns true if there are queries to run. Used by @EnabledIf. */
-  static boolean hasQueries() {
-    String idList = CalciteSystemProperty.TEST_FOODMART_QUERY_IDS.value();
-    return idList != null;
-  }
-
-  @ParameterizedTest
+  @ParameterizedTest(name = "{0}")
   @MethodSource("queries")
-  @EnabledIf("hasQueries")
   public void test(FoodMartQuerySet.FoodmartQuery query) {
     Assertions.assertTimeoutPreemptively(Duration.ofMinutes(2), () -> {
-      CalciteAssert.that()
-        .with(CalciteAssert.Config.FOODMART_CLONE)
-        .pooled()
-        .query(query.sql)
-        .runs();
+      assertFoodmart.query(query.sql).runs();
     });
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "{0}")
   @Disabled
   @MethodSource("queries")
-  @EnabledIf("hasQueries")
   public void testWithLattice(FoodMartQuerySet.FoodmartQuery query) {
     Assertions.assertTimeoutPreemptively(Duration.ofMinutes(2), () -> {
-      CalciteAssert.that()
-        .with(CalciteAssert.Config.JDBC_FOODMART_WITH_LATTICE)
-        .pooled()
-        .withDefaultSchema("foodmart")
-        .query(query.sql)
-        .enableMaterializations(true)
-        .runs();
+      assertFoodmartLattice
+              .withDefaultSchema("foodmart")
+              .query(query.sql)
+              .enableMaterializations(true)
+              .runs();
     });
   }
-
 }
 
 // End FoodmartTest.java
