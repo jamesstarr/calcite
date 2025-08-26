@@ -74,6 +74,10 @@ public class FoodMartQuerySet {
   public static class FoodmartQuery {
     public int id;
     public String sql;
+
+    @Override public String toString() {
+      return "id=" + id;
+    }
   }
 }
 
