@@ -281,3 +281,8 @@ public class XmlFunctions {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End XmlFunctions.java
+>>>>>>> ed4e2bca4 ([CALCITE-5263] Improve XmlFunctions by using an XML DocumentBuilder (#153))

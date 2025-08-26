@@ -31,14 +31,17 @@ import java.nio.file.Path;
 import java.util.function.Supplier;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
+>>>>>>> ed4e2bca4 ([CALCITE-5263] Improve XmlFunctions by using an XML DocumentBuilder (#153))
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit test for the methods in {@link SqlFunctions} that implement Xml processing functions.
  */
+<<<<<<< HEAD
 class SqlXmlFunctionsTest {
+=======
+public class SqlXmlFunctionsTest {
 
   private static final String XML = "<document>string</document>";
   private static final String XSLT =
@@ -48,7 +51,7 @@ class SqlXmlFunctionsTest {
   private static @Nullable String xsltExternalEntity = null;
 
   @BeforeAll
-  static void setup() throws Exception {
+  public static void setup() throws Exception {
     final Path testFile = Files.createTempFile("foo", "temp");
     testFile.toFile().deleteOnExit();
     final String filePath = "file:///" + testFile.toAbsolutePath();
@@ -59,7 +62,7 @@ class SqlXmlFunctionsTest {
   }
 
 
-  @Test void testExtractValue() {
+  @Test public void testExtractValue() {
     assertExtractValue("<a>ccc<b>ddd</b></a>", "/a", is("ccc"));
 
     String input = "<a>ccc<b>ddd</b></a>";
@@ -96,25 +99,7 @@ class SqlXmlFunctionsTest {
     assertXmlTransformFailed(XML, xsltExternalEntity, Matchers.expectThrowable(expected));
   }
 
-  @Test void testExistsNode() {
-    assertExistsNode(null, "", null, nullValue());
-    assertExistsNode("", null, null, nullValue());
-
-    String xpath = "<";
-    String namespace = "a";
-    String message =
-        "Invalid input for EXISTSNODE xpath: '" + xpath + "', namespace: '" + namespace + "'";
-    CalciteException expected = new CalciteException(message, null);
-    assertExistsNodeFailed("", xpath, namespace, Matchers.expectThrowable(expected));
-  }
-
-  private void assertExistsNode(String xml, String xpath, String namespace,
-      Matcher<? super Integer> matcher) {
-    String methodDesc = BuiltInMethod.EXISTS_NODE.getMethodName()
-        + "(" + String.join(", ", xml, xpath, namespace) + ")";
-    assertThat(methodDesc, XmlFunctions.existsNode(xml, xpath, namespace), matcher);
-  }
-
+>>>>>>> ed4e2bca4 ([CALCITE-5263] Improve XmlFunctions by using an XML DocumentBuilder (#153))
   private void assertExistsNodeFailed(String xml, String xpath, String namespace,
                                       Matcher<? super Throwable> matcher) {
     String methodDesc = BuiltInMethod.EXISTS_NODE.getMethodName()
@@ -122,6 +107,7 @@ class SqlXmlFunctionsTest {
     assertFailed(methodDesc, () -> XmlFunctions.existsNode(xml, xpath, namespace), matcher);
   }
 
+<<<<<<< HEAD
   private void assertExtractXml(String xml, String xpath, String namespace,
       Matcher<? super String> matcher) {
     String methodDesc = BuiltInMethod.EXTRACT_XML.getMethodName()
@@ -129,6 +115,7 @@ class SqlXmlFunctionsTest {
     assertThat(methodDesc, XmlFunctions.extractXml(xml, xpath, namespace), matcher);
   }
 
+=======
   private void assertXmlTransformFailed(String xml, String xslt,
                                         Matcher<? super Throwable> matcher) {
     String methodDesc =
@@ -160,3 +147,8 @@ class SqlXmlFunctionsTest {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End SqlXmlFunctionsTest.java
+>>>>>>> ed4e2bca4 ([CALCITE-5263] Improve XmlFunctions by using an XML DocumentBuilder (#153))

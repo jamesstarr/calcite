@@ -93,10 +93,7 @@ import org.apache.calcite.runtime.SqlFunctions;
 import org.apache.calcite.runtime.SqlFunctions.FlatProductInputType;
 import org.apache.calcite.runtime.Utilities;
 import org.apache.calcite.runtime.XmlFunctions;
-import org.apache.calcite.runtime.rtti.RuntimeTypeInformation;
-import org.apache.calcite.runtime.variant.VariantNull;
-import org.apache.calcite.runtime.variant.VariantSqlValue;
-import org.apache.calcite.runtime.variant.VariantValue;
+>>>>>>> ed4e2bca4 ([CALCITE-5263] Improve XmlFunctions by using an XML DocumentBuilder (#153))
 import org.apache.calcite.schema.FilterableTable;
 import org.apache.calcite.schema.ModifiableTable;
 import org.apache.calcite.schema.ProjectableFilterableTable;
@@ -330,6 +327,10 @@ public enum BuiltInMethod {
   FROM_BASE64(SqlFunctions.class, "fromBase64", String.class),
   MD5(SqlFunctions.class, "md5", String.class),
   SHA1(SqlFunctions.class, "sha1", String.class),
+  EXTRACT_VALUE(XmlFunctions.class, "extractValue", String.class, String.class),
+  XML_TRANSFORM(XmlFunctions.class, "xmlTransform", String.class, String.class),
+  EXTRACT_XML(XmlFunctions.class, "extractXml", String.class, String.class, String.class),
+  EXISTS_NODE(XmlFunctions.class, "existsNode", String.class, String.class, String.class),
   JSONIZE(JsonFunctions.class, "jsonize", Object.class),
   DEJSONIZE(JsonFunctions.class, "dejsonize", String.class),
   JSON_VALUE_EXPRESSION(JsonFunctions.class, "jsonValueExpression",
@@ -390,7 +391,6 @@ public enum BuiltInMethod {
   RAND_INTEGER_SEED(RandomFunction.class, "randIntegerSeed", int.class,
       int.class),
   TANH(SqlFunctions.class, "tanh", long.class),
->>>>>>> 82a3d04d6 ([CALCITE-3695] Implement TANH function (#96))
   TRUNCATE(SqlFunctions.class, "truncate", String.class, int.class),
   TRUNCATE_OR_PAD(SqlFunctions.class, "truncateOrPad", String.class, int.class),
   TRIM(SqlFunctions.class, "trim", boolean.class, boolean.class, String.class,
