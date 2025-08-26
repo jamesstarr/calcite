@@ -114,6 +114,7 @@ public abstract class Aggregate extends SingleRel implements Hintable {
   protected final List<AggregateCall> aggCalls;
   protected final ImmutableBitSet groupSet;
   public final ImmutableList<ImmutableBitSet> groupSets;
+  protected final ImmutableList<RelHint> hints;
 
   //~ Constructors -----------------------------------------------------------
 
@@ -152,6 +153,7 @@ public abstract class Aggregate extends SingleRel implements Hintable {
       List<ImmutableBitSet> groupSets,
       List<AggregateCall> aggCalls) {
     super(cluster, traitSet, input);
+    this.hints = ImmutableList.copyOf(Objects.requireNonNull(hints));
     this.aggCalls = ImmutableList.copyOf(aggCalls);
     this.groupSet = Objects.requireNonNull(groupSet);
     if (groupSets == null) {
@@ -470,7 +472,7 @@ public abstract class Aggregate extends SingleRel implements Hintable {
   }
 
   @Override public ImmutableList<RelHint> getHints() {
-    return ImmutableList.of();
+    return hints;
   }
 
   /**
