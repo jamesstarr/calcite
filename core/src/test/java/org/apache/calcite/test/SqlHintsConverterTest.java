@@ -66,15 +66,11 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.UnaryOperator;
@@ -328,10 +324,9 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
   @Test public void testHintsForCalc() {
     final String sql = "select /*+ resource(mem='1024MB')*/ ename, sal, deptno from emp";
     final RelNode rel = tester.convertSqlToRel(sql).rel;
-    final RelHint hint = RelHint.of(
-        Collections.emptyList(),
-        "RESOURCE",
-        new HashMap<String, String>() {{ put("MEM", "1024MB"); }});
+    final RelHint hint = RelHint.builder("RESOURCE")
+        .hintOption("MEM", "1024MB")
+        .build();
     // planner rule to convert Project to Calc.
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(ProjectToCalcRule.INSTANCE)
@@ -347,10 +342,11 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
         + "ename, job, sal, dept.name\n"
         + "from emp join dept on emp.deptno = dept.deptno";
     final RelNode rel = tester.convertSqlToRel(sql).rel;
-    final RelHint hint = RelHint.of(
-        Collections.singletonList(0),
-        "USE_HASH_JOIN",
-        Arrays.asList("EMP", "DEPT"));
+    final RelHint hint = RelHint.builder("USE_HASH_JOIN")
+        .inheritPath(0)
+        .hintOption("EMP")
+        .hintOption("DEPT")
+        .build();
     // Validate Hep planner.
     HepProgram program = new HepProgramBuilder()
         .addRuleInstance(MockJoinRule.INSTANCE)
@@ -371,10 +367,11 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
         .withClusterFactory(
           relOptCluster -> RelOptCluster.create(planner, relOptCluster.getRexBuilder()));
     final RelNode rel = tester1.convertSqlToRel(sql).rel;
-    final RelHint hint = RelHint.of(
-        Collections.singletonList(0),
-        "USE_HASH_JOIN",
-        Arrays.asList("EMP", "DEPT"));
+    final RelHint hint = RelHint.builder("USE_HASH_JOIN")
+        .inheritPath(0)
+        .hintOption("EMP")
+        .hintOption("DEPT")
+        .build();
     // Validate Volcano planner.
     RuleSet ruleSet = RuleSets.ofList(
         new MockEnumerableJoinRule(hint), // Rule to validate the hint.
@@ -641,14 +638,16 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
 
     static final String HINT = "properties(k1='v1', k2='v2'), index(ename), no_hash_join";
 
-    static final RelHint PROPS_HINT = RelHint.of(new ArrayList<>(),
-        "PROPERTIES",
-        ImmutableMap.of("K1", "v1", "K2", "v2"));
+    static final RelHint PROPS_HINT = RelHint.builder("PROPERTIES")
+        .hintOption("K1", "v1")
+        .hintOption("K2", "v2")
+        .build();
 
-    static final RelHint IDX_HINT = RelHint.of(new ArrayList<>(), "INDEX",
-        ImmutableList.of("ENAME"));
+    static final RelHint IDX_HINT = RelHint.builder("INDEX")
+        .hintOption("ENAME")
+        .build();
 
-    static final RelHint JOIN_HINT = RelHint.of(new ArrayList<>(), "NO_HASH_JOIN");
+    static final RelHint JOIN_HINT = RelHint.builder("NO_HASH_JOIN").build();
 
     static final HintStrategyTable HINT_STRATEGY_TABLE = createHintStrategies();
 
@@ -670,15 +669,15 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
      */
     static HintStrategyTable createHintStrategies(HintStrategyTable.Builder builder) {
       return builder
-        .addHintStrategy("no_hash_join", HintStrategies.JOIN)
-        .addHintStrategy("time_zone", HintStrategies.SET_VAR)
-        .addHintStrategy("REPARTITION", HintStrategies.SET_VAR)
-        .addHintStrategy("index", HintStrategies.TABLE_SCAN)
-        .addHintStrategy("properties", HintStrategies.TABLE_SCAN)
-        .addHintStrategy(
+        .hintStrategy("no_hash_join", HintStrategies.JOIN)
+        .hintStrategy("time_zone", HintStrategies.SET_VAR)
+        .hintStrategy("REPARTITION", HintStrategies.SET_VAR)
+        .hintStrategy("index", HintStrategies.TABLE_SCAN)
+        .hintStrategy("properties", HintStrategies.TABLE_SCAN)
+        .hintStrategy(
             "resource", HintStrategies.or(
             HintStrategies.PROJECT, HintStrategies.AGGREGATE, HintStrategies.CALC))
-        .addHintStrategy("AGG_STRATEGY",
+        .hintStrategy("AGG_STRATEGY",
             HintStrategies.AGGREGATE,
             (hint, errorHandler) -> errorHandler.check(
                 hint.listOptions.size() == 1
@@ -688,7 +687,7 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
                     + "allowed options: [ONE_PHASE, TWO_PHASE]",
                 hint.hintName
             ))
-        .addHintStrategy("use_hash_join",
+        .hintStrategy("use_hash_join",
           HintStrategies.cascade(HintStrategies.JOIN,
             HintStrategies.explicit((hint, rel) -> {
               if (!(rel instanceof LogicalJoin)) {

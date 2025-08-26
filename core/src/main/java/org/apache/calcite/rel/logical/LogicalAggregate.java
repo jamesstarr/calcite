@@ -151,12 +151,17 @@ public final class LogicalAggregate extends Aggregate {
       ImmutableBitSet groupSet,
       List<ImmutableBitSet> groupSets, List<AggregateCall> aggCalls) {
     assert traitSet.containsIfApplicable(Convention.NONE);
-    return new LogicalAggregate(getCluster(), traitSet, input,
+    return new LogicalAggregate(getCluster(), traitSet, getHints(), input,
         groupSet, groupSets, aggCalls);
   }
 
   @Override public RelNode accept(RelShuttle shuttle) {
     return shuttle.visit(this);
+  }
+
+  @Override public RelNode withHints(List<RelHint> hintList) {
+    return new LogicalAggregate(getCluster(), traitSet, hintList, input,
+        groupSet, groupSets, aggCalls);
   }
 
 }

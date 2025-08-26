@@ -33,6 +33,7 @@ import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableFunctionScan;
 import org.apache.calcite.rel.core.TableModify;
 import org.apache.calcite.rel.core.Window;
+import org.apache.calcite.rel.hint.RelHint;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeField;
@@ -91,6 +92,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -3223,6 +3225,113 @@ public class RelBuilderTest {
             + "  LogicalTableScan(table=[[scott, EMP]])\n";
     assertThat(root, hasTree(expected));
   }
-}
 
+  @Test public void testHints() {
+    final RelHint indexHint = RelHint.builder("INDEX")
+        .hintOption("_idx1")
+        .hintOption("_idx2")
+        .build();
+    final RelHint propsHint = RelHint.builder("PROPERTIES")
+        .inheritPath(0)
+        .hintOption("parallelism", "3")
+        .hintOption("mem", "20Mb")
+        .build();
+    final RelHint noHashJoinHint = RelHint.builder("NO_HASH_JOIN")
+        .inheritPath(0)
+        .build();
+    final RelBuilder builder = RelBuilder.create(config().build());
+    // Equivalent SQL:
+    //   SELECT *
+    //   FROM emp /*+ INDEX(_idx1, _idx2) */
+    final RelNode root = builder
+            .scan("EMP")
+            .hints(indexHint)
+            .build();
+    assertThat(root,
+        hasHints("[[INDEX inheritPath:[] options:[_idx1, _idx2]]]"));
+    // Equivalent SQL:
+    //   SELECT /*+  PROPERTIES(parallelism='3', mem='20Mb') */
+    //   *
+    //   FROM emp /*+ INDEX(_idx1, _idx2) */
+    final RelNode root1 = builder
+            .scan("EMP")
+            .hints(indexHint, propsHint)
+            .build();
+    assertThat(root1,
+        hasHints("[[INDEX inheritPath:[] options:[_idx1, _idx2]], "
+            + "[PROPERTIES inheritPath:[0] options:{parallelism=3, mem=20Mb}]]"));
+    // Equivalent SQL:
+    //   SELECT /*+ NO_HASH_JOIN */
+    //   *
+    //   FROM emp
+    //     join dept
+    //     on emp.deptno = dept.deptno
+    final RelNode root2 = builder
+        .scan("EMP")
+        .scan("DEPT")
+        .join(JoinRelType.INNER,
+            builder.equals(
+                builder.field(2, 0, "DEPTNO"),
+                builder.field(2, 1, "DEPTNO")))
+        .hints(noHashJoinHint)
+        .build();
+    assertThat(root2, hasHints("[[NO_HASH_JOIN inheritPath:[0]]]"));
+  }
+
+  @Test public void testHintsOnEmptyStack() {
+    final RelHint indexHint = RelHint.builder("INDEX")
+        .hintOption("_idx1")
+        .hintOption("_idx2")
+        .build();
+    // Attach hints on empty stack.
+    final AssertionError error = assertThrows(
+        AssertionError.class,
+        () -> RelBuilder.create(config().build()).hints(indexHint),
+        "hints() should fail on empty stack");
+    assertThat(error.getMessage(),
+        containsString("There is no relational expression to attach the hints"));
+  }
+
+  @Test public void testHintsOnNonHintable() {
+    final RelHint indexHint = RelHint.builder("INDEX")
+        .hintOption("_idx1")
+        .hintOption("_idx2")
+        .build();
+    // Attach hints on non hintable.
+    final AssertionError error1 = assertThrows(
+        AssertionError.class,
+        () -> {
+          final RelBuilder builder = RelBuilder.create(config().build());
+          // Equivalent SQL:
+          //   SELECT *
+          //   FROM emp
+          //   WHERE EMPNO = 124
+          builder
+              .scan("EMP")
+              .filter(
+                  builder.equals(
+                      builder.field("EMPNO"),
+                      builder.literal(124)))
+              .hints(indexHint);
+        },
+        "hints() should fail on non Hintable relational expression");
+    assertThat(error1.getMessage(),
+        containsString("The top relational expression is not a Hintable"));
+  }
+
+  /** Creates a matcher that matches if a RelNode has the expected hints. */
+  private static Matcher<RelNode> hasHints(String expected) {
+    return new org.hamcrest.CustomTypeSafeMatcher<RelNode>("has hints " + expected) {
+      @Override protected boolean matchesSafely(RelNode relNode) {
+        if (!(relNode instanceof org.apache.calcite.rel.hint.Hintable)) {
+          return false;
+        }
+        org.apache.calcite.rel.hint.Hintable hintable =
+            (org.apache.calcite.rel.hint.Hintable) relNode;
+        String actual = hintable.getHints().toString();
+        return actual.equals(expected);
+      }
+    };
+  }
+}
 // End RelBuilderTest.java
