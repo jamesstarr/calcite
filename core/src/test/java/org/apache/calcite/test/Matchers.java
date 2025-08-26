@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
@@ -255,29 +254,6 @@ public class Matchers {
       }
     };
 =======
-  }
-
-  /**
-   * Creates a matcher that matches if the examined value is expected throwable.
-   *
-   * @param expected Throwable to match.
-   */
-  public static Matcher<? super Throwable> expectThrowable(Throwable expected) {
-    return new BaseMatcher<Throwable>() {
-      @Override public boolean matches(Object item) {
-        if (!(item instanceof Throwable)) {
-          return false;
-        }
-        Throwable error = (Throwable) item;
-        return expected != null
-            && Objects.equals(error.getClass(), expected.getClass())
-            && Objects.equals(error.getMessage(), expected.getMessage());
-      }
-
-      @Override public void describeTo(Description description) {
-        description.appendText("is ").appendText(expected.toString());
-      }
-    };
   }
 
   /**

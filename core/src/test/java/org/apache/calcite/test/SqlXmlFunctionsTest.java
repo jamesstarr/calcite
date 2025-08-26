@@ -38,9 +38,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Unit test for the methods in {@link SqlFunctions} that implement Xml processing functions.
  */
-<<<<<<< HEAD
-class SqlXmlFunctionsTest {
-=======
 public class SqlXmlFunctionsTest {
 
   private static final String XML = "<document>string</document>";
@@ -99,7 +96,6 @@ public class SqlXmlFunctionsTest {
     assertXmlTransformFailed(XML, xsltExternalEntity, Matchers.expectThrowable(expected));
   }
 
->>>>>>> ed4e2bca4 ([CALCITE-5263] Improve XmlFunctions by using an XML DocumentBuilder (#153))
   private void assertExistsNodeFailed(String xml, String xpath, String namespace,
                                       Matcher<? super Throwable> matcher) {
     String methodDesc = BuiltInMethod.EXISTS_NODE.getMethodName()
@@ -107,15 +103,6 @@ public class SqlXmlFunctionsTest {
     assertFailed(methodDesc, () -> XmlFunctions.existsNode(xml, xpath, namespace), matcher);
   }
 
-<<<<<<< HEAD
-  private void assertExtractXml(String xml, String xpath, String namespace,
-      Matcher<? super String> matcher) {
-    String methodDesc = BuiltInMethod.EXTRACT_XML.getMethodName()
-        + "(" + String.join(", ", xml, xpath, namespace) + ")";
-    assertThat(methodDesc, XmlFunctions.extractXml(xml, xpath, namespace), matcher);
-  }
-
-=======
   private void assertXmlTransformFailed(String xml, String xslt,
                                         Matcher<? super Throwable> matcher) {
     String methodDesc =
@@ -151,4 +138,3 @@ public class SqlXmlFunctionsTest {
 =======
 
 // End SqlXmlFunctionsTest.java
->>>>>>> ed4e2bca4 ([CALCITE-5263] Improve XmlFunctions by using an XML DocumentBuilder (#153))

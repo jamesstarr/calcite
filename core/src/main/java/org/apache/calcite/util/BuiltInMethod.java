@@ -92,8 +92,11 @@ import org.apache.calcite.runtime.SortedMultiMap;
 import org.apache.calcite.runtime.SqlFunctions;
 import org.apache.calcite.runtime.SqlFunctions.FlatProductInputType;
 import org.apache.calcite.runtime.Utilities;
+<<<<<<< HEAD
 import org.apache.calcite.runtime.XmlFunctions;
 >>>>>>> ed4e2bca4 ([CALCITE-5263] Improve XmlFunctions by using an XML DocumentBuilder (#153))
+=======
+>>>>>>> f4d19cad2 (Revert "[CALCITE-5263] Improve XmlFunctions by using an XML DocumentB… (#155))
 import org.apache.calcite.schema.FilterableTable;
 import org.apache.calcite.schema.ModifiableTable;
 import org.apache.calcite.schema.ProjectableFilterableTable;
@@ -327,10 +330,6 @@ public enum BuiltInMethod {
   FROM_BASE64(SqlFunctions.class, "fromBase64", String.class),
   MD5(SqlFunctions.class, "md5", String.class),
   SHA1(SqlFunctions.class, "sha1", String.class),
-  EXTRACT_VALUE(XmlFunctions.class, "extractValue", String.class, String.class),
-  XML_TRANSFORM(XmlFunctions.class, "xmlTransform", String.class, String.class),
-  EXTRACT_XML(XmlFunctions.class, "extractXml", String.class, String.class, String.class),
-  EXISTS_NODE(XmlFunctions.class, "existsNode", String.class, String.class, String.class),
   JSONIZE(JsonFunctions.class, "jsonize", Object.class),
   DEJSONIZE(JsonFunctions.class, "dejsonize", String.class),
   JSON_VALUE_EXPRESSION(JsonFunctions.class, "jsonValueExpression",
