@@ -159,6 +159,11 @@ public class VolcanoRuleCall extends RelOptRuleCall {
         return;
       }
 
+      if (isRuleExcluded()) {
+        LOGGER.debug("Rule [{}] not fired due to exclusion hint", getRule());
+        return;
+      }
+
       for (int i = 0; i < rels.length; i++) {
         RelNode rel = rels[i];
         RelSubset subset = volcanoPlanner.getSubset(rel);
