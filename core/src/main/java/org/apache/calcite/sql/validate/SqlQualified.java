@@ -36,7 +36,7 @@ public class SqlQualified {
   public final SqlValidatorNamespace namespace;
   public final SqlIdentifier identifier;
 
-  private SqlQualified(SqlValidatorScope scope, int prefixLength,
+  public SqlQualified(SqlValidatorScope scope, int prefixLength,
       SqlValidatorNamespace namespace, SqlIdentifier identifier) {
     Util.discard(scope);
     this.prefixLength = prefixLength;

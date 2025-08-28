@@ -6983,6 +6983,14 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
      */
     VALID
   }
+
+  /**
+   * Used for implementing the dot operator.
+   */
+  public SqlQualified ensureQualified(
+      DelegatingScope scope, SqlIdentifier identifier) {
+    return null;
+  }
 }
 
 // End SqlValidatorImpl.java
