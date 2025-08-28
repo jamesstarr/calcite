@@ -226,8 +226,15 @@ public abstract class DelegatingScope implements SqlValidatorScope {
       return SqlQualified.create(this, 1, null, identifier);
     }
 
+    SqlQualified qualified = validator.ensureQualified(this, identifier);
+    if (qualified != null) {
+      return qualified;
+    }
+
     final SqlIdentifier previous = identifier;
     final SqlNameMatcher nameMatcher = validator.catalogReader.nameMatcher();
+
+
     String columnName;
     final String tableName;
     final SqlValidatorNamespace namespace;
