@@ -347,6 +347,9 @@ LogicalJoin:[[USE_HASH_JOIN inheritPath:[0] options:[EMP, DEPT]]]
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1bcbe1031 ([CALCITE-3781] HintStrategy can specify excluded rules for planner (#156))
     <TestCase name="testUseMergeJoin">
         <Resource name="sql">
             <![CDATA[select /*+ use_merge_join(emp, dept) */
@@ -362,6 +365,9 @@ EnumerableProject(ENAME=[$1], JOB=[$2], SAL=[$5], NAME=[$10])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 >>>>>>> e81bf6d89 ([CALCITE-3519] Use List instead of BitSet to keep inheritPath in RelHint (Shuo Cheng))
+=======
+>>>>>>> 1bcbe1031 ([CALCITE-3781] HintStrategy can specify excluded rules for planner (#156))
 </Root>
