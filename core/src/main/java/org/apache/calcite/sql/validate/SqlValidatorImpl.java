@@ -7125,44 +7125,14 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
      */
     VALID
   }
-   * Visitor to determine if a SqlNode contains a certain identifier.
+=======
+=======
+
+  /**
+   * Used for implementing the dot operator.
    */
-  private static final class ContainsIdentifierVisitor implements SqlVisitor<Boolean> {
-    private final SqlIdentifier identifier;
-
-    ContainsIdentifierVisitor(SqlIdentifier identifier) {
-      this.identifier = identifier;
-    }
-
-    @Override public Boolean visit(SqlLiteral literal) {
-      return false;
-    }
-
-    @Override public Boolean visit(SqlCall call) {
-      return call.getOperandList().stream().anyMatch(operand ->
-              (operand != null) && operand.accept(this));
-    }
-
-    @Override public Boolean visit(SqlNodeList nodeList) {
-      return nodeList.getList().stream().anyMatch(node -> node.accept(this));
-    }
-
-    @Override public Boolean visit(SqlIdentifier id) {
-      return identifier.getSimple().equals(id.getSimple());
-    }
-
-    @Override public Boolean visit(SqlDataTypeSpec type) {
-      return false;
-    }
-
-    @Override public Boolean visit(SqlDynamicParam param) {
-      return false;
-    }
-
-    @Override public Boolean visit(SqlIntervalQualifier intervalQualifier) {
-      return false;
-    }
+  public SqlQualified ensureQualified(
+      DelegatingScope scope, SqlIdentifier identifier) {
+    return null;
   }
-=======
-=======
 }

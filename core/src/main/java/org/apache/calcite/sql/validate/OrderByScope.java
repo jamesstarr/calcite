@@ -103,7 +103,7 @@ public class OrderByScope extends DelegatingScope {
   /** Returns the number of columns in the SELECT clause that have {@code name}
    * as their implicit (e.g. {@code t.name}) or explicit (e.g.
    * {@code t.c as name}) alias. */
-  private int aliasCount(SqlNameMatcher nameMatcher, String name) {
+  public int aliasCount(SqlNameMatcher nameMatcher, String name) {
     int n = 0;
     for (SqlNode s : select.getSelectList()) {
       final String alias = SqlValidatorUtil.getAlias(s, -1);
