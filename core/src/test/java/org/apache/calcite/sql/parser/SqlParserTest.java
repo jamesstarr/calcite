@@ -3069,7 +3069,7 @@ public class SqlParserTest {
     conformance = SqlConformanceEnum.DEFAULT;
     final String error = "'LIMIT start, count' is not allowed under the "
         + "current SQL conformance level";
-    sql("select a from foo limit 1,^2^")
+    sql("select a from foo ^limit 1,2^")
         .fails(error);
 
     // "limit all" is equivalent to no limit
@@ -3114,6 +3114,42 @@ public class SqlParserTest {
 
     // "limit start, all" is not valid
     sql("select a from foo limit 2, ^all^")
+        .fails("(?s).*Encountered \"all\" at line 1.*");
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-5086">[CALCITE-5086]
+   * Calcite supports OFFSET start LIMIT count expression</a>. */
+  @org.junit.jupiter.api.Test void testOffsetStartLimitCount() {
+    conformance = SqlConformanceEnum.LENIENT;
+    final String error = "'OFFSET start LIMIT count' is not allowed under the "
+        + "current SQL conformance level";
+    sql("select a from foo order by b, c offset 1 limit 2")
+        .ok("SELECT `A`\n"
+            + "FROM `FOO`\n"
+            + "ORDER BY `B`, `C`\n"
+            + "OFFSET 1 ROWS\n"
+            + "FETCH NEXT 2 ROWS ONLY");
+
+    conformance = SqlConformanceEnum.DEFAULT;
+    sql("select a from foo order by b, c ^offset 1 limit 2^")
+        .fails(error);
+
+    conformance = SqlConformanceEnum.LENIENT;
+    // "limit 2" overrides the earlier "offset 4"
+    final String expected3 = "SELECT `A`\n"
+        + "FROM `FOO`\n"
+        + "OFFSET 2 ROWS\n"
+        + "FETCH NEXT 3 ROWS ONLY";
+    sql("select a from foo offset 4 limit 2,3")
+        .ok(expected3);
+
+    // "fetch next 4" is illegal following "limit 3"
+    sql("select a from foo offset 2 limit 3 ^fetch^ next 4 rows only")
+        .fails("(?s).*Encountered \"fetch\" at line 1.*");
+
+    // "limit start, all" is not valid
+    sql("select a from foo offset 1 limit 2, ^all^")
         .fails("(?s).*Encountered \"all\" at line 1.*");
   }
 

@@ -284,19 +284,6 @@ public enum SqlConformanceEnum implements SqlConformance {
   }
 
   @Override public boolean isOffsetLimitAllowed() {
-    switch (this) {
-    case BABEL:
-    case LENIENT:
-    case MYSQL_5:
-    case SQL_SERVER_2008:
-    case PRESTO:
-      return true;
-    default:
-      return false;
-    }
-  }
-<<<<<<< HEAD
-=======
 
   public boolean shouldConvertRaggedUnionTypesToVarying() {
     switch (this) {
@@ -359,7 +346,6 @@ public enum SqlConformanceEnum implements SqlConformance {
   }
 
 }
->>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
 
   @Override public boolean allowPluralTimeUnits() {
     switch (this) {

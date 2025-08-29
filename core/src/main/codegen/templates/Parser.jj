@@ -716,8 +716,8 @@ SqlNode OrderByLimitOpt(SqlNode e) :
 SqlNode OrderByLimitOpt(SqlNode e) :
 {
     SqlNodeList orderBy = null;
-    SqlNode start = null;
-    SqlNode count = null;
+    final Span s = Span.of();
+    SqlNode[] offsetFetch = {null, null};
 }
 {
 >>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
@@ -728,6 +728,9 @@ SqlNode OrderByLimitOpt(SqlNode e) :
     ]
     [
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> fbeadc056 ([CALCITE-5086] SQL parser should allow OFFSET to occur before LIMIT (#143))
         LimitClause(s, offsetFetch)
         [ OffsetClause(s, offsetFetch) ]
         [ FetchClause(offsetFetch) ]
@@ -738,6 +741,7 @@ SqlNode OrderByLimitOpt(SqlNode e) :
                 if (!this.conformance.isOffsetLimitAllowed()) {
                     throw SqlUtil.newContextException(s.end(this),
                         RESOURCE.offsetLimitNotAllowed());
+<<<<<<< HEAD
 =======
         // Postgres-style syntax. "LIMIT ... OFFSET ..."
         <LIMIT>
@@ -753,6 +757,8 @@ SqlNode OrderByLimitOpt(SqlNode e) :
 =======
                     throw SqlUtil.newContextException(getPos(), RESOURCE.limitStartCountNotAllowed());
 >>>>>>> c1eea5150 ([CALCITE-3152] Unify throws in sql parser)
+=======
+>>>>>>> fbeadc056 ([CALCITE-5086] SQL parser should allow OFFSET to occur before LIMIT (#143))
                 }
             }
         |
