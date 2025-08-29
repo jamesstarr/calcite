@@ -82,3 +82,8 @@ public class CompositeHintPredicate implements HintPredicate {
     }
   }
 }
+<<<<<<< HEAD
+=======
+
+// End CompositeHintPredicate.java
+>>>>>>> 79de2ff8b ([CALCITE-3812] Refactor HintStrategy to HintPredicate (#158))

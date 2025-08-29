@@ -21,39 +21,65 @@ import org.apache.calcite.rel.RelNode;
 import com.google.common.collect.ImmutableList;
 
 /**
- * Strategy to decide if a hint should apply to a relational expression
- * by using a series of {@link HintStrategy} rules in a given order.
- * If a rule fails, returns false early, else return true.
+ * A {@link HintPredicate} to combine multiple hint predicates into one.
+ *
+ * <p>The composition can be {@code AND} or {@code OR}.
  */
-public class HintStrategyCascade implements HintStrategy {
+public class HintStrategyCascade implements HintPredicate {
+  //~ Enums ------------------------------------------------------------------
+
+  /** How hint predicates are composed. */
+  public enum Composition {
+    AND, OR
+  }
+
   //~ Instance fields --------------------------------------------------------
 
-  private ImmutableList<HintStrategy> strategies;
+  private ImmutableList<HintPredicate> predicates;
+  private Composition composition;
 
   /**
-   * Creates a HintStrategyCascade from an array of hint strategies.
+   * Creates a {@link HintStrategyCascade} with a {@link Composition}
+   * and an array of hint predicates.
    *
    * <p>Make this constructor package-protected intentionally.
-   * Use {@link HintStrategies#cascade}.</p>
+   * Use utility methods in {@link HintPredicates}
+   * to create a {@link HintStrategyCascade}.</p>
    */
-  HintStrategyCascade(HintStrategy... strategies) {
-    assert strategies != null;
-    assert strategies.length > 1;
-    for (HintStrategy strategy : strategies) {
-      assert strategy != null;
+  HintStrategyCascade(Composition composition, HintPredicate... predicates) {
+    assert predicates != null;
+    assert predicates.length > 1;
+    for (HintPredicate predicate : predicates) {
+      assert predicate != null;
     }
-    this.strategies = ImmutableList.copyOf(strategies);
+    this.predicates = ImmutableList.copyOf(predicates);
+    this.composition = composition;
   }
 
   //~ Methods ----------------------------------------------------------------
 
-  @Override public boolean canApply(RelHint hint, RelNode rel) {
-    for (HintStrategy strategy : strategies) {
-      if (!strategy.canApply(hint, rel)) {
-        return false;
+  @Override public boolean apply(RelHint hint, RelNode rel) {
+    return apply(composition, hint, rel);
+  }
+
+  private boolean apply(Composition composition, RelHint hint, RelNode rel) {
+    switch (composition) {
+    case AND:
+      for (HintPredicate predicate: predicates) {
+        if (!predicate.apply(hint, rel)) {
+          return false;
+        }
       }
+      return true;
+    case OR:
+    default:
+      for (HintPredicate predicate: predicates) {
+        if (predicate.apply(hint, rel)) {
+          return true;
+        }
+      }
+      return false;
     }
-    return true;
   }
 }
 

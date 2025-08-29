@@ -54,3 +54,8 @@ public interface HintPredicate {
    */
   boolean apply(RelHint hint, RelNode rel);
 }
+<<<<<<< HEAD
+=======
+
+// End HintPredicate.java
+>>>>>>> 79de2ff8b ([CALCITE-3812] Refactor HintStrategy to HintPredicate (#158))

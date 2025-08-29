@@ -22,8 +22,6 @@ import org.apache.calcite.rel.convert.ConverterRule;
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.trace.CalciteTrace;
 
-import com.google.common.collect.ImmutableSet;
-
 import org.slf4j.Logger;
 
 import java.util.Collections;
@@ -34,23 +32,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 
 /**
- * A {@code HintStrategy} collection indicates which kind of
- * {@link org.apache.calcite.rel.RelNode} a hint can apply to.
+ * A collections of {@link HintStrategy}s.
  *
- * <p>Every supported hint should register a {@code HintStrategy}
- * into this collection. For example, {@link HintStrategies#JOIN} implies that this hint
+ * <p>Every supported hint should register a {@link HintPredicate}
+ * into this collection. For example, {@link HintPredicates#JOIN} implies that this hint
  * would be propagated and attached to the {@link org.apache.calcite.rel.core.Join}
  * relational expressions.
  *
- * <p>A {@code HintStrategy} can be used independently or cascaded with other strategies
- * with method {@link HintStrategies#and}.
+ * <p>Match of hint name is case in-sensitive.
  *
- * <p>The matching for hint name is case in-sensitive.
- *
- * @see HintStrategy
+ * @see HintPredicate
  */
 public class HintStrategyTable {
   //~ Static fields/initializers ---------------------------------------------
@@ -62,14 +55,14 @@ public class HintStrategyTable {
 
   //~ Instance fields --------------------------------------------------------
 
-  /** Mapping from hint name to {@link Entry}. */
-  private final Map<Key, Entry> entries;
+  /** Mapping from hint name to {@link HintStrategy}. */
+  private final Map<Key, HintStrategy> strategies;
 
   /** Handler for the hint error. */
   private final Litmus errorHandler;
 
-  private HintStrategyTable(Map<Key, Entry> entries, Litmus litmus) {
-    this.entries = entries;
+  private HintStrategyTable(Map<Key, HintStrategy> strategies, Litmus litmus) {
+    this.strategies = strategies;
     this.errorHandler = litmus;
   }
 
@@ -91,8 +84,8 @@ public class HintStrategyTable {
 
   private boolean canApply(RelHint hint, RelNode rel) {
     final Key key = Key.of(hint.hintName);
-    assert this.entries.containsKey(key);
-    return this.entries.get(key).hintStrategy.canApply(hint, rel);
+    assert this.strategies.containsKey(key);
+    return this.strategies.get(key).predicate.apply(hint, rel);
   }
 
   /**
@@ -103,16 +96,16 @@ public class HintStrategyTable {
   public boolean validateHint(RelHint hint) {
     final Key key = Key.of(hint.hintName);
     boolean hintExists = this.errorHandler.check(
-        this.entries.containsKey(key),
+        this.strategies.containsKey(key),
         "Hint: {} should be registered in the {}",
         hint.hintName,
         this.getClass().getSimpleName());
     if (!hintExists) {
       return false;
     }
-    final Entry entry = entries.get(key);
-    if (entry.hintOptionChecker != null) {
-      return entry.hintOptionChecker.checkOptions(hint, this.errorHandler);
+    final HintStrategy strategy = strategies.get(key);
+    if (strategy.hintOptionChecker != null) {
+      return strategy.hintOptionChecker.checkOptions(hint, this.errorHandler);
     }
     return true;
   }
@@ -127,10 +120,10 @@ public class HintStrategyTable {
 
     for (RelHint hint : hints) {
       final Key key = Key.of(hint.hintName);
-      assert this.entries.containsKey(key);
-      final Entry entry = entries.get(key);
-      if (entry.excludedRules.contains(rule)) {
-        return isDesiredConversionPossible(entry.converterRules, hintable);
+      assert this.strategies.containsKey(key);
+      final HintStrategy strategy = strategies.get(key);
+      if (strategy.excludedRules.contains(rule)) {
+        return isDesiredConversionPossible(strategy.converterRules, hintable);
       }
     }
 
@@ -149,21 +142,10 @@ public class HintStrategyTable {
   }
 
   /**
-   * Returns a strategies builder.
+   * Returns a {@code HintStrategyTable} builder.
    */
   public static Builder builder() {
     return new Builder();
-  }
-
-  /**
-   * Returns an entry builder of this {@link HintStrategyTable}
-   * with given hint strategy.
-   *
-   * @param hintStrategy hint strategy
-   * @return an {@link EntryBuilder} instance
-   */
-  public static EntryBuilder entryBuilder(HintStrategy hintStrategy) {
-    return new EntryBuilder(hintStrategy);
   }
 
   //~ Inner Class ------------------------------------------------------------
@@ -200,22 +182,22 @@ public class HintStrategyTable {
    * Builder for {@code HintStrategyTable}.
    */
   public static class Builder {
-    private Map<Key, Entry> entries;
+    private Map<Key, HintStrategy> strategies;
     private Litmus errorHandler;
 
     private Builder() {
-      this.entries = new HashMap<>();
+      this.strategies = new HashMap<>();
       this.errorHandler = HintErrorLogger.INSTANCE;
     }
 
-    public Builder hintStrategy(String hintName, HintStrategy strategy) {
-      this.entries.put(Key.of(hintName),
-          entryBuilder(Objects.requireNonNull(strategy)).build());
+    public Builder hintStrategy(String hintName, HintPredicate strategy) {
+      this.strategies.put(Key.of(hintName),
+          HintStrategy.builder(Objects.requireNonNull(strategy)).build());
       return this;
     }
 
-    public Builder hintStrategy(String hintName, Entry entry) {
-      this.entries.put(Key.of(hintName), Objects.requireNonNull(entry));
+    public Builder hintStrategy(String hintName, HintStrategy entry) {
+      this.strategies.put(Key.of(hintName), Objects.requireNonNull(entry));
       return this;
     }
 
@@ -233,100 +215,8 @@ public class HintStrategyTable {
 
     public HintStrategyTable build() {
       return new HintStrategyTable(
-          this.entries,
+          this.strategies,
           this.errorHandler);
-    }
-  }
-
-  /** Represents a hint strategy entry of this {@link HintStrategyTable}. */
-  public static class Entry {
-    public final HintStrategy hintStrategy;
-    public final HintOptionChecker hintOptionChecker;
-    public final ImmutableSet<RelOptRule> excludedRules;
-    public final ImmutableSet<ConverterRule> converterRules;
-
-    public Entry(
-        HintStrategy hintStrategy,
-        HintOptionChecker hintOptionChecker,
-        ImmutableSet<RelOptRule> excludedRules,
-        ImmutableSet<ConverterRule> converterRules) {
-      this.hintStrategy = hintStrategy;
-      this.hintOptionChecker = hintOptionChecker;
-      this.excludedRules = excludedRules;
-      this.converterRules = converterRules;
-    }
-  }
-
-  /** Builder for {@link Entry}. */
-  public static class EntryBuilder {
-    private final HintStrategy hintStrategy;
-    @Nullable
-    private HintOptionChecker optionChecker;
-    private ImmutableSet<RelOptRule> excludedRules;
-    private ImmutableSet<ConverterRule> converterRules;
-
-    private EntryBuilder(HintStrategy hintStrategy) {
-      this.hintStrategy = Objects.requireNonNull(hintStrategy);
-      this.excludedRules = ImmutableSet.of();
-      this.converterRules = ImmutableSet.of();
-    }
-
-    /** Registers a hint option checker to validate the hint options. */
-    public EntryBuilder optionChecker(HintOptionChecker optionChecker) {
-      this.optionChecker = Objects.requireNonNull(optionChecker);
-      return this;
-    }
-
-    /**
-     * Registers an array of rules to exclude during the
-     * {@link org.apache.calcite.plan.RelOptPlanner} planning.
-     *
-     * <p>The desired converter rules work together with the excluded rules.
-     * We have no validation here but they expect to have the same
-     * function(semantic equivalent).
-     *
-     * <p>A rule fire cancels if:
-     *
-     * <ol>
-     *   <li>The registered {@link #excludedRules} contains the rule</li>
-     *   <li>The desired converter rules conversion is not possible for the rule
-     *   matched root node</li>
-     * </ol>
-     *
-     * @param rules excluded rules
-     */
-    public EntryBuilder excludedRules(RelOptRule... rules) {
-      this.excludedRules = ImmutableSet.copyOf(rules);
-      return this;
-    }
-
-    /**
-     * Registers an array of desired converter rules during the
-     * {@link org.apache.calcite.plan.RelOptPlanner} planning.
-     *
-     * <p>The desired converter rules work together with the excluded rules.
-     * We have no validation here but they expect to have the same
-     * function(semantic equivalent).
-     *
-     * <p>A rule fire cancels if:
-     *
-     * <ol>
-     *   <li>The registered {@link #excludedRules} contains the rule</li>
-     *   <li>The desired converter rules conversion is not possible for the rule
-     *   matched root node</li>
-     * </ol>
-     *
-     * <p>If no converter rules are specified, we assume the conversion is possible.
-     *
-     * @param rules desired converter rules
-     */
-    public EntryBuilder converterRules(ConverterRule... rules) {
-      this.converterRules = ImmutableSet.copyOf(rules);
-      return this;
-    }
-
-    public Entry build() {
-      return new Entry(hintStrategy, optionChecker, excludedRules, converterRules);
     }
   }
 
