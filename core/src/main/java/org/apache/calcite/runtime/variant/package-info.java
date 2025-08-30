@@ -19,3 +19,7 @@
  * Runtime support for values of the VARIANT data type.
  */
 package org.apache.calcite.runtime.variant;
+<<<<<<< HEAD
+=======
+// End package-info.java
+>>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))

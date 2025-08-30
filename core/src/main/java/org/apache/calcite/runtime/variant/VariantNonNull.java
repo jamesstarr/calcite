@@ -49,7 +49,7 @@ public class VariantNonNull extends VariantSqlValue {
     // sanity check
     switch (runtimeType.getTypeName()) {
     case UUID:
-      assert value instanceof String;
+      assert value instanceof UUID;
       this.value = value;
       break;
     case NAME:
@@ -455,3 +455,7 @@ public class VariantNonNull extends VariantSqlValue {
     return quote + value + quote;
   }
 }
+<<<<<<< HEAD
+=======
+// End VariantNonNull.java
+>>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))

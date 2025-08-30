@@ -234,6 +234,8 @@ public class JavaTypeFactoryImpl
     case ARRAY:
     case MULTISET:
       return List.class;
+    case VARIANT:
+      return Object.class;
     }
     return null;
   }

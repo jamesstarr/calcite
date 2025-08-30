@@ -73,7 +73,7 @@ public enum SqlTypeFamily implements RelDataTypeFamily {
   CURSOR,
   COLUMN_LIST,
   GEO,
-  UUID,
+>>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
   VARIANT;
 
   private static final Map<Integer, SqlTypeFamily> JDBC_TYPE_TO_FAMILY =
@@ -181,8 +181,10 @@ public enum SqlTypeFamily implements RelDataTypeFamily {
       return ImmutableList.of(SqlTypeName.COLUMN_LIST);
     case VARIANT:
       return ImmutableList.of(SqlTypeName.VARIANT);
+<<<<<<< HEAD
     case UUID:
       return ImmutableList.of(SqlTypeName.UUID);
+=======
     default:
       throw new IllegalArgumentException();
     }
@@ -240,13 +242,10 @@ public enum SqlTypeFamily implements RelDataTypeFamily {
       return factory.createSqlType(SqlTypeName.CURSOR);
     case COLUMN_LIST:
       return factory.createSqlType(SqlTypeName.COLUMN_LIST);
-<<<<<<< HEAD
+>>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
+=======
     case VARIANT:
       return factory.createSqlType(SqlTypeName.VARIANT);
-    case UUID:
-      return factory.createSqlType(SqlTypeName.UUID);
-=======
->>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
     default:
       return null;
     }

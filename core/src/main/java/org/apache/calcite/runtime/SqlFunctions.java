@@ -33,6 +33,7 @@ import org.apache.calcite.linq4j.function.Function1;
 import org.apache.calcite.linq4j.function.NonDeterministic;
 import org.apache.calcite.linq4j.tree.Primitive;
 import org.apache.calcite.runtime.FlatLists.ComparableList;
+import org.apache.calcite.runtime.variant.VariantValue;
 import org.apache.calcite.sql.fun.SqlLibraryOperators;
 import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.NumberUtil;
@@ -2392,6 +2393,9 @@ public class SqlFunctions {
    * known until runtime.
    */
   public static Object item(Object object, Object index) {
+    if (object instanceof VariantValue) {
+      return ((VariantValue) object).item(index);
+    }
     if (object instanceof Map) {
       return mapItem((Map) object, index);
     }

@@ -92,8 +92,11 @@ import org.apache.calcite.runtime.SortedMultiMap;
 import org.apache.calcite.runtime.SqlFunctions;
 import org.apache.calcite.runtime.SqlFunctions.FlatProductInputType;
 import org.apache.calcite.runtime.Utilities;
->>>>>>> f4d19cad2 (Revert "[CALCITE-5263] Improve XmlFunctions by using an XML DocumentB… (#155))
 =======
+import org.apache.calcite.runtime.rtti.RuntimeTypeInformation;
+import org.apache.calcite.runtime.variant.VariantNull;
+import org.apache.calcite.runtime.variant.VariantSqlValue;
+import org.apache.calcite.runtime.variant.VariantValue;
 import org.apache.calcite.runtime.XmlFunctions;
 import org.apache.calcite.schema.FilterableTable;
 import org.apache.calcite.schema.ModifiableTable;
@@ -600,7 +603,13 @@ public enum BuiltInMethod {
   AGG_LAMBDA_FACTORY_ACC_RESULT_SELECTOR(AggregateLambdaFactory.class,
       "resultSelector", Function2.class),
   AGG_LAMBDA_FACTORY_ACC_SINGLE_GROUP_RESULT_SELECTOR(AggregateLambdaFactory.class,
-      "singleGroupResultSelector", Function1.class);
+      "singleGroupResultSelector", Function1.class),
+  VARIANT_CREATE(VariantSqlValue.class, "create", RoundingMode.class,
+      Object.class, RuntimeTypeInformation.class),
+  VARIANT_CAST(VariantValue.class, "cast", RuntimeTypeInformation.class),
+  TYPEOF(VariantValue.class, "getTypeString", VariantValue.class),
+  VARIANT_ITEM(SqlFunctions.class, "item", VariantValue.class, Object.class),
+  VARIANTNULL(VariantNull.class, "getInstance");
 
   public final Method method;
   public final Constructor constructor;

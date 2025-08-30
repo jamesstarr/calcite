@@ -280,7 +280,10 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SYSTEM_USER;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.TAN;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.TRIM;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.TRUNCATE;
+<<<<<<< HEAD
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.TUMBLE;
+=======
+>>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.TYPEOF;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.UNARY_MINUS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.UNARY_PLUS;

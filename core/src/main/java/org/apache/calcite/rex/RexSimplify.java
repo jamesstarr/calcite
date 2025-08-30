@@ -247,6 +247,13 @@ public class RexSimplify {
    * Verify adds an overhead that is only acceptable for a top-level call.
    */
   RexNode simplify(RexNode e, RexUnknownAs unknownAs) {
+    if (e.getType().getSqlTypeName() == SqlTypeName.VARIANT) {
+      // Upstream has many fixes that makes this code path "work".
+      // For now we can just return the expression, since there is no RexLiteral for a Variant.
+      // When we cherry-pick [CALCITE-4918] Add a VARIANT data type we can remove this
+      return e;
+    }
+
     try {
       if (strong.isNull(e)) {
         // Only boolean NULL (aka UNKNOWN) can be converted to FALSE. Even in

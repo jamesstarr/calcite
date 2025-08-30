@@ -258,11 +258,12 @@ public abstract class RuntimeTypeInformation {
     case VARIANT:
       return Expressions.new_(BasicSqlTypeRtti.class,
           Expressions.constant(RuntimeSqlTypeName.VARIANT));
-    case UUID:
-      return Expressions.new_(BasicSqlTypeRtti.class,
-          Expressions.constant(RuntimeSqlTypeName.UUID));
+>>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
     default:
       throw new RuntimeException("Unexpected type " + type);
     }
   }
 }
+<<<<<<< HEAD
+=======
+// End RuntimeTypeInformation.java

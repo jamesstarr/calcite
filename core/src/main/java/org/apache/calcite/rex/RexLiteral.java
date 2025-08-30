@@ -298,8 +298,11 @@ public class RexLiteral extends RexNode {
     switch (typeName) {
     case VARIANT:
       return value instanceof VariantValue;
+<<<<<<< HEAD
     case UUID:
       return value instanceof String;
+=======
+>>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
     case BOOLEAN:
       // Unlike SqlLiteral, we do not allow boolean null.
       return value instanceof Boolean;

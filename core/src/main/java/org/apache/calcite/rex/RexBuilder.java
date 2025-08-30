@@ -621,7 +621,7 @@ public class RexBuilder {
       return true;
     }
     final SqlTypeName sqlType = toType.getSqlTypeName();
-    if (sqlType == SqlTypeName.VARIANT || sqlType == SqlTypeName.UUID) {
+    if (sqlType == SqlTypeName.VARIANT) {
       return false;
     }
     if (!RexLiteral.valueMatchesType(value, sqlType, false)) {

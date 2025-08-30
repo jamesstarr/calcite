@@ -58,3 +58,7 @@ public class VariantSqlNull extends VariantSqlValue {
     return runtimeType == variant.runtimeType;
   }
 }
+<<<<<<< HEAD
+=======
+// End VariantSqlNull.java
+>>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))

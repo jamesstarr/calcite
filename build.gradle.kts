@@ -392,10 +392,15 @@ allprojects {
                 testImplementation("org.junit.jupiter:junit-jupiter-params")
                 testImplementation("org.hamcrest:hamcrest")
                 testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-                if (project.props.bool("junit4", default = false)) {
+                if (project.props.bool("junit4", default = true)) {
                     // Allow projects to opt-out of junit dependency, so they can be JUnit5-only
                     testImplementation("junit:junit")
                     testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
+                } else {
+                    // org.apache.calcite.test.CalciteAssert depends on org/junit/ComparisonFailure
+                    // and it is commonly used. So we keep junit on the test runtime classpath.
+                    // However, it still prevents JUnit4 types in autocomplete which is fine.
+                    testRuntimeOnly("junit:junit")
                 }
 <<<<<<< HEAD
             }
@@ -739,6 +744,7 @@ allprojects {
         if (!skipAutostyle) {
             autostyle {
                 java {
+<<<<<<< HEAD
                     filter.exclude(*javaccGeneratedPatterns + "**/test/java/*.java")
                     license()
                     if (!project.props.bool("junit4", default = false)) {
@@ -795,6 +801,10 @@ allprojects {
                         replace("junit5: Assert.fail", "org.junit.Assert.fail", "org.junit.jupiter.api.Assertions.fail")
                     }
 >>>>>>> 733879945 ([CALCITE-2457] Configure build to automatically replace common JUnit4 classes with JUnit5)
+=======
+                    targetExclude(*javaccGeneratedPatterns + "**/test/java/*.java")
+                    licenseHeaderFile(licenseHeaderFile)
+>>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
                     importOrder(
                         "org.apache.calcite.",
                         "org.apache.",

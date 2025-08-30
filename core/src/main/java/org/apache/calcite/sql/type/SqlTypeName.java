@@ -124,8 +124,7 @@ public enum SqlTypeName {
   GEOMETRY(PrecScale.NO_NO, true, ExtraSqlTypes.GEOMETRY, SqlTypeFamily.GEO),
   /** VARIANT data type, a dynamically-typed value that can have at runtime
    * any of the other data types in this table. */
-  VARIANT(PrecScale.NO_NO, false, Types.OTHER, SqlTypeFamily.VARIANT),
-  UUID(PrecScale.NO_NO, false, Types.OTHER, SqlTypeFamily.UUID);
+  VARIANT(PrecScale.NO_NO, false, Types.OTHER, SqlTypeFamily.VARIANT);
 
   public static final int MAX_DATETIME_PRECISION = 3;
 
