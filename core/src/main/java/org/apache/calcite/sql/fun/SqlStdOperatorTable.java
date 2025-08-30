@@ -1738,6 +1738,16 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
         }
       };
 
+  /** The {@code TYPEOF} function. */
+  public static final SqlFunction TYPEOF =
+      new SqlFunction("TYPEOF", SqlKind.OTHER_FUNCTION, ReturnTypes.VARCHAR_2000,
+          null, OperandTypes.VARIANT, SqlFunctionCategory.STRING);
+
+  /** The {@code VARIANTNULL} function. */
+  public static final SqlFunction VARIANTNULL =
+      new SqlFunction("VARIANTNULL", SqlKind.OTHER_FUNCTION, ReturnTypes.VARIANT,
+          null, OperandTypes.NILADIC, SqlFunctionCategory.SYSTEM);
+
   /** {@code FIRST} function to be used within {@code MATCH_RECOGNIZE}. */
   public static final SqlFunction FIRST =
       new SqlFunction("FIRST", SqlKind.FIRST, ReturnTypes.ARG0_NULLABLE,

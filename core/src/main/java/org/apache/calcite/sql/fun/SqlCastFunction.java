@@ -35,6 +35,7 @@ import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.type.InferTypes;
 import org.apache.calcite.sql.type.SqlOperandCountRanges;
 import org.apache.calcite.sql.type.SqlTypeFamily;
+import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.sql.validate.SqlMonotonicity;
 import org.apache.calcite.sql.validate.SqlValidatorImpl;
@@ -96,6 +97,25 @@ public class SqlCastFunction extends SqlFunction {
     assert opBinding.getOperandCount() == 2;
     RelDataType ret = opBinding.getOperandType(1);
     RelDataType firstType = opBinding.getOperandType(0);
+
+    // MODIFICATION BEGIN
+    // Bringing this from here: https://github.com/apache/calcite/pull/3947
+    // Since SqlCastFunction is far behind.
+    // Once we are caught up we can remove this.
+    if (ret.getSqlTypeName() == SqlTypeName.VARIANT) {
+      // A variant can be cast from any other type, and it inherits
+      // the nullability of the source.
+      // Note that the order of this test and the next one is important.
+      return opBinding.getTypeFactory().createTypeWithNullability(ret, firstType.isNullable());
+    }
+
+    if (firstType.getSqlTypeName() == SqlTypeName.VARIANT) {
+      // A variant can be cast to any other type, but the result
+      // is always nullable, like in the case of a safe cast.
+      return opBinding.getTypeFactory().createTypeWithNullability(ret, true);
+    }
+    // MODIFICATION END
+
     ret =
         opBinding.getTypeFactory().createTypeWithNullability(
             ret,

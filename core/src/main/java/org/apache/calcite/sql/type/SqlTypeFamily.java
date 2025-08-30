@@ -72,7 +72,8 @@ public enum SqlTypeFamily implements RelDataTypeFamily {
   ANY,
   CURSOR,
   COLUMN_LIST,
-  GEO;
+  GEO,
+  VARIANT;
 
   private static final Map<Integer, SqlTypeFamily> JDBC_TYPE_TO_FAMILY =
       ImmutableMap.<Integer, SqlTypeFamily>builder()
@@ -111,6 +112,7 @@ public enum SqlTypeFamily implements RelDataTypeFamily {
 
           .put(ExtraSqlTypes.REF_CURSOR, CURSOR)
           .put(Types.ARRAY, ARRAY)
+          .put(Types.JAVA_OBJECT, VARIANT)
           .build();
 
   /**
@@ -176,6 +178,8 @@ public enum SqlTypeFamily implements RelDataTypeFamily {
       return ImmutableList.of(SqlTypeName.CURSOR);
     case COLUMN_LIST:
       return ImmutableList.of(SqlTypeName.COLUMN_LIST);
+    case VARIANT:
+      return ImmutableList.of(SqlTypeName.VARIANT);
     default:
       throw new IllegalArgumentException();
     }
@@ -233,6 +237,8 @@ public enum SqlTypeFamily implements RelDataTypeFamily {
       return factory.createSqlType(SqlTypeName.CURSOR);
     case COLUMN_LIST:
       return factory.createSqlType(SqlTypeName.COLUMN_LIST);
+    case VARIANT:
+      return factory.createSqlType(SqlTypeName.VARIANT);
     default:
       return null;
     }

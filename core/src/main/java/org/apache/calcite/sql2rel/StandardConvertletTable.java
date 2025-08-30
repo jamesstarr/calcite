@@ -638,6 +638,16 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
     if (arg.getType().isNullable()) {
       type = typeFactory.createTypeWithNullability(type, true);
     }
+    // MODIFICATION BEGIN
+    // This change is here until: [CALCITE-5557] Add SAFE_CAST function
+    // (enabled in BigQuery library)
+    // is brought in
+    if (arg.getType().getSqlTypeName() == SqlTypeName.VARIANT) {
+      // A variant can be cast to any other type, but the result
+      // is always nullable, like in the case of a safe cast.
+      type = typeFactory.createTypeWithNullability(type, true);
+    }
+    // MODIFICATION END
     if (SqlUtil.isNullLiteral(left, false)) {
       validator.setValidatedNodeType(left, type);
       return cx.convertExpression(left);

@@ -762,6 +762,10 @@ public abstract class SqlTypeUtil {
     return t.getFamily() == SqlTypeFamily.ANY;
   }
 
+  private static boolean isVariant(RelDataType t) {
+    return t.getFamily() == SqlTypeFamily.VARIANT;
+  }
+
   /**
    * Tests whether a value can be assigned to a site.
    *
@@ -851,7 +855,7 @@ public abstract class SqlTypeUtil {
     if (toType == fromType) {
       return true;
     }
-    if (isAny(toType) || isAny(fromType)) {
+    if (isAny(toType) || isAny(fromType) || isVariant(toType) || isVariant(fromType)) {
       return true;
     }
 

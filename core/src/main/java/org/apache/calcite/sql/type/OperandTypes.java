@@ -163,6 +163,9 @@ public abstract class OperandTypes {
   public static final SqlOperandTypeChecker ONE_OR_MORE =
       variadic(SqlOperandCountRanges.from(1));
 
+  public static final SqlSingleOperandTypeChecker VARIANT =
+      family(SqlTypeFamily.VARIANT);
+
   public static SqlOperandTypeChecker variadic(
       final SqlOperandCountRange range) {
     return new SqlOperandTypeChecker() {

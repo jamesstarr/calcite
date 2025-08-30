@@ -42,10 +42,11 @@ import java.util.Arrays;
  */
 class SqlItemOperator extends SqlSpecialOperator {
 
-  private static final SqlSingleOperandTypeChecker ARRAY_OR_MAP =
+  private static final SqlSingleOperandTypeChecker ARRAY_OR_MAP_OR_VARIANT =
       OperandTypes.or(
           OperandTypes.family(SqlTypeFamily.ARRAY),
           OperandTypes.family(SqlTypeFamily.MAP),
+          OperandTypes.family(SqlTypeFamily.VARIANT),
           OperandTypes.family(SqlTypeFamily.ANY));
 
   SqlItemOperator() {
@@ -84,7 +85,7 @@ class SqlItemOperator extends SqlSpecialOperator {
       boolean throwOnFailure) {
     final SqlNode left = callBinding.operand(0);
     final SqlNode right = callBinding.operand(1);
-    if (!ARRAY_OR_MAP.checkSingleOperandType(callBinding, left, 0,
+    if (!ARRAY_OR_MAP_OR_VARIANT.checkSingleOperandType(callBinding, left, 0,
         throwOnFailure)) {
       return false;
     }
@@ -105,6 +106,7 @@ class SqlItemOperator extends SqlSpecialOperator {
       return OperandTypes.CHARACTER;
     case ANY:
     case DYNAMIC_STAR:
+    case VARIANT:
       return OperandTypes.or(
           OperandTypes.family(SqlTypeFamily.INTEGER),
           OperandTypes.family(SqlTypeFamily.CHARACTER));
@@ -115,13 +117,18 @@ class SqlItemOperator extends SqlSpecialOperator {
 
   @Override public String getAllowedSignatures(String name) {
     return "<ARRAY>[<INTEGER>]\n"
-        + "<MAP>[<VALUE>]";
+        + "<MAP>[<VALUE>]\n"
+        + "<VARIANT>[<ANY>]";
   }
 
   @Override public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
     final RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
     final RelDataType operandType = opBinding.getOperandType(0);
     switch (operandType.getSqlTypeName()) {
+    case VARIANT:
+      // Return type is always nullable VARIANT
+      return typeFactory.createTypeWithNullability(
+          operandType, true);
     case ARRAY:
       return typeFactory.createTypeWithNullability(
           operandType.getComponentType(), true);

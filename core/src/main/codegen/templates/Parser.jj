@@ -5287,6 +5287,8 @@ SqlTypeNameSpec SqlTypeName1(Span s) :
         <REAL> { sqlTypeName = SqlTypeName.REAL; }
     |
         <FLOAT> { sqlTypeName = SqlTypeName.FLOAT; }
+    |
+        <VARIANT> { s.add(this); sqlTypeName = SqlTypeName.VARIANT; }
     )
     {
         return new SqlBasicTypeNameSpec(sqlTypeName, s.end(this));
@@ -6652,7 +6654,7 @@ SqlNode NamedFunctionCall() :
         call = withinGroup(call)
     ]
     [
-            
+
         <FILTER> { filterSpan = span(); }
         <LPAREN>
         <WHERE>
@@ -7774,6 +7776,7 @@ SqlPostfixOperator PostfixRowOperator() :
 |   < VAR_SAMP: "VAR_SAMP" >
 |   < VARBINARY: "VARBINARY" >
 |   < VARCHAR: "VARCHAR" >
+|   < VARIANT: "VARIANT" >
 |   < VARYING: "VARYING" >
 |   < VERSION: "VERSION" >
 |   < VERSIONING: "VERSIONING" >

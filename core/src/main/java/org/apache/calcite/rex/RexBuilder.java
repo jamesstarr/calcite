@@ -171,6 +171,10 @@ public class RexBuilder {
   public RexNode makeFieldAccess(RexNode expr, String fieldName,
       boolean caseSensitive) {
     final RelDataType type = expr.getType();
+    if (type.getSqlTypeName() == SqlTypeName.VARIANT) {
+      // VARIANT.field is rewritten as an VARIANT[field]
+      return this.makeCall(SqlStdOperatorTable.ITEM, expr, this.makeLiteral(fieldName));
+    }
     final RelDataTypeField field =
         type.getField(fieldName, caseSensitive, false);
     if (field == null) {
@@ -612,7 +616,13 @@ public class RexBuilder {
 
   boolean canRemoveCastFromLiteral(RelDataType toType, Comparable value,
       SqlTypeName fromTypeName) {
+    if (value == null) {
+      return true;
+    }
     final SqlTypeName sqlType = toType.getSqlTypeName();
+    if (sqlType == SqlTypeName.VARIANT) {
+      return false;
+    }
     if (!RexLiteral.valueMatchesType(value, sqlType, false)) {
       return false;
     }

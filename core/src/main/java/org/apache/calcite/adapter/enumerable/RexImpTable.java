@@ -274,10 +274,12 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SYSTEM_USER;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.TAN;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.TRIM;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.TRUNCATE;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.TYPEOF;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.UNARY_MINUS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.UNARY_PLUS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.UPPER;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.USER;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.VARIANTNULL;
 
 /**
  * Contains implementations of Rex operators as Java code.
@@ -408,6 +410,8 @@ public class RexImpTable {
     defineMethod(TAN, "tan", NullPolicy.STRICT);
     defineMethod(TANH, "tanh", NullPolicy.STRICT);
     defineMethod(TRUNCATE, "struncate", NullPolicy.STRICT);
+    defineMethod(TYPEOF, BuiltInMethod.TYPEOF.method, NullPolicy.STRICT);
+    defineMethod(VARIANTNULL, BuiltInMethod.VARIANTNULL.method, NullPolicy.STRICT);
 
     map.put(PI, (translator, call, nullAs) -> Expressions.constant(Math.PI));
 
@@ -2785,6 +2789,8 @@ public class RexImpTable {
 
     private MethodImplementor getImplementor(SqlTypeName sqlTypeName) {
       switch (sqlTypeName) {
+      case VARIANT:
+        return new MethodImplementor(BuiltInMethod.VARIANT_ITEM.method);
       case ARRAY:
         return new MethodImplementor(BuiltInMethod.ARRAY_ITEM.method);
       case MAP:

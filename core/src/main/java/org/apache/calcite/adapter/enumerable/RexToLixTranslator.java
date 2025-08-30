@@ -42,10 +42,13 @@ import org.apache.calcite.rex.RexLocalRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexProgram;
 import org.apache.calcite.runtime.SqlFunctions;
+import org.apache.calcite.runtime.rtti.RuntimeTypeInformation;
+import org.apache.calcite.runtime.variant.VariantValue;
 import org.apache.calcite.sql.SqlIntervalQualifier;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.util.BuiltInMethod;
@@ -60,6 +63,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -204,6 +208,108 @@ public class RexToLixTranslator {
       RelDataType sourceType,
       RelDataType targetType,
       Expression operand) {
+    if (sourceType.getSqlTypeName() == SqlTypeName.VARIANT) {
+      return handleVariantInCast(targetType, operand);
+    }
+
+    if (targetType.getSqlTypeName() == SqlTypeName.VARIANT) {
+      // Converting any type to a VARIANT invokes the Variant constructor
+      Expression rtti = RuntimeTypeInformation.createExpression(sourceType);
+      Expression roundingMode = Expressions.constant(RoundingMode.UNNECESSARY);
+      return Expressions.call(BuiltInMethod.VARIANT_CREATE.method, roundingMode, operand, rtti);
+    }
+
+    Expression convert = translateCastHelper(sourceType, targetType, operand);
+    if (convert == null) {
+      convert = EnumUtils.convert(operand, typeFactory.getJavaClass(targetType));
+    }
+    // Going from anything to CHAR(n) or VARCHAR(n), make sure value is no
+    // longer than n.
+    boolean pad = false;
+    boolean truncate = true;
+    switch (targetType.getSqlTypeName()) {
+    case CHAR:
+    case BINARY:
+      pad = true;
+      // fall through
+    case VARCHAR:
+    case VARBINARY:
+      final int targetPrecision = targetType.getPrecision();
+      if (targetPrecision >= 0) {
+        switch (sourceType.getSqlTypeName()) {
+        case CHAR:
+        case VARCHAR:
+        case BINARY:
+        case VARBINARY:
+          // If this is a widening cast, no need to truncate.
+          final int sourcePrecision = sourceType.getPrecision();
+          if (SqlTypeUtil.comparePrecision(sourcePrecision, targetPrecision)
+              <= 0) {
+            truncate = false;
+          }
+          // If this is a widening cast, no need to pad.
+          if (SqlTypeUtil.comparePrecision(sourcePrecision, targetPrecision)
+              >= 0) {
+            pad = false;
+          }
+          // fall through
+        default:
+          if (truncate || pad) {
+            convert =
+                Expressions.call(
+                    pad
+                        ? BuiltInMethod.TRUNCATE_OR_PAD.method
+                        : BuiltInMethod.TRUNCATE.method,
+                    convert,
+                    Expressions.constant(targetPrecision));
+          }
+        }
+      }
+      break;
+    case TIMESTAMP:
+      int targetScale = targetType.getScale();
+      if (targetScale == RelDataType.SCALE_NOT_SPECIFIED) {
+        targetScale = 0;
+      }
+      if (targetScale < sourceType.getScale()) {
+        convert =
+            Expressions.call(
+                BuiltInMethod.ROUND_LONG.method,
+                convert,
+                Expressions.constant(
+                    (long) Math.pow(10, 3 - targetScale)));
+      }
+      break;
+    case INTERVAL_YEAR:
+    case INTERVAL_YEAR_MONTH:
+    case INTERVAL_MONTH:
+    case INTERVAL_DAY:
+    case INTERVAL_DAY_HOUR:
+    case INTERVAL_DAY_MINUTE:
+    case INTERVAL_DAY_SECOND:
+    case INTERVAL_HOUR:
+    case INTERVAL_HOUR_MINUTE:
+    case INTERVAL_HOUR_SECOND:
+    case INTERVAL_MINUTE:
+    case INTERVAL_MINUTE_SECOND:
+    case INTERVAL_SECOND:
+      switch (sourceType.getSqlTypeName().getFamily()) {
+      case NUMERIC:
+        final BigDecimal multiplier = targetType.getSqlTypeName().getEndUnit().multiplier;
+        final BigDecimal divider = BigDecimal.ONE;
+        convert = RexImpTable.multiplyDivide(convert, multiplier, divider);
+      }
+    }
+
+    convert = scaleIntervalToNumber(sourceType, targetType, convert);
+    return convert;
+  }
+
+  Expression translateCastHelper(
+      RelDataType sourceType,
+      RelDataType targetType,
+      Expression operand) {
+    // This is only here so checkstyle doesn't complain that the method is too long
     Expression convert = null;
     switch (targetType.getSqlTypeName()) {
     case ANY:
@@ -488,89 +594,27 @@ public class RexToLixTranslator {
         break;
       }
     }
-    if (convert == null) {
-      convert = EnumUtils.convert(operand, typeFactory.getJavaClass(targetType));
-    }
-    // Going from anything to CHAR(n) or VARCHAR(n), make sure value is no
-    // longer than n.
-    boolean pad = false;
-    boolean truncate = true;
-    switch (targetType.getSqlTypeName()) {
-    case CHAR:
-    case BINARY:
-      pad = true;
-      // fall through
-    case VARCHAR:
-    case VARBINARY:
-      final int targetPrecision = targetType.getPrecision();
-      if (targetPrecision >= 0) {
-        switch (sourceType.getSqlTypeName()) {
-        case CHAR:
-        case VARCHAR:
-        case BINARY:
-        case VARBINARY:
-          // If this is a widening cast, no need to truncate.
-          final int sourcePrecision = sourceType.getPrecision();
-          if (SqlTypeUtil.comparePrecision(sourcePrecision, targetPrecision)
-              <= 0) {
-            truncate = false;
-          }
-          // If this is a widening cast, no need to pad.
-          if (SqlTypeUtil.comparePrecision(sourcePrecision, targetPrecision)
-              >= 0) {
-            pad = false;
-          }
-          // fall through
-        default:
-          if (truncate || pad) {
-            convert =
-                Expressions.call(
-                    pad
-                        ? BuiltInMethod.TRUNCATE_OR_PAD.method
-                        : BuiltInMethod.TRUNCATE.method,
-                    convert,
-                    Expressions.constant(targetPrecision));
-          }
-        }
-      }
-      break;
-    case TIMESTAMP:
-      int targetScale = targetType.getScale();
-      if (targetScale == RelDataType.SCALE_NOT_SPECIFIED) {
-        targetScale = 0;
-      }
-      if (targetScale < sourceType.getScale()) {
-        convert =
-            Expressions.call(
-                BuiltInMethod.ROUND_LONG.method,
-                convert,
-                Expressions.constant(
-                    (long) Math.pow(10, 3 - targetScale)));
-      }
-      break;
-    case INTERVAL_YEAR:
-    case INTERVAL_YEAR_MONTH:
-    case INTERVAL_MONTH:
-    case INTERVAL_DAY:
-    case INTERVAL_DAY_HOUR:
-    case INTERVAL_DAY_MINUTE:
-    case INTERVAL_DAY_SECOND:
-    case INTERVAL_HOUR:
-    case INTERVAL_HOUR_MINUTE:
-    case INTERVAL_HOUR_SECOND:
-    case INTERVAL_MINUTE:
-    case INTERVAL_MINUTE_SECOND:
-    case INTERVAL_SECOND:
-      switch (sourceType.getSqlTypeName().getFamily()) {
-      case NUMERIC:
-        final BigDecimal multiplier = targetType.getSqlTypeName().getEndUnit().multiplier;
-        final BigDecimal divider = BigDecimal.ONE;
-        convert = RexImpTable.multiplyDivide(convert, multiplier, divider);
-      }
+
+    return convert;
+  }
+
+  Expression handleVariantInCast(
+      RelDataType targetType,
+      Expression operand) {
+    // Converting VARIANT to VARIANT uses the default conversion
+    if (targetType.getSqlTypeName() == SqlTypeName.VARIANT) {
+      return EnumUtils.convert(operand, typeFactory.getJavaClass(targetType));
     }
 
-    convert = scaleIntervalToNumber(sourceType, targetType, convert);
-    return convert;
+    // Converting a VARIANT to any other type calls the Variant.cast method
+    // First cast operand to a VariantValue (it may be an Object)
+    Expression operandCast = Expressions.convert_(operand, VariantValue.class);
+    Expression cast =
+        Expressions.call(operandCast, BuiltInMethod.VARIANT_CAST.method,
+            RuntimeTypeInformation.createExpression(targetType));
+    // The cast returns an Object, so we need a convert to the expected Java type
+    RelDataType nullableTarget = typeFactory.createTypeWithNullability(targetType, true);
+    return Expressions.convert_(cast, typeFactory.getJavaClass(nullableTarget));
   }
 
   private Expression handleNullUnboxingIfNecessary(

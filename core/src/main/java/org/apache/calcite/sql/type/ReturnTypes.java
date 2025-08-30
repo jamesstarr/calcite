@@ -334,6 +334,12 @@ public abstract class ReturnTypes {
       cascade(VARCHAR_2000, SqlTypeTransforms.TO_NULLABLE);
 
   /**
+   * Type-inference strategy that always returns "VARIANT".
+   */
+  public static final SqlReturnTypeInference VARIANT =
+      ReturnTypes.explicit(SqlTypeName.VARIANT);
+
+  /**
    * Type-inference strategy for Histogram agg support
    */
   public static final SqlReturnTypeInference HISTOGRAM =
