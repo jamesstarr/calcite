@@ -8513,7 +8513,7 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
-<<<<<<< HEAD
+>>>>>>> 33669bec7 ([CALCITE-5439] Validation of Pivot fails after creating a deep copy of SqlNode (#152))
   @Test void testPivotThroughShuttle() {
     final String sql = ""
         + "SELECT *\n"
@@ -8536,6 +8536,8 @@ public class SqlParserTest {
     assertThat(toLinux(shuttled.toString()), is(expected));
   }
 
+<<<<<<< HEAD
+=======
 =======
   @Test void testMatchRecognize1() {
     final String sql = "select *\n"

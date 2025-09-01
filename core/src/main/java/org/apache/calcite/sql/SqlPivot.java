@@ -26,7 +26,8 @@ import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
 
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -35,10 +36,9 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
-<<<<<<< HEAD
+=======
 import static java.util.Objects.requireNonNull;
 
-=======
 /**
  * Parse tree node that represents a PIVOT applied to a table reference
  * (or sub-query).
@@ -200,6 +200,17 @@ public class SqlPivot extends SqlCall {
   static class Operator extends SqlSpecialOperator {
     Operator(SqlKind kind) {
       super(kind.name(), kind);
+    }
+
+    @Override public SqlCall createCall(
+        @Nullable SqlLiteral functionQualifier,
+        SqlParserPos pos,
+        @Nullable SqlNode... operands) {
+      assert operands.length == 4;
+      return new SqlPivot(pos, requireNonNull(operands[0], "query"),
+          requireNonNull((SqlNodeList) operands[1], "aggList"),
+          requireNonNull((SqlNodeList) operands[2], "axisList"),
+          requireNonNull((SqlNodeList) operands[3], "inList"));
     }
   }
 }

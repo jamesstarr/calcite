@@ -181,10 +181,6 @@ public enum SqlTypeFamily implements RelDataTypeFamily {
       return ImmutableList.of(SqlTypeName.COLUMN_LIST);
     case VARIANT:
       return ImmutableList.of(SqlTypeName.VARIANT);
-<<<<<<< HEAD
-    case UUID:
-      return ImmutableList.of(SqlTypeName.UUID);
-=======
     default:
       throw new IllegalArgumentException();
     }
@@ -242,7 +238,6 @@ public enum SqlTypeFamily implements RelDataTypeFamily {
       return factory.createSqlType(SqlTypeName.CURSOR);
     case COLUMN_LIST:
       return factory.createSqlType(SqlTypeName.COLUMN_LIST);
->>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
 =======
     case VARIANT:
       return factory.createSqlType(SqlTypeName.VARIANT);
