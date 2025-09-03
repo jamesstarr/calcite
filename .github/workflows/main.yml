@@ -42,7 +42,7 @@ env:
 jobs:
   windows:
     if: github.event.action != 'labeled'
-    name: 'Windows (JDK 8)'
+    name: 'Windows (JDK 11)'
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
