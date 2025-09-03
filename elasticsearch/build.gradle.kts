@@ -73,8 +73,12 @@ dependencies {
     testImplementation("org.elasticsearch:elasticsearch")
     testImplementation(project(":core", "testClasses"))
 <<<<<<< HEAD
+<<<<<<< HEAD
     testRuntimeOnly("net.java.dev.jna:jna")
     testRuntimeOnly("org.apache.logging.log4j:log4j-slf4j-impl")
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    testRuntimeOnly("net.java.dev.jna:jna")
+>>>>>>> 54dc4f56f ([CALCITE-3516] Bump net.java.dev.jna:jna to 5.5.0 (#131))
 }

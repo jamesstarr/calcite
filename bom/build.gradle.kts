@@ -111,9 +111,13 @@ dependencies {
         apiv("net.hydromatic:scott-data-hsqldb")
         apiv("net.hydromatic:tpcds", "hydromatic.tpcds")
 <<<<<<< HEAD
+<<<<<<< HEAD
         apiv("net.java.dev.jna:jna")
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+        apiv("net.java.dev.jna:jna")
+>>>>>>> 54dc4f56f ([CALCITE-3516] Bump net.java.dev.jna:jna to 5.5.0 (#131))
         apiv("net.sf.opencsv:opencsv")
         apiv("org.apache.calcite.avatica:avatica-core", "calcite.avatica")
         apiv("org.apache.calcite.avatica:avatica-server", "calcite.avatica")

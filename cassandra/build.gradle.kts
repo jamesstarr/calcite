@@ -38,14 +38,19 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
 
     testImplementation(project(":core", "testClasses"))
+    testImplementation("com.github.stephenc.jcip:jcip-annotations")
     testImplementation("org.apache.cassandra:cassandra-all") {
         exclude("org.slf4j", "log4j-over-slf4j")
             .because("log4j is already present in the classpath")
     }
     testImplementation("org.cassandraunit:cassandra-unit")
 <<<<<<< HEAD
+<<<<<<< HEAD
     testRuntimeOnly("net.java.dev.jna:jna")
 =======
     testImplementation("com.github.stephenc.jcip:jcip-annotations")
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    testRuntimeOnly("net.java.dev.jna:jna")
+>>>>>>> 54dc4f56f ([CALCITE-3516] Bump net.java.dev.jna:jna to 5.5.0 (#131))
 }
