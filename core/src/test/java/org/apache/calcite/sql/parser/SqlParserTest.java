@@ -2306,7 +2306,7 @@ public class SqlParserTest {
             + "FROM `DEPT`))");
   }
 
-  @Test void testSomeEveryAndIntersectionAggQuery() {
+  @Test public void testSomeEveryAndIntersectionAggQuery() {
     sql("select some(deptno = 10), every(deptno > 0), intersection(multiset[1,2]) from dept")
         .ok("SELECT SOME((`DEPTNO` = 10)), EVERY((`DEPTNO` > 0)), INTERSECTION((MULTISET[1, 2]))\n"
             + "FROM `DEPT`");

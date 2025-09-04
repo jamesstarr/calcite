@@ -2305,6 +2305,7 @@ and `LISTAGG`).
 <<<<<<< HEAD
 | FUSION(multiset)                   | Returns the multiset union of *multiset* across all input values
 | INTERSECTION(multiset)             | Returns the multiset intersection of *multiset* across all input values
+<<<<<<< HEAD
 =======
 | FUSION( multiset )                 | Returns the multiset union of *multiset* across all input values
 >>>>>>> f6e656f5b ([CALCITE-2355] Implement multiset operations (Sergey Nuyanzin))
@@ -2316,6 +2317,8 @@ and `LISTAGG`).
 =======
 | FUSION(multiset)                   | Returns the multiset union of *multiset* across all input values
 >>>>>>> cf7bf148e ([CALCITE-883] Support RESPECT NULLS, IGNORE NULLS option for LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE functions (Chunwei Lei))
+=======
+>>>>>>> 0c0484733 ([CALCITE-3815] Add missing SQL standard aggregate functions: EVERY, SOME, INTERSECTION (#160))
 | APPROX_COUNT_DISTINCT(value [, value ]*)      | Returns the approximate number of distinct values of *value*; the database is allowed to use an approximation but is not required to
 | AVG( [ ALL &#124; DISTINCT ] numeric)         | Returns the average (arithmetic mean) of *numeric* across all input values
 | SUM( [ ALL &#124; DISTINCT ] numeric)         | Returns the sum of *numeric* across all input values
@@ -2324,6 +2327,9 @@ and `LISTAGG`).
 | ANY_VALUE( [ ALL &#124; DISTINCT ] value)     | Returns one of the values of *value* across all input values; this is NOT specified in the SQL standard
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0c0484733 ([CALCITE-3815] Add missing SQL standard aggregate functions: EVERY, SOME, INTERSECTION (#160))
 | SOME(condition)                               | Returns true if any condition is true.
 | EVERY(condition)                              | Returns true if all conditions are true.
 | BIT_AND( [ ALL &#124; DISTINCT ] value)       | Returns the bitwise AND of all non-null input values, or null if none

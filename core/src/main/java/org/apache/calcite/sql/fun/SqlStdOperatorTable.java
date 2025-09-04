@@ -2251,6 +2251,18 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
       };
 =======
   /**
+   * The INTERSECTION operator. Multiset aggregator function.
+   */
+  public static final SqlAggFunction INTERSECTION =
+      new SqlAggFunction("INTERSECTION", null,
+          SqlKind.INTERSECTION,
+          ReturnTypes.ARG0,
+          null,
+          OperandTypes.MULTISET,
+          SqlFunctionCategory.SYSTEM, false, false,
+          Optionality.FORBIDDEN) {
+      };
+  /**
    * The sequence next value function: <code>NEXT VALUE FOR sequence</code>
    */
   public static final SqlOperator NEXT_VALUE =

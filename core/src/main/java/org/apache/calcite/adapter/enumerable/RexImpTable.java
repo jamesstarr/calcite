@@ -183,6 +183,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.GROUPING;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.GROUPING_ID;
 >>>>>>> b2e91c455 ([CALCITE-1824] GROUP_ID returns wrong result (DonnyZone) (#95))
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.INITCAP;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.INTERSECTION;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_A_SET;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_EMPTY;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.IS_FALSE;
@@ -271,6 +272,7 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SIMILAR_TO;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SIN;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SINGLE_VALUE;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SLICE;
+import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SOME;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.STRUCT_ACCESS;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SUBMULTISET_OF;
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.SUBSTRING;
@@ -641,6 +643,8 @@ public class RexImpTable {
     aggMap.put(MIN, minMax);
     aggMap.put(MAX, minMax);
     aggMap.put(ANY_VALUE, minMax);
+    aggMap.put(SOME, minMax);
+    aggMap.put(EVERY, minMax);
     final Supplier<BitOpImplementor> bitop = constructorSupplier(BitOpImplementor.class);
     aggMap.put(BIT_AND, bitop);
     aggMap.put(BIT_OR, bitop);
@@ -653,6 +657,7 @@ public class RexImpTable {
     aggMap.put(PERCENTILE_DISC, constructorSupplier(PercentileDiscImplementor.class));
     aggMap.put(LISTAGG, constructorSupplier(ListaggImplementor.class));
     aggMap.put(FUSION, constructorSupplier(FusionImplementor.class));
+    aggMap.put(INTERSECTION, constructorSupplier(IntersectionImplementor.class));
     final Supplier<GroupingImplementor> grouping =
         constructorSupplier(GroupingImplementor.class);
     aggMap.put(GROUPING, grouping);
@@ -1550,6 +1555,41 @@ public class RexImpTable {
   static class PercentileDiscImplementor extends StrictAggImplementor {
 
     @Override protected void implementNotNullAdd(AggContext info, AggAddContext add) {
+    }
+  }
+
+  /** Implementor for the {@code INTERSECTION} aggregate function. */
+  static class IntersectionImplementor extends StrictAggImplementor {
+    @Override protected void implementNotNullReset(AggContext info, AggResetContext reset) {
+      reset.currentBlock().add(
+          Expressions.statement(
+              Expressions.assign(reset.accumulator().get(0), Expressions.constant(null))));
+    }
+
+    @Override public void implementNotNullAdd(AggContext info, AggAddContext add) {
+      BlockBuilder accumulatorIsNull = new BlockBuilder();
+      accumulatorIsNull.add(
+          Expressions.statement(
+              Expressions.assign(add.accumulator().get(0), Expressions.new_(ArrayList.class))));
+      accumulatorIsNull.add(
+          Expressions.statement(
+              Expressions.call(add.accumulator().get(0),
+                  BuiltInMethod.COLLECTION_ADDALL.method, add.arguments().get(0))));
+
+      BlockBuilder accumulatorNotNull = new BlockBuilder();
+      accumulatorNotNull.add(
+          Expressions.statement(
+              Expressions.call(add.accumulator().get(0),
+                  BuiltInMethod.COLLECTION_RETAIN_ALL.method,
+                  add.arguments().get(0))
+          )
+      );
+
+      add.currentBlock().add(
+          Expressions.ifThenElse(
+              Expressions.equal(add.accumulator().get(0), Expressions.constant(null)),
+              accumulatorIsNull.toBlock(),
+              accumulatorNotNull.toBlock()));
     }
   }
 
