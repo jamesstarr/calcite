@@ -2,6 +2,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Apache Calcite release 1.22.0
 =======
 Apache Calcite release 1.18.0
@@ -15,6 +16,9 @@ Apache Calcite release 1.20.0
 =======
 Apache Calcite release 1.21.0
 >>>>>>> 4d2616180 ([CALCITE-3303] Release Calcite 1.21.0)
+=======
+Apache Calcite release 1.22.0
+>>>>>>> 55e2e46c7 ([CALCITE-3808] Release Calcite 1.22.0 (#120))
 
 This is a source or binary distribution of Apache Calcite.
 

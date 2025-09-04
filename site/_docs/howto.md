@@ -44,6 +44,7 @@ Unpack the source distribution `.tar.gz` file,
 then build using Gradle:
 
 {% highlight bash %}
+<<<<<<< HEAD
 $ tar xvfz apache-calcite-1.23.0-src.tar.gz
 $ cd apache-calcite-1.23.0-src
 $ ./gradlew build
@@ -80,6 +81,10 @@ $ ./gradlew build
 =======
 $ tar xvfz apache-calcite-1.34.0-src.tar.gz
 $ cd apache-calcite-1.34.0-src
+=======
+$ tar xvfz apache-calcite-1.22.0-src.tar.gz
+$ cd apache-calcite-1.22.0-src
+>>>>>>> 55e2e46c7 ([CALCITE-3808] Release Calcite 1.22.0 (#120))
 $ gradle build
 >>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
 {% endhighlight %}
@@ -749,6 +754,7 @@ manager);
  * select "Fixed" as resolution cause;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
  * mark the appropriate version (e.g., 1.22.0) in the "Fix version" field;
 =======
  * mark the appropriate version (e.g., 1.20.0) in the "Fix version" field;
@@ -756,6 +762,9 @@ manager);
 =======
  * mark the appropriate version (e.g., 1.21.0) in the "Fix version" field;
 >>>>>>> 4d2616180 ([CALCITE-3303] Release Calcite 1.21.0)
+=======
+ * mark the appropriate version (e.g., 1.22.0) in the "Fix version" field;
+>>>>>>> 55e2e46c7 ([CALCITE-3808] Release Calcite 1.22.0 (#120))
  * add a comment (e.g., "Fixed in ...") with a hyperlink pointing to the commit
 which resolves the issue (in GitHub or GitBox), and also thank the contributor
 for their contribution.
