@@ -96,6 +96,7 @@ public class RelMetadataQueryBase {
    * Removes cached metadata values for specified RelNode.
    *
    * @param rel RelNode whose cached metadata should be removed
+   * @return true if cache for the provided RelNode was not empty
    */
   public boolean clearCache(RelNode rel) {
     return cache.clear(rel);
