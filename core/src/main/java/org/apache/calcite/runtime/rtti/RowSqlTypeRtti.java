@@ -100,4 +100,3 @@ public class RowSqlTypeRtti extends RuntimeTypeInformation {
     return null;
   }
 }
-// End RowSqlTypeRtti.java

@@ -1951,8 +1951,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2205">[CALCITE-2205]</a>.
    * Since this is a performance problem, the test result does not
    * change, but takes over 15 minutes before the fix and 6 seconds after. */
-  @Test
-  public void testPullUpPredicatesForExprsItr() {
+  @Test public void testPullUpPredicatesForExprsItr() {
     final String sql = "select a.EMPNO, a.ENAME\n"
         + "from (select * from sales.emp ) a\n"
         + "join (select * from sales.emp  ) b\n"
@@ -3199,5 +3198,3 @@ public class RelMetadataTest extends SqlToRelTestBase {
     }
   }
 }
-
-// End RelMetadataTest.java

@@ -147,5 +147,3 @@ public class FilterTableScanRule
     }
   }
 }
-
-// End FilterTableScanRule.java

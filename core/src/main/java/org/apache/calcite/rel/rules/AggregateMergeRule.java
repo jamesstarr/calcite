@@ -163,5 +163,3 @@ public class AggregateMergeRule
     }
   }
 }
-
-// End AggregateMergeRule.java

@@ -1048,5 +1048,3 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
   }
 
 }
-
-// End RelStructuredTypeFlattener.java

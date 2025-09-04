@@ -50,5 +50,3 @@ public interface HintOptionChecker {
    */
   boolean checkOptions(RelHint hint, Litmus errorHandler);
 }
-
-// End HintOptionChecker.java

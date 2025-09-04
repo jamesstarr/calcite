@@ -431,5 +431,3 @@ public abstract class AbstractRelOptPlanner implements RelOptPlanner {
 
   }
 }
-
-// End AbstractRelOptPlanner.java

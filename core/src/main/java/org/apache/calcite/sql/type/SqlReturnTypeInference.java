@@ -55,5 +55,3 @@ public interface SqlReturnTypeInference {
     return ReturnTypes.chain(this, transform);
   }
 }
-
-// End SqlReturnTypeInference.java

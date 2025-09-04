@@ -495,5 +495,3 @@ public class InterpreterTest {
     }
   }
 }
-
-// End InterpreterTest.java

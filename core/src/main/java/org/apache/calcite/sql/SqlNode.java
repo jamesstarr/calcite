@@ -371,5 +371,3 @@ public abstract class SqlNode implements Cloneable {
         list -> new SqlNodeList(list, pos));
   }
 }
-
-// End SqlNode.java

@@ -689,5 +689,3 @@ public abstract class RelOptRule {
     }
   }
 }
-
-// End RelOptRule.java

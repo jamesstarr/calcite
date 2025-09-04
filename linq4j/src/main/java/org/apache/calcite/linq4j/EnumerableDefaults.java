@@ -4076,5 +4076,3 @@ public abstract class EnumerableDefaults {
     };
   }
 }
-
-// End EnumerableDefaults.java

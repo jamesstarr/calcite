@@ -159,4 +159,3 @@ public class AggregateProjectMergeRule
     }
   }
 }
-// End AggregateProjectMergeRule.java

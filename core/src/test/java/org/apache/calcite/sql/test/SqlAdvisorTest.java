@@ -1681,5 +1681,3 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
   }
 
 }
-
-// End SqlAdvisorTest.java

@@ -92,5 +92,3 @@ public class ElasticsearchTableScan extends TableScan implements ElasticsearchRe
     implementor.table = table;
   }
 }
-
-// End ElasticsearchTableScan.java

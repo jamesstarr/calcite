@@ -30,4 +30,3 @@ public enum CharLiteralStyle {
    * Example: {@code "Won\'t"}. */
   BQ_DOUBLE
 }
-// End CharLiteralStyle.java

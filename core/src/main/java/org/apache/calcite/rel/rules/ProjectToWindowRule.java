@@ -399,5 +399,3 @@ public abstract class ProjectToWindowRule
     @Override ProjectToWindowRule toRule();
   }
 }
-
-// End ProjectToWindowRule.java

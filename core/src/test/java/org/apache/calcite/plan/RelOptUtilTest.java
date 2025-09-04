@@ -649,5 +649,3 @@ public class RelOptUtilTest {
     assertThat(RelOptUtil.toString(castNode2), is(RelOptUtil.toString(expectNode2)));
   }
 }
-
-// End RelOptUtilTest.java

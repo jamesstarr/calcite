@@ -485,5 +485,3 @@ public class AggregateJoinTransposeRule
     }
   }
 }
-
-// End AggregateJoinTransposeRule.java

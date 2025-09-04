@@ -247,5 +247,3 @@ class EnumerableStringComparisonTest {
         .withSchema("s", new ReflectiveSchema(new JdbcTest.HrSchema()));
   }
 }
-
-// End EnumerableStringComparisonTest.java

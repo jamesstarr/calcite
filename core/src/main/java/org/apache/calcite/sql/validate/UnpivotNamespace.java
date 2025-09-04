@@ -44,5 +44,3 @@ public class UnpivotNamespace extends AbstractNamespace {
     return unpivot;
   }
 }
-
-// End UnpivotNamespace.java

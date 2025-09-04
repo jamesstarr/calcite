@@ -1068,5 +1068,3 @@ public class RexProgramBuilder {
     }
   }
 }
-
-// End RexProgramBuilder.java

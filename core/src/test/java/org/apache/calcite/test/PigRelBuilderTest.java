@@ -166,5 +166,3 @@ public class PigRelBuilderTest {
   @Test public void testStore() {}
   @Test public void testUnion() {}
 }
-
-// End PigRelBuilderTest.java

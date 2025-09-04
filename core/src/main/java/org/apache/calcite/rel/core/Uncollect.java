@@ -188,5 +188,3 @@ public class Uncollect extends SingleRel {
     return builder.build();
   }
 }
-
-// End Uncollect.java

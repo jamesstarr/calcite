@@ -281,5 +281,3 @@ public class CodeGenerationBenchmark {
     new Runner(opt).run();
   }
 }
-
-// End CodeGenerationBenchmark.java

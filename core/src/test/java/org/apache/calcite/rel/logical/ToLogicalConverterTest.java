@@ -453,5 +453,3 @@ class ToLogicalConverterTest {
   }
 
 }
-
-// End ToLogicalConverterTest.java

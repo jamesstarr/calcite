@@ -258,5 +258,3 @@ public class SqlCreateTable extends SqlCreate
     }
   }
 }
-
-// End SqlCreateTable.java

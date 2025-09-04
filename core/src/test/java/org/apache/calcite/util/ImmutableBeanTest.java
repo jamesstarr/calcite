@@ -31,8 +31,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /** Unit test for {@link ImmutableBeans}. */
 public class ImmutableBeanTest {
 
-  @Test
-  public void testSimple() {
+  @Test public void testSimple() {
     final MyBean b = ImmutableBeans.create(MyBean.class);
     assertThat(b.withFoo(1).getFoo(), is(1));
     assertThat(b.withBar(false).isBar(), is(false));
@@ -447,4 +446,3 @@ public class ImmutableBeanTest {
     BeanWithDefault withChar(char c);
   }
 }
-// End ImmutableBeanTest.java

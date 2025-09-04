@@ -161,5 +161,3 @@ public interface RelOptTable extends Wrapper {
     List<RelHint> getTableHints();
   }
 }
-
-// End RelOptTable.java

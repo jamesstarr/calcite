@@ -326,5 +326,3 @@ public class CassandraSchema extends AbstractSchema {
     return session.getCluster().getMetadata().getKeyspace(keyspace);
   }
 }
-
-// End CassandraSchema.java

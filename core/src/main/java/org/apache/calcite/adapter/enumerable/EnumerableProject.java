@@ -99,5 +99,3 @@ public class EnumerableProject extends Project implements EnumerableRel {
     throw new UnsupportedOperationException();
   }
 }
-
-// End EnumerableProject.java

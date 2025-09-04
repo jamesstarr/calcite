@@ -165,5 +165,3 @@ public final class LogicalAggregate extends Aggregate {
   }
 
 }
-
-// End LogicalAggregate.java

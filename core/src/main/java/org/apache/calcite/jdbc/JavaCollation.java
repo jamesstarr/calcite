@@ -63,5 +63,3 @@ public class JavaCollation extends SqlCollation {
     return collator;
   }
 }
-
-// End JavaCollation.java

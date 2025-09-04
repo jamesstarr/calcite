@@ -477,5 +477,3 @@ public interface SqlConformance {
   boolean allowQualifyingCommonColumn();
 
 }
-
-// End SqlConformance.java

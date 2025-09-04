@@ -1109,5 +1109,3 @@ public abstract class MockCatalogReader extends CalciteCatalogReader {
   }
 
 }
-
-// End MockCatalogReader.java

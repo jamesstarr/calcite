@@ -51,5 +51,3 @@ public interface RelMetadataHandlerProvider {
     }
   }
 }
-
-// End RelMetadataHandlerProvider.java

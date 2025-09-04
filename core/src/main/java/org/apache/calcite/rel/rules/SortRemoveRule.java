@@ -80,5 +80,3 @@ public class SortRemoveRule
     }
   }
 }
-
-// End SortRemoveRule.java

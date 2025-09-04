@@ -105,5 +105,3 @@ public interface SqlVisitor<R> {
     selectList.forEach(e -> e.accept(this));
   }
 }
-
-// End SqlVisitor.java

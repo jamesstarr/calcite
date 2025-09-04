@@ -303,5 +303,3 @@ public class SqlCallBinding extends SqlOperatorBinding {
     return validator.config().typeCoercionEnabled();
   }
 }
-
-// End SqlCallBinding.java

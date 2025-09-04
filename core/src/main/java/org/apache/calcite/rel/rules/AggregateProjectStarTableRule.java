@@ -76,5 +76,3 @@ public class AggregateProjectStarTableRule extends AggregateStarTableRule {
     }
   }
 }
-
-// End AggregateProjectStarTableRule.java

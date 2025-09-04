@@ -713,5 +713,3 @@ public class MultiJoinOptimizeBushyRule
     }
   }
 }
-
-// End MultiJoinOptimizeBushyRule.java

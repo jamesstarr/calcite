@@ -385,5 +385,3 @@ public class SqlIdentifier extends SqlNode {
     return qualified.namespace.resolve().getMonotonicity(Util.last(fqId.names));
   }
 }
-
-// End SqlIdentifier.java

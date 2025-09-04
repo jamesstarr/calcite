@@ -113,5 +113,3 @@ public class SqlMultisetQueryConstructor extends SqlSpecialOperator {
     return false;
   }
 }
-
-// End SqlMultisetQueryConstructor.java

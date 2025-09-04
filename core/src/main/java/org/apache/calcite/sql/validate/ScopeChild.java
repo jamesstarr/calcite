@@ -49,5 +49,3 @@ class ScopeChild {
         + (nullable ? " (nullable)" : "");
   }
 }
-
-// End ScopeChild.java

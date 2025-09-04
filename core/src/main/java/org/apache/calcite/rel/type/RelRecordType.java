@@ -176,5 +176,3 @@ public class RelRecordType extends RelDataTypeImpl implements Serializable {
     }
   }
 }
-
-// End RelRecordType.java

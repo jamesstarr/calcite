@@ -264,5 +264,3 @@ public class SqlDdlNodes {
     ARCHIVE
   }
 }
-
-// End SqlDdlNodes.java

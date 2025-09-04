@@ -285,5 +285,3 @@ public class ReflectVisitorTest {
       implements DiceyNumber {
   }
 }
-
-// End ReflectVisitorTest.java

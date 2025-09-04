@@ -649,5 +649,3 @@ public class AggregateReduceFunctionsRule
     return inputField.getType();
   }
 }
-
-// End AggregateReduceFunctionsRule.java

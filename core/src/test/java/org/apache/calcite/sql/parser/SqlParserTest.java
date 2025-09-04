@@ -9516,5 +9516,3 @@ public class SqlParserTest {
     }
   }
 }
-
-// End SqlParserTest.java

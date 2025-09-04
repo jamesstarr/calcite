@@ -180,5 +180,3 @@ public class JoinAssociateRule
     }
   }
 }
-
-// End JoinAssociateRule.java

@@ -102,5 +102,3 @@ public class RelMetadataQueryBase {
     return cache.clear(rel);
   }
 }
-
-// End RelMetadataQueryBase.java

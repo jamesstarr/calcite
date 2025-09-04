@@ -46,5 +46,3 @@ class EnumerableProjectRule extends ConverterRule {
         project.getRowType());
   }
 }
-
-// End EnumerableProjectRule.java

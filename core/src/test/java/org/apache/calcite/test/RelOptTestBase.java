@@ -302,5 +302,3 @@ abstract class RelOptTestBase extends SqlToRelTestBase {
   }
 
 }
-
-// End RelOptTestBase.java

@@ -41,5 +41,3 @@ interface ElasticsearchConstants {
   Set<String> META_COLUMNS = ImmutableSet.of(UID, ID, TYPE, INDEX);
 
 }
-
-// End ElasticsearchConstants.java

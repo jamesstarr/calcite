@@ -33,5 +33,3 @@ public interface Wrapper {
     return Optional.ofNullable(unwrap(aClass));
   }
 }
-
-// End Wrapper.java

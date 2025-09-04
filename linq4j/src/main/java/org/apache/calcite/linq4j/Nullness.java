@@ -124,5 +124,3 @@ public class Nullness {
     return (T) dest[0];
   }
 }
-
-// End Nullness.java

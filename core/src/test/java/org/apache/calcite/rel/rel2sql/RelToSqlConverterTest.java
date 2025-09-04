@@ -5540,5 +5540,3 @@ public class RelToSqlConverterTest {
     }
   }
 }
-
-// End RelToSqlConverterTest.java

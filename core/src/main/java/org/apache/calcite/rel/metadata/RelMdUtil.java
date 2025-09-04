@@ -952,5 +952,3 @@ public class RelMdUtil {
     return rel.getCluster().getMetadataQuery().clearCache(rel);
   }
 }
-
-// End RelMdUtil.java

@@ -81,5 +81,3 @@ public interface Compatible {
     }
   }
 }
-
-// End Compatible.java

@@ -560,5 +560,3 @@ public interface SqlWriter {
     boolean needsIndent();
   }
 }
-
-// End SqlWriter.java

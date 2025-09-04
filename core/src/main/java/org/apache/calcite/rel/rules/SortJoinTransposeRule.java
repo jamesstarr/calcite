@@ -182,5 +182,3 @@ public class SortJoinTransposeRule
     }
   }
 }
-
-// End SortJoinTransposeRule.java

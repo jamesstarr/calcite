@@ -40,5 +40,3 @@ class EnumerableCollectRule extends ConverterRule {
         collect.getRowType());
   }
 }
-
-// End EnumerableCollectRule.java

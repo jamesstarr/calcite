@@ -1126,5 +1126,3 @@ public class RelFieldTrimmer implements ReflectiveVisitor {
     }
   }
 }
-
-// End RelFieldTrimmer.java

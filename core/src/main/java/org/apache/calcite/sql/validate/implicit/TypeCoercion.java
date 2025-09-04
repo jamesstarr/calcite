@@ -173,5 +173,3 @@ public interface TypeCoercion {
   boolean userDefinedFunctionCoercion(SqlValidatorScope scope, SqlCall call,
       SqlFunction function);
 }
-
-// End TypeCoercion.java

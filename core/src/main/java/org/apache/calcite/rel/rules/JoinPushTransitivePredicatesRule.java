@@ -119,5 +119,3 @@ public class JoinPushTransitivePredicatesRule
     }
   }
 }
-
-// End JoinPushTransitivePredicatesRule.java

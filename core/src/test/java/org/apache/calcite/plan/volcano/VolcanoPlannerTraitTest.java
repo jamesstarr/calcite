@@ -782,5 +782,3 @@ public class VolcanoPlannerTraitTest {
     }
   }
 }
-
-// End VolcanoPlannerTraitTest.java

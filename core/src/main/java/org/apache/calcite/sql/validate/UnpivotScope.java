@@ -47,5 +47,3 @@ public class UnpivotScope extends ListScope {
     return unpivot;
   }
 }
-
-// End UnpivotScope.java

@@ -236,5 +236,3 @@ public abstract class Bug {
     return false;
   }
 }
-
-// End Bug.java

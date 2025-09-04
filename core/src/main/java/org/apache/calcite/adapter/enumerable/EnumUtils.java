@@ -669,5 +669,3 @@ public class EnumUtils {
     return Expressions.lambda(Predicate2.class, builder.toBlock(), left_, right_);
   }
 }
-
-// End EnumUtils.java

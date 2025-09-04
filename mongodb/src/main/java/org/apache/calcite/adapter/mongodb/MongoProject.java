@@ -85,5 +85,3 @@ public class MongoProject extends Project implements MongoRel {
     implementor.add(op.left, op.right);
   }
 }
-
-// End MongoProject.java

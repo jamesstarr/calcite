@@ -69,5 +69,3 @@ public class JdbcConvention extends Convention.Impl {
     planner.addRule(CoreRules.PROJECT_REMOVE);
   }
 }
-
-// End JdbcConvention.java

@@ -1103,5 +1103,3 @@ public enum Primitive {
     OBJECT
   }
 }
-
-// End Primitive.java

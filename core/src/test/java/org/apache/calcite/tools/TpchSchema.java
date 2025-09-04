@@ -65,5 +65,3 @@ public class TpchSchema {
     return new Part(pPartkey);
   }
 }
-
-// End TpchSchema.java

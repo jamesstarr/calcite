@@ -152,5 +152,3 @@ public class AggregateRemoveRule
     }
   }
 }
-
-// End AggregateRemoveRule.java

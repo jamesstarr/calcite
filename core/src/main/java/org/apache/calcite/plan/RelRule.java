@@ -322,4 +322,3 @@ public abstract class RelRule<C extends RelRule.Config> extends RelOptRule {
       extends BiConsumer<R, RelOptRuleCall> {
   }
 }
-// End RelRule.java

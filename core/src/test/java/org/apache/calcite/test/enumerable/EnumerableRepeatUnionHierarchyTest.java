@@ -142,5 +142,3 @@ public class EnumerableRepeatUnionHierarchyTest {
   }
 
 }
-
-// End EnumerableRepeatUnionHierarchyTest.java

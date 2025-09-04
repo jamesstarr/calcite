@@ -119,5 +119,3 @@ public class CsvTableScan extends TableScan implements EnumerableRel {
                 Expressions.constant(fields))));
   }
 }
-
-// End CsvTableScan.java

@@ -1059,5 +1059,3 @@ public abstract class SqlOperator {
   }
 
 }
-
-// End SqlOperator.java

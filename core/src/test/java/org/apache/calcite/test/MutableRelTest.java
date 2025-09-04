@@ -317,5 +317,3 @@ public class MutableRelTest {
     return MutableRels.toMutable(rel);
   }
 }
-
-// End MutableRelTest.java

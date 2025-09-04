@@ -47,4 +47,3 @@ public class RexUtilTest {
     assert constantMap.size() == 1;
   }
 }
-// End RexUtilTest.java

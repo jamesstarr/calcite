@@ -1342,5 +1342,3 @@ public class SqlValidatorUtil {
     }
   }
 }
-
-// End SqlValidatorUtil.java

@@ -77,5 +77,3 @@ public class CalcRemoveRule extends RelRule<CalcRemoveRule.Config>
     }
   }
 }
-
-// End CalcRemoveRule.java

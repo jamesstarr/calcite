@@ -218,5 +218,3 @@ public final class SqlLikeListOperator extends SqlSpecialOperator {
   }
 
 }
-
-// End SqlLikeListOperator.java

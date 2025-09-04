@@ -916,8 +916,7 @@ public class RelOptRulesTest extends RelOptTestBase {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3353">[CALCITE-3353]
    * ProjectJoinTransposeRule caused AssertionError when creating a new Join</a>.
    */
-  @Test
-  public void testProjectJoinTransposeWithMergeJoin() {
+  @Test public void testProjectJoinTransposeWithMergeJoin() {
     ProjectJoinTransposeRule testRule = new ProjectJoinTransposeRule(
              Project.class, Join.class, expr -> !(expr instanceof RexOver),
              RelFactories.LOGICAL_BUILDER);
@@ -2029,8 +2028,7 @@ public class RelOptRulesTest extends RelOptTestBase {
   }
 
   /** Tests to see if the final branch of union is missed */
-  @Test
-  public void testUnionMergeRule() throws Exception {
+  @Test public void testUnionMergeRule() throws Exception {
     HepProgram program = new HepProgramBuilder()
             .addRuleInstance(CoreRules.PROJECT_SET_OP_TRANSPOSE)
             .addRuleInstance(CoreRules.PROJECT_REMOVE)
@@ -2054,8 +2052,7 @@ public class RelOptRulesTest extends RelOptTestBase {
     sql(sql).with(program).check();
   }
 
-  @Test
-  public void testMinusMergeRule() throws Exception {
+  @Test public void testMinusMergeRule() throws Exception {
     HepProgram program = new HepProgramBuilder()
             .addRuleInstance(CoreRules.PROJECT_SET_OP_TRANSPOSE)
             .addRuleInstance(CoreRules.PROJECT_REMOVE)
@@ -2633,8 +2630,7 @@ public class RelOptRulesTest extends RelOptTestBase {
         .check();
   }
 
-  @Test
-  public void testSkipReduceConstantsCaseEquals() throws Exception {
+  @Test public void testSkipReduceConstantsCaseEquals() throws Exception {
     final String sql = "select * from emp e1, emp e2\n"
         + "where coalesce(e1.mgr, -1) = coalesce(e2.mgr, -1)";
     sql(sql).withRule(CoreRules.PROJECT_REDUCE_EXPRESSIONS,
@@ -7284,5 +7280,3 @@ public class RelOptRulesTest extends RelOptTestBase {
   }
 
 }
-
-// End RelOptRulesTest.java

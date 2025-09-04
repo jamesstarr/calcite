@@ -96,5 +96,3 @@ public abstract class AbstractJoinExtractFilterRule
   public interface Config extends RelRule.Config {
   }
 }
-
-// End AbstractJoinExtractFilterRule.java

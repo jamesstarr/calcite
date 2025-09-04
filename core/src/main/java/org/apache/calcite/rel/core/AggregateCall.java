@@ -424,5 +424,3 @@ public class AggregateCall {
         RelCollations.permute(collation, mapping));
   }
 }
-
-// End AggregateCall.java

@@ -419,5 +419,3 @@ public abstract class AbstractRelNode implements RelNode {
     return super.hashCode();
   }
 }
-
-// End AbstractRelNode.java

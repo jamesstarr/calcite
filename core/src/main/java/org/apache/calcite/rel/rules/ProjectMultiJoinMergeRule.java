@@ -105,5 +105,3 @@ public class ProjectMultiJoinMergeRule
     }
   }
 }
-
-// End ProjectMultiJoinMergeRule.java

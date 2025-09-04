@@ -354,5 +354,3 @@ public interface RelOptPlanner {
     }
   }
 }
-
-// End RelOptPlanner.java

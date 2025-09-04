@@ -83,5 +83,3 @@ public class SqlExtractFunction extends SqlFunction {
     }
   }
 }
-
-// End SqlExtractFunction.java

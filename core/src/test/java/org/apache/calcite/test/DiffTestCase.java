@@ -517,5 +517,3 @@ public abstract class DiffTestCase {
     addDiffMask("^(\\.\\s?)+>");
   }
 }
-
-// End DiffTestCase.java

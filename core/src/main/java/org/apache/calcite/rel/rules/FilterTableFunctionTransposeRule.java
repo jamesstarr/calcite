@@ -130,5 +130,3 @@ public class FilterTableFunctionTransposeRule
     }
   }
 }
-
-// End FilterTableFunctionTransposeRule.java

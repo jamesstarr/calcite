@@ -43,4 +43,3 @@ public class PivotScope extends ListScope {
     return pivot;
   }
 }
-// End PivotScope.java

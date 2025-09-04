@@ -740,5 +740,3 @@ public class SubQueryRemoveRule
     Config withMatchHandler(MatchHandler<SubQueryRemoveRule> matchHandler);
   }
 }
-
-// End SubQueryRemoveRule.java

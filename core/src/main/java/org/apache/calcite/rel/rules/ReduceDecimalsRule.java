@@ -1324,5 +1324,3 @@ public class ReduceDecimalsRule
     }
   }
 }
-
-// End ReduceDecimalsRule.java

@@ -64,5 +64,3 @@ public final class JoinExtractFilterRule extends AbstractJoinExtractFilterRule {
     }
   }
 }
-
-// End JoinExtractFilterRule.java

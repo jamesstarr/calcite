@@ -428,5 +428,3 @@ public abstract class SqlLibraryOperators {
       new SqlCastOperator();
 
 }
-
-// End SqlLibraryOperators.java

@@ -108,5 +108,3 @@ public class FilterCalcMergeRule
     }
   }
 }
-
-// End FilterCalcMergeRule.java

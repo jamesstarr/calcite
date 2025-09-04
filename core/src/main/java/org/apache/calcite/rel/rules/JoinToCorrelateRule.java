@@ -144,5 +144,3 @@ public class JoinToCorrelateRule
     }
   }
 }
-
-// End JoinToCorrelateRule.java

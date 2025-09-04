@@ -71,8 +71,7 @@ public class PigRelBuilderStyleTest extends AbstractPigTest {
           + File.separatorChar);
   }
 
-  @Test
-  public void testScanAndFilter() throws Exception {
+  @Test public void testScanAndFilter() throws Exception {
     final SchemaPlus schema = createTestSchema();
     final RelBuilder builder = createRelBuilder(schema);
     final RelNode node = builder.scan("t")
@@ -85,8 +84,7 @@ public class PigRelBuilderStyleTest extends AbstractPigTest {
         new String[] { "(b,2)", "(c,3)" });
   }
 
-  @Test
-  @Disabled("CALCITE-1751")
+  @Test @Disabled("CALCITE-1751")
   public void testImplWithMultipleFilters() {
     final SchemaPlus schema = createTestSchema();
     final RelBuilder builder = createRelBuilder(schema);
@@ -103,8 +101,7 @@ public class PigRelBuilderStyleTest extends AbstractPigTest {
         new String[] { "(c,3)" });
   }
 
-  @Test
-  @Disabled("CALCITE-1751")
+  @Test @Disabled("CALCITE-1751")
   public void testImplWithGroupByAndCount() {
     final SchemaPlus schema = createTestSchema();
     final RelBuilder builder = createRelBuilder(schema);
@@ -122,8 +119,7 @@ public class PigRelBuilderStyleTest extends AbstractPigTest {
         new String[] { "(a,1)", "(b,1)", "(c,1)" });
   }
 
-  @Test
-  public void testImplWithCountWithoutGroupBy() {
+  @Test public void testImplWithCountWithoutGroupBy() {
     final SchemaPlus schema = createTestSchema();
     final RelBuilder builder = createRelBuilder(schema);
     final RelNode node = builder.scan("t")
@@ -139,8 +135,7 @@ public class PigRelBuilderStyleTest extends AbstractPigTest {
         new String[] { "(3)" });
   }
 
-  @Test
-  @Disabled("CALCITE-1751")
+  @Test @Disabled("CALCITE-1751")
   public void testImplWithGroupByMultipleFields() {
     final SchemaPlus schema = createTestSchema();
     final RelBuilder builder = createRelBuilder(schema);
@@ -158,8 +153,7 @@ public class PigRelBuilderStyleTest extends AbstractPigTest {
         new String[] { "(a,1,1)", "(b,2,1)", "(c,3,1)" });
   }
 
-  @Test
-  public void testImplWithGroupByCountDistinct() {
+  @Test public void testImplWithGroupByCountDistinct() {
     final SchemaPlus schema = createTestSchema();
     final RelBuilder builder = createRelBuilder(schema);
     final RelNode node = builder.scan("t")
@@ -177,8 +171,7 @@ public class PigRelBuilderStyleTest extends AbstractPigTest {
         new String[] { "(a,1,1)", "(b,2,1)", "(c,3,1)" });
   }
 
-  @Test
-  public void testImplWithJoin() throws Exception {
+  @Test public void testImplWithJoin() throws Exception {
     final SchemaPlus schema = createTestSchema();
     final RelBuilder builder = createRelBuilder(schema);
     final RelNode node = builder.scan("t").scan("s")
@@ -196,8 +189,7 @@ public class PigRelBuilderStyleTest extends AbstractPigTest {
         new String[] { "(b,2,2,label2)" });
   }
 
-  @Test
-  @Disabled("CALCITE-1751")
+  @Test @Disabled("CALCITE-1751")
   public void testImplWithJoinAndGroupBy() throws Exception {
     final SchemaPlus schema = createTestSchema();
     final RelBuilder builder = createRelBuilder(schema);
@@ -316,5 +308,3 @@ public class PigRelBuilderStyleTest extends AbstractPigTest {
         new Path("target/data2.txt"));
   }
 }
-
-// End PigRelBuilderStyleTest.java

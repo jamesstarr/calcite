@@ -1433,5 +1433,3 @@ public class SqlPrettyWriter implements SqlWriter {
   }
 
 }
-
-// End SqlPrettyWriter.java

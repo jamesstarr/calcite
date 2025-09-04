@@ -105,5 +105,3 @@ public class FilterMultiJoinMergeRule
     }
   }
 }
-
-// End FilterMultiJoinMergeRule.java

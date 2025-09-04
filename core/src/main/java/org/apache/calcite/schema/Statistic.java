@@ -53,5 +53,3 @@ public interface Statistic {
   /** Returns the distribution of the data in this table. */
   RelDistribution getDistribution();
 }
-
-// End Statistic.java

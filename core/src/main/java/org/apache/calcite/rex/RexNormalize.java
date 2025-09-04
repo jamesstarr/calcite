@@ -189,5 +189,3 @@ public class RexNormalize {
     return CalciteSystemProperty.ENABLE_REX_DIGEST_NORMALIZE.value();
   }
 }
-
-// End RexNormalize.java

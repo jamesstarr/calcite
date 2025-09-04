@@ -40,4 +40,3 @@ public class SqlOperatorTables extends ReflectiveSqlOperatorTable {
     return chain(ImmutableList.copyOf(tables));
   }
 }
-// End SqlOperatorTables.java

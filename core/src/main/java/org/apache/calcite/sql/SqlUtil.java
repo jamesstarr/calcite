@@ -1100,5 +1100,3 @@ public abstract class SqlUtil {
     }
   }
 }
-
-// End SqlUtil.java

@@ -165,5 +165,3 @@ public class UnionMergeRule
     }
   }
 }
-
-// End UnionMergeRule.java

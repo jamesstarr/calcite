@@ -271,5 +271,3 @@ public class JoinCommuteRule
     Config withAllowAlwaysTrueCondition(boolean allowAlwaysTrueCondition);
   }
 }
-
-// End JoinCommuteRule.java

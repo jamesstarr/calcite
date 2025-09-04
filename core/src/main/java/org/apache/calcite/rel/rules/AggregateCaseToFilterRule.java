@@ -265,5 +265,3 @@ public class AggregateCaseToFilterRule extends RelOptRule {
         && SqlTypeName.INT_TYPES.contains(rexNode.getType().getSqlTypeName());
   }
 }
-
-// End AggregateCaseToFilterRule.java

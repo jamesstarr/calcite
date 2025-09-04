@@ -384,5 +384,3 @@ public abstract class PruneEmptyRules {
     }
   }
 }
-
-// End PruneEmptyRules.java

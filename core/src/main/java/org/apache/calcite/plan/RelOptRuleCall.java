@@ -310,5 +310,3 @@ public abstract class RelOptRuleCall {
     return rule.relBuilderFactory.create(rel(0).getCluster(), null);
   }
 }
-
-// End RelOptRuleCall.java

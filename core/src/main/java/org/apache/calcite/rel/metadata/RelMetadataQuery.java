@@ -872,5 +872,3 @@ public class RelMetadataQuery extends RelMetadataQueryBase {
     }
   }
 }
-
-// End RelMetadataQuery.java

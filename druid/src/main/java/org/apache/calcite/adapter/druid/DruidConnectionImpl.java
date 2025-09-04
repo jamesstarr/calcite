@@ -747,5 +747,3 @@ class DruidConnectionImpl implements DruidConnection {
     }
   }
 }
-
-// End DruidConnectionImpl.java

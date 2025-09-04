@@ -216,5 +216,3 @@ public class AggregateUnionTransposeRule
     }
   }
 }
-
-// End AggregateUnionTransposeRule.java

@@ -2933,5 +2933,3 @@ public class RexProgramTest extends RexProgramBuilderBase {
     assertThat(s, is(falseLiteral));
   }
 }
-
-// End RexProgramTest.java

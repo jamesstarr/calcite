@@ -1070,5 +1070,3 @@ public class HepPlanner extends AbstractRelOptPlanner {
     materializations.add(materialization);
   }
 }
-
-// End HepPlanner.java

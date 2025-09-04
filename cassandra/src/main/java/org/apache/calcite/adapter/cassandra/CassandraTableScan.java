@@ -76,5 +76,3 @@ public class CassandraTableScan extends TableScan implements CassandraRel {
     implementor.table = table;
   }
 }
-
-// End CassandraTableScan.java

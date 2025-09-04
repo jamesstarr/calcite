@@ -2591,5 +2591,3 @@ public class UtilTest {
     return d.toString();
   }
 }
-
-// End UtilTest.java

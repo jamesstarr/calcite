@@ -536,5 +536,3 @@ public class RexImplicationChecker {
     private int usageCount = 0;
   }
 }
-
-// End RexImplicationChecker.java

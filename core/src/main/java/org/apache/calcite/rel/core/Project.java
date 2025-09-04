@@ -404,5 +404,3 @@ public abstract class Project extends SingleRel implements Hintable {
     public static final int NONE = 0;
   }
 }
-
-// End Project.java

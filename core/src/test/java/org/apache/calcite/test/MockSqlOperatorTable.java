@@ -158,5 +158,3 @@ public class MockSqlOperatorTable extends ChainedSqlOperatorTable {
     }
   }
 }
-
-// End MockSqlOperatorTable.java

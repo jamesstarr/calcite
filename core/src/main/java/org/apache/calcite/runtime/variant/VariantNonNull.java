@@ -455,4 +455,3 @@ public class VariantNonNull extends VariantSqlValue {
     return quote + value + quote;
   }
 }
-// End VariantNonNull.java

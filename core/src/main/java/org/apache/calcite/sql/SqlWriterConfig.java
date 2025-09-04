@@ -432,4 +432,3 @@ public interface SqlWriterConfig {
     TALL
   }
 }
-// End SqlWriterConfig.java

@@ -582,5 +582,3 @@ public class Interpreter extends AbstractEnumerable<Object[]>
     Scalar compile(List<RexNode> nodes, RelDataType inputRowType);
   }
 }
-
-// End Interpreter.java

@@ -125,5 +125,3 @@ public class ProjectCalcMergeRule
     }
   }
 }
-
-// End ProjectCalcMergeRule.java

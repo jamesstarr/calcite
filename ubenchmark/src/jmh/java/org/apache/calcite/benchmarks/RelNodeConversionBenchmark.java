@@ -206,5 +206,3 @@ public class RelNodeConversionBenchmark {
   }
 
 }
-
-// End RelNodeConversionBenchmark.java

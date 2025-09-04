@@ -19,4 +19,3 @@
  * Runtime support for values of the VARIANT data type.
  */
 package org.apache.calcite.runtime.variant;
-// End package-info.java

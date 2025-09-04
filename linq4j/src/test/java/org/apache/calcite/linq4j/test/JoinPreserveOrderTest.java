@@ -494,5 +494,3 @@ public final class JoinPreserveOrderTest {
   };
 
 }
-
-// End JoinPreserveOrderTest.java

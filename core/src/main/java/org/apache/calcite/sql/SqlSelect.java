@@ -278,5 +278,3 @@ public class SqlSelect extends SqlCall {
     return getModifierNode(targetKeyWord) != null;
   }
 }
-
-// End SqlSelect.java

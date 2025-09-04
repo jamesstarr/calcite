@@ -471,5 +471,3 @@ public class RexProgramFuzzyTest extends RexProgramBuilderBase {
     generateRexAndCheckTrueFalse(fuzzer, r);
   }
 }
-
-// End RexProgramFuzzyTest.java

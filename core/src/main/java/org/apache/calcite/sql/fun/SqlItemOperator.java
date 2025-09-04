@@ -153,5 +153,3 @@ class SqlItemOperator extends SqlSpecialOperator {
     }
   }
 }
-
-// End SqlItemOperator.java

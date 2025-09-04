@@ -118,5 +118,3 @@ public class FilterMergeRule extends RelRule<FilterMergeRule.Config>
     }
   }
 }
-
-// End FilterMergeRule.java

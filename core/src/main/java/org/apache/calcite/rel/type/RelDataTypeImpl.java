@@ -425,5 +425,3 @@ public abstract class RelDataTypeImpl
     RelDataTypeField field;
   }
 }
-
-// End RelDataTypeImpl.java

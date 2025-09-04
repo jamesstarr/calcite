@@ -101,5 +101,3 @@ public class CalcMergeRule extends RelRule<CalcMergeRule.Config>
     }
   }
 }
-
-// End CalcMergeRule.java

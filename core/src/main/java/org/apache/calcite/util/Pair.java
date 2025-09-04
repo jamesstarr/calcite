@@ -529,5 +529,3 @@ public class Pair<T1 extends Object, T2 extends Object>
     }
   }
 }
-
-// End Pair.java

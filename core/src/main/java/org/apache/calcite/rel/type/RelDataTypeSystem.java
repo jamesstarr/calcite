@@ -405,5 +405,3 @@ public interface RelDataTypeSystem {
     return null;
   }
 }
-
-// End RelDataTypeSystem.java

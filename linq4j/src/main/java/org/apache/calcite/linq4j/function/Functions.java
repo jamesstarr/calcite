@@ -651,5 +651,3 @@ public abstract class Functions {
     }
   }
 }
-
-// End Functions.java
