@@ -34,14 +34,15 @@ Downloads are available on the
 This release comes five months after 1.21.0. It includes more than 250 resolved issues, comprising a large number of new features as well as general improvements and bug-fixes. Among others, it is worth highlighting the following.
 
 * Supports SQL hints for different kind of relational expressions (<a href="https://issues.apache.org/jira/browse/CALCITE-482">CALCITE-482</a>)
+* The project has migrated from Maven to Gradle and introduces many nice features, i.e. auto check style fix (<a href="https://issues.apache.org/jira/browse/CALCITE-2905">CALCITE-2905</a>)
 * A new Redis adaptor (<a href="https://issues.apache.org/jira/browse/CALCITE-3510">CALCITE-3510</a>)
-* More Oracle and MySQL functions are supported, i.e. Oracle `XML` function (<a href="https://issues.apache.org/jira/browse/CALCITE-3579">CALCITE-3579</a>, <a href="https://issues.apache.org/jira/browse/CALCITE-3580">CALCITE-3580</a>), MySQL math functions (<a href="https://issues.apache.org/jira/browse/CALCITE-3684">CALCITE-3684</a>, <a href="https://issues.apache.org/jira/browse/CALCITE-3695">CALCITE-3695</a>, <a href="https://issues.apache.org/jira/browse/CALCITE-3707">CALCITE-3707</a>)
+* More Oracle and MySQL functions are supported, i.e. Oracle XML function (<a href="https://issues.apache.org/jira/browse/CALCITE-3579">CALCITE-3579</a>, <a href="https://issues.apache.org/jira/browse/CALCITE-3580">CALCITE-3580</a>), MySQL math functions (<a href="https://issues.apache.org/jira/browse/CALCITE-3684">CALCITE-3684</a>, <a href="https://issues.apache.org/jira/browse/CALCITE-3695">CALCITE-3695</a>, <a href="https://issues.apache.org/jira/browse/CALCITE-3707">CALCITE-3707</a>)
 
 We have also fixed some important bugs:
-* The metadata cache is fixed for rare cases that `RelSet`s are merging (<a href="https://issues.apache.org/jira/browse/CALCITE-2018">CALCITE-2018</a>)
-* The `GROUP_ID` now returns correct results (<a href="https://issues.apache.org/jira/browse/CALCITE-1824">CALCITE-1824</a>)
-* `CORRELATE` row count estimation has been fixed, it is always 1 before (<a href="https://issues.apache.org/jira/browse/CALCITE-3711">CALCITE-3711</a>)
-* The modulus precision inference of `DECIMAL`s has been fixed (<a href="https://issues.apache.org/jira/browse/CALCITE-3435">CALCITE-3435</a>)
+* The metadata cache is fixed for rare cases that RelSets are merging (<a href="https://issues.apache.org/jira/browse/CALCITE-2018">CALCITE-2018</a>)
+* The GROUP_ID now returns correct results (<a href="https://issues.apache.org/jira/browse/CALCITE-1824">CALCITE-1824</a>)
+* Correlate row count estimate has been fixed, it is always 1 before (<a href="https://issues.apache.org/jira/browse/CALCITE-3711">CALCITE-3711</a>)
+* The modulus precision inference of DECIMALs has been fixed (<a href="https://issues.apache.org/jira/browse/CALCITE-3435">CALCITE-3435</a>)
 
 Compatibility: This release is tested on Linux, macOS, Microsoft Windows;
 using Oracle JDK 8, 9, 10, 11, 12, 13 and OpenJDK 8, 9, 10, 11, 12, 13;
@@ -341,7 +342,7 @@ generates the `ROW` keyword only if the dialect allows it (quxiucheng)
 * [<a href="https://issues.apache.org/jira/browse/CALCITE-2457">CALCITE-2457</a>] Configure build to automatically replace common JUnit4 classes with JUnit5
 * Build script: instantiate sqllineClasspath only when buildSqllineClasspath is used
 * GitHub Actions: actions/checkout@master &rarr; v1.1.0 to avoid unexpected failures
-* [<a href="https://issues.apache.org/jira/browse/CALCITE-3141">CALCITE-3141</a>] Slow tests are not run in continuous integration
+\* [<a href="https://issues.apache.org/jira/browse/CALCITE-3141">CALCITE-3141</a>] Slow tests are not run in continuous integration
 * [<a href="https://issues.apache.org/jira/browse/CALCITE-3140">CALCITE-3140</a>] Multiple failures when executing slow tests
 * Reduce FoodmartQuery heap consumption by ignoring rows/columns as they are never used in tests
 * Add './gradlew style' task to apply code format and report violations
@@ -383,7 +384,6 @@ generates the `ROW` keyword only if the dialect allows it (quxiucheng)
 * [<a href="https://issues.apache.org/jira/browse/CALCITE-3391">CALCITE-3391</a>] Insecure pages warning on Chrome
 * Site: Update upcoming talks section for ApacheCon Europe 2019
 * Site: Change GitHub avatar links to https
-
 ## <a href="https://github.com/apache/calcite/releases/tag/calcite-1.21.0">1.21.0</a> / 2019-09-11
 {: #v1-21-0}
 
