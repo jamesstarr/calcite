@@ -937,6 +937,18 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
       new SqlMinMaxAggFunction(SqlKind.MAX);
 
   /**
+   * <code>EVERY</code> aggregate function.
+   */
+  public static final SqlAggFunction EVERY =
+      new SqlMinMaxAggFunction("EVERY", SqlKind.MIN, OperandTypes.BOOLEAN);
+
+  /**
+   * <code>SOME</code> aggregate function.
+   */
+  public static final SqlAggFunction SOME =
+      new SqlMinMaxAggFunction("SOME", SqlKind.MAX, OperandTypes.BOOLEAN);
+
+  /**
    * <code>LAST_VALUE</code> aggregate function.
    */
   public static final SqlAggFunction LAST_VALUE =
@@ -2208,6 +2220,18 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           .create(SqlKind.FUSION, ReturnTypes.ARG0, OperandTypes.MULTISET)
           .withFunctionType(SqlFunctionCategory.SYSTEM);
 
+  /**
+   * The INTERSECTION operator. Multiset aggregator function.
+   */
+  public static final SqlAggFunction INTERSECTION =
+      new SqlAggFunction("INTERSECTION", null,
+          SqlKind.INTERSECTION,
+          ReturnTypes.ARG0,
+          null,
+          OperandTypes.MULTISET,
+          SqlFunctionCategory.SYSTEM, false, false,
+          Optionality.FORBIDDEN) {
+      };
   /**
    * The sequence next value function: <code>NEXT VALUE FOR sequence</code>
    */

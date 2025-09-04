@@ -6801,10 +6801,12 @@ SqlIdentifier ReservedFunctionName() :
     |   <CURRENT_TIMESTAMP>
     |   <DENSE_RANK>
     |   <ELEMENT>
+    |   <EVERY>
     |   <EXP>
     |   <FIRST_VALUE>
     |   <FLOOR>
     |   <FUSION>
+    |   <INTERSECTION>
     |   <GROUPING>
     |   <HOUR>
     |   <LAG>
@@ -6834,6 +6836,7 @@ SqlIdentifier ReservedFunctionName() :
     |   <RIGHT>
     |   <ROW_NUMBER>
     |   <SECOND>
+    |   <SOME>
     |   <SQRT>
     |   <STDDEV_POP>
     |   <STDDEV_SAMP>
