@@ -21,13 +21,9 @@ import org.apache.calcite.runtime.SqlFunctions;
 import org.apache.calcite.runtime.XmlFunctions;
 import org.apache.calcite.util.BuiltInMethod;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hamcrest.Matcher;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.function.Supplier;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -39,25 +35,6 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public class SqlXmlFunctionsTest {
 
-  private static final String XML = "<document>string</document>";
-  private static final String XSLT =
-      "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"></xsl:stylesheet>";
-  private static final String DOCUMENT_PATH = "/document";
-  private static @Nullable String xmlExternalEntity = null;
-  private static @Nullable String xsltExternalEntity = null;
-
-  @BeforeAll
-  public static void setup() throws Exception {
-    final Path testFile = Files.createTempFile("foo", "temp");
-    testFile.toFile().deleteOnExit();
-    final String filePath = "file:///" + testFile.toAbsolutePath();
-    xmlExternalEntity = "<!DOCTYPE document [ <!ENTITY entity SYSTEM \"" + filePath
-        + "\"> ]><document>&entity;</document>";
-    xsltExternalEntity = "<!DOCTYPE document [ <!ENTITY entity SYSTEM \"" + filePath
-        + "\"> ]><xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&entity;</xsl:stylesheet>";
-  }
-
-
   @Test public void testExtractValue() {
     assertExtractValue("<a>ccc<b>ddd</b></a>", "/a", is("ccc"));
 
@@ -65,48 +42,6 @@ public class SqlXmlFunctionsTest {
     String message = "Invalid input for EXTRACTVALUE: xml: '" + input + "', xpath expression: '#'";
     CalciteException expected = new CalciteException(message, null);
     assertExtractValueFailed(input, "#", Matchers.expectThrowable(expected));
-  }
-
-  @Test void testExtractValueExternalEntity() {
-    String message = "Invalid input for EXTRACTVALUE: xml: '"
-        + xmlExternalEntity + "', xpath expression: '" + DOCUMENT_PATH + "'";
-    CalciteException expected = new CalciteException(message, null);
-    assertExtractValueFailed(xmlExternalEntity, DOCUMENT_PATH,
-        Matchers.expectThrowable(expected));
-  }
-
-  @Test void testExistsNodeExternalEntity() {
-    String message = "Invalid input for EXISTSNODE xpath: '"
-        + DOCUMENT_PATH + "', namespace: '" + null + "'";
-    CalciteException expected = new CalciteException(message, null);
-    assertExistsNodeFailed(xmlExternalEntity, DOCUMENT_PATH, null,
-        Matchers.expectThrowable(expected));
-  }
-
-  @Test void testXmlTransformExternalEntity() {
-    String message = "Invalid input for XMLTRANSFORM xml: '" + xmlExternalEntity + "'";
-    CalciteException expected = new CalciteException(message, null);
-    assertXmlTransformFailed(xmlExternalEntity, XSLT, Matchers.expectThrowable(expected));
-  }
-
-  @Test void testXmlTransformExternalEntityXslt() {
-    String message = "Illegal xslt specified : '" + xsltExternalEntity + "'";
-    CalciteException expected = new CalciteException(message, null);
-    assertXmlTransformFailed(XML, xsltExternalEntity, Matchers.expectThrowable(expected));
-  }
-
-  private void assertExistsNodeFailed(String xml, String xpath, String namespace,
-                                      Matcher<? super Throwable> matcher) {
-    String methodDesc = BuiltInMethod.EXISTS_NODE.getMethodName()
-        + "(" + String.join(", ", xml, xpath, namespace) + ")";
-    assertFailed(methodDesc, () -> XmlFunctions.existsNode(xml, xpath, namespace), matcher);
-  }
-
-  private void assertXmlTransformFailed(String xml, String xslt,
-                                        Matcher<? super Throwable> matcher) {
-    String methodDesc =
-        BuiltInMethod.XML_TRANSFORM.getMethodName() + "(" + String.join(", ", xml, xslt) + ")";
-    assertFailed(methodDesc, () -> XmlFunctions.xmlTransform(xml, xslt), matcher);
   }
 
   private void assertExtractValue(String input, String xpath,

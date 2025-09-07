@@ -18,8 +18,6 @@ package org.apache.calcite.runtime;
 
 import org.apache.calcite.sql.validate.SqlValidatorException;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import static org.apache.calcite.runtime.Resources.BaseMessage;
 import static org.apache.calcite.runtime.Resources.ExInst;
 import static org.apache.calcite.runtime.Resources.ExInstWithCause;
@@ -953,18 +951,6 @@ public interface CalciteResource {
 
   @BaseMessage("Invalid input for EXTRACTVALUE: xml: ''{0}'', xpath expression: ''{1}''")
   ExInst<CalciteException> invalidInputForExtractValue(String xml, String xpath);
-
-  @BaseMessage("Illegal xslt specified : ''{0}''")
-  ExInst<CalciteException> illegalXslt(String xslt);
-
-  @BaseMessage("Invalid input for XMLTRANSFORM xml: ''{0}''")
-  ExInst<CalciteException> invalidInputForXmlTransform(String xml);
-
-  @BaseMessage("Invalid input for EXTRACT xpath: ''{0}'', namespace: ''{1}''")
-  ExInst<CalciteException> invalidInputForExtractXml(String xpath, @Nullable String namespace);
-
-  @BaseMessage("Invalid input for EXISTSNODE xpath: ''{0}'', namespace: ''{1}''")
-  ExInst<CalciteException> invalidInputForExistsNode(String xpath, @Nullable String namespace);
 }
 <<<<<<< HEAD
 
