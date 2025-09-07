@@ -18,6 +18,8 @@ package org.apache.calcite.runtime;
 
 import org.apache.calcite.sql.validate.SqlValidatorException;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import static org.apache.calcite.runtime.Resources.BaseMessage;
 import static org.apache.calcite.runtime.Resources.ExInst;
 import static org.apache.calcite.runtime.Resources.ExInstWithCause;
@@ -830,9 +832,6 @@ public interface CalciteResource {
   @BaseMessage("Dialect does not support feature: ''{0}''")
   ExInst<SqlValidatorException> dialectDoesNotSupportFeature(String featureName);
 
-  @BaseMessage("While executing SQL [{0}] on JDBC sub-schema")
-  ExInst<RuntimeException> exceptionWhilePerformingQueryOnJdbcSubSchema(String sql);
-
   @BaseMessage("Substring error: negative substring length not allowed")
   ExInst<CalciteException> illegalNegativeSubstringLength();
 
@@ -903,12 +902,15 @@ public interface CalciteResource {
 
   @BaseMessage("Null key of JSON object is not allowed")
   ExInst<CalciteException> nullKeyOfJsonObjectNotAllowed();
+
   @BaseMessage("Timeout of ''{0}'' ms for query execution is reached. Query execution started at ''{1}''")
   ExInst<CalciteException> queryExecutionTimeoutReached(String timeout, String queryStart);
 
   @BaseMessage("Including both WITHIN GROUP(...) and inside ORDER BY in a single JSON_ARRAYAGG call is not allowed")
   ExInst<CalciteException> ambiguousSortOrderInJsonArrayAggFunc();
 
+  @BaseMessage("While executing SQL [{0}] on JDBC sub-schema")
+  ExInst<RuntimeException> exceptionWhilePerformingQueryOnJdbcSubSchema(String sql);
 
   @BaseMessage("Not a valid input for JSON_TYPE: ''{0}''")
   ExInst<CalciteException> invalidInputForJsonType(String value);
@@ -941,7 +943,10 @@ public interface CalciteResource {
   ExInst<CalciteException> invalidInputForXmlTransform(String xml);
 
   @BaseMessage("Invalid input for EXTRACT xpath: ''{0}'', namespace: ''{1}''")
-  ExInst<CalciteException> invalidInputForExtractXml(String xpath, String namespace);
+  ExInst<CalciteException> invalidInputForExtractXml(String xpath, @Nullable String namespace);
+
+  @BaseMessage("Invalid input for EXISTSNODE xpath: ''{0}'', namespace: ''{1}''")
+  ExInst<CalciteException> invalidInputForExistsNode(String xpath, @Nullable String namespace);
 
   @BaseMessage("Invalid input for EXTRACTVALUE: xml: ''{0}'', xpath expression: ''{1}''")
   ExInst<CalciteException> invalidInputForExtractValue(String xml, String xpath);
