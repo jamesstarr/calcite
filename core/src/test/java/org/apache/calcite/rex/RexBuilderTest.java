@@ -100,9 +100,6 @@ class RexBuilderTest {
   /**
    * Test RexBuilder.ensureType()
    */
-<<<<<<< HEAD
-  @Test void testEnsureTypeWithAny() {
-=======
   @Test public void testEnsureTypeWithAny() {
     final RelDataTypeFactory typeFactory = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     RexBuilder builder = new RexBuilder(typeFactory);
@@ -956,4 +953,3 @@ class RexBuilderTest {
   }
 }
 =======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

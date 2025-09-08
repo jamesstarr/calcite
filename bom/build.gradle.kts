@@ -159,7 +159,11 @@ dependencies {
         apiv("org.apache.pig:pig")
         apiv("org.apache.pig:pigunit", "pig")
         apiv("org.apache.spark:spark-core_2.10", "spark")
+<<<<<<< HEAD
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+        apiv("org.apiguardian:apiguardian-api")
+>>>>>>> 20c78195c ([CALCITE-3652] Add org.apiguardian:apiguardian-api to specify API status (#165))
         apiv("org.bouncycastle:bcpkix-jdk15on", "bouncycastle")
         apiv("org.bouncycastle:bcprov-jdk15on", "bouncycastle")
         apiv("org.cassandraunit:cassandra-unit")
