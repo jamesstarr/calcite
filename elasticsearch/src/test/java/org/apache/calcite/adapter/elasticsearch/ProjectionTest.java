@@ -30,7 +30,8 @@ import com.google.common.collect.ImmutableMap;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.parallel.ResourceAccessMode;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -43,12 +44,12 @@ import java.util.Map;
 /**
  * Checks renaming of fields (also upper, lower cases) during projections
  */
+@ResourceLock(value = "elasticsearch-scrolls", mode = ResourceAccessMode.READ)
 public class ProjectionTest {
 
-  @RegisterExtension
   public static final EmbeddedElasticsearchPolicy NODE = EmbeddedElasticsearchPolicy.create();
 
-  private static final String NAME = "docs";
+  private static final String NAME = "projectiontest";
 
   @BeforeAll
   public static void setupInstance() throws Exception {

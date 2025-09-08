@@ -87,10 +87,14 @@ dependencies {
 <<<<<<< HEAD
 <<<<<<< HEAD
     testRuntimeOnly("net.java.dev.jna:jna")
+<<<<<<< HEAD
     testRuntimeOnly("org.apache.logging.log4j:log4j-slf4j-impl")
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
     testRuntimeOnly("net.java.dev.jna:jna")
 >>>>>>> 54dc4f56f ([CALCITE-3516] Bump net.java.dev.jna:jna to 5.5.0 (#131))
+=======
+    testRuntimeOnly("org.slf4j:slf4j-log4j12")
+>>>>>>> 9a0aad092 ([CALCITE-3654] Use single Elasticsearch instance for all elasticsearch tests (#167))
 }

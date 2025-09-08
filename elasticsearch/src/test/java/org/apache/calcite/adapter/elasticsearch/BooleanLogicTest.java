@@ -29,7 +29,8 @@ import com.google.common.collect.ImmutableMap;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.parallel.ResourceAccessMode;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -42,12 +43,12 @@ import java.util.Map;
 /**
  * Test of different boolean expressions (some more complex than others).
  */
+@ResourceLock(value = "elasticsearch-scrolls", mode = ResourceAccessMode.READ)
 public class BooleanLogicTest {
 
-  @RegisterExtension
   public static final EmbeddedElasticsearchPolicy NODE = EmbeddedElasticsearchPolicy.create();
 
-  private static final String NAME = "docs";
+  private static final String NAME = "booleanlogic";
 
   /**
    * Used to create {@code zips} index and insert some data
