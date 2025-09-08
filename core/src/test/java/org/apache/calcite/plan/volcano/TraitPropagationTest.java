@@ -153,7 +153,7 @@ public class TraitPropagationTest {
         }
       };
 
-      final RelNode rt1 = EnumerableTableScan.create(cluster, t1);
+      final RelNode rt1 = LogicalTableScan.create(cluster, t1, ImmutableList.of());
 
       // project s column
       RelNode project = LogicalProject.create(rt1,

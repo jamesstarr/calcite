@@ -273,8 +273,7 @@ public class ScannableTableTest {
         + "EnumerableAggregate(group=[{1}], C=[COUNT()])\n"
         + "  EnumerableAggregate(group=[{0, 1}])\n"
         + "    EnumerableInterpreter\n"
-        + "      BindableTableScan(table=[[s, beatles]], "
-        + "filters=[[=($2, 1940)]], projects=[[0, 2]])";
+        + "      BindableTableScan(table=[[s, beatles]], filters=[[=($2, 1940)]], projects=[[0, 2]])";
     CalciteAssert.that()
         .with(newSchema("s", Pair.of("beatles", table)))
         .query(sql)

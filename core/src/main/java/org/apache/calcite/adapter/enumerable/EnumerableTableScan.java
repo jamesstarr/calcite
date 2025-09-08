@@ -92,6 +92,23 @@ public class EnumerableTableScan
 >>>>>>> 89d1f11c6 ([CALCITE-3167] Make equals and hashCode methods final in AbstractRelNode, and remove overriding methods in EnumerableTableScan (Jin Xing))
   /** Returns whether EnumerableTableScan can generate code to handle a
    * particular variant of the Table SPI.
+   * @deprecated
+   **/
+  @Deprecated
+  public static boolean canHandle(Table table) {
+    if (table instanceof TransientTable) {
+      // CALCITE-3673: TransientTable can't be implemented with Enumerable
+      return false;
+    }
+    // See org.apache.calcite.prepare.RelOptTableImpl.getClassExpressionFunction
+    return table instanceof QueryableTable
+        || table instanceof FilterableTable
+        || table instanceof ProjectableFilterableTable
+        || table instanceof ScannableTable;
+  }
+
+  /** Returns whether EnumerableTableScan can generate code to handle a
+   * particular variant of the Table SPI.
    **/
   public static boolean canHandle(RelOptTable relOptTable) {
     Table table = relOptTable.unwrap(Table.class);

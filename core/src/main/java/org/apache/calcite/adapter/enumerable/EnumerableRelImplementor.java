@@ -44,7 +44,7 @@ import org.apache.calcite.linq4j.tree.VisitorImpl;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.runtime.Bindable;
->>>>>>> 39c3e45da ([CALCITE-2571] TRIM function now trims more than one character (Andrew Pilloud))
+import org.apache.calcite.sql.SqlExplainLevel;
 import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.util.BuiltInMethod;

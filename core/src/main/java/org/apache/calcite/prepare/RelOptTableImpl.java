@@ -307,7 +307,9 @@ public class RelOptTableImpl extends Prepare.AbstractPreparingTable {
       return LogicalTableScan.create(cluster, this, ImmutableList.of());
     }
     if (CalciteSystemProperty.ENABLE_ENUMERABLE.value()
-        && table instanceof QueryableTable) {
+        && table instanceof QueryableTable
+        && (expressionFunction != null
+        || EnumerableTableScan.canHandle(this))) {
       return EnumerableTableScan.create(cluster, this);
     }
     if (table instanceof ScannableTable
@@ -315,10 +317,15 @@ public class RelOptTableImpl extends Prepare.AbstractPreparingTable {
         || table instanceof ProjectableFilterableTable) {
       return LogicalTableScan.create(cluster, this, ImmutableList.of());
     }
-    if (CalciteSystemProperty.ENABLE_ENUMERABLE.value()) {
+    // Some tests rely on the old behavior when tables were immediately converted to
+    // EnumerableTableScan
+    // Note: EnumerableTableScanRule can convert LogicalTableScan to EnumerableTableScan
+    if (CalciteSystemProperty.ENABLE_ENUMERABLE.value()
+        && ((table == null && expressionFunction != null)
+        || EnumerableTableScan.canHandle(this))) {
       return EnumerableTableScan.create(cluster, this);
     }
-    throw new AssertionError();
+    return LogicalTableScan.create(cluster, this, ImmutableList.of());
   }
 
   public List<RelCollation> getCollationList() {
