@@ -140,11 +140,6 @@ public class JoinCommuteRule
   @Override public void onMatch(final RelOptRuleCall call) {
     Join join = call.rel(0);
 
-    if (!join.getSystemFieldList().isEmpty()) {
-      // FIXME Enable this rule for joins with system fields
-      return;
-    }
-
     final RelNode swapped = swap(join, config.isSwapOuter(), call.builder());
     if (swapped == null) {
       return;
