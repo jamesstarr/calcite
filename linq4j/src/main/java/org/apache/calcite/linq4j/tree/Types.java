@@ -156,7 +156,7 @@ public abstract class Types {
     return classes.toArray(new Class[0]);
   }
 
-  static Class[] toClassArray(Iterable<? extends Expression> arguments) {
+  public static Class[] toClassArray(Iterable<? extends Expression> arguments) {
     List<Class> classes = new ArrayList<>();
     for (Expression argument : arguments) {
       classes.add(toClass(argument.getType()));
