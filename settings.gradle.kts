@@ -101,9 +101,13 @@ include(
     "piglet",
     "plus",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "redis",
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    "redis",
+>>>>>>> 278d51c33 ([CALCITE-3510] Implement Redis adapter  (#170))
     "server",
     "spark",
     "splunk",

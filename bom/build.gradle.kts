@@ -79,6 +79,9 @@ dependencies {
         apiv("com.fasterxml.jackson.core:jackson-databind")
         apiv("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", "jackson")
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 278d51c33 ([CALCITE-3510] Implement Redis adapter  (#170))
         apiv("com.github.kstyrc:embedded-redis")
         apiv("com.github.stephenc.jcip:jcip-annotations")
         apiv("com.google.code.findbugs:jsr305", "findbugs.jsr305")
@@ -199,6 +202,9 @@ dependencies {
         apiv("org.slf4j:slf4j-api", "slf4j")
         apiv("org.slf4j:slf4j-log4j12", "slf4j")
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 278d51c33 ([CALCITE-3510] Implement Redis adapter  (#170))
         apiv("redis.clients:jedis")
         apiv("sqlline:sqlline")
         runtimev("org.junit.jupiter:junit-jupiter-engine", "junit5")

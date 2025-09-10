@@ -289,8 +289,12 @@ val dataSetsForSqlline = listOf(
 >>>>>>> da83d51a7 (Add gradle task 'aggregateJavadocIncludingTests' that builds javadoc for both main and test)
 val adaptersForSqlline = listOf(
     ":babel", ":cassandra", ":druid", ":elasticsearch", ":file", ":geode", ":kafka", ":mongodb",
+<<<<<<< HEAD
     ":pig", ":piglet", ":plus", ":spark", ":splunk"
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    ":pig", ":piglet", ":plus", ":redis", ":spark", ":splunk"
+>>>>>>> 278d51c33 ([CALCITE-3510] Implement Redis adapter  (#170))
 )
 
 val sqllineClasspath by configurations.creating {

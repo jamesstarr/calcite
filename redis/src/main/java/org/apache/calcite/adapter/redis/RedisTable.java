@@ -84,8 +84,9 @@ public class RedisTable extends AbstractTable
       String tableName,
       RedisConfig redisConfig,
       RelProtoDataType protoRowType) {
+    final RedisEnumerator redisEnumerator = new RedisEnumerator(redisConfig, schema, tableName);
     RedisTableFieldInfo tableFieldInfo = schema.getTableFieldInfo(tableName);
-    Map<String, Object> allFields = RedisEnumerator.deduceRowType(tableFieldInfo);
+    Map<String, Object> allFields = redisEnumerator.deduceRowType(tableFieldInfo);
     return new RedisTable(schema, tableName, protoRowType,
         allFields, tableFieldInfo.getDataFormat(), redisConfig);
   }

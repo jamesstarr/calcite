@@ -16,12 +16,8 @@
  */
 
 /**
-<<<<<<<< HEAD:redis/src/main/java/org/apache/calcite/adapter/redis/package-info.java
  * The Redis adapter contains various table functions that let you query data
  * sources in your operating system and environment.
-========
- * Query provider based on an Elasticsearch2 DB.
->>>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda)):elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/package-info.java
  */
 @PackageMarker
 package org.apache.calcite.adapter.redis;

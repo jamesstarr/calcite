@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-<<<<<<<< HEAD:redis/src/main/java/org/apache/calcite/adapter/redis/RedisConfig.java
+>>>>>>> 278d51c33 ([CALCITE-3510] Implement Redis adapter  (#170))
 package org.apache.calcite.adapter.redis;
 
 /**
@@ -49,6 +49,7 @@ public class RedisConfig {
     return password;
   }
 }
+<<<<<<< HEAD
 ========
 package org.apache.calcite.adapter.file;
 
@@ -70,3 +71,4 @@ public @interface RequiresNetwork {
 
 // End RequiresNetwork.java
 >>>>>>>> a9d30ce58 ([CALCITE-2457] JUnit 4 -> 5: migrate Assume -> Assumptions, drop suites, remove junit4 from core classpath):file/src/test/java/org/apache/calcite/adapter/file/RequiresNetwork.java
+=======
