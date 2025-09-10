@@ -34,7 +34,7 @@ import org.apache.calcite.schema.Table;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.dialect.CalciteSqlDialect;
->>>>>>> ca3727fe0 ([CALCITE-2417] Fix ClassCastException in RelToSqlConverter with structs (Benoit Hanotte))
+import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.ImmutableBitSet;
 
@@ -181,8 +181,8 @@ public class RelToSqlConverterStructsTest {
 
   private RelToSqlConverterTest.Sql sql(String sql) {
     return new RelToSqlConverterTest.Sql(ROOT_SCHEMA, sql,
-        CalciteSqlDialect.DEFAULT, RelToSqlConverterTest.DEFAULT_REL_CONFIG,
-        ImmutableList.of());
+        CalciteSqlDialect.DEFAULT, SqlParser.Config.DEFAULT,
+        RelToSqlConverterTest.DEFAULT_REL_CONFIG, ImmutableList.of());
   }
 
   @Test public void testNestedSchemaSelectStar() {

@@ -289,6 +289,7 @@ public enum SqlConformanceEnum implements SqlConformance {
     switch (this) {
     case PRAGMATIC_99:
     case PRAGMATIC_2003:
+    case BIG_QUERY:
     case MYSQL_5:
     case ORACLE_10:
     case ORACLE_12:
@@ -344,7 +345,6 @@ public enum SqlConformanceEnum implements SqlConformance {
       return false;
     }
   }
-
 }
 <<<<<<< HEAD
 
