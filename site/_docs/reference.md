@@ -1339,6 +1339,7 @@ comp:
 | ASIN(numeric)             | Returns the arc sine of *numeric*
 | ATAN(numeric)             | Returns the arc tangent of *numeric*
 | ATAN2(numeric, numeric)   | Returns the arc tangent of the *numeric* coordinates
+| CBRT(numeric)             | Returns the cube root of *numeric*
 | COS(numeric)              | Returns the cosine of *numeric*
 | COT(numeric)              | Returns the cotangent of *numeric*
 | DEGREES(numeric)          | Converts *numeric* from radians to degrees
@@ -1800,6 +1801,7 @@ period:
 | {fn ASIN(numeric)}                | Returns the arc sine of *numeric*
 | {fn ATAN(numeric)}                | Returns the arc tangent of *numeric*
 | {fn ATAN2(numeric, numeric)}      | Returns the arc tangent of the *numeric* coordinates
+| {fn CBRT(numeric)}                | Returns the cube root of *numeric*
 | {fn CEILING(numeric)}             | Rounds *numeric* up, and returns the smallest number that is greater than or equal to *numeric*
 | {fn COS(numeric)}                 | Returns the cosine of *numeric*
 | {fn COT(numeric)}                 | Returns the cotangent of *numeric*

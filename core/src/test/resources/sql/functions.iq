@@ -18,6 +18,20 @@
 
 !set outputformat mysql
 
+# MATH Functions
+
+# CBRT
+select cbrt(-8);
++--------+
+| EXPR$0 |
++--------+
+|   -2.0 |
++--------+
+(1 row)
+
+!ok
+
+# XML Functions
 
 # [CALCITE-4875] Preserve Operand Nullability in NVL rewrite
 # Asserting that NVL does not change a Nullable operand to NOT Nullable
