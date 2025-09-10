@@ -5681,7 +5681,6 @@ SqlNode BuiltinFunctionCall() :
         }
         <LPAREN>
         (
-            LOOKAHEAD(2)
             <NANOSECOND> { unit = TimeUnit.NANOSECOND; }
         |   <MICROSECOND> { unit = TimeUnit.MICROSECOND; }
         |   unit = TimeUnit()
