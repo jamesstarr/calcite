@@ -69,11 +69,19 @@ public class OrderByScope extends DelegatingScope {
 
   public SqlQualified fullyQualify(SqlIdentifier identifier) {
     // If it's a simple identifier, look for an alias.
+    SqlQualified sqlQualified = fullyQualifyInternal(identifier);
+    if (null != sqlQualified) {
+      return sqlQualified;
+    } else {
+      return super.fullyQualify(identifier);
+    }
+  }
+
+  public SqlQualified fullyQualifyInternal(SqlIdentifier identifier) {
     if (identifier.isSimple()
         && validator.config().sqlConformance().isSortByAlias()) {
       final String name = identifier.names.get(0);
-      final SqlValidatorNamespace selectNs =
-          validator.getNamespace(select);
+      final SqlValidatorNamespace selectNs = validator.getNamespace(select);
       final RelDataType rowType = selectNs.getRowType();
 
       final SqlNameMatcher nameMatcher = validator.catalogReader.nameMatcher();
@@ -89,7 +97,7 @@ public class OrderByScope extends DelegatingScope {
         return SqlQualified.create(this, 1, selectNs, identifier);
       }
     }
-    return super.fullyQualify(identifier);
+    return null;
   }
 
   /** Returns the number of columns in the SELECT clause that have {@code name}
