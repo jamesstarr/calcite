@@ -95,6 +95,7 @@ public class SqlDialect {
           .add(SqlStdOperatorTable.CHARACTER_LENGTH)
           .add(SqlStdOperatorTable.COALESCE)
           .add(SqlStdOperatorTable.CONCAT)
+          .add(SqlStdOperatorTable.CBRT)
           .add(SqlStdOperatorTable.COS)
           .add(SqlStdOperatorTable.COT)
           .add(SqlStdOperatorTable.DIVIDE)

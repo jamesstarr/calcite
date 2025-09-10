@@ -1480,6 +1480,7 @@ PI
 # CBRT
 select cbrt(-8);
 <<<<<<< HEAD
+<<<<<<< HEAD
 EXPR$0
 -2.0
 !ok
@@ -1487,6 +1488,11 @@ EXPR$0
 SELECT "CBRT"(-8)
 !explain-validated-on calcite
 >>>>>>> 35df78c18 ([CALCITE-3361] Add 'lenientOperatorLookup' connection property)
+=======
+EXPR$0
+-2.0
+!ok
+>>>>>>> bb4b68472 ([CALCITE-3684] Implement CBRT function (Qianjin Xu) (#171))
 
 # CEILING (or CEIL)
 select ceiling(10.5);

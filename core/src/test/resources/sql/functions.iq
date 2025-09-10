@@ -33,6 +33,7 @@ select cbrt(-8);
 
 !ok
 
+<<<<<<< HEAD
 # STRCMP
 select strcmp('mytesttext', 'mytesttext');
 +--------+
@@ -49,6 +50,9 @@ select strcmp('mytesttext', 'mytesttext');
 !set outputformat mysql
 
 >>>>>>> 4176d20cc ([CALCITE-4875] Preserve Operand Nullability in NVL rewrite)
+=======
+# XML Functions
+>>>>>>> bb4b68472 ([CALCITE-3684] Implement CBRT function (Qianjin Xu) (#171))
 
 # [CALCITE-4875] Preserve Operand Nullability in NVL rewrite
 # Asserting that NVL does not change a Nullable operand to NOT Nullable
