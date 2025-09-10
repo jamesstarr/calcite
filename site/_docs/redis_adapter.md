@@ -258,6 +258,7 @@ sqlline> select * from "csv_02";
 | 20     | Sales |
 | 10     | Sales |
 +--------+-------+
+
 {% endhighlight %}
 
 Future plan:

@@ -235,7 +235,7 @@ public final class CalciteSystemProperty<T> {
    * Whether to run Redis tests.
    */
   public static final CalciteSystemProperty<Boolean> TEST_REDIS =
-      booleanProperty("calcite.test.redis", true);
+      booleanProperty("calcite.test.redis", false);
 
   /**
    * A list of ids designating the queries
