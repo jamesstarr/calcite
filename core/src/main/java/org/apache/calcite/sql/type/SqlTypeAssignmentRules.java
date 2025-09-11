@@ -144,6 +144,7 @@ public class SqlTypeAssignmentRules {
     rule.clear();
     rule.add(SqlTypeName.VARBINARY);
     rule.add(SqlTypeName.BINARY);
+    rule.add(SqlTypeName.UUID);
     rules.add(SqlTypeName.VARBINARY, rule);
 
     // CHAR is assignable from...
@@ -153,6 +154,7 @@ public class SqlTypeAssignmentRules {
     rule.clear();
     rule.add(SqlTypeName.CHAR);
     rule.add(SqlTypeName.VARCHAR);
+    rule.add(SqlTypeName.UUID);
     rules.add(SqlTypeName.VARCHAR, rule);
 
     // BOOLEAN is assignable from...
@@ -162,6 +164,7 @@ public class SqlTypeAssignmentRules {
     rule.clear();
     rule.add(SqlTypeName.BINARY);
     rule.add(SqlTypeName.VARBINARY);
+    rule.add(SqlTypeName.UUID);
     rules.add(SqlTypeName.BINARY, rule);
 
     // DATE is assignable from...
@@ -208,6 +211,7 @@ public class SqlTypeAssignmentRules {
     rule.add(SqlTypeName.TIME);
     rule.add(SqlTypeName.DATE);
     rule.add(SqlTypeName.TIMESTAMP);
+    rule.add(SqlTypeName.UUID);
     rules.add(SqlTypeName.ANY, rule);
 
     // we use coerceRules when we're casting
@@ -244,6 +248,7 @@ public class SqlTypeAssignmentRules {
     coerceRules.add(SqlTypeName.BOOLEAN, rule);
     coerceRules.add(SqlTypeName.TIMESTAMP, rule);
     coerceRules.add(SqlTypeName.TIMESTAMP_WITH_LOCAL_TIME_ZONE, rule);
+    coerceRules.add(SqlTypeName.UUID, rule);
 
     // Exact numeric types are castable from intervals
     for (SqlTypeName exactType : SqlTypeName.EXACT_TYPES) {

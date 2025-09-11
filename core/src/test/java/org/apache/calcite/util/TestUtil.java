@@ -190,7 +190,8 @@ public abstract class TestUtil {
         .replaceAll("\\(", "\\\\(")
         .replaceAll("\\)", "\\\\)")
         .replaceAll("\\[", "\\\\[")
-        .replaceAll("\\]", "\\\\]");
+        .replaceAll("\\]", "\\\\]")
+        .replace("\n", "\\n");
   }
 
   /**

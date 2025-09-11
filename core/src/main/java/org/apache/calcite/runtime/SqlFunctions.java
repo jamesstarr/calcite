@@ -44,6 +44,7 @@ import org.apache.calcite.util.Util;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.language.Soundex;
+import org.apache.commons.lang3.Conversion;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -74,6 +75,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
@@ -145,6 +147,20 @@ public class SqlFunctions {
       ThreadLocal.withInitial(HashMap::new);
 
   private SqlFunctions() {
+  }
+
+  public static String uuidToString(UUID uuid) {
+    return uuid.toString();
+  }
+
+  public static UUID binaryToUuid(ByteString bytes) {
+    return Conversion.byteArrayToUuid(bytes.getBytes(), 0);
+  }
+
+  public static ByteString uuidToBinary(UUID uuid) {
+    byte[] dest = new byte[16];
+    Conversion.uuidToByteArray(uuid, dest, 0, 16);
+    return new ByteString(dest);
   }
 
   /** SQL TO_BASE64(string) function. */

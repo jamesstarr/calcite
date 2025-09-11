@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -205,6 +206,8 @@ public class JavaTypeFactoryImpl
         return type.isNullable() ? Double.class : double.class;
       case REAL:
         return type.isNullable() ? Float.class : float.class;
+      case UUID:
+        return UUID.class;
       case BINARY:
       case VARBINARY:
         return ByteString.class;

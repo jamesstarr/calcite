@@ -156,6 +156,7 @@ public class SqlTypeCoercionRule implements SqlTypeMappingRule {
         coerceRules.copyValues(SqlTypeName.BINARY)
             .add(SqlTypeName.VARBINARY)
             .addAll(SqlTypeName.CHAR_TYPES)
+            .add(SqlTypeName.UUID)
             .build());
 
     // VARBINARY is castable from BINARY, CHARACTERS.
@@ -163,6 +164,7 @@ public class SqlTypeCoercionRule implements SqlTypeMappingRule {
         coerceRules.copyValues(SqlTypeName.VARBINARY)
             .add(SqlTypeName.BINARY)
             .addAll(SqlTypeName.CHAR_TYPES)
+            .add(SqlTypeName.UUID)
             .build());
 
     // VARCHAR is castable from BOOLEAN, DATE, TIME, TIMESTAMP, numeric types, binary and
@@ -178,6 +180,7 @@ public class SqlTypeCoercionRule implements SqlTypeMappingRule {
             .addAll(SqlTypeName.BINARY_TYPES)
             .addAll(SqlTypeName.NUMERIC_TYPES)
             .addAll(SqlTypeName.INTERVAL_TYPES)
+            .add(SqlTypeName.UUID)
             .build());
 
     // CHAR is castable from BOOLEAN, DATE, TIME, TIMESTAMP, numeric types, binary and
@@ -193,6 +196,7 @@ public class SqlTypeCoercionRule implements SqlTypeMappingRule {
             .addAll(SqlTypeName.BINARY_TYPES)
             .addAll(SqlTypeName.NUMERIC_TYPES)
             .addAll(SqlTypeName.INTERVAL_TYPES)
+            .add(SqlTypeName.UUID)
             .build());
 
     // BOOLEAN is castable from ...
@@ -201,6 +205,15 @@ public class SqlTypeCoercionRule implements SqlTypeMappingRule {
             .add(SqlTypeName.CHAR)
             .add(SqlTypeName.VARCHAR)
             .addAll(SqlTypeName.NUMERIC_TYPES)
+            .build());
+
+    // UUID is castable from ...
+    coerceRules.add(SqlTypeName.UUID,
+        coerceRules.copyValues(SqlTypeName.UUID)
+            .add(SqlTypeName.VARCHAR)
+            .add(SqlTypeName.CHAR)
+            .add(SqlTypeName.BINARY)
+            .add(SqlTypeName.VARBINARY)
             .build());
 
     // DATE, TIME, and TIMESTAMP are castable from

@@ -40,6 +40,7 @@ import org.apache.calcite.util.Util;
 import com.google.common.base.Preconditions;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 /**
  * Standard implementation of {@link SqlNodeToRexConverter}.
@@ -100,6 +101,8 @@ public class SqlNodeToRexConverterImpl implements SqlNodeToRexConverter {
     long l;
 
     switch (literal.getTypeName()) {
+    case UUID:
+      return rexBuilder.makeUuidLiteral(literal.getValueAs(UUID.class));
     case DECIMAL:
       // exact number
       BigDecimal bd = literal.getValueAs(BigDecimal.class);

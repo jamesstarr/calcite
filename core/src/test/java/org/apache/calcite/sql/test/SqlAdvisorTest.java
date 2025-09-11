@@ -242,6 +242,7 @@ public class SqlAdvisorTest extends SqlValidatorTestCase {
           "KEYWORD(UNKNOWN)",
           "KEYWORD(UPPER)",
           "KEYWORD(USER)",
+          "KEYWORD(UUID)",
           "KEYWORD(VAR_POP)",
           "KEYWORD(VAR_SAMP)",
           "KEYWORD(YEAR)");

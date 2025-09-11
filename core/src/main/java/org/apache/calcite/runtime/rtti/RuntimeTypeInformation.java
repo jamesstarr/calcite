@@ -258,6 +258,9 @@ public abstract class RuntimeTypeInformation {
     case VARIANT:
       return Expressions.new_(BasicSqlTypeRtti.class,
           Expressions.constant(RuntimeSqlTypeName.VARIANT));
+    case UUID:
+      return Expressions.new_(BasicSqlTypeRtti.class,
+          Expressions.constant(RuntimeSqlTypeName.UUID));
     default:
       throw new RuntimeException("Unexpected type " + type);
     }

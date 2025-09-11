@@ -189,6 +189,9 @@ public class SqlTypeAssignmentRule implements SqlTypeMappingRule {
     // MAP is assignable from ...
     rules.add(SqlTypeName.MAP, EnumSet.of(SqlTypeName.MAP));
 
+    // UUID is assignable from
+    rules.add(SqlTypeName.UUID, EnumSet.of(SqlTypeName.UUID));
+
     // ANY is assignable from ...
     rule.clear();
     rule.add(SqlTypeName.TINYINT);

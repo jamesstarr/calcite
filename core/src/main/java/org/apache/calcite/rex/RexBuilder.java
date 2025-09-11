@@ -62,6 +62,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Factory for row expressions.
@@ -620,7 +621,7 @@ public class RexBuilder {
       return true;
     }
     final SqlTypeName sqlType = toType.getSqlTypeName();
-    if (sqlType == SqlTypeName.VARIANT) {
+    if (sqlType == SqlTypeName.VARIANT || sqlType == SqlTypeName.UUID) {
       return false;
     }
     if (!RexLiteral.valueMatchesType(value, sqlType, false)) {
@@ -983,6 +984,10 @@ public class RexBuilder {
    */
   public RexLiteral makeLiteral(boolean b) {
     return b ? booleanTrue : booleanFalse;
+  }
+
+  public RexLiteral makeUuidLiteral(UUID uuid) {
+    return new RexLiteral(uuid, typeFactory.createSqlType(SqlTypeName.UUID), SqlTypeName.UUID);
   }
 
   /**
@@ -1464,6 +1469,8 @@ public class RexBuilder {
               SqlTypeName.GEOMETRY);
     case ANY:
       return makeLiteral(value, guessType(value), allowCast);
+    case UUID:
+      return makeUuidLiteral((UUID) value);
     default:
       throw new IllegalArgumentException(
               "Cannot create literal for type '" + sqlTypeName + "'");
@@ -1566,6 +1573,13 @@ public class RexBuilder {
       return makeCharLiteral(padRight((NlsString) value, type.getPrecision()));
     case VARCHAR:
       literal = makeCharLiteral((NlsString) value);
+      if (allowCast) {
+        return makeCast(type, literal);
+      } else {
+        return literal;
+      }
+    case UUID:
+      literal = makeUuidLiteral((UUID) value);
       if (allowCast) {
         return makeCast(type, literal);
       } else {

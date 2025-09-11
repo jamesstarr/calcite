@@ -36,6 +36,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Enumeration of the type names which can be used to construct a SQL type.
@@ -123,7 +124,8 @@ public enum SqlTypeName {
   GEOMETRY(PrecScale.NO_NO, true, ExtraSqlTypes.GEOMETRY, SqlTypeFamily.GEO),
   /** VARIANT data type, a dynamically-typed value that can have at runtime
    * any of the other data types in this table. */
-  VARIANT(PrecScale.NO_NO, false, Types.OTHER, SqlTypeFamily.VARIANT);
+  VARIANT(PrecScale.NO_NO, false, Types.OTHER, SqlTypeFamily.VARIANT),
+  UUID(PrecScale.NO_NO, false, Types.OTHER, SqlTypeFamily.UUID);
 
   public static final int MAX_DATETIME_PRECISION = 3;
 
@@ -161,7 +163,7 @@ public enum SqlTypeName {
       ImmutableList.of(BOOLEAN);
 
   public static final List<SqlTypeName> BINARY_TYPES =
-      ImmutableList.of(BINARY, VARBINARY);
+      ImmutableList.of(BINARY, VARBINARY, UUID);
 
   public static final List<SqlTypeName> INT_TYPES =
       ImmutableList.of(TINYINT, SMALLINT, INTEGER, BIGINT);
@@ -574,6 +576,7 @@ public enum SqlTypeName {
       }
       return buf.toString();
 
+    case UUID:
     case BINARY:
     case VARBINARY:
       if (!sign) {

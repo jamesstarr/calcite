@@ -38,6 +38,7 @@ import org.apache.calcite.sql.SqlSpecialOperator;
 import org.apache.calcite.sql.SqlTimeLiteral;
 import org.apache.calcite.sql.SqlTimestampLiteral;
 import org.apache.calcite.sql.SqlUtil;
+import org.apache.calcite.sql.SqlUuidLiteral;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.util.DateString;
 import org.apache.calcite.util.PrecedenceClimbingParser;
@@ -62,6 +63,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.StringTokenizer;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import static org.apache.calcite.util.Static.RESOURCE;
@@ -139,6 +141,12 @@ public final class SqlParserUtil {
   @Deprecated // to be removed before 2.0
   public static java.sql.Timestamp parseTimestamp(String s) {
     return java.sql.Timestamp.valueOf(s);
+  }
+
+  public static SqlUuidLiteral parseUuidLiteral(String s, SqlParserPos pos) {
+    final String uuidStr = parseString(s);
+    UUID uuid = UUID.fromString(uuidStr);
+    return SqlLiteral.createUuid(uuid, pos);
   }
 
   public static SqlDateLiteral parseDateLiteral(String s, SqlParserPos pos) {

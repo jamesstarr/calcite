@@ -450,6 +450,48 @@ public abstract class SqlOperatorBaseTest {
     tester.checkBoolean("x'0A00015A' not between x'0A0001A0' and x'0A0001B0'", Boolean.TRUE);
   }
 
+  @Test public void testUuidType() {
+    // This PR should fix this: https://github.com/apache/calcite/pull/4137/files
+    // expected should be d3129be8-6745-3e12-0000-4455664256a4 (but as for this PR it is ok,
+    // this is a "future" fix)
+    tester.checkScalar(
+        "cast(x'd3129be867453e1200004455664256a4' as uuid)",
+        "123e4567-e89b-12d3-a456-426655440000",
+        "UUID NOT NULL");
+
+    tester.checkString(
+        "UUID '123e4567-e89b-12d3-a456-426655440000'",
+        "123e4567-e89b-12d3-a456-426655440000",
+        "UUID NOT NULL");
+
+    tester.checkFails(
+        "cast('123e4567e89b12d3a456426655440000' as uuid)",
+        "Invalid UUID string: 123e4567e89b12d3a456426655440000",
+        true);
+
+    tester.checkFails(
+        "CAST(x'00' AS UUID)",
+        "Need at least 16 bytes for UUID",
+        true);
+
+    tester.checkString(
+        "CAST(UUID '123e4567-e89b-12d3-a456-426655440000' AS VARCHAR)",
+        "123e4567-e89b-12d3-a456-426655440000",
+        "VARCHAR NOT NULL");
+
+    tester.checkString(
+        "UUID '123e4567-e89b-12d3-a456-426655440000' = '123e4567-e89b-12d3-a456-426655440000'",
+        "true",
+        "BOOLEAN NOT NULL");
+
+    // As a intermediary step it casts UUID to CHAR(36) for the above query!
+    tester.checkString("CAST(UUID '123e4567-e89b-12d3-a456-426655440000' AS CHAR(36))",
+        "123e4567-e89b-12d3-a456-426655440000",
+        "CHAR(36) NOT NULL");
+
+    tester.checkNull("CAST(NULL AS UUID)");
+  }
+
   private String getCastString(
       String value,
       String targetType,

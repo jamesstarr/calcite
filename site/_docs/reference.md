@@ -1044,6 +1044,7 @@ USER_DEFINED_TYPE_SCHEMA,
 UTF16,
 UTF32,
 UTF8,
+**UUID**,
 **VALUE**,
 **VALUES**,
 **VALUE_OF**,
@@ -1121,6 +1122,7 @@ name will have been converted to upper case also.
 | TIMESTAMP WITH TIME ZONE | Date and time with time zone | Example: TIMESTAMP '1969-07-20 20:17:40 America/Los Angeles'
 | INTERVAL timeUnit [ TO timeUnit ] | Date time interval | Examples: INTERVAL '1-5' YEAR TO MONTH, INTERVAL '45' DAY, INTERVAL '1 2:34:56.789' DAY TO SECOND
 | GEOMETRY | Geometry | Examples: ST_GeomFromText('POINT (30 10)')
+| UUID        | An 128-bit UUID           | Example: UUID '123e4567-e89b-12d3-a456-426655440000'
 
 Where:
 
@@ -1593,23 +1595,24 @@ Calcite type conversions. The table shows all possible conversions,
 without regard to the context in which it is made. The rules governing
 these details follow the table.
 
-| FROM - TO           | NULL | BOOLEAN | TINYINT | SMALLINT | INT | BIGINT | DECIMAL | FLOAT or REAL | DOUBLE | INTERVAL | DATE | TIME | TIMESTAMP | CHAR or VARCHAR | BINARY or VARBINARY
-|:------------------- |:---- |:------- |:------- |:-------- |:--- |:------ |:------- |:------------- |:------ |:-------- |:---- |:---- |:--------- |:--------------- |:-----------
-| NULL                | i    | i       | i       | i        | i   | i      | i       | i             | i      | i        | i    | i    | i         | i               | i
-| BOOLEAN             | x    | i       | e       | e        | e   | e      | e       | e             | e      | x        | x    | x    | x         | i               | x
-| TINYINT             | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x
-| SMALLINT            | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x
-| INT                 | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x
-| BIGINT              | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x
-| DECIMAL             | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x
-| FLOAT/REAL          | x    | e       | i       | i        | i   | i      | i       | i             | i      | x        | x    | x    | e         | i               | x
-| DOUBLE              | x    | e       | i       | i        | i   | i      | i       | i             | i      | x        | x    | x    | e         | i               | x
-| INTERVAL            | x    | x       | e       | e        | e   | e      | e       | x             | x      | i        | x    | x    | x         | e               | x
-| DATE                | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | i    | x    | i         | i               | x
-| TIME                | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | x    | i    | e         | i               | x
-| TIMESTAMP           | x    | x       | e       | e        | e   | e      | e       | e             | e      | x        | i    | e    | i         | i               | x
-| CHAR or VARCHAR     | x    | e       | i       | i        | i   | i      | i       | i             | i      | i        | i    | i    | i         | i               | i
-| BINARY or VARBINARY | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | e    | e    | e         | i               | i
+| FROM - TO           | NULL | BOOLEAN | TINYINT | SMALLINT | INT | BIGINT | DECIMAL | FLOAT or REAL | DOUBLE | INTERVAL | DATE | TIME | TIMESTAMP | CHAR or VARCHAR | BINARY or VARBINARY | UUID |
+|:------------------- |:---- |:------- |:------- |:-------- |:--- |:------ |:------- |:------------- |:------ |:-------- |:---- |:---- |:--------- |:--------------- |:--------------------|:-----|
+| NULL                | i    | i       | i       | i        | i   | i      | i       | i             | i      | i        | i    | i    | i         | i               | i                   | i    |
+| BOOLEAN             | x    | i       | e       | e        | e   | e      | e       | e             | e      | x        | x    | x    | x         | i               | x                   | x    |
+| TINYINT             | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x                   | x    |
+| SMALLINT            | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x                   | x    |
+| INT                 | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x                   | x    |
+| BIGINT              | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x                   | x    |
+| DECIMAL             | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x                   | x    |
+| FLOAT/REAL          | x    | e       | i       | i        | i   | i      | i       | i             | i      | x        | x    | x    | e         | i               | x                   | x    |
+| DOUBLE              | x    | e       | i       | i        | i   | i      | i       | i             | i      | x        | x    | x    | e         | i               | x                   | x    |
+| INTERVAL            | x    | x       | e       | e        | e   | e      | e       | x             | x      | i        | x    | x    | x         | e               | x                   | x    |
+| DATE                | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | i    | x    | i         | i               | x                   | x    |
+| TIME                | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | x    | i    | e         | i               | x                   | x    |
+| TIMESTAMP           | x    | x       | e       | e        | e   | e      | e       | e             | e      | x        | i    | e    | i         | i               | x                   | x    |
+| CHAR or VARCHAR     | x    | e       | i       | i        | i   | i      | i       | i             | i      | i        | i    | i    | i         | i               | i                   | i    |
+| BINARY or VARBINARY | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | e    | e    | e         | i               | i                   | i    |
+| UUID                | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | x    | x    | x         | x               | x                   | i    |
 
 i: implicit cast / e: explicit cast / x: not allowed
 

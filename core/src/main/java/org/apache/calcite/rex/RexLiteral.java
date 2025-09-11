@@ -54,6 +54,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.UUID;
 
 /**
  * Constant value in a row-expression.
@@ -297,6 +298,8 @@ public class RexLiteral extends RexNode {
     switch (typeName) {
     case VARIANT:
       return value instanceof VariantValue;
+    case UUID:
+      return value instanceof UUID;
     case BOOLEAN:
       // Unlike SqlLiteral, we do not allow boolean null.
       return value instanceof Boolean;
@@ -630,6 +633,10 @@ public class RexLiteral extends RexNode {
         assert value == null;
         destination.append("null");
         break;
+      case UUID:
+        assert value instanceof UUID;
+        destination.append(value.toString());
+        break;
       case SYMBOL:
         assert value instanceof Enum;
         destination.append("FLAG(");
@@ -957,6 +964,11 @@ public class RexLiteral extends RexNode {
       return clazz.cast(value);
     }
     switch (typeName) {
+    case UUID:
+      if (clazz == String.class) {
+        return clazz.cast(((UUID) value).toString());
+      }
+      break;
     case BINARY:
       if (clazz == byte[].class) {
         return clazz.cast(((ByteString) value).getBytes());
