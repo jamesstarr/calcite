@@ -223,7 +223,7 @@ public class SqlLiteral extends SqlNode {
     case CHAR:
       return value instanceof NlsString;
     case UUID:
-      return value instanceof String;
+      return value instanceof UUID;
     case SYMBOL:
       return (value instanceof Enum)
           || (value instanceof SqlSampleSpec);
@@ -836,9 +836,9 @@ public class SqlLiteral extends SqlNode {
   }
 
   public static SqlUuidLiteral createUuid(
-      String uuidStr,
+      UUID u,
       SqlParserPos pos) {
-    return new SqlUuidLiteral(uuidStr, pos);
+    return new SqlUuidLiteral(u, pos);
   }
 
   /**

@@ -66,7 +66,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.StringTokenizer;
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import static org.apache.calcite.util.Static.RESOURCE;
@@ -147,10 +147,9 @@ public final class SqlParserUtil {
   }
 
   public static SqlUuidLiteral parseUuidLiteral(String s, SqlParserPos pos) {
-    final String rawString = parseString(s);
-    // Validate the parsed string using java.util.UUID
-    UUID uuid = UUID.fromString(rawString);
-    return SqlLiteral.createUuid(uuid.toString(), pos);
+    final String uuidStr = parseString(s);
+    UUID uuid = UUID.fromString(uuidStr);
+    return SqlLiteral.createUuid(uuid, pos);
   }
 
   public static SqlDateLiteral parseDateLiteral(String s, SqlParserPos pos) {

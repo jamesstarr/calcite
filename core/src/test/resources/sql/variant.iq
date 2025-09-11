@@ -193,11 +193,17 @@ C
 !ok
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 765ef60c0 (Introduce UUID type from upstream (#134))
 SELECT CAST(UUID '123e4567-e89b-12d3-a456-426655440000' AS VARIANT) AS C;
 C
 123e4567-e89b-12d3-a456-426655440000
 !ok
 
+<<<<<<< HEAD
 =======
 >>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
+=======
+>>>>>>> 765ef60c0 (Introduce UUID type from upstream (#134))
 # End variant.iq

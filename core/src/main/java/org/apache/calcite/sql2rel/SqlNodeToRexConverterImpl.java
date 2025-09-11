@@ -102,7 +102,7 @@ public class SqlNodeToRexConverterImpl implements SqlNodeToRexConverter {
 
     switch (literal.getTypeName()) {
     case UUID:
-      return rexBuilder.makeUuidLiteral(literal.getValueAs(String.class));
+      return rexBuilder.makeUuidLiteral(literal.getValueAs(UUID.class));
     case DECIMAL:
       // exact number
       BigDecimal bd = literal.getValueAs(BigDecimal.class);

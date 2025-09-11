@@ -98,8 +98,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.IntFunction;
 import javax.annotation.Nonnull;
+
+import static org.apache.calcite.linq4j.Nullness.castNonNull;
 
 /**
  * State for generating a SQL statement.
@@ -636,7 +639,7 @@ public abstract class SqlImplementor {
           return SqlLiteral.createTime(literal.getValueAs(TimeString.class),
               literal.getType().getPrecision(), POS);
         case UUID:
-          return SqlLiteral.createUuid(castNonNull(literal.getValueAs(String.class)), POS);
+          return SqlLiteral.createUuid(castNonNull(literal.getValueAs(UUID.class)), POS);
         case TIMESTAMP:
           return SqlLiteral.createTimestamp(
               literal.getValueAs(TimestampString.class),

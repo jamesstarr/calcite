@@ -316,6 +316,14 @@ public class RexToLixTranslator {
     case ANY:
       convert = operand;
       break;
+    case VARBINARY:
+    case BINARY:
+      switch (sourceType.getSqlTypeName()) {
+      case UUID:
+        convert = Expressions.call(BuiltInMethod.UUID_TO_BINARY.method, operand);
+        break;
+      }
+      break;
     case DATE:
       switch (sourceType.getSqlTypeName()) {
       case CHAR:
@@ -514,11 +522,33 @@ public class RexToLixTranslator {
             operand);
       }
       break;
+    case UUID:
+      switch (sourceType.getSqlTypeName()) {
+      case UUID:
+        convert = operand;
+        break;
+      case CHAR:
+      case VARCHAR:
+        convert = Expressions.call(BuiltInMethod.UUID_FROM_STRING.method, operand);
+        break;
+      case BINARY:
+      case VARBINARY:
+        convert = Expressions.call(BuiltInMethod.BINARY_TO_UUID.method, operand);
+      }
+      break;
     case CHAR:
     case VARCHAR:
       final SqlIntervalQualifier interval =
           sourceType.getIntervalQualifier();
       switch (sourceType.getSqlTypeName()) {
+      case UUID:
+        convert = RexImpTable.optimize2(
+            operand,
+            Expressions.call(
+                BuiltInMethod.UUID_TO_STRING.method,
+                operand));
+        break;
+      // If format string is supplied, return formatted date/time/timestamp
       case DATE:
         convert = RexImpTable.optimize2(
             operand,
@@ -890,6 +920,9 @@ public class RexToLixTranslator {
     case VARCHAR:
       value2 = literal.getValueAs(String.class);
       break;
+    case UUID:
+      return Expressions.call(null, BuiltInMethod.UUID_FROM_STRING.method,
+          Expressions.constant(literal.getValueAs(String.class)));
     case BINARY:
     case VARBINARY:
       return Expressions.new_(

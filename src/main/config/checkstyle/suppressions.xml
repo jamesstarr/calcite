@@ -93,8 +93,13 @@ limitations under the License.
   <suppress checks="ImportOrder" files="ImmutablePairList.java" lines="28"/>
   <suppress checks="ImportOrder" files="SqlValidatorUtil.java" lines="80"/>
 <<<<<<< HEAD
+<<<<<<< HEAD
 
   <suppress checks="MethodLength" files="RexToLixTranslator.java"/>
 =======
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
+=======
+
+  <suppress checks="MethodLength" files="RexToLixTranslator.java"/>
+>>>>>>> 765ef60c0 (Introduce UUID type from upstream (#134))
 </suppressions>

@@ -1138,9 +1138,13 @@ UTF16,
 UTF32,
 UTF8,
 <<<<<<< HEAD
+<<<<<<< HEAD
 **UUID**,
 =======
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+**UUID**,
+>>>>>>> 765ef60c0 (Introduce UUID type from upstream (#134))
 **VALUE**,
 **VALUES**,
 **VALUE_OF**,
@@ -1770,6 +1774,7 @@ these details follow the table.
 | CHAR or VARCHAR     | x    | e       | i       | i        | i   | i      | i       | i             | i      | i        | i    | i    | i         | i               | i                   | i    |
 | BINARY or VARBINARY | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | e    | e    | e         | i               | i                   | i    |
 | UUID                | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | x    | x    | x         | x               | x                   | i    |
+<<<<<<< HEAD
 
 i: implicit cast / e: explicit cast / x: not allowed
 
@@ -1971,6 +1976,8 @@ these details follow the table.
 | TIMESTAMP           | x    | x       | e       | e        | e   | e      | e       | e             | e      | x        | i    | e    | i         | i               | x
 | CHAR or VARCHAR     | x    | e       | i       | i        | i   | i      | i       | i             | i      | i        | i    | i    | i         | i               | i
 | BINARY or VARBINARY | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | e    | e    | e         | i               | i
+=======
+>>>>>>> 765ef60c0 (Introduce UUID type from upstream (#134))
 
 i: implicit cast / e: explicit cast / x: not allowed
 

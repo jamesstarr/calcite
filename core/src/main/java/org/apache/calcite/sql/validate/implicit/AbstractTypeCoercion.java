@@ -410,7 +410,7 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
       // because calcite will do the cast in SqlToRelConverter.
       return null;
     }
-<<<<<<< HEAD
+>>>>>>> 765ef60c0 (Introduce UUID type from upstream (#134))
     boolean anyNullable = type1.isNullable() || type2.isNullable();
 
     if ((SqlTypeUtil.isCharacter(type1) || SqlTypeUtil.isBinary(type1))
@@ -422,6 +422,8 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
         && type1.getSqlTypeName() == SqlTypeName.UUID) {
       return factory.createTypeWithNullability(type2, anyNullable);
     }
+<<<<<<< HEAD
+=======
 =======
 
     // DATE + TIMESTAMP -> TIMESTAMP
@@ -658,6 +660,10 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
     if (SqlTypeUtil.isAtomic(in)
         && (expected == SqlTypeFamily.STRING
         || expected == SqlTypeFamily.CHARACTER)) {
+      return expected.getDefaultConcreteType(factory);
+    }
+    if ((SqlTypeUtil.isCharacter(in) || SqlTypeUtil.isBinary(in))
+        && expected == SqlTypeFamily.UUID) {
       return expected.getDefaultConcreteType(factory);
     }
     return null;
