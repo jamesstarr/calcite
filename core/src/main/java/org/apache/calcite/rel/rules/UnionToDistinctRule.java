@@ -63,9 +63,6 @@ public class UnionToDistinctRule
 
   @Override public void onMatch(RelOptRuleCall call) {
     final Union union = call.rel(0);
-    if (union.all) {
-      return; // nothing to do
-    }
     final RelBuilder relBuilder = call.builder();
     relBuilder.pushAll(union.getInputs());
     relBuilder.union(true, union.getInputs().size());
