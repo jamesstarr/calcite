@@ -88,6 +88,7 @@ dependencies {
 <<<<<<< HEAD
     testRuntimeOnly("net.java.dev.jna:jna")
 <<<<<<< HEAD
+<<<<<<< HEAD
     testRuntimeOnly("org.apache.logging.log4j:log4j-slf4j-impl")
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
@@ -97,4 +98,7 @@ dependencies {
 =======
     testRuntimeOnly("org.slf4j:slf4j-log4j12")
 >>>>>>> 9a0aad092 ([CALCITE-3654] Use single Elasticsearch instance for all elasticsearch tests (#167))
+=======
+    testRuntimeOnly("org.apache.logging.log4j:log4j-slf4j-impl")
+>>>>>>> 2833961fa (Refine logging dependencies: keep slf4j bridges in runtime classpath … (#179))
 }

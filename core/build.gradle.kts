@@ -138,9 +138,12 @@ dependencies {
     testImplementation("log4j:log4j") {
         because("SqlHintsConverterTest needs to implement a MockAppender")
     }
+<<<<<<< HEAD
 =======
     testImplementation("org.apache.commons:commons-pool2")
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> 2833961fa (Refine logging dependencies: keep slf4j bridges in runtime classpath … (#179))
     testImplementation("org.hsqldb:hsqldb")
     testImplementation("org.incava:java-diff")
     testImplementation("sqlline:sqlline")
@@ -151,7 +154,7 @@ dependencies {
 =======
 >>>>>>> 3ab086683 ([CALCITE-2457] Migrate core parameterized to JUnit5, and make core junit5-only)
     testImplementation(kotlin("test-junit5"))
-    testImplementation("org.slf4j:slf4j-log4j12")
+    testRuntimeOnly("org.slf4j:slf4j-log4j12")
 }
 
 // There are users that reuse/extend test code (e.g. Apache Felix)

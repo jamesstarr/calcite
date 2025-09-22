@@ -113,9 +113,13 @@ dependencies {
         apiv("joda-time:joda-time")
         apiv("junit:junit", "junit4")
 <<<<<<< HEAD
+<<<<<<< HEAD
         apiv("log4j:log4j", "log4j")
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+        apiv("log4j:log4j", "log4j")
+>>>>>>> 2833961fa (Refine logging dependencies: keep slf4j bridges in runtime classpath … (#179))
         apiv("mysql:mysql-connector-java")
         apiv("net.hydromatic:aggdesigner-algorithm")
         apiv("net.hydromatic:chinook-data-hsqldb")
@@ -149,6 +153,7 @@ dependencies {
         apiv("org.apache.kerby:kerb-core", "kerby")
         apiv("org.apache.kerby:kerb-simplekdc", "kerby")
 <<<<<<< HEAD
+<<<<<<< HEAD
         apiv("org.apache.logging.log4j:log4j-api", "log4j2")
         apiv("org.apache.logging.log4j:log4j-core", "log4j2")
         apiv("org.apache.logging.log4j:log4j-slf4j-impl", "log4j2")
@@ -159,6 +164,11 @@ dependencies {
 =======
         apiv("org.apache.logging.log4j:log4j-api", "log4j")
         apiv("org.apache.logging.log4j:log4j-core", "log4j")
+=======
+        apiv("org.apache.logging.log4j:log4j-api", "log4j2")
+        apiv("org.apache.logging.log4j:log4j-core", "log4j2")
+        apiv("org.apache.logging.log4j:log4j-slf4j-impl", "log4j2")
+>>>>>>> 2833961fa (Refine logging dependencies: keep slf4j bridges in runtime classpath … (#179))
         apiv("org.apache.pig:pig")
         apiv("org.apache.pig:pigunit", "pig")
         apiv("org.apache.spark:spark-core_2.10", "spark")
