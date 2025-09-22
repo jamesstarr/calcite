@@ -58,7 +58,10 @@ public class UnionPullUpConstantsRule
   @Deprecated // to be removed before 2.0
   public UnionPullUpConstantsRule(Class<? extends Union> unionClass,
                                   RelBuilderFactory relBuilderFactory) {
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
+    // If field count is 1, then there's no room for
+    // optimization since we cannot create an empty Project
+    // operator. If we created a Project with one column, this rule would
+    // cycle.
     this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
             .as(Config.class)
             .withOperandFor(unionClass));
@@ -153,6 +156,7 @@ public class UnionPullUpConstantsRule
     default Config withOperandFor(Class<? extends Union> unionClass) {
       return withOperandSupplier(b ->
               b.operand(unionClass)
+                      .predicate(union -> union.getRowType().getFieldCount() > 1)
                       .anyInputs())
               .as(Config.class);
     }

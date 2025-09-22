@@ -2430,7 +2430,7 @@ public class MaterializationTest {
             + "where \"emps\".\"empid\" = 1",
         HR_FKUK_MODEL,
         CalciteAssert.checkResultContains(
-            "EnumerableCalc(expr#0..1=[{inputs}], empid0=[$t0])\n"
+            "EnumerableCalc(expr#0..1=[{inputs}], empid=[$t0])\n"
                 + "  EnumerableTableScan(table=[[hr, m0]])"));
   }
 
@@ -2447,7 +2447,7 @@ public class MaterializationTest {
             + "where \"emps\".\"empid\" = 1",
         HR_FKUK_MODEL,
         CalciteAssert.checkResultContains(
-            "EnumerableCalc(expr#0..1=[{inputs}], empid0=[$t0])\n"
+            "EnumerableCalc(expr#0..1=[{inputs}], empid=[$t0])\n"
                 + "  EnumerableTableScan(table=[[hr, m0]])"));
   }
 
