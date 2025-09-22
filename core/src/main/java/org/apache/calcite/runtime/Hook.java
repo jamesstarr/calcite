@@ -19,7 +19,8 @@ package org.apache.calcite.runtime;
 import org.apache.calcite.rel.RelRoot;
 import org.apache.calcite.util.Holder;
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import org.apiguardian.api.API;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -123,6 +124,8 @@ public enum Hook {
    *     than expected. Use with caution. Prefer thread-local hooks.
    * @see #addThread(Consumer)
    */
+  @API(status = API.Status.MAINTAINED)
+  @Deprecated
   public <T> Closeable add(final Consumer<T> handler) {
     //noinspection unchecked
     handlers.add((Consumer<Object>) handler);

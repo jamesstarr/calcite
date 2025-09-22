@@ -1068,11 +1068,16 @@ allprojects {
                 passProperty("java.awt.headless")
                 passProperty("junit.jupiter.execution.parallel.enabled", "true")
 <<<<<<< HEAD
+<<<<<<< HEAD
                 passProperty("junit.jupiter.execution.parallel.mode.default", "concurrent")
                 passProperty("junit.jupiter.execution.timeout.default", "10 m")
 =======
                 passProperty("junit.jupiter.execution.timeout.default", "5 m")
 >>>>>>> ceb53f5d8 ([CALCITE-2457] Druid: JUnit4 -> JUnit5)
+=======
+                passProperty("junit.jupiter.execution.parallel.mode.default", "concurrent")
+                passProperty("junit.jupiter.execution.timeout.default", "10 m")
+>>>>>>> 361fe0e95 (Use concurrent test execution by default (#177))
                 passProperty("user.language", "TR")
                 passProperty("user.country", "tr")
                 val props = System.getProperties()

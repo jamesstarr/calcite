@@ -68,9 +68,13 @@ dependencies {
     api("com.fasterxml.jackson.core:jackson-annotations")
     api("org.apache.calcite.avatica:avatica-core")
 <<<<<<< HEAD
+<<<<<<< HEAD
     api("org.apiguardian:apiguardian-api")
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    api("org.apiguardian:apiguardian-api")
+>>>>>>> 361fe0e95 (Use concurrent test execution by default (#177))
 
     implementation("com.esri.geometry:esri-geometry-api")
     implementation("com.fasterxml.jackson.core:jackson-core")
@@ -115,9 +119,12 @@ dependencies {
     testPostgresql("org.postgresql:postgresql")
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     testImplementation("com.github.stephenc.jcip:jcip-annotations")
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> 361fe0e95 (Use concurrent test execution by default (#177))
     testImplementation("net.hydromatic:foodmart-data-hsqldb")
     testImplementation("net.hydromatic:foodmart-queries")
     testImplementation("net.hydromatic:quidem")
