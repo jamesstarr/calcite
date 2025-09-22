@@ -111,7 +111,7 @@ public final class CalciteSystemProperty<T> {
    * Whether to include a GraphViz representation when dumping the state of the Volcano planner.
    */
   public static final CalciteSystemProperty<Boolean> DUMP_GRAPHVIZ =
-      booleanProperty("calcite.volcano.dump.graphviz", true);
+      booleanProperty("calcite.volcano.dump.graphviz", false);
 
   /**
    * Whether to include <code>RelSet</code> information when dumping the state of the Volcano
