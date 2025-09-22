@@ -41,6 +41,7 @@ dependencies {
 
     api("com.fasterxml.jackson.core:jackson-annotations")
     api("org.apache.calcite.avatica:avatica-core")
+    api("org.apiguardian:apiguardian-api")
 
     implementation("com.esri.geometry:esri-geometry-api")
     implementation("com.fasterxml.jackson.core:jackson-core")
@@ -65,7 +66,6 @@ dependencies {
     testOracle("com.oracle.ojdbc:ojdbc8")
     testPostgresql("org.postgresql:postgresql")
 
-    testImplementation("com.github.stephenc.jcip:jcip-annotations")
     testImplementation("net.hydromatic:foodmart-data-hsqldb")
     testImplementation("net.hydromatic:foodmart-queries")
     testImplementation("net.hydromatic:quidem")

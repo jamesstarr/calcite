@@ -20,6 +20,8 @@ import org.apache.calcite.config.CalciteSystemProperty;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -29,6 +31,7 @@ import redis.embedded.RedisServer;
 /**
  * RedisITCaseBase.
  */
+@Execution(ExecutionMode.SAME_THREAD)
 public abstract class RedisCaseBase {
 
   public static final int PORT = getAvailablePort();

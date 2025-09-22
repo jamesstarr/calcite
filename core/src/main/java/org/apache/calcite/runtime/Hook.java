@@ -18,6 +18,8 @@ package org.apache.calcite.runtime;
 
 import org.apache.calcite.util.Holder;
 
+import org.apiguardian.api.API;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -107,7 +109,12 @@ public enum Hook {
    *         closeable.close();
    *     }</pre>
    * </blockquote>
+   * @deprecated this installs a global hook (cross-thread), so it might have greater impact
+   *     than expected. Use with caution. Prefer thread-local hooks.
+   * @see #addThread(Consumer)
    */
+  @API(status = API.Status.MAINTAINED)
+  @Deprecated
   public <T> Closeable add(final Consumer<T> handler) {
     //noinspection unchecked
     handlers.add((Consumer<Object>) handler);

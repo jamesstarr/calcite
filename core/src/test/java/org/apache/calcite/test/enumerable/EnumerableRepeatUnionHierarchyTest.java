@@ -25,8 +25,6 @@ import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.test.HierarchySchema;
 import org.apache.calcite.tools.RelBuilder;
 
-import net.jcip.annotations.NotThreadSafe;
-
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -39,7 +37,6 @@ import java.util.function.Function;
  * <a href="https://issues.apache.org/jira/browse/CALCITE-2812">[CALCITE-2812]
  * Add algebraic operators to allow expressing recursive queries</a>.
  */
-@NotThreadSafe
 public class EnumerableRepeatUnionHierarchyTest {
 
   // Tests for the following hierarchy:
