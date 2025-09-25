@@ -54,6 +54,7 @@ import org.apache.calcite.sql.SqlUnnestOperator;
 import org.apache.calcite.sql.SqlUtil;
 import org.apache.calcite.sql.SqlValuesOperator;
 import org.apache.calcite.sql.SqlWindow;
+import org.apache.calcite.sql.SqlWindowTableFunction;
 import org.apache.calcite.sql.SqlWithinGroupOperator;
 import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.type.InferTypes;
@@ -2314,7 +2315,12 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
         }
       };
 
->>>>>>> c830b4f5a ([CALCITE-3382] Hard-wire the TUMBLE grouping function into SQL parser (Rui Wang))
+  /** DESCRIPTOR(column_name, ...). */
+  public static final SqlOperator DESCRIPTOR = new SqlDescriptorOperator();
+
+  /** TUMBLE as a table-value function. */
+  public static final SqlFunction TUMBLE_TVF = new SqlWindowTableFunction(SqlKind.TUMBLE.name());
+
   /** The {@code TUMBLE} group function.
    *
    * <p>This operator is named "$TUMBLE" (not "TUMBLE") because it is created

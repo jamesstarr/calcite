@@ -4977,10 +4977,14 @@ LogicalDelta
   LogicalProject(ROWTIME=[+($0, 7200000:INTERVAL HOUR)], PRODUCTID=[$1])
     LogicalAggregate(group=[{0, 1}])
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject($f0=[$TUMBLE($0, 7200000:INTERVAL HOUR)], PRODUCTID=[$1])
 =======
       LogicalProject($f0=[TUMBLE($0, 7200000:INTERVAL HOUR)], PRODUCTID=[$1])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+      LogicalProject($f0=[$TUMBLE($0, 7200000:INTERVAL HOUR)], PRODUCTID=[$1])
+>>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
         LogicalTableScan(table=[[CATALOG, SALES, ORDERS]])
 ]]>
         </Resource>
@@ -6825,15 +6829,23 @@ LogicalDelta
   LogicalProject(S=[$0], E=[+($0, 60000:INTERVAL MINUTE)])
     LogicalAggregate(group=[{0}])
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject($f0=[$TUMBLE($1, 60000:INTERVAL MINUTE)])
 =======
       LogicalProject($f0=[TUMBLE($1, 60000:INTERVAL MINUTE)])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+      LogicalProject($f0=[$TUMBLE($1, 60000:INTERVAL MINUTE)])
+>>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
         LogicalTableScan(table=[[CATALOG, SALES, SHIPMENTS]])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testTableFunctionTumble">
+=======
+    <TestCase name="testTableValuedFunctionTumble">
+>>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
         <Resource name="sql">
             <![CDATA[select *
 from table(tumble(table Shipments, descriptor(rowtime), INTERVAL '1' MINUTE))]]>
@@ -6841,12 +6853,17 @@ from table(tumble(table Shipments, descriptor(rowtime), INTERVAL '1' MINUTE))]]>
         <Resource name="plan">
             <![CDATA[
 LogicalProject(ORDERID=[$0], ROWTIME=[$1], window_start=[$2], window_end=[$3])
+<<<<<<< HEAD
   LogicalTableFunctionScan(invocation=[TUMBLE(DESCRIPTOR($1), 60000:INTERVAL MINUTE)], rowType=[RecordType(INTEGER ORDERID, TIMESTAMP(0) ROWTIME, TIMESTAMP(0) window_start, TIMESTAMP(0) window_end)])
+=======
+  LogicalTableFunctionScan(invocation=[TUMBLE($1, DESCRIPTOR($1), 60000:INTERVAL MINUTE)], rowType=[RecordType(INTEGER ORDERID, TIMESTAMP(0) ROWTIME, TIMESTAMP(0) window_start, TIMESTAMP(0) window_end)])
+>>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
     LogicalProject(ORDERID=[$0], ROWTIME=[$1])
       LogicalTableScan(table=[[CATALOG, SALES, SHIPMENTS]])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testTableFunctionHop">
         <Resource name="sql">
             <![CDATA[select *
@@ -6876,6 +6893,9 @@ LogicalProject(ORDERID=[$0], ROWTIME=[$1], window_start=[$2], window_end=[$3])
         </Resource>
     </TestCase>
     <TestCase name="testTableFunctionTumbleWithSubQueryParam">
+=======
+    <TestCase name="testTableValuedFunctionTumbleWithSubQueryParam">
+>>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
         <Resource name="sql">
             <![CDATA[select *
 from table(tumble((select * from Shipments), descriptor(rowtime), INTERVAL '1' MINUTE))]]>
@@ -6883,12 +6903,17 @@ from table(tumble((select * from Shipments), descriptor(rowtime), INTERVAL '1' M
         <Resource name="plan">
             <![CDATA[
 LogicalProject(ORDERID=[$0], ROWTIME=[$1], window_start=[$2], window_end=[$3])
+<<<<<<< HEAD
   LogicalTableFunctionScan(invocation=[TUMBLE(DESCRIPTOR($1), 60000:INTERVAL MINUTE)], rowType=[RecordType(INTEGER ORDERID, TIMESTAMP(0) ROWTIME, TIMESTAMP(0) window_start, TIMESTAMP(0) window_end)])
+=======
+  LogicalTableFunctionScan(invocation=[TUMBLE($1, DESCRIPTOR($1), 60000:INTERVAL MINUTE)], rowType=[RecordType(INTEGER ORDERID, TIMESTAMP(0) ROWTIME, TIMESTAMP(0) window_start, TIMESTAMP(0) window_end)])
+>>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
     LogicalProject(ORDERID=[$0], ROWTIME=[$1])
       LogicalTableScan(table=[[CATALOG, SALES, SHIPMENTS]])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
     <TestCase name="testTableFunctionHopWithSubQueryParam">
         <Resource name="sql">
             <![CDATA[select *
@@ -6931,6 +6956,8 @@ LogicalProject(ROWTIME=[$0], PRODUCTID=[$1], ORDERID=[$2], window_start=[$3], wi
 ]]>
         </Resource>
     </TestCase>
+=======
+>>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
     <TestCase name="testTumbleTableRowtimeNotFirstColumn">
         <Resource name="sql">
             <![CDATA[select stream
@@ -6944,10 +6971,14 @@ LogicalDelta
   LogicalProject(ROWTIME=[+($0, 7200000:INTERVAL HOUR)], ORDERID=[$1])
     LogicalAggregate(group=[{0, 1}])
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject($f0=[$TUMBLE($1, 7200000:INTERVAL HOUR)], ORDERID=[$0])
 =======
       LogicalProject($f0=[TUMBLE($1, 7200000:INTERVAL HOUR)], ORDERID=[$0])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+      LogicalProject($f0=[$TUMBLE($1, 7200000:INTERVAL HOUR)], ORDERID=[$0])
+>>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
         LogicalTableScan(table=[[CATALOG, SALES, SHIPMENTS]])
 ]]>
         </Resource>
