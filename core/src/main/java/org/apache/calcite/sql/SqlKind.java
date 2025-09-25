@@ -1004,17 +1004,21 @@ public enum SqlKind {
   /** The {@code ROW_NUMBER} window function. */
   CUME_DIST,
 
-  // Group functions
+  /** The {@code DESCRIPTOR(column_name, ...)}. */
+  DESCRIPTOR,
 
   /** The {@code TUMBLE} group function. */
   TUMBLE,
 
+  // Group functions
   /** The {@code TUMBLE_START} auxiliary function of
    * the {@link #TUMBLE} group function. */
+  // TODO: deprecate TUMBLE_START.
   TUMBLE_START,
 
   /** The {@code TUMBLE_END} auxiliary function of
    * the {@link #TUMBLE} group function. */
+  // TODO: deprecate TUMBLE_END.
   TUMBLE_END,
 
   /** The {@code HOP} group function. */
@@ -1257,7 +1261,7 @@ public enum SqlKind {
                   LITERAL_CHAIN, JDBC_FN, PRECEDING, FOLLOWING, ORDER_BY,
                   NULLS_FIRST, NULLS_LAST, COLLECTION_TABLE, TABLESAMPLE,
                   VALUES, WITH, WITH_ITEM, ITEM, SKIP_TO_FIRST, SKIP_TO_LAST,
-                  JSON_VALUE_EXPRESSION),
+                  JSON_VALUE_EXPRESSION, DESCRIPTOR),
               AGGREGATE, DML, DDL));
 
   /**

@@ -2865,7 +2865,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       }
       break;
 
-    case UNNEST: {
+    case UNNEST:
       call = (SqlCall) node;
       TableFunctionScope tableFunctionScope = new TableFunctionScope(node, lateralScope);
       final UnnestNamespace unnestNs =
@@ -2878,7 +2878,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       registerOperandSubQueries(parentScope, call, 0);
       scopes.put(node, tableFunctionScope);
       break;
-    }
+
     case OTHER_FUNCTION:
       call = (SqlCall) node;
       ProcedureNamespace procNs =

@@ -602,6 +602,7 @@ public enum BuiltInMethod {
       "resultSelector", Function2.class),
   AGG_LAMBDA_FACTORY_ACC_SINGLE_GROUP_RESULT_SELECTOR(AggregateLambdaFactory.class,
       "singleGroupResultSelector", Function1.class),
+  TUMBLING(EnumerableDefaults.class, "tumbling", Enumerable.class, Function1.class),
   VARIANT_CREATE(VariantSqlValue.class, "create", RoundingMode.class,
       Object.class, RuntimeTypeInformation.class),
   VARIANT_CAST(VariantValue.class, "cast", RuntimeTypeInformation.class),
