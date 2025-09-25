@@ -251,6 +251,9 @@ SELECT "EXTRACT"(
 !ok
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3324cc355 ([CALCITE-3640] Oracle EXISTSNODE Function Support (ritesh-kapoor) (#186))
 SELECT EXISTSNODE(
             '<Article><Title>Article1</Title><Authors><Author>Foo</Author><Author>Bar</Author></Authors><Body>article text</Body></Article>'
             , '/Article/Title'
@@ -261,6 +264,12 @@ SELECT EXISTSNODE(
 |      1 |
 +--------+
 (1 row)
+<<<<<<< HEAD
+=======
+
+!ok
+
+>>>>>>> 3324cc355 ([CALCITE-3640] Oracle EXISTSNODE Function Support (ritesh-kapoor) (#186))
 
 !ok
 
