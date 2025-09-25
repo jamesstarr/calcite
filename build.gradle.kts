@@ -185,6 +185,12 @@ val adaptersForSqlline = listOf(
     ":pig", ":piglet", ":plus", ":redis", ":spark", ":splunk"
 )
 
+val dataSetsForSqlline = listOf(
+    "net.hydromatic:foodmart-data-hsqldb",
+    "net.hydromatic:scott-data-hsqldb",
+    "net.hydromatic:chinook-data-hsqldb"
+)
+
 val sqllineClasspath by configurations.creating {
     isCanBeConsumed = false
 }
@@ -194,6 +200,9 @@ dependencies {
     sqllineClasspath("sqlline:sqlline")
     for (p in adaptersForSqlline) {
         sqllineClasspath(project(p))
+    }
+    for (m in dataSetsForSqlline) {
+        sqllineClasspath(module(m))
     }
 }
 
