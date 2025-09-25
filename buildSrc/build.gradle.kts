@@ -17,9 +17,13 @@
  */
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.github.vlsi.gradle.properties.dsl.props
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+import com.github.vlsi.gradle.properties.dsl.props
+>>>>>>> 38246acd0 (Gradle: Support skipAutostyle property in buildSrc (#191))
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -29,12 +33,15 @@ plugins {
 <<<<<<< HEAD
     id("com.github.autostyle")
     id("com.github.vlsi.gradle-extensions")
+<<<<<<< HEAD
 =======
     id("com.diffplug.gradle.spotless")
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
     id("com.github.autostyle")
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
+=======
+>>>>>>> 38246acd0 (Gradle: Support skipAutostyle property in buildSrc (#191))
 }
 
 repositories {
@@ -43,12 +50,18 @@ repositories {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 val skipAutostyle by props()
 
 allprojects {
 =======
 subprojects {
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+val skipAutostyle by props()
+
+allprojects {
+>>>>>>> 38246acd0 (Gradle: Support skipAutostyle property in buildSrc (#191))
     repositories {
         jcenter()
         gradlePluginPortal()
@@ -97,6 +110,9 @@ fun Project.applyKotlinProjectConventions() {
     }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 38246acd0 (Gradle: Support skipAutostyle property in buildSrc (#191))
     if (!skipAutostyle) {
         apply(plugin = "com.github.autostyle")
         autostyle {
@@ -110,6 +126,7 @@ fun Project.applyKotlinProjectConventions() {
                 trimTrailingWhitespace()
                 endWithNewline()
             }
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
@@ -129,6 +146,8 @@ fun Project.applyKotlinProjectConventions() {
             trimTrailingWhitespace()
             endWithNewline()
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> 38246acd0 (Gradle: Support skipAutostyle property in buildSrc (#191))
         }
     }
 }

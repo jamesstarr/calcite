@@ -19,10 +19,14 @@
 pluginManagement {
     plugins {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 38246acd0 (Gradle: Support skipAutostyle property in buildSrc (#191))
         fun String.v() = extra["$this.version"].toString()
         fun PluginDependenciesSpec.idv(id: String, key: String = id) = id(id) version key.v()
         idv("com.github.autostyle")
         idv("com.github.vlsi.gradle-extensions", "com.github.vlsi.vlsi-release-plugins")
+<<<<<<< HEAD
 =======
         fun PluginDependenciesSpec.idv(id: String) = id(id) version extra["$id.version"].toString()
 <<<<<<< HEAD
@@ -31,6 +35,8 @@ pluginManagement {
 =======
         idv("com.github.autostyle")
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
+=======
+>>>>>>> 38246acd0 (Gradle: Support skipAutostyle property in buildSrc (#191))
     }
 }
 
