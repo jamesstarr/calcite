@@ -284,6 +284,7 @@ val dataSetsForSqlline = listOf(
     "net.hydromatic:foodmart-data-hsqldb",
     "net.hydromatic:scott-data-hsqldb",
     "net.hydromatic:chinook-data-hsqldb"
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> da83d51a7 (Add gradle task 'aggregateJavadocIncludingTests' that builds javadoc for both main and test)
@@ -295,6 +296,8 @@ val adaptersForSqlline = listOf(
 =======
     ":pig", ":piglet", ":plus", ":redis", ":spark", ":splunk"
 >>>>>>> 278d51c33 ([CALCITE-3510] Implement Redis adapter  (#170))
+=======
+>>>>>>> 5405253d9 (Add hsqldb data sets (scott, foodmart and chinook) to SQLLine's path (#188))
 )
 
 val sqllineClasspath by configurations.creating {
@@ -308,11 +311,17 @@ dependencies {
         sqllineClasspath(project(p))
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     for (m in dataSetsForSqlline) {
         sqllineClasspath(module(m))
     }
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    for (m in dataSetsForSqlline) {
+        sqllineClasspath(module(m))
+    }
+>>>>>>> 5405253d9 (Add hsqldb data sets (scott, foodmart and chinook) to SQLLine's path (#188))
 }
 
 val buildSqllineClasspath by tasks.registering(Jar::class) {
