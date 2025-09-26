@@ -586,7 +586,7 @@ public abstract class SqlImplementor {
           return SqlLiteral.createTime(literal.getValueAs(TimeString.class),
               literal.getType().getPrecision(), POS);
         case UUID:
-          return SqlLiteral.createUuid(castNonNull(literal.getValueAs(UUID.class)), POS);
+          return SqlLiteral.createUuid(castNonNull(literal.getValueAs(String.class)), POS);
         case TIMESTAMP:
           return SqlLiteral.createTimestamp(
               literal.getValueAs(TimestampString.class),

@@ -986,8 +986,10 @@ public class RexBuilder {
     return b ? booleanTrue : booleanFalse;
   }
 
-  public RexLiteral makeUuidLiteral(UUID uuid) {
-    return new RexLiteral(uuid, typeFactory.createSqlType(SqlTypeName.UUID), SqlTypeName.UUID);
+  public RexLiteral makeUuidLiteral(String uuidStr) {
+    // Validate the provided string using java.util.UUID
+    UUID ignored = UUID.fromString(uuidStr);
+    return new RexLiteral(uuidStr, typeFactory.createSqlType(SqlTypeName.UUID), SqlTypeName.UUID);
   }
 
   /**
@@ -1470,7 +1472,12 @@ public class RexBuilder {
     case ANY:
       return makeLiteral(value, guessType(value), allowCast);
     case UUID:
-      return makeUuidLiteral((UUID) value);
+      if (value instanceof String) {
+        return makeUuidLiteral((String) value);
+      } else {
+        throw new IllegalArgumentException(
+            "Cannot create UUID literal, value must be of String type, got: " + value.getClass());
+      }
     default:
       throw new IllegalArgumentException(
               "Cannot create literal for type '" + sqlTypeName + "'");
@@ -1579,7 +1586,12 @@ public class RexBuilder {
         return literal;
       }
     case UUID:
-      literal = makeUuidLiteral((UUID) value);
+      if (value instanceof String) {
+        literal = makeUuidLiteral((String) value);
+      } else {
+        throw new IllegalArgumentException(
+            "Cannot create UUID literal, value must be of String type, got: " + value.getClass());
+      }
       if (allowCast) {
         return makeCast(type, literal);
       } else {

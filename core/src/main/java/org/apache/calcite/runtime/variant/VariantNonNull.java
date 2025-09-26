@@ -49,7 +49,7 @@ public class VariantNonNull extends VariantSqlValue {
     // sanity check
     switch (runtimeType.getTypeName()) {
     case UUID:
-      assert value instanceof UUID;
+      assert value instanceof String;
       this.value = value;
       break;
     case NAME:

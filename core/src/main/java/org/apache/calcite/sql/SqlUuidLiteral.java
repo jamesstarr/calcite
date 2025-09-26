@@ -24,26 +24,30 @@ import java.util.UUID;
 import static java.util.Objects.requireNonNull;
 
 /**
- * A SQL literal representing an UUID value, for example <code>UUID
+ * A SQL literal representing a UUID value, for example <code>UUID
  * '123e4567-e89b-12d3-a456-426655440000'</code>.
  *
  * <p>Create values using {@link SqlLiteral#createUuid}.
+ *
+ * <p>This class stores UUID values as strings to avoid the signed comparison
+ * issue in {@link java.util.UUID#compareTo(UUID)} which does not comply with
+ * RFC 4122.
  */
 public class SqlUuidLiteral extends SqlLiteral {
   //~ Constructors -----------------------------------------------------------
 
-  public SqlUuidLiteral(UUID t, SqlParserPos pos) {
-    super(t, SqlTypeName.UUID, pos);
+  public SqlUuidLiteral(String uuidStr, SqlParserPos pos) {
+    super(validateAndNormalize(uuidStr), SqlTypeName.UUID, pos);
   }
 
   //~ Methods ----------------------------------------------------------------
 
   @Override public SqlUuidLiteral clone(SqlParserPos pos) {
-    return new SqlUuidLiteral(getUuid(), pos);
+    return new SqlUuidLiteral(getUuidString(), pos);
   }
 
-  public UUID getUuid() {
-    return (UUID) requireNonNull(value, "value");
+  public String getUuidString() {
+    return (String) requireNonNull(value, "value");
   }
 
   @Override public String toString() {
@@ -51,7 +55,7 @@ public class SqlUuidLiteral extends SqlLiteral {
   }
 
   public String toFormattedString() {
-    return getUuid().toString();
+    return getUuidString();
   }
 
   @Override public void unparse(
@@ -59,5 +63,14 @@ public class SqlUuidLiteral extends SqlLiteral {
       int leftPrec,
       int rightPrec) {
     writer.literal(this.toString());
+  }
+
+  private static String validateAndNormalize(String uuidStr) {
+    if (uuidStr == null) {
+      throw new IllegalArgumentException("UUID string cannot be null");
+    }
+    // Validate by parsing and then return the canonical string representation
+    UUID uuid = UUID.fromString(uuidStr);
+    return uuid.toString();
   }
 }
