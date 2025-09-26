@@ -301,7 +301,7 @@ public class RexLiteral extends RexNode {
 >>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
 =======
     case UUID:
-      return value instanceof UUID;
+      return value instanceof String;
     case BOOLEAN:
       // Unlike SqlLiteral, we do not allow boolean null.
       return value instanceof Boolean;
@@ -641,7 +641,7 @@ public class RexLiteral extends RexNode {
         destination.append("null");
         break;
       case UUID:
-        assert value instanceof UUID;
+        assert value instanceof String;
         destination.append(value.toString());
         break;
       case SYMBOL:
@@ -973,7 +973,7 @@ public class RexLiteral extends RexNode {
     switch (typeName) {
     case UUID:
       if (clazz == String.class) {
-        return clazz.cast(((UUID) value).toString());
+        return clazz.cast(value);
       }
       break;
     case BINARY:

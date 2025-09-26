@@ -173,6 +173,7 @@ public class JavaTypeFactoryImpl
       switch (type.getSqlTypeName()) {
       case VARCHAR:
       case CHAR:
+      case UUID:
         return String.class;
       case DATE:
       case TIME:
@@ -209,8 +210,6 @@ public class JavaTypeFactoryImpl
         return type.isNullable() ? Double.class : double.class;
       case REAL:
         return type.isNullable() ? Float.class : float.class;
-      case UUID:
-        return UUID.class;
       case BINARY:
       case VARBINARY:
         return ByteString.class;

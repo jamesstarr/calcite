@@ -683,8 +683,312 @@ public class RexBuilder {
     final BigDecimal divider = endUnit.multiplier;
     RexNode value = multiplyDivide(decodeIntervalOrDecimal(exp),
         multiplier, divider);
-  public RexLiteral makeUuidLiteral(UUID uuid) {
-    return new RexLiteral(uuid, typeFactory.createSqlType(SqlTypeName.UUID), SqlTypeName.UUID);
+    if (scale > 0) {
+      RelDataType decimalType =
+          typeFactory.createSqlType(SqlTypeName.DECIMAL,
+              scale + exp.getType().getPrecision(), scale);
+      value = encodeIntervalOrDecimal(value, decimalType, false);
+    }
+    return ensureType(toType, value, false);
+  }
+
+  public RexNode multiplyDivide(RexNode e, BigDecimal multiplier,
+      BigDecimal divider) {
+    assert multiplier.signum() > 0;
+    assert divider.signum() > 0;
+    switch (multiplier.compareTo(divider)) {
+    case 0:
+      return e;
+    case 1:
+      // E.g. multiplyDivide(e, 1000, 10) ==> e * 100
+      return makeCall(SqlStdOperatorTable.MULTIPLY, e,
+          makeExactLiteral(
+              multiplier.divide(divider, RoundingMode.UNNECESSARY)));
+    case -1:
+      // E.g. multiplyDivide(e, 10, 1000) ==> e / 100
+      return makeCall(SqlStdOperatorTable.DIVIDE_INTEGER, e,
+          makeExactLiteral(
+              divider.divide(multiplier, RoundingMode.UNNECESSARY)));
+    default:
+      throw new AssertionError(multiplier + "/" + divider);
+    }
+  }
+
+  /**
+   * Casts a decimal's integer representation to a decimal node. If the
+   * expression is not the expected integer type, then it is casted first.
+   *
+   * <p>An overflow check may be requested to ensure the internal value
+   * does not exceed the maximum value of the decimal type.
+   *
+   * @param value         integer representation of decimal
+   * @param type          type integer will be reinterpreted as
+   * @param checkOverflow indicates whether an overflow check is required
+   *                      when reinterpreting this particular value as the
+   *                      decimal type. A check usually not required for
+   *                      arithmetic, but is often required for rounding and
+   *                      explicit casts.
+   * @return the integer reinterpreted as an opaque decimal type
+   */
+  public RexNode encodeIntervalOrDecimal(
+      RexNode value,
+      RelDataType type,
+      boolean checkOverflow) {
+    RelDataType bigintType =
+        typeFactory.createSqlType(SqlTypeName.BIGINT);
+    RexNode cast = ensureType(bigintType, value, true);
+    return makeReinterpretCast(type, cast, makeLiteral(checkOverflow));
+  }
+
+  /**
+   * Retrieves an interval or decimal node's integer representation
+   *
+   * @param node the interval or decimal value as an opaque type
+   * @return an integer representation of the decimal value
+   */
+  public RexNode decodeIntervalOrDecimal(RexNode node) {
+    assert SqlTypeUtil.isDecimal(node.getType())
+        || SqlTypeUtil.isInterval(node.getType());
+    RelDataType bigintType = typeFactory.createSqlType(SqlTypeName.BIGINT);
+    return makeReinterpretCast(
+        matchNullability(bigintType, node), node, makeLiteral(false));
+  }
+
+  /**
+   * Creates a call to the CAST operator.
+   *
+   * @param type Type to cast to
+   * @param exp  Expression being cast
+   * @return Call to CAST operator
+   */
+  public RexNode makeAbstractCast(
+      RelDataType type,
+      RexNode exp) {
+    return new RexCall(
+        type,
+        SqlStdOperatorTable.CAST,
+        ImmutableList.of(exp));
+  }
+
+  /**
+   * Makes a reinterpret cast.
+   *
+   * @param type          type returned by the cast
+   * @param exp           expression to be casted
+   * @param checkOverflow whether an overflow check is required
+   * @return a RexCall with two operands and a special return type
+   */
+  public RexNode makeReinterpretCast(
+      RelDataType type,
+      RexNode exp,
+      RexNode checkOverflow) {
+    List<RexNode> args;
+    if ((checkOverflow != null) && checkOverflow.isAlwaysTrue()) {
+      args = ImmutableList.of(exp, checkOverflow);
+    } else {
+      args = ImmutableList.of(exp);
+    }
+    return new RexCall(
+        type,
+        SqlStdOperatorTable.REINTERPRET,
+        args);
+  }
+
+  /**
+   * Makes a cast of a value to NOT NULL;
+   * no-op if the type already has NOT NULL.
+   */
+  public RexNode makeNotNull(RexNode exp) {
+    final RelDataType type = exp.getType();
+    if (!type.isNullable()) {
+      return exp;
+    }
+    final RelDataType notNullType =
+        typeFactory.createTypeWithNullability(type, false);
+    return makeAbstractCast(notNullType, exp);
+  }
+
+  /**
+   * Creates a reference to all the fields in the row. That is, the whole row
+   * as a single record object.
+   *
+   * @param input Input relational expression
+   */
+  public RexNode makeRangeReference(RelNode input) {
+    return new RexRangeRef(input.getRowType(), 0);
+  }
+
+  /**
+   * Creates a reference to all the fields in the row.
+   *
+   * <p>For example, if the input row has type <code>T{f0,f1,f2,f3,f4}</code>
+   * then <code>makeRangeReference(T{f0,f1,f2,f3,f4}, S{f3,f4}, 3)</code> is
+   * an expression which yields the last 2 fields.
+   *
+   * @param type     Type of the resulting range record.
+   * @param offset   Index of first field.
+   * @param nullable Whether the record is nullable.
+   */
+  public RexRangeRef makeRangeReference(
+      RelDataType type,
+      int offset,
+      boolean nullable) {
+    if (nullable && !type.isNullable()) {
+      type =
+          typeFactory.createTypeWithNullability(
+              type,
+              nullable);
+    }
+    return new RexRangeRef(type, offset);
+  }
+
+  /**
+   * Creates a reference to a given field of the input record.
+   *
+   * @param type Type of field
+   * @param i    Ordinal of field
+   * @return Reference to field
+   */
+  public RexInputRef makeInputRef(
+      RelDataType type,
+      int i) {
+    type = SqlTypeUtil.addCharsetAndCollation(type, typeFactory);
+    return new RexInputRef(i, type);
+  }
+
+  /**
+   * Creates a reference to a given field of the input relational expression.
+   *
+   * @param input Input relational expression
+   * @param i    Ordinal of field
+   * @return Reference to field
+   *
+   * @see #identityProjects(RelDataType)
+   */
+  public RexInputRef makeInputRef(RelNode input, int i) {
+    return makeInputRef(input.getRowType().getFieldList().get(i).getType(), i);
+  }
+
+  /**
+   * Creates a reference to a given field of the pattern.
+   *
+   * @param alpha the pattern name
+   * @param type Type of field
+   * @param i    Ordinal of field
+   * @return Reference to field of pattern
+   */
+  public RexPatternFieldRef makePatternFieldRef(String alpha, RelDataType type, int i) {
+    type = SqlTypeUtil.addCharsetAndCollation(type, typeFactory);
+    return new RexPatternFieldRef(alpha, i, type);
+  }
+
+  /**
+   * Create a reference to local variable.
+   *
+   * @param type Type of variable
+   * @param i    Ordinal of variable
+   * @return  Reference to local variable
+   */
+  public RexLocalRef makeLocalRef(RelDataType type, int i) {
+    type = SqlTypeUtil.addCharsetAndCollation(type, typeFactory);
+    return new RexLocalRef(i, type);
+  }
+
+  /**
+   * Creates a literal representing a flag.
+   *
+   * @param flag Flag value
+   */
+  public RexLiteral makeFlag(Enum flag) {
+    assert flag != null;
+    return makeLiteral(flag,
+        typeFactory.createSqlType(SqlTypeName.SYMBOL),
+        SqlTypeName.SYMBOL);
+  }
+
+  /**
+   * Internal method to create a call to a literal. Code outside this package
+   * should call one of the type-specific methods such as
+   * {@link #makeDateLiteral(DateString)}, {@link #makeLiteral(boolean)},
+   * {@link #makeLiteral(String)}.
+   *
+   * @param o        Value of literal, must be appropriate for the type
+   * @param type     Type of literal
+   * @param typeName SQL type of literal
+   * @return Literal
+   */
+  protected RexLiteral makeLiteral(
+      Comparable o,
+      RelDataType type,
+      SqlTypeName typeName) {
+    // All literals except NULL have NOT NULL types.
+    type = typeFactory.createTypeWithNullability(type, o == null);
+    int p;
+    switch (typeName) {
+    case CHAR:
+      // Character literals must have a charset and collation. Populate
+      // from the type if necessary.
+      assert o instanceof NlsString;
+      NlsString nlsString = (NlsString) o;
+      if (nlsString.getCollation() == null
+          || nlsString.getCharset() == null
+          || !nlsString.getCharset().equals(type.getCharset())
+          || !nlsString.getCollation().equals(type.getCollation())) {
+        assert type.getSqlTypeName() == SqlTypeName.CHAR
+            || type.getSqlTypeName() == SqlTypeName.VARCHAR;
+        assert type.getCollation() != null;
+        o = new NlsString(
+            nlsString.getValue(),
+            type.getCharset().name(),
+            type.getCollation());
+      }
+      break;
+    case TIME:
+      assert o instanceof TimeString;
+      p = type.getPrecision();
+      if (p == RelDataType.PRECISION_NOT_SPECIFIED) {
+        p = 0;
+      }
+      o = ((TimeString) o).round(p);
+      break;
+    case TIME_WITH_LOCAL_TIME_ZONE:
+      assert o instanceof TimeString;
+      p = type.getPrecision();
+      if (p == RelDataType.PRECISION_NOT_SPECIFIED) {
+        p = 0;
+      }
+      o = ((TimeString) o).round(p);
+      break;
+    case TIMESTAMP:
+      assert o instanceof TimestampString;
+      p = type.getPrecision();
+      if (p == RelDataType.PRECISION_NOT_SPECIFIED) {
+        p = 0;
+      }
+      o = ((TimestampString) o).round(p);
+      break;
+    case TIMESTAMP_WITH_LOCAL_TIME_ZONE:
+      assert o instanceof TimestampString;
+      p = type.getPrecision();
+      if (p == RelDataType.PRECISION_NOT_SPECIFIED) {
+        p = 0;
+      }
+      o = ((TimestampString) o).round(p);
+    }
+    return new RexLiteral(o, type, typeName);
+  }
+
+  /**
+   * Creates a boolean literal.
+   */
+  public RexLiteral makeLiteral(boolean b) {
+    return b ? booleanTrue : booleanFalse;
+  }
+
+  public RexLiteral makeUuidLiteral(String uuidStr) {
+    // Validate the provided string using java.util.UUID
+    UUID ignored = UUID.fromString(uuidStr);
+    return new RexLiteral(uuidStr, typeFactory.createSqlType(SqlTypeName.UUID), SqlTypeName.UUID);
   }
 
   /**
@@ -1168,7 +1472,12 @@ public class RexBuilder {
       return makeLiteral(value, guessType(value), allowCast);
 =======
     case UUID:
-      return makeUuidLiteral((UUID) value);
+      if (value instanceof String) {
+        return makeUuidLiteral((String) value);
+      } else {
+        throw new IllegalArgumentException(
+            "Cannot create UUID literal, value must be of String type, got: " + value.getClass());
+      }
     default:
       throw new IllegalArgumentException(
               "Cannot create literal for type '" + sqlTypeName + "'");
@@ -1278,7 +1587,12 @@ public class RexBuilder {
         return literal;
       }
     case UUID:
-      literal = makeUuidLiteral((UUID) value);
+      if (value instanceof String) {
+        literal = makeUuidLiteral((String) value);
+      } else {
+        throw new IllegalArgumentException(
+            "Cannot create UUID literal, value must be of String type, got: " + value.getClass());
+      }
       if (allowCast) {
         return makeCast(type, literal);
       } else {

@@ -147,9 +147,10 @@ public final class SqlParserUtil {
   }
 
   public static SqlUuidLiteral parseUuidLiteral(String s, SqlParserPos pos) {
-    final String uuidStr = parseString(s);
-    UUID uuid = UUID.fromString(uuidStr);
-    return SqlLiteral.createUuid(uuid, pos);
+    final String rawString = parseString(s);
+    // Validate the parsed string using java.util.UUID
+    UUID uuid = UUID.fromString(rawString);
+    return SqlLiteral.createUuid(uuid.toString(), pos);
   }
 
   public static SqlDateLiteral parseDateLiteral(String s, SqlParserPos pos) {

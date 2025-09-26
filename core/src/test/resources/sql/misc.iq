@@ -104,6 +104,9 @@ SELECT CAST(NULL AS UUID);
 # !error
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c25d56fe6 (DX-108641: Fix UUID literal comparisons to be compliant with RFC 4122 (#184))
 # Test RFC 4122 compliant UUID ordering - all comparisons in one statement
 SELECT
   UUID '00000000-0000-0000-0000-000000000000' < UUID '10000000-0000-0000-0000-000000000000' AS "0<1",
@@ -132,8 +135,11 @@ SELECT
 
 !ok
 
+<<<<<<< HEAD
 =======
 >>>>>>> 765ef60c0 (Introduce UUID type from upstream (#134))
+=======
+>>>>>>> c25d56fe6 (DX-108641: Fix UUID literal comparisons to be compliant with RFC 4122 (#184))
 # [CALCITE-356] Allow column references of the form schema.table.column
 select "hr"."emps"."empid"
 from "hr"."emps";

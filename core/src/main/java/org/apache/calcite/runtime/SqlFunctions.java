@@ -151,18 +151,25 @@ public class SqlFunctions {
   private SqlFunctions() {
   }
 
-  public static String uuidToString(UUID uuid) {
+  public static String validateUuidString(String uuidString) {
+    UUID uuid = UUID.fromString(uuidString);
     return uuid.toString();
   }
 
-  public static UUID binaryToUuid(ByteString bytes) {
-    return Conversion.byteArrayToUuid(bytes.getBytes(), 0);
+  public static String binaryToUuidString(ByteString bytes) {
+    UUID uuid = Conversion.byteArrayToUuid(bytes.getBytes(), 0);
+    return uuid.toString();
   }
 
   public static ByteString uuidToBinary(UUID uuid) {
     byte[] dest = new byte[16];
     Conversion.uuidToByteArray(uuid, dest, 0, 16);
     return new ByteString(dest);
+  }
+
+  public static ByteString uuidStringToBinary(String uuidString) {
+    UUID uuid = UUID.fromString(uuidString);
+    return uuidToBinary(uuid);
   }
 
   /** SQL TO_BASE64(string) function. */
