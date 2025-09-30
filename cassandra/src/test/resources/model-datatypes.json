@@ -27,6 +27,7 @@
         "port": 9142,
         "keyspace": "dtcassandra"
       }
+<<<<<<< HEAD
 <<<<<<<< HEAD:cassandra/src/test/resources/model-datatypes.json
 ========
     },
@@ -69,6 +70,8 @@
         }
       ]
 >>>>>>>> d1b71bea5 ([CALCITE-2345] Running Unit tests with Fongo and integration tests with real mongo instance (Andrei Sereda)):mongodb/src/test/resources/mongo-model.json
+=======
+>>>>>>> 8155b282a ([CALCITE-3465] Add support for missing Cassandra 3.x data types (Ales… (#102))
     }
   ]
 }

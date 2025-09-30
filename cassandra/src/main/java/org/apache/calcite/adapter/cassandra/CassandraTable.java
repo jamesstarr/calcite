@@ -117,10 +117,9 @@ public class CassandraTable extends AbstractQueryableTable
     final RelDataType rowType = getRowType(typeFactory);
 
     Function1<String, Void> addField = fieldName -> {
-      SqlTypeName typeName =
-          rowType.getField(fieldName, true, false).getType().getSqlTypeName();
-      fieldInfo.add(fieldName, typeFactory.createSqlType(typeName))
-          .nullable(true);
+      RelDataType relDataType =
+          rowType.getField(fieldName, true, false).getType();
+      fieldInfo.add(fieldName, relDataType).nullable(true);
       return null;
     };
 

@@ -19,7 +19,7 @@ package org.apache.calcite.adapter.cassandra;
 import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.rel.RelFieldCollation;
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeImpl;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
@@ -51,6 +51,7 @@ import com.datastax.driver.core.KeyspaceMetadata;
 import com.datastax.driver.core.MaterializedViewMetadata;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.TableMetadata;
+import com.datastax.driver.core.TupleType;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
