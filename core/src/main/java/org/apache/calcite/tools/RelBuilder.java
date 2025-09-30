@@ -2187,10 +2187,10 @@ public class RelBuilder {
 
     RelNode iterative = tableSpool(Spool.Type.LAZY, Spool.Type.LAZY, finder.relOptTable).build();
     RelNode seed = tableSpool(Spool.Type.LAZY, Spool.Type.LAZY, finder.relOptTable).build();
-    RelNode repUnion =
+    RelNode repeatUnion =
         struct.repeatUnionFactory.createRepeatUnion(seed, iterative, all,
             iterationLimit);
-    return push(repUnion);
+    return push(repeatUnion);
   }
 
   /**
