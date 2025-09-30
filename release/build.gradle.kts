@@ -210,6 +210,7 @@ fun CrLfSpec.sourceLayout() = copySpec {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 for (archive in listOf(Tar::class)) {
     val taskName = "dist${archive.simpleName}"
     val archiveTask = tasks.register(taskName, archive) {
@@ -220,6 +221,12 @@ for (archive in listOf(Zip::class, Tar::class)) {
     val archiveTask = tasks.register(taskName, archive) {
         val eol = if (archive == Tar::class) LineEndings.LF else LineEndings.CRLF
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+for (archive in listOf(Tar::class)) {
+    val taskName = "dist${archive.simpleName}"
+    val archiveTask = tasks.register(taskName, archive) {
+        val eol = LineEndings.LF
+>>>>>>> 806f38e30 (DX-104904 Cherry-pick Stop building zip archives when building using gradle (#203))
         group = distributionGroup
         description = "Creates source distribution with $eol line endings for text files"
         if (this is Tar) {
