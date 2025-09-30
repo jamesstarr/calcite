@@ -278,13 +278,13 @@ public class RelDecorrelator implements ReflectiveVisitor {
       // has been rewritten; apply rules post-decorrelation
       final HepProgram program2 = HepProgram.builder()
           .addRuleInstance(
-              new FilterJoinRule.FilterIntoJoinRule(
-                  true, f,
-                  FilterJoinRule.TRUE_PREDICATE))
+              CoreRules.FILTER_INTO_JOIN.config
+                  .withRelBuilderFactory(f)
+                  .toRule())
           .addRuleInstance(
-              new FilterJoinRule.JoinConditionPushRule(
-                  f,
-                  FilterJoinRule.TRUE_PREDICATE))
+              CoreRules.JOIN_CONDITION_PUSH.config
+                  .withRelBuilderFactory(f)
+                  .toRule())
           .build();
 
       final HepPlanner planner2 = createPlanner(program2);
