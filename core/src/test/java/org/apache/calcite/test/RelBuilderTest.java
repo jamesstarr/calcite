@@ -3333,4 +3333,18 @@ public class RelBuilderTest {
       }
     };
   }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3747">[CALCITE-3747]
+   * Constructing BETWEEN with RelBuilder throws class cast exception</a>. */
+  @Test public void testCallBetweenOperator() {
+    final RelBuilder builder = RelBuilder.create(config().build());
+    final RexNode call = builder.scan("EMP")
+        .call(
+            SqlStdOperatorTable.BETWEEN,
+            builder.field("EMPNO"),
+            builder.literal(1),
+            builder.literal(5));
+    assertThat(call.toString(), is("BETWEEN ASYMMETRIC($0, 1, 5)"));
+  }
 }
