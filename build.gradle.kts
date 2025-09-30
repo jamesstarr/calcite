@@ -49,9 +49,11 @@ import com.github.vlsi.gradle.git.FindGitAttributes
 import com.github.vlsi.gradle.git.dsl.gitignore
 import com.github.vlsi.gradle.properties.dsl.lastEditYear
 import com.github.vlsi.gradle.properties.dsl.props
-import com.github.vlsi.gradle.properties.dsl.stringProperty
 import com.github.vlsi.gradle.release.RepositoryType
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dfef275a5 (DX-104182 Cherry-pick Color test results in Gradle output (#195))
 import com.github.vlsi.gradle.test.dsl.printTestResults
 import de.thetaphi.forbiddenapis.gradle.CheckForbiddenApis
 import de.thetaphi.forbiddenapis.gradle.CheckForbiddenApisExtension
@@ -125,6 +127,7 @@ val includeTestTags by props("!org.apache.calcite.test.SlowTests")
 val useGpgCmd by props()
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 // Inherited from gradle-extensions-plugin: slowSuiteLogThreshold=0L, slowTestLogThreshold=2000L
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
@@ -132,6 +135,9 @@ val useGpgCmd by props()
 val slowSuiteLogThreshold = stringProperty("slowSuiteLogThreshold")?.toLong() ?: 0
 val slowTestLogThreshold = stringProperty("slowTestLogThreshold")?.toLong() ?: 2000
 >>>>>>> ceb53f5d8 ([CALCITE-2457] Druid: JUnit4 -> JUnit5)
+=======
+// Inherited from gradle-extensions-plugin: slowSuiteLogThreshold=0L, slowTestLogThreshold=2000L
+>>>>>>> dfef275a5 (DX-104182 Cherry-pick Color test results in Gradle output (#195))
 
 ide {
     copyrightToAsf()
@@ -1096,6 +1102,7 @@ allprojects {
                     }
                 }
 <<<<<<< HEAD
+<<<<<<< HEAD
                 printTestResults()
             }
             configureEach<SpotBugsTask> {
@@ -1148,6 +1155,9 @@ allprojects {
                     }
                 }))
 >>>>>>> ceb53f5d8 ([CALCITE-2457] Druid: JUnit4 -> JUnit5)
+=======
+                printTestResults()
+>>>>>>> dfef275a5 (DX-104182 Cherry-pick Color test results in Gradle output (#195))
             }
             withType<SpotBugsTask>().configureEach {
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
