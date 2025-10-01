@@ -1086,7 +1086,7 @@ public class Linq4jTest {
         s);
   }
 
-  @Test void cartesianProductWithReset() {
+  @Test public void cartesianProductWithReset() {
     Enumerator<List<Integer>> product =
         Linq4j.product(
             Arrays.asList(
@@ -1118,7 +1118,7 @@ public class Linq4jTest {
     return result;
   }
 
-  @Test void testJoinCartesianProduct() {
+  @Test public void testJoinCartesianProduct() {
     int n =
         Linq4j.asEnumerable(emps)
             .<Department, Integer, Integer>hashJoin(
