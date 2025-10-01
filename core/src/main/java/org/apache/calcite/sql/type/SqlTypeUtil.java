@@ -862,7 +862,8 @@ public abstract class SqlTypeUtil {
     final SqlTypeName fromTypeName = fromType.getSqlTypeName();
     final SqlTypeName toTypeName = toType.getSqlTypeName();
     if (toType.getSqlTypeName() == SqlTypeName.UUID) {
-      return fromType.getSqlTypeName() == SqlTypeName.UUID
+      return fromType.getSqlTypeName() == SqlTypeName.NULL
+          || fromType.getSqlTypeName() == SqlTypeName.UUID
           || fromType.getFamily() == SqlTypeFamily.CHARACTER
           || fromType.getFamily() == SqlTypeFamily.BINARY;
     }

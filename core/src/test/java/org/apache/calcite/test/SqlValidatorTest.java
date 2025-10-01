@@ -685,6 +685,11 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     expr("_UTF16'a'||_UTF16'b'||_UTF16'c'").ok();
   }
 
+  @Test public void testUuidCasts() {
+    // Test case for [CALCITE-7158] NULL cannot be cast to UUID
+    sql("SELECT UUID '123e4567-e89b-12d3-a456-426655440000' UNION SELECT NULL").ok();
+  }
+
   @Test public void testConcatWithCharset() {
     sql("_UTF16'a'||_UTF16'b'||_UTF16'c'")
         .charset(Charset.forName("UTF-16LE"));
