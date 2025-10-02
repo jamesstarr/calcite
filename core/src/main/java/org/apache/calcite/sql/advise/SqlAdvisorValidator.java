@@ -27,7 +27,7 @@ import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.sql.validate.OverScope;
->>>>>>> e62a96083 ([CALCITE-3900] Add Config for SqlValidator)
+import org.apache.calcite.sql.validate.SelectScope;
 import org.apache.calcite.sql.validate.SqlModality;
 import org.apache.calcite.sql.validate.SqlValidatorCatalogReader;
 import org.apache.calcite.sql.validate.SqlValidatorImpl;
@@ -110,12 +110,14 @@ public class SqlAdvisorValidator extends SqlValidatorImpl {
     return expr;
   }
 
-<<<<<<< HEAD
+>>>>>>> 2faec311b ([CALCITE-3387] Query with GROUP BY and JOIN ... USING wrongly fails w… (#210))
   public SqlNode expandSelectExpr(SqlNode expr, SelectScope scope, SqlSelect select) {
     // Disable expansion. It doesn't help us come up with better hints.
     return expr;
   }
 
+<<<<<<< HEAD
+=======
 =======
   public SqlNode expandOrderExpr(SqlSelect select, SqlNode orderExpr) {
     // Disable expansion. It doesn't help us come up with better hints.

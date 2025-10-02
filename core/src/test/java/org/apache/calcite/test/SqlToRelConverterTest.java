@@ -283,7 +283,7 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3387">[CALCITE-3387]
    * Query with GROUP BY and JOIN ... USING wrongly fails with
    * "Column 'DEPTNO' is ambiguous"</a>. */
-  @Test void testJoinUsingWithUnqualifiedCommonColumn() {
+  @Test public void testJoinUsingWithUnqualifiedCommonColumn() {
     final String sql = "SELECT deptno, name\n"
         + "FROM emp JOIN dept using (deptno)";
     sql(sql).ok();
@@ -291,7 +291,7 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
 
   /** Similar to {@link #testJoinUsingWithUnqualifiedCommonColumn()},
    * but with nested common column. */
-  @Test void testJoinUsingWithUnqualifiedNestedCommonColumn() {
+  @Test public void testJoinUsingWithUnqualifiedNestedCommonColumn() {
     final String sql =
         "select (coord).x from\n"
             + "customer.contact_peek t1\n"
@@ -302,7 +302,7 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
 
   /** Similar to {@link #testJoinUsingWithUnqualifiedCommonColumn()},
    * but with aggregate. */
-  @Test void testJoinUsingWithAggregate() {
+  @Test public void testJoinUsingWithAggregate() {
     final String sql = "select deptno, count(*)\n"
         + "from emp\n"
         + "full join dept using (deptno)\n"
@@ -312,7 +312,7 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
 
   /** Similar to {@link #testJoinUsingWithUnqualifiedCommonColumn()},
    * but with grouping sets. */
-  @Test void testJoinUsingWithGroupingSets() {
+  @Test public void testJoinUsingWithGroupingSets() {
     final String sql = "select deptno, grouping(deptno),\n"
         + "grouping(deptno, job), count(*)\n"
         + "from emp\n"
@@ -323,7 +323,7 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
 
   /** Similar to {@link #testJoinUsingWithUnqualifiedCommonColumn()},
    * but with multiple join. */
-  @Test void testJoinUsingWithMultipleJoin() {
+  @Test public void testJoinUsingWithMultipleJoin() {
     final String sql = "SELECT deptno, ename\n"
         + "FROM emp "
         + "JOIN dept using (deptno)\n"
@@ -331,7 +331,7 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
-  @Test void testJoinWithUnion() {
+  @Test public void testJoinWithUnion() {
     final String sql = "select grade\n"
         + "from (select empno from emp union select deptno from dept),\n"
         + "  salgrade";

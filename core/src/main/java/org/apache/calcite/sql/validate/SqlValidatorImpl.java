@@ -466,7 +466,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     // Expand the select item: fully-qualify columns, and convert
     // parentheses-free functions such as LOCALTIME into explicit function
     // calls.
-    SqlNode expanded = expandWithAlias(selectItem, scope, select);
+    SqlNode expanded = expandSelectExpr(selectItem, scope, select);
     final String alias =
         deriveAlias(
             selectItem,
@@ -550,79 +550,13 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     }
   }
 
-  /** Returns the set of field names in the join condition specified by USING
-   * or implicitly by NATURAL, de-duplicated and in order. */
-  public List<String> usingNames(SqlJoin join) {
-    switch (join.getConditionType()) {
-    case USING:
-      final ImmutableList.Builder<String> list = ImmutableList.builder();
-      final Set<String> names = catalogReader.nameMatcher().createSet();
-      for (SqlNode node : (SqlNodeList) join.getCondition()) {
-        final String name = ((SqlIdentifier) node).getSimple();
-        if (names.add(name)) {
-          list.add(name);
-        }
-      }
-      return list.build();
-    case NONE:
-      if (join.isNatural()) {
-        final RelDataType t0 = getValidatedNodeType(join.getLeft());
-        final RelDataType t1 = getValidatedNodeType(join.getRight());
-        return SqlValidatorUtil.deriveNaturalJoinColumnList(
-            catalogReader.nameMatcher(), t0, t1);
-      }
-    }
-    return null;
-  }
-
   private static SqlNode expandCommonColumn(SqlSelect sqlSelect,
-      SqlNode selectItem, SelectScope scope, SqlValidatorImpl validator) {
+      SqlNode selectItem, SelectScope scope) {
     if (!(selectItem instanceof SqlIdentifier)) {
       return selectItem;
     }
 
-    final SqlNode from = sqlSelect.getFrom();
-    if (from == null || !(from instanceof SqlJoin)) {
-      return selectItem;
-    }
-
-    final SqlIdentifier identifier = (SqlIdentifier) selectItem;
-    final SqlConformance conformance = validator.getConformance();
-    if (!identifier.isSimple()) {
-      if (!conformance.allowQualifyingCommonColumn()) {
-        validateQualifiedCommonColumn((SqlJoin) from, identifier, scope, validator);
-      }
-      return selectItem;
-    }
-
     return expandExprFromJoin((SqlJoin) from, identifier, scope);
-  }
-
-  private static void validateQualifiedCommonColumn(SqlJoin join,
-      SqlIdentifier identifier, SelectScope scope, SqlValidatorImpl validator) {
-    List<String> names = validator.usingNames(join);
-    if (names == null) {
-      // Not USING or NATURAL.
-      return;
-    }
-
-    // First we should make sure that the first component is the table name.
-    // Then check whether the qualified identifier contains common column.
-    for (ScopeChild child : scope.children) {
-      if (child.name.equals(identifier.getComponent(0).toString())) {
-        if (names.indexOf(identifier.getComponent(1).toString()) >= 0) {
-          throw validator.newValidationError(identifier,
-              RESOURCE.disallowsQualifyingCommonColumn(identifier.toString()));
-        }
-      }
-    }
-
-    // Only need to try to validate the expr from the left input of join
-    // since it is always left-deep join.
-    final SqlNode node = join.getLeft();
-    if (node instanceof SqlJoin) {
-      validateQualifiedCommonColumn((SqlJoin) node, identifier, scope, validator);
-    }
   }
 
   private boolean expandStar(List<SqlNode> selectItems, Set<String> aliases,
@@ -3774,7 +3708,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       checkRollUpInWindow(getWindowInOver(current), scope);
       current = stripOver(current);
 
-      List<SqlNode> children = ((SqlCall) stripDot(current)).getOperandList();
+      List<SqlNode> children = ((SqlCall) stripAs(stripDot(current))).getOperandList();
       for (SqlNode child : children) {
         checkRollUp(parent, current, child, scope, optionalClause);
       }
@@ -5951,6 +5885,16 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     assert feature.getProperties().get("FeatureDefinition") != null;
   }
 
+  public SqlNode expandSelectExpr(SqlNode expr,
+      SelectScope scope, SqlSelect select) {
+    final Expander expander = new SelectExpander(this, scope, select);
+    final SqlNode newExpr = expr.accept(expander);
+    if (expr != newExpr) {
+      setOriginal(newExpr, expr);
+    }
+    return newExpr;
+  }
+
   public SqlNode expand(SqlNode expr, SqlValidatorScope scope) {
     final Expander expander = new Expander(this, scope);
     SqlNode newExpr = expr.accept(expander);
@@ -5980,6 +5924,9 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
   //overridden in Dremio because we need to handle nested types there
   public SqlNode expandWithAlias(SqlNode expr,
       SqlValidatorScope scope, SqlSelect select) {
+    if (scope instanceof SelectScope) {
+      return expandSelectExpr(expr, (SelectScope) scope, select);
+    }
     return expand(expr, scope);
   }
 
@@ -6525,6 +6472,30 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
 
 
   /**
+   * Converts an expression into canonical form by fully-qualifying any
+   * identifiers. For common columns in USING, it will be converted to
+   * COALESCE(A.col, B.col) AS col.
+   */
+  static class SelectExpander extends Expander {
+    final SqlSelect select;
+
+    SelectExpander(SqlValidatorImpl validator, SelectScope scope,
+        SqlSelect select) {
+      super(validator, scope);
+      this.select = select;
+    }
+
+    @Override public SqlNode visit(SqlIdentifier id) {
+      final SqlNode node = expandCommonColumn(select, id, (SelectScope) getScope());
+      if (node != id) {
+        return node;
+      } else {
+        return super.visit(id);
+      }
+    }
+  }
+
+  /**
    * Shuttle which walks over an expression in the GROUP BY/HAVING clause, replacing
    * usages of aliases or ordinals with the underlying expression.
    */
@@ -6610,7 +6581,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       }
       if (id.isSimple()) {
         final SelectScope scope = validator.getRawSelectScope(select);
-        SqlNode node = expandCommonColumn(select, id, scope, validator);
+        SqlNode node = expandCommonColumn(select, id, scope);
         if (node != id) {
           return node;
         }
