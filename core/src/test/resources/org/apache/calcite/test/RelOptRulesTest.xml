@@ -13219,4 +13219,196 @@ LogicalProject(**=[$1])
 ]]>
         </Resource>
     </TestCase>
+    <TestCase name="testMultiJoinOptimizeBushySimple">
+        <Resource name="sql">
+            <![CDATA[select e1.ename from emp e1, dept d, emp e2
+where e1.deptno = d.deptno and d.deptno = e2.deptno]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(ENAME=[$1])
+  MultiJoin(joinFilter=[OR(=($7, $9), =($9, $18))], isFullOuterJoin=[false], joinTypes=[[INNER, INNER, INNER]], outerJoinConditions=[[NULL, NULL, NULL]], projFields=[[ALL, ALL, ALL]])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], DEPTNO00=[$18], NAME=[$19], EMPNO0=[$9], ENAME0=[$10], JOB0=[$11], MGR0=[$12], HIREDATE0=[$13], SAL0=[$14], COMM0=[$15], DEPTNO0=[$16], SLACKER0=[$17])
+    LogicalJoin(condition=[OR(=($7, $18), =($18, $16))], joinType=[inner])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalJoin(condition=[true], joinType=[inner])
+        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+        LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testMultiJoinOptimizeBushy4Tables">
+        <Resource name="sql">
+            <![CDATA[select e1.ename from emp e1, dept d, emp e2, emp e3
+where e1.deptno = d.deptno and d.deptno = e2.deptno
+and e2.empno = e3.empno]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(ENAME=[$1])
+  MultiJoin(joinFilter=[AND(OR(=($9, $18), =($11, $20)), =($7, $9))], isFullOuterJoin=[false], joinTypes=[[INNER, INNER, INNER, INNER]], outerJoinConditions=[[NULL, NULL, NULL, NULL]], projFields=[[ALL, ALL, ALL, ALL]])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalProject(EMPNO00=[$18], ENAME00=[$19], JOB00=[$20], MGR00=[$21], HIREDATE00=[$22], SAL00=[$23], COMM00=[$24], DEPTNO00=[$25], SLACKER00=[$26], DEPTNO000=[$27], NAME=[$28], EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8], EMPNO0=[$9], ENAME0=[$10], JOB0=[$11], MGR0=[$12], HIREDATE0=[$13], SAL0=[$14], COMM0=[$15], DEPTNO0=[$16], SLACKER0=[$17])
+    LogicalJoin(condition=[OR(=($27, $7), =($0, $9))], joinType=[inner])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalJoin(condition=[true], joinType=[inner])
+        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+        LogicalJoin(condition=[=($7, $9)], joinType=[inner])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+          LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testMultiJoinOptimizeBushyWithFilters">
+        <Resource name="sql">
+            <![CDATA[select e1.ename from emp e1, dept d, emp e2
+where e1.deptno = d.deptno and d.deptno = e2.deptno
+and e1.sal > 1000 and d.name = 'Sales']]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalFilter(condition=[AND(>($5, 1000), =($9, 'Sales'))])
+    MultiJoin(joinFilter=[AND(=($9, $18), =($7, $9))], isFullOuterJoin=[false], joinTypes=[[INNER, INNER, INNER]], outerJoinConditions=[[NULL, NULL, NULL]], projFields=[[ALL, ALL, ALL]])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], DEPTNO0=[$8], NAME=[$9], EMPNO0=[$10], ENAME0=[$11], JOB0=[$12], MGR0=[$13], HIREDATE0=[$14], SAL0=[$15], COMM0=[$16], DEPTNO1=[$17])
+    LogicalJoin(condition=[=($7, $17)], joinType=[inner])
+      LogicalJoin(condition=[=($7, $8)], joinType=[inner])
+        LogicalFilter(condition=[>($5, 1000)])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+        LogicalFilter(condition=[=($1, 'Sales')])
+          LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testMultiJoinOptimizeBushyMultipleConditions">
+        <Resource name="sql">
+            <![CDATA[select e1.ename from emp e1, emp e2
+where e1.deptno = e2.deptno and e1.job = e2.job]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(ENAME=[$1])
+  MultiJoin(joinFilter=[AND(=($7, $15), =($2, $10))], isFullOuterJoin=[false], joinTypes=[[INNER, INNER]], outerJoinConditions=[[NULL, NULL]], projFields=[[ALL, ALL]])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], EMPNO0=[$8], ENAME0=[$9], JOB0=[$10], MGR0=[$11], HIREDATE0=[$12], SAL0=[$13], COMM0=[$14], DEPTNO0=[$15])
+    LogicalJoin(condition=[AND(=($7, $15), =($2, $10))], joinType=[inner])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testMultiJoinOptimizeBushyCrossJoin">
+        <Resource name="sql">
+            <![CDATA[select e1.ename from emp e1, dept d
+cross join emp e2
+where e1.deptno = d.deptno]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(ENAME=[$1])
+  MultiJoin(joinFilter=[=($7, $8)], isFullOuterJoin=[false], joinTypes=[[INNER, INNER, INNER]], outerJoinConditions=[[NULL, NULL, NULL]], projFields=[[ALL, ALL, ALL]])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], DEPTNO0=[$8], NAME=[$9], EMPNO0=[$10], ENAME0=[$11], JOB0=[$12], MGR0=[$13], HIREDATE0=[$14], SAL0=[$15], COMM0=[$16], DEPTNO1=[$17])
+    LogicalJoin(condition=[true], joinType=[inner])
+      LogicalJoin(condition=[=($7, $8)], joinType=[inner])
+        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+        LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testMultiJoinOptimizeBushyIsNotDistinctFrom">
+        <Resource name="sql">
+            <![CDATA[select e1.ename from emp e1, dept d, emp e2
+where e1.deptno is not distinct from d.deptno
+and d.deptno is not distinct from e2.deptno]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(ENAME=[$1])
+  MultiJoin(joinFilter=[AND(IS NOT DISTINCT FROM($9, $18), IS NOT DISTINCT FROM($7, $9))], isFullOuterJoin=[false], joinTypes=[[INNER, INNER, INNER]], outerJoinConditions=[[NULL, NULL, NULL]], projFields=[[ALL, ALL, ALL]])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+    LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+    LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], DEPTNO0=[$8], NAME=[$9], EMPNO0=[$10], ENAME0=[$11], JOB0=[$12], MGR0=[$13], HIREDATE0=[$14], SAL0=[$15], COMM0=[$16], DEPTNO1=[$17])
+    LogicalJoin(condition=[IS NOT DISTINCT FROM($7, $17)], joinType=[inner])
+      LogicalJoin(condition=[IS NOT DISTINCT FROM($7, $8)], joinType=[inner])
+        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+        LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
+    <TestCase name="testMultiJoinOptimizeBushyThreeFactorCondition">
+        <Resource name="sql">
+            <![CDATA[select e1.ename from emp e1, dept d, emp e2
+where e1.deptno = d.deptno and d.deptno = e2.deptno
+and e1.sal + d.deptno = e2.sal]]>
+        </Resource>
+        <Resource name="planBefore">
+            <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalFilter(condition=[=(+($5, $8), $15)])
+    MultiJoin(joinFilter=[AND(=($9, $18), =($7, $9))], isFullOuterJoin=[false], joinTypes=[[INNER, INNER, INNER]], outerJoinConditions=[[NULL, NULL, NULL]], projFields=[[ALL, ALL, ALL]])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+      LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+LogicalProject(ENAME=[$1])
+  LogicalFilter(condition=[=(+($5, $8), $15)])
+    LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], DEPTNO0=[$8], NAME=[$9], EMPNO0=[$10], ENAME0=[$11], JOB0=[$12], MGR0=[$13], HIREDATE0=[$14], SAL0=[$15], COMM0=[$16], DEPTNO1=[$17])
+      LogicalJoin(condition=[=($7, $17)], joinType=[inner])
+        LogicalJoin(condition=[=($7, $8)], joinType=[inner])
+          LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+          LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+        </Resource>
+    </TestCase>
 </Root>

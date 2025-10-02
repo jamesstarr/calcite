@@ -7279,4 +7279,38 @@ public class RelOptRulesTest extends RelOptTestBase {
         .checkUnchanged();
   }
 
+  // Tests for MultiJoinOptimizeBushyRule
+  /** Test case for {@link MultiJoinOptimizeBushyRule} with a simple 3-table join. */
+  @Test public void testMultiJoinOptimizeBushySimple() {
+    HepProgram preProgram = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.FILTER_INTO_JOIN)
+        .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(CoreRules.JOIN_TO_MULTI_JOIN)
+        .build();
+    HepProgram program = new HepProgramBuilder()
+        .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(CoreRules.MULTI_JOIN_OPTIMIZE_BUSHY)
+        .build();
+    final String sql = "select e1.ename from emp e1, dept d, emp e2\n"
+        + "where e1.deptno = d.deptno or d.deptno = e2.deptno";
+    sql(sql).withPre(preProgram).with(program).check();
+  }
+
+  /** Test case for {@link MultiJoinOptimizeBushyRule} with a 4-table join. */
+  @Test public void testMultiJoinOptimizeBushy4Tables() {
+    HepProgram preProgram = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.FILTER_INTO_JOIN)
+        .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(CoreRules.JOIN_TO_MULTI_JOIN)
+        .build();
+    HepProgram program = new HepProgramBuilder()
+        .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(CoreRules.MULTI_JOIN_OPTIMIZE_BUSHY)
+        .build();
+    final String sql = "select e1.ename from emp e1, dept d, emp e2, emp e3\n"
+        + "where e1.deptno = d.deptno and (d.deptno = e2.deptno\n"
+        + "or e2.empno = e3.empno)";
+    sql(sql).withPre(preProgram).with(program).check();
+  }
+
 }
