@@ -683,12 +683,6 @@ public class RexBuilder {
     final BigDecimal divider = endUnit.multiplier;
     RexNode value = multiplyDivide(decodeIntervalOrDecimal(exp),
         multiplier, divider);
-    if (scale > 0) {
-      RelDataType decimalType =
-          typeFactory.createSqlType(SqlTypeName.DECIMAL,
-              scale + exp.getType().getPrecision(), scale);
-      value = encodeIntervalOrDecimal(value, decimalType, false);
-    }
     return ensureType(toType, value, false);
   }
 
@@ -944,13 +938,6 @@ public class RexBuilder {
       }
       break;
     case TIME:
-      assert o instanceof TimeString;
-      p = type.getPrecision();
-      if (p == RelDataType.PRECISION_NOT_SPECIFIED) {
-        p = 0;
-      }
-      o = ((TimeString) o).round(p);
-      break;
     case TIME_WITH_LOCAL_TIME_ZONE:
       assert o instanceof TimeString;
       p = type.getPrecision();
@@ -960,13 +947,6 @@ public class RexBuilder {
       o = ((TimeString) o).round(p);
       break;
     case TIMESTAMP:
-      assert o instanceof TimestampString;
-      p = type.getPrecision();
-      if (p == RelDataType.PRECISION_NOT_SPECIFIED) {
-        p = 0;
-      }
-      o = ((TimestampString) o).round(p);
-      break;
     case TIMESTAMP_WITH_LOCAL_TIME_ZONE:
       assert o instanceof TimestampString;
       p = type.getPrecision();
@@ -974,6 +954,7 @@ public class RexBuilder {
         p = 0;
       }
       o = ((TimestampString) o).round(p);
+      break;
     }
     return new RexLiteral(o, type, typeName);
   }
