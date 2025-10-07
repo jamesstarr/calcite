@@ -248,6 +248,138 @@ LogicalUnion(all=[false])
   LogicalProject(T2_VARCHAR20=[$0], T2_DECIMAL=[$6], T2_SMALLINT=[$1], T2_DOUBLE=[$5])
     LogicalTableScan(table=[[CATALOG, SALES, T2]])
 ]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testInsertUnionQuerySourceCoercion">
+    <Resource name="sql">
+      <![CDATA[insert into t1 select 'a', 1, 1.0, 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false union select 'b', 2, 2, 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false union select 'c', CAST(3 AS SMALLINT), 3.0, 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false union select 'd', 4, 4.0, 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false union select 'e', 5, 5.0, 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalTableModify(table=[[CATALOG, SALES, T1]], operation=[INSERT], flattened=[false])
+  LogicalUnion(all=[false])
+    LogicalUnion(all=[false])
+      LogicalUnion(all=[false])
+        LogicalUnion(all=[false])
+          LogicalProject(EXPR$0=['a'], EXPR$1=[1], EXPR$2=[1.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+            LogicalValues(tuples=[[{ 0 }]])
+          LogicalProject(EXPR$0=['b'], EXPR$1=[2], EXPR$2=[2], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+            LogicalValues(tuples=[[{ 0 }]])
+        LogicalProject(EXPR$0=['c'], EXPR$1=[3:SMALLINT], EXPR$2=[3.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+          LogicalValues(tuples=[[{ 0 }]])
+      LogicalProject(EXPR$0=['d'], EXPR$1=[4], EXPR$2=[4.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+        LogicalValues(tuples=[[{ 0 }]])
+    LogicalProject(EXPR$0=['e'], EXPR$1=[5], EXPR$2=[5.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+      LogicalValues(tuples=[[{ 0 }]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testInsertValuesQuerySourceCoercion">
+    <Resource name="sql">
+      <![CDATA[insert into t1 values ('a', 1, 1.0, 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false), ('b', 2,  2, 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false), ('c', CAST(3 AS SMALLINT),  3.0, 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false), ('d', 4, 4.0, 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false), ('e', 5, 5.0, 0, 0, 0, 0, TIMESTAMP '2021-11-28 00:00:00', date '2021-11-28', x'0A', false)]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalTableModify(table=[[CATALOG, SALES, T1]], operation=[INSERT], flattened=[false])
+  LogicalUnion(all=[true])
+    LogicalProject(EXPR$0=['a'], EXPR$1=[1], EXPR$2=[1.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+      LogicalValues(tuples=[[{ 0 }]])
+    LogicalProject(EXPR$0=['b'], EXPR$1=[2], EXPR$2=[2], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+      LogicalValues(tuples=[[{ 0 }]])
+    LogicalProject(EXPR$0=['c'], EXPR$1=[3:SMALLINT], EXPR$2=[3.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+      LogicalValues(tuples=[[{ 0 }]])
+    LogicalProject(EXPR$0=['d'], EXPR$1=[4], EXPR$2=[4.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+      LogicalValues(tuples=[[{ 0 }]])
+    LogicalProject(EXPR$0=['e'], EXPR$1=[5], EXPR$2=[5.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+      LogicalValues(tuples=[[{ 0 }]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testUpdateQuerySourceCoercion">
+    <Resource name="sql">
+      <![CDATA[update t1 set t1_varchar20=123, t1_date=TIMESTAMP '2020-01-03 10:14:34', t1_int=12.3]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalTableModify(table=[[CATALOG, SALES, T1]], operation=[UPDATE], updateColumnList=[[t1_varchar20, t1_date, t1_int]], sourceExpressionList=[[123, 2020-01-03 10:14:34, 12.3:DECIMAL(3, 1)]], flattened=[false])
+  LogicalProject(t1_varchar20=[$0], t1_smallint=[$1], t1_int=[$2], t1_bigint=[$3], t1_float=[$4], t1_double=[$5], t1_decimal=[$6], t1_timestamp=[$7], t1_date=[$8], t1_binary=[$9], t1_boolean=[$10], EXPR$0=[123], EXPR$1=[2020-01-03 10:14:34], EXPR$2=[12.3:DECIMAL(3, 1)])
+    LogicalTableScan(table=[[CATALOG, SALES, T1]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testCastNullAsIntUnionChar">
+    <Resource name="sql">
+      <![CDATA[select CAST(null AS INTEGER) union select '10']]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalUnion(all=[false])
+  LogicalProject(EXPR$0=[null:VARCHAR])
+    LogicalValues(tuples=[[{ 0 }]])
+  LogicalProject(EXPR$0=['10'])
+    LogicalValues(tuples=[[{ 0 }]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testInDateTimestamp">
+    <Resource name="sql">
+      <![CDATA[select (t1_timestamp, t1_date)
+in ((DATE '2020-04-16', TIMESTAMP '2020-04-16 11:40:53'))
+from t1]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalProject(EXPR$0=[AND(=($7, 2020-04-16 00:00:00), =(CAST($8):TIMESTAMP(0) NOT NULL, 2020-04-16 11:40:53))])
+  LogicalTableScan(table=[[CATALOG, SALES, T1]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testInsertQuerySourceCoercion">
+    <Resource name="sql">
+      <![CDATA[insert into t1 select t2_smallint, t2_int, t2_bigint, t2_float,
+t2_double, t2_decimal, t2_int, t2_date, t2_timestamp, t2_varchar20, t2_int from t2]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalTableModify(table=[[CATALOG, SALES, T1]], operation=[INSERT], flattened=[false])
+  LogicalProject(t1_varchar20=[CAST($1):VARCHAR(20) NOT NULL], t1_smallint=[CAST($2):SMALLINT NOT NULL], t1_int=[CAST($3):INTEGER NOT NULL], t1_bigint=[CAST($4):BIGINT NOT NULL], t1_float=[CAST($5):FLOAT NOT NULL], t1_double=[CAST($6):DOUBLE NOT NULL], t1_decimal=[CAST($2):DECIMAL(19, 0) NOT NULL], t1_timestamp=[CAST($8):TIMESTAMP(0) NOT NULL], t1_date=[CAST($7):DATE NOT NULL], t1_binary=[CAST($0):BINARY(1) NOT NULL], t1_boolean=[<>($2, 0)])
+    LogicalTableScan(table=[[CATALOG, SALES, T2]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testNotInOperation">
+    <Resource name="sql">
+      <![CDATA[select
+1 not in ('1', '2', '3') as f0,
+(1, 2) not in (('1', '2')) as f1,
+(1, 2) not in (('1', '2'), ('3', '4')) as f2
+from (values (false, false, false))]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+LogicalValues(tuples=[[{ false, false, false }]])
+]]>
+    </Resource>
+  </TestCase>
+  <TestCase name="testSetOperation">
+    <Resource name="sql">
+      <![CDATA[select t1_int, t1_decimal, t1_smallint, t1_double from t1 union select t2_varchar20, t2_decimal, t2_float, t2_bigint from t2 union select t1_varchar20, t1_decimal, t1_float, t1_double from t1 union select t2_varchar20, t2_decimal, t2_smallint, t2_double from t2]]>
+    </Resource>
+    <Resource name="plan">
+      <![CDATA[
+>>>>>>> 11c540686a4 ([CALCITE-5130] AssertionError: "Conversion to relational algebra failed to preserve datatypes" when union VARCHAR literal and CAST(null AS INTEGER))
+LogicalUnion(all=[false])
+  LogicalUnion(all=[false])
+    LogicalUnion(all=[false])
+      LogicalProject(T1_INT=[CAST($2):VARCHAR NOT NULL], T1_DECIMAL=[$6], T1_SMALLINT=[$1], T1_DOUBLE=[$5])
+        LogicalTableScan(table=[[CATALOG, SALES, T1]])
+      LogicalProject(T2_VARCHAR20=[$0], T2_DECIMAL=[$6], T2_FLOAT=[$4], T2_BIGINT=[$3])
+        LogicalTableScan(table=[[CATALOG, SALES, T2]])
+    LogicalProject(T1_VARCHAR20=[$0], T1_DECIMAL=[$6], T1_FLOAT=[$4], T1_DOUBLE=[$5])
+      LogicalTableScan(table=[[CATALOG, SALES, T1]])
+  LogicalProject(T2_VARCHAR20=[$0], T2_DECIMAL=[$6], T2_SMALLINT=[$1], T2_DOUBLE=[$5])
+    LogicalTableScan(table=[[CATALOG, SALES, T2]])
+]]>
         </Resource>
     </TestCase>
     <TestCase name="testCaseWhen">
