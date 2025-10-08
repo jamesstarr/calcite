@@ -308,12 +308,9 @@ public class MultiJoinOptimizeBushyRule
         return visit((Join) child, filter.getCondition());
       } else if (child instanceof Filter) {
         RelNode grandChild = ((Filter) child).getInput();
-        RelNode newChild = visit(relBuilder.push(grandChild)
-            .filter(filter.getCondition())
-            .build());
-        return relBuilder.push(newChild)
-            .filter(((Filter) child).getCondition())
-            .build();
+        RelNode newChild =
+            visit(filter.copy(filter.getTraitSet(), grandChild, filter.getCondition()));
+        return child.copy(child.getTraitSet(), List.of(newChild));
       } else if (child instanceof Project) {
         ImmutableBitSet inputFields = RelOptUtil.InputFinder.bits(filter.getCondition());
         List<RexNode> projectExprs = ((Project) child).getProjects();
@@ -352,14 +349,18 @@ public class MultiJoinOptimizeBushyRule
             .filter(RexUtil.composeConjunction(rexBuilder, rightFilters, false))
             .build());
       }
-      RelNode newJoin = join.copy(join.getTraitSet(), List.of(left, right));
+      RexNode joinCondition = join.getCondition();
       if (!joinFilters.isEmpty()) {
-        newJoin = relBuilder.push(left)
-            .push(right)
-            .join(join.getJoinType(),
-                RexUtil.composeConjunction(rexBuilder, joinFilters, false))
-            .build();
+        joinCondition = RexUtil.composeConjunction(rexBuilder, joinFilters, false);
       }
+      RelNode newJoin = join.copy(
+          join.getTraitSet(),
+          joinCondition,
+          left,
+          right,
+          join.getJoinType(),
+          join.isSemiJoinDone());
+
       if (topFilters.isEmpty()) {
         return newJoin;
       }
@@ -374,9 +375,7 @@ public class MultiJoinOptimizeBushyRule
           .filter(newCondition)
           .build());
 
-      return relBuilder.push(newChild)
-          .project(project.getProjects(), project.getRowType().getFieldNames())
-          .build();
+      return project.copy(project.getTraitSet(), List.of(newChild));
     }
   }
 
