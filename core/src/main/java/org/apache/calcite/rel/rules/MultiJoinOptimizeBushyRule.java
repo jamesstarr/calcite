@@ -21,6 +21,7 @@ import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
+import org.apache.calcite.plan.hep.HepRelVertex;
 import org.apache.calcite.rel.RelHomogeneousShuttle;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Filter;
@@ -382,6 +383,9 @@ public class MultiJoinOptimizeBushyRule
     }
 
     @Override public RelNode visit(RelNode other) {
+      if (other instanceof HepRelVertex) {
+        other = ((HepRelVertex) other).getCurrentRel();
+      }
       if (other instanceof Filter) {
         return visit((Filter) other);
       }
@@ -441,7 +445,7 @@ public class MultiJoinOptimizeBushyRule
             .filter(RexUtil.composeConjunction(rexBuilder, rightFilters, false))
             .build());
       }
-      RelNode newJoin = join;
+      RelNode newJoin = join.copy(join.getTraitSet(), List.of(left, right));
       if (!joinFilters.isEmpty()) {
         newJoin = relBuilder.push(left)
             .push(right)
