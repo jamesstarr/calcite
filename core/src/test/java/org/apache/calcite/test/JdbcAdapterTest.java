@@ -177,10 +177,10 @@ class JdbcAdapterTest {
             + "ON \"t\".\"DEPTNO\" = \"t0\".\"DEPTNO\"");
   }
 
-  @Test void testPushDownSort() {
+  @Test public void testPushDownSort() {
     CalciteAssert.model(JdbcTest.SCOTT_MODEL)
-        .query("select ename\n"
-            + "from scott.emp\n"
+        .query("select ename \n"
+            + "from scott.emp \n"
             + "order by empno")
         .explainContains("PLAN=JdbcToEnumerableConverter\n"
             + "  JdbcSort(sort0=[$1], dir0=[ASC])\n"
@@ -193,6 +193,7 @@ class JdbcAdapterTest {
             + "ORDER BY \"EMPNO\" NULLS LAST");
   }
 
+<<<<<<< HEAD
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3751">[CALCITE-3751]
    * JDBC adapter wrongly pushes ORDER BY into sub-query</a>. */
@@ -218,6 +219,8 @@ class JdbcAdapterTest {
         .planHasSql(sqlHsqldb);
   }
 
+=======
+>>>>>>> 44565c900 ([CALCITE-3621] Push down sort to DB, SQL of Sort rel contains explici… (#46))
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-631">[CALCITE-631]
    * Push theta joins down to JDBC adapter</a>. */
