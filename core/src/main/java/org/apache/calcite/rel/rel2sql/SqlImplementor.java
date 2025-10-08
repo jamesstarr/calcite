@@ -76,6 +76,7 @@ import org.apache.calcite.util.DateString;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.TimeString;
 import org.apache.calcite.util.TimestampString;
+import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -101,6 +102,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.IntFunction;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import static org.apache.calcite.linq4j.Nullness.castNonNull;
 
@@ -385,7 +387,7 @@ public abstract class SqlImplementor {
   /** Factory method for Result */
   public Result makeNewResult(SqlNode node, Collection<Clause> clauses, String neededAlias,
                               RelDataType neededType, Map<String, RelDataType> aliases) {
-    return new Result(node, clauses, neededAlias, neededType, aliases);
+    return new Result(node, clauses, neededAlias, neededType, aliases, isAnon());
   }
 
   /** Creates a result based on a single relational expression. */
@@ -406,7 +408,7 @@ public abstract class SqlImplementor {
         && !aliases.isEmpty()
         && (!dialect.hasImplicitTableAlias()
           || aliases.size() > 1)) {
-      return makeNewResult(node, clauses, alias4, rel.getRowType(), aliases);
+      return new Result(node, clauses, alias4, rowType, aliases);
     }
     final String alias5;
     if (alias2 == null
@@ -416,8 +418,25 @@ public abstract class SqlImplementor {
     } else {
       alias5 = null;
     }
-    return makeNewResult(node, clauses, alias5, rel.getRowType(),
-        ImmutableMap.of(alias4, rel.getRowType()));
+    return new Result(node, clauses, alias5, rowType,
+        ImmutableMap.of(alias4, rowType), isAnon());
+  }
+
+  /** Returns the row type of {@code rel}, adjusting the field names if
+   * {@code node} is "(query) as tableAlias (fieldAlias, ...)". */
+  private RelDataType adjustedRowType(RelNode rel, SqlNode node) {
+    final RelDataType rowType = rel.getRowType();
+    if (node.getKind() == SqlKind.AS) {
+      final List<SqlNode> operandList = ((SqlCall) node).getOperandList();
+      if (operandList.size() > 2) {
+        final RelDataTypeFactory.Builder builder = rel.getCluster().getTypeFactory().builder();
+        Pair.forEach(Util.skip(operandList, 2),
+            rowType.getFieldList(),
+            (operand, field) -> builder.add(operand.toString(), field.getType()));
+        return builder.build();
+      }
+    }
+    return rowType;
   }
 
   /** Creates a result based on a join. (Each join could contain one or more
@@ -428,7 +447,7 @@ public abstract class SqlImplementor {
     collectAliases(builder, join,
         Iterables.concat(leftResult.aliases.values(),
             rightResult.aliases.values()).iterator());
-    return makeNewResult(join, Expressions.list(Clause.FROM), null, null,
+    return new Result(join, Expressions.list(Clause.FROM), null, null,
         builder.build());
   }
 
@@ -712,7 +731,8 @@ public abstract class SqlImplementor {
       case SCALAR_QUERY:
         subQuery = (RexSubQuery) rex;
         sqlSubQuery =
-            implementor().visitChild(0, subQuery.rel).asQueryOrValues();
+            implementor().visitChild(0, subQuery.rel)
+                .asQueryOrValues();
         return subQuery.getOperator().createCall(POS, sqlSubQuery);
 
       case NOT:
@@ -1267,12 +1287,8 @@ public abstract class SqlImplementor {
     private final RelDataType neededType;
     private final Map<String, RelDataType> aliases;
     final Expressions.FluentList<Clause> clauses;
-    protected final SqlNode node;
-    protected final String neededAlias;
-    protected final RelDataType neededType;
-    protected final Map<String, RelDataType> aliases;
-    protected final Expressions.FluentList<Clause> clauses;
 =======
+    private final boolean anon;
 
     public Result(SqlNode node, Collection<Clause> clauses, String neededAlias,
         RelDataType neededType, Map<String, RelDataType> aliases) {
@@ -1312,7 +1328,6 @@ public abstract class SqlImplementor {
      */
     public Builder builder(RelNode rel, Clause... clauses) {
       final boolean needNew = needNewSubQuery(rel, clauses);
-
       SqlSelect select;
       Expressions.FluentList<Clause> clauseList = Expressions.list();
       if (needNew) {
@@ -1383,9 +1398,6 @@ public abstract class SqlImplementor {
           needNew ? null : aliases);
     }
 
-<<<<<<< HEAD
-=======
-=======
     /** Returns whether a new sub-query is required. */
     private boolean needNewSubQuery(RelNode rel, Clause[] clauses) {
       final Clause maxClause = maxClause();
@@ -1589,7 +1601,7 @@ public abstract class SqlImplementor {
       if (neededAlias == null) {
         return this;
       } else {
-        return makeNewResult(node, clauses, neededAlias, neededType,
+        return new Result(node, clauses, neededAlias, neededType,
             ImmutableMap.of(neededAlias, neededType));
       }
     }
@@ -1605,13 +1617,18 @@ public abstract class SqlImplementor {
           ImmutableMap.of(alias, type));
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
 
     /** Returns a copy of this Result, overriding the value of {@code anon}. */
     Result withAnon(boolean anon) {
       return anon == this.anon ? this
           : new Result(node, clauses, neededAlias, neededType, aliases, anon);
     }
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> a94ab7e4f ([CALCITE-3751] JDBC adapter generates SQL with wrong aliases in GROUP… (#220))
   }
 
   /** Builder. */
@@ -1620,7 +1637,8 @@ public abstract class SqlImplementor {
     protected final List<Clause> clauses;
     protected final SqlSelect select;
     public final Context context;
-    protected final Map<String, RelDataType> aliases;
+    final boolean anon;
+    private final Map<String, RelDataType> aliases;
 
     public Builder(RelNode rel, List<Clause> clauses, SqlSelect select,
         Context context, boolean anon,

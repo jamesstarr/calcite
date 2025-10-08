@@ -17,7 +17,7 @@
 package org.apache.calcite.rel.rel2sql;
 
 import org.apache.calcite.adapter.jdbc.JdbcTable;
->>>>>>> 0a6ba20d6 ([CALCITE-2914] Add a new statistic provider, to improve how LatticeSuggester deduces foreign keys)
+import org.apache.calcite.linq4j.Ord;
 import org.apache.calcite.linq4j.tree.Expressions;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelCollations;
@@ -99,6 +99,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
@@ -904,9 +905,6 @@ public class RelToSqlConverter extends SqlImplementor
     return result(matchRecognize, Expressions.list(Clause.FROM), e, null);
   }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   private SqlCall as(SqlNode e, String alias) {
     return SqlStdOperatorTable.AS.createCall(POS, e,
         new SqlIdentifier(alias, POS));
@@ -953,6 +951,7 @@ public class RelToSqlConverter extends SqlImplementor
     result.add(leftOperand);
     result.add(new SqlIdentifier(alias, POS));
 <<<<<<< HEAD
+<<<<<<< HEAD
     Ord.forEach(rowType.getFieldNames(), (fieldName, i) -> {
       if (fieldName.toLowerCase(Locale.ROOT).startsWith("expr$")) {
         fieldName = "col_" + i;
@@ -972,9 +971,13 @@ public class RelToSqlConverter extends SqlImplementor
         ordinalMap.put(lowerName, sqlColumn);
       } else {
         sqlColumn = new SqlIdentifier(rowType.getFieldNames().get(i), POS);
+=======
+    Ord.forEach(rowType.getFieldNames(), (fieldName, i) -> {
+      if (fieldName.toLowerCase(Locale.ROOT).startsWith("expr$")) {
+        fieldName = "col_" + i;
       }
-      result.add(sqlColumn);
-    }
+      result.add(new SqlIdentifier(fieldName, POS));
+    });
     return result;
   }
 
