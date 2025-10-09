@@ -1555,7 +1555,8 @@ public class RexBuilder {
     value = clean(value, type);
     RexLiteral literal;
     final List<RexNode> operands;
-    switch (type.getSqlTypeName()) {
+    final SqlTypeName sqlTypeName = type.getSqlTypeName();
+    switch (sqlTypeName) {
     case CHAR:
       return makeCharLiteral(padRight((NlsString) value, type.getPrecision()));
     case VARCHAR:
@@ -1661,7 +1662,7 @@ public class RexBuilder {
         return makeCall(SqlStdOperatorTable.MULTISET_VALUE, operands);
       } else {
         return new RexLiteral((Comparable) FlatLists.of(operands), type,
-            type.getSqlTypeName());
+            sqlTypeName);
       }
     case ROW:
       operands = new ArrayList<>();
@@ -1674,11 +1675,12 @@ public class RexBuilder {
         operands.add(e);
       }
       return new RexLiteral((Comparable) FlatLists.of(operands), type,
-          type.getSqlTypeName());
+          sqlTypeName);
     case ANY:
       return makeLiteral(value, guessType(value), allowCast);
     default:
-      throw Util.unexpected(type.getSqlTypeName());
+      throw new IllegalArgumentException(
+          "Cannot create literal for type '" + sqlTypeName + "'");
     }
   }
 

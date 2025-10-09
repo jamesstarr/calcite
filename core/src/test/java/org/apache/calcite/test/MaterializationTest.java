@@ -1672,7 +1672,7 @@ public class MaterializationTest {
             + "from \"emps\" where \"deptno\" > 10 group by \"deptno\"")
         .withResultContains(
             "EnumerableCalc(expr#0..1=[{inputs}], expr#2=[1], expr#3=[+($t1, $t2)],"
-                + " deptno=[$t0], $f1=[$t3])\n"
+                + " deptno=[$t0], S=[$t3])\n"
                 + "  EnumerableAggregate(group=[{1}], agg#0=[$SUM0($3)])\n"
                 + "    EnumerableCalc(expr#0..3=[{inputs}], expr#4=[10], expr#5=[<($t4, $t1)], "
                 + "proj#0..3=[{exprs}], $condition=[$t5])\n"
@@ -1695,7 +1695,7 @@ public class MaterializationTest {
             + "from \"emps\" where \"deptno\" > 10 group by \"deptno\"")
         .withResultContains(
             "EnumerableCalc(expr#0..1=[{inputs}], expr#2=[1], expr#3=[+($t0, $t2)], "
-                + "expr#4=[+($t1, $t2)], $f0=[$t3], $f1=[$t4])\n"
+                + "expr#4=[+($t1, $t2)], EXPR$0=[$t3], S=[$t4])\n"
                 + "  EnumerableAggregate(group=[{1}], agg#0=[$SUM0($3)])\n"
                 + "    EnumerableCalc(expr#0..3=[{inputs}], expr#4=[10], expr#5=[<($t4, $t1)], "
                 + "proj#0..3=[{exprs}], $condition=[$t5])\n"
@@ -2455,7 +2455,7 @@ public class MaterializationTest {
             + "join \"dependents\" using (\"empid\")\n"
             + "where \"emps\".\"empid\" = 1")
         .withResultContains(
-            "EnumerableCalc(expr#0..1=[{inputs}], empid=[$t0])\n"
+            "EnumerableCalc(expr#0..1=[{inputs}], empid0=[$t0])\n"
                 + "  EnumerableTableScan(table=[[hr, m0]])")
         .ok();
   }
@@ -2471,7 +2471,7 @@ public class MaterializationTest {
             + "join \"dependents\" using (\"empid\")\n"
             + "where \"emps\".\"empid\" = 1")
         .withResultContains(
-            "EnumerableCalc(expr#0..1=[{inputs}], empid=[$t0])\n"
+            "EnumerableCalc(expr#0..1=[{inputs}], empid0=[$t0])\n"
                 + "  EnumerableTableScan(table=[[hr, m0]])")
         .ok();
   }

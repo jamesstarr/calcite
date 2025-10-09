@@ -2040,10 +2040,7 @@ public abstract class RelOptUtil {
       }
     }
 
-    // Change the below to enable constant-reduction.
-    if (false) {
-      registerReductionRules(planner);
-    }
+    planner.addRule(CoreRules.FILTER_REDUCE_EXPRESSIONS);
 
   }
 

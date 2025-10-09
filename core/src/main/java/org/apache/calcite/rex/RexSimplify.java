@@ -2242,10 +2242,11 @@ public class RexSimplify {
       this.literal = Objects.requireNonNull(literal);
     }
 
-    /** Creates a comparison, between a {@link RexInputRef} or {@link RexFieldAccess}
-     * and a literal. */
-    public static Comparison of(RexNode e) {
-      return of(e, node -> RexUtil.isReferenceOrAccess(node, true));
+    /** Creates a comparison, between a {@link RexInputRef} or {@link RexFieldAccess} or
+     * deterministic {@link RexCall} and a literal. */
+    static Comparison of(RexNode e) {
+      return of(e, node -> RexUtil.isReferenceOrAccess(node, true)
+          || RexUtil.isDeterministic(node));
     }
 
     /** Creates a comparison, or returns null. */
