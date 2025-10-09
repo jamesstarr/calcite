@@ -53,7 +53,11 @@ import org.apache.calcite.sql.SqlSpecialOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.ReturnTypes;
 import org.apache.calcite.sql.type.SqlOperandTypeChecker;
+<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 import org.apache.calcite.sql.type.SqlTypeAssignmentRule;
+=======
+import org.apache.calcite.sql.type.SqlTypeAssignmentRules;
+>>>>>>> 433697657 ([CALCITE-3525] RexSimplify: eliminate redundant rex calls in OR (#213)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.util.DateString;
@@ -872,26 +876,17 @@ public class RexProgramTest extends RexProgramBuilderBase {
 =======
 =======
   @Test public void testItemStrong() {
-    final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
-
     final ImmutableBitSet c0 = ImmutableBitSet.of(0);
-    final RelDataType intArray = typeFactory.createArrayType(intType, -1);
-    RexInputRef inputRef = rexBuilder.makeInputRef(intArray, 0);
+    RexNode item = item(input(tArray(tInt()), 0), literal(0));
 
-    RexNode rexNode = item(inputRef, literal(0));
+    assertThat(Strong.isStrong(item), is(true));
+    assertThat(Strong.isNull(item, c0), is(true));
 
-    assertThat(Strong.isStrong(rexNode), is(true));
+    RelDataType mapType = typeFactory.createMapType(tVarchar(), tVarchar());
+    item = item(input(mapType, 0), literal("abc"));
 
-    assertThat(Strong.isNull(rexNode, c0), is(true));
-
-    final RelDataType varcharType = typeFactory.createSqlType(SqlTypeName.VARCHAR);
-    final RelDataType mapType = typeFactory.createMapType(varcharType, varcharType);
-
-    inputRef = rexBuilder.makeInputRef(mapType, 0);
-    rexNode = item(inputRef, literal("abc"));
-    assertThat(Strong.isStrong(rexNode), is(true));
-
-    assertThat(Strong.isNull(rexNode, c0), is(true));
+    assertThat(Strong.isStrong(item), is(true));
+    assertThat(Strong.isNull(item, c0), is(true));
   }
 
 >>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
@@ -2556,6 +2551,20 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "AND(=(?0.b, 2), =(?0.a, 3))");
   }
 
+  @Test public void testSimplifyItemRangeTerms() {
+    RexNode item = item(input(tArray(tInt()), 3), literal(1));
+    // paranoid validation doesn't support array types, disable it for a moment
+    simplify = this.simplify.withParanoid(false);
+    // (a=1 or a=2 or (arr[1]>4 and arr[1]<3 and a=3)) => a=1 or a=2
+    checkSimplifyFilter(
+        or(
+          eq(vInt(), literal(1)),
+          eq(vInt(), literal(2)),
+          and(gt(item, literal(4)), lt(item, literal(3)), eq(vInt(), literal(3)))),
+        "OR(=(?0.int0, 1), =(?0.int0, 2))");
+    simplify = simplify.withParanoid(true);
+  }
+
   @Test public void testSimplifyNotAnd() {
     final RexNode e = or(
         le(
@@ -2684,17 +2693,19 @@ public class RexProgramTest extends RexProgramBuilderBase {
   @Test public void testConsistentTypeForSimpleFilter() {
     // Create a condition with TIMESTAMP input and CHAR literal
     final NlsString nlsString = new NlsString("2018-01-01 01:23:45", null, null);
-    RexNode condition = eq(
-        rexBuilder.makeInputRef(
-            typeFactory.createTypeWithNullability(
-                typeFactory.createSqlType(SqlTypeName.TIMESTAMP), true),
-            0), rexBuilder.makeCharLiteral(nlsString));
-    RexLiteral consistentTypeLiteral =
-        RexSimplify.Comparison.of(condition).getConsistentTypeLiteral(simplify);
+    RexNode timestampRef = rexBuilder.makeInputRef(
+        typeFactory.createTypeWithNullability(
+            typeFactory.createSqlType(SqlTypeName.TIMESTAMP), true),
+        0);
+    RexNode charLiteral = rexBuilder.makeCharLiteral(nlsString);
+    RexNode condition = eq(timestampRef, charLiteral);
 
-    // Get consistent type for condition and make sure new data type for the literal is TIMESTAMP
-    SqlTypeName consistentType = consistentTypeLiteral.getType().getSqlTypeName();
-    assertThat(consistentType, is(SqlTypeName.TIMESTAMP));
+    // Verify that consistent type would be TIMESTAMP (using public API)
+    List<RelDataType> types = RexUtil.types(Arrays.asList(timestampRef, charLiteral));
+    RelDataType consistentType = SqlTypeUtil.consistentType(typeFactory,
+        SqlOperandTypeChecker.Consistency.COMPARE, types);
+    assertThat("Consistent type should be TIMESTAMP",
+        consistentType.getSqlTypeName(), is(SqlTypeName.TIMESTAMP));
 
     // Run simplify for the condition
     RexCall result = (RexCall) simplify.simplify(condition);
@@ -2703,6 +2714,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
     RexNode literal = result.getOperands().get(1);
     assertThat(literal.getType().getSqlTypeName(), is(SqlTypeName.CHAR));
   }
+
+
 
   @Test public void testSimplifyCaseNullableBoolean() {
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java

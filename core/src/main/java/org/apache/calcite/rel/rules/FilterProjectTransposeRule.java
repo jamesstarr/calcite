@@ -181,7 +181,8 @@ public class FilterProjectTransposeRule
           .replaceIfs(RelDistributionTraitDef.INSTANCE,
               () -> Collections.singletonList(
                       input.getTraitSet().getTrait(RelDistributionTraitDef.INSTANCE)));
-      newFilterRel = filter.copy(traitSet, input, simplifyFilterCondition(newCondition, call));
+      newCondition = RexUtil.removeNullabilityCast(relBuilder.getTypeFactory(), newCondition);
+      newFilterRel = filter.copy(traitSet, input, newCondition);
     } else {
       newFilterRel =
           relBuilder.push(project.getInput()).filter(newCondition).build();

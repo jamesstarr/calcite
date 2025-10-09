@@ -1616,9 +1616,6 @@ public abstract class SqlImplementor {
       return new Result(node, clauses, alias, neededType,
           ImmutableMap.of(alias, type));
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 
     /** Returns a copy of this Result, overriding the value of {@code anon}. */
     Result withAnon(boolean anon) {
@@ -1628,7 +1625,6 @@ public abstract class SqlImplementor {
 <<<<<<< HEAD
 =======
 =======
->>>>>>> a94ab7e4f ([CALCITE-3751] JDBC adapter generates SQL with wrong aliases in GROUP… (#220))
   }
 
   /** Builder. */

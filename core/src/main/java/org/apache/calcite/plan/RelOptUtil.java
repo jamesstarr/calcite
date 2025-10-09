@@ -1033,13 +1033,6 @@ public abstract class RelOptUtil {
         rightKeys,
         filterNulls,
         nonEquiList);
-
-  /** Check if it is the join whose condition is based on column equality,
-   * this mostly depends on the physical implementation of the join. */
-  public static boolean forceEquiJoin(Join join) {
-    return join.isSemiJoin() || join instanceof EquiJoin;
-  }
-=======
 =======
 
   /**
@@ -1287,4 +1280,3 @@ public abstract class RelOptUtil {
   }
 }
 =======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
