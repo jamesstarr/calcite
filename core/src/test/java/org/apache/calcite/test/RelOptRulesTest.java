@@ -7313,4 +7313,32 @@ public class RelOptRulesTest extends RelOptTestBase {
     sql(sql).withPre(preProgram).with(program).check();
   }
 
+  @Test public void testMultiJoinOptimizeBushySimpleFilterOnEmp() {
+    HepProgram preProgram = new HepProgramBuilder()
+        .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(CoreRules.JOIN_TO_MULTI_JOIN)
+        .build();
+    HepProgram program = new HepProgramBuilder()
+        .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(CoreRules.MULTI_JOIN_OPTIMIZE_BUSHY)
+        .build();
+    final String sql = "select e1.ename from emp e1 inner join dept d\n"
+        + "on e1.deptno = e1.empno";
+    sql(sql).withPre(preProgram).with(program).check();
+  }
+
+  @Test public void testMultiJoinOptimizeBushySimpleFilterOnDept() {
+    HepProgram preProgram = new HepProgramBuilder()
+        .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(CoreRules.JOIN_TO_MULTI_JOIN)
+        .build();
+    HepProgram program = new HepProgramBuilder()
+        .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(CoreRules.MULTI_JOIN_OPTIMIZE_BUSHY)
+        .build();
+    final String sql = "select e1.ename from emp e1 inner join dept d\n"
+        + "on d.deptno = 40";
+    sql(sql).withPre(preProgram).with(program).check();
+  }
+
 }
