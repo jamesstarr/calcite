@@ -143,9 +143,12 @@ val getLicenses by tasks.registering(GatherLicenseTask::class) {
     addDependency(":jekyll:", SpdxLicense.MIT)
     addDependency("font-awesome:font-awesome-code:4.2.0", SpdxLicense.MIT)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     addDependency("font-awesome:font-awesome-font:4.2.0", SpdxLicense.OFL_1_1)
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> ee64d0c4b ([CALCITE-3822] Source distribution must not contain fonts under SIL O… (#223))
     // git.io/normalize
     addDependency(":normalize:3.0.2", SpdxLicense.MIT)
     // Gridism: A simple, responsive, and handy CSS grid by @cobyism
@@ -174,6 +177,9 @@ fun CopySpec.excludeLicenseFromSourceRelease() {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ee64d0c4b ([CALCITE-3822] Source distribution must not contain fonts under SIL O… (#223))
 fun CopySpec.excludeCategoryBLicensedWorksFromSourceRelease() {
     // The source distribution contains "font-awesome:fonts" which is licensed as
     // http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License).
@@ -188,8 +194,11 @@ fun CopySpec.excludeCategoryBLicensedWorksFromSourceRelease() {
     exclude("site/fonts/**")
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+>>>>>>> ee64d0c4b ([CALCITE-3822] Source distribution must not contain fonts under SIL O… (#223))
 fun CrLfSpec.sourceLayout() = copySpec {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     gitattributes(gitProps)
@@ -202,9 +211,13 @@ fun CrLfSpec.sourceLayout() = copySpec {
             gitignore(gitProps)
             excludeLicenseFromSourceRelease()
 <<<<<<< HEAD
+<<<<<<< HEAD
             excludeCategoryBLicensedWorksFromSourceRelease()
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+            excludeCategoryBLicensedWorksFromSourceRelease()
+>>>>>>> ee64d0c4b ([CALCITE-3822] Source distribution must not contain fonts under SIL O… (#223))
         }
     }
 }
