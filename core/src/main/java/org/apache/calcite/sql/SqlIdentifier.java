@@ -36,13 +36,15 @@ import java.util.List;
  * A <code>SqlIdentifier</code> is an identifier, possibly compound.
  */
 public class SqlIdentifier extends SqlNode {
-<<<<<<< HEAD
+>>>>>>> c22bb1728 ([CALCITE-3811] JDBC adapter generates SQL with invalid field names if… (#222))
   /** An identifier for star, "*".
    *
    * @see SqlNodeList#SINGLETON_STAR */
   public static final SqlIdentifier STAR = star(SqlParserPos.ZERO);
+<<<<<<< HEAD
 =======
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+=======
+>>>>>>> c22bb1728 ([CALCITE-3811] JDBC adapter generates SQL with invalid field names if… (#222))
 
   //~ Instance fields --------------------------------------------------------
 
