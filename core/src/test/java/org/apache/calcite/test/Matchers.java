@@ -209,6 +209,17 @@ public class Matchers {
   }
 
   /**
+   * Creates a {@link Matcher} that matches execution plan and trims {@code , id=123} node ids.
+   * {@link RelNode#getId()} is not stable across runs, so this matcher enables to trim those.
+   * @param value execpted execution plan
+   * @return matcher
+   */
+  @API(since = "1.22", status = API.Status.EXPERIMENTAL)
+  public static Matcher<String> containsWithoutNodeIds(String value) {
+    return compose(CoreMatchers.containsString(value), Matchers::trimNodeIds);
+  }
+
+  /**
    * Creates a matcher that matches when the examined string is equal to the
    * specified <code>operand</code> when all Windows-style line endings ("\r\n")
    * have been converted to Unix-style line endings ("\n").
@@ -255,6 +266,10 @@ public class Matchers {
       }
     };
 =======
+  }
+
+  public static String trimNodeIds(String s) {
+    return s.replaceAll(", id = [0-9]+", "");
   }
 
   /**

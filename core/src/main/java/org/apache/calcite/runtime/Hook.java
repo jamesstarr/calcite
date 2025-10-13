@@ -90,6 +90,17 @@ public enum Hook {
    * The query might be a SQL string (for the JDBC adapter), a list of Mongo
    * pipeline expressions (for the MongoDB adapter), et cetera. */
   QUERY_PLAN,
+<<<<<<< HEAD
+=======
+
+  /**
+   * Called when a plan is about to be implemented (e.g. implemented via Enumerable, Bindable,
+   * and so on).
+   * The hook supplies {@link RelRoot} as an argument.
+   */
+  @API(since = "1.22", status = API.Status.EXPERIMENTAL)
+  PLAN_BEFORE_IMPLEMENTATION;
+>>>>>>> 880f78741 ([CALCITE-3722] Add Hook#PLAN_BEFORE_IMPLEMENTATION to capture the pla… (#219))
 
 <<<<<<< HEAD
   /**
