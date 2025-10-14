@@ -44,9 +44,6 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import static org.apache.calcite.util.Static.RESOURCE;
-<<<<<<< HEAD
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
-=======
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 /**
  * Abstract base for implementations of the {@link RelOptPlanner} interface.
@@ -437,9 +434,18 @@ public abstract class AbstractRelOptPlanner implements RelOptPlanner {
   /** Returns sub-classes of relational expression. */
   public Iterable<Class<? extends RelNode>> subClasses(
       final Class<? extends RelNode> clazz) {
+<<<<<<< HEAD
     return Iterables.filter(classes, clazz::isAssignableFrom);
 =======
     return Util.filter(classes, clazz::isAssignableFrom);
 
+=======
+    return Util.filter(classes, c -> {
+      // RelSubset must be exact type, not subclass
+      if (c == RelSubset.class) {
+        return c == clazz;
+      }
+      return clazz.isAssignableFrom(c);
+    });
   }
 }

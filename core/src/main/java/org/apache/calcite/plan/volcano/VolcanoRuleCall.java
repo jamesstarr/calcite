@@ -290,7 +290,10 @@ public class VolcanoRuleCall extends RelOptRuleCall {
       final Collection<? extends RelNode> successors;
       if (ascending) {
         assert previousOperand.getParent() == operand;
+<<<<<<< HEAD
         assert operand.getMatchedClass() != RelSubset.class;
+=======
+>>>>>>> 197c6c2a8 ([CALCITE-3756] RelSubset should not match operand(RelNode.class) (#192))
         if (previousOperand.getMatchedClass() != RelSubset.class
             && previous instanceof RelSubset) {
           throw new RuntimeException("RelSubset should not match with "
@@ -360,7 +363,7 @@ public class VolcanoRuleCall extends RelOptRuleCall {
           final RelSubset input =
               (RelSubset) rel.getInput(previousOperand.ordinalInParent);
           List<RelNode> inputRels = input.getRelList();
-          if (!inputRels.contains(previous)) {
+          if (!(previous instanceof RelSubset) && !inputRels.contains(previous)) {
             continue;
           }
         }
