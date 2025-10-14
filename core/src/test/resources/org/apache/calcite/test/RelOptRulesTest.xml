@@ -10159,10 +10159,14 @@ LogicalTableModify(table=[[CATALOG, SALES, DEPT]], operation=[INSERT], flattened
             <![CDATA[
 LogicalTableModify(table=[[CATALOG, SALES, DEPT]], operation=[INSERT], flattened=[false])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalCalc(expr#0..8=[{inputs}], expr#9=[CAST($t2):VARCHAR(10) NOT NULL], DEPTNO=[$t0], NAME=[$t9])
 =======
   LogicalCalc(expr#0..8=[{inputs}], expr#9=[CAST($t2):VARCHAR(128)], expr#10=[CAST($t9):VARCHAR(10) NOT NULL], DEPTNO=[$t0], NAME=[$t10])
 >>>>>>> d5492d7cf ([CALCITE-3346] Re-enable some ignored tests in RelOptRuleTests (Wang Yanlin))
+=======
+  LogicalCalc(expr#0..8=[{inputs}], expr#9=[CAST($t2):VARCHAR(10) NOT NULL], DEPTNO=[$t0], NAME=[$t9])
+>>>>>>> caadd64d5 ([CALCITE-3712] Optimize lossless casts in RexSimplify: CAST(CAST(intE… (#229))
     LogicalTableScan(table=[[CATALOG, SALES, EMPNULLABLES]])
 ]]>
         </Resource>

@@ -23,13 +23,9 @@ import org.apache.calcite.plan.Strong;
 import org.apache.calcite.rel.metadata.NullSentinel;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-=======
 import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.rex.RexBuilder;
 =======
->>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexDynamicParam;
 import org.apache.calcite.rex.RexInputRef;
@@ -47,6 +43,8 @@ import org.apache.calcite.schema.SchemaPlus;
 >>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 =======
 >>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+>>>>>>> caadd64d5 ([CALCITE-3712] Optimize lossless casts in RexSimplify: CAST(CAST(intE… (#229))
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSpecialOperator;
@@ -74,17 +72,13 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-=======
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
->>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 =======
 import org.junit.jupiter.api.BeforeEach;
+=======
+>>>>>>> caadd64d5 ([CALCITE-3712] Optimize lossless casts in RexSimplify: CAST(CAST(intE… (#229))
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 >>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
@@ -128,10 +122,6 @@ import static org.junit.Assert.fail;
  * Unit tests for {@link RexProgram} and
  * {@link org.apache.calcite.rex.RexProgramBuilder}.
  */
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-class RexProgramTest extends RexProgramTestBase {
-=======
 public class RexProgramTest {
   //~ Instance fields --------------------------------------------------------
   private JavaTypeFactory typeFactory;
@@ -148,7 +138,6 @@ public class RexProgramTest {
 public class RexProgramTest extends RexProgramBuilderBase {
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
->>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   /**
    * Creates a RexProgramTest.
    */
@@ -386,6 +375,9 @@ public class RexProgramTest extends RexProgramBuilderBase {
 >>>>>>> 0c5880c91 (Revert "Reapply "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING"""):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 =======
 >>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+public class RexProgramTest extends RexProgramTestBase {
+>>>>>>> caadd64d5 ([CALCITE-3712] Optimize lossless casts in RexSimplify: CAST(CAST(intE… (#229))
   /**
    * Tests construction of a RexProgram.
    */
@@ -1036,12 +1028,9 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplifyUnchanged(cast(cast(vVarchar(), tInt()), tVarchar()));
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Disabled("CALCITE-3457: AssertionError in RexSimplify.validateStrongPolicy")
-  @Test void reproducerFor3457() {
-=======
   @Disabled("CALCITE-3457: AssertionError in RexSimplify.validateStrongPolicy:843")
+=======
+  @Disabled("CALCITE-3457: AssertionError in RexSimplify.validateStrongPolicy")
   @Test public void reproducerFor3457() {
 >>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     // Identified with RexProgramFuzzyTest#testFuzzy, seed=4887662474363391810L
@@ -3931,16 +3920,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "false");
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testInterpreter() {
-    assertThat(eval(trueLiteral), is(true));
-    assertThat(eval(nullInt), is(NullSentinel.INSTANCE));
-    assertThat(eval(eq(nullInt, nullInt)),
-        is(NullSentinel.INSTANCE));
-    assertThat(eval(eq(this.trueLiteral, nullInt)),
 =======
-=======
->>>>>>> 40dbae0b2 ([CALCITE-2556] Simplify not(true/false) to false/true (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 =======
 >>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   private RexNode simplify(RexNode e) {
@@ -3950,6 +3930,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
     return simplify.simplifyUnknownAs(e, RexUnknownAs.UNKNOWN);
   }
 
+=======
+>>>>>>> caadd64d5 ([CALCITE-3712] Optimize lossless casts in RexSimplify: CAST(CAST(intE… (#229))
   @Test public void testInterpreter() {
     assertThat(eval(trueLiteral), is(true));
     assertThat(eval(nullInt), is(NullSentinel.INSTANCE));
@@ -4150,156 +4132,6 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkIs(isNotTrue(isNotNull(isNull(vBool()))), false);
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  /** Unit test for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2842">[CALCITE-2842]
-   * Computing digest of IN expressions leads to Exceptions</a>. */
-  @Test void testInDigest() {
-    RexNode e = in(vInt(), literal(1), literal(2));
-    assertThat(e.toString(), is("IN(?0.int0, 1, 2)"));
-  }
-
-  // Empty string "" cannot be simplified to a number/bigint.  Instead of
-  // throwing an exception, just return the original expression.
-  @Test public void testSimplifyEmptyStringCast() {
-    RexNode emptyString = rexBuilder.makeLiteral("");
-    RexNode emptyStringCast = rexBuilder.makeCast(
-        typeFactory.createTypeWithNullability(
-            typeFactory.createSqlType(SqlTypeName.BIGINT), true), emptyString);
-    RexNode result = RexUtil.simplify(rexBuilder, emptyStringCast);
-    assertThat(result, equalTo(emptyStringCast));
-  }
-
-  private void checkThresholdDnf(RexNode node, int threshold, String expected) {
-    assertThat("RexUtil.toDnf(rexBuilder, threshold=" + threshold + " , " + node + ")",
-            RexUtil.toDnf(rexBuilder, threshold, node).toString(),
-            equalTo(expected));
-  }
-
-  /** Unit test for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-5238">[CALCITE-5238]
-   * Add a maxNodeCount parameter to RexUtil.toDnf</a>. */
-  @Test public void testThresholdDnf() {
-    final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
-    final RelDataType rowType = typeFactory.builder()
-            .add("x", intType)
-            .add("y", intType)
-            .build();
-
-    final RexDynamicParam range = rexBuilder.makeDynamicParam(rowType, 0);
-    final RexNode xRef = rexBuilder.makeFieldAccess(range, 0);
-    final RexNode yRef = rexBuilder.makeFieldAccess(range, 1);
-
-    final RexLiteral literal1 =
-            rexBuilder.makeExactLiteral(BigDecimal.valueOf(1));
-    final RexLiteral literal2 =
-            rexBuilder.makeExactLiteral(BigDecimal.valueOf(2));
-    final RexLiteral literal3 =
-            rexBuilder.makeExactLiteral(BigDecimal.valueOf(3));
-    final RexLiteral literal4 =
-            rexBuilder.makeExactLiteral(BigDecimal.valueOf(4));
-
-    // Expression
-    //   AND(=(?0.x, 1), OR(=(?0.x, 2), =(?0.y, 3)))
-    // transformation creates 7 nodes
-    //   OR(AND(=(1, ?0.x), =(2, ?0.x)), AND(=(1, ?0.x), =(3, ?0.y)))
-    // Thus, it is triggered.
-    checkThresholdDnf(
-            and(eq(xRef, literal1), or(eq(xRef, literal2), eq(yRef, literal3))),
-            8, "OR(AND(=(1, ?0.x), =(2, ?0.x)), AND(=(1, ?0.x), =(3, ?0.y)))");
-
-    // Expression
-    //   AND(=(?0.x, 1), =(?0.x, 2), OR(=(?0.x, 3), =(?0.y, 4)))
-    // transformation creates 9 nodes
-    //   OR(AND(=(1, ?0.x), =(2, ?0.x), =(3, ?0.x)),
-    //       AND(=(1, ?0.x), =(2, ?0.x), =(4, ?0.y)))
-    // Thus, it is NOT triggered.
-    checkThresholdDnf(
-            and(eq(xRef, literal1), eq(xRef, literal2),
-                    or(eq(xRef, literal3), eq(yRef, literal4))),
-            8, "AND(=(1, ?0.x), =(2, ?0.x), OR(=(3, ?0.x), =(4, ?0.y)))");
-  }
-
-  /** Unit test for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3192">[CALCITE-3192]
-   * Simplify OR incorrectly weaks condition</a>. */
-  @Test void testOrSimplificationNotWeakensCondition() {
-    // "1 < a or (a < 3 and b = 2)" can't be simplified if a is nullable.
-    checkSimplifyUnchanged(
-        or(
-            lt(literal(1), vInt()),
-            and(
-                lt(vInt(), literal(3)),
-                vBoolNotNull(2))));
-  }
-
-  @Test void testIsNullSimplificationWithUnaryPlus() {
-    RexNode expr =
-        isNotNull(coalesce(unaryPlus(vInt(1)), vIntNotNull(0)));
-    RexNode s = simplify.simplifyUnknownAs(expr, RexUnknownAs.UNKNOWN);
-
-    assertThat(expr.isAlwaysTrue(), is(true));
-    assertThat(s, is(trueLiteral));
-  }
-
-  @Test void testIsNullSimplificationWithIsDistinctFrom() {
-    RexNode expr =
-        isNotNull(
-            case_(vBool(),
-                isDistinctFrom(falseLiteral, vBoolNotNull(0)),
-                vBoolNotNull(2)));
-    RexNode s = simplify.simplifyUnknownAs(expr, RexUnknownAs.UNKNOWN);
-
-    assertThat(expr.isAlwaysTrue(), is(true));
-    assertThat(s, is(trueLiteral));
-  }
-
-  @Test void testSimplifyRangeWithMultiPredicates() {
-    final RexNode ref = input(tInt(), 0);
-    RelOptPredicateList relOptPredicateList = RelOptPredicateList.of(rexBuilder,
-        ImmutableList.of(gt(ref, literal(1)), le(ref, literal(5))));
-    checkSimplifyFilter(gt(ref, literal(9)), relOptPredicateList, "false");
-  }
-
-  @Test void testSimplifyCastUnaryMinus() {
-    RexNode expr =
-        isNull(ne(unaryMinus(cast(unaryMinus(vIntNotNull(1)), nullable(tInt()))), vIntNotNull(1)));
-    RexNode s = simplify.simplifyUnknownAs(expr, RexUnknownAs.UNKNOWN);
-
-    assertThat(s, is(falseLiteral));
-  }
-
-  @Test public void testSimplifyNotEqual() {
-    RexNode ref = input(tInt(), 0);
-    RelOptPredicateList relOptPredicateList = RelOptPredicateList.of(rexBuilder,
-        ImmutableList.of(eq(ref, literal(9))));
-    checkSimplifyFilter(ne(ref, literal(9)), relOptPredicateList, "false");
-    checkSimplifyFilter(ne(ref, literal(5)), relOptPredicateList, "true");
-
-    ref = input(tInt(true), 0);
-    checkSimplifyFilter(ne(ref, literal(9)), relOptPredicateList,
-        "AND(null, IS NULL($0))");
-    checkSimplifyFilter(ne(ref, literal(5)), relOptPredicateList,
-        "OR(null, IS NOT NULL($0))");
-  }
-
-  @Test public void testSimplifyNonDeterministicFunction() {
-    final SqlOperator ndc = new SqlSpecialOperator(
-        "NDC",
-        SqlKind.OTHER_FUNCTION,
-        0,
-        false,
-        ReturnTypes.BOOLEAN,
-        null, null) {
-      @Override public boolean isDeterministic() {
-        return false;
-      }
-    };
-    final RexNode call1 = rexBuilder.makeCall(ndc);
-    final RexNode call2 = rexBuilder.makeCall(ndc);
-    final RexNode expr = eq(call1, call2);
-    checkSimplifyUnchanged(expr);
-=======
 =======
   /** Checks that {@link RexNode#isAlwaysTrue()},
    * {@link RexNode#isAlwaysTrue()} and {@link RexSimplify} agree that
@@ -4311,12 +4143,13 @@ public class RexProgramTest extends RexProgramBuilderBase {
             is(expected ? "true" : "false"));
   }
 
->>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   private Comparable eval(RexNode e) {
     return RexInterpreter.evaluate(e, ImmutableMap.of());
 >>>>>>> e8d5a20c4 ([CALCITE-2314] Verify RexNode transformations by evaluating before and after expressions against sample values):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
+=======
+>>>>>>> caadd64d5 ([CALCITE-3712] Optimize lossless casts in RexSimplify: CAST(CAST(intE… (#229))
   /** Unit test for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2842">[CALCITE-2842]
    * Computing digest of IN expressions leads to Exceptions</a>. */
