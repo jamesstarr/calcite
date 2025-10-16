@@ -32,7 +32,6 @@ import org.apache.calcite.rel.rules.MatchRule;
 import org.apache.calcite.rel.rules.MaterializedViewFilterScanRule;
 import org.apache.calcite.rel.rules.PruneEmptyRules;
 import org.apache.calcite.rel.rules.SortRemoveConstantKeysRule;
-import org.apache.calcite.rel.rules.TableScanRule;
 
 import com.google.common.collect.ImmutableList;
 
@@ -73,9 +72,8 @@ public class RelOptRules {
   static final List<RelOptRule> BASE_RULES = ImmutableList.of(
       CoreRules.AGGREGATE_STAR_TABLE,
       CoreRules.AGGREGATE_PROJECT_STAR_TABLE,
-<<<<<<< HEAD
-=======
       TableScanRule.INSTANCE,
+=======
       CalciteSystemProperty.COMMUTE.value()
           ? CoreRules.JOIN_ASSOCIATE
           : CoreRules.PROJECT_MERGE,

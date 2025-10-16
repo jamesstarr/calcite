@@ -128,7 +128,7 @@ public class PlannerTest {
 
         "LogicalProject(empid=[$0], deptno=[$1], name=[$2], salary=[$3], commission=[$4])\n"
         + "  LogicalFilter(condition=[LIKE($2, '%e%')])\n"
-        + "    EnumerableTableScan(table=[[hr, emps]])\n");
+        + "    LogicalTableScan(table=[[hr, emps]])\n");
   }
 
   @Test public void testParseIdentiferMaxLengthWithDefault() {
@@ -383,6 +383,7 @@ public class PlannerTest {
     Program program =
         Programs.ofRules(
             CoreRules.FILTER_MERGE,
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
     Planner planner = getPlanner(null, program);
@@ -512,6 +513,226 @@ public class PlannerTest {
         .build();
 
     RelOptPlanner planner = relNode.getCluster().getPlanner();
+<<<<<<< HEAD
+=======
+    RuleSet ruleSet =
+        RuleSets.ofList(
+            PruneEmptyRules.UNION_INSTANCE,
+            CoreRules.FILTER_VALUES_MERGE,
+            EnumerableRules.ENUMERABLE_PROJECT_RULE,
+            EnumerableRules.ENUMERABLE_FILTER_RULE,
+            EnumerableRules.ENUMERABLE_VALUES_RULE,
+            EnumerableRules.ENUMERABLE_UNION_RULE);
+    Program program = Programs.of(ruleSet);
+
+    RelTraitSet toTraits = relNode.getTraitSet()
+        .replace(EnumerableConvention.INSTANCE);
+
+    RelNode output = program.run(planner, relNode, toTraits,
+        ImmutableList.of(), ImmutableList.of());
+
+    // Expected outcomes are:
+    // 1) relation is optimized to simple VALUES
+    // 2) the number of rule invocations is reasonable
+    // 3) planner does not throw OutOfMemoryError
+    assertThat("empty union should be pruned out of " + toString(relNode),
+        Util.toLinux(toString(output)),
+        equalTo("EnumerableUnion(all=[true])\n"
+            + "  EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n"
+            + "  EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 2 }]])\n"));
+  }
+
+  /** Unit test that parses, validates, converts and
+   * plans for query using order by */
+  @Test public void testSortPlan() throws Exception {
+    RuleSet ruleSet =
+        RuleSets.ofList(
+            CoreRules.SORT_REMOVE,
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
+            EnumerableRules.ENUMERABLE_PROJECT_RULE,
+            EnumerableRules.ENUMERABLE_SORT_RULE);
+    Planner planner = getPlanner(null, Programs.of(ruleSet));
+    SqlNode parse = planner.parse(
+        "select * from \"emps\" "
+            + "order by \"emps\".\"deptno\"");
+    SqlNode validate = planner.validate(parse);
+    RelNode convert = planner.rel(validate).project();
+    RelTraitSet traitSet = convert.getTraitSet()
+        .replace(EnumerableConvention.INSTANCE);
+    RelNode transform = planner.transform(0, traitSet, convert);
+    assertThat(toString(transform),
+        equalTo("EnumerableSort(sort0=[$1], dir0=[ASC])\n"
+            + "  EnumerableProject(empid=[$0], deptno=[$1], name=[$2], salary=[$3], commission=[$4])\n"
+            + "    EnumerableTableScan(table=[[hr, emps]])\n"));
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-2554">[CALCITE-2554]
+   * Enrich EnumerableJoin operator with order preserving information</a>.
+   *
+   * <p>Since the left input to the join is sorted, and this join preserves
+   * order, there shouldn't be any sort operator above the join.
+   */
+  @Test public void testRedundantSortOnJoinPlan() throws Exception {
+    RuleSet ruleSet =
+        RuleSets.ofList(
+            CoreRules.SORT_REMOVE,
+            CoreRules.SORT_JOIN_TRANSPOSE,
+            CoreRules.SORT_PROJECT_TRANSPOSE,
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
+            EnumerableRules.ENUMERABLE_LIMIT_RULE,
+            EnumerableRules.ENUMERABLE_JOIN_RULE,
+            EnumerableRules.ENUMERABLE_PROJECT_RULE,
+            EnumerableRules.ENUMERABLE_SORT_RULE);
+    Planner planner = getPlanner(null, Programs.of(ruleSet));
+    SqlNode parse = planner.parse(
+        "select e.\"deptno\" from \"emps\" e "
+            + "left outer join \"depts\" d "
+            + " on e.\"deptno\" = d.\"deptno\" "
+            + "order by e.\"deptno\" "
+            + "limit 10");
+    SqlNode validate = planner.validate(parse);
+    RelNode convert = planner.rel(validate).rel;
+    RelTraitSet traitSet = convert.getTraitSet()
+        .replace(EnumerableConvention.INSTANCE).simplify();
+    RelNode transform = planner.transform(0, traitSet, convert);
+    assertThat(toString(transform),
+        equalTo("EnumerableProject(deptno=[$1])\n"
+        + "  EnumerableLimit(fetch=[10])\n"
+        + "    EnumerableHashJoin(condition=[=($1, $5)], joinType=[left])\n"
+        + "      EnumerableLimit(fetch=[10])\n"
+        + "        EnumerableSort(sort0=[$1], dir0=[ASC])\n"
+        + "          EnumerableTableScan(table=[[hr, emps]])\n"
+        + "      EnumerableProject(deptno=[$0], name=[$1], employees=[$2], x=[$3.x], y=[$3.y])\n"
+        + "        EnumerableTableScan(table=[[hr, depts]])\n"));
+  }
+
+  /** Unit test that parses, validates, converts and
+   * plans for query using two duplicate order by.
+   * The duplicate order by should be removed by SqlToRelConverter. */
+  @Test public void testDuplicateSortPlan() throws Exception {
+    runDuplicateSortCheck(
+        "select empid from ( "
+        + "select * "
+        + "from emps "
+        + "order by emps.deptno) "
+        + "order by deptno",
+        "EnumerableSort(sort0=[$1], dir0=[ASC])\n"
+        + "  EnumerableProject(empid=[$0], deptno=[$1])\n"
+        + "    EnumerableTableScan(table=[[hr, emps]])\n");
+  }
+
+  /** Unit test that parses, validates, converts and
+   * plans for query using two duplicate order by.
+   * The duplicate order by should be removed by SqlToRelConverter. */
+  @Test public void testDuplicateSortPlanWithExpr() throws Exception {
+    runDuplicateSortCheck("select empid+deptno from ( "
+        + "select empid, deptno "
+        + "from emps "
+        + "order by emps.deptno) "
+        + "order by deptno",
+        "EnumerableSort(sort0=[$1], dir0=[ASC])\n"
+        + "  EnumerableProject(EXPR$0=[+($0, $1)], deptno=[$1])\n"
+        + "    EnumerableTableScan(table=[[hr, emps]])\n");
+  }
+
+  @Test public void testTwoSortRemoveInnerSort() throws Exception {
+    runDuplicateSortCheck("select empid+deptno from ( "
+        + "select empid, deptno "
+        + "from emps "
+        + "order by empid) "
+        + "order by deptno",
+        "EnumerableSort(sort0=[$1], dir0=[ASC])\n"
+        + "  EnumerableProject(EXPR$0=[+($0, $1)], deptno=[$1])\n"
+        + "    EnumerableTableScan(table=[[hr, emps]])\n");
+  }
+
+  /** Tests that outer order by is not removed since window function
+   * might reorder the rows in-between */
+  @Test public void testDuplicateSortPlanWithOver() throws Exception {
+    runDuplicateSortCheck("select emp_cnt, empid+deptno from ( "
+        + "select empid, deptno, count(*) over (partition by deptno) emp_cnt from ( "
+        + "  select empid, deptno "
+        + "    from emps "
+        + "   order by emps.deptno) "
+        + ")"
+        + "order by deptno",
+        "EnumerableSort(sort0=[$2], dir0=[ASC])\n"
+        + "  EnumerableProject(emp_cnt=[$2], EXPR$1=[+($0, $1)], deptno=[$1])\n"
+        + "    EnumerableWindow(window#0=[window(partition {1} order by [] range between UNBOUNDED PRECEDING and UNBOUNDED FOLLOWING aggs [COUNT()])])\n"
+        + "      EnumerableProject(empid=[$0], deptno=[$1])\n"
+        + "        EnumerableTableScan(table=[[hr, emps]])\n");
+  }
+
+  @Test public void testDuplicateSortPlanWithRemovedOver() throws Exception {
+    runDuplicateSortCheck("select empid+deptno from ( "
+        + "select empid, deptno, count(*) over (partition by deptno) emp_cnt from ( "
+        + "  select empid, deptno "
+        + "    from emps "
+        + "   order by emps.deptno) "
+        + ")"
+        + "order by deptno",
+        "EnumerableSort(sort0=[$1], dir0=[ASC])\n"
+        + "  EnumerableProject(EXPR$0=[+($0, $1)], deptno=[$1])\n"
+        + "    EnumerableWindow(window#0=[window(partition {1} order by [] range between UNBOUNDED PRECEDING and UNBOUNDED FOLLOWING aggs [COUNT()])])\n"
+        + "      EnumerableProject(empid=[$0], deptno=[$1])\n"
+        + "        EnumerableTableScan(table=[[hr, emps]])\n");
+  }
+
+  // If proper "SqlParseException, ValidationException, RelConversionException"
+  // is used, then checkstyle fails with
+  // "Redundant throws: 'ValidationException' listed more then one time"
+  // "Redundant throws: 'RelConversionException' listed more then one time"
+  private void runDuplicateSortCheck(String sql, String plan) throws Exception {
+    RuleSet ruleSet =
+        RuleSets.ofList(
+            CoreRules.SORT_REMOVE,
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
+            EnumerableRules.ENUMERABLE_PROJECT_RULE,
+            EnumerableRules.ENUMERABLE_WINDOW_RULE,
+            EnumerableRules.ENUMERABLE_SORT_RULE,
+            CoreRules.PROJECT_TO_LOGICAL_PROJECT_AND_WINDOW);
+    Planner planner = getPlanner(null,
+        SqlParser.configBuilder().setLex(Lex.JAVA).build(),
+        Programs.of(ruleSet));
+    SqlNode parse = planner.parse(sql);
+    SqlNode validate = planner.validate(parse);
+    RelNode convert = planner.rel(validate).rel;
+    RelTraitSet traitSet = convert.getTraitSet()
+        .replace(EnumerableConvention.INSTANCE);
+    if (traitSet.getTrait(RelCollationTraitDef.INSTANCE) == null) {
+      // SortRemoveRule can only work if collation trait is enabled.
+      return;
+    }
+    RelNode transform = planner.transform(0, traitSet, convert);
+    assertThat(toString(transform), equalTo(plan));
+  }
+
+  /** Unit test that parses, validates, converts and
+   * plans for query using two duplicate order by.*/
+  @Test public void testDuplicateSortPlanWORemoveSortRule() throws Exception {
+    RuleSet ruleSet =
+        RuleSets.ofList(
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
+            EnumerableRules.ENUMERABLE_PROJECT_RULE,
+            EnumerableRules.ENUMERABLE_SORT_RULE);
+    Planner planner = getPlanner(null, Programs.of(ruleSet));
+    SqlNode parse = planner.parse(
+        "select \"empid\" from ( "
+            + "select * "
+            + "from \"emps\" "
+            + "order by \"emps\".\"deptno\") "
+            + "order by \"deptno\"");
+    SqlNode validate = planner.validate(parse);
+    RelNode convert = planner.rel(validate).rel;
+    RelTraitSet traitSet = convert.getTraitSet()
+        .replace(EnumerableConvention.INSTANCE);
+    RelNode transform = planner.transform(0, traitSet, convert);
+    assertThat(toString(transform),
+        equalTo("EnumerableSort(sort0=[$1], dir0=[ASC])\n"
+            + "  EnumerableProject(empid=[$0], deptno=[$1])\n"
+            + "    EnumerableTableScan(table=[[hr, emps]])\n"));
+>>>>>>> 815957625 ([CALCITE-3769] Deprecate TableScanRule (#199))
   }
 
   /** Test case for
@@ -537,6 +758,7 @@ public class PlannerTest {
     RuleSet ruleSet =
         RuleSets.ofList(
             CoreRules.FILTER_MERGE,
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
     final List<RelTraitDef> traitDefs = new ArrayList<>();
@@ -562,6 +784,7 @@ public class PlannerTest {
     RuleSet ruleSet =
         RuleSets.ofList(
             CoreRules.FILTER_MERGE,
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
     Planner planner = getPlanner(null, Programs.of(ruleSet));
@@ -660,6 +883,7 @@ public class PlannerTest {
     Program program0 =
         Programs.ofRules(
             CoreRules.FILTER_MERGE,
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
 
@@ -1167,7 +1391,7 @@ public class PlannerTest {
     assertThat(plan,
         equalTo("LogicalSort(sort0=[$0], dir0=[ASC])\n"
         + "  LogicalProject(psPartkey=[$0])\n"
-        + "    EnumerableTableScan(table=[[tpch, partsupp]])\n"));
+        + "    LogicalTableScan(table=[[tpch, partsupp]])\n"));
   }
 
   /** Test case for

@@ -30,7 +30,6 @@ import org.apache.calcite.plan.RelOptSchema;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelTraitSet;
-import org.apache.calcite.plan.ViewExpanders;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
@@ -163,8 +162,6 @@ public abstract class Prepare {
 
     final RelTraitSet desiredTraits = getDesiredRootTraitSet(root);
 
-<<<<<<< HEAD
-=======
     // Work around
     //   [CALCITE-1774] Allow rules to be registered during planning process
     // by briefly creating each kind of physical table to let it register its
@@ -185,7 +182,8 @@ public abstract class Prepare {
     };
     visitor.go(root.rel);
 
->>>>>>> ca65868f2 ([CALCITE-2441] RelBuilder.scan should expand TranslatableTable and views)
+=======
+>>>>>>> 815957625 ([CALCITE-3769] Deprecate TableScanRule (#199))
     final Program program = getProgram();
     final RelNode rootRel4 = program.run(
         planner, root.rel, desiredTraits, materializationList, latticeList);

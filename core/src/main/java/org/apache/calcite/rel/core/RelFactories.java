@@ -428,6 +428,155 @@ public class RelFactories {
   }
 
   /**
+<<<<<<< HEAD
+=======
+   * Can create a {@link Values} of the appropriate type for a rule's calling
+   * convention.
+   */
+  public interface ValuesFactory {
+    /**
+     * Creates a Values.
+     */
+    RelNode createValues(RelOptCluster cluster, RelDataType rowType,
+        List<ImmutableList<RexLiteral>> tuples);
+  }
+
+  /**
+   * Implementation of {@link ValuesFactory} that returns a
+   * {@link LogicalValues}.
+   */
+  private static class ValuesFactoryImpl implements ValuesFactory {
+    public RelNode createValues(RelOptCluster cluster, RelDataType rowType,
+        List<ImmutableList<RexLiteral>> tuples) {
+      return LogicalValues.create(cluster, rowType,
+          ImmutableList.copyOf(tuples));
+    }
+  }
+
+  /**
+   * Can create a {@link TableScan} of the appropriate type for a rule's calling
+   * convention.
+   */
+  public interface TableScanFactory {
+    /**
+     * Creates a {@link TableScan}.
+     */
+    RelNode createScan(RelOptCluster cluster, RelOptTable table, List<RelHint> hints);
+  }
+
+  /**
+   * Implementation of {@link TableScanFactory} that returns a
+   * {@link LogicalTableScan}.
+   */
+  private static class TableScanFactoryImpl implements TableScanFactory {
+    public RelNode createScan(RelOptCluster cluster, RelOptTable table, List<RelHint> hints) {
+      return table.toRel(ViewExpanders.simpleContext(cluster, hints));
+    }
+  }
+
+  /**
+   * Creates a {@link TableScanFactory} that uses a
+   * {@link org.apache.calcite.plan.RelOptTable.ViewExpander} to handle
+   * {@link TranslatableTable} instances, and falls back to a default
+   * factory for other tables.
+   *
+   * @param viewExpander View expander
+   * @param tableScanFactory Factory for non-translatable tables
+   * @return Table scan factory
+   */
+  @Nonnull public static TableScanFactory expandingScanFactory(
+      @Nonnull RelOptTable.ViewExpander viewExpander,
+      @Nonnull TableScanFactory tableScanFactory) {
+    return (cluster, table, hints) -> {
+      final TranslatableTable translatableTable =
+          table.unwrap(TranslatableTable.class);
+      if (translatableTable != null) {
+        final RelOptTable.ToRelContext toRelContext =
+            ViewExpanders.toRelContext(viewExpander, cluster);
+        return translatableTable.toRel(toRelContext, table);
+      }
+      return tableScanFactory.createScan(cluster, table, hints);
+    };
+  }
+
+  /**
+   * Can create a {@link TableFunctionScan}
+   * of the appropriate type for a rule's calling convention.
+   */
+  public interface TableFunctionScanFactory {
+    /** Creates a {@link TableFunctionScan}. */
+    RelNode createTableFunctionScan(RelOptCluster cluster,
+        List<RelNode> inputs, RexNode rexCall, Type elementType,
+        Set<RelColumnMapping> columnMappings);
+  }
+
+  /**
+   * Implementation of
+   * {@link TableFunctionScanFactory}
+   * that returns a {@link TableFunctionScan}.
+   */
+  private static class TableFunctionScanFactoryImpl
+      implements TableFunctionScanFactory {
+    @Override public RelNode createTableFunctionScan(RelOptCluster cluster,
+        List<RelNode> inputs, RexNode rexCall, Type elementType,
+        Set<RelColumnMapping> columnMappings) {
+      return LogicalTableFunctionScan.create(cluster, inputs, rexCall,
+          elementType, rexCall.getType(), columnMappings);
+    }
+  }
+
+  /**
+   * Can create a {@link Snapshot} of
+   * the appropriate type for a rule's calling convention.
+   */
+  public interface SnapshotFactory {
+    /**
+     * Creates a {@link Snapshot}.
+     */
+    RelNode createSnapshot(RelNode input, RexNode period);
+  }
+
+  /**
+   * Implementation of {@link RelFactories.SnapshotFactory} that
+   * returns a vanilla {@link LogicalSnapshot}.
+   */
+  public static class SnapshotFactoryImpl implements SnapshotFactory {
+    public RelNode createSnapshot(RelNode input, RexNode period) {
+      return LogicalSnapshot.create(input, period);
+    }
+  }
+
+  /**
+   * Can create a {@link Match} of
+   * the appropriate type for a rule's calling convention.
+   */
+  public interface MatchFactory {
+    /** Creates a {@link Match}. */
+    RelNode createMatch(RelNode input, RexNode pattern,
+        RelDataType rowType, boolean strictStart, boolean strictEnd,
+        Map<String, RexNode> patternDefinitions, Map<String, RexNode> measures,
+        RexNode after, Map<String, ? extends SortedSet<String>> subsets,
+        boolean allRows, ImmutableBitSet partitionKeys, RelCollation orderKeys,
+        RexNode interval);
+  }
+
+  /**
+   * Implementation of {@link MatchFactory}
+   * that returns a {@link LogicalMatch}.
+   */
+  private static class MatchFactoryImpl implements MatchFactory {
+    public RelNode createMatch(RelNode input, RexNode pattern,
+        RelDataType rowType, boolean strictStart, boolean strictEnd,
+        Map<String, RexNode> patternDefinitions, Map<String, RexNode> measures,
+        RexNode after, Map<String, ? extends SortedSet<String>> subsets,
+        boolean allRows, ImmutableBitSet partitionKeys, RelCollation orderKeys,
+        RexNode interval) {
+      return LogicalMatch.create(input, rowType, pattern, strictStart,
+          strictEnd, patternDefinitions, measures, after, subsets, allRows,
+          partitionKeys, orderKeys, interval);
+    }
+  }
+>>>>>>> 815957625 ([CALCITE-3769] Deprecate TableScanRule (#199))
 
   /**
    * Can create a {@link Spool} of

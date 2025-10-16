@@ -239,7 +239,7 @@ public class EnumerableTableScan
     switch (relFieldType.getSqlTypeName()) {
     case ARRAY:
     case MULTISET:
-<<<<<<< HEAD
+>>>>>>> 815957625 ([CALCITE-3769] Deprecate TableScanRule (#199))
       final RelDataType fieldType = relFieldType.getComponentType();
       if (fieldType.isStruct()) {
         // We can't represent a multiset or array as a List<Employee>, because
@@ -257,6 +257,7 @@ public class EnumerableTableScan
       } else {
         return e;
       }
+<<<<<<< HEAD
 =======
       // We can't represent a multiset or array as a List<Employee>, because
       // the consumer does not know the element type.
@@ -270,6 +271,7 @@ public class EnumerableTableScan
           Expressions.call(BuiltInMethod.AS_ENUMERABLE2.method, e);
       final Expression e3 = elementPhysType.convertTo(e2, JavaRowFormat.LIST);
       return Expressions.call(e3, BuiltInMethod.ENUMERABLE_TO_LIST.method);
+=======
     default:
       return e;
     }
