@@ -16,14 +16,13 @@
  */
 package org.apache.calcite.adapter.enumerable;
 
+import org.apache.calcite.linq4j.tree.Expression;
 import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.convert.ConverterRule;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.logical.LogicalTableScan;
-import org.apache.calcite.schema.QueryableTable;
-import org.apache.calcite.schema.Table;
 import org.apache.calcite.tools.RelBuilderFactory;
 
 import java.util.function.Predicate;
@@ -54,25 +53,15 @@ public class EnumerableTableScanRule extends ConverterRule {
   @Override public RelNode convert(RelNode rel) {
     LogicalTableScan scan = (LogicalTableScan) rel;
     final RelOptTable relOptTable = scan.getTable();
->>>>>>> 815957625 ([CALCITE-3769] Deprecate TableScanRule (#199))
-    final Table table = relOptTable.unwrap(Table.class);
-
-    // The QueryableTable can only be implemented as ENUMERABLE convention now,
-    // but some test QueryableTables do not really implement the expressions,
-    // just skips the QueryableTable#getExpression invocation and returns early.
-    if (table instanceof QueryableTable || relOptTable.getExpression(Object.class) != null) {
-      return EnumerableTableScan.create(scan.getCluster(), relOptTable);
-<<<<<<< HEAD
-    }
-
-    return null;
-=======
     final Expression expression = relOptTable.getExpression(Object.class);
     if (expression == null) {
       return null;
 =======
+=======
+    final Expression expression = relOptTable.getExpression(Object.class);
+    if (expression == null) {
+      return null;
     }
-
-    return null;
+    return EnumerableTableScan.create(scan.getCluster(), relOptTable);
   }
 }

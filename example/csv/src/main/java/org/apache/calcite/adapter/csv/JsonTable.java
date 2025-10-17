@@ -26,6 +26,7 @@ import org.apache.calcite.util.Pair;
 =======
 import org.apache.calcite.util.Source;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,28 +34,16 @@ import java.util.List;
  */
 public class JsonTable extends AbstractTable {
   private final Source source;
-  private RelDataType rowType;
-  protected List<Object> dataList;
+  protected List<Object> list = new ArrayList<>();
 
   public JsonTable(Source source) {
     this.source = source;
   }
 
   public RelDataType getRowType(RelDataTypeFactory typeFactory) {
-    if (rowType == null) {
-      rowType = JsonEnumerator.deduceRowType(typeFactory, source).getRelDataType();
-    }
-    return rowType;
-  }
-
-  /** Returns the data list of the table. */
-  public List<Object> getDataList(RelDataTypeFactory typeFactory) {
-    if (dataList == null) {
-      JsonDataConverter jsonDataConverter =
-          JsonEnumerator.deduceRowType(typeFactory, source);
-      dataList = jsonDataConverter.getDataList();
-    }
-    return dataList;
+    JsonDataConverter jsonDataConverter = JsonEnumerator.deduceRowType(typeFactory, source);
+    list = jsonDataConverter.getDataList();
+    return jsonDataConverter.getRelDataType();
   }
 
   public Statistic getStatistic() {

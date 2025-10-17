@@ -116,8 +116,6 @@ public interface RelOptTable extends Wrapper {
    * Generates code for this table.
    *
    * @param clazz The desired collection class; for example {@code Queryable}.
-   *
-   * @return the code for the table, or null if code generation is not supported
    */
   Expression getExpression(Class clazz);
 

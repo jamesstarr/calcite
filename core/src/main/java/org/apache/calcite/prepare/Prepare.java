@@ -23,6 +23,7 @@ import org.apache.calcite.jdbc.CalcitePrepare;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.jdbc.CalciteSchema.LatticeEntry;
 import org.apache.calcite.plan.Convention;
+import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptLattice;
 import org.apache.calcite.plan.RelOptMaterialization;
 import org.apache.calcite.plan.RelOptPlanner;
@@ -30,9 +31,12 @@ import org.apache.calcite.plan.RelOptSchema;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelTraitSet;
+import org.apache.calcite.plan.ViewExpanders;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
+import org.apache.calcite.rel.RelVisitor;
+import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.logical.LogicalTableModify;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeField;
@@ -182,8 +186,11 @@ public abstract class Prepare {
     };
     visitor.go(root.rel);
 
+<<<<<<< HEAD
 =======
 >>>>>>> 815957625 ([CALCITE-3769] Deprecate TableScanRule (#199))
+=======
+>>>>>>> 6a8c91b46 (Revert "[CALCITE-3769] Deprecate TableScanRule (#199)" (#234))
     final Program program = getProgram();
     final RelNode rootRel4 = program.run(
         planner, root.rel, desiredTraits, materializationList, latticeList);

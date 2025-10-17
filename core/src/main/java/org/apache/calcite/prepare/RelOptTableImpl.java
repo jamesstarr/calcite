@@ -18,11 +18,11 @@ package org.apache.calcite.prepare;
 
 import org.apache.calcite.adapter.enumerable.EnumerableTableScan;
 import org.apache.calcite.config.CalciteSystemProperty;
-=======
->>>>>>> 815957625 ([CALCITE-3769] Deprecate TableScanRule (#199))
+>>>>>>> 6a8c91b46 (Revert "[CALCITE-3769] Deprecate TableScanRule (#199)" (#234))
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.linq4j.tree.Expression;
 import org.apache.calcite.materialize.Lattice;
+import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptSchema;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.rel.RelCollation;
@@ -37,6 +37,7 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.rel.type.RelRecordType;
+import org.apache.calcite.runtime.Hook;
 import org.apache.calcite.schema.ColumnStrategy;
 import org.apache.calcite.schema.FilterableTable;
 import org.apache.calcite.schema.ModifiableTable;
@@ -124,7 +125,6 @@ public class RelOptTableImpl extends Prepare.AbstractPreparingTable {
     return new RelOptTableImpl(schema, rowType, names, table,
         c -> expression, table.getStatistic().getRowCount());
 =======
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
   }
 
   public static RelOptTableImpl create(
@@ -301,7 +301,30 @@ public class RelOptTableImpl extends Prepare.AbstractPreparingTable {
     if (table instanceof TranslatableTable) {
       return ((TranslatableTable) table).toRel(context, this);
     }
-    return LogicalTableScan.create(context.getCluster(), this, context.getTableHints());
+    final RelOptCluster cluster = context.getCluster();
+    if (Hook.ENABLE_BINDABLE.get(false)) {
+      return LogicalTableScan.create(cluster, this, ImmutableList.of());
+    }
+    if (CalciteSystemProperty.ENABLE_ENUMERABLE.value()
+        && table instanceof QueryableTable
+        && (expressionFunction != null
+        || EnumerableTableScan.canHandle(this))) {
+      return EnumerableTableScan.create(cluster, this);
+    }
+    if (table instanceof ScannableTable
+        || table instanceof FilterableTable
+        || table instanceof ProjectableFilterableTable) {
+      return LogicalTableScan.create(cluster, this, ImmutableList.of());
+    }
+    // Some tests rely on the old behavior when tables were immediately converted to
+    // EnumerableTableScan
+    // Note: EnumerableTableScanRule can convert LogicalTableScan to EnumerableTableScan
+    if (CalciteSystemProperty.ENABLE_ENUMERABLE.value()
+        && ((table == null && expressionFunction != null)
+        || EnumerableTableScan.canHandle(this))) {
+      return EnumerableTableScan.create(cluster, this);
+    }
+    return LogicalTableScan.create(cluster, this, ImmutableList.of());
   }
 
   public List<RelCollation> getCollationList() {

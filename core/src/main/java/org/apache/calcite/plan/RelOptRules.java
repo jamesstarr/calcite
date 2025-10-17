@@ -32,6 +32,7 @@ import org.apache.calcite.rel.rules.MatchRule;
 import org.apache.calcite.rel.rules.MaterializedViewFilterScanRule;
 import org.apache.calcite.rel.rules.PruneEmptyRules;
 import org.apache.calcite.rel.rules.SortRemoveConstantKeysRule;
+import org.apache.calcite.rel.rules.TableScanRule;
 
 import com.google.common.collect.ImmutableList;
 
@@ -73,7 +74,7 @@ public class RelOptRules {
       CoreRules.AGGREGATE_STAR_TABLE,
       CoreRules.AGGREGATE_PROJECT_STAR_TABLE,
       TableScanRule.INSTANCE,
-=======
+>>>>>>> 6a8c91b46 (Revert "[CALCITE-3769] Deprecate TableScanRule (#199)" (#234))
       CalciteSystemProperty.COMMUTE.value()
           ? CoreRules.JOIN_ASSOCIATE
           : CoreRules.PROJECT_MERGE,
@@ -85,7 +86,6 @@ public class RelOptRules {
       CoreRules.AGGREGATE_EXPAND_DISTINCT_AGGREGATES,
       CoreRules.AGGREGATE_REDUCE_FUNCTIONS,
       AggregateCaseToFilterRule.INSTANCE,
->>>>>>> 0218f4ee7 ([CALCITE-3144] Add rule, AggregateCaseToFilterRule, that converts "SUM(CASE WHEN b THEN x END)" to "SUM(x) FILTER (WHERE b)")
       CoreRules.FILTER_AGGREGATE_TRANSPOSE,
       CoreRules.PROJECT_WINDOW_TRANSPOSE,
       CoreRules.JOIN_COMMUTE,

@@ -17087,10 +17087,10 @@ LogicalProject(DEPTNO=[$0])
 LogicalProject(DEPTNO=[$0])
   LogicalJoin(condition=[true], joinType=[inner])
     LogicalProject(DEPTNO=[$0])
-      LogicalTableScan(table=[[scott, DEPT]])
+      EnumerableTableScan(table=[[scott, DEPT]])
     LogicalAggregate(group=[{}], DUMMY=[COUNT()])
       LogicalProject(DUMMY=[0])
-        LogicalTableScan(table=[[scott, EMP]])
+        EnumerableTableScan(table=[[scott, EMP]])
 ]]>
         </Resource>
         <Resource name="finalPlan">
@@ -17098,10 +17098,10 @@ LogicalProject(DEPTNO=[$0])
 LogicalProject(DEPTNO=[$0])
   LogicalJoin(condition=[true], joinType=[inner])
     LogicalProject(DEPTNO=[$0])
-      LogicalTableScan(table=[[scott, DEPT]])
+      EnumerableTableScan(table=[[scott, DEPT]])
     LogicalAggregate(group=[{}], DUMMY=[COUNT()])
       LogicalProject(DUMMY=[0])
-        LogicalTableScan(table=[[scott, EMP]])
+        EnumerableTableScan(table=[[scott, EMP]])
 ]]>
         </Resource>
     </TestCase>

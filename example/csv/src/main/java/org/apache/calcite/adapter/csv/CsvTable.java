@@ -32,8 +32,7 @@ import java.util.List;
 public abstract class CsvTable extends AbstractTable {
   protected final Source source;
   protected final RelProtoDataType protoRowType;
-  private RelDataType rowType;
-  private List<CsvFieldType> fieldTypes;
+  protected List<CsvFieldType> fieldTypes;
 
   /** Creates a CsvTable. */
   CsvTable(Source source, RelProtoDataType protoRowType) {
@@ -45,26 +44,14 @@ public abstract class CsvTable extends AbstractTable {
     if (protoRowType != null) {
       return protoRowType.apply(typeFactory);
     }
-    if (rowType == null) {
-      rowType = CsvEnumerator.deduceRowType((JavaTypeFactory) typeFactory, source,
-          null, isStream());
-    }
-    return rowType;
-  }
-
-  /** Returns the field types of this CSV table. */
-  public List<CsvFieldType> getFieldTypes(RelDataTypeFactory typeFactory) {
     if (fieldTypes == null) {
       fieldTypes = new ArrayList<>();
-      CsvEnumerator.deduceRowType((JavaTypeFactory) typeFactory, source,
-          fieldTypes, isStream());
+      return CsvEnumerator.deduceRowType((JavaTypeFactory) typeFactory, source,
+          fieldTypes);
+    } else {
+      return CsvEnumerator.deduceRowType((JavaTypeFactory) typeFactory, source,
+          null);
     }
-    return fieldTypes;
-  }
-
-  /** Returns whether the table represents a stream. */
-  protected boolean isStream() {
-    return false;
   }
 
   /** Various degrees of table "intelligence". */

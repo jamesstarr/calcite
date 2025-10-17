@@ -197,7 +197,7 @@ public class MatchTest {
     String builderExpected = ""
          + "LogicalFilter(condition=[CONTAINS($1, 'waltham')])\n"
          + "  LogicalProject(_MAP=[$0], city=[ITEM($0, 'city')])\n"
-         + "    ElasticsearchTableScan(table=[[elastic, " + ZIPS + "]])\n";
+         + "    LogicalTableScan(table=[[elastic, " + ZIPS + "]])\n";
 
     RelNode root = builder.build();
 
