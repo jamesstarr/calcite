@@ -209,10 +209,12 @@ public class EnumerableJoinTest {
             + "  EnumerableMergeJoin(condition=[AND(=($1, $3), >($0, *(10, $3)))], joinType=[inner])\n"
             + "    EnumerableSort(sort0=[$1], dir0=[ASC])\n"
             + "      EnumerableCalc(expr#0..4=[{inputs}], proj#0..2=[{exprs}])\n"
-            + "        EnumerableTableScan(table=[[s, emps]])\n"
+            + "        EnumerableInterpreter\n"
+            + "          BindableTableScan(table=[[s, emps]])\n"
             + "    EnumerableSort(sort0=[$0], dir0=[ASC])\n"
             + "      EnumerableCalc(expr#0..3=[{inputs}], proj#0..1=[{exprs}])\n"
-            + "        EnumerableTableScan(table=[[s, depts]])\n")
+            + "        EnumerableInterpreter\n"
+            + "          BindableTableScan(table=[[s, depts]])\n")
         .returnsUnordered(""
             + "empid=100; name=Bill; dept_name=Sales; e_deptno=10; d_deptno=10\n"
             + "empid=110; name=Theodore; dept_name=Sales; e_deptno=10; d_deptno=10\n"
