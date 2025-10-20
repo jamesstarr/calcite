@@ -31,7 +31,6 @@ import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelDistribution;
 import org.apache.calcite.rel.RelFieldCollation;
-import org.apache.calcite.rel.RelHomogeneousShuttle;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.AggregateCall;
@@ -2174,45 +2173,25 @@ public class RelBuilder {
    */
   @Experimental
   public RelBuilder repeatUnion(String tableName, boolean all, int iterationLimit) {
-    RelOptTableFinder finder = new RelOptTableFinder(tableName);
+    RelOptTable table = null;
     for (int i = 0; i < stack.size(); i++) { // search scan(tableName) in the stack
-      peek(i).accept(finder);
-      if (finder.relOptTable != null) { // found
+      table = RelOptUtil.findTable(peek(i), tableName);
+      if (table != null) { // found
         break;
       }
     }
-    if (finder.relOptTable == null) {
+    if (table == null) {
       throw RESOURCE.tableNotFound(tableName).ex();
     }
 
-    RelNode iterative = tableSpool(Spool.Type.LAZY, Spool.Type.LAZY, finder.relOptTable).build();
-    RelNode seed = tableSpool(Spool.Type.LAZY, Spool.Type.LAZY, finder.relOptTable).build();
+    RelNode iterative = tableSpool(Spool.Type.LAZY, Spool.Type.LAZY, table).build();
+    RelNode seed = tableSpool(Spool.Type.LAZY, Spool.Type.LAZY, table).build();
     RelNode repeatUnion =
         struct.repeatUnionFactory.createRepeatUnion(seed, iterative, all,
-            iterationLimit);
+            iterationLimit, table);
     return push(repeatUnion);
   }
 
-  /**
-   * Auxiliary class to find a certain RelOptTable based on its name
-   */
-  private static final class RelOptTableFinder extends RelHomogeneousShuttle {
-    private RelOptTable relOptTable = null;
-    private final String tableName;
-
-    private RelOptTableFinder(String tableName) {
-      this.tableName = tableName;
-    }
-
-    @Override public RelNode visit(TableScan scan) {
-      final RelOptTable scanTable = scan.getTable();
-      final List<String> qualifiedName = scanTable.getQualifiedName();
-      if (qualifiedName.get(qualifiedName.size() - 1).equals(tableName)) {
-        relOptTable = scanTable;
-      }
-      return super.visit(scan);
-    }
-  }
 
   /** Creates a {@link Join}. */
   public RelBuilder join(JoinRelType joinType, RexNode condition0,

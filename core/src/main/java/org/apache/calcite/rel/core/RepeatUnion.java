@@ -18,17 +18,23 @@ package org.apache.calcite.rel.core;
 
 import org.apache.calcite.linq4j.function.Experimental;
 import org.apache.calcite.plan.RelOptCluster;
+import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.BiRel;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelWriter;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.schema.TransientTable;
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.Lists;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.List;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Relational expression that computes a repeat union (recursive union in SQL
@@ -63,12 +69,22 @@ public abstract class RepeatUnion extends BiRel {
    */
   public final int iterationLimit;
 
+  /**
+   * Transient table where repeat union's intermediate results will be stored (optional).
+   */
+  protected final @Nullable RelOptTable transientTable;
+
   //~ Constructors -----------------------------------------------------------
   protected RepeatUnion(RelOptCluster cluster, RelTraitSet traitSet,
-      RelNode seed, RelNode iterative, boolean all, int iterationLimit) {
+      RelNode seed, RelNode iterative, boolean all, int iterationLimit,
+      @Nullable RelOptTable transientTable) {
     super(cluster, traitSet, seed, iterative);
     this.iterationLimit = iterationLimit;
     this.all = all;
+    this.transientTable = transientTable;
+    if (transientTable != null) {
+      requireNonNull(transientTable.unwrap(TransientTable.class));
+    }
   }
 
   @Override public double estimateRowCount(RelMetadataQuery mq) {
@@ -95,6 +111,10 @@ public abstract class RepeatUnion extends BiRel {
 
   public RelNode getIterativeRel() {
     return right;
+  }
+
+  public @Nullable RelOptTable getTransientTable() {
+    return transientTable;
   }
 
   @Override protected RelDataType deriveRowType() {
