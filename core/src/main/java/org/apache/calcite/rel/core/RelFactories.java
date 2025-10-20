@@ -607,7 +607,7 @@ public class RelFactories {
   public interface RepeatUnionFactory {
     /** Creates a {@link RepeatUnion}. */
     RelNode createRepeatUnion(RelNode seed, RelNode iterative, boolean all,
-        int iterationLimit);
+        int iterationLimit, RelOptTable table);
   }
 
   /**
@@ -616,8 +616,8 @@ public class RelFactories {
    */
   private static class RepeatUnionFactoryImpl implements RepeatUnionFactory {
     public RelNode createRepeatUnion(RelNode seed, RelNode iterative,
-        boolean all, int iterationLimit) {
-      return LogicalRepeatUnion.create(seed, iterative, all, iterationLimit);
+        boolean all, int iterationLimit, RelOptTable table) {
+      return LogicalRepeatUnion.create(seed, iterative, all, iterationLimit, table);
     }
   }
 

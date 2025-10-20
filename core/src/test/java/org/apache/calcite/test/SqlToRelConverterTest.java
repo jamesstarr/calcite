@@ -550,7 +550,7 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
   }
 
 
-  @Test void testRecursiveQuery() {
+  @Test public void testRecursiveQuery() {
     final String sql = "WITH RECURSIVE aux(i) AS (\n"
         + "  VALUES (1)\n"
         + "  UNION ALL\n"
@@ -560,7 +560,7 @@ public class SqlToRelConverterTest extends SqlToRelTestBase {
     sql(sql).ok();
   }
 
-  @Test void testGroupingSetsWith() {
+  @Test public void testGroupingSetsWith() {
     final String sql = "with t(a, b, c, d) as (values (1, 2, 3, 4))\n"
         + "select 1 from t\n"
         + "group by rollup(a, b), rollup(c, d)";

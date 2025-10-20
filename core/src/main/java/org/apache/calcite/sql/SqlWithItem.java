@@ -115,7 +115,8 @@ public class SqlWithItem extends SqlCall {
       assert functionQualifier == null;
       assert operands.length == 4;
       return new SqlWithItem(pos, (SqlIdentifier) operands[0],
-          (SqlNodeList) operands[1], operands[2], (SqlLiteral) operands[3]);
+          (SqlNodeList) operands[1], operands[2],
+          SqlLiteral.createBoolean(false, SqlParserPos.ZERO));
     }
   }
 }

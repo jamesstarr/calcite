@@ -21,7 +21,7 @@ import org.apache.calcite.linq4j.tree.BlockBuilder;
 import org.apache.calcite.linq4j.tree.Expression;
 import org.apache.calcite.linq4j.tree.Expressions;
 import org.apache.calcite.plan.RelOptCluster;
->>>>>>> e323a2a7b ([CALCITE-2812] Add algebraic operators to allow expressing recursive queries)
+import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.RepeatUnion;
@@ -44,14 +44,15 @@ public class EnumerableRepeatUnion extends RepeatUnion implements EnumerableRel 
    * Creates an EnumerableRepeatUnion.
    */
   EnumerableRepeatUnion(RelOptCluster cluster, RelTraitSet traitSet,
-      RelNode seed, RelNode iterative, boolean all, int iterationLimit) {
-    super(cluster, traitSet, seed, iterative, all, iterationLimit);
+      RelNode seed, RelNode iterative, boolean all, int iterationLimit,
+      RelOptTable transientTable) {
+    super(cluster, traitSet, seed, iterative, all, iterationLimit, transientTable);
   }
 
   @Override public EnumerableRepeatUnion copy(RelTraitSet traitSet, List<RelNode> inputs) {
     assert inputs.size() == 2;
     return new EnumerableRepeatUnion(getCluster(), traitSet,
-        inputs.get(0), inputs.get(1), all, iterationLimit);
+        inputs.get(0), inputs.get(1), all, iterationLimit, transientTable);
   }
 
   @Override public Result implement(EnumerableRelImplementor implementor, Prefer pref) {
