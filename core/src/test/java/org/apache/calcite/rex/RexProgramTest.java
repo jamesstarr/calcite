@@ -1861,14 +1861,12 @@ public class RexProgramTest extends RexProgramTestBase {
     assertThat(simplify
             .simplifyFilterPredicates(args)
             .toStringRaw(),
-=======
-    assertThat(simplify.withUnknownAsFalse(true)
-=======
     assertThat(simplify
->>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
             .simplifyFilterPredicates(args)
             .toString(),
 >>>>>>> 5926c2361 ([CALCITE-2205] JoinPushTransitivePredicatesRule should not create Filter on top of equivalent Filter (Vitalii Diravka)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+>>>>>>> b2465b3e2 ([CALCITE-2450] Reorder RexCall predicates to a canonical form (#233))
         equalTo("AND(=(?0.a, 1), =(?0.b, 1))"));
 
     // "a = 1 and a = 10" is always false
@@ -2501,7 +2499,7 @@ public class RexProgramTest extends RexProgramTestBase {
     // TODO: "b is not unknown" would be the best simplification.
     final RexNode simplified =
         this.simplify.simplifyUnknownAs(neOrEq, RexUnknownAs.UNKNOWN);
-    assertThat(simplified.toString(),
+    assertThat(simplified.toStringRaw(),
         equalTo("OR(<>(?0.b, 1), =(?0.b, 1))"));
 
     // "a is null or a is not null" ==> "true"
@@ -3562,15 +3560,9 @@ public class RexProgramTest extends RexProgramTestBase {
 
   private void assertTypeAndToString(
       RexNode rexNode, String representation, String type) {
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-    assertEquals(representation, rexNode.toStringRaw());
-    assertEquals(type, rexNode.getType().toString()
-        + (rexNode.getType().isNullable() ? "" : " NOT NULL"), "type of " + rexNode);
-  }
-
-  @Test void testIsDeterministic() {
-=======
     assertEquals(representation, rexNode.toString());
+=======
+    assertEquals(representation, rexNode.toStringRaw());
     assertEquals(type, rexNode.getType().toString()
         + (rexNode.getType().isNullable() ? "" : " NOT NULL"), "type of " + rexNode);
   }
@@ -4201,22 +4193,22 @@ public class RexProgramTest extends RexProgramTestBase {
     // Expression
     //   AND(=(?0.x, 1), OR(=(?0.x, 2), =(?0.y, 3)))
     // transformation creates 7 nodes
-    //   OR(AND(=(?0.x, 1), =(?0.x, 2)), AND(=(?0.x, 1), =(?0.y, 3)))
+    //   OR(AND(=(1, ?0.x), =(2, ?0.x)), AND(=(1, ?0.x), =(3, ?0.y)))
     // Thus, it is triggered.
     checkThresholdDnf(
             and(eq(xRef, literal1), or(eq(xRef, literal2), eq(yRef, literal3))),
-            8, "OR(AND(=(?0.x, 1), =(?0.x, 2)), AND(=(?0.x, 1), =(?0.y, 3)))");
+            8, "OR(AND(=(1, ?0.x), =(2, ?0.x)), AND(=(1, ?0.x), =(3, ?0.y)))");
 
     // Expression
     //   AND(=(?0.x, 1), =(?0.x, 2), OR(=(?0.x, 3), =(?0.y, 4)))
     // transformation creates 9 nodes
-    //   OR(AND(=(?0.x, 1), =(?0.x, 2), =(?0.x, 3)),
-    //       AND(=(?0.x, 1), =(?0.x, 2), =(?0.y, 4)))
+    //   OR(AND(=(1, ?0.x), =(2, ?0.x), =(3, ?0.x)),
+    //       AND(=(1, ?0.x), =(2, ?0.x), =(4, ?0.y)))
     // Thus, it is NOT triggered.
     checkThresholdDnf(
             and(eq(xRef, literal1), eq(xRef, literal2),
                     or(eq(xRef, literal3), eq(yRef, literal4))),
-            8, "AND(=(?0.x, 1), =(?0.x, 2), OR(=(?0.x, 3), =(?0.y, 4)))");
+            8, "AND(=(1, ?0.x), =(2, ?0.x), OR(=(3, ?0.x), =(4, ?0.y)))");
   }
 
   /** Unit test for

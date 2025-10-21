@@ -93,6 +93,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.calcite.plan.RelOptRule.operand;
+import static org.apache.calcite.test.RelMetadataTest.sortsAs;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -1444,7 +1445,7 @@ public class PlannerTest {
             + "  EnumerableUnion(all=[true])\n"
             + "    EnumerableTableScan(table=[[scott, EMP]])\n"
             + "    EnumerableTableScan(table=[[scott, EMP]])\n"
-            + "  EnumerableFilter(condition=[=($cor0.DEPTNO, $0)])\n"
+            + "  EnumerableFilter(condition=[=($0, $cor0.DEPTNO)])\n"
             + "    EnumerableUnion(all=[true])\n"
             + "      EnumerableTableScan(table=[[scott, EMP]])\n"
             + "      EnumerableTableScan(table=[[scott, EMP]])\n"));

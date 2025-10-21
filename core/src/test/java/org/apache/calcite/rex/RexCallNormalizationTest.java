@@ -21,8 +21,8 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for RexCall normalization.
  */
-class RexCallNormalizationTest extends RexProgramTestBase {
-  @Test void digestIsNormalized() {
+public class RexCallNormalizationTest extends RexProgramTestBase {
+  @Test public void digestIsNormalized() {
     final RexNode node = and(or(vBool(1), vBool()), vBool());
     checkDigest(node, "AND(?0.bool0, OR(?0.bool0, ?0.bool1))");
     checkRaw(node, "AND(OR(?0.bool1, ?0.bool0), ?0.bool0)");
@@ -32,7 +32,7 @@ class RexCallNormalizationTest extends RexProgramTestBase {
     checkDigest(eq(vVarchar(), literal("01")), "=('01', ?0.varchar0)");
   }
 
-  @Test void skipNormalizationWorks() {
+  @Test public void skipNormalizationWorks() {
     final RexNode node = and(or(vBool(1), vBool()), vBool());
     try (RexNode.Closeable ignored = RexNode.skipNormalize()) {
       checkDigest(node, "AND(OR(?0.bool1, ?0.bool0), ?0.bool0)");
@@ -40,33 +40,33 @@ class RexCallNormalizationTest extends RexProgramTestBase {
     }
   }
 
-  @Test void skipNormalizeWorks() {
+  @Test public void skipNormalizeWorks() {
     checkDigest(and(or(vBool(1), vBool()), vBool()),
         "AND(?0.bool0, OR(?0.bool0, ?0.bool1))");
   }
 
-  @Test void reversibleSameArgOpsNormalizedToLess() {
+  @Test public void reversibleSameArgOpsNormalizedToLess() {
     checkDigest(lt(vBool(), vBool()), "<(?0.bool0, ?0.bool0)");
     checkDigest(gt(vBool(), vBool()), "<(?0.bool0, ?0.bool0)");
     checkDigest(le(vBool(), vBool()), "<=(?0.bool0, ?0.bool0)");
     checkDigest(ge(vBool(), vBool()), "<=(?0.bool0, ?0.bool0)");
   }
 
-  @Test void reversibleDifferentArgTypesShouldNotBeShuffled() {
+  @Test public void reversibleDifferentArgTypesShouldNotBeShuffled() {
     checkDigest(plus(vSmallInt(), vInt()), "+(?0.smallint0, ?0.int0)");
     checkDigest(plus(vInt(), vSmallInt()), "+(?0.int0, ?0.smallint0)");
     checkDigest(mul(vSmallInt(), vInt()), "*(?0.smallint0, ?0.int0)");
     checkDigest(mul(vInt(), vSmallInt()), "*(?0.int0, ?0.smallint0)");
   }
 
-  @Test void reversibleDifferentNullabilityArgsAreNormalized() {
+  @Test public void reversibleDifferentNullabilityArgsAreNormalized() {
     checkDigest(plus(vIntNotNull(), vInt()), "+(?0.int0, ?0.notNullInt0)");
     checkDigest(plus(vInt(), vIntNotNull()), "+(?0.int0, ?0.notNullInt0)");
     checkDigest(mul(vIntNotNull(), vInt()), "*(?0.int0, ?0.notNullInt0)");
     checkDigest(mul(vInt(), vIntNotNull()), "*(?0.int0, ?0.notNullInt0)");
   }
 
-  @Test void symmetricalDifferentArgOps() {
+  @Test public void symmetricalDifferentArgOps() {
     for (int i = 0; i < 2; i++) {
       int j = 1 - i;
       checkDigest(eq(vBool(i), vBool(j)), "=(?0.bool0, ?0.bool1)");
@@ -74,7 +74,7 @@ class RexCallNormalizationTest extends RexProgramTestBase {
     }
   }
 
-  @Test void reversibleDifferentArgOps() {
+  @Test public void reversibleDifferentArgOps() {
     for (int i = 0; i < 2; i++) {
       int j = 1 - i;
       checkDigest(

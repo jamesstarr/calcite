@@ -2057,17 +2057,11 @@ public class RelMetadataTest extends SqlToRelTestBase {
         + "union all\n"
         + "select empno, comm, deptno from emp where empno=1 and comm=4");
     final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-    // MODIFICATION BEGIN {CALCITE-4073}
-    // Reason: This change is partially cherry-picked early to address a flaky test introduced in
-    // CALCITE-3439.
+    // The normalization from CALCITE-2450 should make this deterministic, but the order
+    // of =($1, 2) and =($2, 3) within the AND can still vary, so we accept both orders.
     assertThat(mq.getPulledUpPredicates(rel).pulledUpPredicates,
-        // Because the hashCode for
-        // OR(AND(=($1, 2), =($2, 3)) and
-        // OR(AND(=($2, 3), =($1, 2)) are the same, the result is flipped and not stable,
-        // but they both are correct.
         anyOf(sortsAs("[=($0, 1), OR(AND(=($1, 2), =($2, 3)), =($1, 4))]"),
             sortsAs("[=($0, 1), OR(AND(=($2, 3), =($1, 2)), =($1, 4))]")));
-    // MODIFICATION END {CALCITE-4073}
 
   }
 
@@ -2732,6 +2726,7 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final RelOptPredicateList inputSet = mq.getAllPredicates(rel);
     assertThat(inputSet.pulledUpPredicates,
         sortsAs("[=([CATALOG, SALES, EMP].#2.$0, 5)]"));
+<<<<<<< HEAD
   }
 
   @Test void testTableReferencesUnionUnknownNode() {
@@ -2746,6 +2741,8 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final RelMetadataQuery mq = node.getCluster().getMetadataQuery();
     final Set<RelTableRef> tableReferences = mq.getTableReferences(union);
     assertNull(tableReferences);
+=======
+>>>>>>> b2465b3e2 ([CALCITE-2450] Reorder RexCall predicates to a canonical form (#233))
   }
 
   @Test public void testTableReferencesUnionUnknownNode() {

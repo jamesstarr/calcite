@@ -1362,29 +1362,23 @@ public enum SqlKind {
    * <p>For instance: {@link #AND}, {@link #OR}, {@link #EQUALS}, {@link #LEAST}</p>
    * <p>Note: {@link #PLUS} does depend on the argument oder if argument types are different</p>
    */
-<<<<<<< HEAD
+=======
   @API(since = "1.22", status = API.Status.EXPERIMENTAL)
   public static final Set<SqlKind> SYMMETRICAL =
       EnumSet.of(
           AND, OR, EQUALS, NOT_EQUALS,
           IS_DISTINCT_FROM, IS_NOT_DISTINCT_FROM,
           GREATEST, LEAST);
-=======
-  public static final Set<SqlKind> SYMMETRICAL =
-          EnumSet.of(
-                  AND, OR, EQUALS, NOT_EQUALS,
-                  IS_DISTINCT_FROM, IS_NOT_DISTINCT_FROM,
-                  GREATEST, LEAST);
 
   /**
    * Category of operators that do not depend on the argument order if argument types are equal.
    *
    * <p>For instance: {@link #PLUS}, {@link #TIMES}</p>
    */
-=======
+  @API(since = "1.22", status = API.Status.EXPERIMENTAL)
   public static final Set<SqlKind> SYMMETRICAL_SAME_ARG_TYPE =
-          EnumSet.of(
-                  PLUS, TIMES);
+      EnumSet.of(
+          PLUS, TIMES);
 
   /** Lower-case name. */
   public final String lowerName = name().toLowerCase(Locale.ROOT);

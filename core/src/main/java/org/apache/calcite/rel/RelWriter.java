@@ -88,8 +88,19 @@ public interface RelWriter {
   default boolean nest() {
     return false;
   }
-<<<<<<< HEAD
 =======
+
+  /**
+   * Activates {@link RexNode} normalization if {@link SqlExplainLevel#DIGEST_ATTRIBUTES} is used.
+   * Note: the returned value must be closed, and the API is designed to be used with a
+   * try-with-resources.
+   * @return a handle that should be closed to revert normalization state
+   */
+  @API(since = "1.22", status = API.Status.EXPERIMENTAL)
+  default RexNode.Closeable withRexNormalize() {
+    boolean needNormalize = getDetailLevel() == SqlExplainLevel.DIGEST_ATTRIBUTES;
+    return RexNode.withNormalize(needNormalize);
+  }
 }
 <<<<<<< HEAD
 >>>>>>> 0994ded7e ([CALCITE-2902] Improve performance of AbstractRelNode#computeDigest)
