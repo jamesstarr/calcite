@@ -21,6 +21,7 @@ import org.apache.calcite.adapter.enumerable.EnumerableRules;
 import org.apache.calcite.adapter.java.ReflectiveSchema;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
+import org.apache.calcite.interpreter.Bindables;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.rel.rules.JoinCommuteRule;
 import org.apache.calcite.rel.rules.JoinToCorrelateRule;
@@ -46,6 +47,8 @@ public class EnumerableRepeatUnionTest {
   @Test public void testGenerateNumbers() {
     CalciteAssert.that()
         .query("?")
+        .withHook(Hook.PLANNER, (Consumer<RelOptPlanner>) planner ->
+            planner.addRule(Bindables.BINDABLE_TABLE_SCAN_RULE))
         .withRel(
             //   WITH RECURSIVE delta(n) AS (
             //     VALUES (1)
@@ -95,6 +98,8 @@ public class EnumerableRepeatUnionTest {
   @Test public void testGenerateNumbers2() {
     CalciteAssert.that()
         .query("?")
+        .withHook(Hook.PLANNER, (Consumer<RelOptPlanner>) planner ->
+            planner.addRule(Bindables.BINDABLE_TABLE_SCAN_RULE))
         .withRel(
             //   WITH RECURSIVE aux(i) AS (
             //     VALUES (0)
@@ -123,6 +128,8 @@ public class EnumerableRepeatUnionTest {
   @Test public void testGenerateNumbers3() {
     CalciteAssert.that()
         .query("?")
+        .withHook(Hook.PLANNER, (Consumer<RelOptPlanner>) planner ->
+            planner.addRule(Bindables.BINDABLE_TABLE_SCAN_RULE))
         .withRel(
             //   WITH RECURSIVE aux(i, j) AS (
             //     VALUES (0, 0)
@@ -161,6 +168,8 @@ public class EnumerableRepeatUnionTest {
   @Test public void testFactorial() {
     CalciteAssert.that()
         .query("?")
+        .withHook(Hook.PLANNER, (Consumer<RelOptPlanner>) planner ->
+            planner.addRule(Bindables.BINDABLE_TABLE_SCAN_RULE))
         .withRel(
             //   WITH RECURSIVE delta(n, fact) AS (
             //     VALUES (0, 1)
@@ -201,6 +210,8 @@ public class EnumerableRepeatUnionTest {
   @Test public void testGenerateNumbersNestedRecursion() {
     CalciteAssert.that()
         .query("?")
+        .withHook(Hook.PLANNER, (Consumer<RelOptPlanner>) planner ->
+            planner.addRule(Bindables.BINDABLE_TABLE_SCAN_RULE))
         .withRel(
             //   WITH RECURSIVE t_out(n) AS (
             //     WITH RECURSIVE t_in(n) AS (
