@@ -217,8 +217,7 @@ class CsvTest {
   @Test void testPushDownProjectDumb() throws SQLException {
     // rule does not fire, because we're using 'dumb' tables in simple model
     final String sql = "explain plan for select * from EMPS";
-    final String expected = "PLAN=EnumerableInterpreter\n"
-        + "  BindableTableScan(table=[[SALES, EMPS]])\n";
+    final String expected = "PLAN=EnumerableTableScan(table=[[SALES, EMPS]])\n";
     sql("model", sql).returns(expected).ok();
   }
 

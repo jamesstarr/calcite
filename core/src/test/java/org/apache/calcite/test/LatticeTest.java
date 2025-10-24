@@ -358,7 +358,7 @@ public class LatticeTest {
             CalciteAssert.checkRel(
                 "LogicalProject(unit_sales=[$7], brand_name=[$10])\n"
                     + "  LogicalProject(product_id=[$0], time_id=[$1], customer_id=[$2], promotion_id=[$3], store_id=[$4], store_sales=[$5], store_cost=[$6], unit_sales=[$7], product_class_id=[$8], product_id0=[$9], brand_name=[$10], product_name=[$11], SKU=[$12], SRP=[$13], gross_weight=[$14], net_weight=[$15], recyclable_package=[$16], low_fat=[$17], units_per_case=[$18], cases_per_pallet=[$19], shelf_width=[$20], shelf_height=[$21], shelf_depth=[$22])\n"
-                    + "    LogicalTableScan(table=[[adhoc, star]])\n",
+                    + "    StarTableScan(table=[[adhoc, star]])\n",
                 counter));
     assertThat(counter.intValue(), equalTo(1));
   }
@@ -379,10 +379,10 @@ public class LatticeTest {
                   containsStringLinux(
                       "LogicalProject(brand_name=[$1], customer_id=[$0])\n"
                       + "  LogicalAggregate(group=[{2, 10}])\n"
-                      + "    LogicalTableScan(table=[[adhoc, star]])\n"),
+                      + "    StarTableScan(table=[[adhoc, star]])\n"),
                   containsStringLinux(
                       "LogicalAggregate(group=[{2, 10}])\n"
-                      + "  LogicalTableScan(table=[[adhoc, star]])\n")));
+                      + "  StarTableScan(table=[[adhoc, star]])\n")));
           return null;
         });
     assertThat(counter.intValue(), equalTo(2));
@@ -827,7 +827,7 @@ public class LatticeTest {
             CalciteAssert.checkRel(
                 "LogicalProject(unit_sales=[$7], brand_name=[$10])\n"
                     + "  LogicalProject(product_id=[$0], time_id=[$1], customer_id=[$2], promotion_id=[$3], store_id=[$4], store_sales=[$5], store_cost=[$6], unit_sales=[$7], product_class_id=[$8], product_id0=[$9], brand_name=[$10], product_name=[$11], SKU=[$12], SRP=[$13], gross_weight=[$14], net_weight=[$15], recyclable_package=[$16], low_fat=[$17], units_per_case=[$18], cases_per_pallet=[$19], shelf_width=[$20], shelf_height=[$21], shelf_depth=[$22])\n"
-                    + "    LogicalTableScan(table=[[adhoc, star]])\n",
+                    + "    StarTableScan(table=[[adhoc, star]])\n",
                 counter));
     if (enabled) {
       assertThat(counter.intValue(), is(1));
@@ -885,7 +885,7 @@ public class LatticeTest {
         .enableMaterializations(true)
         .substitutionMatches(
             CalciteAssert.checkRel(
-                "EnumerableTableScan(table=[[mat, m0]])\n",
+                "LogicalTableScan(table=[[mat, m0]])\n",
                 counter));
     assertThat(counter.intValue(), equalTo(1));
   }

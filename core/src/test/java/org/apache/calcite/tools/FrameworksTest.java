@@ -524,7 +524,7 @@ public class FrameworksTest {
 
     public Expression getExpression(SchemaPlus schema, String tableName,
         Class clazz) {
-      throw new UnsupportedOperationException();
+      return null;
     }
   }
 

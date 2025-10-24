@@ -240,22 +240,25 @@ public class EnumerableTableScan
     case ARRAY:
     case MULTISET:
 =======
-      // We can't represent a multiset or array as a List<Employee>, because
-      // the consumer does not know the element type.
-      // The standard element type is List.
-      // We need to convert to a List<List>.
-      final JavaTypeFactory typeFactory =
-          (JavaTypeFactory) getCluster().getTypeFactory();
-      final PhysType elementPhysType = PhysTypeImpl.of(
-          typeFactory, relFieldType.getComponentType(), JavaRowFormat.CUSTOM);
-      final MethodCallExpression e2 =
-          Expressions.call(BuiltInMethod.AS_ENUMERABLE2.method, e);
-      final Expression e3 = elementPhysType.convertTo(e2, JavaRowFormat.LIST);
-      return Expressions.call(e3, BuiltInMethod.ENUMERABLE_TO_LIST.method);
-<<<<<<< HEAD
 =======
-=======
->>>>>>> 6a8c91b46 (Revert "[CALCITE-3769] Deprecate TableScanRule (#199)" (#234))
+      final RelDataType fieldType = relFieldType.getComponentType();
+      if (fieldType.isStruct()) {
+        // We can't represent a multiset or array as a List<Employee>, because
+        // the consumer does not know the element type.
+        // The standard element type is List.
+        // We need to convert to a List<List>.
+        final JavaTypeFactory typeFactory =
+            (JavaTypeFactory) getCluster().getTypeFactory();
+        final PhysType elementPhysType = PhysTypeImpl.of(
+            typeFactory, fieldType, JavaRowFormat.CUSTOM);
+        final MethodCallExpression e2 =
+            Expressions.call(BuiltInMethod.AS_ENUMERABLE2.method, e);
+        final Expression e3 = elementPhysType.convertTo(e2, JavaRowFormat.LIST);
+        return Expressions.call(e3, BuiltInMethod.ENUMERABLE_TO_LIST.method);
+      } else {
+        return e;
+      }
+>>>>>>> 0e675a2f7 (Revert "Revert "[CALCITE-3769] Deprecate TableScanRule (#199)" (#234)" (#237))
     default:
       return e;
     }
