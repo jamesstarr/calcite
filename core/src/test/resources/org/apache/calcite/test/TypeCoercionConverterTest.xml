@@ -362,6 +362,7 @@ LogicalTableModify(table=[[CATALOG, SALES, T1]], operation=[INSERT], flattened=[
       LogicalUnion(all=[false])
         LogicalUnion(all=[false])
 <<<<<<< HEAD
+<<<<<<< HEAD
           LogicalProject(EXPR$0=['a'], EXPR$1=[1:SMALLINT], EXPR$2=[1.0], EXPR$3=[0], EXPR$4=[0:FLOAT], EXPR$5=[0:DOUBLE], EXPR$6=[0:DECIMAL(19, 0)], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
             LogicalValues(tuples=[[{ 0 }]])
           LogicalProject(EXPR$0=['b'], EXPR$1=[2:SMALLINT], EXPR$2=[2], EXPR$3=[0], EXPR$4=[0:FLOAT], EXPR$5=[0:DOUBLE], EXPR$6=[0:DECIMAL(19, 0)], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
@@ -373,15 +374,22 @@ LogicalTableModify(table=[[CATALOG, SALES, T1]], operation=[INSERT], flattened=[
     LogicalProject(EXPR$0=['e'], EXPR$1=[5], EXPR$2=[5.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0:FLOAT], EXPR$5=[0:DOUBLE], EXPR$6=[0:DECIMAL(19, 0)], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
 =======
           LogicalProject(EXPR$0=['a'], EXPR$1=[1], EXPR$2=[1.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+=======
+          LogicalProject(EXPR$0=['a'], EXPR$1=[1:SMALLINT], EXPR$2=[1.0], EXPR$3=[0], EXPR$4=[0:FLOAT], EXPR$5=[0:DOUBLE], EXPR$6=[0:DECIMAL(19, 0)], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+>>>>>>> 6781dfa0f ([CALCITE-3672] Support implicit type coercion for insert and update (#181))
             LogicalValues(tuples=[[{ 0 }]])
-          LogicalProject(EXPR$0=['b'], EXPR$1=[2], EXPR$2=[2], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+          LogicalProject(EXPR$0=['b'], EXPR$1=[2:SMALLINT], EXPR$2=[2], EXPR$3=[0], EXPR$4=[0:FLOAT], EXPR$5=[0:DOUBLE], EXPR$6=[0:DECIMAL(19, 0)], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
             LogicalValues(tuples=[[{ 0 }]])
-        LogicalProject(EXPR$0=['c'], EXPR$1=[3:SMALLINT], EXPR$2=[3.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+        LogicalProject(EXPR$0=['c'], EXPR$1=[3:SMALLINT], EXPR$2=[3.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0:FLOAT], EXPR$5=[0:DOUBLE], EXPR$6=[0:DECIMAL(19, 0)], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
           LogicalValues(tuples=[[{ 0 }]])
-      LogicalProject(EXPR$0=['d'], EXPR$1=[4], EXPR$2=[4.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+      LogicalProject(EXPR$0=['d'], EXPR$1=[4], EXPR$2=[4.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0:FLOAT], EXPR$5=[0:DOUBLE], EXPR$6=[0:DECIMAL(19, 0)], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
         LogicalValues(tuples=[[{ 0 }]])
+<<<<<<< HEAD
     LogicalProject(EXPR$0=['e'], EXPR$1=[5], EXPR$2=[5.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
 >>>>>>> 599378705 ([CALCITE-5130] AssertionError: "Conversion to relational algebra fail… (#214))
+=======
+    LogicalProject(EXPR$0=['e'], EXPR$1=[5], EXPR$2=[5.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0:FLOAT], EXPR$5=[0:DOUBLE], EXPR$6=[0:DECIMAL(19, 0)], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+>>>>>>> 6781dfa0f ([CALCITE-3672] Support implicit type coercion for insert and update (#181))
       LogicalValues(tuples=[[{ 0 }]])
 ]]>
     </Resource>
@@ -395,6 +403,7 @@ LogicalTableModify(table=[[CATALOG, SALES, T1]], operation=[INSERT], flattened=[
 LogicalTableModify(table=[[CATALOG, SALES, T1]], operation=[INSERT], flattened=[false])
   LogicalUnion(all=[true])
 <<<<<<< HEAD
+<<<<<<< HEAD
     LogicalProject(EXPR$0=['a'], EXPR$1=[1:SMALLINT], EXPR$2=[1.0], EXPR$3=[0], EXPR$4=[0:FLOAT], EXPR$5=[0:DOUBLE], EXPR$6=[0:DECIMAL(19, 0)], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
       LogicalValues(tuples=[[{ 0 }]])
     LogicalProject(EXPR$0=['b'], EXPR$1=[2:SMALLINT], EXPR$2=[2], EXPR$3=[0], EXPR$4=[0:FLOAT], EXPR$5=[0:DOUBLE], EXPR$6=[0:DECIMAL(19, 0)], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
@@ -406,19 +415,27 @@ LogicalTableModify(table=[[CATALOG, SALES, T1]], operation=[INSERT], flattened=[
     LogicalProject(EXPR$0=['e'], EXPR$1=[5], EXPR$2=[5.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0:FLOAT], EXPR$5=[0:DOUBLE], EXPR$6=[0:DECIMAL(19, 0)], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
 =======
     LogicalProject(EXPR$0=['a'], EXPR$1=[1], EXPR$2=[1.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+=======
+    LogicalProject(EXPR$0=['a'], EXPR$1=[1:SMALLINT], EXPR$2=[1.0], EXPR$3=[0], EXPR$4=[0:FLOAT], EXPR$5=[0:DOUBLE], EXPR$6=[0:DECIMAL(19, 0)], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+>>>>>>> 6781dfa0f ([CALCITE-3672] Support implicit type coercion for insert and update (#181))
       LogicalValues(tuples=[[{ 0 }]])
-    LogicalProject(EXPR$0=['b'], EXPR$1=[2], EXPR$2=[2], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+    LogicalProject(EXPR$0=['b'], EXPR$1=[2:SMALLINT], EXPR$2=[2], EXPR$3=[0], EXPR$4=[0:FLOAT], EXPR$5=[0:DOUBLE], EXPR$6=[0:DECIMAL(19, 0)], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
       LogicalValues(tuples=[[{ 0 }]])
-    LogicalProject(EXPR$0=['c'], EXPR$1=[3:SMALLINT], EXPR$2=[3.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+    LogicalProject(EXPR$0=['c'], EXPR$1=[3:SMALLINT], EXPR$2=[3.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0:FLOAT], EXPR$5=[0:DOUBLE], EXPR$6=[0:DECIMAL(19, 0)], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
       LogicalValues(tuples=[[{ 0 }]])
-    LogicalProject(EXPR$0=['d'], EXPR$1=[4], EXPR$2=[4.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+    LogicalProject(EXPR$0=['d'], EXPR$1=[4], EXPR$2=[4.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0:FLOAT], EXPR$5=[0:DOUBLE], EXPR$6=[0:DECIMAL(19, 0)], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
       LogicalValues(tuples=[[{ 0 }]])
+<<<<<<< HEAD
     LogicalProject(EXPR$0=['e'], EXPR$1=[5], EXPR$2=[5.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0], EXPR$5=[0], EXPR$6=[0], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
 >>>>>>> 599378705 ([CALCITE-5130] AssertionError: "Conversion to relational algebra fail… (#214))
+=======
+    LogicalProject(EXPR$0=['e'], EXPR$1=[5], EXPR$2=[5.0:DECIMAL(2, 1)], EXPR$3=[0], EXPR$4=[0:FLOAT], EXPR$5=[0:DOUBLE], EXPR$6=[0:DECIMAL(19, 0)], EXPR$7=[2021-11-28 00:00:00], EXPR$8=[2021-11-28], EXPR$9=[X'0a':BINARY(1)], EXPR$10=[false])
+>>>>>>> 6781dfa0f ([CALCITE-3672] Support implicit type coercion for insert and update (#181))
       LogicalValues(tuples=[[{ 0 }]])
 ]]>
     </Resource>
   </TestCase>
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
   <TestCase name="testUpdateQuerySourceCoercion">
@@ -434,6 +451,8 @@ LogicalTableModify(table=[[CATALOG, SALES, T1]], operation=[UPDATE], updateColum
     </Resource>
   </TestCase>
 >>>>>>> 599378705 ([CALCITE-5130] AssertionError: "Conversion to relational algebra fail… (#214))
+=======
+>>>>>>> 6781dfa0f ([CALCITE-3672] Support implicit type coercion for insert and update (#181))
   <TestCase name="testCastNullAsIntUnionChar">
     <Resource name="sql">
       <![CDATA[select CAST(null AS INTEGER) union select '10']]>
@@ -462,6 +481,7 @@ LogicalProject(EXPR$0=[AND(=($7, 2020-04-16 00:00:00), =(CAST($8):TIMESTAMP(0) N
     </Resource>
   </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   <TestCase name="testInsertQuerySourceCoercion">
     <Resource name="sql">
@@ -477,6 +497,8 @@ LogicalTableModify(table=[[CATALOG, SALES, T1]], operation=[INSERT], flattened=[
     </Resource>
   </TestCase>
 >>>>>>> 599378705 ([CALCITE-5130] AssertionError: "Conversion to relational algebra fail… (#214))
+=======
+>>>>>>> 6781dfa0f ([CALCITE-3672] Support implicit type coercion for insert and update (#181))
   <TestCase name="testNotInOperation">
     <Resource name="sql">
       <![CDATA[select
@@ -498,9 +520,12 @@ LogicalValues(tuples=[[{ false, false, false }]])
     <Resource name="plan">
       <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 11c540686a4 ([CALCITE-5130] AssertionError: "Conversion to relational algebra failed to preserve datatypes" when union VARCHAR literal and CAST(null AS INTEGER))
 >>>>>>> 599378705 ([CALCITE-5130] AssertionError: "Conversion to relational algebra fail… (#214))
+=======
+>>>>>>> 6781dfa0f ([CALCITE-3672] Support implicit type coercion for insert and update (#181))
 LogicalUnion(all=[false])
   LogicalUnion(all=[false])
     LogicalUnion(all=[false])
@@ -544,6 +569,9 @@ LogicalProject(EXPR$0=[CAST($3):DECIMAL(19, 0) NOT NULL])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6781dfa0f ([CALCITE-3672] Support implicit type coercion for insert and update (#181))
     <TestCase name="testInsertQuerySourceCoercion">
         <Resource name="sql">
             <![CDATA[insert into t1 select t2_smallint, t2_int, t2_bigint, t2_float,
@@ -569,6 +597,9 @@ LogicalTableModify(table=[[CATALOG, SALES, T1]], operation=[UPDATE], updateColum
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
+=======
+>>>>>>> 6781dfa0f ([CALCITE-3672] Support implicit type coercion for insert and update (#181))
 </Root>

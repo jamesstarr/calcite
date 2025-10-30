@@ -24,7 +24,7 @@ import org.apache.calcite.rel.type.RelDataTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlCollation;
->>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
+import org.apache.calcite.sql.SqlDynamicParam;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
@@ -80,6 +80,29 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
 
   //~ Methods ----------------------------------------------------------------
 
+<<<<<<< HEAD
+=======
+  /**
+   * Cast operand at index {@code index} to target type.
+   * we do this base on the fact that validate happens before type coercion.
+   */
+  protected boolean coerceOperandType(
+      SqlValidatorScope scope,
+      SqlCall call,
+      int index,
+      RelDataType targetType) {
+    // Transform the JavaType to SQL type because the SqlDataTypeSpec
+    // does not support deriving JavaType yet.
+    if (RelDataTypeFactoryImpl.isJavaType(targetType)) {
+      targetType = ((JavaTypeFactory) factory).toSql(targetType);
+    }
+
+    SqlNode operand = call.getOperandList().get(index);
+    if (operand instanceof SqlDynamicParam) {
+      // Do not support implicit type coercion for dynamic param.
+      return false;
+    }
+>>>>>>> 6781dfa0f ([CALCITE-3672] Support implicit type coercion for insert and update (#181))
     // Check it early.
     if (!needToCast(scope, operand, targetType)) {
       return false;
@@ -127,6 +150,10 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
     }
 
     final SqlNode node = nodeList.get(index);
+    if (node instanceof SqlDynamicParam) {
+      // Do not support implicit type coercion for dynamic param.
+      return false;
+    }
     if (node instanceof SqlIdentifier) {
       // Do not expand a star/dynamic table col.
       SqlIdentifier node1 = (SqlIdentifier) node;
@@ -197,7 +224,8 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
     }
 
     // This prevents that we cast a JavaType to normal RelDataType.
-    if (toType.getSqlTypeName() == fromType.getSqlTypeName()) {
+    if (fromType instanceof RelDataTypeFactoryImpl.JavaType
+        && toType.getSqlTypeName() == fromType.getSqlTypeName()) {
       return false;
     }
 
@@ -208,10 +236,7 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
     }
 
     // No need to cast between char and varchar.
-    if (toType.getSqlTypeName() == SqlTypeName.VARCHAR
-        && fromType.getSqlTypeName() == SqlTypeName.CHAR
-        || toType.getSqlTypeName() == SqlTypeName.CHAR
-        && fromType.getSqlTypeName() == SqlTypeName.VARCHAR) {
+    if (SqlTypeUtil.isCharacter(toType) && SqlTypeUtil.isCharacter(fromType)) {
       return false;
     }
 
