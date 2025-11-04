@@ -4125,12 +4125,6 @@ public class SqlToRelConverter {
 
     replaceSubQueries(bb, call, RelOptUtil.Logic.TRUE_FALSE_UNKNOWN);
 
-    Builder<RexNode> rexNodeSourceExpressionListBuilder = ImmutableList.builder();
-    for (SqlNode n : call.getSourceExpressionList()) {
-      RexNode rn = bb.convertExpression(n);
-      rexNodeSourceExpressionListBuilder.add(rn);
-    }
-
     RelOptTable targetTable = getTargetTable(call);
 
     // convert update column list from SqlIdentifier to String
@@ -4146,6 +4140,13 @@ public class SqlToRelConverter {
     }
 
     RelNode sourceRel = convertSelect(call.getSourceSelect(), false);
+
+    bb.setRoot(sourceRel, false);
+    Builder<RexNode> rexNodeSourceExpressionListBuilder = ImmutableList.builder();
+    for (SqlNode n : call.getSourceExpressionList()) {
+      RexNode rn = bb.convertExpression(n);
+      rexNodeSourceExpressionListBuilder.add(rn);
+    }
 
     return LogicalTableModify.create(targetTable, catalogReader, sourceRel,
         LogicalTableModify.Operation.UPDATE, targetColumnNameList,
