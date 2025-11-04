@@ -28,7 +28,6 @@ import org.apache.calcite.rel.core.Correlate;
 import org.apache.calcite.rel.core.Exchange;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.core.Project;
-import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableFunctionScan;
 import org.apache.calcite.rel.core.TableModify;
@@ -3125,10 +3124,7 @@ public class RelBuilderTest {
           expandingConfig(connection);
       final RelOptTable.ViewExpander viewExpander =
           (RelOptTable.ViewExpander) Frameworks.getPlanner(configBuilder.build());
-      final RelFactories.TableScanFactory tableScanFactory =
-          RelFactories.expandingScanFactory(viewExpander,
-              RelFactories.DEFAULT_TABLE_SCAN_FACTORY);
-      configBuilder.context(Contexts.of(tableScanFactory));
+      configBuilder.context(Contexts.of(viewExpander));
       final RelBuilder builder = RelBuilder.create(configBuilder.build());
       RelNode node = builder.scan("MYVIEW").build();
 
@@ -3151,10 +3147,7 @@ public class RelBuilderTest {
           expandingConfig(connection);
       final RelOptTable.ViewExpander viewExpander =
           (RelOptTable.ViewExpander) Frameworks.getPlanner(configBuilder.build());
-      final RelFactories.TableScanFactory tableScanFactory =
-          RelFactories.expandingScanFactory(viewExpander,
-              RelFactories.DEFAULT_TABLE_SCAN_FACTORY);
-      configBuilder.context(Contexts.of(tableScanFactory));
+      configBuilder.context(Contexts.of(viewExpander));
       final RelBuilder builder = RelBuilder.create(configBuilder.build());
       RelNode node =
           builder.scan("MYVIEW")
