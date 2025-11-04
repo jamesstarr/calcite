@@ -65,7 +65,6 @@ import org.apache.calcite.rel.logical.LogicalTableModify;
 import org.apache.calcite.rel.logical.LogicalTableScan;
 import org.apache.calcite.rel.logical.LogicalUnion;
 import org.apache.calcite.rel.logical.LogicalValues;
-import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelColumnMapping;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.stream.Delta;
@@ -594,8 +593,6 @@ public class SqlToRelConverter {
       query = validator.validate(query);
     }
 
-    RelMetadataQuery.THREAD_PROVIDERS.set(
-        JaninoRelMetadataProvider.of(cluster.getMetadataProvider()));
     RelNode result = convertQueryRecursive(query, top, null).rel;
     if (top) {
       if (isStream(query)) {
@@ -2580,12 +2577,7 @@ public class SqlToRelConverter {
     final List<RelHint> hints = hintStrategies.apply(
         SqlUtil.getRelHint(hintStrategies, tableHints),
         LogicalTableScan.create(cluster, table, ImmutableList.of()));
-    final RelNode tableRel;
-    if (config.isConvertTableAccess()) {
-      tableRel = toRel(table, hints);
-    } else {
-      tableRel = LogicalTableScan.create(cluster, table, hints);
-    }
+    final RelNode tableRel = toRel(table, hints);
     bb.setRoot(tableRel, true);
     if (usedDataset[0]) {
       bb.setDataset(datasetName);
@@ -6504,7 +6496,12 @@ public class SqlToRelConverter {
      * optimizer doesn't like leaf rels to have {@link Convention#NONE}.
      * However, if we are doing further conversion passes (e.g.
      * {@link RelStructuredTypeFlattener}), then we may need to defer
-     * conversion. */
+     * conversion.
+     *
+     * @deprecated Table access references are always converted to
+     * logical relational expressions during sql-to-rel conversion.
+     * */
+    @Deprecated // to be removed before 1.23
     boolean isConvertTableAccess();
 
     /** Returns the {@code decorrelationEnabled} option. Controls whether to
@@ -6552,7 +6549,6 @@ public class SqlToRelConverter {
 
   /** Builder for a {@link Config}. */
   public static class ConfigBuilder {
-    private boolean convertTableAccess = true;
     private boolean decorrelationEnabled = true;
     private boolean trimUnusedFields = false;
     private boolean createValuesRel = true;
@@ -6566,7 +6562,6 @@ public class SqlToRelConverter {
 
     /** Sets configuration identical to a given {@link Config}. */
     public ConfigBuilder withConfig(Config config) {
-      this.convertTableAccess = config.isConvertTableAccess();
       this.decorrelationEnabled = config.isDecorrelationEnabled();
       this.trimUnusedFields = config.isTrimUnusedFields();
       this.createValuesRel = config.isCreateValuesRel();
@@ -6578,8 +6573,8 @@ public class SqlToRelConverter {
       return this;
     }
 
+    @Deprecated // to be removed before 1.23
     public ConfigBuilder withConvertTableAccess(boolean convertTableAccess) {
-      this.convertTableAccess = convertTableAccess;
       return this;
     }
 
@@ -6632,7 +6627,7 @@ public class SqlToRelConverter {
 
     /** Builds a {@link Config}. */
     public Config build() {
-      return new ConfigImpl(convertTableAccess, decorrelationEnabled,
+      return new ConfigImpl(decorrelationEnabled,
           trimUnusedFields, createValuesRel, explain, expand,
           inSubQueryThreshold, relBuilderFactory, hintStrategyTable);
     }
@@ -6641,7 +6636,6 @@ public class SqlToRelConverter {
   /** Implementation of {@link Config}.
    * Called by builder; all values are in private final fields. */
   private static class ConfigImpl implements Config {
-    private final boolean convertTableAccess;
     private final boolean decorrelationEnabled;
     private final boolean trimUnusedFields;
     private final boolean createValuesRel;
@@ -6651,12 +6645,11 @@ public class SqlToRelConverter {
     private final RelBuilderFactory relBuilderFactory;
     private final HintStrategyTable hintStrategyTable;
 
-    private ConfigImpl(boolean convertTableAccess, boolean decorrelationEnabled,
+    private ConfigImpl(boolean decorrelationEnabled,
         boolean trimUnusedFields, boolean createValuesRel, boolean explain,
         boolean expand, int inSubQueryThreshold,
         RelBuilderFactory relBuilderFactory,
         HintStrategyTable hintStrategyTable) {
-      this.convertTableAccess = convertTableAccess;
       this.decorrelationEnabled = decorrelationEnabled;
       this.trimUnusedFields = trimUnusedFields;
       this.createValuesRel = createValuesRel;
@@ -6668,7 +6661,7 @@ public class SqlToRelConverter {
     }
 
     public boolean isConvertTableAccess() {
-      return convertTableAccess;
+      return true;
     }
 
     public boolean isDecorrelationEnabled() {
