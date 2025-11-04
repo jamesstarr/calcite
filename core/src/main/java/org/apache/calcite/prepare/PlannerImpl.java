@@ -250,7 +250,6 @@ public class PlannerImpl implements Planner, ViewExpander {
     final SqlToRelConverter.Config config = SqlToRelConverter.configBuilder()
         .withConfig(sqlToRelConverterConfig)
         .withTrimUnusedFields(false)
-        .withConvertTableAccess(false)
         .build();
     final SqlToRelConverter sqlToRelConverter =
         new SqlToRelConverter(this, validator,
@@ -303,7 +302,6 @@ public class PlannerImpl implements Planner, ViewExpander {
         .configBuilder()
         .withConfig(sqlToRelConverterConfig)
         .withTrimUnusedFields(false)
-        .withConvertTableAccess(false)
         .build();
     final SqlToRelConverter sqlToRelConverter =
         new SqlToRelConverter(this, validator,
