@@ -6325,6 +6325,7 @@ public class RelOptRulesTest extends RelOptTestBase {
     sql(sql)
         .withLateDecorrelation(true)
         .withTrim(true)
+        .withContext(Contexts.of(RelBuilder.Config.DEFAULT.withPruneInputOfAggregate(false)))
         .with(HepProgram.builder().build())
         .check();
   }
@@ -6559,20 +6560,27 @@ public class RelOptRulesTest extends RelOptTestBase {
    * should not return a zero field Aggregate</a>.
    */
   @Test public void testProjectJoinTransposeRuleOnAggWithNoFieldsWithTrimmer() {
-    final RelBuilder relBuilder = RelBuilder.create(RelBuilderTest.config().build());
+    final RelBuilder relBuilder =
+        RelBuilderTest.createBuilder(c -> c.withPruneInputOfAggregate(false));
     // Build a rel equivalent to sql:
     // SELECT name FROM (SELECT count(*) cnt_star, count(empno) cnt_en FROM sales.emp)
     // cross join sales.dept
     // limit 10
 
     RelNode left = relBuilder.scan("DEPT").build();
-    RelNode right = relBuilder.scan("EMP")
+
+    // Create a fresh RelBuilder for the aggregate operation to ensure
+    // configuration is applied
+    final RelBuilder rightBuilder =
+        RelBuilderTest.createBuilder(c -> c.withPruneInputOfAggregate(false));
+
+    RelNode right = rightBuilder.scan("EMP")
         .project(
-          ImmutableList.of(relBuilder.getRexBuilder().makeExactLiteral(BigDecimal.ZERO)),
+          ImmutableList.of(rightBuilder.getRexBuilder().makeExactLiteral(BigDecimal.ZERO)),
           ImmutableList.of("DUMMY"))
         .aggregate(
-          relBuilder.groupKey(),
-          relBuilder.count(false, "DUMMY_COUNT", relBuilder.field(0)))
+          rightBuilder.groupKey(),
+          rightBuilder.count(false, "DUMMY_COUNT", rightBuilder.field(0)))
         .build();
 
     RelNode plan = relBuilder.push(left)
@@ -6589,10 +6597,20 @@ public class RelOptRulesTest extends RelOptTestBase {
     VolcanoPlanner planner = new VolcanoPlanner(null, null);
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
     planner.addRelTraitDef(RelDistributionTraitDef.INSTANCE);
-    Tester tester = new TesterImpl(getDiffRepos(), false, true, false,
+
+    // Create a RelBuilderFactory that disables pruneInputOfAggregate
+    final RelBuilderFactory relBuilderFactory =
+        RelBuilder.proto(Contexts.of(RelBuilder.Config.DEFAULT.withPruneInputOfAggregate(false)));
+
+    Tester tester = new TesterImpl(getDiffRepos(), false, false, false,
             false, false, null, null)
             .withClusterFactory(
-              relOptCluster -> RelOptCluster.create(planner, relOptCluster.getRexBuilder()));
+              relOptCluster -> RelOptCluster.create(planner, relOptCluster.getRexBuilder()))
+            .withConfig(SqlToRelConverter.configBuilder()
+                .withRelBuilderFactory(relBuilderFactory)
+                .withTrimUnusedFields(true)
+                .build())
+            .withContext(Contexts.of(RelBuilder.Config.DEFAULT.withPruneInputOfAggregate(false)));
 
     plan = tester.trimRelNode(plan);
 
