@@ -45,12 +45,17 @@ LogicalAggregate(group=[{}], SUM_SAL=[SUM($0)], COUNT_DISTINCT_CLERK=[COUNT(DIST
             <![CDATA[
 LogicalProject(SUM_SAL=[$0], COUNT_DISTINCT_CLERK=[$1], SUM_SAL_D10=[$2], SUM_SAL_D20=[$3], COUNT_D30=[CAST($4):INTEGER], COUNT_D40=[$5], COUNT_D20=[$6])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalAggregate(group=[{}], SUM_SAL=[SUM($0)], COUNT_DISTINCT_CLERK=[COUNT(DISTINCT $1) FILTER $2], SUM_SAL_D10=[SUM($3) FILTER $4], SUM_SAL_D20=[SUM($5) FILTER $6], COUNT_D30=[COUNT() FILTER $7], COUNT_D40=[COUNT() FILTER $8], COUNT_D20=[COUNT() FILTER $9])
     LogicalProject(SAL=[$5], DEPTNO=[$7], $f8=[=($2, 'CLERK')], SAL0=[$5], $f10=[=($7, 10)], SAL1=[$5], $f12=[=($7, 20)], $f13=[=($7, 30)], $f14=[=($7, 40)], $f15=[=($7, 20)])
 =======
   LogicalAggregate(group=[{}], SUM_SAL=[SUM($0)], COUNT_DISTINCT_CLERK=[COUNT(DISTINCT $7) FILTER $8], SUM_SAL_D10=[SUM($9) FILTER $10], SUM_SAL_D20=[SUM($11) FILTER $12], COUNT_D30=[COUNT() FILTER $13], COUNT_D40=[COUNT() FILTER $14], COUNT_D20=[COUNT() FILTER $15])
     LogicalProject(SAL=[$5], $f1=[CASE(=($2, 'CLERK'), $7, null:INTEGER)], $f2=[CASE(=($7, 10), $5, null:INTEGER)], $f3=[CASE(=($7, 20), $5, 0)], $f4=[CASE(=($7, 30), 1, 0)], $f5=[CASE(=($7, 40), 'x', null:CHAR(1))], $f6=[CASE(=($7, 20), 1, null:INTEGER)], DEPTNO=[$7], $f8=[=($2, 'CLERK')], SAL0=[$5], $f10=[=($7, 10)], SAL1=[$5], $f12=[=($7, 20)], $f13=[=($7, 30)], $f14=[=($7, 40)], $f15=[=($7, 20)])
 >>>>>>> 0218f4ee7 ([CALCITE-3144] Add rule, AggregateCaseToFilterRule, that converts "SUM(CASE WHEN b THEN x END)" to "SUM(x) FILTER (WHERE b)")
+=======
+  LogicalAggregate(group=[{}], SUM_SAL=[SUM($0)], COUNT_DISTINCT_CLERK=[COUNT(DISTINCT $1) FILTER $2], SUM_SAL_D10=[SUM($3) FILTER $4], SUM_SAL_D20=[SUM($5) FILTER $6], COUNT_D30=[COUNT() FILTER $7], COUNT_D40=[COUNT() FILTER $8], COUNT_D20=[COUNT() FILTER $9])
+    LogicalProject(SAL=[$5], DEPTNO=[$7], $f8=[=($2, 'CLERK')], SAL0=[$5], $f10=[=($7, 10)], SAL1=[$5], $f12=[=($7, 20)], $f13=[=($7, 30)], $f14=[=($7, 40)], $f15=[=($7, 20)])
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -1163,10 +1168,14 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
     LogicalProject(DEPTNO=[$0], $f1=[true])
       LogicalAggregate(group=[{0}])
 <<<<<<< HEAD
+<<<<<<< HEAD
         LogicalProject(DEPTNO=[$7])
 =======
         LogicalProject(DEPTNO=[$7], i=[true])
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
+=======
+        LogicalProject(DEPTNO=[$7])
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -1232,6 +1241,7 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
         LogicalProject(DEPTNO=[$0], $f1=[true])
           LogicalAggregate(group=[{0}])
 <<<<<<< HEAD
+<<<<<<< HEAD
             LogicalProject(DEPTNO=[$7])
               LogicalTableScan(table=[[CATALOG, SALES, EMP]])
       LogicalProject(JOB=[$0], $f1=[true])
@@ -1244,6 +1254,13 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
         LogicalAggregate(group=[{0}])
           LogicalProject(JOB=[$2], i=[true])
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
+=======
+            LogicalProject(DEPTNO=[$7])
+              LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+      LogicalProject(JOB=[$0], $f1=[true])
+        LogicalAggregate(group=[{0}])
+          LogicalProject(JOB=[$2])
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
             LogicalFilter(condition=[=($5, 34)])
               LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
@@ -1301,10 +1318,14 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
     LogicalProject(DEPTNO=[$0], $f1=[true])
       LogicalAggregate(group=[{0}])
 <<<<<<< HEAD
+<<<<<<< HEAD
         LogicalProject(DEPTNO=[$7])
 =======
         LogicalProject(DEPTNO=[$7], i=[true])
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
+=======
+        LogicalProject(DEPTNO=[$7])
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
@@ -1649,12 +1670,17 @@ LogicalAggregate(group=[{}], EXPR$0=[SUM($0)], EXPR$1=[COUNT(DISTINCT $1) FILTER
         <Resource name="planAfter">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalAggregate(group=[{}], EXPR$0=[MIN($1) FILTER $3], EXPR$1=[COUNT($0) FILTER $2])
   LogicalProject(SAL=[$0], EXPR$0=[$2], $g_0_f_1=[AND(=($3, 0), IS TRUE($1))], $g_3=[=($3, 3)])
 =======
 LogicalAggregate(group=[{}], EXPR$0=[MIN($2) FILTER $4], EXPR$1=[COUNT($0) FILTER $3])
   LogicalProject(SAL=[$0], $f2=[$1], EXPR$0=[$2], $g_0_f_1=[AND(=($3, 0), IS TRUE($1))], $g_3=[=($3, 3)])
 >>>>>>> 051a91454 ([CALCITE-3721] Filter of distinct aggregate call is lost after applyi… (#83))
+=======
+LogicalAggregate(group=[{}], EXPR$0=[MIN($1) FILTER $3], EXPR$1=[COUNT($0) FILTER $2])
+  LogicalProject(SAL=[$0], EXPR$0=[$2], $g_0_f_1=[AND(=($3, 0), IS TRUE($1))], $g_3=[=($3, 3)])
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
     LogicalAggregate(group=[{1, 2}], groups=[[{1, 2}, {}]], EXPR$0=[SUM($0)], $g=[GROUPING($1, $2)])
       LogicalProject(COMM=[$6], SAL=[$5], $f2=[>($5, 1000)])
         LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -1666,10 +1692,14 @@ LogicalAggregate(group=[{}], EXPR$0=[MIN($2) FILTER $4], EXPR$1=[COUNT($0) FILTE
             <![CDATA[SELECT COUNT(DISTINCT c) FILTER (WHERE d),
 COUNT(DISTINCT d) FILTER (WHERE c)
 <<<<<<< HEAD
+<<<<<<< HEAD
 FROM (select sal > 1000 is true as c, sal < 500 is true as d, comm from emp)]]>
 =======
 FROM (select sal > 1000 is true as c, sal < 500 is true as d from emp)]]>
 >>>>>>> 051a91454 ([CALCITE-3721] Filter of distinct aggregate call is lost after applyi… (#83))
+=======
+FROM (select sal > 1000 is true as c, sal < 500 is true as d, comm from emp)]]>
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
         </Resource>
         <Resource name="planBefore">
             <![CDATA[
@@ -1705,12 +1735,17 @@ LogicalAggregate(group=[{0}], EXPR$1=[SUM($1)], EXPR$2=[COUNT(DISTINCT $2) FILTE
             <![CDATA[
 LogicalProject(DEPTNO=[$0], EXPR$1=[CAST($1):INTEGER NOT NULL], EXPR$2=[$2])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalAggregate(group=[{0}], EXPR$1=[MIN($2) FILTER $4], EXPR$2=[COUNT($1) FILTER $3])
     LogicalProject(DEPTNO=[$0], SAL=[$1], EXPR$1=[$3], $g_0_f_2=[AND(=($4, 0), IS TRUE($2))], $g_3=[=($4, 3)])
 =======
   LogicalAggregate(group=[{0}], EXPR$1=[MIN($3) FILTER $5], EXPR$2=[COUNT($1) FILTER $4])
     LogicalProject(DEPTNO=[$0], SAL=[$1], $f3=[$2], EXPR$1=[$3], $g_0_f_2=[AND(=($4, 0), IS TRUE($2))], $g_3=[=($4, 3)])
 >>>>>>> 051a91454 ([CALCITE-3721] Filter of distinct aggregate call is lost after applyi… (#83))
+=======
+  LogicalAggregate(group=[{0}], EXPR$1=[MIN($2) FILTER $4], EXPR$2=[COUNT($1) FILTER $3])
+    LogicalProject(DEPTNO=[$0], SAL=[$1], EXPR$1=[$3], $g_0_f_2=[AND(=($4, 0), IS TRUE($2))], $g_3=[=($4, 3)])
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
       LogicalAggregate(group=[{0, 2, 3}], groups=[[{0, 2, 3}, {0}]], EXPR$1=[SUM($1)], $g=[GROUPING($0, $2, $3)])
         LogicalProject(DEPTNO=[$7], COMM=[$6], SAL=[$5], $f3=[>($5, 1000)])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -2089,6 +2124,7 @@ LogicalProject(EXPR$0=[1])
     <TestCase name="testPushAboveFiltersIntoInnerJoinCondition">
         <Resource name="sql">
 <<<<<<< HEAD
+<<<<<<< HEAD
             <![CDATA[select * from sales.dept d inner join sales.emp e
 on d.deptno = e.deptno and d.deptno > e.mgr
 where d.deptno > e.mgr]]>
@@ -2098,19 +2134,27 @@ where d.deptno > e.mgr]]>
 =======
             <![CDATA[
 select * from sales.dept d inner join sales.emp e
+=======
+            <![CDATA[select * from sales.dept d inner join sales.emp e
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
 on d.deptno = e.deptno and d.deptno > e.mgr
-where d.deptno > e.mgr
-]]>
+where d.deptno > e.mgr]]>
         </Resource>
+<<<<<<< HEAD
     <Resource name="planBefore">
         <![CDATA[
 >>>>>>> 683d1f0eb ([CALCITE-3729] Filters failed to be pushed down when it's identical t… (#75))
+=======
+        <Resource name="planBefore">
+            <![CDATA[
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
 LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5], HIREDATE=[$6], SAL=[$7], COMM=[$8], DEPTNO0=[$9], SLACKER=[$10])
   LogicalFilter(condition=[>($0, $5)])
     LogicalJoin(condition=[AND(=($0, $9), >($0, $5))], joinType=[inner])
       LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
+<<<<<<< HEAD
 <<<<<<< HEAD
         </Resource>
         <Resource name="planAfter">
@@ -2120,16 +2164,25 @@ LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5
     <Resource name="planAfter">
         <![CDATA[
 >>>>>>> 683d1f0eb ([CALCITE-3729] Filters failed to be pushed down when it's identical t… (#75))
+=======
+        </Resource>
+        <Resource name="planAfter">
+            <![CDATA[
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
 LogicalProject(DEPTNO=[$0], NAME=[$1], EMPNO=[$2], ENAME=[$3], JOB=[$4], MGR=[$5], HIREDATE=[$6], SAL=[$7], COMM=[$8], DEPTNO0=[$9], SLACKER=[$10])
   LogicalJoin(condition=[AND(=($0, $9), >($0, $5))], joinType=[inner])
     LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
 <<<<<<< HEAD
+<<<<<<< HEAD
         </Resource>
 =======
     </Resource>
 >>>>>>> 683d1f0eb ([CALCITE-3729] Filters failed to be pushed down when it's identical t… (#75))
+=======
+        </Resource>
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
     </TestCase>
     <TestCase name="testPushFilterThroughSemiJoin">
         <Resource name="sql">
@@ -4249,8 +4302,8 @@ LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
 =======
     LogicalProject(EXPR$0=[$2], EMPNO=[$1])
-      LogicalAggregate(group=[{0, 1}], EXPR$0=[MAX($3)])
-        LogicalProject(DEPTNO=[$7], EMPNO=[$0], $f1=['abc'], SAL=[$5])
+      LogicalAggregate(group=[{0, 1}], EXPR$0=[MAX($2)])
+        LogicalProject(DEPTNO=[$7], EMPNO=[$0], SAL=[$5])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 >>>>>>> c871a3be9 ([CALCITE-5149] Refine RelMdColumnUniqueness for Aggregate by considering intersect keys between target keys and group keys)
 ]]>
@@ -8623,6 +8676,7 @@ LogicalProject(DEPTNO=[$0], NAME=[$1])
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject(DEPTNO=[$7])
 =======
       LogicalProject(DEPTNO9=[$7], $f0=[1])
@@ -8633,6 +8687,9 @@ LogicalProject(DEPTNO=[$0], NAME=[$1])
 =======
       LogicalProject(DEPTNO=[$7], $f0=[1:BIGINT])
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
+=======
+      LogicalProject(DEPTNO=[$7])
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
         LogicalFilter(condition=[>($5, 100)])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
@@ -8641,6 +8698,7 @@ LogicalProject(DEPTNO=[$0], NAME=[$1])
             <![CDATA[
 LogicalJoin(condition=[=($0, $2)], joinType=[semi])
   LogicalTableScan(table=[[CATALOG, SALES, DEPT]])
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -8654,6 +8712,9 @@ LogicalJoin(condition=[=($0, $2)], joinType=[semi])
 =======
   LogicalProject(DEPTNO=[$7], $f0=[1:BIGINT])
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
+=======
+  LogicalProject(DEPTNO=[$7])
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
     LogicalFilter(condition=[>($5, 100)])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
@@ -9969,12 +10030,17 @@ LogicalProject(JOB=[$0], MGR0=[$2], DEPTNO=[$1], HIREDATE1=[$3], COMM1=[$4])
             <![CDATA[
 LogicalProject(JOB=[$0], MGR0=[$2], DEPTNO=[$1], HIREDATE1=[$3], COMM1=[$4])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalAggregate(group=[{0, 1, 2}], HIREDATE1=[MAX($3)], COMM1=[SUM($4)])
     LogicalProject(JOB=[$0], DEPTNO=[$2], MGR=[$4], HIREDATE1=[$6], $f8=[CAST(*($3, $7)):INTEGER NOT NULL])
 =======
   LogicalAggregate(group=[{0, 2, 4}], HIREDATE1=[MAX($6)], COMM1=[SUM($8)])
     LogicalProject(JOB=[$0], SAL=[$1], DEPTNO=[$2], $f3=[$3], MGR=[$4], SAL0=[$5], HIREDATE1=[$6], COMM1=[$7], $f8=[CAST(*($3, $7)):INTEGER NOT NULL])
 >>>>>>> fdda73d23 ([CALCITE-2278] AggregateJoinTransposeRule fails to split aggregate call if input contains an aggregate call and has distinct rows (Haisheng Yuan))
+=======
+  LogicalAggregate(group=[{0, 1, 2}], HIREDATE1=[MAX($3)], COMM1=[SUM($4)])
+    LogicalProject(JOB=[$0], DEPTNO=[$2], MGR=[$4], HIREDATE1=[$6], $f8=[CAST(*($3, $7)):INTEGER NOT NULL])
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
       LogicalJoin(condition=[=($1, $5)], joinType=[inner])
         LogicalAggregate(group=[{2, 5, 7}], agg#0=[COUNT()])
           LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -10072,12 +10138,17 @@ LogicalAggregate(group=[{}], EXPR$0=[SUM($5)])
             <![CDATA[
 LogicalProject(EXPR$0=[CASE(=($1, 0), null:INTEGER, $0)])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalAggregate(group=[{}], EXPR$0=[$SUM0($0)], agg#1=[$SUM0($1)])
     LogicalProject($f5=[CAST(*($1, $4)):INTEGER NOT NULL], $f6=[*($2, $4)])
 =======
   LogicalAggregate(group=[{}], EXPR$0=[$SUM0($5)], agg#1=[$SUM0($6)])
     LogicalProject(JOB=[$0], EXPR$0=[$1], $f2=[$2], NAME=[$3], $f1=[$4], $f5=[CAST(*($1, $4)):INTEGER NOT NULL], $f6=[*($2, $4)])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+  LogicalAggregate(group=[{}], EXPR$0=[$SUM0($0)], agg#1=[$SUM0($1)])
+    LogicalProject($f5=[CAST(*($1, $4)):INTEGER NOT NULL], $f6=[*($2, $4)])
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
       LogicalJoin(condition=[=($0, $3)], joinType=[inner])
         LogicalAggregate(group=[{2}], EXPR$0=[$SUM0($5)], agg#1=[COUNT()])
           LogicalProject(EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7], SLACKER=[$8])
@@ -10869,12 +10940,17 @@ LogicalAggregate(group=[{}], VOLUME=[COUNT()], C1_SUM_SAL=[SUM($0)])
         <Resource name="planAfter">
             <![CDATA[
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalAggregate(group=[{}], VOLUME=[$SUM0($0)], C1_SUM_SAL=[SUM($1)])
   LogicalProject(VOLUME=[$3], $f4=[CAST(*($1, $3)):INTEGER])
 =======
 LogicalAggregate(group=[{}], VOLUME=[$SUM0($3)], C1_SUM_SAL=[SUM($4)])
   LogicalProject(ENAME=[$0], SAL=[$1], ENAME0=[$2], VOLUME=[$3], $f4=[CAST(*($1, $3)):INTEGER])
 >>>>>>> 07cd0bbba ([CALCITE-3076] AggregateJoinTransposeRule throws error for unique under aggregate keys when generating merged calls)
+=======
+LogicalAggregate(group=[{}], VOLUME=[$SUM0($0)], C1_SUM_SAL=[SUM($1)])
+  LogicalProject(VOLUME=[$3], $f4=[CAST(*($1, $3)):INTEGER])
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
     LogicalJoin(condition=[=($0, $2)], joinType=[inner])
       LogicalProject(ENAME=[$1], SAL=[$0])
         LogicalProject(SAL=[$5], ENAME=[$1])
@@ -12856,6 +12932,7 @@ LogicalProject(DEPTNO=[$0])
     LogicalProject(DEPTNO=[$0], $f1=[true])
       LogicalAggregate(group=[{0}])
         LogicalProject(DEPTNO=[$7])
+<<<<<<< HEAD
           LogicalJoin(condition=[=($1, $11)], joinType=[inner])
             LogicalJoin(condition=[=($0, $9)], joinType=[inner])
               LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -12980,6 +13057,8 @@ LogicalProject(DEPTNO=[$0])
     LogicalProject(DEPTNO=[$0], $f1=[true])
       LogicalAggregate(group=[{0}])
         LogicalProject(DEPTNO=[$7], i=[true])
+=======
+>>>>>>> 00e141e95 ([CALCITE-3763] RelBuilder.aggregate should prune unused fields from t… (#197))
           LogicalJoin(condition=[=($1, $11)], joinType=[inner])
             LogicalJoin(condition=[=($0, $9)], joinType=[inner])
               LogicalTableScan(table=[[CATALOG, SALES, EMP]])
@@ -12987,7 +13066,7 @@ LogicalProject(DEPTNO=[$0])
                 LogicalTableScan(table=[[CATALOG, SALES, EMP_ADDRESS]])
             LogicalProject(ENAME=[$0], $f1=[true])
               LogicalAggregate(group=[{0}])
-                LogicalProject(ENAME=[$0], i=[true])
+                LogicalProject(ENAME=[$0])
                   LogicalTableScan(table=[[CATALOG, SALES, BONUS]])
 ]]>
         </Resource>
@@ -13042,7 +13121,7 @@ LogicalProject(DEPTNO=[$7])
             LogicalTableScan(table=[[CATALOG, SALES, EMP_ADDRESS]])
         LogicalProject(ENAME=[$0], $f1=[true])
           LogicalAggregate(group=[{0}])
-            LogicalProject(ENAME=[$0], i=[true])
+            LogicalProject(ENAME=[$0])
               LogicalTableScan(table=[[CATALOG, SALES, BONUS]])
 ]]>
         </Resource>
@@ -14563,7 +14642,7 @@ LogicalProject(HIREDATE=[$1])
   LogicalFilter(condition=[>($2, 3)])
     LogicalProject(SAL=[$0], HIREDATE=[CURRENT_TIMESTAMP], $f2=[$1])
       LogicalAggregate(group=[{0}], agg#0=[COUNT()])
-        LogicalProject(SAL=[$5], HIREDATE=[$4])
+        LogicalProject(SAL=[$5])
           LogicalFilter(condition=[AND(IS NULL($5), =($4, CURRENT_TIMESTAMP))])
             LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>

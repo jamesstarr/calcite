@@ -32,6 +32,7 @@ import java.util.function.UnaryOperator;
 =======
 >>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
 
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import static org.hamcrest.CoreMatchers.is;
