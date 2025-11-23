@@ -6672,7 +6672,7 @@ public class SqlToRelConverter {
 
     /** Builds a {@link Config}. */
     public Config build() {
-      return new ConfigImpl(convertTableAccess, decorrelationEnabled,
+      return new ConfigImpl(decorrelationEnabled,
           trimUnusedFields, createValuesRel, explain, expand, removeSortInSubQuery,
           inSubQueryThreshold, relBuilderConfigTransform, relBuilderFactory,
           hintStrategyTable);
