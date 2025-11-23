@@ -294,8 +294,8 @@ public class JdbcTest {
           assertThat(resultSet.getString(1),
               isLinux(
                   "EnumerableTableModify(table=[[adhoc, MUTABLE_EMPLOYEES]], operation=[INSERT], flattened=[false])\n"
-                        + "  EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t1):JavaType(int) NOT NULL], expr#4=[10], expr#5=[CAST($t0):JavaType(class java.lang.String)], expr#6=[CAST($t2):JavaType(float) NOT NULL], expr#7=[null:JavaType(class java.lang.Integer)], empid=[$t3], deptno=[$t4], name=[$t5], salary=[$t6], commission=[$t7])\n"
-                  + "    EnumerableValues(tuples=[[{ 'Fred', 56, 123.4 }]])\n"));
+                      + "  EnumerableCalc(expr#0=[{inputs}], expr#1=[56], expr#2=[10], expr#3=['Fred':JavaType(class java.lang.String)], expr#4=[CAST($t3):JavaType(class java.lang.String)], expr#5=[123.4:JavaType(float)], expr#6=[null:JavaType(class java.lang.Integer)], empid=[$t1], deptno=[$t2], name=[$t4], salary=[$t5], commission=[$t6])\n"
+                      + "    EnumerableValues(tuples=[[{ 0 }]])\n"));
 
           // With named columns
           resultSet =
@@ -2885,9 +2885,9 @@ public class JdbcTest {
             + "  LogicalFilter(condition=[IN($0, {\n"
             + "LogicalProject(deptno=[$1])\n"
             + "  LogicalFilter(condition=[<($0, 150)])\n"
-            + "    EnumerableTableScan(table=[[hr, emps]])\n"
+            + "    LogicalTableScan(table=[[hr, emps]])\n"
             + "})])\n"
-            + "    EnumerableTableScan(table=[[hr, depts]])")
+            + "    LogicalTableScan(table=[[hr, depts]])")
         .explainContains(""
             + "EnumerableHashJoin(condition=[=($0, $5)], joinType=[semi])\n"
             + "  EnumerableTableScan(table=[[hr, depts]])\n"
@@ -3448,12 +3448,11 @@ public class JdbcTest {
       CalciteAssert.hr()
           .query("select count(*) c from \"hr\".\"emps\", \"hr\".\"depts\"")
           .convertContains("LogicalAggregate(group=[{}], C=[COUNT()])\n"
-              + "  LogicalProject(DUMMY=[0])\n"
-              + "    LogicalJoin(condition=[true], joinType=[inner])\n"
-              + "      LogicalProject(DUMMY=[0])\n"
-              + "        EnumerableTableScan(table=[[hr, emps]])\n"
-              + "      LogicalProject(DUMMY=[0])\n"
-              + "        EnumerableTableScan(table=[[hr, depts]])");
+              + "  LogicalJoin(condition=[true], joinType=[inner])\n"
+              + "    LogicalProject(DUMMY=[0])\n"
+              + "      LogicalTableScan(table=[[hr, emps]])\n"
+              + "    LogicalProject(DUMMY=[0])\n"
+              + "      LogicalTableScan(table=[[hr, depts]])");
     }
   }
 
@@ -4409,7 +4408,7 @@ public class JdbcTest {
           .convertContains("LogicalProject(name=[$1], EXPR$1=[+($2, 1)])\n"
               + "  LogicalAggregate(group=[{0, 1}], agg#0=[COUNT($2)])\n"
               + "    LogicalProject(deptno=[$1], name=[$2], commission=[$4])\n"
-              + "      EnumerableTableScan(table=[[hr, emps]])\n");
+              + "      LogicalTableScan(table=[[hr, emps]])\n");
     }
   }
 
@@ -4427,7 +4426,7 @@ public class JdbcTest {
               + "LogicalProject(name=[$2], EXPR$1=[+(COUNT($3) OVER (PARTITION BY $1 RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING), 1)])\n"
               + "  LogicalFilter(condition=[>($0, 10)])\n"
               + "    LogicalProject(empid=[$0], deptno=[$1], name=[$2], commission=[$4])\n"
-              + "      EnumerableTableScan(table=[[hr, emps]])\n");
+              + "      LogicalTableScan(table=[[hr, emps]])\n");
     }
   }
 
@@ -4788,9 +4787,9 @@ public class JdbcTest {
         + "LogicalProject(empid=[$0], deptno=[$1], name=[$2], salary=[$3], commission=[$4])\n"
         + "  LogicalFilter(condition=[EXISTS($cor0, {\n"
         + "LogicalFilter(condition=[=($cor0.deptno, $0)])\n"
-        + "  EnumerableTableScan(table=[[hr, depts]])\n"
+        + "  LogicalTableScan(table=[[hr, depts]])\n"
         + "})], variablesSet=[[$cor0]])\n"
-        + "    EnumerableTableScan(table=[[hr, emps]])\n";
+        + "    LogicalTableScan(table=[[hr, emps]])\n";
     CalciteAssert.hr().query(sql).convertContains(plan)
         .returnsUnordered(
             "empid=100; deptno=10; name=Bill; salary=10000.0; commission=1000",
@@ -7246,7 +7245,7 @@ public class JdbcTest {
         + "isStrictStarts=[false], isStrictEnds=[false], subsets=[[]], "
         + "patternDefinitions=[[=(CAST(PREV(UP.$0, 0)):INTEGER NOT NULL, 100)]], "
         + "inputFields=[[empid, deptno, name, salary, commission]])\n"
-        + "    EnumerableTableScan(table=[[hr, emps]])\n";
+        + "    LogicalTableScan(table=[[hr, emps]])\n";
     final String plan = "PLAN="
         + "EnumerableMatch(partition=[[]], order=[[0 DESC]], "
         + "outputFields=[[C, EMPID, TWO]], allRows=[false], "
@@ -7279,7 +7278,7 @@ public class JdbcTest {
         + "isStrictStarts=[false], isStrictEnds=[false], subsets=[[]], "
         + "patternDefinitions=[[<(PREV(UP.$4, 0), PREV(UP.$4, 1))]], "
         + "inputFields=[[empid, deptno, name, salary, commission]])\n"
-        + "    EnumerableTableScan(table=[[hr, emps]])\n";
+        + "    LogicalTableScan(table=[[hr, emps]])\n";
     final String plan = "PLAN="
         + "EnumerableMatch(partition=[[]], order=[[0 DESC]], "
         + "outputFields=[[C, EMPID]], allRows=[false], "

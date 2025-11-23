@@ -93,6 +93,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.calcite.plan.RelOptRule.operand;
+import static org.apache.calcite.test.RelMetadataTest.sortsAs;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -128,7 +129,7 @@ public class PlannerTest {
 
         "LogicalProject(empid=[$0], deptno=[$1], name=[$2], salary=[$3], commission=[$4])\n"
         + "  LogicalFilter(condition=[LIKE($2, '%e%')])\n"
-        + "    EnumerableTableScan(table=[[hr, emps]])\n");
+        + "    LogicalTableScan(table=[[hr, emps]])\n");
   }
 
   @Test public void testParseIdentiferMaxLengthWithDefault() {
@@ -160,7 +161,7 @@ public class PlannerTest {
 
         "LogicalSort(sort0=[$1], dir0=[ASC], offset=[10])\n"
         + "  LogicalProject(empid=[$0], deptno=[$1], name=[$2], salary=[$3], commission=[$4])\n"
-        + "    EnumerableTableScan(table=[[hr, emps]])\n");
+        + "    LogicalTableScan(table=[[hr, emps]])\n");
   }
 
   private String toString(RelNode rel) {
@@ -306,8 +307,7 @@ public class PlannerTest {
     RelNode rel = planner.rel(validate).project();
     final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
     final RelOptPredicateList predicates = mq.getPulledUpPredicates(rel);
-    final String buf = predicates.pulledUpPredicates.toString();
-    assertThat(buf, equalTo(expectedPredicates));
+    assertThat(predicates.pulledUpPredicates, sortsAs(expectedPredicates));
   }
 
   /** Tests predicates that can be pulled-up from a UNION. */
@@ -384,6 +384,7 @@ public class PlannerTest {
     Program program =
         Programs.ofRules(
             CoreRules.FILTER_MERGE,
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
     Planner planner = getPlanner(null, program);
@@ -546,6 +547,7 @@ public class PlannerTest {
     RuleSet ruleSet =
         RuleSets.ofList(
             CoreRules.SORT_REMOVE,
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE,
             EnumerableRules.ENUMERABLE_SORT_RULE);
     Planner planner = getPlanner(null, Programs.of(ruleSet));
@@ -576,6 +578,7 @@ public class PlannerTest {
             CoreRules.SORT_REMOVE,
             CoreRules.SORT_JOIN_TRANSPOSE,
             CoreRules.SORT_PROJECT_TRANSPOSE,
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
             EnumerableRules.ENUMERABLE_LIMIT_RULE,
             EnumerableRules.ENUMERABLE_JOIN_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE,
@@ -683,6 +686,7 @@ public class PlannerTest {
     RuleSet ruleSet =
         RuleSets.ofList(
             CoreRules.SORT_REMOVE,
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE,
             EnumerableRules.ENUMERABLE_WINDOW_RULE,
             EnumerableRules.ENUMERABLE_SORT_RULE,
@@ -708,6 +712,7 @@ public class PlannerTest {
   @Test public void testDuplicateSortPlanWORemoveSortRule() throws Exception {
     RuleSet ruleSet =
         RuleSets.ofList(
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE,
             EnumerableRules.ENUMERABLE_SORT_RULE);
     Planner planner = getPlanner(null, Programs.of(ruleSet));
@@ -740,10 +745,10 @@ public class PlannerTest {
     RelNode convert = planner.rel(validate).rel;
     RelDataType insertSourceType = convert.getInput(0).getRowType();
     String typeString = SqlTests.getTypeString(insertSourceType);
-    assertEquals("RecordType(INTEGER NOT NULL empid, INTEGER NOT NULL deptno, VARCHAR name, "
-            + "REAL NOT NULL salary, INTEGER commission) NOT NULL", typeString);
+    assertEquals("RecordType(INTEGER NOT NULL empid, INTEGER NOT NULL deptno, "
+        + "JavaType(class java.lang.String) name, REAL NOT NULL salary, "
+        + "INTEGER NOT NULL commission) NOT NULL", typeString);
   }
-
 
   /** Unit test that parses, validates, converts and plans. Planner is
    * provided with a list of RelTraitDefs to register. */
@@ -751,6 +756,7 @@ public class PlannerTest {
     RuleSet ruleSet =
         RuleSets.ofList(
             CoreRules.FILTER_MERGE,
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
     final List<RelTraitDef> traitDefs = new ArrayList<>();
@@ -776,6 +782,7 @@ public class PlannerTest {
     RuleSet ruleSet =
         RuleSets.ofList(
             CoreRules.FILTER_MERGE,
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
     Planner planner = getPlanner(null, Programs.of(ruleSet));
@@ -824,6 +831,7 @@ public class PlannerTest {
     RuleSet ruleSet1 =
         RuleSets.ofList(
             rule1,
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
 
@@ -873,6 +881,7 @@ public class PlannerTest {
     Program program0 =
         Programs.ofRules(
             CoreRules.FILTER_MERGE,
+            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
             EnumerableRules.ENUMERABLE_FILTER_RULE,
             EnumerableRules.ENUMERABLE_PROJECT_RULE);
 
@@ -1370,7 +1379,7 @@ public class PlannerTest {
     assertThat(plan,
         equalTo("LogicalSort(sort0=[$0], dir0=[ASC])\n"
         + "  LogicalProject(psPartkey=[$0])\n"
-        + "    EnumerableTableScan(table=[[tpch, partsupp]])\n"));
+        + "    LogicalTableScan(table=[[tpch, partsupp]])\n"));
   }
 
   /** Test case for
@@ -1430,7 +1439,7 @@ public class PlannerTest {
             + "  EnumerableUnion(all=[true])\n"
             + "    EnumerableTableScan(table=[[scott, EMP]])\n"
             + "    EnumerableTableScan(table=[[scott, EMP]])\n"
-            + "  EnumerableFilter(condition=[=($cor0.DEPTNO, $0)])\n"
+            + "  EnumerableFilter(condition=[=($0, $cor0.DEPTNO)])\n"
             + "    EnumerableUnion(all=[true])\n"
             + "      EnumerableTableScan(table=[[scott, EMP]])\n"
             + "      EnumerableTableScan(table=[[scott, EMP]])\n"));

@@ -808,7 +808,7 @@ public class MaterializationTest {
         + "from \"emps\"\n"
         + "group by \"deptno\"";
     final String expected = "EnumerableCalc(expr#0..1=[{inputs}], expr#2=[1], "
-        + "expr#3=[+($t1, $t2)], $f0=[$t3], deptno=[$t0])\n"
+        + "expr#3=[+($t1, $t2)], C=[$t3], deptno=[$t0])\n"
         + "  EnumerableAggregate(group=[{0}], agg#0=[$SUM0($1)])\n"
         + "    EnumerableTableScan(table=[[hr, m0]])";
     sql(materialize, query).withResultContains(expected).ok();
@@ -1277,7 +1277,7 @@ public class MaterializationTest {
   private void checkSatisfiable(RexNode e, String s) {
     assertTrue(SubstitutionVisitor.mayBeSatisfiable(e));
     final RexNode simple = simplify.simplifyUnknownAsFalse(e);
-    assertEquals(s, simple.toString());
+    assertEquals(s, simple.toStringRaw());
   }
 
   @Test public void testSplitFilter() {
@@ -1321,7 +1321,7 @@ public class MaterializationTest {
     newFilter = SubstitutionVisitor.splitFilter(simplify,
         x_eq_1,
         rexBuilder.makeCall(SqlStdOperatorTable.OR, x_eq_1, z_eq_3));
-    assertThat(newFilter.toString(), equalTo("=($0, 1)"));
+    assertThat(newFilter.toStringRaw(), equalTo("=($0, 1)"));
 
     // 2b.
     //   condition: x = 1 or y = 2
@@ -1331,7 +1331,7 @@ public class MaterializationTest {
     newFilter = SubstitutionVisitor.splitFilter(simplify,
         rexBuilder.makeCall(SqlStdOperatorTable.OR, x_eq_1, y_eq_2),
         rexBuilder.makeCall(SqlStdOperatorTable.OR, x_eq_1, y_eq_2, z_eq_3));
-    assertThat(newFilter.toString(), equalTo("OR(=($0, 1), =($1, 2))"));
+    assertThat(newFilter.toStringRaw(), equalTo("OR(=($0, 1), =($1, 2))"));
 
     // 2c.
     //   condition: x = 1
@@ -1341,7 +1341,7 @@ public class MaterializationTest {
     newFilter = SubstitutionVisitor.splitFilter(simplify,
         x_eq_1,
         rexBuilder.makeCall(SqlStdOperatorTable.OR, x_eq_1, y_eq_2, z_eq_3));
-    assertThat(newFilter.toString(),
+    assertThat(newFilter.toStringRaw(),
         equalTo("=($0, 1)"));
 
     // 2d.
@@ -1389,7 +1389,7 @@ public class MaterializationTest {
     newFilter = SubstitutionVisitor.splitFilter(simplify,
         rexBuilder.makeCall(SqlStdOperatorTable.AND, x_eq_1, y_eq_2),
         y_eq_2);
-    assertThat(newFilter.toString(), equalTo("=($0, 1)"));
+    assertThat(newFilter.toStringRaw(), equalTo("=($0, 1)"));
 
     // Example 5.
     //   condition: x = 1
@@ -1672,7 +1672,7 @@ public class MaterializationTest {
             + "from \"emps\" where \"deptno\" > 10 group by \"deptno\"")
         .withResultContains(
             "EnumerableCalc(expr#0..1=[{inputs}], expr#2=[1], expr#3=[+($t1, $t2)],"
-                + " deptno=[$t0], $f1=[$t3])\n"
+                + " deptno=[$t0], S=[$t3])\n"
                 + "  EnumerableAggregate(group=[{1}], agg#0=[$SUM0($3)])\n"
                 + "    EnumerableCalc(expr#0..3=[{inputs}], expr#4=[10], expr#5=[<($t4, $t1)], "
                 + "proj#0..3=[{exprs}], $condition=[$t5])\n"
@@ -1695,7 +1695,7 @@ public class MaterializationTest {
             + "from \"emps\" where \"deptno\" > 10 group by \"deptno\"")
         .withResultContains(
             "EnumerableCalc(expr#0..1=[{inputs}], expr#2=[1], expr#3=[+($t0, $t2)], "
-                + "expr#4=[+($t1, $t2)], $f0=[$t3], $f1=[$t4])\n"
+                + "expr#4=[+($t1, $t2)], EXPR$0=[$t3], S=[$t4])\n"
                 + "  EnumerableAggregate(group=[{1}], agg#0=[$SUM0($3)])\n"
                 + "    EnumerableCalc(expr#0..3=[{inputs}], expr#4=[10], expr#5=[<($t4, $t1)], "
                 + "proj#0..3=[{exprs}], $condition=[$t5])\n"
@@ -2455,7 +2455,7 @@ public class MaterializationTest {
             + "join \"dependents\" using (\"empid\")\n"
             + "where \"emps\".\"empid\" = 1")
         .withResultContains(
-            "EnumerableCalc(expr#0..1=[{inputs}], empid=[$t0])\n"
+            "EnumerableCalc(expr#0..1=[{inputs}], empid0=[$t0])\n"
                 + "  EnumerableTableScan(table=[[hr, m0]])")
         .ok();
   }
@@ -2471,7 +2471,7 @@ public class MaterializationTest {
             + "join \"dependents\" using (\"empid\")\n"
             + "where \"emps\".\"empid\" = 1")
         .withResultContains(
-            "EnumerableCalc(expr#0..1=[{inputs}], empid=[$t0])\n"
+            "EnumerableCalc(expr#0..1=[{inputs}], empid0=[$t0])\n"
                 + "  EnumerableTableScan(table=[[hr, m0]])")
         .ok();
   }

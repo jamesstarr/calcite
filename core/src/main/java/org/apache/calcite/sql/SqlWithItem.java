@@ -28,13 +28,23 @@ import java.util.List;
 public class SqlWithItem extends SqlCall {
   public SqlIdentifier name;
   public SqlNodeList columnList; // may be null
+  public SqlLiteral recursive;
   public SqlNode query;
 
+  @Deprecated // to be removed before 2.0
   public SqlWithItem(SqlParserPos pos, SqlIdentifier name,
       SqlNodeList columnList, SqlNode query) {
+    this(pos, name, columnList, query,
+        SqlLiteral.createBoolean(false, SqlParserPos.ZERO));
+  }
+
+  public SqlWithItem(SqlParserPos pos, SqlIdentifier name,
+      SqlNodeList columnList, SqlNode query,
+      SqlLiteral recursive) {
     super(pos);
     this.name = name;
     this.columnList = columnList;
+    this.recursive = recursive;
     this.query = query;
   }
 
@@ -44,8 +54,9 @@ public class SqlWithItem extends SqlCall {
     return SqlKind.WITH_ITEM;
   }
 
-  public List<SqlNode> getOperandList() {
-    return ImmutableNullableList.of(name, columnList, query);
+  @SuppressWarnings("nullness")
+  @Override public List<SqlNode> getOperandList() {
+    return ImmutableNullableList.of(name, columnList, query, recursive);
   }
 
   @Override public void setOperand(int i, SqlNode operand) {
@@ -58,6 +69,9 @@ public class SqlWithItem extends SqlCall {
       break;
     case 2:
       query = operand;
+      break;
+    case 3:
+      recursive = (SqlLiteral) operand;
       break;
     default:
       throw new AssertionError(i);
@@ -99,9 +113,9 @@ public class SqlWithItem extends SqlCall {
     @Override public SqlCall createCall(SqlLiteral functionQualifier,
         SqlParserPos pos, SqlNode... operands) {
       assert functionQualifier == null;
-      assert operands.length == 3;
+      assert operands.length == 4;
       return new SqlWithItem(pos, (SqlIdentifier) operands[0],
-          (SqlNodeList) operands[1], operands[2]);
+          (SqlNodeList) operands[1], operands[2], (SqlLiteral) operands[3]);
     }
   }
 }

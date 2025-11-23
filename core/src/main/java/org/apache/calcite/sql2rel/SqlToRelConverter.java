@@ -22,6 +22,7 @@ import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptSamplingParameters;
+import org.apache.calcite.plan.RelOptSchema;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelTraitSet;
@@ -64,7 +65,6 @@ import org.apache.calcite.rel.logical.LogicalTableModify;
 import org.apache.calcite.rel.logical.LogicalTableScan;
 import org.apache.calcite.rel.logical.LogicalUnion;
 import org.apache.calcite.rel.logical.LogicalValues;
-import org.apache.calcite.rel.metadata.JaninoRelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelColumnMapping;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.stream.Delta;
@@ -168,6 +168,7 @@ import org.apache.calcite.sql.validate.SqlValidatorNamespace;
 import org.apache.calcite.sql.validate.SqlValidatorScope;
 import org.apache.calcite.sql.validate.SqlValidatorTable;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
+import org.apache.calcite.sql.validate.SqlWithItemTableRef;
 import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.calcite.util.ImmutableBitSet;
@@ -340,8 +341,9 @@ public class SqlToRelConverter {
     this.exprConverter = new SqlNodeToRexConverterImpl(convertletTable);
     this.explainParamCount = 0;
     this.config = new ConfigBuilder().withConfig(config).build();
-    this.relBuilder = config.getRelBuilderFactory().create(cluster, null)
-        .transform(config.getRelBuilderConfigTransform());
+    this.relBuilder =
+        config.getRelBuilderFactory().create(cluster,
+            validator != null ? validator.getCatalogReader().unwrap(RelOptSchema.class) : null);
     this.hintStrategies = config.getHintStrategyTable();
 
     cluster.setHintStrategies(this.hintStrategies);
@@ -592,8 +594,6 @@ public class SqlToRelConverter {
       query = validator.validate(query);
     }
 
-    RelMetadataQuery.THREAD_PROVIDERS.set(
-        JaninoRelMetadataProvider.of(cluster.getMetadataProvider()));
     RelNode result = convertQueryRecursive(query, top, null).rel;
     if (top) {
       if (isStream(query)) {
@@ -2172,6 +2172,11 @@ public class SqlToRelConverter {
       convertIdentifier(bb, (SqlIdentifier) from, null, null);
       return;
 
+    case WITH_ITEM_TABLE_REF:
+      SqlWithItemTableRef withItemTableRef = (SqlWithItemTableRef) from;
+      convertTransientScan(bb, withItemTableRef.getWithItem());
+      return;
+
     case EXTEND:
       call = (SqlCall) from;
       final SqlNode operand0 = call.getOperandList().get(0);
@@ -2546,6 +2551,14 @@ public class SqlToRelConverter {
     bb.setRoot(relBuilder.build(), true);
   }
 
+  private void convertTransientScan(Blackboard bb, SqlWithItem withItem) {
+    final SqlValidatorNamespace fromNamespace = getNamespace(withItem).resolve();
+    bb.setRoot(
+        relBuilder.transientScan(withItem.name.getSimple(),
+            fromNamespace.getRowType()).build(),
+        true);
+  }
+
   private void convertIdentifier(Blackboard bb, SqlIdentifier id,
       SqlNodeList extendedColumns, SqlNodeList tableHints) {
     final SqlValidatorNamespace fromNamespace =
@@ -2574,12 +2587,7 @@ public class SqlToRelConverter {
     final List<RelHint> hints = hintStrategies.apply(
         SqlUtil.getRelHint(hintStrategies, tableHints),
         LogicalTableScan.create(cluster, table, ImmutableList.of()));
-    final RelNode tableRel;
-    if (config.isConvertTableAccess()) {
-      tableRel = toRel(table, hints);
-    } else {
-      tableRel = LogicalTableScan.create(cluster, table, hints);
-    }
+    final RelNode tableRel = toRel(table, hints);
     bb.setRoot(tableRel, true);
     if (usedDataset[0]) {
       bb.setDataset(datasetName);
@@ -3688,7 +3696,29 @@ public class SqlToRelConverter {
     }
   }
 
-
+  private RelNode createUnion(SqlCall call,
+      RelNode left,
+      RelNode right) {
+    SqlValidatorNamespace nameSpace = this.validator().getNamespace(call);
+    boolean all = all(call);
+    if (nameSpace != null) {
+      SqlNode enclosingNode = nameSpace.getEnclosingNode();
+      if (enclosingNode != null) {
+        String name = "";
+        if (enclosingNode.getKind() == SqlKind.WITH_ITEM) {
+          name = ((SqlWithItem) enclosingNode).name.getSimple();
+        }
+        if (RelOptUtil.findTable(right, name) != null) {
+          return this.relBuilder.
+              push(left).
+              push(right).
+              repeatUnion(name, all).
+              build();
+        }
+      }
+    }
+    return LogicalUnion.create(ImmutableList.of(left, right), all);
+  }
 
   /**
    * Converts a set operation (UNION, INTERSECT, MINUS) into relational
@@ -3704,7 +3734,7 @@ public class SqlToRelConverter {
         convertQueryRecursive(call.operand(1), false, null).project();
     switch (call.getKind()) {
     case UNION:
-      return LogicalUnion.create(ImmutableList.of(left, right), all(call));
+      return createUnion(call, left, right);
 
     case INTERSECT:
       return LogicalIntersect.create(ImmutableList.of(left, right), all(call));
@@ -4105,12 +4135,6 @@ public class SqlToRelConverter {
 
     replaceSubQueries(bb, call, RelOptUtil.Logic.TRUE_FALSE_UNKNOWN);
 
-    Builder<RexNode> rexNodeSourceExpressionListBuilder = ImmutableList.builder();
-    for (SqlNode n : call.getSourceExpressionList()) {
-      RexNode rn = bb.convertExpression(n);
-      rexNodeSourceExpressionListBuilder.add(rn);
-    }
-
     RelOptTable targetTable = getTargetTable(call);
 
     // convert update column list from SqlIdentifier to String
@@ -4126,6 +4150,13 @@ public class SqlToRelConverter {
     }
 
     RelNode sourceRel = convertSelect(call.getSourceSelect(), false);
+
+    bb.setRoot(sourceRel, false);
+    Builder<RexNode> rexNodeSourceExpressionListBuilder = ImmutableList.builder();
+    for (SqlNode n : call.getSourceExpressionList()) {
+      RexNode rn = bb.convertExpression(n);
+      rexNodeSourceExpressionListBuilder.add(rn);
+    }
 
     return LogicalTableModify.create(targetTable, catalogReader, sourceRel,
         LogicalTableModify.Operation.UPDATE, targetColumnNameList,
@@ -6476,7 +6507,12 @@ public class SqlToRelConverter {
      * optimizer doesn't like leaf rels to have {@link Convention#NONE}.
      * However, if we are doing further conversion passes (e.g.
      * {@link RelStructuredTypeFlattener}), then we may need to defer
-     * conversion. */
+     * conversion.
+     *
+     * @deprecated Table access references are always converted to
+     * logical relational expressions during sql-to-rel conversion.
+     * */
+    @Deprecated // to be removed before 1.23
     boolean isConvertTableAccess();
 
     /** Returns the {@code decorrelationEnabled} option. Controls whether to
@@ -6536,7 +6572,6 @@ public class SqlToRelConverter {
 
   /** Builder for a {@link Config}. */
   public static class ConfigBuilder {
-    private boolean convertTableAccess = true;
     private boolean decorrelationEnabled = true;
     private boolean trimUnusedFields = false;
     private boolean createValuesRel = true;
@@ -6552,7 +6587,6 @@ public class SqlToRelConverter {
 
     /** Sets configuration identical to a given {@link Config}. */
     public ConfigBuilder withConfig(Config config) {
-      this.convertTableAccess = config.isConvertTableAccess();
       this.decorrelationEnabled = config.isDecorrelationEnabled();
       this.trimUnusedFields = config.isTrimUnusedFields();
       this.createValuesRel = config.isCreateValuesRel();
@@ -6566,8 +6600,8 @@ public class SqlToRelConverter {
       return this;
     }
 
+    @Deprecated // to be removed before 1.23
     public ConfigBuilder withConvertTableAccess(boolean convertTableAccess) {
-      this.convertTableAccess = convertTableAccess;
       return this;
     }
 
@@ -6648,7 +6682,6 @@ public class SqlToRelConverter {
   /** Implementation of {@link Config}.
    * Called by builder; all values are in private final fields. */
   private static class ConfigImpl implements Config {
-    private final boolean convertTableAccess;
     private final boolean decorrelationEnabled;
     private final boolean trimUnusedFields;
     private final boolean createValuesRel;
@@ -6660,13 +6693,12 @@ public class SqlToRelConverter {
     private final RelBuilderFactory relBuilderFactory;
     private final HintStrategyTable hintStrategyTable;
 
-    private ConfigImpl(boolean convertTableAccess, boolean decorrelationEnabled,
+    private ConfigImpl(boolean decorrelationEnabled,
         boolean trimUnusedFields, boolean createValuesRel, boolean explain,
         boolean expand, boolean removeSortInSubQuery, int inSubQueryThreshold,
         UnaryOperator<RelBuilder.Config> relBuilderConfigTransform,
         RelBuilderFactory relBuilderFactory,
         HintStrategyTable hintStrategyTable) {
-      this.convertTableAccess = convertTableAccess;
       this.decorrelationEnabled = decorrelationEnabled;
       this.trimUnusedFields = trimUnusedFields;
       this.createValuesRel = createValuesRel;
@@ -6680,7 +6712,7 @@ public class SqlToRelConverter {
     }
 
     public boolean isConvertTableAccess() {
-      return convertTableAccess;
+      return true;
     }
 
     public boolean isDecorrelationEnabled() {

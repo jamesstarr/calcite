@@ -477,5 +477,4 @@ public interface SqlConformance {
    * true otherwise.
    */
   boolean allowQualifyingCommonColumn();
-
 }

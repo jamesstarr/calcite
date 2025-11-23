@@ -26,12 +26,12 @@ import org.apache.calcite.plan.RelOptPredicateList;
 import org.apache.calcite.plan.RelOptSchema;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelOptUtil;
+import org.apache.calcite.plan.ViewExpanders;
 import org.apache.calcite.prepare.RelOptTableImpl;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelDistribution;
 import org.apache.calcite.rel.RelFieldCollation;
-import org.apache.calcite.rel.RelHomogeneousShuttle;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.AggregateCall;
@@ -117,6 +117,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -156,6 +157,7 @@ public class RelBuilder {
   private final Deque<Frame> stack = new ArrayDeque<>();
   private final RexSimplify simplifier;
   private final Config config;
+  private final RelOptTable.ViewExpander viewExpander;
   private final RelFactories.Struct struct;
 
   protected RelBuilder(Context context, RelOptCluster cluster,
@@ -166,6 +168,7 @@ public class RelBuilder {
       context = Contexts.EMPTY_CONTEXT;
     }
     this.config = getConfig(context);
+    this.viewExpander = getViewExpander(cluster, context);
     this.struct =
         Objects.requireNonNull(RelFactories.Struct.fromContext(context));
     final RexExecutor executor =
@@ -174,6 +177,23 @@ public class RelBuilder {
     final RelOptPredicateList predicates = RelOptPredicateList.EMPTY;
     this.simplifier =
         new RexSimplify(cluster.getRexBuilder(), predicates, executor);
+  }
+
+  /**
+   * Derives the view expander
+   * {@link org.apache.calcite.plan.RelOptTable.ViewExpander}
+   * to be used for this RelBuilder.
+   *
+   * <p>The ViewExpander instance is used for expanding views in the default
+   * table scan factory {@code RelFactories.TableScanFactoryImpl}.
+   * You can also define a new table scan factory in the {@code struct}
+   * to override the whole table scan creation.
+   *
+   * <p>The default view expander does not support expanding views.
+   */
+  private RelOptTable.ViewExpander getViewExpander(RelOptCluster cluster, Context context) {
+    return Util.first(context.unwrap(RelOptTable.ViewExpander.class),
+        ViewExpanders.simpleContext(cluster));
   }
 
   /** Derives the Config to be used for this RelBuilder.
@@ -1224,8 +1244,9 @@ public class RelBuilder {
       throw RESOURCE.tableNotFound(String.join(".", names)).ex();
     }
     final RelNode scan =
-        struct.scanFactory.createScan(cluster, relOptTable,
-            ImmutableList.of());
+        struct.scanFactory.createScan(
+            ViewExpanders.toRelContext(viewExpander, cluster),
+            relOptTable);
     push(scan);
     rename(relOptTable.getRowType().getFieldNames());
 
@@ -1829,7 +1850,7 @@ public class RelBuilder {
     final Registrar registrar =
         new Registrar(fields(), peek().getRowType().getFieldNames());
     final GroupKeyImpl groupKey_ = (GroupKeyImpl) groupKey;
-    final ImmutableBitSet groupSet =
+    ImmutableBitSet groupSet =
         ImmutableBitSet.of(registrar.registerExpressions(groupKey_.nodes));
   label:
     if (Iterables.isEmpty(aggCalls)) {
@@ -1855,7 +1876,7 @@ public class RelBuilder {
         return project(fields(groupSet));
       }
     }
-    final ImmutableList<ImmutableBitSet> groupSets;
+    ImmutableList<ImmutableBitSet> groupSets;
     if (groupKey_.nodeLists != null) {
       final int sizeBefore = registrar.extraNodes.size();
       final SortedSet<ImmutableBitSet> groupSetSet =
@@ -1891,7 +1912,7 @@ public class RelBuilder {
     project(registrar.extraNodes);
     rename(registrar.names);
     final Frame frame = stack.pop();
-    final RelNode r = frame.rel;
+    RelNode r = frame.rel;
     final List<AggregateCall> aggregateCalls = new ArrayList<>();
     for (AggCall aggCall : aggCalls) {
       final AggregateCall aggregateCall;
@@ -1928,6 +1949,49 @@ public class RelBuilder {
     assert ImmutableBitSet.ORDERING.isStrictlyOrdered(groupSets) : groupSets;
     for (ImmutableBitSet set : groupSets) {
       assert groupSet.contains(set);
+    }
+
+    if (config.pruneInputOfAggregate()
+        && r instanceof Project) {
+      final Set<Integer> fieldsUsed =
+          RelOptUtil.getAllFields2(groupSet, aggregateCalls);
+      // Some parts of the system can't handle rows with zero fields, so
+      // pretend that one field is used.
+      if (fieldsUsed.isEmpty()) {
+        r = ((Project) r).getInput();
+      } else if (fieldsUsed.size() < r.getRowType().getFieldCount()) {
+        // Some fields are computed but not used. Prune them.
+        final Map<Integer, Integer> map = new HashMap<>();
+        for (int source : fieldsUsed) {
+          map.put(source, map.size());
+        }
+
+        groupSet = groupSet.permute(map);
+        groupSets =
+            ImmutableBitSet.ORDERING.immutableSortedCopy(
+                ImmutableBitSet.permute(groupSets, map));
+
+        final Mappings.TargetMapping targetMapping =
+            Mappings.target(map, r.getRowType().getFieldCount(),
+                fieldsUsed.size());
+        final List<AggregateCall> oldAggregateCalls =
+            new ArrayList<>(aggregateCalls);
+        aggregateCalls.clear();
+        for (AggregateCall aggregateCall : oldAggregateCalls) {
+          aggregateCalls.add(aggregateCall.transform(targetMapping));
+        }
+
+        final Project project = (Project) r;
+        final List<RexNode> newProjects = new ArrayList<>();
+        final RelDataTypeFactory.Builder builder =
+            cluster.getTypeFactory().builder();
+        for (int i : fieldsUsed) {
+          newProjects.add(project.getProjects().get(i));
+          builder.add(project.getRowType().getFieldList().get(i));
+        }
+        r = project.copy(r.getTraitSet(), project.getInput(), newProjects,
+            builder.build());
+      }
     }
 
     if (!config.dedupAggregateCalls() || Util.isDistinct(aggregateCalls)) {
@@ -2113,8 +2177,9 @@ public class RelBuilder {
         transientTable,
         ImmutableList.of(tableName));
     RelNode scan =
-        struct.scanFactory.createScan(cluster, relOptTable,
-            ImmutableList.of());
+        struct.scanFactory.createScan(
+            ViewExpanders.toRelContext(viewExpander, cluster),
+            relOptTable);
     push(scan);
     rename(rowType.getFieldNames());
     return this;
@@ -2174,45 +2239,25 @@ public class RelBuilder {
    */
   @Experimental
   public RelBuilder repeatUnion(String tableName, boolean all, int iterationLimit) {
-    RelOptTableFinder finder = new RelOptTableFinder(tableName);
+    RelOptTable table = null;
     for (int i = 0; i < stack.size(); i++) { // search scan(tableName) in the stack
-      peek(i).accept(finder);
-      if (finder.relOptTable != null) { // found
+      table = RelOptUtil.findTable(peek(i), tableName);
+      if (table != null) { // found
         break;
       }
     }
-    if (finder.relOptTable == null) {
+    if (table == null) {
       throw RESOURCE.tableNotFound(tableName).ex();
     }
 
-    RelNode iterative = tableSpool(Spool.Type.LAZY, Spool.Type.LAZY, finder.relOptTable).build();
-    RelNode seed = tableSpool(Spool.Type.LAZY, Spool.Type.LAZY, finder.relOptTable).build();
-    RelNode repUnion =
+    RelNode iterative = tableSpool(Spool.Type.LAZY, Spool.Type.LAZY, table).build();
+    RelNode seed = tableSpool(Spool.Type.LAZY, Spool.Type.LAZY, table).build();
+    RelNode repeatUnion =
         struct.repeatUnionFactory.createRepeatUnion(seed, iterative, all,
-            iterationLimit);
-    return push(repUnion);
+            iterationLimit, table);
+    return push(repeatUnion);
   }
 
-  /**
-   * Auxiliary class to find a certain RelOptTable based on its name
-   */
-  private static final class RelOptTableFinder extends RelHomogeneousShuttle {
-    private RelOptTable relOptTable = null;
-    private final String tableName;
-
-    private RelOptTableFinder(String tableName) {
-      this.tableName = tableName;
-    }
-
-    @Override public RelNode visit(TableScan scan) {
-      final RelOptTable scanTable = scan.getTable();
-      final List<String> qualifiedName = scanTable.getQualifiedName();
-      if (qualifiedName.get(qualifiedName.size() - 1).equals(tableName)) {
-        relOptTable = scanTable;
-      }
-      return super.visit(scan);
-    }
-  }
 
   /** Creates a {@link Join}. */
   public RelBuilder join(JoinRelType joinType, RexNode condition0,
@@ -3234,10 +3279,19 @@ public class RelBuilder {
       if (distinct) {
         b.append("DISTINCT ");
       }
-      b.append(operands)
-          .append(')');
+      final int iMax = operands.size() - 1;
+      // CHECKSTYLE: stop NoWhitespaceBefore
+      for (int i = 0; ; i++) {
+      // CHECKSTYLE: resume NoWhitespaceBefore
+        b.append(operands.get(i));
+        if (i == iMax) {
+          break;
+        }
+        b.append(", ");
+      }
+      b.append(')');
       if (filter != null) {
-        b.append(" FILTER (WHERE" + filter + ")");
+        b.append(" FILTER (WHERE ").append(filter).append(')');
       }
       return b.toString();
     }
@@ -3576,6 +3630,15 @@ public class RelBuilder {
 
     /** Sets {@link #pushJoinCondition()}. */
     Config withPushJoinCondition(boolean pushJoinCondition);
+
+    /** Whether {@link RelBuilder#aggregate} should prune unused
+     * input columns; default true. */
+    @ImmutableBeans.Property
+    @ImmutableBeans.BooleanDefault(true)
+    boolean pruneInputOfAggregate();
+
+    /** Sets {@link #pruneInputOfAggregate}. */
+    Config withPruneInputOfAggregate(boolean pruneInputOfAggregate);
 
     /** Whether to simplify expressions; default true. */
     @ImmutableBeans.Property

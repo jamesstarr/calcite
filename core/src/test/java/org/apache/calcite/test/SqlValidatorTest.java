@@ -685,6 +685,11 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     expr("_UTF16'a'||_UTF16'b'||_UTF16'c'").ok();
   }
 
+  @Test public void testUuidCasts() {
+    // Test case for [CALCITE-7158] NULL cannot be cast to UUID
+    sql("SELECT UUID '123e4567-e89b-12d3-a456-426655440000' UNION SELECT NULL").ok();
+  }
+
   @Test public void testConcatWithCharset() {
     sql("_UTF16'a'||_UTF16'b'||_UTF16'c'")
         .charset(Charset.forName("UTF-16LE"));
@@ -5008,6 +5013,12 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     sql("select * from " + emps + " as e,\n"
         + " (select 1, ^e^.deptno from (values(true))) as d")
         .fails("Table 'E' not found");
+
+    // fail: deptno is ambiguous
+    sql("select ^deptno^, name from " + depts + "as d\n"
+        + "join " + emps +  "as e\n"
+        + "on d.deptno = e.deptno")
+        .fails("Column 'DEPTNO' is ambiguous");
   }
 
   @Test public void testNestedFrom() {
@@ -5962,6 +5973,47 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     sql("select * from dept where exists (\n"
         + "select 1 from emp join bonus using (^deptno^))")
         .fails("Column 'DEPTNO' not found in any table");
+
+    // cannot qualify common column in Oracle.
+    sql("select ^emp.deptno^ from emp join dept using (deptno)")
+        .withConformance(SqlConformanceEnum.ORACLE_10)
+        .fails("Cannot qualify common column 'EMP.DEPTNO'")
+        .withConformance(SqlConformanceEnum.ORACLE_12)
+        .fails("Cannot qualify common column 'EMP.DEPTNO'");
+
+    sql("select ^emp.deptno^ from emp natural join dept")
+        .withConformance(SqlConformanceEnum.ORACLE_10)
+        .fails("Cannot qualify common column 'EMP.DEPTNO'")
+        .withConformance(SqlConformanceEnum.ORACLE_12)
+        .fails("Cannot qualify common column 'EMP.DEPTNO'");
+
+    sql("select count(^emp.deptno^) from emp join dept using (deptno)")
+        .withConformance(SqlConformanceEnum.ORACLE_10)
+        .fails("Cannot qualify common column 'EMP.DEPTNO'")
+        .withConformance(SqlConformanceEnum.ORACLE_12)
+        .fails("Cannot qualify common column 'EMP.DEPTNO'");
+
+    sql("select emp.deptno from emp join dept using (deptno)")
+        .withConformance(SqlConformanceEnum.DEFAULT)
+        .ok()
+        .withConformance(SqlConformanceEnum.MYSQL_5)
+        .ok();
+
+    sql("select emp.empno from emp natural join dept")
+        .withConformance(SqlConformanceEnum.DEFAULT)
+        .ok()
+        .withConformance(SqlConformanceEnum.ORACLE_10)
+        .ok()
+        .withConformance(SqlConformanceEnum.ORACLE_12)
+        .ok();
+
+    sql("select emp.empno from emp join dept using (deptno)")
+        .withConformance(SqlConformanceEnum.DEFAULT)
+        .ok()
+        .withConformance(SqlConformanceEnum.ORACLE_10)
+        .ok()
+        .withConformance(SqlConformanceEnum.ORACLE_12)
+        .ok();
   }
 
   @Test public void testCrossJoinOnFails() {
@@ -6242,6 +6294,74 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
   @Test public void testWith() {
     // simplest possible
     sql("with emp2 as (select * from emp)\n"
+        + "select * from emp2")
+        .type(EMP_RECORD_TYPE);
+
+    // simplest with recursive fails
+    sql("with RECURSIVE emp2 as (select * from ^emp2^)\n"
+        + "select * from emp2")
+        .fails("Object 'EMP2' not found");
+
+    sql("with RECURSIVE emp2 as ("
+        + "select * from emp "
+        + " union select * from ^emp2^"
+        + " union select * from emp2"
+        + ")\n"
+        + "select * from emp2")
+        .fails("Object 'EMP2' not found");
+
+    // mutually recursive queries are not supported.
+    sql("WITH RECURSIVE\n"
+        + "x (id) AS (SELECT 1 UNION ALL SELECT id+1 FROM ^y^ WHERE id < 5),\n"
+        + "y (id) AS (SELECT 1 UNION ALL SELECT id+1 FROM x WHERE id < 5)\n"
+        + "SELECT * FROM x")
+        .fails("Object 'Y' not found");
+
+    sql("WITH RECURSIVE t_out(n) AS\n"
+        + "  (WITH RECURSIVE t_in(n) AS\n"
+        + "     (\n"
+        + "      VALUES (1)\n"
+        + "      UNION ALL SELECT n+1\n"
+        + "      FROM ^t_out^\n"
+        + "      WHERE n < 9 ) SELECT n\n"
+        + "   FROM t_in\n"
+        + "   UNION ALL SELECT n*10\n"
+        + "   FROM t_out\n"
+        + "   WHERE n < 100 )\n"
+        + "SELECT n\n"
+        + "FROM t_out")
+        .fails("Object 'T_OUT' not found");
+
+    sql("WITH RECURSIVE cte (n) AS\n"
+        + "(\n"
+        + "  SELECT 1, 2\n"
+        + "  UNION ALL\n"
+        + "  SELECT ^n + 1^ FROM cte WHERE n < 5\n"
+        + ")\n"
+        + "SELECT * FROM cte")
+        .fails("Column count mismatch in UNION ALL");
+
+    // simplest with RECURSIVE working case.
+    sql("with RECURSIVE emp2 as (select * from emp union select * from emp2)\n"
+        + "select * from emp2")
+        .type(EMP_RECORD_TYPE);
+
+    // union all with recursive working case.
+    sql("with RECURSIVE emp2 as (select * from emp union all select * from emp2)\n"
+        + "select * from emp2")
+        .type(EMP_RECORD_TYPE);
+
+    // recursive usage of the with clause table name on the left child should throw an error.
+    sql("with RECURSIVE emp2 as (select * from ^emp2^ union all select * from emp2)\n"
+        + "select * from emp2")
+        .fails("Object 'EMP2' not found");
+
+    sql("with RECURSIVE emp2 as (select * from emp intersect select * from ^emp2^)\n"
+        + "select * from emp2")
+        .fails("Object 'EMP2' not found");
+
+    sql("with recursive emp2 as (select * from emp),\n"
+        + "emp3 as (select * from emp2 union all select * from emp3)\n"
         + "select * from emp2")
         .type(EMP_RECORD_TYPE);
 
@@ -9757,7 +9877,8 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         + "^values(1, '2', 'abc')^";
     final String error4 = "(?s).*Cannot assign to target field 'B' of type BIGINT "
         + "from source field 'EXPR\\$1' of type CHAR\\(1\\).*";
-    s.sql(sql4).fails(error4);
+    s.sql(sql4).withTypeCoercion(false).fails(error4);
+    s.sql(sql4).ok();
   }
 
   @Test public void testInsertFailNullability() {
@@ -10741,17 +10862,30 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
   @Test public void testInsertFailDataType() {
     sql("insert into empnullables ^values ('5', 'bob')^")
         .withConformance(SqlConformanceEnum.PRAGMATIC_2003)
+        .withTypeCoercion(false)
         .fails("Cannot assign to target field 'EMPNO' of type INTEGER"
             + " from source field 'EXPR\\$0' of type CHAR\\(1\\)");
+    sql("insert into empnullables values ('5', 'bob')")
+        .withConformance(SqlConformanceEnum.PRAGMATIC_2003)
+        .ok();
     sql("insert into empnullables (^empno^, ename) values ('5', 'bob')")
         .withConformance(SqlConformanceEnum.PRAGMATIC_2003)
+        .withTypeCoercion(false)
         .fails("Cannot assign to target field 'EMPNO' of type INTEGER"
             + " from source field 'EXPR\\$0' of type CHAR\\(1\\)");
+    sql("insert into empnullables (empno, ename) values ('5', 'bob')")
+        .withConformance(SqlConformanceEnum.PRAGMATIC_2003)
+        .ok();
     sql("insert into empnullables(extra BOOLEAN)"
         + " (empno, ename, ^extra^) values (5, 'bob', 'true')")
         .withConformance(SqlConformanceEnum.PRAGMATIC_2003)
+        .withTypeCoercion(false)
         .fails("Cannot assign to target field 'EXTRA' of type BOOLEAN"
             + " from source field 'EXPR\\$2' of type CHAR\\(4\\)");
+    sql("insert into empnullables(extra BOOLEAN)"
+        + " (empno, ename, ^extra^) values (5, 'bob', 'true')")
+        .withConformance(SqlConformanceEnum.PRAGMATIC_2003)
+        .ok();
   }
 
   @Disabled("CALCITE-1727")
@@ -10952,13 +11086,23 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
     sql("insert into EMPDEFAULTS(\"comm\" BOOLEAN)"
         + " (empno, ename, job, ^comm^)\n"
         + "values (1, 'Arthur', 'clown', true)")
+        .withTypeCoercion(false)
         .fails("Cannot assign to target field 'COMM' of type INTEGER"
             + " from source field 'EXPR\\$3' of type BOOLEAN");
     sql("insert into EMPDEFAULTS(\"comm\" BOOLEAN)"
+        + " (empno, ename, job, comm)\n"
+        + "values (1, 'Arthur', 'clown', true)")
+        .ok();
+    sql("insert into EMPDEFAULTS(\"comm\" BOOLEAN)"
         + " (empno, ename, job, ^\"comm\"^)\n"
         + "values (1, 'Arthur', 'clown', 1)")
+        .withTypeCoercion(false)
         .fails("Cannot assign to target field 'comm' of type BOOLEAN"
             + " from source field 'EXPR\\$3' of type INTEGER");
+    sql("insert into EMPDEFAULTS(\"comm\" BOOLEAN)"
+        + " (empno, ename, job, \"comm\")\n"
+        + "values (1, 'Arthur', 'clown', 1)")
+        .ok();
   }
 
   @Test public void testInsertExtendedColumnModifiableViewFailCollision() {
@@ -10973,14 +11117,16 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         + " (empno, ename, job, ^slacker^) values (1, 'Arthur', 'clown', 1)";
     final String error1 = "Cannot assign to target field 'SLACKER' of type"
         + " BOOLEAN from source field 'EXPR\\$3' of type INTEGER";
-    s.sql(sql1).fails(error1);
+    s.sql(sql1).withTypeCoercion(false).fails(error1);
+    s.sql(sql1).ok();
 
     final String sql2 = "insert into EMP_MODIFIABLEVIEW2(\"slacker\" INTEGER)"
         + " (empno, ename, job, ^\"slacker\"^)\n"
         + "values (1, 'Arthur', 'clown', true)";
     final String error2 = "Cannot assign to target field 'slacker' of type"
         + " INTEGER from source field 'EXPR\\$3' of type BOOLEAN";
-    s.sql(sql2).fails(error2);
+    s.sql(sql2).withTypeCoercion(false).fails(error2);
+    s.sql(sql2).ok();
   }
 
   @Test public void testInsertExtendedColumnModifiableViewFailExtendedCollision() {
@@ -10995,14 +11141,23 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         + " (empno, ename, job, ^extra^) values (1, 'Arthur', 'clown', 1)";
     final String error1 = "Cannot assign to target field 'EXTRA' of type"
         + " BOOLEAN from source field 'EXPR\\$3' of type INTEGER";
-    s.sql(sql1).fails(error1);
+    s.sql(sql1).withTypeCoercion(false).fails(error1);
 
     final String sql2 = "insert into EMP_MODIFIABLEVIEW2(\"extra\" INTEGER)"
+        + " (empno, ename, job, extra) values (1, 'Arthur', 'clown', 1)";
+    s.sql(sql2).ok();
+
+    final String sql3 = "insert into EMP_MODIFIABLEVIEW2(\"extra\" INTEGER)"
         + " (empno, ename, job, ^\"extra\"^)\n"
         + "values (1, 'Arthur', 'clown', true)";
-    final String error2 = "Cannot assign to target field 'extra' of type"
+    final String error3 = "Cannot assign to target field 'extra' of type"
         + " INTEGER from source field 'EXPR\\$3' of type BOOLEAN";
-    s.sql(sql2).fails(error2);
+    s.sql(sql3).withTypeCoercion(false).fails(error3);
+
+    final String sql4 = "insert into EMP_MODIFIABLEVIEW2(\"extra\" INTEGER)"
+        + " (empno, ename, job, \"extra\")\n"
+        + "values (1, 'Arthur', 'clown', true)";
+    s.sql(sql4).ok();
   }
 
   @Test public void testInsertExtendedColumnModifiableViewFailUnderlyingCollision() {
@@ -11023,7 +11178,8 @@ public class SqlValidatorTest extends SqlValidatorTestCase {
         + " (empno, ename, job, ^\"comm\"^) values (1, 'Arthur', 'clown', 1)";
     final String error2 = "Cannot assign to target field 'comm' of type"
         + " BOOLEAN from source field 'EXPR\\$3' of type INTEGER";
-    s.sql(sql2).fails(error2);
+    s.sql(sql2).withTypeCoercion(false).fails(error2);
+    s.sql(sql2).ok();
   }
 
   @Test public void testDelete() {

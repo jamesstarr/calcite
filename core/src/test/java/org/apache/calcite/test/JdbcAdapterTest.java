@@ -177,6 +177,47 @@ public class JdbcAdapterTest {
             + "ON \"t\".\"DEPTNO\" = \"t0\".\"DEPTNO\"");
   }
 
+  @Test public void testPushDownSort() {
+    CalciteAssert.model(JdbcTest.SCOTT_MODEL)
+        .query("select ename\n"
+            + "from scott.emp\n"
+            + "order by empno")
+        .explainContains("PLAN=JdbcToEnumerableConverter\n"
+            + "  JdbcSort(sort0=[$1], dir0=[ASC])\n"
+            + "    JdbcProject(ENAME=[$1], EMPNO=[$0])\n"
+            + "      JdbcTableScan(table=[[SCOTT, EMP]])")
+        .runs()
+        .enable(CalciteAssert.DB == CalciteAssert.DatabaseInstance.HSQLDB)
+        .planHasSql("SELECT \"ENAME\", \"EMPNO\"\n"
+            + "FROM \"SCOTT\".\"EMP\"\n"
+            + "ORDER BY \"EMPNO\" NULLS LAST");
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3751">[CALCITE-3751]
+   * JDBC adapter wrongly pushes ORDER BY into sub-query</a>. */
+  @Test public void testOrderByPlan() {
+    final String sql = "select deptno, job, sum(sal)\n"
+        + "from \"EMP\"\n"
+        + "group by deptno, job\n"
+        + "order by 1, 2";
+    final String explain = "PLAN=JdbcToEnumerableConverter\n"
+        + "  JdbcSort(sort0=[$0], sort1=[$1], dir0=[ASC], dir1=[ASC])\n"
+        + "    JdbcProject(DEPTNO=[$1], JOB=[$0], EXPR$2=[$2])\n"
+        + "      JdbcAggregate(group=[{2, 7}], EXPR$2=[SUM($5)])\n"
+        + "        JdbcTableScan(table=[[SCOTT, EMP]])";
+    final String sqlHsqldb = "SELECT \"DEPTNO\", \"JOB\", SUM(\"SAL\")\n"
+        + "FROM \"SCOTT\".\"EMP\"\n"
+        + "GROUP BY \"JOB\", \"DEPTNO\"\n"
+        + "ORDER BY \"DEPTNO\" NULLS LAST, \"JOB\" NULLS LAST";
+    CalciteAssert.model(JdbcTest.SCOTT_MODEL)
+        .query(sql)
+        .explainContains(explain)
+        .runs()
+        .enable(CalciteAssert.DB == CalciteAssert.DatabaseInstance.HSQLDB)
+        .planHasSql(sqlHsqldb);
+  }
+
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-631">[CALCITE-631]
    * Push theta joins down to JDBC adapter</a>. */
@@ -763,11 +804,16 @@ public class JdbcAdapterTest {
         + " 666, '666', 666, 666)";
     final String explain = "PLAN=JdbcToEnumerableConverter\n"
         + "  JdbcTableModify(table=[[foodmart, expense_fact]], operation=[INSERT], flattened=[false])\n"
-        + "    JdbcValues(tuples=[[{ 666, 666, 1997-01-01 00:00:00, 666, '666', 666, 666.0000 }]])\n";
-    final String jdbcSql = "INSERT INTO \"foodmart\".\"expense_fact\""
-        + " (\"store_id\", \"account_id\", \"exp_date\", \"time_id\","
-        + " \"category_id\", \"currency_id\", \"amount\")\n"
-        + "VALUES  (666, 666, TIMESTAMP '1997-01-01 00:00:00', 666, '666', 666, 666.0000)";
+        + "    JdbcProject(store_id=[666], account_id=[666], exp_date=[1997-01-01 00:00:00], "
+        + "time_id=[666], category_id=['666'], currency_id=[666], amount=[666:DECIMAL(10, 4)])\n"
+        + "      JdbcValues(tuples=[[{ 0 }]])\n\n";
+    final String jdbcSql = "INSERT INTO \"foodmart\".\"expense_fact\" (\"store_id\", "
+        + "\"account_id\", \"exp_date\", \"time_id\", \"category_id\", \"currency_id\", "
+        + "\"amount\")\n"
+        + "(SELECT 666 AS \"store_id\", 666 AS \"account_id\", "
+        + "TIMESTAMP '1997-01-01 00:00:00' AS \"exp_date\", 666 AS \"time_id\", "
+        + "'666' AS \"category_id\", 666 AS \"currency_id\", "
+        + "666 AS \"amount\"\nFROM (VALUES  (0)) AS \"t\" (\"ZERO\"))";
     final AssertThat that =
         CalciteAssert.model(JdbcTest.FOODMART_MODEL)
             .enable(CalciteAssert.DB == DatabaseInstance.HSQLDB
@@ -793,13 +839,17 @@ public class JdbcAdapterTest {
         + "   666, '666', 666, 666)";
     final String explain = "PLAN=JdbcToEnumerableConverter\n"
         + "  JdbcTableModify(table=[[foodmart, expense_fact]], operation=[INSERT], flattened=[false])\n"
-        + "    JdbcValues(tuples=[[{ 666, 666, 1997-01-01 00:00:00, 666, '666', 666, 666.0000 },"
-        + " { 666, 777, 1997-01-01 00:00:00, 666, '666', 666, 666.0000 }]])\n";
-    final String jdbcSql = "INSERT INTO \"foodmart\".\"expense_fact\""
-        + " (\"store_id\", \"account_id\", \"exp_date\", \"time_id\","
-        + " \"category_id\", \"currency_id\", \"amount\")\n"
-        + "VALUES  (666, 666, TIMESTAMP '1997-01-01 00:00:00', 666, '666', 666, 666.0000),\n"
-        + " (666, 777, TIMESTAMP '1997-01-01 00:00:00', 666, '666', 666, 666.0000)";
+        + "    JdbcUnion(all=[true])\n"
+        + "      JdbcProject(EXPR$0=[666], EXPR$1=[666], EXPR$2=[1997-01-01 00:00:00], EXPR$3=[666], EXPR$4=['666'], EXPR$5=[666], EXPR$6=[666:DECIMAL(10, 4)])\n"
+        + "        JdbcValues(tuples=[[{ 0 }]])\n"
+        + "      JdbcProject(EXPR$0=[666], EXPR$1=[777], EXPR$2=[1997-01-01 00:00:00], EXPR$3=[666], EXPR$4=['666'], EXPR$5=[666], EXPR$6=[666:DECIMAL(10, 4)])\n"
+        + "        JdbcValues(tuples=[[{ 0 }]])\n\n";
+    final String jdbcSql = "INSERT INTO \"foodmart\".\"expense_fact\" (\"store_id\", "
+        + "\"account_id\", \"exp_date\", \"time_id\", \"category_id\", \"currency_id\","
+        + " \"amount\")\nSELECT 666, 666, TIMESTAMP '1997-01-01 00:00:00', 666, '666', 666, 666\n"
+        + "FROM (VALUES  (0)) AS \"t\" (\"ZERO\")\nUNION ALL\nSELECT 666, 777, "
+        + "TIMESTAMP '1997-01-01 00:00:00', 666, '666', 666, 666\n"
+        + "FROM (VALUES  (0)) AS \"t\" (\"ZERO\")";
     final AssertThat that =
         CalciteAssert.model(JdbcTest.FOODMART_MODEL)
             .enable(CalciteAssert.DB == DatabaseInstance.HSQLDB

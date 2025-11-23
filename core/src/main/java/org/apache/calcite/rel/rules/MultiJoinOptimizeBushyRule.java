@@ -21,13 +21,19 @@ import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
+import org.apache.calcite.plan.hep.HepRelVertex;
+import org.apache.calcite.rel.RelHomogeneousShuttle;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.core.Filter;
+import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinRelType;
+import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.metadata.RelColumnOrigin;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.rules.LoptMultiJoin.Edge;
 import org.apache.calcite.rex.RexBuilder;
+import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexPermuteInputsShuttle;
 import org.apache.calcite.rex.RexUtil;
@@ -57,6 +63,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
+import static org.apache.calcite.plan.RelOptUtil.classifyFilters;
 import static org.apache.calcite.rel.rules.LoptMultiJoin.Edge;
 import static org.apache.calcite.util.mapping.Mappings.TargetMapping;
 
@@ -336,16 +343,133 @@ public class MultiJoinOptimizeBushyRule
       }
     }
 
-    remainingConditions.addAll(
-            RelOptUtil.conjunctions(multiJoinRel.getPostJoinFilter())
-    );
-    RexNode postJoinFilter = RexUtil.composeConjunction(rexBuilder,
-            remainingConditions, false);
     final Pair<RelNode, Mappings.TargetMapping> top = Util.last(relNodes);
-    relBuilder.push(top.left)
-            .project(relBuilder.fields(top.right))
-            .filter(postJoinFilter);
+
+    RelNode topJoin = relBuilder.push(top.left)
+        .project(relBuilder.fields(top.right))
+        .build();
+
+    // remaining conditions are the join conditions that had more than two factors.
+    // We couldn't use it to optimize the join ordering, but we can still push them down after
+    // the optimization.
+    if (!remainingConditions.isEmpty()) {
+      PushJoinFiltersShuttle pushJoinFiltersShuttle = new PushJoinFiltersShuttle(relBuilder);
+
+      relBuilder.push(topJoin)
+          .filter(RexUtil.composeConjunction(rexBuilder, remainingConditions, false));
+
+      topJoin = relBuilder.build().accept(pushJoinFiltersShuttle);
+    }
+
+    relBuilder.push(topJoin)
+            .filter(multiJoinRel.getPostJoinFilter());
+
     call.transformTo(relBuilder.build());
+  }
+
+  /**
+   * Pushes filters above a join past Joins, Filters and Projects.
+   * These pushdown is a very basic level, since the plan should have already been
+   * filter-optimized before join optimization.
+   */
+  private static class PushJoinFiltersShuttle extends RelHomogeneousShuttle {
+
+    private final RelBuilder relBuilder;
+    private final RexBuilder rexBuilder;
+
+    PushJoinFiltersShuttle(RelBuilder relBuilder) {
+      this.relBuilder = relBuilder;
+      this.rexBuilder = relBuilder.getRexBuilder();
+    }
+
+    @Override public RelNode visit(RelNode other) {
+      if (other instanceof HepRelVertex) {
+        other = ((HepRelVertex) other).getCurrentRel();
+      }
+      if (other instanceof Filter) {
+        return visit((Filter) other);
+      }
+      return other;
+    }
+
+    private RelNode visit(Filter filter) {
+      RelNode child = filter.getInput();
+      if (child instanceof Join) {
+        if (((Join) child).getJoinType().isOuterJoin()) {
+          return filter;
+        }
+        return visit((Join) child, filter.getCondition());
+      } else if (child instanceof Filter) {
+        RelNode grandChild = ((Filter) child).getInput();
+        RelNode newChild =
+            visit(filter.copy(filter.getTraitSet(), grandChild, filter.getCondition()));
+        return child.copy(child.getTraitSet(), List.of(newChild));
+      } else if (child instanceof Project) {
+        ImmutableBitSet inputFields = RelOptUtil.InputFinder.bits(filter.getCondition());
+        List<RexNode> projectExprs = ((Project) child).getProjects();
+        for (int i : inputFields) {
+          if (!(projectExprs.get(i) instanceof RexInputRef)) {
+            return filter;
+          }
+        }
+        return visit((Project) child, filter.getCondition());
+      }
+      return filter;
+    }
+
+    private RelNode visit(Join join, RexNode condition) {
+      List<RexNode> joinFilters = new ArrayList<>();
+      List<RexNode> leftFilters = new ArrayList<>();
+      List<RexNode> rightFilters = new ArrayList<>();
+      List<RexNode> topFilters = RelOptUtil.conjunctions(condition);
+      RelNode left = join.getLeft();
+      RelNode right = join.getRight();
+
+      if (!classifyFilters(join, topFilters, join.getJoinType(),
+          true, true, true, joinFilters, leftFilters, rightFilters)) {
+        return relBuilder.push(join)
+            .filter(condition)
+            .build();
+      }
+
+      if (!leftFilters.isEmpty()) {
+        left = visit(relBuilder.push(left)
+            .filter(RexUtil.composeConjunction(rexBuilder, leftFilters, false))
+            .build());
+      }
+      if (!rightFilters.isEmpty()) {
+        right = visit(relBuilder.push(right)
+            .filter(RexUtil.composeConjunction(rexBuilder, rightFilters, false))
+            .build());
+      }
+      RexNode joinCondition = join.getCondition();
+      if (!joinFilters.isEmpty()) {
+        joinCondition = RexUtil.composeConjunction(rexBuilder, joinFilters, false);
+      }
+      RelNode newJoin = join.copy(
+          join.getTraitSet(),
+          joinCondition,
+          left,
+          right,
+          join.getJoinType(),
+          join.isSemiJoinDone());
+
+      if (topFilters.isEmpty()) {
+        return newJoin;
+      }
+      return relBuilder.push(newJoin)
+          .filter(RexUtil.composeConjunction(rexBuilder, topFilters, false))
+          .build();
+    }
+
+    private RelNode visit(Project project, RexNode condition) {
+      RexNode newCondition = RelOptUtil.pushPastProject(condition, project);
+      RelNode newChild = visit(relBuilder.push(project.getInput())
+          .filter(newCondition)
+          .build());
+
+      return project.copy(project.getTraitSet(), List.of(newChild));
+    }
   }
 
   /**

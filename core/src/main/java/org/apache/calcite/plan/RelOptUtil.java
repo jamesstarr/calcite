@@ -611,7 +611,8 @@ public abstract class RelOptUtil {
    * Creates a plan suitable for use in <code>EXISTS</code> or <code>IN</code>
    * statements.
    *
-   * @see org.apache.calcite.sql2rel.SqlToRelConverter#convertExists
+   * @see org.apache.calcite.sql2rel.SqlToRelConverter
+   * SqlToRelConverter#convertExists
    *
    * @param seekRel    A query rel, for example the resulting rel from 'select *
    *                   from emp' or 'values (1,2,3)' or '('Foo', 34)'.
@@ -882,9 +883,15 @@ public abstract class RelOptUtil {
 
   /** Gets all fields in an aggregate. */
   public static Set<Integer> getAllFields(Aggregate aggregate) {
+    return getAllFields2(aggregate.getGroupSet(), aggregate.getAggCallList());
+  }
+
+  /** Gets all fields in an aggregate. */
+  public static Set<Integer> getAllFields2(ImmutableBitSet groupSet,
+      List<AggregateCall> aggCallList) {
     final Set<Integer> allFields = new TreeSet<>();
-    allFields.addAll(aggregate.getGroupSet().asList());
-    for (AggregateCall aggregateCall : aggregate.getAggCallList()) {
+    allFields.addAll(groupSet.asList());
+    for (AggregateCall aggregateCall : aggCallList) {
       allFields.addAll(aggregateCall.getArgList());
       if (aggregateCall.filterArg >= 0) {
         allFields.add(aggregateCall.filterArg);
@@ -2020,6 +2027,20 @@ public abstract class RelOptUtil {
         planner.addRule(rule);
       }
     }
+    // Registers this rule for default ENUMERABLE convention
+    // because:
+    // 1. ScannableTable can bind data directly;
+    // 2. Only BindableTable supports project push down now.
+
+    // EnumerableInterpreterRule.INSTANCE would then transform
+    // the BindableTableScan to
+    // EnumerableInterpreter + BindableTableScan.
+
+    // Note: the cost of EnumerableInterpreter + BindableTableScan
+    // is always bigger that EnumerableTableScan because of the additional
+    // EnumerableInterpreter node, but if there are pushing projects or filter,
+    // we prefer BindableTableScan instead,
+    // see BindableTableScan#computeSelfCost.
     planner.addRule(Bindables.BINDABLE_TABLE_SCAN_RULE);
     planner.addRule(CoreRules.PROJECT_TABLE_SCAN);
     planner.addRule(CoreRules.PROJECT_INTERPRETER_TABLE_SCAN);
@@ -2040,10 +2061,7 @@ public abstract class RelOptUtil {
       }
     }
 
-    // Change the below to enable constant-reduction.
-    if (false) {
-      registerReductionRules(planner);
-    }
+    planner.addRule(CoreRules.FILTER_REDUCE_EXPRESSIONS);
 
   }
 
@@ -3052,6 +3070,28 @@ public abstract class RelOptUtil {
   public static RelNode createProject(RelNode child, Mappings.TargetMapping mapping,
           RelFactories.ProjectFactory projectFactory) {
     return createProject(projectFactory, child, Mappings.asList(mapping.inverse()));
+  }
+
+  /** Returns the relational table node for {@code tableName} if it occurs within a
+   * relational expression {@code root} otherwise an empty option is returned. */
+  public static RelOptTable findTable(RelNode root, final String tableName) {
+    try {
+      RelShuttle visitor = new RelHomogeneousShuttle() {
+        @Override public RelNode visit(TableScan scan) {
+          final RelOptTable scanTable = scan.getTable();
+          final List<String> qualifiedName = scanTable.getQualifiedName();
+          if (qualifiedName.get(qualifiedName.size() - 1).equals(tableName)) {
+            throw new Util.FoundOne(scanTable);
+          }
+          return super.visit(scan);
+        }
+      };
+      root.accept(visitor);
+      return null;
+    } catch (Util.FoundOne e) {
+      Util.swallow(e, null);
+      return (RelOptTable) e.getNode();
+    }
   }
 
   /** Returns whether relational expression {@code target} occurs within a

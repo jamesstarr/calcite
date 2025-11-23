@@ -3567,17 +3567,18 @@ SqlNodeList WithList() :
     SqlWithItem withItem;
     SqlParserPos pos;
     SqlNodeList list;
+    boolean recursive = false;
 }
 {
-    <WITH> { list = new SqlNodeList(getPos()); }
-    withItem = WithItem() {list.add(withItem);}
+    <WITH> [ <RECURSIVE> { recursive = true; } ]{ list = new SqlNodeList(getPos()); }
+    withItem = WithItem(SqlLiteral.createBoolean(recursive, getPos())) {list.add(withItem);}
     (
-        <COMMA> withItem = WithItem() {list.add(withItem);}
+        <COMMA> withItem = WithItem(SqlLiteral.createBoolean(recursive, getPos())) {list.add(withItem);}
     )*
     { return list; }
 }
 
-SqlWithItem WithItem() :
+SqlWithItem WithItem(SqlLiteral recursive) :
 {
     SqlIdentifier id;
     SqlNodeList columnList = null;
@@ -3593,7 +3594,7 @@ SqlWithItem WithItem() :
     definition = ParenthesizedExpression(ExprContext.ACCEPT_QUERY)
     {
         return new SqlWithItem(id.getParserPosition(), id, columnList,
-            definition);
+            definition, recursive);
     }
 }
 

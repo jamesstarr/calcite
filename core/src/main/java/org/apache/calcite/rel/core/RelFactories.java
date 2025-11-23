@@ -459,7 +459,12 @@ public class RelFactories {
     /**
      * Creates a {@link TableScan}.
      */
-    RelNode createScan(RelOptCluster cluster, RelOptTable table, List<RelHint> hints);
+    RelNode createScan(RelOptTable.ToRelContext toRelContext, RelOptTable table);
+
+    @Deprecated // to be removed before 1.23
+    default RelNode createScan(RelOptCluster cluster, RelOptTable table) {
+      return createScan(ViewExpanders.simpleContext(cluster), table);
+    }
   }
 
   /**
@@ -467,8 +472,8 @@ public class RelFactories {
    * {@link LogicalTableScan}.
    */
   private static class TableScanFactoryImpl implements TableScanFactory {
-    public RelNode createScan(RelOptCluster cluster, RelOptTable table, List<RelHint> hints) {
-      return LogicalTableScan.create(cluster, table, hints);
+    public RelNode createScan(RelOptTable.ToRelContext toRelContext, RelOptTable table) {
+      return table.toRel(toRelContext);
     }
   }
 
@@ -481,19 +486,26 @@ public class RelFactories {
    * @param viewExpander View expander
    * @param tableScanFactory Factory for non-translatable tables
    * @return Table scan factory
+   *
+   * @deprecated Use the custom context {@code Contexts.of(viewExpander) } for RelBuilder.
+   *
    */
+  @Deprecated // to be removed before 1.23
   @Nonnull public static TableScanFactory expandingScanFactory(
       @Nonnull RelOptTable.ViewExpander viewExpander,
       @Nonnull TableScanFactory tableScanFactory) {
-    return (cluster, table, hints) -> {
+    return (toRelContext, table) -> {
       final TranslatableTable translatableTable =
           table.unwrap(TranslatableTable.class);
+      final RelOptTable.ToRelContext newToRelContext =
+          ViewExpanders.toRelContext(
+              viewExpander,
+              toRelContext.getCluster(),
+              toRelContext.getTableHints());
       if (translatableTable != null) {
-        final RelOptTable.ToRelContext toRelContext =
-            ViewExpanders.toRelContext(viewExpander, cluster);
-        return translatableTable.toRel(toRelContext, table);
+        return translatableTable.toRel(newToRelContext, table);
       }
-      return tableScanFactory.createScan(cluster, table, hints);
+      return tableScanFactory.createScan(newToRelContext, table);
     };
   }
 
@@ -604,7 +616,7 @@ public class RelFactories {
   public interface RepeatUnionFactory {
     /** Creates a {@link RepeatUnion}. */
     RelNode createRepeatUnion(RelNode seed, RelNode iterative, boolean all,
-        int iterationLimit);
+        int iterationLimit, RelOptTable table);
   }
 
   /**
@@ -613,8 +625,8 @@ public class RelFactories {
    */
   private static class RepeatUnionFactoryImpl implements RepeatUnionFactory {
     public RelNode createRepeatUnion(RelNode seed, RelNode iterative,
-        boolean all, int iterationLimit) {
-      return LogicalRepeatUnion.create(seed, iterative, all, iterationLimit);
+        boolean all, int iterationLimit, RelOptTable table) {
+      return LogicalRepeatUnion.create(seed, iterative, all, iterationLimit, table);
     }
   }
 

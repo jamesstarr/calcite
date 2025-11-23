@@ -21,8 +21,8 @@ import com.github.vlsi.gradle.git.FindGitAttributes
 import com.github.vlsi.gradle.git.dsl.gitignore
 import com.github.vlsi.gradle.properties.dsl.lastEditYear
 import com.github.vlsi.gradle.properties.dsl.props
-import com.github.vlsi.gradle.properties.dsl.stringProperty
 import com.github.vlsi.gradle.release.RepositoryType
+import com.github.vlsi.gradle.test.dsl.printTestResults
 import de.thetaphi.forbiddenapis.gradle.CheckForbiddenApis
 import de.thetaphi.forbiddenapis.gradle.CheckForbiddenApisExtension
 import org.apache.calcite.buildtools.buildext.dsl.ParenthesisBalancer
@@ -69,8 +69,7 @@ val includeTestTags by props("!org.apache.calcite.test.SlowTests")
 // By default use Java implementation to sign artifacts
 // When useGpgCmd=true, then gpg command line tool is used for signing
 val useGpgCmd by props()
-val slowSuiteLogThreshold = stringProperty("slowSuiteLogThreshold")?.toLong() ?: 0
-val slowTestLogThreshold = stringProperty("slowTestLogThreshold")?.toLong() ?: 2000
+// Inherited from gradle-extensions-plugin: slowSuiteLogThreshold=0L, slowTestLogThreshold=2000L
 
 ide {
     copyrightToAsf()
@@ -656,52 +655,7 @@ allprojects {
                         passProperty(e)
                     }
                 }
-                // https://github.com/junit-team/junit5/issues/2041
-                // Gradle does not print parameterized test names yet :(
-                // Hopefully it will be fixed in Gradle 6.1
-                fun String?.withDisplayName(displayName: String?, separator: String = ", "): String? = when {
-                    displayName == null -> this
-                    this == null -> displayName
-                    endsWith(displayName) -> this
-                    else -> "$this$separator$displayName"
-                }
-                fun printResult(descriptor: TestDescriptor, result: TestResult) {
-                    val test = descriptor as org.gradle.api.internal.tasks.testing.TestDescriptorInternal
-                    val classDisplayName = test.className.withDisplayName(test.classDisplayName)
-                    val testDisplayName = test.name.withDisplayName(test.displayName)
-                    val duration = "%5.1fsec".format((result.endTime - result.startTime) / 1000f)
-                    val displayName = classDisplayName.withDisplayName(testDisplayName, " > ")
-                    // Hide SUCCESS from output log, so FAILURE/SKIPPED are easier to spot
-                    val resultType = result.resultType
-                        .takeUnless { it == TestResult.ResultType.SUCCESS }
-                        ?.toString()
-                        ?: (if (result.skippedTestCount > 0 || result.testCount == 0L) "WARNING" else "       ")
-                    if (!descriptor.isComposite) {
-                        println("$resultType $duration, $displayName")
-                    } else {
-                        val completed = result.testCount.toString().padStart(4)
-                        val failed = result.failedTestCount.toString().padStart(3)
-                        val skipped = result.skippedTestCount.toString().padStart(3)
-                        println("$resultType $duration, $completed completed, $failed failed, $skipped skipped, $displayName")
-                    }
-                }
-                afterTest(KotlinClosure2<TestDescriptor, TestResult, Any>({ descriptor, result ->
-                    // There are lots of skipped tests, so it is not clear how to log them
-                    // without making build logs too verbose
-                    if (result.resultType == TestResult.ResultType.FAILURE ||
-                        result.endTime - result.startTime >= slowTestLogThreshold) {
-                        printResult(descriptor, result)
-                    }
-                }))
-                afterSuite(KotlinClosure2<TestDescriptor, TestResult, Any>({ descriptor, result ->
-                    if (descriptor.name.startsWith("Gradle Test Executor")) {
-                        return@KotlinClosure2
-                    }
-                    if (result.resultType == TestResult.ResultType.FAILURE ||
-                        result.endTime - result.startTime >= slowSuiteLogThreshold) {
-                        printResult(descriptor, result)
-                    }
-                }))
+                printTestResults()
             }
             withType<SpotBugsTask>().configureEach {
                 group = LifecycleBasePlugin.VERIFICATION_GROUP

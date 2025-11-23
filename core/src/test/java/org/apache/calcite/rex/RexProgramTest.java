@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.calcite.test;
+package org.apache.calcite.rex;
 
 import org.apache.calcite.avatica.util.ByteString;
 import org.apache.calcite.plan.RelOptPredicateList;
@@ -23,25 +23,15 @@ import org.apache.calcite.plan.Strong;
 import org.apache.calcite.rel.metadata.NullSentinel;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.rex.RexCall;
-import org.apache.calcite.rex.RexDynamicParam;
-import org.apache.calcite.rex.RexInputRef;
-import org.apache.calcite.rex.RexInterpreter;
-import org.apache.calcite.rex.RexLiteral;
-import org.apache.calcite.rex.RexLocalRef;
-import org.apache.calcite.rex.RexNode;
-import org.apache.calcite.rex.RexProgram;
-import org.apache.calcite.rex.RexProgramBuilder;
-import org.apache.calcite.rex.RexSimplify;
-import org.apache.calcite.rex.RexUnknownAs;
-import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSpecialOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.ReturnTypes;
+import org.apache.calcite.sql.type.SqlOperandTypeChecker;
 import org.apache.calcite.sql.type.SqlTypeAssignmentRules;
 import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.util.DateString;
 import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.NlsString;
@@ -56,7 +46,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -81,137 +70,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Unit tests for {@link RexProgram} and
  * {@link org.apache.calcite.rex.RexProgramBuilder}.
  */
-public class RexProgramTest extends RexProgramBuilderBase {
-  @BeforeEach public void setUp() {
-    super.setUp();
-  }
-
-  private void checkCnf(RexNode node, String expected) {
-    assertThat("RexUtil.toCnf(rexBuilder, " + node + ")",
-        RexUtil.toCnf(rexBuilder, node).toString(), equalTo(expected));
-  }
-
-  private void checkThresholdCnf(RexNode node, int threshold, String expected) {
-    assertThat("RexUtil.toCnf(rexBuilder, threshold=" + threshold + " , " + node + ")",
-        RexUtil.toCnf(rexBuilder, threshold, node).toString(),
-        equalTo(expected));
-  }
-
-  private void checkPullFactorsUnchanged(RexNode node) {
-    checkPullFactors(node, node.toString());
-  }
-
-  private void checkPullFactors(RexNode node, String expected) {
-    assertThat("RexUtil.pullFactors(rexBuilder, " + node + ")",
-        RexUtil.pullFactors(rexBuilder, node).toString(),
-        equalTo(expected));
-  }
-
-  /**
-   * Asserts that given node has expected string representation with account of node type
-   * @param message extra message that clarifies where the node came from
-   * @param expected expected string representation of the node
-   * @param node node to check
-   */
-  private void assertNode(String message, String expected, RexNode node) {
-    String actual;
-    if (node.isA(SqlKind.CAST) || node.isA(SqlKind.NEW_SPECIFICATION)) {
-      // toString contains type (see RexCall.toString)
-      actual = node.toString();
-    } else {
-      actual = node + ":" + node.getType() + (node.getType().isNullable() ? "" : " NOT NULL");
-    }
-    assertEquals(expected, actual, message);
-  }
-
-  /** Simplifies an expression and checks that the result is as expected. */
-  private void checkSimplify(RexNode node, String expected) {
-    final String nodeString = node.toString();
-    checkSimplify3_(node, expected, expected, expected);
-    if (expected.equals(nodeString)) {
-      throw new AssertionError("expected == node.toString(); "
-          + "use checkSimplifyUnchanged");
-    }
-  }
-
-  /** Simplifies an expression and checks that the result is unchanged. */
-  private void checkSimplifyUnchanged(RexNode node) {
-    final String expected = node.toString();
-    checkSimplify3_(node, expected, expected, expected);
-  }
-
-  /** Simplifies an expression and checks the result if unknowns remain
-   * unknown, or if unknown becomes false. If the result is the same, use
-   * {@link #checkSimplify(RexNode, String)}.
-   *
-   * @param node Expression to simplify
-   * @param expected Expected simplification
-   * @param expectedFalse Expected simplification, if unknown is to be treated
-   *     as false
-   */
-  private void checkSimplify2(RexNode node, String expected,
-      String expectedFalse) {
-    checkSimplify3_(node, expected, expectedFalse, expected);
-    if (expected.equals(expectedFalse)) {
-      throw new AssertionError("expected == expectedFalse; use checkSimplify");
-    }
-  }
-
-  private void checkSimplify3(RexNode node, String expected,
-      String expectedFalse, String expectedTrue) {
-    checkSimplify3_(node, expected, expectedFalse, expectedTrue);
-    if (expected.equals(expectedFalse) && expected.equals(expectedTrue)) {
-      throw new AssertionError("expected == expectedFalse == expectedTrue; "
-          + "use checkSimplify");
-    }
-    if (expected.equals(expectedTrue)) {
-      throw new AssertionError("expected == expectedTrue; use checkSimplify2");
-    }
-  }
-
-  private void checkSimplify3_(RexNode node, String expected,
-      String expectedFalse, String expectedTrue) {
-    final RexNode simplified =
-        simplify.simplifyUnknownAs(node, RexUnknownAs.UNKNOWN);
-    assertThat(simplified.toString(), equalTo(expected));
-    if (node.getType().getSqlTypeName() == SqlTypeName.BOOLEAN) {
-      final RexNode simplified2 =
-          simplify.simplifyUnknownAs(node, RexUnknownAs.FALSE);
-      assertThat(simplified2.toString(), equalTo(expectedFalse));
-      final RexNode simplified3 =
-          simplify.simplifyUnknownAs(node, RexUnknownAs.TRUE);
-      assertThat(simplified3.toString(), equalTo(expectedTrue));
-    } else {
-      assertThat(expectedFalse, is(expected));
-      assertThat(expectedTrue, is(expected));
-    }
-  }
-
-  private void checkSimplifyFilter(RexNode node, String expected) {
-    final RexNode simplified =
-        this.simplify.simplifyUnknownAs(node, RexUnknownAs.FALSE);
-    assertThat(simplified.toString(), equalTo(expected));
-  }
-
-  private void checkSimplifyFilter(RexNode node, RelOptPredicateList predicates,
-      String expected) {
-    final RexNode simplified =
-        simplify.withPredicates(predicates)
-            .simplifyUnknownAs(node, RexUnknownAs.FALSE);
-    assertThat(simplified.toString(), equalTo(expected));
-  }
-
-  /** Returns the number of nodes (including leaves) in a Rex tree. */
-  private static int nodeCount(RexNode node) {
-    int n = 1;
-    if (node instanceof RexCall) {
-      for (RexNode operand : ((RexCall) node).getOperands()) {
-        n += nodeCount(operand);
-      }
-    }
-    return n;
-  }
-
+public class RexProgramTest extends RexProgramTestBase {
   /**
    * Tests construction of a RexProgram.
    */
@@ -638,26 +497,17 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
   @Test public void testItemStrong() {
-    final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
-
     final ImmutableBitSet c0 = ImmutableBitSet.of(0);
-    final RelDataType intArray = typeFactory.createArrayType(intType, -1);
-    RexInputRef inputRef = rexBuilder.makeInputRef(intArray, 0);
+    RexNode item = item(input(tArray(tInt()), 0), literal(0));
 
-    RexNode rexNode = item(inputRef, literal(0));
+    assertThat(Strong.isStrong(item), is(true));
+    assertThat(Strong.isNull(item, c0), is(true));
 
-    assertThat(Strong.isStrong(rexNode), is(true));
+    RelDataType mapType = typeFactory.createMapType(tVarchar(), tVarchar());
+    item = item(input(mapType, 0), literal("abc"));
 
-    assertThat(Strong.isNull(rexNode, c0), is(true));
-
-    final RelDataType varcharType = typeFactory.createSqlType(SqlTypeName.VARCHAR);
-    final RelDataType mapType = typeFactory.createMapType(varcharType, varcharType);
-
-    inputRef = rexBuilder.makeInputRef(mapType, 0);
-    rexNode = item(inputRef, literal("abc"));
-    assertThat(Strong.isStrong(rexNode), is(true));
-
-    assertThat(Strong.isNull(rexNode, c0), is(true));
+    assertThat(Strong.isStrong(item), is(true));
+    assertThat(Strong.isNull(item, c0), is(true));
   }
 
   @Test public void xAndNotX() {
@@ -790,7 +640,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkSimplifyUnchanged(cast(cast(vVarchar(), tInt()), tVarchar()));
   }
 
-  @Disabled("CALCITE-3457: AssertionError in RexSimplify.validateStrongPolicy:843")
+  @Disabled("CALCITE-3457: AssertionError in RexSimplify.validateStrongPolicy")
   @Test public void reproducerFor3457() {
     // Identified with RexProgramFuzzyTest#testFuzzy, seed=4887662474363391810L
     checkSimplify(
@@ -1030,7 +880,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
     final int nodeCount = nodeCount(cnf);
     assertThat((n + 1) * (int) Math.pow(2, n) + 1, equalTo(nodeCount));
     if (n == 3) {
-      assertThat(cnf.toString(),
+      assertThat(cnf.toStringRaw(),
           equalTo("AND(OR(?0.x0, ?0.x1, ?0.x2), OR(?0.x0, ?0.x1, ?0.y2),"
               + " OR(?0.x0, ?0.y1, ?0.x2), OR(?0.x0, ?0.y1, ?0.y2),"
               + " OR(?0.y0, ?0.x1, ?0.x2), OR(?0.y0, ?0.x1, ?0.y2),"
@@ -1395,7 +1245,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
     // as previous, using simplifyFilterPredicates
     assertThat(simplify
             .simplifyFilterPredicates(args)
-            .toString(),
+            .toStringRaw(),
         equalTo("AND(=(?0.a, 1), =(?0.b, 1))"));
 
     // "a = 1 and a = 10" is always false
@@ -1709,7 +1559,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
     // TODO: "b is not unknown" would be the best simplification.
     final RexNode simplified =
         this.simplify.simplifyUnknownAs(neOrEq, RexUnknownAs.UNKNOWN);
-    assertThat(simplified.toString(),
+    assertThat(simplified.toStringRaw(),
         equalTo("OR(<>(?0.b, 1), =(?0.b, 1))"));
 
     // "a is null or a is not null" ==> "true"
@@ -1746,6 +1596,20 @@ public class RexProgramTest extends RexProgramBuilderBase {
             or(eq(aRef, literal3),
                 eq(aRef, literal4))),
         "AND(=(?0.b, 2), =(?0.a, 3))");
+  }
+
+  @Test public void testSimplifyItemRangeTerms() {
+    RexNode item = item(input(tArray(tInt()), 3), literal(1));
+    // paranoid validation doesn't support array types, disable it for a moment
+    simplify = this.simplify.withParanoid(false);
+    // (a=1 or a=2 or (arr[1]>4 and arr[1]<3 and a=3)) => a=1 or a=2
+    checkSimplifyFilter(
+        or(
+          eq(vInt(), literal(1)),
+          eq(vInt(), literal(2)),
+          and(gt(item, literal(4)), lt(item, literal(3)), eq(vInt(), literal(3)))),
+        "OR(=(?0.int0, 1), =(?0.int0, 2))");
+    simplify = simplify.withParanoid(true);
   }
 
   @Test public void testSimplifyNotAnd() {
@@ -1849,17 +1713,19 @@ public class RexProgramTest extends RexProgramBuilderBase {
   @Test public void testConsistentTypeForSimpleFilter() {
     // Create a condition with TIMESTAMP input and CHAR literal
     final NlsString nlsString = new NlsString("2018-01-01 01:23:45", null, null);
-    RexNode condition = eq(
-        rexBuilder.makeInputRef(
-            typeFactory.createTypeWithNullability(
-                typeFactory.createSqlType(SqlTypeName.TIMESTAMP), true),
-            0), rexBuilder.makeCharLiteral(nlsString));
-    RexLiteral consistentTypeLiteral =
-        RexSimplify.Comparison.of(condition).getConsistentTypeLiteral(simplify);
+    RexNode timestampRef = rexBuilder.makeInputRef(
+        typeFactory.createTypeWithNullability(
+            typeFactory.createSqlType(SqlTypeName.TIMESTAMP), true),
+        0);
+    RexNode charLiteral = rexBuilder.makeCharLiteral(nlsString);
+    RexNode condition = eq(timestampRef, charLiteral);
 
-    // Get consistent type for condition and make sure new data type for the literal is TIMESTAMP
-    SqlTypeName consistentType = consistentTypeLiteral.getType().getSqlTypeName();
-    assertThat(consistentType, is(SqlTypeName.TIMESTAMP));
+    // Verify that consistent type would be TIMESTAMP (using public API)
+    List<RelDataType> types = RexUtil.types(Arrays.asList(timestampRef, charLiteral));
+    RelDataType consistentType = SqlTypeUtil.consistentType(typeFactory,
+        SqlOperandTypeChecker.Consistency.COMPARE, types);
+    assertThat("Consistent type should be TIMESTAMP",
+        consistentType.getSqlTypeName(), is(SqlTypeName.TIMESTAMP));
 
     // Run simplify for the condition
     RexCall result = (RexCall) simplify.simplify(condition);
@@ -1868,6 +1734,8 @@ public class RexProgramTest extends RexProgramBuilderBase {
     RexNode literal = result.getOperands().get(1);
     assertThat(literal.getType().getSqlTypeName(), is(SqlTypeName.CHAR));
   }
+
+
 
   @Test public void testSimplifyCaseNullableBoolean() {
     RexNode condition = eq(input(tVarchar(), 0), literal("S"));
@@ -2474,7 +2342,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
 
   private void assertTypeAndToString(
       RexNode rexNode, String representation, String type) {
-    assertEquals(representation, rexNode.toString());
+    assertEquals(representation, rexNode.toStringRaw());
     assertEquals(type, rexNode.getType().toString()
         + (rexNode.getType().isNullable() ? "" : " NOT NULL"), "type of " + rexNode);
   }
@@ -2678,13 +2546,6 @@ public class RexProgramTest extends RexProgramBuilderBase {
         "false");
   }
 
-  private RexNode simplify(RexNode e) {
-    final RexSimplify simplify =
-        new RexSimplify(rexBuilder, RelOptPredicateList.EMPTY, RexUtil.EXECUTOR)
-            .withParanoid(true);
-    return simplify.simplifyUnknownAs(e, RexUnknownAs.UNKNOWN);
-  }
-
   @Test public void testInterpreter() {
     assertThat(eval(trueLiteral), is(true));
     assertThat(eval(nullInt), is(NullSentinel.INSTANCE));
@@ -2801,20 +2662,6 @@ public class RexProgramTest extends RexProgramBuilderBase {
     checkIs(isNotTrue(isNotNull(isNull(vBool()))), false);
   }
 
-  /** Checks that {@link RexNode#isAlwaysTrue()},
-   * {@link RexNode#isAlwaysTrue()} and {@link RexSimplify} agree that
-   * an expression reduces to true or false. */
-  private void checkIs(RexNode e, boolean expected) {
-    assertThat("isAlwaysTrue() of expression: " + e.toString(), e.isAlwaysTrue(), is(expected));
-    assertThat("isAlwaysFalse() of expression: " + e.toString(), e.isAlwaysFalse(), is(!expected));
-    assertThat("Simplification is not using isAlwaysX informations", simplify(e).toString(),
-            is(expected ? "true" : "false"));
-  }
-
-  private Comparable eval(RexNode e) {
-    return RexInterpreter.evaluate(e, ImmutableMap.of());
-  }
-
   /** Unit test for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2842">[CALCITE-2842]
    * Computing digest of IN expressions leads to Exceptions</a>. */
@@ -2866,22 +2713,22 @@ public class RexProgramTest extends RexProgramBuilderBase {
     // Expression
     //   AND(=(?0.x, 1), OR(=(?0.x, 2), =(?0.y, 3)))
     // transformation creates 7 nodes
-    //   OR(AND(=(?0.x, 1), =(?0.x, 2)), AND(=(?0.x, 1), =(?0.y, 3)))
+    //   OR(AND(=(1, ?0.x), =(2, ?0.x)), AND(=(1, ?0.x), =(3, ?0.y)))
     // Thus, it is triggered.
     checkThresholdDnf(
             and(eq(xRef, literal1), or(eq(xRef, literal2), eq(yRef, literal3))),
-            8, "OR(AND(=(?0.x, 1), =(?0.x, 2)), AND(=(?0.x, 1), =(?0.y, 3)))");
+            8, "OR(AND(=(1, ?0.x), =(2, ?0.x)), AND(=(1, ?0.x), =(3, ?0.y)))");
 
     // Expression
     //   AND(=(?0.x, 1), =(?0.x, 2), OR(=(?0.x, 3), =(?0.y, 4)))
     // transformation creates 9 nodes
-    //   OR(AND(=(?0.x, 1), =(?0.x, 2), =(?0.x, 3)),
-    //       AND(=(?0.x, 1), =(?0.x, 2), =(?0.y, 4)))
+    //   OR(AND(=(1, ?0.x), =(2, ?0.x), =(3, ?0.x)),
+    //       AND(=(1, ?0.x), =(2, ?0.x), =(4, ?0.y)))
     // Thus, it is NOT triggered.
     checkThresholdDnf(
             and(eq(xRef, literal1), eq(xRef, literal2),
                     or(eq(xRef, literal3), eq(yRef, literal4))),
-            8, "AND(=(?0.x, 1), =(?0.x, 2), OR(=(?0.x, 3), =(?0.y, 4)))");
+            8, "AND(=(1, ?0.x), =(2, ?0.x), OR(=(3, ?0.x), =(4, ?0.y)))");
   }
 
   /** Unit test for

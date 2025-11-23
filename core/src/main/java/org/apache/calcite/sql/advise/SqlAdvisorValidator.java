@@ -27,6 +27,7 @@ import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.sql.validate.OverScope;
+import org.apache.calcite.sql.validate.SelectScope;
 import org.apache.calcite.sql.validate.SqlModality;
 import org.apache.calcite.sql.validate.SqlValidatorCatalogReader;
 import org.apache.calcite.sql.validate.SqlValidatorImpl;
@@ -105,6 +106,11 @@ public class SqlAdvisorValidator extends SqlValidatorImpl {
   }
 
   public SqlNode expandWithAlias(SqlNode expr, SqlValidatorScope scope, SqlSelect sqlSelect) {
+    // Disable expansion. It doesn't help us come up with better hints.
+    return expr;
+  }
+
+  public SqlNode expandSelectExpr(SqlNode expr, SelectScope scope, SqlSelect select) {
     // Disable expansion. It doesn't help us come up with better hints.
     return expr;
   }

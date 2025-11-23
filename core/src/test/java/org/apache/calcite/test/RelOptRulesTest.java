@@ -92,7 +92,6 @@ import org.apache.calcite.rel.rules.ReduceExpressionsRule;
 import org.apache.calcite.rel.rules.ReduceExpressionsRule.ProjectReduceExpressionsRule;
 import org.apache.calcite.rel.rules.SortJoinCopyRule;
 import org.apache.calcite.rel.rules.SortRemoveConstantKeysRule;
-import org.apache.calcite.rel.rules.TableScanRule;
 import org.apache.calcite.rel.rules.UnionMergeRule;
 import org.apache.calcite.rel.rules.ValuesReduceRule;
 import org.apache.calcite.rel.type.RelDataType;
@@ -1998,7 +1997,6 @@ public class RelOptRulesTest extends RelOptTestBase {
 
   @Test public void testMergeFilterWithJoinCondition() throws Exception {
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(TableScanRule.INSTANCE)
         .addRuleInstance(CoreRules.JOIN_EXTRACT_FILTER)
         .addRuleInstance(CoreRules.FILTER_TO_CALC)
         .addRuleInstance(CoreRules.CALC_MERGE)
@@ -2269,7 +2267,6 @@ public class RelOptRulesTest extends RelOptTestBase {
     // of the projections, transfer it to calc, for the other,
     // keep it unchanged.
     HepProgram program = new HepProgramBuilder()
-        .addRuleInstance(TableScanRule.INSTANCE)
         // Control the calc conversion.
         .addMatchLimit(1)
         .addRuleInstance(CoreRules.PROJECT_TO_CALC)
@@ -6328,6 +6325,7 @@ public class RelOptRulesTest extends RelOptTestBase {
     sql(sql)
         .withLateDecorrelation(true)
         .withTrim(true)
+        .withContext(Contexts.of(RelBuilder.Config.DEFAULT.withPruneInputOfAggregate(false)))
         .with(HepProgram.builder().build())
         .check();
   }
@@ -6562,20 +6560,27 @@ public class RelOptRulesTest extends RelOptTestBase {
    * should not return a zero field Aggregate</a>.
    */
   @Test public void testProjectJoinTransposeRuleOnAggWithNoFieldsWithTrimmer() {
-    final RelBuilder relBuilder = RelBuilder.create(RelBuilderTest.config().build());
+    final RelBuilder relBuilder =
+        RelBuilderTest.createBuilder(c -> c.withPruneInputOfAggregate(false));
     // Build a rel equivalent to sql:
     // SELECT name FROM (SELECT count(*) cnt_star, count(empno) cnt_en FROM sales.emp)
     // cross join sales.dept
     // limit 10
 
     RelNode left = relBuilder.scan("DEPT").build();
-    RelNode right = relBuilder.scan("EMP")
+
+    // Create a fresh RelBuilder for the aggregate operation to ensure
+    // configuration is applied
+    final RelBuilder rightBuilder =
+        RelBuilderTest.createBuilder(c -> c.withPruneInputOfAggregate(false));
+
+    RelNode right = rightBuilder.scan("EMP")
         .project(
-          ImmutableList.of(relBuilder.getRexBuilder().makeExactLiteral(BigDecimal.ZERO)),
+          ImmutableList.of(rightBuilder.getRexBuilder().makeExactLiteral(BigDecimal.ZERO)),
           ImmutableList.of("DUMMY"))
         .aggregate(
-          relBuilder.groupKey(),
-          relBuilder.count(false, "DUMMY_COUNT", relBuilder.field(0)))
+          rightBuilder.groupKey(),
+          rightBuilder.count(false, "DUMMY_COUNT", rightBuilder.field(0)))
         .build();
 
     RelNode plan = relBuilder.push(left)
@@ -6592,10 +6597,20 @@ public class RelOptRulesTest extends RelOptTestBase {
     VolcanoPlanner planner = new VolcanoPlanner(null, null);
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
     planner.addRelTraitDef(RelDistributionTraitDef.INSTANCE);
-    Tester tester = new TesterImpl(getDiffRepos(), false, true, false,
+
+    // Create a RelBuilderFactory that disables pruneInputOfAggregate
+    final RelBuilderFactory relBuilderFactory =
+        RelBuilder.proto(Contexts.of(RelBuilder.Config.DEFAULT.withPruneInputOfAggregate(false)));
+
+    Tester tester = new TesterImpl(getDiffRepos(), false, false, false,
             false, false, null, null)
             .withClusterFactory(
-              relOptCluster -> RelOptCluster.create(planner, relOptCluster.getRexBuilder()));
+              relOptCluster -> RelOptCluster.create(planner, relOptCluster.getRexBuilder()))
+            .withConfig(SqlToRelConverter.configBuilder()
+                .withRelBuilderFactory(relBuilderFactory)
+                .withTrimUnusedFields(true)
+                .build())
+            .withContext(Contexts.of(RelBuilder.Config.DEFAULT.withPruneInputOfAggregate(false)));
 
     plan = tester.trimRelNode(plan);
 
@@ -7277,6 +7292,68 @@ public class RelOptRulesTest extends RelOptTestBase {
         .withTester(t -> createDynamicTester())
         .withRule(CoreRules.FILTER_REDUCE_EXPRESSIONS)
         .checkUnchanged();
+  }
+
+  // Tests for MultiJoinOptimizeBushyRule
+  /** Test case for {@link MultiJoinOptimizeBushyRule} with a simple 3-table join. */
+  @Test public void testMultiJoinOptimizeBushySimple() {
+    HepProgram preProgram = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.FILTER_INTO_JOIN)
+        .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(CoreRules.JOIN_TO_MULTI_JOIN)
+        .build();
+    HepProgram program = new HepProgramBuilder()
+        .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(CoreRules.MULTI_JOIN_OPTIMIZE_BUSHY)
+        .build();
+    final String sql = "select e1.ename from emp e1, dept d, emp e2\n"
+        + "where e1.deptno = d.deptno or d.deptno = e2.deptno";
+    sql(sql).withPre(preProgram).with(program).check();
+  }
+
+  /** Test case for {@link MultiJoinOptimizeBushyRule} with a 4-table join. */
+  @Test public void testMultiJoinOptimizeBushy4Tables() {
+    HepProgram preProgram = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.FILTER_INTO_JOIN)
+        .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(CoreRules.JOIN_TO_MULTI_JOIN)
+        .build();
+    HepProgram program = new HepProgramBuilder()
+        .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(CoreRules.MULTI_JOIN_OPTIMIZE_BUSHY)
+        .build();
+    final String sql = "select e1.ename from emp e1, dept d, emp e2, emp e3\n"
+        + "where e1.deptno = d.deptno and (d.deptno = e2.deptno\n"
+        + "or e2.empno = e3.empno)";
+    sql(sql).withPre(preProgram).with(program).check();
+  }
+
+  @Test public void testMultiJoinOptimizeBushySimpleFilterOnEmp() {
+    HepProgram preProgram = new HepProgramBuilder()
+        .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(CoreRules.JOIN_TO_MULTI_JOIN)
+        .build();
+    HepProgram program = new HepProgramBuilder()
+        .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(CoreRules.MULTI_JOIN_OPTIMIZE_BUSHY)
+        .build();
+    final String sql = "select e1.ename from emp e1 inner join dept d\n"
+        + "on e1.deptno = e1.empno";
+    sql(sql).withPre(preProgram).with(program).check();
+  }
+
+  @Test public void testMultiJoinOptimizeBushySimpleFilterOnDept() {
+    HepProgram preProgram = new HepProgramBuilder()
+        .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(CoreRules.JOIN_TO_MULTI_JOIN)
+        .build();
+    HepProgram program = new HepProgramBuilder()
+        .addMatchOrder(HepMatchOrder.BOTTOM_UP)
+        .addRuleInstance(CoreRules.MULTI_JOIN_OPTIMIZE_BUSHY)
+        .build();
+    final String sql = "select e1.ename from emp e1 inner join dept d\n"
+        + "on d.deptno = 40";
+    sql(sql).withPre(preProgram).with(program).check();
   }
 
 }
