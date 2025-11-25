@@ -210,7 +210,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -5883,7 +5882,6 @@ public class SqlToRelConverter {
     private boolean expand = true;
     private boolean removeSortInSubQuery = true;
     private int inSubQueryThreshold = DEFAULT_IN_SUB_QUERY_THRESHOLD;
-    private UnaryOperator<RelBuilder.Config> relBuilderConfigTransform = UnaryOperator.identity();
     private RelBuilderFactory relBuilderFactory = RelFactories.LOGICAL_BUILDER;
     private HintStrategyTable hintStrategyTable = HintStrategyTable.EMPTY;
 
@@ -5898,7 +5896,6 @@ public class SqlToRelConverter {
       this.expand = config.isExpand();
       this.removeSortInSubQuery = config.isRemoveSortInSubQuery();
       this.inSubQueryThreshold = config.getInSubQueryThreshold();
-      this.relBuilderConfigTransform = config.getRelBuilderConfigTransform();
       this.relBuilderFactory = config.getRelBuilderFactory();
       this.hintStrategyTable = config.getHintStrategyTable();
       return this;
@@ -5939,19 +5936,6 @@ public class SqlToRelConverter {
       return this;
     }
 
-    /** Whether to push down join conditions; default true. */
-    public ConfigBuilder withPushJoinCondition(boolean pushJoinCondition) {
-      return withRelBuilderConfigTransform(
-          Util.andThen(relBuilderConfigTransform,
-              c -> c.withPushJoinCondition(pushJoinCondition)));
-    }
-
-    public ConfigBuilder withRelBuilderConfigTransform(
-        UnaryOperator<RelBuilder.Config> relBuilderConfigTransform) {
-      this.relBuilderConfigTransform = relBuilderConfigTransform;
-      return this;
-    }
-
     @Deprecated // to be removed before 2.0
     public ConfigBuilder withInSubqueryThreshold(int inSubQueryThreshold) {
       return withInSubQueryThreshold(inSubQueryThreshold);
@@ -5982,7 +5966,7 @@ public class SqlToRelConverter {
           inSubQueryThreshold, relBuilderFactory, hintStrategyTable);
 =======
           trimUnusedFields, createValuesRel, explain, expand, removeSortInSubQuery,
-          inSubQueryThreshold, relBuilderConfigTransform, relBuilderFactory,
+          inSubQueryThreshold, relBuilderFactory,
           hintStrategyTable);
     }
   }
@@ -5997,14 +5981,12 @@ public class SqlToRelConverter {
     private final boolean expand;
     private final boolean removeSortInSubQuery;
     private final int inSubQueryThreshold;
-    private final UnaryOperator<RelBuilder.Config> relBuilderConfigTransform;
     private final RelBuilderFactory relBuilderFactory;
     private final HintStrategyTable hintStrategyTable;
 
     private ConfigImpl(boolean decorrelationEnabled,
         boolean trimUnusedFields, boolean createValuesRel, boolean explain,
         boolean expand, boolean removeSortInSubQuery, int inSubQueryThreshold,
-        UnaryOperator<RelBuilder.Config> relBuilderConfigTransform,
         RelBuilderFactory relBuilderFactory,
         HintStrategyTable hintStrategyTable) {
       this.decorrelationEnabled = decorrelationEnabled;
@@ -6014,7 +5996,6 @@ public class SqlToRelConverter {
       this.expand = expand;
       this.removeSortInSubQuery = removeSortInSubQuery;
       this.inSubQueryThreshold = inSubQueryThreshold;
-      this.relBuilderConfigTransform = relBuilderConfigTransform;
       this.relBuilderFactory = relBuilderFactory;
       this.hintStrategyTable = hintStrategyTable;
     }
@@ -6049,10 +6030,6 @@ public class SqlToRelConverter {
 
     public int getInSubQueryThreshold() {
       return inSubQueryThreshold;
-    }
-
-    public UnaryOperator<RelBuilder.Config> getRelBuilderConfigTransform() {
-      return relBuilderConfigTransform;
     }
 
     public RelBuilderFactory getRelBuilderFactory() {

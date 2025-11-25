@@ -2465,16 +2465,6 @@ public class Util {
     return list0;
   }
 
-  /** Composes two unary operators.
-   *
-   * <p>As {@link java.util.function.Function#andThen(java.util.function.Function)}
-   * but for {@link java.util.function.UnaryOperator}. */
-  public static <X> java.util.function.UnaryOperator<X> andThen(
-      java.util.function.UnaryOperator<X> op1,
-      java.util.function.UnaryOperator<X> op2) {
-    return op1.andThen(op2)::apply;
-  }
-
   /** Transforms a list, applying a function to each element. */
   public static <F, T> List<T> transform(List<? extends F> list,
       java.util.function.Function<? super F, ? extends T> function) {
