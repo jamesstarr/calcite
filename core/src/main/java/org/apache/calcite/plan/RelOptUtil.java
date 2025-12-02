@@ -28,7 +28,6 @@ import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelHomogeneousShuttle;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelShuttle;
-import org.apache.calcite.rel.RelShuttleImpl;
 import org.apache.calcite.rel.RelVisitor;
 import org.apache.calcite.rel.RelWriter;
 import org.apache.calcite.rel.core.Aggregate;
@@ -445,18 +444,16 @@ public abstract class RelOptUtil {
     if (originalRel instanceof Hintable
         && newRel instanceof Hintable
         && ((Hintable) originalRel).getHints().size() > 0) {
-      HintStrategyTable hintStrategies = originalRel.getCluster().getHintStrategies();
       final List<RelHint> hints = ((Hintable) originalRel).getHints();
-      // Keep all the hints of project node for 2 reasons:
-      // 1. Keep sync with the hints propagation logic,
-      // see RelHintPropagateShuttle for details.
-      // 2. We may re-propagate these hints when decorrelating a query.
-      if (originalRel instanceof Project
-          && newRel instanceof Project) {
-        return ((Hintable) newRel).attachHints(hints);
+      if (filterHints) {
+        HintStrategyTable hintStrategies = originalRel.getCluster().getHintStrategies();
+        return ((Hintable) newRel).attachHints(hintStrategies.apply(hints, newRel));
       } else {
-        return ((Hintable) newRel)
-            .attachHints(hintStrategies.apply(hints, newRel));
+        // Keep all the hints if filterHints is false for 2 reasons:
+        // 1. Keep sync with the hints propagation logic,
+        // see RelHintPropagateShuttle for details.
+        // 2. We may re-propagate these hints when decorrelating a query.
+        return ((Hintable) newRel).attachHints(hints);
       }
     }
     return newRel;
@@ -3841,7 +3838,7 @@ public abstract class RelOptUtil {
    *   <li>Scan2 would have hints {[Hint1[0, 1, 0], Hint2[0]}</li>
    * </ul>
    */
-  private static class RelHintPropagateShuttle extends RelShuttleImpl {
+  private static class RelHintPropagateShuttle extends RelHomogeneousShuttle {
     /**
      * Stack recording the hints and its current inheritPath.
      */
@@ -3876,27 +3873,50 @@ public abstract class RelOptUtil {
       }
     }
 
-    public RelNode visit(LogicalJoin join) {
-      final LogicalJoin join1 = (LogicalJoin) super.visit(join);
-      return attachHints(join1);
+    public RelNode visit(RelNode other) {
+      if (other instanceof Hintable) {
+        return visitHintable(other);
+      } else {
+        return visitChildren(other);
+      }
     }
 
-    public RelNode visit(LogicalProject project) {
-      final List<RelHint> topHints = project.getHints();
+    /**
+     * Handle the {@link Hintable}s.
+     *
+     * <p>There are two cases to handle hints:
+     *
+     * <ul>
+     *   <li>For TableScan: table scan is always a leaf node,
+     *   attach the hints of the propagation path directly;</li>
+     *   <li>For other {@link Hintable}s: if the node has hints itself, that means,
+     *   these hints are query hints that need to propagate to its children,
+     *   so we do these things:
+     *   <ol>
+     *     <li>push the hints with empty inheritPath to the stack</li>
+     *     <li>visit the children nodes and propagate the hints</li>
+     *     <li>pop the hints pushed in step1</li>
+     *     <li>attach the hints of the propagation path</li>
+     *   </ol>
+     *   if the node does not have hints, attach the hints of the propagation path directly.
+     *   </li>
+     * </ul>
+     *
+     * @param node {@link Hintable} to handle
+     * @return New copy of the {@code hintable} with propagated hints attached
+     */
+    private RelNode visitHintable(RelNode node) {
+      final List<RelHint> topHints = ((Hintable) node).getHints();
       final boolean hasHints = topHints != null && topHints.size() > 0;
-      if (hasHints) {
+      final boolean hasQueryHints = hasHints && !(node instanceof TableScan);
+      if (hasQueryHints) {
         inheritPaths.push(Pair.of(topHints, new ArrayDeque<>()));
       }
-      final RelNode project1 = super.visit(project);
-      if (hasHints) {
+      final RelNode node1 = visitChildren(node);
+      if (hasQueryHints) {
         inheritPaths.pop();
       }
-      return attachHints(project1);
-    }
-
-    public RelNode visit(TableScan scan) {
-      TableScan scan1 = (TableScan) super.visit(scan);
-      return attachHints(scan1);
+      return attachHints(node1);
     }
 
     private RelNode attachHints(RelNode original) {
@@ -3943,25 +3963,19 @@ public abstract class RelOptUtil {
    * <ul>
    *   <li>Project: remove the hints that have non-empty inherit path
    *   (which means the hint was not originally declared from it); </li>
+   *   <li>Aggregate: remove the hints that have non-empty inherit path;</li>
    *   <li>Join: remove all the hints;</li>
    *   <li>TableScan: remove the hints that have non-empty inherit path.</li>
    * </ul>
    *
    */
-  private static class ResetHintsShuttle extends RelShuttleImpl {
-    public RelNode visit(LogicalJoin join) {
-      final LogicalJoin join1 = (LogicalJoin) super.visit(join);
-      return resetHints(join1);
-    }
-
-    public RelNode visit(LogicalProject project) {
-      final LogicalProject project1 = (LogicalProject) super.visit(project);
-      return resetHints(project1);
-    }
-
-    public RelNode visit(TableScan scan) {
-      TableScan scan1 = (TableScan) super.visit(scan);
-      return resetHints(scan1);
+  private static class ResetHintsShuttle extends RelHomogeneousShuttle {
+    public RelNode visit(RelNode node) {
+      node = visitChildren(node);
+      if (node instanceof Hintable) {
+        node = resetHints((Hintable) node);
+      }
+      return node;
     }
 
     private static RelNode resetHints(Hintable hintable) {

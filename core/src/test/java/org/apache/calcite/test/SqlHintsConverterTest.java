@@ -47,6 +47,7 @@ import org.apache.calcite.rel.hint.HintStrategy;
 import org.apache.calcite.rel.hint.HintStrategyTable;
 import org.apache.calcite.rel.hint.Hintable;
 import org.apache.calcite.rel.hint.RelHint;
+import org.apache.calcite.rel.logical.LogicalAggregate;
 import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.rules.CoreRules;
@@ -139,7 +140,7 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
   }
 
   @Test public void testHintsInSubQueryWithDecorrelation() {
-    final String sql = "select /*+ resource(parallelism='3') */\n"
+    final String sql = "select /*+ resource(parallelism='3'), AGG_STRATEGY(TWO_PHASE) */\n"
         + "sum(e1.empno) from emp e1, dept d1\n"
         + "where e1.deptno = d1.deptno\n"
         + "and e1.sal> (\n"
@@ -653,6 +654,13 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
           this.hintsCollect.add("Project:" + project.getHints().toString());
         }
         return super.visit(project);
+      }
+
+      @Override public RelNode visit(LogicalAggregate aggregate) {
+        if (aggregate.getHints().size() > 0) {
+          this.hintsCollect.add("Aggregate:" + aggregate.getHints().toString());
+        }
+        return super.visit(aggregate);
       }
     }
   }
