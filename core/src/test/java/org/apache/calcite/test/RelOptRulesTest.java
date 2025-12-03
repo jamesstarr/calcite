@@ -928,6 +928,15 @@ class RelOptRulesTest extends RelOptTestBase {
         .check();
   }
 
+  @Test public void testJoinProjectTransposeWindow() {
+    final String sql = "select *\n"
+        + "from dept a\n"
+        + "join (select rank() over (order by name) as r, 1 + 1 from dept) as b\n"
+        + "on a.name = b.r";
+    sql(sql)
+        .withRule(CoreRules.JOIN_PROJECT_BOTH_TRANSPOSE)
+        .check();
+  }
 
   /**
    * Test case for
