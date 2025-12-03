@@ -51,13 +51,19 @@ Release          | Date       | Commit   | Download
 {% endcomment %}{% capture d2 %}2017-08-31{% endcapture %}{% comment %}
 {% endcomment %}{% capture d3 %}2018-06-01{% endcapture %}{% comment %}
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 80385b9e0 (Add 1.22.0 release announcement (#255))
 {% endcomment %}{% capture d4 %}2020-03-01{% endcapture %}{% comment %}
 {% endcomment %}{% if d1 > d4 %}{% comment %}
 {% endcomment %}{% assign digest = "sha512" %}{% comment %}
 {% endcomment %}{% else if d1 > d2 %}{% comment %}
+<<<<<<< HEAD
 =======
 {% endcomment %}{% if d1 > d2 %}{% comment %}
 >>>>>>> 6ec775507 ([CALCITE-2333] Stop releasing zips)
+=======
+>>>>>>> 80385b9e0 (Add 1.22.0 release announcement (#255))
 {% endcomment %}{% assign digest = "sha256" %}{% comment %}
 {% endcomment %}{% else %}{% comment %}
 {% endcomment %}{% assign digest = "md5" %}{% comment %}
