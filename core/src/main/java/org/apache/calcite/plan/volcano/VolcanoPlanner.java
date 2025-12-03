@@ -58,11 +58,9 @@ import org.apache.calcite.util.PartiallyOrderedSet;
 import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
-import com.google.common.collect.SetMultimap;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -236,8 +234,8 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
 
   /** Maps rule classes to their name, to ensure that the names are unique and
    * conform to rules. */
-  private final SetMultimap<String, Class> ruleNames =
-      LinkedHashMultimap.create();
+  private final Map<String, RelOptRule> ruleNames = new HashMap<>();
+
 
   //~ Constructors -----------------------------------------------------------
 
@@ -456,12 +454,9 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     assert added;
 
     final String ruleName = rule.toString();
-    if (ruleNames.put(ruleName, rule.getClass())) {
-      Set<Class> x = ruleNames.get(ruleName);
-      if (x.size() > 1) {
-        throw new RuntimeException("Rule description '" + ruleName
-            + "' is not unique; classes: " + x);
-      }
+    if (ruleNames.put(ruleName, rule) != null) {
+      throw new RuntimeException("Rule description '" + ruleName
+          + "' is not unique. ");
     }
 
     mapRuleDescription(rule);
@@ -497,6 +492,9 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
       // Rule was not present.
       return false;
     }
+
+    // Remove rule name.
+    ruleNames.remove(rule.toString());
 
     // Remove description.
     unmapRuleDescription(rule);
