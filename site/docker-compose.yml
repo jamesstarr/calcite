@@ -32,10 +32,14 @@ services:
     image: maven
     working_dir: /usr/src/calcite
 <<<<<<< HEAD
+<<<<<<< HEAD
     command: sh -c "./gradlew javadocAggregate; rm -rf site/target/javadocAggregate; mkdir -p site/target; mv build/docs/javadocAggregate site/target"
 =======
     command: sh -c "./gradlew javadocAggregate; rm -rf site/target/apidocs site/target/testapidocs; mkdir -p site/target; mv build/docs/javadocAggregate site/target/apidocs"
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    command: sh -c "./gradlew javadocAggregate; rm -rf site/target/javadocAggregate; mkdir -p site/target; mv build/docs/javadocAggregate site/target"
+>>>>>>> 1b9f9a3c6 (Site: Fix links to javadoc (#256))
     volumes:
       - ../:/usr/src/calcite
       - maven-repo:/root/.m2
