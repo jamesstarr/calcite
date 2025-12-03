@@ -757,6 +757,8 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
     RelNode newRel = rel.getTable().toRel(toRelContext);
     if (!SqlTypeUtil.isFlat(rel.getRowType())) {
       newRel = coverNewRelByFlatteningProjection(rel, newRel);
+    } else {
+      newRel = RelOptUtil.copyRelHints(rel, newRel);
     }
     setNewForOldRel(rel, newRel);
   }

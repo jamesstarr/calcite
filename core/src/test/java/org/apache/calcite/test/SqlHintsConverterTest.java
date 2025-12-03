@@ -35,6 +35,7 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelShuttleImpl;
 import org.apache.calcite.rel.RelVisitor;
 import org.apache.calcite.rel.convert.ConverterRule;
+import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.Calc;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.JoinInfo;
@@ -45,6 +46,7 @@ import org.apache.calcite.rel.hint.HintStrategy;
 import org.apache.calcite.rel.hint.HintStrategyTable;
 import org.apache.calcite.rel.hint.Hintable;
 import org.apache.calcite.rel.hint.RelHint;
+import org.apache.calcite.rel.logical.LogicalAggregate;
 import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.rules.CoreRules;
@@ -104,8 +106,8 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
   }
 
   @Test public void testQueryHintWithLiteralOptions() {
-    final String sql = HintTools.withHint("select /*+ time_zone(1, 1.23, 'a bc', -1.0) */ *\n"
-        + "from emp");
+    final String sql = "select /*+ time_zone(1, 1.23, 'a bc', -1.0) */ *\n"
+        + "from emp";
     sql(sql).ok();
   }
 
@@ -137,7 +139,7 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
   }
 
   @Test public void testHintsInSubQueryWithDecorrelation() {
-    final String sql = "select /*+ resource(parallelism='3') */\n"
+    final String sql = "select /*+ resource(parallelism='3'), AGG_STRATEGY(TWO_PHASE) */\n"
         + "sum(e1.empno) from emp e1, dept d1\n"
         + "where e1.deptno = d1.deptno\n"
         + "and e1.sal> (\n"
@@ -425,6 +427,26 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
     getDiffRepos().assertEquals("planAfter", "${planAfter}", planAfter);
   }
 
+  @Test public void testHintsPropagateWithDifferentKindOfRels() {
+    final String sql = "select /*+ AGG_STRATEGY(TWO_PHASE) */\n"
+        + "ename, avg(sal)\n"
+        + "from emp group by ename";
+    final RelNode rel = tester.convertSqlToRel(sql).rel;
+    final RelHint hint = RelHint.builder("AGG_STRATEGY")
+        .inheritPath(0)
+        .hintOption("TWO_PHASE")
+        .build();
+    // AggregateReduceFunctionsRule does the transformation:
+    // AGG -> PROJECT + AGG
+    HepProgram program = new HepProgramBuilder()
+        .addRuleInstance(CoreRules.AGGREGATE_REDUCE_FUNCTIONS)
+        .build();
+    HepPlanner planner = new HepPlanner(program);
+    planner.setRoot(rel);
+    RelNode newRel = planner.findBestExp();
+    new ValidateHintVisitor(hint, Aggregate.class).go(newRel);
+  }
+
   //~ Methods ----------------------------------------------------------------
 
   @Override protected Tester createTester() {
@@ -642,6 +664,13 @@ public class SqlHintsConverterTest extends SqlToRelTestBase {
           this.hintsCollect.add("Project:" + project.getHints().toString());
         }
         return super.visit(project);
+      }
+
+      @Override public RelNode visit(LogicalAggregate aggregate) {
+        if (aggregate.getHints().size() > 0) {
+          this.hintsCollect.add("Aggregate:" + aggregate.getHints().toString());
+        }
+        return super.visit(aggregate);
       }
     }
   }
