@@ -89,6 +89,7 @@ import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
 import org.apache.calcite.sql.type.SqlOperandTypeChecker;
 import org.apache.calcite.sql.type.SqlOperandTypeInference;
+import org.apache.calcite.sql.type.SqlTypeCoercionRule;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.sql.util.SqlBasicVisitor;
@@ -4180,6 +4181,10 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
   public TypeCoercion getTypeCoercion() {
     assert config.typeCoercionEnabled();
     return this.typeCoercion;
+  }
+
+  public void setSqlTypeCoercionRules(SqlTypeCoercionRule typeCoercionRules) {
+    SqlTypeCoercionRule.THREAD_PROVIDERS.set(typeCoercionRules);
   }
 
   public boolean hasValidationMessage() {
