@@ -48,12 +48,9 @@ class SqlTypeFixture {
       typeFactory.createSqlType(SqlTypeName.ANY), false);
   final RelDataType sqlFloat = typeFactory.createTypeWithNullability(
       typeFactory.createSqlType(SqlTypeName.FLOAT), false);
-<<<<<<< HEAD
-  final RelDataType sqlTimestampPrec0 = typeFactory.createTypeWithNullability(
-      typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 0), false);
-  final RelDataType sqlTimestampPrec3 = typeFactory.createTypeWithNullability(
-      typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 3), false);
 =======
+  final RelDataType sqlTimestamp = typeFactory.createTypeWithNullability(
+      typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 3), false);
   final RelDataType arrayFloat = typeFactory.createTypeWithNullability(
       typeFactory.createArrayType(sqlFloat, -1), false);
   final RelDataType arrayBigInt = typeFactory.createTypeWithNullability(

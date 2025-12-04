@@ -4188,6 +4188,10 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     return this.typeCoercion;
   }
 
+  public void setSqlTypeCoercionRules(SqlTypeCoercionRule typeCoercionRules) {
+    SqlTypeCoercionRule.THREAD_PROVIDERS.set(typeCoercionRules);
+  }
+
   public boolean hasValidationMessage() {
     assert this.validationMessage != null;
     return !this.validationMessage.isEmpty();

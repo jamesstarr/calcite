@@ -253,7 +253,7 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
     if (SqlTypeUtil.equalSansNullability(factory, fromType, toType)) {
       return false;
     }
-    // Should keep sync with rules in SqlTypeAssignmentRules.
+    // Should keep sync with rules in SqlTypeCoercionRule.
     assert SqlTypeUtil.canCastFrom(toType, fromType, true);
     return true;
   }

@@ -51,11 +51,10 @@ import org.apache.calcite.sql.SqlSpecialOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.ReturnTypes;
 import org.apache.calcite.sql.type.SqlOperandTypeChecker;
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-import org.apache.calcite.sql.type.SqlTypeAssignmentRule;
-=======
 import org.apache.calcite.sql.type.SqlTypeAssignmentRules;
->>>>>>> 433697657 ([CALCITE-3525] RexSimplify: eliminate redundant rex calls in OR (#213)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+import org.apache.calcite.sql.type.SqlTypeAssignmentRule;
+>>>>>>> 67fc2a3d9 ([CALCITE-3550] Make SqlTypeAssignmentRules conversion mapping pluggab… (#262))
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.util.DateString;
