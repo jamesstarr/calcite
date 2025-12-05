@@ -21,10 +21,9 @@ import org.apache.calcite.plan.RelOptPredicateList;
 import org.apache.calcite.plan.volcano.RelSubset;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Aggregate;
-<<<<<<< HEAD
-import org.apache.calcite.rel.core.Calc;
-=======
 >>>>>>> 211582e05 ([CALCITE-3454] Support Exchange in RelMdMaxRowCount,RelMdMinRowCount,RelMdRowCount (xy2953396112))
+=======
+import org.apache.calcite.rel.core.Calc;
 import org.apache.calcite.rel.core.Exchange;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Intersect;

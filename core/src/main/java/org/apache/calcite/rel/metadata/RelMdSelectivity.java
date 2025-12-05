@@ -122,7 +122,7 @@ public class RelMdSelectivity
     }
   }
 
-<<<<<<< HEAD
+>>>>>>> b2d7f1014 ([CALCITE-3838] Support Calc in RelMdSize,RelMdSelectivity,RelMdMaxRow… (#270))
   public Double getSelectivity(Calc rel, RelMetadataQuery mq, RexNode predicate) {
     final RexProgram rexProgram = rel.getProgram();
     final RexLocalRef programCondition = rexProgram.getCondition();
@@ -137,8 +137,10 @@ public class RelMdSelectivity
     }
   }
 
+<<<<<<< HEAD
 =======
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
+=======
+>>>>>>> b2d7f1014 ([CALCITE-3838] Support Calc in RelMdSize,RelMdSelectivity,RelMdMaxRow… (#270))
   public Double getSelectivity(Join rel, RelMetadataQuery mq, RexNode predicate) {
     if (!rel.isSemiJoin()) {
       return getSelectivity((RelNode) rel, mq, predicate);
