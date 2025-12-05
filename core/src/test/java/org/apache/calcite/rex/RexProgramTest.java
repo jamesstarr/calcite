@@ -2779,4 +2779,22 @@ public class RexProgramTest extends RexProgramTestBase {
 
     assertThat(s, is(falseLiteral));
   }
+
+  @Test public void testSimplifyNonDeterministicFunction() {
+    final SqlOperator ndc = new SqlSpecialOperator(
+        "NDC",
+        SqlKind.OTHER_FUNCTION,
+        0,
+        false,
+        ReturnTypes.BOOLEAN,
+        null, null) {
+      @Override public boolean isDeterministic() {
+        return false;
+      }
+    };
+    final RexNode call1 = rexBuilder.makeCall(ndc);
+    final RexNode call2 = rexBuilder.makeCall(ndc);
+    final RexNode expr = eq(call1, call2);
+    checkSimplifyUnchanged(expr);
+  }
 }

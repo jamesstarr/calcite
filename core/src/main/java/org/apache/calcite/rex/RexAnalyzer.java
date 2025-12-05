@@ -28,7 +28,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -129,27 +128,11 @@ public class RexAnalyzer {
     }
 
     @Override public Void visitCall(RexCall call) {
-      switch (call.getKind()) {
-      case CAST:
+      if (!RexInterpreter.SUPPORTED_SQL_KIND.contains(call.getKind())) {
         ++unsupportedCount;
         return null;
-      case EQUALS:
-      case GREATER_THAN:
-      case GREATER_THAN_OR_EQUAL:
-      case LESS_THAN_OR_EQUAL:
-      case LESS_THAN:
-      case NOT_EQUALS:
-        final List<RexNode> operands = new ArrayList<>(call.getOperands());
-        final RexNode o0 = operands.get(0);
-        final RexNode o1 = operands.get(1);
-        if (o0.equals(o1) && !RexUtil.isDeterministic(o1)) {
-          ++unsupportedCount;
-          return null;
-        }
-        // fall through
-      default:
-        return super.visitCall(call);
       }
+      return super.visitCall(call);
     }
   }
 }
