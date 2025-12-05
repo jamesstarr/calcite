@@ -123,7 +123,7 @@ class EnumerablesTest {
             + " Emp(30, Greg), Dept(30, Development)]"));
   }
 
-  @Test void testMergeJoinWithNullKeys() {
+  @Test public void testMergeJoinWithNullKeys() {
     assertThat(
         EnumerableDefaults.mergeJoin(
             Linq4j.asEnumerable(
@@ -147,7 +147,7 @@ class EnumerablesTest {
             + " Emp(20, Theodore), Dept(30, Theodore)]"));
   }
 
-  @Test void testMergeJoin2() {
+  @Test public void testMergeJoin2() {
     // Matching keys at start
     testIntersect(
         Lists.newArrayList(1, 3, 4),
@@ -177,20 +177,48 @@ class EnumerablesTest {
         Lists.newArrayList(1, 3, 5),
         equalTo("[]"));
     // Left empty
-    assertThat(
-        intersect(new ArrayList<>(),
-            newArrayList(1, 3, 4, 6)).toList().toString(),
+    testIntersect(
+        new ArrayList<>(),
+        newArrayList(1, 3, 4, 6),
         equalTo("[]"));
     // Right empty
-    assertThat(
-        intersect(newArrayList(3, 7),
-            new ArrayList<>()).toList().toString(),
+    testIntersect(
+        newArrayList(3, 7),
+        new ArrayList<>(),
         equalTo("[]"));
     // Both empty
-    assertThat(
-        intersect(new ArrayList<Integer>(),
-            new ArrayList<>()).toList().toString(),
+    testIntersect(
+        new ArrayList<Integer>(),
+        new ArrayList<>(),
         equalTo("[]"));
+  }
+
+  private static <T extends Comparable<T>> void testIntersect(
+      List<T> list0, List<T> list1, org.hamcrest.Matcher<String> matcher) {
+    assertThat(
+        intersect(list0, list1).toList().toString(),
+        matcher);
+
+    // Repeat test with nulls at the end of left / right: result should not be impacted
+
+    // Null at the end of left
+    list0.add(null);
+    assertThat(
+        intersect(list0, list1).toList().toString(),
+        matcher);
+
+    // Null at the end of right
+    list0.remove(list0.size() - 1);
+    list1.add(null);
+    assertThat(
+        intersect(list0, list1).toList().toString(),
+        matcher);
+
+    // Null at the end of left and right
+    list0.add(null);
+    assertThat(
+        intersect(list0, list1).toList().toString(),
+        matcher);
   }
 
   private static <T extends Comparable<T>> Enumerable<T> intersect(
