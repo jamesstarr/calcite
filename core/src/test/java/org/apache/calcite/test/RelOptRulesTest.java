@@ -3673,7 +3673,7 @@ class RelOptRulesTest extends RelOptTestBase {
     builder.addRuleClass(ReduceExpressionsRule.class);
 
     HepPlanner hepPlanner = new HepPlanner(builder.build());
-    hepPlanner.addRule(ReduceExpressionsRule.PROJECT_INSTANCE);
+    hepPlanner.addRule(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
     hepPlanner.setRoot(root);
 
     RelNode output = hepPlanner.findBestExp();
