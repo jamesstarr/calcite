@@ -995,13 +995,13 @@ public class SqlPrettyWriter implements SqlWriter {
   }
 
   public void identifier(String name) {
-    String qName = name;
+    maybeWhitespace(name);
     if (isQuoteAllIdentifiers()
         || dialect.identifierNeedsToBeQuoted(name)) {
-      qName = dialect.quoteIdentifier(name);
+      dialect.quoteIdentifier(buf, name);
+    } else {
+      buf.append(name);
     }
-    maybeWhitespace(qName);
-    buf.append(qName);
     setNeedWhitespace(true);
   }
 
