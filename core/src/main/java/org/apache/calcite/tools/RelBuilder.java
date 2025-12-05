@@ -1960,6 +1960,7 @@ public class RelBuilder {
       assert groupSet.contains(set);
     }
 
+    List<Field> inFields = frame.fields;
     if (config.pruneInputOfAggregate()
         && r instanceof Project) {
       final Set<Integer> fieldsUsed =
@@ -1989,6 +1990,7 @@ public class RelBuilder {
         for (AggregateCall aggregateCall : oldAggregateCalls) {
           aggregateCalls.add(aggregateCall.transform(targetMapping));
         }
+        inFields = Mappings.permute(inFields, targetMapping.inverse());
 
         final Project project = (Project) r;
         final List<RexNode> newProjects = new ArrayList<>();
@@ -2005,7 +2007,7 @@ public class RelBuilder {
 
     if (!config.dedupAggregateCalls() || Util.isDistinct(aggregateCalls)) {
       return aggregate_(groupSet, groupSets, r, aggregateCalls,
-          registrar.extraNodes, frame.fields);
+          registrar.extraNodes, inFields);
     }
 
     // There are duplicate aggregate calls. Rebuild the list to eliminate
@@ -2027,7 +2029,7 @@ public class RelBuilder {
       projects.add(Pair.of(groupSet.cardinality() + i, aggregateCall.name));
     }
     aggregate_(groupSet, groupSets, r, distinctAggregateCalls,
-        registrar.extraNodes, frame.fields);
+        registrar.extraNodes, inFields);
     final List<RexNode> fields = projects.stream()
         .map(p -> p.right == null ? field(p.left)
             : alias(field(p.left), p.right))
@@ -2040,7 +2042,7 @@ public class RelBuilder {
   private RelBuilder aggregate_(ImmutableBitSet groupSet,
       ImmutableList<ImmutableBitSet> groupSets, RelNode input,
       List<AggregateCall> aggregateCalls, List<RexNode> extraNodes,
-      ImmutableList<Field> inFields) {
+      List<Field> inFields) {
     final RelNode aggregate =
         struct.aggregateFactory.createAggregate(input,
             ImmutableList.of(), groupSet, groupSets, aggregateCalls);
@@ -3534,6 +3536,10 @@ public class RelBuilder {
       }
       this.rel = rel;
       this.fields = builder.build();
+    }
+
+    @Override public String toString() {
+      return rel + ": " + fields;
     }
 
     private static String deriveAlias(RelNode rel) {
