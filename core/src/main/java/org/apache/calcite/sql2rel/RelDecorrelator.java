@@ -50,6 +50,7 @@ import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.logical.LogicalSnapshot;
 import org.apache.calcite.rel.logical.LogicalSort;
+import org.apache.calcite.rel.logical.LogicalTableFunctionScan;
 import org.apache.calcite.rel.metadata.RelMdUtil;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.rules.CoreRules;
@@ -1071,6 +1072,13 @@ public class RelDecorrelator implements ReflectiveVisitor {
    */
   public Frame decorrelateRel(LogicalSnapshot rel, boolean isCorVarDefined) {
     if (RexUtil.containsCorrelation(rel.getPeriod())) {
+      return null;
+    }
+    return decorrelateRel((RelNode) rel, isCorVarDefined);
+  }
+
+  public Frame decorrelateRel(LogicalTableFunctionScan rel, boolean isCorVarDefined) {
+    if (RexUtil.containsCorrelation(rel.getCall())) {
       return null;
     }
     return decorrelateRel((RelNode) rel, isCorVarDefined);
