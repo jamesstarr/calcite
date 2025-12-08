@@ -346,15 +346,14 @@ public abstract class PruneEmptyRules implements SubstitutionRule {
             return;
           }
           if (join.getJoinType() == JoinRelType.ANTI) {
-<<<<<<< HEAD
-            // In case of anti join: Join(X, Empty, ANTI) becomes X
-            call.transformTo(join.getLeft());
-=======
             // "select * from emp anti join dept" is not necessarily empty if dept is empty
             if (join.analyzeCondition().isEqui()) {
               // In case of anti (equi) join: Join(X, Empty, ANTI) becomes X
               call.transformTo(join.getLeft());
             }
+=======
+            // In case of anti join: Join(X, Empty, ANTI) becomes X
+            call.transformTo(join.getLeft());
             return;
           }
           call.transformTo(call.builder().push(join).empty().build());

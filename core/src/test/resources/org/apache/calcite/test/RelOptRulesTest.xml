@@ -4014,12 +4014,16 @@ LogicalProject(EMPNO=[$0])
             <![CDATA[
 LogicalProject(EMPNO=[$0])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalTableScan(table=[[scott, EMP]])
 =======
   LogicalJoin(condition=[AND(=($7, $8), =($5, 2000))], joinType=[anti])
     LogicalTableScan(table=[[scott, EMP]])
     LogicalValues(tuples=[[]])
 >>>>>>> f393e4bc6 ([CALCITE-3783] PruneEmptyRules#JOIN_RIGHT_INSTANCE wrong behavior for… (#105))
+=======
+  LogicalTableScan(table=[[scott, EMP]])
+>>>>>>> 2ccbf99df ([CALCITE-3837] AntiJoin with empty right input can always be transfor… (#265))
 ]]>
         </Resource>
     </TestCase>
