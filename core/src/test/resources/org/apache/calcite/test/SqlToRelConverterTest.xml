@@ -1550,6 +1550,9 @@ LogicalProject(EXPR$0=[ROW(1, 2).EXPR$1])
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 57e6c26cd ([CALCITE-4456] Allows all the value expressions for explicit row valu… (#277))
     <TestCase name="testRowValueConstructorWithSubquery">
         <Resource name="sql">
             <![CDATA[select ROW((select deptno
@@ -1567,8 +1570,11 @@ LogicalProject(EXPR$0=[ROW($9, $1)])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 >>>>>>> af4516c57 ([CALCITE-3138] RelStructuredTypeFlattener doesn't restructure ROW type fields (Igor Guzenko))
+=======
+>>>>>>> 57e6c26cd ([CALCITE-4456] Allows all the value expressions for explicit row valu… (#277))
     <TestCase name="testDynamicNestedColumn">
         <Resource name="sql">
             <![CDATA[select t3.fake_q1['fake_col2'] as fake2
