@@ -2526,6 +2526,7 @@ semantics.
 | o | LTRIM(string)                                  | Returns *string* with all blanks removed from the start
 | o | RTRIM(string)                                  | Returns *string* with all blanks removed from the end
 | m p | SHA1(string)                                 | Calculates a SHA-1 hash value of *string* and returns it as a hex string
+| o | SINH(numeric)                                  | Returns the hyperbolic sine of *numeric*
 | o | SUBSTR(string, position [, substringLength ]) | Returns a portion of *string*, beginning at character *position*, *substringLength* characters long. SUBSTR calculates lengths using characters as defined by the input character set
 | m | STRCMP(string, string)                         | Returns 0 if both of the strings are same and returns -1 when the first argument is smaller than the second and 1 when the second one is smaller than the first one
 | o | TANH(numeric)                                  | Returns the hyperbolic tangent of *numeric*
