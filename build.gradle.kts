@@ -17,6 +17,7 @@
 import com.github.spotbugs.SpotBugsTask
 import com.github.vlsi.gradle.crlf.CrLfSpec
 import com.github.vlsi.gradle.crlf.LineEndings
+import com.github.vlsi.gradle.dsl.configureEach
 import com.github.vlsi.gradle.git.FindGitAttributes
 import com.github.vlsi.gradle.git.dsl.gitignore
 import com.github.vlsi.gradle.properties.dsl.lastEditYear
@@ -359,7 +360,7 @@ allprojects {
         tasks.register("checkstyleAll") {
             dependsOn(tasks.withType<Checkstyle>())
         }
-        tasks.withType<Checkstyle>().configureEach {
+        tasks.configureEach<Checkstyle> {
             // Excludes here are faster than in suppressions.xml
             // Since here we can completely remove file from the analysis.
             // On the other hand, supporessions.xml still analyzes the file, and
@@ -388,7 +389,7 @@ allprojects {
         }
     }
 
-    tasks.withType<AbstractArchiveTask>().configureEach {
+    tasks.configureEach<AbstractArchiveTask> {
         // Ensure builds are reproducible
         isPreserveFileTimestamps = false
         isReproducibleFileOrder = true
@@ -438,7 +439,7 @@ allprojects {
     }
 
     tasks {
-        withType<Javadoc>().configureEach {
+        configureEach<Javadoc> {
             excludeJavaCcGenerated()
             (options as StandardJavadocDocletOptions).apply {
                 // Please refrain from using non-ASCII chars below since the options are passed as
@@ -597,7 +598,7 @@ allprojects {
         }
 
         tasks {
-            withType<Jar>().configureEach {
+            configureEach<Jar> {
                 manifest {
                     attributes["Bundle-License"] = "Apache-2.0"
                     attributes["Implementation-Title"] = "Apache Calcite"
@@ -610,7 +611,7 @@ allprojects {
                 }
             }
 
-            withType<CheckForbiddenApis>().configureEach {
+            configureEach<CheckForbiddenApis> {
                 excludeJavaCcGenerated()
                 exclude(
                     "**/org/apache/calcite/adapter/os/Processes${'$'}ProcessFactory.class",
@@ -622,10 +623,10 @@ allprojects {
                 )
             }
 
-            withType<JavaCompile>().configureEach {
+            configureEach<JavaCompile> {
                 options.encoding = "UTF-8"
             }
-            withType<Test>().configureEach {
+            configureEach<Test> {
                 useJUnitPlatform {
                     if (includeTestTags.isNotBlank()) {
                         includeTags.add(includeTestTags)
@@ -657,7 +658,7 @@ allprojects {
                 }
                 printTestResults()
             }
-            withType<SpotBugsTask>().configureEach {
+            configureEach<SpotBugsTask> {
                 group = LifecycleBasePlugin.VERIFICATION_GROUP
                 if (enableSpotBugs) {
                     description = "$description (skipped by default, to enable it add -Dspotbugs)"
@@ -671,7 +672,7 @@ allprojects {
 
             afterEvaluate {
                 // Add default license/notice when missing
-                withType<Jar>().configureEach {
+                configureEach<Jar> {
                     CrLfSpec(LineEndings.LF).run {
                         into("META-INF") {
                             filteringCharset = "UTF-8"
