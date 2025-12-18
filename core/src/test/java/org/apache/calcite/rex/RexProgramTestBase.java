@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Base class for {@link RexProgram} tests.
  */
-public class RexProgramTestBase extends RexProgramBuilderBase {
+class RexProgramTestBase extends RexProgramBuilderBase {
 
   protected void checkDigest(RexNode node, String expected) {
     assertEquals(expected, node.toString(), () -> "Digest of " + node.toStringRaw());

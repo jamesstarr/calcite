@@ -29,7 +29,7 @@ import java.util.Collection;
  * by Calcite schema.
  */
 @Disabled("JUnit 4 parameterized test - disable JUnit 5 detection")
-public class EndToEndTest extends QuidemTest {
+class EndToEndTest extends QuidemTest {
   /** Runs a test from the command line.
    *
    * <p>For example:

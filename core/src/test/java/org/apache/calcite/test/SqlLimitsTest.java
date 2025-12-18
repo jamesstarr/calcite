@@ -83,7 +83,7 @@ public class SqlLimitsTest {
     Locale.setDefault(Locale.US);
   }
 
-  @Test public void testPrintLimits() {
+  @Test void testPrintLimits() {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
     final List<RelDataType> types =

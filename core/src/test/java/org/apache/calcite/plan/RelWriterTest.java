@@ -82,7 +82,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Unit test for {@link org.apache.calcite.rel.externalize.RelJson}.
  */
-public class RelWriterTest {
+class RelWriterTest {
   public static final String XX = "{\n"
       + "  \"rels\": [\n"
       + "    {\n"
@@ -388,7 +388,7 @@ public class RelWriterTest {
    * a simple tree of relational expressions, consisting of a table and a
    * project including window expressions.
    */
-  @Test public void testWriter() {
+  @Test void testWriter() {
     String s =
         Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
           rootSchema.add("hr",
@@ -434,7 +434,7 @@ public class RelWriterTest {
    * a simple tree of relational expressions, consisting of a table, a filter
    * and an aggregate node.
    */
-  @Test public void testWriter2() {
+  @Test void testWriter2() {
     String s =
         Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
           rootSchema.add("hr",
@@ -490,7 +490,7 @@ public class RelWriterTest {
   /**
    * Unit test for {@link org.apache.calcite.rel.externalize.RelJsonReader}.
    */
-  @Test public void testReader() {
+  @Test void testReader() {
     String s =
         Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
 
@@ -519,7 +519,7 @@ public class RelWriterTest {
   /**
    * Unit test for {@link org.apache.calcite.rel.externalize.RelJsonReader}.
    */
-  @Test public void testReader2() {
+  @Test void testReader2() {
     String s =
         Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
           SchemaPlus schema =
@@ -549,7 +549,7 @@ public class RelWriterTest {
   /**
    * Unit test for {@link org.apache.calcite.rel.externalize.RelJsonReader}.
    */
-  @Test public void testReaderNull() {
+  @Test void testReaderNull() {
     String s =
         Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
           SchemaPlus schema =
@@ -573,7 +573,7 @@ public class RelWriterTest {
             + "    LogicalTableScan(table=[[hr, emps]])\n"));
   }
 
-  @Test public void testTrim() {
+  @Test void testTrim() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder b = RelBuilder.create(config);
     final RelNode rel =
@@ -598,7 +598,7 @@ public class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testPlusOperator() {
+  @Test void testPlusOperator() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     final RelNode rel = builder
@@ -618,7 +618,7 @@ public class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testAggregateWithAlias() {
+  @Test void testAggregateWithAlias() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     // The rel node stands for sql: SELECT max(SAL) as max_sal from EMP group by JOB;
@@ -646,7 +646,7 @@ public class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testAggregateWithoutAlias() {
+  @Test void testAggregateWithoutAlias() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     // The rel node stands for sql: SELECT max(SAL) from EMP group by JOB;
@@ -674,7 +674,7 @@ public class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testCalc() {
+  @Test void testCalc() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     final RexBuilder rexBuilder = builder.getRexBuilder();
@@ -710,7 +710,7 @@ public class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testCorrelateQuery() {
+  @Test void testCorrelateQuery() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     final Holder<RexCorrelVariable> v = Holder.of(null);
@@ -735,7 +735,7 @@ public class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testOverWithoutPartition() {
+  @Test void testOverWithoutPartition() {
     // The rel stands for the sql of "select count(*) over (order by deptno) from EMP"
     final RelNode rel = mockCountOver("EMP", ImmutableList.of(), ImmutableList.of("DEPTNO"));
     String relJson = RelOptUtil.dumpPlan("", rel, SqlExplainFormat.JSON,
@@ -748,7 +748,7 @@ public class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testOverWithoutOrderKey() {
+  @Test void testOverWithoutOrderKey() {
     // The rel stands for the sql of "select count(*) over (partition by DEPTNO) from EMP"
     final RelNode rel = mockCountOver("EMP", ImmutableList.of("DEPTNO"), ImmutableList.of());
     String relJson = RelOptUtil.dumpPlan("", rel, SqlExplainFormat.JSON,
@@ -761,7 +761,7 @@ public class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testInterval() {
+  @Test void testInterval() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     SqlIntervalQualifier sqlIntervalQualifier =
@@ -787,7 +787,7 @@ public class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testUdf() {
+  @Test void testUdf() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     final RelNode rel = builder
@@ -882,7 +882,7 @@ public class RelWriterTest {
     return rel;
   }
 
-  @Test public void testWriteSortExchangeWithHashDistribution() {
+  @Test void testWriteSortExchangeWithHashDistribution() {
     final RelNode root = createSortPlan(RelDistributions.hash(Lists.newArrayList(0)));
     final RelJsonWriter writer = new RelJsonWriter();
     root.explain(writer);
@@ -896,7 +896,7 @@ public class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testWriteSortExchangeWithRandomDistribution() {
+  @Test void testWriteSortExchangeWithRandomDistribution() {
     final RelNode root = createSortPlan(RelDistributions.RANDOM_DISTRIBUTED);
     final RelJsonWriter writer = new RelJsonWriter();
     root.explain(writer);
