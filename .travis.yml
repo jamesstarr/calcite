@@ -26,6 +26,7 @@ matrix:
     - jdk: openjdk11
       env:
         - SLOW_TESTS=Y
+    - jdk: openjdk14
 branches:
   only:
     - master
