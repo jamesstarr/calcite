@@ -21,11 +21,15 @@
 **/data.txt
 **/data2.txt
 <<<<<<< HEAD
+<<<<<<< HEAD
 .idea/vcs.xml
 =======
 #bu ildSrc/build
 #b uildSrc/subprojects/*/build
 >>>>>>> eb5cf8076 ([CALCITE-3749] Ignore local.proproperties in RAT, Autostyle checks, a… (#87))
+=======
+.idea/vcs.xml
+>>>>>>> e946e1b74 (Add JIRA links in Git in IDEA (#309))
 
 # TODO: remove when pom.xml files are removed
 src/main/config/licenses

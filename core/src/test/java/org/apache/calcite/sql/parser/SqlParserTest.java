@@ -1903,19 +1903,6 @@ public class SqlParserTest {
         .fails("(?s).*Encountered \"=>\" at .*");
   }
 
-<<<<<<< HEAD
-  @Test void testFunctionNamedArgument() {
-    expr("foo(x => 1)")
-        .ok("`FOO`(`X` => 1)");
-    expr("foo(x => 1, \"y\" => 'a', z => x <= y)")
-        .ok("`FOO`(`X` => 1, `y` => 'a', `Z` => (`X` <= `Y`))");
-    expr("foo(x.y ^=>^ 1)")
-        .fails("(?s).*Encountered \"=>\" at .*");
-    expr("foo(a => 1, x.y ^=>^ 2, c => 3)")
-        .fails("(?s).*Encountered \"=>\" at .*");
-  }
-
-=======
   @Test void testFunctionDefaultArgument() {
     sql("foo(1, DEFAULT, default, 'default', \"default\", 3)").expression()
         .ok("`FOO`(1, DEFAULT, DEFAULT, 'default', `default`, 3)");
@@ -3180,7 +3167,6 @@ public class SqlParserTest {
   }
 
 =======
->>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
   @Test void testMultilineComment() {
     // on single line
     sql("select 1 /* , 2 */, 3 from t")

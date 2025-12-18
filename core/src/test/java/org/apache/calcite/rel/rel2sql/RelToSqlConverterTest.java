@@ -3322,16 +3322,6 @@ class RelToSqlConverterTest {
         .ok(expected);
   }
 
-<<<<<<< HEAD
-  @Test void testFloorClickHouse() {
-    String query = "SELECT floor(\"hire_date\" TO MINUTE) FROM \"employee\"";
-    String expected = "SELECT toStartOfMinute(`hire_date`)\nFROM `foodmart`.`employee`";
-    sql(query)
-        .withClickHouse()
-        .ok(expected);
-  }
-
-=======
   @Test void testFloorPostgres() {
     String query = "SELECT floor(\"hire_date\" TO MINUTE) FROM \"employee\"";
     String expected = "SELECT DATE_TRUNC('MINUTE', \"hire_date\")\nFROM \"foodmart\".\"employee\"";
@@ -3519,7 +3509,6 @@ class RelToSqlConverterTest {
   }
 
 =======
->>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
   @Test void testFloorMysqlHour() {
     String query = "SELECT floor(\"hire_date\" TO HOUR) FROM \"employee\"";
     String expected = "SELECT DATE_FORMAT(`hire_date`, '%Y-%m-%d %H:00:00')\n"

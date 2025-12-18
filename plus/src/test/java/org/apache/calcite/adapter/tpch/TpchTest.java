@@ -767,16 +767,12 @@ class TpchTest {
             "R_REGIONKEY=4; R_NAME=MIDDLE EAST; R_COMMENT=uickly special accounts cajole carefully blithely close requests. carefully final asymptotes haggle furiousl");
   }
 
-<<<<<<< HEAD
-  @Disabled("it's wasting time")
-=======
   @Test void testLineItem() {
     with()
         .query("select * from tpch.lineitem")
         .returnsCount(6001215);
   }
 
->>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
   @Test void testOrders() {
     with()
         .query("select * from tpch.orders")
@@ -788,10 +784,6 @@ class TpchTest {
    * Correlated scalar sub-query with multiple aggregates gives
    * AssertionError</a>. */
   @Disabled("planning succeeds, but gives OutOfMemoryError during execution")
-<<<<<<< HEAD
-=======
-  @Test public void testDecorrelateScalarAggregate() {
-=======
   @Test void testDecorrelateScalarAggregate() {
     final String sql = "select sum(l_extendedprice)\n"
         + "from lineitem, part\n"
@@ -805,7 +797,6 @@ class TpchTest {
     with().query(sql).runs();
   }
 
->>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
   @Test void testCustomer() {
     with()
         .query("select * from tpch.customer")
@@ -861,12 +852,8 @@ class TpchTest {
     checkQuery(6);
   }
 
-<<<<<<< HEAD
-  @Test public void testQuery07() {
-=======
   @Disabled("slow")
   @Test void testQuery07() {
->>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     assumeTrue(Bug.CALCITE_2223_FIXED);
     checkQuery(7);
   }

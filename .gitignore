@@ -36,6 +36,7 @@
 # Icon for JetBrains Toolbox
 !/.idea/icon.png
 !/.idea/vcs.xml
+<<<<<<< HEAD
 =======
 target
 .DS_Store
@@ -66,6 +67,8 @@ target
 # Icon for JetBrains Toolbox
 !/.idea/icon.png
 >>>>>>> e6fbeaa30 (Add icon for JetBrains Toolbox (#307))
+=======
+>>>>>>> e946e1b74 (Add JIRA links in Git in IDEA (#309))
 *.iml
 
 settings.xml
