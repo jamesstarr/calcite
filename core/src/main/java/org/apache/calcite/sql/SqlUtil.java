@@ -446,8 +446,9 @@ public abstract class SqlUtil {
     }
 
     // second pass:  eliminate routines which don't accept the given
-    // argument types
-    routines = filterRoutinesByParameterType(sqlSyntax, routines, argTypes, argNames, coerce);
+    // argument types and parameter names if specified
+    routines =
+        filterRoutinesByParameterTypeAndName(sqlSyntax, routines, argTypes, argNames, coerce);
 
     // see if we can stop now; this is necessary for the case
     // of builtin functions where we don't have param type info,
@@ -552,25 +553,10 @@ public abstract class SqlUtil {
           }
           final List<RelDataType> permutedArgTypes;
           if (argNames != null) {
-            // Arguments passed by name. Make sure that the function has
-            // parameters of all of these names.
-            final Map<Integer, Integer> map = new HashMap<>();
-            for (Ord<String> argName : Ord.zip(argNames)) {
-              final int i = function.getParamNames().indexOf(argName.e);
-              if (i < 0) {
-                return false;
-              }
-              map.put(i, argName.i);
+            permutedArgTypes = permuteArgTypes(function, argNames, argTypes);
+            if (permutedArgTypes == null) {
+              return false;
             }
-            permutedArgTypes = Functions.generate(paramTypes.size(), a0 -> {
-
-              if (map.containsKey(a0)) {
-                return argTypes.get(map.get(a0));
-              } else {
-                return null;
-              }
-
-            });
           } else {
             permutedArgTypes = Lists.newArrayList(argTypes);
             while (permutedArgTypes.size() < argTypes.size()) {
@@ -642,7 +628,10 @@ public abstract class SqlUtil {
               if (paramTypes == null) {
                 return false;
               }
-              final RelDataType paramType = paramTypes.get(argType.i);
+              int index = argNames != null
+                  ? function.getParamNames().indexOf(argNames.get(argType.i))
+                  : argType.i;
+              final RelDataType paramType = paramTypes.get(index);
               return precList.compareTypePrecedence(paramType, bestMatch) >= 0;
             })
             .collect(Collectors.toList());

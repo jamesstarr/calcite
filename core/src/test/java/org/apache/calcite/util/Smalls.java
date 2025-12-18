@@ -868,6 +868,7 @@ public class Smalls {
     }
   }
 
+<<<<<<< HEAD
   /** A table function that returns a {@link QueryableTable}. */
   public static class SimpleTableFunction {
     public QueryableTable eval(Integer s) {
@@ -875,6 +876,8 @@ public class Smalls {
     }
   }
 
+=======
+>>>>>>> 7565c9b7b ([CALCITE-3835] Overloaded table functions fail with an assertion erro… (#311))
   /** A table function that returns a {@link QueryableTable}. */
   public static class SimpleTableFunction {
     public QueryableTable eval(Integer s) {
