@@ -57,8 +57,15 @@ target
 /out
 /*/out/
 /example/*/out
+<<<<<<< HEAD
 /.idea
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+# The star is required for further !/.idea/ to work, see https://git-scm.com/docs/gitignore
+/.idea/*
+# Icon for JetBrains Toolbox
+!/.idea/icon.png
+>>>>>>> e6fbeaa30 (Add icon for JetBrains Toolbox (#307))
 *.iml
 
 settings.xml
