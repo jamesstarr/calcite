@@ -104,7 +104,7 @@ class RelOptUtilTest {
         Lists.newArrayList(Iterables.concat(empRow.getFieldList(), deptRow.getFieldList()));
   }
 
-  @Test public void testTypeDump() {
+  @Test void testTypeDump() {
     RelDataTypeFactory typeFactory =
         new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     RelDataType t1 =
@@ -155,7 +155,7 @@ class RelOptUtilTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3136">[CALCITE-3136]
    * Fix the default rule description of ConverterRule</a>. */
-  @Test public void testConvertRuleDefaultRuleDescription() {
+  @Test void testConvertRuleDefaultRuleDescription() {
     RelCollation collation1 =
             RelCollations.of(new RelFieldCollation(4, RelFieldCollation.Direction.DESCENDING));
     RelCollation collation2 =
@@ -225,7 +225,7 @@ class RelOptUtilTest {
    * Test {@link RelOptUtil#splitJoinCondition(RelNode, RelNode, RexNode, List, List, List)}
    * where the join condition contains just one which is a EQUAL operator.
    */
-  @Test public void testSplitJoinConditionEquals() {
+  @Test void testSplitJoinConditionEquals() {
     int leftJoinIndex = empScan.getRowType().getFieldNames().indexOf("DEPTNO");
     int rightJoinIndex = deptRow.getFieldNames().indexOf("DEPTNO");
 
@@ -245,7 +245,7 @@ class RelOptUtilTest {
    * Test {@link RelOptUtil#splitJoinCondition(RelNode, RelNode, RexNode, List, List, List)}
    * where the join condition contains just one which is a IS NOT DISTINCT operator.
    */
-  @Test public void testSplitJoinConditionIsNotDistinctFrom() {
+  @Test void testSplitJoinConditionIsNotDistinctFrom() {
     int leftJoinIndex = empScan.getRowType().getFieldNames().indexOf("DEPTNO");
     int rightJoinIndex = deptRow.getFieldNames().indexOf("DEPTNO");
 
@@ -265,7 +265,7 @@ class RelOptUtilTest {
    * Test {@link RelOptUtil#splitJoinCondition(RelNode, RelNode, RexNode, List, List, List)}
    * where the join condition contains an expanded version of IS NOT DISTINCT
    */
-  @Test public void testSplitJoinConditionExpandedIsNotDistinctFrom() {
+  @Test void testSplitJoinConditionExpandedIsNotDistinctFrom() {
     int leftJoinIndex = empScan.getRowType().getFieldNames().indexOf("DEPTNO");
     int rightJoinIndex = deptRow.getFieldNames().indexOf("DEPTNO");
 
@@ -290,7 +290,7 @@ class RelOptUtilTest {
    * Test {@link RelOptUtil#splitJoinCondition(RelNode, RelNode, RexNode, List, List, List)}
    * where the join condition contains an expanded version of IS NOT DISTINCT using CASE
    */
-  @Test public void testSplitJoinConditionExpandedIsNotDistinctFromUsingCase() {
+  @Test void testSplitJoinConditionExpandedIsNotDistinctFromUsingCase() {
     int leftJoinIndex = empScan.getRowType().getFieldNames().indexOf("DEPTNO");
     int rightJoinIndex = deptRow.getFieldNames().indexOf("DEPTNO");
 
@@ -316,7 +316,7 @@ class RelOptUtilTest {
    * Test {@link RelOptUtil#splitJoinCondition(RelNode, RelNode, RexNode, List, List, List)}
    * where the join condition contains an expanded version of IS NOT DISTINCT using CASE
    */
-  @Test public void testSplitJoinConditionExpandedIsNotDistinctFromUsingCase2() {
+  @Test void testSplitJoinConditionExpandedIsNotDistinctFromUsingCase2() {
     int leftJoinIndex = empScan.getRowType().getFieldNames().indexOf("DEPTNO");
     int rightJoinIndex = deptRow.getFieldNames().indexOf("DEPTNO");
 
@@ -359,7 +359,7 @@ class RelOptUtilTest {
    * Test {@link RelOptUtil#pushDownJoinConditions(org.apache.calcite.rel.core.Join, RelBuilder)}
    * where the join condition contains a complex expression
    */
-  @Test public void testPushDownJoinConditions() {
+  @Test void testPushDownJoinConditions() {
     int leftJoinIndex = empScan.getRowType().getFieldNames().indexOf("DEPTNO");
     int rightJoinIndex = deptRow.getFieldNames().indexOf("DEPTNO");
 
@@ -404,7 +404,7 @@ class RelOptUtilTest {
    * Test {@link RelOptUtil#pushDownJoinConditions(org.apache.calcite.rel.core.Join, RelBuilder)}
    * where the join condition contains a complex expression
    */
-  @Test public void testPushDownJoinConditionsWithIsNotDistinct() {
+  @Test void testPushDownJoinConditionsWithIsNotDistinct() {
     int leftJoinIndex = empScan.getRowType().getFieldNames().indexOf("DEPTNO");
     int rightJoinIndex = deptRow.getFieldNames().indexOf("DEPTNO");
 
@@ -450,7 +450,7 @@ class RelOptUtilTest {
    * Test {@link RelOptUtil#pushDownJoinConditions(org.apache.calcite.rel.core.Join, RelBuilder)}
    * where the join condition contains a complex expression
    */
-  @Test public void testPushDownJoinConditionsWithExpandedIsNotDistinct() {
+  @Test void testPushDownJoinConditionsWithExpandedIsNotDistinct() {
     int leftJoinIndex = empScan.getRowType().getFieldNames().indexOf("DEPTNO");
     int rightJoinIndex = deptRow.getFieldNames().indexOf("DEPTNO");
 
@@ -501,7 +501,7 @@ class RelOptUtilTest {
    * Test {@link RelOptUtil#pushDownJoinConditions(org.apache.calcite.rel.core.Join, RelBuilder)}
    * where the join condition contains a complex expression
    */
-  @Test public void testPushDownJoinConditionsWithExpandedIsNotDistinctUsingCase() {
+  @Test void testPushDownJoinConditionsWithExpandedIsNotDistinctUsingCase() {
     int leftJoinIndex = empScan.getRowType().getFieldNames().indexOf("DEPTNO");
     int rightJoinIndex = deptRow.getFieldNames().indexOf("DEPTNO");
 
@@ -557,7 +557,7 @@ class RelOptUtilTest {
    * Test {@link RelOptUtil#createCastRel(RelNode, RelDataType, boolean)}
    * with changed field nullability or field name.
    */
-  @Test public void testCreateCastRel() {
+  @Test void testCreateCastRel() {
     // Equivalent SQL:
     // select empno, ename, count(job)
     // from emp

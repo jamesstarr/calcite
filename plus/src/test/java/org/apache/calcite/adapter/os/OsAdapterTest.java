@@ -108,7 +108,7 @@ class OsAdapterTest {
     }
   }
 
-  @Test public void testDu() {
+  @Test void testDu() {
     assumeFalse(isWindows(), "Skip: the 'du' table does not work on Windows");
     assumeToolExists("du");
     sql("select * from du")
@@ -124,7 +124,7 @@ class OsAdapterTest {
         });
   }
 
-  @Test public void testDuFilterSortLimit() {
+  @Test void testDuFilterSortLimit() {
     assumeFalse(isWindows(), "Skip: the 'du' table does not work on Windows");
     assumeToolExists("du");
     sql("select * from du where path like '%/src/test/java/%'\n"
@@ -143,14 +143,14 @@ class OsAdapterTest {
         });
   }
 
-  @Test public void testFiles() {
+  @Test void testFiles() {
     assumeFalse(isWindows(), "Skip: the 'files' table does not work on Windows");
     sql("select distinct type from files")
         .returnsUnordered("type=d",
             "type=f");
   }
 
-  @Test public void testPs() {
+  @Test void testPs() {
     assumeFalse(isWindows(), "Skip: the 'ps' table does not work on Windows");
     assumeToolExists("ps");
     sql("select * from ps")
@@ -170,7 +170,7 @@ class OsAdapterTest {
         });
   }
 
-  @Test public void testPsDistinct() {
+  @Test void testPsDistinct() {
     assumeFalse(isWindows(), "Skip: the 'ps' table does not work on Windows");
     assumeToolExists("ps");
     sql("select distinct `user` from ps")
@@ -185,7 +185,7 @@ class OsAdapterTest {
         });
   }
 
-  @Test public void testGitCommits() {
+  @Test void testGitCommits() {
     assumeTrue(hasGit(), "no git");
     sql("select count(*) from git_commits")
         .returns(r -> {
@@ -199,7 +199,7 @@ class OsAdapterTest {
         });
   }
 
-  @Test public void testGitCommitsTop() {
+  @Test void testGitCommitsTop() {
     assumeTrue(hasGit(), "no git");
     final String q = "select author from git_commits\n"
         + "group by 1 order by count(*) desc limit 2";
@@ -207,7 +207,7 @@ class OsAdapterTest {
         "author=Julian Hyde <jhyde@apache.org>");
   }
 
-  @Test public void testJps() {
+  @Test void testJps() {
     final String q = "select pid, info from jps";
     sql(q).returns(r -> {
       try {
@@ -221,7 +221,7 @@ class OsAdapterTest {
     });
   }
 
-  @Test public void testVmstat() {
+  @Test void testVmstat() {
     assumeFalse(isWindows(), "Skip: the 'files' table does not work on Windows");
     assumeToolExists("vmstat");
     sql("select * from vmstat")
@@ -239,7 +239,7 @@ class OsAdapterTest {
         });
   }
 
-  @Test public void testStdin() throws SQLException {
+  @Test void testStdin() throws SQLException {
     try (Hook.Closeable ignore = Hook.STANDARD_STREAMS.addThread(
 <<<<<<< HEAD
         new Function<Holder<Object[]>, Void>() {

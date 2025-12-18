@@ -65,9 +65,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * Unit test for {@link org.apache.calcite.rex.RexExecutorImpl}.
  */
 public class RexExecutorTest {
-  public RexExecutorTest() {
-  }
-
   protected void check(final Action action) throws Exception {
     Frameworks.withPrepare((cluster, relOptSchema, rootSchema, statement) -> {
       final RexBuilder rexBuilder = cluster.getRexBuilder();
@@ -81,8 +78,7 @@ public class RexExecutorTest {
 
   /** Tests an executor that uses variables stored in a {@link DataContext}.
    * Can change the value of the variable and execute again. */
->>>>>>> 90bb2364a ([CALCITE-3196] In Frameworks, add interface BasePrepareAction (a functional interface) and deprecate abstract class PrepareAction)
-  @Test public void testVariableExecution() throws Exception {
+  @Test void testVariableExecution() throws Exception {
     check((rexBuilder, executor) -> {
 
       Object[] values = new Object[1];
@@ -120,7 +116,7 @@ public class RexExecutorTest {
     });
   }
 
-  @Test public void testConstant() throws Exception {
+  @Test void testConstant() throws Exception {
     check((rexBuilder, executor) -> {
 
       final List<RexNode> reducedValues = new ArrayList<>();
@@ -194,17 +190,17 @@ public class RexExecutorTest {
     });
   }
 
-  @Test public void testUserFromContext() throws Exception {
+  @Test void testUserFromContext() throws Exception {
     testContextLiteral(SqlStdOperatorTable.USER,
         DataContext.Variable.USER, "happyCalciteUser");
   }
 
-  @Test public void testSystemUserFromContext() throws Exception {
+  @Test void testSystemUserFromContext() throws Exception {
     testContextLiteral(SqlStdOperatorTable.SYSTEM_USER,
         DataContext.Variable.SYSTEM_USER, "");
   }
 
-  @Test public void testTimestampFromContext() throws Exception {
+  @Test void testTimestampFromContext() throws Exception {
     // CURRENT_TIMESTAMP actually rounds the value to nearest second
     // and that's why we do currentTimeInMillis / 1000 * 1000
     long val = System.currentTimeMillis() / 1000 * 1000;
@@ -243,44 +239,8 @@ public class RexExecutorTest {
     });
   }
 
-  @Test public void testSubstring() throws Exception {
-<<<<<<< HEAD
-    check(new Action() {
-      public void check(RexBuilder rexBuilder, RexExecutorImpl executor) {
-        final List<RexNode> reducedValues = new ArrayList<>();
-        final RexLiteral hello =
-            rexBuilder.makeCharLiteral(
-                new NlsString("Hello world!", null, null));
-        final RexNode plus =
-            rexBuilder.makeCall(SqlStdOperatorTable.PLUS,
-                rexBuilder.makeExactLiteral(BigDecimal.ONE),
-                rexBuilder.makeExactLiteral(BigDecimal.ONE));
-        RexLiteral four = rexBuilder.makeExactLiteral(BigDecimal.valueOf(4));
-        final RexNode substring =
-            rexBuilder.makeCall(SqlStdOperatorTable.SUBSTRING,
-                hello, plus, four);
-        executor.reduce(rexBuilder, ImmutableList.of(substring, plus),
-            reducedValues);
-        assertThat(reducedValues.size(), equalTo(2));
-        assertThat(reducedValues.get(0), instanceOf(RexLiteral.class));
-        assertThat(((RexLiteral) reducedValues.get(0)).getValue2(),
-            equalTo((Object) "ello")); // substring('Hello world!, 2, 4)
-        assertThat(reducedValues.get(1), instanceOf(RexLiteral.class));
-        assertThat(((RexLiteral) reducedValues.get(1)).getValue2(),
-            equalTo((Object) 2L));
-      }
-      return null;
-    });
-  }
-
-  @Test void testSubstring() throws Exception {
-    check((rexBuilder, executor) -> {
-
-      final List<RexNode> reducedValues = new ArrayList<>();
-      final RexLiteral hello =
-          rexBuilder.makeCharLiteral(
-              new NlsString("Hello world!", null, null));
 =======
+  @Test void testSubstring() throws Exception {
     check((rexBuilder, executor) -> {
 
       final List<RexNode> reducedValues = new ArrayList<>();
@@ -308,7 +268,7 @@ public class RexExecutorTest {
     });
   }
 
-  @Test public void testBinarySubstring() throws Exception {
+  @Test void testBinarySubstring() throws Exception {
     check((rexBuilder, executor) -> {
 
       final List<RexNode> reducedValues = new ArrayList<>();
@@ -337,7 +297,7 @@ public class RexExecutorTest {
     });
   }
 
-  @Test public void testDeterministic1() throws Exception {
+  @Test void testDeterministic1() throws Exception {
     check((rexBuilder, executor) -> {
 
       final RexNode plus =
@@ -349,7 +309,7 @@ public class RexExecutorTest {
     });
   }
 
-  @Test public void testDeterministic2() throws Exception {
+  @Test void testDeterministic2() throws Exception {
     check((rexBuilder, executor) -> {
 
       final RexNode plus =
@@ -361,7 +321,7 @@ public class RexExecutorTest {
     });
   }
 
-  @Test public void testDeterministic3() throws Exception {
+  @Test void testDeterministic3() throws Exception {
     check((rexBuilder, executor) -> {
 
       final RexNode plus =

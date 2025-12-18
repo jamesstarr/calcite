@@ -42,21 +42,21 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 class SqlTypeFactoryTest {
 
-  @Test public void testLeastRestrictiveWithAny() {
+  @Test void testLeastRestrictiveWithAny() {
     SqlTypeFixture f = new SqlTypeFixture();
     RelDataType leastRestrictive =
         f.typeFactory.leastRestrictive(Lists.newArrayList(f.sqlBigInt, f.sqlAny));
     assertThat(leastRestrictive.getSqlTypeName(), is(SqlTypeName.ANY));
   }
 
-  @Test public void testLeastRestrictiveWithNumbers() {
+  @Test void testLeastRestrictiveWithNumbers() {
     SqlTypeFixture f = new SqlTypeFixture();
     RelDataType leastRestrictive =
         f.typeFactory.leastRestrictive(Lists.newArrayList(f.sqlBigInt, f.sqlInt));
     assertThat(leastRestrictive.getSqlTypeName(), is(SqlTypeName.BIGINT));
   }
 
-  @Test public void testLeastRestrictiveTimestamps() {
+  @Test void testLeastRestrictiveTimestamps() {
     Fixture f = new Fixture();
     RelDataType leastRestrictive =
         f.typeFactory.leastRestrictive(
@@ -66,7 +66,7 @@ class SqlTypeFactoryTest {
     assertThat(leastRestrictive.isNullable(), is(false));
   }
 
-  @Test public void testLeastRestrictiveTimestampsWithNullability() {
+  @Test void testLeastRestrictiveTimestampsWithNullability() {
     Fixture f = new Fixture();
     RelDataType leastRestrictive =
         f.typeFactory.leastRestrictive(
@@ -76,7 +76,7 @@ class SqlTypeFactoryTest {
     assertThat(leastRestrictive.isNullable(), is(true));
   }
 
-  @Test public void testLeastRestrictiveTimestampsAndDatesWithNullability() {
+  @Test void testLeastRestrictiveTimestampsAndDatesWithNullability() {
     Fixture f = new Fixture();
     RelDataType leastRestrictive =
         f.typeFactory.leastRestrictive(
@@ -86,7 +86,7 @@ class SqlTypeFactoryTest {
     assertThat(leastRestrictive.isNullable(), is(true));
   }
 
-  @Test public void testLeastRestrictiveTimestampsAndIncompatible() {
+  @Test void testLeastRestrictiveTimestampsAndIncompatible() {
     Fixture f = new Fixture();
     RelDataType leastRestrictive =
         f.typeFactory.leastRestrictive(
@@ -94,7 +94,7 @@ class SqlTypeFactoryTest {
     assertThat(leastRestrictive, is((RelDataType) null));
   }
 
-  @Test public void testLeastRestrictiveWithNullability() {
+  @Test void testLeastRestrictiveWithNullability() {
     SqlTypeFixture f = new SqlTypeFixture();
     RelDataType leastRestrictive =
         f.typeFactory.leastRestrictive(Lists.newArrayList(f.sqlVarcharNullable, f.sqlAny));
@@ -105,7 +105,7 @@ class SqlTypeFactoryTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2994">[CALCITE-2994]
    * Least restrictive type among structs does not consider nullability</a>. */
-  @Test public void testLeastRestrictiveWithNullableStruct() {
+  @Test void testLeastRestrictiveWithNullableStruct() {
     Fixture f = new Fixture();
     RelDataType leastRestrictive =
         f.typeFactory.leastRestrictive(ImmutableList.of(f.structOfIntNullable, f.structOfInt));
@@ -113,7 +113,7 @@ class SqlTypeFactoryTest {
     assertThat(leastRestrictive.isNullable(), is(true));
   }
 
-  @Test public void testLeastRestrictiveWithNull() {
+  @Test void testLeastRestrictiveWithNull() {
     SqlTypeFixture f = new SqlTypeFixture();
     RelDataType leastRestrictive =
         f.typeFactory.leastRestrictive(Lists.newArrayList(f.sqlNull, f.sqlNull));
@@ -162,7 +162,7 @@ class SqlTypeFactoryTest {
   }
 
   /** Unit test for {@link ArraySqlType#getPrecedenceList()}. */
-  @Test public void testArrayPrecedenceList() {
+  @Test void testArrayPrecedenceList() {
     SqlTypeFixture f = new SqlTypeFixture();
     assertThat(checkPrecendenceList(f.arrayBigInt, f.arrayBigInt, f.arrayFloat),
         is(3));
@@ -203,7 +203,7 @@ class SqlTypeFactoryTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2464">[CALCITE-2464]
    * Allow to set nullability for columns of structured types</a>. */
-  @Test public void createStructTypeWithNullability() {
+  @Test void createStructTypeWithNullability() {
     SqlTypeFixture f = new SqlTypeFixture();
     RelDataTypeFactory typeFactory = f.typeFactory;
     List<RelDataTypeField> fields = new ArrayList<>();
@@ -222,7 +222,7 @@ class SqlTypeFactoryTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3429">[CALCITE-3429]
    * AssertionError thrown for user-defined table function with map argument</a>. */
-  @Test public void testCreateTypeWithJavaMapType() {
+  @Test void testCreateTypeWithJavaMapType() {
     SqlTypeFixture f = new SqlTypeFixture();
     RelDataType relDataType = f.typeFactory.createJavaType(Map.class);
     assertThat(relDataType.getSqlTypeName(), is(SqlTypeName.MAP));

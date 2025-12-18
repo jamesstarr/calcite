@@ -173,7 +173,7 @@ public class JdbcFrontLinqBackTest {
    * Tests EXCEPT.
    */
   @Disabled
-  @Test public void testExcept() {
+  @Test void testExcept() {
     hr()
         .query("select substring(\"name\" from 1 for 1) as x\n"
             + "from \"hr\".\"emps\" as e\n"

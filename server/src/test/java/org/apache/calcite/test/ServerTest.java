@@ -92,7 +92,7 @@ class ServerTest {
     }
   }
 
-  @Test public void testCreateType() throws Exception {
+  @Test void testCreateType() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
       boolean b = s.execute("create type mytype1 as BIGINT");
@@ -121,7 +121,7 @@ class ServerTest {
     }
   }
 
-  @Test public void testDropType() throws Exception {
+  @Test void testDropType() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
       boolean b = s.execute("create type mytype1 as BIGINT");
@@ -135,7 +135,7 @@ class ServerTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3046">[CALCITE-3046]
    * CompileException when inserting casted value of composited user defined type
    * into table</a>. */
-  @Test public void testCreateTable() throws Exception {
+  @Test void testCreateTable() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
       boolean b = s.execute("create table t (i int not null)");
@@ -172,7 +172,7 @@ class ServerTest {
     }
   }
 
-  @Test public void testCreateFunction() throws Exception {
+  @Test void testCreateFunction() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
       boolean b = s.execute("create schema s");
@@ -188,7 +188,7 @@ class ServerTest {
     }
   }
 
-  @Test public void testDropFunction() throws Exception {
+  @Test void testDropFunction() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
       boolean b = s.execute("create schema s");
@@ -235,7 +235,7 @@ class ServerTest {
   }
 
   @Disabled
-  @Test public void testInsertCastedValueOfCompositeUdt() throws Exception {
+  @Test void testInsertCastedValueOfCompositeUdt() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
       boolean b = s.execute("create type mytype as (i int, j int)");
@@ -248,7 +248,7 @@ class ServerTest {
     }
   }
 
-  @Test public void testInsertCreateNewCompositeUdt() throws Exception {
+  @Test void testInsertCreateNewCompositeUdt() throws Exception {
     try (Connection c = connect();
         Statement s = c.createStatement()) {
       boolean b = s.execute("create type mytype as (i int, j int)");
@@ -268,7 +268,7 @@ class ServerTest {
     }
   }
 
-  @Test public void testStoredGeneratedColumn() throws Exception {
+  @Test void testStoredGeneratedColumn() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
       final String sql0 = "create table t (\n"
@@ -386,7 +386,7 @@ class ServerTest {
   }
 
   @Disabled("not working yet")
-  @Test public void testStoredGeneratedColumn2() throws Exception {
+  @Test void testStoredGeneratedColumn2() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
       final String sql = "create table t (\n"
@@ -443,7 +443,7 @@ class ServerTest {
 <<<<<<< HEAD
 =======
 
-  @Test public void testVirtualColumnWithFunctions() throws Exception {
+  @Test void testVirtualColumnWithFunctions() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
       // Test builtin and library functions.

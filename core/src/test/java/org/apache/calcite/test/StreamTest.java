@@ -195,7 +195,7 @@ public class StreamTest {
   }
 
   @Disabled
-  @Test public void testStreamUnionAllOrderBy() {
+  @Test void testStreamUnionAllOrderBy() {
     CalciteAssert.model(STREAM_MODEL)
         .withDefaultSchema("STREAMS")
         .query("select stream *\n"
@@ -300,7 +300,7 @@ public class StreamTest {
   }
 
   @Disabled
-  @Test public void testTumbleViaOver() {
+  @Test void testTumbleViaOver() {
     String sql = "WITH HourlyOrderTotals (rowtime, productId, c, su) AS (\n"
         + "  SELECT FLOOR(rowtime TO HOUR),\n"
         + "    productId,\n"

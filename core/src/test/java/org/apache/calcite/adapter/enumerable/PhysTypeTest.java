@@ -41,7 +41,7 @@ public final class PhysTypeTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2677">[CALCITE-2677]
    * Struct types with one field are not mapped correctly to Java Classes</a>. */
-  @Test public void testFieldClassOnColumnOfOneFieldStructType() {
+  @Test void testFieldClassOnColumnOfOneFieldStructType() {
     RelDataType columnType = TYPE_FACTORY.createStructType(
         ImmutableList.of(TYPE_FACTORY.createSqlType(SqlTypeName.INTEGER)),
         ImmutableList.of("intField"));
@@ -56,7 +56,7 @@ public final class PhysTypeTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2677">[CALCITE-2677]
    * Struct types with one field are not mapped correctly to Java Classes</a>. */
-  @Test public void testFieldClassOnColumnOfTwoFieldStructType() {
+  @Test void testFieldClassOnColumnOfTwoFieldStructType() {
     RelDataType columnType = TYPE_FACTORY.createStructType(
         ImmutableList.of(
             TYPE_FACTORY.createSqlType(SqlTypeName.INTEGER),
@@ -76,7 +76,7 @@ public final class PhysTypeTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3364">[CALCITE-3364]
    * Can't group table function result due to a type cast error if table function
    * returns a row with a single value</a>. */
-  @Test public void testOneColumnJavaRowFormatConversion() {
+  @Test void testOneColumnJavaRowFormatConversion() {
     RelDataType rowType = TYPE_FACTORY.createStructType(
         ImmutableList.of(TYPE_FACTORY.createSqlType(SqlTypeName.INTEGER)),
         ImmutableList.of("intField"));

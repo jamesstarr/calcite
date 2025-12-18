@@ -129,7 +129,7 @@ class CsvTest {
    * Tests the vanity driver.
    */
   @Disabled
-  @Test public void testVanityDriver() throws SQLException {
+  @Test void testVanityDriver() throws SQLException {
     Properties info = new Properties();
     Connection connection =
         DriverManager.getConnection("jdbc:csv:", info);
@@ -140,7 +140,7 @@ class CsvTest {
    * Tests the vanity driver with properties in the URL.
    */
   @Disabled
-  @Test public void testVanityDriverArgsInUrl() throws SQLException {
+  @Test void testVanityDriverArgsInUrl() throws SQLException {
     Connection connection =
         DriverManager.getConnection("jdbc:csv:"
             + "directory='foo'");
@@ -302,7 +302,7 @@ class CsvTest {
   }
 
   /** Filter that can be slightly handled by CsvFilterableTable. */
-  @Test public void testFilterableWhere3() throws SQLException {
+  @Test void testFilterableWhere3() throws SQLException {
     final String sql = "select empno, gender, name from EMPS\n"
             + " where gender <> 'M' and empno > 125";
     sql("filterable-model", sql)
@@ -314,7 +314,7 @@ class CsvTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2272">[CALCITE-2272]
    * Incorrect result for {@code name like '%E%' and city not like '%W%'}</a>.
    */
-  @Test public void testFilterableWhereWithNot1() throws SQLException {
+  @Test void testFilterableWhereWithNot1() throws SQLException {
     sql("filterable-model",
         "select name, empno from EMPS "
             + "where name like '%E%' and city not like '%W%' ")
@@ -324,7 +324,7 @@ class CsvTest {
 
   /** Similar to {@link #testFilterableWhereWithNot1()};
    * But use the same column. */
-  @Test public void testFilterableWhereWithNot2() throws SQLException {
+  @Test void testFilterableWhereWithNot2() throws SQLException {
     sql("filterable-model",
         "select name, empno from EMPS "
             + "where name like '%i%' and name not like '%W%' ")
@@ -333,7 +333,7 @@ class CsvTest {
         .ok();
   }
 
-  @Test public void testJson() throws SQLException {
+  @Test void testJson() throws SQLException {
     final String sql = "select * from archers\n";
     final String[] lines = {
         "id=19990101; dow=Friday; longDate=New Years Day; title=Tractor trouble.; "
@@ -520,7 +520,7 @@ class CsvTest {
   @Ignore("No longer rewriting this to a join and no execution for in subquery rexnode")
 =======
   @Disabled("No longer rewriting this to a join and no execution for in subquery rexnode")
-  @Test public void testInToSemiJoinWithCast() throws SQLException {
+  @Test void testInToSemiJoinWithCast() throws SQLException {
     // Note that the IN list needs at least 20 values to trigger the rewrite
     // to a semijoin. Try it both ways.
     final String sql = "SELECT e.name\n"

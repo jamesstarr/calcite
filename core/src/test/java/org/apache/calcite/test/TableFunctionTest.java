@@ -87,7 +87,7 @@ class TableFunctionTest {
   /**
    * Tests a table function with literal arguments.
    */
-  @Test public void testTableFunction() throws SQLException {
+  @Test void testTableFunction() throws SQLException {
     try (Connection connection = DriverManager.getConnection("jdbc:calcite:")) {
       CalciteConnection calciteConnection =
           connection.unwrap(CalciteConnection.class);
@@ -106,7 +106,7 @@ class TableFunctionTest {
 >>>>>>> 38d0848a3 ([CALCITE-2382] Sub-query join lateral table function (pengzhiwei))
   }
 
-  @Test public void testTableFunctionWithArrayParameter() throws SQLException {
+  @Test void testTableFunctionWithArrayParameter() throws SQLException {
     try (Connection connection = DriverManager.getConnection("jdbc:calcite:")) {
       CalciteConnection calciteConnection =
           connection.unwrap(CalciteConnection.class);
@@ -124,7 +124,7 @@ class TableFunctionTest {
     }
   }
 
-  @Test public void testTableFunctionWithMapParameter() throws SQLException {
+  @Test void testTableFunctionWithMapParameter() throws SQLException {
     try (Connection connection = DriverManager.getConnection("jdbc:calcite:")) {
       CalciteConnection calciteConnection =
           connection.unwrap(CalciteConnection.class);
@@ -262,7 +262,7 @@ class TableFunctionTest {
    * as literals.
    */
   @Disabled("SQLException does not include message from nested exception")
-  @Test public void testTableFunctionNonNullableMustBeLiterals()
+  @Test void testTableFunctionNonNullableMustBeLiterals()
       throws SQLException, ClassNotFoundException {
     Connection connection = getConnectionWithMultiplyFunction();
     try {
@@ -395,7 +395,7 @@ class TableFunctionTest {
     with().query(q).returnsUnordered("c1=103");
   }
 
-  @Test public void testUserDefinedTableFunction4() {
+  @Test void testUserDefinedTableFunction4() {
     final String q = "select \"c1\"\n"
         + "from table(\"s\".\"multiplication\"('2', 3, 100))\n"
         + "where \"c1\" + 2 < \"c2\"";
@@ -448,14 +448,14 @@ class TableFunctionTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3364">[CALCITE-3364]
    * Can't group table function result due to a type cast error if table function
    * returns a row with a single value</a>. */
-  @Test public void testUserDefinedTableFunction9() {
+  @Test void testUserDefinedTableFunction9() {
     final String q = "select \"N\" + 1 as c\n"
         + "from table(\"s\".\"fibonacci2\"(3))\n"
         + "group by \"N\"";
     with().query(q).returnsUnordered("C=2\nC=3\nC=4");
   }
 
-  @Test public void testCrossApply() {
+  @Test void testCrossApply() {
     final String q1 = "select *\n"
         + "from (values 2, 5) as t (c)\n"
         + "cross apply table(\"s\".\"fibonacci2\"(c))";
@@ -481,7 +481,7 @@ class TableFunctionTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2004">[CALCITE-2004]
    * Wrong plan generated for left outer apply with table function</a>. */
-  @Test public void testLeftOuterApply() {
+  @Test void testLeftOuterApply() {
     final String sql = "select *\n"
         + "from (values 4) as t (c)\n"
         + "left join lateral table(\"s\".\"fibonacci2\"(c)) as R(n) on c=n";
@@ -495,7 +495,7 @@ class TableFunctionTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2382">[CALCITE-2382]
    * Sub-query lateral joined to table function</a>. */
-  @Test public void testInlineViewLateralTableFunction() throws SQLException {
+  @Test void testInlineViewLateralTableFunction() throws SQLException {
     try (Connection connection = DriverManager.getConnection("jdbc:calcite:")) {
       CalciteConnection calciteConnection =
           connection.unwrap(CalciteConnection.class);

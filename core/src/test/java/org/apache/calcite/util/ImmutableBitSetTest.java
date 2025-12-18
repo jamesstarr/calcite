@@ -352,7 +352,7 @@ class ImmutableBitSetTest {
   }
 
   /** Tests {@link ImmutableBitSet.Builder#buildAndReset()}. */
-  @Test public void testReset() {
+  @Test void testReset() {
     final ImmutableBitSet.Builder builder = ImmutableBitSet.builder();
     builder.set(2);
     assertThat(builder.build().toString(), is("{2}"));
@@ -384,7 +384,7 @@ class ImmutableBitSetTest {
     assertThat(builder2.buildAndReset().toString(), is("{3, 151}"));
   }
 
-  @Test public void testNth() {
+  @Test void testNth() {
     assertThat(ImmutableBitSet.of(0, 2, 4).nth(0), equalTo(0));
     assertThat(ImmutableBitSet.of(0, 2, 4).nth(1), equalTo(2));
     assertThat(ImmutableBitSet.of(0, 2, 4).nth(2), equalTo(4));
@@ -422,7 +422,7 @@ class ImmutableBitSetTest {
 
   /** Tests the method
    * {@link org.apache.calcite.util.BitSets#closure(java.util.SortedMap)}. */
-  @Test public void testClosure() {
+  @Test void testClosure() {
     final SortedMap<Integer, ImmutableBitSet> empty = new TreeMap<>();
     assertThat(ImmutableBitSet.closure(empty), equalTo(empty));
 

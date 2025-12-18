@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Unit test for the methods in {@link SqlFunctions} that implement Xml processing functions.
  */
-public class SqlXmlFunctionsTest {
+class SqlXmlFunctionsTest {
 
   private static final String XML = "<document>string</document>";
   private static final String XSLT =
@@ -48,7 +48,7 @@ public class SqlXmlFunctionsTest {
   private static @Nullable String xsltExternalEntity = null;
 
   @BeforeAll
-  public static void setup() throws Exception {
+  static void setup() throws Exception {
     final Path testFile = Files.createTempFile("foo", "temp");
     testFile.toFile().deleteOnExit();
     final String filePath = "file:///" + testFile.toAbsolutePath();
@@ -59,7 +59,7 @@ public class SqlXmlFunctionsTest {
   }
 
 
-  @Test public void testExtractValue() {
+  @Test void testExtractValue() {
     assertExtractValue("<a>ccc<b>ddd</b></a>", "/a", is("ccc"));
 
     String input = "<a>ccc<b>ddd</b></a>";
@@ -96,7 +96,7 @@ public class SqlXmlFunctionsTest {
     assertXmlTransformFailed(XML, xsltExternalEntity, Matchers.expectThrowable(expected));
   }
 
-  @Test public void testExistsNode() {
+  @Test void testExistsNode() {
     assertExistsNode(null, "", null, nullValue());
     assertExistsNode("", null, null, nullValue());
 

@@ -39,7 +39,7 @@ import static java.lang.System.identityHashCode;
 /**
  * Test to verify {@link RelCompositeTrait}.
  */
-public class RelTraitTest {
+class RelTraitTest {
   private static final RelCollationTraitDef COLLATION = RelCollationTraitDef.INSTANCE;
 
   private void assertCanonical(String message, Supplier<List<RelCollation>> collation) {
@@ -52,16 +52,16 @@ public class RelTraitTest {
         () -> "RelCompositeTrait.of should return the same instance for " + message);
   }
 
-  @Test public void compositeEmpty() {
+  @Test void compositeEmpty() {
     assertCanonical("empty composite", ImmutableList::of);
   }
 
-  @Test public void compositeOne() {
+  @Test void compositeOne() {
     assertCanonical("composite with one element",
         () -> ImmutableList.of(RelCollations.of(ImmutableList.of())));
   }
 
-  @Test public void compositeTwo() {
+  @Test void compositeTwo() {
     assertCanonical("composite with two elements",
         () -> ImmutableList.of(RelCollations.of(0), RelCollations.of(1)));
   }

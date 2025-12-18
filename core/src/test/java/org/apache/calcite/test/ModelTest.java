@@ -353,7 +353,7 @@ class ModelTest {
 <<<<<<< HEAD
 =======
 
-  @Test public void testYamlInlineDetection() throws Exception {
+  @Test void testYamlInlineDetection() throws Exception {
     // yaml model with different line endings
     final String yamlModel = "version: 1.0\r\n"
         + "schemas:\n"
@@ -373,7 +373,7 @@ class ModelTest {
         .connectThrows("Unexpected end-of-input in a comment");
   }
 
-  @Test public void testYamlFileDetection() throws Exception {
+  @Test void testYamlFileDetection() throws Exception {
     final URL inUrl = ModelTest.class.getResource("/empty-model.yaml");
     CalciteAssert.that()
         .with(CalciteConnectionProperty.MODEL, inUrl.getFile())

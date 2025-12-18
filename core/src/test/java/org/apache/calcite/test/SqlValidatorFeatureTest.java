@@ -36,7 +36,7 @@ import static org.apache.calcite.util.Static.RESOURCE;
  * SqlValidatorFeatureTest verifies that features can be independently enabled
  * or disabled.
  */
-public class SqlValidatorFeatureTest extends SqlValidatorTestCase {
+class SqlValidatorFeatureTest extends SqlValidatorTestCase {
   private static final String FEATURE_DISABLED = "feature_disabled";
 
   private Feature disabledFeature;

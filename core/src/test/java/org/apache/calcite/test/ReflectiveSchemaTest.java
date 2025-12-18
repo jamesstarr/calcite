@@ -165,7 +165,7 @@ public class ReflectiveSchemaTest {
    * The function returns a {@link org.apache.calcite.linq4j.Queryable}.
    */
   @Disabled
-  @Test public void testOperator() throws SQLException, ClassNotFoundException {
+  @Test void testOperator() throws SQLException, ClassNotFoundException {
     Connection connection =
         DriverManager.getConnection("jdbc:calcite:");
     CalciteConnection calciteConnection =
@@ -323,7 +323,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2404">[CALCITE-2404]
    * Accessing structured-types is not implemented by the runtime</a>. */
-  @Test public void testSelectWithFieldAccessOnFirstLevelRecordType() {
+  @Test void testSelectWithFieldAccessOnFirstLevelRecordType() {
     CalciteAssert.that()
         .with(CalciteAssert.SchemaSpec.BOOKSTORE)
         .query("select au.\"birthPlace\".\"city\" as city from \"bookstore\".\"authors\" au\n")
@@ -333,7 +333,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2404">[CALCITE-2404]
    * Accessing structured-types is not implemented by the runtime</a>. */
-  @Test public void testSelectWithFieldAccessOnSecondLevelRecordType() {
+  @Test void testSelectWithFieldAccessOnSecondLevelRecordType() {
     CalciteAssert.that()
         .with(CalciteAssert.SchemaSpec.BOOKSTORE)
         .query("select au.\"birthPlace\".\"coords\".\"latitude\" as lat\n"
@@ -344,7 +344,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2404">[CALCITE-2404]
    * Accessing structured-types is not implemented by the runtime</a>. */
-  @Test public void testWhereWithFieldAccessOnFirstLevelRecordType() {
+  @Test void testWhereWithFieldAccessOnFirstLevelRecordType() {
     CalciteAssert.that()
         .with(CalciteAssert.SchemaSpec.BOOKSTORE)
         .query("select au.\"aid\" as aid from \"bookstore\".\"authors\" au\n"
@@ -355,7 +355,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2404">[CALCITE-2404]
    * Accessing structured-types is not implemented by the runtime</a>. */
-  @Test public void testWhereWithFieldAccessOnSecondLevelRecordType() {
+  @Test void testWhereWithFieldAccessOnSecondLevelRecordType() {
     CalciteAssert.that()
         .with(CalciteAssert.SchemaSpec.BOOKSTORE)
         .query("select au.\"aid\" as aid from \"bookstore\".\"authors\" au\n"
@@ -366,7 +366,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2404">[CALCITE-2404]
    * Accessing structured-types is not implemented by the runtime</a>. */
-  @Test public void testSelectWithFieldAccessOnFirstLevelRecordTypeArray() {
+  @Test void testSelectWithFieldAccessOnFirstLevelRecordTypeArray() {
     CalciteAssert.that()
         .with(CalciteAssert.SchemaSpec.BOOKSTORE)
         .query("select au.\"books\"[1].\"title\" as title from \"bookstore\".\"authors\" au\n")
@@ -376,7 +376,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2404">[CALCITE-2404]
    * Accessing structured-types is not implemented by the runtime</a>. */
-  @Test public void testSelectWithFieldAccessOnSecondLevelRecordTypeArray() {
+  @Test void testSelectWithFieldAccessOnSecondLevelRecordTypeArray() {
     CalciteAssert.that()
         .with(CalciteAssert.SchemaSpec.BOOKSTORE)
         .query("select au.\"books\"[1].\"pages\"[1].\"pageNo\" as pno\n"
@@ -387,7 +387,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2404">[CALCITE-2404]
    * Accessing structured-types is not implemented by the runtime</a>. */
-  @Test public void testWhereWithFieldAccessOnFirstLevelRecordTypeArray() {
+  @Test void testWhereWithFieldAccessOnFirstLevelRecordTypeArray() {
     CalciteAssert.that()
         .with(CalciteAssert.SchemaSpec.BOOKSTORE)
         .query("select au.\"aid\" as aid from \"bookstore\".\"authors\" au\n"
@@ -398,7 +398,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2404">[CALCITE-2404]
    * Accessing structured-types is not implemented by the runtime</a>. */
-  @Test public void testWhereWithFieldAccessOnSecondLevelRecordTypeArray() {
+  @Test void testWhereWithFieldAccessOnSecondLevelRecordTypeArray() {
     CalciteAssert.that()
         .with(CalciteAssert.SchemaSpec.BOOKSTORE)
         .query("select au.\"aid\" as aid from \"bookstore\".\"authors\" au\n"
@@ -474,7 +474,7 @@ public class ReflectiveSchemaTest {
     }
   }
 
-  @Test public void testClassNames() throws Exception {
+  @Test void testClassNames() throws Exception {
     CalciteAssert.that()
         .withSchema("s", CATCHALL).query("select * from \"s\".\"everyTypes\"")
         .returns(
@@ -520,7 +520,7 @@ public class ReflectiveSchemaTest {
     fail("column not found: " + columnName);
   }
 
-  @Test public void testJavaBoolean() throws Exception {
+  @Test void testJavaBoolean() throws Exception {
     final CalciteAssert.AssertThat with =
         CalciteAssert.that().withSchema("s", CATCHALL);
     with.query("select count(*) as c from \"s\".\"everyTypes\"\n"
@@ -592,7 +592,7 @@ public class ReflectiveSchemaTest {
         .returns("C=null\n");
   }
 
-  @Test public void testDivideDoubleBigDecimal() {
+  @Test void testDivideDoubleBigDecimal() {
     final CalciteAssert.AssertThat with =
         CalciteAssert.that().withSchema("s", CATCHALL);
     with.query("select \"wrapperDouble\" / \"bigDecimal\" as c\n"
@@ -600,7 +600,7 @@ public class ReflectiveSchemaTest {
         .runs();
   }
 
-  @Test public void testDivideWraperWrapper() throws Exception {
+  @Test void testDivideWraperWrapper() throws Exception {
     final CalciteAssert.AssertThat with =
         CalciteAssert.that().withSchema("s", CATCHALL);
     with.query("select \"wrapperLong\" / \"wrapperLong\" as c\n"
@@ -743,7 +743,7 @@ public class ReflectiveSchemaTest {
    * {@link ViewTable}.{@code ViewTableMacro}, then it
    * should be expanded. */
   @Disabled
-  @Test public void testTableMacroIsView() throws Exception {
+  @Test void testTableMacroIsView() throws Exception {
     CalciteAssert.that()
         .withSchema("s", new ReflectiveSchema(new JdbcTest.HrSchema()))
         .query("select * from table(\"s\".\"view\"('abc'))")
@@ -754,7 +754,7 @@ public class ReflectiveSchemaTest {
 
   /** Finds a table-macro using reflection. */
   @Disabled
-  @Test public void testTableMacro() throws Exception {
+  @Test void testTableMacro() throws Exception {
     CalciteAssert.that()
         .withSchema("s", new ReflectiveSchema(new JdbcTest.HrSchema()))
         .query("select * from table(\"s\".\"foo\"(3))")
@@ -820,7 +820,7 @@ public class ReflectiveSchemaTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3512">[CALCITE-3512]
    * Query fails when comparing Time/TimeStamp types</a>. */
-  @Test public void testTimeCanCompare() {
+  @Test void testTimeCanCompare() {
     final String sql = "select a.v\n"
         + "from (select \"sqlTime\" v\n"
         + "  from \"s\".\"everyTypes\" "
@@ -836,7 +836,7 @@ public class ReflectiveSchemaTest {
         .returnsUnordered("V=00:00:00");
   }
 
-  @Test public void testTimestampCanCompare() {
+  @Test void testTimestampCanCompare() {
     final String sql = "select a.v\n"
         + "from (select \"sqlTimestamp\" v\n"
         + "  from \"s\".\"everyTypes\" "
@@ -1067,7 +1067,7 @@ public class ReflectiveSchemaTest {
 =======
 
   /** CALCITE-2611 unknown on one side of an or may lead to uncompilable code */
-  @Test public void testUnknownInOr() {
+  @Test void testUnknownInOr() {
     CalciteAssert.that()
         .withSchema("s", CATCHALL)
         .query("select (\"value\" = 3 and unknown) or ( \"value\"  = 3 ) "

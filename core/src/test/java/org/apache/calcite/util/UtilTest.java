@@ -111,7 +111,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Unit test for {@link Util} and other classes in this package.
  */
-public class UtilTest {
+class UtilTest {
   @BeforeAll public static void setUSLocale() {
     // This ensures numbers in exceptions are printed as in asserts.
     // For example, 1,000 vs 1 000
@@ -930,7 +930,7 @@ public class UtilTest {
   /**
    * Unit test for {@link Pair#forEach(Iterable, Iterable, BiConsumer)}.
    */
-  @Test public void testPairForEach() {
+  @Test void testPairForEach() {
     List<String> strings = Arrays.asList("paul", "george", "john", "ringo");
     List<Integer> integers = Arrays.asList(1942, 1943, 1940);
 
@@ -1323,14 +1323,14 @@ public class UtilTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2287">[CALCITE-2287]
    * FlatList.equals throws StackOverflowError</a>. */
-  @Test public void testFlat34Equals() {
+  @Test void testFlat34Equals() {
     List f3list = FlatLists.of(1, 2, 3);
     List f4list = FlatLists.of(1, 2, 3, 4);
     assertThat(f3list.equals(f4list), is(false));
   }
 
   @SuppressWarnings("unchecked")
-  @Test public void testFlatListN() {
+  @Test void testFlatListN() {
     List<List<Object>> list = new ArrayList<>();
     list.add(FlatLists.of());
     list.add(FlatLists.<Object>copyOf());
@@ -1377,7 +1377,7 @@ public class UtilTest {
     }
   }
 
-  @Test public void testFlatListProduct() {
+  @Test void testFlatListProduct() {
     final List<Enumerator<List<String>>> list = new ArrayList<>();
     list.add(Linq4j.enumerator(l2(l1("a"), l1("b"))));
     list.add(Linq4j.enumerator(l3(l2("x", "p"), l2("y", "q"), l2("z", "r"))));
@@ -1943,7 +1943,7 @@ public class UtilTest {
   }
 
   /** Tests {@link Ord#forEach(Iterable, ObjIntConsumer)}. */
-  @Test public void testOrdForEach() {
+  @Test void testOrdForEach() {
     final String[] strings = {"ab", "", "cde"};
     final StringBuilder b = new StringBuilder();
     final String expected = "0:ab;1:;2:cde;";
@@ -2430,7 +2430,7 @@ public class UtilTest {
   }
 
   /** Tests {@link Util#transform(List, java.util.function.Function)}. */
-  @Test public void testTransform() {
+  @Test void testTransform() {
     final List<String> beatles =
         Arrays.asList("John", "Paul", "George", "Ringo");
     final List<String> empty = Collections.emptyList();
@@ -2447,7 +2447,7 @@ public class UtilTest {
   }
 
   /** Tests {@link Util#filter(Iterable, java.util.function.Predicate)}. */
-  @Test public void testFilter() {
+  @Test void testFilter() {
     final List<String> beatles =
         Arrays.asList("John", "Paul", "George", "Ringo");
     final List<String> empty = Collections.emptyList();
@@ -2469,7 +2469,7 @@ public class UtilTest {
   }
 
   /** Tests {@link Util#select(List, List)}. */
-  @Test public void testSelect() {
+  @Test void testSelect() {
     final List<String> beatles =
         Arrays.asList("John", "Paul", "George", "Ringo");
     final List<String> nullBeatles =
@@ -2502,7 +2502,7 @@ public class UtilTest {
         isIterable(Arrays.asList(null, "Ringo", null)));
   }
 
-  @Test public void testEquivalenceSet() {
+  @Test void testEquivalenceSet() {
     final EquivalenceSet<String> c = new EquivalenceSet<>();
     assertThat(c.size(), is(0));
     assertThat(c.classCount(), is(0));
@@ -2540,7 +2540,7 @@ public class UtilTest {
     assertThat(c.classCount(), is(0));
   }
 
-  @Test public void testBlackHoleMap() {
+  @Test void testBlackHoleMap() {
     final Map<Integer, Integer> map = BlackholeMap.of();
 
     for (int i = 0; i < 100; i++) {

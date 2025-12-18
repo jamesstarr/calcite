@@ -188,7 +188,7 @@ class SplunkAdapterTest {
   /**
    * Reads from a table.
    */
-  @Test public void testSelect() throws SQLException {
+  @Test void testSelect() throws SQLException {
     final String sql = "select \"source\", \"sourcetype\"\n"
         + "from \"splunk\".\"splunk\"";
     checkSql(sql, resultSet -> {
@@ -246,7 +246,7 @@ class SplunkAdapterTest {
   }
 
   @Disabled("cannot plan due to CAST in ON clause")
-  @Test public void testJoinToJdbc() throws SQLException {
+  @Test void testJoinToJdbc() throws SQLException {
     checkSql(
         "select p.\"product_name\", /*s.\"product_id\",*/ s.\"action\"\n"
             + "from \"splunk\".\"splunk\" as s\n"

@@ -73,7 +73,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Testing Elasticsearch match query.
  */
 @ResourceLock(value = "elasticsearch-scrolls", mode = ResourceAccessMode.READ)
-public class MatchTest {
+class MatchTest {
 
   public static final EmbeddedElasticsearchPolicy NODE = EmbeddedElasticsearchPolicy.create();
 
@@ -153,7 +153,7 @@ public class MatchTest {
    *
    * @throws Exception
    */
-  @Test public void testMatchQuery() throws Exception {
+  @Test void testMatchQuery() throws Exception {
 
     CalciteConnection con = (CalciteConnection) newConnectionFactory()
         .createConnection();

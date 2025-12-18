@@ -250,7 +250,7 @@ public class FrameworksTest {
 
   /** Unit test for {@link CalciteConnectionConfigImpl#set}
    * and {@link CalciteConnectionConfigImpl#isSet}. */
-  @Test public void testConnectionConfig() {
+  @Test void testConnectionConfig() {
     final CalciteConnectionProperty forceDecorrelate =
         CalciteConnectionProperty.FORCE_DECORRELATE;
     final CalciteConnectionProperty lenientOperatorLookup =
@@ -385,7 +385,7 @@ public class FrameworksTest {
    * 2) the aggregate can be removed during optimization.
    * 3) all aggregate calls are simplified to the same reference.
    * */
-  @Test public void testPushProjectToScan() throws Exception {
+  @Test void testPushProjectToScan() throws Exception {
     Table table = new TableImpl();
     final SchemaPlus rootSchema = Frameworks.createRootSchema(true);
     SchemaPlus schema = rootSchema.add("x", new AbstractSchema());

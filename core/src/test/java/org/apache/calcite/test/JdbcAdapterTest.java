@@ -89,7 +89,7 @@ class JdbcAdapterTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3115">[CALCITE-3115]
    * Cannot add JdbcRules which have different JdbcConvention
    * to same VolcanoPlanner's RuleSet.</a>*/
-  @Test public void testUnionPlan2() {
+  @Test void testUnionPlan2() {
     CalciteAssert.model(JdbcTest.FOODMART_SCOTT_MODEL)
         .query("select \"store_name\" from \"foodmart\".\"store\" where \"store_id\" < 10\n"
             + "union all\n"
@@ -113,7 +113,7 @@ class JdbcAdapterTest {
                 + "WHERE \"EMPNO\" > 10");
   }
 
-  @Test public void testFilterUnionPlan() {
+  @Test void testFilterUnionPlan() {
     CalciteAssert.model(JdbcTest.FOODMART_MODEL)
         .query("select * from (\n"
             + "  select * from \"sales_fact_1997\"\n"
@@ -177,7 +177,7 @@ class JdbcAdapterTest {
             + "ON \"t\".\"DEPTNO\" = \"t0\".\"DEPTNO\"");
   }
 
-  @Test public void testPushDownSort() {
+  @Test void testPushDownSort() {
     CalciteAssert.model(JdbcTest.SCOTT_MODEL)
         .query("select ename\n"
             + "from scott.emp\n"
@@ -193,38 +193,11 @@ class JdbcAdapterTest {
             + "ORDER BY \"EMPNO\" NULLS LAST");
   }
 
-<<<<<<< HEAD
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3751">[CALCITE-3751]
-   * JDBC adapter wrongly pushes ORDER BY into sub-query</a>. */
-  @Test void testOrderByPlan() {
-    final String sql = "select deptno, job, sum(sal)\n"
-        + "from \"EMP\"\n"
-        + "group by deptno, job\n"
-        + "order by 1, 2";
-    final String explain = "PLAN=JdbcToEnumerableConverter\n"
-        + "  JdbcSort(sort0=[$0], sort1=[$1], dir0=[ASC], dir1=[ASC])\n"
-        + "    JdbcProject(DEPTNO=[$1], JOB=[$0], EXPR$2=[$2])\n"
-        + "      JdbcAggregate(group=[{2, 7}], EXPR$2=[SUM($5)])\n"
-        + "        JdbcTableScan(table=[[SCOTT, EMP]])";
-    final String sqlHsqldb = "SELECT \"DEPTNO\", \"JOB\", SUM(\"SAL\")\n"
-        + "FROM \"SCOTT\".\"EMP\"\n"
-        + "GROUP BY \"JOB\", \"DEPTNO\"\n"
-        + "ORDER BY \"DEPTNO\" NULLS LAST, \"JOB\" NULLS LAST";
-    CalciteAssert.model(JdbcTest.SCOTT_MODEL)
-        .query(sql)
-        .explainContains(explain)
-        .runs()
-        .enable(CalciteAssert.DB == CalciteAssert.DatabaseInstance.HSQLDB)
-        .planHasSql(sqlHsqldb);
-  }
-
-=======
 >>>>>>> 44565c900 ([CALCITE-3621] Push down sort to DB, SQL of Sort rel contains explici… (#46))
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3751">[CALCITE-3751]
    * JDBC adapter wrongly pushes ORDER BY into sub-query</a>. */
-  @Test public void testOrderByPlan() {
+  @Test void testOrderByPlan() {
     final String sql = "select deptno, job, sum(sal)\n"
         + "from \"EMP\"\n"
         + "group by deptno, job\n"
@@ -311,7 +284,7 @@ class JdbcAdapterTest {
             + "ON \"SALGRADE\".\"LOSAL\" <= \"t\".\"SAL\" AND \"SALGRADE\".\"HISAL\" >= \"t\".\"SAL\"");
   }
 
-  @Test public void testMixedJoinPlan() {
+  @Test void testMixedJoinPlan() {
     CalciteAssert.model(JdbcTest.SCOTT_MODEL)
         .query("select e.empno, e.ename, e.empno, e.ename\n"
             + "from scott.emp e inner join scott.emp m on\n"
@@ -541,7 +514,7 @@ class JdbcAdapterTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2206">[CALCITE-2206]
    * JDBC adapter incorrectly pushes windowed aggregates down to HSQLDB</a>. */
-  @Test public void testOverNonSupportedDialect() {
+  @Test void testOverNonSupportedDialect() {
     final String sql = "select \"store_id\", \"account_id\", \"exp_date\",\n"
         + " \"time_id\", \"category_id\", \"currency_id\", \"amount\",\n"
         + " last_value(\"time_id\") over () as \"last_version\"\n"
@@ -562,7 +535,7 @@ class JdbcAdapterTest {
             + "FROM \"foodmart\".\"expense_fact\"");
   }
 
-  @Test public void testTablesNoCatalogSchema() {
+  @Test void testTablesNoCatalogSchema() {
     final String model =
         JdbcTest.FOODMART_MODEL
             .replace("jdbcCatalog: 'foodmart'", "jdbcCatalog: null")
@@ -622,7 +595,7 @@ class JdbcAdapterTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2305">[CALCITE-2305]
    * JDBC adapter generates invalid casts on PostgreSQL, because PostgreSQL does
    * not have TINYINT and DOUBLE types</a>. */
-  @Test public void testCast() {
+  @Test void testCast() {
     CalciteAssert
         .model(JdbcTest.FOODMART_MODEL)
         .enable(CalciteAssert.DB == CalciteAssert.DatabaseInstance.POSTGRESQL)
@@ -635,7 +608,7 @@ class JdbcAdapterTest {
             + "FROM \"foodmart\".\"expense_fact\"");
   }
 
-  @Test public void testOverRowsBetweenBoundFollowingAndFollowing() {
+  @Test void testOverRowsBetweenBoundFollowingAndFollowing() {
     CalciteAssert
         .model(JdbcTest.FOODMART_MODEL)
         .enable(CalciteAssert.DB == CalciteAssert.DatabaseInstance.POSTGRESQL)
@@ -916,7 +889,7 @@ class JdbcAdapterTest {
     });
   }
 
-  @Test public void testTableModifyInsertWithSubQuery() throws Exception {
+  @Test void testTableModifyInsertWithSubQuery() throws Exception {
     final AssertThat that = CalciteAssert
         .model(JdbcTest.FOODMART_MODEL)
         .enable(CalciteAssert.DB == DatabaseInstance.HSQLDB);
@@ -953,7 +926,10 @@ class JdbcAdapterTest {
     });
   }
 
+<<<<<<< HEAD
   @Test void testTableModifyInsertWithSubQuery() throws Exception {
+=======
+  @Test void testTableModifyUpdate() throws Exception {
     final AssertThat that = CalciteAssert
         .model(JdbcTest.FOODMART_MODEL)
         .enable(CalciteAssert.DB == DatabaseInstance.HSQLDB);
@@ -981,7 +957,7 @@ class JdbcAdapterTest {
     });
   }
 
-  @Test void testTableModifyUpdate() throws Exception {
+  @Test void testTableModifyDelete() throws Exception {
     final AssertThat that = CalciteAssert
         .model(JdbcTest.FOODMART_MODEL)
         .enable(CalciteAssert.DB == DatabaseInstance.HSQLDB);
@@ -1018,10 +994,9 @@ class JdbcAdapterTest {
         .typeIs("[employee_id INTEGER NOT NULL, position_id INTEGER]");
   }
 
-<<<<<<< HEAD
-  @Test void pushBindParameters() throws Exception {
-=======
   @Test public void pushBindParameters() throws Exception {
+=======
+  @Test void pushBindParameters() throws Exception {
     final String sql = "select empno, ename from emp where empno = ?";
     CalciteAssert.model(JdbcTest.SCOTT_MODEL)
         .query(sql)

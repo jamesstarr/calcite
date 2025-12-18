@@ -161,11 +161,369 @@ class RelWriterTest {
       + "  ]\n"
       + "}";
 
+<<<<<<< HEAD
+=======
+  public static final String XXNULL = "{\n"
+      + "  \"rels\": [\n"
+      + "    {\n"
+      + "      \"id\": \"0\",\n"
+      + "      \"relOp\": \"LogicalTableScan\",\n"
+      + "      \"table\": [\n"
+      + "        \"hr\",\n"
+      + "        \"emps\"\n"
+      + "      ],\n"
+      + "      \"inputs\": []\n"
+      + "    },\n"
+      + "    {\n"
+      + "      \"id\": \"1\",\n"
+      + "      \"relOp\": \"LogicalFilter\",\n"
+      + "      \"condition\": {\n"
+      + "        \"op\": {"
+      + "            \"name\": \"=\",\n"
+      + "            \"kind\": \"EQUALS\",\n"
+      + "            \"syntax\": \"BINARY\"\n"
+      + "          },\n"
+      + "        \"operands\": [\n"
+      + "          {\n"
+      + "            \"input\": 1,\n"
+      + "            \"name\": \"$1\"\n"
+      + "          },\n"
+      + "          {\n"
+      + "            \"literal\": null,\n"
+      + "            \"type\": \"INTEGER\"\n"
+      + "          }\n"
+      + "        ]\n"
+      + "      }\n"
+      + "    },\n"
+      + "    {\n"
+      + "      \"id\": \"2\",\n"
+      + "      \"relOp\": \"LogicalAggregate\",\n"
+      + "      \"group\": [\n"
+      + "        0\n"
+      + "      ],\n"
+      + "      \"aggs\": [\n"
+      + "        {\n"
+      + "        \"agg\": {\n"
+      + "            \"name\": \"COUNT\",\n"
+      + "            \"kind\": \"COUNT\",\n"
+      + "            \"syntax\": \"FUNCTION_STAR\"\n"
+      + "          },\n"
+      + "          \"type\": {\n"
+      + "            \"type\": \"BIGINT\",\n"
+      + "            \"nullable\": false\n"
+      + "          },\n"
+      + "          \"distinct\": true,\n"
+      + "          \"operands\": [\n"
+      + "            1\n"
+      + "          ]\n"
+      + "        },\n"
+      + "        {\n"
+      + "        \"agg\": {\n"
+      + "            \"name\": \"COUNT\",\n"
+      + "            \"kind\": \"COUNT\",\n"
+      + "            \"syntax\": \"FUNCTION_STAR\"\n"
+      + "          },\n"
+      + "          \"type\": {\n"
+      + "            \"type\": \"BIGINT\",\n"
+      + "            \"nullable\": false\n"
+      + "          },\n"
+      + "          \"distinct\": false,\n"
+      + "          \"operands\": []\n"
+      + "        }\n"
+      + "      ]\n"
+      + "    }\n"
+      + "  ]\n"
+      + "}";
+
+  public static final String XX2 = "{\n"
+      + "  \"rels\": [\n"
+      + "    {\n"
+      + "      \"id\": \"0\",\n"
+      + "      \"relOp\": \"LogicalTableScan\",\n"
+      + "      \"table\": [\n"
+      + "        \"hr\",\n"
+      + "        \"emps\"\n"
+      + "      ],\n"
+      + "      \"inputs\": []\n"
+      + "    },\n"
+      + "    {\n"
+      + "      \"id\": \"1\",\n"
+      + "      \"relOp\": \"LogicalProject\",\n"
+      + "      \"fields\": [\n"
+      + "        \"field0\",\n"
+      + "        \"field1\",\n"
+      + "        \"field2\"\n"
+      + "      ],\n"
+      + "      \"exprs\": [\n"
+      + "        {\n"
+      + "          \"input\": 0,\n"
+      + "          \"name\": \"$0\"\n"
+      + "        },\n"
+      + "        {\n"
+      + "          \"op\": {\n"
+      + "            \"name\": \"COUNT\",\n"
+      + "            \"kind\": \"COUNT\",\n"
+      + "            \"syntax\": \"FUNCTION_STAR\"\n"
+      + "          },\n"
+      + "          \"operands\": [\n"
+      + "            {\n"
+      + "              \"input\": 0,\n"
+      + "              \"name\": \"$0\"\n"
+      + "            }\n"
+      + "          ],\n"
+      + "          \"distinct\": false,\n"
+      + "          \"type\": {\n"
+      + "            \"type\": \"BIGINT\",\n"
+      + "            \"nullable\": false\n"
+      + "          },\n"
+      + "          \"window\": {\n"
+      + "            \"partition\": [\n"
+      + "              {\n"
+      + "                \"input\": 2,\n"
+      + "                \"name\": \"$2\"\n"
+      + "              }\n"
+      + "            ],\n"
+      + "            \"order\": [\n"
+      + "              {\n"
+      + "                \"expr\": {\n"
+      + "                  \"input\": 1,\n"
+      + "                  \"name\": \"$1\"\n"
+      + "                },\n"
+      + "                \"direction\": \"ASCENDING\",\n"
+      + "                \"null-direction\": \"LAST\"\n"
+      + "              }\n"
+      + "            ],\n"
+      + "            \"rows-lower\": {\n"
+      + "              \"type\": \"UNBOUNDED_PRECEDING\"\n"
+      + "            },\n"
+      + "            \"rows-upper\": {\n"
+      + "              \"type\": \"CURRENT_ROW\"\n"
+      + "            }\n"
+      + "          }\n"
+      + "        },\n"
+      + "        {\n"
+      + "          \"op\": {\n"
+      + "            \"name\": \"SUM\",\n"
+      + "            \"kind\": \"SUM\",\n"
+      + "            \"syntax\": \"FUNCTION\"\n"
+      + "          },\n"
+      + "          \"operands\": [\n"
+      + "            {\n"
+      + "              \"input\": 0,\n"
+      + "              \"name\": \"$0\"\n"
+      + "            }\n"
+      + "          ],\n"
+      + "          \"distinct\": false,\n"
+      + "          \"type\": {\n"
+      + "            \"type\": \"BIGINT\",\n"
+      + "            \"nullable\": false\n"
+      + "          },\n"
+      + "          \"window\": {\n"
+      + "            \"partition\": [\n"
+      + "              {\n"
+      + "                \"input\": 2,\n"
+      + "                \"name\": \"$2\"\n"
+      + "              }\n"
+      + "            ],\n"
+      + "            \"order\": [\n"
+      + "              {\n"
+      + "                \"expr\": {\n"
+      + "                  \"input\": 1,\n"
+      + "                  \"name\": \"$1\"\n"
+      + "                },\n"
+      + "                \"direction\": \"ASCENDING\",\n"
+      + "                \"null-direction\": \"LAST\"\n"
+      + "              }\n"
+      + "            ],\n"
+      + "            \"range-lower\": {\n"
+      + "              \"type\": \"CURRENT_ROW\"\n"
+      + "            },\n"
+      + "            \"range-upper\": {\n"
+      + "              \"type\": \"FOLLOWING\",\n"
+      + "              \"offset\": {\n"
+      + "                \"literal\": 1,\n"
+      + "                \"type\": {\n"
+      + "                  \"type\": \"INTEGER\",\n"
+      + "                  \"nullable\": false\n"
+      + "                }\n"
+      + "              }\n"
+      + "            }\n"
+      + "          }\n"
+      + "        }\n"
+      + "      ]\n"
+      + "    }\n"
+      + "  ]\n"
+      + "}";
+
+  public static final String XX3 = "{\n"
+      + "  \"rels\": [\n"
+      + "    {\n"
+      + "      \"id\": \"0\",\n"
+      + "      \"relOp\": \"LogicalTableScan\",\n"
+      + "      \"table\": [\n"
+      + "        \"scott\",\n"
+      + "        \"EMP\"\n"
+      + "      ],\n"
+      + "      \"inputs\": []\n"
+      + "    },\n"
+      + "    {\n"
+      + "      \"id\": \"1\",\n"
+      + "      \"relOp\": \"LogicalSortExchange\",\n"
+      + "      \"distribution\": {\n"
+      + "        \"type\": \"HASH_DISTRIBUTED\",\n"
+      + "        \"keys\": [\n"
+      + "          0\n"
+      + "        ]\n"
+      + "      },\n"
+      + "      \"collation\": [\n"
+      + "        {\n"
+      + "          \"field\": 0,\n"
+      + "          \"direction\": \"ASCENDING\",\n"
+      + "          \"nulls\": \"LAST\"\n"
+      + "        }\n"
+      + "      ]\n"
+      + "    }\n"
+      + "  ]\n"
+      + "}";
+
+  /**
+   * Unit test for {@link org.apache.calcite.rel.externalize.RelJsonWriter} on
+   * a simple tree of relational expressions, consisting of a table and a
+   * project including window expressions.
+   */
+  @Test void testWriter() {
+    String s =
+        Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
+          rootSchema.add("hr",
+              new ReflectiveSchema(new JdbcTest.HrSchema()));
+          LogicalTableScan scan =
+              LogicalTableScan.create(cluster,
+                  relOptSchema.getTableForMember(
+                            Arrays.asList("hr", "emps")),
+                        ImmutableList.of());
+          final RexBuilder rexBuilder = cluster.getRexBuilder();
+          LogicalFilter filter =
+              LogicalFilter.create(scan,
+                  rexBuilder.makeCall(
+                      SqlStdOperatorTable.EQUALS,
+                      rexBuilder.makeFieldAccess(
+                          rexBuilder.makeRangeReference(scan),
+                          "deptno", true),
+                      rexBuilder.makeExactLiteral(BigDecimal.TEN)));
+          final RelJsonWriter writer = new RelJsonWriter();
+          final RelDataType bigIntType =
+              cluster.getTypeFactory().createSqlType(SqlTypeName.BIGINT);
+          LogicalAggregate aggregate =
+                    LogicalAggregate.create(filter,
+                        ImmutableList.of(),
+                        ImmutableBitSet.of(0), null,
+                  ImmutableList.of(
+                      AggregateCall.create(SqlStdOperatorTable.COUNT,
+                          true, false, false, ImmutableList.of(1), -1,
+                                RelCollations.EMPTY, bigIntType, "c"),
+                      AggregateCall.create(SqlStdOperatorTable.COUNT,
+                          false, false, false, ImmutableList.of(), -1,
+                                RelCollations.EMPTY, bigIntType, "d")));
+          aggregate.explain(writer);
+          return writer.asString();
+
+        });
+    assertThat(s, is(XX));
+  }
+
+
+  /**
+   * Unit test for {@link org.apache.calcite.rel.externalize.RelJsonWriter} on
+   * a simple tree of relational expressions, consisting of a table, a filter
+   * and an aggregate node.
+   */
+  @Test void testWriter2() {
+    String s =
+        Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
+          rootSchema.add("hr",
+              new ReflectiveSchema(new JdbcTest.HrSchema()));
+          LogicalTableScan scan =
+              LogicalTableScan.create(cluster,
+                  relOptSchema.getTableForMember(
+                      Arrays.asList("hr", "emps")),
+                  ImmutableList.of());
+          final RexBuilder rexBuilder = cluster.getRexBuilder();
+          final RelDataType bigIntType =
+              cluster.getTypeFactory().createSqlType(SqlTypeName.BIGINT);
+          LogicalProject project =
+              LogicalProject.create(scan,
+                  ImmutableList.of(),
+                  ImmutableList.of(
+                      rexBuilder.makeInputRef(scan, 0),
+                      rexBuilder.makeOver(bigIntType,
+                          SqlStdOperatorTable.COUNT,
+                          ImmutableList.of(rexBuilder.makeInputRef(scan, 0)),
+                          ImmutableList.of(rexBuilder.makeInputRef(scan, 2)),
+                          ImmutableList.of(
+                              new RexFieldCollation(
+                                  rexBuilder.makeInputRef(scan, 1), ImmutableSet.of())),
+                          RexWindowBound.create(
+                              SqlWindow.createUnboundedPreceding(SqlParserPos.ZERO), null),
+                          RexWindowBound.create(
+                              SqlWindow.createCurrentRow(SqlParserPos.ZERO), null),
+                          true, true, false, false, false),
+                      rexBuilder.makeOver(bigIntType,
+                          SqlStdOperatorTable.SUM,
+                          ImmutableList.of(rexBuilder.makeInputRef(scan, 0)),
+                          ImmutableList.of(rexBuilder.makeInputRef(scan, 2)),
+                          ImmutableList.of(
+                              new RexFieldCollation(
+                                  rexBuilder.makeInputRef(scan, 1), ImmutableSet.of())),
+                          RexWindowBound.create(
+                              SqlWindow.createCurrentRow(SqlParserPos.ZERO), null),
+                          RexWindowBound.create(null,
+                              rexBuilder.makeCall(
+                                  SqlWindow.FOLLOWING_OPERATOR,
+                                  rexBuilder.makeExactLiteral(BigDecimal.ONE))),
+                          false, true, false, false, false)),
+                  ImmutableList.of("field0", "field1", "field2"));
+          final RelJsonWriter writer = new RelJsonWriter();
+          project.explain(writer);
+          return writer.asString();
+        });
+    assertThat(s, is(XX2));
+  }
+
 
   /**
    * Unit test for {@link org.apache.calcite.rel.externalize.RelJsonReader}.
    */
-  @Test public void testReader2() {
+  @Test void testReader() {
+    String s =
+        Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
+
+          SchemaPlus schema =
+              rootSchema.add("hr",
+                  new ReflectiveSchema(new JdbcTest.HrSchema()));
+          final RelJsonReader reader =
+              new RelJsonReader(cluster, relOptSchema, schema);
+          RelNode node;
+          try {
+            node = reader.read(XX);
+          } catch (IOException e) {
+            throw TestUtil.rethrow(e);
+          }
+          return RelOptUtil.dumpPlan("", node, SqlExplainFormat.TEXT,
+              SqlExplainLevel.EXPPLAN_ATTRIBUTES);
+
+        });
+
+    assertThat(s,
+        isLinux("LogicalAggregate(group=[{0}], c=[COUNT(DISTINCT $1)], d=[COUNT()])\n"
+            + "  LogicalFilter(condition=[=($1, 10)])\n"
+            + "    LogicalTableScan(table=[[hr, emps]])\n"));
+  }
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
+
+  /**
+   * Unit test for {@link org.apache.calcite.rel.externalize.RelJsonReader}.
+   */
+  @Test void testReader2() {
     String s =
         Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
           SchemaPlus schema =
@@ -195,7 +553,7 @@ class RelWriterTest {
   /**
    * Unit test for {@link org.apache.calcite.rel.externalize.RelJsonReader}.
    */
-  @Test public void testReaderNull() {
+  @Test void testReaderNull() {
     String s =
         Frameworks.withPlanner((cluster, relOptSchema, rootSchema) -> {
           SchemaPlus schema =
@@ -219,7 +577,7 @@ class RelWriterTest {
             + "    LogicalTableScan(table=[[hr, emps]])\n"));
   }
 
-  @Test public void testTrim() {
+  @Test void testTrim() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder b = RelBuilder.create(config);
     final RelNode rel =
@@ -244,7 +602,7 @@ class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testPlusOperator() {
+  @Test void testPlusOperator() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     final RelNode rel = builder
@@ -264,7 +622,7 @@ class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testAggregateWithAlias() {
+  @Test void testAggregateWithAlias() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     // The rel node stands for sql: SELECT max(SAL) as max_sal from EMP group by JOB;
@@ -292,7 +650,7 @@ class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testAggregateWithoutAlias() {
+  @Test void testAggregateWithoutAlias() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     // The rel node stands for sql: SELECT max(SAL) from EMP group by JOB;
@@ -320,7 +678,7 @@ class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testCalc() {
+  @Test void testCalc() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     final RexBuilder rexBuilder = builder.getRexBuilder();
@@ -356,7 +714,7 @@ class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testCorrelateQuery() {
+  @Test void testCorrelateQuery() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     final Holder<RexCorrelVariable> v = Holder.of(null);
@@ -381,7 +739,7 @@ class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testOverWithoutPartition() {
+  @Test void testOverWithoutPartition() {
     // The rel stands for the sql of "select count(*) over (order by deptno) from EMP"
     final RelNode rel = mockCountOver("EMP", ImmutableList.of(), ImmutableList.of("DEPTNO"));
     String relJson = RelOptUtil.dumpPlan("", rel, SqlExplainFormat.JSON,
@@ -394,7 +752,7 @@ class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testOverWithoutOrderKey() {
+  @Test void testOverWithoutOrderKey() {
     // The rel stands for the sql of "select count(*) over (partition by DEPTNO) from EMP"
     final RelNode rel = mockCountOver("EMP", ImmutableList.of("DEPTNO"), ImmutableList.of());
     String relJson = RelOptUtil.dumpPlan("", rel, SqlExplainFormat.JSON,
@@ -407,7 +765,7 @@ class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testInterval() {
+  @Test void testInterval() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     SqlIntervalQualifier sqlIntervalQualifier =
@@ -433,7 +791,7 @@ class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testUdf() {
+  @Test void testUdf() {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
     final RelNode rel = builder
@@ -528,7 +886,7 @@ class RelWriterTest {
     return rel;
   }
 
-  @Test public void testWriteSortExchangeWithHashDistribution() {
+  @Test void testWriteSortExchangeWithHashDistribution() {
     final RelNode root = createSortPlan(RelDistributions.hash(Lists.newArrayList(0)));
     final RelJsonWriter writer = new RelJsonWriter();
     root.explain(writer);
@@ -542,7 +900,7 @@ class RelWriterTest {
     assertThat(s, isLinux(expected));
   }
 
-  @Test public void testWriteSortExchangeWithRandomDistribution() {
+  @Test void testWriteSortExchangeWithRandomDistribution() {
     final RelNode root = createSortPlan(RelDistributions.RANDOM_DISTRIBUTED);
     final RelJsonWriter writer = new RelJsonWriter();
     root.explain(writer);

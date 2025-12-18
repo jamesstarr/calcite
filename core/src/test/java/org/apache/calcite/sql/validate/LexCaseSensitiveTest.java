@@ -92,7 +92,7 @@ class LexCaseSensitiveTest {
     runProjectQueryWithLex(Lex.ORACLE, sql);
   }
 
-  @Test public void testCalciteCaseOracleException() {
+  @Test void testCalciteCaseOracleException() {
     assertThrows(ValidationException.class, () -> {
       // Oracle is case sensitive, so EMPID should not be found.
       String sql = "select EMPID, \"empid\" from\n"
@@ -150,7 +150,7 @@ class LexCaseSensitiveTest {
     runProjectQueryWithLex(Lex.JAVA, sql);
   }
 
-  @Test public void testCalciteCaseJavaException() {
+  @Test void testCalciteCaseJavaException() {
     assertThrows(ValidationException.class, () -> {
       // JAVA is case sensitive, so EMPID should not be found.
       String sql = "select EMPID, empid from\n"

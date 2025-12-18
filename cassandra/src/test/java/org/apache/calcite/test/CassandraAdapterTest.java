@@ -40,7 +40,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
  */
 @Execution(ExecutionMode.SAME_THREAD)
 @ExtendWith(CassandraExtension.class)
-public class CassandraAdapterTest {
+class CassandraAdapterTest {
 
   /** Connection factory based on the "mongo-zips" model. */
   private static final ImmutableMap<String, String> TWISSANDRA =

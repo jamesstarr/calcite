@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Unit test for {@link PartiallyOrderedSet}.
  */
-public class PartiallyOrderedSetTest {
+class PartiallyOrderedSetTest {
   private static final boolean DEBUG = false;
 
   // 100, 250, 1000, 3000 are reasonable
@@ -183,7 +183,7 @@ public class PartiallyOrderedSetTest {
     assertEqualsList("['ab', 'abcd']", poset.getAncestors("'a'"));
   }
 
-  @Test public void testPosetTricky() {
+  @Test void testPosetTricky() {
     final PartiallyOrderedSet<String> poset =
         new PartiallyOrderedSet<>(STRING_SUBSET_ORDERING);
 
@@ -214,7 +214,7 @@ public class PartiallyOrderedSetTest {
   }
 
   @Tag("slow")
-  @Test public void testPosetBitsLarge() {
+  @Test void testPosetBitsLarge() {
     // It takes 80 seconds, and the computations are exactly the same every time
     final PartiallyOrderedSet<Integer> poset =
         new PartiallyOrderedSet<>(PartiallyOrderedSetTest::isBitSuperset);
@@ -222,7 +222,7 @@ public class PartiallyOrderedSetTest {
   }
 
   @Tag("slow")
-  @Test public void testPosetBitsLarge2() {
+  @Test void testPosetBitsLarge2() {
     final int n = 30000;
     final PartiallyOrderedSet<Integer> poset =
         new PartiallyOrderedSet<>(PartiallyOrderedSetTest::isBitSuperset,
@@ -299,7 +299,7 @@ public class PartiallyOrderedSetTest {
     assertTrue(integers.isValid(true));
   }
 
-  @Test public void testDivisorSeries() {
+  @Test void testDivisorSeries() {
     checkPoset(PartiallyOrderedSetTest::isDivisor, DEBUG, range(1, SCALE * 3),
         false);
   }
@@ -330,7 +330,7 @@ public class PartiallyOrderedSetTest {
     }
   }
 
-  @Test public void testDivisorInverseSeries() {
+  @Test void testDivisorInverseSeries() {
     checkPoset(PartiallyOrderedSetTest::isDivisorInverse, DEBUG,
         range(1, SCALE * 3), false);
   }
@@ -361,7 +361,7 @@ public class PartiallyOrderedSetTest {
     }
   }
 
-  @Test public void testSubsetSeries() {
+  @Test void testSubsetSeries() {
     checkPoset(PartiallyOrderedSetTest::isBitSubset, DEBUG, range(1, SCALE / 2), false);
   }
 

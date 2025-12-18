@@ -48,6 +48,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Test for {@link RexBuilder}.
  */
 class RexBuilderTest {
+<<<<<<< HEAD
 
   private static final int PRECISION = 256;
 
@@ -72,6 +73,8 @@ class RexBuilderTest {
     }
   }
 
+=======
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
 
   private static final int PRECISION = 256;
 
@@ -100,7 +103,7 @@ class RexBuilderTest {
   /**
    * Test RexBuilder.ensureType()
    */
-  @Test public void testEnsureTypeWithAny() {
+  @Test void testEnsureTypeWithAny() {
     final RelDataTypeFactory typeFactory = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     RexBuilder builder = new RexBuilder(typeFactory);
 
@@ -115,7 +118,7 @@ class RexBuilderTest {
   /**
    * Test RexBuilder.ensureType()
    */
-  @Test public void testEnsureTypeWithItself() {
+  @Test void testEnsureTypeWithItself() {
     final RelDataTypeFactory typeFactory = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     RexBuilder builder = new RexBuilder(typeFactory);
 
@@ -130,7 +133,7 @@ class RexBuilderTest {
   /**
    * Test RexBuilder.ensureType()
    */
-  @Test public void testEnsureTypeWithDifference() {
+  @Test void testEnsureTypeWithDifference() {
     final RelDataTypeFactory typeFactory = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     RexBuilder builder = new RexBuilder(typeFactory);
 
@@ -540,7 +543,7 @@ class RexBuilderTest {
   /**
    * Test string literal encoding.
    */
-  @Test public void testStringLiteral() {
+  @Test void testStringLiteral() {
     final RelDataTypeFactory typeFactory =
             new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     final RelDataType varchar =
@@ -586,7 +589,7 @@ class RexBuilderTest {
   }
 
   /** Tests {@link RexBuilder#makeExactLiteral(java.math.BigDecimal)}. */
-  @Test public void testBigDecimalLiteral() {
+  @Test void testBigDecimalLiteral() {
     final RelDataTypeFactory typeFactory =
         new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     final RexBuilder builder = new RexBuilder(typeFactory);
@@ -602,7 +605,7 @@ class RexBuilderTest {
   }
 
   /** Tests {@link RexCopier#visitOver(RexOver)} */
-  @Test public void testCopyOver() {
+  @Test void testCopyOver() {
     final RelDataTypeFactory sourceTypeFactory =
         new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     RelDataType type = sourceTypeFactory.createSqlType(SqlTypeName.VARCHAR, 65536);
@@ -643,7 +646,7 @@ class RexBuilderTest {
   }
 
   /** Tests {@link RexCopier#visitCorrelVariable(RexCorrelVariable)} */
-  @Test public void testCopyCorrelVariable() {
+  @Test void testCopyCorrelVariable() {
     final RelDataTypeFactory sourceTypeFactory =
         new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     RelDataType type = sourceTypeFactory.createSqlType(SqlTypeName.VARCHAR, 65536);
@@ -664,7 +667,7 @@ class RexBuilderTest {
   }
 
   /** Tests {@link RexCopier#visitLocalRef(RexLocalRef)} */
-  @Test public void testCopyLocalRef() {
+  @Test void testCopyLocalRef() {
     final RelDataTypeFactory sourceTypeFactory =
         new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     RelDataType type = sourceTypeFactory.createSqlType(SqlTypeName.VARCHAR, 65536);
@@ -684,7 +687,7 @@ class RexBuilderTest {
   }
 
   /** Tests {@link RexCopier#visitDynamicParam(RexDynamicParam)} */
-  @Test public void testCopyDynamicParam() {
+  @Test void testCopyDynamicParam() {
     final RelDataTypeFactory sourceTypeFactory =
         new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     RelDataType type = sourceTypeFactory.createSqlType(SqlTypeName.VARCHAR, 65536);
@@ -704,7 +707,7 @@ class RexBuilderTest {
   }
 
   /** Tests {@link RexCopier#visitRangeRef(RexRangeRef)} */
-  @Test public void testCopyRangeRef() {
+  @Test void testCopyRangeRef() {
     final RelDataTypeFactory sourceTypeFactory =
         new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
     RelDataType type = sourceTypeFactory.createSqlType(SqlTypeName.VARCHAR, 65536);

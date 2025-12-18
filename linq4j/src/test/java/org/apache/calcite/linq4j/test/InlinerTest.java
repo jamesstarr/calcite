@@ -199,7 +199,7 @@ class InlinerTest {
 <<<<<<< HEAD
 =======
 
-  @Test public void testInlineInTryCatchStatement() {
+  @Test void testInlineInTryCatchStatement() {
     final BlockBuilder builder = new BlockBuilder(true);
     final ParameterExpression t = Expressions.parameter(int.class, "t");
     builder.add(Expressions.declare(Modifier.FINAL, t, ONE));

@@ -121,19 +121,6 @@ import static org.junit.Assert.fail;
  * Unit tests for {@link RexProgram} and
  * {@link org.apache.calcite.rex.RexProgramBuilder}.
  */
-public class RexProgramTest {
-  //~ Instance fields --------------------------------------------------------
-  private JavaTypeFactory typeFactory;
-  private RexBuilder rexBuilder;
-  private RexLiteral trueLiteral;
-  private RexLiteral falseLiteral;
-  private RexNode nullLiteral;
-  private RexNode unknownLiteral;
-  private RexSimplify simplify;
-
-  //~ Methods ----------------------------------------------------------------
-
-=======
 public class RexProgramTest extends RexProgramBuilderBase {
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
@@ -145,7 +132,6 @@ public class RexProgramTest extends RexProgramBuilderBase {
   }
 
 =======
->>>>>>> 96c501189 (Remove trivial default constructors from test code):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   @Before public void setUp() {
 =======
   @BeforeEach public void setUp() {
@@ -377,6 +363,9 @@ public class RexProgramTest extends RexProgramBuilderBase {
 =======
 public class RexProgramTest extends RexProgramTestBase {
 >>>>>>> caadd64d5 ([CALCITE-3712] Optimize lossless casts in RexSimplify: CAST(CAST(intE… (#229))
+=======
+class RexProgramTest extends RexProgramTestBase {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
   /**
    * Tests construction of a RexProgram.
    */
@@ -847,8 +836,9 @@ public class RexProgramTest extends RexProgramTestBase {
 
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+=======
+  @Test public void testItemStrong() {
+=======
   @Test void testItemStrong() {
     final ImmutableBitSet c0 = ImmutableBitSet.of(0);
     RexNode item = item(input(tArray(tInt()), 0), literal(0));
@@ -864,25 +854,6 @@ public class RexProgramTest extends RexProgramTestBase {
   }
 
   @Test void xAndNotX() {
-=======
-=======
-  @Test public void testItemStrong() {
-    final ImmutableBitSet c0 = ImmutableBitSet.of(0);
-    RexNode item = item(input(tArray(tInt()), 0), literal(0));
-
-    assertThat(Strong.isStrong(item), is(true));
-    assertThat(Strong.isNull(item, c0), is(true));
-
-    RelDataType mapType = typeFactory.createMapType(tVarchar(), tVarchar());
-    item = item(input(mapType, 0), literal("abc"));
-
-    assertThat(Strong.isStrong(item), is(true));
-    assertThat(Strong.isNull(item, c0), is(true));
-  }
-
->>>>>>> f441902ae ([CALCITE-3390] Add ITEM expression to SqlKind and include it in the policy map for Strong (Aman Sinha) & [CALCITE-3457] RexSimplify incorrectly simplifies IS NOT NULL operator with ITEM call (#19)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
-  @Test public void xAndNotX() {
->>>>>>> f070f34c8 ([CALCITE-2327] RexSimplify: AND(x, y, NOT(y)) ==> AND(x, null, IS NULL(y))):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     checkSimplify2(
         and(vBool(), not(vBool()),
             vBool(1), not(vBool(1))),
@@ -1030,8 +1001,7 @@ public class RexProgramTest extends RexProgramTestBase {
   @Disabled("CALCITE-3457: AssertionError in RexSimplify.validateStrongPolicy:843")
 =======
   @Disabled("CALCITE-3457: AssertionError in RexSimplify.validateStrongPolicy")
-  @Test public void reproducerFor3457() {
->>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+  @Test void reproducerFor3457() {
     // Identified with RexProgramFuzzyTest#testFuzzy, seed=4887662474363391810L
     checkSimplify(
         eq(
@@ -1072,17 +1042,6 @@ public class RexProgramTest extends RexProgramTestBase {
     );
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testNoCommonReturnTypeFails() {
-    try {
-      final RexNode node = coalesce(vVarchar(1), vInt(2));
-      fail("expected exception, got " + node);
-    } catch (IllegalArgumentException e) {
-      final String expected = "Cannot infer return type for COALESCE;"
-          + " operand types: [VARCHAR, INTEGER]";
-      assertThat(e.getMessage(), is(expected));
-    }
-=======
     checkSimplify(cast(vInt(), tInt()), "CAST(?0.int0):INTEGER NOT NULL");
     checkSimplify(cast(vIntNotNull(), nullable(tInt())), "CAST(?0.notNullInt0):INTEGER");
     checkSimplify(cast(vIntNotNull(), tInt()), "?0.notNullInt0");
@@ -1091,7 +1050,6 @@ public class RexProgramTest extends RexProgramTestBase {
     checkSimplify(cast(cast(vVarchar(), tInt()), tInt()), "CAST(?0.varchar0):INTEGER NOT NULL");
     checkSimplify(cast(cast(vVarchar(), tInt()), tVarchar()),
         "CAST(CAST(?0.varchar0):INTEGER NOT NULL):VARCHAR NOT NULL");
->>>>>>> 714ffd845 ([CALCITE-2590] Remove redundant CAST when operand has exactly the same type as it is casted to):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 =======
     checkSimplifyUnchanged(cast(vInt(), tInt()));
     checkSimplify(cast(vIntNotNull(), nullable(tInt())), "?0.notNullInt0");
@@ -1107,6 +1065,9 @@ public class RexProgramTest extends RexProgramTestBase {
 =======
 >>>>>>> 2148b0192 (Add shrinker for RexProgramFuzzy so the results are simpler to reason about):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   @Test public void testNoCommonReturnTypeFails() {
+=======
+  @Test void testNoCommonReturnTypeFails() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     try {
       final RexNode node = coalesce(vVarchar(1), vInt(2));
       fail("expected exception, got " + node);
@@ -1762,7 +1723,8 @@ public class RexProgramTest extends RexProgramTestBase {
 >>>>>>> 3f4dc4cca (Following [CALCITE-2469] simplify "f(x, y) IS NULL" to "x IS NULL OR y IS NULL" if "f" is strong):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+  @Test public void simplifyStrong() {
+=======
   @Test void simplifyStrong() {
     checkSimplify(ge(trueLiteral, falseLiteral), "true");
     checkSimplify3(ge(trueLiteral, nullBool), "null:BOOLEAN", "false", "true");
@@ -1782,27 +1744,6 @@ public class RexProgramTest extends RexProgramTestBase {
   }
 
   @Test void testSimplifyFilter() {
-=======
-  @Test public void simplifyStrong() {
-    checkSimplify(ge(trueLiteral, falseLiteral), "true");
-    checkSimplify3(ge(trueLiteral, nullBool), "null:BOOLEAN", "false", "true");
-    checkSimplify3(ge(nullBool, nullBool), "null:BOOLEAN", "false", "true");
-    checkSimplify3(gt(trueLiteral, nullBool), "null:BOOLEAN", "false", "true");
-    checkSimplify3(le(trueLiteral, nullBool), "null:BOOLEAN", "false", "true");
-    checkSimplify3(lt(trueLiteral, nullBool), "null:BOOLEAN", "false", "true");
-
-    checkSimplify3(not(nullBool), "null:BOOLEAN", "false", "true");
-    checkSimplify3(ne(vInt(), nullBool), "null:BOOLEAN", "false", "true");
-    checkSimplify3(eq(vInt(), nullBool), "null:BOOLEAN", "false", "true");
-
-    checkSimplify(plus(vInt(), nullInt), "null:INTEGER");
-    checkSimplify(sub(vInt(), nullInt), "null:INTEGER");
-    checkSimplify(mul(vInt(), nullInt), "null:INTEGER");
-    checkSimplify(div(vInt(), nullInt), "null:INTEGER");
-  }
-
-  @Test public void testSimplifyFilter() {
->>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
     final RelDataType booleanType =
         typeFactory.createSqlType(SqlTypeName.BOOLEAN);
     final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
@@ -2359,7 +2300,7 @@ public class RexProgramTest extends RexProgramTestBase {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
    * Enhance RexSimplify to handle (x&lt;&gt;a or x&lt;&gt;b)</a>. */
-  @Test public void testSimplifyOrNotEqualsNotNullable() {
+  @Test void testSimplifyOrNotEqualsNotNullable() {
     checkSimplify(
         or(
             ne(vIntNotNull(), literal(1)),
@@ -2370,7 +2311,7 @@ public class RexProgramTest extends RexProgramTestBase {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
    * Enhance RexSimplify to handle (x&lt;&gt;a or x&lt;&gt;b)</a>. */
-  @Test public void testSimplifyOrNotEqualsNotNullable2() {
+  @Test void testSimplifyOrNotEqualsNotNullable2() {
     checkSimplify(
         or(
             ne(vIntNotNull(0), literal(1)),
@@ -2382,7 +2323,7 @@ public class RexProgramTest extends RexProgramTestBase {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
    * Enhance RexSimplify to handle (x&lt;&gt;a or x&lt;&gt;b)</a>. */
-  @Test public void testSimplifyOrNotEqualsNullable() {
+  @Test void testSimplifyOrNotEqualsNullable() {
     checkSimplify3(
         or(
             ne(vInt(), literal(1)),
@@ -2393,7 +2334,7 @@ public class RexProgramTest extends RexProgramTestBase {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3198">[CALCITE-3198]
    * Enhance RexSimplify to handle (x&lt;&gt;a or x&lt;&gt;b)</a>. */
-  @Test public void testSimplifyOrNotEqualsNullable2() {
+  @Test void testSimplifyOrNotEqualsNullable2() {
     checkSimplify3(
         or(
             ne(vInt(0), literal(1)),
@@ -2404,7 +2345,7 @@ public class RexProgramTest extends RexProgramTestBase {
         "true");
   }
 
-  @Test public void testSimplifyAndPush() {
+  @Test void testSimplifyAndPush() {
     final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
     final RelDataType rowType = typeFactory.builder()
         .add("a", intType)
@@ -2457,7 +2398,7 @@ public class RexProgramTest extends RexProgramTestBase {
         ">(?0.a, 10)");
   }
 
-  @Test public void testSimplifyOrTerms() {
+  @Test void testSimplifyOrTerms() {
     final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
     final RelDataType rowType = typeFactory.builder()
         .add("a", intType).nullable(false)
@@ -2537,7 +2478,7 @@ public class RexProgramTest extends RexProgramTestBase {
         "AND(=(?0.b, 2), =(?0.a, 3))");
   }
 
-  @Test public void testSimplifyItemRangeTerms() {
+  @Test void testSimplifyItemRangeTerms() {
     RexNode item = item(input(tArray(tInt()), 3), literal(1));
     // paranoid validation doesn't support array types, disable it for a moment
     simplify = this.simplify.withParanoid(false);
@@ -2551,7 +2492,7 @@ public class RexProgramTest extends RexProgramTestBase {
     simplify = simplify.withParanoid(true);
   }
 
-  @Test public void testSimplifyNotAnd() {
+  @Test void testSimplifyNotAnd() {
     final RexNode e = or(
         le(
             vBool(1),
@@ -2562,7 +2503,7 @@ public class RexProgramTest extends RexProgramTestBase {
     checkSimplify(e, "OR(<=(?0.bool1, true), ?0.bool1)");
   }
 
-  @Test public void testSimplifyUnknown() {
+  @Test void testSimplifyUnknown() {
     final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
     final RelDataType rowType = typeFactory.builder()
             .add("a", intType).nullable(true)
@@ -2617,7 +2558,7 @@ public class RexProgramTest extends RexProgramTestBase {
   /** Unit test for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2840">[CALCITE-2840]
    * Simplification should use more specific UnknownAs modes during simplification</a>. */
-  @Test public void testNestedAndSimplification() {
+  @Test void testNestedAndSimplification() {
     // to have the correct mode for the AND at the bottom,
     // both the OR and AND parent should retain the UnknownAs mode
     checkSimplify2(
@@ -2637,22 +2578,14 @@ public class RexProgramTest extends RexProgramTestBase {
   /** Unit test for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1289">[CALCITE-1289]
    * RexUtil.simplifyCase() should account for nullability</a>. */
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyCaseNotNullableBoolean() {
-    RexNode condition = eq(vVarchar(), literal("S"));
-    RexCall caseNode = (RexCall) case_(condition, trueLiteral, falseLiteral);
-
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-    final RexCall result = (RexCall) simplify.simplifyUnknownAs(caseNode, RexUnknownAs.UNKNOWN);
-    assertThat("The case should be nonNullable", caseNode.getType().isNullable(), is(false));
-    assertThat("Expected a nonNullable type", result.getType().isNullable(), is(false));
-=======
     final RexCall result =
         (RexCall) simplify.simplifyUnknownAs(caseNode, RexUnknownAs.UNKNOWN);
     assertThat(result.getType().isNullable(), is(false));
->>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 =======
   @Test public void testSimplifyCaseNotNullableBoolean() {
+=======
+  @Test void testSimplifyCaseNotNullableBoolean() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     RexNode condition = eq(vVarchar(), literal("S"));
     RexCall caseNode = (RexCall) case_(condition, trueLiteral, falseLiteral);
 
@@ -2665,7 +2598,8 @@ public class RexProgramTest extends RexProgramTestBase {
     assertThat(result.getOperands().get(0), is(condition));
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+  @Test public void testConsistentTypeForSimpleFilter() {
+=======
   @Test void testConsistentTypeForSimpleFilter() {
     // Create a condition with TIMESTAMP input and CHAR literal
     final NlsString nlsString = new NlsString("2018-01-01 01:23:45", null, null);
@@ -2675,16 +2609,6 @@ public class RexProgramTest extends RexProgramTestBase {
         0);
     RexNode charLiteral = rexBuilder.makeCharLiteral(nlsString);
     RexNode condition = eq(timestampRef, charLiteral);
-=======
-  @Test public void testConsistentTypeForSimpleFilter() {
-    // Create a condition with TIMESTAMP input and CHAR literal
-    final NlsString nlsString = new NlsString("2018-01-01 01:23:45", null, null);
-    RexNode timestampRef = rexBuilder.makeInputRef(
-        typeFactory.createTypeWithNullability(
-            typeFactory.createSqlType(SqlTypeName.TIMESTAMP), true),
-        0);
-    RexNode charLiteral = rexBuilder.makeCharLiteral(nlsString);
-    RexNode condition = eq(timestampRef, charLiteral);
 
     // Verify that consistent type would be TIMESTAMP (using public API)
     List<RelDataType> types = RexUtil.types(Arrays.asList(timestampRef, charLiteral));
@@ -2703,20 +2627,8 @@ public class RexProgramTest extends RexProgramTestBase {
 
 
 
-  @Test public void testSimplifyCaseNullableBoolean() {
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-    RexNode condition = eq(
-        rexBuilder.makeInputRef(
-            typeFactory.createTypeWithNullability(
-                typeFactory.createSqlType(SqlTypeName.VARCHAR), false),
-            0),
-        rexBuilder.makeLiteral("S"));
-    RexCall caseNode = (RexCall) case_(condition, trueLiteral, falseLiteral);
->>>>>>> 4d6cc46fe (DX-20400: Fix long pre-logical time):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
-=======
     RexNode condition = eq(input(tVarchar(), 0), literal("S"));
     RexNode caseNode = case_(condition, trueLiteral, falseLiteral);
->>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 
     // Verify that consistent type would be TIMESTAMP (using public API)
     List<RelDataType> types = RexUtil.types(Arrays.asList(timestampRef, charLiteral));
@@ -2735,6 +2647,8 @@ public class RexProgramTest extends RexProgramTestBase {
 
 
 
+=======
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
   @Test void testSimplifyCaseNullableBoolean() {
     RexNode condition = eq(input(tVarchar(), 0), literal("S"));
     RexNode caseNode = case_(condition, trueLiteral, falseLiteral);
@@ -2746,13 +2660,10 @@ public class RexProgramTest extends RexProgramTestBase {
     assertThat(result, is(condition));
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyRecurseIntoArithmetics() {
-=======
   @Test public void testSimplifyRecurseIntoArithmetics() {
->>>>>>> 820228110 ([CALCITE-2852] RexNode simplification does not traverse unknown functions):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyRecurseIntoArithmetics() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     checkSimplify(
         plus(literal(1),
             case_(
@@ -2762,13 +2673,12 @@ public class RexProgramTest extends RexProgramTestBase {
         "+(1, 2)");
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyCaseBranchesCollapse() {
 =======
-=======
->>>>>>> 820228110 ([CALCITE-2852] RexNode simplification does not traverse unknown functions):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   @Test public void testSimplifyCaseBranchesCollapse() {
 >>>>>>> f14ece75c ([CALCITE-2631] General improvements in case simplification):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyCaseBranchesCollapse() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // case when x is true then 1 when x is not true then 1 else 2 end
     // => case when x is true or x is not true then 1 else 2 end
     checkSimplify(
@@ -2788,7 +2698,7 @@ public class RexProgramTest extends RexProgramTestBase {
 >>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
-  @Test public void testSimplifyCaseBranchesCollapse2() {
+  @Test void testSimplifyCaseBranchesCollapse2() {
     // case when x is true then 1 when true then 1 else 2 end
     // => 1
     checkSimplify(
@@ -2799,8 +2709,7 @@ public class RexProgramTest extends RexProgramTestBase {
         "1");
   }
 
->>>>>>> f14ece75c ([CALCITE-2631] General improvements in case simplification):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
-  @Test public void testSimplifyCaseNullableVarChar() {
+  @Test void testSimplifyCaseNullableVarChar() {
     RexNode condition = eq(input(tVarchar(), 0), literal("S"));
     RexNode caseNode = case_(condition, literal("A"), literal("B"));
 >>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
@@ -2830,11 +2739,10 @@ public class RexProgramTest extends RexProgramTestBase {
     assertThat(result, is(caseNode));
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyCaseCasting() {
-=======
   @Test public void testSimplifyCaseCasting() {
->>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyCaseCasting() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     RexNode caseNode = case_(eq(vIntNotNull(), literal(3)), nullBool, falseLiteral);
 
     checkSimplify3(caseNode, "AND(=(?0.notNullInt0, 3), null)",
@@ -2842,11 +2750,10 @@ public class RexProgramTest extends RexProgramTestBase {
         "=(?0.notNullInt0, 3)");
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyCaseAndNotSimplicationIsInAction() {
-=======
   @Test public void testSimplifyCaseAndNotSimplicationIsInAction() {
->>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyCaseAndNotSimplicationIsInAction() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     RexNode caseNode = case_(
         eq(vIntNotNull(), literal(0)), falseLiteral,
         eq(vIntNotNull(), literal(1)), trueLiteral,
@@ -2854,11 +2761,10 @@ public class RexProgramTest extends RexProgramTestBase {
     checkSimplify(caseNode, "=(?0.notNullInt0, 1)");
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyCaseBranchRemovalStrengthensType() {
-=======
   @Test public void testSimplifyCaseBranchRemovalStrengthensType() {
->>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyCaseBranchRemovalStrengthensType() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     RexNode caseNode =
         case_(falseLiteral, nullBool, eq(div(vInt(), literal(2)), literal(3)), trueLiteral,
             falseLiteral);
@@ -2869,29 +2775,26 @@ public class RexProgramTest extends RexProgramTestBase {
         res.getType().isNullable(), is(false));
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyCaseCompaction() {
-=======
   @Test public void testSimplifyCaseCompaction() {
->>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyCaseCompaction() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     RexNode caseNode = case_(vBool(0), vInt(0), vBool(1), vInt(0), vInt(1));
     checkSimplify(caseNode, "CASE(OR(?0.bool0, ?0.bool1), ?0.int0, ?0.int1)");
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyCaseCompaction2() {
-=======
   @Test public void testSimplifyCaseCompaction2() {
->>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyCaseCompaction2() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     RexNode caseNode = case_(vBool(0), vInt(0), vBool(1), vInt(1), vInt(1));
     checkSimplify(caseNode, "CASE(?0.bool0, ?0.int0, ?0.int1)");
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyCaseCompactionDiv() {
-=======
   @Test public void testSimplifyCaseCompactionDiv() {
->>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyCaseCompactionDiv() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // FIXME: RexInterpreter currently evaluates childs beforehand.
     simplify = simplify.withParanoid(false);
     RexNode caseNode = case_(vBool(0), vInt(0),
@@ -2902,11 +2805,10 @@ public class RexProgramTest extends RexProgramTestBase {
   }
 
   /* case value branch contains division */
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyCaseDiv1() {
-=======
   @Test public void testSimplifyCaseDiv1() {
->>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyCaseDiv1() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // FIXME: RexInterpreter currently evaluates childs beforehand.
     simplify = simplify.withParanoid(false);
     RexNode caseNode = case_(
@@ -2917,11 +2819,10 @@ public class RexProgramTest extends RexProgramTestBase {
   }
 
   /* case condition contains division */
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyCaseDiv2() {
-=======
   @Test public void testSimplifyCaseDiv2() {
->>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyCaseDiv2() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // FIXME: RexInterpreter currently evaluates childs beforehand.
     simplify = simplify.withParanoid(false);
     RexNode caseNode = case_(
@@ -2931,26 +2832,22 @@ public class RexProgramTest extends RexProgramTestBase {
     checkSimplifyUnchanged(caseNode);
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyCaseFirstBranchIsSafe() {
-=======
   @Test public void testSimplifyCaseFirstBranchIsSafe() {
->>>>>>> e76d5a7ad ([CALCITE-2848] Simplifying a case statement's first branch should ignore its safety):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyCaseFirstBranchIsSafe() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     RexNode caseNode = case_(
         gt(div(vIntNotNull(), literal(1)), literal(1)), falseLiteral,
         trueLiteral);
     checkSimplify(caseNode, "<=(/(?0.notNullInt0, 1), 1)");
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testPushNotIntoCase() {
 =======
-=======
->>>>>>> e76d5a7ad ([CALCITE-2848] Simplifying a case statement's first branch should ignore its safety):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   @Test public void testPushNotIntoCase() {
 >>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testPushNotIntoCase() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     checkSimplify(
         not(
             case_(
@@ -2963,27 +2860,24 @@ public class RexProgramTest extends RexProgramTestBase {
   }
 
   @Test void testNotRecursion() {
-=======
-        "CASE(IS TRUE(?0.bool0), NOT(?0.bool1), >(/(?0.notNullInt0, 2), 1), NOT(?0.bool2), NOT(?0.bool3))");
-=======
         "CASE(?0.bool0, NOT(?0.bool1), >(/(?0.notNullInt0, 2), 1), NOT(?0.bool2), NOT(?0.bool3))");
->>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
   @Test public void testNotRecursion() {
 >>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     checkSimplify(
         not(coalesce(nullBool, trueLiteral)),
         "false");
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyAnd() {
 =======
-=======
->>>>>>> a421dc07c ([CALCITE-2841] Simplification: push negation into Case expression):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   @Test public void testSimplifyAnd() {
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyAnd() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     RelDataType booleanNotNullableType =
         typeFactory.createTypeWithNullability(
             typeFactory.createSqlType(SqlTypeName.BOOLEAN), false);
@@ -3000,11 +2894,10 @@ public class RexProgramTest extends RexProgramTestBase {
     assertThat(result.getType().getSqlTypeName(), is(SqlTypeName.BOOLEAN));
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyAnd2() {
-=======
   @Test public void testSimplifyAnd2() {
->>>>>>> 096387bac (DX-12328: Fix RexSimplify for AND expression):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyAnd2() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     RelDataType integerNullableType =
         typeFactory.createTypeWithNullability(
             typeFactory.createSqlType(SqlTypeName.INTEGER), false);
@@ -3066,7 +2959,7 @@ public class RexProgramTest extends RexProgramTestBase {
 >>>>>>> af29791d2 ([CALCITE-2581] Avoid errors in simplifying "null and not (null or ...)" (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   }
 
-  @Test public void testSimplifyAnd3() {
+  @Test void testSimplifyAnd3() {
     // in the case of 3-valued logic, the result must be unknown if a is unknown
     checkSimplify2(
             and(vBool(), not(vBool())),
@@ -3074,8 +2967,7 @@ public class RexProgramTest extends RexProgramTestBase {
             "false");
   }
 
-  @Test public void testSimplifyIsNotNull() {
->>>>>>> 096387bac (DX-12328: Fix RexSimplify for AND expression):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+  @Test void testSimplifyIsNotNull() {
     RelDataType intType =
         typeFactory.createTypeWithNullability(
             typeFactory.createSqlType(SqlTypeName.INTEGER), false);
@@ -3122,29 +3014,27 @@ public class RexProgramTest extends RexProgramTestBase {
   /** Unit test for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2929">[CALCITE-2929]
    * Simplification of IS NULL checks are incorrectly assuming that CAST-s are possible</a>. */
-  @Test public void testSimplifyCastIsNull() {
->>>>>>> bb2c52aab ([CALCITE-2929] Simplification of IS NULL checks are incorrectly assuming that CAST-s are possible):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+  @Test void testSimplifyCastIsNull() {
     checkSimplifyUnchanged(isNull(cast(vVarchar(), tInt(true))));
   }
 
   /** Unit test for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2929">[CALCITE-2929]
    * Simplification of IS NULL checks are incorrectly assuming that CAST-s are possible</a>. */
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyCastIsNull2() {
-    checkSimplifyUnchanged(isNull(cast(vVarcharNotNull(), tInt(false))));
-  }
-
-  @Test void checkSimplifyDynamicParam() {
-=======
 =======
   @Test public void testSimplifyCastIsNull2() {
     checkSimplifyUnchanged(isNull(cast(vVarcharNotNull(), tInt(false))));
   }
 
->>>>>>> bb2c52aab ([CALCITE-2929] Simplification of IS NULL checks are incorrectly assuming that CAST-s are possible):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   @Test public void checkSimplifyDynamicParam() {
 >>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyCastIsNull2() {
+    checkSimplifyUnchanged(isNull(cast(vVarcharNotNull(), tInt(false))));
+  }
+
+  @Test void checkSimplifyDynamicParam() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     checkSimplify(isNotNull(lt(vInt(0), vInt(1))),
         "AND(IS NOT NULL(?0.int0), IS NOT NULL(?0.int1))");
     checkSimplify(isNotNull(lt(vInt(0), vIntNotNull(2))),
@@ -3155,11 +3045,10 @@ public class RexProgramTest extends RexProgramTestBase {
     checkSimplify(isNotNull(lt(vInt(0), null_(tInt()))), "false");
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyCastLiteral() {
-=======
   @Test public void testSimplifyCastLiteral() {
->>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyCastLiteral() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     final List<RexLiteral> literals = new ArrayList<>();
     literals.add(
         rexBuilder.makeExactLiteral(BigDecimal.ONE,
@@ -3257,11 +3146,10 @@ public class RexProgramTest extends RexProgramTestBase {
     }
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testCastLiteral() {
-=======
   @Test public void testCastLiteral() {
->>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testCastLiteral() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     assertNode("cast(literal int not null)",
         "42:INTEGER NOT NULL", cast(literal(42), tInt()));
     assertNode("cast(literal int)",
@@ -3273,11 +3161,10 @@ public class RexProgramTest extends RexProgramTestBase {
         "CAST(42):INTEGER", abstractCast(literal(42), nullable(tInt())));
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyCastLiteral2() {
-=======
   @Test public void testSimplifyCastLiteral2() {
->>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyCastLiteral2() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     final RexLiteral literalAbc = rexBuilder.makeLiteral("abc");
     final RexLiteral literalOne = rexBuilder.makeExactLiteral(BigDecimal.ONE);
     final RelDataType intType = typeFactory.createSqlType(SqlTypeName.INTEGER);
@@ -3406,14 +3293,13 @@ public class RexProgramTest extends RexProgramTestBase {
         "2011-07-20 01:23:45:TIMESTAMP_WITH_LOCAL_TIME_ZONE(0)");
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
   @Test void testRemovalOfNullabilityWideningCast() {
     RexNode expr = cast(isTrue(vBoolNotNull()), tBool(true));
 =======
   @Test public void testRemovalOfNullabilityWideningCast() {
 <<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
     RexNode expr = cast(isTrue(vBoolNotNull()), tBoolean(true));
->>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
 =======
     RexNode expr = cast(isTrue(vBoolNotNull()), tBool(true));
 >>>>>>> c896ba0fc (Simplify reproducerFor3457 test):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
@@ -3422,11 +3308,10 @@ public class RexProgramTest extends RexProgramTestBase {
     assertThat(result.getType().isNullable(), is(false));
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testCompareTimestampWithTimeZone() {
-=======
   @Test public void testCompareTimestampWithTimeZone() {
->>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testCompareTimestampWithTimeZone() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     final TimestampWithTimeZoneString timestampLTZChar1 =
         new TimestampWithTimeZoneString("2011-07-20 10:34:56 America/Los_Angeles");
     final TimestampWithTimeZoneString timestampLTZChar2 =
@@ -3506,12 +3391,10 @@ public class RexProgramTest extends RexProgramTestBase {
     checkSimplifyUnchanged(le(literalAbc, literalZero));
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testBooleanComparisions() {
-=======
   @Test public void testBooleanComparisions() {
->>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testBooleanComparisions() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     checkSimplify(eq(vBool(), trueLiteral), "?0.bool0");
     checkSimplify(ge(vBool(), trueLiteral), "?0.bool0");
     checkSimplify(ne(vBool(), trueLiteral), "NOT(?0.bool0)");
@@ -3534,13 +3417,12 @@ public class RexProgramTest extends RexProgramTestBase {
     checkSimplify(lt(vBoolNotNull(), falseLiteral), "false");
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimpleDynamicVars() {
 =======
-=======
->>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   @Test public void testSimpleDynamicVars() {
 >>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimpleDynamicVars() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     assertTypeAndToString(
         vBool(2), "?0.bool2", "BOOLEAN");
     assertTypeAndToString(
@@ -3566,8 +3448,7 @@ public class RexProgramTest extends RexProgramTestBase {
         + (rexNode.getType().isNullable() ? "" : " NOT NULL"), "type of " + rexNode);
   }
 
-  @Test public void testIsDeterministic() {
->>>>>>> 76adfe0d5 ([CALCITE-2462] RexProgramTest: move "rex building" methods to base class):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+  @Test void testIsDeterministic() {
     SqlOperator ndc = new SqlSpecialOperator(
             "NDC",
             SqlKind.OTHER_FUNCTION,
@@ -3741,7 +3622,7 @@ public class RexProgramTest extends RexProgramTestBase {
     checkSimplifyUnchanged(nullInt);
   }
 
-  @Test public void notDistinct() {
+  @Test void notDistinct() {
     checkSimplify(
             isFalse(isNotDistinctFrom(vBool(0), vBool(1))),
             "IS DISTINCT FROM(?0.bool0, ?0.bool1)");
@@ -3750,7 +3631,7 @@ public class RexProgramTest extends RexProgramTestBase {
   /** Unit test for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2505">[CALCITE-2505]
    * RexSimplify wrongly simplifies "COALESCE(+(NULL), x)" to "NULL"</a>. */
-  @Test public void testSimplifyCoalesce() {
+  @Test void testSimplifyCoalesce() {
     checkSimplify(coalesce(vIntNotNull(), vInt()), // first arg not null
         "?0.notNullInt0");
     checkSimplifyUnchanged(coalesce(vInt(), vIntNotNull()));
@@ -3772,7 +3653,7 @@ public class RexProgramTest extends RexProgramTestBase {
         "COALESCE(?0.int0, ?0.int1)");
   }
 
-  @Test public void simplifyNull() {
+  @Test void simplifyNull() {
     checkSimplify3(nullBool, "null:BOOLEAN", "false", "true");
     // null int must not be simplified to false
     checkSimplifyUnchanged(nullInt);
@@ -3788,11 +3669,10 @@ public class RexProgramTest extends RexProgramTestBase {
     return map2.toString();
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyFalse() {
-=======
   @Test public void testSimplifyFalse() {
->>>>>>> 40dbae0b2 ([CALCITE-2556] Simplify not(true/false) to false/true (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyFalse() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     final RelDataType booleanNullableType =
         typeFactory.createTypeWithNullability(
             typeFactory.createSqlType(SqlTypeName.BOOLEAN), true);
@@ -3815,12 +3695,10 @@ public class RexProgramTest extends RexProgramTestBase {
     assertThat(result2.getOperands().get(0), is(booleanInput));
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyNot() {
-=======
   @Test public void testSimplifyNot() {
->>>>>>> 40dbae0b2 ([CALCITE-2556] Simplify not(true/false) to false/true (pengzhiwei)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyNot() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // "NOT(NOT(x))" => "x"
     checkSimplify(not(not(vBool())), "?0.bool0");
     // "NOT(true)"  => "false"
@@ -3863,12 +3741,10 @@ public class RexProgramTest extends RexProgramTestBase {
         "AND(NOT(?0.bool0), NOT(?0.bool1))");
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyAndNot() {
-=======
   @Test public void testSimplifyAndNot() {
->>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyAndNot() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // "x > 1 AND NOT (y > 2)" -> "x > 1 AND y <= 2"
     checkSimplify(and(gt(vInt(1), literal(1)), not(gt(vInt(2), literal(2)))),
         "AND(>(?0.int1, 1), <=(?0.int2, 2))");
@@ -3887,11 +3763,10 @@ public class RexProgramTest extends RexProgramTestBase {
         "IS NOT NULL(?0.int2)");
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testSimplifyOrNot() {
-=======
   @Test public void testSimplifyOrNot() {
->>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testSimplifyOrNot() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // "x > 1 OR NOT (y > 2)" -> "x > 1 OR y <= 2"
     checkSimplify(or(gt(vInt(1), literal(1)), not(gt(vInt(2), literal(2)))),
         "OR(>(?0.int1, 1), <=(?0.int2, 2))");
@@ -3911,8 +3786,6 @@ public class RexProgramTest extends RexProgramTestBase {
         "false");
   }
 
-=======
-=======
 >>>>>>> e84a51205 ([CALCITE-2604] When simplifying an expression, say whether an UNKNOWN value will be interpreted as is, or as TRUE or FALSE):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
   private RexNode simplify(RexNode e) {
     final RexSimplify simplify =
@@ -3922,8 +3795,10 @@ public class RexProgramTest extends RexProgramTestBase {
   }
 
 =======
->>>>>>> caadd64d5 ([CALCITE-3712] Optimize lossless casts in RexSimplify: CAST(CAST(intE… (#229))
   @Test public void testInterpreter() {
+=======
+  @Test void testInterpreter() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     assertThat(eval(trueLiteral), is(true));
     assertThat(eval(nullInt), is(NullSentinel.INSTANCE));
     assertThat(eval(eq(nullInt, nullInt)),
@@ -3953,24 +3828,20 @@ public class RexProgramTest extends RexProgramTestBase {
         is(false));
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testIsNullRecursion() {
-=======
   @Test public void testIsNullRecursion() {
->>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testIsNullRecursion() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // make sure that simplifcation is visiting below isX expressions
     checkSimplify(
         isNull(or(coalesce(nullBool, trueLiteral), falseLiteral)),
         "false");
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testRedundantIsTrue() {
-=======
   @Test public void testRedundantIsTrue() {
->>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testRedundantIsTrue() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     checkSimplify2(
         isTrue(isTrue(vBool())),
         "IS TRUE(?0.bool0)",
@@ -3978,11 +3849,10 @@ public class RexProgramTest extends RexProgramTestBase {
     );
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testRedundantIsFalse() {
-=======
   @Test public void testRedundantIsFalse() {
->>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testRedundantIsFalse() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     checkSimplify2(
         isTrue(isFalse(vBool())),
         "IS FALSE(?0.bool0)",
@@ -3990,11 +3860,10 @@ public class RexProgramTest extends RexProgramTestBase {
     );
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testRedundantIsNotTrue() {
-=======
   @Test public void testRedundantIsNotTrue() {
->>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testRedundantIsNotTrue() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     checkSimplify3(
         isNotFalse(isNotTrue(vBool())),
         "IS NOT TRUE(?0.bool0)",
@@ -4003,11 +3872,10 @@ public class RexProgramTest extends RexProgramTestBase {
     );
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testRedundantIsNotFalse() {
-=======
   @Test public void testRedundantIsNotFalse() {
->>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testRedundantIsNotFalse() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     checkSimplify3(
         isNotFalse(isNotFalse(vBool())),
         "IS NOT FALSE(?0.bool0)",
@@ -4027,98 +3895,87 @@ public class RexProgramTest extends RexProgramTestBase {
   /** Unit tests for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2438">[CALCITE-2438]
    * RexCall#isAlwaysTrue returns incorrect result</a>. */
-  @Test public void testIsAlwaysTrueAndFalseXisNullisNotNullisFalse() {
->>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+  @Test void testIsAlwaysTrueAndFalseXisNullisNotNullisFalse() {
     // "((x IS NULL) IS NOT NULL) IS FALSE" -> false
     checkIs(isFalse(isNotNull(isNull(vBool()))), false);
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testIsAlwaysTrueAndFalseNotXisNullisNotNullisFalse() {
-=======
   @Test public void testIsAlwaysTrueAndFalseNotXisNullisNotNullisFalse() {
->>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testIsAlwaysTrueAndFalseNotXisNullisNotNullisFalse() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // "(NOT ((x IS NULL) IS NOT NULL)) IS FALSE" -> true
     checkIs(isFalse(not(isNotNull(isNull(vBool())))), true);
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testIsAlwaysTrueAndFalseXisNullisNotNullisTrue() {
-=======
   @Test public void testIsAlwaysTrueAndFalseXisNullisNotNullisTrue() {
->>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testIsAlwaysTrueAndFalseXisNullisNotNullisTrue() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // "((x IS NULL) IS NOT NULL) IS TRUE" -> true
     checkIs(isTrue(isNotNull(isNull(vBool()))), true);
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testIsAlwaysTrueAndFalseNotXisNullisNotNullisTrue() {
-=======
   @Test public void testIsAlwaysTrueAndFalseNotXisNullisNotNullisTrue() {
->>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testIsAlwaysTrueAndFalseNotXisNullisNotNullisTrue() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // "(NOT ((x IS NULL) IS NOT NULL)) IS TRUE" -> false
     checkIs(isTrue(not(isNotNull(isNull(vBool())))), false);
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testIsAlwaysTrueAndFalseNotXisNullisNotNullisNotTrue() {
-=======
   @Test public void testIsAlwaysTrueAndFalseNotXisNullisNotNullisNotTrue() {
->>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testIsAlwaysTrueAndFalseNotXisNullisNotNullisNotTrue() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // "(NOT ((x IS NULL) IS NOT NULL)) IS NOT TRUE" -> true
     checkIs(isNotTrue(not(isNotNull(isNull(vBool())))), true);
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testIsAlwaysTrueAndFalseXisNullisNotNull() {
-=======
   @Test public void testIsAlwaysTrueAndFalseXisNullisNotNull() {
->>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testIsAlwaysTrueAndFalseXisNullisNotNull() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // "(x IS NULL) IS NOT NULL" -> true
     checkIs(isNotNull(isNull(vBool())), true);
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testIsAlwaysTrueAndFalseXisNotNullisNotNull() {
-=======
   @Test public void testIsAlwaysTrueAndFalseXisNotNullisNotNull() {
->>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testIsAlwaysTrueAndFalseXisNotNullisNotNull() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // "(x IS NOT NULL) IS NOT NULL" -> true
     checkIs(isNotNull(isNotNull(vBool())), true);
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testIsAlwaysTrueAndFalseXisNullisNull() {
-=======
   @Test public void testIsAlwaysTrueAndFalseXisNullisNull() {
->>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testIsAlwaysTrueAndFalseXisNullisNull() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // "(x IS NULL) IS NULL" -> false
     checkIs(isNull(isNull(vBool())), false);
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testIsAlwaysTrueAndFalseXisNotNullisNull() {
-=======
   @Test public void testIsAlwaysTrueAndFalseXisNotNullisNull() {
->>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testIsAlwaysTrueAndFalseXisNotNullisNull() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // "(x IS NOT NULL) IS NULL" -> false
     checkIs(isNull(isNotNull(vBool())), false);
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testIsAlwaysTrueAndFalseXisNullisNotNullisNotFalse() {
-=======
   @Test public void testIsAlwaysTrueAndFalseXisNullisNotNullisNotFalse() {
->>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testIsAlwaysTrueAndFalseXisNullisNotNullisNotFalse() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // "((x IS NULL) IS NOT NULL) IS NOT FALSE" -> true
     checkIs(isNotFalse(isNotNull(isNull(vBool()))), true);
   }
 
-<<<<<<< HEAD:core/src/test/java/org/apache/calcite/rex/RexProgramTest.java
-  @Test void testIsAlwaysTrueAndFalseXisNullisNotNullisNotTrue() {
-=======
   @Test public void testIsAlwaysTrueAndFalseXisNullisNotNullisNotTrue() {
->>>>>>> 1b5b688f2 ([CALCITE-2438] Fix wrong results for IS NOT FALSE(false) (zhiwei.pzw) (Zoltan Haindrich)):core/src/test/java/org/apache/calcite/test/RexProgramTest.java
+=======
+  @Test void testIsAlwaysTrueAndFalseXisNullisNotNullisNotTrue() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     // "((x IS NULL) IS NOT NULL) IS NOT TRUE" -> false
     checkIs(isNotTrue(isNotNull(isNull(vBool()))), false);
   }
@@ -4144,7 +4001,7 @@ public class RexProgramTest extends RexProgramTestBase {
   /** Unit test for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2842">[CALCITE-2842]
    * Computing digest of IN expressions leads to Exceptions</a>. */
-  @Test public void testInDigest() {
+  @Test void testInDigest() {
     RexNode e = in(vInt(), literal(1), literal(2));
     assertThat(e.toString(), is("IN(?0.int0, 1, 2)"));
   }
@@ -4213,7 +4070,7 @@ public class RexProgramTest extends RexProgramTestBase {
   /** Unit test for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3192">[CALCITE-3192]
    * Simplify OR incorrectly weaks condition</a>. */
-  @Test public void testOrSimplificationNotWeakensCondition() {
+  @Test void testOrSimplificationNotWeakensCondition() {
     // "1 < a or (a < 3 and b = 2)" can't be simplified if a is nullable.
     checkSimplifyUnchanged(
         or(
@@ -4223,7 +4080,7 @@ public class RexProgramTest extends RexProgramTestBase {
                 vBoolNotNull(2))));
   }
 
-  @Test public void testIsNullSimplificationWithUnaryPlus() {
+  @Test void testIsNullSimplificationWithUnaryPlus() {
     RexNode expr =
         isNotNull(coalesce(unaryPlus(vInt(1)), vIntNotNull(0)));
     RexNode s = simplify.simplifyUnknownAs(expr, RexUnknownAs.UNKNOWN);
@@ -4232,7 +4089,7 @@ public class RexProgramTest extends RexProgramTestBase {
     assertThat(s, is(trueLiteral));
   }
 
-  @Test public void testIsNullSimplificationWithIsDistinctFrom() {
+  @Test void testIsNullSimplificationWithIsDistinctFrom() {
     RexNode expr =
         isNotNull(
             case_(vBool(),
@@ -4244,14 +4101,14 @@ public class RexProgramTest extends RexProgramTestBase {
     assertThat(s, is(trueLiteral));
   }
 
-  @Test public void testSimplifyRangeWithMultiPredicates() {
+  @Test void testSimplifyRangeWithMultiPredicates() {
     final RexNode ref = input(tInt(), 0);
     RelOptPredicateList relOptPredicateList = RelOptPredicateList.of(rexBuilder,
         ImmutableList.of(gt(ref, literal(1)), le(ref, literal(5))));
     checkSimplifyFilter(gt(ref, literal(9)), relOptPredicateList, "false");
   }
 
-  @Test public void testSimplifyCastUnaryMinus() {
+  @Test void testSimplifyCastUnaryMinus() {
     RexNode expr =
         isNull(ne(unaryMinus(cast(unaryMinus(vIntNotNull(1)), nullable(tInt()))), vIntNotNull(1)));
     RexNode s = simplify.simplifyUnknownAs(expr, RexUnknownAs.UNKNOWN);
@@ -4259,7 +4116,7 @@ public class RexProgramTest extends RexProgramTestBase {
     assertThat(s, is(falseLiteral));
   }
 
-  @Test public void testSimplifyNonDeterministicFunction() {
+  @Test void testSimplifyNonDeterministicFunction() {
     final SqlOperator ndc = new SqlSpecialOperator(
         "NDC",
         SqlKind.OTHER_FUNCTION,

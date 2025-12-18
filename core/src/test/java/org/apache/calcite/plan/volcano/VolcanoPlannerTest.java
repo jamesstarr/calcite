@@ -129,7 +129,7 @@ class VolcanoPlannerTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3118">[CALCITE-3118]
    * VolcanoRuleCall should look at RelSubset rather than RelSet
    * when checking child ordinal of a parent operand</a>. */
-  @Test public void testMatchedOperandsDifferent() {
+  @Test void testMatchedOperandsDifferent() {
     VolcanoPlanner planner = new VolcanoPlanner();
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
     RelOptCluster cluster = newCluster(planner);
@@ -176,7 +176,7 @@ class VolcanoPlannerTest {
     }
   }
 
-  @Test public void testMultiInputsParentOpMatching() {
+  @Test void testMultiInputsParentOpMatching() {
     VolcanoPlanner planner = new VolcanoPlanner();
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
     RelOptCluster cluster = newCluster(planner);
@@ -292,10 +292,9 @@ class VolcanoPlannerTest {
    * this one didn't work due to the definition of ReformedSingleRule.
    */
   @Disabled // broken, because ReformedSingleRule matches child traits strictly
-<<<<<<< HEAD
-  @Test void testTransformSingleReformed() {
-=======
   @Test public void testTransformSingleReformed() {
+=======
+  @Test void testTransformSingleReformed() {
     VolcanoPlanner planner = new VolcanoPlanner();
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
 
@@ -386,7 +385,7 @@ class VolcanoPlannerTest {
    * pattern which spans calling conventions.
    */
   @Disabled // broken, because ReformedSingleRule matches child traits strictly
-  @Test public void testRemoveSingleReformed() {
+  @Test void testRemoveSingleReformed() {
     VolcanoPlanner planner = new VolcanoPlanner();
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
 
@@ -451,7 +450,7 @@ class VolcanoPlannerTest {
   }
 
   @Disabled("CALCITE-2592 EnumerableMergeJoin is never taken")
-  @Test public void testMergeJoin() {
+  @Test void testMergeJoin() {
     VolcanoPlanner planner = new VolcanoPlanner();
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
 
@@ -492,7 +491,7 @@ class VolcanoPlannerTest {
    * Tests whether planner correctly notifies listeners of events.
    */
   @Disabled
-  @Test public void testListener() {
+  @Test void testListener() {
     TestListener listener = new TestListener();
 
     VolcanoPlanner planner = new VolcanoPlanner();

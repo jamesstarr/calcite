@@ -98,7 +98,7 @@ class MultiJdbcSchemaJoinTest {
   }
 
   /** Tests {@link org.apache.calcite.adapter.jdbc.JdbcCatalogSchema}. */
-  @Test public void test3() throws SQLException {
+  @Test void test3() throws SQLException {
     final BasicDataSource dataSource = new BasicDataSource();
     dataSource.setUrl(TempDb.INSTANCE.getUrl());
     dataSource.setUsername("");
@@ -146,7 +146,7 @@ class MultiJdbcSchemaJoinTest {
     return connection;
   }
 
-  @Test public void testJdbcWithEnumerableHashJoin() throws SQLException {
+  @Test void testJdbcWithEnumerableHashJoin() throws SQLException {
     // This query works correctly
     String query = "select t.id, t.field1 "
         + "from db.table1 t join \"hr\".\"emps\" e on e.\"empid\" = t.id";
@@ -154,7 +154,7 @@ class MultiJdbcSchemaJoinTest {
     assertThat(runQuery(setup(), query), equalTo(expected));
   }
 
-  @Test public void testEnumerableWithJdbcJoin() throws SQLException {
+  @Test void testEnumerableWithJdbcJoin() throws SQLException {
     //  * compared to testJdbcWithEnumerableHashJoin, the join order is reversed
     //  * the query fails with a CannotPlanException
     String query = "select t.id, t.field1 "

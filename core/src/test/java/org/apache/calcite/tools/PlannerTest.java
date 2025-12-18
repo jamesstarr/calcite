@@ -119,7 +119,7 @@ public class PlannerTest {
     assertThat(toString(rel), equalTo(expectedRelExpr));
   }
 
-  @Test public void testParseAndConvert() throws Exception {
+  @Test void testParseAndConvert() throws Exception {
     checkParseAndConvert(
         "select * from \"emps\" where \"name\" like '%e%'",
 
@@ -132,7 +132,7 @@ public class PlannerTest {
         + "    LogicalTableScan(table=[[hr, emps]])\n");
   }
 
-  @Test public void testParseIdentiferMaxLengthWithDefault() {
+  @Test void testParseIdentiferMaxLengthWithDefault() {
     Assertions.assertThrows(SqlParseException.class, () -> {
       Planner planner = getPlanner(null, SqlParser.configBuilder().build());
       planner.parse("select name as "
@@ -140,7 +140,7 @@ public class PlannerTest {
     });
   }
 
-  @Test public void testParseIdentiferMaxLengthWithIncreased() throws Exception {
+  @Test void testParseIdentiferMaxLengthWithIncreased() throws Exception {
     Planner planner = getPlanner(null,
         SqlParser.configBuilder().setIdentifierMaxLength(512).build());
     planner.parse("select name as "
@@ -244,7 +244,7 @@ public class PlannerTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3547">[CALCITE-3547]
    * SqlValidatorException because Planner cannot find UDFs added to schema</a>. */
-  @Test public void testValidateUserDefinedFunctionInSchema() throws Exception {
+  @Test void testValidateUserDefinedFunctionInSchema() throws Exception {
     SchemaPlus rootSchema = Frameworks.createRootSchema(true);
     rootSchema.add("my_plus",
         ScalarFunctionImpl.create(Smalls.MyPlusFunction.class, "eval"));
@@ -401,7 +401,7 @@ public class PlannerTest {
   }
 
   /** Unit test that parses, validates, converts and plans. */
-  @Test public void trimEmptyUnion2() throws Exception {
+  @Test void trimEmptyUnion2() throws Exception {
     checkUnionPruning("values(1) union all select * from (values(2)) where false",
         "EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n");
 
@@ -409,11 +409,11 @@ public class PlannerTest {
         "EnumerableValues(type=[RecordType(INTEGER EXPR$0)], tuples=[[{ 1 }]])\n");
   }
 
-  @Test public void trimEmptyUnion31() throws Exception {
+  @Test void trimEmptyUnion31() throws Exception {
     emptyUnions31();
   }
 
-  @Test public void trimEmptyUnion31withUnionMerge() throws Exception {
+  @Test void trimEmptyUnion31withUnionMerge() throws Exception {
     emptyUnions31(CoreRules.UNION_MERGE);
   }
 
@@ -440,11 +440,11 @@ public class PlannerTest {
       + " [rel#69:EnumerableUnion.ENUMERABLE.[](input#0=RelSubset#78,input#1=RelSubset#71,all=true)]"
       + " has lower cost {4.0 rows, 4.0 cpu, 0.0 io} than best cost {5.0 rows, 5.0 cpu, 0.0 io}"
       + " of subset [rel#67:Subset#6.ENUMERABLE.[]]")
-  @Test public void trimEmptyUnion32() throws Exception {
+  @Test void trimEmptyUnion32() throws Exception {
     emptyUnions32();
   }
 
-  @Test public void trimEmptyUnion32withUnionMerge() throws Exception {
+  @Test void trimEmptyUnion32withUnionMerge() throws Exception {
     emptyUnions32(CoreRules.UNION_MERGE);
   }
 
@@ -496,7 +496,7 @@ public class PlannerTest {
       + " [rel#17:EnumerableUnion.ENUMERABLE.[](input#0=RelSubset#26,input#1=RelSubset#19,all=true)]"
       + " has lower cost {4.0 rows, 4.0 cpu, 0.0 io}"
       + " than best cost {5.0 rows, 5.0 cpu, 0.0 io} of subset [rel#15:Subset#5.ENUMERABLE.[]]")
-  @Test public void trimEmptyUnion32viaRelBuidler() throws Exception {
+  @Test void trimEmptyUnion32viaRelBuidler() throws Exception {
     RelBuilder relBuilder = RelBuilder.create(RelBuilderTest.config().build());
 
     // This somehow blows up (see trimEmptyUnion32, the second case)
@@ -545,7 +545,7 @@ public class PlannerTest {
 
   /** Unit test that parses, validates, converts and
    * plans for query using order by */
-  @Test public void testSortPlan() throws Exception {
+  @Test void testSortPlan() throws Exception {
     RuleSet ruleSet =
         RuleSets.ofList(
             CoreRules.SORT_REMOVE,
@@ -574,7 +574,7 @@ public class PlannerTest {
    * <p>Since the left input to the join is sorted, and this join preserves
    * order, there shouldn't be any sort operator above the join.
    */
-  @Test public void testRedundantSortOnJoinPlan() throws Exception {
+  @Test void testRedundantSortOnJoinPlan() throws Exception {
     RuleSet ruleSet =
         RuleSets.ofList(
             CoreRules.SORT_REMOVE,
@@ -611,7 +611,7 @@ public class PlannerTest {
   /** Unit test that parses, validates, converts and
    * plans for query using two duplicate order by.
    * The duplicate order by should be removed by SqlToRelConverter. */
-  @Test public void testDuplicateSortPlan() throws Exception {
+  @Test void testDuplicateSortPlan() throws Exception {
     runDuplicateSortCheck(
         "select empid from ( "
         + "select * "
@@ -626,7 +626,7 @@ public class PlannerTest {
   /** Unit test that parses, validates, converts and
    * plans for query using two duplicate order by.
    * The duplicate order by should be removed by SqlToRelConverter. */
-  @Test public void testDuplicateSortPlanWithExpr() throws Exception {
+  @Test void testDuplicateSortPlanWithExpr() throws Exception {
     runDuplicateSortCheck("select empid+deptno from ( "
         + "select empid, deptno "
         + "from emps "
@@ -637,7 +637,7 @@ public class PlannerTest {
         + "    EnumerableTableScan(table=[[hr, emps]])\n");
   }
 
-  @Test public void testTwoSortRemoveInnerSort() throws Exception {
+  @Test void testTwoSortRemoveInnerSort() throws Exception {
     runDuplicateSortCheck("select empid+deptno from ( "
         + "select empid, deptno "
         + "from emps "
@@ -650,7 +650,7 @@ public class PlannerTest {
 
   /** Tests that outer order by is not removed since window function
    * might reorder the rows in-between */
-  @Test public void testDuplicateSortPlanWithOver() throws Exception {
+  @Test void testDuplicateSortPlanWithOver() throws Exception {
     runDuplicateSortCheck("select emp_cnt, empid+deptno from ( "
         + "select empid, deptno, count(*) over (partition by deptno) emp_cnt from ( "
         + "  select empid, deptno "
@@ -665,7 +665,7 @@ public class PlannerTest {
         + "        EnumerableTableScan(table=[[hr, emps]])\n");
   }
 
-  @Test public void testDuplicateSortPlanWithRemovedOver() throws Exception {
+  @Test void testDuplicateSortPlanWithRemovedOver() throws Exception {
     runDuplicateSortCheck("select empid+deptno from ( "
         + "select empid, deptno, count(*) over (partition by deptno) emp_cnt from ( "
         + "  select empid, deptno "
@@ -711,7 +711,7 @@ public class PlannerTest {
 
   /** Unit test that parses, validates, converts and
    * plans for query using two duplicate order by.*/
-  @Test public void testDuplicateSortPlanWORemoveSortRule() throws Exception {
+  @Test void testDuplicateSortPlanWORemoveSortRule() throws Exception {
     RuleSet ruleSet =
         RuleSets.ofList(
             EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
@@ -740,7 +740,7 @@ public class PlannerTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3029">[CALCITE-3029]
    * Java-oriented field type is wrongly forced to be NOT NULL after being converted to
    * SQL-oriented</a>. */
-  @Test public void testInsertSourceRelTypeWithNullValues() throws Exception {
+  @Test void testInsertSourceRelTypeWithNullValues() throws Exception {
     Planner planner = getPlanner(null, Programs.standard());
     SqlNode parse = planner.parse(
         "insert into \"emps\" values(1, 1, null, 1, 1)");
@@ -911,23 +911,23 @@ public class PlannerTest {
             + "  MockJdbcTableScan(table=[[hr, emps]])\n"));
   }
 
-  @Test public void testPlan5WayJoin()
+  @Test void testPlan5WayJoin()
       throws Exception {
     checkJoinNWay(5); // LoptOptimizeJoinRule disabled; takes about .4s
   }
 
-  @Test public void testPlan9WayJoin()
+  @Test void testPlan9WayJoin()
       throws Exception {
     checkJoinNWay(9); // LoptOptimizeJoinRule enabled; takes about 0.04s
   }
 
-  @Test public void testPlan35WayJoin()
+  @Test void testPlan35WayJoin()
       throws Exception {
     checkJoinNWay(35); // takes about 2s
   }
 
   @Tag("slow")
-  @Test public void testPlan60WayJoin()
+  @Test void testPlan60WayJoin()
       throws Exception {
     checkJoinNWay(60); // takes about 15s
   }
@@ -993,7 +993,7 @@ public class PlannerTest {
    * <p>Specifically, tests that a relation (dependents) in an inner join
    * cannot be pushed into an outer join (emps left join depts).
    */
-  @Test public void testHeuristicLeftJoin() throws Exception {
+  @Test void testHeuristicLeftJoin() throws Exception {
     final String sql = "select * from \"emps\" as e\n"
         + "left join \"depts\" as d on e.\"deptno\" = d.\"deptno\"\n"
         + "join \"dependents\" as p on e.\"empid\" = p.\"empid\"";
@@ -1014,7 +1014,7 @@ public class PlannerTest {
    * {@code (emps  join dependents) right join depts}
    * but we do not currently allow it.
    */
-  @Test public void testHeuristicPushInnerJoin() throws Exception {
+  @Test void testHeuristicPushInnerJoin() throws Exception {
     final String sql = "select * from \"emps\" as e\n"
         + "right join \"depts\" as d on e.\"deptno\" = d.\"deptno\"\n"
         + "join \"dependents\" as p on e.\"empid\" = p.\"empid\"";
@@ -1032,7 +1032,7 @@ public class PlannerTest {
 
   /** Tests that a relation (dependents) that is on the null-generating side of
    * an outer join cannot be pushed into an inner join (emps join depts). */
-  @Test public void testHeuristicRightJoin() throws Exception {
+  @Test void testHeuristicRightJoin() throws Exception {
     final String sql = "select * from \"emps\" as e\n"
         + "join \"depts\" as d on e.\"deptno\" = d.\"deptno\"\n"
         + "right join \"dependents\" as p on e.\"empid\" = p.\"empid\"";
@@ -1062,7 +1062,7 @@ public class PlannerTest {
   /** Plans a 3-table join query on the FoodMart schema. The ideal plan is not
    * bushy, but nevertheless exercises the bushy-join heuristic optimizer. */
   @Disabled
-  @Test public void testAlmostBushy() throws Exception {
+  @Test void testAlmostBushy() throws Exception {
     final String sql = "select *\n"
         + "from \"sales_fact_1997\" as s\n"
         + "join \"customer\" as c\n"
@@ -1092,7 +1092,7 @@ public class PlannerTest {
    *   (customer x ((product_class x product) x sales))
    * if you don't assume 'x' is left-associative. */
   @Disabled
-  @Test public void testBushy() throws Exception {
+  @Test void testBushy() throws Exception {
     final String sql = "select *\n"
         + "from \"sales_fact_1997\" as s\n"
         + "join \"customer\" as c\n"
@@ -1121,7 +1121,7 @@ public class PlannerTest {
   /** Plans a 5-table join query on the FoodMart schema. The ideal plan is
    * bushy: store x (customer x (product_class x product x sales)). */
   @Disabled
-  @Test public void testBushy5() throws Exception {
+  @Test void testBushy5() throws Exception {
     final String sql = "select *\n"
         + "from \"sales_fact_1997\" as s\n"
         + "join \"customer\" as c\n"
@@ -1152,7 +1152,7 @@ public class PlannerTest {
   /** Tests the bushy join algorithm where one table does not join to
    * anything. */
   @Disabled
-  @Test public void testBushyCrossJoin() throws Exception {
+  @Test void testBushyCrossJoin() throws Exception {
     final String sql = "select * from \"sales_fact_1997\" as s\n"
         + "join \"customer\" as c\n"
         + "  on s.\"customer_id\" = c.\"customer_id\"\n"
@@ -1171,7 +1171,7 @@ public class PlannerTest {
   /** Tests the bushy join algorithm against a query where not all tables have a
    * join condition to the others. */
   @Disabled
-  @Test public void testBushyCrossJoin2() throws Exception {
+  @Test void testBushyCrossJoin2() throws Exception {
     final String sql = "select * from \"sales_fact_1997\" as s\n"
         + "join \"customer\" as c\n"
         + "  on s.\"customer_id\" = c.\"customer_id\"\n"
@@ -1413,7 +1413,7 @@ public class PlannerTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3376">[CALCITE-3376]
    * VolcanoPlanner CannotPlanException: best rel is null even though there is
    * an option with non-infinite cost</a>. */
-  @Test public void testCorrelatedJoinWithIdenticalInputs() throws Exception {
+  @Test void testCorrelatedJoinWithIdenticalInputs() throws Exception {
     final RelBuilder builder = RelBuilder.create(RelBuilderTest.config().build());
     final RuleSet ruleSet =
         RuleSets.ofList(
@@ -1460,7 +1460,7 @@ public class PlannerTest {
             + "      EnumerableTableScan(table=[[scott, EMP]])\n"));
   }
 
-  @Test public void testView() throws Exception {
+  @Test void testView() throws Exception {
     final String sql = "select * FROM dept";
     final String expected = "LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
         + "  LogicalValues(type=[RecordType(INTEGER DEPTNO, CHAR(11) DNAME)], "
@@ -1471,7 +1471,7 @@ public class PlannerTest {
     checkView(sql, is(expected));
   }
 
-  @Test public void testViewOnView() throws Exception {
+  @Test void testViewOnView() throws Exception {
     final String sql = "select * FROM dept30";
     final String expected = "LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
         + "  LogicalFilter(condition=[=($0, 30)])\n"

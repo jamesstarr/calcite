@@ -185,7 +185,7 @@ class UdfTest {
   /** Tests a user-defined function that is defined in terms of a class with
    * non-static methods. */
   @Disabled("[CALCITE-1561] Intermittent test failures")
-  @Test public void testUserDefinedFunction() throws Exception {
+  @Test void testUserDefinedFunction() throws Exception {
     final String sql = "select \"adhoc\".my_plus(\"deptno\", 100) as p\n"
         + "from \"adhoc\".EMPLOYEES";
     final AtomicInteger c = Smalls.MyPlusFunction.INSTANCE_COUNT.get();
@@ -225,7 +225,7 @@ class UdfTest {
     withUdf().query(sql).returns(expected);
   }
 
-  @Test public void testUserDefinedFunctionWithNull() throws Exception {
+  @Test void testUserDefinedFunctionWithNull() throws Exception {
     final String sql = "select \"adhoc\".my_det_plus(\"deptno\", 1 + null) as p\n"
         + "from \"adhoc\".EMPLOYEES where 1 > 0 or nullif(null, 1) is null";
     final AtomicInteger c = Smalls.MyDeterministicPlusFunction.INSTANCE_COUNT.get();
@@ -244,7 +244,7 @@ class UdfTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3195">[CALCITE-3195]
    * Handle a UDF that throws checked exceptions in the Enumerable code generator</a>. */
-  @Test public void testUserDefinedFunctionWithException() throws Exception {
+  @Test void testUserDefinedFunctionWithException() throws Exception {
     final String sql1 = "select \"adhoc\".my_exception(\"deptno\") as p\n"
         + "from \"adhoc\".EMPLOYEES";
     final String expected1 = "P=20\n"
@@ -940,10 +940,9 @@ class UdfTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2053">[CALCITE-2053]
    * Overloaded user-defined functions that have Double and BigDecimal arguments
    * will goes wrong </a>. */
-<<<<<<< HEAD
-  @Test void testBigDecimalAndLong() {
-=======
   @Test public void testBigDecimalAndLong() {
+=======
+  @Test void testBigDecimalAndLong() {
     final CalciteAssert.AssertThat with = withUdf();
     with.query("values \"adhoc\".\"toDouble\"(cast(1.0 as double))")
             .returns("EXPR$0=1.0\n");

@@ -141,7 +141,7 @@ class SqlValidatorUtilTest {
     SqlValidatorUtil.checkIdentifierListForDuplicates(newList, null);
   }
 
-  @Test public void testNameMatcher() {
+  @Test void testNameMatcher() {
     final ImmutableList<String> beatles =
         ImmutableList.of("john", "paul", "ringo", "rinGo");
     final SqlNameMatcher insensitiveMatcher =

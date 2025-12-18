@@ -38,7 +38,7 @@ class PigAdapterTest extends AbstractPigTest {
           Sources.of(PigAdapterTest.class.getResource("/model.json"))
               .file().getAbsolutePath());
 
-  @Test public void testScanAndFilter() throws Exception {
+  @Test void testScanAndFilter() throws Exception {
     CalciteAssert.that()
         .with(MODEL)
         .query("select * from \"t\" where \"tc0\" > 'abc'")

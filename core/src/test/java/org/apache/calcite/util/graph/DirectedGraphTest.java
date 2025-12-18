@@ -313,7 +313,7 @@ class DirectedGraphTest {
     return list;
   }
 
-  @Test public void testAttributed() {
+  @Test void testAttributed() {
     AttributedDirectedGraph<String, DefaultEdge> g =
         AttributedDirectedGraph.create(new DefaultAttributedEdgeFactory());
     g.addVertex("A");

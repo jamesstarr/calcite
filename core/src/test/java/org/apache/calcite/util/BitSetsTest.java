@@ -190,7 +190,7 @@ class BitSetsTest {
   /**
    * Tests the method {@link BitSets#closure(java.util.SortedMap)}
    */
-  @Test public void testClosure() {
+  @Test void testClosure() {
     final SortedMap<Integer, BitSet> empty = new TreeMap<>();
     assertThat(BitSets.closure(empty), equalTo(empty));
 

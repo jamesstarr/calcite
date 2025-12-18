@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Tests for {@link RelCollation} and {@link RelFieldCollation}.
  */
 class RelCollationTest {
-  /** Unit test for {@link RelCollations#contains(List, ImmutableIntList)}. */
+  /** Unit test for {@link RelCollations#contains}. */
   @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
   @Test void testCollationContains() {
     final RelCollation collation21 =
@@ -78,9 +78,8 @@ class RelCollationTest {
         is(true));
   }
 
-  /**
-   * Unit test for {@link org.apache.calcite.rel.RelCollationImpl#compareTo}.
-   */
+  /** Unit test for
+   *  {@link org.apache.calcite.rel.RelCollationImpl#compareTo}. */
   @Test void testCollationCompare() {
     assertThat(collation(1, 2).compareTo(collation(1, 2)), equalTo(0));
     assertThat(collation(1, 2).compareTo(collation(1)), equalTo(1));

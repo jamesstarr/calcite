@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * HTML tables over HTTP.
  */
 @ExtendWith(RequiresNetworkExtension.class)
-public class SqlTest {
+class SqlTest {
   // helper functions
 
   private Fluent sql(String model, String sql) {
@@ -273,7 +273,7 @@ public class SqlTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-1754">[CALCITE-1754]
    * In Csv adapter, convert DATE and TIME values to int, and TIMESTAMP values
    * to long</a>. */
-  @Test public void testCsvGroupByTimestampAdd() throws SQLException {
+  @Test void testCsvGroupByTimestampAdd() throws SQLException {
     final String sql = "select count(*) as c,\n"
         + "  {fn timestampadd(SQL_TSI_DAY, 1, JOINEDAT) } as t\n"
         + "from EMPS group by {fn timestampadd(SQL_TSI_DAY, 1, JOINEDAT ) } ";
@@ -346,7 +346,7 @@ public class SqlTest {
 =======
 
   /** Reads the DEPTS table from the JSON schema. */
-  @Test public void testJsonSalesDepts() throws SQLException {
+  @Test void testJsonSalesDepts() throws SQLException {
     final String sql = "select * from sales.depts";
     sql("sales-json", sql)
         .returns("DEPTNO=10; NAME=Sales",
@@ -356,7 +356,7 @@ public class SqlTest {
   }
 
   /** Reads the EMPS table from the JSON schema. */
-  @Test public void testJsonSalesEmps() throws SQLException {
+  @Test void testJsonSalesEmps() throws SQLException {
     final String sql = "select * from sales.emps";
     final String[] lines = {
         "EMPNO=100; NAME=Fred; DEPTNO=10; GENDER=; CITY=; EMPID=30; AGE=25; SLACKER=true; MANAGER=false; JOINEDAT=1996-08-03",
@@ -371,7 +371,7 @@ public class SqlTest {
   /** Reads the EMPTY table from the JSON schema. The JSON file has no lines,
    * therefore the table has a system-generated column called
    * "EmptyFileHasNoColumns". */
-  @Test public void testJsonSalesEmpty() throws SQLException {
+  @Test void testJsonSalesEmpty() throws SQLException {
     final String sql = "select * from sales.\"EMPTY\"";
     checkSql(sql, "sales-json", resultSet -> {
       try {
@@ -390,7 +390,7 @@ public class SqlTest {
   }
 
   /** Test returns the result of two json file joins. */
-  @Test public void testJsonJoinOnString() {
+  @Test void testJsonJoinOnString() {
     final String sql = "select emps.EMPNO, emps.NAME, depts.deptno from emps\n"
         + "join depts on emps.deptno = depts.deptno";
     final String[] lines = {
@@ -402,7 +402,7 @@ public class SqlTest {
   }
 
   /** The folder contains both JSON files and CSV files joins. */
-  @Test public void testJsonWithCsvJoin() {
+  @Test void testJsonWithCsvJoin() {
     final String sql = "select emps.empno,\n"
         + " NAME,\n"
         + " \"DATE\".JOINEDAT\n"

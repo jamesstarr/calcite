@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * {@link ReflectiveVisitor} and provides a contrived example of how to use
  * them.
  */
-public class ReflectVisitorTest {
+class ReflectVisitorTest {
   /**
    * Tests CarelessNumberNegater.
    */

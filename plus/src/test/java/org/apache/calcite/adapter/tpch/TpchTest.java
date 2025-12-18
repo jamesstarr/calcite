@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * tests only run as part of slow tests.</p>
  */
 @Tag("slow")
-public class TpchTest {
+class TpchTest {
   public static final boolean ENABLE = TestUtil.getJavaMajorVersion() >= 7;
 
   private static String schema(String name, String scaleFactor) {
@@ -755,7 +755,7 @@ public class TpchTest {
           + "order by\n"
           + "  cntrycode");
 
-  @Disabled("it's wasting time")
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
   @Test void testRegion() {
     with()
         .query("select * from tpch.region")
@@ -767,14 +767,16 @@ public class TpchTest {
             "R_REGIONKEY=4; R_NAME=MIDDLE EAST; R_COMMENT=uickly special accounts cajole carefully blithely close requests. carefully final asymptotes haggle furiousl");
   }
 
+<<<<<<< HEAD
   @Disabled("it's wasting time")
+=======
   @Test void testLineItem() {
     with()
         .query("select * from tpch.lineitem")
         .returnsCount(6001215);
   }
 
-  @Disabled("it's wasting time")
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
   @Test void testOrders() {
     with()
         .query("select * from tpch.orders")
@@ -786,8 +788,11 @@ public class TpchTest {
    * Correlated scalar sub-query with multiple aggregates gives
    * AssertionError</a>. */
   @Disabled("planning succeeds, but gives OutOfMemoryError during execution")
+<<<<<<< HEAD
 =======
   @Test public void testDecorrelateScalarAggregate() {
+=======
+  @Test void testDecorrelateScalarAggregate() {
     final String sql = "select sum(l_extendedprice)\n"
         + "from lineitem, part\n"
         + "where\n"
@@ -800,7 +805,7 @@ public class TpchTest {
     with().query(sql).runs();
   }
 
-  @Disabled("it's wasting time")
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
   @Test void testCustomer() {
     with()
         .query("select * from tpch.customer")
@@ -813,23 +818,23 @@ public class TpchTest {
   }
 
   /** Tests the customer table with scale factor 5. */
-  @Test public void testCustomer5() {
+  @Test void testCustomer5() {
     with()
         .query("select * from tpch_5.customer")
         .returnsCount(750000);
   }
 
-  @Test public void testQuery01() {
+  @Test void testQuery01() {
     checkQuery(1);
   }
 
   @Disabled("Infinite planning")
-  @Test public void testQuery02() {
+  @Test void testQuery02() {
     checkQuery(2);
   }
 
   @Disabled("Infinite planning")
-  @Test public void testQuery02Conversion() {
+  @Test void testQuery02Conversion() {
     query(2)
         .convertMatches(relNode -> {
           String s = RelOptUtil.toString(relNode);
@@ -843,12 +848,12 @@ public class TpchTest {
   }
 
   @Disabled("NoSuchMethodException: SqlFunctions.lt(Date, Date)")
-  @Test public void testQuery04() {
+  @Test void testQuery04() {
     checkQuery(4);
   }
 
   @Disabled("OutOfMemoryError")
-  @Test public void testQuery05() {
+  @Test void testQuery05() {
     checkQuery(5);
   }
 
@@ -856,18 +861,23 @@ public class TpchTest {
     checkQuery(6);
   }
 
->>>>>>> ef260b65b ([CALCITE-3141] Slow tests are not run in continuous integration (#129))
+<<<<<<< HEAD
   @Test public void testQuery07() {
+=======
+  @Disabled("slow")
+  @Test void testQuery07() {
+>>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     assumeTrue(Bug.CALCITE_2223_FIXED);
     checkQuery(7);
   }
 
-  @Test public void testQuery08() {
+  @Disabled("slow")
+  @Test void testQuery08() {
     checkQuery(8);
   }
 
   @Disabled("no method found")
-  @Test public void testQuery09() {
+  @Test void testQuery09() {
     checkQuery(9);
   }
 
@@ -876,17 +886,17 @@ public class TpchTest {
   }
 
   @Disabled("CannotPlanException")
-  @Test public void testQuery11() {
+  @Test void testQuery11() {
     checkQuery(11);
   }
 
   @Disabled("NoSuchMethodException: SqlFunctions.lt(Date, Date)")
-  @Test public void testQuery12() {
+  @Test void testQuery12() {
     checkQuery(12);
   }
 
   @Disabled("CannotPlanException")
-  @Test public void testQuery13() {
+  @Test void testQuery13() {
     checkQuery(13);
   }
 
@@ -895,7 +905,7 @@ public class TpchTest {
   }
 
   @Disabled("AssertionError")
-  @Test public void testQuery15() {
+  @Test void testQuery15() {
     checkQuery(15);
   }
 
@@ -903,7 +913,8 @@ public class TpchTest {
     checkQuery(16);
   }
 
-  @Test public void testQuery17() {
+  @Disabled("slow")
+  @Test void testQuery17() {
     checkQuery(17);
   }
 
@@ -913,7 +924,7 @@ public class TpchTest {
 
   // a bit slow
   @Disabled
-  @Test public void testQuery19() {
+  @Test void testQuery19() {
     checkQuery(19);
   }
 
@@ -921,15 +932,14 @@ public class TpchTest {
     checkQuery(20);
   }
 
-<<<<<<< HEAD
-  @Disabled("slow")
-=======
   @Test public void testQuery21() {
+=======
+  @Test void testQuery21() {
     checkQuery(21);
   }
 
   @Disabled("IllegalArgumentException during decorrelation")
-  @Test public void testQuery22() {
+  @Test void testQuery22() {
     checkQuery(22);
   }
 

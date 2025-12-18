@@ -183,7 +183,7 @@ class MutableRelTest {
         + "intersect select * from emp where ename like 'John%'");
   }
 
-  @Test public void testUpdateInputOfUnion() {
+  @Test void testUpdateInputOfUnion() {
     MutableRel mutableRel = createMutableRel(
         "select sal from emp where deptno = 10"
             + "union select sal from emp where ename like 'John%'");
@@ -202,8 +202,7 @@ class MutableRelTest {
     MatcherAssert.assertThat(actual, Matchers.isLinux(expected));
   }
 
-=======
-  @Test public void testParentInfoOfUnion() {
+  @Test void testParentInfoOfUnion() {
     MutableRel mutableRel = createMutableRel(
         "select sal from emp where deptno = 10"
             + "union select sal from emp where ename like 'John%'");
@@ -212,7 +211,7 @@ class MutableRelTest {
     }
   }
 
-  @Test public void testMutableTableFunctionScanEquals() {
+  @Test void testMutableTableFunctionScanEquals() {
     final String sql = "SELECT * FROM TABLE(RAMP(3))";
     final MutableRel mutableRel1 = createMutableRel(sql);
     final MutableRel mutableRel2 = createMutableRel(sql);

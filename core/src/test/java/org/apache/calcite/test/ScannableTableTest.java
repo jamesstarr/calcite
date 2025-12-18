@@ -327,7 +327,7 @@ public class ScannableTableTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3405">[CALCITE-3405]
    * Prune columns for ProjectableFilterable when project is not simple mapping</a>. */
-  @Test public void testPushNonSimpleMappingProject() throws Exception {
+  @Test void testPushNonSimpleMappingProject() throws Exception {
     final StringBuilder buf = new StringBuilder();
     final Table table = new BeatlesProjectableFilterableTable(buf, true);
     final String explain = "PLAN="
@@ -350,7 +350,7 @@ public class ScannableTableTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3405">[CALCITE-3405]
    * Prune columns for ProjectableFilterable when project is not simple mapping</a>. */
-  @Test public void testPushSimpleMappingProject() throws Exception {
+  @Test void testPushSimpleMappingProject() throws Exception {
     final StringBuilder buf = new StringBuilder();
     final Table table = new BeatlesProjectableFilterableTable(buf, true);
     // Note that no redundant Project on EnumerableInterpreter
@@ -400,7 +400,7 @@ public class ScannableTableTest {
    * Stack overflow error thrown when running join query</a>
    * Test two ProjectableFilterableTable can join and produce right plan.
    */
-  @Test public void testProjectableFilterableTableJoin() throws Exception {
+  @Test void testProjectableFilterableTableJoin() throws Exception {
     final StringBuilder buf = new StringBuilder();
     final String explain = "PLAN="
         + "EnumerableNestedLoopJoin(condition=[true], joinType=[inner])\n"
