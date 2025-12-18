@@ -34,6 +34,7 @@ matrix:
       env:
         - SLOW_TESTS=Y
 <<<<<<< HEAD
+<<<<<<< HEAD
     - jdk: openjdk14
 =======
     - env: IMAGE=maven:3-jdk-11 JDOC=Y
@@ -64,6 +65,9 @@ matrix:
 >>>>>>> 158022b28 ([CALCITE-2660] OsAdapterTest should check if required commands are available)
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    - jdk: openjdk14
+>>>>>>> bb2091ca0 (Update Gradle: 6.1.1 -> 6.3 (#294))
 branches:
   only:
     - master

@@ -269,10 +269,14 @@ if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
       max*)
         # In POSIX sh, ulimit -H is undefined. That's why the result is checked to see if it worked.
 <<<<<<< HEAD
+<<<<<<< HEAD
         # shellcheck disable=SC3045
 =======
         # shellcheck disable=SC3045 
 >>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
+=======
+        # shellcheck disable=SC3045
+>>>>>>> bb2091ca0 (Update Gradle: 6.1.1 -> 6.3 (#294))
         MAX_FD=$( ulimit -H -n ) ||
             warn "Could not query maximum file descriptor limit"
     esac
@@ -281,6 +285,9 @@ if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
       *)
         # In POSIX sh, ulimit -n is undefined. That's why the result is checked to see if it worked.
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> bb2091ca0 (Update Gradle: 6.1.1 -> 6.3 (#294))
         # shellcheck disable=SC3045
         ulimit -n "$MAX_FD" ||
             warn "Could not set maximum file descriptor limit to $MAX_FD"

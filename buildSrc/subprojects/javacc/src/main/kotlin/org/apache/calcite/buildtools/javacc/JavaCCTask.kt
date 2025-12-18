@@ -27,9 +27,13 @@ import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 <<<<<<< HEAD
+<<<<<<< HEAD
 import org.gradle.api.tasks.Internal
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+import org.gradle.api.tasks.Internal
+>>>>>>> bb2091ca0 (Update Gradle: 6.1.1 -> 6.3 (#294))
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.property
@@ -41,6 +45,7 @@ open class JavaCCTask @Inject constructor(
     val javaCCClasspath = objectFactory.property<Configuration>()
         .convention(project.configurations.named(JavaCCPlugin.JAVACC_CLASSPATH_CONFIGURATION_NAME))
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     @Internal
     val inputFile = objectFactory.property<File>()
@@ -59,6 +64,20 @@ open class JavaCCTask @Inject constructor(
     val inputFile = objectFactory.property<File>()
 
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    @Internal
+    val inputFile = objectFactory.property<File>()
+
+    // See https://github.com/gradle/gradle/issues/12627
+    @get:InputFile
+    val actualInputFile: File? get() = try {
+        inputFile.orNull
+    } catch (e: org.gradle.api.internal.provider.AbstractProperty.PropertyQueryException) {
+        // This means Gradle queries property too early or the file doesn't exist yet
+        null
+    }
+
+>>>>>>> bb2091ca0 (Update Gradle: 6.1.1 -> 6.3 (#294))
     @Input
     val lookAhead = objectFactory.property<Int>().convention(1)
 
