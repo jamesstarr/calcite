@@ -3631,13 +3631,16 @@ class RexProgramTest extends RexProgramTestBase {
   /** Unit test for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2505">[CALCITE-2505]
    * RexSimplify wrongly simplifies "COALESCE(+(NULL), x)" to "NULL"</a>. */
-  @Test void testSimplifyCoalesce() {
-    checkSimplify(coalesce(vIntNotNull(), vInt()), // first arg not null
+  @Test public void testSimplifyCoalesce() {
+    // first arg not null
+    checkSimplify(coalesce(vIntNotNull(), vInt()),
         "?0.notNullInt0");
     checkSimplifyUnchanged(coalesce(vInt(), vIntNotNull()));
-    checkSimplify(coalesce(vInt(), vInt()), // repeated arg
+    // repeated arg
+    checkSimplify(coalesce(vInt(), vInt()),
         "?0.int0");
-    checkSimplify(coalesce(vIntNotNull(), vIntNotNull()), // repeated arg
+    // repeated arg
+    checkSimplify(coalesce(vIntNotNull(), vIntNotNull()),
         "?0.notNullInt0");
     checkSimplify(coalesce(vIntNotNull(), literal(1)), "?0.notNullInt0");
     checkSimplifyUnchanged(coalesce(vInt(), literal(1)));
@@ -3647,10 +3650,39 @@ class RexProgramTest extends RexProgramTestBase {
         "COALESCE(?0.int0, +(?0.int0, ?0.notNullInt0), 1)");
     checkSimplify(coalesce(gt(nullInt, nullInt), trueLiteral),
         "true");
+    checkSimplify(coalesce(unaryPlus(nullInt), unaryPlus(vInt())),
+        "?0.int0");
+    checkSimplifyUnchanged(coalesce(vInt(1), vInt()));
 
     checkSimplify(coalesce(nullInt, vInt()), "?0.int0");
     checkSimplify(coalesce(vInt(), nullInt, vInt(1)),
         "COALESCE(?0.int0, ?0.int1)");
+
+    // first arg not null
+    checkSimplify(coalesce(vDecimalNotNull(), vDecimal()),
+        "?0.notNullDecimal0");
+    checkSimplifyUnchanged(coalesce(vDecimal(), vDecimalNotNull()));
+    // repeated arg
+    checkSimplify(coalesce(vDecimal(), vDecimal()),
+        "?0.decimal0");
+    // repeated arg
+    checkSimplify(coalesce(vDecimalNotNull(), vDecimalNotNull()),
+        "?0.notNullDecimal0");
+    checkSimplify(coalesce(vDecimalNotNull(), literal(1)), "?0.notNullDecimal0");
+    checkSimplifyUnchanged(coalesce(vDecimal(), literal(1)));
+    checkSimplify(
+        coalesce(vDecimal(), plus(vDecimal(), vDecimalNotNull()), literal(1),
+            vDecimalNotNull()),
+        "COALESCE(?0.decimal0, +(?0.decimal0, ?0.notNullDecimal0), 1)");
+    checkSimplify(coalesce(gt(nullDecimal, nullDecimal), trueLiteral),
+        "true");
+    checkSimplify(coalesce(unaryPlus(nullDecimal), unaryPlus(vDecimal())),
+        "?0.decimal0");
+    checkSimplifyUnchanged(coalesce(vDecimal(1), vDecimal()));
+
+    checkSimplify(coalesce(nullDecimal, vDecimal()), "?0.decimal0");
+    checkSimplify(coalesce(vDecimal(), nullInt, vDecimal(1)),
+        "COALESCE(?0.decimal0, ?0.decimal1)");
   }
 
   @Test void simplifyNull() {
@@ -4114,6 +4146,20 @@ class RexProgramTest extends RexProgramTestBase {
     RexNode s = simplify.simplifyUnknownAs(expr, RexUnknownAs.UNKNOWN);
 
     assertThat(s, is(falseLiteral));
+  }
+
+  @Test void testSimplifyUnaryMinus() {
+    RexNode origExpr = vIntNotNull(1);
+    RexNode expr = unaryMinus(unaryMinus(origExpr));
+    RexNode simplifiedExpr = simplify.simplifyUnknownAs(expr, RexUnknownAs.UNKNOWN);
+    assertThat(simplifiedExpr, is(origExpr));
+  }
+
+  @Test void testSimplifyUnaryPlus() {
+    RexNode origExpr = vIntNotNull(1);
+    RexNode expr = unaryPlus(origExpr);
+    RexNode simplifiedExpr = simplify.simplifyUnknownAs(expr, RexUnknownAs.UNKNOWN);
+    assertThat(simplifiedExpr, is(origExpr));
   }
 
   @Test void testSimplifyNonDeterministicFunction() {

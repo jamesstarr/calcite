@@ -298,6 +298,10 @@ public class RexSimplify {
       case LESS_THAN_OR_EQUAL:
       case NOT_EQUALS:
         return simplifyComparison((RexCall) e, unknownAs);
+      case MINUS_PREFIX:
+        return simplifyUnaryMinus((RexCall) e, unknownAs);
+      case PLUS_PREFIX:
+        return simplifyUnaryPlus((RexCall) e, unknownAs);
       default:
         if (e.getClass() == RexCall.class) {
           return simplifyGenericNode((RexCall) e);
@@ -706,7 +710,19 @@ public class RexSimplify {
     return rexBuilder.makeCall(SqlStdOperatorTable.NOT, a2);
   }
 
->>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks)
+  private RexNode simplifyUnaryMinus(RexCall call, RexUnknownAs unknownAs) {
+    final RexNode a = call.getOperands().get(0);
+    if (a.getKind() == SqlKind.MINUS_PREFIX) {
+      // -(-(x)) ==> x
+      return simplify(((RexCall) a).getOperands().get(0), unknownAs);
+    }
+    return simplifyGenericNode(call);
+  }
+
+  private RexNode simplifyUnaryPlus(RexCall call, RexUnknownAs unknownAs) {
+    return simplify(call.getOperands().get(0), unknownAs);
+  }
+
   private RexNode simplifyIs(RexCall call, RexUnknownAs unknownAs) {
     final SqlKind kind = call.getKind();
     final RexNode a = call.getOperands().get(0);
