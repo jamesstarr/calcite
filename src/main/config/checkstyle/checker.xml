@@ -154,6 +154,7 @@
     </module>
     <module name="IllegalImport" />
 <<<<<<< HEAD
+<<<<<<< HEAD
     <module name="AvoidStarImport" />
 <<<<<<< HEAD
 =======
@@ -167,6 +168,9 @@
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 =======
 >>>>>>> a1b3408f5 ([CALCITE-2905] Drop pom.xml files)
+=======
+    <module name="AvoidStarImport" />
+>>>>>>> 4d342f230 (Add AvoidStarImport Checkstyle rule (#321))
 
     <!-- Checks for Javadoc comments (tree walker).       -->
     <!-- See http://checkstyle.sf.net/config_javadoc.html -->
