@@ -70,6 +70,7 @@ dependencies {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     api("org.apiguardian:apiguardian-api")
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
@@ -78,6 +79,9 @@ dependencies {
 >>>>>>> 361fe0e95 (Use concurrent test execution by default (#177))
 =======
 >>>>>>> d4dded518 ([CALCITE-3871] Remove dependency of org.apiguardian:apiguardian-api)
+=======
+    api("org.apiguardian:apiguardian-api")
+>>>>>>> 1b917d06c (Revert "[CALCITE-3871] Remove dependency of org.apiguardian:apiguardi… (#314))
 
     implementation("com.esri.geometry:esri-geometry-api")
     implementation("com.fasterxml.jackson.core:jackson-core")

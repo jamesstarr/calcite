@@ -44,6 +44,8 @@ dependencies {
 >>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
  */
 dependencies {
+    api("org.apiguardian:apiguardian-api")
+
     implementation("com.google.guava:guava")
     implementation("org.apache.calcite.avatica:avatica-core")
 <<<<<<< HEAD
