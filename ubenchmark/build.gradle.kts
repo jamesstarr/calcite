@@ -40,6 +40,7 @@ dependencies {
     // Make jmhCompileClasspath resolvable
     @Suppress("DEPRECATION")
     jmhCompileClasspath(platform(project(":bom")))
+<<<<<<< HEAD
     jmhImplementation(project(":core"))
     jmhImplementation(project(":linq4j"))
     jmhImplementation("com.google.guava:guava")
@@ -89,6 +90,8 @@ plugins {
 
 dependencies {
     jmhImplementation(platform(project(":bom")))
+=======
+>>>>>>> f473cf5d0 (Make ubenchmark clases executable from IDEA (#317))
     jmhImplementation(project(":core"))
     jmhImplementation(project(":linq4j"))
     jmhImplementation("com.google.guava:guava")
