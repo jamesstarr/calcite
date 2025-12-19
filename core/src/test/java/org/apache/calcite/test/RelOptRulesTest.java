@@ -1692,6 +1692,23 @@ class RelOptRulesTest extends RelOptTestBase {
     sql(sql).withRule(customPCTrans).check();
   }
 
+  @Test void testSwapOuterJoinFieldAccess() {
+    HepProgram preProgram = new HepProgramBuilder()
+        .addMatchLimit(1)
+        .addRuleInstance(CoreRules.JOIN_PROJECT_LEFT_TRANSPOSE_INCLUDE_OUTER)
+        .addRuleInstance(CoreRules.PROJECT_MERGE)
+        .build();
+    final HepProgram program = new HepProgramBuilder()
+        .addMatchLimit(1)
+        .addRuleInstance(CoreRules.JOIN_COMMUTE_OUTER)
+        .addRuleInstance(CoreRules.PROJECT_MERGE)
+        .build();
+    final String sql = "select t1.name, e.ename\n"
+        + "from DEPT_NESTED as t1 left outer join sales.emp e\n"
+        + " on t1.skill.type = e.job";
+    sql(sql).withPre(preProgram).with(program).check();
+  }
+
   @Test void testProjectCorrelateTranspose() {
     ProjectCorrelateTransposeRule customPCTrans =
         new ProjectCorrelateTransposeRule(expr -> true,
