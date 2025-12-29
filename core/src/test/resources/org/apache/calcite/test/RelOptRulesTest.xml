@@ -181,10 +181,14 @@ where case when (sal = 1000) then
             <![CDATA[
 LogicalProject(SAL=[$5])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalFilter(condition=[OR(=($5, 1000), =($5, 2000))])
 =======
   LogicalFilter(condition=[OR(=($5, 1000), AND(=($5, 2000), <>($5, 1000)))])
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
+=======
+  LogicalFilter(condition=[OR(=($5, 1000), =($5, 2000))])
+>>>>>>> 8225a6c79 ([CALCITE-3852] RexSimplify doesn't simplify NOT EQUAL predicates (#296))
     LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>

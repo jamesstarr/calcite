@@ -4148,21 +4148,21 @@ class RexProgramTest extends RexProgramTestBase {
     assertThat(s, is(falseLiteral));
   }
 
-  @Test void testSimplifyUnaryMinus() {
-    RexNode origExpr = vIntNotNull(1);
-    RexNode expr = unaryMinus(unaryMinus(origExpr));
-    RexNode simplifiedExpr = simplify.simplifyUnknownAs(expr, RexUnknownAs.UNKNOWN);
-    assertThat(simplifiedExpr, is(origExpr));
+  @Test public void testSimplifyNotEqual() {
+    RexNode ref = input(tInt(), 0);
+    RelOptPredicateList relOptPredicateList = RelOptPredicateList.of(rexBuilder,
+        ImmutableList.of(eq(ref, literal(9))));
+    checkSimplifyFilter(ne(ref, literal(9)), relOptPredicateList, "false");
+    checkSimplifyFilter(ne(ref, literal(5)), relOptPredicateList, "true");
+
+    ref = input(tInt(true), 0);
+    checkSimplifyFilter(ne(ref, literal(9)), relOptPredicateList,
+        "AND(null, IS NULL($0))");
+    checkSimplifyFilter(ne(ref, literal(5)), relOptPredicateList,
+        "OR(null, IS NOT NULL($0))");
   }
 
-  @Test void testSimplifyUnaryPlus() {
-    RexNode origExpr = vIntNotNull(1);
-    RexNode expr = unaryPlus(origExpr);
-    RexNode simplifiedExpr = simplify.simplifyUnknownAs(expr, RexUnknownAs.UNKNOWN);
-    assertThat(simplifiedExpr, is(origExpr));
-  }
-
-  @Test void testSimplifyNonDeterministicFunction() {
+  @Test public void testSimplifyNonDeterministicFunction() {
     final SqlOperator ndc = new SqlSpecialOperator(
         "NDC",
         SqlKind.OTHER_FUNCTION,
