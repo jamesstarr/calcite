@@ -100,6 +100,8 @@ import static org.apache.calcite.linq4j.tree.ExpressionType.Subtract;
 import static org.apache.calcite.linq4j.tree.ExpressionType.UnaryPlus;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.CHR;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.COMPRESS;
+import static org.apache.calcite.sql.fun.SqlLibraryOperators.CONCAT2;
+import static org.apache.calcite.sql.fun.SqlLibraryOperators.CONCAT_FUNCTION;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.COSH;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.DATE;
 import static org.apache.calcite.sql.fun.SqlLibraryOperators.DATE_FROM_UNIX_DATE;
