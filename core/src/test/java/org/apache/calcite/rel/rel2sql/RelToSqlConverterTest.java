@@ -2047,6 +2047,19 @@ class RelToSqlConverterTest {
     sql(query).dialect(mySqlDialect(NullCollation.LAST)).ok(expected);
   }
 
+  @Test void testCastToVarchar() {
+    String query = "select cast(\"product_id\" as varchar) from \"product\"";
+    final String expectedClickHouse = "SELECT CAST(`product_id` AS `String`)\n"
+        + "FROM `foodmart`.`product`";
+    final String expectedMysql = "SELECT CAST(`product_id` AS CHAR)\n"
+        + "FROM `foodmart`.`product`";
+    sql(query)
+        .withClickHouse()
+        .ok(expectedClickHouse)
+        .withMysql()
+        .ok(expectedMysql);
+  }
+
   @Test void testSelectQueryWithLimitClauseWithoutOrder() {
     String query = "select \"product_id\" from \"product\" limit 100 offset 10";
     final String expected = "SELECT \"product_id\"\n"
@@ -3330,6 +3343,14 @@ class RelToSqlConverterTest {
         .ok(expected);
   }
 
+  @Test void testFloorClickHouse() {
+    String query = "SELECT floor(\"hire_date\" TO MINUTE) FROM \"employee\"";
+    String expected = "SELECT toStartOfMinute(`hire_date`)\nFROM `foodmart`.`employee`";
+    sql(query)
+        .withClickHouse()
+        .ok(expected);
+  }
+
   @Test void testFloorPostgres() {
     String query = "SELECT floor(\"hire_date\" TO MINUTE) FROM \"employee\"";
     String expected = "SELECT DATE_TRUNC('MINUTE', \"hire_date\")\nFROM \"foodmart\".\"employee\"";
@@ -3372,6 +3393,25 @@ class RelToSqlConverterTest {
     sql(query)
         .withMysql()
         .ok(expected);
+  }
+
+  @Test public void testFloorWeek() {
+    final String query = "SELECT floor(\"hire_date\" TO WEEK) FROM \"employee\"";
+    final String expectedClickHouse = "SELECT toMonday(`hire_date`)\n"
+        + "FROM `foodmart`.`employee`";
+    final String expectedMssql = "SELECT CONVERT(DATETIME, CONVERT(VARCHAR(10), "
+        + "DATEADD(day, - (6 + DATEPART(weekday, [hire_date] )) % 7, [hire_date] ), 126))\n"
+        + "FROM [foodmart].[employee]";
+    final String expectedMysql = "SELECT STR_TO_DATE(DATE_FORMAT(`hire_date` , '%x%v-1'), "
+        + "'%x%v-%w')\n"
+        + "FROM `foodmart`.`employee`";
+    sql(query)
+        .withClickHouse()
+        .ok(expectedClickHouse)
+        .withMssql()
+        .ok(expectedMssql)
+        .withMysql()
+        .ok(expectedMysql);
   }
 
   @Test void testUnparseSqlIntervalQualifierDb2() {
@@ -3497,7 +3537,7 @@ class RelToSqlConverterTest {
         .ok(expected);
   }
 
-<<<<<<< HEAD
+>>>>>>> 581bcc15c ([CALCITE-2157] ClickHouse dialect implementation (Chris Baynes) (#328))
   @Test public void testFloorMonth() {
     final String query = "SELECT floor(\"hire_date\" TO MONTH) FROM \"employee\"";
     final String expectedClickHouse = "SELECT toStartOfMonth(`hire_date`)\n"
@@ -3516,6 +3556,8 @@ class RelToSqlConverterTest {
         .ok(expectedMysql);
   }
 
+<<<<<<< HEAD
+=======
 =======
   @Test void testFloorMysqlHour() {
     String query = "SELECT floor(\"hire_date\" TO HOUR) FROM \"employee\"";
@@ -5709,6 +5751,10 @@ class RelToSqlConverterTest {
 
     Sql withCalcite() {
       return dialect(SqlDialect.DatabaseProduct.CALCITE.getDialect());
+    }
+
+    Sql withClickHouse() {
+      return dialect(SqlDialect.DatabaseProduct.CLICKHOUSE.getDialect());
     }
 
     Sql withDb2() {

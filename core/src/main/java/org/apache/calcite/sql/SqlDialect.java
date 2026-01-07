@@ -261,7 +261,9 @@ public class SqlDialect {
     case "ACCESS":
       return DatabaseProduct.ACCESS;
     case "APACHE DERBY":
->>>>>>> b3be0b9f7 ([CALCITE-3050] Integrate SqlDialect and SqlParser.Config)
+      return DatabaseProduct.DERBY;
+    case "CLICKHOUSE":
+      return DatabaseProduct.CLICKHOUSE;
     case "DBMS:CLOUDSCAPE":
       return DatabaseProduct.DERBY;
     case "HIVE":
