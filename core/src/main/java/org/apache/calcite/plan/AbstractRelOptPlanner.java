@@ -29,6 +29,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,7 +63,7 @@ public abstract class AbstractRelOptPlanner implements RelOptPlanner {
 
   private final AtomicBoolean cancelFlag;
 
-  private final Set<Class<? extends RelNode>> classes = new HashSet<>();
+  private final Set<Class<? extends RelNode>> classes = new LinkedHashSet<>();
 
   private final Set<RelTrait> traits = new HashSet<>();
 
