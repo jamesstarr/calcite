@@ -370,5 +370,9 @@ public class RelSet {
     for (RelSubset subset : subsets) {
       planner.fireRules(subset);
     }
+    // Fire rule match on subsets as well
+    for (RelSubset subset : subsets) {
+      planner.fireRules(subset, true);
+    }
   }
 }

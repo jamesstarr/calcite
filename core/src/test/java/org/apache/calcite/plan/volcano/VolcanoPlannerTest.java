@@ -52,7 +52,7 @@ import static org.apache.calcite.plan.volcano.PlannerTests.NoneLeafRel;
 import static org.apache.calcite.plan.volcano.PlannerTests.NoneSingleRel;
 import static org.apache.calcite.plan.volcano.PlannerTests.PHYS_CALLING_CONVENTION;
 import static org.apache.calcite.plan.volcano.PlannerTests.PHYS_CALLING_CONVENTION_2;
->>>>>>> 9e40b5a40 ([CALCITE-3118] VolcanoRuleCall should look at RelSubset rather than RelSet when checking child ordinal of a parent operand (Botong Huang))
+import static org.apache.calcite.plan.volcano.PlannerTests.PHYS_CALLING_CONVENTION_3;
 import static org.apache.calcite.plan.volcano.PlannerTests.PhysBiRel;
 import static org.apache.calcite.plan.volcano.PlannerTests.PhysLeafRel;
 import static org.apache.calcite.plan.volcano.PlannerTests.PhysLeafRule;
