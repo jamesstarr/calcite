@@ -39,7 +39,7 @@ import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.test.CalciteAssert.ConnectionPostProcessor;
->>>>>>> 31f6a392c ([CALCITE-3479] Stack overflow error thrown when running join queryi (Xiening Dai))
+import org.apache.calcite.util.NlsString;
 import org.apache.calcite.util.Pair;
 
 import com.google.common.collect.ImmutableMap;
@@ -486,6 +486,26 @@ public class ScannableTableTest {
       assertThat(resultSet,
           Matchers.returnsUnordered("i=0", "i=10", "i=20"));
       assertThat(scanCount.get(), is(3));
+    }
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-3758">[CALCITE-3758]
+   * FilterTableScanRule generate wrong mapping for filter condition
+   * when underlying is BindableTableScan</a>. */
+  @Test public void testPFTableInBindableConvention() {
+    final StringBuilder buf = new StringBuilder();
+    final Table table = new BeatlesProjectableFilterableTable(buf, true);
+    try (Hook.Closeable ignored = Hook.ENABLE_BINDABLE.addThread(Hook.propertyJ(true))) {
+      final String explain = "PLAN="
+          + "BindableTableScan(table=[[s, beatles]], filters=[[=($1, 'John')]], projects=[[1]])";
+      CalciteAssert.that()
+          .with(newSchema("s", Pair.of("beatles", table)))
+          .query("select \"j\" from \"s\".\"beatles\" where \"j\" = 'John'")
+          .explainContains(explain)
+          .returnsUnordered("j=John");
+      assertThat(buf.toString(),
+          is("returnCount=1, filter=<1, John>, projects=[1]"));
     }
   }
 
