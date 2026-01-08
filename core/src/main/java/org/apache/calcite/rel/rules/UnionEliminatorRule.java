@@ -49,6 +49,22 @@ public class UnionEliminatorRule
   //~ Methods ----------------------------------------------------------------
 
   @Override public boolean matches(RelOptRuleCall call) {
+<<<<<<< HEAD
+=======
+    Union union = call.rel(0);
+    return union.all && union.getInputs().size() == 1;
+  }
+
+  @Override public void onMatch(RelOptRuleCall call) {
+    Union union = call.rel(0);
+    call.transformTo(union.getInputs().get(0));
+  }
+
+  @Override public boolean autoPruneOld() {
+    return true;
+  }
+
+>>>>>>> 2504323cf ([CALCITE-3939] Change UnionEliminatorRule and ProjectRemoveRule to au… (#335))
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
     Config DEFAULT = EMPTY.as(Config.class)

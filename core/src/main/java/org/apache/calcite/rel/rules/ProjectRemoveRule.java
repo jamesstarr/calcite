@@ -20,12 +20,8 @@ import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Project;
-import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.tools.RelBuilderFactory;
-
-import java.util.List;
 
 /**
  * Planner rule that,
@@ -85,20 +81,8 @@ public class ProjectRemoveRule
         project.getInput().getRowType());
   }
 
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY
-            .withOperandSupplier(b ->
-                    b.operand(Project.class)
-                            // Use a predicate to detect non-matches early.
-                            // This keeps the rule queue short.
-                            .predicate(ProjectRemoveRule::isTrivial)
-                            .anyInputs())
-            .as(Config.class);
-
-    @Override default ProjectRemoveRule toRule() {
-      return new ProjectRemoveRule(this);
-    }
+  @Override public boolean autoPruneOld() {
+    return true;
   }
 
   /** Rule configuration. */
