@@ -31,9 +31,9 @@ import org.slf4j.Logger;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
+>>>>>>> 312f2890e ([CALCITE-3868] Remove redundant ruleSet and ruleNames in VolcanoPlanner (#332))
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -44,16 +44,18 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import static org.apache.calcite.util.Static.RESOURCE;
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 /**
  * Abstract base for implementations of the {@link RelOptPlanner} interface.
  */
 public abstract class AbstractRelOptPlanner implements RelOptPlanner {
+<<<<<<< HEAD
   //~ Static fields/initializers ---------------------------------------------
 
   /** Logger for rule attempts information. */
   private static final Logger RULE_ATTEMPTS_LOGGER = CalciteTrace.getRuleAttemptsTracer();
 
+=======
+>>>>>>> 312f2890e ([CALCITE-3868] Remove redundant ruleSet and ruleNames in VolcanoPlanner (#332))
   //~ Instance fields --------------------------------------------------------
 
   /**
