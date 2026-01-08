@@ -20,12 +20,8 @@ import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Project;
-import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.tools.RelBuilderFactory;
-
-import java.util.List;
 
 /**
  * Planner rule that,
@@ -69,8 +65,7 @@ public class ProjectRemoveRule
           childProject.getInput(), childProject.getProjects(),
           project.getRowType());
     }
-    RelNode child = call.getPlanner().register(stripped, project);
-    call.transformTo(child);
+    call.transformTo(stripped);
   }
 
   /**
@@ -86,10 +81,8 @@ public class ProjectRemoveRule
         project.getInput().getRowType());
   }
 
-  @Deprecated // to be removed before 1.5
-  public static boolean isIdentity(List<? extends RexNode> exps,
-      RelDataType childRowType) {
-    return RexUtil.isIdentity(exps, childRowType);
+  @Override public boolean autoPruneOld() {
+    return true;
   }
 
   /** Rule configuration. */

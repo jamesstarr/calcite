@@ -55,18 +55,13 @@ public class UnionEliminatorRule
 
   @Override public void onMatch(RelOptRuleCall call) {
     Union union = call.rel(0);
-    if (union.getInputs().size() != 1) {
-      return;
-    }
-    if (!union.all) {
-      return;
-    }
-
-    // REVIEW jvs 14-Mar-2006:  why don't we need to register
-    // the equivalence here like we do in AggregateRemoveRule?
-
     call.transformTo(union.getInputs().get(0));
   }
+
+  @Override public boolean autoPruneOld() {
+    return true;
+  }
+
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
     Config DEFAULT = EMPTY.as(Config.class)
