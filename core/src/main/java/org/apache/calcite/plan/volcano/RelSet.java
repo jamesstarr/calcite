@@ -364,5 +364,9 @@ class RelSet {
       assert planner.getSet(rel) == this;
       planner.fireRules(rel, true);
     }
+    // Fire rule match on subsets as well
+    for (RelSubset subset : subsets) {
+      planner.fireRules(subset, true);
+    }
   }
 }
