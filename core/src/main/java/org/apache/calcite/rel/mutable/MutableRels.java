@@ -179,14 +179,14 @@ public abstract class MutableRels {
    * Construct expression list of Project by the given fields of the input.
    */
   public static List<RexNode> createProjects(final MutableRel child,
-      final List<RexNode> projects) {
-    List<RexNode> rexNodeList = new ArrayList<>(projects.size());
-    for (RexNode project : projects) {
-      if (project instanceof RexInputRef) {
-        RexInputRef rexInputRef = (RexInputRef) project;
+      final List<RexNode> projs) {
+    List<RexNode> rexNodeList = new ArrayList<>(projs.size());
+    for (int i = 0; i < projs.size(); i++) {
+      if (projs.get(i) instanceof RexInputRef) {
+        RexInputRef rexInputRef = (RexInputRef) projs.get(i);
         rexNodeList.add(RexInputRef.of(rexInputRef.getIndex(), child.rowType));
       } else {
-        rexNodeList.add(project);
+        rexNodeList.add(projs.get(i));
       }
     }
     return rexNodeList;
