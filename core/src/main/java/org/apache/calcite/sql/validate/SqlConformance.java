@@ -73,8 +73,8 @@ public interface SqlConformance {
    *
    * <p>Among the built-in conformance levels, true in
    * {@link SqlConformanceEnum#BABEL},
-   * {@link SqlConformanceEnum#LENIENT},
    * {@link SqlConformanceEnum#BIG_QUERY},
+   * {@link SqlConformanceEnum#LENIENT},
    * {@link SqlConformanceEnum#MYSQL_5};
    * false otherwise.
    */
@@ -99,8 +99,8 @@ public interface SqlConformance {
    *
    * <p>Among the built-in conformance levels, true in
    * {@link SqlConformanceEnum#BABEL},
-   * {@link SqlConformanceEnum#LENIENT},
    * {@link SqlConformanceEnum#BIG_QUERY},
+   * {@link SqlConformanceEnum#LENIENT},
    * {@link SqlConformanceEnum#MYSQL_5};
    * false otherwise.
    */
@@ -477,4 +477,5 @@ public interface SqlConformance {
    * true otherwise.
    */
   boolean allowQualifyingCommonColumn();
+
 }

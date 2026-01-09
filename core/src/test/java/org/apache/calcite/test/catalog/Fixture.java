@@ -57,7 +57,7 @@ final class Fixture extends AbstractFixture {
       .kind(StructKind.PEEK_FIELDS)
       .build();
   final RelDataType rectilinearPeekCoordMultisetType =
-            typeFactory.createMultisetType(rectilinearPeekCoordType, -1);
+      typeFactory.createMultisetType(rectilinearPeekCoordType, -1);
   final RelDataType rectilinearPeekNoExpandCoordType = typeFactory.builder()
       .add("M", intType)
       .add("SUB",
@@ -81,8 +81,8 @@ final class Fixture extends AbstractFixture {
       .add("EMPNO", intType)
       .add("ENAME", varchar10Type)
       .add("DETAIL", typeFactory.builder()
-          .add("SKILLS", array(skillRecordType)).build())
-            .kind(StructKind.PEEK_FIELDS)
+      .add("SKILLS", array(skillRecordType)).build())
+      .kind(StructKind.PEEK_FIELDS)
       .build();
   final RelDataType empListType = array(empRecordType);
   final ObjectSqlType addressType = new ObjectSqlType(SqlTypeName.STRUCTURED,

@@ -366,4 +366,5 @@ public enum SqlConformanceEnum implements SqlConformance {
       return false;
     }
   }
+
 }

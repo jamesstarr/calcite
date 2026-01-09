@@ -1374,7 +1374,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
     final String sql = "select d.deptno, e2.empno\n"
         + "from dept_nested as d,\n"
         + " UNNEST(d.employees) as e2(empno, y, z)";
-    sql(sql).with(getExtendedTester()).ok();
+    sql(sql).ok();
   }
 
   /**
@@ -1382,7 +1382,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3789">[CALCITE-3789]
    * Support validation of UNNEST multiple array columns like Presto</a>.
    */
-  @Test void testAliasUnnestArrayPlanWithSingleColumn() {
+  @Test public void testAliasUnnestArrayPlanWithSingleColumn() {
     final String sql = "select d.deptno, employee.empno\n"
         + "from dept_nested_expanded as d,\n"
         + " UNNEST(d.employees) as t(employee)";
@@ -1394,7 +1394,7 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3789">[CALCITE-3789]
    * Support validation of UNNEST multiple array columns like Presto</a>.
    */
-  @Test void testAliasUnnestArrayPlanWithDoubleColumn() {
+  @Test public void testAliasUnnestArrayPlanWithDoubleColumn() {
     final String sql = "select d.deptno, e, k.empno\n"
         + "from dept_nested_expanded as d CROSS JOIN\n"
         + " UNNEST(d.admins, d.employees) as t(e, k)";
