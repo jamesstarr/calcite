@@ -34,7 +34,6 @@ import java.util.Arrays;
 >>>>>>> 312f2890e ([CALCITE-3868] Remove redundant ruleSet and ruleNames in VolcanoPlanner (#332))
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -74,7 +73,7 @@ public abstract class AbstractRelOptPlanner implements RelOptPlanner {
 
   protected final AtomicBoolean cancelFlag;
 
-  private final Set<Class<? extends RelNode>> classes = new LinkedHashSet<>();
+  private final Set<Class<? extends RelNode>> classes = new HashSet<>();
 
   private final Set<Convention> conventions = new HashSet<>();
 
