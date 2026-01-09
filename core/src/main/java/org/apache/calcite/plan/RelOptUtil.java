@@ -126,7 +126,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -2164,7 +2163,7 @@ public abstract class RelOptUtil {
   }
 
   /**
-   * Returns whether two types are equal using '='.
+   * Returns whether two types are equal using 'equals'.
    *
    * @param desc1 Description of first type
    * @param type1 First type
@@ -2185,7 +2184,7 @@ public abstract class RelOptUtil {
       return litmus.succeed();
     }
 
-    if (!Objects.equals(type1, type2)) {
+    if (!type1.equals(type2)) {
       return litmus.fail("type mismatch:\n{}:\n{}\n{}:\n{}",
           desc1, type1.getFullTypeString(),
           desc2, type2.getFullTypeString());
