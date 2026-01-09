@@ -6898,10 +6898,14 @@ from table(tumble(table Shipments, descriptor(rowtime), INTERVAL '1' MINUTE))]]>
             <![CDATA[
 LogicalProject(ORDERID=[$0], ROWTIME=[$1], window_start=[$2], window_end=[$3])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalTableFunctionScan(invocation=[TUMBLE(DESCRIPTOR($1), 60000:INTERVAL MINUTE)], rowType=[RecordType(INTEGER ORDERID, TIMESTAMP(0) ROWTIME, TIMESTAMP(0) window_start, TIMESTAMP(0) window_end)])
 =======
   LogicalTableFunctionScan(invocation=[TUMBLE($1, DESCRIPTOR($1), 60000:INTERVAL MINUTE)], rowType=[RecordType(INTEGER ORDERID, TIMESTAMP(0) ROWTIME, TIMESTAMP(0) window_start, TIMESTAMP(0) window_end)])
 >>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
+=======
+  LogicalTableFunctionScan(invocation=[TUMBLE(DESCRIPTOR($1), 60000:INTERVAL MINUTE)], rowType=[RecordType(INTEGER ORDERID, TIMESTAMP(0) ROWTIME, TIMESTAMP(0) window_start, TIMESTAMP(0) window_end)])
+>>>>>>> 48882ed6a ([CALCITE-3955] Remove the first operand of RexCall from SqlWindowTabl… (#341))
     LogicalProject(ORDERID=[$0], ROWTIME=[$1])
       LogicalTableScan(table=[[CATALOG, SALES, SHIPMENTS]])
 ]]>
@@ -6948,10 +6952,14 @@ from table(tumble((select * from Shipments), descriptor(rowtime), INTERVAL '1' M
             <![CDATA[
 LogicalProject(ORDERID=[$0], ROWTIME=[$1], window_start=[$2], window_end=[$3])
 <<<<<<< HEAD
+<<<<<<< HEAD
   LogicalTableFunctionScan(invocation=[TUMBLE(DESCRIPTOR($1), 60000:INTERVAL MINUTE)], rowType=[RecordType(INTEGER ORDERID, TIMESTAMP(0) ROWTIME, TIMESTAMP(0) window_start, TIMESTAMP(0) window_end)])
 =======
   LogicalTableFunctionScan(invocation=[TUMBLE($1, DESCRIPTOR($1), 60000:INTERVAL MINUTE)], rowType=[RecordType(INTEGER ORDERID, TIMESTAMP(0) ROWTIME, TIMESTAMP(0) window_start, TIMESTAMP(0) window_end)])
 >>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
+=======
+  LogicalTableFunctionScan(invocation=[TUMBLE(DESCRIPTOR($1), 60000:INTERVAL MINUTE)], rowType=[RecordType(INTEGER ORDERID, TIMESTAMP(0) ROWTIME, TIMESTAMP(0) window_start, TIMESTAMP(0) window_end)])
+>>>>>>> 48882ed6a ([CALCITE-3955] Remove the first operand of RexCall from SqlWindowTabl… (#341))
     LogicalProject(ORDERID=[$0], ROWTIME=[$1])
       LogicalTableScan(table=[[CATALOG, SALES, SHIPMENTS]])
 ]]>
