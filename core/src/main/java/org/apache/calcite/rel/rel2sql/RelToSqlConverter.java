@@ -623,7 +623,7 @@ public class RelToSqlConverter extends SqlImplementor
         // In this case we need to construct the following query:
         // SELECT NULL as C0, NULL as C1, NULL as C2 ... FROM DUAL WHERE FALSE
         // This would return an empty result set with the same number of columns as the field names.
-        final List<SqlNode> nullColumnNames = new ArrayList<>();
+        final List<SqlNode> nullColumnNames = new ArrayList<>(fieldNames.size());
         for (String fieldName : fieldNames) {
           SqlCall nullColumnName = as(SqlLiteral.createNull(POS), fieldName);
           nullColumnNames.add(nullColumnName);
