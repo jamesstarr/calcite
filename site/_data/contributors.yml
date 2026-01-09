@@ -325,7 +325,11 @@
   org: MapR
   role: PMC
   avatar: https://mapr.com/blog/author/ted-dunning/assets/tdunning-panama.jpg
+<<<<<<< HEAD
 - name: Vineet Garg
+=======
+  name: Vineet Garg
+>>>>>>> c39e58cfb (Site: Add Vineet Garg as committer (#350))
   apacheId: vgarg
   githubId: vineetgarg02
   org: Cloudera
