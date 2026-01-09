@@ -290,10 +290,9 @@ public class VolcanoRuleCall extends RelOptRuleCall {
       final Collection<? extends RelNode> successors;
       if (ascending) {
         assert previousOperand.getParent() == operand;
-<<<<<<< HEAD
-        assert operand.getMatchedClass() != RelSubset.class;
-=======
 >>>>>>> 197c6c2a8 ([CALCITE-3756] RelSubset should not match operand(RelNode.class) (#192))
+=======
+        assert operand.getMatchedClass() != RelSubset.class;
         if (previousOperand.getMatchedClass() != RelSubset.class
             && previous instanceof RelSubset) {
           throw new RuntimeException("RelSubset should not match with "
@@ -310,7 +309,10 @@ public class VolcanoRuleCall extends RelOptRuleCall {
         // because unordered can match child in any ordinal
         if (parentOperand.childPolicy == RelOptRuleOperandChildPolicy.UNORDERED) {
           if (operand.getMatchedClass() == RelSubset.class) {
-            successors = inputs;
+            // Find all the sibling subsets that satisfy this subset's traitSet
+            successors = inputs.stream()
+              .flatMap(subset -> ((RelSubset) subset).getSubsetsSatisfyingThis())
+              .collect(Collectors.toList());
           } else {
             List<RelNode> allRelsInAllSubsets = new ArrayList<>();
             Set<RelNode> duplicates = new HashSet<>();
@@ -336,10 +338,9 @@ public class VolcanoRuleCall extends RelOptRuleCall {
           final RelSubset subset =
               (RelSubset) inputs.get(operand.ordinalInParent);
           if (operand.getMatchedClass() == RelSubset.class) {
-            // Find all the sibling subsets that satisfy the traitSet of current subset.
-            successors = subset.set.subsets.stream()
-                .filter(s -> s.getTraitSet().satisfies(subset.getTraitSet()))
-                .collect(Collectors.toList());
+            // Find all the sibling subsets that satisfy this subset'straitSet
+            successors =
+              subset.getSubsetsSatisfyingThis().collect(Collectors.toList());
           } else {
             successors = subset.getRelList();
           }
@@ -362,9 +363,16 @@ public class VolcanoRuleCall extends RelOptRuleCall {
           }
           final RelSubset input =
               (RelSubset) rel.getInput(previousOperand.ordinalInParent);
-          List<RelNode> inputRels = input.getRelList();
-          if (!(previous instanceof RelSubset) && !inputRels.contains(previous)) {
-            continue;
+          if (previousOperand.getMatchedClass() == RelSubset.class) {
+            // The matched subset (previous) should satisfy our input subset (input)
+            if (input.getSubsetsSatisfyingThis().noneMatch(previous::equals)) {
+              continue;
+            }
+          } else {
+            List<RelNode> inputRels = input.getRelList();
+            if (!inputRels.contains(previous)) {
+              continue;
+            }
           }
         }
 

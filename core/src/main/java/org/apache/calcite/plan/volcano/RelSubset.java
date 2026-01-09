@@ -53,7 +53,7 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
->>>>>>> 9a5b94c08 ([CALCITE-2817] Make CannotPlanException great)
+import java.util.stream.Stream;
 
 /**
  * Subset of an equivalence class where all relational expressions have the
