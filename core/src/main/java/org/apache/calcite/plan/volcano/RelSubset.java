@@ -37,6 +37,7 @@ import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 import org.apache.calcite.util.trace.CalciteTrace;
 
+import org.apiguardian.api.API;
 import org.slf4j.Logger;
 
 import java.io.PrintWriter;
@@ -52,6 +53,7 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Subset of an equivalence class where all relational expressions have the
@@ -429,6 +431,26 @@ public class RelSubset extends AbstractRelNode {
       }
     }
     return list;
+  }
+
+  /**
+   * Returns stream of subsets whose traitset satisfies
+   * current subset's traitset.
+   */
+  @API(since = "1.23", status = API.Status.EXPERIMENTAL)
+  public Stream<RelSubset> getSubsetsSatisfyingThis() {
+    return set.subsets.stream()
+      .filter(s -> s.getTraitSet().satisfies(traitSet));
+  }
+
+  /**
+   * Returns stream of subsets whose traitset is satisfied
+   * by current subset's traitset.
+   */
+  @API(since = "1.23", status = API.Status.EXPERIMENTAL)
+  public Stream<RelSubset> getSatisfyingSubsets() {
+    return set.subsets.stream()
+      .filter(s -> traitSet.satisfies(s.getTraitSet()));
   }
 
   //~ Inner Classes ----------------------------------------------------------
