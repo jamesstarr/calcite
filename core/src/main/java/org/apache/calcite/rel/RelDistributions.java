@@ -62,7 +62,11 @@ public class RelDistributions {
 
   /** Creates a hash distribution. */
   public static RelDistribution hash(Collection<? extends Number> numbers) {
-    ImmutableIntList list = normalizeKeys(numbers);
+    ImmutableIntList list = ImmutableIntList.copyOf(numbers);
+    if (numbers.size() > 1
+        && !Ordering.natural().isOrdered(list)) {
+      list = ImmutableIntList.copyOf(Ordering.natural().sortedCopy(list));
+    }
     return of(RelDistribution.Type.HASH_DISTRIBUTED, list);
   }
 
@@ -70,6 +74,7 @@ public class RelDistributions {
   public static RelDistribution range(Collection<? extends Number> numbers) {
     ImmutableIntList list = ImmutableIntList.copyOf(numbers);
     return of(RelDistribution.Type.RANGE_DISTRIBUTED, list);
+<<<<<<< HEAD
   }
 
   public static RelDistribution of(RelDistribution.Type type, ImmutableIntList keys) {
@@ -85,10 +90,13 @@ public class RelDistributions {
       list = ImmutableIntList.copyOf(Ordering.natural().sortedCopy(list));
     }
     return list;
+=======
+>>>>>>> 53d7a8688 ([CALCITE-3949] RelDistributions.of() and RelCollations.of() should ca… (#344))
   }
 
   public static RelDistribution of(RelDistribution.Type type, ImmutableIntList keys) {
-    return new RelDistributionImpl(type, keys);
+    RelDistribution distribution = new RelDistributionImpl(type, keys);
+    return RelDistributionTraitDef.INSTANCE.canonize(distribution);
   }
 
   /** Implementation of {@link org.apache.calcite.rel.RelDistribution}. */
