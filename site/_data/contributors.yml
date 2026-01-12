@@ -93,13 +93,19 @@
   org: Tencent
   role: Committer
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b7cb32df6 (Site: Add Forward Xu, Jin Xing, Wang Yanlin, as committers (#352))
 - name: Forward Xu
   apacheId: forwardxu
   githubId: XuQianJin-Stars
   org: Tencent
   role: Committer
+<<<<<<< HEAD
 =======
 >>>>>>> 63b97ebbe (Site: Add Feng Zhu as committer)
+=======
+>>>>>>> b7cb32df6 (Site: Add Forward Xu, Jin Xing, Wang Yanlin, as committers (#352))
 - name: Francis Chuang
   apacheId: francischuang
   githubId: F21
@@ -326,10 +332,14 @@
   role: PMC
   avatar: https://mapr.com/blog/author/ted-dunning/assets/tdunning-panama.jpg
 <<<<<<< HEAD
+<<<<<<< HEAD
 - name: Vineet Garg
 =======
   name: Vineet Garg
 >>>>>>> c39e58cfb (Site: Add Vineet Garg as committer (#350))
+=======
+- name: Vineet Garg
+>>>>>>> b7cb32df6 (Site: Add Forward Xu, Jin Xing, Wang Yanlin, as committers (#352))
   apacheId: vgarg
   githubId: vineetgarg02
   org: Cloudera
@@ -351,6 +361,7 @@
   githubId: yanlin-Lynn
   org: Ant Financial
   role: Committer
+<<<<<<< HEAD
 =======
   role: Committer
 =======
@@ -358,6 +369,8 @@
 >>>>>>> 7066e2e4c (Add Volodymyr to PMC on site)
 
 >>>>>>> e7452f80f (Site: Add committer Kevin Risden)
+=======
+>>>>>>> b7cb32df6 (Site: Add Forward Xu, Jin Xing, Wang Yanlin, as committers (#352))
 - name: Zhen Wang
   apacheId: zhenw
   githubId: zinking
