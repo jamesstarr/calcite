@@ -26,7 +26,6 @@ import org.apache.calcite.plan.ConventionTraitDef;
 import org.apache.calcite.plan.RelOptCost;
 import org.apache.calcite.plan.RelOptCostFactory;
 import org.apache.calcite.plan.RelOptLattice;
-import org.apache.calcite.plan.RelOptListener;
 import org.apache.calcite.plan.RelOptMaterialization;
 import org.apache.calcite.plan.RelOptMaterializations;
 import org.apache.calcite.plan.RelOptPlanner;
@@ -191,11 +190,6 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
    * are merged. Tells us whether anything is going on.
    */
   private int registerCount;
-
-  /**
-   * Listener for this planner, or null if none set.
-   */
-  RelOptListener listener;
 
   private RelNode originalRoot;
 
@@ -622,6 +616,7 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
       pw.flush();
       LOGGER.trace(sw.toString());
     }
+    dumpRuleAttemptsInfo();
     RelNode cheapest = root.buildCheapestPlan(this);
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug(
@@ -1760,16 +1755,6 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
       registerCount++;
     }
     return subset;
-  }
-
-  // implement RelOptPlanner
-  public void addListener(RelOptListener newListener) {
-    // TODO jvs 6-Apr-2006:  new superclass AbstractRelOptPlanner
-    // now defines a multicast listener; just need to hook it in
-    if (listener != null) {
-      throw Util.needToImplement("multiple VolcanoPlanner listeners");
-    }
-    listener = newListener;
   }
 
   // implement RelOptPlanner

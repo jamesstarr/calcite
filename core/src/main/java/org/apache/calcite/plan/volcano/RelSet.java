@@ -234,7 +234,7 @@ class RelSet {
 
       addAbstractConverters(planner, cluster, subset, false);
 
-      if (planner.listener != null) {
+      if (planner.getListener() != null) {
         postEquivalenceEvent(planner, subset);
       }
     }
@@ -248,7 +248,7 @@ class RelSet {
             rel,
             "equivalence class " + id,
             false);
-    planner.listener.relEquivalenceFound(event);
+    planner.getListener().relEquivalenceFound(event);
   }
 
   /**
@@ -267,7 +267,7 @@ class RelSet {
 
       VolcanoPlanner planner =
           (VolcanoPlanner) rel.getCluster().getPlanner();
-      if (planner.listener != null) {
+      if (planner.getListener() != null) {
         postEquivalenceEvent(planner, rel);
       }
     }
