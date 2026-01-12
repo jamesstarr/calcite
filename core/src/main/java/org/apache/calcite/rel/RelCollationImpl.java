@@ -117,6 +117,7 @@ public class RelCollationImpl implements RelCollation {
 
   public void register(RelOptPlanner planner) {}
 
+<<<<<<< HEAD
   /**
    * Applies mapping to a given collation.
    *
@@ -135,6 +136,8 @@ public class RelCollationImpl implements RelCollation {
    * @param mapping   Mapping
    * @return Collation with applied mapping.
    */
+=======
+>>>>>>> a34db3420 ([CALCITE-3889] Add apply(Mappings.Mapping) to RelTrait and RelTraitSet (#353))
   @Override public RelCollationImpl apply(
       final Mappings.TargetMapping mapping) {
     return (RelCollationImpl) RexUtil.apply(mapping, this);

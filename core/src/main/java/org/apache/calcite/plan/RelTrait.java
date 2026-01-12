@@ -16,8 +16,7 @@
  */
 package org.apache.calcite.plan;
 
-import org.apache.calcite.rel.RelDistributions;
-import org.apache.calcite.rel.core.Project;
+>>>>>>> a34db3420 ([CALCITE-3889] Add apply(Mappings.Mapping) to RelTrait and RelTraitSet (#353))
 import org.apache.calcite.util.mapping.Mappings;
 
 /**
@@ -90,27 +89,21 @@ public interface RelTrait {
    */
   void register(RelOptPlanner planner);
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
 
   /**
    * Applies a mapping to this trait.
    *
-   * <p>Some traits may be changed if the columns order is changed by a mapping of the
-   * {@link Project} operator. </p>
-   *
-   * <p>For example, if relation {@code SELECT a, b ORDER BY a, b} is sorted by columns [0, 1],
-   * then the project {@code SELECT b, a} over this relation will be sorted by columns [1, 0].
-   * In the same time project {@code SELECT b} will not be sorted at all because it doesn't
-   * contain the collation prefix and this method will return an empty collation. </p>
-   *
-   * <p>Other traits are independent from the columns remapping. For example {@link Convention} or
-   * {@link RelDistributions#SINGLETON}.</p>
-   *
+>>>>>>> a34db3420 ([CALCITE-3889] Add apply(Mappings.Mapping) to RelTrait and RelTraitSet (#353))
    * @param mapping   Mapping
    * @return trait with mapping applied
    */
   default <T extends RelTrait> T apply(Mappings.TargetMapping mapping) {
     return (T) this;
   }
+<<<<<<< HEAD
 =======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
+=======
+>>>>>>> a34db3420 ([CALCITE-3889] Add apply(Mappings.Mapping) to RelTrait and RelTraitSet (#353))
 }
