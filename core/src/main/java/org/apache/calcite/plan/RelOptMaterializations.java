@@ -21,7 +21,10 @@ import org.apache.calcite.plan.hep.HepPlanner;
 import org.apache.calcite.plan.hep.HepProgram;
 import org.apache.calcite.plan.hep.HepProgramBuilder;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.rules.CoreRules;
+import org.apache.calcite.sql2rel.RelFieldTrimmer;
+import org.apache.calcite.tools.RelBuilder;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.graph.DefaultDirectedGraph;
 import org.apache.calcite.util.graph.DefaultEdge;
@@ -231,6 +234,22 @@ public abstract class RelOptMaterializations {
     return rel;
 =======
 >>>>>>> 2e6c42a57 ([CALCITE-3334]: Refinement for Substitution-Based MV Matching (#12))
+  }
+
+  /**
+   * Trim unused fields in relational expressions.
+   */
+  private static RelNode trimUnusedfields(RelNode relNode) {
+    final List<RelOptTable> relOptTables = RelOptUtil.findAllTables(relNode);
+    RelOptSchema relOptSchema = null;
+    if (relOptTables.size() != 0) {
+      relOptSchema = relOptTables.get(0).getRelOptSchema();
+    }
+    final RelBuilder relBuilder = RelFactories.LOGICAL_BUILDER.create(
+        relNode.getCluster(), relOptSchema);
+    final RelFieldTrimmer relFieldTrimmer = new RelFieldTrimmer(null, relBuilder);
+    final RelNode rel = relFieldTrimmer.trim(relNode);
+    return rel;
   }
 
   /**
