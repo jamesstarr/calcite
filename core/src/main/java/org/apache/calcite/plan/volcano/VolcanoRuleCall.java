@@ -122,10 +122,7 @@ public class VolcanoRuleCall extends RelOptRuleCall {
                 this,
                 true);
         volcanoPlanner.getListener().ruleProductionSucceeded(event);
-      }
-
-      if (this.getRule() instanceof SubstitutionRule) {
-        volcanoPlanner.setImportance(rels[0], 0d);
+>>>>>>> f996861c4 ([CALCITE-3915] Add rule listener to report rule attempts and time at … (#340))
       }
 
       // Registering the root relational expression implicitly registers
@@ -290,7 +287,6 @@ public class VolcanoRuleCall extends RelOptRuleCall {
       final Collection<? extends RelNode> successors;
       if (ascending) {
         assert previousOperand.getParent() == operand;
->>>>>>> 197c6c2a8 ([CALCITE-3756] RelSubset should not match operand(RelNode.class) (#192))
 =======
         assert operand.getMatchedClass() != RelSubset.class;
         if (previousOperand.getMatchedClass() != RelSubset.class

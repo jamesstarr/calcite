@@ -125,6 +125,7 @@ public abstract class CalciteTrace {
     );
   }
 
+<<<<<<< HEAD
   /**
    * The tracers report important/useful information related with the execution
    * of unit tests.
@@ -133,6 +134,8 @@ public abstract class CalciteTrace {
     return LoggerFactory.getLogger(testClass.getName());
   }
 
+=======
+>>>>>>> f996861c4 ([CALCITE-3915] Add rule listener to report rule attempts and time at … (#340))
   /**
    * The tracers report important/useful information related with the execution
    * of unit tests.
