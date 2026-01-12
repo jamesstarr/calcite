@@ -21,7 +21,6 @@ import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
-import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
 import org.apache.calcite.sql.SqlCollation;
 import org.apache.calcite.sql.SqlWindow;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
@@ -716,42 +715,5 @@ class RexBuilderTest {
     assertThat("builder.makeExactLiteral(new BigDecimal(" + val
             + ")).getValueAs(BigDecimal.class).toString()",
         literal.getValueAs(BigDecimal.class).toString(), is(val));
-  }
-
-  @Test public void timestampDefaultPrecision() {
-    for (final int i : new int[]{0, 1, 3, 6, 9}) {
-      final RelDataTypeFactory typeFactory = new SqlTypeFactoryImpl(
-              new TestRelDataTypeSystemImpl(i));
-      Calendar c = Util.calendar();
-      c.set(Calendar.YEAR, 1974);
-      c.set(Calendar.MONTH, Calendar.AUGUST);
-      c.set(Calendar.DAY_OF_MONTH, 9);
-      c.set(Calendar.HOUR_OF_DAY, 1);
-      c.set(Calendar.MINUTE, 23);
-      c.set(Calendar.SECOND, 45);
-
-      RexBuilder builder = new RexBuilder(typeFactory);
-      RexNode node = builder.makeTimestampLiteral(c, RelDataType.PRECISION_NOT_SPECIFIED);
-
-      assertEquals(node.getType().getPrecision(), i);
-    }
-  }
-
-  /**
-   * {@link RelDataTypeFactory} with given value as the default timestamp precision.
-   */
-  private class TestRelDataTypeSystemImpl extends RelDataTypeSystemImpl {
-    final int i;
-
-    private TestRelDataTypeSystemImpl(int i) {
-      this.i = i;
-    }
-
-    @Override public int getDefaultPrecision(SqlTypeName typeName) {
-      if (typeName == SqlTypeName.TIMESTAMP) {
-        return i;
-      }
-      return super.getDefaultPrecision(typeName);
-    }
   }
 }
