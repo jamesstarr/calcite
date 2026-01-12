@@ -88,14 +88,10 @@ public interface RelTrait {
    * @param planner Planner
    */
   void register(RelOptPlanner planner);
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 
   /**
    * Applies a mapping to this trait.
    *
->>>>>>> a34db3420 ([CALCITE-3889] Add apply(Mappings.Mapping) to RelTrait and RelTraitSet (#353))
    * @param mapping   Mapping
    * @return trait with mapping applied
    */

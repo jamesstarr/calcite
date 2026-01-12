@@ -17,6 +17,7 @@ limitations under the License.
 {% endcomment %}
 -->
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.calcite/calcite-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.calcite/calcite-core)
 [![Travis Build Status](https://travis-ci.org/apache/calcite.svg?branch=master)](https://travis-ci.org/apache/calcite)
@@ -28,6 +29,12 @@ limitations under the License.
 =======
 [![CI Status](https://github.com/apache/calcite/workflows/CI/badge.svg)](https://github.com/apache/calcite/actions)
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.calcite/calcite-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.calcite/calcite-core)
+[![Travis Build Status](https://travis-ci.org/apache/calcite.svg?branch=master)](https://travis-ci.org/apache/calcite)
+[![CI Status](https://github.com/apache/calcite/workflows/CI/badge.svg?branch=master)](https://github.com/apache/calcite/actions?query=branch%3Amaster)
+>>>>>>> 53de79cdb (Add Maven Central badge to README.md (#354))
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/apache/calcite?svg=true&branch=master)](https://ci.appveyor.com/project/ApacheSoftwareFoundation/calcite)
 
 # Apache Calcite
