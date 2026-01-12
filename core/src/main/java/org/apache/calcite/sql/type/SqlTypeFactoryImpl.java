@@ -240,7 +240,6 @@ public class SqlTypeFactoryImpl extends RelDataTypeFactoryImpl {
     int anyCount = 0;
     int dateCount = 0;
     int timestampCount = 0;
-    int maxTimestampPrecision = RelDataType.PRECISION_NOT_SPECIFIED;
 
     for (RelDataType type : types) {
       final SqlTypeName typeName = type.getSqlTypeName();
@@ -264,9 +263,6 @@ public class SqlTypeFactoryImpl extends RelDataTypeFactoryImpl {
       }
       if (typeName == SqlTypeName.TIMESTAMP) {
         ++timestampCount;
-        if (type.getPrecision() > maxTimestampPrecision) {
-          maxTimestampPrecision = type.getPrecision();
-        }
       }
     }
 
@@ -274,19 +270,6 @@ public class SqlTypeFactoryImpl extends RelDataTypeFactoryImpl {
     if (anyCount > 0) {
       return createTypeWithNullability(createSqlType(SqlTypeName.ANY),
           nullCount > 0 || nullableCount > 0);
-    }
-
-    // Time is not comparable to date or timestamp, but date and timestamps are.
-    if ((dateCount > 0 || timestampCount > 0)
-        && (dateCount + timestampCount + nullCount) == types.size()) {
-      if (timestampCount == 0) {
-        return createTypeWithNullability(createSqlType(SqlTypeName.DATE),
-            nullCount > 0 || nullableCount > 0);
-      } else {
-        return createTypeWithNullability(
-                createSqlType(SqlTypeName.TIMESTAMP, maxTimestampPrecision),
-                nullCount > 0 || nullableCount > 0);
-      }
     }
 
     for (int i = 0; i < types.size(); ++i) {
