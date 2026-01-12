@@ -758,7 +758,7 @@ public class DiffRepository {
    * @param filter    Filters each string returned by the repository
    * @return The diff repository shared between test cases in this class.
    */
-  public static DiffRepository lookup(Class clazz,
+  public static DiffRepository lookup(Class<?> clazz,
       DiffRepository baseRepository,
       Filter filter) {
     final Key key = new Key(clazz, baseRepository, filter);
@@ -791,11 +791,11 @@ public class DiffRepository {
 
   /** Cache key. */
   private static class Key {
-    private final Class clazz;
+    private final Class<?> clazz;
     private final DiffRepository baseRepository;
     private final Filter filter;
 
-    Key(Class clazz, DiffRepository baseRepository, Filter filter) {
+    Key(Class<?> clazz, DiffRepository baseRepository, Filter filter) {
       this.clazz = Objects.requireNonNull(clazz);
       this.baseRepository = baseRepository;
       this.filter = filter;
