@@ -24,6 +24,9 @@ import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptPredicateList;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelTraitSet;
+import org.apache.calcite.plan.hep.HepPlanner;
+import org.apache.calcite.plan.hep.HepProgram;
+import org.apache.calcite.plan.hep.HepProgramBuilder;
 import org.apache.calcite.rel.RelCollation;
 import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelCollations;
@@ -75,6 +78,7 @@ import org.apache.calcite.rel.metadata.RelMetadataHandlerProvider;
 import org.apache.calcite.rel.metadata.RelMetadataProvider;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.metadata.UnboundMetadata;
+import org.apache.calcite.rel.rules.ProjectToCalcRule;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
@@ -376,6 +380,21 @@ public class RelMetadataTest extends SqlToRelTestBase {
             expectedDerived);
       }
     }
+  }
+
+  @Test void testCalcColumnOriginsTable() {
+    final String sql = "select name,deptno from dept where deptno > 10";
+    final RelNode relNode = convertSql(sql);
+    final HepProgram program = new HepProgramBuilder().
+        addRuleInstance(ProjectToCalcRule.INSTANCE).build();
+    final HepPlanner planner = new HepPlanner(program);
+    planner.setRoot(relNode);
+    final RelNode calc = planner.findBestExp();
+    final RelMetadataQuery mq = calc.getCluster().getMetadataQuery();
+    final RelColumnOrigin nameColumn = mq.getColumnOrigin(calc, 0);
+    assertThat(nameColumn.getOriginColumnOrdinal(), is(1));
+    final RelColumnOrigin deptnoColumn = mq.getColumnOrigin(calc, 1);
+    assertThat(deptnoColumn.getOriginColumnOrdinal(), is(0));
   }
 
   @Test void testColumnOriginsTableOnly() {
