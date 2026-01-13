@@ -8061,7 +8061,7 @@ of the 'normal states'.
 
 <DEFAULT, DQID, BTID> TOKEN :
 {
-    < HINT_BEG: "/*+" ~["/"] >
+    < HINT_BEG: "/*+">
 |   < COMMENT_END: "*/" >
 }
 
