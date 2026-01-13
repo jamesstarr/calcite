@@ -19,7 +19,8 @@ package org.apache.calcite.sql.validate.implicit;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.validate.SqlValidator;
 
->>>>>>> 2c12460c3 ([CALCITE-2435] tests: refactor SqlTestFactory)
+import org.apiguardian.api.API;
+
 /** Factory for {@link TypeCoercion} objects.
  *
  * <p>A type coercion factory allows you to include custom rules of
@@ -28,8 +29,9 @@ import org.apache.calcite.sql.validate.SqlValidator;
  *
  * <p>This interface is experimental and would change without notice.
  *
- * @see SqlValidator.Config#withTypeCoercionEnabled
+ * @see SqlValidator.Config#withTypeCoercionFactory
  */
+@API(status = API.Status.EXPERIMENTAL, since = "1.23")
 public interface TypeCoercionFactory {
 
   /**

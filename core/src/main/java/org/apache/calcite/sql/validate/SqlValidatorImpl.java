@@ -96,7 +96,6 @@ import org.apache.calcite.sql.util.SqlBasicVisitor;
 import org.apache.calcite.sql.util.SqlShuttle;
 import org.apache.calcite.sql.util.SqlVisitor;
 import org.apache.calcite.sql.validate.implicit.TypeCoercion;
-import org.apache.calcite.sql.validate.implicit.TypeCoercions;
 import org.apache.calcite.util.BitString;
 import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.ImmutableBitSet;
@@ -329,9 +328,10 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     aggOrOverOrGroupFinder = new AggFinder(opTab, true, true, true, null,
         nameMatcher);
     this.lenientOperatorLookup = false;
-    @SuppressWarnings("argument.type.incompatible")
-    TypeCoercion typeCoercion = TypeCoercions.getTypeCoercion(this, config.sqlConformance());
-    this.typeCoercion = typeCoercion;
+    this.typeCoercion = config.typeCoercionFactory().create(typeFactory, this);
+    if (config.typeCoercionRules() != null) {
+      SqlTypeCoercionRule.THREAD_PROVIDERS.set(config.typeCoercionRules());
+    }
     this.validationMessage = "";
   }
 
