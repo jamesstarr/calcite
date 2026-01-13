@@ -9797,10 +9797,14 @@ of the 'normal states'.
 <DEFAULT, DQID, BTID> TOKEN :
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     < HINT_BEG: "/*+">
 =======
     < HINT_BEG: "/*+" ~["/"] >
 >>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
+=======
+    < HINT_BEG: "/*+">
+>>>>>>> 173ab5f49 ([CALCITE-3940] Hint item can not parse correctly if the name is right… (#331))
 |   < COMMENT_END: "*/" >
 }
 

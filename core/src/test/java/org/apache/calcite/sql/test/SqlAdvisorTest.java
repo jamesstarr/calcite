@@ -60,7 +60,7 @@ class SqlAdvisorTest extends SqlValidatorTestCase {
       SqlTestFactory.INSTANCE.withValidator(SqlAdvisorValidator::new);
 
   private static final List<String> STAR_KEYWORD =
-      Arrays.asList(
+      Collections.singletonList(
           "KEYWORD(*)");
 
   protected static final List<String> FROM_KEYWORDS =
@@ -119,7 +119,7 @@ class SqlAdvisorTest extends SqlValidatorTestCase {
           "TABLE(B)");
 
   private static final List<String> EMP_TABLE =
-      Arrays.asList(
+      Collections.singletonList(
           "TABLE(EMP)");
 
   protected static final List<String> FETCH_OFFSET =
@@ -258,7 +258,8 @@ class SqlAdvisorTest extends SqlValidatorTestCase {
           "KEYWORD(ALL)",
           "KEYWORD(DISTINCT)",
           "KEYWORD(STREAM)",
-          "KEYWORD(*)");
+          "KEYWORD(*)",
+          "KEYWORD(/*+)");
 
   private static final List<String> ORDER_KEYWORDS =
       Arrays.asList(
@@ -342,7 +343,7 @@ class SqlAdvisorTest extends SqlValidatorTestCase {
           "KEYWORD(QUALIFY)");
 
   private static final List<String> A_TABLE =
-      Arrays.asList(
+      Collections.singletonList(
           "TABLE(A)");
 
   protected static final List<String> JOIN_KEYWORDS =
@@ -357,6 +358,7 @@ class SqlAdvisorTest extends SqlValidatorTestCase {
           "KEYWORD(ORDER)",
           "KEYWORD(()",
           "KEYWORD(EXTEND)",
+          "KEYWORD(/*+)",
           "KEYWORD(AS)",
           "KEYWORD(USING)",
           "KEYWORD(OUTER)",
