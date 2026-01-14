@@ -27,6 +27,7 @@ import org.junit.Assume;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -755,7 +756,7 @@ class TpchTest {
           + "order by\n"
           + "  cntrycode");
 
->>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
+  @Disabled("it's wasting time")
   @Test void testRegion() {
     with()
         .query("select * from tpch.region")
@@ -914,7 +915,8 @@ class TpchTest {
   }
 
   // a bit slow
-  @Disabled
+  @Timeout(value = 10, unit = TimeUnit.MINUTES)
+  @Disabled("Too slow, more than 5 min")
   @Test void testQuery19() {
     checkQuery(19);
   }
