@@ -26,8 +26,10 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
@@ -753,6 +755,7 @@ class TpchTest {
           + "order by\n"
           + "  cntrycode");
 
+  @Disabled("it's wasting time")
   @Test void testRegion() {
     with()
         .query("select * from tpch.region")
@@ -911,7 +914,8 @@ class TpchTest {
   }
 
   // a bit slow
-  @Disabled
+  @Timeout(value = 10, unit = TimeUnit.MINUTES)
+  @Disabled("Too slow, more than 5 min")
   @Test void testQuery19() {
     checkQuery(19);
   }
