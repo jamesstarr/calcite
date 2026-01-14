@@ -212,12 +212,17 @@ releaseParams {
     tlp.set("Calcite")
     componentName.set("Apache Calcite")
 <<<<<<< HEAD
+<<<<<<< HEAD
     releaseTag.set("calcite-$buildVersion")
     rcTag.set(rc.map { "calcite-$buildVersion-rc$it" })
 =======
     releaseTag.set("rel/v$buildVersion")
     rcTag.set(rc.map { "v$buildVersion-rc$it" })
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
+=======
+    releaseTag.set("calcite-$buildVersion")
+    rcTag.set(rc.map { "calcite-$buildVersion-rc$it" })
+>>>>>>> 0d28f377c (The release tag should be 'calcite-N.N' not 'vN.N' (#376))
     sitePreviewEnabled.set(false)
     nexus {
         // https://github.com/marcphilipp/nexus-publish-plugin/issues/35
