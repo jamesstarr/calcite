@@ -16,11 +16,12 @@
  */
 package org.apache.calcite.sql;
 
-<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/Symbolizable.java
+>>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
 import org.apache.calcite.sql.parser.SqlParserPos;
 
 /** Sub-class should be a Enum and can convert to a {@link SqlLiteral}. */
 public interface Symbolizable {
+<<<<<<< HEAD
 =======
 /**
  * Specifies the type of correlation operation: inner, left, semi, or anti.
@@ -32,16 +33,13 @@ public enum CorrelateJoinType {
    * Inner join
    */
   INNER,
->>>>>>> 0a404408f ([CALCITE-3119] Deprecate Linq4j CorrelateJoinType (in favor of JoinType)):linq4j/src/main/java/org/apache/calcite/linq4j/CorrelateJoinType.java
+=======
+>>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
 
   /**
    * Creates a parse-tree node representing an occurrence of this keyword
    * at a particular position in the parsed text.
    */
-<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/Symbolizable.java
-  default SqlLiteral symbol(SqlParserPos pos) {
-    return SqlLiteral.createSymbol((Enum<?>) this, pos);
-=======
   LEFT,
 
   /**
@@ -74,6 +72,9 @@ public enum CorrelateJoinType {
     }
     throw new IllegalStateException(
         "Unable to convert " + this + " to JoinType");
->>>>>>> 0a404408f ([CALCITE-3119] Deprecate Linq4j CorrelateJoinType (in favor of JoinType)):linq4j/src/main/java/org/apache/calcite/linq4j/CorrelateJoinType.java
+=======
+  default SqlLiteral symbol(SqlParserPos pos) {
+    return SqlLiteral.createSymbol((Enum<?>) this, pos);
+>>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
   }
 }

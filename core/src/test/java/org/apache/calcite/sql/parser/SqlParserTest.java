@@ -8700,7 +8700,7 @@ public class SqlParserTest {
     expr("json_value('{\"foo\": \"100\"}', 'lax $.foo' "
         + "returning integer)")
         .ok("JSON_VALUE('{\"foo\": \"100\"}', 'lax $.foo' "
-            + "RETURNING INTEGER NULL ON EMPTY NULL ON ERROR)");
+            + "RETURNING INTEGER)");
     expr("json_value('{\"foo\": \"100\"}', 'lax $.foo' "
         + "returning integer default 10 on empty error on error)")
         .ok("JSON_VALUE('{\"foo\": \"100\"}', 'lax $.foo' "

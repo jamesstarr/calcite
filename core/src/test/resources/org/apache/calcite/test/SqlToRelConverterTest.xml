@@ -8748,6 +8748,7 @@ from emp]]>
             <![CDATA[
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 LogicalProject(EXPR$0=[JSON_VALUE($1, 'lax $')])
 =======
 LogicalProject(EXPR$0=[CAST(JSON_VALUE_ANY(JSON_API_COMMON_SYNTAX(FORMAT JSON($1), 'lax $'), FLAG(SqlJsonValueEmptyOrErrorBehavior[NULL]), null:ANY, FLAG(SqlJsonValueEmptyOrErrorBehavior[NULL]), null:ANY)):VARCHAR(2000)])
@@ -8755,6 +8756,9 @@ LogicalProject(EXPR$0=[CAST(JSON_VALUE_ANY(JSON_API_COMMON_SYNTAX(FORMAT JSON($1
 =======
 LogicalProject(EXPR$0=[CAST(JSON_VALUE_ANY($1, 'lax $', FLAG(SqlJsonValueEmptyOrErrorBehavior[NULL]), null:ANY, FLAG(SqlJsonValueEmptyOrErrorBehavior[NULL]), null:ANY)):VARCHAR(2000)])
 >>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
+=======
+LogicalProject(EXPR$0=[JSON_VALUE($1, 'lax $')])
+>>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
   LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>

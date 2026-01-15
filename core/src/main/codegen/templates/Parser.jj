@@ -75,9 +75,13 @@ import org.apache.calcite.sql.SqlJsonQueryEmptyOrErrorBehavior;
 import org.apache.calcite.sql.SqlJsonQueryWrapperBehavior;
 import org.apache.calcite.sql.SqlJsonValueEmptyOrErrorBehavior;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import org.apache.calcite.sql.SqlJsonValueReturning;
 =======
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+import org.apache.calcite.sql.SqlJsonValueReturning;
+>>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlMatchRecognize;
@@ -7070,6 +7074,9 @@ SqlJsonExistsErrorBehavior JsonExistsErrorBehavior() :
 SqlCall JsonExistsFunctionCall() :
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
     List<SqlNode> args = new ArrayList<SqlNode>();
     List<SqlNode> commonSyntax;
 =======
@@ -7089,6 +7096,7 @@ SqlCall JsonExistsFunctionCall() :
 <<<<<<< HEAD
 <<<<<<< HEAD
     <LPAREN> commonSyntax = JsonApiCommonSyntax() {
+<<<<<<< HEAD
         args.addAll(commonSyntax);
     }
     [
@@ -7107,6 +7115,12 @@ SqlCall JsonExistsFunctionCall() :
     [
         errorBehavior = JsonExistsErrorBehavior() { args.add(SqlLiteral.createSymbol(errorBehavior, getPos())); }
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+        args.addAll(commonSyntax);
+    }
+    [
+        errorBehavior = JsonExistsErrorBehavior() { args.add(errorBehavior.symbol(getPos())); }
+>>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
         <ON> <ERROR>
     ]
     <RPAREN> {
@@ -7125,6 +7139,7 @@ List<SqlNode> JsonValueEmptyOrErrorBehavior() :
     (
         <ERROR> {
             list.add(SqlJsonValueEmptyOrErrorBehavior.ERROR.symbol(getPos()));
+<<<<<<< HEAD
         }
     |
         <NULL> {
@@ -7146,16 +7161,21 @@ List<SqlNode> JsonValueEmptyOrErrorBehavior() :
         <ERROR> {
             list.add(SqlLiteral.createSymbol(SqlJsonValueEmptyOrErrorBehavior.ERROR, getPos()));
             list.add(SqlLiteral.createNull(getPos()));
+=======
+>>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
         }
     |
         <NULL> {
-            list.add(SqlLiteral.createSymbol(SqlJsonValueEmptyOrErrorBehavior.NULL, getPos()));
-            list.add(SqlLiteral.createNull(getPos()));
+            list.add(SqlJsonValueEmptyOrErrorBehavior.NULL.symbol(getPos()));
         }
     |
         <DEFAULT_> e = Expression(ExprContext.ACCEPT_NON_QUERY) {
+<<<<<<< HEAD
             list.add(SqlLiteral.createSymbol(SqlJsonValueEmptyOrErrorBehavior.DEFAULT, getPos()));
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+            list.add(SqlJsonValueEmptyOrErrorBehavior.DEFAULT.symbol(getPos()));
+>>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
             list.add(e);
         }
     )
@@ -7165,6 +7185,7 @@ List<SqlNode> JsonValueEmptyOrErrorBehavior() :
 <<<<<<< HEAD
         <EMPTY> {
             list.add(SqlJsonEmptyOrError.EMPTY.symbol(getPos()));
+<<<<<<< HEAD
         }
     |
         <ERROR> {
@@ -7179,10 +7200,12 @@ List<SqlNode> JsonValueEmptyOrErrorBehavior() :
         <EMPTY> {
 >>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
             list.add(SqlLiteral.createSymbol(SqlJsonEmptyOrError.EMPTY, getPos()));
+=======
+>>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
         }
     |
         <ERROR> {
-            list.add(SqlLiteral.createSymbol(SqlJsonEmptyOrError.ERROR, getPos()));
+            list.add(SqlJsonEmptyOrError.ERROR.symbol(getPos()));
         }
     )
 <<<<<<< HEAD
@@ -7198,6 +7221,7 @@ SqlCall JsonValueFunctionCall() :
 {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     final List<SqlNode> args = new ArrayList<SqlNode>(7);
     SqlNode e;
     List<SqlNode> commonSyntax;
@@ -7207,6 +7231,9 @@ SqlCall JsonValueFunctionCall() :
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 =======
     final SqlNode[] args = new SqlNode[7];
+=======
+    final List<SqlNode> args = new ArrayList<SqlNode>(7);
+>>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
     SqlNode e;
     List<SqlNode> commonSyntax;
 >>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
@@ -7239,17 +7266,23 @@ SqlCall JsonValueFunctionCall() :
         args[0] = e;
 =======
     <LPAREN> commonSyntax = JsonApiCommonSyntax() {
+<<<<<<< HEAD
         args[0] = commonSyntax.get(0);
         args[1] = commonSyntax.get(1);
 >>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
+=======
+        args.addAll(commonSyntax);
+>>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
     }
     [
         e = JsonReturningClause() {
-            args[6] = e;
+            args.add(SqlJsonValueReturning.RETURNING.symbol(getPos()));
+            args.add(e);
         }
     ]
     (
         behavior = JsonValueEmptyOrErrorBehavior() {
+<<<<<<< HEAD
             final SqlJsonEmptyOrError symbol =
                 ((SqlLiteral) behavior.get(2)).getValueAs(SqlJsonEmptyOrError.class);
             switch (symbol) {
@@ -7263,6 +7296,9 @@ SqlCall JsonValueFunctionCall() :
                 break;
             }
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+=======
+            args.addAll(behavior);
+>>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
         }
     )*
     <RPAREN> {
