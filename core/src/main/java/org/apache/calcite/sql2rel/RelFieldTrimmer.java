@@ -551,7 +551,7 @@ public class RelFieldTrimmer implements ReflectiveVisitor {
   }
 
   public TrimResult trimFields(
-<<<<<<< HEAD
+>>>>>>> d110443b0 ([CALCITE-3984] Support exchange operator in RelFieldTrimmer (Xu Zhaohui) (#373))
       Exchange exchange,
       ImmutableBitSet fieldsUsed,
       Set<RelDataTypeField> extraFields) {
@@ -590,8 +590,10 @@ public class RelFieldTrimmer implements ReflectiveVisitor {
   }
 
   public TrimResult trimFields(
+<<<<<<< HEAD
 =======
->>>>>>> fd8a63b3e ([CALCITE-3880] Add SortExchange support to RelFieldTrimmer (Krisztian Kasa))
+=======
+>>>>>>> d110443b0 ([CALCITE-3984] Support exchange operator in RelFieldTrimmer (Xu Zhaohui) (#373))
       SortExchange sortExchange,
       ImmutableBitSet fieldsUsed,
       Set<RelDataTypeField> extraFields) {
