@@ -271,7 +271,7 @@ public final class RelTraitSet extends AbstractList<RelTrait> {
   }
 
   /**
-<<<<<<< HEAD
+>>>>>>> 82d506510 ([CALCITE-3983] Add utility methods to RelTraitSet (#371))
    * Returns whether all the traits are default trait value.
    */
   public boolean isDefault() {
@@ -382,8 +382,10 @@ public final class RelTraitSet extends AbstractList<RelTrait> {
   }
 
   /**
+<<<<<<< HEAD
 =======
->>>>>>> a34db3420 ([CALCITE-3889] Add apply(Mappings.Mapping) to RelTrait and RelTraitSet (#353))
+=======
+>>>>>>> 82d506510 ([CALCITE-3983] Add utility methods to RelTraitSet (#371))
    * Returns the size of the RelTraitSet.
    *
    * @return the size of the RelTraitSet.
