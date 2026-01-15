@@ -1305,7 +1305,11 @@ public class RexUtil {
       List<RelFieldCollation> fieldCollations) {
     final List<RelFieldCollation> newFieldCollations = new ArrayList<>();
     for (RelFieldCollation fieldCollation : fieldCollations) {
-      newFieldCollations.add(apply(mapping, fieldCollation));
+      RelFieldCollation newFieldCollation = apply(mapping, fieldCollation);
+      if (newFieldCollation == null) {
+        break;
+      }
+      newFieldCollations.add(newFieldCollation);
     }
     return newFieldCollations;
   }

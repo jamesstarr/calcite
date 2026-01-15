@@ -117,7 +117,7 @@ public class RelCollationImpl implements RelCollation {
 
   public void register(RelOptPlanner planner) {}
 
-<<<<<<< HEAD
+>>>>>>> dc2f3eda0 ([CALCITE-3969] Trait keys remapping may throw exception when some tra… (#375))
   /**
    * Applies mapping to a given collation.
    *
@@ -136,8 +136,10 @@ public class RelCollationImpl implements RelCollation {
    * @param mapping   Mapping
    * @return Collation with applied mapping.
    */
+<<<<<<< HEAD
 =======
->>>>>>> a34db3420 ([CALCITE-3889] Add apply(Mappings.Mapping) to RelTrait and RelTraitSet (#353))
+=======
+>>>>>>> dc2f3eda0 ([CALCITE-3969] Trait keys remapping may throw exception when some tra… (#375))
   @Override public RelCollationImpl apply(
       final Mappings.TargetMapping mapping) {
     return (RelCollationImpl) RexUtil.apply(mapping, this);
