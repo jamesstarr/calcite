@@ -1834,6 +1834,27 @@ public class RelBuilderTest {
     assertThat(root, hasTree(expected));
   }
 
+  /** Checks if simplification is run in {@link org.apache.calcite.rex.RexUnknownAs#FALSE} mode for join conditions */
+  @Test void testJoinConditionSimplification() {
+    final RelBuilder builder = RelBuilder.create(config().build());
+    final RelNode root =
+        builder.scan("EMP")
+            .scan("DEPT")
+            .join(JoinRelType.INNER,
+                builder.or(builder.literal(null),
+                    builder.and(
+                        builder.equals(builder.field(2, 0, "DEPTNO"), builder.literal(1)),
+                        builder.equals(builder.field(2, 0, "DEPTNO"), builder.literal(2)),
+                        builder.equals(builder.field(2, 1, "DEPTNO"),
+                            builder.field(2, 0, "DEPTNO")))))
+            .build();
+    assertThat(
+        root, hasTree(
+        "LogicalJoin(condition=[false], joinType=[inner])\n"
+        + "  LogicalTableScan(table=[[scott, EMP]])\n"
+        + "  LogicalTableScan(table=[[scott, DEPT]])\n"));
+  }
+
   @Test void testJoinCartesian() {
     // Equivalent SQL:
     //   SELECT * emp CROSS JOIN dept
@@ -3077,6 +3098,279 @@ public class RelBuilderTest {
         + "  LogicalTableScan(table=[[scott, EMP]])\n";
     assertThat(root, hasTree(expected));
   }
+<<<<<<< HEAD
+=======
+
+  /** Tests filter builder with correlation variables */
+  @Test void testFilterWithCorrelationVariables() {
+    final RelBuilder builder = RelBuilder.create(config().build());
+    final Holder<RexCorrelVariable> v = Holder.of(null);
+    RelNode root = builder.scan("EMP")
+        .variable(v)
+        .scan("DEPT")
+        .filter(Collections.singletonList(v.get().id),
+            Collections.singletonList(
+                builder.call(SqlStdOperatorTable.OR,
+                builder.call(SqlStdOperatorTable.AND,
+                    builder.call(SqlStdOperatorTable.LESS_THAN,
+                        builder.field(v.get(), "DEPTNO"),
+                        builder.literal(30)),
+                    builder.call(SqlStdOperatorTable.GREATER_THAN,
+                        builder.field(v.get(), "DEPTNO"),
+                        builder.literal(20))),
+                builder.isNull(builder.field(2)))))
+        .join(JoinRelType.LEFT,
+            builder.equals(builder.field(2, 0, "SAL"),
+                builder.literal(1000)),
+            ImmutableSet.of(v.get().id))
+        .build();
+
+    final String expected = ""
+        + "LogicalCorrelate(correlation=[$cor0], joinType=[left], "
+        + "requiredColumns=[{5, 7}])\n"
+        + "  LogicalTableScan(table=[[scott, EMP]])\n"
+        + "  LogicalFilter(condition=[=($cor0.SAL, 1000)])\n"
+        + "    LogicalFilter(condition=[OR(AND(<($cor0.DEPTNO, 30), >($cor0.DEPTNO, 20)), "
+        + "IS NULL($2))], variablesSet=[[$cor0]])\n"
+        + "      LogicalTableScan(table=[[scott, DEPT]])\n";
+
+    assertThat(root, hasTree(expected));
+  }
+
+  @Test void testCorrelate() {
+    final RelBuilder builder = RelBuilder.create(config().build());
+    final Holder<RexCorrelVariable> v = Holder.of(null);
+    RelNode root = builder.scan("EMP")
+        .variable(v)
+        .scan("DEPT")
+        .filter(
+            builder.equals(builder.field(0),
+                builder.field(v.get(), "DEPTNO")))
+        .correlate(JoinRelType.LEFT, v.get().id, builder.field(2, 0, "DEPTNO"))
+        .build();
+
+    final String expected = ""
+        + "LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{7}])\n"
+        + "  LogicalTableScan(table=[[scott, EMP]])\n"
+        + "  LogicalFilter(condition=[=($0, $cor0.DEPTNO)])\n"
+        + "    LogicalTableScan(table=[[scott, DEPT]])\n";
+    assertThat(root, hasTree(expected));
+  }
+
+  @Test void testSimpleLeftCorrelateViaJoin() {
+    RelNode root = buildSimpleCorrelateWithJoin(JoinRelType.LEFT);
+    final String expected = ""
+        + "LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{7}])\n"
+        + "  LogicalTableScan(table=[[scott, EMP]])\n"
+        + "  LogicalFilter(condition=[=($cor0.DEPTNO, $0)])\n"
+        + "    LogicalTableScan(table=[[scott, DEPT]])\n";
+    assertThat(root, hasTree(expected));
+  }
+
+  @Test void testSimpleInnerCorrelateViaJoin() {
+    RelNode root = buildSimpleCorrelateWithJoin(JoinRelType.INNER);
+    final String expected = ""
+        + "LogicalFilter(condition=[=($7, $8)])\n"
+        + "  LogicalCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])\n"
+        + "    LogicalTableScan(table=[[scott, EMP]])\n"
+        + "    LogicalTableScan(table=[[scott, DEPT]])\n";
+    assertThat(root, hasTree(expected));
+  }
+
+  @Test void testSimpleRightCorrelateViaJoinThrowsException() {
+    try {
+      buildSimpleCorrelateWithJoin(JoinRelType.RIGHT);
+    } catch (IllegalArgumentException ex) {
+      return;
+    }
+  }
+
+  @Test void testSimpleFullCorrelateViaJoinThrowsException() {
+    try {
+      buildSimpleCorrelateWithJoin(JoinRelType.FULL);
+    } catch (IllegalArgumentException ex) {
+      return;
+    }
+  }
+
+  private static RelNode buildSimpleCorrelateWithJoin(JoinRelType type) {
+    final RelBuilder builder = RelBuilder.create(config().build());
+    final Holder<RexCorrelVariable> v = Holder.of(null);
+    return builder
+        .scan("EMP")
+        .variable(v)
+        .scan("DEPT")
+        .join(type,
+            builder.equals(
+                builder.field(2, 0, "DEPTNO"),
+                builder.field(2, 1, "DEPTNO")), ImmutableSet.of(v.get().id))
+        .build();
+  }
+
+  @Test void testCorrelateWithComplexFields() {
+    final RelBuilder builder = RelBuilder.create(config().build());
+    final Holder<RexCorrelVariable> v = Holder.of(null);
+    RelNode root = builder.scan("EMP")
+        .variable(v)
+        .scan("DEPT")
+        .filter(
+            builder.equals(builder.field(0),
+                builder.field(v.get(), "DEPTNO")))
+        .correlate(JoinRelType.LEFT, v.get().id,
+            builder.field(2, 0, "DEPTNO"),
+            builder.getRexBuilder().makeCall(SqlStdOperatorTable.AS,
+                builder.field(2, 0, "EMPNO"),
+                builder.literal("RENAMED_EMPNO")))
+        .build();
+
+    final String expected = ""
+        + "LogicalCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{0, 7}])\n"
+        + "  LogicalProject(RENAMED_EMPNO=[$0], ENAME=[$1], JOB=[$2], MGR=[$3], HIREDATE=[$4], SAL=[$5], COMM=[$6], DEPTNO=[$7])\n"
+        + "    LogicalTableScan(table=[[scott, EMP]])\n"
+        + "  LogicalFilter(condition=[=($0, $cor0.DEPTNO)])\n"
+        + "    LogicalTableScan(table=[[scott, DEPT]])\n";
+    assertThat(root, hasTree(expected));
+  }
+
+  @Test void testFilterCastNull() {
+    final RelBuilder builder = RelBuilder.create(config().build());
+    final RelDataTypeFactory typeFactory = builder.getTypeFactory();
+    final RelNode root =
+        builder.scan("EMP")
+            .filter(
+                builder.getRexBuilder().makeCast(
+                    typeFactory.createTypeWithNullability(
+                        typeFactory.createSqlType(SqlTypeName.BOOLEAN), true),
+                    builder.equals(builder.field("DEPTNO"),
+                        builder.literal(10))))
+            .build();
+    final String expected = ""
+        + "LogicalFilter(condition=[=($7, 10)])\n"
+        + "  LogicalTableScan(table=[[scott, EMP]])\n";
+    assertThat(root, hasTree(expected));
+  }
+
+
+  @Test void testRelBuilderToString() {
+    final RelBuilder builder = RelBuilder.create(config().build());
+    builder.scan("EMP");
+
+    // One entry on the stack, a single-node tree
+    final String expected1 = "LogicalTableScan(table=[[scott, EMP]])\n";
+    assertThat(Util.toLinux(builder.toString()), is(expected1));
+
+    // One entry on the stack, a two-node tree
+    builder.filter(builder.equals(builder.field(2), builder.literal(3)));
+    final String expected2 = "LogicalFilter(condition=[=($2, 3)])\n"
+        + "  LogicalTableScan(table=[[scott, EMP]])\n";
+    assertThat(Util.toLinux(builder.toString()), is(expected2));
+
+    // Two entries on the stack
+    builder.scan("DEPT");
+    final String expected3 = "LogicalTableScan(table=[[scott, DEPT]])\n"
+        + "LogicalFilter(condition=[=($2, 3)])\n"
+        + "  LogicalTableScan(table=[[scott, EMP]])\n";
+    assertThat(Util.toLinux(builder.toString()), is(expected3));
+  }
+
+  /**
+   * Ensures that relational algebra ({@link RelBuilder}) works with SQL views.
+   *
+   * <p>This test currently fails (thus ignored).
+   */
+  @Test void testExpandViewInRelBuilder() throws SQLException {
+    try (Connection connection = DriverManager.getConnection("jdbc:calcite:")) {
+      final Frameworks.ConfigBuilder configBuilder =
+          expandingConfig(connection);
+      final RelOptTable.ViewExpander viewExpander =
+          (RelOptTable.ViewExpander) Frameworks.getPlanner(configBuilder.build());
+      configBuilder.context(Contexts.of(viewExpander));
+      final RelBuilder builder = RelBuilder.create(configBuilder.build());
+      RelNode node = builder.scan("MYVIEW").build();
+
+      int count = 0;
+      try (PreparedStatement statement =
+               connection.unwrap(RelRunner.class).prepare(node);
+           ResultSet resultSet = statement.executeQuery()) {
+        while (resultSet.next()) {
+          count++;
+        }
+      }
+
+      assertTrue(count > 1);
+    }
+  }
+
+  @Test void testExpandViewShouldKeepAlias() throws SQLException {
+    try (Connection connection = DriverManager.getConnection("jdbc:calcite:")) {
+      final Frameworks.ConfigBuilder configBuilder =
+          expandingConfig(connection);
+      final RelOptTable.ViewExpander viewExpander =
+          (RelOptTable.ViewExpander) Frameworks.getPlanner(configBuilder.build());
+      configBuilder.context(Contexts.of(viewExpander));
+      final RelBuilder builder = RelBuilder.create(configBuilder.build());
+      RelNode node =
+          builder.scan("MYVIEW")
+              .project(
+                  builder.field(1, "MYVIEW", "EMPNO"),
+                  builder.field(1, "MYVIEW", "ENAME"))
+              .build();
+      String expected =
+          "LogicalProject(EMPNO=[$0], ENAME=[$1])\n"
+              + "  LogicalFilter(condition=[=(1, 1)])\n"
+                  + "    LogicalTableScan(table=[[scott, EMP]])\n";
+      assertThat(node, hasTree(expected));
+    }
+  }
+
+  @Test void testExpandTable() throws SQLException {
+    try (Connection connection = DriverManager.getConnection("jdbc:calcite:")) {
+      // RelBuilder expands as default. Plan contains JdbcTableScan,
+      // because RelBuilder.scan has called RelOptTable.toRel.
+      final Frameworks.ConfigBuilder configBuilder =
+          expandingConfig(connection);
+      final RelBuilder builder = RelBuilder.create(configBuilder.build());
+      final String expected = "LogicalFilter(condition=[>($2, 10)])\n"
+          + "  JdbcTableScan(table=[[JDBC_SCOTT, EMP]])\n";
+      checkExpandTable(builder, hasTree(expected));
+    }
+  }
+
+  private void checkExpandTable(RelBuilder builder, Matcher<RelNode> matcher) {
+    final RelNode root =
+        builder.scan("JDBC_SCOTT", "EMP")
+            .filter(
+                builder.call(SqlStdOperatorTable.GREATER_THAN, builder.field(2),
+                    builder.literal(10)))
+            .build();
+    assertThat(root, matcher);
+  }
+
+  @Test void testExchange() {
+    final RelBuilder builder = RelBuilder.create(config().build());
+    final RelNode root = builder.scan("EMP")
+        .exchange(RelDistributions.hash(Lists.newArrayList(0)))
+        .build();
+    final String expected =
+        "LogicalExchange(distribution=[hash[0]])\n"
+            + "  LogicalTableScan(table=[[scott, EMP]])\n";
+    assertThat(root, hasTree(expected));
+  }
+
+  @Test void testSortExchange() {
+    final RelBuilder builder = RelBuilder.create(config().build());
+    final RelNode root =
+        builder.scan("EMP")
+            .sortExchange(RelDistributions.hash(Lists.newArrayList(0)),
+                RelCollations.of(0))
+            .build();
+    final String expected =
+        "LogicalSortExchange(distribution=[hash[0]], collation=[[0]])\n"
+            + "  LogicalTableScan(table=[[scott, EMP]])\n";
+    assertThat(root, hasTree(expected));
+  }
+
+>>>>>>> 495e347b4 ([CALCITE-3887] Filter and Join conditions may not need to retain null… (#362))
   @Test void testHints() {
     final RelHint indexHint = RelHint.builder("INDEX")
         .hintOption("_idx1")

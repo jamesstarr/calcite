@@ -8650,6 +8650,7 @@ LogicalProject(DEPTNO=[$0])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 =======
 
 >>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
@@ -8668,6 +8669,8 @@ LogicalProject(DEPTNO=[$0])
         </Resource>
     </TestCase>
 >>>>>>> 61eb479a0 ([CALCITE-3171] SemiJoin on conditions push down throws IndexOutOfBoundsException)
+=======
+>>>>>>> 495e347b4 ([CALCITE-3887] Filter and Join conditions may not need to retain null… (#362))
     <TestCase name="testSemiJoinRuleExists">
         <Resource name="sql">
             <![CDATA[select * from dept where exists (
