@@ -21,19 +21,6 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 
 /** Sub-class should be a Enum and can convert to a {@link SqlLiteral}. */
 public interface Symbolizable {
-<<<<<<< HEAD
-=======
-/**
- * Specifies the type of correlation operation: inner, left, semi, or anti.
- * @deprecated Use {@link JoinType}
- */
-@Deprecated // to be removed before 1.21
-public enum CorrelateJoinType {
-  /**
-   * Inner join
-   */
-  INNER,
-=======
 >>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
 
   /**
@@ -75,6 +62,5 @@ public enum CorrelateJoinType {
 =======
   default SqlLiteral symbol(SqlParserPos pos) {
     return SqlLiteral.createSymbol((Enum<?>) this, pos);
->>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
   }
 }
