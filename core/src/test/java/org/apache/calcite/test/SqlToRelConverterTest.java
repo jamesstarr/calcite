@@ -2069,13 +2069,13 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
   }
 
 
-  @Test void testTableValuedFunctionTumble() {
+  @Test void testTableFunctionTumble() {
     final String sql = "select *\n"
         + "from table(tumble(table Shipments, descriptor(rowtime), INTERVAL '1' MINUTE))";
     sql(sql).ok();
   }
 
-  @Test void testTableValuedFunctionTumbleWithSubQueryParam() {
+  @Test void testTableFunctionTumbleWithSubQueryParam() {
     final String sql = "select *\n"
         + "from table(tumble((select * from Shipments), descriptor(rowtime), INTERVAL '1' MINUTE))";
     sql(sql).ok();

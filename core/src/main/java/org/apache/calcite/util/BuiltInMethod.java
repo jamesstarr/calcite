@@ -20,6 +20,7 @@ import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.enumerable.AggregateLambdaFactory;
 import org.apache.calcite.adapter.enumerable.BasicAggregateLambdaFactory;
 import org.apache.calcite.adapter.enumerable.BasicLazyAccumulator;
+import org.apache.calcite.adapter.enumerable.EnumUtils;
 import org.apache.calcite.adapter.enumerable.LazyAggregateLambdaFactory;
 import org.apache.calcite.adapter.enumerable.MatchUtils;
 import org.apache.calcite.adapter.enumerable.SourceSorter;
@@ -610,7 +611,9 @@ public enum BuiltInMethod {
   VARIANT_CAST(VariantValue.class, "cast", RuntimeTypeInformation.class),
   TYPEOF(VariantValue.class, "getTypeString", VariantValue.class),
   VARIANT_ITEM(SqlFunctions.class, "item", VariantValue.class, Object.class),
-  VARIANTNULL(VariantNull.class, "getInstance");
+  VARIANTNULL(VariantNull.class, "getInstance"),
+  HOPPING(EnumUtils.class, "hopping", Enumerator.class, int.class, long.class,
+      long.class);
 
   public final Method method;
   public final Constructor constructor;
