@@ -49,12 +49,11 @@ import org.apache.calcite.sql.SqlSessionTableFunction;
 import org.apache.calcite.sql.SqlSetOperator;
 import org.apache.calcite.sql.SqlSpecialOperator;
 import org.apache.calcite.sql.SqlSyntax;
->>>>>>> 28b8ea1f9 ([CALCITE-2750] PI operator incorrectly identified as dynamic function)
+import org.apache.calcite.sql.SqlTumbleTableFunction;
 import org.apache.calcite.sql.SqlUnnestOperator;
 import org.apache.calcite.sql.SqlUtil;
 import org.apache.calcite.sql.SqlValuesOperator;
 import org.apache.calcite.sql.SqlWindow;
-import org.apache.calcite.sql.SqlWindowTableFunction;
 import org.apache.calcite.sql.SqlWithinGroupOperator;
 import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.type.InferTypes;
@@ -2316,7 +2315,10 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
   public static final SqlOperator DESCRIPTOR = new SqlDescriptorOperator();
 
   /** TUMBLE as a table-value function. */
-  public static final SqlFunction TUMBLE_TVF = new SqlWindowTableFunction(SqlKind.TUMBLE.name());
+  public static final SqlFunction TUMBLE_TVF = new SqlTumbleTableFunction();
+
+  /** HOP as a table-value function. */
+  public static final SqlFunction HOP_TVF = new SqlHopTableFunction();
 
   /** The {@code TUMBLE} group function.
    *
@@ -2331,9 +2333,6 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
    * this TUMBLE group function, and in fact all group functions. See
    * [CALCITE-3340] for details.
    */
-<<<<<<< HEAD
-  public static final SqlGroupedWindowFunction TUMBLE_OLD =
-=======
   public static final SqlGroupedWindowFunction TUMBLE =
       new SqlGroupedWindowFunction("$TUMBLE", SqlKind.TUMBLE,
           null, ReturnTypes.ARG0, null,
@@ -2356,7 +2355,10 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
       TUMBLE_OLD.auxiliary(SqlKind.TUMBLE_END);
 
   /** The {@code HOP} group function. */
+<<<<<<< HEAD
   public static final SqlGroupedWindowFunction HOP_OLD =
+=======
+  public static final SqlGroupedWindowFunction HOP =
       new SqlGroupedWindowFunction("$HOP", SqlKind.HOP, null,
           ReturnTypes.ARG0, null,
           OperandTypes.or(OperandTypes.DATETIME_INTERVAL_INTERVAL,

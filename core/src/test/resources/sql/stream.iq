@@ -45,6 +45,9 @@ SELECT * FROM TABLE(TUMBLE((SELECT * FROM ORDERS), DESCRIPTOR(ROWTIME), INTERVAL
 
 !ok
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 54c668e21 ([CALCITE-3737] HOP Table Function (Rui Wang) (#369))
 
 SELECT * FROM TABLE(HOP(TABLE ORDERS, DESCRIPTOR(ROWTIME), INTERVAL '5' MINUTE, INTERVAL '10' MINUTE));
 +---------------------+----+---------+-------+---------------------+---------------------+
@@ -83,6 +86,7 @@ SELECT * FROM TABLE(HOP((SELECT * FROM ORDERS), DESCRIPTOR(ROWTIME), INTERVAL '5
 (10 rows)
 
 !ok
+<<<<<<< HEAD
 
 SELECT * FROM TABLE(SESSION(TABLE ORDERS, DESCRIPTOR(ROWTIME), DESCRIPTOR(PRODUCT), INTERVAL '20' MINUTE));
 +---------------------+----+---------+-------+---------------------+---------------------+
@@ -113,3 +117,5 @@ SELECT * FROM TABLE(SESSION((SELECT * FROM ORDERS), DESCRIPTOR(ROWTIME), DESCRIP
 !ok
 =======
 >>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
+=======
+>>>>>>> 54c668e21 ([CALCITE-3737] HOP Table Function (Rui Wang) (#369))

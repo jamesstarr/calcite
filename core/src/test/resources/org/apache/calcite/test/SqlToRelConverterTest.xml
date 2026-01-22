@@ -5036,10 +5036,14 @@ LogicalDelta
   LogicalProject(ROWTIME=[$0], C=[$1])
     LogicalAggregate(group=[{0}], C=[COUNT()])
 <<<<<<< HEAD
+<<<<<<< HEAD
       LogicalProject($f0=[$HOP($0, 3600000:INTERVAL HOUR, 10800000:INTERVAL HOUR)])
 =======
       LogicalProject($f0=[HOP($0, 3600000:INTERVAL HOUR, 10800000:INTERVAL HOUR)])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
+=======
+      LogicalProject($f0=[$HOP($0, 3600000:INTERVAL HOUR, 10800000:INTERVAL HOUR)])
+>>>>>>> 54c668e21 ([CALCITE-3737] HOP Table Function (Rui Wang) (#369))
         LogicalTableScan(table=[[CATALOG, SALES, ORDERS]])
 ]]>
         </Resource>
@@ -6886,10 +6890,14 @@ LogicalDelta
         </Resource>
     </TestCase>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TestCase name="testTableFunctionTumble">
 =======
     <TestCase name="testTableValuedFunctionTumble">
 >>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
+=======
+    <TestCase name="testTableFunctionTumble">
+>>>>>>> 54c668e21 ([CALCITE-3737] HOP Table Function (Rui Wang) (#369))
         <Resource name="sql">
             <![CDATA[select *
 from table(tumble(table Shipments, descriptor(rowtime), INTERVAL '1' MINUTE))]]>
@@ -6911,6 +6919,7 @@ LogicalProject(ORDERID=[$0], ROWTIME=[$1], window_start=[$2], window_end=[$3])
 ]]>
         </Resource>
     </TestCase>
+<<<<<<< HEAD
 <<<<<<< HEAD
     <TestCase name="testTableFunctionHop">
         <Resource name="sql">
@@ -6944,6 +6953,9 @@ LogicalProject(ORDERID=[$0], ROWTIME=[$1], window_start=[$2], window_end=[$3])
 =======
     <TestCase name="testTableValuedFunctionTumbleWithSubQueryParam">
 >>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
+=======
+    <TestCase name="testTableFunctionTumbleWithSubQueryParam">
+>>>>>>> 54c668e21 ([CALCITE-3737] HOP Table Function (Rui Wang) (#369))
         <Resource name="sql">
             <![CDATA[select *
 from table(tumble((select * from Shipments), descriptor(rowtime), INTERVAL '1' MINUTE))]]>

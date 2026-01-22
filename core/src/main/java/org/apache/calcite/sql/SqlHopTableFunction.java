@@ -40,30 +40,7 @@ public class SqlHopTableFunction extends SqlWindowTableFunction {
 
   @Override public boolean checkOperandTypes(SqlCallBinding callBinding,
       boolean throwOnFailure) {
-    final SqlNode operand0 = callBinding.operand(0);
-    final SqlValidator validator = callBinding.getValidator();
-    final RelDataType type = validator.getValidatedNodeType(operand0);
-    if (type.getSqlTypeName() != SqlTypeName.ROW) {
-      return throwValidationSignatureErrorOrReturnFalse(callBinding, throwOnFailure);
-    }
-    final SqlNode operand1 = callBinding.operand(1);
-    if (operand1.getKind() != SqlKind.DESCRIPTOR) {
-      return throwValidationSignatureErrorOrReturnFalse(callBinding, throwOnFailure);
-    }
-    validateColumnNames(validator, type.getFieldNames(), ((SqlCall) operand1).getOperandList());
-    final RelDataType type2 = validator.getValidatedNodeType(callBinding.operand(2));
-    if (!SqlTypeUtil.isInterval(type2)) {
-      return throwValidationSignatureErrorOrReturnFalse(callBinding, throwOnFailure);
-    }
-    final RelDataType type3 = validator.getValidatedNodeType(callBinding.operand(3));
-    if (!SqlTypeUtil.isInterval(type3)) {
-      return throwValidationSignatureErrorOrReturnFalse(callBinding, throwOnFailure);
-    }
-    return true;
-  }
-
-  @Override public String getAllowedSignatures(String opNameToUse) {
-    return getName() + "(TABLE table_name, DESCRIPTOR(col), "
+    return getName() + "(TABLE table_name, DESCRIPTOR(col1, col2 ...), "
         + "datetime interval, datetime interval)";
   }
 }

@@ -176,6 +176,9 @@ data: {
       "HIERARCHY"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 54c668e21 ([CALCITE-3737] HOP Table Function (Rui Wang) (#369))
       "HOP"
       "HOURS"
 =======

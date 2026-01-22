@@ -8060,11 +8060,25 @@ SqlCall GroupByWindowingCall():
 =======
 }
 {
+<<<<<<< HEAD
     <TUMBLE> { s = span(); }
     args = UnquantifiedFunctionParameterList(ExprContext.ACCEPT_SUB_QUERY) {
         return SqlStdOperatorTable.TUMBLE.createCall(s.end(this), args);
 >>>>>>> c830b4f5a ([CALCITE-3382] Hard-wire the TUMBLE grouping function into SQL parser (Rui Wang))
     }
+=======
+    (
+        <TUMBLE> { s = span(); }
+        args = UnquantifiedFunctionParameterList(ExprContext.ACCEPT_SUB_QUERY) {
+            return SqlStdOperatorTable.TUMBLE.createCall(s.end(this), args);
+        }
+    |
+        <HOP> { s = span(); }
+        args = UnquantifiedFunctionParameterList(ExprContext.ACCEPT_SUB_QUERY) {
+            return SqlStdOperatorTable.HOP.createCall(s.end(this), args);
+        }
+    )
+>>>>>>> 54c668e21 ([CALCITE-3737] HOP Table Function (Rui Wang) (#369))
 }
 
 SqlCall MatchRecognizeFunctionCall() :

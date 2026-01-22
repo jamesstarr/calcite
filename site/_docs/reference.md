@@ -2495,6 +2495,7 @@ will apply tumbling with 1 minute window size on rows from table orders. rowtime
 watermarked column of table orders that tells data completeness.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #### HOP
 In streaming queries, HOP assigns windows that cover rows within the interval of *size* and shifting every *slide* based
 on a timestamp column. Windows assigned could have overlapping so hopping sometime is named as "sliding windowing".
@@ -2524,6 +2525,23 @@ watermarked column of table orders that tells data completeness. Session is appl
 
 =======
 >>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
+=======
+#### HOP
+In streaming queries, HOP assigns windows that cover rows within the interval of *size*, shifting every *slide*, 
+and optionally aligned at *time* based on a timestamp column. Windows assigned could have overlapping so hopping 
+sometime is named as "sliding windowing".  
+
+
+| Operator syntax      | Description
+|:-------------------- |:-----------
+| HOP(table, DESCRIPTOR(column_name), slide, size, [, time ]) | Indicates a hopping window for *datetime*, covering rows within the interval of *size*, shifting every *slide*, and optionally aligned at *time*. Hopping is applied on table in which there is a watermarked column specified by descriptor.
+
+Here is an example:
+`SELECT * FROM TABLE(HOP(TABLE orders, DESCRIPTOR(rowtime), INTERVAL '2' MINUTE, INTERVAL '5' MINUTE))`,
+will apply hopping with 5-minute interval size on rows from table orders, shifting every 2 minutes. rowtime is the
+watermarked column of table orders that tells data completeness.
+
+>>>>>>> 54c668e21 ([CALCITE-3737] HOP Table Function (Rui Wang) (#369))
 ### Grouped window functions
 **warning**: grouped window functions are deprecated.
 
