@@ -5846,8 +5846,8 @@ LogicalProject(EXPR$0=[1])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
         </Resource>
-        <Resource name="planAfter">
-            <![CDATA[
+      <Resource name="planAfter">
+        <![CDATA[
 LogicalProject(EXPR$0=[1])
   LogicalJoin(condition=[=($7, $16)], joinType=[inner])
     LogicalFilter(condition=[>($7, 7)])
@@ -5855,8 +5855,31 @@ LogicalProject(EXPR$0=[1])
     LogicalFilter(condition=[>($7, 7)])
       LogicalTableScan(table=[[CATALOG, SALES, EMP]])
 ]]>
-        </Resource>
+      </Resource>
     </TestCase>
+  <TestCase name="testPredicatePull">
+    <Resource name="sql">
+      <![CDATA[select deptno, sal from emp where deptno = 10 group by rollup(sal, deptno)]]>
+    </Resource>
+    <Resource name="planBefore">
+      <![CDATA[
+LogicalProject(DEPTNO=[$1], SAL=[$0])
+  LogicalAggregate(group=[{0, 1}], groups=[[{0, 1}, {0}, {}]])
+    LogicalProject(SAL=[$5], DEPTNO=[$7])
+      LogicalFilter(condition=[=($7, 10)])
+        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+    <Resource name="planAfter">
+      <![CDATA[
+LogicalProject(DEPTNO=[$1], SAL=[$0])
+  LogicalAggregate(group=[{0, 1}], groups=[[{0, 1}, {0}, {}]])
+    LogicalProject(SAL=[$5], DEPTNO=[10])
+      LogicalFilter(condition=[=($7, 10)])
+        LogicalTableScan(table=[[CATALOG, SALES, EMP]])
+]]>
+    </Resource>
+  </TestCase>
     <TestCase name="testTransitiveInferenceProject">
         <Resource name="sql">
             <![CDATA[select 1 from (select * from sales.emp where deptno > 7) d
