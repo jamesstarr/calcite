@@ -8033,6 +8033,9 @@ SqlCall GroupByWindowingCall():
     final Span s;
     final List<SqlNode> args;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c4fd13d2c ([CALCITE-3780] SESSION Table function (Rui Wang) (#380))
     final SqlOperator op;
 }
 {
@@ -8041,6 +8044,7 @@ SqlCall GroupByWindowingCall():
         {
             s = span();
             op = SqlStdOperatorTable.TUMBLE_OLD;
+<<<<<<< HEAD
         }
     |
         <HOP>
@@ -8071,14 +8075,29 @@ SqlCall GroupByWindowingCall():
         <TUMBLE> { s = span(); }
         args = UnquantifiedFunctionParameterList(ExprContext.ACCEPT_SUB_QUERY) {
             return SqlStdOperatorTable.TUMBLE.createCall(s.end(this), args);
+=======
+>>>>>>> c4fd13d2c ([CALCITE-3780] SESSION Table function (Rui Wang) (#380))
         }
     |
-        <HOP> { s = span(); }
-        args = UnquantifiedFunctionParameterList(ExprContext.ACCEPT_SUB_QUERY) {
-            return SqlStdOperatorTable.HOP.createCall(s.end(this), args);
+        <HOP>
+        {
+            s = span();
+            op = SqlStdOperatorTable.HOP_OLD;
+        }
+    |
+        <SESSION>
+        {
+            s = span();
+            op = SqlStdOperatorTable.SESSION_OLD;
         }
     )
+<<<<<<< HEAD
 >>>>>>> 54c668e21 ([CALCITE-3737] HOP Table Function (Rui Wang) (#369))
+=======
+    args = UnquantifiedFunctionParameterList(ExprContext.ACCEPT_SUB_QUERY) {
+        return op.createCall(s.end(this), args);
+    }
+>>>>>>> c4fd13d2c ([CALCITE-3780] SESSION Table function (Rui Wang) (#380))
 }
 
 SqlCall MatchRecognizeFunctionCall() :

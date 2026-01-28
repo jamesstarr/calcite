@@ -2314,11 +2314,14 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
   /** DESCRIPTOR(column_name, ...). */
   public static final SqlOperator DESCRIPTOR = new SqlDescriptorOperator();
 
-  /** TUMBLE as a table-value function. */
-  public static final SqlFunction TUMBLE_TVF = new SqlTumbleTableFunction();
+  /** TUMBLE as a table function. */
+  public static final SqlFunction TUMBLE = new SqlTumbleTableFunction();
 
-  /** HOP as a table-value function. */
-  public static final SqlFunction HOP_TVF = new SqlHopTableFunction();
+  /** HOP as a table function. */
+  public static final SqlFunction HOP = new SqlHopTableFunction();
+
+  /** SESSION as a table function. */
+  public static final SqlFunction SESSION = new SqlSessionTableFunction();
 
   /** The {@code TUMBLE} group function.
    *
@@ -2333,7 +2336,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
    * this TUMBLE group function, and in fact all group functions. See
    * [CALCITE-3340] for details.
    */
-  public static final SqlGroupedWindowFunction TUMBLE =
+  public static final SqlGroupedWindowFunction TUMBLE_OLD =
       new SqlGroupedWindowFunction("$TUMBLE", SqlKind.TUMBLE,
           null, ReturnTypes.ARG0, null,
           OperandTypes.or(OperandTypes.DATETIME_INTERVAL,
@@ -2355,10 +2358,9 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
       TUMBLE_OLD.auxiliary(SqlKind.TUMBLE_END);
 
   /** The {@code HOP} group function. */
-<<<<<<< HEAD
-  public static final SqlGroupedWindowFunction HOP_OLD =
-=======
   public static final SqlGroupedWindowFunction HOP =
+=======
+  public static final SqlGroupedWindowFunction HOP_OLD =
       new SqlGroupedWindowFunction("$HOP", SqlKind.HOP, null,
           ReturnTypes.ARG0, null,
           OperandTypes.or(OperandTypes.DATETIME_INTERVAL_INTERVAL,
