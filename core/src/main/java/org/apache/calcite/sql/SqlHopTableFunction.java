@@ -40,8 +40,6 @@ public class SqlHopTableFunction extends SqlWindowTableFunction {
 
   @Override public boolean checkOperandTypes(SqlCallBinding callBinding,
       boolean throwOnFailure) {
-    // There should only be three operands, and number of operands are checked before
-    // this call.
     final SqlNode operand0 = callBinding.operand(0);
     final SqlValidator validator = callBinding.getValidator();
     final RelDataType type = validator.getValidatedNodeType(operand0);
@@ -65,7 +63,7 @@ public class SqlHopTableFunction extends SqlWindowTableFunction {
   }
 
   @Override public String getAllowedSignatures(String opNameToUse) {
-    return getName() + "(TABLE table_name, DESCRIPTOR(col1, col2 ...), "
+    return getName() + "(TABLE table_name, DESCRIPTOR(col), "
         + "datetime interval, datetime interval)";
   }
 }
