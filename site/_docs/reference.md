@@ -1841,7 +1841,7 @@ period:
 | {fn RTRIM(string)} | Returns *string* with trailing space characters removed
 | {fn SUBSTRING(string, offset, length)} | Returns a character string that consists of *length* characters from *string* starting at the *offset* position
 | {fn UCASE(string)} | Returns a string in which all alphabetic characters in *string* have been converted to upper case
-| {fn REPLACE(string, search, replacement)} | Returns a string in which all the occurrences of *search* in *string* are replaced with *replacement*; if *replacement* is the empty string, the occurrences of *search* are removed
+| {fn REPLACE(string, search, replacement)} | Returns a string in which all the occurrences of *search* in *string* are replaced with *replacement*; returns unchanged *string* if *search* is an empty string(''); if *replacement* is the empty string, the occurrences of *search* are removed. Matching between *search* and *string* is case-insensitive under SQL Server semantics
 | {fn ASCII(string)} | Returns the ASCII code of the first character of *string*; if the first character is a non-ASCII character, returns its Unicode code point; returns 0 if *string* is empty
 | {fn REVERSE(string)} | Returns *string* with the order of the characters reversed
 
@@ -2051,9 +2051,9 @@ will apply tumbling with 1 minute window size on rows from table orders. rowtime
 watermarked column of table orders that tells data completeness.
 
 #### HOP
-In streaming queries, HOP assigns windows that cover rows within the interval of *size*, shifting every *slide*, 
-and optionally aligned at *time* based on a timestamp column. Windows assigned could have overlapping so hopping 
-sometime is named as "sliding windowing".  
+In streaming queries, HOP assigns windows that cover rows within the interval of *size*, shifting every *slide*,
+and optionally aligned at *time* based on a timestamp column. Windows assigned could have overlapping so hopping
+sometime is named as "sliding windowing".
 
 
 | Operator syntax      | Description
