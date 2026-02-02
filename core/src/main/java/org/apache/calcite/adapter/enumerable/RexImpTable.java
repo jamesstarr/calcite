@@ -3334,6 +3334,20 @@ public class RexImpTable {
               intervalExpression2));
     }
   }
+
+  /** Implementor for the {@code REPLACE} function for Oracle, PostgreSQL and
+   * Microsoft SQL Server. And search pattern for SQL Server is case-insensitive. */
+  private static class ReplaceImplementor implements NotNullImplementor {
+    @Override public Expression implement(RexToLixTranslator translator,
+        RexCall call, List<Expression> translatedOperands) {
+      boolean isCaseSensitive = translator.conformance != SqlConformanceEnum.SQL_SERVER_2008;
+      final Expression operand0 = translatedOperands.get(0);
+      final Expression operand1 = translatedOperands.get(1);
+      final Expression operand2 = translatedOperands.get(2);
+      return Expressions.call(BuiltInMethod.REPLACE.method,
+          operand0, operand1, operand2, Expressions.constant(isCaseSensitive));
+    }
+  }
 }
 <<<<<<< HEAD
 
