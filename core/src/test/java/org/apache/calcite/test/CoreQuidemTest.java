@@ -16,11 +16,16 @@
  */
 package org.apache.calcite.test;
 
+import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.prepare.Prepare;
+import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.util.TryThreadLocal;
+
+import net.hydromatic.quidem.Quidem;
 
 import org.junit.jupiter.api.Disabled;
 
+import java.sql.Connection;
 import java.util.Collection;
 
 /**
@@ -77,6 +82,25 @@ class CoreQuidemTest extends QuidemTest {
     try (TryThreadLocal.Memo ignored = Prepare.THREAD_EXPAND.push(true)) {
       checkRun(path);
     }
+  }
+
+  @Override protected Quidem.ConnectionFactory createConnectionFactory() {
+    return new QuidemConnectionFactory() {
+      @Override public Connection connect(String name, boolean reference)
+          throws Exception {
+        switch (name) {
+        case "scott-mssql":
+          // Same as "scott", but uses SQL_SERVER_2008 conformance.
+          return CalciteAssert.that()
+              .with(CalciteConnectionProperty.CONFORMANCE,
+                  SqlConformanceEnum.SQL_SERVER_2008)
+              .with(CalciteAssert.Config.SCOTT)
+              .connect();
+        default:
+          return super.connect(name, reference);
+        }
+      }
+    };
   }
 
 }
