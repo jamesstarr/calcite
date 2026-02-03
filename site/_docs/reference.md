@@ -2033,8 +2033,8 @@ Not implemented:
 |:-------------------- |:-----------
 | DESCRIPTOR(name [, name ]*) | DESCRIPTOR appears as an argument in a function to indicate a list of names. The interpretation of names is left to the function.
 
-### Table-valued functions.
-Table-valued functions occur in the `FROM` clause.
+### Table functions.
+Table functions occur in the `FROM` clause.
 
 #### TUMBLE
 In streaming queries, TUMBLE assigns a window for each row of a relation based on a timestamp column. An assigned window
@@ -2043,7 +2043,7 @@ is named as "fixed windowing".
 
 | Operator syntax      | Description
 |:-------------------- |:-----------
-| TUMBLE(table, DESCRIPTOR(column_name), interval [, time ]) | Indicates a tumbling window of *interval* for *datetime*, optionally aligned at *time*. Tumbling is applied on table in which there is a watermarked column specified by descriptor.
+| TUMBLE(table, DESCRIPTOR(datetime), interval) | Indicates a tumbling window of *interval* for *datetime*.
 
 Here is an example:
 `SELECT * FROM TABLE(TUMBLE(TABLE orders, DESCRIPTOR(rowtime), INTERVAL '1' MINUTE))`,
@@ -2053,17 +2053,29 @@ watermarked column of table orders that tells data completeness.
 #### HOP
 In streaming queries, HOP assigns windows that cover rows within the interval of *size* and shifting every *slide* based
 on a timestamp column. Windows assigned could have overlapping so hopping sometime is named as "sliding windowing".
-sometime is named as "sliding windowing".
+
+| Operator syntax      | Description
+|:-------------------- |:-----------
+| HOP(table, DESCRIPTOR(datetime), slide, size) | Indicates a hopping window for *datetime*, covering rows within the interval of *size*, shifting every *slide*.
+
+Here is an example:
+`SELECT * FROM TABLE(HOP(TABLE orders, DESCRIPTOR(rowtime), INTERVAL '2' MINUTE, INTERVAL '5' MINUTE))`,
+will apply hopping with 5-minute interval size on rows from table orders and shifting every 2 minutes. rowtime is the
+watermarked column of table orders that tells data completeness.
+
+#### SESSION
+In streaming queries, SESSION assigns windows that cover rows based on *datetime*. Within a session window, distances
+of rows are less than *interval*. Session window is applied per *key*.
 
 
 | Operator syntax      | Description
 |:-------------------- |:-----------
-| HOP(table, DESCRIPTOR(column_name), slide, size, [, time ]) | Indicates a hopping window for *datetime*, covering rows within the interval of *size*, shifting every *slide*, and optionally aligned at *time*. Hopping is applied on table in which there is a watermarked column specified by descriptor.
+| session(table, DESCRIPTOR(datetime), DESCRIPTOR(key), interval) | Indicates a session window of *interval* for *datetime*. Session window is applied per *key*.
 
 Here is an example:
-`SELECT * FROM TABLE(HOP(TABLE orders, DESCRIPTOR(rowtime), INTERVAL '2' MINUTE, INTERVAL '5' MINUTE))`,
-will apply hopping with 5-minute interval size on rows from table orders, shifting every 2 minutes. rowtime is the
-watermarked column of table orders that tells data completeness.
+`SELECT * FROM TABLE(SESSION(TABLE orders, DESCRIPTOR(rowtime), DESCRIPTOR(product), INTERVAL '20' MINUTE))`,
+will apply session with 20-minute inactive gap on rows from table orders. rowtime is the
+watermarked column of table orders that tells data completeness. Session is applied per product.
 
 ### Grouped window functions
 **warning**: grouped window functions are deprecated.
