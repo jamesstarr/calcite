@@ -72,6 +72,14 @@ public class RexSimplify {
   final boolean predicateElimination;
   private final RexExecutor executor;
   private final Strong strong;
+  /**
+   * {@code simplify} calls itself recursively multiple times, creating the possibility
+   * of an exponential increase in the time required to simplify a {@link RexNode}.
+   * These variables limit the maximum depth the recursive calls can reach; a more
+   * proper fix is in progress (Calcite-2449).
+   */
+  private final int maxDepth;
+  private int currentDepth;
 
   /**
    * Creates a RexSimplify.
@@ -82,13 +90,26 @@ public class RexSimplify {
    */
   public RexSimplify(RexBuilder rexBuilder, RelOptPredicateList predicates,
                      RexExecutor executor) {
-    this(rexBuilder, predicates, UNKNOWN, true, false, executor);
+    this(rexBuilder, predicates, UNKNOWN, true, false, executor, 40, 0);
+  }
+
+  /**
+   * Creates a RexSimplify.
+   *
+   * @param rexBuilder Rex builder
+   * @param predicates Predicates known to hold on input fields
+   * @param executor Executor for constant reduction, not null
+   * @param maxDepth Maximum amount of recursion depth for simplify
+   */
+  public RexSimplify(RexBuilder rexBuilder, RelOptPredicateList predicates,
+      RexExecutor executor, int maxDepth) {
+    this(rexBuilder, predicates, UNKNOWN, true, false, executor, maxDepth, 0);
   }
 
   /** Internal constructor. */
   private RexSimplify(RexBuilder rexBuilder, RelOptPredicateList predicates,
       RexUnknownAs defaultUnknownAs, boolean predicateElimination,
-      boolean paranoid, RexExecutor executor) {
+      boolean paranoid, RexExecutor executor, int maxDepth, int currentDepth) {
     this.rexBuilder = Objects.requireNonNull(rexBuilder);
     this.predicates = Objects.requireNonNull(predicates);
     this.defaultUnknownAs = Objects.requireNonNull(defaultUnknownAs);
@@ -96,20 +117,22 @@ public class RexSimplify {
     this.paranoid = paranoid;
     this.executor = Objects.requireNonNull(executor);
     this.strong = new Strong();
+    this.maxDepth = maxDepth;
+    this.currentDepth = currentDepth;
   }
 
   @Deprecated // to be removed before 2.0
   public RexSimplify(RexBuilder rexBuilder, boolean unknownAsFalse,
       RexExecutor executor) {
     this(rexBuilder, RelOptPredicateList.EMPTY,
-        RexUnknownAs.falseIf(unknownAsFalse), true, false, executor);
+        RexUnknownAs.falseIf(unknownAsFalse), true, false, executor, 40, 0);
   }
 
   @Deprecated // to be removed before 2.0
   public RexSimplify(RexBuilder rexBuilder, RelOptPredicateList predicates,
       boolean unknownAsFalse, RexExecutor executor) {
     this(rexBuilder, predicates, RexUnknownAs.falseIf(unknownAsFalse), true,
-        false, executor);
+        false, executor, 40, 0);
   }
 
   //~ Methods ----------------------------------------------------------------
@@ -125,7 +148,7 @@ public class RexSimplify {
     return defaultUnknownAs == this.defaultUnknownAs
         ? this
         : new RexSimplify(rexBuilder, predicates, defaultUnknownAs,
-            predicateElimination, paranoid, executor);
+            predicateElimination, paranoid, executor, maxDepth, currentDepth);
   }
 
   /** Returns a RexSimplify the same as this but with a specified
@@ -134,7 +157,7 @@ public class RexSimplify {
     return predicates == this.predicates
         ? this
         : new RexSimplify(rexBuilder, predicates, defaultUnknownAs,
-            predicateElimination, paranoid, executor);
+            predicateElimination, paranoid, executor, maxDepth, currentDepth);
   }
 
   /** Returns a RexSimplify the same as this but which verifies that
@@ -146,7 +169,7 @@ public class RexSimplify {
     return paranoid == this.paranoid
         ? this
         : new RexSimplify(rexBuilder, predicates, defaultUnknownAs,
-            predicateElimination, paranoid, executor);
+            predicateElimination, paranoid, executor, maxDepth, currentDepth);
   }
 
   /** Returns a RexSimplify the same as this but with a specified {@link #predicateElimination}
@@ -157,7 +180,7 @@ public class RexSimplify {
     return predicateElimination == this.predicateElimination
               ? this
               : new RexSimplify(rexBuilder, predicates, defaultUnknownAs,
-              predicateElimination, paranoid, executor);
+              predicateElimination, paranoid, executor, maxDepth, currentDepth);
   }
 
   /** Simplifies a boolean expression, always preserving its type and its
@@ -251,6 +274,11 @@ public class RexSimplify {
    * Verify adds an overhead that is only acceptable for a top-level call.
    */
   RexNode simplify(RexNode e, RexUnknownAs unknownAs) {
+    currentDepth++;
+    if (maxDepth < currentDepth) {
+      return e;
+    }
+
     if (e.getType().getSqlTypeName() == SqlTypeName.VARIANT) {
       // Upstream has many fixes that makes this code path "work".
       // For now we can just return the expression, since there is no RexLiteral for a Variant.
@@ -315,6 +343,8 @@ public class RexSimplify {
       }
     } catch (ClassCastException ex) {
       return e;
+    } finally {
+      currentDepth--;
     }
 
     if (e.getType().getSqlTypeName() == SqlTypeName.VARIANT) {
