@@ -315,7 +315,7 @@ public interface SqlSplittableAggFunction {
         return AggregateCall.create(bottom.getAggregation(),
             bottom.isDistinct(), bottom.isApproximate(), false,
             bottom.getArgList(), bottom.filterArg, bottom.getCollation(),
-            bottom.getType(), top.getName());
+            top.getType(), top.getName());
       } else {
         return null;
       }
