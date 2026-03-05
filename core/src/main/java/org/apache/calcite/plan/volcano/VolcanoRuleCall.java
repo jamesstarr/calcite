@@ -23,6 +23,7 @@ import org.apache.calcite.plan.RelOptRuleOperand;
 >>>>>>> a509374ba ([CALCITE-2899] Deprecate RelTraitPropagationVisitor and remove its usages)
 =======
 import org.apache.calcite.plan.RelOptRuleOperandChildPolicy;
+import org.apache.calcite.plan.SubstitutionRule;
 import org.apache.calcite.rel.RelNode;
 
 import com.google.common.collect.ImmutableList;
@@ -123,6 +124,10 @@ public class VolcanoRuleCall extends RelOptRuleCall {
                 true);
         volcanoPlanner.getListener().ruleProductionSucceeded(event);
 >>>>>>> f996861c4 ([CALCITE-3915] Add rule listener to report rule attempts and time at … (#340))
+      }
+
+      if (this.getRule() instanceof SubstitutionRule) {
+        volcanoPlanner.setImportance(rels[0], 0d);
       }
 
       // Registering the root relational expression implicitly registers

@@ -19,7 +19,7 @@ package org.apache.calcite.rel.rules;
 import org.apache.calcite.plan.Contexts;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
+import org.apache.calcite.plan.SubstitutionRule;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.tools.RelBuilder;

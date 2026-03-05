@@ -18,6 +18,7 @@ package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
+import org.apache.calcite.plan.SubstitutionRule;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rex.RexUtil;
@@ -79,10 +80,6 @@ public class ProjectRemoveRule
   public static boolean isTrivial(Project project) {
     return RexUtil.isIdentity(project.getProjects(),
         project.getInput().getRowType());
-  }
-
-  @Override public boolean autoPruneOld() {
-    return true;
   }
 
   /** Rule configuration. */

@@ -57,7 +57,7 @@ public class RelSet {
    * same parent, there will be multiple entries.
    */
   final List<RelNode> parents = new ArrayList<>();
-  final List<RelSubset> subsets = new ArrayList<>();
+  public final List<RelSubset> subsets = new ArrayList<>();
 
   /**
    * Set to the superseding set when this is found to be equivalent to another
@@ -365,14 +365,17 @@ public class RelSet {
     for (RelNode rel : rels) {
       assert planner.getSet(rel) == this;
       planner.fireRules(rel);
+<<<<<<< HEAD
     }
     // Fire rule match on subsets as well
     for (RelSubset subset : subsets) {
       planner.fireRules(subset);
+=======
+>>>>>>> 5f2a37e7d ([CALCITE-3753] Remove rule queue importance (#378))
     }
     // Fire rule match on subsets as well
     for (RelSubset subset : subsets) {
-      planner.fireRules(subset, true);
+      planner.fireRules(subset);
     }
   }
 }

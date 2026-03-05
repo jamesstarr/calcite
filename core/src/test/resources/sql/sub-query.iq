@@ -559,7 +559,7 @@ EnumerableCalc(expr#0..2=[{inputs}], A=[$t1], B=[$t2])
 >>>>>>> 9ce106577 (Revert "[CALCITE-3285] EnumerableMergeJoin should support non-equi jo… (#68))
 =======
 EnumerableCalc(expr#0..2=[{inputs}], proj#0..1=[{exprs}])
-  EnumerableHashJoin(condition=[=($0, $2)], joinType=[inner])
+  EnumerableMergeJoin(condition=[=($0, $2)], joinType=[inner])
     EnumerableValues(tuples=[[{ 60, 'b' }]])
 >>>>>>> 312f2890e ([CALCITE-3868] Remove redundant ruleSet and ruleNames in VolcanoPlanner (#332))
     EnumerableCalc(expr#0..2=[{inputs}], DEPTNO=[$t0])

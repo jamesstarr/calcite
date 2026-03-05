@@ -383,12 +383,12 @@ public class RelSubset extends AbstractRelNode {
       subset.getParents().forEach(mq::clearCache);
       // Lower cost means lower importance. Other nodes will change
       // too, but we'll get to them later.
-      planner.ruleQueue.recompute(subset);
       q.add(subset);
     }
     subset.timestamp++;
   }
 
+<<<<<<< HEAD
   private static final Comparator<RelSubset> COST_COMPARATOR = new Comparator<RelSubset>() {
     @Override public int compare(RelSubset o1, RelSubset o2) {
       if (o1.bestCost.equals(o2.bestCost)) {
@@ -425,6 +425,8 @@ public class RelSubset extends AbstractRelNode {
     subset.timestamp++;
   }
 
+=======
+>>>>>>> 5f2a37e7d ([CALCITE-3753] Remove rule queue importance (#378))
   @Override public void collectVariablesUsed(Set<CorrelationId> variableSet) {
     variableSet.addAll(set.variablesUsed);
   }

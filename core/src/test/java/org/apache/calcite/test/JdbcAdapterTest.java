@@ -254,6 +254,30 @@ class JdbcAdapterTest {
             + "      JdbcProject(EMPNO=[$0], ENAME=[$1], SAL=[$5])\n"
             + "        JdbcTableScan(table=[[SCOTT, EMP]])\n"
             + "      JdbcTableScan(table=[[SCOTT, SALGRADE]])")
+<<<<<<< HEAD
+        .runs()
+        .enable(CalciteAssert.DB == CalciteAssert.DatabaseInstance.HSQLDB)
+        .planHasSql("SELECT \"t\".\"EMPNO\", \"t\".\"ENAME\", \"SALGRADE\".\"GRADE\"\n"
+            + "FROM (SELECT \"EMPNO\", \"ENAME\", \"SAL\"\n"
+            + "FROM \"SCOTT\".\"EMP\") AS \"t\"\n"
+            + "INNER JOIN \"SCOTT\".\"SALGRADE\" ON \"t\".\"SAL\" >= \"SALGRADE\".\"LOSAL\" "
+            + "AND \"t\".\"SAL\" <= \"SALGRADE\".\"HISAL\"");
+  }
+
+  @Test void testMixedJoinPlan() {
+    CalciteAssert.model(JdbcTest.SCOTT_MODEL)
+        .query("select e.empno, e.ename, e.empno, e.ename\n"
+            + "from scott.emp e inner join scott.emp m on\n"
+            + "e.mgr = m.empno and e.sal > m.sal")
+        .explainContains("PLAN=JdbcToEnumerableConverter\n"
+            + "  JdbcProject(EMPNO=[$0], ENAME=[$1], EMPNO0=[$0], ENAME0=[$1])\n"
+            + "    JdbcJoin(condition=[AND(=($2, $4), >($3, $5))], joinType=[inner])\n"
+            + "      JdbcProject(EMPNO=[$0], ENAME=[$1], MGR=[$3], SAL=[$5])\n"
+            + "        JdbcTableScan(table=[[SCOTT, EMP]])\n"
+            + "      JdbcProject(EMPNO=[$0], SAL=[$5])\n"
+            + "        JdbcTableScan(table=[[SCOTT, EMP]])")
+=======
+>>>>>>> 5f2a37e7d ([CALCITE-3753] Remove rule queue importance (#378))
         .runs()
         .enable(CalciteAssert.DB == CalciteAssert.DatabaseInstance.HSQLDB)
         .planHasSql("SELECT \"t\".\"EMPNO\", \"t\".\"ENAME\", \"SALGRADE\".\"GRADE\"\n"
@@ -278,29 +302,8 @@ class JdbcAdapterTest {
         .runs()
         .enable(CalciteAssert.DB == CalciteAssert.DatabaseInstance.HSQLDB)
         .planHasSql("SELECT \"t\".\"EMPNO\", \"t\".\"ENAME\", "
-            + "\"SALGRADE\".\"GRADE\"\nFROM \"SCOTT\".\"SALGRADE\"\n"
-            + "INNER JOIN (SELECT \"EMPNO\", \"ENAME\", \"SAL\"\n"
-            + "FROM \"SCOTT\".\"EMP\") AS \"t\" "
-            + "ON \"SALGRADE\".\"LOSAL\" <= \"t\".\"SAL\" AND \"SALGRADE\".\"HISAL\" >= \"t\".\"SAL\"");
-  }
-
-  @Test void testMixedJoinPlan() {
-    CalciteAssert.model(JdbcTest.SCOTT_MODEL)
-        .query("select e.empno, e.ename, e.empno, e.ename\n"
-            + "from scott.emp e inner join scott.emp m on\n"
-            + "e.mgr = m.empno and e.sal > m.sal")
-        .explainContains("PLAN=JdbcToEnumerableConverter\n"
-            + "  JdbcProject(EMPNO=[$2], ENAME=[$3], EMPNO0=[$2], ENAME0=[$3])\n"
-            + "    JdbcJoin(condition=[AND(=($4, $0), >($5, $1))], joinType=[inner])\n"
-            + "      JdbcProject(EMPNO=[$0], SAL=[$5])\n"
-            + "        JdbcTableScan(table=[[SCOTT, EMP]])\n"
-            + "      JdbcProject(EMPNO=[$0], ENAME=[$1], MGR=[$3], SAL=[$5])\n"
-            + "        JdbcTableScan(table=[[SCOTT, EMP]])")
-        .runs()
-        .enable(CalciteAssert.DB == CalciteAssert.DatabaseInstance.HSQLDB)
-        .planHasSql("SELECT \"t0\".\"EMPNO\", \"t0\".\"ENAME\", "
-            + "\"t0\".\"EMPNO\" AS \"EMPNO0\", \"t0\".\"ENAME\" AS \"ENAME0\"\n"
-            + "FROM (SELECT \"EMPNO\", \"SAL\"\n"
+            + "\"t\".\"EMPNO\" AS \"EMPNO0\", \"t\".\"ENAME\" AS \"ENAME0\"\n"
+            + "FROM (SELECT \"EMPNO\", \"ENAME\", \"MGR\", \"SAL\"\n"
             + "FROM \"SCOTT\".\"EMP\") AS \"t\"\n"
             + "INNER JOIN (SELECT \"EMPNO\", \"SAL\"\n"
             + "FROM \"SCOTT\".\"EMP\") AS \"t0\" "
@@ -351,9 +354,8 @@ class JdbcAdapterTest {
         .enable(CalciteAssert.DB == CalciteAssert.DatabaseInstance.HSQLDB)
         .planHasSql("SELECT \"t\".\"EMPNO\", \"t\".\"ENAME\", "
             + "\"t0\".\"DNAME\", \"SALGRADE\".\"GRADE\"\n"
-            + "FROM \"SCOTT\".\"SALGRADE\"\n"
-            + "INNER JOIN ((SELECT \"EMPNO\", \"ENAME\", \"SAL\", \"DEPTNO\"\n"
-            + "FROM \"SCOTT\".\"EMP\") AS \"t\" "
+            + "FROM (SELECT \"EMPNO\", \"ENAME\", \"SAL\", \"DEPTNO\"\n"
+            + "FROM \"SCOTT\".\"EMP\") AS \"t\"\n"
             + "INNER JOIN (SELECT \"DEPTNO\", \"DNAME\"\n"
             + "FROM \"SCOTT\".\"DEPT\") AS \"t0\" ON \"t\".\"DEPTNO\" = \"t0\".\"DEPTNO\"\n"
             + "INNER JOIN \"SCOTT\".\"SALGRADE\" "

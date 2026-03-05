@@ -438,6 +438,7 @@ order by "deptno", ar, br limit 5;
 +--------+-----+-----+
 |     10 | 110 | 100 |
 <<<<<<< HEAD
+<<<<<<< HEAD
 |     10 | 110 | 100 |
 |     10 | 110 | 100 |
 |     10 | 110 | 110 |
@@ -448,6 +449,10 @@ order by "deptno", ar, br limit 5;
 <<<<<<< HEAD
 >>>>>>> 07a2c7256 ([CALCITE-2271] Join of two views with window aggregates produces incorrect results or NPE)
 =======
+=======
+|     10 | 110 | 100 |
+|     10 | 110 | 100 |
+>>>>>>> 5f2a37e7d ([CALCITE-3753] Remove rule queue importance (#378))
 |     10 | 110 | 110 |
 |     10 | 110 | 110 |
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)

@@ -17,8 +17,6 @@
 package org.apache.calcite.plan.volcano;
 
 import org.apache.calcite.plan.RelOptRuleOperand;
-import org.apache.calcite.plan.RelTrait;
-import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.util.Litmus;
 
@@ -29,13 +27,10 @@ import java.util.Map;
  * A match of a rule to a particular set of target relational expressions,
  * frozen in time.
  */
-class VolcanoRuleMatch extends VolcanoRuleCall {
+public class VolcanoRuleMatch extends VolcanoRuleCall {
   //~ Instance fields --------------------------------------------------------
 
-  private final RelSet targetSet;
-  private RelSubset targetSubset;
   private String digest;
-  private double cachedImportance = Double.NaN;
 
   //~ Constructors -----------------------------------------------------------
 
@@ -47,15 +42,11 @@ class VolcanoRuleMatch extends VolcanoRuleCall {
    *                 can modify it later
    * @param nodeInputs Map from relational expressions to their inputs
    */
-  VolcanoRuleMatch(VolcanoPlanner volcanoPlanner, RelOptRuleOperand operand0,
+  public VolcanoRuleMatch(VolcanoPlanner volcanoPlanner, RelOptRuleOperand operand0,
       RelNode[] rels, Map<RelNode, List<RelNode>> nodeInputs) {
     super(volcanoPlanner, operand0, rels.clone(), nodeInputs);
     assert allNotNull(rels, Litmus.THROW);
 
-    // Try to deduce which subset the result will belong to. Assume --
-    // for now -- that the set is the same as the root relexp.
-    targetSet = volcanoPlanner.getSet(rels[0]);
-    assert targetSet != null : rels[0].toString() + " isn't in a set";
     digest = computeDigest();
   }
 
@@ -63,72 +54,6 @@ class VolcanoRuleMatch extends VolcanoRuleCall {
 
   public String toString() {
     return digest;
-  }
-
-  /**
-   * Clears the cached importance value of this rule match. The importance
-   * will be re-calculated next time {@link #getImportance()} is called.
-   */
-  void clearCachedImportance() {
-    cachedImportance = Double.NaN;
-  }
-
-  /**
-   * Returns the importance of this rule.
-   *
-   * <p>Calls {@link #computeImportance()} the first time, thereafter uses a
-   * cached value until {@link #clearCachedImportance()} is called.
-   *
-   * @return importance of this rule; a value between 0 and 1
-   */
-  double getImportance() {
-    if (Double.isNaN(cachedImportance)) {
-      cachedImportance = computeImportance();
-    }
-
-    return cachedImportance;
-  }
-
-  /**
-   * Computes the importance of this rule match.
-   *
-   * @return importance of this rule match
-   */
-  double computeImportance() {
-    assert rels[0] != null;
-    RelSubset subset = volcanoPlanner.getSubset(rels[0]);
-    double importance = 0;
-    if (subset != null) {
-      importance = volcanoPlanner.ruleQueue.getImportance(subset);
-    }
-    final RelSubset targetSubset = guessSubset();
-    if ((targetSubset != null) && (targetSubset != subset)) {
-      // If this rule will generate a member of an equivalence class
-      // which is more important, use that importance.
-      final double targetImportance =
-          volcanoPlanner.ruleQueue.getImportance(targetSubset);
-      if (targetImportance > importance) {
-        importance = targetImportance;
-
-        // If the equivalence class is cheaper than the target, bump up
-        // the importance of the rule. A converter is an easy way to
-        // make the plan cheaper, so we'd hate to miss this opportunity.
-        //
-        // REVIEW: jhyde, 2007/12/21: This rule seems to make sense, but
-        // is disabled until it has been proven.
-        //
-        // CHECKSTYLE: IGNORE 3
-        if ((subset != null)
-            && subset.bestCost.isLt(targetSubset.bestCost)
-            && false) {
-          importance *=
-              targetSubset.bestCost.divideBy(subset.bestCost);
-          importance = Math.min(importance, 0.99);
-        }
-      }
-    }
-
-    return importance;
   }
 
   /**
