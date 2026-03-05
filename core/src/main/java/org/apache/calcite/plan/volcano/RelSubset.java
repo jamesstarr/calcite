@@ -102,7 +102,7 @@ public class RelSubset extends AbstractRelNode {
    * Flag indicating whether this RelSubset's importance was artificially
    * boosted.
    */
-  boolean boosted;
+  public boolean boosted;
 
   //~ Constructors -----------------------------------------------------------
 
@@ -225,7 +225,7 @@ public class RelSubset extends AbstractRelNode {
    * Returns the collection of distinct subsets that contain a RelNode one
    * of whose inputs is in this subset.
    */
-  Set<RelSubset> getParentSubsets(VolcanoPlanner planner) {
+  public Set<RelSubset> getParentSubsets(VolcanoPlanner planner) {
     final Set<RelSubset> list = new LinkedHashSet<>();
     for (RelNode parent : set.getParentRels()) {
       for (RelSubset rel : inputSubsets(parent)) {
@@ -381,22 +381,9 @@ public class RelSubset extends AbstractRelNode {
       subset.getParents().forEach(mq::clearCache);
       // Lower cost means lower importance. Other nodes will change
       // too, but we'll get to them later.
-      planner.ruleQueue.recompute(subset);
       q.add(subset);
     }
     subset.timestamp++;
-  }
-
-  public void propagateBoostRemoval(VolcanoPlanner planner) {
-    planner.ruleQueue.recompute(this);
-
-    if (boosted) {
-      boosted = false;
-
-      for (RelSubset parentSubset : getParentSubsets(planner)) {
-        parentSubset.propagateBoostRemoval(planner);
-      }
-    }
   }
 
   @Override public void collectVariablesUsed(Set<CorrelationId> variableSet) {

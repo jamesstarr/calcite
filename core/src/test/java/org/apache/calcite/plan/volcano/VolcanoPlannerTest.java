@@ -316,7 +316,6 @@ class VolcanoPlannerTest {
 
   private void removeTrivialProject(boolean useRule) {
     VolcanoPlanner planner = new VolcanoPlanner();
-    planner.ambitious = true;
 
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
 
@@ -383,7 +382,6 @@ class VolcanoPlannerTest {
   @Disabled // broken, because ReformedSingleRule matches child traits strictly
   @Test void testRemoveSingleReformed() {
     VolcanoPlanner planner = new VolcanoPlanner();
-    planner.ambitious = true;
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
 
     planner.addRule(new PhysLeafRule());
@@ -418,7 +416,6 @@ class VolcanoPlannerTest {
    */
   @Test void testRemoveSingleGood() {
     VolcanoPlanner planner = new VolcanoPlanner();
-    planner.ambitious = true;
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
 
     planner.addRule(new PhysLeafRule());

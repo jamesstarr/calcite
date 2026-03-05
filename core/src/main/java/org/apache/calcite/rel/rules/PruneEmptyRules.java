@@ -20,6 +20,7 @@ import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelTraitSet;
+import org.apache.calcite.plan.SubstitutionRule;
 import org.apache.calcite.plan.hep.HepRelVertex;
 import org.apache.calcite.plan.volcano.RelSubset;
 import org.apache.calcite.rel.RelNode;
@@ -61,7 +62,7 @@ import static org.apache.calcite.plan.RelOptRule.unordered;
  *
  * @see LogicalValues#createEmpty
  */
-public abstract class PruneEmptyRules {
+public abstract class PruneEmptyRules implements SubstitutionRule {
   //~ Static fields/initializers ---------------------------------------------
 
   /**

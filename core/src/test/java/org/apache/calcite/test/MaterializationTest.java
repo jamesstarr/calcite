@@ -91,10 +91,6 @@ class MaterializationTest {
       CalciteAssert.checkResultContains(
           "EnumerableTableScan(table=[[hr, m0]])");
 
-  private static final Consumer<ResultSet> CONTAINS_LOCATIONS =
-      CalciteAssert.checkResultContains(
-          "EnumerableTableScan(table=[[hr, locations]])");
-
   private static final Ordering<Iterable<String>> CASE_INSENSITIVE_LIST_COMPARATOR =
       Ordering.from(String.CASE_INSENSITIVE_ORDER).lexicographical();
 
@@ -1646,7 +1642,7 @@ class MaterializationTest {
         + "where \"deptno\" > 10\n"
         + "group by \"deptno\"";
     final String expected = "EnumerableAggregate(group=[{1}])\n"
-        + "  EnumerableCalc(expr#0..1=[{inputs}], expr#2=[10], expr#3=[<($t2, $t1)], "
+        + "  EnumerableCalc(expr#0..1=[{inputs}], expr#2=[10], expr#3=[>($t1, $t2)], "
         + "proj#0..1=[{exprs}], $condition=[$t3])\n"
         + "    EnumerableTableScan(table=[[hr, m0]])";
     sql(materialize, query).withResultContains(expected).ok();
@@ -1718,7 +1714,7 @@ class MaterializationTest {
             + "from \"emps\" where \"deptno\" > 10 group by \"deptno\"")
         .withResultContains(
             "EnumerableAggregate(group=[{1}], S=[$SUM0($3)])\n"
-                + "  EnumerableCalc(expr#0..3=[{inputs}], expr#4=[10], expr#5=[<($t4, $t1)], "
+                + "  EnumerableCalc(expr#0..3=[{inputs}], expr#4=[10], expr#5=[>($t1, $t4)], "
                 + "proj#0..3=[{exprs}], $condition=[$t5])\n"
                 + "    EnumerableTableScan(table=[[hr, m0]])")
         .ok();
@@ -1987,7 +1983,7 @@ class MaterializationTest {
         + "join \"emps\" using (\"deptno\") where \"emps\".\"empid\" > 15\n"
         + "group by \"depts\".\"deptno\"";
     final String expected = "EnumerableAggregate(group=[{0}])\n"
-        + "  EnumerableCalc(expr#0..1=[{inputs}], expr#2=[15], expr#3=[<($t2, $t1)], "
+        + "  EnumerableCalc(expr#0..1=[{inputs}], expr#2=[15], expr#3=[>($t1, $t2)], "
         + "proj#0..1=[{exprs}], $condition=[$t3])\n"
         + "    EnumerableTableScan(table=[[hr, m0]])";
     sql(materialize, query).withResultContains(expected).ok();
@@ -2333,7 +2329,7 @@ class MaterializationTest {
         "select \"empid\" \"deptno\" from \"emps\"\n"
             + "join \"depts\" using (\"deptno\") where \"empid\" = 1")
         .withResultContains(
-            "EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):INTEGER NOT NULL], expr#2=[1], "
+            "EnumerableCalc(expr#0=[{inputs}], expr#1=[1], expr#2=[CAST($t0):INTEGER NOT NULL], "
                 + "expr#3=[=($t1, $t2)], deptno=[$t0], $condition=[$t3])\n"
                 + "  EnumerableTableScan(table=[[hr, m0]])")
         .ok();
@@ -2346,7 +2342,7 @@ class MaterializationTest {
             + "join \"depts\" using (\"deptno\") where \"empid\" > 1")
         .withResultContains(
             "EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):JavaType(int) NOT NULL], "
-                + "expr#2=[1], expr#3=[>($t1, $t2)], EXPR$0=[$t1], $condition=[$t3])\n"
+                + "expr#2=[1], expr#3=[<($t2, $t1)], EXPR$0=[$t1], $condition=[$t3])\n"
                 + "  EnumerableTableScan(table=[[hr, m0]])")
         .ok();
   }
@@ -2358,7 +2354,7 @@ class MaterializationTest {
             + "join \"depts\" using (\"deptno\") where \"empid\" = 1")
         .withResultContains(
             "EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):JavaType(int) NOT NULL], "
-                + "expr#2=[CAST($t1):INTEGER NOT NULL], expr#3=[1], expr#4=[=($t2, $t3)], "
+                + "expr#2=[1], expr#3=[CAST($t1):INTEGER NOT NULL], expr#4=[=($t2, $t3)], "
                 + "EXPR$0=[$t1], $condition=[$t4])\n"
                 + "  EnumerableTableScan(table=[[hr, m0]])")
         .ok();
@@ -2514,7 +2510,7 @@ class MaterializationTest {
             + "join \"dependents\" using (\"empid\")\n"
             + "where \"emps\".\"empid\" = 1")
         .withResultContains(
-            "EnumerableCalc(expr#0..1=[{inputs}], empid0=[$t0])\n"
+            "EnumerableCalc(expr#0..1=[{inputs}], empid=[$t0])\n"
                 + "  EnumerableTableScan(table=[[hr, m0]])")
         .ok();
   }
@@ -2530,7 +2526,7 @@ class MaterializationTest {
             + "join \"dependents\" using (\"empid\")\n"
             + "where \"emps\".\"empid\" = 1")
         .withResultContains(
-            "EnumerableCalc(expr#0..1=[{inputs}], empid0=[$t0])\n"
+            "EnumerableCalc(expr#0..1=[{inputs}], empid=[$t0])\n"
                 + "  EnumerableTableScan(table=[[hr, m0]])")
         .ok();
   }

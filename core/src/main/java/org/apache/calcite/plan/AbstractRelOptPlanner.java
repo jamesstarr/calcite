@@ -71,7 +71,7 @@ public abstract class AbstractRelOptPlanner implements RelOptPlanner {
 
   private Pattern ruleDescExclusionFilter;
 
-  private final AtomicBoolean cancelFlag;
+  protected final AtomicBoolean cancelFlag;
 
   private final Set<Class<? extends RelNode>> classes = new HashSet<>();
 

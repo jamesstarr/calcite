@@ -43,7 +43,7 @@ import java.util.Set;
  * <p>All of the expressions in an <code>RelSet</code> have the same calling
  * convention.</p>
  */
-class RelSet {
+public class RelSet {
   //~ Static fields/initializers ---------------------------------------------
 
   private static final Logger LOGGER = CalciteTrace.getPlannerTracer();
@@ -57,7 +57,7 @@ class RelSet {
    * same parent, there will be multiple entries.
    */
   final List<RelNode> parents = new ArrayList<>();
-  final List<RelSubset> subsets = new ArrayList<>();
+  public final List<RelSubset> subsets = new ArrayList<>();
 
   /**
    * Set to the superseding set when this is found to be equivalent to another
@@ -85,7 +85,7 @@ class RelSet {
 
   //~ Constructors -----------------------------------------------------------
 
-  RelSet(
+  public RelSet(
       int id,
       Set<CorrelationId> variablesPropagated,
       Set<CorrelationId> variablesUsed) {
@@ -312,7 +312,6 @@ class RelSet {
 
     // merge subsets
     for (RelSubset otherSubset : otherSet.subsets) {
-      planner.ruleQueue.subsetImportances.remove(otherSubset);
       RelSubset subset =
           getOrCreateSubset(
               otherSubset.getCluster(),
@@ -362,11 +361,11 @@ class RelSet {
     // once to fire again.)
     for (RelNode rel : rels) {
       assert planner.getSet(rel) == this;
-      planner.fireRules(rel, true);
+      planner.fireRules(rel);
     }
     // Fire rule match on subsets as well
     for (RelSubset subset : subsets) {
-      planner.fireRules(subset, true);
+      planner.fireRules(subset);
     }
   }
 }
