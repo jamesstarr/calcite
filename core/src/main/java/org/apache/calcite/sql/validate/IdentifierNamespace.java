@@ -137,7 +137,6 @@ public class IdentifierNamespace extends AbstractNamespace {
         throw new CyclicDefinitionException(e.depth - 1, e.path);
       }
     }
->>>>>>> b7a4336d1 (Revert "Partial revert of CALCITE-1549")
     SqlValidatorScope.Resolve previousResolve = null;
     if (resolved.count() == 1) {
       final SqlValidatorScope.Resolve resolve =

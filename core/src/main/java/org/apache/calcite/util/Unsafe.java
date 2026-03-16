@@ -51,7 +51,6 @@ public class Unsafe {
     // Included in this class because StringBuffer is banned.
     sw.getBuffer().setLength(0);
   }
-}
 
   /** Helper for the SQL {@code REGEXP_REPLACE} function.
    *
