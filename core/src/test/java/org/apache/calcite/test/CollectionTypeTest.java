@@ -442,7 +442,6 @@ class CollectionTypeTest {
         }
       };
     }
->>>>>>> 9d2c4bca7 (Revert "Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)"")
 
     @Override public boolean isRolledUp(String column) {
       return false;

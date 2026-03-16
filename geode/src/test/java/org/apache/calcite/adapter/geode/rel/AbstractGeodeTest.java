@@ -13,24 +13,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-<<<<<<<< HEAD:file/src/test/resources/sales-json.json
- *
- * A JSON model of a Calcite schema based on CSV files.
- */
-{
-  "version": "1.0",
-  "defaultSchema": "SALES",
-  "schemas": [
-    {
-      "name": "SALES",
-      "type": "custom",
-      "factory": "org.apache.calcite.adapter.file.FileSchemaFactory",
-      "operand": {
-        "directory": "sales-json"
-      }
-    }
-  ]
-========
  */
 package org.apache.calcite.adapter.geode.rel;
 
@@ -50,5 +32,4 @@ public abstract class AbstractGeodeTest {
   @RegisterExtension
   public static final GeodeEmbeddedPolicy POLICY = GeodeEmbeddedPolicy.create().share();
 
->>>>>>>> 1b41ebada ([CALCITE-2588] Run Geode Adapter tests with an Embedded Instance):geode/src/test/java/org/apache/calcite/adapter/geode/rel/AbstractGeodeTest.java
 }

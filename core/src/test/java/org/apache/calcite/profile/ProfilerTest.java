@@ -117,7 +117,6 @@ class ProfilerTest {
                 || ((Profiler.Distribution) statistic).cardinality < 14
                 && ((Profiler.Distribution) statistic).minimal)
         .unordered(
->>>>>>> aae3c7e14 ([CALCITE-2546] Reduce precision of Profiler's surprise and cardinality attributes to avoid FP discrepancies (Alisha Prabhu))
             "{type:distribution,columns:[COMM,DEPTNO0],cardinality:5}",
             "{type:distribution,columns:[COMM,DEPTNO],cardinality:5}",
             "{type:distribution,columns:[COMM,DNAME],cardinality:5}",
