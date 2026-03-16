@@ -22,19 +22,9 @@
 :: sqlline> !connect jdbc:calcite: admin admin
 
 :: Copy dependency jars on first call.
-:: (To force jar refresh, remove core\target\dependencies)
-:: We remove slf4j-log4j, otherwise slf4j complains about multiple bindings.
-if not exist core\target\dependencies (
-  call .\mvnw -B dependency:copy-dependencies -DoverWriteReleases=false -DoverWriteSnapshots=false -DoverWriteIfNewer=true -DoutputDirectory=target\dependencies
-  del /q /s slf4j-log4j12-*.jar
-)
-
-java -Xmx1G -cp ".\target\dependencies\*;core\target\dependencies\*;cassandra\target\dependencies\*;druid\target\dependencies\*;elasticsearch\target\dependencies\*;geode\target\dependencies\*;file\target\dependencies\*;mongodb\target\dependencies\*;server\target\dependencies\*;spark\target\dependencies\*;splunk\target\dependencies\*" sqlline.SqlLine --verbose=true %*
-=======
 :: To force jar refresh, remove core\target\dependencies)
 if not exist build\libs\sqllineClasspath.jar (call gradlew buildSqllineClasspath)
 
 java -Xmx1G -jar build\libs\sqllineClasspath.jar %*
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 
 :: End sqlline.bat

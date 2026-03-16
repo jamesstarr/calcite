@@ -1,7 +1,4 @@
 @echo off
-:: sqlline.bat - Windows script to launch SQL shell
-=======
->>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 ::
 :: Licensed to the Apache Software Foundation (ASF) under one or more
 :: contributor license agreements.  See the NOTICE file distributed with
@@ -18,8 +15,6 @@
 :: See the License for the specific language governing permissions and
 :: limitations under the License.
 ::
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
 
 :: sqlline.bat - Windows script to launch SQL shell
 :: Example:
