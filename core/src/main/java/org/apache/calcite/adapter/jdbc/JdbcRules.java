@@ -288,6 +288,86 @@ public class JdbcRules {
         // It's not possible to convert semi-joins or anti-joins. They have fewer columns
         // than regular joins.
         return null;
+      default:
+        return convert(join, true);
+      }
+    }
+
+    /**
+     * Converts a {@code Join} into a {@code JdbcJoin}.
+     *
+     * @param join Join operator to convert
+     * @param convertInputTraits Whether to convert input to {@code join}'s
+     *                            JDBC convention
+     * @return A new JdbcJoin
+     */
+    public RelNode convert(Join join, boolean convertInputTraits) {
+      final List<RelNode> newInputs = new ArrayList<>();
+      for (RelNode input : join.getInputs()) {
+        if (convertInputTraits && input.getConvention() != getOutTrait()) {
+          input =
+              convert(input,
+                  input.getTraitSet().replace(out));
+        }
+        newInputs.add(input);
+      }
+      if (convertInputTraits && !canJoinOnCondition(join.getCondition())) {
+        return null;
+      }
+      try {
+        return new JdbcJoin(
+            join.getCluster(),
+            join.getTraitSet().replace(out),
+            newInputs.get(0),
+            newInputs.get(1),
+            join.getCondition(),
+            join.getVariablesSet(),
+            join.getJoinType());
+      } catch (InvalidRelException e) {
+        LOGGER.debug(e.toString());
+        return null;
+      }
+    }
+
+    /**
+     * Returns whether a condition is supported by {@link JdbcJoin}.
+     *
+     * <p>Corresponds to the capabilities of
+     * {@link SqlImplementor#convertConditionToSqlNode}.
+     *
+     * @param node Condition
+     * @return Whether condition is supported
+     */
+    private boolean canJoinOnCondition(RexNode node) {
+      final List<RexNode> operands;
+      switch (node.getKind()) {
+      case AND:
+      case OR:
+        operands = ((RexCall) node).getOperands();
+        for (RexNode operand : operands) {
+          if (!canJoinOnCondition(operand)) {
+            return false;
+          }
+        }
+        return true;
+
+      case EQUALS:
+      case IS_NOT_DISTINCT_FROM:
+      case NOT_EQUALS:
+      case GREATER_THAN:
+      case GREATER_THAN_OR_EQUAL:
+      case LESS_THAN:
+      case LESS_THAN_OR_EQUAL:
+        operands = ((RexCall) node).getOperands();
+        if ((operands.get(0) instanceof RexInputRef)
+            && (operands.get(1) instanceof RexInputRef)) {
+          return true;
+        }
+        // fall through
+
+      default:
+        return false;
+      }
     }
   }
 

@@ -92,7 +92,6 @@ public class DruidTableFactory implements TableFactory {
         fieldBuilder.put(dimension, SqlTypeName.VARCHAR);
       }
     }
->>>>>>> 9d2c4bca7 (Revert "Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)"")
 
     // init the complex metric map
     final Object complexMetricsRaw = operand.get("complexMetrics");
