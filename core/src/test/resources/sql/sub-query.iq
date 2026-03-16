@@ -32,22 +32,10 @@ where t1.x not in (select t2.x from t2);
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..4=[{inputs}], expr#5=[0], expr#6=[=($t1, $t5)], expr#7=[IS NULL($t4)], expr#8=[>=($t2, $t1)], expr#9=[IS NOT NULL($t0)], expr#10=[AND($t7, $t8, $t9)], expr#11=[OR($t6, $t10)], X=[$t0], $condition=[$t11])
-  EnumerableHashJoin(condition=[=($0, $3)], joinType=[left])
-    EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[0], expr#6=[=($t1, $t5)], expr#7=[false], expr#8=[IS NULL($t0)], expr#9=[null], expr#10=[IS NOT NULL($t4)], expr#11=[true], expr#12=[<($t2, $t1)], expr#13=[CASE($t6, $t7, $t8, $t9, $t10, $t11, $t12, $t11, $t7)], expr#14=[NOT($t13)], EXPR$0=[$t0], $condition=[$t14])
 <<<<<<< HEAD
   EnumerableJoin(condition=[=($0, $3)], joinType=[left])
     EnumerableJoin(condition=[true], joinType=[inner])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[0], expr#6=[=($t1, $t5)], expr#7=[false], expr#8=[IS NULL($t0)], expr#9=[null:NULL], expr#10=[IS NOT NULL($t4)], expr#11=[true], expr#12=[<($t2, $t1)], expr#13=[CASE($t6, $t7, $t8, $t9, $t10, $t11, $t12, $t11, $t7)], expr#14=[NOT($t13)], EXPR$0=[$t0], $condition=[$t14])
@@ -66,21 +54,13 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[0], expr#6=[=($t1, $t5)], expr#7=[f
           EnumerableValues(tuples=[[{ 0 }]])
         EnumerableCalc(expr#0=[{inputs}], expr#1=[2], EXPR$0=[$t1])
           EnumerableValues(tuples=[[{ 0 }]])
-<<<<<<< HEAD
-        EnumerableCalc(expr#0=[{inputs}], expr#1=[null:INTEGER], EXPR$0=[$t1])
-=======
         EnumerableCalc(expr#0=[{inputs}], expr#1=[true], expr#2=[null:INTEGER], expr#3=[3], expr#4=[CASE($t1, $t2, $t3)], EXPR$0=[$t4])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
           EnumerableValues(tuples=[[{ 0 }]])
       EnumerableAggregate(group=[{}], c=[COUNT()], ck=[COUNT($0)])
         EnumerableUnion(all=[true])
           EnumerableCalc(expr#0=[{inputs}], expr#1=[1], EXPR$0=[$t1])
             EnumerableValues(tuples=[[{ 0 }]])
-<<<<<<< HEAD
-          EnumerableCalc(expr#0=[{inputs}], expr#1=[null:INTEGER], EXPR$0=[$t1])
-=======
           EnumerableCalc(expr#0=[{inputs}], expr#1=[true], expr#2=[null:INTEGER], expr#3=[3], expr#4=[CASE($t1, $t2, $t3)], EXPR$0=[$t4])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[IS NULL($t4)], expr#6=[>=($t2, $t1)], expr#7=[AND($t5, $t6)], expr#8=[0], expr#9=[=($t1, $t8)], expr#10=[IS NULL($t0)], expr#11=[OR($t7, $t9, $t10)], X=[$t0], $condition=[$t11])
 =======
@@ -101,11 +81,6 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[0], expr#6=[=($t1, $t5)], expr#7=[I
         EnumerableUnion(all=[true])
           EnumerableCalc(expr#0=[{inputs}], expr#1=[1], EXPR$0=[$t1])
             EnumerableValues(tuples=[[{ 0 }]])
-<<<<<<< HEAD
-          EnumerableCalc(expr#0=[{inputs}], expr#1=[2], EXPR$0=[$t1])
->>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
-            EnumerableValues(tuples=[[{ 0 }]])
-=======
 >>>>>>> b7f1c317c ([CALCITE-2886] Simplification of AND expressions should push negations earlier)
           EnumerableCalc(expr#0=[{inputs}], expr#1=[null:INTEGER], EXPR$0=[$t1])
             EnumerableValues(tuples=[[{ 0 }]])
@@ -119,7 +94,6 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[0], expr#6=[=($t1, $t5)], expr#7=[I
           EnumerableCalc(expr#0=[{inputs}], expr#1=[null:INTEGER], EXPR$0=[$t1])
 =======
           EnumerableCalc(expr#0=[{inputs}], expr#1=[true], expr#2=[null:INTEGER], expr#3=[3], expr#4=[CASE($t1, $t2, $t3)], EXPR$0=[$t4])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 =======
           EnumerableCalc(expr#0=[{inputs}], expr#1=[null:INTEGER], EXPR$0=[$t1])
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
@@ -417,12 +391,7 @@ EnumerableCalc(expr#0..5=[{inputs}], EMPNO=[$t0])
         EnumerableCalc(expr#0..1=[{inputs}], JOB=[$t1], DEPTNO=[$t0])
           EnumerableAggregate(group=[{0, 2}])
             EnumerableCalc(expr#0..3=[{inputs}], expr#4=[>($t3, $t0)], proj#0..3=[{exprs}], $condition=[$t4])
-<<<<<<< HEAD
-<<<<<<< HEAD
-              EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
-=======
               EnumerableHashJoin(condition=[true], joinType=[inner])
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
 =======
               EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
 >>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
@@ -540,17 +509,10 @@ EnumerableCalc(expr#0..2=[{inputs}], proj#0..1=[{exprs}])
 # Uncorrelated
 with t (a, b) as (select * from (values (60, 'b')))
 select * from t where a in (select deptno from "scott".dept);
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..2=[{inputs}], proj#0..1=[{exprs}])
-  EnumerableMergeJoin(condition=[=($0, $2)], joinType=[inner])
-    EnumerableValues(tuples=[[{ 60, 'b' }]])
-=======
 EnumerableCalc(expr#0..2=[{inputs}], A=[$t1], B=[$t2])
 <<<<<<< HEAD
 <<<<<<< HEAD
   EnumerableMergeJoin(condition=[=($0, $1)], joinType=[inner])
->>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
 =======
   EnumerableMergeJoin(condition=[=($1, $0)], joinType=[inner])
 >>>>>>> 475cf3352 ([CALCITE-3285] EnumerableMergeJoin should support non-equi join condions (Jin Xing))
@@ -695,17 +657,9 @@ where empno IN (
 
 !ok
 EnumerableCalc(expr#0..4=[{inputs}], SAL=[$t4])
-<<<<<<< HEAD
-<<<<<<< HEAD
-  EnumerableHashJoin(condition=[AND(=($1, $3), =($0, $2))], joinType=[inner])
-<<<<<<< HEAD
-<<<<<<< HEAD
-    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NOT NULL($t1)], proj#0..1=[{exprs}], $condition=[$t3])
-=======
   EnumerableJoin(condition=[AND(=($1, $3), =($0, $2))], joinType=[inner])
 <<<<<<< HEAD
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t1):VARCHAR(14) CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], expr#4=[=($t3, $t1)], proj#0..1=[{exprs}], $condition=[$t4])
->>>>>>> f495333f2 ([DX-12070] Support for non-ISO-8859-1 literals)
 =======
 =======
   EnumerableHashJoin(condition=[AND(=($1, $3), =($0, $2))], joinType=[inner])
@@ -738,10 +692,6 @@ where exists (
 (1 row)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 16625330a ([CALCITE-3428] Refine RelMdColumnUniqueness for Filter by considering constant columns (Jin Xing))
 EnumerableCalc(expr#0..3=[{inputs}], DEPTNO=[$t1], DNAME=[$t2], LOC=[$t3])
   EnumerableHashJoin(condition=[=($0, $1)], joinType=[inner])
@@ -753,7 +703,6 @@ EnumerableCalc(expr#0..3=[{inputs}], DEPTNO=[$t1], DNAME=[$t2], LOC=[$t3])
 EnumerableSemiJoin(condition=[=($0, $10)], joinType=[inner])
 =======
 EnumerableHashJoin(condition=[=($0, $10)], joinType=[semi])
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
   EnumerableTableScan(table=[[scott, DEPT]])
   EnumerableCalc(expr#0..7=[{inputs}], expr#8=['SMITH':VARCHAR(10)], expr#9=[=($t1, $t8)], expr#10=[IS NOT NULL($t7)], expr#11=[AND($t9, $t10)], proj#0..7=[{exprs}], $condition=[$t11])
     EnumerableTableScan(table=[[scott, EMP]])
@@ -922,18 +871,9 @@ from "scott".emp;
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL($t3)], expr#6=[AND($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], SAL=[$t1], EXPR$1=[$t12])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:NULL], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], SAL=[$t1], EXPR$1=[$t12])
@@ -948,18 +888,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], cs=[$t3])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null], expr#5=[null], expr#6=[IS NULL($t5)], expr#7=[OR($t4, $t6)], cs=[$t3], $condition=[$t7])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:BOOLEAN], expr#5=[null:INTEGER], expr#6=[IS NULL($t5)], expr#7=[OR($t4, $t6)], cs=[$t3], $condition=[$t7])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], $condition=[$t5])
 >>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
@@ -1009,12 +940,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL(
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[123], expr#5=[null], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[123], expr#5=[null:INTEGER], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], cs=[$t3])
 >>>>>>> 58f40d369 ([CALCITE-2567] Simplify IS NULL(null) to true (pengzhiwei))
@@ -1046,18 +972,9 @@ from "scott".emp;
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL($t3)], expr#6=[AND($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], SAL=[$t1], EXPR$1=[$t12])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:NULL], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], SAL=[$t1], EXPR$1=[$t12])
@@ -1077,14 +994,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL(
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[1], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t4)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[1], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t4)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
@@ -1122,18 +1032,9 @@ from "scott".emp;
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL($t3)], expr#6=[AND($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], SAL=[$t1], EXPR$1=[$t12])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:NULL], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], SAL=[$t1], EXPR$1=[$t12])
@@ -1153,14 +1054,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL(
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
@@ -1198,18 +1092,9 @@ from "scott".emp;
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL($t3)], expr#6=[AND($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], SAL=[$t1], EXPR$1=[$t12])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:NULL], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], SAL=[$t1], EXPR$1=[$t12])
@@ -1229,16 +1114,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL(
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[IS NULL($t4)], expr#9=[OR($t6, $t7, $t8)], cs=[$t3], $condition=[$t9])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[IS NULL($t4)], expr#9=[OR($t6, $t7, $t8)], cs=[$t3], $condition=[$t9])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
@@ -1283,13 +1159,7 @@ from "scott".emp;
 
 !ok
 EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NOT NULL($t2)], SAL=[$t1], EXPR$1=[$t3])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-=======
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
   EnumerableHashJoin(condition=[true], joinType=[left])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
@@ -1328,19 +1198,9 @@ from "scott".emp;
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[NOT($t2)], expr#5=[IS TRUE($t4)], expr#6=[null:BOOLEAN], expr#7=[IS NOT NULL($t3)], expr#8=[AND($t5, $t6, $t7)], expr#9=[IS NOT NULL($t2)], expr#10=[IS NOT FALSE($t2)], expr#11=[AND($t9, $t7, $t10)], expr#12=[OR($t8, $t11)], SAL=[$t1], EXPR$1=[$t12])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[IS NOT NULL($t2)], expr#9=[true], expr#10=[CASE($t4, $t5, $t6, $t7, $t8, $t9, $t5)], SAL=[$t1], EXPR$1=[$t10])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:NULL], expr#8=[IS NOT NULL($t2)], expr#9=[true], expr#10=[CASE($t4, $t5, $t6, $t7, $t8, $t9, $t5)], SAL=[$t1], EXPR$1=[$t10])
@@ -1363,15 +1223,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[NOT($t2)], expr#5=[IS TRUE($t4)], e
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[=($t4, $t0)], cs=[$t3], $condition=[$t5])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], cs=[$t3], $condition=[$t6])
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
@@ -1412,21 +1264,9 @@ from "scott".emp;
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[NOT($t12)], SAL=[$t1], EXPR$1=[$t13])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:NULL], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[NOT($t12)], SAL=[$t1], EXPR$1=[$t13])
@@ -1441,18 +1281,9 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], cs=[$t3])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null], expr#5=[null], expr#6=[IS NULL($t5)], expr#7=[OR($t4, $t6)], cs=[$t3], $condition=[$t7])
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:BOOLEAN], expr#5=[null:INTEGER], expr#6=[IS NULL($t5)], expr#7=[OR($t4, $t6)], cs=[$t3], $condition=[$t7])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], cs=[$t3], $condition=[$t5])
 >>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
@@ -1511,12 +1342,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[123], expr#5=[null], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[123], expr#5=[null:INTEGER], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], cs=[$t3])
 >>>>>>> 58f40d369 ([CALCITE-2567] Simplify IS NULL(null) to true (pengzhiwei))
@@ -1548,21 +1374,9 @@ from "scott".emp;
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[NOT($t12)], SAL=[$t1], EXPR$1=[$t13])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:NULL], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[NOT($t12)], SAL=[$t1], EXPR$1=[$t13])
@@ -1591,14 +1405,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[1], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t4)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[1], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t4)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
@@ -1636,21 +1443,9 @@ from "scott".emp;
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[NOT($t12)], SAL=[$t1], EXPR$1=[$t13])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:NULL], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[NOT($t12)], SAL=[$t1], EXPR$1=[$t13])
@@ -1679,14 +1474,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
@@ -1724,21 +1512,9 @@ from "scott".emp;
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN], expr#6=[OR($t4, $t5)], SAL=[$t1], EXPR$1=[$t6])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[NOT($t12)], SAL=[$t1], EXPR$1=[$t13])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:NULL], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[NOT($t12)], SAL=[$t1], EXPR$1=[$t13])
@@ -1767,16 +1543,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[null:BOOLEAN
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[IS NULL($t4)], expr#9=[OR($t6, $t7, $t8)], cs=[$t3], $condition=[$t9])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[IS NULL($t4)], expr#9=[OR($t6, $t7, $t8)], cs=[$t3], $condition=[$t9])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
@@ -1820,18 +1587,9 @@ from "scott".emp;
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NULL($t2)], SAL=[$t1], EXPR$1=[$t3])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NOT NULL($t2)], expr#4=[true], expr#5=[false], expr#6=[CASE($t3, $t4, $t5)], expr#7=[NOT($t6)], SAL=[$t1], EXPR$1=[$t7])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..2=[{inputs}], expr#3=[IS NOT NULL($t2)], expr#4=[true], expr#5=[AND($t3, $t4)], expr#6=[false], expr#7=[NOT($t3)], expr#8=[AND($t6, $t7)], expr#9=[OR($t5, $t8)], expr#10=[NOT($t9)], SAL=[$t1], EXPR$1=[$t10])
@@ -1878,22 +1636,9 @@ from "scott".emp;
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], expr#6=[IS TRUE($t5)], expr#7=[null:BOOLEAN], expr#8=[AND($t6, $t7)], expr#9=[IS NOT FALSE($t2)], expr#10=[IS NULL($t2)], expr#11=[AND($t9, $t10)], expr#12=[OR($t4, $t8, $t11)], SAL=[$t1], EXPR$1=[$t12])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[IS NOT NULL($t2)], expr#9=[true], expr#10=[CASE($t4, $t5, $t6, $t7, $t8, $t9, $t5)], expr#11=[NOT($t10)], SAL=[$t1], EXPR$1=[$t11])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:NULL], expr#8=[IS NOT NULL($t2)], expr#9=[true], expr#10=[CASE($t4, $t5, $t6, $t7, $t8, $t9, $t5)], expr#11=[NOT($t10)], SAL=[$t1], EXPR$1=[$t11])
@@ -1925,15 +1670,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], e
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[=($t4, $t0)], cs=[$t3], $condition=[$t5])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], cs=[$t3], $condition=[$t6])
 >>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
@@ -1974,18 +1711,9 @@ from "scott".emp;
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL($t3)], expr#6=[AND($t4, $t5)], expr#7=[IS NULL($t6)], SAL=[$t1], EXPR$1=[$t7])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[IS NULL($t12)], SAL=[$t1], EXPR$1=[$t13])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:NULL], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[IS NULL($t12)], SAL=[$t1], EXPR$1=[$t13])
@@ -2005,14 +1733,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL(
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
@@ -2035,14 +1756,7 @@ select sal from "scott".emp
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableValues(tuples=[[]])
 =======
-=======
->>>>>>> 5894084f1 (Revert "[CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)")
 EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
   EnumerableHashJoin(condition=[true], joinType=[inner])
     EnumerableAggregate(group=[{0}])
@@ -2050,11 +1764,7 @@ EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
         EnumerableTableScan(table=[[scott, DEPT]])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
-<<<<<<< HEAD
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
-=======
 EnumerableValues(tuples=[[]])
->>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
 =======
 >>>>>>> 5894084f1 (Revert "[CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)")
 =======
@@ -2072,10 +1782,6 @@ select sal from "scott".emp
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableValues(tuples=[[]])
-=======
 EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
   EnumerableHashJoin(condition=[true], joinType=[inner])
     EnumerableAggregate(group=[{0}])
@@ -2083,7 +1789,6 @@ EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
         EnumerableTableScan(table=[[scott, DEPT]])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 EnumerableValues(tuples=[[]])
 >>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
@@ -2099,10 +1804,6 @@ select sal from "scott".emp
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableValues(tuples=[[]])
-=======
 EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
   EnumerableHashJoin(condition=[true], joinType=[inner])
     EnumerableAggregate(group=[{0}])
@@ -2110,7 +1811,6 @@ EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
         EnumerableTableScan(table=[[scott, DEPT]])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 EnumerableValues(tuples=[[]])
 >>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
@@ -2126,10 +1826,6 @@ select sal from "scott".emp
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableValues(tuples=[[]])
-=======
 EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
   EnumerableHashJoin(condition=[true], joinType=[inner])
     EnumerableAggregate(group=[{0}])
@@ -2137,7 +1833,6 @@ EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
         EnumerableTableScan(table=[[scott, DEPT]])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 EnumerableValues(tuples=[[]])
 >>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
@@ -2153,10 +1848,6 @@ select sal from "scott".emp
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableValues(tuples=[[]])
-=======
 EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
   EnumerableHashJoin(condition=[true], joinType=[inner])
     EnumerableAggregate(group=[{0}])
@@ -2164,7 +1855,6 @@ EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
         EnumerableTableScan(table=[[scott, DEPT]])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 EnumerableValues(tuples=[[]])
 >>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
@@ -2194,9 +1884,6 @@ select sal from "scott".emp
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
 EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t1])
   EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
@@ -2214,7 +1901,6 @@ EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
         EnumerableTableScan(table=[[scott, DEPT]])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
     EnumerableAggregate(group=[{0}])
       EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[=($t4, $t0)], cs=[$t3], $condition=[$t5])
@@ -2246,9 +1932,6 @@ select sal from "scott".emp
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
 EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t1])
   EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
@@ -2266,7 +1949,6 @@ EnumerableCalc(expr#0..2=[{inputs}], SAL=[$t2])
         EnumerableTableScan(table=[[scott, DEPT]])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5])
       EnumerableTableScan(table=[[scott, EMP]])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
     EnumerableAggregate(group=[{0}])
       EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[=($t4, $t0)], cs=[$t3], $condition=[$t5])
@@ -2284,21 +1966,9 @@ select sal from "scott".emp
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $condition=[$t4])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[null], expr#11=[IS NOT NULL($t2)], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[null:NULL], expr#11=[IS NOT NULL($t2)], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
@@ -2327,14 +1997,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $conditio
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], cs=[$t3])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null], expr#5=[=($t4, $t4)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[null:INTEGER], expr#5=[=($t4, $t4)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
@@ -2357,18 +2020,9 @@ select sal from "scott".emp
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], expr#6=[IS NOT NULL($t2)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], expr#9=[OR($t4, $t8)], SAL=[$t1], $condition=[$t9])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[IS NOT NULL($t2)], expr#9=[CASE($t4, $t5, $t6, $t7, $t8, $t7, $t5)], expr#10=[NOT($t9)], SAL=[$t1], $condition=[$t10])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#6=[IS NOT NULL($t2)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], expr#9=[IS NULL($t3)], expr#10=[OR($t8, $t9)], SAL=[$t1], $condition=[$t10])
@@ -2388,13 +2042,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], e
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], cs=[$t3])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[123], expr#5=[null], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[123], expr#5=[null:INTEGER], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
@@ -2414,21 +2062,9 @@ select sal from "scott".emp
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $condition=[$t4])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[null], expr#11=[IS NOT NULL($t2)], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[null:NULL], expr#11=[IS NOT NULL($t2)], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
@@ -2457,14 +2093,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $conditio
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[1], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t4)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[1], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t4)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
@@ -2487,21 +2116,9 @@ select sal from "scott".emp
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $condition=[$t4])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[null], expr#11=[IS NOT NULL($t2)], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[null:NULL], expr#11=[IS NOT NULL($t2)], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
@@ -2530,14 +2147,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $conditio
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
@@ -2560,21 +2170,9 @@ select sal from "scott".emp
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $condition=[$t4])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[null], expr#11=[IS NOT NULL($t2)], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[null:NULL], expr#11=[IS NOT NULL($t2)], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
@@ -2603,17 +2201,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], SAL=[$t1], $conditio
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[IS NULL($t4)], expr#9=[OR($t6, $t7, $t8)], cs=[$t3], $condition=[$t9])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[IS NULL($t4)], expr#9=[OR($t6, $t7, $t8)], cs=[$t3], $condition=[$t9])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
@@ -2645,18 +2233,9 @@ select sal from "scott".emp
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], expr#6=[IS NOT NULL($t2)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], expr#9=[OR($t4, $t8)], SAL=[$t1], $condition=[$t9])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[IS NOT NULL($t2)], expr#9=[CASE($t4, $t5, $t6, $t7, $t8, $t7, $t5)], expr#10=[NOT($t9)], SAL=[$t1], $condition=[$t10])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#6=[IS NOT NULL($t2)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], expr#9=[IS NULL($t3)], expr#10=[OR($t8, $t9)], SAL=[$t1], $condition=[$t10])
@@ -2690,18 +2269,9 @@ select sal from "scott".emp
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], expr#6=[IS NOT NULL($t2)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], expr#9=[OR($t4, $t8)], SAL=[$t1], $condition=[$t9])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[true], expr#8=[IS NOT NULL($t2)], expr#9=[CASE($t4, $t5, $t6, $t7, $t8, $t7, $t5)], expr#10=[NOT($t9)], SAL=[$t1], $condition=[$t10])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[false], expr#5=[=($t2, $t4)], expr#6=[IS NOT NULL($t2)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], expr#9=[IS NULL($t3)], expr#10=[OR($t8, $t9)], SAL=[$t1], $condition=[$t10])
@@ -2721,14 +2291,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[NOT($t2)], e
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[=($t4, $t0)], cs=[$t3], $condition=[$t5])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], $condition=[$t8])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], cs=[$t3], $condition=[$t6])
 >>>>>>> 82b258588 ([CALCITE-2469] RexSimplify should optimize '(NOT x) IS NULL' to 'x IS NULL' (pengzhiwei))
@@ -2765,18 +2328,9 @@ select sal from "scott".emp
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL($t3)], expr#6=[AND($t4, $t5)], expr#7=[IS NULL($t6)], SAL=[$t1], $condition=[$t7])
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-<<<<<<< HEAD
-=======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[IS NULL($t12)], SAL=[$t1], $condition=[$t13])
 <<<<<<< HEAD
   EnumerableJoin(condition=[true], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 =======
 EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NULL($t3)], expr#5=[false], expr#6=[=($t2, $t5)], expr#7=[null:NULL], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t2)], expr#11=[true], expr#12=[CASE($t4, $t5, $t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[IS NULL($t12)], SAL=[$t1], $condition=[$t13])
@@ -2796,14 +2350,7 @@ EnumerableCalc(expr#0..3=[{inputs}], expr#4=[null:BOOLEAN], expr#5=[IS NOT NULL(
     EnumerableLimit(fetch=[1])
       EnumerableSort(sort0=[$0], dir0=[DESC])
         EnumerableAggregate(group=[{0}], c=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-          EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], cs=[$t3])
-=======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
           EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], cs=[$t3], $condition=[$t7])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
@@ -2828,29 +2375,14 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
-  EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
-    EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
-      EnumerableTableScan(table=[[scott, EMP]])
-    EnumerableValues(tuples=[[]])
 =======
-=======
->>>>>>> 5894084f1 (Revert "[CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)")
 EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t2])
   EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[null:BOOLEAN], DEPTNO=[$t0], $condition=[$t3])
       EnumerableTableScan(table=[[scott, DEPT]])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
-<<<<<<< HEAD
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
-=======
 EnumerableValues(tuples=[[]])
->>>>>>> 8c87cc57f ([CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich))
 =======
 >>>>>>> 5894084f1 (Revert "[CALCITE-2247] Simplify AND and OR conditions using predicates (Zoltan Haindrich)")
 =======
@@ -2872,17 +2404,12 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableValues(tuples=[[]])
-=======
 EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t2])
   EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[123], expr#4=[null:INTEGER], expr#5=[=($t3, $t4)], DEPTNO=[$t0], $condition=[$t5])
       EnumerableTableScan(table=[[scott, DEPT]])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 EnumerableValues(tuples=[[]])
 >>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
@@ -2898,21 +2425,12 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
-  EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
-    EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
-      EnumerableTableScan(table=[[scott, EMP]])
-    EnumerableValues(tuples=[[]])
-=======
 EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t2])
   EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[null:INTEGER], expr#4=[1], expr#5=[=($t3, $t4)], DEPTNO=[$t0], $condition=[$t5])
       EnumerableTableScan(table=[[scott, DEPT]])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
   EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
@@ -2932,21 +2450,12 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
-  EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
-    EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
-      EnumerableTableScan(table=[[scott, EMP]])
-    EnumerableValues(tuples=[[]])
-=======
 EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t2])
   EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[null:INTEGER], expr#4=[=($t3, $t0)], DEPTNO=[$t0], $condition=[$t4])
       EnumerableTableScan(table=[[scott, DEPT]])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
   EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
@@ -2966,21 +2475,12 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
-  EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
-    EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
-      EnumerableTableScan(table=[[scott, EMP]])
-    EnumerableValues(tuples=[[]])
-=======
 EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t2])
   EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[null:INTEGER], expr#4=[CAST($t0):TINYINT], expr#5=[=($t3, $t4)], DEPTNO=[$t0], $condition=[$t5])
       EnumerableTableScan(table=[[scott, DEPT]])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
   EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{}])
@@ -3004,12 +2504,7 @@ select sal from "scott".emp e
 
 !ok
 EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t2])
-<<<<<<< HEAD
-<<<<<<< HEAD
-  EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])
-=======
   EnumerableJoin(condition=[=($0, $3)], joinType=[inner])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
   EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
@@ -3033,16 +2528,9 @@ select sal from "scott".emp e
 
 !ok
 EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t2])
-<<<<<<< HEAD
-<<<<<<< HEAD
-  EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])
-    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[10], expr#4=[=($t3, $t0)], DEPTNO=[$t0], $condition=[$t4])
-<<<<<<< HEAD
-=======
   EnumerableJoin(condition=[=($0, $3)], joinType=[inner])
 =======
   EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[10], expr#4=[CAST($t0):TINYINT], expr#5=[=($t3, $t4)], DEPTNO=[$t0], $condition=[$t5])
 >>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
@@ -3062,19 +2550,9 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableValues(tuples=[[]])
-=======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t3, $t5)], expr#7=[true], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[null], expr#11=[IS NOT NULL($t3)], expr#12=[CASE($t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t3, $t5)], expr#7=[true], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[null:NULL], expr#11=[IS NOT NULL($t3)], expr#12=[CASE($t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t3, $t5)], expr#7=[true], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[null:BOOLEAN], expr#11=[IS NOT NULL($t3)], expr#12=[CASE($t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
 >>>>>>> 881f1f154 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
@@ -3113,11 +2591,6 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[NOT($t4)], expr#6=[IS NOT NULL($t4)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], SAL=[$t1], $condition=[$t8])
   EnumerableHashJoin(condition=[=($2, $3)], joinType=[left])
@@ -3133,7 +2606,6 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t3, $t5)], expr#
 <<<<<<< HEAD
 <<<<<<< HEAD
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[123], expr#5=[null], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], DEPTNO=[$t0], $condition=[$t8])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[false], expr#4=[123], expr#5=[null:INTEGER], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], DEPTNO=[$t0], $condition=[$t8])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
@@ -3166,18 +2638,9 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableValues(tuples=[[]])
-=======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#7=[true], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[null], expr#11=[IS NOT NULL($t4)], expr#12=[CASE($t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#7=[true], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[null:NULL], expr#11=[IS NOT NULL($t4)], expr#12=[CASE($t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#7=[true], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[null:BOOLEAN], expr#11=[IS NOT NULL($t4)], expr#12=[CASE($t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
 >>>>>>> 881f1f154 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
@@ -3212,18 +2675,9 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableValues(tuples=[[]])
-=======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#7=[true], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[null], expr#11=[IS NOT NULL($t4)], expr#12=[CASE($t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#7=[true], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[null:NULL], expr#11=[IS NOT NULL($t4)], expr#12=[CASE($t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#7=[true], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[null:BOOLEAN], expr#11=[IS NOT NULL($t4)], expr#12=[CASE($t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
 >>>>>>> 881f1f154 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
@@ -3258,18 +2712,9 @@ select sal from "scott".emp e
 (0 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableValues(tuples=[[]])
-=======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t3, $t5)], expr#7=[true], expr#8=[null], expr#9=[IS NULL($t8)], expr#10=[null], expr#11=[IS NOT NULL($t3)], expr#12=[CASE($t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t3, $t5)], expr#7=[true], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[null:NULL], expr#11=[IS NOT NULL($t3)], expr#12=[CASE($t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t3, $t5)], expr#7=[true], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[null:BOOLEAN], expr#11=[IS NOT NULL($t3)], expr#12=[CASE($t6, $t7, $t9, $t10, $t11, $t7, $t5)], expr#13=[NOT($t12)], SAL=[$t1], $condition=[$t13])
 >>>>>>> 881f1f154 (Deprecate RexBuilder.constantNull(), because it produces untyped NULL literals that make planning difficult)
@@ -3315,25 +2760,14 @@ select sal from "scott".emp e
 (11 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..4=[{inputs}], expr#5=[NOT($t4)], expr#6=[IS NOT NULL($t4)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], SAL=[$t1], $condition=[$t8])
-=======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#7=[IS NOT NULL($t4)], expr#8=[OR($t6, $t7)], expr#9=[IS NOT TRUE($t8)], SAL=[$t1], $condition=[$t9])
->>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[NOT($t4)], expr#6=[IS NOT NULL($t4)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], SAL=[$t1], $condition=[$t8])
 >>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
   EnumerableHashJoin(condition=[=($2, $3)], joinType=[left])
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#7=[true], expr#8=[IS NOT NULL($t4)], expr#9=[CASE($t6, $t7, $t8, $t7, $t5)], expr#10=[NOT($t9)], SAL=[$t1], $condition=[$t10])
-<<<<<<< HEAD
-  EnumerableJoin(condition=[=($2, $3)], joinType=[left])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
-=======
   EnumerableHashJoin(condition=[=($2, $3)], joinType=[left])
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[=($t4, $t0)], DEPTNO1=[$t0], $f1=[$t3], $condition=[$t5])
@@ -3361,10 +2795,6 @@ select sal from "scott".emp e
 (11 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 71e4710aa ([CALCITE-2839] Simplify comparisions against boolean literals)
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[NOT($t3)], expr#6=[IS NOT NULL($t3)], expr#7=[OR($t5, $t6)], expr#8=[IS NOT TRUE($t7)], SAL=[$t1], $condition=[$t8])
   EnumerableHashJoin(condition=[=($2, $4)], joinType=[left])
@@ -3378,16 +2808,10 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[NOT($t3)], expr#6=[IS NOT NULL($t3)
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t3, $t5)], expr#7=[true], expr#8=[IS NOT NULL($t3)], expr#9=[CASE($t6, $t7, $t8, $t7, $t5)], expr#10=[NOT($t9)], SAL=[$t1], $condition=[$t10])
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t3, $t5)], expr#7=[IS NOT NULL($t3)], expr#8=[OR($t6, $t7)], expr#9=[IS NOT TRUE($t8)], SAL=[$t1], $condition=[$t9])
->>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
   EnumerableHashJoin(condition=[=($2, $4)], joinType=[left])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
-<<<<<<< HEAD
-    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], expr#7=[IS NULL($t5)], expr#8=[OR($t6, $t7)], cs=[$t3], DEPTNO=[$t0], $condition=[$t8])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
-=======
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[10], expr#5=[CAST($t0):TINYINT], expr#6=[=($t4, $t5)], cs=[$t3], DEPTNO=[$t0], $condition=[$t6])
->>>>>>> 82b258588 ([CALCITE-2469] RexSimplify should optimize '(NOT x) IS NULL' to 'x IS NULL' (pengzhiwei))
 =======
 >>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
 =======
@@ -3423,11 +2847,6 @@ select sal from "scott".emp e
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 8d4673e99 ([CALCITE-1413] Enhance boolean case statement simplifications (Zoltan Haindrich))
 EnumerableCalc(expr#0..3=[{inputs}], SAL=[$t1])
   EnumerableHashJoin(condition=[=($2, $3)], joinType=[left])
@@ -3443,7 +2862,6 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], DEPTNO1=[$t0], $f1=[$t3], $condition=[$t7])
->>>>>>> eed9a3176 ([CALCITE-2329] Improve rewrite for "constant IN (sub-query)")
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#7=[null:NULL], expr#8=[null:INTEGER], expr#9=[IS NULL($t8)], expr#10=[IS NOT NULL($t4)], expr#11=[true], expr#12=[CASE($t6, $t7, $t9, $t7, $t10, $t11, $t5)], expr#13=[IS NULL($t12)], SAL=[$t1], $condition=[$t13])
 =======
@@ -3452,12 +2870,7 @@ EnumerableCalc(expr#0..4=[{inputs}], expr#5=[false], expr#6=[=($t4, $t5)], expr#
   EnumerableHashJoin(condition=[=($2, $3)], joinType=[left])
     EnumerableCalc(expr#0..7=[{inputs}], EMPNO=[$t0], SAL=[$t5], DEPTNO=[$t7])
       EnumerableTableScan(table=[[scott, EMP]])
-<<<<<<< HEAD
-    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[=($t4, $t0)], expr#6=[IS NULL($t4)], expr#7=[OR($t5, $t6)], DEPTNO1=[$t0], $f1=[$t3], $condition=[$t7])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
-=======
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], expr#4=[null:INTEGER], expr#5=[IS NULL($t4)], DEPTNO1=[$t0], $f1=[$t3], $condition=[$t5])
->>>>>>> 3ec71a591 ([CALCITE-2555] RexSimplify: >=(..., null) could be simplified to null (pengzhiwei))
 =======
     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[true], DEPTNO1=[$t0], $f1=[$t3])
 >>>>>>> 58f40d369 ([CALCITE-2567] Simplify IS NULL(null) to true (pengzhiwei))
@@ -3551,13 +2964,7 @@ from "scott".emp;
 
 !ok
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-# Test nested sub-query in PROJECT within FILTER
-=======
 # Test nested subquery in PROJECT within FILTER
->>>>>>> c52133959 ([CALCITE-1726] Subquery in FILTER is left untransformed (Vineet Garg))
 =======
 # Test nested sub-query in PROJECT within FILTER
 >>>>>>> b06e7746c (Cosmetic changes)
@@ -3575,12 +2982,7 @@ select * from emp where deptno IN (select (select max(deptno) from "scott".emp t
 !ok
 EnumerableHashJoin(condition=[=($7, $9)], joinType=[semi])
   EnumerableTableScan(table=[[scott, EMP]])
-<<<<<<< HEAD
-<<<<<<< HEAD
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-=======
   EnumerableHashJoin(condition=[true], joinType=[left])
->>>>>>> c52133959 ([CALCITE-1726] Subquery in FILTER is left untransformed (Vineet Garg))
 =======
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 >>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
@@ -3590,12 +2992,7 @@ EnumerableHashJoin(condition=[=($7, $9)], joinType=[semi])
       EnumerableTableScan(table=[[scott, EMP]])
 !plan
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-# Test nested sub-query in FILTER within PROJECT
-=======
 # Test nested subquery in FILTER within PROJECT
->>>>>>> c52133959 ([CALCITE-1726] Subquery in FILTER is left untransformed (Vineet Garg))
 =======
 # Test nested sub-query in FILTER within PROJECT
 >>>>>>> b06e7746c (Cosmetic changes)
@@ -3620,12 +3017,7 @@ select (select max(deptno) from "scott".emp where deptno IN (select deptno from 
 
 !ok
 EnumerableCalc(expr#0..1=[{inputs}], EXPR$0=[$t1])
-<<<<<<< HEAD
-<<<<<<< HEAD
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-=======
   EnumerableHashJoin(condition=[true], joinType=[left])
->>>>>>> c52133959 ([CALCITE-1726] Subquery in FILTER is left untransformed (Vineet Garg))
 =======
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
 >>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
@@ -3638,37 +3030,6 @@ EnumerableCalc(expr#0..1=[{inputs}], EXPR$0=[$t1])
         EnumerableTableScan(table=[[scott, EMP]])
 !plan
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-!use scott
-
-# [CALCITE-1513] Correlated NOT IN query throws AssertionError
-select count(*) as c
-from "scott".emp as e
-where sal + 100 not in (
-  select deptno
-  from dept
-  where dname = e.ename);
- C
-----
- 14
-(1 row)
-
-!ok
-EnumerableAggregate(group=[{}], C=[COUNT()])
-<<<<<<< HEAD
-<<<<<<< HEAD
-  EnumerableCalc(expr#0..9=[{inputs}], expr#10=[0], expr#11=[=($t4, $t10)], expr#12=[IS NULL($t2)], expr#13=[IS NOT NULL($t7)], expr#14=[<($t5, $t4)], expr#15=[OR($t12, $t13, $t14)], expr#16=[IS NOT TRUE($t15)], expr#17=[OR($t11, $t16)], proj#0..9=[{exprs}], $condition=[$t17])
-    EnumerableHashJoin(condition=[AND(=($1, $8), =($2, $9))], joinType=[left])
-      EnumerableHashJoin(condition=[=($1, $3)], joinType=[left])
-        EnumerableCalc(expr#0..7=[{inputs}], proj#0..1=[{exprs}], SAL=[$t5])
-          EnumerableTableScan(table=[[scott, EMP]])
-        EnumerableCalc(expr#0..2=[{inputs}], expr#3=[1:BIGINT], expr#4=[IS NOT NULL($t1)], DNAME=[$t1], $f1=[$t3], $f2=[$t3], $condition=[$t4])
-          EnumerableTableScan(table=[[scott, DEPT]])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 02619ecaf ([CALCITE-3576] Remove enumerable convention check in FilterIntoJoinRule)
       EnumerableCalc(expr#0..4=[{inputs}], DEPTNO=[$t2], i=[$t3], DNAME=[$t4], SAL=[$t0])
         EnumerableHashJoin(condition=[=($1, $2)], joinType=[inner])
@@ -3684,7 +3045,6 @@ EnumerableAggregate(group=[{}], C=[COUNT()])
           EnumerableTableScan(table=[[scott, DEPT]])
         EnumerableAggregate(group=[{5}])
           EnumerableTableScan(table=[[scott, EMP]])
->>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
 =======
 >>>>>>> 02619ecaf ([CALCITE-3576] Remove enumerable convention check in FilterIntoJoinRule)
 !plan
@@ -3753,29 +3113,7 @@ EnumerableCalc(expr#0..6=[{inputs}], expr#7=[>($t1, $t2)], expr#8=[IS TRUE($t7)]
 (14 rows)
 
 !ok
-<<<<<<< HEAD
-=======
-!use scott
->>>>>>> f5151a38b ([CALCITE-1513] Correlated NOT IN query throws AssertionError (Vineet Garg))
-
-# [CALCITE-1513] Correlated NOT IN query throws AssertionError
-select count(*) as c
-from "scott".emp as e
-where sal + 100 not in (
-  select deptno
-  from dept
-  where dname = e.ename);
- C
-----
- 14
-(1 row)
-
-!ok
-EnumerableAggregate(group=[{}], C=[COUNT()])
-  EnumerableCalc(expr#0..9=[{inputs}], expr#10=[IS NOT NULL($t7)], expr#11=[<($t5, $t4)], expr#12=[OR($t10, $t11)], expr#13=[IS NOT TRUE($t12)], expr#14=[0], expr#15=[=($t4, $t14)], expr#16=[IS TRUE($t15)], expr#17=[IS NULL($t2)], expr#18=[OR($t13, $t16, $t17)], proj#0..9=[{exprs}], $condition=[$t18])
-=======
   EnumerableCalc(expr#0..9=[{inputs}], expr#10=[IS NOT NULL($t7)], expr#11=[<($t5, $t4)], expr#12=[OR($t10, $t11)], expr#13=[IS NOT TRUE($t12)], expr#14=[0], expr#15=[=($t4, $t14)], expr#16=[IS NULL($t2)], expr#17=[OR($t13, $t15, $t16)], proj#0..9=[{exprs}], $condition=[$t17])
->>>>>>> 9b88dbf50 ([CALCITE-2838] Simplification: Remove redundant IS TRUE/IS NOT FALSE checks)
 =======
   EnumerableCalc(expr#0..9=[{inputs}], expr#10=[0], expr#11=[=($t4, $t10)], expr#12=[IS NULL($t2)], expr#13=[IS NOT NULL($t7)], expr#14=[<($t5, $t4)], expr#15=[OR($t12, $t13, $t14)], expr#16=[IS NOT TRUE($t15)], expr#17=[OR($t11, $t16)], proj#0..9=[{exprs}], $condition=[$t17])
 >>>>>>> b7f1c317c ([CALCITE-2886] Simplification of AND expressions should push negations earlier)

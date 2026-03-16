@@ -33,12 +33,7 @@
 - name: Andrei Sereda
   apacheId: sereda
   githubId: asereda-gs
-<<<<<<< HEAD
-<<<<<<< HEAD
-  org:
-=======
   org: 
->>>>>>> 0aae1eb4f (Site: Add Andrei Sereda as committer)
 =======
   org:
 >>>>>>> 319c0bed2 (Cosmetic)
@@ -63,9 +58,6 @@
   githubId: chunweilei
   org: Alibaba
   role: Committer
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 1894d9344 (Site: Add Danny Chan as committer)
 - name: Danny Chan
   apacheId: danny0405
@@ -75,7 +67,6 @@
 <<<<<<< HEAD
   role: PMC
 =======
->>>>>>> a1e8602dc (Site: Add new committers and PMC (Chunwei Lei, Ruben Quesada Lopez, Zhiwei Peng and Stamatis Zampetakis))
 =======
   role: Committer
 >>>>>>> 1894d9344 (Site: Add Danny Chan as committer)
@@ -92,9 +83,6 @@
   githubId: DonnyZone
   org: Tencent
   role: Committer
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> b7cb32df6 (Site: Add Forward Xu, Jin Xing, Wang Yanlin, as committers (#352))
 - name: Forward Xu
   apacheId: forwardxu
@@ -103,19 +91,13 @@
   role: Committer
 <<<<<<< HEAD
 =======
->>>>>>> 63b97ebbe (Site: Add Feng Zhu as committer)
 =======
 >>>>>>> b7cb32df6 (Site: Add Forward Xu, Jin Xing, Wang Yanlin, as committers (#352))
 - name: Francis Chuang
   apacheId: francischuang
   githubId: F21
   org: Boostport
-<<<<<<< HEAD
-<<<<<<< HEAD
-  role: PMC
-=======
   role: PMC Chair
->>>>>>> 79c4f0e43 (Site: Update PMC chair)
 =======
   role: PMC
 >>>>>>> 720a25162 (Site: Switch PMC Chair to Stamatis Zampetakis)
@@ -128,12 +110,7 @@
   apacheId: hyuan
   githubId: hsyuan
   org: Alibaba
-<<<<<<< HEAD
-<<<<<<< HEAD
-  role: PMC
-=======
   role: Committer
->>>>>>> 5d2e4f09c (Site: Add new committers (Haisheng Yuan, Hongze Zhang and Stamatis Zampetakis))
 =======
   role: PMC
 >>>>>>> ca5bed635 (Site: Add Haisheng Yuan as PMC)
@@ -202,11 +179,7 @@
   apacheId: krisden
   githubId: risdenk
   org:
-<<<<<<< HEAD
-  role: PMC
-=======
   role: Committer
->>>>>>> e7452f80f (Site: Add committer Kevin Risden)
 - name: Laurent Goujon
   apacheId: laurent
   githubId: laurentgo
@@ -221,12 +194,7 @@
   apacheId: mmior
   githubId: michaelmior
   org: Rochester Institute of Technology
-<<<<<<< HEAD
-<<<<<<< HEAD
-  role: PMC
-=======
   role: PMC Chair
->>>>>>> b8bb0b3b8 (Update Michael Mior's affiliation)
 =======
   role: PMC
 >>>>>>> 79c4f0e43 (Site: Update PMC chair)
@@ -258,10 +226,6 @@
   githubId: nishantmonu51
   org: Hortonworks
   role: Committer
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> a1e8602dc (Site: Add new committers and PMC (Chunwei Lei, Ruben Quesada Lopez, Zhiwei Peng and Stamatis Zampetakis))
 - name: Ruben Quesada Lopez
   apacheId: rubenql
@@ -270,7 +234,6 @@
   role: Committer
 <<<<<<< HEAD
 =======
->>>>>>> 9f9df1e8e (Site: Add committer Sergey Nuyanzin)
 =======
 >>>>>>> a1e8602dc (Site: Add new committers and PMC (Chunwei Lei, Ruben Quesada Lopez, Zhiwei Peng and Stamatis Zampetakis))
 - name: Sergey Nuyanzin
@@ -278,10 +241,6 @@
   githubId: snuyanzin
   org: EPAM
   role: Committer
-<<<<<<< HEAD
-=======
->>>>>>> e7452f80f (Site: Add committer Kevin Risden)
-=======
 >>>>>>> 9f9df1e8e (Site: Add committer Sergey Nuyanzin)
 - name: Shuyi Chen
   apacheId: shuyichen
@@ -300,7 +259,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
->>>>>>> 4a1fcfd19 (Site: Change affiliation of Stamatis Zampetakis (#351))
   org: Cloudera
   role: PMC Chair
   homepage: https://people.apache.org/~zabetak/
@@ -310,14 +268,8 @@
 >>>>>>> 5d2e4f09c (Site: Add new committers (Haisheng Yuan, Hongze Zhang and Stamatis Zampetakis))
 =======
   org: TIBCO
-<<<<<<< HEAD
-  role: PMC
-<<<<<<< HEAD
->>>>>>> a1e8602dc (Site: Add new committers and PMC (Chunwei Lei, Ruben Quesada Lopez, Zhiwei Peng and Stamatis Zampetakis))
-=======
 =======
   role: PMC Chair
->>>>>>> 720a25162 (Site: Switch PMC Chair to Stamatis Zampetakis)
   homepage: https://people.apache.org/~zabetak/
 >>>>>>> 5358a4d6d (Site: Update homepage of Stamatis Zampetakis)
 - name: Steven Noels
@@ -331,12 +283,7 @@
   org: MapR
   role: PMC
   avatar: https://mapr.com/blog/author/ted-dunning/assets/tdunning-panama.jpg
-<<<<<<< HEAD
-<<<<<<< HEAD
-- name: Vineet Garg
-=======
   name: Vineet Garg
->>>>>>> c39e58cfb (Site: Add Vineet Garg as committer (#350))
 =======
 - name: Vineet Garg
 >>>>>>> b7cb32df6 (Site: Add Forward Xu, Jin Xing, Wang Yanlin, as committers (#352))
@@ -353,20 +300,9 @@
   apacheId: volodymyr
   githubId: vvysotskyi
   org:
-<<<<<<< HEAD
-<<<<<<< HEAD
-  role: PMC
-- name: Wang Yanlin
-  apacheId: yanlin
-  githubId: yanlin-Lynn
-  org: Ant Financial
-  role: Committer
-<<<<<<< HEAD
-=======
   role: Committer
 =======
   role: PMC
->>>>>>> 7066e2e4c (Add Volodymyr to PMC on site)
 
 >>>>>>> e7452f80f (Site: Add committer Kevin Risden)
 =======
@@ -381,11 +317,6 @@
   githubId: Zhiqiang-He
   org: Huawei
   role: Committer
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> a1e8602dc (Site: Add new committers and PMC (Chunwei Lei, Ruben Quesada Lopez, Zhiwei Peng and Stamatis Zampetakis))
 - name: Zhiwei Peng
   apacheId: zhiwei
@@ -394,7 +325,6 @@
   role: Committer
 <<<<<<< HEAD
 =======
->>>>>>> 44fc5fd5f (Site: Add Zoltan Haindrich as committer)
 =======
 >>>>>>> a1e8602dc (Site: Add new committers and PMC (Chunwei Lei, Ruben Quesada Lopez, Zhiwei Peng and Stamatis Zampetakis))
 - name: Zoltan Haindrich

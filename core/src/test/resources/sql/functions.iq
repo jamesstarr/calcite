@@ -16,9 +16,6 @@
 # limitations under the License.
 #
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 6c8821c46 ([CALCITE-3579] Oracle XMLTRANSFORM Function Support (ritesh-kapoor))
 
 !set outputformat mysql
@@ -39,7 +36,6 @@ select cbrt(-8);
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
->>>>>>> 23475ce5b ([CALCITE-3704] Implement STRCMP function)
 # STRCMP
 select strcmp('mytesttext', 'mytesttext');
 +--------+
@@ -66,12 +62,7 @@ select strcmp('mytesttext', 'mytesttext');
 !use oraclefunc
 select nvl("name", 'undefined') FROM "hr"."emps";
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0..4=[{inputs}], expr#5=[IS NOT NULL($t2)], expr#6=[CAST($t2):VARCHAR], expr#7=['undefined':VARCHAR], expr#8=[CASE($t5, $t6, $t7)], EXPR$0=[$t8])
-=======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[IS NOT NULL($t2)], expr#6=[CAST($t2):VARCHAR CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], expr#7=['undefined'], expr#8=[CASE($t5, $t6, $t7)], EXPR$0=[$t8])
->>>>>>> 4176d20cc ([CALCITE-4875] Preserve Operand Nullability in NVL rewrite)
 =======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[IS NOT NULL($t2)], expr#6=[CAST($t2):VARCHAR], expr#7=['undefined':VARCHAR], expr#8=[CASE($t5, $t6, $t7)], EXPR$0=[$t8])
 >>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
@@ -113,35 +104,6 @@ SELECT ExtractValue('<a>c</a>', '//a');
 
 !ok
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-# COSH
-select cosh(1);
-+-------------------+
-| EXPR$0            |
-+-------------------+
-| 1.543080634815244 |
-+-------------------+
-
-!use mysqlfunc
-!set outputformat mysql
-
-# XML Functions
-
-SELECT ExtractValue('<a>c</a>', '//a');
-+--------+
-| EXPR$0 |
-+--------+
-| c      |
-+--------+
-(1 row)
-
-!ok
-
-=======
 >>>>>>> 6d50536b1 ([CALCITE-3684] Supports CONCAT for variable arguments (Wenhui Tang) (#303))
 # STRING Functions
 
@@ -158,7 +120,6 @@ SELECT CONCAT('c', 'h', 'a', 'r');
 
 <<<<<<< HEAD
 =======
->>>>>>> 688b6a192 ([CALCITE-3647] MySQL COMPRESS function support (ritesh-kapoor))
 =======
 >>>>>>> 6d50536b1 ([CALCITE-3684] Supports CONCAT for variable arguments (Wenhui Tang) (#303))
 # Compression Functions
@@ -187,9 +148,6 @@ select sinh(1);
 
 !ok
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 6d50536b1 ([CALCITE-3684] Supports CONCAT for variable arguments (Wenhui Tang) (#303))
 #CONCAT
 select concat('a', 'b');
@@ -206,7 +164,6 @@ select concat('a', 'b');
 =======
 !use oraclefunc
 
->>>>>>> 6c8821c46 ([CALCITE-3579] Oracle XMLTRANSFORM Function Support (ritesh-kapoor))
 =======
 >>>>>>> e9a230e80 ([CALCITE-3694] Implement SINH function)
 =======
@@ -239,10 +196,6 @@ SELECT XMLTRANSFORM(
 !ok
 
 
-<<<<<<< HEAD
-=======
->>>>>>> 82a3d04d6 ([CALCITE-3695] Implement TANH function (#96))
-=======
 >>>>>>> 6c8821c46 ([CALCITE-3579] Oracle XMLTRANSFORM Function Support (ritesh-kapoor))
 # TANH
 select tanh(1);
@@ -274,7 +227,6 @@ SELECT "EXTRACT"(
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
->>>>>>> 3324cc355 ([CALCITE-3640] Oracle EXISTSNODE Function Support (ritesh-kapoor) (#186))
 SELECT EXISTSNODE(
             '<Article><Title>Article1</Title><Authors><Author>Foo</Author><Author>Bar</Author></Authors><Body>article text</Body></Article>'
             , '/Article/Title'
@@ -285,14 +237,6 @@ SELECT EXISTSNODE(
 |      1 |
 +--------+
 (1 row)
-<<<<<<< HEAD
-=======
-
-!ok
-
-<<<<<<< HEAD
->>>>>>> 3324cc355 ([CALCITE-3640] Oracle EXISTSNODE Function Support (ritesh-kapoor) (#186))
-=======
 # [CALCITE-6791] Search pattern during matching in REPLACE function should be
 # case insensitive in MSSQL
 !use scott-mssql
@@ -315,7 +259,6 @@ select replace('ciAao', 'A', 'ciao');
 (1 row)
 
 !ok
->>>>>>> 9d5cc2f5f ([CALCITE-6791] Search pattern during matching in REPLACE function should be case insensitive in MSSQL)
 
 !ok
 

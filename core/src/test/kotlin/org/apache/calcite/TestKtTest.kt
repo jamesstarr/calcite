@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 8718191eb (Add license to TestKtTest and add apache-rat:check to Travis CI)
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -25,15 +22,10 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 =======
 =======
->>>>>>> 8718191eb (Add license to TestKtTest and add apache-rat:check to Travis CI)
 package org.apache.calcite
 
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
-<<<<<<< HEAD
-import kotlin.test.junit.JUnitAsserter
->>>>>>> 1ff1a5da8 ([CALCITE-2458] Add Kotlin as a test dependency)
-=======
 >>>>>>> 3ab086683 ([CALCITE-2457] Migrate core parameterized to JUnit5, and make core junit5-only)
 
 class TestKtTest {
@@ -43,7 +35,6 @@ class TestKtTest {
 <<<<<<< HEAD
 =======
         JUnitAsserter.hashCode() // make maven-dependency-plugin happy
->>>>>>> 1ff1a5da8 ([CALCITE-2458] Add Kotlin as a test dependency)
 =======
 >>>>>>> 3ab086683 ([CALCITE-2457] Migrate core parameterized to JUnit5, and make core junit5-only)
         assertEquals("Hello, world", "Hello, world", message = "42")

@@ -92,12 +92,7 @@ as implemented by Avatica's
 | <a href="{{ site.apiRoot }}/org/apache/calcite/config/CalciteConnectionProperty.html#FUN">fun</a> | Collection of built-in functions and operators. Valid values are "standard" (the default), "oracle", "spatial", and may be combined using commas, for example "oracle,spatial".
 | <a href="{{ site.apiRoot }}/org/apache/calcite/config/CalciteConnectionProperty.html#LEX">lex</a> | Lexical policy. Values are ORACLE (default), MYSQL, MYSQL_ANSI, SQL_SERVER, JAVA.
 | <a href="{{ site.apiRoot }}/org/apache/calcite/config/CalciteConnectionProperty.html#MATERIALIZATIONS_ENABLED">materializationsEnabled</a> | Whether Calcite should use materializations. Default false.
-<<<<<<< HEAD
-<<<<<<< HEAD
-| <a href="{{ site.apiRoot }}/org/apache/calcite/config/CalciteConnectionProperty.html#MODEL">model</a> | URI of the JSON/YAML model file or inline like `inline:{...}` for JSON and `inline:...` for YAML.
-=======
 | <a href="{{ site.apiRoot }}/org/apache/calcite/config/CalciteConnectionProperty.html#MODEL">model</a> | URI of the JSON model file.
->>>>>>> 319c0bed2 (Cosmetic)
 =======
 | <a href="{{ site.apiRoot }}/org/apache/calcite/config/CalciteConnectionProperty.html#MODEL">model</a> | URI of the JSON/YAML model file or inline like `inline:{...}` for JSON and `inline:...` for YAML.
 >>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)

@@ -14,12 +14,7 @@
 @rem limitations under the License.
 @rem
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-@if "%DEBUG%"=="" @echo off
-=======
 @if "%DEBUG%" == "" @echo off
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 @if "%DEBUG%"=="" @echo off
 >>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
@@ -33,23 +28,10 @@
 if "%OS%"=="Windows_NT" setlocal
 
 set DIRNAME=%~dp0
-<<<<<<< HEAD
-<<<<<<< HEAD
-if "%DIRNAME%"=="" set DIRNAME=.
-@rem This is normally unused
-set APP_BASE_NAME=%~n0
-set APP_HOME=%DIRNAME%
-
-@rem Resolve any "." and ".." in APP_HOME to make it shorter.
-for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
-
-<<<<<<< HEAD
-=======
 if "%DIRNAME%" == "" set DIRNAME=.
 =======
 if "%DIRNAME%"=="" set DIRNAME=.
 @rem This is normally unused
->>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
 set APP_BASE_NAME=%~n0
 set APP_HOME=%DIRNAME%
 
@@ -64,12 +46,7 @@ if defined JAVA_HOME goto findJavaFromJavaHome
 
 set JAVA_EXE=java.exe
 %JAVA_EXE% -version >NUL 2>&1
-<<<<<<< HEAD
-<<<<<<< HEAD
-if %ERRORLEVEL% equ 0 goto execute
-=======
 if "%ERRORLEVEL%" == "0" goto init
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 if %ERRORLEVEL% equ 0 goto execute
 >>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
@@ -121,12 +98,7 @@ set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
 
 :end
 @rem End local scope for the variables with windows NT shell
-<<<<<<< HEAD
-<<<<<<< HEAD
-if %ERRORLEVEL% equ 0 goto mainEnd
-=======
 if "%ERRORLEVEL%"=="0" goto mainEnd
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 if %ERRORLEVEL% equ 0 goto mainEnd
 >>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
@@ -134,9 +106,6 @@ if %ERRORLEVEL% equ 0 goto mainEnd
 :fail
 rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
 rem the _cmd.exe /c_ return code!
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
 set EXIT_CODE=%ERRORLEVEL%
 if %EXIT_CODE% equ 0 set EXIT_CODE=1
@@ -146,7 +115,6 @@ exit /b %EXIT_CODE%
 =======
 if  not "" == "%GRADLE_EXIT_CONSOLE%" exit 1
 exit /b 1
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 >>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
 

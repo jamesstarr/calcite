@@ -1479,15 +1479,8 @@ PI
 
 # CBRT
 select cbrt(-8);
-<<<<<<< HEAD
-<<<<<<< HEAD
-EXPR$0
--2.0
-!ok
-=======
 SELECT "CBRT"(-8)
 !explain-validated-on calcite
->>>>>>> 35df78c18 ([CALCITE-3361] Add 'lenientOperatorLookup' connection property)
 =======
 EXPR$0
 -2.0
@@ -1633,9 +1626,6 @@ EXPR$0
 -0.8939966636005579
 !ok
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> e9a230e80 ([CALCITE-3694] Implement SINH function)
 # SINH
 select sinh(1);
@@ -1645,7 +1635,6 @@ EXPR$0
 
 <<<<<<< HEAD
 =======
->>>>>>> 35df78c18 ([CALCITE-3361] Add 'lenientOperatorLookup' connection property)
 =======
 >>>>>>> e9a230e80 ([CALCITE-3694] Implement SINH function)
 # SIGN

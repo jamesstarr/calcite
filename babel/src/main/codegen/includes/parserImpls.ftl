@@ -42,10 +42,6 @@ SqlNode DateFunctionCall() :
     }
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> ac75dc75c ([CALCITE-3218] Syntax error while parsing DATEADD function (which is valid on Redshift) (Lindsey Meyer))
 SqlNode DateaddFunctionCall() :
 {
@@ -76,16 +72,12 @@ SqlNode DateaddFunctionCall() :
 
 <<<<<<< HEAD
 =======
->>>>>>> 2e167f8ed ([CALCITE-3063] Parse and process PostgreSQL posix regular expressions)
 =======
 >>>>>>> ac75dc75c ([CALCITE-3218] Syntax error while parsing DATEADD function (which is valid on Redshift) (Lindsey Meyer))
 /* Extra operators */
 
 <DEFAULT, DQID, BTID> TOKEN :
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> ac75dc75c ([CALCITE-3218] Syntax error while parsing DATEADD function (which is valid on Redshift) (Lindsey Meyer))
     < DATE_PART: "DATE_PART" >
 |   < DATEADD: "DATEADD" >
@@ -114,7 +106,6 @@ void InfixCast(List<Object> list, ExprContext exprContext, Span s) :
 
 <<<<<<< HEAD
 =======
->>>>>>> 493df6ca3 ([CALCITE-3022] Babel: Various SQL parsing issues)
 =======
     < NEGATE: "!" >
 =======

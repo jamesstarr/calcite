@@ -13,12 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-<<<<<<< HEAD
-<<<<<<< HEAD
  */
-=======
- */
->>>>>>> 9addb8c46 ([CALCITE-3176] File adapter for parsing JSON files)
 =======
  */
 >>>>>>> 6dce00874 (More compiler fixes, and cosmetic changes)

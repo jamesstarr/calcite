@@ -14,34 +14,9 @@
 # limitations under the License.
 #
 *~
-<<<<<<< HEAD
-<<<<<<< HEAD
-.gradle
-/target
-.DS_Store
-/*/target
-/example/*/target
-/build
-/*/build
-/example/*/build
-/buildSrc/build
-/buildSrc/subprojects/*/build
-
-# IDEA
-/out
-/*/out/
-/example/*/out
-# The star is required for further !/.idea/ to work, see https://git-scm.com/docs/gitignore
-/.idea/*
-# Icon for JetBrains Toolbox
-!/.idea/icon.png
-!/.idea/vcs.xml
-<<<<<<< HEAD
-=======
 target
 .DS_Store
 .idea
->>>>>>> 9b10f38e2 (Add .DS_Store into .gitignore)
 =======
 .gradle
 /target
@@ -58,15 +33,10 @@ target
 /out
 /*/out/
 /example/*/out
-<<<<<<< HEAD
-/.idea
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
 # The star is required for further !/.idea/ to work, see https://git-scm.com/docs/gitignore
 /.idea/*
 # Icon for JetBrains Toolbox
 !/.idea/icon.png
->>>>>>> e6fbeaa30 (Add icon for JetBrains Toolbox (#307))
 =======
 >>>>>>> e946e1b74 (Add JIRA links in Git in IDEA (#309))
 *.iml
@@ -89,15 +59,7 @@ nb-configuration.xml
 
 .mvn/wrapper/maven-wrapper.jar
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-# Local configuration file (sdk path, etc)
-local.properties
-spark/build
-<<<<<<< HEAD
-=======
 # End .gitignore
->>>>>>> a90cf4d56 ([CALCITE-2112] Add Maven wrapper for Calcite (Ratandeep S. Ratti))
 =======
 # Local configuration file (sdk path, etc)
 local.properties

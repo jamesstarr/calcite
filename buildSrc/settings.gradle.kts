@@ -18,9 +18,6 @@
 
 pluginManagement {
     plugins {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 38246acd0 (Gradle: Support skipAutostyle property in buildSrc (#191))
         fun String.v() = extra["$this.version"].toString()
         fun PluginDependenciesSpec.idv(id: String, key: String = id) = id(id) version key.v()
@@ -31,7 +28,6 @@ pluginManagement {
         fun PluginDependenciesSpec.idv(id: String) = id(id) version extra["$id.version"].toString()
 <<<<<<< HEAD
         idv("com.diffplug.gradle.spotless")
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
         idv("com.github.autostyle")
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
@@ -42,14 +38,9 @@ pluginManagement {
 
 include("javacc")
 include("fmpp")
-<<<<<<< HEAD
-<<<<<<< HEAD
-include("buildext")
-=======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 include("buildext")
->>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 
 val upperCaseLetters = "\\p{Upper}".toRegex()
 

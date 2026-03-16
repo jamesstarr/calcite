@@ -16,27 +16,15 @@
  *
  */
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-import com.github.vlsi.gradle.properties.dsl.props
-=======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 import com.github.vlsi.gradle.properties.dsl.props
->>>>>>> 38246acd0 (Gradle: Support skipAutostyle property in buildSrc (#191))
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
     `kotlin-dsl` apply false
-<<<<<<< HEAD
-<<<<<<< HEAD
-    id("com.github.autostyle")
-    id("com.github.vlsi.gradle-extensions")
-<<<<<<< HEAD
-=======
     id("com.diffplug.gradle.spotless")
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
     id("com.github.autostyle")
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
@@ -49,14 +37,7 @@ repositories {
     gradlePluginPortal()
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-val skipAutostyle by props()
-
-allprojects {
-=======
 subprojects {
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 val skipAutostyle by props()
 
@@ -72,10 +53,6 @@ allprojects {
 fun Project.applyKotlinProjectConventions() {
     apply(plugin = "org.gradle.kotlin.kotlin-dsl")
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    tasks.withType<KotlinCompile> {
-=======
     plugins.withType<KotlinDslPlugin> {
         configure<KotlinDslPluginOptions> {
             experimentalWarning.set(false)
@@ -83,13 +60,7 @@ fun Project.applyKotlinProjectConventions() {
     }
 
 =======
->>>>>>> af96e9835 ([CALCITE-4829] Bump Gradle to 7.2 and test with Java 17 at GitHub Actions)
     tasks.withType<KotlinCompile> {
-<<<<<<< HEAD
-        sourceCompatibility = "unused"
-        targetCompatibility = "unused"
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
 >>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
         kotlinOptions {
             jvmTarget = "1.8"
@@ -98,7 +69,6 @@ fun Project.applyKotlinProjectConventions() {
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 
     // Configure task dependencies after evaluation
     afterEvaluate {
@@ -108,10 +78,6 @@ fun Project.applyKotlinProjectConventions() {
             }
         }
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 38246acd0 (Gradle: Support skipAutostyle property in buildSrc (#191))
     if (!skipAutostyle) {
         apply(plugin = "com.github.autostyle")
@@ -129,7 +95,6 @@ fun Project.applyKotlinProjectConventions() {
 <<<<<<< HEAD
 =======
 =======
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
     apply(plugin = "com.diffplug.gradle.spotless")
     spotless {
 =======

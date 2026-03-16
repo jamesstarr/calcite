@@ -307,15 +307,9 @@ return the `RelBuilder`.
 |:------------------- |:-----------
 | `scan(tableName)` | Creates a [TableScan]({{ site.apiRoot }}/org/apache/calcite/rel/core/TableScan.html).
 | `functionScan(operator, n, expr...)`<br/>`functionScan(operator, n, exprList)` | Creates a [TableFunctionScan]({{ site.apiRoot }}/org/apache/calcite/rel/core/TableFunctionScan.html) of the `n` most recent relational expressions.
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-| `transientScan(tableName [, rowType])` | Creates a [TableScan]({{ site.apiRoot }}/org/apache/calcite/rel/core/TableScan.html) on a [TransientTable]({{ site.apiRoot }}/org/apache/calcite/schema/TransientTable.html) with the given type (if not specified, the most recent relational expression's type will be used).
-=======
 >>>>>>> 71bc84579 ([CALCITE-1515] In RelBuilder, add functionScan method to create TableFunctionScan (Chunwei Lei))
 =======
 | `transientScan(tableName [, rowType])` | Creates a [TableScan]({{ site.apiRoot }}/org/apache/calcite/rel/core/TableScan.html) on a [TransientTable]]({{ site.apiRoot }}/org/apache/calcite/schema/TransientTable.html) with the given type (if not specified, the most recent relational expression's type will be used).
->>>>>>> e323a2a7b ([CALCITE-2812] Add algebraic operators to allow expressing recursive queries)
 =======
 | `transientScan(tableName [, rowType])` | Creates a [TableScan]({{ site.apiRoot }}/org/apache/calcite/rel/core/TableScan.html) on a [TransientTable]({{ site.apiRoot }}/org/apache/calcite/schema/TransientTable.html) with the given type (if not specified, the most recent relational expression's type will be used).
 >>>>>>> fb6ba4c8a ([CALCITE-3542] Implement RepeatUnion All=false (#200))
@@ -328,51 +322,29 @@ return the `RelBuilder`.
 | `aggregate(groupKey, aggCall...)`<br/>`aggregate(groupKey, aggCallList)` | Creates an [Aggregate]({{ site.apiRoot }}/org/apache/calcite/rel/core/Aggregate.html).
 | `distinct()` | Creates an [Aggregate]({{ site.apiRoot }}/org/apache/calcite/rel/core/Aggregate.html) that eliminates duplicate records.
 | `pivot(groupKey, aggCalls, axes, values)` | Adds a pivot operation, implemented by generating an [Aggregate]({{ site.apiRoot }}/org/apache/calcite/rel/core/Aggregate.html) with a column for each combination of measures and values
-<<<<<<< HEAD
-<<<<<<< HEAD
-| `unpivot(includeNulls, measureNames, axisNames, axisMap)` | Adds an unpivot operation, implemented by generating a [Join]({{ site.apiRoot }}/org/apache/calcite/rel/core/Join.html) to a [Values]({{ site.apiRoot }}/org/apache/calcite/rel/core/Values.html) that converts each row to several rows
-=======
 >>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 =======
 | `unpivot(includeNulls, measureNames, axisNames, axisMap)` | Adds an unpivot operation, implemented by generating a [Join]({{ site.apiRoot }}/org/apache/calcite/rel/core/Join.html) to a [Values]({{ site.apiRoot }}/org/apache/calcite/rel/core/Values.html) that converts each row to several rows
->>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 | `sort(fieldOrdinal...)`<br/>`sort(expr...)`<br/>`sort(exprList)` | Creates a [Sort]({{ site.apiRoot }}/org/apache/calcite/rel/core/Sort.html).<br/><br/>In the first form, field ordinals are 0-based, and a negative ordinal indicates descending; for example, -2 means field 1 descending.<br/><br/>In the other forms, you can wrap expressions in `as`, `nullsFirst` or `nullsLast`.
 | `sortLimit(offset, fetch, expr...)`<br/>`sortLimit(offset, fetch, exprList)` | Creates a [Sort]({{ site.apiRoot }}/org/apache/calcite/rel/core/Sort.html) with offset and limit.
 | `limit(offset, fetch)` | Creates a [Sort]({{ site.apiRoot }}/org/apache/calcite/rel/core/Sort.html) that does not sort, only applies with offset and limit.
 | `correlate(joinType, correlationId, requiredField...)`<br/>`correlate(joinType, correlationId, requiredFieldList)` | Creates a [Correlate]({{ site.apiRoot }}/org/apache/calcite/rel/core/Correlate.html) of the two most recent relational expressions, with a variable name and required field expressions for the left relation.
-<<<<<<< HEAD
-<<<<<<< HEAD
-| `exchange(distribution)` | Creates an [Exchange]({{ site.apiRoot }}/org/apache/calcite/rel/core/Exchange.html).
-| `sortExchange(distribution, collation)` | Creates a [SortExchange]({{ site.apiRoot }}/org/apache/calcite/rel/core/SortExchange.html).
-=======
 >>>>>>> 1eca0c5dd ([CALCITE-3111] Allow custom implementations of Correlate in RelDecorrelator)
 =======
 | `exchange(distribution)` | Creates an [Exchange]({{ site.apiRoot }}/org/apache/calcite/rel/core/Exchange.html).
 | `sortExchange(distribution, collation)` | Creates a [SortExchange]({{ site.apiRoot }}/org/apache/calcite/rel/core/SortExchange.html).
->>>>>>> 349a43772 ([CALCITE-2661] In RelBuilder, add methods for creating Exchange and SortExchange relational expressions (Chunwei Lei))
 | `join(joinType, expr...)`<br/>`join(joinType, exprList)`<br/>`join(joinType, fieldName...)` | Creates a [Join]({{ site.apiRoot }}/org/apache/calcite/rel/core/Join.html) of the two most recent relational expressions.<br/><br/>The first form joins on a boolean expression (multiple conditions are combined using AND).<br/><br/>The last form joins on named fields; each side must have a field of each name.
 | `semiJoin(expr)` | Creates a [SemiJoin]({{ site.apiRoot }}/org/apache/calcite/rel/core/SemiJoin.html) of the two most recent relational expressions.
-<<<<<<< HEAD
-<<<<<<< HEAD
-| `antiJoin(expr)` | Creates a [Join]({{ site.apiRoot }}/org/apache/calcite/rel/core/Join.html) with ANTI join type of the two most recent relational expressions.
-=======
 | `antiJoin(expr)` | Creates an AntiJoin of the two most recent relational expressions.
->>>>>>> c8ecee92a ([CALCITE-2920] In RelBuilder, add antiJoin method (Ruben Quesada Lopez))
 =======
 | `antiJoin(expr)` | Creates a [Join]({{ site.apiRoot }}/org/apache/calcite/rel/core/Join.html) with ANTI join type of the two most recent relational expressions.
 >>>>>>> 3038c3397 ([CALCITE-2968] New AntiJoin relational expression)
 | `union(all [, n])` | Creates a [Union]({{ site.apiRoot }}/org/apache/calcite/rel/core/Union.html) of the `n` (default two) most recent relational expressions.
 | `intersect(all [, n])` | Creates an [Intersect]({{ site.apiRoot }}/org/apache/calcite/rel/core/Intersect.html) of the `n` (default two) most recent relational expressions.
 | `minus(all)` | Creates a [Minus]({{ site.apiRoot }}/org/apache/calcite/rel/core/Minus.html) of the two most recent relational expressions.
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-| `repeatUnion(tableName, all [, n])` | Creates a [RepeatUnion]({{ site.apiRoot }}/org/apache/calcite/rel/core/RepeatUnion.html) associated to a [TransientTable]({{ site.apiRoot }}/org/apache/calcite/schema/TransientTable.html) of the two most recent relational expressions, with `n` maximum number of iterations (default -1, i.e. no limit).
-=======
 >>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
 =======
 | `repeatUnion(tableName, all [, n])` | Creates a [RepeatUnion]({{ site.apiRoot }}/org/apache/calcite/rel/core/RepeatUnion.html) associated to a [TransientTable]]({{ site.apiRoot }}/org/apache/calcite/schema/TransientTable.html) of the two most recent relational expressions, with `n` maximum number of iterations (default -1, i.e. no limit).
->>>>>>> e323a2a7b ([CALCITE-2812] Add algebraic operators to allow expressing recursive queries)
 =======
 | `repeatUnion(tableName, all [, n])` | Creates a [RepeatUnion]({{ site.apiRoot }}/org/apache/calcite/rel/core/RepeatUnion.html) associated to a [TransientTable]({{ site.apiRoot }}/org/apache/calcite/schema/TransientTable.html) of the two most recent relational expressions, with `n` maximum number of iterations (default -1, i.e. no limit).
 >>>>>>> fb6ba4c8a ([CALCITE-3542] Implement RepeatUnion All=false (#200))
@@ -402,28 +374,13 @@ Argument types:
 * `varHolder` [Holder]({{ site.apiRoot }}/org/apache/calcite/util/Holder.html) of [RexCorrelVariable]({{ site.apiRoot }}/org/apache/calcite/rex/RexCorrelVariable.html)
 * `patterns` Map whose key is String, value is [RexNode]({{ site.apiRoot }}/org/apache/calcite/rex/RexNode.html)
 * `subsets` Map whose key is String, value is a sorted set of String
-<<<<<<< HEAD
-<<<<<<< HEAD
-* `distribution` [RelDistribution]({{ site.apiRoot }}/org/apache/calcite/rel/RelDistribution.html)
-* `collation` [RelCollation]({{ site.apiRoot }}/org/apache/calcite/rel/RelCollation.html)
-* `operator` [SqlOperator]({{ site.apiRoot }}/org/apache/calcite/sql/SqlOperator.html)
-<<<<<<< HEAD
-* `correlationId` [CorrelationId]({{ site.apiRoot }}/org/apache/calcite/rel/core/CorrelationId.html)
-* `variablesSet` Iterable of
-=======
 =======
 * `distribution` [RelDistribution]({{ site.apiRoot }}/org/apache/calcite/rel/RelDistribution.html)
 * `collation` [RelCollation]({{ site.apiRoot }}/org/apache/calcite/rel/RelCollation.html)
->>>>>>> 349a43772 ([CALCITE-2661] In RelBuilder, add methods for creating Exchange and SortExchange relational expressions (Chunwei Lei))
 =======
 >>>>>>> 71bc84579 ([CALCITE-1515] In RelBuilder, add functionScan method to create TableFunctionScan (Chunwei Lei))
 * `correlationId` [CorrelationId]({{ site.apiRoot }}/org/apache/calcite/rel/core/CorrelationId.html)
-<<<<<<< HEAD
-* `variablesSet` Iterable of 
->>>>>>> 1eca0c5dd ([CALCITE-3111] Allow custom implementations of Correlate in RelDecorrelator)
-=======
 * `variablesSet` Iterable of
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
   [CorrelationId]({{ site.apiRoot }}/org/apache/calcite/rel/core/CorrelationId.html)
 * `joinType` [JoinRelType]({{ site.apiRoot }}/org/apache/calcite/rel/core/JoinRelType.html)
 
@@ -561,10 +518,6 @@ To further modify the `AggCall`, call its methods:
 | `distinct(distinct)` | Eliminates duplicate values before aggregating if `distinct`
 | `filter(expr)`       | Filters rows before aggregating (see SQL `FILTER (WHERE ...)`)
 | `sort(expr...)`<br/>`sort(exprList)` | Sorts rows before aggregating (see SQL `WITHIN GROUP`)
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 
->>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
 =======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)

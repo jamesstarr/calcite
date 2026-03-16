@@ -66,12 +66,6 @@ select * from "scott".emp where not sal > 1300 and not sal < 1200;
 
 !ok
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-# MULTISET EXCEPT
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
 # TODO reactive when multiset changes are cherry picked
 #values multiset ['a', 'c', 'a'] multiset except multiset ['a'];
@@ -254,7 +248,6 @@ order by 1,2;
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
->>>>>>> 651fe11cc ([CALCITE-3412] FLOOR(timestamp TO WEEK) gives wrong result (#272))
 # FLOOR and CEIL of DATE
 select v,
   case when b then 'ceil' else 'floor' end as op,
@@ -321,11 +314,7 @@ order by 1,2;
 | 12:34:56 | floor | 12:34:56 | 12:34:56 | 12:34:56 | 12:34:56 | 12:34:56 | 12:00:00 | 12:34:00 | 12:34:56 |
 +----------+-------+----------+----------+----------+----------+----------+----------+----------+----------+
 (2 rows)
-<<<<<<< HEAD
-=======
-=======
 # MULTISET EXCEPT
->>>>>>> 999c7aa89 (Revert "Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)"")
 values multiset ['a', 'c', 'a'] multiset except multiset ['a'];
 +--------+
 | EXPR$0 |
@@ -424,17 +413,6 @@ values multiset ['a', 'c', 'a'] multiset except multiset ['a'];
 # !ok
 
 # MULTISET INTERSECT DISTINCT
-<<<<<<< HEAD
-values multiset ['a', 'c', 'a', 'a'] multiset intersect distinct multiset ['a', 'a'];
-+--------+
-| EXPR$0 |
-+--------+
-| [a]    |
-+--------+
-(1 row)
-<<<<<<< HEAD
->>>>>>> f6e656f5b ([CALCITE-2355] Implement multiset operations (Sergey Nuyanzin))
-=======
 # TODO reactive when multiset changes are cherry picked
 # values multiset ['a', 'c', 'a', 'a'] multiset intersect distinct multiset ['a', 'a'];
 # +--------+
@@ -443,7 +421,6 @@ values multiset ['a', 'c', 'a', 'a'] multiset intersect distinct multiset ['a', 
 # | [a]    |
 # +--------+
 # (1 row)
->>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
 
 # !ok
 

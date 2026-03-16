@@ -36,16 +36,9 @@
   <!-- See http://checkstyle.sf.net/config_header.html -->
     <!-- Verify that EVERY source file has the appropriate license -->
   <module name="Header">
-<<<<<<< HEAD
-<<<<<<< HEAD
-    <property name="headerFile" value="${base_dir}/src/main/config/checkstyle/header.java.txt"/>
-    <property name="fileExtensions" value="cql,jj,json"/>
-<<<<<<< HEAD
-=======
     <property name="headerFile" value="src/main/config/checkstyle/header.java.txt"/>
 =======
     <property name="headerFile" value="${base_dir}/src/main/config/checkstyle/header.java.txt"/>
->>>>>>> aec71d08e ([CALCITE-2788]  Building error for sub-project of calcite on "maven-checkstyle-plugin")
     <property name="fileExtensions" value="cql,java,jj,json,kt"/>
 =======
 >>>>>>> a1b3408f5 ([CALCITE-2905] Drop pom.xml files)
@@ -153,11 +146,6 @@
       <property name="processJavadoc" value="true"/>
     </module>
     <module name="IllegalImport" />
-<<<<<<< HEAD
-<<<<<<< HEAD
-    <module name="AvoidStarImport" />
-<<<<<<< HEAD
-=======
     <module name="ImportOrder">
       <property name="groups" value="org.apache.calcite.,org.apache.,au.com.,com.,io.,mondrian.,net.,org.,scala.,/^javax?\./"/>
       <property name="ordered" value="true"/>
@@ -165,7 +153,6 @@
       <property name="option" value="bottom"/>
       <property name="sortStaticImportsAlphabetically" value="false"/>
     </module>
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 =======
 >>>>>>> a1b3408f5 ([CALCITE-2905] Drop pom.xml files)
 =======
@@ -321,9 +308,6 @@
     <property name="influenceFormat" value="$1"/>
   </module>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 
 
@@ -334,7 +318,6 @@
 
 =======
 =======
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
   <module name="net.hydromatic.toolbox.checkstyle.HydromaticFileSetCheck"/>
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======

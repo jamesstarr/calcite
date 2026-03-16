@@ -43,15 +43,8 @@ data: {
     package: "org.apache.calcite.sql.parser.impl",
     class: "SqlParserImpl",
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 =======
->>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
     # List of additional classes and packages to import.
     # Example. "org.apache.calcite.sql.*", "java.util.List".
     imports: [
@@ -64,13 +57,6 @@ data: {
 
     # List of keywords from "keywords" section that are not reserved.
     nonReservedKeywords: [
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
       "A"
       "ABSENT"
@@ -130,7 +116,6 @@ data: {
 <<<<<<< HEAD
       "DAYS"
 =======
->>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
 =======
       "DAYS"
 >>>>>>> 7aadeab7b ([CALCITE-3383] Plural time units (#18))
@@ -174,15 +159,10 @@ data: {
       "GOTO"
       "GRANTED"
       "HIERARCHY"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 54c668e21 ([CALCITE-3737] HOP Table Function (Rui Wang) (#369))
       "HOP"
       "HOURS"
 =======
->>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
 =======
       "HOURS"
 >>>>>>> 7aadeab7b ([CALCITE-3383] Plural time units (#18))
@@ -227,14 +207,7 @@ data: {
       "MICROSECOND"
       "MILLENNIUM"
       "MILLISECOND"
-<<<<<<< HEAD
-<<<<<<< HEAD
-      "MINUTES"
       "MINVALUE"
-      "MONTHS"
-=======
-      "MINVALUE"
->>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
 =======
       "MINUTES"
       "MINVALUE"
@@ -306,14 +279,9 @@ data: {
       "SCOPE_CATALOGS"
       "SCOPE_NAME"
       "SCOPE_SCHEMA"
-<<<<<<< HEAD
-<<<<<<< HEAD
-      "SECONDS"
-=======
 >>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
 =======
       "SECONDS"
->>>>>>> 7aadeab7b ([CALCITE-3383] Plural time units (#18))
       "SECTION"
       "SECURITY"
       "SELF"
@@ -398,14 +366,9 @@ data: {
       "TRIGGER_CATALOG"
       "TRIGGER_NAME"
       "TRIGGER_SCHEMA"
-<<<<<<< HEAD
-<<<<<<< HEAD
-      "TUMBLE"
-=======
 >>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
 =======
       "TUMBLE"
->>>>>>> c830b4f5a ([CALCITE-3382] Hard-wire the TUMBLE grouping function into SQL parser (Rui Wang))
       "TYPE"
       "UNBOUNDED"
       "UNCOMMITTED"
@@ -427,14 +390,9 @@ data: {
       "WRAPPER"
       "WRITE"
       "XML"
-<<<<<<< HEAD
-<<<<<<< HEAD
-      "YEARS"
-=======
 >>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
 =======
       "YEARS"
->>>>>>> 7aadeab7b ([CALCITE-3383] Plural time units (#18))
       "ZONE"
     ]
 
@@ -446,15 +404,7 @@ data: {
     # List of non-reserved keywords to remove;
     # items in this list become reserved
     nonReservedKeywordsToRemove: [
-<<<<<<< HEAD
-    ]
-
-    # List of additional join types. Each is a method with no arguments.
-    # Example: LeftSemiJoin()
-    joinTypes: [
 =======
-=======
->>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 =======
 >>>>>>> fc317a98f (Revert "Revert "[CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved"")
 =======
@@ -767,14 +717,8 @@ data: {
         "WRITE"
         "XML"
         "ZONE"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 38576ceb2 ([CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved)
-=======
 >>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 =======
->>>>>>> bfa324222 (Revert "[CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved")
 =======
 >>>>>>> fc317a98f (Revert "Revert "[CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved"")
 =======
@@ -801,12 +745,7 @@ data: {
     ]
 
     # List of methods for parsing custom data types.
-<<<<<<< HEAD
-<<<<<<< HEAD
-    # Return type of method implementation should be "SqlTypeNameSpec".
-=======
     # Return type of method implementation should be "SqlIdentifier".
->>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 =======
     # Return type of method implementation should be "SqlTypeNameSpec".
 >>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
@@ -814,9 +753,6 @@ data: {
     dataTypeParserMethods: [
     ]
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
     # List of methods for parsing builtin function calls.
     # Return type of method implementation should be "SqlNode".
@@ -826,7 +762,6 @@ data: {
 
 <<<<<<< HEAD
 =======
->>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 =======
 >>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
     # List of methods for parsing extensions to "ALTER <scope>" calls.
@@ -845,9 +780,6 @@ data: {
     dropStatementParserMethods: [
     ]
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
     # Binary operators tokens
     binaryOperatorsTokens: [
@@ -859,7 +791,6 @@ data: {
 
 <<<<<<< HEAD
 =======
->>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
 >>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 =======
@@ -877,19 +808,12 @@ data: {
     implementationFiles: [
       "parserImpls.ftl"
     ]
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    includePosixOperators: false
-=======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
 
     includeCompoundIdentifier: true
     includeBraces: true
     includeAdditionalDeclarations: false
->>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
 =======
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 =======

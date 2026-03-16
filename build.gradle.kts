@@ -2,20 +2,11 @@
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
-<<<<<<< HEAD
-<<<<<<< HEAD
- * The ASF licenses this file to you under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
-=======
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
  * The ASF licenses this file to you under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
@@ -29,18 +20,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-<<<<<<< HEAD
-<<<<<<< HEAD
- */
-import com.github.spotbugs.SpotBugsTask
-import com.github.vlsi.gradle.crlf.CrLfSpec
-import com.github.vlsi.gradle.crlf.LineEndings
-import com.github.vlsi.gradle.dsl.configureEach
-<<<<<<< HEAD
-=======
  *
 =======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
  */
 import com.github.spotbugs.SpotBugsTask
 import com.github.vlsi.gradle.crlf.CrLfSpec
@@ -53,9 +34,6 @@ import com.github.vlsi.gradle.git.dsl.gitignore
 import com.github.vlsi.gradle.properties.dsl.lastEditYear
 import com.github.vlsi.gradle.properties.dsl.props
 import com.github.vlsi.gradle.release.RepositoryType
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> dfef275a5 (DX-104182 Cherry-pick Color test results in Gradle output (#195))
 import com.github.vlsi.gradle.test.dsl.printTestResults
 import de.thetaphi.forbiddenapis.gradle.CheckForbiddenApis
@@ -65,7 +43,6 @@ import org.apache.calcite.buildtools.buildext.dsl.ParenthesisBalancer
 =======
 import de.thetaphi.forbiddenapis.gradle.CheckForbiddenApis
 import de.thetaphi.forbiddenapis.gradle.CheckForbiddenApisExtension
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -74,13 +51,7 @@ plugins {
     publishing
     // Verification
     checkstyle
-<<<<<<< HEAD
-<<<<<<< HEAD
-    calcite.buildext
-    id("com.github.autostyle")
-=======
     id("com.diffplug.gradle.spotless")
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
     calcite.buildext
     id("com.github.autostyle")
@@ -112,12 +83,7 @@ val lastEditYear by extra(lastEditYear())
 // Do not enable spotbugs by default. Execute it only when -Pspotbugs is present
 val enableSpotBugs = props.bool("spotbugs", default = false)
 val skipCheckstyle by props()
-<<<<<<< HEAD
-<<<<<<< HEAD
-val skipAutostyle by props()
-=======
 val skipSpotless by props()
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 val skipAutostyle by props()
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
@@ -128,16 +94,10 @@ val includeTestTags by props("!org.apache.calcite.test.SlowTests")
 // By default use Java implementation to sign artifacts
 // When useGpgCmd=true, then gpg command line tool is used for signing
 val useGpgCmd by props()
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-// Inherited from gradle-extensions-plugin: slowSuiteLogThreshold=0L, slowTestLogThreshold=2000L
-=======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 val slowSuiteLogThreshold = stringProperty("slowSuiteLogThreshold")?.toLong() ?: 0
 val slowTestLogThreshold = stringProperty("slowTestLogThreshold")?.toLong() ?: 2000
->>>>>>> ceb53f5d8 ([CALCITE-2457] Druid: JUnit4 -> JUnit5)
 =======
 // Inherited from gradle-extensions-plugin: slowSuiteLogThreshold=0L, slowTestLogThreshold=2000L
 >>>>>>> dfef275a5 (DX-104182 Cherry-pick Color test results in Gradle output (#195))
@@ -164,9 +124,6 @@ val rat by tasks.getting(org.nosphere.apache.rat.RatTask::class) {
     exclude(rootDir.resolve(".ratignore").readLines())
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 // Configure RAT task dependencies after all projects are evaluated
 gradle.projectsEvaluated {
@@ -177,7 +134,6 @@ gradle.projectsEvaluated {
         project.tasks.withType<com.github.autostyle.gradle.AutostyleTask>().configureEach {
 =======
         project.tasks.withType<com.diffplug.gradle.spotless.SpotlessTask>().configureEach {
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 =======
         project.tasks.withType<com.github.autostyle.gradle.AutostyleTask>().configureEach {
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
@@ -186,10 +142,6 @@ gradle.projectsEvaluated {
     }
 }
 
-<<<<<<< HEAD
-=======
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 tasks.validateBeforeBuildingReleaseArtifacts {
     dependsOn(rat)
@@ -218,7 +170,6 @@ releaseParams {
 =======
     releaseTag.set("rel/v$buildVersion")
     rcTag.set(rc.map { "v$buildVersion-rc$it" })
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
     releaseTag.set("calcite-$buildVersion")
     rcTag.set(rc.map { "calcite-$buildVersion-rc$it" })
@@ -255,14 +206,9 @@ val javadocAggregate by tasks.registering(Javadoc::class) {
 
     val sourceSets = allprojects
         .mapNotNull { it.extensions.findByType<SourceSetContainer>() }
-<<<<<<< HEAD
-<<<<<<< HEAD
-        .filter { it.names.contains("main") }
-=======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
         .filter { it.names.contains("main") }
->>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
         .map { it.named("main") }
 
     classpath = files(sourceSets.map { set -> set.map { it.output + it.compileClasspath } })
@@ -270,9 +216,6 @@ val javadocAggregate by tasks.registering(Javadoc::class) {
     setDestinationDir(file("$buildDir/docs/javadocAggregate"))
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> da83d51a7 (Add gradle task 'aggregateJavadocIncludingTests' that builds javadoc for both main and test)
 /** Similar to {@link #javadocAggregate} but includes tests.
  * CI uses this target to validate javadoc (e.g. checking for broken links). */
@@ -301,15 +244,9 @@ val dataSetsForSqlline = listOf(
 <<<<<<< HEAD
 =======
 =======
->>>>>>> da83d51a7 (Add gradle task 'aggregateJavadocIncludingTests' that builds javadoc for both main and test)
 val adaptersForSqlline = listOf(
     ":babel", ":cassandra", ":druid", ":elasticsearch", ":file", ":geode", ":kafka", ":mongodb",
-<<<<<<< HEAD
-    ":pig", ":piglet", ":plus", ":spark", ":splunk"
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
     ":pig", ":piglet", ":plus", ":redis", ":spark", ":splunk"
->>>>>>> 278d51c33 ([CALCITE-3510] Implement Redis adapter  (#170))
 =======
 >>>>>>> 5405253d9 (Add hsqldb data sets (scott, foodmart and chinook) to SQLLine's path (#188))
 )
@@ -324,18 +261,11 @@ dependencies {
     for (p in adaptersForSqlline) {
         sqllineClasspath(project(p))
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-    for (m in dataSetsForSqlline) {
-        sqllineClasspath(module(m))
-    }
-=======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
     for (m in dataSetsForSqlline) {
         sqllineClasspath(module(m))
     }
->>>>>>> 5405253d9 (Add hsqldb data sets (scott, foodmart and chinook) to SQLLine's path (#188))
 }
 
 val buildSqllineClasspath by tasks.registering(Jar::class) {
@@ -353,9 +283,6 @@ val buildSqllineClasspath by tasks.registering(Jar::class) {
     }
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 val semaphore = `java.util.concurrent`.Semaphore(4) // Allow 4 concurrent checkstyle tasks
 
@@ -369,7 +296,6 @@ val licenseHeaderFile = file("config/license.header.java")
 
 val javaccGeneratedPatterns = arrayOf(
 <<<<<<< HEAD
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
     "org/apache/calcite/jdbc/CalciteDriverVersion.java",
 >>>>>>> 2619f909b ([CALCITE-2905] Use code generation to create DriverVersion)
@@ -388,9 +314,6 @@ fun PatternFilterable.excludeJavaCcGenerated() {
     exclude(*javaccGeneratedPatterns)
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 fun com.github.autostyle.gradle.BaseFormatExtension.license() {
     licenseHeader(rootProject.ide.licenseHeader) {
@@ -403,17 +326,12 @@ fun com.github.autostyle.gradle.BaseFormatExtension.license() {
 
 <<<<<<< HEAD
 =======
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 allprojects {
     group = "org.apache.calcite"
     version = buildVersion
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
     repositories {
         // RAT and Autostyle dependencies
@@ -423,7 +341,6 @@ allprojects {
     apply(plugin = "com.github.vlsi.gradle-extensions")
 
 =======
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
     apply(plugin = "com.github.vlsi.gradle-extensions")
 
@@ -441,9 +358,6 @@ allprojects {
 
     val hasTests = file("src/test/java").isDirectory || file("src/test/kotlin").isDirectory
     if (hasTests) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
         // Add default tests dependencies only if Java plugin is applied
         plugins.withType<JavaPlugin> {
@@ -505,7 +419,6 @@ allprojects {
                 // However, it still prevents JUnit4 types in autocomplete which is fine.
                 testRuntimeOnly("junit:junit")
 =======
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
             }
         }
     }
@@ -516,11 +429,6 @@ allprojects {
             kotlinGradle {
                 license()
                 ktlint()
-<<<<<<< HEAD
-                trimTrailingWhitespace()
-                endWithNewline()
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
             }
             format("configs") {
                 filter {
@@ -532,34 +440,15 @@ allprojects {
                     exclude(rootDir.resolve(".ratignore").readLines())
                 }
                 license()
->>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
             }
             if (project == rootProject) {
                 // Spotless does not exclude subprojects when using target(...)
                 // So **/*.md is enough to scan all the md files in the codebase
                 // See https://github.com/diffplug/spotless/issues/468
                 format("markdown") {
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    filter.include("**/*.md")
-                    // Flot is known to have trailing whitespace, so the files
-                    // are kept in their original format (e.g. to simplify diff on library upgrade)
-                    endWithNewline()
-                }
-            }
-        }
-        plugins.withId("org.jetbrains.kotlin.jvm") {
-            autostyle {
-                kotlin {
-                    licenseHeader(rootProject.ide.licenseHeader)
-                    ktlint {
-                        userData(mapOf("disabled_rules" to "import-ordering"))
-                    }
-=======
                     target("**/*.md")
                     // Flot is known to have trailing whitespace, so the files
                     // are kept in their original format (e.g. to simplify diff on library upgrade)
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
                     filter.include("**/*.md")
                     // Flot is known to have trailing whitespace, so the files
@@ -589,12 +478,7 @@ allprojects {
             checkstyle("net.hydromatic:toolbox:${"hydromatic-toolbox".v}")
         }
         checkstyle {
-<<<<<<< HEAD
-<<<<<<< HEAD
-            // Current version is 10.12.4 - no more concurrency issues
-=======
             // Current one is ~8.8
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
             // Current version is 10.12.4 - no more concurrency issues
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
@@ -606,19 +490,10 @@ allprojects {
                 "base_dir" to rootDir.toString()
             )
         }
-<<<<<<< HEAD
-<<<<<<< HEAD
-        tasks.register("checkstyleAll") {
-            dependsOn(tasks.withType<Checkstyle>())
-        }
-        tasks.configureEach<Checkstyle> {
-<<<<<<< HEAD
-=======
 =======
         tasks.register("checkstyleAll") {
             dependsOn(tasks.withType<Checkstyle>())
         }
->>>>>>> 31352ef75 (Add './gradlew style' task to apply code format and report violations)
         tasks.withType<Checkstyle>().configureEach {
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
@@ -628,15 +503,9 @@ allprojects {
             // On the other hand, supporessions.xml still analyzes the file, and
             // then it recognizes it should suppress all the output.
             excludeJavaCcGenerated()
-<<<<<<< HEAD
-<<<<<<< HEAD
-            // Limit concurrent checkstyle tasks to prevent resource contention
-            // Allow up to 4 concurrent tasks instead of just 1
-=======
             // There are concurrency issues with Checkstyle 7.8.2
             // It could be in Checkstyle, in CheckstyleAnt task or in Gradle's Checkstyle plugin
             // The bug looks like as if suppression was not working
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
             // Limit concurrent checkstyle tasks to prevent resource contention
             // Allow up to 4 concurrent tasks instead of just 1
@@ -649,23 +518,12 @@ allprojects {
             }
         }
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    if (!skipAutostyle || !skipCheckstyle) {
-        tasks.register("style") {
-            group = LifecycleBasePlugin.VERIFICATION_GROUP
-            description = "Formats code (license header, import order, whitespace at end of line, ...) and executes Checkstyle verifications"
-            if (!skipAutostyle) {
-                dependsOn("autostyleApply")
-=======
     if (!skipSpotless || !skipCheckstyle) {
         tasks.register("style") {
             group = LifecycleBasePlugin.VERIFICATION_GROUP
             description = "Formats code (license header, import order, whitespace at end of line, ...) and executes Checkstyle verifications"
             if (!skipSpotless) {
                 dependsOn("spotlessApply")
->>>>>>> 31352ef75 (Add './gradlew style' task to apply code format and report violations)
 =======
     if (!skipAutostyle || !skipCheckstyle) {
         tasks.register("style") {
@@ -680,19 +538,9 @@ allprojects {
             }
         }
     }
-<<<<<<< HEAD
+=======
 
     tasks.configureEach<AbstractArchiveTask> {
-=======
-=======
->>>>>>> 31352ef75 (Add './gradlew style' task to apply code format and report violations)
-
-<<<<<<< HEAD
-    tasks.withType<AbstractArchiveTask>().configureEach {
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
-    tasks.configureEach<AbstractArchiveTask> {
->>>>>>> b06469413 (Bump release-plugins: 1.61 -> 1.65)
         // Ensure builds are reproducible
         isPreserveFileTimestamps = false
         isReproducibleFileOrder = true
@@ -704,9 +552,6 @@ allprojects {
         afterEvaluate {
             configure<SigningExtension> {
                 val release = rootProject.releaseParams.release.get()
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 7f94964d5 (Change build.gradle.kts so signing is optional)
                 // Only require signing if we have signing credentials configured
                 val hasSigningCredentials = if (useGpgCmd) {
@@ -744,16 +589,12 @@ allprojects {
                 }
 =======
 =======
->>>>>>> 7f94964d5 (Change build.gradle.kts so signing is optional)
                 // Note it would still try to sign the artifacts,
                 // however it would fail only when signing a RELEASE version fails
                 isRequired = release && hasSigningCredentials
                 if (useGpgCmd) {
                     useGpgCmd()
                 }
-<<<<<<< HEAD
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
                 // Sign all publications if this is a release version and publishing plugin is applied
                 if (release && plugins.hasPlugin("maven-publish")) {
                     try {
@@ -773,18 +614,12 @@ allprojects {
                         logger.debug("Publishing extension not available for project ${project.path}: ${e.message}")
                     }
                 }
->>>>>>> 7f94964d5 (Change build.gradle.kts so signing is optional)
             }
         }
     }
 
     tasks {
-<<<<<<< HEAD
-<<<<<<< HEAD
-        configureEach<Javadoc> {
-=======
         withType<Javadoc>().configureEach {
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
         configureEach<Javadoc> {
 >>>>>>> b06469413 (Bump release-plugins: 1.61 -> 1.65)
@@ -820,9 +655,6 @@ allprojects {
             sourceCompatibility = JavaVersion.VERSION_1_8
             targetCompatibility = JavaVersion.VERSION_1_8
         }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 994cab940 (Bump Gradle 6.7 -> 6.8.1)
         configure<JavaPluginExtension> {
             consistentResolution {
@@ -831,7 +663,6 @@ allprojects {
         }
 <<<<<<< HEAD
 =======
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 >>>>>>> 994cab940 (Bump Gradle 6.7 -> 6.8.1)
 
@@ -853,32 +684,6 @@ allprojects {
             }
         }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        if (!skipAutostyle) {
-            autostyle {
-                java {
-<<<<<<< HEAD
-                    filter.exclude(*javaccGeneratedPatterns + "**/test/java/*.java")
-                    license()
-                    if (!project.props.bool("junit4", default = false)) {
-                        replace("junit5: Test", "org.junit.Test", "org.junit.jupiter.api.Test")
-                        replaceRegex("junit5: Before", "org.junit.Before\\b", "org.junit.jupiter.api.BeforeEach")
-                        replace("junit5: BeforeClass", "org.junit.BeforeClass", "org.junit.jupiter.api.BeforeAll")
-                        replaceRegex("junit5: After", "org.junit.After\\b", "org.junit.jupiter.api.AfterEach")
-                        replace("junit5: AfterClass", "org.junit.AfterClass", "org.junit.jupiter.api.AfterAll")
-                        replace("junit5: Ignore", "org.junit.Ignore", "org.junit.jupiter.api.Disabled")
-                        replaceRegex("junit5: @Before", "@Before\\b", "@BeforeEach")
-                        replace("junit5: @BeforeClass", "@BeforeClass", "@BeforeAll")
-                        replaceRegex("junit5: @After", "@After\\b", "@AfterEach")
-                        replace("junit5: @AfterClass", "@AfterClass", "@AfterAll")
-                        replace("junit5: @Ignore", "@Ignore", "@Disabled")
-                        replace("junit5: Assert.assertThat", "org.junit.Assert.assertThat", "org.hamcrest.MatcherAssert.assertThat")
-                        replace("junit5: Assert.fail", "org.junit.Assert.fail", "org.junit.jupiter.api.Assertions.fail")
-                    }
-                    replaceRegex("side by side comments", "(\n\\s*+[*]*+/\n)(/[/*])", "\$1\n\$2")
-=======
         if (isReleaseVersion) {
             configure<SigningExtension> {
                 // Sign all the publications
@@ -887,20 +692,14 @@ allprojects {
         }
 
 =======
->>>>>>> 7f94964d5 (Change build.gradle.kts so signing is optional)
         if (!skipSpotless) {
             spotless {
                 java {
                     targetExclude(*javaccGeneratedPatterns + "**/test/java/*.java")
                     licenseHeaderFile(licenseHeaderFile)
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
                     if (!project.props.bool("junit4", default = true)) {
 =======
                     if (!project.props.bool("junit4", default = false)) {
->>>>>>> 3ab086683 ([CALCITE-2457] Migrate core parameterized to JUnit5, and make core junit5-only)
 =======
         if (!skipAutostyle) {
             autostyle {
@@ -923,12 +722,8 @@ allprojects {
                         replace("junit5: Assert.assertThat", "org.junit.Assert.assertThat", "org.hamcrest.MatcherAssert.assertThat")
                         replace("junit5: Assert.fail", "org.junit.Assert.fail", "org.junit.jupiter.api.Assertions.fail")
                     }
-<<<<<<< HEAD
->>>>>>> 733879945 ([CALCITE-2457] Configure build to automatically replace common JUnit4 classes with JUnit5)
-=======
                     targetExclude(*javaccGeneratedPatterns + "**/test/java/*.java")
                     licenseHeaderFile(licenseHeaderFile)
->>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
 =======
                     replaceRegex("side by side comments", "(\n\\s*+[*]*+/\n)(/[/*])", "\$1\n\$2")
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
@@ -952,9 +747,6 @@ allprojects {
                         "static "
                     )
                     removeUnusedImports()
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
                     indentWithSpaces(2)
                     replaceRegex("@Override should not be on its own line", "(@Override)\\s{2,}", "\$1 ")
@@ -975,7 +767,6 @@ allprojects {
                     trimTrailingWhitespace()
                     indentWithSpaces(4)
                     endWithNewline()
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
                 }
@@ -1025,12 +816,7 @@ allprojects {
         }
 
         tasks {
-<<<<<<< HEAD
-<<<<<<< HEAD
-            configureEach<Jar> {
-=======
             withType<Jar>().configureEach {
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
             configureEach<Jar> {
 >>>>>>> b06469413 (Bump release-plugins: 1.61 -> 1.65)
@@ -1046,12 +832,7 @@ allprojects {
                 }
             }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-            configureEach<CheckForbiddenApis> {
-=======
             withType<CheckForbiddenApis>().configureEach {
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
             configureEach<CheckForbiddenApis> {
 >>>>>>> b06469413 (Bump release-plugins: 1.61 -> 1.65)
@@ -1066,18 +847,10 @@ allprojects {
                 )
             }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-            configureEach<JavaCompile> {
-                options.encoding = "UTF-8"
-            }
-            configureEach<Test> {
-=======
             withType<JavaCompile>().configureEach {
                 options.encoding = "UTF-8"
             }
             withType<Test>().configureEach {
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
             configureEach<JavaCompile> {
                 options.encoding = "UTF-8"
@@ -1089,22 +862,15 @@ allprojects {
                         includeTags.add(includeTestTags)
                     }
                 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
                 exclude("**/*Suite*")
                 jvmArgs("-Xmx1536m")
                 jvmArgs("-Djdk.net.URLClassPath.disableClassPathURLCheck=true")
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 >>>>>>> ceb53f5d8 ([CALCITE-2457] Druid: JUnit4 -> JUnit5)
                 testLogging {
                     exceptionFormat = TestExceptionFormat.FULL
                     showStandardStreams = true
                 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> ceb53f5d8 ([CALCITE-2457] Druid: JUnit4 -> JUnit5)
                 exclude("**/*Suite*")
                 jvmArgs("-Xmx1536m")
@@ -1122,7 +888,6 @@ allprojects {
                 passProperty("junit.jupiter.execution.timeout.default", "10 m")
 =======
                 passProperty("junit.jupiter.execution.timeout.default", "5 m")
->>>>>>> ceb53f5d8 ([CALCITE-2457] Druid: JUnit4 -> JUnit5)
 =======
                 passProperty("junit.jupiter.execution.parallel.mode.default", "concurrent")
                 passProperty("junit.jupiter.execution.timeout.default", "10 m")
@@ -1135,13 +900,6 @@ allprojects {
                         passProperty(e)
                     }
                 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-                printTestResults()
-            }
-            configureEach<SpotBugsTask> {
-<<<<<<< HEAD
-=======
 =======
                 // https://github.com/junit-team/junit5/issues/2041
                 // Gradle does not print parameterized test names yet :(
@@ -1189,7 +947,6 @@ allprojects {
                         printResult(descriptor, result)
                     }
                 }))
->>>>>>> ceb53f5d8 ([CALCITE-2457] Druid: JUnit4 -> JUnit5)
 =======
                 printTestResults()
 >>>>>>> dfef275a5 (DX-104182 Cherry-pick Color test results in Gradle output (#195))
@@ -1211,12 +968,7 @@ allprojects {
 
             afterEvaluate {
                 // Add default license/notice when missing
-<<<<<<< HEAD
-<<<<<<< HEAD
-                configureEach<Jar> {
-=======
                 withType<Jar>().configureEach {
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
                 configureEach<Jar> {
 >>>>>>> b06469413 (Bump release-plugins: 1.61 -> 1.65)
@@ -1254,9 +1006,6 @@ allprojects {
             archiveClassifier.set("sources")
         }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
         // Configure task dependencies to ensure spotless runs before compilation and JAR creation
         afterEvaluate {
@@ -1271,7 +1020,6 @@ allprojects {
 
 <<<<<<< HEAD
 =======
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
         val javadocJar by tasks.registering(Jar::class) {
@@ -1280,12 +1028,7 @@ allprojects {
         }
 
         val testClasses by configurations.creating {
-<<<<<<< HEAD
-<<<<<<< HEAD
-            extendsFrom(configurations["testRuntimeOnly"])
-=======
             extendsFrom(configurations["testRuntime"])
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
             extendsFrom(configurations["testRuntimeOnly"])
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
@@ -1309,9 +1052,6 @@ allprojects {
                 // Do not publish "root" project. Java plugin is applied here for DSL purposes only
                 return@configure
             }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 02ef5191a ([CALCITE-2905] Use me.champeau.gradle.jmh for JMH)
             if (!project.props.bool("nexus.publish", default = true)) {
                 // Some of the artifacts do not need to be published
@@ -1319,7 +1059,6 @@ allprojects {
             }
 <<<<<<< HEAD
 =======
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 >>>>>>> 02ef5191a ([CALCITE-2905] Use me.champeau.gradle.jmh for JMH)
             publications {

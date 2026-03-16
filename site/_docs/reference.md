@@ -227,9 +227,6 @@ joinCondition:
 
 tableReference:
       tablePrimary
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
       [ FOR SYSTEM_TIME AS OF expression ]
       [ pivot ]
@@ -237,7 +234,6 @@ tableReference:
 <<<<<<< HEAD
 =======
       [ pivot ]
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 =======
 >>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
       [ matchRecognize ]
@@ -254,9 +250,6 @@ tablePrimary:
 columnDecl:
       column type [ NOT NULL ]
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
 hint:
       hintName
@@ -278,7 +271,6 @@ optionValue:
   |   numericLiteral
 
 =======
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 =======
   |   optionName, [, optionName]*
 =======
@@ -289,14 +281,10 @@ optionValue:
 hintKVOption:
       optionName '=' stringLiteral
 
-<<<<<<< HEAD
->>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
-=======
 optionValue:
       stringLiteral
   |   numericLiteral
 
->>>>>>> a0b18b06d (Add doc for type coercion and SQL hints change (#59))
 pivot:
       PIVOT '('
       pivotAgg [, pivotAgg ]*
@@ -318,9 +306,6 @@ pivotExpr:
       }
       [ [ AS ] alias ]
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 unpivot:
       UNPIVOT [ INCLUDING NULLS | EXCLUDING NULLS ] '('
@@ -341,7 +326,6 @@ unpivotValue:
 
 <<<<<<< HEAD
 =======
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 =======
 >>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 values:
@@ -678,12 +662,7 @@ IMMEDIATELY,
 IMPLEMENTATION,
 **IMPORT**,
 **IN**,
-<<<<<<< HEAD
-<<<<<<< HEAD
-**INCLUDE**,
-=======
 INCLUDE,
->>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 =======
 **INCLUDE**,
 >>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
@@ -715,18 +694,9 @@ JAVA,
 JSON,
 **JSON_ARRAY**,
 **JSON_ARRAYAGG**,
-<<<<<<< HEAD
-<<<<<<< HEAD
-JSON_DEPTH,
-**JSON_EXISTS**,
-<<<<<<< HEAD
-<<<<<<< HEAD
-JSON_KEYS,
-=======
 >>>>>>> 31a1bb0fc ([CALCITE-2808] Add the JSON_LENGTH function (xuqianjin))
 =======
 JSON_KEYS,
->>>>>>> f823ceb45 ([CALCITE-2892] Add the JSON_KEYS function (xuqianjin))
 JSON_LENGTH,
 **JSON_OBJECT**,
 **JSON_OBJECTAGG**,
@@ -742,11 +712,7 @@ JSON_DEPTH,
 **JSON_OBJECTAGG**,
 JSON_PRETTY,
 **JSON_QUERY**,
-<<<<<<< HEAD
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
-=======
 JSON_TYPE,
->>>>>>> 5b7700f68 ([CALCITE-2791] Add the JSON_TYPE function (xuqianjin))
 **JSON_VALUE**,
 K,
 KEY,
@@ -878,12 +844,7 @@ PATH,
 **PERCENT_RANK**,
 **PERIOD**,
 **PERMUTE**,
-<<<<<<< HEAD
-<<<<<<< HEAD
-**PIVOT**,
-=======
 PIVOT,
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 =======
 **PIVOT**,
 >>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
@@ -1115,12 +1076,7 @@ UNDER,
 **UNKNOWN**,
 UNNAMED,
 **UNNEST**,
-<<<<<<< HEAD
-<<<<<<< HEAD
-**UNPIVOT**,
-=======
 UNPIVOT,
->>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 =======
 **UNPIVOT**,
 >>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
@@ -1137,14 +1093,9 @@ USER_DEFINED_TYPE_SCHEMA,
 UTF16,
 UTF32,
 UTF8,
-<<<<<<< HEAD
-<<<<<<< HEAD
-**UUID**,
-=======
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 =======
 **UUID**,
->>>>>>> 765ef60c0 (Introduce UUID type from upstream (#134))
 **VALUE**,
 **VALUES**,
 **VALUE_OF**,
@@ -1255,70 +1206,14 @@ Note:
 | MULTISET | Unordered collection that may contain duplicates | Example: int multiset
 | ARRAY    | Ordered, contiguous collection that may contain duplicates | Example: varchar(10) array
 | CURSOR   | Cursor over the result of executing a query |
-<<<<<<< HEAD
-<<<<<<< HEAD
-| VARIANT | Dynamically-typed value that can have at runtime a value of any other type | VARIANT
-=======
 >>>>>>> 378c49b87 ([CALCITE-3233] Support Row type for SqlDataTypeSpec)
 =======
 | VARIANT | Dynamically-typed value that can have at runtime a value of any other type | VARIANT
->>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
 
 Note:
 
 * Every `ROW` column type can have an optional [ NULL | NOT NULL ] suffix
   to indicate if this column type is nullable, default is not nullable.
-<<<<<<< HEAD
-
-### The `VARIANT` type
-
-Values of `VARIANT` type are dynamically-typed.
-Any such value holds at runtime two pieces of information:
-- the data type
-- the data value
-
-Values of `VARIANT` type can be created by casting any other value to a `VARIANT`: e.g.
-`SELECT CAST(x AS VARIANT)`.  Conversely, values of type `VARIANT` can be cast to any other data type
-`SELECT CAST(variant AS INT)`.  A cast of a value of type `VARIANT` to target type T
-will compare the runtime type with T.  If the types are identical or the types are
-numeric and there is a natural conversion between the two types, the
-original value is converted to the target type and returned.  Otherwise the `CAST` returns `NULL`.
-
-Values of type `ARRAY`, `MAP`, and `ROW` type can be cast to `VARIANT`.  `VARIANT` values
-also offer the following operations:
-
-- indexing using array indexing notation `variant[index]`.  If the `VARIANT` is
-  obtained from an `ARRAY` value, the indexing operation returns a `VARIANT` whose value element
-  is the element at the specified index.  Otherwise, this operation returns `NULL`
-- indexing using map element access notation `variant[key]`, where `key` can have
-  any legal `MAP` key type.  If the `VARIANT` is obtained from a `MAP` value
-  that has en element with this key, a `VARIANT` value holding the associated value in
-  the `MAP` is returned.  Otherwise `NULL` is returned.  If the `VARIANT` is obtained from `ROW` value
-  which has a field with the name `key`, this operation returns a `VARIANT` value holding
-  the corresponding field value.  Otherwise `NULL` is returned.
-- field access using the dot notation: `variant.field`.  This operation is interpreted
-  as equivalent to `variant['field']`.  Note, however, that the field notation
-  is subject to the capitalization rules of the SQL dialect, so for correct
-  operation the field may need to be quoted: `variant."field"`
-
-The runtime types do not need to match exactly the compile-time types.
-As a compiler front-end, Calcite does not mandate exactly how the runtime types
-are represented.  Calcite does include one particular implementation in
-Java runtime, which is used for testing.  In this representation
-the runtime types are represented as follows:
-
-- The scalar types do not include information about precision and scale.  Thus all `DECIMAL`
-  compile-time types are represented by a single run-time type.
-- `CHAR(N)` and `VARCHAR` are both represented by a single runtime `VARCHAR` type.
-- `BINARY(N)` and `VARBINARY` are both represented by a single runtime `VARBINARY` type.
-- `FLOAT` and `DOUBLE` are both represented by the same runtime type.
-- All "short interval" types (from days to seconds) are represented by a single type.
-- All "long interval" types (from years to months) are represented by a single type.
-- Generic types such as `INT ARRAY`, `MULTISET`, and `MAP` convert all their elements to VARIANT values
-
-The function VARIANTNULL() can be used to create an instance
-of the `VARIANT` `null` value.
-=======
 >>>>>>> 378c49b87 ([CALCITE-3233] Support Row type for SqlDataTypeSpec)
 
 ### The `VARIANT` type
@@ -1829,7 +1724,6 @@ Implicit type coercion of following cases are ignored:
   we allow some precision loss when widening decimal to fractional,
   or promote to `VARCHAR` type.
 =======
->>>>>>> e9f91b4bc ([CALCITE-3053] Add a test to ensure that all functions are documented in the SQL reference)
 =======
 | TYPEOF(variant)                        | Returns a string that describes the runtime type of *variant*, where variant has a `VARIANT` type
 | VARIANTNULL()                          | Returns an instance of the `VARIANT` null value (constructor)
@@ -2205,9 +2099,6 @@ period:
 | {fn RTRIM(string)} | Returns *string* with trailing space characters removed
 | {fn SUBSTRING(string, offset, length)} | Returns a character string that consists of *length* characters from *string* starting at the *offset* position
 | {fn UCASE(string)} | Returns a string in which all alphabetic characters in *string* have been converted to upper case
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 9d5cc2f5f ([CALCITE-6791] Search pattern during matching in REPLACE function should be case insensitive in MSSQL)
 | {fn REPLACE(string, search, replacement)} | Returns a string in which all the occurrences of *search* in *string* are replaced with *replacement*; returns unchanged *string* if *search* is an empty string(''); if *replacement* is the empty string, the occurrences of *search* are removed. Matching between *search* and *string* is case-insensitive under SQL Server semantics
 | {fn ASCII(string)} | Returns the ASCII code of the first character of *string*; if the first character is a non-ASCII character, returns its Unicode code point; returns 0 if *string* is empty
@@ -2217,7 +2108,6 @@ period:
 <<<<<<< HEAD
 | {fn ASCII(string)} | Returns the corresponding ASCII code of the first character of *string*; Returns 0 if *string* is empty; Returns NULL if *string* is NULL; Returns the Unicode code point for non-ASCII character
 <<<<<<< HEAD
->>>>>>> bd30002c0 ([CALCITE-2599] Implement SQL ASCII function (Chunwei Lei))
 =======
 | {fn REVERSE(string)} | Returns the *string* with the order of the characters reversed.
 >>>>>>> 2781e2f82 ([CALCITE-2601] Add REVERSE function (pingle wang))
@@ -2229,14 +2119,10 @@ period:
 Not implemented:
 
 * {fn CHAR(string)}
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 * {fn DIFFERENCE(string, string)}
 * {fn REPEAT(string, integer)}
 * {fn SOUNDEX(string)}
 * {fn SPACE(integer)}
->>>>>>> f44c1beaf ([CALCITE-3005] Implement string functions: LEFT, RIGHT (xuqianjin))
 =======
 >>>>>>> b8a27ac14 ([CALCITE-2965] Implement string functions: REPEAT, SPACE, SOUNDEX, DIFFERENCE)
 
@@ -2309,16 +2195,7 @@ and `LISTAGG`).
 | LISTAGG( [ ALL &#124; DISTINCT ] value [, separator]) | Returns values concatenated into a string, delimited by separator (default ',')
 | COUNT( [ ALL &#124; DISTINCT ] value [, value ]*) | Returns the number of input rows for which *value* is not null (wholly not null if *value* is composite)
 | COUNT(*)                           | Returns the number of input rows
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-| FUSION(multiset)                   | Returns the multiset union of *multiset* across all input values
-| INTERSECTION(multiset)             | Returns the multiset intersection of *multiset* across all input values
-<<<<<<< HEAD
-=======
 | FUSION( multiset )                 | Returns the multiset union of *multiset* across all input values
->>>>>>> f6e656f5b ([CALCITE-2355] Implement multiset operations (Sergey Nuyanzin))
 =======
 >>>>>>> 53857d63a (Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)")
 =======
@@ -2335,10 +2212,6 @@ and `LISTAGG`).
 | MAX( [ ALL &#124; DISTINCT ] value)           | Returns the maximum value of *value* across all input values
 | MIN( [ ALL &#124; DISTINCT ] value)           | Returns the minimum value of *value* across all input values
 | ANY_VALUE( [ ALL &#124; DISTINCT ] value)     | Returns one of the values of *value* across all input values; this is NOT specified in the SQL standard
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 0c0484733 ([CALCITE-3815] Add missing SQL standard aggregate functions: EVERY, SOME, INTERSECTION (#160))
 | SOME(condition)                               | Returns true if any condition is true.
 | EVERY(condition)                              | Returns true if all conditions are true.
@@ -2347,7 +2220,6 @@ and `LISTAGG`).
 | BIT_XOR( [ ALL &#124; DISTINCT ] value)       | Returns the bitwise XOR of all non-null input values, or null if none
 <<<<<<< HEAD
 =======
->>>>>>> 40961f7ad ([CALCITE-2366] Add support for ANY_VALUE aggregate function (Gautam Parai))
 =======
 | BIT_AND( [ ALL &#124; DISTINCT ] value)       | Returns the bitwise AND of all non-null input values, or null if none
 | BIT_OR( [ ALL &#124; DISTINCT ] value)        | Returns the bitwise OR of all non-null input values, or null if none
@@ -2442,13 +2314,7 @@ Not implemented:
 * APPROX_COUNT_DISTINCT(value [, value ]*) OVER window
 * PERCENT_RANK(value) OVER window
 * CUME_DIST(value) OVER window
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 * NTH_VALUE(value, nth) OVER window
->>>>>>> 391a8883e (Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)")
 =======
 * NTH_VALUE(value, nth) [ FROM { FIRST | LAST } ] IGNORE NULLS OVER window
 >>>>>>> 3564ebb7c (Revert "Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)"")
@@ -2471,14 +2337,8 @@ Not implemented:
 |:-------------------- |:-----------
 | DESCRIPTOR(name [, name ]*) | DESCRIPTOR appears as an argument in a function to indicate a list of names. The interpretation of names is left to the function.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-### Table functions.
-Table functions occur in the `FROM` clause.
-=======
 ### Table-valued functions.
 Table-valued functions occur in the `FROM` clause.
->>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
 =======
 ### Table functions.
 Table functions occur in the `FROM` clause.
@@ -2491,12 +2351,7 @@ is named as "fixed windowing".
 
 | Operator syntax      | Description
 |:-------------------- |:-----------
-<<<<<<< HEAD
-<<<<<<< HEAD
-| TUMBLE(table, DESCRIPTOR(datetime), interval) | Indicates a tumbling window of *interval* for *datetime*.
-=======
 | TUMBLE(table, DESCRIPTOR(column_name), interval [, time ]) | Indicates a tumbling window of *interval* for *datetime*, optionally aligned at *time*. Tumbling is applied on table in which there is a watermarked column specified by descriptor.
->>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
 =======
 | TUMBLE(table, DESCRIPTOR(datetime), interval) | Indicates a tumbling window of *interval* for *datetime*.
 >>>>>>> c4fd13d2c ([CALCITE-3780] SESSION Table function (Rui Wang) (#380))
@@ -2506,37 +2361,6 @@ Here is an example:
 will apply tumbling with 1 minute window size on rows from table orders. rowtime is the
 watermarked column of table orders that tells data completeness.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-#### HOP
-In streaming queries, HOP assigns windows that cover rows within the interval of *size* and shifting every *slide* based
-on a timestamp column. Windows assigned could have overlapping so hopping sometime is named as "sliding windowing".
-<<<<<<< HEAD
-
-| Operator syntax      | Description
-|:-------------------- |:-----------
-| HOP(table, DESCRIPTOR(datetime), slide, size) | Indicates a hopping window for *datetime*, covering rows within the interval of *size*, shifting every *slide*.
-
-Here is an example:
-`SELECT * FROM TABLE(HOP(TABLE orders, DESCRIPTOR(rowtime), INTERVAL '2' MINUTE, INTERVAL '5' MINUTE))`,
-will apply hopping with 5-minute interval size on rows from table orders and shifting every 2 minutes. rowtime is the
-watermarked column of table orders that tells data completeness.
-
-#### SESSION
-In streaming queries, SESSION assigns windows that cover rows based on *datetime*. Within a session window, distances
-of rows are less than *interval*. Session window is applied per *key*.
-
-
-| Operator syntax      | Description
-|:-------------------- |:-----------
-| session(table, DESCRIPTOR(datetime), DESCRIPTOR(key), interval) | Indicates a session window of *interval* for *datetime*. Session window is applied per *key*.
-
-Here is an example:
-`SELECT * FROM TABLE(SESSION(TABLE orders, DESCRIPTOR(rowtime), DESCRIPTOR(product), INTERVAL '20' MINUTE))`,
-will apply session with 20-minute inactive gap on rows from table orders. rowtime is the
-watermarked column of table orders that tells data completeness. Session is applied per product.
-
-=======
 >>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
 =======
 #### HOP
@@ -2544,7 +2368,6 @@ In streaming queries, HOP assigns windows that cover rows within the interval of
 on a timestamp column. Windows assigned could have overlapping so hopping sometime is named as "sliding windowing".
 sometime is named as "sliding windowing".
 =======
->>>>>>> c4fd13d2c ([CALCITE-3780] SESSION Table function (Rui Wang) (#380))
 
 
 | Operator syntax      | Description
@@ -2556,9 +2379,6 @@ Here is an example:
 will apply hopping with 5-minute interval size on rows from table orders and shifting every 2 minutes. rowtime is the
 watermarked column of table orders that tells data completeness.
 
-<<<<<<< HEAD
->>>>>>> 54c668e21 ([CALCITE-3737] HOP Table Function (Rui Wang) (#369))
-=======
 #### SESSION
 In streaming queries, SESSION assigns windows that cover rows based on *datetime*. Within a session window, distances
 of rows are less than *interval*. Session window is applied per *key*.
@@ -2573,7 +2393,6 @@ Here is an example:
 will apply session with 20-minute inactive gap on rows from table orders. rowtime is the
 watermarked column of table orders that tells data completeness. Session is applied per product.
 
->>>>>>> c4fd13d2c ([CALCITE-3780] SESSION Table function (Rui Wang) (#380))
 ### Grouped window functions
 **warning**: grouped window functions are deprecated.
 
@@ -2921,9 +2740,6 @@ Not implemented:
 
 ### JSON Functions
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 In the following:
 
@@ -2932,28 +2748,12 @@ In the following:
 
 <<<<<<< HEAD
 =======
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 =======
 >>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 #### Query Functions
 
 | Operator syntax        | Description
 |:---------------------- |:-----------
-<<<<<<< HEAD
-<<<<<<< HEAD
-| JSON_EXISTS(jsonValue, path [ { TRUE &#124; FALSE &#124; UNKNOWN &#124; ERROR ) ON ERROR } ) | Whether a *jsonValue* satisfies a search criterion described using JSON path expression *path*
-| JSON_VALUE(jsonValue, path [ RETURNING type ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON EMPTY ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON ERROR ] ) | Extract an SQL scalar from a *jsonValue* using JSON path expression *path*
-| JSON_QUERY(jsonValue, path [ { WITHOUT [ ARRAY ] &#124; WITH [ CONDITIONAL &#124; UNCONDITIONAL ] [ ARRAY ] } WRAPPER ] [ { ERROR &#124; NULL &#124; EMPTY ARRAY &#124; EMPTY OBJECT } ON EMPTY ] [ { ERROR &#124; NULL &#124; EMPTY ARRAY &#124; EMPTY OBJECT } ON ERROR ] ) | Extract a JSON object or JSON array from *jsonValue* using the *path* JSON path expression
-
-Note:
-
-* The `ON ERROR` and `ON EMPTY` clauses define the fallback
-  behavior of the function when an error is thrown or a null value
-  is about to be returned.
-* The `ARRAY WRAPPER` clause defines how to represent a JSON array result
-  in `JSON_QUERY` function. The following examples compare the wrapper
-  behaviors.
-=======
 | JSON_EXISTS(value, path [ { TRUE &#124; FALSE &#124; UNKNOWN &#124; ERROR ) ON ERROR } ) | Test whether a JSON **value** satisfies a search criterion described using JSON path expression **path**
 | JSON_VALUE(value, path [ RETURNING type ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON EMPTY ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON ERROR ] ) | Extract an SQL scalar from a JSON **value** using JSON path expression **path**
 | JSON_QUERY(value, path [ { WITHOUT [ ARRAY ] &#124; WITH [ CONDITIONAL &#124; UNCONDITIONAL ] [ ARRAY ] } WRAPPER ] [ { ERROR &#124; NULL &#124; EMPTY ARRAY &#124; EMPTY OBJECT } ON EMPTY ] [ { ERROR &#124; NULL &#124; EMPTY ARRAY &#124; EMPTY OBJECT } ON ERROR ] ) | Extract an JSON object or an JSON array from a JSON **value** using JSON path expression **path**
@@ -2963,7 +2763,6 @@ Note:
 * The common structure `value, path` is JSON API common syntax. **value** is a character string type json input, and **path** is a JSON path expression (in character string type too), mode flag **strict** or **lax** should be specified in the beginning of **path**.  
 * **ON ERROR** clause, and **ON EMPTY** clause define the fallback behavior of the function when an error is thrown or a null value is about to be returned.   
 * **ARRAY WRAPPER** clause defines how to represent JSON array result in JSON_QUERY function. Following is a comparision to demonstrate the difference among different wrapper behaviors.
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 =======
 | JSON_EXISTS(jsonValue, path [ { TRUE &#124; FALSE &#124; UNKNOWN &#124; ERROR ) ON ERROR } ) | Whether a *jsonValue* satisfies a search criterion described using JSON path expression *path*
 | JSON_VALUE(jsonValue, path [ RETURNING type ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON EMPTY ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON ERROR ] ) | Extract an SQL scalar from a *jsonValue* using JSON path expression *path*
@@ -2982,22 +2781,9 @@ Note:
 Example Data:
 
 ```JSON
-<<<<<<< HEAD
-<<<<<<< HEAD
-{"a": "[1,2]", "b": [1,2], "c": "hi"}
-```
-
-Comparison:
-<<<<<<< HEAD
-
-|Operator                                    |$.a          |$.b          |$.c
-|:-------------------------------------------|:------------|:------------|:------------
-|JSON_VALUE                                  | [1, 2]      | error       | hi
-=======
 { "a": "[1,2]", "b": [1,2], "c": "hi"}
 =======
 {"a": "[1,2]", "b": [1,2], "c": "hi"}
->>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 ```
 
 Comparision:
@@ -3024,9 +2810,6 @@ Not implemented:
 
 | Operator syntax        | Description
 |:---------------------- |:-----------
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 | JSON_OBJECT( { [ KEY ] name VALUE value [ FORMAT JSON ] &#124; name : value [ FORMAT JSON ] } * [ { NULL &#124; ABSENT } ON NULL ] ) | Construct JSON object using a series of key (*name*) value (*value*) pairs
 | JSON_OBJECTAGG( { [ KEY ] name VALUE value [ FORMAT JSON ] &#124; name : value [ FORMAT JSON ] } [ { NULL &#124; ABSENT } ON NULL ] ) | Aggregate function to construct a JSON object using a key (*name*) value (*value*) pair
@@ -3322,7 +3105,6 @@ Result
 | JSON_ARRAY( { value [ FORMAT JSON ] } * [ { NULL &#124; ABSENT } ON NULL ] ) | Construct json array using a series of values (**value**)
 | JSON_ARRAYAGG( value [ FORMAT JSON ] [ { NULL &#124; ABSENT } ON NULL ] ) | Aggregate function to construct json array using a value (**value**)
 =======
->>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 
 Note:
 
@@ -3338,19 +3120,6 @@ Note:
 
 #### Comparison Operators
 
-<<<<<<< HEAD
-| Operator syntax                                   | Description
-|:------------------------------------------------- |:-----------
-| value IS JSON [ VALUE ]                           | Whether *value* is a json value, *value* is in character string type
-| value IS NOT JSON [ VALUE ]                       | Whether *value* is not a json value, *value* is in character string type
-| value IS JSON SCALAR                              | Whether *value* is a json scalar value, *value* is in character string type
-| value IS NOT JSON SCALAR                          | Whether *value* is not a json scalar value, *value* is in character string type
-| value IS JSON OBJECT                              | Whether *value* is a json object, *value* is in character string type
-| value IS NOT JSON OBJECT                          | Whether *value* is not a json object, *value* is in character string type
-| value IS JSON ARRAY                               | Whether *value* is a json array, *value* is in character string type
-| value IS NOT JSON ARRAY                           | Whether *value* is not a json array, *value* is in character string type
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
-=======
 | Operator syntax                   | Description
 |:--------------------------------- |:-----------
 | jsonValue IS JSON [ VALUE ]       | Whether *jsonValue* is a JSON value
@@ -3361,7 +3130,6 @@ Note:
 | jsonValue IS NOT JSON OBJECT      | Whether *jsonValue* is not a JSON object
 | jsonValue IS JSON ARRAY           | Whether *jsonValue* is a JSON array
 | jsonValue IS NOT JSON ARRAY       | Whether *jsonValue* is not a JSON array
->>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 
 #### MySQL Specific Operators
 =======
@@ -3892,28 +3660,18 @@ ddlStatement:
   |   createViewStatement
   |   createMaterializedViewStatement
   |   createTypeStatement
-<<<<<<< HEAD
-<<<<<<< HEAD
-  |   createFunctionStatement
-=======
 >>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
 =======
   |   createFunctionStatement
->>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
   |   dropSchemaStatement
   |   dropForeignSchemaStatement
   |   dropTableStatement
   |   dropViewStatement
   |   dropMaterializedViewStatement
   |   dropTypeStatement
-<<<<<<< HEAD
-<<<<<<< HEAD
-  |   dropFunctionStatement
-=======
 >>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
 =======
   |   dropFunctionStatement
->>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
 
 createSchemaStatement:
       CREATE [ OR REPLACE ] SCHEMA [ IF NOT EXISTS ] name
@@ -4004,18 +3762,11 @@ dropMaterializedViewStatement:
 
 dropTypeStatement:
       DROP TYPE [ IF EXISTS ] name
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-dropFunctionStatement:
-      DROP FUNCTION [ IF EXISTS ] name
-=======
 >>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
 =======
 
 dropFunctionStatement:
       DROP FUNCTION [ IF EXISTS ] name
->>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
 {% endhighlight %}
 
 In *createTableStatement*, if you specify *AS query*, you may omit the list of
@@ -4027,9 +3778,6 @@ generated column, `VIRTUAL` is the default.
 
 In *createFunctionStatement* and *usingFile*, *classNameLiteral*
 and *filePathLiteral* are character literals.
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> e31c8f7a5 ([CALCITE-3726] Documentation for Declaring Objects For Types Defined In Schema (ritesh-kapoor))
 
 
@@ -4069,6 +3817,5 @@ employee_typ(315, 'Francis', 'Logan', 'FLOGAN',
 ```
 <<<<<<< HEAD
 =======
->>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
 =======
 >>>>>>> e31c8f7a5 ([CALCITE-3726] Documentation for Declaring Objects For Types Defined In Schema (ritesh-kapoor))

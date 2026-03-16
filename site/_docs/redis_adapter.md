@@ -258,14 +258,9 @@ sqlline> select * from "csv_02";
 | 20     | Sales |
 | 10     | Sales |
 +--------+-------+
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
 >>>>>>> f3df0243a (Improve 1.22.0 release note and document (#121))
 =======
 
->>>>>>> 278d51c33 ([CALCITE-3510] Implement Redis adapter  (#170))
 {% endhighlight %}
 
 Future plan:

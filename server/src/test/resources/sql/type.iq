@@ -49,9 +49,6 @@ select * from t;
 
 !ok
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 6763e6766 ([CALCITE-3726] Allow declaring type objects (ritesh-kapoor))
 # Create a table with complex structure type
 # This is to test struct type inference in
@@ -144,7 +141,6 @@ drop table w2;
 <<<<<<< HEAD
 =======
 drop table t;
->>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
 =======
 >>>>>>> 6763e6766 ([CALCITE-3726] Allow declaring type objects (ritesh-kapoor))
 (0 rows modified)

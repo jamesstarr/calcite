@@ -1,8 +1,5 @@
 <?xml version="1.0" ?>
 <!--
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -41,26 +38,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 =======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 <Root>
     <TestCase name="testNestedQueryHint">
         <Resource name="sql">
-<<<<<<< HEAD
-            <![CDATA[select /*+ resource(parallelism='3') */ empno
->>>>>>> e81bf6d89 ([CALCITE-3519] Use List instead of BitSet to keep inheritPath in RelHint (Shuo Cheng))
-=======
             <![CDATA[select /*+ resource(parallelism='3'), repartition(10) */ empno
->>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
 from (select /*+ resource(mem='20Mb')*/ empno, ename from emp)]]>
         </Resource>
         <Resource name="hints">
             <![CDATA[
-<<<<<<< HEAD
-<<<<<<< HEAD
-Project:[[RESOURCE inheritPath:[] options:{PARALLELISM=3}], [REPARTITION inheritPath:[] options:[10]]]
-=======
 Project:[[RESOURCE inheritPath:[] options:{PARALLELISM=3}]]
->>>>>>> e81bf6d89 ([CALCITE-3519] Use List instead of BitSet to keep inheritPath in RelHint (Shuo Cheng))
 =======
 Project:[[RESOURCE inheritPath:[] options:{PARALLELISM=3}], [REPARTITION inheritPath:[] options:[10]]]
 >>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
@@ -85,10 +71,6 @@ TableScan:[[PROPERTIES inheritPath:[0, 1, 0] options:{K1=v1, K2=v2}], [INDEX inh
 ]]>
         </Resource>
     </TestCase>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
     <TestCase name="testQueryHintWithLiteralOptions">
         <Resource name="sql">
@@ -107,15 +89,9 @@ Project:[[TIME_ZONE inheritPath:[] options:[1, 1.23, a bc, -1.0]]]
             <![CDATA[select /*+ resource(parallelism='3'), AGG_STRATEGY(TWO_PHASE) */
 =======
 =======
->>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
     <TestCase name="testHintsInSubQueryWithDecorrelation">
         <Resource name="sql">
-<<<<<<< HEAD
-            <![CDATA[select /*+ resource(parallelism='3') */
->>>>>>> b28730274 ([CALCITE-3527] Enrich tests for SQL hints in SqlHintsConverterTest (Shuo Cheng))
-=======
             <![CDATA[select /*+ resource(parallelism='3'), AGG_STRATEGY(TWO_PHASE) */
->>>>>>> 5cce01e6e ([CALCITE-3590] Support SQL hints for Aggregate - manual port)
 sum(e1.empno) from emp e1, dept d1
 where e1.deptno = d1.deptno
 and e1.sal> (
@@ -123,19 +99,9 @@ select /*+ resource(cpu='2') */ avg(e2.sal) from emp e2 where e2.deptno = d1.dep
         </Resource>
         <Resource name="hints">
             <![CDATA[
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-Aggregate:[[RESOURCE inheritPath:[] options:{PARALLELISM=3}], [AGG_STRATEGY inheritPath:[] options:[TWO_PHASE]]]
-Project:[[RESOURCE inheritPath:[0] options:{PARALLELISM=3}]]
-Project:[[RESOURCE inheritPath:[0, 0] options:{PARALLELISM=3}]]
-Aggregate:[[RESOURCE inheritPath:[] options:{CPU=2}], [RESOURCE inheritPath:[0, 0, 0, 1] options:{PARALLELISM=3}], [AGG_STRATEGY inheritPath:[0, 0, 0, 1] options:[TWO_PHASE]]]
-Project:[[RESOURCE inheritPath:[0] options:{CPU=2}], [RESOURCE inheritPath:[0, 0, 0, 1, 0] options:{PARALLELISM=3}]]
-=======
 Project:[[RESOURCE inheritPath:[] options:{PARALLELISM=3}]]
 Project:[[RESOURCE inheritPath:[0] options:{PARALLELISM=3}]]
 Project:[[RESOURCE inheritPath:[] options:{CPU=2}], [RESOURCE inheritPath:[0, 0, 1, 0] options:{PARALLELISM=3}]]
->>>>>>> 566e203e4 ([CALCITE-3584] Propagate hints when decorrelating a query)
 =======
 Aggregate:[[RESOURCE inheritPath:[] options:{PARALLELISM=3}], [AGG_STRATEGY inheritPath:[] options:[TWO_PHASE]]]
 Project:[[RESOURCE inheritPath:[0] options:{PARALLELISM=3}]]
@@ -159,16 +125,6 @@ select /*+ properties(k1='v1', k2='v2'), index(ename), no_hash_join */
         </Resource>
         <Resource name="hints">
             <![CDATA[
-<<<<<<< HEAD
-<<<<<<< HEAD
-Aggregate:[[PROPERTIES inheritPath:[] options:{K1=v1, K2=v2}], [INDEX inheritPath:[] options:[ENAME]], [NO_HASH_JOIN inheritPath:[]]]
-LogicalJoin:[[NO_HASH_JOIN inheritPath:[0, 0, 0]]]
-LogicalJoin:[[NO_HASH_JOIN inheritPath:[0, 0, 0, 0]]]
-TableScan:[[PROPERTIES inheritPath:[0, 0, 0, 0, 0] options:{K1=v1, K2=v2}], [INDEX inheritPath:[0, 0, 0, 0, 0] options:[ENAME]]]
-TableScan:[[PROPERTIES inheritPath:[0, 0, 0, 0, 1] options:{K1=v1, K2=v2}], [INDEX inheritPath:[0, 0, 0, 0, 1] options:[ENAME]]]
-Aggregate:[[PROPERTIES inheritPath:[] options:{K1=v1, K2=v2}], [INDEX inheritPath:[] options:[ENAME]], [NO_HASH_JOIN inheritPath:[]]]
-TableScan:[[PROPERTIES inheritPath:[0, 0] options:{K1=v1, K2=v2}], [INDEX inheritPath:[0, 0] options:[ENAME]], [PROPERTIES inheritPath:[0, 0, 0, 1, 0, 0] options:{K1=v1, K2=v2}], [INDEX inheritPath:[0, 0, 0, 1, 0, 0] options:[ENAME]]]
-=======
 Project:[[PROPERTIES inheritPath:[] options:{K1=v1, K2=v2}], [INDEX inheritPath:[] options:[ENAME]], [NO_HASH_JOIN inheritPath:[]]]
 LogicalJoin:[[NO_HASH_JOIN inheritPath:[0, 0]]]
 LogicalJoin:[[NO_HASH_JOIN inheritPath:[0, 0, 0]]]
@@ -176,7 +132,6 @@ TableScan:[[PROPERTIES inheritPath:[0, 0, 0, 0] options:{K1=v1, K2=v2}], [INDEX 
 TableScan:[[PROPERTIES inheritPath:[0, 0, 0, 1] options:{K1=v1, K2=v2}], [INDEX inheritPath:[0, 0, 0, 1] options:[ENAME]]]
 Project:[[PROPERTIES inheritPath:[] options:{K1=v1, K2=v2}], [INDEX inheritPath:[] options:[ENAME]], [NO_HASH_JOIN inheritPath:[]]]
 TableScan:[[PROPERTIES inheritPath:[0] options:{K1=v1, K2=v2}], [INDEX inheritPath:[0] options:[ENAME]], [PROPERTIES inheritPath:[0, 0, 1, 0, 0] options:{K1=v1, K2=v2}], [INDEX inheritPath:[0, 0, 1, 0, 0] options:[ENAME]]]
->>>>>>> 566e203e4 ([CALCITE-3584] Propagate hints when decorrelating a query)
 =======
 Aggregate:[[PROPERTIES inheritPath:[] options:{K1=v1, K2=v2}], [INDEX inheritPath:[] options:[ENAME]], [NO_HASH_JOIN inheritPath:[]]]
 LogicalJoin:[[NO_HASH_JOIN inheritPath:[0, 0, 0]]]
@@ -202,42 +157,20 @@ select /*+ resource(cpu='2'), index(ename), no_hash_join */
         </Resource>
         <Resource name="hints">
             <![CDATA[
-<<<<<<< HEAD
-<<<<<<< HEAD
-Aggregate:[[RESOURCE inheritPath:[] options:{PARALLELISM=3}], [INDEX inheritPath:[] options:[ENAME]], [NO_HASH_JOIN inheritPath:[]]]
-Project:[[RESOURCE inheritPath:[0] options:{PARALLELISM=3}]]
-Project:[[RESOURCE inheritPath:[0, 0] options:{PARALLELISM=3}]]
-LogicalJoin:[[NO_HASH_JOIN inheritPath:[0, 0, 0]]]
-LogicalJoin:[[NO_HASH_JOIN inheritPath:[0, 0, 0, 0]]]
-TableScan:[[INDEX inheritPath:[0, 0, 0, 0, 0] options:[ENAME]]]
-TableScan:[[INDEX inheritPath:[0, 0, 0, 0, 1] options:[ENAME]]]
-Aggregate:[[RESOURCE inheritPath:[] options:{CPU=2}], [INDEX inheritPath:[] options:[ENAME]], [NO_HASH_JOIN inheritPath:[]], [RESOURCE inheritPath:[0, 0, 0, 1] options:{PARALLELISM=3}]]
-Project:[[RESOURCE inheritPath:[0] options:{CPU=2}], [RESOURCE inheritPath:[0, 0, 0, 1, 0] options:{PARALLELISM=3}]]
-TableScan:[[INDEX inheritPath:[0, 0] options:[ENAME]], [INDEX inheritPath:[0, 0, 0, 1, 0, 0] options:[ENAME]]]
-=======
 >>>>>>> b28730274 ([CALCITE-3527] Enrich tests for SQL hints in SqlHintsConverterTest (Shuo Cheng))
 =======
 Project:[[RESOURCE inheritPath:[] options:{PARALLELISM=3}], [INDEX inheritPath:[] options:[ENAME]], [NO_HASH_JOIN inheritPath:[]]]
 =======
 Aggregate:[[RESOURCE inheritPath:[] options:{PARALLELISM=3}], [INDEX inheritPath:[] options:[ENAME]], [NO_HASH_JOIN inheritPath:[]]]
->>>>>>> 5cce01e6e ([CALCITE-3590] Support SQL hints for Aggregate - manual port)
 Project:[[RESOURCE inheritPath:[0] options:{PARALLELISM=3}]]
 Project:[[RESOURCE inheritPath:[0, 0] options:{PARALLELISM=3}]]
 LogicalJoin:[[NO_HASH_JOIN inheritPath:[0, 0, 0]]]
-<<<<<<< HEAD
-TableScan:[[INDEX inheritPath:[0, 0, 0, 0] options:[ENAME]]]
-TableScan:[[INDEX inheritPath:[0, 0, 0, 1] options:[ENAME]]]
-Project:[[RESOURCE inheritPath:[] options:{CPU=2}], [INDEX inheritPath:[] options:[ENAME]], [NO_HASH_JOIN inheritPath:[]], [RESOURCE inheritPath:[0, 0, 1, 0] options:{PARALLELISM=3}]]
-TableScan:[[INDEX inheritPath:[0] options:[ENAME]], [INDEX inheritPath:[0, 0, 1, 0, 0] options:[ENAME]]]
->>>>>>> 566e203e4 ([CALCITE-3584] Propagate hints when decorrelating a query)
-=======
 LogicalJoin:[[NO_HASH_JOIN inheritPath:[0, 0, 0, 0]]]
 TableScan:[[INDEX inheritPath:[0, 0, 0, 0, 0] options:[ENAME]]]
 TableScan:[[INDEX inheritPath:[0, 0, 0, 0, 1] options:[ENAME]]]
 Aggregate:[[RESOURCE inheritPath:[] options:{CPU=2}], [INDEX inheritPath:[] options:[ENAME]], [NO_HASH_JOIN inheritPath:[]], [RESOURCE inheritPath:[0, 0, 0, 1] options:{PARALLELISM=3}]]
 Project:[[RESOURCE inheritPath:[0] options:{CPU=2}], [RESOURCE inheritPath:[0, 0, 0, 1, 0] options:{PARALLELISM=3}]]
 TableScan:[[INDEX inheritPath:[0, 0] options:[ENAME]], [INDEX inheritPath:[0, 0, 0, 1, 0, 0] options:[ENAME]]]
->>>>>>> 5cce01e6e ([CALCITE-3590] Support SQL hints for Aggregate - manual port)
 ]]>
         </Resource>
     </TestCase>
@@ -251,9 +184,6 @@ select /*+ resource(cpu='2') */ avg(e2.sal) from emp e2 where e2.deptno = d1.dep
         </Resource>
         <Resource name="hints">
             <![CDATA[
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 5cce01e6e ([CALCITE-3590] Support SQL hints for Aggregate - manual port)
 Aggregate:[[RESOURCE inheritPath:[] options:{PARALLELISM=3}]]
 Project:[[RESOURCE inheritPath:[0] options:{PARALLELISM=3}]]
@@ -264,7 +194,6 @@ Project:[[RESOURCE inheritPath:[0] options:{CPU=2}], [RESOURCE inheritPath:[0, 0
         </Resource>
     </TestCase>
 =======
->>>>>>> e81bf6d89 ([CALCITE-3519] Use List instead of BitSet to keep inheritPath in RelHint (Shuo Cheng))
 =======
 Project:[[RESOURCE inheritPath:[] options:{PARALLELISM=3}]]
 Project:[[RESOURCE inheritPath:[] options:{CPU=2}], [RESOURCE inheritPath:[0, 0, 1, 0] options:{PARALLELISM=3}]]
@@ -287,9 +216,6 @@ LogicalJoin:[[NO_HASH_JOIN inheritPath:[0]]]
 ]]>
         </Resource>
     </TestCase>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> b28730274 ([CALCITE-3527] Enrich tests for SQL hints in SqlHintsConverterTest (Shuo Cheng))
     <TestCase name="testThreeLevelNestedQueryHint">
         <Resource name="sql">
@@ -327,7 +253,6 @@ TableScan:[[INDEX inheritPath:[] options:[EMPNO]], [INDEX inheritPath:[0, 1, 0, 
     </TestCase>
 <<<<<<< HEAD
 =======
->>>>>>> e81bf6d89 ([CALCITE-3519] Use List instead of BitSet to keep inheritPath in RelHint (Shuo Cheng))
 =======
 >>>>>>> b28730274 ([CALCITE-3527] Enrich tests for SQL hints in SqlHintsConverterTest (Shuo Cheng))
     <TestCase name="testTableHintsInJoin">
@@ -345,9 +270,6 @@ TableScan:[[PROPERTIES inheritPath:[] options:{K1=v1, K2=v2}]]
 ]]>
         </Resource>
     </TestCase>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> b28730274 ([CALCITE-3527] Enrich tests for SQL hints in SqlHintsConverterTest (Shuo Cheng))
     <TestCase name="testSameHintsWithDifferentInheritPath">
         <Resource name="sql">
@@ -367,7 +289,6 @@ TableScan:[[PROPERTIES inheritPath:[] options:{K1=v1, K2=v2}], [PROPERTIES inher
     </TestCase>
 <<<<<<< HEAD
 =======
->>>>>>> e81bf6d89 ([CALCITE-3519] Use List instead of BitSet to keep inheritPath in RelHint (Shuo Cheng))
 =======
 >>>>>>> b28730274 ([CALCITE-3527] Enrich tests for SQL hints in SqlHintsConverterTest (Shuo Cheng))
     <TestCase name="testTableHintsInSelect">
@@ -393,9 +314,6 @@ LogicalJoin:[[USE_HASH_JOIN inheritPath:[0] options:[EMP, DEPT]]]
 ]]>
         </Resource>
     </TestCase>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 1bcbe1031 ([CALCITE-3781] HintStrategy can specify excluded rules for planner (#156))
     <TestCase name="testUseMergeJoin">
         <Resource name="sql">
@@ -414,7 +332,6 @@ EnumerableProject(ENAME=[$1], JOB=[$2], SAL=[$5], NAME=[$10])
     </TestCase>
 <<<<<<< HEAD
 =======
->>>>>>> e81bf6d89 ([CALCITE-3519] Use List instead of BitSet to keep inheritPath in RelHint (Shuo Cheng))
 =======
 >>>>>>> 1bcbe1031 ([CALCITE-3781] HintStrategy can specify excluded rules for planner (#156))
 </Root>

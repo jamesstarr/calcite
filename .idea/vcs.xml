@@ -7,9 +7,6 @@
           <option name="issueRegexp" value="[A-Z]+\-\d+" />
           <option name="linkRegexp" value="https://issues.apache.org/jira/browse/$0" />
         </IssueNavigationLink>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> e71559b1d (Add github pull request link in git commit messages in IDEA (#315))
         <IssueNavigationLink>
           <option name="issueRegexp" value="(apache/calcite)?#(\d+)" />
@@ -17,7 +14,6 @@
         </IssueNavigationLink>
 <<<<<<< HEAD
 =======
->>>>>>> e946e1b74 (Add JIRA links in Git in IDEA (#309))
 =======
 >>>>>>> e71559b1d (Add github pull request link in git commit messages in IDEA (#315))
       </list>

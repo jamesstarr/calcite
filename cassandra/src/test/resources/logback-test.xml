@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -36,7 +33,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
->>>>>>> 6c2e00988 ([CALCITE-2419] Use embedded Cassandra for tests)
 =======
 >>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 
@@ -53,10 +49,6 @@ limitations under the License.
     <appender-ref ref="STDOUT" />
   </root>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 67eca546b ([CALCITE-2442] Remove .toDelete cassandra temp folder on Windows afte… (#198))
   <!-- Avoid showing connection errors on cassandra shutdown -->
   <logger name="com.datastax.driver.core.ControlConnection" level="off" additivity="false"/>
@@ -64,7 +56,6 @@ limitations under the License.
 </configuration>
 =======
 </configuration>
->>>>>>> 6c2e00988 ([CALCITE-2419] Use embedded Cassandra for tests)
 =======
 </configuration>
 >>>>>>> d689de383 ([CALCITE-2480] NameSet.contains wrongly returns false when element in set is upper-case and seek is lower-case)

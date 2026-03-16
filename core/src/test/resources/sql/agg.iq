@@ -2278,12 +2278,7 @@ from (values (1,2),(3,4));
 (1 row)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-EnumerableCalc(expr#0=[{inputs}], expr#1=[0:BIGINT], expr#2=[=($t0, $t1)], expr#3=[null:BIGINT], expr#4=[CASE($t2, $t3, $t0)], EXPR$0=[$t4])
-=======
 EnumerableCalc(expr#0=[{inputs}], expr#1=[0:BIGINT], expr#2=[=($t0, $t1)], expr#3=[null:BIGINT], expr#4=[CAST($t0):BIGINT], expr#5=[CASE($t2, $t3, $t4)], EXPR$0=[$t5])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
 =======
 EnumerableCalc(expr#0=[{inputs}], expr#1=[0:BIGINT], expr#2=[=($t0, $t1)], expr#3=[null:BIGINT], expr#4=[CASE($t2, $t3, $t0)], EXPR$0=[$t4])
 >>>>>>> ad1feec10 ([CALCITE-2695] Simplify casts which are only widening nullability (Zoltan Haindrich))
@@ -2414,9 +2409,6 @@ EnumerableAggregate(group=[{7}], EMPNOS=[COLLECT($0) WITHIN GROUP ([0 DESC])])
   EnumerableTableScan(table=[[scott, EMP]])
 !plan
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 4a20ea9ee ([CALCITE-2785] In EnumerableAggregate, wrong result produced if there are sorted aggregates and non-sorted aggregates at the same time)
 select
 deptno,
@@ -2441,7 +2433,6 @@ EnumerableAggregate(group=[{7}], EMPNOS_1=[COLLECT($0)], EMPNOS_2=[COLLECT($0) W
 
 <<<<<<< HEAD
 =======
->>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
 =======
 >>>>>>> 4a20ea9ee ([CALCITE-2785] In EnumerableAggregate, wrong result produced if there are sorted aggregates and non-sorted aggregates at the same time)
 select deptno, collect(empno) within group (order by empno desc)
@@ -2504,12 +2495,7 @@ group by dept.deptno;
 !ok
 EnumerableAggregate(group=[{0}], S=[COLLECT($1) WITHIN GROUP ([1 DESC])], S1=[COLLECT($1) WITHIN GROUP ([2])], S2=[COLLECT($1) WITHIN GROUP ([1]) FILTER $3])
   EnumerableCalc(expr#0..3=[{inputs}], expr#4=[1], expr#5=[2000], expr#6=[>($t2, $t5)], expr#7=[IS TRUE($t6)], DEPTNO=[$t0], SAL=[$t2], $f2=[$t4], $f3=[$t7])
-<<<<<<< HEAD
-<<<<<<< HEAD
-    EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])
-=======
     EnumerableJoin(condition=[=($0, $3)], joinType=[inner])
->>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
 =======
     EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])
 >>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
@@ -2538,9 +2524,6 @@ EnumerableAggregate(group=[{0}], EMPNOS=[COLLECT($1) WITHIN GROUP ([2])])
     EnumerableTableScan(table=[[scott, EMP]])
 !plan
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 40961f7ad ([CALCITE-2366] Add support for ANY_VALUE aggregate function (Gautam Parai))
 # [CALCITE-2366] Add support for ANY_VALUE function
 # Without GROUP BY clause
@@ -2592,7 +2575,6 @@ EnumerableCalc(expr#0..1=[{inputs}], ANYEMPNO=[$t1])
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
->>>>>>> 3d63e022b ([CALCITE-3591] Add bit_xor aggregate operator (wangxlong))
 
 # BIT_AND, BIT_OR, BIT_XOR aggregate functions
 select bit_and(deptno), bit_or(deptno), bit_xor(deptno) from "scott".emp;
@@ -2602,17 +2584,6 @@ select bit_and(deptno), bit_or(deptno), bit_xor(deptno) from "scott".emp;
 +--------+--------+--------+
 |      0 |     30 |     30 |
 +--------+--------+--------+
-<<<<<<< HEAD
-=======
-# BIT_AND, BIT_OR aggregate functions
-select bit_and(deptno), bit_or(deptno) from "scott".emp;
-+--------+--------+
-| EXPR$0 | EXPR$1 |
-+--------+--------+
-|      0 |     30 |
-+--------+--------+
->>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
-=======
 >>>>>>> 3d63e022b ([CALCITE-3591] Add bit_xor aggregate operator (wangxlong))
 (1 row)
 
@@ -2621,7 +2592,6 @@ select bit_and(deptno), bit_or(deptno) from "scott".emp;
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
->>>>>>> 3d63e022b ([CALCITE-3591] Add bit_xor aggregate operator (wangxlong))
 select deptno, bit_and(empno), bit_or(empno), bit_xor(empno) from "scott".emp group by deptno;
 
 +--------+--------+--------+--------+
@@ -2631,18 +2601,6 @@ select deptno, bit_and(empno), bit_or(empno), bit_xor(empno) from "scott".emp gr
 |     20 |   7168 |   8191 |   7985 |
 |     30 |   7168 |   8191 |    934 |
 +--------+--------+--------+--------+
-<<<<<<< HEAD
-=======
-select deptno, bit_and(empno), bit_or(empno) from "scott".emp group by deptno;
-+--------+--------+--------+
-| DEPTNO | EXPR$1 | EXPR$2 |
-+--------+--------+--------+
-|     10 |   7686 |   7935 |
-|     20 |   7168 |   8191 |
-|     30 |   7168 |   8191 |
-+--------+--------+--------+
->>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
-=======
 >>>>>>> 3d63e022b ([CALCITE-3591] Add bit_xor aggregate operator (wangxlong))
 (3 rows)
 
@@ -2651,7 +2609,6 @@ select deptno, bit_and(empno), bit_or(empno) from "scott".emp group by deptno;
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
->>>>>>> 0218f4ee7 ([CALCITE-3144] Add rule, AggregateCaseToFilterRule, that converts "SUM(CASE WHEN b THEN x END)" to "SUM(x) FILTER (WHERE b)")
 # Based on [DRUID-7593] Exact distinct-COUNT with complex expression (CASE, IN) throws
 # NullPointerException
 WITH wikipedia AS (
@@ -2689,10 +2646,6 @@ LIMIT 500;
 =======
 >>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
 # [CALCITE-2266] JSON_OBJECTAGG, JSON_ARRAYAGG
-<<<<<<< HEAD
-
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
-=======
 >>>>>>> 48dfb0754 ([CALCITE-2787] JSON aggregate calls with different null clause get incorrectly merged during converting from SQL to relational algebra)
 !use post
 
@@ -2736,7 +2689,6 @@ select json_object('deptno': deptno, 'employees': json_arrayagg(json_object('ena
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
->>>>>>> 9120ec0fa ([CALCITE-2786] Add order by clause support for JSON_ARRAYAGG)
 # [CALCITE-2786] Add order by clause support for JSON_ARRAYAGG
 select gender,
 json_arrayagg(deptno order by deptno),
@@ -2751,10 +2703,6 @@ from emp group by gender;
 (2 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
 EnumerableAggregate(group=[{1}], EXPR$1=[JSON_ARRAYAGG_ABSENT_ON_NULL($0) WITHIN GROUP ([0])], EXPR$2=[JSON_ARRAYAGG_ABSENT_ON_NULL($0) WITHIN GROUP ([0 DESC])])
   EnumerableUnion(all=[true])
@@ -2852,7 +2800,6 @@ EnumerableAggregate(group=[{2}], EXPR$1=[JSON_OBJECTAGG_NULL_ON_NULL($0, $1)], E
 !plan
 
 =======
->>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
 =======
 >>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 =======
@@ -2884,9 +2831,6 @@ EnumerableAggregate(group=[{0}], EXPR$1=[JSON_ARRAYAGG_ABSENT_ON_NULL($1) WITHIN
 >>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
 !plan
 
-<<<<<<< HEAD
->>>>>>> 9120ec0fa ([CALCITE-2786] Add order by clause support for JSON_ARRAYAGG)
-=======
 # [CALCITE-2787] Json aggregate calls with different null clause get incorrectly merged
 # during converting from SQL to relational algebra
 select gender,
@@ -2959,7 +2903,6 @@ EnumerableAggregate(group=[{2}], EXPR$1=[JSON_OBJECTAGG_NULL_ON_NULL($0, $1)], E
       EnumerableValues(tuples=[[{ 0 }]])
 !plan
 
->>>>>>> 48dfb0754 ([CALCITE-2787] JSON aggregate calls with different null clause get incorrectly merged during converting from SQL to relational algebra)
 # End agg.iq
 =======
 # End agg.iq

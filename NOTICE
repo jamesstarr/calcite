@@ -1,10 +1,5 @@
 Apache Calcite
-<<<<<<< HEAD
-<<<<<<< HEAD
-Copyright 2012-2020 The Apache Software Foundation
-=======
 Copyright 2012-2019 The Apache Software Foundation
->>>>>>> 6669d2f18 (Update year in NOTICE)
 =======
 Copyright 2012-2020 The Apache Software Foundation
 >>>>>>> 55e2e46c7 ([CALCITE-3808] Release Calcite 1.22.0 (#120))

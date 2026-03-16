@@ -15,11 +15,7 @@
  * limitations under the License.
  *
  */
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 >>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 plugins {
@@ -29,9 +25,6 @@ plugins {
     calcite.javacc
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 // Disable ALL Babel tasks after they are created
 afterEvaluate {
@@ -43,7 +36,6 @@ afterEvaluate {
 
 <<<<<<< HEAD
 =======
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 dependencies {

@@ -47,13 +47,8 @@ A basic example of a model file is given below:
       "name": "elasticsearch",
       "factory": "org.apache.calcite.adapter.elasticsearch.ElasticsearchSchemaFactory",
       "operand": {
-<<<<<<< HEAD
-<<<<<<< HEAD
-        "coordinates": "{'127.0.0.1': 9200}"
-=======
         "coordinates": "{'127.0.0.1': 9300}",
         "index": "usa"
->>>>>>> 9fbe97bb2 (Site: Improve documentation for ElasticSearch Adapter)
 =======
         "coordinates": "{'127.0.0.1': 9200}"
 >>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
@@ -63,12 +58,8 @@ A basic example of a model file is given below:
 }
 {% endhighlight %}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 This adapter is targeted for Elasticsearch versions 2 or older. 
 
->>>>>>> 9fbe97bb2 (Site: Improve documentation for ElasticSearch Adapter)
 =======
 >>>>>>> ec2d09650 (Site: ElasticAdapter mention supported versions (and support schedule))
 Assuming this file is stored as `model.json`, you can connect to
@@ -80,12 +71,7 @@ $ ./sqlline
 sqlline> !connect jdbc:calcite:model=model.json admin admin
 {% endhighlight %}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-You can also specify the index name and path prefix that is represented by the `index` and `pathPrefix` parameter in the model definition:
-=======
 You can also specify the index name that is represented by the `index` parameter in the model definition:
->>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
 =======
 You can also specify the index name and path prefix that is represented by the `index` and `pathPrefix` parameter in the model definition:
 >>>>>>> ebcc1d137 ([CALCITE-3434] ElasticSearch schema with pathPrefix (Jeffery Zhang))
@@ -95,13 +81,7 @@ You can also specify the index name and path prefix that is represented by the `
 
       "operand": {
         "coordinates": "{'127.0.0.1': 9200}",
-<<<<<<< HEAD
-<<<<<<< HEAD
-        "index": "usa",
-        "pathPrefix": "path"
-=======
         "index": "usa"
->>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
 =======
         "index": "usa",
         "pathPrefix": "path"
@@ -111,27 +91,16 @@ You can also specify the index name and path prefix that is represented by the `
 ...
 {% endhighlight %}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
 >>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
 =======
 
->>>>>>> ebcc1d137 ([CALCITE-3434] ElasticSearch schema with pathPrefix (Jeffery Zhang))
 `sqlline` will now accept SQL queries which access your Elasticsearch.
 The purpose of this adapter is to compile the query into the most efficient
 Elasticsearch SEARCH JSON possible by exploiting filtering and sorting directly
 in Elasticsearch where possible.
 
 We can issue a simple query to fetch the names of all the states
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-stored in the index `usa`.
-=======
 stored in the type `zips`. 
->>>>>>> 8ada3c16f (Site: Elastic query example on _MAP)
 =======
 stored in the type `zips`.
 >>>>>>> b06e7746c (Cosmetic changes)
@@ -192,28 +161,6 @@ The final source json given to Elasticsearch is below:
 }
 {% endhighlight %}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-You can also query elastic search index without prior view definition:
-
-{% highlight sql %}
-sqlline> SELECT _MAP['city'], _MAP['state'] from "elasticsearch"."usa" order by _MAP['state'];
-{% endhighlight %}
-
-### Use of Scrolling API
-
-For queries without aggregate functions (like `COUNT`, `MAX` etc.) elastic adapter
-uses [scroll API](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html), by default.
-This ensures that consistent and full data-set is returned to end user (lazily and in batches). Please note that
-scroll is automatically cleared (removed) when all query resuts are consumed.
-
-### Supported versions
-
-Currently this adapter supports ElasticSearch versions 6.x (or newer). Generally
-<<<<<<< HEAD
-we try to follow official [support schedule](https://www.elastic.co/support/eol).
-Also, types are not supported (this adapter only supports indices).
-=======
 =======
 You can also query elastic search index without prior view definition:
 
@@ -221,7 +168,6 @@ You can also query elastic search index without prior view definition:
 sqlline> SELECT _MAP['city'], _MAP['state'] from "elasticsearch"."zips" order by _MAP['state'];
 {% endhighlight %}
 
->>>>>>> 8ada3c16f (Site: Elastic query example on _MAP)
 ### Use of Scrolling API
 
 For queries without aggregate functions (like `COUNT`, `MAX` etc.) elastic adapter
@@ -229,14 +175,10 @@ uses [scroll API](https://www.elastic.co/guide/en/elasticsearch/reference/curren
 This ensures that consistent and full data-set is returned to end user (lazily and in batches). Please note that
 scroll is automatically cleared (removed) when all query resuts are consumed.
 
-<<<<<<< HEAD
->>>>>>> 9fbe97bb2 (Site: Improve documentation for ElasticSearch Adapter)
-=======
 ### Supported versions
 
 Currently this adapter supports ElasticSearch versions 2.x (or newer). Generally
 =======
->>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
 we try to follow official [support schedule](https://www.elastic.co/support/eol).
 Also, types are not supported (this adapter only supports indices).
 <<<<<<< HEAD

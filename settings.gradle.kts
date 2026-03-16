@@ -2,20 +2,11 @@
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
-<<<<<<< HEAD
-<<<<<<< HEAD
- * The ASF licenses this file to you under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
-=======
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
  * The ASF licenses this file to you under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
@@ -29,14 +20,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-<<<<<<< HEAD
-<<<<<<< HEAD
- */
-=======
  *
  */
 
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
  */
 >>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
@@ -45,12 +31,7 @@ pluginManagement {
         fun String.v() = extra["$this.version"].toString()
         fun PluginDependenciesSpec.idv(id: String, key: String = id) = id(id) version key.v()
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-        idv("com.github.autostyle")
-=======
         idv("com.diffplug.gradle.spotless")
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
         idv("com.github.autostyle")
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
@@ -63,14 +44,9 @@ pluginManagement {
         idv("com.github.vlsi.stage-vote-release", "com.github.vlsi.vlsi-release-plugins")
         idv("com.google.protobuf")
         idv("de.thetaphi.forbiddenapis")
-<<<<<<< HEAD
-<<<<<<< HEAD
-        idv("me.champeau.gradle.jmh")
-=======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
         idv("me.champeau.gradle.jmh")
->>>>>>> 02ef5191a ([CALCITE-2905] Use me.champeau.gradle.jmh for JMH)
         idv("org.jetbrains.gradle.plugin.idea-ext")
         idv("org.nosphere.apache.rat")
         idv("org.owasp.dependencycheck")
@@ -100,14 +76,9 @@ include(
     "pig",
     "piglet",
     "plus",
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "redis",
-=======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
     "redis",
->>>>>>> 278d51c33 ([CALCITE-3510] Implement Redis adapter  (#170))
     "server",
     "spark",
     "splunk",
@@ -137,9 +108,6 @@ property("localAvatica")?.ifBlank { "../calcite-avatica" }?.let {
     println("Importing project '$it'")
     includeBuild(it)
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 
 // This enables to try local Autostyle
@@ -149,6 +117,5 @@ property("localAutostyle")?.ifBlank { "../autostyle" }?.let {
 }
 <<<<<<< HEAD
 =======
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)

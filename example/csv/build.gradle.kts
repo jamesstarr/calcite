@@ -2,20 +2,11 @@
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
-<<<<<<< HEAD
-<<<<<<< HEAD
- * The ASF licenses this file to you under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
-=======
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
  * The ASF licenses this file to you under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
@@ -29,14 +20,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-<<<<<<< HEAD
-<<<<<<< HEAD
- */
-=======
  *
  */
 
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
  */
 >>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
@@ -48,14 +34,9 @@ val sqllineClasspath by configurations.creating {
 dependencies {
     api(project(":core"))
     api(project(":linq4j"))
-<<<<<<< HEAD
-<<<<<<< HEAD
-    api("org.checkerframework:checker-qual")
-=======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
     api("org.checkerframework:checker-qual")
->>>>>>> af96e9835 ([CALCITE-4829] Bump Gradle to 7.2 and test with Java 17 at GitHub Actions)
 
     implementation("com.fasterxml.jackson.core:jackson-core")
     implementation("com.fasterxml.jackson.core:jackson-databind")
@@ -68,13 +49,7 @@ dependencies {
     testImplementation("sqlline:sqlline")
     testImplementation(project(":core", "testClasses"))
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    sqllineClasspath(project)
-    sqllineClasspath(files(sourceSets.test.map { it.output }))
-=======
     sqllineClasspath(project(":example:csv", "testClasses"))
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
     sqllineClasspath(project)
     sqllineClasspath(files(sourceSets.test.map { it.output }))
@@ -85,9 +60,6 @@ val buildSqllineClasspath by tasks.registering(Jar::class) {
     inputs.files(sqllineClasspath).withNormalizer(ClasspathNormalizer::class.java)
     archiveFileName.set("sqllineClasspath.jar")
     manifest {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> af96e9835 ([CALCITE-4829] Bump Gradle to 7.2 and test with Java 17 at GitHub Actions)
         attributes(
             "Main-Class" to "sqlline.SqlLine",
@@ -106,7 +78,6 @@ val buildSqllineClasspath by tasks.registering(Jar::class) {
                 "Class-Path" to sqllineClasspath.map { it.absolutePath }.joinToString(" ")
             )
         }
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 >>>>>>> af96e9835 ([CALCITE-4829] Bump Gradle to 7.2 and test with Java 17 at GitHub Actions)
     }

@@ -24,9 +24,6 @@ data: {
     package: "org.apache.calcite.sql.parser.ddl",
     class: "SqlDdlParserImpl",
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
     # List of import statements.
     imports: [
@@ -48,7 +45,6 @@ data: {
         "java.util.Map"
         "java.util.HashMap"
       ]
->>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
 =======
 >>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
 
@@ -64,14 +60,8 @@ data: {
       "ARCHIVE"
     ]
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     # List of non-reserved keywords to add;
     # items in this list become non-reserved
     nonReservedKeywordsToAdd: [
@@ -84,16 +74,9 @@ data: {
       "FILE"
       "ARCHIVE"
     ]
-<<<<<<< HEAD
-<<<<<<< HEAD
 =======
-=======
->>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
       # List of keywords from "keywords" section that are not reserved.
       nonReservedKeywords: [
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> fc317a98f (Revert "Revert "[CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved"")
         "A"
         "ABSOLUTE"
@@ -389,14 +372,7 @@ data: {
         "STORED"
         "VIRTUAL"
       ]
->>>>>>> 38576ceb2 ([CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved)
 
-<<<<<<< HEAD
-    # List of non-reserved keywords to remove;
-    # items in this list become reserved
-    nonReservedKeywordsToRemove: [
-    ]
-=======
       # List of additional join types. Each is a method with no arguments.
       # Example: LeftSemiJoin()
       joinTypes: [
@@ -405,7 +381,6 @@ data: {
       # List of methods for parsing custom SQL statements.
       statementParserMethods: [
       ]
->>>>>>> ed34cf8f8 ([CALCITE-2304] In Babel parser, allow Hive-style syntax "LEFT SEMI JOIN")
 
     # Return type of method implementation should be "SqlNode".
     # Return type of method implementation should be "SqlTypeNameSpec".
@@ -466,9 +441,6 @@ data: {
         "VIRTUAL"
       ]
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 97f1be88e (Revert "Revert "[CALCITE-2304] In Babel parser, allow Hive-style syntax "LEFT SEMI JOIN""")
       # List of additional join types. Each is a method with no arguments.
       # Example: LeftSemiJoin()
@@ -477,7 +449,6 @@ data: {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
->>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
 
     # List of non-reserved keywords to remove;
@@ -519,10 +490,6 @@ data: {
       "SqlDropFunction"
     ]
 
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
-=======
       # Binary operators tokens
       binaryOperatorsTokens: [
       ]
@@ -530,7 +497,6 @@ data: {
     # Binary operators tokens
     binaryOperatorsTokens: [
     ]
->>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
 
     # Binary operators initialization
     extraBinaryExpressions: [
@@ -545,16 +511,9 @@ data: {
     implementationFiles: [
       "parserImpls.ftl"
     ]
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    includePosixOperators: false
-=======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
       includePosixOperators: false
->>>>>>> 2e167f8ed ([CALCITE-3063] Parse and process PostgreSQL posix regular expressions)
 =======
     includePosixOperators: false
 >>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)

@@ -44,10 +44,6 @@ FROM   (SELECT deptno, job, sal
 PIVOT  (SUM(sal) AS sum_sal, COUNT(*) AS sal
         FOR (job) IN ('CL' || 'ERK', 'MANAGER' mgr, 'ANALYST' AS "MGR_SUM",null))
 ORDER BY deptno;
-<<<<<<< HEAD
-<<<<<<< HEAD
-At line 1, column 8: Column 'MGR_SUM_SAL' is ambiguous
-=======
 +--------+-----------------------+-------------------+-------------+---------+-----------------+--------------+--------------+----------+
 | DEPTNO | 'CL' || 'ERK'_SUM_SAL | 'CL' || 'ERK'_SAL | MGR_SUM_SAL | MGR_SAL | MGR_SUM_SUM_SAL | MGR_SUM_SAL0 | NULL_SUM_SAL | NULL_SAL |
 +--------+-----------------------+-------------------+-------------+---------+-----------------+--------------+--------------+----------+
@@ -58,7 +54,6 @@ At line 1, column 8: Column 'MGR_SUM_SAL' is ambiguous
 (3 rows)
 
 Expected error, but SQL command did not give one
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 =======
 At line 1, column 8: Column 'MGR_SUM_SAL' is ambiguous
 >>>>>>> ba05fdac3 ([CALCITE-2977] Exception is not thrown when there are ambiguous field in select list)
@@ -284,10 +279,6 @@ PIVOT (SUM(sal) FOR (deptno) IN (10, 10 as ten, 20));
 SELECT *
 FROM (SELECT sal, deptno FROM emp)
 PIVOT (SUM(sal) AS b_c, COUNT(*) AS c FOR deptno IN (10 as a, 20 as a_b));
-<<<<<<< HEAD
-<<<<<<< HEAD
-At line 1, column 8: Column 'A_B_C' is ambiguous
-=======
 +---------+-----+----------+---------+
 | A_B_C   | A_C | A_B_B_C  | A_B_C0  |
 +---------+-----+----------+---------+
@@ -296,7 +287,6 @@ At line 1, column 8: Column 'A_B_C' is ambiguous
 (1 row)
 
 Expected error, but SQL command did not give one
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 =======
 At line 1, column 8: Column 'A_B_C' is ambiguous
 >>>>>>> ba05fdac3 ([CALCITE-2977] Exception is not thrown when there are ambiguous field in select list)
@@ -333,10 +323,6 @@ PIVOT (SUM(sal), SUM(empno) AS sum_empno FOR deptno IN (10, 20));
 SELECT *
 FROM (SELECT sal, empno, deptno FROM emp)
 PIVOT (SUM(sal), COUNT(*), SUM(empno) AS sum_empno FOR deptno IN (10, 20));
-<<<<<<< HEAD
-<<<<<<< HEAD
-At line 1, column 8: Column '10' is ambiguous
-=======
 +---------+---------+--------------+----------+----------+--------------+
 | 10      | 100     | 10_SUM_EMPNO | 20       | 200      | 20_SUM_EMPNO |
 +---------+---------+--------------+----------+----------+--------------+
@@ -345,7 +331,6 @@ At line 1, column 8: Column '10' is ambiguous
 (1 row)
 
 Expected error, but SQL command did not give one
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 =======
 At line 1, column 8: Column '10' is ambiguous
 >>>>>>> ba05fdac3 ([CALCITE-2977] Exception is not thrown when there are ambiguous field in select list)
@@ -383,9 +368,6 @@ PIVOT (sum(sal + deptno + 1)
 
 !ok
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 # Sample PIVOT query
 SELECT *
@@ -724,7 +706,6 @@ UNPIVOT ((m0, m1, m2)
 
 <<<<<<< HEAD
 =======
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 =======
 >>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 # End pivot.iq

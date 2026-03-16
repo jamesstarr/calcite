@@ -26,11 +26,6 @@ limitations under the License.
 
 # Upcoming talks
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-There are no upcoming talks at the moment. Stay tuned!
-=======
 * September 8th-12th, 2019
   [ApacheCon North America 2019](https://www.apachecon.com/acna19/)
   (Las Vegas, Nevada)
@@ -44,7 +39,6 @@ There are no upcoming talks at the moment. Stay tuned!
     Management of Streams and Tables (Kenneth Knowles, Julian Hyde)
   * Unifying Batch and Stream Data Processing with Apache Calcite and
     Apache Beam (Khai Tran)
->>>>>>> 0074fe110 (Site: Add upcoming talks at ApacheCon NA 2019)
 =======
 ## Fast federated SQL with Apache Calcite (Chris Baynes)
 
@@ -60,12 +54,7 @@ There are no upcoming talks at the moment. Stay tuned!
 
 Name (Apache ID) | Github | Org | Role
 :--------------- | :----- | :-- | :---
-<<<<<<< HEAD
-<<<<<<< HEAD
-{% for c in site.data.contributors %}{% unless c.emeritus %}{% if c.homepage %}<a href="{{ c.homepage }}">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %} (<a href="https://people.apache.org/phonebook.html?uid={{ c.apacheId }}">{{ c.apacheId }}</a>) | <a href="https://github.com/{{ c.githubId }}"><img width="64" src="{% unless c.avatar %}https://github.com/{{ c.githubId }}.png{% else %}{{ c.avatar }}{% endunless %}"></a> | {{ c.org }} | {{ c.role }}
-=======
 {% for c in site.data.contributors %}{% unless c.emeritus %}{% if c.homepage %}<a href="{{ c.homepage }}">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %} (<a href="http://people.apache.org/phonebook.html?uid={{ c.apacheId }}">{{ c.apacheId }}</a>) | <a href="https://github.com/{{ c.githubId }}"><img width="64" src="{% unless c.avatar %}https://github.com/{{ c.githubId }}.png{% else %}{{ c.avatar }}{% endunless %}"></a> | {{ c.org }} | {{ c.role }}
->>>>>>> 461f9701a (Site: Change GitHub avatar links to https)
 =======
 {% for c in site.data.contributors %}{% unless c.emeritus %}{% if c.homepage %}<a href="{{ c.homepage }}">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %} (<a href="https://people.apache.org/phonebook.html?uid={{ c.apacheId }}">{{ c.apacheId }}</a>) | <a href="https://github.com/{{ c.githubId }}"><img width="64" src="{% unless c.avatar %}https://github.com/{{ c.githubId }}.png{% else %}{{ c.avatar }}{% endunless %}"></a> | {{ c.org }} | {{ c.role }}
 >>>>>>> 75c34cb7b ([CALCITE-3391] Insecure pages warning on Chrome)
@@ -75,12 +64,7 @@ Emeritus members
 
 Name (Apache ID) | Github | Org | Role
 :--------------- | :----- | :-- | :---
-<<<<<<< HEAD
-<<<<<<< HEAD
-{% for c in site.data.contributors %}{% if c.emeritus %}{% if c.homepage %}<a href="{{ c.homepage }}">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %} (<a href="https://people.apache.org/phonebook.html?uid={{ c.apacheId }}">{{ c.apacheId }}</a>) | <a href="https://github.com/{{ c.githubId }}"><img width="64" src="{% unless c.avatar %}https://github.com/{{ c.githubId }}.png{% else %}{{ c.avatar }}{% endunless %}"></a> | {{ c.org }} | {{ c.role }}
-=======
 {% for c in site.data.contributors %}{% if c.emeritus %}{% if c.homepage %}<a href="{{ c.homepage }}">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %} (<a href="http://people.apache.org/phonebook.html?uid={{ c.apacheId }}">{{ c.apacheId }}</a>) | <a href="https://github.com/{{ c.githubId }}"><img width="64" src="{% unless c.avatar %}https://github.com/{{ c.githubId }}.png{% else %}{{ c.avatar }}{% endunless %}"></a> | {{ c.org }} | {{ c.role }}
->>>>>>> 461f9701a (Site: Change GitHub avatar links to https)
 =======
 {% for c in site.data.contributors %}{% if c.emeritus %}{% if c.homepage %}<a href="{{ c.homepage }}">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %} (<a href="https://people.apache.org/phonebook.html?uid={{ c.apacheId }}">{{ c.apacheId }}</a>) | <a href="https://github.com/{{ c.githubId }}"><img width="64" src="{% unless c.avatar %}https://github.com/{{ c.githubId }}.png{% else %}{{ c.avatar }}{% endunless %}"></a> | {{ c.org }} | {{ c.role }}
 >>>>>>> 75c34cb7b ([CALCITE-3391] Insecure pages warning on Chrome)
@@ -131,9 +115,6 @@ Want to learn more about Calcite?
 Watch some presentations and read through some slide decks about
 Calcite, or attend one of the [upcoming talks](#upcoming-talks).
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> a66b85e96 (Site: Move "Fast federated SQL with Apache Calcite" in talks section and add video link)
 ## Fast federated SQL with Apache Calcite
 
@@ -144,7 +125,6 @@ At [ApacheCon Europe 2019](https://aceu19.apachecon.com/), Berlin, Germany, Octo
 
 <<<<<<< HEAD
 =======
->>>>>>> 0074fe110 (Site: Add upcoming talks at ApacheCon NA 2019)
 =======
 >>>>>>> a66b85e96 (Site: Move "Fast federated SQL with Apache Calcite" in talks section and add video link)
 ## One SQL to Rule Them All - an Efficient and Syntactically Idiomatic Approach to Management of Streams and Tables

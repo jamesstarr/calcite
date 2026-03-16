@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -38,7 +35,6 @@
   ~  * limitations under the License.
   ~  */
 =======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
   ~
   ~ http://www.apache.org/licenses/LICENSE-2.0
   ~
@@ -48,10 +44,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<<<<<<< HEAD
-
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
-=======
 >>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 <Configuration status="WARN">
 
@@ -67,7 +59,6 @@
 <<<<<<< HEAD
     <Logger name="org.elasticsearch" level="WARN"/>
 =======
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
 =======
     <Logger name="org.elasticsearch" level="WARN"/>
 >>>>>>> 7d9e79e53 (Silence Pig, Spark, and Elasticsearch logs in tests)
@@ -75,14 +66,7 @@
       <AppenderRef ref="console" />
     </Root>
   </Loggers>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 </Configuration>
-=======
-</Configuration>
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
 =======
 </Configuration>
 >>>>>>> 2fd3f202e (Reapply [CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin))

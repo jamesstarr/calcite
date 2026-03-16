@@ -14,9 +14,6 @@
 # limitations under the License.
 
 data: {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
   parser: {
     # Generated parser implementation class package and name
@@ -915,7 +912,6 @@ freemarkerLinks: {
       package: "org.apache.calcite.sql.parser.babel",
       class: "SqlBabelParserImpl",
 =======
->>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
 
     # List of import statements.
     imports: [
@@ -1801,10 +1797,5 @@ freemarkerLinks: {
 }
 
 freemarkerLinks: {
-<<<<<<< HEAD
-    includes: includes/
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
-=======
   includes: includes/
->>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
 }

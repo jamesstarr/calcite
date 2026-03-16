@@ -31,14 +31,8 @@ parser: {
   # List of keywords from "keywords" section that are not reserved.
   nonReservedKeywords: [
     "A"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "ABSENT"
-=======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 =======
     "ABSENT"
 >>>>>>> bc05cf861 (DX-86250 - Unintended reserved words added after Calcite upgrade)
@@ -79,14 +73,8 @@ parser: {
     "COMMAND_FUNCTION"
     "COMMAND_FUNCTION_CODE"
     "COMMITTED"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "CONDITIONAL"
-=======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
     "CONDITION_NUMBER"
 =======
 >>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
@@ -105,14 +93,8 @@ parser: {
     "DATABASE"
     "DATETIME_INTERVAL_CODE"
     "DATETIME_INTERVAL_PRECISION"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "DAYS"
-=======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 =======
     "DAYS"
 >>>>>>> 7aadeab7b ([CALCITE-3383] Plural time units (#18))
@@ -135,10 +117,6 @@ parser: {
     "DOY"
     "DYNAMIC_FUNCTION"
     "DYNAMIC_FUNCTION_CODE"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
     "ENCODING"
     "EPOCH"
@@ -146,7 +124,6 @@ parser: {
 <<<<<<< HEAD
 =======
     "EPOCH"
->>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
     "EPOCH"
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
@@ -158,14 +135,8 @@ parser: {
     "FINAL"
     "FIRST"
     "FOLLOWING"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "FORMAT"
-=======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 =======
     "FORMAT"
 >>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
@@ -180,32 +151,17 @@ parser: {
     "GOTO"
     "GRANTED"
     "HIERARCHY"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "HOURS"
-=======
 >>>>>>> 82a7f9ddf ([CALCITE-2993] ParseException may be thrown for legal SQL queries due to incorrect "LOOKAHEAD(1)" hints)
 =======
     "HOURS"
->>>>>>> 7aadeab7b ([CALCITE-3383] Plural time units (#18))
     "IGNORE"
     "IMMEDIATE"
     "IMMEDIATELY"
     "IMPLEMENTATION"
     "INCLUDE"
-<<<<<<< HEAD
-=======
     "IMMEDIATE"
     "IMMEDIATELY"
     "IMPLEMENTATION"
->>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
-=======
-    "IMMEDIATE"
-    "IMMEDIATELY"
-    "IMPLEMENTATION"
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 =======
 >>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
     "INCLUDING"
@@ -215,15 +171,7 @@ parser: {
     "INSTANCE"
     "INSTANTIABLE"
     "INVOKER"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     "ISODOW"
-    "ISOLATION"
-<<<<<<< HEAD
-=======
-    "ISODOW"
->>>>>>> 7f011cb5c ([CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin))
 =======
     "ISODOW"
     "ISOLATION"
@@ -240,13 +188,9 @@ parser: {
     "ISOLATION"
     "JAVA"
     "JSON"
-<<<<<<< HEAD
->>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
-=======
     "ISOLATION"
     "JAVA"
     "JSON"
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 =======
     "JSON_DEPTH"
     "JSON_KEYS"
@@ -273,15 +217,7 @@ parser: {
     "MESSAGE_TEXT"
     "MICROSECOND"
     "MILLENNIUM"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     "MILLISECOND"
-    "MINUTES"
-<<<<<<< HEAD
-=======
-    "MILLISECOND"
->>>>>>> 7f011cb5c ([CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin))
     "MINVALUE"
     "MONTHS"
 =======
@@ -298,14 +234,8 @@ parser: {
     "MUMPS"
     "NAME"
     "NAMES"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "NANOSECOND"
-=======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 =======
     "NANOSECOND"
 >>>>>>> 1fc91a383 (DX-82825: Fix NANOSECOND non reserved keyword duplication in parser)
@@ -332,10 +262,6 @@ parser: {
     "PARAMETER_SPECIFIC_SCHEMA"
     "PARTIAL"
     "PASCAL"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> bc05cf861 (DX-86250 - Unintended reserved words added after Calcite upgrade)
     "PASSING"
     "PASSTHROUGH"
@@ -347,7 +273,6 @@ parser: {
     "PASSTHROUGH"
     "PAST"
     "PATH"
->>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
     "PASSTHROUGH"
     "PAST"
@@ -368,14 +293,8 @@ parser: {
     "RELATIVE"
     "REPEATABLE"
     "REPLACE"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "RESPECT"
-=======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 =======
     "RESPECT"
 >>>>>>> 82a7f9ddf ([CALCITE-2993] ParseException may be thrown for legal SQL queries due to incorrect "LOOKAHEAD(1)" hints)
@@ -385,14 +304,8 @@ parser: {
     "RETURNED_LENGTH"
     "RETURNED_OCTET_LENGTH"
     "RETURNED_SQLSTATE"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "RETURNING"
-=======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 =======
     "RETURNING"
 >>>>>>> 235b41fd0 (Re-format and re-organize config.fmpp files that customize the SQL parser)
@@ -402,14 +315,8 @@ parser: {
     "ROUTINE_NAME"
     "ROUTINE_SCHEMA"
     "ROW_COUNT"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "SCALAR"
-=======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 =======
     "SCALAR"
 >>>>>>> bc05cf861 (DX-86250 - Unintended reserved words added after Calcite upgrade)
@@ -419,14 +326,8 @@ parser: {
     "SCOPE_CATALOGS"
     "SCOPE_NAME"
     "SCOPE_SCHEMA"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "SECONDS"
-=======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 =======
     "SECONDS"
 >>>>>>> 7aadeab7b ([CALCITE-3383] Plural time units (#18))
@@ -517,10 +418,6 @@ parser: {
     "TYPE"
     "UNBOUNDED"
     "UNCOMMITTED"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> bc05cf861 (DX-86250 - Unintended reserved words added after Calcite upgrade)
     "UNCONDITIONAL"
     "UNDER"
@@ -528,7 +425,6 @@ parser: {
 <<<<<<< HEAD
 =======
     "UNDER"
->>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
     "UNDER"
 >>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
@@ -540,17 +436,8 @@ parser: {
     "USER_DEFINED_TYPE_CODE"
     "USER_DEFINED_TYPE_NAME"
     "USER_DEFINED_TYPE_SCHEMA"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "UTF16"
-    "UTF32"
-    "UTF8"
-=======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 =======
     "UTF8"
     "UTF16"
@@ -568,14 +455,8 @@ parser: {
     "WRAPPER"
     "WRITE"
     "XML"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "YEARS"
-=======
 >>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
 =======
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 =======
     "YEARS"
 >>>>>>> 7aadeab7b ([CALCITE-3383] Plural time units (#18))

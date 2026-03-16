@@ -2,20 +2,11 @@
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
-<<<<<<< HEAD
-<<<<<<< HEAD
- * The ASF licenses this file to you under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
-=======
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
  * The ASF licenses this file to you under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
@@ -29,14 +20,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-<<<<<<< HEAD
-<<<<<<< HEAD
- */
-=======
  *
  */
 
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
  */
 >>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
@@ -78,9 +64,6 @@ dependencies {
         apiv("com.fasterxml.jackson.core:jackson-core", "jackson")
         apiv("com.fasterxml.jackson.core:jackson-databind")
         apiv("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", "jackson")
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 278d51c33 ([CALCITE-3510] Implement Redis adapter  (#170))
         apiv("com.github.kstyrc:embedded-redis")
         apiv("com.github.stephenc.jcip:jcip-annotations")
@@ -93,7 +76,6 @@ dependencies {
         apiv("com.github.stephenc.jcip:jcip-annotations")
         apiv("com.google.code.findbugs:jsr305", "findbugs.jsr305")
         apiv("com.google.guava:guava")
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
         apiv("com.google.protobuf:protobuf-java", "protobuf")
@@ -112,14 +94,9 @@ dependencies {
         apiv("javax.servlet:javax.servlet-api", "servlet")
         apiv("joda-time:joda-time")
         apiv("junit:junit", "junit4")
-<<<<<<< HEAD
-<<<<<<< HEAD
-        apiv("log4j:log4j", "log4j")
-=======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
         apiv("log4j:log4j", "log4j")
->>>>>>> 2833961fa (Refine logging dependencies: keep slf4j bridges in runtime classpath … (#179))
         apiv("mysql:mysql-connector-java")
         apiv("net.hydromatic:aggdesigner-algorithm")
         apiv("net.hydromatic:chinook-data-hsqldb")
@@ -129,14 +106,9 @@ dependencies {
         apiv("net.hydromatic:quidem")
         apiv("net.hydromatic:scott-data-hsqldb")
         apiv("net.hydromatic:tpcds", "hydromatic.tpcds")
-<<<<<<< HEAD
-<<<<<<< HEAD
-        apiv("net.java.dev.jna:jna")
-=======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
         apiv("net.java.dev.jna:jna")
->>>>>>> 54dc4f56f ([CALCITE-3516] Bump net.java.dev.jna:jna to 5.5.0 (#131))
         apiv("net.sf.opencsv:opencsv")
         apiv("org.apache.calcite.avatica:avatica-core", "calcite.avatica")
         apiv("org.apache.calcite.avatica:avatica-server", "calcite.avatica")
@@ -152,33 +124,16 @@ dependencies {
         apiv("org.apache.kerby:kerb-client", "kerby")
         apiv("org.apache.kerby:kerb-core", "kerby")
         apiv("org.apache.kerby:kerb-simplekdc", "kerby")
-<<<<<<< HEAD
-<<<<<<< HEAD
-        apiv("org.apache.logging.log4j:log4j-api", "log4j2")
-        apiv("org.apache.logging.log4j:log4j-core", "log4j2")
-        apiv("org.apache.logging.log4j:log4j-slf4j-impl", "log4j2")
-        apiv("org.apache.pig:pig")
-        apiv("org.apache.pig:pigunit", "pig")
-        apiv("org.apache.spark:spark-core_2.10", "spark")
-<<<<<<< HEAD
-<<<<<<< HEAD
-        apiv("org.apiguardian:apiguardian-api")
-=======
         apiv("org.apache.logging.log4j:log4j-api", "log4j")
         apiv("org.apache.logging.log4j:log4j-core", "log4j")
 =======
         apiv("org.apache.logging.log4j:log4j-api", "log4j2")
         apiv("org.apache.logging.log4j:log4j-core", "log4j2")
         apiv("org.apache.logging.log4j:log4j-slf4j-impl", "log4j2")
->>>>>>> 2833961fa (Refine logging dependencies: keep slf4j bridges in runtime classpath … (#179))
         apiv("org.apache.pig:pig")
         apiv("org.apache.pig:pigunit", "pig")
         apiv("org.apache.spark:spark-core_2.10", "spark")
-<<<<<<< HEAD
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
         apiv("org.apiguardian:apiguardian-api")
->>>>>>> 20c78195c ([CALCITE-3652] Add org.apiguardian:apiguardian-api to specify API status (#165))
 =======
 >>>>>>> d4dded518 ([CALCITE-3871] Remove dependency of org.apiguardian:apiguardian-api)
 =======
@@ -218,9 +173,6 @@ dependencies {
         apiv("org.scala-lang:scala-library")
         apiv("org.slf4j:slf4j-api", "slf4j")
         apiv("org.slf4j:slf4j-log4j12", "slf4j")
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 278d51c33 ([CALCITE-3510] Implement Redis adapter  (#170))
         apiv("redis.clients:jedis")
         apiv("sqlline:sqlline")
@@ -235,7 +187,6 @@ dependencies {
 <<<<<<< HEAD
         runtimev("org.openjdk.jmh:jmh-core", "jmh")
         runtimev("org.openjdk.jmh:jmh-generator-annprocess", "jmh")
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
         apiv("org.openjdk.jmh:jmh-core", "jmh")
         apiv("org.openjdk.jmh:jmh-generator-annprocess", "jmh")

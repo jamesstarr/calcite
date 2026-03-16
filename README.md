@@ -16,16 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 {% endcomment %}
 -->
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.calcite/calcite-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.calcite/calcite-core)
 [![Travis Build Status](https://travis-ci.org/apache/calcite.svg?branch=master)](https://travis-ci.org/apache/calcite)
-<<<<<<< HEAD
-[![CI Status](https://github.com/apache/calcite/workflows/CI/badge.svg?branch=master)](https://github.com/apache/calcite/actions?query=branch%3Amaster)
-=======
-[![Travis Build Status](https://travis-ci.org/apache/calcite.svg?branch=master)](https://travis-ci.org/apache/calcite)
->>>>>>> 9f3c8c3ae (Update build status badges in README.md)
 =======
 [![CI Status](https://github.com/apache/calcite/workflows/CI/badge.svg)](https://github.com/apache/calcite/actions)
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
@@ -43,16 +34,6 @@ Apache Calcite is a dynamic data management framework.
 
 It contains many of the pieces that comprise a typical
 database management system but omits the storage primitives.
-<<<<<<< HEAD
-<<<<<<< HEAD
-It provides an industry standard SQL parser and validator,
-a customisable optimizer with pluggable rules and cost functions,
-logical and physical algebraic operators, various transformation
-algorithms from SQL to algebra (and the opposite), and many
-adapters for executing SQL queries over Cassandra, Druid,
-Elasticsearch, MongoDB, Kafka, and others, with minimal
-configuration.
-=======
 It provides an industry standard SQL parser and validator, 
 a customisable optimizer with pluggable rules and cost functions,
 logical and physical algebraic operators, various transformation
@@ -60,7 +41,6 @@ algorithms from SQL to algebra (and the opposite), and many
 adapters for executing SQL queries over Cassandra, Druid, 
 Elasticsearch, MongoDB, Kafka, and others, with minimal 
 configuration.  
->>>>>>> 0c5dd4d55 (Improve READMEs and release howto instructions)
 =======
 It provides an industry standard SQL parser and validator,
 a customisable optimizer with pluggable rules and cost functions,

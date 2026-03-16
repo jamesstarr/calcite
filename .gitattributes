@@ -4,9 +4,6 @@
 *.cs     text diff=csharp
 *.java   text diff=java
 *.html   text diff=html
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> 9e1b7a548 (Git: Windows line-endings)
 *.kt     text diff=kotlin
 *.kts    text diff=kotlin
@@ -16,7 +13,6 @@
 =======
 *.py     text diff=python executable
 *.pl     text diff=perl executable
->>>>>>> c9cd1c371 (Add executable flags via .gitattributes so release artifacts have executable bits)
 =======
 >>>>>>> 9e1b7a548 (Git: Windows line-endings)
 *.pm     text diff=perl

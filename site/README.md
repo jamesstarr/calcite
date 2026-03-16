@@ -41,21 +41,9 @@ Site generation currently works best with ruby-2.5.1.
 ### Add javadoc
 
 1. `cd ..`
-<<<<<<< HEAD
-<<<<<<< HEAD
-2. `./gradlew javadocAggregate`
-3. `rm -rf site/target/javadocAggregate`
-   `rmdir site\target\javadocAggregate /S /Q` (Windows)
-<<<<<<< HEAD
-4. `mkdir site/target`
-   `mkdir site\target` (Windows)
-4. `mv build/docs/javadocAggregate site/target`
-   `for /d %a in (build\docs\javadocAggregate*) do move %a site\target` (Windows)
-=======
 2. `mvn -DskipTests site`
 =======
 2. `./gradlew javadocAggregate`
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 3. `rm -rf site/target/apidocs site/target/testapidocs`
    `rmdir site\target\apidocs site\target\testapidocs /S /Q` (Windows)
 4. `mkdir site/target`
@@ -114,21 +102,8 @@ As you make changes to the site, the site will automatically rebuild.
 4. `git reset origin/master --soft`
 
 If you have not regenerated the javadoc and they are missing, restore them:
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-6. `git reset -- javadocAggregate/`
-7. `git checkout -- javadocAggregate/`
-<<<<<<< HEAD
-
-Restore the avatica site
-
-8. `git reset -- avatica/`
-9. `git checkout -- avatica/`
-=======
 =======
 
->>>>>>> 17879714c (Update instructions for publishing site; we previously used subversion, now we use git)
 6. `git reset -- apidocs/`
 7. `git reset -- testapidocs/`
 8. `git checkout -- apidocs/`
@@ -175,18 +150,9 @@ sync with "master". Immediately after a release, the release manager
 will publish the site, including all of the features that have just
 been released. When making an edit to the site, a Calcite committer
 must commit the change to the git "master" branch (as well as
-<<<<<<< HEAD
-<<<<<<< HEAD
-git, to publish the site, of course). If the edit is to appear
-on the site immediately, the committer should then cherry-pick the
-change into the "site" branch.  If there have been no feature-related
-changes on the site since the release, then "site" should be a
-fast-forward merge of "master".
-=======
 subversion, to publish the site, of course). If the edit is to appear
 =======
 git, to publish the site, of course). If the edit is to appear
->>>>>>> 17879714c (Update instructions for publishing site; we previously used subversion, now we use git)
 on the site immediately, the committer should then cherry-pick the
 change into the "site" branch.  If there have been no feature-related
 changes on the site since the release, then "site" should be a

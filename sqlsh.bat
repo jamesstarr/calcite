@@ -1,9 +1,5 @@
 @echo off
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 :: sqlline.bat - Windows script to launch SQL shell
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 >>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 ::
@@ -22,16 +18,10 @@
 :: See the License for the specific language governing permissions and
 :: limitations under the License.
 ::
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-:: sqlline.bat - Windows script to launch SQL shell
-=======
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 =======
 
 :: sqlline.bat - Windows script to launch SQL shell
->>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 :: Example:
 :: > sqlline.bat
 :: sqlline> !connect jdbc:calcite: admin admin

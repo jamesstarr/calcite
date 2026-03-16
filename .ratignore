@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
 **/local.properties
->>>>>>> eb5cf8076 ([CALCITE-3749] Ignore local.proproperties in RAT, Autostyle checks, a… (#87))
 =======
 
 >>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
@@ -20,13 +15,8 @@
 **/src/test/resources/*.json
 **/data.txt
 **/data2.txt
-<<<<<<< HEAD
-<<<<<<< HEAD
-.idea/vcs.xml
-=======
 #bu ildSrc/build
 #b uildSrc/subprojects/*/build
->>>>>>> eb5cf8076 ([CALCITE-3749] Ignore local.proproperties in RAT, Autostyle checks, a… (#87))
 =======
 .idea/vcs.xml
 >>>>>>> e946e1b74 (Add JIRA links in Git in IDEA (#309))
@@ -62,9 +52,6 @@ site/js/**
 # Images
 site/img/*.png
 site/favicon.ico
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 
 # Development and personal files
@@ -72,6 +59,5 @@ site/favicon.ico
 *.patch
 <<<<<<< HEAD
 =======
->>>>>>> eb5cf8076 ([CALCITE-3749] Ignore local.proproperties in RAT, Autostyle checks, a… (#87))
 =======
 >>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)

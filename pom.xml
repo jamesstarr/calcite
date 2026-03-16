@@ -27,18 +27,7 @@ limitations under the License.
   <groupId>org.apache.calcite</groupId>
   <artifactId>calcite</artifactId>
   <packaging>pom</packaging>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-  <version>1.16.0-SNAPSHOT</version>
-=======
   <version>1.18.0-SNAPSHOT</version>
->>>>>>> a8362b70b ([maven-release-plugin] prepare for next development iteration)
 =======
   <version>1.19.0-SNAPSHOT</version>
 >>>>>>> c12c4b5fe ([maven-release-plugin] prepare for next development iteration)
@@ -128,14 +117,7 @@ limitations under the License.
     <!-- We support (and test against) Guava versions between
          19.0 and 27.1. Default is 19.0 due to Cassandra adapter. -->
     <guava.version>19.0</guava.version>
-<<<<<<< HEAD
-    <joda.version>2.8.1</joda.version>
-<<<<<<< HEAD
-    <h2.version>1.4.185</h2.version>
-    <hadoop.version>2.7.0</hadoop.version>
 =======
-=======
->>>>>>> a0d360b06 (Following [CALCITE-3005], remove conflict warning in SQL parser)
     <h2.version>1.4.197</h2.version>
     <!-- Require Hadoop 2.7.4+ due to HADOOP-14586 -->
     <hadoop.version>2.7.5</hadoop.version>
@@ -187,15 +169,10 @@ limitations under the License.
     <tpcds.version>1.2</tpcds.version>
     <xalan.version>2.7.1</xalan.version>
     <xerces.version>2.9.1</xerces.version>
-<<<<<<< HEAD
-    <sketches.version>0.9.0</sketches.version>
-<<<<<<< HEAD
-=======
     <fmpp.version>0.9.14</fmpp.version>
     <jsonpath.version>2.4.0</jsonpath.version>
     <kafka.client.version>2.0.0</kafka.client.version>
 =======
->>>>>>> a0d360b06 (Following [CALCITE-3005], remove conflict warning in SQL parser)
 
     <!-- Java 1.8 does not support -html5, so override via profile for Java 1.8 -->
     <maven-javadoc-html5>-html5</maven-javadoc-html5>
@@ -787,10 +764,6 @@ limitations under the License.
         <!-- If you are looking to change source/target,
              change the maven.compiler.{source,target} property -->
         <configuration>
-<<<<<<< HEAD
-          <source>1.8</source>
-          <target>1.8</target>
-=======
 >>>>>>> 84de9ce3d ([CALCITE-2594] Ensure forbiddenapis and maven-compiler use the correct JDK version)
           <compilerArgument>-Xlint:deprecation</compilerArgument>
         </configuration>
@@ -870,7 +843,6 @@ limitations under the License.
           <excludePackageNames>org.apache.calcite.benchmarks.generated,org.apache.calcite.sql.parser.ddl,org.apache.calcite.sql.parser.impl,org.apache.calcite.sql.parser.parserextensiontesting,org.apache.calcite.piglet.parser,org.openjdk.jmh,org.apache.calcite.adapter.elasticsearch2</excludePackageNames>
           <excludePackageNames>${maven-javadoc-plugin.excludePackageNames}</excludePackageNames>
           <quiet>true</quiet>
->>>>>>> aa1d61783 ([CALCITE-2518] Add failOnWarnings to maven-javadoc-plugin configuration)
           <show>private</show>
         </configuration>
 =======

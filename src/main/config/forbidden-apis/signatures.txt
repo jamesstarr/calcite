@@ -58,18 +58,11 @@ java.lang.Runtime#exec(java.lang.String[], java.lang.String[], java.io.File)
 @defaultMessage For an enum, use == rather than equals
 java.lang.Enum#equals(java.lang.Object)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-@defaultMessage It does not handle encoded URLs, use Sources.of(URL).file() instead
-java.net.URL#getPath()
-
-=======
 >>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 =======
 @defaultMessage It does not handle encoded URLs, use Sources.of(URL).file() instead
 java.net.URL#getPath()
 
->>>>>>> d6c0815c2 ([CALCITE-2495] Support encoded URLs in calcite.util.Source, and use it for URL->File conversion in tests)
 # Preconditions.checkArgument,
 # Preconditions.checkPositionIndex, and
 # Preconditions.checkState are still OK

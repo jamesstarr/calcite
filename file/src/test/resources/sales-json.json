@@ -13,9 +13,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-<<<<<<< HEAD
-<<<<<<<< HEAD:file/src/test/resources/sales-json.json
-=======
 >>>>>>> 9addb8c46 ([CALCITE-3176] File adapter for parsing JSON files)
  *
  * A JSON model of a Calcite schema based on CSV files.
@@ -56,4 +53,3 @@ public abstract class AbstractGeodeTest {
 // End AbstractGeodeTest.java
 =======
 }
->>>>>>> 9addb8c46 ([CALCITE-3176] File adapter for parsing JSON files)
