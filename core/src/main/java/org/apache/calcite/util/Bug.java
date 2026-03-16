@@ -200,53 +200,6 @@ public abstract class Bug {
   public static final boolean CALCITE_2933_FIXED = false;
 
   /**
-   * Whether
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2223">[CALCITE-2223]
-   * ProjectMergeRule is infinitely matched when is applied after ProjectReduceExpressions Rule</a>
-   * is fixed.
-   */
-  public static final boolean CALCITE_2223_FIXED = false;
-
-  /** Whether
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2400">[CALCITE-2400]
-   * Allow standards-compliant column ordering for NATURAL JOIN and JOIN USING
-   * when dynamic tables are used</a> is fixed. */
-  public static final boolean CALCITE_2400_FIXED = false;
-
-
-  /** Whether
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2539">[CALCITE-2539]
-   * Several test case not passed in CalciteSqlOperatorTest.java</a> is fixed. */
-  public static final boolean CALCITE_2539_FIXED = false;
-
-  /** Whether
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2401">[CALCITE-2401]
-   * Improve RelMdPredicates performance</a> is fixed.
-   */
-  public static final boolean CALCITE_2401_FIXED = false;
-
-  /** Whether
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2776">[CALCITE-2776]
-   * Wrong value when accessing struct types with one attribute</a> is fixed. */
-  public static final boolean CALCITE_2776_FIXED = false;
-
-  /** Whether
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2869">[CALCITE-2869]
-   * JSON data type support</a> is fixed. */
-  public static final boolean CALCITE_2869_FIXED = false;
-
-  /** Whether
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3243">[CALCITE-3243]
-   * Incomplete validation of operands in JSON functions</a> is fixed. */
-  public static final boolean CALCITE_3243_FIXED = false;
-
-  /** Whether
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2933">[CALCITE-2933]
-   * In Druid adapter, expression like "cast(cast(\"timestamp\" as timestamp) as varchar)"
-   * returns as epoch millisecond</a> is fixed. */
-  public static final boolean CALCITE_2933_FIXED = false;
-
-  /**
    * Use this to flag temporary code.
    */
   public static final boolean TODO_FIXED = false;
